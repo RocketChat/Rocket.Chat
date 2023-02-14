@@ -10,4 +10,6 @@ export interface ISetUserAvatarParams {
 
 export interface IUserService {
 	setUserAvatar(param: ISetUserAvatarParams): Promise<void>;
+	deleteUser(userId: string, confirmRelinquish: boolean): Promise<void>;
+	checkUsernameAvailability(username: string): Promise<boolean>;
 }

@@ -7,13 +7,13 @@ export class AppDepartmentsConverter {
 		this.orch = orch;
 	}
 
-	convertById(id) {
-		const department = LivechatDepartment.findOneById(id);
+	async convertById(id) {
+		const department = await LivechatDepartment.findOneById(id);
 
 		return this.convertDepartment(department);
 	}
 
-	convertDepartment(department) {
+	async convertDepartment(department) {
 		if (!department) {
 			return undefined;
 		}

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import { MongoInternals } from 'meteor/mongo';
 import { Users } from '@rocket.chat/models';
-import type { ILivechatAgent } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IUser } from '@rocket.chat/core-typings';
 
 import { metrics } from '../../../app/metrics';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';

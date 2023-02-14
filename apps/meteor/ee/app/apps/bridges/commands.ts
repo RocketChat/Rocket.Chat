@@ -1,23 +1,21 @@
-import type { ISlashCommand, ISlashCommandPreviewItem } from '@rocket.chat/apps-engine/definition/slashcommands';
-import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
+import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcommands';
 import { CommandBridge } from '@rocket.chat/apps-engine/server/bridges/CommandBridge';
-import type { IMessage, RequiredField, SlashCommand, SlashCommandPreviews } from '@rocket.chat/core-typings';
+import type { SlashCommand } from '@rocket.chat/core-typings';
 
-import { slashCommands } from '../../../../app/utils/server';
 import { Utilities } from '../../../../app/apps/lib/misc/Utilities';
 import type { AppServerOrchestrator } from '../orchestrator';
-import { parseParameters } from '../../../../lib/utils/parseParameters';
+import { AppEvents } from '../../../../app/apps/server/communication';
+import { SlashCommandService } from '../../../../server/sdk';
 
 export class AppCommandsBridge extends CommandBridge {
-	disabledCommands: Map<string, typeof slashCommands.commands[string]>;
+	disabledCommands: Map<string, SlashCommand>;
 
-	// eslint-disable-next-line no-empty-function
 	constructor(private readonly orch: AppServerOrchestrator) {
 		super();
 		this.disabledCommands = new Map();
 	}
 
-	protected doesCommandExist(command: string, appId: string): boolean {
+	protected async doesCommandExist(command: string, appId: string): Promise<boolean> {
 		this.orch.debugLog(`The App ${appId} is checking if "${command}" command exists.`);
 
 		if (typeof command !== 'string' || command.length === 0) {
@@ -26,10 +24,10 @@ export class AppCommandsBridge extends CommandBridge {
 
 		const cmd = command.toLowerCase();
 
-		return typeof slashCommands.commands[cmd] === 'object' || this.disabledCommands.has(cmd);
+		return typeof (await SlashCommandService.getCommand(cmd)) === 'object' || this.disabledCommands.has(cmd);
 	}
 
-	protected enableCommand(command: string, appId: string): void {
+	protected async enableCommand(command: string, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is attempting to enable the command: "${command}"`);
 
 		if (typeof command !== 'string' || command.trim().length === 0) {
@@ -41,13 +39,13 @@ export class AppCommandsBridge extends CommandBridge {
 			throw new Error(`The command is not currently disabled: "${cmd}"`);
 		}
 
-		slashCommands.commands[cmd] = this.disabledCommands.get(cmd) as typeof slashCommands.commands[string];
+		await SlashCommandService.setAppCommand(this.disabledCommands.get(cmd) as SlashCommand);
 		this.disabledCommands.delete(cmd);
 
-		this.orch.getNotifier().commandUpdated(cmd);
+		this.orch.notifyAppEvent(AppEvents.COMMAND_UPDATED, cmd);
 	}
 
-	protected disableCommand(command: string, appId: string): void {
+	protected async disableCommand(command: string, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is attempting to disable the command: "${command}"`);
 
 		if (typeof command !== 'string' || command.trim().length === 0) {
@@ -60,16 +58,16 @@ export class AppCommandsBridge extends CommandBridge {
 			return;
 		}
 
-		const commandObj = slashCommands.commands[cmd];
+		const commandObj = await SlashCommandService.getCommand(cmd);
 
 		if (typeof commandObj === 'undefined') {
 			throw new Error(`Command does not exist in the system currently: "${cmd}"`);
 		}
 
 		this.disabledCommands.set(cmd, commandObj);
-		delete slashCommands.commands[cmd];
+		await SlashCommandService.removeCommand(cmd);
 
-		this.orch.getNotifier().commandDisabled(cmd);
+		this.orch.notifyAppEvent(AppEvents.COMMAND_DISABLED, cmd);
 	}
 
 	// command: { command, paramsExample, i18nDescription, executor: function }
@@ -79,26 +77,24 @@ export class AppCommandsBridge extends CommandBridge {
 		this._verifyCommand(command);
 
 		const cmd = command.command.toLowerCase();
-		if (typeof slashCommands.commands[cmd] === 'undefined') {
+		const item = await SlashCommandService.getCommand(cmd);
+		const typeofCommand = typeof item;
+
+		if (typeofCommand === 'undefined') {
 			throw new Error(`Command does not exist in the system currently (or it is disabled): "${cmd}"`);
 		}
 
-		const item = slashCommands.commands[cmd];
-
 		item.params = command.i18nParamsExample ? command.i18nParamsExample : item.params;
 		item.description = command.i18nDescription ? command.i18nDescription : item.params;
-		item.callback = this._appCommandExecutor.bind(this);
 		item.providesPreview = command.providesPreview;
-		item.previewer = command.previewer ? this._appCommandPreviewer.bind(this) : item.previewer;
-		item.previewCallback = (
-			command.executePreviewItem ? this._appCommandPreviewExecutor.bind(this) : item.previewCallback
-		) as typeof slashCommands.commands[string]['previewCallback'];
+		item.previewer = !command.previewer ? undefined : ({} as any);
+		item.previewCallback = !command.executePreviewItem ? undefined : ({} as any);
+		await SlashCommandService.setAppCommand(item);
 
-		slashCommands.commands[cmd] = item;
-		this.orch.getNotifier().commandUpdated(cmd);
+		this.orch.notifyAppEvent(AppEvents.COMMAND_UPDATED, cmd);
 	}
 
-	protected registerCommand(command: ISlashCommand, appId: string): void {
+	protected async registerCommand(command: ISlashCommand, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is registering the command: "${command.command}"`);
 
 		this._verifyCommand(command);
@@ -109,19 +105,16 @@ export class AppCommandsBridge extends CommandBridge {
 			params: Utilities.getI18nKeyForApp(command.i18nParamsExample, appId),
 			description: Utilities.getI18nKeyForApp(command.i18nDescription, appId),
 			permission: command.permission,
-			callback: this._appCommandExecutor.bind(this),
 			providesPreview: command.providesPreview,
-			previewer: !command.previewer ? undefined : this._appCommandPreviewer.bind(this),
-			previewCallback: (!command.executePreviewItem ? undefined : this._appCommandPreviewExecutor.bind(this)) as
-				| typeof slashCommands.commands[string]['previewCallback']
-				| undefined,
+			previewer: !command.previewer ? undefined : {},
+			previewCallback: !command.executePreviewItem ? undefined : {},
 		} as SlashCommand;
 
-		slashCommands.commands[command.command.toLowerCase()] = item;
-		this.orch.getNotifier().commandAdded(command.command.toLowerCase());
+		await SlashCommandService.setAppCommand(item);
+		this.orch.notifyAppEvent(AppEvents.COMMAND_ADDED, command.command.toLowerCase());
 	}
 
-	protected unregisterCommand(command: string, appId: string): void {
+	protected async unregisterCommand(command: string, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is unregistering the command: "${command}"`);
 
 		if (typeof command !== 'string' || command.trim().length === 0) {
@@ -130,9 +123,9 @@ export class AppCommandsBridge extends CommandBridge {
 
 		const cmd = command.toLowerCase();
 		this.disabledCommands.delete(cmd);
-		delete slashCommands.commands[cmd];
+		await SlashCommandService.removeCommand(cmd);
 
-		this.orch.getNotifier().commandRemoved(cmd);
+		this.orch.notifyAppEvent(AppEvents.COMMAND_REMOVED, cmd);
 	}
 
 	private _verifyCommand(command: ISlashCommand): void {
@@ -159,68 +152,5 @@ export class AppCommandsBridge extends CommandBridge {
 		if (typeof command.executor !== 'function') {
 			throw new Error('Invalid Slash Command parameter provided, it must be a valid ISlashCommand object.');
 		}
-	}
-
-	private async _appCommandExecutor(
-		command: string,
-		parameters: any,
-		message: RequiredField<Partial<IMessage>, 'rid'>,
-		triggerId?: string,
-		userId?: string,
-	): Promise<void> {
-		const user = this.orch.getConverters()?.get('users').convertById(userId);
-		const room = this.orch.getConverters()?.get('rooms').convertById(message.rid);
-		const threadId = message.tmid;
-		const params = parseParameters(parameters);
-
-		const context = new SlashCommandContext(
-			Object.freeze(user),
-			Object.freeze(room),
-			Object.freeze(params) as string[],
-			threadId,
-			triggerId,
-		);
-
-		await this.orch.getManager()?.getCommandManager().executeCommand(command, context);
-	}
-
-	private async _appCommandPreviewer(
-		command: string,
-		parameters: string,
-		message: IMessage,
-		userId?: string,
-	): Promise<SlashCommandPreviews> {
-		const user = this.orch.getConverters()?.get('users').convertById(userId);
-		const room = this.orch.getConverters()?.get('rooms').convertById(message.rid);
-		const threadId = message.tmid;
-		const params = parseParameters(parameters);
-
-		const context = new SlashCommandContext(Object.freeze(user), Object.freeze(room), Object.freeze(params) as string[], threadId);
-		const preview = await this.orch.getManager()?.getCommandManager().getPreviews(command, context);
-		return preview as SlashCommandPreviews;
-	}
-
-	private async _appCommandPreviewExecutor(
-		command: string,
-		parameters: any,
-		message: IMessage,
-		preview: ISlashCommandPreviewItem,
-		triggerId: string,
-		userId?: string,
-	): Promise<void> {
-		const user = this.orch.getConverters()?.get('users').convertById(userId);
-		const room = this.orch.getConverters()?.get('rooms').convertById(message.rid);
-		const threadId = message.tmid;
-		const params = parseParameters(parameters);
-
-		const context = new SlashCommandContext(
-			Object.freeze(user),
-			Object.freeze(room),
-			Object.freeze(params) as string[],
-			threadId,
-			triggerId,
-		);
-
-		await this.orch.getManager()?.getCommandManager().executePreview(command, preview, context);
 	}
 }

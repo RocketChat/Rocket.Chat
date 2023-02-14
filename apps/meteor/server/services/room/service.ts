@@ -4,7 +4,7 @@ import { Users } from '@rocket.chat/models';
 import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import type { ICreateDiscussionParams, ICreateRoomParams, IRoomService } from '../../sdk/types/IRoomService';
 import { Authorization } from '../../sdk';
-import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
+import { createRoom, addUserToRoom as meteorAddUserToRoom } from '../../../app/lib/server/functions'; // TODO remove this import
 import { create as createDiscussion } from '../../../app/discussion/server/methods/createDiscussion';
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
@@ -36,6 +36,15 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		}
 
 		return true;
+	}
+
+	async addUserToRoom(
+		rid: string,
+		user: Pick<IUser, '_id' | 'username'> | string,
+		inviter?: Pick<IUser, '_id' | 'username'>,
+		silenced?: boolean,
+	): Promise<boolean | unknown> {
+		return meteorAddUserToRoom(rid, user, inviter, silenced);
 	}
 
 	async createDiscussion(params: ICreateDiscussionParams): Promise<IRoom> {

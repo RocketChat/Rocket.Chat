@@ -1,12 +1,12 @@
+import EventEmitter from 'events';
+
 import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { Apps as AppsModel, AppsLogs as AppsLogsModel, AppsPersistence as AppsPersistenceModel } from '@rocket.chat/models';
 
 import { Logger } from '../../../server/lib/logger/Logger';
-import { settings } from '../../../app/settings/server';
 import { RealAppBridges } from './bridges';
-import { AppMethods, AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from '../../../app/apps/server/communication';
 import {
 	AppMessagesConverter,
 	AppRoomsConverter,
@@ -28,6 +28,7 @@ export class AppServerOrchestrator {
 	constructor(db) {
 		this.db = db;
 		this._isInitialized = false;
+		this.appEventsSink = new EventEmitter();
 	}
 
 	initialize({ marketplaceUrl = 'https://marketplace.rocket.chat', appsSourceStorageType, appsSourceStorageFilesystemPath }) {
@@ -36,6 +37,9 @@ export class AppServerOrchestrator {
 		}
 
 		this._rocketchatLogger = new Logger('Rocket.Chat Apps');
+
+		this.developmentMode = false;
+		this.frameworkEnabled = true;
 
 		this._marketplaceUrl = marketplaceUrl;
 
@@ -64,12 +68,6 @@ export class AppServerOrchestrator {
 			bridges: this._bridges,
 			sourceStorage: this._appSourceStorage,
 		});
-
-		this._communicators = new Map();
-		this._communicators.set('methods', new AppMethods(this));
-		this._communicators.set('notifier', new AppServerNotifier(this));
-		this._communicators.set('restapi', new AppsRestApi(this, this._manager));
-		this._communicators.set('uikit', new AppUIKitInteractionApi(this));
 
 		this._isInitialized = true;
 	}
@@ -101,8 +99,8 @@ export class AppServerOrchestrator {
 		return this._bridges;
 	}
 
-	getNotifier() {
-		return this._communicators.get('notifier');
+	notifyAppEvent(event, ...payload) {
+		this.appEventsSink.emit(event, ...payload);
 	}
 
 	getManager() {
@@ -122,7 +120,7 @@ export class AppServerOrchestrator {
 	}
 
 	isEnabled() {
-		return settings.get('Apps_Framework_enabled');
+		return this.frameworkEnabled;
 	}
 
 	isLoaded() {
@@ -130,7 +128,7 @@ export class AppServerOrchestrator {
 	}
 
 	isDebugging() {
-		return settings.get('Apps_Framework_Development_Mode') && !isTesting();
+		return this.developmentMode && !isTesting();
 	}
 
 	/**
@@ -200,6 +198,14 @@ export class AppServerOrchestrator {
 
 				throw error;
 			});
+	}
+
+	setDevelopmentMode(isEnabled) {
+		this.developmentMode = isEnabled;
+	}
+
+	setFrameworkEnabled(isEnabled) {
+		this.frameworkEnabled = isEnabled;
 	}
 }
 

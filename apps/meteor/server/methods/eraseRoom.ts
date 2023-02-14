@@ -7,7 +7,7 @@ import { deleteRoom } from '../../app/lib/server/functions/deleteRoom';
 import { hasPermission } from '../../app/authorization/server';
 import { Rooms, Messages } from '../../app/models/server';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
-import { Team, Apps } from '../sdk';
+import { Apps, Team } from '../sdk';
 
 export async function eraseRoom(rid: string, uid: string): Promise<void> {
 	const room = Rooms.findOneById(rid);
@@ -30,9 +30,11 @@ export async function eraseRoom(rid: string, uid: string): Promise<void> {
 		});
 	}
 
-	const prevent = Promise.await(Apps.triggerEvent(AppInterface.IPreRoomDeletePrevent, room));
-	if (prevent) {
-		throw new Meteor.Error('error-app-prevented-deleting', 'A Rocket.Chat App prevented the room erasing.');
+	if (await Apps.isLoaded()) {
+		const prevent = await Apps.triggerEvent('IPreRoomDeletePrevent', room);
+		if (prevent) {
+			throw new Meteor.Error('error-app-prevented-deleting', 'A Rocket.Chat App prevented the room erasing.');
+		}
 	}
 
 	deleteRoom(rid);
@@ -44,7 +46,9 @@ export async function eraseRoom(rid: string, uid: string): Promise<void> {
 		Messages.createUserDeleteRoomFromTeamWithRoomIdAndUser(team.roomId, room.name, user);
 	}
 
-	await Apps.triggerEvent(AppInterface.IPostRoomDeleted, room);
+	if (await Apps.isLoaded()) {
+		Apps.triggerEvent('IPostRoomDeleted', room);
+	}
 }
 
 Meteor.methods({

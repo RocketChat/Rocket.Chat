@@ -4,6 +4,7 @@ import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { Users } from '@rocket.chat/models';
 
 import type { AppServerOrchestrator } from '../orchestrator';
+import { AppEvents } from '../../../../app/apps/server/communication';
 
 export class AppActivationBridge extends ActivationBridge {
 	// eslint-disable-next-line no-empty-function
@@ -12,15 +13,15 @@ export class AppActivationBridge extends ActivationBridge {
 	}
 
 	protected async appAdded(app: ProxiedApp): Promise<void> {
-		await this.orch.getNotifier().appAdded(app.getID());
+		this.orch.notifyAppEvent(AppEvents.APP_ADDED, app.getID());
 	}
 
 	protected async appUpdated(app: ProxiedApp): Promise<void> {
-		await this.orch.getNotifier().appUpdated(app.getID());
+		this.orch.notifyAppEvent(AppEvents.APP_UPDATED, app.getID());
 	}
 
 	protected async appRemoved(app: ProxiedApp): Promise<void> {
-		await this.orch.getNotifier().appRemoved(app.getID());
+		this.orch.notifyAppEvent(AppEvents.APP_REMOVED, app.getID());
 	}
 
 	protected async appStatusChanged(app: ProxiedApp, status: AppStatus): Promise<void> {
@@ -28,10 +29,10 @@ export class AppActivationBridge extends ActivationBridge {
 
 		await Users.updateStatusByAppId(app.getID(), userStatus);
 
-		await this.orch.getNotifier().appStatusUpdated(app.getID(), status);
+		this.orch.notifyAppEvent(AppEvents.APP_STATUS_CHANGE, app.getID(), status);
 	}
 
 	protected async actionsChanged(): Promise<void> {
-		await this.orch.getNotifier().actionsChanged();
+		this.orch.notifyAppEvent(AppEvents.APP_STATUS_CHANGE);
 	}
 }

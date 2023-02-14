@@ -41,7 +41,7 @@ export class AppsRestApi {
 			// when there is no `response` field in the error, it means the request
 			// couldn't even make it to the server
 			if (!e.hasOwnProperty('response')) {
-				await AppsConverter.rocketChatLoggerWarn(message, e.message);
+				await Apps.rocketChatLoggerWarn(message, e.message);
 				return API.v1.internalError('Could not reach the Marketplace');
 			}
 
@@ -781,7 +781,7 @@ export class AppsRestApi {
 					const updated = [];
 					this.bodyParams.settings.forEach((s) => {
 						if (settings[s.id]) {
-							Promise.await(AppsManager.getSettingsManager().updateAppSetting(this.urlParams.id, s));
+							Promise.await(AppsManager.updateAppSetting(this.urlParams.id, s));
 							// Updating?
 							updated.push(s);
 						}
@@ -842,7 +842,7 @@ export class AppsRestApi {
 
 					if (prl) {
 						return API.v1.success({
-							apis: await AppsManager.apiManager.listApis(this.urlParams.id),
+							apis: await AppsManager.listApis(this.urlParams.id),
 						});
 					}
 					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);

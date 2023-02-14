@@ -8,6 +8,11 @@ import type { IAppInstallParameters, IAppUninstallParameters } from '@rocket.cha
 import type { IGetAppsFilter } from '@rocket.chat/apps-engine/server/IGetAppsFilter';
 import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import type {
+	SlashCommandContext,
+	ISlashCommandPreview,
+	ISlashCommandPreviewItem,
+} from '@rocket.chat/apps-engine/definition/slashcommands';
 
 import { ServiceClass } from '../../../server/sdk/types/ServiceClass';
 import type { AppServerOrchestrator } from './orchestrator';
@@ -86,5 +91,21 @@ export class AppsManagerService extends ServiceClass implements IAppsManagerServ
 
 	getAllActionButtons(): IUIActionButton[] {
 		return this.apps.getManager()?.getUIActionButtonManager().getAllActionButtons() ?? [];
+	}
+
+	async getCommandPreviews(command: string, context: SlashCommandContext): Promise<ISlashCommandPreview | undefined> {
+		return this.apps.getManager()?.getCommandManager().getPreviews(command, context);
+	}
+
+	async commandExecutePreview(
+		command: string,
+		previewItem: ISlashCommandPreviewItem,
+		context: SlashCommandContext,
+	): Promise<ISlashCommandPreview | undefined> {
+		return this.apps.getManager()?.getCommandManager().executePreview(command, previewItem, context);
+	}
+
+	async commandExecuteCommand(command: string, context: SlashCommandContext): Promise<void> {
+		return this.apps.getManager()?.getCommandManager().executeCommand(command, context);
 	}
 }
