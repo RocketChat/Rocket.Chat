@@ -6,7 +6,7 @@ import { FederationRoomEvents, Users } from '../../../models/server';
 export async function getStatistics() {
 	const numberOfEvents = FederationRoomEvents.find().count();
 	const numberOfFederatedUsers = Users.findRemote().count();
-	const numberOfServers = await FederationServers.find().count();
+	const numberOfServers = await FederationServers.col.estimatedDocumentCount();
 
 	return { numberOfEvents, numberOfFederatedUsers, numberOfServers };
 }

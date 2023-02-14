@@ -52,15 +52,59 @@ export class OmnichannelDepartments {
 		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Save"');
 	}
 
+	get allDepartmentsTab() {
+		return this.page.locator('[role="tab"]:first-child');
+	}
+
+	get archivedDepartmentsTab() {
+		return this.page.locator('[role="tab"]:nth-child(2)');
+	}
+
 	get firstRowInTable() {
 		return this.page.locator('table tr:first-child td:first-child');
 	}
 
-	get btnDeleteFirstRowInTable() {
-		return this.page.locator('table tr:first-child td:nth-child(6) button');
+	get firstRowInTableMenu() {
+		return this.page.locator('table tr:first-child [data-testid="menu"]');
+	}
+
+	get menuEditOption() {
+		return this.page.locator('[role=option][value="edit"]');
+	}
+
+	get menuDeleteOption() {
+		return this.page.locator('[role=option][value="delete"]');
+	}
+
+	get menuArchiveOption() {
+		return this.page.locator('[role=option][value="archive"]');
+	}
+
+	get menuUnarchiveOption() {
+		return this.page.locator('[role=option][value="unarchive"]');
+	}
+
+	get inputModalConfirmDelete() {
+		return this.page.locator('#modal-root .rcx-modal input');
 	}
 
 	get btnModalConfirmDelete() {
 		return this.page.locator('#modal-root .rcx-modal .rcx-modal__footer .rcx-button--danger');
+	}
+
+	get upgradeDepartmentsModal() {
+		return this.page.locator('[data-qa-id="enterprise-departments-modal"]');
+	}
+
+	get btnUpgradeDepartmentsModalClose() {
+		return this.page.locator('[data-qa="modal-close"]');
+	}
+
+	get btnUpgradeDepartmentsModalTalkToSales() {
+		return this.page.locator('[data-qa-id="talk-to-sales"]');
+	}
+
+	get btnUpgradeDepartmentsModalUpgrade() {
+		return this.page.locator('[data-qa-id="upgrade-now"]');
 	}
 }
