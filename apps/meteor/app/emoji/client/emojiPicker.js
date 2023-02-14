@@ -9,6 +9,7 @@ import { t } from '../../utils/client';
 import { EmojiPicker } from './lib/EmojiPicker';
 import { emoji } from '../lib/rocketchat';
 import './emojiPicker.html';
+import { baseURI } from '../../../client/lib/baseURI';
 
 const ESCAPE = 27;
 
@@ -21,6 +22,20 @@ const getEmojiElement = (emoji, image) =>
 const loadMoreLink = () => `<li class="emoji-picker-load-more"><a href="#load-more">${t('Load_more')}</a></li>`;
 
 let customItems = 90;
+
+const baseUrlFix = () => `${baseURI}${FlowRouter.current().path.substring(1)}`;
+
+const isMozillaFirefoxBelowVersion = (upperVersion) => {
+	const [, version] = navigator.userAgent.match(/Firefox\/(\d+)\.\d/) || [];
+	return parseInt(version, 10) < upperVersion;
+};
+
+const isGoogleChromeBelowVersion = (upperVersion) => {
+	const [, version] = navigator.userAgent.match(/Chrome\/(\d+)\.\d/) || [];
+	return parseInt(version, 10) < upperVersion;
+};
+
+const isBaseUrlFixNeeded = () => isMozillaFirefoxBelowVersion(55) || isGoogleChromeBelowVersion(55);
 
 const createEmojiList = (category, actualTone, limit = null) => {
 	const html =
@@ -167,6 +182,7 @@ Template.emojiPicker.helpers({
 	currentCategory() {
 		return EmojiPicker.currentCategory.get();
 	},
+	baseUrl: isBaseUrlFixNeeded() ? baseUrlFix : undefined,
 });
 
 Template.emojiPicker.events({

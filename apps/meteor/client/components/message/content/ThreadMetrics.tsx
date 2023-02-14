@@ -7,7 +7,6 @@ import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { useToggleFollowingThreadMutation } from '../../../views/room/contextualBar/Threads/hooks/useToggleFollowingThreadMutation';
 import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
 import { followStyle, anchor } from '../helpers/followSyle';
-import { useBlockRendered } from '../hooks/useBlockRendered';
 import AllMentionNotification from '../notification/AllMentionNotification';
 import MeMentionNotification from '../notification/MeMentionNotification';
 import UnreadMessagesNotification from '../notification/UnreadMessagesNotification';
@@ -25,7 +24,6 @@ type ThreadMetricsProps = {
 };
 
 const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, following, lm }: ThreadMetricsProps): ReactElement => {
-	const { className, ref } = useBlockRendered<HTMLDivElement>();
 	const t = useTranslation();
 
 	const format = useTimeAgo();
@@ -45,7 +43,6 @@ const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, 
 
 	return (
 		<MessageBlock className={followStyle}>
-			<div className={className} ref={ref} />
 			<MessageMetrics>
 				<MessageMetricsReply data-rid={rid} data-mid={mid} onClick={() => goToThread({ rid, tmid: mid })}>
 					{t('Reply')}
