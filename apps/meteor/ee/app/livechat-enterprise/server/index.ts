@@ -12,7 +12,6 @@ import './methods/resumeOnHold';
 import LivechatUnit from '../../models/server/models/LivechatUnit';
 import LivechatTag from '../../models/server/models/LivechatTag';
 import LivechatUnitMonitors from '../../models/server/models/LivechatUnitMonitors';
-import './startup';
 import './hooks/afterTakeInquiry';
 import './hooks/beforeNewInquiry';
 import './hooks/beforeNewRoom';

@@ -1,7 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { LivechatInquiry, LivechatPriority, LivechatRooms, Messages } from '@rocket.chat/models';
 import type { ILivechatPriority, IMessage, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
-import type { FindOptions, UpdateFilter } from 'mongodb';
+import type { FindOptions } from 'mongodb';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
 import { logger } from '../../lib/logger';
@@ -43,30 +43,15 @@ export async function updatePriority(
 	_id: string,
 	data: Pick<ILivechatPriority, 'name'> & { reset?: boolean },
 ): Promise<ILivechatPriority | null> {
-	const query = {
-		_id,
-	};
-	const update: Pick<UpdateFilter<ILivechatPriority>, '$set' | '$unset'> = {
-		...((data.reset && {
-			$set: { dirty: false },
-			$unset: { name: 1 },
-		}) || {
-			// Trim value before inserting
-			$set: { name: data.name?.trim(), dirty: true },
-		}),
-	};
-
 	if (data.name) {
 		// If we want to enforce translated duplicates we need to change this
-		const priority = await LivechatPriority.findOne({ name: new RegExp(`^${escapeRegExp(data.name.trim())}$`, 'i') });
+		const priority = await LivechatPriority.findOneNameUsingRegex(data.name, { projection: { name: 1 } });
 		if (priority && priority._id !== _id) {
 			throw new Error('error-duplicate-priority-name');
 		}
 	}
 
-	const createdResult = await LivechatPriority.findOneAndUpdate(query, update, {
-		returnDocument: 'after',
-	});
+	const createdResult = await LivechatPriority.updatePriority(_id, data.reset || false, data.name);
 
 	if (!createdResult.ok || !createdResult.value) {
 		logger.error(`Error updating priority: ${_id}. Unsuccessful result from mongodb. Result`, createdResult);
