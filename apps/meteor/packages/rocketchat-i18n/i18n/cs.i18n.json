@@ -3811,7 +3811,6 @@
   "Username_ended_the_OTR_session": "__username__ ukončil/a relaci OTR",
   "Username_invalid": "<strong>%s</strong> není platné uživatelské jméno, <br/> použijte pouze písmena, číslice, tečky, pomlčky a podtržítka",
   "Username_is_already_in_here": "`@%s` už je zde.",
-  "Username_is_not_in_this_room": "Uživatel `#%s` není v této místnosti.",
   "Username_Placeholder": "Zadejte uživatelská jména...",
   "Username_title": "Registrovat uživatelské jméno",
   "Username_wants_to_start_otr_Do_you_want_to_accept": "__username__ chce spustit OTR (konverzaci mimo záznam). Chcete ji přijmout?",

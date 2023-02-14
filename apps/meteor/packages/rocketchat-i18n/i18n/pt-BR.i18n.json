@@ -4624,7 +4624,6 @@
   "Username_ended_the_OTR_session": "__username__ terminou a sessão OTR",
   "Username_invalid": "<strong>%s</strong> não é um nome de usuário válido, <br/> use somente letras, números, pontos, hifens e travessão.",
   "Username_is_already_in_here": "`@%s` já está aqui.",
-  "Username_is_not_in_this_room": "O usuário `%s` não está nesta sala.",
   "Username_Placeholder": "Digite os nomes de usuário...",
   "Username_title": "Cadastre um nome de usuário",
   "Username_wants_to_start_otr_Do_you_want_to_accept": "__username__ quer começar OTR. Você aceita?",
