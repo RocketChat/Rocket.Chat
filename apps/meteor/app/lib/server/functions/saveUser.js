@@ -83,7 +83,7 @@ function validateUserData(userId, userData) {
 		});
 	}
 
-	if (userData.roles && _.indexOf(userData.roles, 'admin') >= 0 && !hasPermission(userId, 'assign-admin-role')) {
+	if (userData.roles && userData.roles.includes('admin') && !hasPermission(userId, 'assign-admin-role')) {
 		throw new Meteor.Error('error-action-not-allowed', 'Assigning admin is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Assign_admin',

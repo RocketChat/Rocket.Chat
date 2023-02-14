@@ -167,6 +167,7 @@
 		"eslint-plugin-react": "^7.31.11",
 		"eslint-plugin-react-hooks": "^4.6.0",
 		"eslint-plugin-testing-library": "^5.9.1",
+		"eslint-plugin-you-dont-need-lodash-underscore": "^6.12.0",
 		"fast-glob": "^3.2.11",
 		"i18next": "^20.6.1",
 		"jsdom-global": "^3.0.2",

@@ -864,7 +864,7 @@ export class Users extends Base {
 		};
 
 		if (idExceptions) {
-			if (!_.isArray(idExceptions)) {
+			if (!Array.isArray(idExceptions)) {
 				idExceptions = [idExceptions];
 			}
 

@@ -89,7 +89,7 @@ export const processWebhookMessage = function (messageObj, user, defaultValues =
 			message.emoji = defaultValues.emoji;
 		}
 
-		if (_.isArray(message.attachments)) {
+		if (Array.isArray(message.attachments)) {
 			for (let i = 0; i < message.attachments.length; i++) {
 				const attachment = message.attachments[i];
 				if (attachment.msg) {

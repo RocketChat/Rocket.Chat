@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -9,6 +8,7 @@ import { t } from '../../utils/client';
 import { EmojiPicker } from './lib/EmojiPicker';
 import { emoji } from '../lib/rocketchat';
 import './emojiPicker.html';
+import { withThrottling } from '../../../lib/utils/highOrderFunctions';
 
 const ESCAPE = 27;
 
@@ -188,7 +188,7 @@ Template.emojiPicker.events({
 
 		return false;
 	},
-	'scroll .emojis': _.throttle((event, instance) => {
+	'scroll .emojis': withThrottling({ wait: 300 })((event, instance) => {
 		if (EmojiPicker.scrollingToCategory) {
 			return;
 		}
@@ -209,7 +209,7 @@ Template.emojiPicker.events({
 		const category = el.id.replace('emoji-list-category-', '');
 
 		EmojiPicker.currentCategory.set(category);
-	}, 300),
+	}),
 	'click .change-tone > a'(event, instance) {
 		event.stopPropagation();
 		event.preventDefault();

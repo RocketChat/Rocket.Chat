@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import { Tracker } from 'meteor/tracker';
 
 import { CannedResponse } from '../../collections/CannedResponse';
@@ -38,9 +37,7 @@ Tracker.autorun(() => {
 			return records;
 		},
 		getValue: (_id, collection, records) => {
-			const record = _.findWhere(records, {
-				_id,
-			});
+			const record = records.find((record) => record._id === _id);
 			return record && record.text;
 		},
 	});

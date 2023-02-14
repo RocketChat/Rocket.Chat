@@ -7098,6 +7098,7 @@ __metadata:
     eslint-plugin-react: ^7.31.11
     eslint-plugin-react-hooks: ^4.6.0
     eslint-plugin-testing-library: ^5.9.1
+    eslint-plugin-you-dont-need-lodash-underscore: ^6.12.0
     eventemitter3: ^4.0.7
     exif-be-gone: ^1.2.2
     express: ^4.17.3
@@ -17599,6 +17600,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-plugin-you-dont-need-lodash-underscore@npm:^6.12.0":
+  version: 6.12.0
+  resolution: "eslint-plugin-you-dont-need-lodash-underscore@npm:6.12.0"
+  dependencies:
+    kebab-case: ^1.0.0
+  checksum: 9371cfa3c524f9b7c27de0ea3f8232ea60812e80a1f9ec99be3e7caaec22db44ce69f26db067e7ea1f2ca60f2b29f371c773e8f9913caae878fa3f45b4ada0e8
+  languageName: node
+  linkType: hard
+
 "eslint-scope@npm:5.1.1, eslint-scope@npm:^5.1.1":
   version: 5.1.1
   resolution: "eslint-scope@npm:5.1.1"
@@ -24053,6 +24063,13 @@ __metadata:
   bin:
     katex: cli.js
   checksum: 0e094523544b3c921e55da8cf1a9ea2718213c621af508af9fc03859b97dc73280f478fbfede5a8b32948210c3596c5a637dd64e0e28e31d6c617b5d50c29762
+  languageName: node
+  linkType: hard
+
+"kebab-case@npm:^1.0.0":
+  version: 1.0.2
+  resolution: "kebab-case@npm:1.0.2"
+  checksum: bf01164e11c544ee9b3aa1a91c2e7d6aa6b3356b834a5e885d43f36db14aae5d347cd4a298a566133321b82fde6bac6b597f148ac19bfd3d3fc81e1034a79729
   languageName: node
   linkType: hard
 

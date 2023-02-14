@@ -1,11 +1,11 @@
 import './popover.html';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 
 import { messageBox } from './messageBox.ts';
 import { isRTLScriptLanguage } from '../../../../client/lib/utils/isRTLScriptLanguage';
+import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
 
 export const popover = {
 	renderedPopover: null,
@@ -51,7 +51,7 @@ Template.popover.onRendered(function () {
 	const { activeElement } = this.data;
 	const originalWidth = window.innerWidth;
 	const popoverContent = this.firstNode.children[0];
-	const position = _.throttle(() => {
+	const position = withThrottling({ wait: 50 })(() => {
 		const direction = typeof this.data.direction === 'function' ? this.data.direction() : this.data.direction;
 
 		const verticalDirection = /top/.test(direction) ? 'top' : 'bottom';
@@ -134,7 +134,7 @@ Template.popover.onRendered(function () {
 			$(activeElement).addClass('active');
 		}
 		popoverContent.style.opacity = 1;
-	}, 50);
+	});
 
 	const observer = new MutationObserver(position);
 	observer.observe(popoverContent, { childList: true, subtree: true });

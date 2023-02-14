@@ -18,6 +18,7 @@ import { customMessagePopups } from './customMessagePopups';
 import './messagePopupConfig.html';
 import './messagePopupSlashCommand.html';
 import './messagePopupUser.html';
+import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
 
 const reloadUsersFromRoomMessages = (rid, template) => {
 	const user = Meteor.userId() && Meteor.users.findOne(Meteor.userId(), { fields: { username: 1 } });
@@ -61,7 +62,7 @@ const reloadUsersFromRoomMessages = (rid, template) => {
 		);
 };
 
-const fetchUsersFromServer = _.throttle(async (filterText, records, rid, cb) => {
+const fetchUsersFromServer = withThrottling({ wait: 1000 })(async (filterText, records, rid, cb) => {
 	const usernames = records.map(({ username }) => username);
 
 	const { users } = await callWithErrorHandling('spotlight', filterText, usernames, { users: true, mentions: true }, rid);
@@ -90,9 +91,9 @@ const fetchUsersFromServer = _.throttle(async (filterText, records, rid, cb) => 
 	records.sort(({ sort: sortA }, { sort: sortB }) => sortA - sortB);
 
 	cb && cb(records);
-}, 1000);
+});
 
-const fetchRoomsFromServer = _.throttle(async (filterText, records, rid, cb) => {
+const fetchRoomsFromServer = withThrottling({ wait: 1000 })(async (filterText, records, rid, cb) => {
 	if (!hasAllPermission('view-outside-room')) {
 		cb && cb([]);
 		return;
@@ -111,7 +112,7 @@ const fetchRoomsFromServer = _.throttle(async (filterText, records, rid, cb) => 
 	});
 
 	cb && cb(records);
-}, 1000);
+});
 
 const emojiSort = (recents) => (a, b) => {
 	let idA = a._id;
