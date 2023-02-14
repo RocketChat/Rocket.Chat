@@ -27,8 +27,8 @@ const useDropdownPosition = (reference: RefObject<HTMLElement>, target: RefObjec
 		container: innerContainer,
 	});
 
-	const left = `${parseFloat(style.left) - boundingRect.left}px`;
-	const top = `${parseFloat(style.top) - boundingRect.top}px`;
+	const left = `${parseFloat(String(style?.left ?? '0')) - boundingRect.left}px`;
+	const top = `${parseFloat(String(style?.top ?? '0')) - boundingRect.top}px`;
 
 	return useMemo(() => ({ ...style, left, top }), [style, left, top]);
 };

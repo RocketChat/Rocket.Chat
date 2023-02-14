@@ -40,6 +40,8 @@ export type UsersSetPreferencesParamsPOST = {
 		dontAskAgainList?: Array<{ action: string; label: string }>;
 		receiveLoginDetectionEmail?: boolean;
 		idleTimeLimit?: number;
+		omnichannelTranscriptEmail?: boolean;
+		omnichannelTranscriptPDF?: boolean;
 	};
 };
 
@@ -194,6 +196,14 @@ const UsersSetPreferencesParamsPostSchema = {
 				},
 				idleTimeLimit: {
 					type: 'number',
+					nullable: true,
+				},
+				omnichannelTranscriptEmail: {
+					type: 'boolean',
+					nullable: true,
+				},
+				omnichannelTranscriptPDF: {
+					type: 'boolean',
 					nullable: true,
 				},
 			},
