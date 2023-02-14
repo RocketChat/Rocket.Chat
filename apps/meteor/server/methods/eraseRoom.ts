@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { deleteRoom } from '../../app/lib/server/functions/deleteRoom';
 import { hasPermission } from '../../app/authorization/server';
 import { Rooms, Messages } from '../../app/models/server';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
-import { Apps, AppsListener, Team } from '../sdk';
+import { Apps, Team } from '../sdk';
 
 export async function eraseRoom(rid: string, uid: string): Promise<void> {
 	const room = Rooms.findOneById(rid);
@@ -30,7 +31,7 @@ export async function eraseRoom(rid: string, uid: string): Promise<void> {
 	}
 
 	if (await Apps.isLoaded()) {
-		const prevent = await AppsListener.roomEvent('IPreRoomDeletePrevent', room);
+		const prevent = await Apps.triggerEvent('IPreRoomDeletePrevent', room);
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented-deleting', 'A Rocket.Chat App prevented the room erasing.');
 		}
@@ -46,7 +47,7 @@ export async function eraseRoom(rid: string, uid: string): Promise<void> {
 	}
 
 	if (await Apps.isLoaded()) {
-		AppsListener.roomEvent('IPostRoomDeleted', room);
+		Apps.triggerEvent('IPostRoomDeleted', room);
 	}
 }
 

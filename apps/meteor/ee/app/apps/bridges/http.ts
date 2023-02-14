@@ -3,7 +3,7 @@ import type { IHttpResponse } from '@rocket.chat/apps-engine/definition/accessor
 import type { IHttpBridgeRequestInfo } from '@rocket.chat/apps-engine/server/bridges';
 
 import type { AppServerOrchestrator } from '../orchestrator';
-import { fetch } from '../../../../server/lib/http/fetch';
+import { FetchService } from '../../../../server/sdk';
 
 const isGetOrHead = (method: string): boolean => ['GET', 'HEAD'].includes(method.toUpperCase());
 
@@ -69,15 +69,17 @@ export class AppHttpBridge extends HttpBridge {
 		this.orch.debugLog(`The App ${info.appId} is requesting from the outter webs:`, info);
 
 		try {
-			const response = await fetch(
+			const allowSelfSignedCerts =
+				(request.hasOwnProperty('strictSSL') && !request.strictSSL) ||
+				(request.hasOwnProperty('rejectUnauthorized') && request.rejectUnauthorized);
+			const response = await FetchService.fetch(
 				url.href,
 				{
 					method,
 					body: content,
 					headers,
 				},
-				(request.hasOwnProperty('strictSSL') && !request.strictSSL) ||
-					(request.hasOwnProperty('rejectUnauthorized') && request.rejectUnauthorized),
+				allowSelfSignedCerts,
 			);
 
 			const result: IHttpResponse = {

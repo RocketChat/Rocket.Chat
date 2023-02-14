@@ -29,6 +29,12 @@ import type { IAppsVideoManagerService } from './types/IAppsVideoManagerService'
 import type { IUploadService } from './types/IUploadService';
 import type { ICloudService } from './types/ICloudService';
 import type { IUserService } from './types/IUserService';
+import type { IFetchService } from './types/IFetchService';
+import type { ILivechatService } from './types/ILivechatService';
+import type { IMessageService } from './types/IMessageService';
+import type { INotificationService } from './types/INotificationService';
+import type { ISlashCommandService } from './types/ISlashCommandService';
+import type { IAppsApiService } from './types/IAppsApiService';
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxifyWithWait<IAuthorization>('authorization');
@@ -58,6 +64,12 @@ export const AppsConverter = proxifyWithWait<IAppsConverterService>('apps');
 export const AppsManager = proxifyWithWait<IAppsManagerService>('apps');
 export const AppsListener = proxifyWithWait<IAppsListenerService>('apps');
 export const AppsVideoManager = proxifyWithWait<IAppsVideoManagerService>('apps');
+export const AppsApiService = proxifyWithWait<IAppsApiService>('apps');
+export const FetchService = proxifyWithWait<IFetchService>('fetch');
+export const LivechatService = proxifyWithWait<ILivechatService>('livechat');
+export const MessageService = proxifyWithWait<IMessageService>('message');
+export const NotificationService = proxifyWithWait<INotificationService>('notification');
+export const SlashCommandService = proxifyWithWait<ISlashCommandService>('slashcommand');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available

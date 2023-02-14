@@ -75,7 +75,7 @@ export const slashCommands = {
 			throw new Meteor.Error('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
 
-		const previewInfo = Promise.await(cmd.previewer(command, params, message, userId)) as SlashCommandPreviews; // TODO: check if works correctly
+		const previewInfo = Promise.await(cmd.previewer(command, params, message, userId)) as SlashCommandPreviews;
 
 		if (!previewInfo?.items?.length) {
 			return;

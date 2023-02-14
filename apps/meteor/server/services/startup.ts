@@ -24,6 +24,11 @@ import { UploadService } from './upload/service';
 import { CloudService } from './cloud/service';
 import { UserService } from './user/service';
 import { FederationService } from './federation/service';
+import { FetchService } from './fetch/service';
+import { LivechatService } from './livechat/service';
+import { MessageService } from './message/service';
+import { NotificationService } from './notification/service';
+import { SlashCommandService } from './slashcommand/service';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -49,6 +54,11 @@ api.registerService(new PushService());
 api.registerService(new DeviceManagementService());
 api.registerService(new VideoConfService());
 api.registerService(new FederationService());
+api.registerService(new FetchService());
+api.registerService(new LivechatService());
+api.registerService(new MessageService());
+api.registerService(new NotificationService());
+api.registerService(new SlashCommandService());
 
 // if the process is running in micro services mode we don't need to register services that will run separately
 if (!isRunningMs()) {
@@ -62,6 +72,7 @@ if (!isRunningMs()) {
 		const { AppsConverterService } = await import('../../ee/app/apps/converterService');
 		const { AppsManagerService } = await import('../../ee/app/apps/managerService');
 		const { AppsVideoManagerService } = await import('../../ee/app/apps/videoManagerService');
+		const { AppsApiService } = await import('../../ee/app/apps/apiService');
 
 		api.registerService(new Presence());
 		api.registerService(new Authorization());
@@ -71,5 +82,6 @@ if (!isRunningMs()) {
 		api.registerService(new AppsConverterService());
 		api.registerService(new AppsManagerService());
 		api.registerService(new AppsVideoManagerService());
+		api.registerService(new AppsApiService());
 	})();
 }

@@ -8,6 +8,8 @@ import './lib/logger/startup';
 import './importPackages';
 import '../imports/startup/server';
 import '../app/lib/server/startup';
+import '../app/apps/server/startup';
+import '../app/apps/server/api';
 
 import '../ee/server';
 import './lib/pushConfig';
