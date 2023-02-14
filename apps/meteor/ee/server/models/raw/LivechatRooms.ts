@@ -202,11 +202,18 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		return super.update(restrictedQuery, ...restArgs);
 	}
 
-	updateOne(...args: Parameters<LivechatRoomsRaw['updateOne']>) {
-		const [query, ...restArgs] = args;
+	updateOne(...args: Parameters<LivechatRoomsRaw['updateOne']> & { bypassUnits?: boolean }) {
+		const [query, update, opts, extraOpts] = args;
+		if (extraOpts?.bypassUnits) {
+			// When calling updateOne from a service, we cannot call the meteor code inside the query restrictions
+			// So the solution now is to pass a bypassUnits flag to the updateOne method which prevents checking
+			// units restrictions on the query, but just for the query the service is actually using
+			// We need to find a way of remove the meteor dependency when fetching units, and then, we can remove this flag
+			return super.updateOne(query, update, opts);
+		}
 		const restrictedQuery = addQueryRestrictionsToRoomsModel(query);
 		queriesLogger.debug({ msg: 'LivechatRoomsRawEE.updateOne', query: restrictedQuery });
-		return super.updateOne(restrictedQuery, ...restArgs);
+		return super.updateOne(restrictedQuery, update, opts);
 	}
 
 	updateMany(...args: Parameters<LivechatRoomsRaw['updateMany']>) {
