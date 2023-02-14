@@ -1,9 +1,9 @@
 import { log } from 'console';
 
-import { CannedResponse, LivechatPriority, LivechatTag, LivechatUnit } from '@rocket.chat/models';
+import { CannedResponse, LivechatPriority, LivechatRooms, LivechatTag, LivechatUnit } from '@rocket.chat/models';
+import { Analytics } from '@rocket.chat/core-services';
 
 import { getModules, getTags, hasLicense } from './license';
-import { Analytics } from '../../../../server/sdk';
 
 type ENTERPRISE_STATISTICS = GenericStats & Partial<EEOnlyStats>;
 
@@ -18,6 +18,8 @@ type EEOnlyStats = {
 	cannedResponses: number;
 	priorities: number;
 	businessUnits: number;
+	omnichannelPdfTranscriptRequested: number;
+	omnichannelPdfTranscriptSucceeded: number;
 };
 
 export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
@@ -78,6 +80,24 @@ async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
 			.then((count) => {
 				statistics.businessUnits = count;
 				return true;
+			}),
+	);
+
+	// Number of PDF transcript requested
+	statsPms.push(
+		LivechatRooms.find({ pdfTranscriptRequested: { $exists: true } })
+			.count()
+			.then((count) => {
+				statistics.omnichannelPdfTranscriptRequested = count;
+			}),
+	);
+
+	// Number of PDF transcript that succeeded
+	statsPms.push(
+		LivechatRooms.find({ pdfFileId: { $exists: true } })
+			.count()
+			.then((count) => {
+				statistics.omnichannelPdfTranscriptSucceeded = count;
 			}),
 	);
 

@@ -79,7 +79,7 @@ const OTR = ({ isOnline, onClickClose, onClickStart, onClickEnd, onClickRefresh,
 				{onClickClose && <VerticalBar.Close onClick={onClickClose} />}
 			</VerticalBar.Header>
 
-			<VerticalBar.ScrollableContent p='x24'>
+			<VerticalBar.ScrollableContent p='x24' color='default'>
 				<Box fontScale='h4'>{t('Off_the_record_conversation')}</Box>
 				{isOnline ? renderOTRState() : <Box fontScale='p2m'>{t('OTR_is_only_available_when_both_users_are_online')}</Box>}
 			</VerticalBar.ScrollableContent>

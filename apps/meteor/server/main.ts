@@ -79,7 +79,6 @@ import './routes/i18n';
 import './routes/timesync';
 import './routes/userDataDownload';
 import './stream/stdout';
-import './stream/streamBroadcast';
 import './settings/index';
 
 import './features/EmailInbox/index';

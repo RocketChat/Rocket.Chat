@@ -72,7 +72,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, suggestions
 	};
 
 	return (
-		<Box display='flex' flexDirection='column' fontScale='p2m'>
+		<Box display='flex' flexDirection='column' fontScale='p2m' color='default'>
 			{t('Profile_picture')}
 			<Box display='flex' flexDirection='row' mbs='x4'>
 				<UserAvatar

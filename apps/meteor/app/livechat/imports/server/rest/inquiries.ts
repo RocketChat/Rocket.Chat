@@ -12,6 +12,7 @@ import { LivechatInquiry } from '@rocket.chat/models';
 import { API } from '../../../../api/server';
 import { Users, LivechatDepartment } from '../../../../models/server';
 import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';
+import { deprecationWarning } from '../../../../api/server/helpers/deprecationWarning';
 
 API.v1.addRoute(
 	'livechat/inquiries.list',
@@ -81,15 +82,19 @@ API.v1.addRoute(
 			const { department } = this.requestParams();
 
 			return API.v1.success(
-				await findInquiries({
-					userId: this.userId,
-					department,
-					status: LivechatInquiryStatus.QUEUED,
-					pagination: {
-						offset,
-						count,
-						sort,
-					},
+				deprecationWarning({
+					endpoint: 'livechat/inquiries.queued',
+					versionWillBeRemoved: '6.0',
+					response: await findInquiries({
+						userId: this.userId,
+						department,
+						status: LivechatInquiryStatus.QUEUED,
+						pagination: {
+							offset,
+							count,
+							sort,
+						},
+					}),
 				}),
 			);
 		},

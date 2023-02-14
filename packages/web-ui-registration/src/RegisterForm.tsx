@@ -25,6 +25,10 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 	const requiresPasswordConfirmation = useSetting('Accounts_RequirePasswordConfirmation');
 	const manuallyApproveNewUsersRequired = useSetting('Accounts_ManuallyApproveNewUsers');
 
+	const usernameOrEmailPlaceholder = String(useSetting('Accounts_EmailOrUsernamePlaceholder'));
+	const passwordPlaceholder = String(useSetting('Accounts_PasswordPlaceholder'));
+	const passwordConfirmationPlaceholder = String(useSetting('Accounts_ConfirmPasswordPlaceholder'));
+
 	const formLabelId = useUniqueId();
 	const registerUser = useRegisterMethod();
 
@@ -101,7 +105,7 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 								{...register('email', {
 									required: true,
 								})}
-								placeholder='example@example.com'
+								placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
 								error={
 									errors.email &&
 									t('The_field_is_required', {
@@ -155,6 +159,7 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 								error={errors.password && (errors.password?.message || t('registration.component.form.requiredField'))}
 								aria-invalid={errors.password ? 'true' : undefined}
 								id='password'
+								placeholder={passwordPlaceholder}
 							/>
 						</Field.Row>
 						{errors.password && <Field.Error>{errors.password.message}</Field.Error>}
@@ -172,6 +177,7 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 									error={errors.passwordConfirmation?.type === 'validate' ? t('Invalid_confirm_pass') : undefined}
 									aria-invalid={errors.passwordConfirmation ? 'true' : false}
 									id='passwordConfirmation'
+									placeholder={passwordConfirmationPlaceholder}
 								/>
 							</Field.Row>
 							{errors.passwordConfirmation?.type === 'validate' && <Field.Error>{t('Invalid_confirm_pass')}</Field.Error>}

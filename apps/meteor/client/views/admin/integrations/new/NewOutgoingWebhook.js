@@ -39,22 +39,18 @@ export default function NewOutgoingWebhook({ data = defaultData, onChange, setSa
 
 	const { urls, triggerWords } = formValues;
 
-	const params = useMemo(
-		() => ({
+	const saveIntegration = useEndpointAction('POST', '/v1/integrations.create', { successMessage: t('Integration_added') });
+
+	const handleSave = useCallback(async () => {
+		const result = await saveIntegration({
 			...formValues,
 			urls: urls.split('\n'),
 			triggerWords: triggerWordsToArray(triggerWords),
-		}),
-		[formValues, triggerWords, urls],
-	);
-	const saveIntegration = useEndpointAction('POST', '/v1/integrations.create', params, t('Integration_added'));
-
-	const handleSave = useCallback(async () => {
-		const result = await saveIntegration();
+		});
 		if (result.success) {
 			router.push({ id: result.integration._id, context: 'edit', type: 'outgoing' });
 		}
-	}, [saveIntegration, router]);
+	}, [saveIntegration, formValues, urls, triggerWords, router]);
 
 	const saveButton = useMemo(
 		() => (

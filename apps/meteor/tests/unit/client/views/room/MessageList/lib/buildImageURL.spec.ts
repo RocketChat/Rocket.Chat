@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { buildImageURL } from '../../../../../../../client/views/room/MessageList/components/UrlPreview/PreviewList';
+import { buildImageURL } from '../../../../../../../client/components/message/content/urlPreviews/buildImageURL';
 
 describe('buildImageURL', () => {
 	const testCases = [

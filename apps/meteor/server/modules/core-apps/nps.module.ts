@@ -1,5 +1,6 @@
-import type { IUiKitCoreApp } from '../../sdk/types/IUiKitCoreApp';
-import { Banner, NPS } from '../../sdk';
+import type { IUiKitCoreApp } from '@rocket.chat/core-services';
+import { Banner, NPS } from '@rocket.chat/core-services';
+
 import { createModal } from './nps/createModal';
 
 export class Nps implements IUiKitCoreApp {

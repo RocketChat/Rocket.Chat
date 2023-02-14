@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
+import { api } from '@rocket.chat/core-services';
 
 import { hasPermission } from '../../../authorization';
 import { metrics } from '../../../metrics';
@@ -12,7 +13,6 @@ import { sendMessage } from '../functions';
 import { RateLimiter } from '../lib';
 import { canSendMessage } from '../../../authorization/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { api } from '../../../../server/sdk/api';
 
 export function executeSendMessage(uid, message) {
 	if (message.tshow && !message.tmid) {

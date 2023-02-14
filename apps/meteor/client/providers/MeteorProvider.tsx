@@ -1,7 +1,9 @@
 import type { FC } from 'react';
 import React from 'react';
 
-import AttachmentProvider from '../components/message/Attachments/providers/AttachmentProvider';
+import { OmnichannelRoomIconProvider } from '../components/RoomIcon/OmnichannelRoomIcon/provider/OmnichannelRoomIconProvider';
+import ActionManagerProvider from './ActionManagerProvider';
+import AttachmentProvider from './AttachmentProvider';
 import AuthorizationProvider from './AuthorizationProvider';
 import AvatarUrlProvider from './AvatarUrlProvider';
 import { CallProvider } from './CallProvider';
@@ -18,6 +20,7 @@ import SettingsProvider from './SettingsProvider';
 import ToastMessagesProvider from './ToastMessagesProvider';
 import TooltipProvider from './TooltipProvider';
 import TranslationProvider from './TranslationProvider';
+import UserPresenceProvider from './UserPresenceProvider';
 import UserProvider from './UserProvider';
 import VideoConfProvider from './VideoConfProvider';
 
@@ -25,11 +28,11 @@ const MeteorProvider: FC = ({ children }) => (
 	<ConnectionStatusProvider>
 		<ServerProvider>
 			<RouterProvider>
-				<TranslationProvider>
-					<SessionProvider>
-						<TooltipProvider>
-							<ToastMessagesProvider>
-								<SettingsProvider>
+				<SettingsProvider>
+					<TranslationProvider>
+						<SessionProvider>
+							<TooltipProvider>
+								<ToastMessagesProvider>
 									<LayoutProvider>
 										<AvatarUrlProvider>
 											<CustomSoundProvider>
@@ -37,13 +40,19 @@ const MeteorProvider: FC = ({ children }) => (
 													<DeviceProvider>
 														<ModalProvider>
 															<AuthorizationProvider>
-																<VideoConfProvider>
-																	<CallProvider>
-																		<OmnichannelProvider>
-																			<AttachmentProvider>{children}</AttachmentProvider>
-																		</OmnichannelProvider>
-																	</CallProvider>
-																</VideoConfProvider>
+																<OmnichannelRoomIconProvider>
+																	<UserPresenceProvider>
+																		<ActionManagerProvider>
+																			<VideoConfProvider>
+																				<CallProvider>
+																					<OmnichannelProvider>
+																						<AttachmentProvider>{children}</AttachmentProvider>
+																					</OmnichannelProvider>
+																				</CallProvider>
+																			</VideoConfProvider>
+																		</ActionManagerProvider>
+																	</UserPresenceProvider>
+																</OmnichannelRoomIconProvider>
 															</AuthorizationProvider>
 														</ModalProvider>
 													</DeviceProvider>
@@ -51,11 +60,11 @@ const MeteorProvider: FC = ({ children }) => (
 											</CustomSoundProvider>
 										</AvatarUrlProvider>
 									</LayoutProvider>
-								</SettingsProvider>
-							</ToastMessagesProvider>
-						</TooltipProvider>
-					</SessionProvider>
-				</TranslationProvider>
+								</ToastMessagesProvider>
+							</TooltipProvider>
+						</SessionProvider>
+					</TranslationProvider>
+				</SettingsProvider>
 			</RouterProvider>
 		</ServerProvider>
 	</ConnectionStatusProvider>

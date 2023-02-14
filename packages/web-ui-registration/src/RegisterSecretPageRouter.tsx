@@ -4,10 +4,10 @@ import type { ReactElement } from 'react';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import LoginRegisterForm from './RegisterForm';
 import RegisterFormDisabled from './RegisterFormDisabled';
+import RegisterTemplate from './RegisterTemplate';
 import SecretRegisterForm from './SecretRegisterForm';
 import SecretRegisterInvalidForm from './SecretRegisterInvalidForm';
 import FormSkeleton from './template/FormSkeleton';
-import HorizontalTemplate from './template/HorizontalTemplate';
 
 export const RegisterSecretPageRouter = ({
 	setLoginRoute,
@@ -16,7 +16,8 @@ export const RegisterSecretPageRouter = ({
 	setLoginRoute: DispatchLoginRouter;
 	origin: 'register' | 'secret-register';
 }): ReactElement => {
-	const registrationMode = useSetting('Accounts_RegistrationForm');
+	const registrationMode = useSetting<string>('Accounts_RegistrationForm');
+
 	const isPublicRegistration = registrationMode === 'Public';
 	const isRegistrationAllowedForSecret = registrationMode === 'Secret URL';
 	const isRegistrationDisabled = registrationMode === 'Disabled' || (origin === 'register' && isRegistrationAllowedForSecret);
@@ -27,17 +28,17 @@ export const RegisterSecretPageRouter = ({
 
 	if (isPublicRegistration) {
 		return (
-			<HorizontalTemplate>
+			<RegisterTemplate>
 				<LoginRegisterForm setLoginRoute={setLoginRoute} />
-			</HorizontalTemplate>
+			</RegisterTemplate>
 		);
 	}
 
 	if (isRegistrationDisabled) {
 		return (
-			<HorizontalTemplate>
+			<RegisterTemplate>
 				<RegisterFormDisabled setLoginRoute={setLoginRoute} />
-			</HorizontalTemplate>
+			</RegisterTemplate>
 		);
 	}
 
@@ -46,9 +47,9 @@ export const RegisterSecretPageRouter = ({
 	}
 
 	return (
-		<HorizontalTemplate>
+		<RegisterTemplate>
 			<FormSkeleton />
-		</HorizontalTemplate>
+		</RegisterTemplate>
 	);
 };
 

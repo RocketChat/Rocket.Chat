@@ -35,8 +35,8 @@ const SidebarNavigationItem: FC<SidebarNavigationItemProps> = ({
 	return (
 		<SidebarGenericItem active={isActive} href={path} key={path}>
 			{icon && <Icon name={icon} size='x20' mi='x4' />}
-			<Box withTruncatedText fontScale='p2' mi='x4' color='hint'>
-				{label} {tag && <Tag style={{ display: 'inline', backgroundColor: '#000', color: '#FFF', marginLeft: 4 }}>{tag}</Tag>}
+			<Box withTruncatedText fontScale='p2' mi='x4'>
+				{label} {tag && <Tag>{tag}</Tag>}
 			</Box>
 		</SidebarGenericItem>
 	);

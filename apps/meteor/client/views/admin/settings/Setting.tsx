@@ -1,5 +1,5 @@
 import type { ISettingColor, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
-import { isSettingColor } from '@rocket.chat/core-typings';
+import { isSettingColor, isSetting } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useSettingStructure, useTranslation, useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -23,6 +23,11 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 
 	if (!setting || !persistedSetting) {
 		throw new Error(`Setting ${settingId} not found`);
+	}
+
+	// Checks if setting has at least required fields before doing anything
+	if (!isSetting(setting)) {
+		throw new Error(`Setting ${settingId} is not valid`);
 	}
 
 	const dispatch = useEditableSettingsDispatch();

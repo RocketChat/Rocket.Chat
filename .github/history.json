@@ -97999,6 +97999,80 @@
         "5.0"
       ],
       "pull_requests": []
+    },
+    "5.4.1": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "27557",
+          "title": "[FIX] Custom languages not being applied to i18next",
+          "userLogin": "ggazzo",
+          "milestone": "5.4.1",
+          "contributors": [
+            "ggazzo",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27558",
+          "title": "[FIX] Registration and Login placeholders not being used",
+          "userLogin": "ggazzo",
+          "milestone": "5.4.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "27475",
+          "title": "[FIX] Fix Login with Show default form disabled",
+          "userLogin": "ggazzo",
+          "milestone": "5.4.1",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "27328",
+          "title": "[FIX] Message Actions menu does not close upon choosing an action",
+          "userLogin": "filipemarins",
+          "milestone": "5.4.1",
+          "contributors": [
+            "filipemarins",
+            "yash-rajpal",
+            "hugocostadev",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27538",
+          "title": "Chore: Deprecate unused omnichannel API",
+          "userLogin": "murtaza98",
+          "milestone": "5.4.1",
+          "contributors": [
+            "murtaza98"
+          ]
+        },
+        {
+          "pr": "27432",
+          "title": "[FIX] Pagination not working on current chats",
+          "userLogin": "MartinSchoeler",
+          "milestone": "5.4.1",
+          "contributors": [
+            "MartinSchoeler",
+            "aleksandernsilva",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        }
+      ]
     }
   },
   "5.4.0-rc.0": {

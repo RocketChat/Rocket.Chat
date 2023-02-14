@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import type { IRoom, RoomType, IRoomWithRetentionPolicy, IUser } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { Team } from '@rocket.chat/core-services';
 import { Rooms } from '@rocket.chat/models';
 
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
@@ -18,7 +19,6 @@ import { saveReactWhenReadOnly } from '../functions/saveReactWhenReadOnly';
 import { saveRoomSystemMessages } from '../functions/saveRoomSystemMessages';
 import { saveRoomEncrypted } from '../functions/saveRoomEncrypted';
 import { saveStreamingOptions } from '../functions/saveStreamingOptions';
-import { Team } from '../../../../server/sdk';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 import { saveFavoriteRoom } from '../functions/saveFavoriteRoom';

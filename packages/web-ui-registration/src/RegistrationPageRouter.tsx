@@ -1,11 +1,10 @@
-import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 
 import { LoginForm } from './LoginForm';
 import ResetPasswordForm from './ResetPasswordForm';
 import { useLoginRouter } from './hooks/useLoginRouter';
-import HorizontalTemplate from './template/HorizontalTemplate';
 import RegisterSecretPageRouter from './RegisterSecretPageRouter';
+import RegisterTemplate from './RegisterTemplate';
 
 export const RegistrationPageRouter = ({
 	defaultRoute = 'login',
@@ -13,21 +12,20 @@ export const RegistrationPageRouter = ({
 	defaultRoute?: 'login' | 'register' | 'reset-password' | 'secret-register';
 }): ReactElement | null => {
 	const [route, setLoginRoute] = useLoginRouter(defaultRoute);
-	const showFormLogin = useSetting('Accounts_ShowFormLogin');
 
-	if (route === 'login' && showFormLogin) {
+	if (route === 'login') {
 		return (
-			<HorizontalTemplate>
+			<RegisterTemplate>
 				<LoginForm setLoginRoute={setLoginRoute} />
-			</HorizontalTemplate>
+			</RegisterTemplate>
 		);
 	}
 
 	if (route === 'reset-password') {
 		return (
-			<HorizontalTemplate>
+			<RegisterTemplate>
 				<ResetPasswordForm setLoginRoute={setLoginRoute} />
-			</HorizontalTemplate>
+			</RegisterTemplate>
 		);
 	}
 

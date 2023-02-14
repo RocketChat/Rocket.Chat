@@ -16,7 +16,7 @@ const AppsList = ({ apps, title, isMarketplace }: AppsListProps): ReactElement =
 		<Box is='h3' fontScale='h3' color='default' mbe='x20'>
 			{title}
 		</Box>
-		<Box mbe='x36'>
+		<Box mbe='x24'>
 			{apps.map((app) => (
 				<AppRow key={app.id} isMarketplace={isMarketplace} {...app} />
 			))}

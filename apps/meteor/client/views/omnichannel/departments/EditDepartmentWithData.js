@@ -8,24 +8,29 @@ import { useEndpointData } from '../../../hooks/useEndpointData';
 import EditDepartment from './EditDepartment';
 import EditDepartmentWithAllowedForwardData from './EditDepartmentWithAllowedForwardData';
 
-const param = { onlyMyDepartments: true };
-function EditDepartmentWithData({ id, reload, title }) {
+const params = { onlyMyDepartments: true };
+function EditDepartmentWithData({ id, title }) {
 	const t = useTranslation();
-	const { value: data, phase: state, error } = useEndpointData(`/v1/livechat/department/${id}`, param);
+	const { value: data, phase: state, error } = useEndpointData('/v1/livechat/department/:_id', { keys: { _id: id }, params });
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;
 	}
 
 	if (error || (id && !data?.department)) {
-		return <Box mbs='x16'>{t('Department_not_found')}</Box>;
+		return <Box mbs={16}>{t('Department_not_found')}</Box>;
 	}
+
+	if (data.department.archived === true) {
+		return <Box mbs={16}>{t('Department_archived')}</Box>;
+	}
+
 	return (
 		<>
 			{data && data.department && data.department.departmentsAllowedToForward && data.department.departmentsAllowedToForward.length > 0 ? (
-				<EditDepartmentWithAllowedForwardData id={id} data={data} reload={reload} title={title} />
+				<EditDepartmentWithAllowedForwardData id={id} data={data} title={title} />
 			) : (
-				<EditDepartment id={id} data={data} reload={reload} title={title} />
+				<EditDepartment id={id} data={data} title={title} />
 			)}
 		</>
 	);

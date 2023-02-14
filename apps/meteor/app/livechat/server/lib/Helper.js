@@ -3,6 +3,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Match, check } from 'meteor/check';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
+import { api } from '@rocket.chat/core-services';
 
 import { hasRole } from '../../../authorization';
 import {
@@ -25,7 +26,6 @@ import { sendNotification } from '../../../lib/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { queueInquiry, saveQueueInquiry } from './QueueManager';
 import { validateEmail as validatorFunc } from '../../../../lib/emailValidator';
-import { api } from '../../../../server/sdk/api';
 
 const logger = new Logger('LivechatHelper');
 
