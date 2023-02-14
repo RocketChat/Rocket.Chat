@@ -90,9 +90,6 @@ jobs:
           npm --versions
           yarn -v
           node -v
-          meteor --version
-          meteor npm --versions
-          meteor node -v
           git version
 
       - name: yarn install
