@@ -264,10 +264,10 @@ Template.messagePopupSlashCommandPreview.onRendered(function _messagePopupSlashC
 	}
 
 	this.inputBox = this.data.getInput();
-	$(this.inputBox).on('keyup', this.onInputKeyup.bind(this));
-	$(this.inputBox).on('keydown', this.onInputKeydown.bind(this));
-	$(this.inputBox).on('focus', this.onFocus.bind(this));
-	$(this.inputBox).on('blur', this.onBlur.bind(this));
+	$(this.inputBox).on('keyup', this.onInputKeyup);
+	$(this.inputBox).on('keydown', this.onInputKeydown);
+	$(this.inputBox).on('focus', this.onFocus);
+	$(this.inputBox).on('blur', this.onBlur);
 
 	const self = this;
 	self.autorun(() => {
