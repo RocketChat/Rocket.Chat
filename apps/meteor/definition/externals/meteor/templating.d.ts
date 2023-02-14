@@ -88,7 +88,6 @@ declare module 'meteor/templating' {
 		}>;
 		messagePopupUser: BlazeTemplate;
 		rc_modal: BlazeTemplate;
-		popout: BlazeTemplate;
 		popover: BlazeTemplate;
 		messagePopupCannedResponse: BlazeTemplate;
 	};
