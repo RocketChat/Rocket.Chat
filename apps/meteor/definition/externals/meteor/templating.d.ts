@@ -70,23 +70,19 @@ declare module 'meteor/templating' {
 				validate: () => unknown;
 			}
 		>;
+		error: Blaze.Template<any, Blaze.TemplateInstance<any>>;
+		loading: Blaze.Template<any, Blaze.TemplateInstance<any>>;
+		collapseArrow: Blaze.Template<any, Blaze.TemplateInstance<any>>;
+		rc_modal: Blaze.Template<any, Blaze.TemplateInstance<any>>;
+		popout: Blaze.Template<any, Blaze.TemplateInstance<any>>;
+		popover: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		error: BlazeTemplate;
 		loading: BlazeTemplate;
-		messagePopup: BlazeTemplate;
-		messagePopupChannel: BlazeTemplate;
-		messagePopupConfig: BlazeTemplate<{
-			rid: IRoom['_id'];
-			tmid?: IMessage['_id'];
-			getInput: () => HTMLTextAreaElement | null;
-		}>;
-		messagePopupEmoji: BlazeTemplate;
-		messagePopupSlashCommand: BlazeTemplate;
 		messagePopupSlashCommandPreview: BlazeTemplate<{
 			tmid?: IMessage['_id'];
 			rid: IRoom['_id'];
 			getInput: () => HTMLTextAreaElement | null;
 		}>;
-		messagePopupUser: BlazeTemplate;
 		rc_modal: BlazeTemplate;
 		popover: BlazeTemplate;
 		messagePopupCannedResponse: BlazeTemplate;
