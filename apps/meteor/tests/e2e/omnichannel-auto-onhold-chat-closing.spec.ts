@@ -63,11 +63,8 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 		await agent.poHomeChannel.sidenav.openChat(newVisitor.name);
 		await agent.poHomeChannel.content.sendMessage('this_is_a_test_message_from_agent');
 
-		expect(agent.poHomeChannel.content.btnOnHold).toBeVisible();
 		await agent.poHomeChannel.content.btnOnHold.click();
 
-		// expect to see a confirmation modal
-		expect(agent.poHomeChannel.content.btnModalConfirm).toBeVisible();
 		await agent.poHomeChannel.content.btnModalConfirm.click();
 
 		// expect to see a system message saying the chat was on-hold

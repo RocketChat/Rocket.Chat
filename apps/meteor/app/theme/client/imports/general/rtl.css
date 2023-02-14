@@ -102,16 +102,6 @@
 			transform: translateX(27px);
 		}
 
-		& .search-form {
-			width: 100%;
-			padding: 0 0 0 4px;
-
-			& .icon-plus {
-				right: 4px;
-				left: auto;
-			}
-		}
-
 		& .info-tabs {
 			right: auto;
 			left: 20px;
@@ -304,12 +294,6 @@
 		left: auto;
 
 		padding: 0 20px 0 10px;
-	}
-
-	& .list-view {
-		& > .title .see-all {
-			float: left;
-		}
 	}
 
 	& .page-list .list {

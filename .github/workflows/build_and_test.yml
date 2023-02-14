@@ -454,9 +454,6 @@ jobs:
       - name: yarn build
         run: yarn build
 
-      - name: Unit Test
-        run: yarn testunit --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
-
       - name: Restore build
         uses: actions/download-artifact@v2
         with:

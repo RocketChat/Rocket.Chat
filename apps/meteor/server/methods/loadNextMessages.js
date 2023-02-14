@@ -3,7 +3,6 @@ import { check } from 'meteor/check';
 
 import { canAccessRoomId } from '../../app/authorization/server';
 import { Messages } from '../../app/models/server';
-import { settings } from '../../app/settings/server';
 import { normalizeMessagesForUser } from '../../app/utils/server/lib/normalizeMessagesForUser';
 
 Meteor.methods({
@@ -33,12 +32,6 @@ Meteor.methods({
 			},
 			limit,
 		};
-
-		if (!settings.get('Message_ShowEditedStatus')) {
-			options.fields = {
-				editedAt: 0,
-			};
-		}
 
 		let records;
 		if (end) {

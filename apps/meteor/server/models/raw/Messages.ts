@@ -11,6 +11,7 @@ import type {
 	Filter,
 	FindOptions,
 	IndexDescription,
+	DeleteResult,
 } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
@@ -59,16 +60,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		const query = {
 			rid: roomId,
 			t: type,
-		};
-
-		return this.findPaginated(query, options);
-	}
-
-	findSnippetedByRoom(roomId: IRoom['_id'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
-		const query: Filter<IMessage> = {
-			_hidden: { $ne: true },
-			snippeted: true,
-			rid: roomId,
 		};
 
 		return this.findPaginated(query, options);
@@ -227,6 +218,26 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				rid,
 				$or: [{ t: { $exists: false } }, { t: 'livechat-close' }],
 				...(searchTerm && { msg: new RegExp(escapeRegExp(searchTerm), 'ig') }),
+			},
+			options,
+		);
+	}
+
+	findLivechatMessages(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
+		return this.find(
+			{
+				rid,
+				$or: [{ t: { $exists: false } }, { t: 'livechat-close' }],
+			},
+			options,
+		);
+	}
+
+	findLivechatMessagesWithoutClosing(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
+		return this.find(
+			{
+				rid,
+				t: { $exists: false },
 			},
 			options,
 		);
@@ -413,5 +424,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				)
 				.toArray()
 		)[0] as IMessage;
+	}
+
+	removeByRoomId(roomId: string): Promise<DeleteResult> {
+		return this.deleteMany({ rid: roomId });
 	}
 }
