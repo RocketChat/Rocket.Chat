@@ -1,5 +1,5 @@
 import { States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent, UIEvent } from 'react';
 import React, { useEffect, useRef, useMemo, useState } from 'react';
 
@@ -11,16 +11,15 @@ import { useRoom } from '../../../contexts/RoomContext';
 import { useMessageSearchQuery } from '../hooks/useMessageSearchQuery';
 
 type MessageSearchProps = {
-	settings: {
-		GlobalSearchEnabled: boolean;
-		PageSize: number;
-	};
 	searchText: string;
 };
 
-const MessageSearch = ({ settings, searchText }: MessageSearchProps): ReactElement => {
+const MessageSearch = ({ searchText }: MessageSearchProps): ReactElement => {
+	const pageSize = useSetting<number>('PageSize') ?? 10;
+	const globalSearchEnabled = useSetting<boolean>('GlobalSearchEnabled') ?? false;
+
 	const [payload, setPayload] = useState(() => ({
-		limit: settings.PageSize,
+		limit: pageSize,
 		searchAll: false,
 	}));
 	const messageSearchQuery = useMessageSearchQuery({ searchText, ...payload });
@@ -29,7 +28,7 @@ const MessageSearch = ({ settings, searchText }: MessageSearchProps): ReactEleme
 
 	const handleToggleGlobalSearch = (event: ChangeEvent<HTMLInputElement>) => {
 		setPayload({
-			limit: settings.PageSize,
+			limit: pageSize,
 			searchAll: event.target.checked,
 		});
 	};
@@ -41,14 +40,14 @@ const MessageSearch = ({ settings, searchText }: MessageSearchProps): ReactEleme
 
 		const throttledTestAndSet = withThrottling({ wait: 200 })((element: HTMLElement) => {
 			if (element.scrollTop >= element.scrollHeight - element.clientHeight) {
-				setPayload(({ limit, ...rest }) => ({ ...rest, limit: limit + settings.PageSize }));
+				setPayload(({ limit, ...rest }) => ({ ...rest, limit: limit + pageSize }));
 			}
 		});
 
 		return (event: UIEvent<HTMLElement>) => {
 			throttledTestAndSet(event.currentTarget);
 		};
-	}, [hasMore, settings.PageSize]);
+	}, [hasMore, pageSize]);
 
 	const scrollListRef = useRef<HTMLDivElement>(null);
 
@@ -59,9 +58,9 @@ const MessageSearch = ({ settings, searchText }: MessageSearchProps): ReactEleme
 		}
 
 		if (element.scrollTop >= element.scrollHeight - element.clientHeight) {
-			setPayload(({ limit, ...rest }) => ({ ...rest, limit: limit + settings.PageSize }));
+			setPayload(({ limit, ...rest }) => ({ ...rest, limit: limit + pageSize }));
 		}
-	}, [settings.PageSize]);
+	}, [pageSize]);
 
 	const room = useRoom();
 	const messageContext = useMemo(() => {
@@ -82,7 +81,7 @@ const MessageSearch = ({ settings, searchText }: MessageSearchProps): ReactEleme
 		<div className='rocket-search-result'>
 			<div className='rocket-default-search-settings'>
 				<div>
-					{settings.GlobalSearchEnabled && (
+					{globalSearchEnabled && (
 						<label>
 							<input type='checkbox' id='global-search' checked={payload.searchAll} onChange={handleToggleGlobalSearch} />
 							{t('Global_Search')}

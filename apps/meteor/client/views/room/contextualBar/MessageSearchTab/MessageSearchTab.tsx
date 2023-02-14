@@ -9,10 +9,10 @@ import VerticalBarIcon from '../../../../components/VerticalBar/VerticalBarIcon'
 import VerticalBarText from '../../../../components/VerticalBar/VerticalBarText';
 import { useTabBarClose } from '../../contexts/ToolboxContext';
 import MessageSearchPanel from './components/MessageSearchPanel';
-import { useSearchProviderQuery } from './hooks/useSearchProviderQuery';
+import { useMessageSearchProviderQuery } from './hooks/useMessageSearchProviderQuery';
 
 const MessageSearchTab = () => {
-	const providerQuery = useSearchProviderQuery();
+	const providerQuery = useMessageSearchProviderQuery();
 
 	const tabBarClose = useTabBarClose();
 	const handleCloseButtonClick = useCallback(() => {
@@ -28,7 +28,7 @@ const MessageSearchTab = () => {
 				<VerticalBarText>{t('Search_Messages')}</VerticalBarText>
 				<VerticalBarClose onClick={handleCloseButtonClick} />
 			</VerticalBarHeader>
-			<VerticalBarContent flexShrink={1} flexGrow={1}>
+			<VerticalBarContent flexShrink={1} flexGrow={1} paddingInline={0}>
 				{providerQuery.isSuccess && <MessageSearchPanel provider={providerQuery.data} />}
 				{providerQuery.isError && (
 					<Callout m={24} type='danger'>
