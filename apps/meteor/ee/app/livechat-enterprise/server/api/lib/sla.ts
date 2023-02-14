@@ -45,10 +45,14 @@ export async function findSLA({
 	};
 }
 
-export const updateRoomSLA = async (roomId: string, user: IUser, sla: IOmnichannelServiceLevelAgreements) => {
+export const updateRoomSLA = async (
+	roomId: string,
+	user: Required<Pick<IUser, '_id' | 'username' | 'name'>>,
+	sla: IOmnichannelServiceLevelAgreements,
+) => {
 	await Promise.all([updateInquiryQueueSla(roomId, sla), updateRoomSlaWeights(roomId, sla), addSlaChangeHistoryToRoom(roomId, user, sla)]);
 };
 
-export const removeRoomSLA = async (roomId: string, user: IUser) => {
+export const removeRoomSLA = async (roomId: string, user: Required<Pick<IUser, '_id' | 'username' | 'name'>>) => {
 	await Promise.all([removeInquiryQueueSla(roomId), removeSlaFromRoom(roomId), addSlaChangeHistoryToRoom(roomId, user)]);
 };

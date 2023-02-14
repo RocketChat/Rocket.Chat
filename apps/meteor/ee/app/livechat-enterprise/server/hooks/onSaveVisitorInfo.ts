@@ -6,7 +6,7 @@ import { removePriorityFromRoom, updateRoomPriority } from '../api/lib/prioritie
 import { removeRoomSLA, updateRoomSLA } from '../api/lib/sla';
 import { cbLogger } from '../lib/logger';
 
-const updateSLA = async (room: IOmnichannelRoom, user: IUser, slaId?: string) => {
+const updateSLA = async (room: IOmnichannelRoom, user: Required<Pick<IUser, '_id' | 'username' | 'name'>>, slaId?: string) => {
 	if (!slaId) {
 		return removeRoomSLA(room._id, user);
 	}
@@ -19,7 +19,7 @@ const updateSLA = async (room: IOmnichannelRoom, user: IUser, slaId?: string) =>
 	await updateRoomSLA(room._id, user, sla);
 };
 
-const updatePriority = async (room: IOmnichannelRoom, user: IUser, priorityId?: string) => {
+const updatePriority = async (room: IOmnichannelRoom, user: Required<Pick<IUser, '_id' | 'username' | 'name'>>, priorityId?: string) => {
 	if (!priorityId) {
 		return removePriorityFromRoom(room._id, user);
 	}
@@ -27,7 +27,10 @@ const updatePriority = async (room: IOmnichannelRoom, user: IUser, priorityId?: 
 	await updateRoomPriority(room._id, user, priorityId);
 };
 
-const saveInfo = async (room: IOmnichannelRoom, { user, oldRoom }: { user: IUser; oldRoom: IOmnichannelRoom }) => {
+const saveInfo = async (
+	room: IOmnichannelRoom,
+	{ user, oldRoom }: { user: Required<Pick<IUser, '_id' | 'username' | 'name'>>; oldRoom: IOmnichannelRoom },
+) => {
 	if (!room || !user) {
 		return room;
 	}
@@ -57,7 +60,22 @@ const saveInfo = async (room: IOmnichannelRoom, { user, oldRoom }: { user: IUser
 
 callbacks.add(
 	'livechat.saveInfo',
-	(room, { user, oldRoom }) => Promise.await(saveInfo(room, { user, oldRoom })),
+	(room, { user, oldRoom }) => {
+		if (!room || !user || !user.username) {
+			return room;
+		}
+
+		return Promise.await(
+			saveInfo(room, {
+				user: {
+					_id: user._id,
+					name: user.name || '',
+					username: user.username,
+				},
+				oldRoom,
+			}),
+		);
+	},
 	callbacks.priority.HIGH,
 	'livechat-on-save-room-info',
 );

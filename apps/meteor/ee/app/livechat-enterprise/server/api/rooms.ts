@@ -73,14 +73,34 @@ API.v1.addRoute(
 			const { rid } = this.urlParams;
 			const { priorityId } = this.bodyParams;
 
-			await updateRoomPriority(rid, this.user, priorityId);
+			if (!this.user.username) {
+				return API.v1.failure('Invalid user');
+			}
+
+			await updateRoomPriority(
+				rid,
+				{
+					_id: this.user._id,
+					name: this.user.name || '',
+					username: this.user.username,
+				},
+				priorityId,
+			);
 
 			return API.v1.success();
 		},
 		async delete() {
 			const { rid } = this.urlParams;
 
-			await removePriorityFromRoom(rid, this.user);
+			if (!this.user.username) {
+				return API.v1.failure('Invalid user');
+			}
+
+			await removePriorityFromRoom(rid, {
+				_id: this.user._id,
+				name: this.user.name || '',
+				username: this.user.username,
+			});
 
 			return API.v1.success();
 		},

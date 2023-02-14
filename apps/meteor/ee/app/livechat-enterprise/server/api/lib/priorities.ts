@@ -1,6 +1,6 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { LivechatInquiry, LivechatPriority, LivechatRooms, Messages } from '@rocket.chat/models';
-import type { ILivechatPriority, IMessage, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatPriority, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import type { FindOptions } from 'mongodb';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
@@ -61,7 +61,11 @@ export async function updatePriority(
 	return createdResult.value;
 }
 
-export const updateRoomPriority = async (rid: string, user: IUser, priorityId: string): Promise<void> => {
+export const updateRoomPriority = async (
+	rid: string,
+	user: Required<Pick<IUser, '_id' | 'username' | 'name'>>,
+	priorityId: string,
+): Promise<void> => {
 	const room = await LivechatRooms.findOneById(rid, { projection: { _id: 1 } });
 	if (!room) {
 		throw new Error('error-room-does-not-exist');
@@ -79,8 +83,8 @@ export const updateRoomPriority = async (rid: string, user: IUser, priorityId: s
 	]);
 };
 
-export const removePriorityFromRoom = async (rid: string, user: IUser): Promise<void> => {
-	const room: Pick<IOmnichannelRoom, '_id'> | null = await LivechatRooms.findOneById(rid, { projection: { _id: 1 } });
+export const removePriorityFromRoom = async (rid: string, user: Required<Pick<IUser, '_id' | 'username' | 'name'>>): Promise<void> => {
+	const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id'>>(rid, { projection: { _id: 1 } });
 	if (!room) {
 		throw new Error('error-room-does-not-exist');
 	}
@@ -94,8 +98,8 @@ export const removePriorityFromRoom = async (rid: string, user: IUser): Promise<
 
 export const addPriorityChangeHistoryToRoom = async (
 	roomId: string,
-	user: Pick<IUser, '_id' | 'name' | 'username'>,
+	user: Required<Pick<IUser, '_id' | 'username' | 'name'>>,
 	priority?: Pick<ILivechatPriority, 'name' | 'i18n'>,
 ) => {
-	await Messages.createPriorityHistoryWithRoomIdMessageAndUser(roomId, user as IMessage['u'], priority);
+	await Messages.createPriorityHistoryWithRoomIdMessageAndUser(roomId, user, priority);
 };

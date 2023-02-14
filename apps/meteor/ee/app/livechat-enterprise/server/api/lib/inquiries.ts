@@ -14,9 +14,17 @@ export async function setSLAToInquiry({ userId, roomId, sla }: { userId: string;
 	}
 
 	const user = await Users.findOneById(userId, { projection: { _id: 1, username: 1, name: 1 } });
-	if (!user) {
+	if (!user || !user.username) {
 		throw new Error('error-invalid-user');
 	}
 
-	await updateRoomSLA(roomId, user, slaData);
+	await updateRoomSLA(
+		roomId,
+		{
+			_id: user._id,
+			name: user.name || '',
+			username: user.username,
+		},
+		slaData,
+	);
 }
