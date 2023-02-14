@@ -95,7 +95,7 @@ export const updateRoomPriority = async (rid: string, user: IUser, priorityId: s
 };
 
 export const removePriorityFromRoom = async (rid: string, user: IUser): Promise<void> => {
-	const room: Pick<IOmnichannelRoom, '_id'> | null  = await LivechatRooms.findOneById(rid, { projection: { _id: 1 } });
+	const room: Pick<IOmnichannelRoom, '_id'> | null = await LivechatRooms.findOneById(rid, { projection: { _id: 1 } });
 	if (!room) {
 		throw new Error('error-room-does-not-exist');
 	}
