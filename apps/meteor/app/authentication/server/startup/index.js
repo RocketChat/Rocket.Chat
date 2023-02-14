@@ -19,7 +19,7 @@ import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
 import { AppEvents, Apps } from '../../../apps/server/orchestrator';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
-import { safeHtmlDots } from '/lib/utils/safeHtmlDots';
+import { safeHtmlDots } from '../../../../lib/utils/safeHtmlDots';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
