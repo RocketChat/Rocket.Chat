@@ -4,28 +4,10 @@ import type { ComponentProps, ReactElement } from 'react';
 import { forwardRef } from 'react';
 
 const messageComposerInputStyle = css`
-	overflow-y: auto;
-
-	width: 100%;
-	height: 23px;
-
-	min-height: 23px;
-	max-height: 155px;
-	padding: 0;
-
 	resize: none;
 
-	color: ${Palette.text['font-default']};
-	border: 0;
-	background-color: transparent;
-
-	font-family: inherit;
-	font-size: var(--message-box-text-size);
-
-	line-height: 21px;
-
 	&::placeholder {
-		color: var(--message-box-placeholder-color);
+		color: ${Palette.text['font-annotation']};
 	}
 `;
 
@@ -33,7 +15,10 @@ const MessageComposerInput = forwardRef<HTMLInputElement, ComponentProps<typeof 
 	(props, ref): ReactElement => (
 		<Box is='label' width='full' fontSize={0}>
 			<Box
+				color='default'
+				width='full'
 				minHeight='20px'
+				maxHeight='155px'
 				rows={1}
 				fontScale='p2'
 				ref={ref}
