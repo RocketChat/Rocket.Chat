@@ -83,7 +83,7 @@ const AdminUserInfoActions = ({
 			...(changeAdminStatusAction && !isFederatedUser && { makeAdmin: changeAdminStatusAction }),
 			...(resetE2EKeyAction && !isFederatedUser && { resetE2EKey: resetE2EKeyAction }),
 			...(resetTOTPAction && !isFederatedUser && { resetTOTP: resetTOTPAction }),
-			...(deleteUserAction && !isFederatedUser && { delete: deleteUserAction }),
+			...(deleteUserAction && { delete: deleteUserAction }),
 			...(changeUserStatusAction && !isFederatedUser && { changeActiveStatus: changeUserStatusAction }),
 		}),
 		[

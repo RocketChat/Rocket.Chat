@@ -1,7 +1,8 @@
+/* eslint-disable complexity */
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Button, Tag, Box } from '@rocket.chat/fuselage';
-import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useContentBoxSize, useMergedRefs, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
@@ -30,6 +31,8 @@ import { EmojiPicker } from '../../../../../../../app/emoji/client';
 import { createComposerAPI } from '../../../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
+import { ComposerBoxPopup } from '../../../../../../../app/ui-message/client/popup/ComposerBoxPopup';
+import { useComposerBoxPopup } from '../../../../../../../app/ui-message/client/popup/hooks/useComposerBoxPopup';
 import { useHasLicenseModule } from '../../../../../../../ee/client/hooks/useHasLicenseModule';
 import { getImageExtensionFromMime } from '../../../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../../../hooks/useFormatDateAndTime';
@@ -40,8 +43,9 @@ import { keyCodes } from '../../../../../../lib/utils/keyCodes';
 import AudioMessageRecorder from '../../../../../composer/AudioMessageRecorder';
 import VideoMessageRecorder from '../../../../../composer/VideoMessageRecorder';
 import { useChat } from '../../../../contexts/ChatContext';
+// import BlazeTemplate from '../../../BlazeTemplate';
+import { useComposerPopup } from '../../../../contexts/ComposerPopupContext';
 import { useRoom } from '../../../../contexts/RoomContext';
-import BlazeTemplate from '../../../BlazeTemplate';
 import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import MessageBoxDropdown from './MessageBoxDropdown';
@@ -332,21 +336,40 @@ const MessageBox = ({
 		}
 	});
 
+	const composerPopupConfig = useComposerPopup();
+
+	const {
+		popup,
+		focused,
+		items,
+		ariaActiveDescendant,
+		select,
+		callbackRef: c,
+	} = useComposerBoxPopup<{ _id: string; sort?: number }>({
+		configurations: composerPopupConfig,
+	});
+
+	const mergedRefs = useMergedRefs(c, callbackRef);
+
 	return (
 		<>
 			{chat?.composer?.quotedMessages && <MessageBoxReplies />}
-			<BlazeTemplate w='full' name='messagePopupConfig' tmid={tmid} rid={rid} getInput={() => textareaRef.current} />
-			<BlazeTemplate w='full' name='messagePopupSlashCommandPreview' tmid={tmid} rid={rid} getInput={() => textareaRef.current} />
+
+			{/* <BlazeTemplate w='full' name='messagePopupSlashCommandPreview' tmid={tmid} rid={rid} getInput={() => textareaRef.current} /> */}
+
+			{popup && <ComposerBoxPopup select={select} items={items} focused={focused} title={popup.title} renderItem={popup.renderItem} />}
+
 			{readOnly && (
 				<Box mbe='x4'>
 					<Tag title={t('Only_people_with_permission_can_send_messages_here')}>{t('This_room_is_read_only')}</Tag>
 				</Box>
 			)}
+
 			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={rid} tmid={tmid} />}
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
 				{isRecordingAudio && <AudioMessageRecorder rid={rid} tmid={tmid} disabled={!canSend || typing} />}
 				<MessageComposerInput
-					ref={callbackRef as unknown as Ref<HTMLInputElement>}
+					ref={mergedRefs as unknown as Ref<HTMLInputElement>}
 					aria-label={t('Message')}
 					name='msg'
 					disabled={isRecording || (!canJoin && !canSend)}
@@ -356,6 +379,7 @@ const MessageBox = ({
 					className='rc-message-box__textarea js-input-message'
 					onKeyDown={handler}
 					onPaste={handlePaste}
+					aria-activedescendant={ariaActiveDescendant}
 				/>
 				<div ref={shadowRef} style={shadowStyle} />
 				<MessageComposerToolbar>

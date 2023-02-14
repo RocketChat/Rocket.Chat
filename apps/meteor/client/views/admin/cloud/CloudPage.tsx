@@ -11,7 +11,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 
 import Page from '../../../components/Page';
 import ConnectToCloudSection from './ConnectToCloudSection';
@@ -28,6 +28,7 @@ const CloudPage = function CloudPage(): ReactNode {
 
 	const cloudRoute = useRoute('cloud');
 
+	const shouldOpenManualRegistration = useQueryStringParameter('register');
 	const page = useRouteParameter('page');
 
 	const errorCode = useQueryStringParameter('error_code');
@@ -95,13 +96,19 @@ const CloudPage = function CloudPage(): ReactNode {
 		acceptWorkspaceToken();
 	}, [reload, connectWorkspace, dispatchToastMessage, t, token]);
 
-	const handleManualWorkspaceRegistrationButtonClick = (): void => {
+	const handleManualWorkspaceRegistrationButtonClick = useCallback((): void => {
 		const handleModalClose = (): void => {
 			setModal(null);
 			reload();
 		};
 		setModal(<ManualWorkspaceRegistrationModal onClose={handleModalClose} />);
-	};
+	}, [setModal, reload]);
+
+	useEffect(() => {
+		if (shouldOpenManualRegistration) {
+			handleManualWorkspaceRegistrationButtonClick();
+		}
+	}, [shouldOpenManualRegistration, handleManualWorkspaceRegistrationButtonClick]);
 
 	if (result.isLoading || result.isError) {
 		return null;
