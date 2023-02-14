@@ -8,8 +8,7 @@ import { cbLogger } from '../lib/logger';
 
 const updateSLA = async (room: IOmnichannelRoom, user: IUser, slaId?: string) => {
 	if (!slaId) {
-		await removeRoomSLA(room._id, user);
-		return;
+		return removeRoomSLA(room._id, user);
 	}
 
 	const sla = await OmnichannelServiceLevelAgreements.findOneById(slaId, { projection: { _id: 1, dueTimeInMinutes: 1 } });
@@ -22,8 +21,7 @@ const updateSLA = async (room: IOmnichannelRoom, user: IUser, slaId?: string) =>
 
 const updatePriority = async (room: IOmnichannelRoom, user: IUser, priorityId?: string) => {
 	if (!priorityId) {
-		await removePriorityFromRoom(room._id, user);
-		return;
+		return removePriorityFromRoom(room._id, user);
 	}
 
 	await updateRoomPriority(room._id, user, priorityId);

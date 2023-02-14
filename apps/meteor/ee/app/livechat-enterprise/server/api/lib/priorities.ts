@@ -58,7 +58,7 @@ export async function updatePriority(
 
 	if (data.name) {
 		// If we want to enforce translated duplicates we need to change this
-		const priority = await LivechatPriority.findOne({ name: new RegExp(`^${escapeRegExp(data.name.trim())}$`, 'i') });
+		const priority = await LivechatPriority.findOne({ name: new RegExp(`^${escapeRegExp(data.name.trim())}$`, 'i') }, { name: 1 });
 		if (priority && priority._id !== _id) {
 			throw new Error('error-duplicate-priority-name');
 		}
