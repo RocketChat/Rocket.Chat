@@ -1,5 +1,7 @@
 import { createColors } from 'colorette';
 
+import { lrpad } from '../../../lib/utils/stringUtils';
+
 // force enable colors on dev env
 const colors = createColors({
 	useColor: process.env.NODE_ENV !== 'production',
@@ -22,7 +24,7 @@ export function showBox(title: string, message: string, color?: LogColors): void
 
 	lines.push(topLine);
 	if (title) {
-		lines.push(`|  ${s.lrpad(title, len)}  |`);
+		lines.push(`|  ${lrpad(title, len)}  |`);
 		lines.push(topLine);
 	}
 	lines.push(separator);

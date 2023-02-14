@@ -85,7 +85,7 @@ export function numberFormat(_number: number, dec: number, dsep?: string, tsep?:
 	return fnums.replace(/(\d)(?=(?:\d{3})+$)/g, `$1${tsep}`) + decimals;
 }
 
-export function pad(_str: unknown, _length: number, padStr: string, type: 'right' | 'left' | 'both') {
+export function pad(_str: unknown, _length: number, padStr?: string, type: 'right' | 'left' | 'both' = 'right') {
 	const str = makeString(_str);
 	const length = ~~_length;
 
@@ -107,6 +107,6 @@ export function pad(_str: unknown, _length: number, padStr: string, type: 'right
 	}
 }
 
-export function lrpad(str: unknown, length: number, padStr: string): string {
+export function lrpad(str: unknown, length: number, padStr?: string): string {
 	return pad(str, length, padStr, 'both');
 }
