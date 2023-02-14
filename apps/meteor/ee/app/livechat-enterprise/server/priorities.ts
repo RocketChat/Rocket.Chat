@@ -31,9 +31,9 @@ const defaultPriorities: Omit<ILivechatPriority, '_id' | '_updatedAt'>[] = [
 ];
 
 export const createDefaultPriorities = async (): Promise<void> => {
-	const priorities = await LivechatPriority.find().toArray();
+	const priorities = await LivechatPriority.col.countDocuments({});
 
-	if (!priorities.length) {
+	if (!priorities) {
 		await LivechatPriority.insertMany(defaultPriorities);
 	}
 };

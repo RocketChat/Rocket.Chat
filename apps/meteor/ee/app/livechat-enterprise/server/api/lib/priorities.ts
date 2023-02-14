@@ -82,7 +82,7 @@ export const updateRoomPriority = async (rid: string, user: IUser, priorityId: s
 		throw new Error('error-room-does-not-exist');
 	}
 
-	const priority = await LivechatPriority.findOneById(priorityId);
+	const priority = await LivechatPriority.findOneById(priorityId, { projection: { priorityId: 1, priorityWeight: 1 } });
 	if (!priority) {
 		throw new Error('error-invalid-priority');
 	}
