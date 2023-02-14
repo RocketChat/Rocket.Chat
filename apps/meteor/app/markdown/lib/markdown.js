@@ -107,13 +107,14 @@ export const createMarkdownMessageRenderer = ({ parser, ...options }) => {
 	}
 
 	const parse = typeof parsers[parser] === 'function' ? parsers[parser] : parsers.original;
+	const markedParser = parsers.marked;
 
-	return (message) => {
+	return (message, useMarkedPaser = false) => {
 		if (!message?.html?.trim()) {
 			return message;
 		}
 
-		return parse(message, options);
+		return useMarkedPaser ? markedParser(message, options) : parse(message, options);
 	};
 };
 

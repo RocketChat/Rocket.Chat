@@ -2750,7 +2750,6 @@
   "Username_doesnt_exist": "Tên người dùng `%s` không tồn tại.",
   "Username_invalid": "<strong>%s</strong> không phải là tên người dùng hợp lệ,<br/> chỉ sử dụng chữ cái, số, dấu chấm, dấu nối và dấu gạch dưới",
   "Username_is_already_in_here": "`@%s` đã có ở đây.",
-  "Username_is_not_in_this_room": "Người dùng `#%s` không ở trong phòng này.",
   "Username_Placeholder": "Vui lòng nhập tên người dùng ...",
   "Username_title": "Đăng ký tên người dùng",
   "Users": "Người dùng",

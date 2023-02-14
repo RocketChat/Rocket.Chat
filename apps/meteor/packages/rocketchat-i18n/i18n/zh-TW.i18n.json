@@ -4333,7 +4333,6 @@
   "Username_ended_the_OTR_session": "__username__結束了不公開會議",
   "Username_invalid": "<strong>%s</strong>不是一個合法的使用者名稱， <br/>只能使用字母，數字，.和_",
   "Username_is_already_in_here": "`@%s`已經在這裡了。",
-  "Username_is_not_in_this_room": "使用者 `#%s` 並不在這個頻道",
   "Username_Placeholder": "請輸入使用者名稱...",
   "Username_title": "註冊使用者名稱",
   "Username_wants_to_start_otr_Do_you_want_to_accept": "__username__想要啟動不公開。你想接受嗎？",

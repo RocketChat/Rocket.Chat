@@ -463,7 +463,7 @@ export class ChatMessages {
 
 	private async processTooLongMessage({ msg, rid, tmid }: Pick<IMessage, 'msg' | 'rid' | 'tmid'>) {
 		const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(msg);
-		if (messageProperties.length(adjustedMessage) <= settings.get('Message_MaxAllowedSize') && msg) {
+		if (adjustedMessage.length <= settings.get('Message_MaxAllowedSize') && msg) {
 			return false;
 		}
 
