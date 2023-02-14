@@ -1077,7 +1077,13 @@ describe('[Channels]', function () {
 		});
 
 		after((done) => {
-			removeIntegration(integrationCreatedByAnUser._id, 'incoming').then(done);
+			removeIntegration(integrationCreatedByAnUser._id, 'incoming').then(
+				() => done(),
+				(reason) => {
+					console.warn(reason);
+					done();
+				},
+			);
 		});
 
 		it('should return the list of integrations of created channel and it should contain the integration created by user when the admin DOES have the permission', (done) => {

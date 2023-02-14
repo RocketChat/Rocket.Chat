@@ -37,7 +37,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!integration.channel || typeof integration.channel.valueOf() === 'string') {
+		if (!integration.channel || typeof integration.channel.valueOf() !== 'string') {
 			throw new Meteor.Error('error-invalid-channel', 'Invalid channel', {
 				method: 'addIncomingIntegration',
 			});
@@ -59,7 +59,7 @@ Meteor.methods({
 			}
 		}
 
-		if (!integration.username || typeof integration.username.valueOf() === 'string' || integration.username.trim() === '') {
+		if (!integration.username || typeof integration.username.valueOf() !== 'string' || integration.username.trim() === '') {
 			throw new Meteor.Error('error-invalid-username', 'Invalid username', {
 				method: 'addIncomingIntegration',
 			});
