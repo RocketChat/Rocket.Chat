@@ -3,12 +3,12 @@ import { Option, OptionIcon, OptionContent } from '@rocket.chat/fuselage';
 import { useTranslation, useSetting, useSetModal } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { WebdavAccounts } from '../../../../../../../../app/models/client';
-import { useReactiveValue } from '../../../../../../../hooks/useReactiveValue';
-import type { ChatAPI } from '../../../../../../../lib/chats/ChatAPI';
-import { useChat } from '../../../../../contexts/ChatContext';
-import AddWebdavAccountModal from '../../../../../webdav/AddWebdavAccountModal';
-import WebdavFilePickerModal from '../../../../../webdav/WebdavFilePickerModal';
+import { WebdavAccounts } from '../../../../../../../../../app/models/client';
+import { useReactiveValue } from '../../../../../../../../hooks/useReactiveValue';
+import type { ChatAPI } from '../../../../../../../../lib/chats/ChatAPI';
+import { useChat } from '../../../../../../contexts/ChatContext';
+import AddWebdavAccountModal from '../../../../../../webdav/AddWebdavAccountModal';
+import WebdavFilePickerModal from '../../../../../../webdav/WebdavFilePickerModal';
 
 const getWebdavAccounts = (): IWebdavAccountIntegration[] => WebdavAccounts.find().fetch();
 
