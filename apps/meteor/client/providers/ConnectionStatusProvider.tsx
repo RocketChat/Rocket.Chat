@@ -1,6 +1,8 @@
-import { ConnectionStatusContext, ConnectionStatusContextValue } from '@rocket.chat/ui-contexts';
+import type { ConnectionStatusContextValue } from '@rocket.chat/ui-contexts';
+import { ConnectionStatusContext } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 import { useReactiveValue } from '../hooks/useReactiveValue';
 

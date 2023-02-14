@@ -2,7 +2,7 @@ import faker from '@faker-js/faker';
 import type { IInquiry, ILivechatAgent, ILivechatDepartment, ILivechatVisitor, IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { api, credentials, methodCall, request } from '../api-data';
 import { adminUsername } from '../user';
-import { DummyResponse } from './utils';
+import type { DummyResponse } from './utils';
 
 export const createLivechatRoom = (visitorToken: string): Promise<IOmnichannelRoom> =>
 	new Promise((resolve) => {
@@ -79,18 +79,34 @@ export const fetchInquiry = (roomId: string): Promise<IInquiry> => {
 	});
 };
 
-export const createDepartment = (agents?: { agentId: string }[]): Promise<ILivechatDepartment> => {
+export const createDepartment = (agents?: { agentId: string }[], name?: string): Promise<ILivechatDepartment> => {
 	return new Promise((resolve, reject) => {
 		request
 			.post(api('livechat/department'))
 			.set(credentials)
-			.send({ department: { name: `Department ${Date.now()}`, enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'a@b.com' }, agents })
+			.send({ department: { name: name || `Department ${Date.now()}`, enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'a@b.com' }, agents })
 			.end((err: Error, res: DummyResponse<ILivechatDepartment>) => {
 				if (err) {
 					return reject(err);
 				}
 				resolve(res.body.department);
 			});
+	});
+}
+
+export const deleteDepartment = (departmentId: string): Promise<unknown> => {
+	return new Promise((resolve, reject) => {
+		request
+			.delete(api(`livechat/department/${departmentId}`))
+				.set(credentials)
+				.send()
+				.expect(200)
+				.end((err: Error, res: DummyResponse<ILivechatAgent>) => {
+					if (err) {
+						return reject(err);
+					}
+					resolve(res.body);
+				});
 	});
 }
 

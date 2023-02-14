@@ -1,10 +1,11 @@
 import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocketchat:streamer';
 import type { ISubscription, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
+import { Authorization, VideoConf } from '@rocket.chat/core-services';
 
-import { Authorization, VideoConf } from '../../sdk';
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { SystemLogger } from '../../lib/logger/system';
+import { streamDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
 
 export class NotificationsModule {
 	public readonly streamLogged: IStreamer;
@@ -255,6 +256,7 @@ export class NotificationsModule {
 			if (e === 'user-activity' && Array.isArray(_activity) && (_activity.length === 0 || _activity.includes('user-typing'))) {
 				streamRoom._emit(`${rid}/typing`, [username, _activity.includes('user-typing')], this.connection, true);
 			} else if (e === 'typing') {
+				streamDeprecationLogger.warn(`The 'typing' event is deprecated and will be removed in the next major version of Rocket.Chat`);
 				streamRoom._emit(`${rid}/user-activity`, [username, _activity ? ['user-typing'] : [], extraData], this.connection, true);
 			}
 

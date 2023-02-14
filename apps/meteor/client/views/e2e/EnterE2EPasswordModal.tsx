@@ -1,7 +1,8 @@
 import { Box, PasswordInput, Field, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useState, useCallback } from 'react';
+import type { ReactElement } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import GenericModal from '../../components/GenericModal';
 

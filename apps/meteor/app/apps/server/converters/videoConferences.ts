@@ -1,7 +1,6 @@
 import type { VideoConference } from '@rocket.chat/apps-engine/definition/videoConferences';
 import type { IVideoConference } from '@rocket.chat/core-typings';
-
-import { VideoConf } from '../../../../server/sdk';
+import { VideoConf } from '@rocket.chat/core-services';
 
 export class AppVideoConferencesConverter {
 	async convertById(callId: string): Promise<VideoConference | undefined> {

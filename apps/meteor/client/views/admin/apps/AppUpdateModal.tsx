@@ -1,6 +1,7 @@
 import { Button, Modal } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 type AppUpdateModalProps = {
 	confirm: () => void;
@@ -25,7 +26,7 @@ const AppUpdateModal: FC<AppUpdateModalProps> = ({ confirm, cancel, ...props }) 
 	return (
 		<Modal {...props}>
 			<Modal.Header>
-				<Modal.Icon color='danger' name='info-circled' />
+				<Modal.Icon color='on-danger' name='info-circled' />
 				<Modal.Title>{t('Apps_Manual_Update_Modal_Title')}</Modal.Title>
 				<Modal.Close onClick={handleCloseButtonClick} />
 			</Modal.Header>

@@ -6,7 +6,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import { UIKitInteractionTypes } from '@rocket.chat/core-typings';
 
 import Notifications from '../../notifications/client/lib/Notifications';
-import { CachedCollectionManager } from '../../ui-cached-collection';
+import { CachedCollectionManager } from '../../ui-cached-collection/client';
 import { modal } from '../../ui-utils/client/lib/modal';
 import { APIClient, t } from '../../utils/client';
 import * as banners from '../../../client/lib/banners';
@@ -168,16 +168,23 @@ export const triggerAction = async ({ type, actionId, appId, rid, mid, viewId, c
 
 		setTimeout(reject, TRIGGER_TIMEOUT, [TRIGGER_TIMEOUT_ERROR, { triggerId, appId }]);
 
-		const { type: interactionType, ...data } = await APIClient.post(`/apps/ui.interaction/${appId}`, {
-			type,
-			actionId,
-			payload,
-			container,
-			mid,
-			rid,
-			triggerId,
-			viewId,
-		});
+		const { type: interactionType, ...data } = await (async () => {
+			try {
+				return await APIClient.post(`/apps/ui.interaction/${appId}`, {
+					type,
+					actionId,
+					payload,
+					container,
+					mid,
+					rid,
+					triggerId,
+					viewId,
+				});
+			} catch (e) {
+				reject(e);
+				return {};
+			}
+		})();
 
 		return resolve(handlePayloadUserInteraction(interactionType, data));
 	});

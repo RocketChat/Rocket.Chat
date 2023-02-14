@@ -37,7 +37,7 @@ export class RocketChatRoomAdapter {
 		return Rooms.findOneById(internalRoomId);
 	}
 
-	public async createFederatedRoom(federatedRoom: FederatedRoom): Promise<void> {
+	public async createFederatedRoom(federatedRoom: FederatedRoom): Promise<string> {
 		const usernameOrId = federatedRoom.getCreatorUsername() || federatedRoom.getCreatorId();
 		if (!usernameOrId) {
 			throw new Error('Cannot create a room without a creator');
@@ -46,6 +46,8 @@ export class RocketChatRoomAdapter {
 		const roomId = rid || _id;
 		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(roomId, federatedRoom.getExternalId());
 		await Rooms.setAsFederated(roomId);
+
+		return roomId;
 	}
 
 	public async removeDirectMessageRoom(federatedRoom: FederatedRoom): Promise<void> {
@@ -55,7 +57,7 @@ export class RocketChatRoomAdapter {
 		await MatrixBridgedRoom.removeByLocalRoomId(roomId);
 	}
 
-	public async createFederatedRoomForDirectMessage(federatedRoom: DirectMessageFederatedRoom): Promise<void> {
+	public async createFederatedRoomForDirectMessage(federatedRoom: DirectMessageFederatedRoom): Promise<string> {
 		const creatorId = federatedRoom.getCreatorId();
 		const usernameOrId = federatedRoom.getCreatorUsername() || creatorId;
 		if (!usernameOrId) {
@@ -79,6 +81,8 @@ export class RocketChatRoomAdapter {
 		const roomId = rid || _id;
 		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(roomId, federatedRoom.getExternalId());
 		await Rooms.setAsFederated(roomId);
+
+		return roomId;
 	}
 
 	public async getDirectMessageFederatedRoomByUserIds(userIds: string[]): Promise<FederatedRoom | undefined> {

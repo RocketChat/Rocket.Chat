@@ -141,6 +141,12 @@ export class RestClient implements RestClientInterface {
 
 			...options,
 		});
+
+		// If the server sent no data, return an empty record as we're only expecting objects.
+		if (response.status === 204) {
+			return {} as any;
+		}
+
 		return response.json();
 	}
 

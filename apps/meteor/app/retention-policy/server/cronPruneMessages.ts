@@ -85,6 +85,7 @@ const pruneCronName = 'Prune old messages by retention policy';
 
 function deployCron(precision: string): void {
 	SyncedCron.remove(pruneCronName);
+
 	SyncedCron.add({
 		name: pruneCronName,
 		schedule: (parser) => parser.cron(precision),

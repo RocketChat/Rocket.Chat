@@ -1,41 +1,43 @@
 import { OptionTitle } from '@rocket.chat/fuselage';
 import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { triggerActionButtonAction } from '../../../app/ui-message/client/ActionManager';
-import { IAppAccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
+import type { IAppAccountBoxItem } from '../../../app/ui-utils/client/lib/AccountBox';
 import ListItem from '../Sidebar/ListItem';
 
 type AppsModelListProps = {
 	appBoxItems: IAppAccountBoxItem[];
-	showManageApps: boolean;
-	closeList: () => void;
+	appsManagementAllowed: boolean;
+	onDismiss: () => void;
 };
 
-const AppsModelList: FC<AppsModelListProps> = ({ appBoxItems, showManageApps, closeList }) => {
+const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsModelListProps): ReactElement => {
 	const t = useTranslation();
 	const marketplaceRoute = useRoute('admin-marketplace');
+	const page = 'list';
 
 	return (
 		<>
 			<OptionTitle>{t('Apps')}</OptionTitle>
 			<ul>
-				{showManageApps && (
+				{appsManagementAllowed && (
 					<>
 						<ListItem
 							icon='store'
 							text={t('Marketplace')}
 							action={(): void => {
-								marketplaceRoute.push();
-								closeList();
+								marketplaceRoute.push({ context: 'all', page });
+								onDismiss();
 							}}
 						/>
 						<ListItem
 							icon='cube'
 							text={t('Installed')}
 							action={(): void => {
-								marketplaceRoute.push({ context: 'installed' });
-								closeList();
+								marketplaceRoute.push({ context: 'installed', page });
+								onDismiss();
 							}}
 						/>
 					</>
@@ -51,7 +53,7 @@ const AppsModelList: FC<AppsModelListProps> = ({ appBoxItems, showManageApps, cl
 									appId: item.appId,
 									payload: { context: item.context },
 								});
-								closeList();
+								onDismiss();
 							};
 							return <ListItem text={(t.has(item.name) && t(item.name)) || item.name} action={action} key={item.actionId + key} />;
 						})}

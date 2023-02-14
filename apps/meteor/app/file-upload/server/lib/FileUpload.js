@@ -327,6 +327,8 @@ export const FileUpload = {
 			name: `thumb-${file.name}`,
 			size: buffer.length,
 			type: file.type,
+			originalFileId: file._id,
+			typeGroup: 'thumb',
 			rid,
 			userId,
 		};
@@ -335,7 +337,7 @@ export const FileUpload = {
 	},
 
 	uploadsOnValidate(file) {
-		if (!/^image\/((x-windows-)?bmp|p?jpeg|png|gif)$/.test(file.type)) {
+		if (!/^image\/((x-windows-)?bmp|p?jpeg|png|gif|webp)$/.test(file.type)) {
 			return;
 		}
 

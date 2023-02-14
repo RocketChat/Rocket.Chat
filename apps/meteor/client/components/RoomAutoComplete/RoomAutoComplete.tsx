@@ -1,7 +1,9 @@
 import { AutoComplete, Option, Box } from '@rocket.chat/fuselage';
-import React, { memo, useMemo, useState, ReactElement, ComponentProps } from 'react';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import type { ReactElement, ComponentProps } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
-import { useEndpointData } from '../../hooks/useEndpointData';
 import RoomAvatar from '../avatar/RoomAvatar';
 import Avatar from './Avatar';
 
@@ -19,17 +21,21 @@ type RoomAutoCompleteProps<T> = Omit<ComponentProps<typeof AutoComplete>, 'value
 /* @deprecated */
 const RoomAutoComplete = <T,>(props: RoomAutoCompleteProps<T>): ReactElement => {
 	const [filter, setFilter] = useState('');
-	const { value: data } = useEndpointData(
-		'/v1/rooms.autocomplete.channelAndPrivate',
-		useMemo(() => query(filter), [filter]),
-	);
+	const autocomplete = useEndpoint('GET', '/v1/rooms.autocomplete.channelAndPrivate');
+
+	const result = useQuery(['rooms.autocomplete.channelAndPrivate', filter], () => autocomplete(query(filter)), {
+		keepPreviousData: true,
+	});
+
 	const options = useMemo(
 		() =>
-			data?.items.map(({ name, _id, avatarETag, t }) => ({
-				value: _id,
-				label: { name, avatarETag, type: t },
-			})) || [],
-		[data],
+			result.isSuccess
+				? result.data.items.map(({ name, _id, avatarETag, t }) => ({
+						value: _id,
+						label: { name, avatarETag, type: t },
+				  }))
+				: [],
+		[result.data?.items, result.isSuccess],
 	) as unknown as { value: string; label: string }[];
 
 	return (

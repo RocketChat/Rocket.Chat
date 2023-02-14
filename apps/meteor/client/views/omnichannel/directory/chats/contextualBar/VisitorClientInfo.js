@@ -15,10 +15,8 @@ const VisitorClientInfo = ({ uid }) => {
 		value: userData,
 		phase: state,
 		error,
-	} = useEndpointData(
-		'/v1/livechat/visitors.info',
-		useMemo(() => ({ visitorId: uid }), [uid]),
-	);
+	} = useEndpointData('/v1/livechat/visitors.info', { params: useMemo(() => ({ visitorId: uid }), [uid]) });
+
 	if (state === AsyncStatePhase.LOADING) {
 		return <FormSkeleton />;
 	}

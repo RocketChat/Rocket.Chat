@@ -138,7 +138,7 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 
 		const inviterUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalInviterId);
 		if (!inviterUser) {
-			await this.createFederatedUserForInviterUsingLocalInformation(internalInviterId);
+			await this.createFederatedUserIncludingHomeserverUsingLocalInformation(internalInviterId);
 		}
 
 		const federatedInviterUser = inviterUser || (await this.internalUserAdapter.getFederatedUserByInternalId(internalInviterId));
@@ -182,7 +182,7 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 		const inviteeUser = await this.internalUserAdapter.getFederatedUserByInternalUsername(username);
 		if (!inviteeUser) {
 			const existsOnlyOnProxyServer = isInviteeFromTheSameHomeServer;
-			await this.createFederatedUser(rawInviteeId, username, existsOnlyOnProxyServer);
+			await this.createFederatedUserInternallyOnly(rawInviteeId, username, existsOnlyOnProxyServer);
 		}
 
 		const federatedInviteeUser = inviteeUser || (await this.internalUserAdapter.getFederatedUserByInternalUsername(username));

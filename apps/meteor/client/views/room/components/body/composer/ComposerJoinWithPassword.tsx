@@ -1,7 +1,8 @@
 import { TextInput } from '@rocket.chat/fuselage';
 import { MessageFooterCallout, MessageFooterCalloutAction, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import React, { ChangeEvent, ReactElement, useCallback, useState, FormEventHandler } from 'react';
+import type { ChangeEvent, ReactElement, FormEventHandler } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { useRoom } from '../../../contexts/RoomContext';
 

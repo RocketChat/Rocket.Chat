@@ -125,24 +125,6 @@ export class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	setLastMessageSnippeted(roomId, message, snippetName, snippetedBy, snippeted, snippetedAt) {
-		const query = { _id: roomId };
-
-		const msg = `\`\`\`${message.msg}\`\`\``;
-
-		const update = {
-			$set: {
-				'lastMessage.msg': msg,
-				'lastMessage.snippeted': snippeted,
-				'lastMessage.snippetedAt': snippetedAt || new Date(),
-				'lastMessage.snippetedBy': snippetedBy,
-				'lastMessage.snippetName': snippetName,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	setLastMessagePinned(roomId, pinnedBy, pinned, pinnedAt) {
 		const query = { _id: roomId };
 
@@ -309,7 +291,7 @@ export class Rooms extends Base {
 	}
 
 	findOneByNonValidatedName(name, options) {
-		const room = this.findOneByName(name, options);
+		const room = this.findOneByNameOrFname(name, options);
 		if (room) {
 			return room;
 		}
@@ -328,6 +310,21 @@ export class Rooms extends Base {
 
 	findOneByName(name, options) {
 		const query = { name };
+
+		return this.findOne(query, options);
+	}
+
+	findOneByNameOrFname(name, options) {
+		const query = {
+			$or: [
+				{
+					name,
+				},
+				{
+					fname: name,
+				},
+			],
+		};
 
 		return this.findOne(query, options);
 	}

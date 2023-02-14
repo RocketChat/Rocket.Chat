@@ -1,4 +1,4 @@
-import type { ILivechatDepartmentRecord } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
@@ -14,19 +14,38 @@ type DepartmentsListOptions = {
 	haveNone?: boolean;
 	excludeDepartmentId?: string;
 	enabled?: boolean;
+	showArchived?: boolean;
 };
+
+type DepartmentListItem =
+	| (ILivechatDepartment & {
+			label: string;
+			value: { value: string; label: string };
+	  })
+	| {
+			_id: '';
+			label: string;
+			value: { value: 'all'; label: string };
+			_updatedAt: Date;
+	  }
+	| {
+			_id: '';
+			label: string;
+			value: { value: ''; label: string };
+			_updatedAt: Date;
+	  };
 
 export const useDepartmentsList = (
 	options: DepartmentsListOptions,
 ): {
-	itemsList: RecordList<ILivechatDepartmentRecord>;
+	itemsList: RecordList<DepartmentListItem>;
 	initialItemCount: number;
 	reload: () => void;
 	loadMoreItems: (start: number, end: number) => void;
 } => {
 	const t = useTranslation();
-	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatDepartmentRecord>());
-	const reload = useCallback(() => setItemsList(new RecordList<ILivechatDepartmentRecord>()), []);
+	const [itemsList, setItemsList] = useState(() => new RecordList<DepartmentListItem>());
+	const reload = useCallback(() => setItemsList(new RecordList<DepartmentListItem>()), []);
 
 	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
 
@@ -44,6 +63,7 @@ export const useDepartmentsList = (
 				sort: `{ "name": 1 }`,
 				excludeDepartmentId: options.excludeDepartmentId,
 				enabled: options.enabled ? 'true' : 'false',
+				showArchived: options.showArchived ? 'true' : 'false',
 			});
 
 			const items = departments
@@ -53,15 +73,20 @@ export const useDepartmentsList = (
 					}
 					return true;
 				})
-				.map((department: any) => {
-					department._updatedAt = new Date(department._updatedAt);
-					department.label = department.name;
-					department.value = { value: department._id, label: department.name };
-					return department;
+				.map(({ _id, name, _updatedAt, ...department }): DepartmentListItem => {
+					return {
+						...department,
+						_id,
+						name: department.archived ? `${name} [${t('Archived')}]` : name,
+						label: department.archived ? `${name} [${t('Archived')}]` : name,
+						value: { value: _id, label: name },
+						...(_updatedAt && { _updatedAt: new Date(_updatedAt) }),
+					};
 				});
 
 			options.haveAll &&
 				items.unshift({
+					_id: '',
 					label: t('All'),
 					value: { value: 'all', label: t('All') },
 					_updatedAt: new Date(),
@@ -69,6 +94,7 @@ export const useDepartmentsList = (
 
 			options.haveNone &&
 				items.unshift({
+					_id: '',
 					label: t('None'),
 					value: { value: '', label: t('None') },
 					_updatedAt: new Date(),
@@ -81,13 +107,14 @@ export const useDepartmentsList = (
 		},
 		[
 			getDepartments,
-			options.departmentId,
-			options.filter,
-			options.haveAll,
 			options.onlyMyDepartments,
-			options.haveNone,
+			options.filter,
 			options.excludeDepartmentId,
 			options.enabled,
+			options.showArchived,
+			options.haveAll,
+			options.haveNone,
+			options.departmentId,
 			t,
 		],
 	);

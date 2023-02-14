@@ -1,8 +1,9 @@
-import { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Field, Button, TextAreaInput, Modal, Box, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useRecordList } from '../../../hooks/lists/useRecordList';
@@ -109,7 +110,7 @@ const ForwardChatModal = ({
 								withTitle
 								filter={departmentsFilter as string}
 								setFilter={setDepartmentsFilter}
-								options={departments.map(({ _id, name }) => ({ value: _id, label: name }))}
+								options={departments as any}
 								maxWidth='100%'
 								placeholder={t('Select_an_option')}
 								onChange={(value: string): void => {

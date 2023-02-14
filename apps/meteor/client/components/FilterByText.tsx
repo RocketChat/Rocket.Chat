@@ -1,6 +1,7 @@
 import { Box, Icon, TextInput, Button } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactNode, ChangeEvent, FormEvent, memo, useCallback, useEffect, useState, ReactElement } from 'react';
+import type { ReactNode, ChangeEvent, FormEvent, ReactElement } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 
 type FilterByTextCommonProps = {
 	children?: ReactNode | undefined;
@@ -8,6 +9,7 @@ type FilterByTextCommonProps = {
 	inputRef?: () => void;
 	shouldFiltersStack?: boolean;
 	onChange: (filter: { text: string }) => void;
+	autoFocus?: boolean;
 };
 
 type FilterByTextPropsWithButton = FilterByTextCommonProps & {
@@ -27,6 +29,7 @@ const FilterByText = ({
 	inputRef,
 	children,
 	shouldFiltersStack,
+	autoFocus,
 	...props
 }: FilterByTextProps): ReactElement => {
 	const t = useTranslation();
@@ -53,6 +56,7 @@ const FilterByText = ({
 				addon={<Icon name='magnifier' size='x20' />}
 				onChange={handleInputChange}
 				value={text}
+				autoFocus={autoFocus}
 			/>
 			{isFilterByTextPropsWithButton(props) ? (
 				<Button onClick={props.onButtonClick} mis='x8' primary>

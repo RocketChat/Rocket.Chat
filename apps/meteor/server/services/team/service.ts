@@ -14,13 +14,7 @@ import type {
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Team, Rooms, Subscriptions, Users, TeamMember } from '@rocket.chat/models';
 import type { InsertionModel } from '@rocket.chat/model-typings';
-
-import { checkUsernameAvailability } from '../../../app/lib/server/functions';
-import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
-import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
-import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
-import { Messages } from '../../../app/models/server';
-import { Room, Authorization } from '../../sdk';
+import { Room, Authorization, ServiceClassInternal } from '@rocket.chat/core-services';
 import type {
 	IListRoomsFilter,
 	ITeamAutocompleteResult,
@@ -30,8 +24,13 @@ import type {
 	ITeamMemberParams,
 	ITeamService,
 	ITeamUpdateData,
-} from '../../sdk/types/ITeamService';
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
+} from '@rocket.chat/core-services';
+
+import { checkUsernameAvailability } from '../../../app/lib/server/functions';
+import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
+import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
+import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
+import { Messages } from '../../../app/models/server';
 import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomType } from '../../../app/channel-settings/server/functions/saveRoomType';
 

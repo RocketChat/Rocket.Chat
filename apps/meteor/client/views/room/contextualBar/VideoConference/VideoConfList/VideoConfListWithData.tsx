@@ -1,5 +1,6 @@
-import { IRoom } from '@rocket.chat/core-typings';
-import React, { ReactElement, useMemo } from 'react';
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import { useRecordList } from '../../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';

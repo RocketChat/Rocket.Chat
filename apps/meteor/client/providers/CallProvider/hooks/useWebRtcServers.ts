@@ -1,7 +1,7 @@
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { IceServer } from '../definitions/IceServer';
+import type { IceServer } from '../definitions/IceServer';
 import { parseStringToIceServers } from '../lib/parseStringToIceServers';
 
 export const useWebRtcServers = (): IceServer[] => {

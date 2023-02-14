@@ -1,7 +1,8 @@
 import { Box, TableRow, TableCell, Menu, Option } from '@rocket.chat/fuselage';
 import { useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { KeyboardEvent, ReactElement, useCallback } from 'react';
+import type { KeyboardEvent, ReactElement } from 'react';
+import React, { useCallback } from 'react';
 
 import { useFormatDateAndTime } from '../../../../../../client/hooks/useFormatDateAndTime';
 import DeviceIcon from '../../../../deviceManagement/components/DeviceIcon';
@@ -14,7 +15,6 @@ type DeviceRowProps = {
 	deviceName?: string;
 	deviceType?: string;
 	deviceOSName?: string;
-	deviceOSVersion?: string;
 	loginAt: string;
 	onReload: () => void;
 };
@@ -26,7 +26,6 @@ const DeviceManagementAdminRow = ({
 	deviceName,
 	deviceType = 'browser',
 	deviceOSName = '',
-	deviceOSVersion = '',
 	loginAt,
 	onReload,
 }: DeviceRowProps): ReactElement => {
@@ -69,7 +68,7 @@ const DeviceManagementAdminRow = ({
 					{deviceName && <Box withTruncatedText>{deviceName}</Box>}
 				</Box>
 			</TableCell>
-			<TableCell>{`${deviceOSName} ${deviceOSVersion}`}</TableCell>
+			<TableCell>{deviceOSName}</TableCell>
 			<TableCell withTruncatedText>{username}</TableCell>
 			{mediaQuery && <TableCell>{formatDateAndTime(loginAt)}</TableCell>}
 			{mediaQuery && <TableCell withTruncatedText>{_id}</TableCell>}

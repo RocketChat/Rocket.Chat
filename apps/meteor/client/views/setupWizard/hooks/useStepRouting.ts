@@ -1,5 +1,6 @@
 import { useRouteParameter, useRoute, useRole } from '@rocket.chat/ui-contexts';
-import { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
+import { useState, useEffect } from 'react';
 
 export const useStepRouting = (): [number, Dispatch<SetStateAction<number>>] => {
 	const param = useRouteParameter('step');

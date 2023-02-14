@@ -6,7 +6,7 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import _ from 'underscore';
 
-import { messageContext } from '../../../ui-utils/client/lib/messageContext';
+import { createMessageContext } from '../../../ui-utils/client/lib/messageContext';
 import { MessageAction, RoomHistoryManager } from '../../../ui-utils';
 import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { Rooms } from '../../../models/client';
@@ -31,6 +31,7 @@ Meteor.startup(function () {
 						name: Rooms.findOne({ _id: message.rid }).name,
 					},
 					{
+						...FlowRouter.current().queryParams,
 						jump: message._id,
 					},
 				);
@@ -79,7 +80,8 @@ Template.DefaultSearchResultTemplate.onCreated(function () {
 
 	// global search
 	this.globalSearchEnabled = this.data.settings.GlobalSearchEnabled;
-	this.data.parentPayload.searchAll = this.globalSearchEnabled;
+	// default value for global search
+	this.data.parentPayload.searchAll = false;
 
 	this.hasMore = new ReactiveVar(true);
 
@@ -124,7 +126,7 @@ Template.DefaultSearchResultTemplate.helpers({
 		return { customClass: 'search', actionContext: 'search', ...msg, groupable: false };
 	},
 	messageContext() {
-		const result = messageContext.call(this, { rid: Session.get('openedRoom') });
+		const result = createMessageContext.call(this, { rid: Session.get('openedRoom') });
 		return {
 			...result,
 			settings: {

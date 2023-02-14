@@ -1,8 +1,8 @@
 import { UiInteractionBridge as UiIntBridge } from '@rocket.chat/apps-engine/server/bridges/UiInteractionBridge';
 import type { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import { api } from '@rocket.chat/core-services';
 
-import { api } from '../../../../server/sdk/api';
 import type { AppServerOrchestrator } from '../orchestrator';
 
 export class UiInteractionBridge extends UiIntBridge {

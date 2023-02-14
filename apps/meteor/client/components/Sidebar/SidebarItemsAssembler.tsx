@@ -1,7 +1,8 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, FC } from 'react';
+import type { FC } from 'react';
+import React, { memo } from 'react';
 
-import { SidebarItem } from '../../lib/createSidebarItems';
+import type { SidebarItem } from '../../lib/createSidebarItems';
 import SidebarNavigationItem from './SidebarNavigationItem';
 
 type SidebarItemsAssemblerProps = {

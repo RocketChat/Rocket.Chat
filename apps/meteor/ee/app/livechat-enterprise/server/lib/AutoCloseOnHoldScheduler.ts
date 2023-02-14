@@ -2,15 +2,17 @@ import { Agenda } from '@rocket.chat/agenda';
 import { MongoInternals } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
+import { LivechatRooms, Users } from '@rocket.chat/models';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { Livechat } from '../../../../../app/livechat/server';
-import { LivechatRooms, Users } from '../../../../../app/models/server';
 
-const schedulerUser = Users.findOneById('rocket.cat');
 const SCHEDULER_NAME = 'omnichannel_auto_close_on_hold_scheduler';
 
 class AutoCloseOnHoldSchedulerClass {
 	scheduler: Agenda;
+
+	schedulerUser: IUser;
 
 	running: boolean;
 
@@ -48,14 +50,26 @@ class AutoCloseOnHoldSchedulerClass {
 		const { roomId, comment } = data;
 
 		const payload = {
-			user: schedulerUser,
-			room: LivechatRooms.findOneById(roomId),
+			user: await this.getSchedulerUser(),
+			room: await LivechatRooms.findOneById(roomId),
 			comment,
 			options: {},
 			visitor: undefined,
 		};
 
 		Livechat.closeRoom(payload);
+	}
+
+	private async getSchedulerUser(): Promise<IUser> {
+		if (!this.schedulerUser) {
+			const schedulerUser = await Users.findOneById('rocket.cat');
+			if (!schedulerUser) {
+				throw new Error('Scheduler user not found');
+			}
+			this.schedulerUser = schedulerUser;
+		}
+
+		return this.schedulerUser;
 	}
 }
 

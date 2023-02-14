@@ -1,7 +1,8 @@
 import { Sidebar, Dropdown } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
-import React, { HTMLAttributes, useRef, VFC } from 'react';
+import type { HTMLAttributes, VFC } from 'react';
+import React, { useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 import { AccountBox } from '../../../../app/ui-utils/client';
@@ -57,7 +58,7 @@ const Administration: VFC<Omit<HTMLAttributes<HTMLElement>, 'is'>> = (props) => 
 					<Dropdown reference={reference} ref={target}>
 						<AdministrationList
 							accountBoxItems={accountBoxItems}
-							closeList={(): void => toggle(false)}
+							onDismiss={(): void => toggle(false)}
 							hasAdminPermission={hasAdminPermission}
 							hasAuditLicense={hasAuditLicense}
 							hasAuditPermission={hasAuditPermission}

@@ -23,6 +23,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	setAsReadByRoomIdAndUserId(
 		rid: string,
 		uid: string,
+		readThreads?: boolean,
 		alert?: boolean,
 		options?: FindOptions<ISubscription>,
 	): ReturnType<IBaseModel<ISubscription>['update']>;
@@ -76,4 +77,10 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	setAlertForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document>;
 
 	setOpenForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document>;
+
+	setGroupE2EKey(_id: string, key: string): Promise<ISubscription | null>;
+
+	setGroupE2ESuggestedKey(_id: string, key: string): Promise<UpdateResult | Document>;
+
+	unsetGroupE2ESuggestedKey(_id: string): Promise<UpdateResult | Document>;
 }

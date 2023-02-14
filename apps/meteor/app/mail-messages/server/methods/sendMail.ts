@@ -2,9 +2,12 @@ import { Meteor } from 'meteor/meteor';
 
 import { Mailer } from '../lib/Mailer';
 import { hasPermission } from '../../../authorization/server';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
 	'Mailer.sendMail'(from, subject, body, dryrun, query) {
+		methodDeprecationLogger.warn('Mailer.sendMail will be deprecated in future versions of Rocket.Chat');
+
 		const userId = Meteor.userId();
 
 		if (!userId || !hasPermission(userId, 'send-mail')) {
@@ -13,7 +16,7 @@ Meteor.methods({
 			});
 		}
 
-		return Mailer.sendMail(from, subject, body, dryrun, query);
+		return Mailer.sendMail({ from, subject, body, dryrun, query });
 	},
 });
 

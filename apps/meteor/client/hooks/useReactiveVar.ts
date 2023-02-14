@@ -1,4 +1,4 @@
-import { ReactiveVar } from 'meteor/reactive-var';
+import type { ReactiveVar } from 'meteor/reactive-var';
 import { useCallback } from 'react';
 
 import { useReactiveValue } from './useReactiveValue';

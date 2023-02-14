@@ -1,5 +1,4 @@
 {
-  "403": "ممنوع",
   "500": "خطأ محلي في الخادم",
   "__count__empty_rooms_will_be_removed_automatically": "ستتم إزالة __count__ من الغرف الفارغة تلقائيًا.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "ستتم إزالة __count__ من الغرف الفارغة تلقائيًا: <br/> __rooms__",
@@ -293,7 +292,6 @@
   "Additional_emails": "رسائل بريد إلكتروني إضافية",
   "Additional_Feedback": "ملاحظات إضافية",
   "additional_integrations_Bots": "إذا كنت تبحث عن كيفية دمج الروبوت الخاص بك، فلن تجد أفضل من محول Hubot الخاص بنا. <a href=\"https://github.com/RocketChat/hubot-rocketchat\" target=\"_blank\">https://github.com/RocketChat/hubot-rocketchat</a>",
-  "additional_integrations_Zapier": "هل تتطلع إلى دمج البرامج والتطبيقات الأخرى مع Rocket.Chat ولكن ليس لديك الوقت للقيام بذلك يدويًا؟ ننصحك باستخدام Zapier الذي ندعمه بالكامل. يمكنك قراءة المزيد عنه على وثائقنا. <a href=\"https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/\" target=\"_blank\">https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/</a>",
   "Admin_disabled_encryption": "لم يقوم المسؤول لديك بتمكين التشفير بين الوحدات الطرفية.",
   "Admin_Info": "معلومات المسؤول",
   "Administration": "الإدارة",
@@ -703,7 +701,6 @@
   "Busy": "مشغول",
   "By": "بواسطة",
   "by": "بواسطة",
-  "By_author": "بواسطة __author__",
   "cache_cleared": "تم محو التخزين المؤقت",
   "Call": "مكالمة",
   "Calling": "يتم الآن الاتصال",
@@ -962,7 +959,6 @@
   "Comment": "تعليق",
   "Common_Access": "الوصول المشترك",
   "Community": "المجتمع",
-  "Compact": "مدمج",
   "Composer_not_available_phone_calls": "الرسائل غير متوافرة في المكالمات الهاتفية",
   "Condensed": "مكثف",
   "Condition": "حالة",
@@ -1266,7 +1262,6 @@
   "Country_Yemen": "اليمن",
   "Country_Zambia": "زامبيا",
   "Country_Zimbabwe": "زيمبابوي",
-  "Cozy": "كوزي",
   "Create": "إنشاء",
   "Create_Canned_Response": "إنشاء رد مسجَّل",
   "Create_channel": "إنشاء Channel",
@@ -1612,7 +1607,6 @@
   "Email_subject": "موضوع البريد الإلكتروني",
   "Email_verified": "تم التحقق من البريد الإلكتروني",
   "Email_sent": "تم إرسال البريد الإلكتروني",
-  "Emails_sent_successfully!": "تم إرسال رسائل البريد الإلكتروني بنجاح",
   "Emoji": "رمز تعبيري",
   "Emoji_provided_by_JoyPixels": "رموز تعبيرية مقدمة من <strong>JoyPixels</strong>",
   "EmojiCustomFilesystem": "نظام ملفات الرموز التعبيرية المخصصة",
@@ -1889,7 +1883,6 @@
   "Feature_Limiting": "وضع حد للميزة",
   "Features": "الميزات",
   "Features_Enabled": "الميزات الممكّنة",
-  "Feature_Disabled": "الميزات المعطلة",
   "Federation": "اتحاد",
   "Federation_Adding_Federated_Users": "إضافة مستخدمين متحدين",
   "Federation_Adding_to_your_server": "إضافة اتحاد إلى الخادم الخاص بك",
@@ -3025,8 +3018,6 @@
   "Message_UserId": "معرّف المستخدم",
   "Message_VideoRecorderEnabled": "تم تمكين مُسجّل الفيديو",
   "Message_VideoRecorderEnabledDescription": "يتطلب أن تكون ملفات \"video/webm\" نوع وسائط مقبولاً ضمن إعدادات \"تحميل الملف\".",
-  "Message_view_mode_info": "هذا يغير مقدار المساحة التي تشغلها الرسائل على الشاشة.",
-  "MessageBox_view_mode": "وضع عرض MessageBox",
   "messages": "الرسائل",
   "Messages": "الرسائل",
   "Messages_sent": "تم إرسال الرسائل",
@@ -3194,7 +3185,6 @@
   "Node_version": "إصدار العقدة",
   "None": "لا يوجد",
   "Nonprofit": "غير ربحية",
-  "Normal": "عادي",
   "Not_authorized": "غير مخول",
   "Not_Available": "غير متاح",
   "Not_enough_data": "لا توجد بيانات كافية",
@@ -3524,6 +3514,7 @@
   "Reactions": "التفاعلات",
   "Read_by": "قراءة بواسطة",
   "Read_only": "القراءة فقط",
+  "This_room_is_read_only": "يُمكن قراءة دردشة هذه الغرفة فقط",
   "Read_only_changed_successfully": "تم تغيير وضع القراءة فقط بنجاح",
   "Read_only_channel": "Channel للقراءة فقط",
   "Read_only_group": "مجموعة القراءة فقط",
@@ -4293,11 +4284,8 @@
   "theme-color-status-offline": "لون الحالة غير متصل",
   "theme-color-status-online": "لون الحالة متصل",
   "theme-color-success-color": "لون النجاح",
-  "theme-color-tertiary-font-color": "لون الخط الثلاثي",
   "theme-color-transparent-dark": "شفاف داكن",
   "theme-color-transparent-darker": "شفاف أدكن",
-  "theme-color-transparent-light": "شفاف فاتح",
-  "theme-color-transparent-lighter": "شفاف أفتح",
   "theme-color-transparent-lightest": "الشفاف الأفتح",
   "theme-color-unread-notification-color": "لون الإشعارات غير المقروءة",
   "theme-custom-css": "CSS المخصصة",
@@ -4525,7 +4513,7 @@
   "User Search (Group Validation)": "البحث عن المستخدم (التحقق من المجموعة)",
   "User__username__is_now_a_leader_of__room_name_": "أصبح المستخدم __username__ الآن قائدًا لـ __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "المستخدم __username__ هو الآن مشرف على __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "المستخدم __username__ هو الآن مالك __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "المستخدم __username__ هو الآن مالك __room_name__",
   "User__username__muted_in_room__roomName__": "تم كتم صوت المستخدم __username__ في الغرفة __roomName__",
   "User__username__removed_from__room_name__leaders": "تمت إزالة المستخدم __username__ من قادة __room_name__",
   "User__username__removed_from__room_name__moderators": "تمت إزالة المستخدم __username__ من مشرفي __room_name__",
@@ -4597,8 +4585,6 @@
   "UserDataDownload_CompletedRequestExistedWithLink_Text": "سبق إنشاء ملف البيانات الخاص بك. انقر <a href=\"__download_link__\" target=\"_blank\">هنا</a> لتنزيله.",
   "UserDataDownload_EmailBody": "ملف البيانات الخاص بك جاهز الآن للتنزيل. انقر <a href=\"__download_link__\">هنا</a> لتنزيله.",
   "UserDataDownload_EmailSubject": "ملف البيانات الخاص بك جاهز للتنزيل",
-  "UserDataDownload_FeatureDisabled": "عذرًا، لم يتم تمكين عمليات تصدير بيانات المستخدم على هذا الخادم!",
-  "UserDataDownload_LoginNeeded": "تحتاج إلى تسجيل الدخول إلى حساب Rocket.Chat لتنزيل تصدير البيانات هذا. انقر فوق الرابط الموجود أدناه للقيام بذلك، ثم حاول مرة أخرى.",
   "UserDataDownload_Requested": "تنزيل الملف مطلوب",
   "UserDataDownload_Requested_Text": "سيتم إنشاء ملف البيانات الخاص بك. سيتم إرسال رابط لتنزيله إلى عنوان بريدك الإلكتروني عندما يكون جاهزًا. هناك <strong>__pending_operations__</strong> عمليات في قائمة الانتظار سيتم إجراؤها قبل إجرائك.",
   "UserDataDownload_RequestExisted_Text": "يتم إنشاء ملف البيانات الخاص بك. سيتم إرسال رابط لتنزيله إلى عنوان بريدك الإلكتروني عندما يكون جاهزًا. هناك <strong>__pending_operations__</strong>  عمليات في قائمة الانتظار سيتم إجراؤها قبل إجرائك.",
@@ -4664,7 +4650,6 @@
   "view-omnichannel-contact-center": "عرض مركز اتصال القناة متعددة الاتجاهات",
   "view-omnichannel-contact-center_description": "إذن لعرض مركز اتصال القناة متعددة الاتجاهات والتفاعل معه",
   "View_Logs": "عرض السجلات",
-  "View_mode": "عرض الوضع",
   "View_original": "عرض الأصل",
   "View_the_Logs_for": "عرض سجلات: \"__name__\"",
   "view-broadcast-member-list": "عرض قائمة الأعضاء في Room البث",
@@ -4888,7 +4873,6 @@
   "Your_invite_link_will_expire_on__date__": "ستنتهي صلاحية رابط الدعوة في __date__.",
   "Your_invite_link_will_expire_on__date__or_after__usesLeft__uses": "ستنتهي صلاحية رابط دعوتك في __date__ أو بعد استخدامات __usesLeft__.",
   "Your_invite_link_will_never_expire": "لن تنتهي صلاحية رابط الدعوة الخاص بك.",
-  "Your_mail_was_sent_to_s": "تم إرسال بريدك إلى %s",
   "your_message": "رسالتك",
   "your_message_optional": "رسالتك (اختياري)",
   "Your_new_email_is_email": "عنوان بريدك الإلكتروني الجديد هو <strong>[email]</strong>.",
@@ -4901,13 +4885,30 @@
   "Your_TOTP_has_been_reset": "تمت إعادة تعيين TOTP الثنائي.",
   "Your_workspace_is_ready": "مساحة العمل الخاصة بك جاهزة للاستخدام 🎉",
   "Zapier": "Zapier",
+  "registration.page.login.errors.wrongCredentials": "لم يتم العثور على المستخدم أو كلمة المرور غير صحيحة",
+  "registration.page.login.errors.loginBlockedForIp": "تم حظر تسجيل الدخول مؤقتًا لعنوان IP هذا",
+  "registration.page.login.errors.loginBlockedForUser": "تم حظر تسجيل الدخول مؤقتا لهذا المستخدم",
+  "registration.page.login.errors.licenseUserLimitReached": "تم بلوغ الحد الأقصى لعدد المستخدمين.",
+  "registration.page.login.errors.AppUserNotAllowedToLogin": "لا يُسمح لمستخدمي التطبيق بتسجيل الدخول مباشرة.",
+  "registration.page.registration.waitActivationWarning": "قبل أن تتمكن من تسجيل الدخول، يجب تفعيل حسابك يدويًا بواسطة المسؤول.",
+  "registration.page.login.forgot": "نسيت كلمة السر",
+  "registration.page.resetPassword.sent": "إن كان البريد الإلكتروني مسجلاً، فسنرسل تعليمات إعادة تعيين كلمة المرور الخاصة بك. إذا لم تتلقَّ بريداً إلكترونيًا في وقت قريب، فيرجى العودة والمحاولة مرة أخرى.",
+  "registration.component.login": "تسجيل الدخول",
+  "registration.component.login.userNotFound": "لم يتم العثور على المستخدم",
+  "registration.component.resetPassword": "إعادة تعيين كلمة السر",
+  "registration.component.form.emailOrUsername": "البريد الإلكتروني أو اسم المستخدم",
+  "registration.component.form.email": "البريد الإلكتروني",
+  "registration.component.form.password": "كلمة المرور",
+  "registration.component.form.divider": "أو",
+  "registration.component.form.submit": "إرسال",
+  "registration.component.form.requiredField": "هذا الحقل مطلوب",
+  "onboarding.component.form.requiredField": "هذا الحقل مطلوب",
   "onboarding.component.form.steps": "الخطوة {{currentStep}} من {{stepCount}}",
   "onboarding.component.form.action.back": "عودة",
   "onboarding.component.form.action.next": "التالي",
   "onboarding.component.form.action.skip": "تخطي هذه الخطوة",
   "onboarding.component.form.action.register": "تسجيل",
   "onboarding.component.form.action.confirm": "تأكيد",
-  "onboarding.component.form.requiredField": "هذا الحقل مطلوب",
   "onboarding.component.form.termsAndConditions": "أوافق على <1>البنود والشروط</1> و<3>سياسة الخصوصية</3>",
   "onboarding.component.emailCodeFallback": "ألم تتلق رسالة بريد إلكتروني؟ <1>إعادة الإرسال</1> or <3>تغيير البريد الإلكتروني</3>",
   "onboarding.page.form.title": "دعنا <1>نطلق</1> مساحة العمل الخاصة بك",

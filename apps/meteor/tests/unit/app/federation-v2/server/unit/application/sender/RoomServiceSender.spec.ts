@@ -72,6 +72,10 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		getMessageById: sinon.stub(),
 		setExternalFederationEventOnMessage: sinon.stub(),
 	};
+	const notificationsAdapter = {
+		subscribeToUserTypingEventsOnFederatedRoomId: sinon.stub(),
+		broadcastUserTypingOnRoom: sinon.stub(),
+	};
 	const bridge = {
 		getUserProfileInformation: sinon.stub().resolves({}),
 		extractHomeserverOrigin: sinon.stub(),
@@ -93,6 +97,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			fileAdapter as any,
 			messageAdapter as any,
 			settingsAdapter as any,
+			notificationsAdapter as any,
 			bridge as any,
 		);
 	});

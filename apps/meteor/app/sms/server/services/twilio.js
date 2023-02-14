@@ -2,11 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import twilio from 'twilio';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
+import { api } from '@rocket.chat/core-services';
 
 import { settings } from '../../../settings/server';
 import { SMS } from '../SMS';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
-import { api } from '../../../../server/sdk/api';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const MAX_FILE_SIZE = 5242880;

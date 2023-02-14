@@ -1,4 +1,5 @@
-import { useRef, useEffect, RefObject } from 'react';
+import type { RefObject } from 'react';
+import { useRef, useEffect } from 'react';
 
 // @deprecated
 export const useBlockRendered = <T extends HTMLElement>(): {

@@ -9,7 +9,14 @@ import _ from 'underscore';
 import s from 'underscore.string';
 import moment from 'moment-timezone';
 import UAParser from 'ua-parser-js';
-import { Users as UsersRaw, LivechatVisitors, LivechatCustomField, Settings } from '@rocket.chat/models';
+import {
+	Users as UsersRaw,
+	LivechatVisitors,
+	LivechatCustomField,
+	Settings,
+	LivechatDepartment as LivechatDepartmentRaw,
+} from '@rocket.chat/models';
+import { VideoConf, api } from '@rocket.chat/core-services';
 
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -39,8 +46,6 @@ import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../server/lib/roles/removeUserFromRoles';
-import { VideoConf } from '../../../../server/sdk';
-import { api } from '../../../../server/sdk/api';
 
 const logger = new Logger('Livechat');
 
@@ -751,7 +756,7 @@ export const Livechat = {
 		return RoutingManager.transferRoom(room, guest, transferData);
 	},
 
-	returnRoomAsInquiry(rid, departmentId) {
+	returnRoomAsInquiry(rid, departmentId, overrideTransferData = {}) {
 		Livechat.logger.debug(`Transfering room ${rid} to ${departmentId ? 'department' : ''} queue`);
 		const room = LivechatRooms.findOneById(rid);
 		if (!room) {
@@ -791,7 +796,7 @@ export const Livechat = {
 
 		const transferredBy = normalizeTransferredByData(user, room);
 		Livechat.logger.debug(`Transfering room ${room._id} by user ${transferredBy._id}`);
-		const transferData = { roomId: rid, scope: 'queue', departmentId, transferredBy };
+		const transferData = { roomId: rid, scope: 'queue', departmentId, transferredBy, ...overrideTransferData };
 		try {
 			this.saveTransferHistory(room, transferData);
 			RoutingManager.unassignAgent(inquiry, departmentId);
@@ -1044,74 +1049,6 @@ export const Livechat = {
 		return updateDepartmentAgents(_id, departmentAgents, department.enabled);
 	},
 
-	saveDepartment(_id, departmentData, departmentAgents) {
-		check(_id, Match.Maybe(String));
-
-		const defaultValidations = {
-			enabled: Boolean,
-			name: String,
-			description: Match.Optional(String),
-			showOnRegistration: Boolean,
-			email: String,
-			showOnOfflineForm: Boolean,
-			requestTagBeforeClosingChat: Match.Optional(Boolean),
-			chatClosingTags: Match.Optional([String]),
-			fallbackForwardDepartment: Match.Optional(String),
-		};
-
-		// The Livechat Form department support addition/custom fields, so those fields need to be added before validating
-		Object.keys(departmentData).forEach((field) => {
-			if (!defaultValidations.hasOwnProperty(field)) {
-				defaultValidations[field] = Match.OneOf(String, Match.Integer, Boolean);
-			}
-		});
-
-		check(departmentData, defaultValidations);
-		check(
-			departmentAgents,
-			Match.Maybe({
-				upsert: Match.Maybe(Array),
-				remove: Match.Maybe(Array),
-			}),
-		);
-
-		const { requestTagBeforeClosingChat, chatClosingTags, fallbackForwardDepartment } = departmentData;
-		if (requestTagBeforeClosingChat && (!chatClosingTags || chatClosingTags.length === 0)) {
-			throw new Meteor.Error(
-				'error-validating-department-chat-closing-tags',
-				'At least one closing tag is required when the department requires tag(s) on closing conversations.',
-				{ method: 'livechat:saveDepartment' },
-			);
-		}
-
-		if (_id) {
-			const department = LivechatDepartment.findOneById(_id);
-			if (!department) {
-				throw new Meteor.Error('error-department-not-found', 'Department not found', {
-					method: 'livechat:saveDepartment',
-				});
-			}
-		}
-
-		if (fallbackForwardDepartment === _id) {
-			throw new Meteor.Error(
-				'error-fallback-department-circular',
-				'Cannot save department. Circular reference between fallback department and department',
-			);
-		}
-
-		if (fallbackForwardDepartment && !LivechatDepartment.findOneById(fallbackForwardDepartment)) {
-			throw new Meteor.Error('error-fallback-department-not-found', 'Fallback department not found', { method: 'livechat:saveDepartment' });
-		}
-
-		const departmentDB = LivechatDepartment.createOrUpdateDepartment(_id, departmentData);
-		if (departmentDB && departmentAgents) {
-			updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
-		}
-
-		return departmentDB;
-	},
-
 	saveAgentInfo(_id, agentData, agentDepartments) {
 		check(_id, Match.Maybe(String));
 		check(agentData, Object);
@@ -1133,7 +1070,15 @@ export const Livechat = {
 	removeDepartment(_id) {
 		check(_id, String);
 
-		const department = LivechatDepartment.findOneById(_id, { fields: { _id: 1 } });
+		const departmentRemovalEnabled = settings.get('Omnichannel_enable_department_removal');
+
+		if (!departmentRemovalEnabled) {
+			throw new Meteor.Error('department-removal-disabled', 'Department removal is disabled', {
+				method: 'livechat:removeDepartment',
+			});
+		}
+
+		const department = LivechatDepartment.findOneById(_id, { projection: { _id: 1 } });
 
 		if (!department) {
 			throw new Meteor.Error('department-not-found', 'Department not found', {
@@ -1152,6 +1097,34 @@ export const Livechat = {
 			});
 		}
 		return ret;
+	},
+
+	async unarchiveDepartment(_id) {
+		check(_id, String);
+
+		const department = await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1 } });
+
+		if (!department) {
+			throw new Meteor.Error('department-not-found', 'Department not found', {
+				method: 'livechat:removeDepartment',
+			});
+		}
+
+		return LivechatDepartmentRaw.unarchiveDepartment(_id);
+	},
+
+	async archiveDepartment(_id) {
+		check(_id, String);
+
+		const department = await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1 } });
+
+		if (!department) {
+			throw new Meteor.Error('department-not-found', 'Department not found', {
+				method: 'livechat:removeDepartment',
+			});
+		}
+
+		return LivechatDepartmentRaw.archiveDepartment(_id);
 	},
 
 	showConnecting() {

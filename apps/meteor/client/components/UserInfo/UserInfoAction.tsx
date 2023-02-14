@@ -1,5 +1,6 @@
 import { Button, Icon } from '@rocket.chat/fuselage';
-import React, { ReactElement, ComponentProps } from 'react';
+import type { ReactElement, ComponentProps } from 'react';
+import React from 'react';
 
 type UserInfoActionProps = {
 	icon: ComponentProps<typeof Icon>['name'];

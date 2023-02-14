@@ -25,6 +25,7 @@ addAction('contact-chat-history', {
 	id: 'contact-chat-history',
 	title: 'Contact_Chat_History',
 	icon: 'clock',
-	template: 'contactChatHistory',
+	// template: 'contactChatHistory',
+	template: lazy(() => import('../../../client/views/omnichannel/contactHistory/ContactHistory')),
 	order: 11,
 });

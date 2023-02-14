@@ -347,13 +347,6 @@ export class Subscriptions extends Base {
 		return this.find(query, options);
 	}
 
-	updateGroupE2EKey(_id, key) {
-		const query = { _id };
-		const update = { $set: { E2EKey: key } };
-		this.update(query, update);
-		return this.findOne({ _id });
-	}
-
 	/**
 	 * @param {IRole['_id'][]} roles
 	 * @param {string} scope the value for the role scope (room id)
@@ -662,26 +655,6 @@ export class Subscriptions extends Base {
 		const update = {
 			$set: {
 				open: true,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	setAsReadByRoomIdAndUserId(roomId, userId) {
-		const query = {
-			'rid': roomId,
-			'u._id': userId,
-		};
-
-		const update = {
-			$set: {
-				open: true,
-				alert: false,
-				unread: 0,
-				userMentions: 0,
-				groupMentions: 0,
-				ls: new Date(),
 			},
 		};
 
@@ -1338,23 +1311,6 @@ export class Subscriptions extends Base {
 			},
 			update,
 		);
-	}
-
-	removeAllUnreadThreadsByRoomIdAndUserId(rid, userId) {
-		const query = {
-			rid,
-			'u._id': userId,
-		};
-
-		const update = {
-			$unset: {
-				tunread: 1,
-				tunreadUser: 1,
-				tunreadGroup: 1,
-			},
-		};
-
-		return this.update(query, update);
 	}
 
 	removeUnreadThreadsByRoomId(rid, tunread) {

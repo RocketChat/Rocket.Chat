@@ -24,7 +24,6 @@ export type UsersSetPreferencesParamsPOST = {
 		highlights?: string[];
 		alsoSendThreadToChannel?: 'never' | 'always' | 'default';
 		desktopNotificationRequireInteraction?: boolean;
-		messageViewMode?: number;
 		hideUsernames?: boolean;
 		hideRoles?: boolean;
 		displayAvatars?: boolean;
@@ -38,7 +37,9 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarDisplayAvatar?: boolean;
 		sidebarGroupByType?: boolean;
 		muteFocusedConversations?: boolean;
+		dontAskAgainList?: Array<{ action: string; label: string }>;
 		receiveLoginDetectionEmail?: boolean;
+		idleTimeLimit?: number;
 	};
 };
 
@@ -124,10 +125,6 @@ const UsersSetPreferencesParamsPostSchema = {
 					type: 'boolean',
 					nullable: true,
 				},
-				messageViewMode: {
-					type: 'number',
-					nullable: true,
-				},
 				hideUsernames: {
 					type: 'boolean',
 					nullable: true,
@@ -178,6 +175,25 @@ const UsersSetPreferencesParamsPostSchema = {
 				},
 				muteFocusedConversations: {
 					type: 'boolean',
+					nullable: true,
+				},
+				dontAskAgainList: {
+					type: 'array',
+					items: {
+						type: 'object',
+						properties: {
+							action: { type: 'string' },
+							label: { type: 'string' },
+						},
+					},
+					nullable: true,
+				},
+				receiveLoginDetectionEmail: {
+					type: 'boolean',
+					nullable: true,
+				},
+				idleTimeLimit: {
+					type: 'number',
 					nullable: true,
 				},
 			},

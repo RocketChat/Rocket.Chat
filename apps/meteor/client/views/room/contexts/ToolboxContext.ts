@@ -1,7 +1,8 @@
-import { EventHandlerOf } from '@rocket.chat/emitter';
+import type { EventHandlerOf } from '@rocket.chat/emitter';
 import { createContext, useContext } from 'react';
 
-import { actions, listen, ToolboxActionConfig, ToolboxAction, Events } from '../lib/Toolbox';
+import type { ToolboxActionConfig, ToolboxAction, Events } from '../lib/Toolbox';
+import { actions, listen } from '../lib/Toolbox';
 import '../lib/Toolbox/defaultActions';
 
 export type ToolboxEventHandler = (handler: EventHandlerOf<Events, 'change'>) => () => void;

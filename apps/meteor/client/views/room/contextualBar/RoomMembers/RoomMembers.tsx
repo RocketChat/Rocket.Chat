@@ -1,8 +1,10 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
-import { Box, Icon, TextInput, Margins, Select, Throbber, ButtonGroup, Button, Callout, SelectOption } from '@rocket.chat/fuselage';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Margins, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, ReactElement, FormEventHandler, ComponentProps, MouseEvent } from 'react';
+import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent } from 'react';
+import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
@@ -46,7 +48,7 @@ const RoomMembers = ({
 	total,
 	error,
 	loadMoreItems,
-	renderRow: Row = RoomMembersRow,
+	renderRow: RowComponent = RoomMembersRow,
 	rid,
 	isTeam,
 	isDirect,
@@ -137,7 +139,7 @@ const RoomMembers = ({
 							overscan={50}
 							data={members}
 							components={{ Scroller: ScrollableContentWrapper }}
-							itemContent={(index, data): ReactElement => <Row data={itemData} user={data} index={index} reload={reload} />}
+							itemContent={(index, data): ReactElement => <RowComponent data={itemData} user={data} index={index} reload={reload} />}
 						/>
 					)}
 				</Box>

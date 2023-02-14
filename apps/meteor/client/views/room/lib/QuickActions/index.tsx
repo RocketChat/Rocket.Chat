@@ -1,9 +1,10 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Box, Option } from '@rocket.chat/fuselage';
-import { ComponentProps, ReactNode } from 'react';
+import type { Box, Option } from '@rocket.chat/fuselage';
+import type { ComponentProps, ReactNode } from 'react';
 
-import { ToolboxActionConfig } from '../Toolbox';
-import { generator, Events as GeneratorEvents } from '../Toolbox/generator';
+import type { ToolboxActionConfig } from '../Toolbox';
+import type { Events as GeneratorEvents } from '../Toolbox/generator';
+import { generator } from '../Toolbox/generator';
 
 type QuickActionsHook = ({ room }: { room: IRoom }) => QuickActionsActionConfig | null;
 

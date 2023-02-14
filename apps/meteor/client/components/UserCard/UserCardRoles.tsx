@@ -1,5 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { ReactNode, ReactElement } from 'react';
+import type { ReactNode, ReactElement } from 'react';
+import React from 'react';
 
 import UserCardInfo from './UserCardInfo';
 

@@ -1,15 +1,25 @@
-import { Markdown } from '../../../markdown/client';
+import type { Icon } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { ComponentProps } from 'react';
+
 import { settings } from '../../../settings/client';
 
-type FormattingButton = {
-	label: string;
-	icon?: string;
-	pattern?: string;
-	text?: () => string | undefined;
-	link?: string;
-	command?: string;
-	condition?: () => boolean;
-};
+export type FormattingButton =
+	| {
+			label: TranslationKey;
+			icon: ComponentProps<typeof Icon>['name'];
+			pattern: string;
+			// text?: () => string | undefined;
+			command?: string;
+			link?: string;
+			condition?: () => boolean;
+	  }
+	| {
+			label: TranslationKey;
+			text: () => string | undefined;
+			link: string;
+			condition?: () => boolean;
+	  };
 
 export const formattingButtons: ReadonlyArray<FormattingButton> = [
 	{
@@ -17,48 +27,31 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 		icon: 'bold',
 		pattern: '*{{text}}*',
 		command: 'b',
-		condition: () => Markdown && settings.get('Markdown_Parser') === 'original',
-	},
-	{
-		label: 'bold',
-		icon: 'bold',
-		pattern: '**{{text}}**',
-		command: 'b',
-		condition: () => Markdown && settings.get('Markdown_Parser') === 'marked',
 	},
 	{
 		label: 'italic',
 		icon: 'italic',
 		pattern: '_{{text}}_',
 		command: 'i',
-		condition: () => Markdown && settings.get('Markdown_Parser') !== 'disabled',
 	},
 	{
 		label: 'strike',
 		icon: 'strike',
 		pattern: '~{{text}}~',
-		condition: () => Markdown && settings.get('Markdown_Parser') === 'original',
-	},
-	{
-		label: 'strike',
-		icon: 'strike',
-		pattern: '~~{{text}}~~',
-		condition: () => Markdown && settings.get('Markdown_Parser') === 'marked',
 	},
 	{
 		label: 'inline_code',
 		icon: 'code',
 		pattern: '`{{text}}`',
-		condition: () => Markdown && settings.get('Markdown_Parser') !== 'disabled',
 	},
 	{
 		label: 'multi_line',
 		icon: 'multiline',
 		pattern: '```\n{{text}}\n``` ',
-		condition: () => Markdown && settings.get('Markdown_Parser') !== 'disabled',
 	},
 	{
-		label: 'KaTeX',
+		label: 'KaTeX' as TranslationKey,
+		icon: 'katex',
 		text: () => {
 			if (!settings.get('Katex_Enabled')) {
 				return;
@@ -75,6 +68,9 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 	},
 ] as const;
 
+/**
+ * @deprecated
+ */
 export function applyFormatting(pattern: string, input: HTMLTextAreaElement) {
 	const { selectionEnd = input.value.length, selectionStart = 0 } = input;
 	const initText = input.value.slice(0, selectionStart);

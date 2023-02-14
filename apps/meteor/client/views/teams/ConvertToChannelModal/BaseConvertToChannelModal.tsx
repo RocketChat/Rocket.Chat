@@ -1,7 +1,7 @@
-import type { IRoom } from '@rocket.chat/core-typings';
-import { Serialized } from '@rocket.chat/core-typings';
+import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { FC, useState, useCallback } from 'react';
+import type { FC } from 'react';
+import React, { useState, useCallback } from 'react';
 
 import FirstStep from './ModalSteps/FirstStep';
 import SecondStep from './ModalSteps/SecondStep';
@@ -16,7 +16,7 @@ type BaseConvertToChannelModalProps = {
 	onCancel: () => void;
 	onConfirm: () => Serialized<IRoom>[];
 	currentStep?: string;
-	rooms?: (Serialized<IRoom> & { isLastOwner?: string })[];
+	rooms?: (Serialized<IRoom> & { isLastOwner?: boolean })[];
 };
 
 const BaseConvertToChannelModal: FC<BaseConvertToChannelModalProps> = ({

@@ -133,8 +133,10 @@ export class MatrixRoomReceiverConverter {
 			inviterUsernameOnly: formatExternalUserIdToInternalUsernameFormat(externalEvent.sender),
 			eventOrigin: getEventOrigin(externalEvent.sender, homeServerDomain),
 			leave: externalEvent.content?.membership === RoomMembershipChangedEventType.LEAVE,
-			userAvatarUrl:
-				externalEvent.content?.membership === RoomMembershipChangedEventType.JOIN ? externalEvent.content?.avatar_url : undefined,
+			userProfile: {
+				avatarUrl: externalEvent.content?.avatar_url,
+				displayName: externalEvent.content?.displayname,
+			},
 		});
 	}
 

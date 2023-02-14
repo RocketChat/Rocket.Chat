@@ -16,6 +16,7 @@ import { getURL } from '../../utils/lib/getURL';
 import { getExtension } from '../../utils/lib/mimeTypes';
 import { hasPermission } from '../../authorization/server';
 import { RocketChatFile } from '../../file';
+import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 
 const RocketChatAssetsInstance = new RocketChatFile.GridFS({
 	name: 'assets',
@@ -416,6 +417,8 @@ WebAppHashing.calculateClientHash = function (manifest, includeFilter, runtimeCo
 
 Meteor.methods({
 	refreshClients() {
+		methodDeprecationLogger.warn('refreshClients will be deprecated in future versions of Rocket.Chat');
+
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'refreshClients',

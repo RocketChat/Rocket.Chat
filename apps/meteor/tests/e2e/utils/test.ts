@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { v4 as uuid } from 'uuid';
-import type { APIResponse } from '@playwright/test';
+import type { Locator, APIResponse } from '@playwright/test';
 import { test as baseTest } from '@playwright/test';
 
 import { BASE_API_URL, BASE_URL, API_PREFIX, ADMIN_CREDENTIALS } from '../config/constants';
@@ -78,3 +78,44 @@ export const test = baseTest.extend<BaseTest>({
 });
 
 export const { expect } = test;
+
+expect.extend({
+	async toBeInvalid(received: Locator) {
+		try {
+			await expect(received).toHaveAttribute('aria-invalid', 'true');
+
+			return {
+				message: () => `expected ${received} to be invalid`,
+				pass: true,
+			};
+		} catch (error) {
+			return {
+				message: () => `expected ${received} to be invalid`,
+				pass: false,
+			};
+		}
+	},
+	async toBeBusy(received: Locator) {
+		try {
+			await expect(received).toHaveAttribute('aria-busy', 'true');
+
+			return {
+				message: () => `expected ${received} to be busy`,
+				pass: true,
+			};
+		} catch (error) {
+			return {
+				message: () => `expected ${received} to be busy`,
+				pass: false,
+			};
+		}
+	},
+	async hasAttribute(received: Locator, attribute: string) {
+		const pass = await received.evaluate((node, attribute) => node.hasAttribute(attribute), attribute);
+
+		return {
+			message: () => `expected ${received} to have attribute \`${attribute}\``,
+			pass,
+		};
+	},
+});

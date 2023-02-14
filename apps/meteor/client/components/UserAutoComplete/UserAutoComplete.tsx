@@ -1,6 +1,7 @@
 import { AutoComplete, Option, Box, Chip, Options } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import React, { ComponentProps, memo, ReactElement, useMemo, useState } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
 import { useEndpointData } from '../../hooks/useEndpointData';
 import UserAvatar from '../avatar/UserAvatar';
@@ -27,7 +28,7 @@ const UserAutoComplete = ({ value, ...props }: UserAutoCompleteProps): ReactElem
 	const { value: data } = useEndpointData(
 		'/v1/users.autocomplete',
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		useMemo(() => query(debouncedFilter, conditions), [filter]),
+		{ params: useMemo(() => query(debouncedFilter, conditions), [filter]) },
 	);
 
 	const options = useMemo(() => data?.items.map((user) => ({ value: user.username, label: user.name || user.username })) || [], [data]);

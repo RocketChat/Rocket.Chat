@@ -11,10 +11,12 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import React, { useCallback, useMemo, useState, ReactElement, ContextType } from 'react';
+import type { ReactElement, ContextType } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { validateEmail } from '../../../../lib/emailValidator';
+import { queryClient } from '../../../lib/queryClient';
 import { SetupWizardContext } from '../contexts/SetupWizardContext';
 import { useParameters } from '../hooks/useParameters';
 import { useStepRouting } from '../hooks/useStepRouting';
@@ -171,6 +173,8 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 		try {
 			await saveOrganizationData();
 			const { intentData } = await createRegistrationIntent({ resend, email });
+			queryClient.invalidateQueries(['licenses']);
+			queryClient.invalidateQueries(['getRegistrationStatus']);
 
 			setSetupWizardData((prevState) => ({
 				...prevState,

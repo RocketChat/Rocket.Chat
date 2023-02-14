@@ -1,5 +1,6 @@
-import { IRoom } from '@rocket.chat/core-typings';
-import React, { ReactElement, useCallback, useEffect, useMemo } from 'react';
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { ReactElement } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
 import ORTInstance from '../../../../../app/otr/client/OTR';
 import { OtrRoomState } from '../../../../../app/otr/lib/OtrRoomState';

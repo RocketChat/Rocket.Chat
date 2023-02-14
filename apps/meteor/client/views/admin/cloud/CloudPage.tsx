@@ -10,7 +10,8 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { useEffect, ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import React, { useEffect } from 'react';
 
 import Page from '../../../components/Page';
 import ConnectToCloudSection from './ConnectToCloudSection';

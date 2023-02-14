@@ -1,8 +1,10 @@
 import { Select } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
-import { getPeriod, Period } from './periods';
+import type { Period } from './periods';
+import { getPeriod } from './periods';
 
 type PeriodSelectorProps<TPeriod extends Period['key']> = {
 	periods: TPeriod[];

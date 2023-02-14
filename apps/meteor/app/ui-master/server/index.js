@@ -153,6 +153,9 @@ settings.watchByRegex(/theme-color-rc/i, renderDynamicCssList);
 injectIntoBody(
 	'react-root',
 	`
+<noscript style="color: white; text-align:center">
+	You need to enable JavaScript to run this app.
+</noscript>
 <div id="react-root">
 	<div class="page-loading">
 		<div class="loading-animation">

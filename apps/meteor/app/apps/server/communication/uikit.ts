@@ -6,11 +6,11 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
+import { UiKitCoreApp } from '@rocket.chat/core-services';
 
 import { settings } from '../../../settings/server';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
-import { UiKitCoreApp } from '../../../../server/sdk';
 import { authenticationMiddleware } from '../../../api/server/middlewares/authentication';
 
 const apiServer = express();
@@ -170,7 +170,8 @@ router.post('/:appId', async (req, res, next) => {
 
 		const result = await (UiKitCoreApp as any)[type](payload); // TO-DO: fix type
 
-		res.send(result);
+		// Using ?? to always send something in the response, even if the app had no result.
+		res.send(result ?? {});
 	} catch (e) {
 		if (e instanceof Error) res.status(500).send({ error: e.message });
 		else res.status(500).send({ error: e });

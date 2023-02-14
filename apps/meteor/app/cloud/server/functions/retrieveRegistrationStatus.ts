@@ -11,7 +11,7 @@ export function retrieveRegistrationStatus(): {
 } {
 	const info = {
 		connectToCloud: settings.get<boolean>('Register_Server'),
-		workspaceRegistered: !!settings.get('Cloud_Workspace_Client_Id'),
+		workspaceRegistered: !!settings.get('Cloud_Workspace_Client_Id') && !!settings.get('Cloud_Workspace_Client_Secret'),
 		workspaceId: settings.get<string>('Cloud_Workspace_Id'),
 		uniqueId: settings.get<string>('uniqueID'),
 		token: '',

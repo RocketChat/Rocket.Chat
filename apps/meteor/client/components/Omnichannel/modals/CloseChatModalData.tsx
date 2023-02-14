@@ -1,5 +1,6 @@
-import { ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
-import React, { ReactElement } from 'react';
+import type { ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
@@ -15,7 +16,7 @@ const CloseChatModalData = ({
 	onCancel: () => void;
 	onConfirm: (comment?: string, tags?: string[]) => Promise<void>;
 }): ReactElement => {
-	const { value: data, phase: state } = useEndpointData(`/v1/livechat/department/${departmentId}`);
+	const { value: data, phase: state } = useEndpointData('/v1/livechat/department/:_id', { keys: { _id: departmentId } });
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;

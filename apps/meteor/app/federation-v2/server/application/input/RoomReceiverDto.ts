@@ -31,7 +31,10 @@ export interface IFederationChangeMembershipInputDto extends IFederationReceiver
 	leave?: boolean;
 	roomType?: RoomType;
 	externalRoomName?: string;
-	userAvatarUrl?: string;
+	userProfile?: {
+		avatarUrl?: string;
+		displayName?: string;
+	};
 }
 
 export interface IFederationSendInternalMessageInputDto extends IFederationReceiverBaseRoomInputDto {
@@ -133,8 +136,8 @@ export class FederationRoomChangeMembershipDto extends FederationBaseRoomInputDt
 		leave,
 		roomType,
 		externalRoomName,
-		userAvatarUrl,
 		externalEventId,
+		userProfile,
 	}: IFederationChangeMembershipInputDto) {
 		super({ externalRoomId, normalizedRoomId, externalEventId });
 		this.externalInviterId = externalInviterId;
@@ -147,7 +150,7 @@ export class FederationRoomChangeMembershipDto extends FederationBaseRoomInputDt
 		this.leave = leave;
 		this.roomType = roomType;
 		this.externalRoomName = externalRoomName;
-		this.userAvatarUrl = userAvatarUrl;
+		this.userProfile = userProfile;
 	}
 
 	externalInviterId: string;
@@ -170,7 +173,7 @@ export class FederationRoomChangeMembershipDto extends FederationBaseRoomInputDt
 
 	externalRoomName?: string;
 
-	userAvatarUrl?: string;
+	userProfile?: { avatarUrl?: string; displayName?: string };
 }
 
 class ExternalMessageBaseDto extends FederationBaseRoomInputDto {

@@ -1,5 +1,6 @@
 import { RegisteredServerPage, StandaloneServerPage } from '@rocket.chat/onboarding-ui';
-import React, { ReactElement, ComponentProps, useState } from 'react';
+import type { ReactElement, ComponentProps } from 'react';
+import React, { useState } from 'react';
 
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 

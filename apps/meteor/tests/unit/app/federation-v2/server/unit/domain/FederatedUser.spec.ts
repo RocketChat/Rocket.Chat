@@ -186,4 +186,20 @@ describe('Federation - Domain - FederatedUser', () => {
 			expect(federatedUser.shouldUpdateFederationAvatar('url2')).to.be.equal(true);
 		});
 	});
+
+	describe('#shouldUpdateDisplayName()', () => {
+		it('should return false if the current name is equal to the desired one', () => {
+			const federatedUser = FederatedUser.createWithInternalReference('externalId', true, {
+				name: 'name',
+			} as any);
+			expect(federatedUser.shouldUpdateDisplayName('name')).to.be.equal(false);
+		});
+
+		it('should return true if the current name is different to the desired one', () => {
+			const federatedUser = FederatedUser.createWithInternalReference('externalId', true, {
+				name: 'name',
+			} as any);
+			expect(federatedUser.shouldUpdateFederationAvatar('name')).to.be.equal(true);
+		});
+	});
 });

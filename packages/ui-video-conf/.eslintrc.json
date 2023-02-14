@@ -5,7 +5,8 @@
 		"@rocket.chat/eslint-config/original",
 		"prettier",
 		"plugin:anti-trojan-source/recommended",
-		"plugin:react/jsx-runtime"
+		"plugin:react/jsx-runtime",
+		"plugin:storybook/recommended"
 	],
 	"parser": "@typescript-eslint/parser",
 	"plugins": ["@typescript-eslint", "react", "react-hooks", "prettier"],
@@ -63,5 +64,13 @@
 			"version": "detect"
 		}
 	},
-	"ignorePatterns": ["**/dist"]
+	"ignorePatterns": ["**/dist"],
+	"overrides": [
+    {
+      "files": ["*.stories.tsx"],
+      "rules": {
+				"react/no-multi-comp": "off"
+      }
+    }
+  ]
 }

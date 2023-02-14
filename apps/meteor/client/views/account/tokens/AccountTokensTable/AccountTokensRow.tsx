@@ -1,7 +1,8 @@
-import { IPersonalAccessToken, Serialized } from '@rocket.chat/core-typings';
+import type { IPersonalAccessToken, Serialized } from '@rocket.chat/core-typings';
 import { ButtonGroup, IconButton, TableRow, TableCell } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, FC } from 'react';
+import type { FC } from 'react';
+import React, { useCallback } from 'react';
 
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 

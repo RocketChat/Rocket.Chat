@@ -82,10 +82,6 @@ settingsRegistry.addGroup('Accounts', function () {
 		type: 'int',
 		public: true,
 	});
-	this.add('Accounts_ShowFormLogin', true, {
-		type: 'boolean',
-		public: true,
-	});
 	this.add('Accounts_EmailOrUsernamePlaceholder', '', {
 		type: 'string',
 		public: true,
@@ -431,15 +427,15 @@ settingsRegistry.addGroup('Accounts', function () {
 			values: [
 				{
 					key: 'default',
-					i18nLabel: 'Default',
+					i18nLabel: 'Selected_first_reply_unselected_following_replies',
 				},
 				{
 					key: 'always',
-					i18nLabel: 'Always',
+					i18nLabel: 'Selected_by_default',
 				},
 				{
 					key: 'never',
-					i18nLabel: 'Never',
+					i18nLabel: 'Unselected_by_default',
 				},
 			],
 			public: true,
@@ -470,26 +466,6 @@ settingsRegistry.addGroup('Accounts', function () {
 			],
 			public: true,
 			i18nLabel: 'Enter_Behaviour',
-		});
-
-		this.add('Accounts_Default_User_Preferences_messageViewMode', 0, {
-			type: 'select',
-			values: [
-				{
-					key: 0,
-					i18nLabel: 'Normal',
-				},
-				{
-					key: 1,
-					i18nLabel: 'Cozy',
-				},
-				{
-					key: 2,
-					i18nLabel: 'Compact',
-				},
-			],
-			public: true,
-			i18nLabel: 'MessageBox_view_mode',
 		});
 		this.add('Accounts_Default_User_Preferences_emailNotificationMode', 'mentions', {
 			type: 'select',
@@ -547,13 +523,6 @@ settingsRegistry.addGroup('Accounts', function () {
 			type: 'int',
 			public: true,
 			i18nLabel: 'Notifications_Sound_Volume',
-		});
-
-		this.add('Accounts_Default_User_Preferences_useLegacyMessageTemplate', false, {
-			type: 'boolean',
-			public: true,
-			i18nLabel: 'Use_Legacy_Message_Template',
-			alert: 'Use_Legacy_Message_Template_alert',
 		});
 	});
 
@@ -884,6 +853,11 @@ settingsRegistry.addGroup('General', function () {
 		type: 'boolean',
 	});
 
+	this.add('Extra_CSP_Domains', '', {
+		type: 'string',
+		multiline: true,
+	});
+
 	this.add('Iframe_Restrict_Access', true, {
 		type: 'boolean',
 		secret: true,
@@ -927,6 +901,20 @@ settingsRegistry.addGroup('General', function () {
 		public: true,
 	});
 	this.add('Unread_Count_DM', 'all_messages', {
+		type: 'select',
+		values: [
+			{
+				key: 'all_messages',
+				i18nLabel: 'All_messages',
+			},
+			{
+				key: 'mentions_only',
+				i18nLabel: 'Mentions_only',
+			},
+		],
+		public: true,
+	});
+	this.add('Unread_Count_Omni', 'all_messages', {
 		type: 'select',
 		values: [
 			{
@@ -1140,12 +1128,6 @@ settingsRegistry.addGroup('General', function () {
 
 settingsRegistry.addGroup('Message', function () {
 	this.section('Message_Attachments', function () {
-		this.add('Message_Attachments_GroupAttach', false, {
-			type: 'boolean',
-			public: true,
-			i18nDescription: 'Message_Attachments_GroupAttachDescription',
-		});
-
 		this.add('Message_Attachments_Thumbnails_Enabled', true, {
 			type: 'boolean',
 			public: true,
@@ -1220,10 +1202,6 @@ settingsRegistry.addGroup('Message', function () {
 	this.add('Message_AlwaysSearchRegExp', false, {
 		type: 'boolean',
 	});
-	this.add('Message_ShowEditedStatus', true, {
-		type: 'boolean',
-		public: true,
-	});
 	this.add('Message_ShowDeletedStatus', false, {
 		type: 'boolean',
 		public: true,
@@ -1256,10 +1234,6 @@ settingsRegistry.addGroup('Message', function () {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Message_ShowFormattingTips', true, {
-		type: 'boolean',
-		public: true,
-	});
 	this.add('Message_GroupingPeriod', 300, {
 		type: 'int',
 		public: true,
@@ -1285,12 +1259,6 @@ settingsRegistry.addGroup('Message', function () {
 		type: 'action',
 		actionText: 'clear',
 		i18nLabel: 'clear_cache_now',
-	});
-	// TODO: deprecate this setting in favor of App
-	this.add('API_EmbedDisabledFor', '', {
-		type: 'string',
-		public: true,
-		i18nDescription: 'API_EmbedDisabledFor_Description',
 	});
 	// TODO: deprecate this setting in favor of App
 	this.add('API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16', {
@@ -1547,6 +1515,46 @@ settingsRegistry.addGroup('Push', function () {
 });
 
 settingsRegistry.addGroup('Layout', function () {
+	this.section('Login', function () {
+		this.add('Layout_Login_Hide_Logo', false, {
+			type: 'boolean',
+			public: true,
+			enterprise: true,
+			invalidValue: false,
+		});
+		this.add('Layout_Login_Hide_Title', false, {
+			type: 'boolean',
+			public: true,
+			enterprise: true,
+			invalidValue: false,
+		});
+		this.add('Layout_Login_Hide_Powered_By', false, {
+			type: 'boolean',
+			public: true,
+			enterprise: true,
+			invalidValue: false,
+		});
+		this.add('Layout_Login_Template', 'horizontal-template', {
+			type: 'select',
+			values: [
+				{
+					key: 'vertical-template',
+					i18nLabel: 'Layout_Login_Template_Vertical',
+				},
+				{
+					key: 'horizontal-template',
+					i18nLabel: 'Layout_Login_Template_Horizontal',
+				},
+			],
+			public: true,
+			enterprise: true,
+			invalidValue: 'horizontal-template',
+		});
+		this.add('Accounts_ShowFormLogin', true, {
+			type: 'boolean',
+			public: true,
+		});
+	});
 	this.section('Content', function () {
 		this.add('Layout_Home_Title', 'Home', {
 			type: 'string',
@@ -3178,10 +3186,20 @@ settingsRegistry.addGroup('Troubleshoot', function () {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Notifications_Alert',
 	});
+
+	// this settings will let clients know in case presence has been disabled
+	this.add('Presence_broadcast_disabled', false, {
+		type: 'boolean',
+		public: true,
+		blocked: true,
+	});
+
 	this.add('Troubleshoot_Disable_Presence_Broadcast', false, {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Presence_Broadcast_Alert',
+		enableQuery: { _id: 'Presence_broadcast_disabled', value: false },
 	});
+
 	this.add('Troubleshoot_Disable_Instance_Broadcast', false, {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Instance_Broadcast_Alert',

@@ -1,6 +1,7 @@
-import { Dispatch, SetStateAction, useCallback } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
+import { useCallback } from 'react';
 
-import { CategoryDropdownItem, CategoryDropDownListProps } from '../definitions/CategoryDropdownDefinitions';
+import type { CategoryDropdownItem, CategoryDropDownListProps } from '../definitions/CategoryDropdownDefinitions';
 
 export const useCategoryToggle = (
 	setData: Dispatch<SetStateAction<CategoryDropDownListProps['groups']>>,

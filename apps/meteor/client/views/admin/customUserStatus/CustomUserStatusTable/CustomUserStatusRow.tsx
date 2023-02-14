@@ -1,6 +1,7 @@
-import { IUserStatus } from '@rocket.chat/core-typings';
+import type { IUserStatus } from '@rocket.chat/core-typings';
 import { TableRow, TableCell } from '@rocket.chat/fuselage';
-import React, { CSSProperties, ReactElement } from 'react';
+import type { CSSProperties, ReactElement } from 'react';
+import React from 'react';
 
 import MarkdownText from '../../../../components/MarkdownText';
 

@@ -6,8 +6,14 @@ import _ from 'underscore';
 import { hasPermission } from '../../../app/authorization/client';
 import { ChatRoom, ChatSubscription } from '../../../app/models/client';
 import { openRoom } from '../../../app/ui-utils/client/lib/openRoom';
-import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../definition/IRoomTypeConfig';
-import type { IRoomTypeConfig, IRoomTypeClientDirectives, RoomIdentification } from '../../../definition/IRoomTypeConfig';
+import type {
+	RoomSettingsEnum,
+	RoomMemberActions,
+	UiTextContext,
+	IRoomTypeConfig,
+	IRoomTypeClientDirectives,
+	RoomIdentification,
+} from '../../../definition/IRoomTypeConfig';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 import { roomExit } from './roomExit';
 
@@ -67,7 +73,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 	}
 
 	getRoomTypeById(rid: string): RoomType | undefined {
-		const room = ChatRoom.findOne({ _id: rid, t: { $exists: true, $ne: null } }, { fields: { t: 1 } });
+		const room = ChatRoom.findOne({ _id: rid, t: { $exists: true, $ne: null as any } }, { fields: { t: 1 } });
 		return room?.t;
 	}
 

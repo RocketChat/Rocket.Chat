@@ -1,4 +1,5 @@
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { isIE11 } from '../../../../lib/utils/isIE11';
 import GenericPreview from './GenericPreview';

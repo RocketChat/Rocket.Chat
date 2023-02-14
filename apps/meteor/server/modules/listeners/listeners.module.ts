@@ -1,9 +1,10 @@
 import { UserStatus, isSettingColor } from '@rocket.chat/core-typings';
+import type { IUser, IRoom, VideoConference } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
+import type { IServiceClass } from '@rocket.chat/core-services';
+import { EnterpriseSettings } from '@rocket.chat/core-services';
 
-import type { IServiceClass } from '../../sdk/types/ServiceClass';
 import type { NotificationsModule } from '../notifications/notifications.module';
-import { EnterpriseSettings } from '../../sdk/index';
 import { settings } from '../../../app/settings/server/cached';
 
 const isMessageParserDisabled = process.env.DISABLE_MESSAGE_PARSER === 'true';
@@ -96,6 +97,25 @@ export class ListenersModule {
 			notifications.notifyLoggedInThisInstance('roles-change', update);
 		});
 
+		service.onEvent(
+			'user.video-conference',
+			({
+				userId,
+				action,
+				params,
+			}: {
+				userId: string;
+				action: string;
+				params: {
+					callId: VideoConference['_id'];
+					uid: IUser['_id'];
+					rid: IRoom['_id'];
+				};
+			}) => {
+				notifications.notifyUserInThisInstance(userId, 'video-conference', { action, params });
+			},
+		);
+
 		service.onEvent('presence.status', ({ user }) => {
 			const { _id, username, name, status, statusText, roles } = user;
 			if (!status) {
@@ -128,6 +148,12 @@ export class ListenersModule {
 			);
 
 			notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
+		});
+
+		service.onEvent('message.update', ({ message }) => {
+			if (message.rid) {
+				notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
+			}
 		});
 
 		service.onEvent('watch.subscriptions', ({ clientAction, subscription }) => {
@@ -203,6 +229,7 @@ export class ListenersModule {
 
 		service.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
 			if (clientAction !== 'removed') {
+				// TODO check if setting is EE before calling this
 				const result = await EnterpriseSettings.changeSettingValue(setting);
 				if (result !== undefined && !(result instanceof Error)) {
 					setting.value = result;

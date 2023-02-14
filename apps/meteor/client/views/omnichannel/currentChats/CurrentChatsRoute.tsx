@@ -3,7 +3,8 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 import { usePermission, useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { ComponentProps, memo, ReactElement, useCallback, useMemo, useState } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 
 import {
 	GenericTableBody,
@@ -25,44 +26,50 @@ import RemoveChatButton from './RemoveChatButton';
 import { useAllCustomFields } from './hooks/useAllCustomFields';
 import { useCurrentChats } from './hooks/useCurrentChats';
 
+type DebouncedParams = {
+	fname: string;
+	guest: string;
+	servedBy: string;
+	department: string;
+	status: string;
+	from: string;
+	to: string;
+	tags: any[];
+};
+
+type CurrentChatQuery = {
+	agents?: string[];
+	offset?: number;
+	roomName?: string;
+	departmentId?: string;
+	open?: boolean;
+	createdAt?: string;
+	closedAt?: string;
+	tags?: string[];
+	onhold?: boolean;
+	customFields?: string;
+	sort: string;
+	count?: number;
+};
+
 type useQueryType = (
-	debouncedParams: {
-		fname: string;
-		guest: string;
-		servedBy: string;
-		department: string;
-		status: string;
-		from: string;
-		to: string;
-		tags: any[];
-		itemsPerPage: 25 | 50 | 100;
-		current: number;
-	},
+	debouncedParams: DebouncedParams,
 	customFields: { [key: string]: string } | undefined,
 	[column, direction]: [string, 'asc' | 'desc'],
+	current: number,
+	itemsPerPage: 25 | 50 | 100,
 ) => GETLivechatRoomsParams;
 
 const sortDir = (sortDir: 'asc' | 'desc'): 1 | -1 => (sortDir === 'asc' ? 1 : -1);
 
 const currentChatQuery: useQueryType = (
-	{ guest, servedBy, department, status, from, to, tags, itemsPerPage, current },
+	{ guest, servedBy, department, status, from, to, tags },
 	customFields,
 	[column, direction],
+	current,
+	itemsPerPage,
 ) => {
-	const query: {
-		agents?: string[];
-		offset?: number;
-		roomName?: string;
-		departmentId?: string;
-		open?: boolean;
-		createdAt?: string;
-		closedAt?: string;
-		tags?: string[];
-		onhold?: boolean;
-		customFields?: string;
-		sort: string;
-		count?: number;
-	} = {
+	const query: CurrentChatQuery = {
 		...(guest && { roomName: guest }),
 		sort: JSON.stringify({
 			[column]: sortDir(direction),
@@ -111,6 +118,18 @@ const currentChatQuery: useQueryType = (
 const CurrentChatsRoute = (): ReactElement => {
 	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'departmentId' | 'servedBy' | 'ts' | 'lm' | 'open'>('ts', 'desc');
 	const [customFields, setCustomFields] = useState<{ [key: string]: string }>();
+
+	const t = useTranslation();
+	const id = useRouteParameter('id');
+
+	const canViewCurrentChats = usePermission('view-livechat-current-chats');
+	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
+	const directoryRoute = useRoute('omnichannel-current-chats');
+
+	const { data: allCustomFields } = useAllCustomFields();
+
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
+
 	const [params, setParams] = useState({
 		guest: '',
 		fname: '',
@@ -119,34 +138,28 @@ const CurrentChatsRoute = (): ReactElement => {
 		department: '',
 		from: '',
 		to: '',
-		current: 0,
-		itemsPerPage: 25 as 25 | 50 | 100,
 		tags: [] as string[],
 	});
-	const t = useTranslation();
-	const id = useRouteParameter('id');
-
-	const query = useMemo(
-		() => currentChatQuery(params, customFields, [sortBy, sortDirection]),
-		[customFields, params, sortBy, sortDirection],
-	);
-	const canViewCurrentChats = usePermission('view-livechat-current-chats');
-	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
-	const directoryRoute = useRoute('omnichannel-current-chats');
-
-	const result = useCurrentChats(query);
-
-	const { data: allCustomFields } = useAllCustomFields();
-
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 
 	const hasCustomFields = useMemo(
 		() => !!allCustomFields?.customFields?.find((customField) => customField.scope === 'room'),
 		[allCustomFields],
 	);
 
+	const query = useMemo(
+		() => currentChatQuery(params, customFields, [sortBy, sortDirection], current, itemsPerPage),
+		[customFields, itemsPerPage, params, sortBy, sortDirection, current],
+	);
+
+	const result = useCurrentChats(query);
+
 	const onRowClick = useMutableCallback((_id) => {
 		directoryRoute.push({ id: _id });
+	});
+
+	const onFilter = useMutableCallback((params: DebouncedParams): void => {
+		setParams(params);
+		setCurrent(0);
 	});
 
 	const renderRow = useCallback(
@@ -195,7 +208,7 @@ const CurrentChatsRoute = (): ReactElement => {
 				<Page.Header title={t('Current_Chats')} />
 				<Box pi='24px'>
 					<FilterByText
-						setFilter={setParams as ComponentProps<typeof FilterByText>['setFilter']}
+						setFilter={onFilter as ComponentProps<typeof FilterByText>['setFilter']}
 						setCustomFields={setCustomFields}
 						customFields={customFields}
 						hasCustomFields={hasCustomFields}

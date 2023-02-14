@@ -1,10 +1,11 @@
 import { useDebouncedValue, useLocalStorage, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
-import React, { FC, memo, MouseEvent, useCallback, useMemo, useState } from 'react';
+import type { FC, MouseEvent } from 'react';
+import React, { memo, useCallback, useMemo, useState } from 'react';
 
-import { ChatMessages } from '../../../../../../app/ui/client';
 import { useRecordList } from '../../../../../../client/hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../../../client/lib/asyncState';
+import { useChat } from '../../../../../../client/views/room/contexts/ChatContext';
 import { useRoom } from '../../../../../../client/views/room/contexts/RoomContext';
 import { useCannedResponseFilterOptions } from '../../../hooks/useCannedResponseFilterOptions';
 import { useCannedResponseList } from '../../../hooks/useCannedResponseList';
@@ -43,16 +44,14 @@ export const WrapCannedResponseList: FC<{ tabBar: any }> = ({ tabBar }) => {
 		});
 	});
 
+	const composer = useChat()?.composer;
+
 	const onClickUse = (e: MouseEvent<HTMLOrSVGElement>, text: string): void => {
 		e.preventDefault();
 		e.stopPropagation();
 
-		const input = ChatMessages.get({ rid: room._id })?.input;
-
-		if (input) {
-			input.value = text;
-			input.focus();
-		}
+		composer?.setText(text);
+		composer?.focus();
 	};
 
 	const onClickCreate = (): void => {

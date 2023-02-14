@@ -20,7 +20,7 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
 		await poHomeChannel.sidenav.checkboxPrivateChannel.click();
 		await poHomeChannel.sidenav.inputChannelName.type(channelName);
-		await poHomeChannel.sidenav.btnCreateChannel.click();
+		await poHomeChannel.sidenav.btnCreate.click();
 
 		await expect(page).toHaveURL(`/channel/${channelName}`);
 	});
@@ -30,7 +30,7 @@ test.describe.serial('channel-management', () => {
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
 		await poHomeChannel.sidenav.inputChannelName.type(channelName);
-		await poHomeChannel.sidenav.btnCreateChannel.click();
+		await poHomeChannel.sidenav.btnCreate.click();
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 	});

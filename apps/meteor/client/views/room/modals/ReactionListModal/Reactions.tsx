@@ -1,7 +1,8 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import Emoji from '../../../../components/Emoji';
 import ReactionUserTag from './ReactionUserTag';

@@ -1,4 +1,4 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import DeploymentCard from './DeploymentCard';
@@ -202,10 +202,8 @@ export default {
 			customScript: 0,
 			tabInvites: 0,
 			totalEmailInvitation: 0,
-			totalRoomsWithSnippet: 0,
 			totalRoomsWithStarred: 0,
 			totalRoomsWithPinned: 0,
-			totalSnippet: 0,
 			totalStarred: 0,
 			totalPinned: 0,
 			totalE2ERooms: 0,

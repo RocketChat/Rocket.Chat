@@ -1,7 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { MouseEvent, ReactElement } from 'react';
+import type { MouseEvent, ReactElement } from 'react';
+import React from 'react';
 
 import { useVoipOutboundStates } from '../../../contexts/CallContext';
 import { useDialModal } from '../../../hooks/useDialModal';

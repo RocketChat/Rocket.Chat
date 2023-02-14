@@ -13,4 +13,4 @@ export const URL_MONGODB = process.env.MONGO_URL || 'mongodb://localhost:3001/me
 export const ADMIN_CREDENTIALS = {
 	email: 'rocketchat.internal.admin.test@rocket.chat',
 	password: 'rocketchat.internal.admin.test',
-};
+} as const;

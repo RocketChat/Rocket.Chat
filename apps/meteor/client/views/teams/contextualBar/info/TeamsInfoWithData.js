@@ -14,13 +14,14 @@ import React, { useCallback, useMemo } from 'react';
 import { UiTextContext } from '../../../../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../../../../components/GenericModal';
 import { useDontAskAgain } from '../../../../hooks/useDontAskAgain';
-import { useEndpointActionExperimental } from '../../../../hooks/useEndpointActionExperimental';
+import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { useTabBarClose, useTabBarOpen } from '../../../room/contexts/ToolboxContext';
 import ConvertToChannelModal from '../../ConvertToChannelModal';
 import DeleteTeamModal from './Delete';
-import LeaveTeamModal from './Leave';
+import LeaveTeam from './LeaveTeam';
+import LeaveTeamModal from './LeaveTeam/LeaveTeamModal/LeaveTeamModal';
 import TeamsInfo from './TeamsInfo';
 
 const retentionPolicyMaxAge = {
@@ -56,9 +57,9 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
 
-	const deleteTeam = useEndpointActionExperimental('POST', '/v1/teams.delete');
-	const leaveTeam = useEndpointActionExperimental('POST', '/V1/teams.leave');
-	const convertTeamToChannel = useEndpointActionExperimental('POST', '/v1/teams.convertToChannel');
+	const deleteTeam = useEndpointAction('POST', '/v1/teams.delete');
+	const leaveTeam = useEndpointAction('POST', '/v1/teams.leave');
+	const convertTeamToChannel = useEndpointAction('POST', '/v1/teams.convertToChannel');
 
 	const hideTeam = useMethod('hideRoom');
 
@@ -109,6 +110,7 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 
 	const onClickLeave = useMutableCallback(() => {
 		const onConfirm = async (roomsLeft) => {
+			roomsLeft = Object.keys(roomsLeft);
 			const roomsToLeave = Array.isArray(roomsLeft) && roomsLeft.length > 0 ? roomsLeft : [];
 
 			try {
@@ -125,7 +127,7 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 			}
 		};
 
-		setModal(<LeaveTeamModal onConfirm={onConfirm} onCancel={closeModal} teamId={room.teamId} />);
+		setModal(<LeaveTeam onConfirm={onConfirm} onCancel={closeModal} teamId={room.teamId} />);
 	});
 
 	const handleHide = useMutableCallback(async () => {

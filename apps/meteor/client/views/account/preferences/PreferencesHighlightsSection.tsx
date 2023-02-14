@@ -1,9 +1,10 @@
 import { Accordion, Field, FieldGroup, TextAreaInput } from '@rocket.chat/fuselage';
 import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { useForm } from '../../../hooks/useForm';
-import { FormSectionProps } from './AccountPreferencesPage';
+import type { FormSectionProps } from './AccountPreferencesPage';
 
 const PreferencesHighlightsSection = ({ onChange, commitRef, ...props }: FormSectionProps): ReactElement => {
 	const t = useTranslation();
