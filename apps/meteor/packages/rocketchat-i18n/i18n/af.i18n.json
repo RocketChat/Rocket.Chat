@@ -2652,7 +2652,6 @@
   "Username_ended_the_OTR_session": "__username__ het die OTR-sessie geëindig",
   "Username_invalid": "<strong>%s</strong> is nie 'n geldige gebruikersnaam nie,<br/> gebruik slegs letters, syfers, kolletjies, koppeltekens en onderstreeptekens",
   "Username_is_already_in_here": "`@%s` is reeds hier.",
-  "Username_is_not_in_this_room": "Die gebruiker `#%s` is nie in hierdie kamer nie.",
   "Username_Placeholder": "Voer asseblief gebruikers name in ...",
   "Username_title": "Registreer gebruikersnaam",
   "Username_wants_to_start_otr_Do_you_want_to_accept": "__username__ wil OTR begin. Wil jy aanvaar?",
