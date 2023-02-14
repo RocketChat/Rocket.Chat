@@ -118,3 +118,5 @@ export * from './VideoConferenceCapabilities';
 export * from './VideoConferenceOptions';
 
 export * from './SpotlightUser';
+
+export * from './search';
