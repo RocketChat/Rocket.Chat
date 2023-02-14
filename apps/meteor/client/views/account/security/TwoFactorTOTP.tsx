@@ -1,6 +1,6 @@
 import { Box, Button, TextInput, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useUser, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useUser, useMethod, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { useState, useCallback, useEffect, ReactElement, ComponentProps } from 'react';
 import qrcode from 'yaqrcode';
 
@@ -15,6 +15,7 @@ const TwoFactorTOTP = (props: ComponentProps<typeof Box>): ReactElement => {
 	const user = useUser();
 	const setModal = useSetModal();
 
+	const logoutOtherSessions = useEndpoint('POST', '/v1/users.logoutOtherClients');
 	const enableTotpFn = useMethod('2fa:enable');
 	const disableTotpFn = useMethod('2fa:disable');
 	const verifyCodeFn = useMethod('2fa:validateTempToken');
@@ -85,11 +86,13 @@ const TwoFactorTOTP = (props: ComponentProps<typeof Box>): ReactElement => {
 			if (!result) {
 				return dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
 			}
+
+			logoutOtherSessions();
 			setModal(<BackupCodesModal codes={result.codes} onClose={closeModal} />);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [authCode, closeModal, dispatchToastMessage, setModal, t, verifyCodeFn]);
+	}, [authCode, closeModal, dispatchToastMessage, logoutOtherSessions, setModal, t, verifyCodeFn]);
 
 	const handleRegenerateCodes = useCallback(() => {
 		const onRegenerate = async (authCode: string): Promise<void> => {
