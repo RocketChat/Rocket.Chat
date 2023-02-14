@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import { Blaze } from 'meteor/blaze';
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
@@ -15,10 +14,10 @@ import { EmojiPicker, emoji } from '../../../emoji';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { t, getUserPreference, slashCommands } from '../../../utils/client';
 import { customMessagePopups } from './customMessagePopups';
+import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
 import './messagePopupConfig.html';
 import './messagePopupSlashCommand.html';
 import './messagePopupUser.html';
-import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
 
 const reloadUsersFromRoomMessages = (rid, template) => {
 	const user = Meteor.userId() && Meteor.users.findOne(Meteor.userId(), { fields: { username: 1 } });
@@ -403,9 +402,7 @@ Template.messagePopupConfig.helpers({
 				return records;
 			},
 			getValue: (_id, collection, records) => {
-				const record = _.findWhere(records, {
-					_id,
-				});
+				const record = records.find((record) => record._id === _id);
 				return record && record.name;
 			},
 		};

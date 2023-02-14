@@ -5,10 +5,10 @@ import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useState, useEffect } from 'react';
 import { useController, useForm } from 'react-hook-form';
-import { debounce } from 'underscore';
 
 import { hasAtLeastOnePermission } from '../../../../../../app/authorization/client';
 import { validateEmail } from '../../../../../../lib/emailValidator';
+import { withDebouncing } from '../../../../../../lib/utils/highOrderFunctions';
 import CustomFieldsForm from '../../../../../components/CustomFieldsForm';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { createToken } from '../../../../../lib/utils/createToken';
@@ -176,7 +176,7 @@ export const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactE
 		setValue('username', user.username || '');
 	};
 
-	const validate = (fieldName: keyof ContactFormData): (() => void) => debounce(() => trigger(fieldName), 500);
+	const validate = (fieldName: keyof ContactFormData): (() => void) => withDebouncing({ wait: 500 })(() => trigger(fieldName));
 
 	const handleSave = async (): Promise<void> => {
 		const { name, phone, email, customFields, username, token } = getValues();

@@ -1,10 +1,11 @@
 // This is not supposed to be a complete list
 // it is just to improve readability in this file
 
-import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
+
+import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
 import './messagePopup.html';
 
@@ -144,9 +145,9 @@ Template.messagePopup.onCreated(function () {
 		}
 	};
 
-	template.setTextFilter = _.debounce(function (value) {
+	template.setTextFilter = withDebouncing({ wait: template.textFilterDelay })(function (value) {
 		return template.textFilter.set(value);
-	}, template.textFilterDelay);
+	});
 
 	template.onInputKeyup = (event) => {
 		if (template.closeOnEsc === true && template.open.curValue === true && event.which === keys.ESC) {

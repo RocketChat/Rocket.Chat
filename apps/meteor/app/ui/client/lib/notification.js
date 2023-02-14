@@ -5,7 +5,6 @@ import { Random } from 'meteor/random';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import _ from 'underscore';
 
 import { e2e } from '../../../e2e/client';
 import { Users, ChatSubscription } from '../../../models/client';
@@ -173,8 +172,8 @@ export const KonchatNotification = {
 	newRoom(rid /* , withSound = true*/) {
 		Tracker.nonreactive(function () {
 			let newRoomSound = Session.get('newRoomSound');
-			if (newRoomSound != null) {
-				newRoomSound = _.union(newRoomSound, [rid]);
+			if (newRoomSound) {
+				newRoomSound = [...newRoomSound, rid];
 			} else {
 				newRoomSound = [rid];
 			}
@@ -183,11 +182,9 @@ export const KonchatNotification = {
 		});
 	},
 
-	// $('.link-room-' + rid).addClass('new-room-highlight')
-
 	removeRoomNotification(rid) {
-		let newRoomSound = Session.get('newRoomSound');
-		newRoomSound = _.without(newRoomSound, rid);
+		let newRoomSound = Session.get('newRoomSound') ?? [];
+		newRoomSound = newRoomSound.filter((_rid) => _rid !== rid);
 		Tracker.nonreactive(() => Session.set('newRoomSound', newRoomSound));
 
 		return $(`.link-room-${rid}`).removeClass('new-room-highlight');
