@@ -74,8 +74,6 @@ declare module 'meteor/templating' {
 		loading: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		collapseArrow: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		rc_modal: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		popout: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		popover: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		error: BlazeTemplate;
 		loading: BlazeTemplate;
 		messagePopupSlashCommandPreview: BlazeTemplate<{
@@ -84,7 +82,6 @@ declare module 'meteor/templating' {
 			getInput: () => HTMLTextAreaElement | null;
 		}>;
 		rc_modal: BlazeTemplate;
-		popover: BlazeTemplate;
 		messagePopupCannedResponse: BlazeTemplate;
 	};
 
