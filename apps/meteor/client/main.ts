@@ -8,6 +8,7 @@ import './lib/meteorCallWrapper';
 import './importPackages';
 
 import '../ee/client';
+import './templateHelpers';
 import './methods';
 import './startup';
 import './views/admin';
