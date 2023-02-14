@@ -45,12 +45,9 @@ import { useChat } from '../../../../contexts/ChatContext';
 import { useComposerPopup } from '../../../../contexts/ComposerPopupContext';
 import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
-import MessageBoxDropdown from './MessageBoxDropdown';
+import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
-import AudioMessageAction from './actions/AudioMessageAction';
-import FileUploadAction from './actions/FileUploadAction';
-import VideoMessageAction from './actions/VideoMessageAction';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -386,10 +383,14 @@ const MessageBox = ({
 							/>
 						)}
 						<MessageComposerActionsDivider />
-						<VideoMessageAction isRecording={isRecording} />
-						<AudioMessageAction disabled={!canSend || typing || isRecording} />
-						<FileUploadAction isRecording={isRecording} />
-						<MessageBoxDropdown isRecording={isRecording} rid={rid} tmid={tmid} />
+						<MessageBoxActionsToolbar
+							variant={sizes.inlineSize < 480 ? 'small' : 'large'}
+							isRecording={isRecording}
+							typing={typing}
+							canSend={canSend}
+							rid={rid}
+							tmid={tmid}
+						/>
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
 						{!canSend && (

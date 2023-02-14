@@ -95,12 +95,11 @@ function TagsRoute() {
 		[reload, onRowClick],
 	);
 
-	if (context === 'new') {
-		return <TagEdit reload={reload} />;
-	}
-
 	if (context === 'edit') {
-		return <TagEditWithData reload={reload} tagId={id} title={context === 'edit' ? t('Edit_Tag') : t('New_Tag')} />;
+		return <TagEditWithData reload={reload} tagId={id} title={t('Edit_Tag')} />;
+	}
+	if (context === 'new') {
+		return <TagEdit data={data} reload={reload} title={t('New_Tag')} />;
 	}
 
 	if (!canViewTags) {

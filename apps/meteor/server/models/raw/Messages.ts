@@ -11,6 +11,7 @@ import type {
 	Filter,
 	FindOptions,
 	IndexDescription,
+	DeleteResult,
 } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
@@ -222,6 +223,26 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
+	findLivechatMessages(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
+		return this.find(
+			{
+				rid,
+				$or: [{ t: { $exists: false } }, { t: 'livechat-close' }],
+			},
+			options,
+		);
+	}
+
+	findLivechatMessagesWithoutClosing(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
+		return this.find(
+			{
+				rid,
+				t: { $exists: false },
+			},
+			options,
+		);
+	}
+
 	async setBlocksById(_id: string, blocks: Required<IMessage>['blocks']): Promise<void> {
 		await this.updateOne(
 			{ _id },
@@ -403,5 +424,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				)
 				.toArray()
 		)[0] as IMessage;
+	}
+
+	removeByRoomId(roomId: string): Promise<DeleteResult> {
+		return this.deleteMany({ rid: roomId });
 	}
 }
