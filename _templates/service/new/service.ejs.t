@@ -9,7 +9,7 @@ import { broker } from '../../../../apps/meteor/ee/server/startup/broker';
 import { Collections, getCollection, getConnection } from '../../../../apps/meteor/ee/server/services/mongo';
 import { registerServiceModels } from '../../../../apps/meteor/ee/server/lib/registerServiceModels';
 
-const PORT = process.env.PORT || 3034;
+const PORT = process.env.PORT || <%= h.random() %>;
 
 (async () => {
 	const db = await getConnection();

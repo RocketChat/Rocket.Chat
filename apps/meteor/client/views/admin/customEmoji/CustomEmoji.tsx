@@ -1,5 +1,6 @@
 import { Box, Pagination, States, StatesActions, StatesAction, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { FC, MutableRefObject } from 'react';
@@ -33,7 +34,7 @@ const CustomEmoji: FC<CustomEmojiProps> = ({ onClick, reload }) => {
 	const query = useDebouncedValue(
 		useMemo(
 			() => ({
-				query: JSON.stringify({ name: { $regex: text || '', $options: 'i' } }),
+				query: JSON.stringify({ name: { $regex: escapeRegExp(text), $options: 'i' } }),
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
 				offset: current,
