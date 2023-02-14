@@ -1,5 +1,5 @@
-import type { ILivechatPriority, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings/src';
-
+import type { ILivechatPriority } from './ILivechatPriority';
+import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IMessage } from './IMessage';
 import type { IUser, Username } from './IUser';
