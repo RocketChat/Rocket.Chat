@@ -293,10 +293,6 @@
 	}
 }
 
-.rc-old .search-form {
-	position: relative;
-}
-
 .rc-old .-autocomplete-container {
 	top: auto;
 
@@ -1055,38 +1051,6 @@
 	}
 }
 
-.rc-old .message-popup-position {
-	position: relative;
-
-	.message-popup {
-		display: flex;
-		flex-direction: column;
-
-		max-height: 20rem;
-		align-items: stretch;
-
-		.message-popup-items {
-			overflow-y: auto;
-
-			.popup-slash-command {
-				display: flex;
-				flex-flow: row wrap;
-
-				&-format {
-					flex-grow: 1;
-				}
-
-				&-description {
-					text-align: right;
-
-					font-style: italic;
-					flex-grow: 2;
-				}
-			}
-		}
-	}
-}
-
 .rc-old .message-popup-items.preview-items {
 	display: flex;
 	overflow-y: auto;
@@ -1113,16 +1077,6 @@
 
 	border-radius: 5px;
 	box-shadow: 0 -1px 10px 0 rgba(0, 0, 0, 0.2), 0 1px 1px rgba(0, 0, 0, 0.16);
-}
-
-.rc-old .message-popup-title {
-	padding: 0 20px;
-
-	border-width: 0 0 1px;
-
-	font-size: 14px;
-	font-weight: 300;
-	line-height: 32px;
 }
 
 .rc-old .popup-item {
@@ -1755,62 +1709,6 @@
 
 	height: 100%;
 	flex-grow: 1;
-}
-
-.rc-old .list-view {
-	& .list {
-		position: relative;
-
-		display: flex;
-
-		width: 100%;
-		flex-flow: column nowrap;
-
-		& .message {
-			padding: 8px 0 4px 50px;
-		}
-	}
-
-	& > .title {
-		&:not(:last-child) {
-			margin: 0 0 20px;
-		}
-
-		& h2 {
-			font-size: 20px;
-			font-weight: 300;
-			line-height: 25px;
-		}
-
-		& p {
-			margin-top: 4px;
-
-			font-size: 12px;
-		}
-
-		& b {
-			font-weight: 600;
-		}
-
-		& .see-all {
-			float: right;
-
-			cursor: pointer;
-			text-decoration: underline;
-
-			border-width: 0;
-
-			&:hover {
-				text-decoration: none;
-			}
-		}
-	}
-
-	& .show-more-users {
-		display: block;
-
-		margin: 1em auto 0;
-	}
 }
 
 .rc-old #login-card {
