@@ -1,17 +1,19 @@
 import { Subscriptions } from '@rocket.chat/models';
+import type { IRoom, IMessage } from '@rocket.chat/core-typings';
+import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
 
-import { ReadReceipt } from './lib/ReadReceipt';
-import { callbacks } from '../../../lib/callbacks';
+import { ReadReceipt } from '../../../../server/lib/message-read-receipt/ReadReceipt';
+import { callbacks } from '../../../../../lib/callbacks';
 
 callbacks.add(
 	'afterSaveMessage',
-	(message, room) => {
+	(message: IMessage, room: IRoom) => {
 		// skips this callback if the message was edited
-		if (message.editedAt) {
+		if (isEditedMessage(message) && message.editedAt) {
 			return message;
 		}
 
-		if (room && !room.closedAt) {
+		if (!isOmnichannelRoom(room) || !room.closedAt) {
 			// set subscription as read right after message was sent
 			Promise.await(Subscriptions.setAsReadByRoomIdAndUserId(room._id, message.u._id));
 		}
@@ -23,13 +25,4 @@ callbacks.add(
 	},
 	callbacks.priority.MEDIUM,
 	'message-read-receipt-afterSaveMessage',
-);
-
-callbacks.add(
-	'afterReadMessages',
-	(rid, { uid, lastSeen }) => {
-		ReadReceipt.markMessagesAsRead(rid, uid, lastSeen);
-	},
-	callbacks.priority.MEDIUM,
-	'message-read-receipt-afterReadMessages',
 );
