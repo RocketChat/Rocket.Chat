@@ -157,7 +157,7 @@
 		font: inherit;
 		line-height: initial;
 
-		& .emojione,
+		& .emoji-toolkit,
 		& .emoji {
 			display: inline-block !important;
 

@@ -3244,7 +3244,7 @@
         },
         {
           "pr": "7557",
-          "title": "[FIX] Revert emojione package version upgrade",
+          "title": "[FIX] Revert emoji-toolkit package version upgrade",
           "userLogin": "sampaiodiego",
           "milestone": "0.58.0",
           "contributors": [
@@ -7598,7 +7598,7 @@
         },
         {
           "pr": "8078",
-          "title": "[MOVE] Move files from emojione to client/server folders",
+          "title": "[MOVE] Move files from emoji-toolkit to client/server folders",
           "userLogin": "vcapretz",
           "milestone": "0.60.0",
           "contributors": [
@@ -20771,7 +20771,7 @@
         },
         {
           "pr": "12605",
-          "title": "Convert emoji-emojione to main module structure",
+          "title": "Convert emoji-emoji-toolkit to main module structure",
           "userLogin": "MarcosSpessatto",
           "milestone": "0.72.0",
           "contributors": [
@@ -23531,7 +23531,7 @@
         },
         {
           "pr": "12605",
-          "title": "Convert emoji-emojione to main module structure",
+          "title": "Convert emoji-emoji-toolkit to main module structure",
           "userLogin": "MarcosSpessatto",
           "milestone": "0.72.0",
           "contributors": [
@@ -30273,7 +30273,7 @@
         },
         {
           "pr": "13807",
-          "title": "[IMPROVE] Upgrade EmojiOne to JoyPixels 4.5.0",
+          "title": "[IMPROVE] Upgrade emoji-toolkit to JoyPixels 4.5.0",
           "userLogin": "wreiske",
           "milestone": "1.1.0",
           "contributors": [
@@ -56918,7 +56918,7 @@
           "pr": "20359",
           "title": "[FIX] Custom emojis to override default",
           "userLogin": "aKn1ghtOut",
-          "description": "Due to the sequence of the imports and how the emojiRenderer prioritizes lists, the custom emojis could not override the emojione emojis. Making two small changes fixed the issue.\r\n\r\nWith the custom emoji for `:facepalm:` added, you can check out the result below:\r\n### Before\r\n![Screenshot from 2021-01-25 02-20-04](https://user-images.githubusercontent.com/38764067/105643088-dfb0e080-5eb3-11eb-8a00-582c53fbe9a4.png)\r\n\r\n### After\r\n![Screenshot from 2021-01-25 02-18-58](https://user-images.githubusercontent.com/38764067/105643076-cdcf3d80-5eb3-11eb-84b8-5dbc4f1135df.png)",
+          "description": "Due to the sequence of the imports and how the emojiRenderer prioritizes lists, the custom emojis could not override the emoji-toolkit emojis. Making two small changes fixed the issue.\r\n\r\nWith the custom emoji for `:facepalm:` added, you can check out the result below:\r\n### Before\r\n![Screenshot from 2021-01-25 02-20-04](https://user-images.githubusercontent.com/38764067/105643088-dfb0e080-5eb3-11eb-8a00-582c53fbe9a4.png)\r\n\r\n### After\r\n![Screenshot from 2021-01-25 02-18-58](https://user-images.githubusercontent.com/38764067/105643076-cdcf3d80-5eb3-11eb-84b8-5dbc4f1135df.png)",
           "contributors": [
             "aKn1ghtOut"
           ]

@@ -9,7 +9,7 @@
 @import './flags-sprites.css';
 @import './modifier-sprites.css';
 
-.emojione {
+.emoji-toolkit {
 	position: relative;
 
 	display: inline-block;
@@ -29,11 +29,11 @@
 	image-rendering: optimizeQuality;
 }
 
-.message .emojione.big {
+.message .emoji-toolkit.big {
 	width: 44px;
 	height: 44px;
 }
-.big > .emojione {
+.big > .emoji-toolkit {
 	width: 44px;
 	height: 44px;
 }

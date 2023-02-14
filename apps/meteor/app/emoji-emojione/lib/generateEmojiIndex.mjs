@@ -8,12 +8,12 @@ import nsg from 'node-sprite-generator';
 import _ from 'underscore';
 import gm from 'gm'; // lgtm[js/unused-local-variable]
 
-const assetFolder = '../../../node_modules/emojione-assets';
+const assetFolder = '../../../node_modules/emoji-toolkit-assets';
 const emojiJsonFile = `${ assetFolder }/emoji.json`;
 
 if (!fs.existsSync(emojiJsonFile)) {
 	console.error(`${ emojiJsonFile } doesn't exist.`);
-	console.error('Maybe you need to run \'meteor npm install emojione-assets\' or \'meteor npm install\'?');
+	console.error('Maybe you need to run \'meteor npm install emoji-toolkit-assets\' or \'meteor npm install\'?');
 } else {
 	const emojiJson = fs.readFileSync(emojiJsonFile);
 	generateEmojiPicker(emojiJson);
@@ -117,7 +117,7 @@ function generateEmojiPicker(data) {
 		let srcList = [];
 		let diversityList = [];
 		const emojis = _.filter(emojiList, x => x.category === category);
-		const spritePath = `../../../public/packages/emojione/${ category }-sprites.png`;
+		const spritePath = `../../../public/packages/emoji-toolkit/${ category }-sprites.png`;
 
 		_.each(emojis, function (emoji) {
 			srcList.push(`${ assetFolder }/png/64/${ emoji.code_points.base }.png`);
@@ -131,7 +131,7 @@ function generateEmojiPicker(data) {
 			src: srcList,
 			spritePath: spritePath,
 			layout: 'packed',
-			stylesheet: 'emojione.tpl',
+			stylesheet: 'emoji-toolkit.tpl',
 			stylesheetPath: `../client/${ category }-sprites.css`,
 			compositor: 'gm',
 			layoutOptions: {
@@ -141,7 +141,7 @@ function generateEmojiPicker(data) {
 				prefix: '',
 				diversityList: diversityList,
 				category: category,
-				spritePath: `/packages/emojione/${ category }-sprites.png`,
+				spritePath: `/packages/emoji-toolkit/${ category }-sprites.png`,
 				pixelRatio: 1
 			}
 		}, function (err) {
@@ -154,7 +154,7 @@ function generateEmojiPicker(data) {
 	}
 
 	spriteCss += `
-.emojione {
+.emoji-toolkit {
 	position: relative;
 
 	display: inline-block;
@@ -174,12 +174,12 @@ function generateEmojiPicker(data) {
 	image-rendering: optimizeQuality;
 }
 
-.emojione.big {
+.emoji-toolkit.big {
 	width: 44px;
 	height: 44px;
 }
 `;
-	fs.writeFileSync("../client/emojione-sprites.css", spriteCss, {
+	fs.writeFileSync("../client/emoji-toolkit-sprites.css", spriteCss, {
 		encoding: 'utf8',
 		flag: 'w'
 	});

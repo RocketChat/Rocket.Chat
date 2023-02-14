@@ -144,7 +144,7 @@ const getEmojis = (collection, filter) => {
 		return [];
 	}
 
-	if (!emoji.packages.emojione || emoji.packages.emojione.asciiList[key]) {
+	if (!emoji.packages.emoji-toolkit || emoji.packages.emoji-toolkit.asciiList[key]) {
 		return [];
 	}
 

@@ -1,2 +1,2 @@
 import '../lib/rocketchat';
-import './emojione-sprites.css';
+import './emoji-toolkit-sprites.css';

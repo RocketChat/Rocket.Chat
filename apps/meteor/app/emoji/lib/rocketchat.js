@@ -1,4 +1,4 @@
-import { emojioneRender } from '../../emoji-emojione/lib/emojioneRender';
+import { emoji-toolkitRender } from '../../emoji-emoji-toolkit/lib/emoji-toolkitRender';
 
 let EmojiPicker;
 const removeFromRecent = (emoji) => {
@@ -18,7 +18,7 @@ export const emoji = {
 				recent: [],
 			},
 			toneList: {},
-			render: emojioneRender,
+			render: emoji-toolkitRender,
 			renderPicker(emojiToRender) {
 				if (!emoji.list[emojiToRender]) {
 					removeFromRecent(emojiToRender);
