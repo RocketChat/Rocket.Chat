@@ -25,7 +25,6 @@ import {
 	isLivechatVideoConference,
 } from '@rocket.chat/core-typings';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
-import type { AppVideoConfProviderManager } from '@rocket.chat/apps-engine/server/managers';
 import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
@@ -153,7 +152,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			}
 		}
 
-		const blocks = await (await this.getProviderManager()).getVideoConferenceInfo(call.providerName, call, user || undefined).catch((e) => {
+		const blocks = await AppsVideoManager.getVideoConferenceInfo(call.providerName, call, user || undefined).catch((e) => {
 			throw new Error(e);
 		});
 
@@ -841,7 +840,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('video-conf-provider-unavailable');
 		}
 
-		(await this.getProviderManager()).onNewVideoConference(call.providerName, call).catch((e) => {
+		AppsVideoManager.onNewVideoConference(call.providerName, call).catch((e) => {
 			throw new Error(e);
 		});
 	}
@@ -857,7 +856,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('video-conf-provider-unavailable');
 		}
 
-		(await this.getProviderManager()).onVideoConferenceChanged(call.providerName, call).catch((e) => {
+		AppsVideoManager.onVideoConferenceChanged(call.providerName, call).catch((e) => {
 			throw new Error(e);
 		});
 	}
@@ -873,7 +872,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('video-conf-provider-unavailable');
 		}
 
-		(await this.getProviderManager()).onUserJoin(call.providerName, call, user).catch((e) => {
+		AppsVideoManager.onUserJoin(call.providerName, call, user).catch((e) => {
 			throw new Error(e);
 		});
 	}

@@ -23,5 +23,9 @@ export interface IAppsService {
 	rocketChatLoggerError<T>(obj: T, args: any[]): void;
 	retrieveOneFromStorage(appId: string): Promise<IAppStorageItem | null>;
 	fetchAppSourceStorage(storageItem: IAppStorageItem): Promise<Buffer> | undefined;
+	setFrameworkEnabled: (value: boolean) => void;
+	setDevelopmentMode: (value: boolean) => void;
+	setStorage(value: string): void;
+	setFileSystemStoragePath(value: string): void;
 	runOnAppEvent(listener: AppServerNotifier): void;
 }

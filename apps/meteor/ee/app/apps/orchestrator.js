@@ -6,7 +6,6 @@ import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { Apps as AppsModel, AppsLogs as AppsLogsModel, AppsPersistence as AppsPersistenceModel } from '@rocket.chat/models';
 
 import { Logger } from '../../../server/lib/logger/Logger';
-import { settings } from '../../../app/settings/server';
 import { RealAppBridges } from './bridges';
 import {
 	AppMessagesConverter,
@@ -38,6 +37,9 @@ export class AppServerOrchestrator {
 		}
 
 		this._rocketchatLogger = new Logger('Rocket.Chat Apps');
+
+		this.developmentMode = false;
+		this.frameworkEnabled = true;
 
 		this._marketplaceUrl = marketplaceUrl;
 
@@ -118,7 +120,7 @@ export class AppServerOrchestrator {
 	}
 
 	isEnabled() {
-		return settings.get('Apps_Framework_enabled');
+		return this.frameworkEnabled;
 	}
 
 	isLoaded() {
@@ -126,7 +128,7 @@ export class AppServerOrchestrator {
 	}
 
 	isDebugging() {
-		return settings.get('Apps_Framework_Development_Mode') && !isTesting();
+		return this.developmentMode && !isTesting();
 	}
 
 	/**
@@ -196,6 +198,14 @@ export class AppServerOrchestrator {
 
 				throw error;
 			});
+	}
+
+	setDevelopmentMode(isEnabled) {
+		this.developmentMode = isEnabled;
+	}
+
+	setFrameworkEnabled(isEnabled) {
+		this.frameworkEnabled = isEnabled;
 	}
 }
 

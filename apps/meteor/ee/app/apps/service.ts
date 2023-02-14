@@ -98,11 +98,27 @@ export class AppsOrchestratorService extends ServiceClass implements IAppsServic
 	}
 
 	retrieveOneFromStorage(appId: string): Promise<IAppStorageItem | null> {
-		return this.apps.getStorage()?.retrieveOne(appId);
+		return this.apps.getStorage()!.retrieveOne(appId);
 	}
 
 	fetchAppSourceStorage(storageItem: IAppStorageItem): Promise<Buffer> | undefined {
 		return this.apps.getAppSourceStorage()?.fetch(storageItem);
+	}
+
+	setFrameworkEnabled(value: boolean): void {
+		return this.apps.setFrameworkEnabled(value);
+	}
+
+	setDevelopmentMode(value: boolean): void {
+		return this.apps.setDevelopmentMode(value);
+	}
+
+	setStorage(value: string): void {
+		return this.apps.getAppSourceStorage()?.setStorage(value);
+	}
+
+	setFileSystemStoragePath(value: string): void {
+		return this.apps.getAppSourceStorage()?.setFileSystemStoragePath(value);
 	}
 
 	runOnAppEvent(listener: AppServerNotifier): void {
