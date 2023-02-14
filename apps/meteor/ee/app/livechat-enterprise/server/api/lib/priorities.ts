@@ -1,6 +1,6 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { LivechatInquiry, LivechatPriority, LivechatRooms, Messages } from '@rocket.chat/models';
-import type { ILivechatPriority, IMessage, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatPriority, IMessage, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import type { FindOptions, UpdateFilter } from 'mongodb';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
@@ -82,7 +82,7 @@ export const updateRoomPriority = async (rid: string, user: IUser, priorityId: s
 		throw new Error('error-room-does-not-exist');
 	}
 
-	const priority = await LivechatPriority.findOneById(priorityId, { projection: { priorityId: 1, priorityWeight: 1 } });
+	const priority = await LivechatPriority.findOneById(priorityId);
 	if (!priority) {
 		throw new Error('error-invalid-priority');
 	}
@@ -95,7 +95,7 @@ export const updateRoomPriority = async (rid: string, user: IUser, priorityId: s
 };
 
 export const removePriorityFromRoom = async (rid: string, user: IUser): Promise<void> => {
-	const room = await LivechatRooms.findOneById(rid, { projection: { _id: 1, priorityId: 1, priorityWeight: 1 } });
+	const room: Pick<IOmnichannelRoom, '_id'> | null  = await LivechatRooms.findOneById(rid, { projection: { _id: 1 } });
 	if (!room) {
 		throw new Error('error-room-does-not-exist');
 	}
@@ -103,7 +103,7 @@ export const removePriorityFromRoom = async (rid: string, user: IUser): Promise<
 	await Promise.all([
 		LivechatRooms.unsetPriorityByRoomId(rid),
 		LivechatInquiry.unsetPriorityForRoom(rid),
-		addPriorityChangeHistoryToRoom(room._id, user),
+		addPriorityChangeHistoryToRoom(rid, user),
 	]);
 };
 
