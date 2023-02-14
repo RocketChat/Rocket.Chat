@@ -25,9 +25,7 @@
 						data-href="{{item.href}}"
 						data-sidenav="{{item.sideNav}}"
 					>
-						{{#if item.icon}}
-						<span class="rc-popover__icon"> {{> icon block="rc-popover__icon-element" icon=item.icon }} </span>
-						{{/if}} {{#if item.name}}
+						{{#if item.name}}
 						<span class="rc-popover__item-text">{{item.name}}</span>
 						{{/if}}
 					</li>
