@@ -1,129 +1,105 @@
-import { States, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
+import { Box, MessageDivider } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ChangeEvent, UIEvent } from 'react';
-import React, { useEffect, useRef, useMemo, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { Fragment, memo, useState } from 'react';
+import { Virtuoso } from 'react-virtuoso';
 
-import { createMessageContext } from '../../../../../../app/ui-utils/client/lib/messageContext';
-import { withThrottling } from '../../../../../../lib/utils/highOrderFunctions';
-import BlazeTemplate from '../../../components/BlazeTemplate';
+import { MessageTypes } from '../../../../../../app/ui-utils/client';
+import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
+import RoomMessage from '../../../../../components/message/variants/RoomMessage';
+import SystemMessage from '../../../../../components/message/variants/SystemMessage';
+import { useFormatDate } from '../../../../../hooks/useFormatDate';
+import MessageListErrorBoundary from '../../../MessageList/MessageListErrorBoundary';
+import { isMessageFirstUnread } from '../../../MessageList/lib/isMessageFirstUnread';
+import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
+import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
 import LoadingMessagesIndicator from '../../../components/body/LoadingMessagesIndicator';
-import { useRoom } from '../../../contexts/RoomContext';
+import { useRoomSubscription } from '../../../contexts/RoomContext';
 import { useMessageSearchQuery } from '../hooks/useMessageSearchQuery';
 
 type MessageSearchProps = {
 	searchText: string;
+	globalSearch: boolean;
 };
 
-const MessageSearch = ({ searchText }: MessageSearchProps): ReactElement => {
+const MessageSearch = ({ searchText, globalSearch }: MessageSearchProps): ReactElement => {
 	const pageSize = useSetting<number>('PageSize') ?? 10;
-	const globalSearchEnabled = useSetting<boolean>('GlobalSearchEnabled') ?? false;
 
-	const [payload, setPayload] = useState(() => ({
-		limit: pageSize,
-		searchAll: false,
-	}));
-	const messageSearchQuery = useMessageSearchQuery({ searchText, ...payload });
+	const [limit, setLimit] = useState(pageSize);
+	const messageSearchQuery = useMessageSearchQuery({ searchText, limit, globalSearch });
 
-	const hasMore = !!messageSearchQuery.data && !(messageSearchQuery.data?.message?.docs.length < payload.limit);
+	const subscription = useRoomSubscription();
 
-	const handleToggleGlobalSearch = (event: ChangeEvent<HTMLInputElement>) => {
-		setPayload({
-			limit: pageSize,
-			searchAll: event.target.checked,
-		});
-	};
-
-	const scrollHandler = useMemo(() => {
-		if (!hasMore) {
-			return undefined;
-		}
-
-		const throttledTestAndSet = withThrottling({ wait: 200 })((element: HTMLElement) => {
-			if (element.scrollTop >= element.scrollHeight - element.clientHeight) {
-				setPayload(({ limit, ...rest }) => ({ ...rest, limit: limit + pageSize }));
-			}
-		});
-
-		return (event: UIEvent<HTMLElement>) => {
-			throttledTestAndSet(event.currentTarget);
-		};
-	}, [hasMore, pageSize]);
-
-	const scrollListRef = useRef<HTMLDivElement>(null);
-
-	useEffect(() => {
-		const element = scrollListRef.current;
-		if (!element) {
-			return;
-		}
-
-		if (element.scrollTop >= element.scrollHeight - element.clientHeight) {
-			setPayload(({ limit, ...rest }) => ({ ...rest, limit: limit + pageSize }));
-		}
-	}, [pageSize]);
-
-	const room = useRoom();
-	const messageContext = useMemo(() => {
-		const context = createMessageContext({ rid: room._id });
-		return {
-			...context,
-			settings: {
-				...context.settings,
-				showReplyButton: false,
-				showreply: false,
-			},
-		};
-	}, [room._id]);
-
+	const formatDate = useFormatDate();
 	const t = useTranslation();
 
 	return (
-		<div className='rocket-search-result'>
-			<div className='rocket-default-search-settings'>
-				<div>
-					{globalSearchEnabled && (
-						<label>
-							<input type='checkbox' id='global-search' checked={payload.searchAll} onChange={handleToggleGlobalSearch} />
-							{t('Global_Search')}
-						</label>
+		<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis={0}>
+			{messageSearchQuery.data && (
+				<>
+					{messageSearchQuery.data.length === 0 && (
+						<Box p={24} color='annotation' textAlign='center' width='full'>
+							{t('No_results_found')}
+						</Box>
 					)}
-				</div>
-			</div>
-			<div className='rocket-default-search-results' ref={scrollListRef} onScroll={scrollHandler}>
-				{messageSearchQuery.data &&
-					(messageSearchQuery.data?.message?.docs.length ? (
-						<div className='flex-tab__result js-list'>
-							<div className='list clearfix' role='list'>
-								{messageSearchQuery.data?.message?.docs.map((message) => (
-									<BlazeTemplate
-										key={message._id}
-										name='message'
-										msg={{
-											customClass: 'search',
-											actionContext: 'search',
-											...message,
-											searchedText: searchText,
-											groupable: false,
+					{messageSearchQuery.data.length > 0 && (
+						<MessageListErrorBoundary>
+							<MessageListProvider>
+								<Box is='section' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis='auto' height='full'>
+									<Virtuoso
+										totalCount={messageSearchQuery.data.length}
+										overscan={25}
+										data={messageSearchQuery.data}
+										components={{ Scroller: ScrollableContentWrapper }}
+										itemContent={(index, message) => {
+											const previous = messageSearchQuery.data[index - 1];
+
+											const newDay = isMessageNewDay(message, previous);
+											const firstUnread = isMessageFirstUnread(subscription, message, previous);
+											const showDivider = newDay || firstUnread;
+
+											const system = MessageTypes.isSystemMessage(message);
+
+											const unread = subscription?.tunread?.includes(message._id) ?? false;
+											const mention = subscription?.tunreadUser?.includes(message._id) ?? false;
+											const all = subscription?.tunreadGroup?.includes(message._id) ?? false;
+
+											return (
+												<Fragment key={message._id}>
+													{showDivider && (
+														<MessageDivider unreadLabel={firstUnread ? t('Unread_Messages').toLowerCase() : undefined}>
+															{newDay && formatDate(message.ts)}
+														</MessageDivider>
+													)}
+
+													{system ? (
+														<SystemMessage message={message} />
+													) : (
+														<RoomMessage
+															message={message}
+															sequential={false}
+															unread={unread}
+															mention={mention}
+															all={all}
+															context='search'
+														/>
+													)}
+												</Fragment>
+											);
 										}}
-										groupable={true}
-										room={messageContext.room}
-										subscription={messageContext.subscription}
-										settings={messageContext.settings}
-										u={messageContext.u}
+										endReached={() => {
+											setLimit((limit) => limit + pageSize);
+										}}
 									/>
-								))}
-							</div>
-						</div>
-					) : (
-						<States>
-							<StatesIcon name='magnifier' />
-							<StatesTitle>{t('No_results_found')}</StatesTitle>
-						</States>
-					))}
-				<div className='load-more'>{searchText && messageSearchQuery.isLoading && <LoadingMessagesIndicator />}</div>
-			</div>
-		</div>
+								</Box>
+							</MessageListProvider>
+						</MessageListErrorBoundary>
+					)}
+				</>
+			)}
+			{searchText && messageSearchQuery.isLoading && <LoadingMessagesIndicator />}
+		</Box>
 	);
 };
 
-export default MessageSearch;
+export default memo(MessageSearch);

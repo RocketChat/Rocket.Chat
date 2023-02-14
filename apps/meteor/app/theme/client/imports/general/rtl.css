@@ -296,12 +296,6 @@
 		padding: 0 20px 0 10px;
 	}
 
-	& .list-view {
-		& > .title .see-all {
-			float: left;
-		}
-	}
-
 	& .page-list .list {
 		& a .info ul {
 			margin-right: 3px;

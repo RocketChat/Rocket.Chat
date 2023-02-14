@@ -3,7 +3,15 @@ import { useQuery } from '@tanstack/react-query';
 
 import { useRoom } from '../../../contexts/RoomContext';
 
-export const useMessageSearchQuery = ({ searchText, limit, searchAll }: { searchText: string; limit: number; searchAll: boolean }) => {
+export const useMessageSearchQuery = ({
+	searchText,
+	limit,
+	globalSearch,
+}: {
+	searchText: string;
+	limit: number;
+	globalSearch: boolean;
+}) => {
 	const uid = useUserId() ?? undefined;
 	const room = useRoom();
 
@@ -12,10 +20,15 @@ export const useMessageSearchQuery = ({ searchText, limit, searchAll }: { search
 
 	const searchMessages = useMethod('rocketchatSearch.search');
 	return useQuery(
-		['rooms', room._id, 'message-search', { uid, rid: room._id, searchText, limit }] as const,
-		() => searchMessages(searchText, { uid, rid: room._id }, { limit, searchAll }),
+		['rooms', room._id, 'message-search', { uid, rid: room._id, searchText, limit, globalSearch }] as const,
+		async () => {
+			const {
+				message: { docs },
+			} = await searchMessages(searchText, { uid, rid: room._id }, { limit, searchAll: globalSearch });
+			return docs;
+		},
 		{
-			enabled: !!searchText,
+			keepPreviousData: true,
 			onError: () => {
 				dispatchToastMessage({
 					type: 'error',
