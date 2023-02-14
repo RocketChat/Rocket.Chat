@@ -6,7 +6,7 @@ import React from 'react';
 const CustomHomePageContent = (): ReactElement => {
 	const body = String(useSetting('Layout_Home_Body'));
 
-	return <Box withRichContent dangerouslySetInnerHTML={{ __html: body }} />;
+	return <Box role='status' aria-label={body} withRichContent dangerouslySetInnerHTML={{ __html: body }} />;
 };
 
 export default CustomHomePageContent;
