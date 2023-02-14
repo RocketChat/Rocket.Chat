@@ -7,7 +7,7 @@ import React from 'react';
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import CustomHomepageContent from '../CustomHomePageContent';
 
-const CustomCard = (): ReactElement | null => {
+const CustomContentCard = (): ReactElement | null => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -89,4 +89,4 @@ const CustomCard = (): ReactElement | null => {
 	return <CustomHomepageContent />;
 };
 
-export default CustomCard;
+export default CustomContentCard;

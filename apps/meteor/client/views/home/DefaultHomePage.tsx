@@ -9,7 +9,7 @@ import HomePageHeader from './HomePageHeader';
 import HomepageGridItem from './HomepageGridItem';
 import AddUsersCard from './cards/AddUsersCard';
 import CreateChannelsCard from './cards/CreateChannelsCard';
-import CustomCard from './cards/CustomCard';
+import CustomContentCard from './cards/CustomContentCard';
 import DesktopAppsCard from './cards/DesktopAppsCard';
 import DocumentationCard from './cards/DocumentationCard';
 import JoinRoomsCard from './cards/JoinRoomsCard';
@@ -62,7 +62,7 @@ const DefaultHomePage = (): ReactElement => {
 				</Grid>
 				{(isAdmin || (isCustomContentVisible && !isCustomContentBodyEmpty)) && (
 					<Box pbs='x16' mbe='x32'>
-						<CustomCard />
+						<CustomContentCard />
 					</Box>
 				)}
 			</PageScrollableContent>
