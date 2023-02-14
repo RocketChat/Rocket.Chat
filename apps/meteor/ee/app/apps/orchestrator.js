@@ -1,3 +1,5 @@
+import EventEmitter from 'events';
+
 import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
@@ -5,7 +7,6 @@ import { Apps as AppsModel, AppsLogs as AppsLogsModel, AppsPersistence as AppsPe
 
 import { Logger } from '../../../server/lib/logger/Logger';
 import { RealAppBridges } from './bridges';
-import { AppMethods, AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from '../../../app/apps/server/communication';
 import {
 	AppMessagesConverter,
 	AppRoomsConverter,
@@ -27,6 +28,7 @@ export class AppServerOrchestrator {
 	constructor(db) {
 		this.db = db;
 		this._isInitialized = false;
+		this.appEventsSink = new EventEmitter();
 	}
 
 	initialize({ marketplaceUrl = 'https://marketplace.rocket.chat', appsSourceStorageType, appsSourceStorageFilesystemPath }) {
@@ -67,12 +69,6 @@ export class AppServerOrchestrator {
 			sourceStorage: this._appSourceStorage,
 		});
 
-		this._communicators = new Map();
-		this._communicators.set('methods', new AppMethods(this));
-		this._communicators.set('notifier', new AppServerNotifier(this));
-		this._communicators.set('restapi', new AppsRestApi(this, this._manager));
-		this._communicators.set('uikit', new AppUIKitInteractionApi(this));
-
 		this._isInitialized = true;
 	}
 
@@ -103,8 +99,8 @@ export class AppServerOrchestrator {
 		return this._bridges;
 	}
 
-	getNotifier() {
-		return this._communicators.get('notifier');
+	notifyAppEvent(event, ...payload) {
+		this.appEventsSink.emit(event, ...payload);
 	}
 
 	getManager() {

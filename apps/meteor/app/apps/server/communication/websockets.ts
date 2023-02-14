@@ -144,6 +144,8 @@ export class AppServerNotifier {
 
 		this.received = new Map();
 		this.listener = new AppServerListener(this.engineStreamer, this.clientStreamer, this.received);
+
+		Apps.runOnAppEvent(this);
 	}
 
 	async appAdded(appId: string): Promise<void> {
@@ -166,7 +168,7 @@ export class AppServerNotifier {
 		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_UPDATED, appId);
 	}
 
-	async appStatusUpdated(appId: string, status: AppStatus): Promise<void> {
+	async appStatusChange(appId: string, status: AppStatus): Promise<void> {
 		if (this.received.has(`${AppEvents.APP_STATUS_CHANGE}_${appId}`)) {
 			const details = this.received.get(`${AppEvents.APP_STATUS_CHANGE}_${appId}`);
 			if (details.status === status) {
@@ -179,7 +181,7 @@ export class AppServerNotifier {
 		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_STATUS_CHANGE, { appId, status });
 	}
 
-	async appSettingsChange(appId: string, setting: ISetting): Promise<void> {
+	async appSettingUpdated(appId: string, setting: ISetting): Promise<void> {
 		if (this.received.has(`${AppEvents.APP_SETTING_UPDATED}_${appId}_${setting._id}`)) {
 			this.received.delete(`${AppEvents.APP_SETTING_UPDATED}_${appId}_${setting._id}`);
 			return;

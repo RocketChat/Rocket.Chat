@@ -11,6 +11,8 @@ import { settings } from '../../../app/settings/server';
 import { ServiceClass } from '../../../server/sdk/types/ServiceClass';
 import type { AppServerOrchestrator } from './orchestrator';
 import { OrchestratorFactory } from './orchestratorFactory';
+import { AppEvents } from '../../../app/apps/server/communication';
+import type { AppServerNotifier } from '../../../app/apps/server/communication';
 
 type AppsInitParams = {
 	appsSourceStorageFilesystemPath: any;
@@ -117,5 +119,21 @@ export class AppsOrchestratorService extends ServiceClass implements IAppsServic
 
 	setFileSystemStoragePath(value: string): void {
 		return this.apps.getAppSourceStorage()?.setFileSystemStoragePath(value);
+	}
+
+	runOnAppEvent(listener: AppServerNotifier): void {
+		Object.entries(AppEvents).forEach(([key, value]) => {
+			this.apps.appEventsSink.on(value, (...args) => {
+				const method =
+					key.toLowerCase().split('_')[0] +
+					key
+						.toLowerCase()
+						.split('_')
+						.map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+						.flat()
+						.join('');
+				listener[method](...args);
+			});
+		});
 	}
 }

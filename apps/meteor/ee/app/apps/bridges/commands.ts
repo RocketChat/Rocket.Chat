@@ -4,6 +4,7 @@ import type { SlashCommand } from '@rocket.chat/core-typings';
 
 import { Utilities } from '../../../../app/apps/lib/misc/Utilities';
 import type { AppServerOrchestrator } from '../orchestrator';
+import { AppEvents } from '../../../../app/apps/server/communication';
 import { SlashCommandService } from '../../../../server/sdk';
 
 export class AppCommandsBridge extends CommandBridge {
@@ -41,7 +42,7 @@ export class AppCommandsBridge extends CommandBridge {
 		await SlashCommandService.setAppCommand(this.disabledCommands.get(cmd) as SlashCommand);
 		this.disabledCommands.delete(cmd);
 
-		this.orch.getNotifier().commandUpdated(cmd);
+		this.orch.notifyAppEvent(AppEvents.COMMAND_UPDATED, cmd);
 	}
 
 	protected async disableCommand(command: string, appId: string): Promise<void> {
@@ -66,7 +67,7 @@ export class AppCommandsBridge extends CommandBridge {
 		this.disabledCommands.set(cmd, commandObj);
 		await SlashCommandService.removeCommand(cmd);
 
-		this.orch.getNotifier().commandDisabled(cmd);
+		this.orch.notifyAppEvent(AppEvents.COMMAND_DISABLED, cmd);
 	}
 
 	// command: { command, paramsExample, i18nDescription, executor: function }
@@ -90,7 +91,7 @@ export class AppCommandsBridge extends CommandBridge {
 		item.previewCallback = !command.executePreviewItem ? undefined : ({} as any);
 		await SlashCommandService.setAppCommand(item);
 
-		this.orch.getNotifier().commandUpdated(cmd);
+		this.orch.notifyAppEvent(AppEvents.COMMAND_UPDATED, cmd);
 	}
 
 	protected async registerCommand(command: ISlashCommand, appId: string): Promise<void> {
@@ -110,7 +111,7 @@ export class AppCommandsBridge extends CommandBridge {
 		} as SlashCommand;
 
 		await SlashCommandService.setAppCommand(item);
-		this.orch.getNotifier().commandAdded(command.command.toLowerCase());
+		this.orch.notifyAppEvent(AppEvents.COMMAND_ADDED, command.command.toLowerCase());
 	}
 
 	protected async unregisterCommand(command: string, appId: string): Promise<void> {
@@ -124,7 +125,7 @@ export class AppCommandsBridge extends CommandBridge {
 		this.disabledCommands.delete(cmd);
 		await SlashCommandService.removeCommand(cmd);
 
-		this.orch.getNotifier().commandRemoved(cmd);
+		this.orch.notifyAppEvent(AppEvents.COMMAND_REMOVED, cmd);
 	}
 
 	private _verifyCommand(command: ISlashCommand): void {

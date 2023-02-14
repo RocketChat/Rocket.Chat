@@ -84,3 +84,4 @@ import './stream/streamBroadcast';
 import './settings/index';
 
 import './features/EmailInbox/index';
+import '../app/apps/server/communication/startup';
