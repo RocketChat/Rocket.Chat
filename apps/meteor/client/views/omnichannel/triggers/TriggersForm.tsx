@@ -128,7 +128,7 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, className }) => {
 	return (
 		<>
 			<Field className={className}>
-				<Box display='flex' flexDirection='row'>
+				<Box data-qa='TriggerToggle-Enabled' display='flex' flexDirection='row'>
 					<Field.Label>{t('Enabled')}</Field.Label>
 					<Field.Row>
 						<ToggleSwitch checked={valueEnabled} onChange={handleEnabled} />
@@ -136,7 +136,7 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, className }) => {
 				</Box>
 			</Field>
 			<Field className={className}>
-				<Box display='flex' flexDirection='row'>
+				<Box data-qa='TriggerToggle-RunOnce' display='flex' flexDirection='row'>
 					<Field.Label>{t('Run_only_once_for_each_visitor')}</Field.Label>
 					<Field.Row>
 						<ToggleSwitch checked={valueRunOnce} onChange={handleRunOnce} />
@@ -157,7 +157,7 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, className }) => {
 			<Field className={className}>
 				<Field.Label>{t('Description')}</Field.Label>
 				<Field.Row>
-					<TextInput {...register('description')} placeholder={t('Description')} />
+					<TextInput data-qa='TriggerTextInput-Description' {...register('description')} placeholder={t('Description')} />
 				</Field.Row>
 			</Field>
 			<Field className={className}>
@@ -167,7 +167,11 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, className }) => {
 				</Field.Row>
 				{conditionValuePlaceholder && (
 					<Field.Row>
-						<TextInput {...register('conditions.value')} placeholder={conditionValuePlaceholder} />
+						<TextInput
+							data-qa='TriggerTextInput-ConditionValue'
+							{...register('conditions.value')}
+							placeholder={conditionValuePlaceholder}
+						/>
 					</Field.Row>
 				)}
 			</Field>
@@ -181,12 +185,13 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, className }) => {
 				</Field.Row>
 				{actionSender === 'custom' && (
 					<Field.Row>
-						<TextInput {...register('actions.params.name')} placeholder={t('Name_of_agent')} />
+						<TextInput data-qa='TriggerTextInput-ActionAgentName' {...register('actions.params.name')} placeholder={t('Name_of_agent')} />
 					</Field.Row>
 				)}
 				<Field.Row>
 					<TextAreaInput
 						rows={3}
+						data-qa='TriggerTextAreaInput-ActionMsg'
 						{...register('actions.params.msg', { required: t('The_field_is_required', t('Message')) })}
 						placeholder={`${t('Message')}*`}
 					/>

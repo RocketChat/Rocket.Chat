@@ -26,4 +26,8 @@ export class OmnichannelSidenav {
 	get linkCurrentChats(): Locator {
 		return this.page.locator('a[href="omnichannel/current"]');
 	}
+
+	get linkTriggers(): Locator {
+		return this.page.locator('a[href="/omnichannel/triggers"]');
+	}
 }
