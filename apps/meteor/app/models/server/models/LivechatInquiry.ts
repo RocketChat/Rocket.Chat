@@ -1,5 +1,5 @@
 import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
-import type { FindOptions, FindCursor, UpdateResult, DeleteResult } from 'mongodb';
+import type { FindOptions, FindCursor, UpdateResult } from 'mongodb';
 
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { Base } from './_Base';
@@ -257,13 +257,6 @@ export class LivechatInquiry extends Base {
 				$unset: { defaultAgent: 1 },
 			},
 		);
-	}
-
-	/*
-	 * remove the inquiry by roomId
-	 */
-	removeByRoomId(rid: string): DeleteResult {
-		return this.remove({ rid });
 	}
 
 	removeByVisitorToken(token: string): void {
