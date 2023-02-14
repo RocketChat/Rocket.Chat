@@ -4,7 +4,7 @@ import { Option, OptionTitle, OptionIcon, OptionContent } from '@rocket.chat/fus
 import { useSetting, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import ShareLocationModal from '../../../../../ShareLocation/ShareLocationModal';
+import ShareLocationModal from '../../../../../../ShareLocation/ShareLocationModal';
 
 const ShareLocationAction = ({ room, tmid }: { room: IRoom; tmid?: string }) => {
 	const t = useTranslation();
