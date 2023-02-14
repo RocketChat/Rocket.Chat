@@ -1,4 +1,5 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { sanitize } from 'dompurify';
 
 export function truncate(str: string, length: number): string {
 	return str.length > length ? `${str.slice(0, length - 3)}...` : str;
@@ -48,7 +49,7 @@ export function capitalize(_str: unknown, lowercaseRest: boolean): string {
 }
 
 export function stripTags(str: unknown): string {
-	return makeString(str).replace(/<\/?[^>]+>/g, '');
+	return sanitize(makeString(str)).replace(/<\/?[^>]+>/g, '');
 }
 
 export function strLeft(_str: unknown, _sep: unknown): string {
