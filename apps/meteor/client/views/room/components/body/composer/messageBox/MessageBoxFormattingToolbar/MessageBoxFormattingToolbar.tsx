@@ -2,9 +2,9 @@ import { MessageComposerAction } from '@rocket.chat/ui-composer';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
-import type { FormattingButton } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
-import { popover } from '../../../../../../../app/ui-utils/client';
-import type { ComposerAPI } from '../../../../../../lib/chats/ChatAPI';
+import type { FormattingButton } from '../../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
+import type { ComposerAPI } from '../../../../../../../lib/chats/ChatAPI';
+import FormattingToolbarDropdown from './FormattingToolbarDropdown';
 
 type MessageBoxFormattingToolbarProps = {
 	disabled: boolean;
@@ -17,50 +17,23 @@ export const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer
 	const t = useTranslation();
 
 	if (variant === 'small') {
-		return (
-			<MessageComposerAction
-				{...props}
-				onClick={(event): void => {
-					const config = {
-						popoverClass: 'message-box',
-						columns: [
-							{
-								groups: [
-									{
-										title: t('Message_Formatting_Toolbox'),
-										items: items.map((item) =>
-											'icon' in item
-												? {
-														icon: item.icon,
-														name: t(item.label),
-														type: 'messagebox-action',
-														id: item.label,
-														action: () => composer.wrapSelection(item.pattern),
-												  }
-												: {
-														icon: 'link',
-														name: item.label,
-														type: 'messagebox-action',
-														id: item.label,
-														action: () => window.open(item.link, '_blank'),
-												  },
-										),
-									},
-								],
-							},
-						],
-						offsetVertical: 10,
-						direction: 'top-inverted',
-						currentTarget: event.currentTarget,
-						activeElement: event.currentTarget,
-					};
+		const collapsedItems = [...items];
+		const featuredFormatter = collapsedItems.splice(0, 1)[0];
 
-					popover.open(config);
-				}}
-				icon='bold'
-			/>
+		return (
+			<>
+				{'icon' in featuredFormatter && (
+					<MessageComposerAction
+						{...props}
+						onClick={() => composer.wrapSelection(featuredFormatter.pattern)}
+						icon={featuredFormatter.icon}
+					/>
+				)}
+				<FormattingToolbarDropdown {...props} composer={composer} items={collapsedItems} />;
+			</>
 		);
 	}
+
 	return (
 		<>
 			{items.map((formatter) =>

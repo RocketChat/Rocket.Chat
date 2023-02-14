@@ -4,7 +4,7 @@ import { Option, OptionIcon, OptionContent } from '@rocket.chat/fuselage';
 import { useTranslation, useSetting, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import CreateDiscussion from '../../../../../../../components/CreateDiscussion';
+import CreateDiscussion from '../../../../../../../../components/CreateDiscussion';
 
 const CreateDiscussionAction = ({ room }: { room: IRoom }) => {
 	const setModal = useSetModal();
