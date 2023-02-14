@@ -1,0 +1,81 @@
+@import '../../styles/colors';
+@import '../../styles/helpers';
+@import '../../styles/variables';
+
+$composer-padding: 12px 6px;
+$composer-border-width: $default-border;
+$composer-border-color: $color-text-light;
+$composer-border-radius: $default-border-radius;
+$composer-background-color: $bg-color-white;
+$composer-focused-border-color: $color-text-grey;
+
+$composer-input-min-height: 20px;
+$composer-input-max-height: 150px;
+$composer-input-padding: 2px 6px;
+$composer-input-color: $bg-color-dark;
+$composer-input-font-size: 0.875rem;
+$composer-input-font-weight: 500;
+$composer-input-line-height: 1.25rem;
+$composer-input-placeholder-color: $color-text-light;
+
+.composer {
+	display: flex;
+
+	width: 100%;
+	padding: $composer-padding;
+
+	transition: all $default-time-animation;
+
+	border: $composer-border-width solid $composer-border-color;
+	border-radius: $composer-border-radius;
+	background-color: $composer-background-color;
+	align-items: flex-end;
+
+	&:focus-within {
+		border-color: $composer-focused-border-color;
+	}
+
+	&__input {
+		overflow-y: auto;
+		flex: 1 1 auto;
+
+		min-height: $composer-input-min-height;
+		max-height: $composer-input-max-height;
+		padding: $composer-input-padding;
+
+		resize: none;
+
+		cursor: text;
+		word-wrap: break-word;
+
+		color: $composer-input-color;
+
+		border: none;
+		outline: none;
+
+		font-size: $composer-input-font-size;
+		font-weight: $composer-input-font-weight;
+		line-height: $composer-input-line-height;
+
+		&:empty::before {
+			display: block; /* For Firefox */
+
+			overflow: hidden;
+
+			max-width: 100%;
+
+			content: attr(data-placeholder);
+			white-space: nowrap;
+
+			text-overflow: ellipsis;
+
+			color: $composer-input-placeholder-color;
+		}
+	}
+
+	&--connecting {
+		.composer__input {
+			cursor: default;
+		}
+	}
+}

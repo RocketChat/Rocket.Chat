@@ -1,0 +1,15 @@
+{
+    "translation": {
+        "are_you_sure_you_want_to_switch_the_department": "តើអ្នកពិតជាចង់ផ្លាស់ប្តូរនាយកដ្ឋានឬ?",
+        "cancel": "បោះបង់",
+        "conversation_finished": "សន្ទនាបានបញ្ចប់",
+        "department_switched": "នាយកដ្ឋានបានប្តូរ",
+        "no": "ទេ",
+        "options": "ជម្រើស",
+        "send": "ផ្ញើ",
+        "user_joined": "អ្នកប្រ",
+        "user_left": "អ្នកប្រើបានចាកចេញ",
+        "we_are_not_online_right_now_please_leave_a_message": "យើងមិននៅលើអ៊ីនធឺរណែតឥឡូវនេះទេ។ សូមទុកសារ។",
+        "yes": "បាទ"
+    }
+}

@@ -1,0 +1,93 @@
+@import '../../styles/colors';
+@import '../../styles/variables';
+
+$avatar-size-small: 20px;
+$avatar-status-indicator-size-small: 10px;
+$avatar-size-medium: 32px;
+$avatar-status-indicator-size-medium: 12px;
+$avatar-size-large: 46px;
+$avatar-status-indicator-size-large: 14px;
+
+.avatar {
+	position: relative;
+
+	flex: 0 0 auto;
+
+	width: $avatar-size-medium;
+	height: $avatar-size-medium;
+
+	border-radius: $default-border-radius;
+	background-color: #000000;
+	background-image: url(./profile.png);
+	background-repeat: no-repeat;
+	background-position: right;
+	background-size: contain;
+
+	&__image {
+		width: 100%;
+		height: 100%;
+
+		color: transparent;
+		border-radius: $default-border-radius;
+		object-fit: cover;
+	}
+
+	&__status {
+		position: absolute;
+		right: -2px;
+		bottom: -3px;
+
+		overflow: hidden;
+
+		width: $avatar-status-indicator-size-medium;
+		height: $avatar-status-indicator-size-medium;
+
+		border: 2px solid var(--color, transparent);
+		border-radius: 50%;
+		background-color: $bg-color-grey;
+
+		&--small {
+			right: -2px;
+			bottom: -2px;
+
+			width: $avatar-status-indicator-size-small;
+			height: $avatar-status-indicator-size-small;
+		}
+
+		&--large {
+			right: -2px;
+			bottom: -4px;
+
+			width: $avatar-status-indicator-size-large;
+			height: $avatar-status-indicator-size-large;
+		}
+
+		&--status {
+			&-online {
+				background-color: $color-green;
+			}
+
+			&-away {
+				background-color: $color-yellow;
+			}
+
+			&-busy {
+				background-color: $color-red;
+			}
+		}
+	}
+
+	&--nobg {
+		background: none;
+	}
+
+	&--small {
+		width: $avatar-size-small;
+		height: $avatar-size-small;
+	}
+
+	&--large {
+		width: $avatar-size-large;
+		height: $avatar-size-large;
+	}
+}

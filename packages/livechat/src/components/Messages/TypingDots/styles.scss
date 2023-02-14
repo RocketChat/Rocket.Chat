@@ -1,0 +1,46 @@
+@import '../../../styles/colors';
+@import '../../../styles/helpers';
+@import '../../../styles/variables';
+
+$typing-dots-dot-size: 8px;
+$typing-dots-dot-margin: 0 2px;
+$typing-dots-dot-color: $color-text-grey;
+$typing-dots-dot-highlight-color: $bg-color-grey;
+$typing-dots-dot-animation-time: 3 * $default-time-animation;
+$typing-dots-dot-animation-delay-gap: $default-time-animation;
+
+.typing-dots {
+	text-align: center;
+
+	&__dot {
+		display: inline-block;
+
+		width: $typing-dots-dot-size;
+		height: $typing-dots-dot-size;
+		margin: $typing-dots-dot-margin;
+
+		animation: typing-dots__indicator $typing-dots-dot-animation-time infinite alternate;
+		vertical-align: middle;
+
+		border-radius: 50%;
+		background-color: $typing-dots-dot-color;
+
+		&:nth-of-type(2) {
+			animation-delay: $typing-dots-dot-animation-delay-gap;
+		}
+
+		&:nth-of-type(3) {
+			animation-delay: (2 * $typing-dots-dot-animation-delay-gap);
+		}
+	}
+}
+
+@include keyframes('typing-dots__indicator') {
+	0% {
+		background-color: $typing-dots-dot-color;
+	}
+
+	100% {
+		background: $typing-dots-dot-highlight-color;
+	}
+}

@@ -1,0 +1,8 @@
+$video-attachment-max-height: 250px;
+
+.video-attachment {
+	&__inner {
+		max-width: 100%;
+		max-height: $video-attachment-max-height;
+	}
+}

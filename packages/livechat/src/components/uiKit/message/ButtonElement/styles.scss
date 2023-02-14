@@ -1,0 +1,117 @@
+@use 'sass:math';
+
+@import '../../../../styles/colors';
+@import '../../../../styles/helpers';
+@import '../../../../styles/variables';
+
+.uikit-button {
+	position: relative;
+
+	display: flex;
+	flex-direction: row;
+
+	box-sizing: border-box;
+	padding: 2px 6px;
+
+	cursor: pointer;
+	user-select: none;
+	transition:
+		color $default-time-animation,
+		background-color $default-time-animation,
+		border-color $default-time-animation,
+		transform math.div($default-time-animation, 2);
+	white-space: nowrap;
+	text-decoration: none;
+
+	color: $color-text-grey;
+
+	border: $default-border solid;
+
+	border-color: $bg-color-grey;
+	border-radius: (2 * $default-border-radius);
+	outline: none;
+	background-color: $bg-color-white;
+
+	font-family: $font-family;
+	font-size: 0.875rem;
+	font-weight: normal;
+	line-height: 1.25rem;
+	align-items: center;
+	justify-content: center;
+
+	@include pressable-button(2px, $default-border);
+
+	&:focus {
+		box-shadow: 0 0 5px rgba(#000000, 0.5);
+	}
+
+	&::after {
+		position: relative;
+		left: 4px;
+
+		visibility: hidden;
+
+		box-sizing: border-box;
+
+		width: 0;
+		height: 0;
+		margin-right: 2px;
+
+		content: "";
+
+		transition:
+			opacity math.div($default-time-animation, 2),
+			border-width math.div($default-time-animation, 2),
+			width math.div($default-time-animation, 2),
+			height math.div($default-time-animation, 2),
+			visibility math.div($default-time-animation, 2);
+		animation: button-loading-rotation 1s linear infinite;
+
+		opacity: 0;
+		border-width: 0;
+
+		border-style: solid;
+
+		border-color:
+			currentColor
+			currentColor
+			currentColor
+			transparent;
+		border-radius: 50%;
+	}
+
+	&:hover:not(:disabled) {
+		color: $color-text-dark;
+		background-color: $bg-color-grey;
+	}
+
+	&:disabled {
+		cursor: default;
+
+		opacity: $disabled-opacity;
+
+		&::before {
+			cursor: default;
+		}
+	}
+
+	&--style-primary {
+		color: var(--color, $color-blue);
+
+		&:hover:not(:disabled) {
+			color: $color-text-lighter;
+			border-color: var(--color, $color-blue);
+			background-color: var(--color, $color-blue);
+		}
+	}
+
+	&--style-danger {
+		color: $color-dark-red;
+
+		&:hover:not(:disabled) {
+			color: $color-text-lighter;
+			border-color: $color-dark-red;
+			background-color: $color-dark-red;
+		}
+	}
+}

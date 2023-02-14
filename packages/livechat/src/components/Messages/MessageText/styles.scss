@@ -1,0 +1,43 @@
+@import '../../../styles/colors';
+@import '../../../styles/variables';
+
+$message-text-font-size: 0.875rem;
+
+.message-text {
+	word-wrap: break-word;
+	word-break: break-word;
+
+	font-size: $message-text-font-size;
+
+	a {
+		text-decoration: underline dotted;
+
+		&:hover,
+		&:focus {
+			text-decoration-style: solid;
+		}
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6,
+	p {
+		margin: 0;
+		padding: 0;
+	}
+
+	&--system {
+		width: 200px;
+
+		color: $color-text-grey-system;
+
+		font-size: 0.75rem;
+
+		em {
+			font-style: normal;
+		}
+	}
+}

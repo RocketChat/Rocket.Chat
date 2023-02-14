@@ -1,5 +1,0 @@
-_caddy-url_
-proxy / localhost:_port_ {
-  websocket
-  transparent
-}

@@ -1,0 +1,55 @@
+//----- Grid System
+@use 'sass:math';
+
+@import "helpers";
+
+//----- Extends
+%clearfix::after {
+	display: block;
+	clear: both;
+
+	content: '';
+}
+
+$grid-spacing: 3%;
+
+.row {
+	@extend %clearfix;
+
+	& + & {
+		margin-top: $grid-spacing;
+	}
+}
+
+[class^="col-"] {
+	float: left;
+
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	margin-right: $grid-spacing;
+
+	&:last-child {
+		margin-right: 0%;
+	}
+}
+
+$cols: 12;
+
+@for $i from 1 through $cols {
+	.col-#{$i},
+	%col-#{$i} {
+		width: math.div(100%, math.div($cols, $i)) - ($grid-spacing * math.div(($cols - $i), $cols));
+	}
+}
+
+@each $breakpoint, $value in ($breakpoints) {
+	@include md($breakpoint) {
+		@for $i from 1 through $cols {
+			.col-#{$breakpoint}-#{$i},
+			%col-#{$breakpoint}-#{$i} {
+				width: math.div(100%, math.div($cols, $i)) - ($grid-spacing * math.div(($cols - $i), $cols));
+			}
+		}
+	}
+}

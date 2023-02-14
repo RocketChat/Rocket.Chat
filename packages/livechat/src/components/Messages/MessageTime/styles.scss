@@ -1,0 +1,40 @@
+@use 'sass:math';
+
+@import '../../../styles/colors';
+@import '../../../styles/variables';
+
+$message-time-margin: 0 math.div($default-gap, 2);
+$message-time-font-size: 0.625rem;
+$message-time-line-height: 1rem;
+$message-time-color: $color-text-grey;
+
+.message-time {
+	position: absolute;
+
+	margin: $message-time-margin;
+
+	user-select: none;
+	white-space: nowrap;
+
+	color: $message-time-color;
+
+	font-size: $message-time-font-size;
+	line-height: $message-time-line-height;
+	justify-self: end;
+
+	&-wrapper {
+		position: relative;
+
+		& > .message-time {
+			bottom: -16px;
+
+			&--normal {
+				right: 0;
+			}
+
+			&--inverted {
+				left: 0;
+			}
+		}
+	}
+}

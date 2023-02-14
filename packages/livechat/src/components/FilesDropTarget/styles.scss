@@ -1,0 +1,77 @@
+@import '../../styles/colors';
+@import '../../styles/variables';
+
+$drop-overlay-animation-time: $default-time-animation;
+$drop-overlay-background-color: rgba($bg-color-white, 0.9);
+$drop-overlay-gap: $default-padding;
+$drop-overlay-border-width: 4px;
+$drop-overlay-border-style: dashed;
+$drop-overlay-text-font-size: 1.375rem;
+
+.drop {
+	position: relative;
+
+	display: flex;
+	overflow: hidden;
+
+	flex-direction: column;
+	flex: 1 1 auto;
+
+	&.drop--overlayed.drop--dragover {
+		&::before {
+			position: absolute;
+			z-index: 10;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+
+			content: "";
+			animation: fadein $drop-overlay-animation-time;
+			pointer-events: none;
+
+			background-color: $drop-overlay-background-color;
+		}
+
+		&::after {
+			position: absolute;
+			z-index: 10;
+			top: $drop-overlay-gap;
+			right: $drop-overlay-gap;
+			bottom: $drop-overlay-gap;
+			left: $drop-overlay-gap;
+
+			display: flex;
+
+			box-sizing: border-box;
+			padding: $drop-overlay-gap;
+
+			content: attr(data-overlay-text) "";
+			animation: fadein $drop-overlay-animation-time;
+			text-align: center;
+			pointer-events: none;
+
+			color: var(--color, $color-blue);
+			border: $drop-overlay-border-width var(--color, $color-blue) $drop-overlay-border-style;
+
+			font-size: $drop-overlay-text-font-size;
+			font-weight: 500;
+			align-items: center;
+			justify-content: center;
+		}
+	}
+
+	&__input {
+		display: none;
+	}
+}
+
+@keyframes fadein {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}

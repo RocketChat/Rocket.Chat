@@ -1,0 +1,53 @@
+@import '../../../styles/colors';
+
+$file-attachment-min-width: 180px;
+$file-attachment-height: 2rem;
+$file-attachment-color: $color-text-dark;
+$file-attachment-font-size: 0.75rem;
+$file-attachment-line-height: 1rem;
+$file-attachment-title-margin: 0 8px;
+$file-attachment-download-color: $color-text-light;
+$file-attachment-download-highlight-color: $color-blue;
+
+.file-attachment {
+	& &__inner {
+		display: flex;
+
+		width: 100%;
+		min-width: $file-attachment-min-width;
+		height: $file-attachment-height;
+
+		text-decoration: none;
+		letter-spacing: 0;
+
+		color: $file-attachment-color;
+
+		font-size: $file-attachment-font-size;
+		font-weight: 500;
+		line-height: $file-attachment-line-height;
+		align-items: center;
+		flex-flow: row nowrap;
+
+		:focus,
+		&:hover {
+			.file-attachment__download-button {
+				color: var(--color, $file-attachment-download-highlight-color);
+			}
+		}
+	}
+
+	& &__title {
+		display: block;
+		overflow: hidden;
+		flex: 1 1 0;
+
+		margin: $file-attachment-title-margin;
+
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+
+	& &__download-button {
+		color: $file-attachment-download-color;
+	}
+}

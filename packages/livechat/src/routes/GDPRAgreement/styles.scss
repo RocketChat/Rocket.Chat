@@ -1,0 +1,27 @@
+@import '../../styles/colors';
+
+.gdpr {
+	&__consent-text {
+		margin: 0 0 1rem;
+
+		letter-spacing: 0;
+
+		color: $color-text-grey;
+
+		font-size: 1rem;
+		font-weight: normal;
+		line-height: 1.5rem;
+	}
+
+	&__instructions {
+		margin: 0 0 1.5rem;
+
+		letter-spacing: 0;
+
+		color: $color-text-grey;
+
+		font-size: 0.75rem;
+		font-weight: normal;
+		line-height: 1.1875rem;
+	}
+}

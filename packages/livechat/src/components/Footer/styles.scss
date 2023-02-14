@@ -1,0 +1,92 @@
+@import '../../styles/colors';
+@import '../../styles/helpers';
+@import '../../styles/variables';
+
+.footer {
+	display: flex;
+	flex-direction: column;
+	flex: 0 0 auto;
+
+	width: 100%;
+	padding: 4px 8px;
+
+	color: $color-text-grey;
+
+	font-size: 0.625rem;
+	align-items: stretch;
+	justify-content: space-between;
+
+	&__content {
+		display: flex;
+
+		padding: 4px 8px;
+	}
+
+	&__options {
+		padding: 0;
+
+		cursor: pointer;
+		user-select: none;
+		transition: trasform $default-time-animation;
+		text-align: left;
+		letter-spacing: 0.2px;
+
+		color: $color-text-grey;
+		border: none;
+		background: none;
+
+		font-size: 0.625rem;
+		font-weight: bold;
+		line-height: 1;
+
+		&:hover,
+		&:focus {
+			color: black;
+		}
+
+		@include pressable-button(2px);
+	}
+
+	&__remainder {
+		min-width: 100px;
+		margin-left: 10px;
+
+		font-weight: bold;
+
+		&--highlight {
+			transition: color 0.2s;
+
+			color: $color-red;
+		}
+	}
+}
+
+.powered-by {
+	width: 100%;
+	margin: 0;
+
+	user-select: none;
+	text-align: end;
+
+	font-size: 10px;
+	font-weight: 500;
+	align-self: flex-end;
+
+	.powered-by__logo {
+		display: inline-flex;
+
+		height: 10px;
+		margin: 0 5px;
+
+		vertical-align: middle;
+		align-items: center;
+
+		svg {
+			fill: #{$color-text-grey};
+
+			&:hover {
+				fill: #db2323;
+			}
+		}
+	}
+}
