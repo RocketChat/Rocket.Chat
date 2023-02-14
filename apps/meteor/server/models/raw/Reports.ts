@@ -69,7 +69,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			{
 				$group: {
 					_id: { message: '$msg.message', user: '$message.u._id' },
-					reports: { $push: '$$ROOT' },
+					reports: { $first: '$$ROOT' },
 				},
 			},
 			{ $match: { ...query, ...cquery } },
@@ -304,7 +304,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			{
 				$group: {
 					_id: { message: '$message.msg', user: '$message.u._id' },
-					reports: { $push: '$$ROOT' },
+					reports: { $first: '$$ROOT' },
 				},
 			},
 			{ $match: { ...query, ...cquery } },
@@ -363,7 +363,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			{
 				$group: {
 					_id: { message: '$message.msg', user: '$message.u._id' },
-					reports: { $push: '$$ROOT' },
+					reports: { $first: '$$ROOT' },
 				},
 			},
 			{ $match: { ...query, ...cquery } },
@@ -442,7 +442,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 	// 		return this.col.estimatedDocumentCount(query);
 	// 	}
 
-	async countGroupedReports(latest?: number, oldest?: number, selector?: string): Promise<number> {
+	async countGroupedReports(latest?: Date, oldest?: Date, selector?: string): Promise<number> {
 		const query = {
 			'reports._hidden': {
 				$ne: true,
@@ -484,7 +484,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			{
 				$group: {
 					_id: { message: '$message.msg', user: '$message.u._id' },
-					reports: { $push: '$$ROOT' },
+					reports: { $first: '$$ROOT' },
 				},
 			},
 			{ $match: { ...query, ...cquery } },
@@ -494,8 +494,6 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		];
 
 		const result = await this.col.aggregate(params, { allowDiskUse: true }).toArray();
-
-		console.log(result);
 
 		return result[0]?.total_count || 0;
 	}
