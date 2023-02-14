@@ -19,10 +19,6 @@
 /* Typography */
 @import 'imports/general/typography.css';
 
-/* Sidebar */
-@import 'imports/components/sidebar/sidebar.css';
-@import 'imports/components/sidebar/rooms-list.css';
-
 /* Main */
 @import 'imports/components/flex-nav.css';
 @import 'imports/components/header.css';
@@ -33,8 +29,6 @@
 @import 'imports/components/popout.css';
 @import 'imports/components/modal.css';
 @import 'imports/components/messages.css';
-@import 'imports/components/read-receipts.css';
-@import 'imports/components/contextual-bar.css';
 @import 'imports/components/emojiPicker.css';
 
 /* User Info */

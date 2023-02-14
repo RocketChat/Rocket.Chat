@@ -13,7 +13,7 @@ const AddUsersCard = (): ReactElement => {
 	};
 
 	return (
-		<Card variant='light' data-qa-id='homepage-add-users-card'>
+		<Card data-qa-id='homepage-add-users-card'>
 			<Card.Title>{t('Add_users')}</Card.Title>
 			<Card.Body>{t('Invite_and_add_members_to_this_workspace_to_start_communicating')}</Card.Body>
 			<Card.FooterWrapper>

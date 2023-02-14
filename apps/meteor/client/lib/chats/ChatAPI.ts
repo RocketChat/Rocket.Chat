@@ -1,5 +1,8 @@
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { UIEvent } from 'react';
 
+import type { FormattingButton } from '../../../app/ui-message/client/messageBox/messageBoxFormatting';
+import type { Subscribable } from '../../definitions/Subscribable';
 import type { Upload } from './Upload';
 
 export type ComposerAPI = {
@@ -14,17 +17,30 @@ export type ComposerAPI = {
 				| ((previous: { readonly start: number; readonly end: number }) => { readonly start?: number; readonly end?: number });
 		},
 	): void;
+	wrapSelection(pattern: string): void;
+	insertText(text: string): void;
+	insertNewLine(): void;
 	clear(): void;
 	focus(): void;
+
+	setCursorToEnd(): void;
+	setCursorToStart(): void;
 	replyWith(text: string): Promise<void>;
 	quoteMessage(message: IMessage): Promise<void>;
 	dismissQuotedMessage(mid: IMessage['_id']): Promise<void>;
 	dismissAllQuotedMessages(): Promise<void>;
-	readonly quotedMessages: {
-		get(): IMessage[];
-		subscribe(callback: () => void): () => void;
-	};
+	readonly quotedMessages: Subscribable<IMessage[]>;
+
 	setEditingMode(editing: boolean): void;
+	readonly editing: Subscribable<boolean>;
+
+	setRecordingMode(recording: boolean): void;
+	readonly recording: Subscribable<boolean>;
+
+	setRecordingVideo(recording: boolean): void;
+	readonly recordingVideo: Subscribable<boolean>;
+
+	readonly formatters: Subscribable<FormattingButton[]>;
 };
 
 export type DataAPI = {
@@ -57,6 +73,10 @@ export type DataAPI = {
 	markRoomAsRead(): Promise<void>;
 	findDiscussionByID(drid: IRoom['_id']): Promise<IRoom | undefined>;
 	getDiscussionByID(drid: IRoom['_id']): Promise<IRoom>;
+	findSubscription(): Promise<ISubscription | undefined>;
+	getSubscription(): Promise<ISubscription>;
+	findSubscriptionFromMessage(message: IMessage): Promise<ISubscription | undefined>;
+	getSubscriptionFromMessage(message: IMessage): Promise<ISubscription>;
 };
 
 export type UploadsAPI = {
@@ -77,6 +97,7 @@ export type ChatAPI = {
 		toNextMessage(): Promise<void>;
 		editMessage(message: IMessage, options?: { cursorAtStart?: boolean }): Promise<void>;
 	};
+
 	readonly currentEditing:
 		| {
 				readonly mid: IMessage['_id'];
@@ -85,13 +106,26 @@ export type ChatAPI = {
 				cancel(): Promise<void>;
 		  }
 		| undefined;
+
+	readonly userCard: {
+		open(username: string): (event: UIEvent) => void;
+		close(): void;
+	};
+
+	readonly action: {
+		start(action: 'typing'): void;
+		stop(action: 'typing' | 'recording' | 'uploading' | 'playing'): void;
+		performContinuously(action: 'recording' | 'uploading' | 'playing'): void;
+	};
+
 	readonly flows: {
 		readonly uploadFiles: (files: readonly File[]) => Promise<void>;
-		readonly sendMessage: ({ text, tshow }: { text: string; tshow?: boolean }) => Promise<void>;
+		readonly sendMessage: ({ text, tshow }: { text: string; tshow?: boolean }) => Promise<boolean>;
 		readonly processSlashCommand: (message: IMessage) => Promise<boolean>;
 		readonly processTooLongMessage: (message: IMessage) => Promise<boolean>;
 		readonly processMessageEditing: (message: Pick<IMessage, '_id' | 't'> & Partial<Omit<IMessage, '_id' | 't'>>) => Promise<boolean>;
 		readonly processSetReaction: (message: Pick<IMessage, 'msg'>) => Promise<boolean>;
 		readonly requestMessageDeletion: (message: IMessage) => Promise<void>;
+		readonly replyBroadcast: (message: IMessage) => Promise<void>;
 	};
 };

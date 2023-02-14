@@ -11,6 +11,7 @@ import type { ChatEndpoints } from './v1/chat';
 import type { CloudEndpoints } from './v1/cloud';
 import type { CustomSoundEndpoint } from './v1/customSounds';
 import type { CustomUserStatusEndpoints } from './v1/customUserStatus';
+import type { DirectoryEndpoint } from './v1/directory';
 import type { DnsEndpoints } from './v1/dns';
 import type { E2eEndpoints } from './v1/e2e';
 import type { EmojiCustomEndpoints } from './v1/emojiCustom';
@@ -24,6 +25,7 @@ import type { LicensesEndpoints } from './v1/licenses';
 import type { MiscEndpoints } from './v1/misc';
 import type { OmnichannelEndpoints } from './v1/omnichannel';
 import type { PermissionsEndpoints } from './v1/permissions';
+import type { PresenceEndpoints } from './v1/presence';
 import type { PushEndpoints } from './v1/push';
 import type { RolesEndpoints } from './v1/roles';
 import type { RoomsEndpoints } from './v1/rooms';
@@ -54,6 +56,7 @@ export interface Endpoints
 		CustomUserStatusEndpoints,
 		DmEndpoints,
 		DnsEndpoints,
+		DirectoryEndpoint,
 		EmojiCustomEndpoints,
 		GroupsEndpoints,
 		ImEndpoints,
@@ -70,6 +73,7 @@ export interface Endpoints
 		LicensesEndpoints,
 		MiscEndpoints,
 		PermissionsEndpoints,
+		PresenceEndpoints,
 		InstancesEndpoints,
 		IntegrationsEndpoints,
 		VoipEndpoints,
@@ -197,27 +201,13 @@ export type UrlParams<T extends string> = string extends T
 export type MethodOf<TPathPattern extends PathPattern> = TPathPattern extends any ? keyof Endpoints[TPathPattern] : never;
 
 export * from './v1/permissions';
+export * from './v1/presence';
 export * from './v1/roles';
 export * from './v1/settings';
 export * from './v1/teams';
 export * from './v1/videoConference';
 export * from './v1/assets';
-export * from './v1/channels/ChannelsAddAllProps';
-export * from './v1/channels/ChannelsArchiveProps';
-export * from './v1/channels/ChannelsUnarchiveProps';
-export * from './v1/channels/ChannelsHistoryProps';
-export * from './v1/channels/ChannelsRolesProps';
-export * from './v1/channels/ChannelsJoinProps';
-export * from './v1/channels/ChannelsKickProps';
-export * from './v1/channels/ChannelsLeaveProps';
-export * from './v1/channels/ChannelsMessagesProps';
-export * from './v1/channels/ChannelsOpenProps';
-export * from './v1/channels/ChannelsSetAnnouncementProps';
-export * from './v1/channels/ChannelsGetAllUserMentionsByChannelProps';
-export * from './v1/channels/ChannelsModeratorsProps';
-export * from './v1/channels/ChannelsConvertToTeamProps';
-export * from './v1/channels/ChannelsSetReadOnlyProps';
-export * from './v1/channels/ChannelsDeleteProps';
+export * from './v1/channels';
 export * from './v1/subscriptionsEndpoints';
 export * from './v1/mailer';
 export * from './v1/mailer/MailerParamsPOST';
@@ -234,6 +224,7 @@ export * from './helpers/PaginatedResult';
 export * from './helpers/ReplacePlaceholders';
 export * from './helpers/WithItemCount';
 export * from './v1/emojiCustom';
+export * from './v1/instances';
 export * from './v1/users';
 export * from './v1/users/UsersSetAvatarParamsPOST';
 export * from './v1/users/UsersSetPreferenceParamsPOST';

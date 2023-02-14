@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { FileProp } from '@rocket.chat/core-typings';
 import { Integrations, FederationServers, LivechatVisitors } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../file-upload/server';
 import { Users, Subscriptions, Messages, Rooms, LivechatDepartmentAgents } from '../../../models/server';
@@ -10,7 +11,6 @@ import { updateGroupDMsName } from './updateGroupDMsName';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
-import { api } from '../../../../server/sdk/api';
 import { LivechatUnitMonitors } from '../../../../ee/app/models/server';
 
 export async function deleteUser(userId: string, confirmRelinquish = false): Promise<void> {

@@ -10,7 +10,7 @@ const RadioDownAnchor = forwardRef<HTMLInputElement, Partial<ComponentProps<type
 
 		const selectedFilter = group?.items.find((item) => item.checked)?.label;
 
-		return <Select ref={ref} placeholder={selectedFilter} options={[]} onChange={(): number => 0} {...props} />;
+		return <Select ref={ref} placeholder={selectedFilter} options={[]} onChange={(): number => 0} color='hint' {...props} />;
 	},
 );
 

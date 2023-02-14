@@ -18,6 +18,7 @@ to: ee/apps/<%= name %>/package.json
 	],
 	"author": "Rocket.Chat",
 	"dependencies": {
+		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/emitter": "0.31.22",
 		"@rocket.chat/model-typings": "workspace:^",
@@ -41,7 +42,7 @@ to: ee/apps/<%= name %>/package.json
 		"@types/polka": "^0.5.4",
 		"eslint": "^8.29.0",
 		"ts-node": "^10.9.1",
-		"typescript": "~4.5.5"
+		"typescript": "~4.6.4"
 	},
 	"main": "./dist/ee/apps/<%= name %>/src/service.js",
 	"files": [

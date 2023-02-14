@@ -8,7 +8,7 @@ import type { ReactiveVar as ReactiveVarType } from 'meteor/reactive-var';
 import { EJSON } from 'meteor/ejson';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Emitter } from '@rocket.chat/emitter';
-import type { IE2EEMessage, IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IE2EEMessage, IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 
 import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
@@ -43,6 +43,11 @@ import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { mapMessageFromApi } from '../../../client/lib/utils/mapMessageFromApi';
 
 let failedToDecodeKey = false;
+
+type KeyPair = {
+	public_key: string | null;
+	private_key: string | null;
+};
 
 class E2E extends Emitter {
 	private started: boolean;
@@ -114,19 +119,40 @@ class E2E extends Emitter {
 		delete this.instancesByRoomId[rid];
 	}
 
-	async persistKeys(public_key: string | null, private_key: string | null): Promise<void> {
+	async persistKeys({ public_key, private_key }: KeyPair, password: string): Promise<void> {
 		if (typeof public_key !== 'string' || typeof private_key !== 'string') {
 			throw new Error('Failed to persist keys as they are not strings.');
 		}
 
+		const encodedPrivateKey = await this.encodePrivateKey(private_key, password);
+
+		if (!encodedPrivateKey) {
+			throw new Error('Failed to encode private key with provided password.');
+		}
+
 		await APIClient.post('/v1/e2e.setUserPublicAndPrivateKeys', {
 			public_key,
-			private_key,
+			private_key: encodedPrivateKey,
 		});
 	}
 
-	getKeysFromLocalStorage(): [public_key: string | null, private_key: string | null] {
-		return [Meteor._localStorage.getItem('public_key'), Meteor._localStorage.getItem('private_key')];
+	async acceptSuggestedKey(rid: string): Promise<void> {
+		await APIClient.post('/v1/e2e.acceptSuggestedGroupKey', {
+			rid,
+		});
+	}
+
+	async rejectSuggestedKey(rid: string): Promise<void> {
+		await APIClient.post('/v1/e2e.rejectSuggestedGroupKey', {
+			rid,
+		});
+	}
+
+	getKeysFromLocalStorage(): KeyPair {
+		return {
+			public_key: Meteor._localStorage.getItem('public_key'),
+			private_key: Meteor._localStorage.getItem('private_key'),
+		};
 	}
 
 	async startClient(): Promise<void> {
@@ -138,9 +164,7 @@ class E2E extends Emitter {
 
 		this.started = true;
 
-		const [localPublicKey, localPrivateKey] = this.getKeysFromLocalStorage();
-		let public_key = localPublicKey;
-		let private_key = localPrivateKey;
+		let { public_key, private_key } = this.getKeysFromLocalStorage();
 
 		await this.loadKeysFromDB();
 
@@ -176,7 +200,7 @@ class E2E extends Emitter {
 		}
 
 		if (!this.db_public_key || !this.db_private_key) {
-			this.persistKeys(...this.getKeysFromLocalStorage());
+			this.persistKeys(this.getKeysFromLocalStorage(), await this.createRandomPassword());
 		}
 
 		const randomPassword = Meteor._localStorage.getItem('e2e.randomPassword');
@@ -229,7 +253,7 @@ class E2E extends Emitter {
 	}
 
 	async changePassword(newPassword: string): Promise<void> {
-		await this.persistKeys(...this.getKeysFromLocalStorage());
+		await this.persistKeys(this.getKeysFromLocalStorage(), newPassword);
 
 		if (Meteor._localStorage.getItem('e2e.randomPassword')) {
 			Meteor._localStorage.setItem('e2e.randomPassword', newPassword);
@@ -423,16 +447,16 @@ class E2E extends Emitter {
 		});
 	}
 
-	async decryptSubscription(rid: IRoom['_id']): Promise<void> {
-		const e2eRoom = await this.getInstanceByRoomId(rid);
-		this.log('decryptSubscription ->', rid);
+	async decryptSubscription(subscriptionId: ISubscription['_id']): Promise<void> {
+		const e2eRoom = await this.getInstanceByRoomId(subscriptionId);
+		this.log('decryptSubscription ->', subscriptionId);
 		e2eRoom?.decryptSubscription();
 	}
 
 	async decryptSubscriptions(): Promise<void> {
 		Subscriptions.find({
 			encrypted: true,
-		}).forEach((room: IRoom) => this.decryptSubscription(room._id));
+		}).forEach((subscription) => this.decryptSubscription(subscription._id));
 	}
 
 	openAlert(config: Omit<LegacyBannerPayload, 'id'>): void {

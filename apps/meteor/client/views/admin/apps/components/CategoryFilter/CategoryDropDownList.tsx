@@ -6,7 +6,7 @@ import type { CategoryDropDownListProps } from '../../definitions/CategoryDropdo
 
 const CategoryDropDownList: FC<CategoryDropDownListProps> = function CategoryDropDownList({ groups, onSelected }) {
 	return (
-		<Tile overflow='auto' pb='x12' pi={0} elevation='2' w='full' bg='alternative' borderRadius='x2'>
+		<Tile overflow='auto' pb='x12' pi={0} elevation='2' w='full' bg='light' borderRadius='x2'>
 			{groups.map((group, index) => (
 				<Fragment key={index}>
 					{group.label && (

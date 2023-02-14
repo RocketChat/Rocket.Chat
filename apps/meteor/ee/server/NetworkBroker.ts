@@ -1,9 +1,8 @@
 import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
+import { asyncLocalStorage } from '@rocket.chat/core-services';
+import type { IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
 
-import { asyncLocalStorage } from '../../server/sdk';
-import type { IBroker, IBrokerNode, IServiceMetrics } from '../../server/sdk/types/IBroker';
-import type { IServiceClass } from '../../server/sdk/types/ServiceClass';
-import type { EventSignatures } from '../../server/sdk/lib/Events';
+import { EnterpriseCheck } from './lib/EnterpriseCheck';
 
 const events: { [k: string]: string } = {
 	onNodeConnected: '$node.connected',
@@ -72,7 +71,11 @@ export class NetworkBroker implements IBroker {
 	}
 
 	destroyService(instance: IServiceClass): void {
-		this.broker.destroyService(instance.getName());
+		const name = instance.getName();
+		if (!name) {
+			return;
+		}
+		this.broker.destroyService(name);
 	}
 
 	createService(instance: IServiceClass): void {
@@ -85,16 +88,8 @@ export class NetworkBroker implements IBroker {
 		const serviceInstance = instance as any;
 
 		const name = instance.getName();
-
-		if (!instance.isInternal()) {
-			instance.onEvent('shutdown', async (services) => {
-				if (!services[name]?.includes(this.broker.nodeID)) {
-					this.broker.logger.info({ msg: 'Not shutting down, different node.', nodeID: this.broker.nodeID });
-					return;
-				}
-				this.broker.logger.warn({ msg: 'Received shutdown event, destroying service.', nodeID: this.broker.nodeID });
-				this.destroyService(instance);
-			});
+		if (!name) {
+			return;
 		}
 
 		const instanceEvents = instance.getEvents();
@@ -107,6 +102,7 @@ export class NetworkBroker implements IBroker {
 		const service: ServiceSchema = {
 			name,
 			actions: {},
+			mixins: !instance.isInternal() ? [EnterpriseCheck] : [],
 			...dependencies,
 			events: instanceEvents.reduce<Record<string, (ctx: Context) => void>>((map, eventName) => {
 				map[eventName] = /^\$/.test(eventName)

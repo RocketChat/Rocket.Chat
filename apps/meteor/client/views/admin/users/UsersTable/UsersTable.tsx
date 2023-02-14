@@ -1,6 +1,8 @@
 import { States, StatesIcon, StatesTitle, Pagination } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, MutableRefObject } from 'react';
 import React, { useMemo, useState, useEffect } from 'react';
 
@@ -14,8 +16,6 @@ import {
 } from '../../../../components/GenericTable';
 import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../../lib/asyncState';
 import UsersTableRow from './UsersTableRow';
 
 type UsersTableProps = {
@@ -44,9 +44,9 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 				}),
 				query: JSON.stringify({
 					$or: [
-						{ 'emails.address': { $regex: text || '', $options: 'i' } },
-						{ username: { $regex: text || '', $options: 'i' } },
-						{ name: { $regex: text || '', $options: 'i' } },
+						{ 'emails.address': { $regex: escapeRegExp(text), $options: 'i' } },
+						{ username: { $regex: escapeRegExp(text), $options: 'i' } },
+						{ name: { $regex: escapeRegExp(text), $options: 'i' } },
 					],
 				}),
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
@@ -58,11 +58,26 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 		500,
 	);
 
-	const { value, phase, reload: reloadList } = useEndpointData('/v1/users.list', query);
+	const getUsers = useEndpoint('GET', '/v1/users.list');
+
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const { data, isLoading, error, isSuccess, refetch } = useQuery(
+		['users', query],
+		async () => {
+			const users = await getUsers(query);
+			return users;
+		},
+		{
+			onError: (error) => {
+				dispatchToastMessage({ type: 'error', message: error });
+			},
+		},
+	);
 
 	useEffect(() => {
-		reload.current = reloadList;
-	}, [reload, reloadList]);
+		reload.current = refetch;
+	}, [reload, refetch]);
 
 	const handleClick = useMutableCallback((id): void =>
 		usersRoute.push({
@@ -110,25 +125,25 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 		[mediaQuery, setSort, sortBy, sortDirection, t],
 	);
 
-	if (phase === AsyncStatePhase.REJECTED) {
+	if (error) {
 		return null;
 	}
 
 	return (
 		<>
-			<FilterByText placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)} />
-			{phase === AsyncStatePhase.LOADING && (
+			<FilterByText autoFocus placeholder={t('Search_Users')} onChange={({ text }): void => setText(text)} />
+			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
-					<GenericTableBody>{phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={5} />}</GenericTableBody>
+					<GenericTableBody>{isLoading && <GenericTableLoadingTable headerCells={5} />}</GenericTableBody>
 				</GenericTable>
 			)}
-			{value?.users && value.users.length > 0 && phase === AsyncStatePhase.RESOLVED && (
+			{data?.users && data.count > 0 && isSuccess && (
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
-							{value?.users.map((user) => (
+							{data?.users.map((user) => (
 								<UsersTableRow key={user._id} onClick={handleClick} mediaQuery={mediaQuery} user={user} />
 							))}
 						</GenericTableBody>
@@ -137,14 +152,14 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={value?.total || 0}
+						count={data?.total || 0}
 						onSetItemsPerPage={onSetItemsPerPage}
 						onSetCurrent={onSetCurrent}
 						{...paginationProps}
 					/>
 				</>
 			)}
-			{phase === AsyncStatePhase.RESOLVED && value?.users.length === 0 && (
+			{isSuccess && data?.count === 0 && (
 				<States>
 					<StatesIcon name='magnifier' />
 					<StatesTitle>{t('No_results_found')}</StatesTitle>

@@ -76,3 +76,47 @@ export function process2faReturn({
 		},
 	});
 }
+
+export async function process2faAsyncReturn({
+	promise,
+	onCode,
+	emailOrUsername,
+}: {
+	promise: Promise<unknown>;
+	onCode: (code: string, method: string) => void;
+	emailOrUsername: string | null | undefined;
+}): Promise<unknown> {
+	// if the promise is rejected, we need to check if it's a 2fa error
+	return promise.catch((error) => {
+		// if it's not a 2fa error, we reject the promise
+		if (!isTotpRequiredError(error) || !hasRequiredTwoFactorMethod(error)) {
+			throw error;
+		}
+
+		const props = {
+			method: error.details.method,
+			emailOrUsername: emailOrUsername || error.details.emailOrUsername || Meteor.user()?.username,
+		};
+
+		assertModalProps(props);
+
+		return new Promise<unknown>((resolve, reject) => {
+			imperativeModal.open({
+				component: TwoFactorModal,
+				props: {
+					...props,
+					onConfirm: (code: string, method: string): void => {
+						imperativeModal.close();
+
+						// once we have the code, we resolve the promise with the result of the `onCode` callback
+						resolve(onCode(method === 'password' ? SHA256(code) : code, method));
+					},
+					onClose: (): void => {
+						imperativeModal.close();
+						reject(new Meteor.Error('totp-canceled'));
+					},
+				},
+			});
+		});
+	});
+}

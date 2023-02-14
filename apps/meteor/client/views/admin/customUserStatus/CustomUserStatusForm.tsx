@@ -19,7 +19,7 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 	const t = useTranslation();
 	const { _id, name, statusType } = status || {};
 	const setModal = useSetModal();
-	const route = useRoute('custom-user-status');
+	const route = useRoute('user-status');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const {
@@ -87,7 +87,7 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 
 	return (
 		<VerticalBar.ScrollableContent>
-			<Field>
+			<Field is='form' onSubmit={handleSubmit(handleSave)}>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
 					<TextInput {...register('name', { required: true })} placeholder={t('Name')} />
@@ -110,7 +110,7 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 				<Field.Row>
 					<ButtonGroup stretch w='full'>
 						<Button onClick={onClose}>{t('Cancel')}</Button>
-						<Button primary onClick={handleSubmit(handleSave)} disabled={!isDirty}>
+						<Button primary type='submit' disabled={!isDirty}>
 							{t('Save')}
 						</Button>
 					</ButtonGroup>

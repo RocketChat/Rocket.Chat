@@ -6,6 +6,7 @@ import { Template } from 'meteor/templating';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 import { timeAgo } from '../../../client/lib/utils/timeAgo';
 import { formatDateAndTime } from '../../../client/lib/utils/formatDateAndTime';
@@ -20,6 +21,7 @@ import { renderMessageBody } from '../../../client/lib/utils/renderMessageBody';
 import { settings } from '../../settings/client';
 import { formatTime } from '../../../client/lib/utils/formatTime';
 import { formatDate } from '../../../client/lib/utils/formatDate';
+import { hasTranslationLanguageInAttachments } from '../../../client/views/room/MessageList/lib/autoTranslate';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import './messageThread';
 import './message.html';
@@ -257,7 +259,9 @@ Template.message.helpers({
 			const autoTranslate = subscription && subscription.autoTranslate;
 			return (
 				msg.autoTranslateFetching ||
-				(!!autoTranslate !== !!msg.autoTranslateShowInverse && msg.translations && msg.translations[settings.translateLanguage])
+				(!!autoTranslate !== !!msg.autoTranslateShowInverse && msg.translations && msg.translations[settings.translateLanguage]) ||
+				(!!autoTranslate !== !!msg.autoTranslateShowInverse &&
+					hasTranslationLanguageInAttachments(msg.attachments, settings.translateLanguage))
 			);
 		}
 	},
@@ -305,15 +309,6 @@ Template.message.helpers({
 			return false;
 		}
 
-		// check if oembed is disabled for message's sender
-		if (
-			(settings.API_EmbedDisabledFor || '')
-				.split(',')
-				.map((username) => username.trim())
-				.includes(msg.u && msg.u.username)
-		) {
-			return false;
-		}
 		return true;
 	},
 	reactions() {
@@ -439,26 +434,8 @@ Template.message.helpers({
 		const { msg } = this;
 		return msg.actionContext;
 	},
-	messageActions(group) {
-		const { msg, context: ctx } = this;
-		let messageGroup = group;
-		let context = ctx || msg.actionContext;
-
-		if (!group) {
-			messageGroup = 'message';
-		}
-
-		if (!context) {
-			const room = Rooms.findOne({ _id: this.msg.rid });
-
-			context = isRoomFederated(room) ? 'federated' : 'message';
-		}
-
-		return MessageAction.getButtons({ ...this, message: this.msg, user: this.u }, context, messageGroup);
-	},
-	isSnippet() {
-		const { msg } = this;
-		return msg.actionContext === 'snippeted';
+	messageActions() {
+		return Template.instance().actions.get();
 	},
 	isThreadReply() {
 		const {
@@ -639,6 +616,28 @@ const processSequentials = ({ index, currentNode, settings, forceDate, showDateS
 		}
 	}
 };
+
+Template.message.onCreated(function () {
+	this.actions = new ReactiveVar([]);
+
+	this.autorun(() => {
+		const { msg, context: ctx, u, chatContext } = Template.currentData();
+		const messageGroup = 'message';
+		let context = ctx || msg.actionContext;
+
+		if (!context) {
+			const room = Rooms.findOne({ _id: msg.rid });
+
+			context = isRoomFederated(room) ? 'federated' : 'message';
+		}
+
+		MessageAction.getButtons({ ...Template.currentData(), message: msg, user: u, chat: chatContext }, context, messageGroup).then(
+			(actions) => {
+				this.actions.set(actions);
+			},
+		);
+	});
+});
 
 Template.message.onRendered(function () {
 	const currentNode = this.firstNode;

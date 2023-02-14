@@ -34,7 +34,7 @@ const DefaultHomePage = (): ReactElement => {
 				<Box is='h3' fontScale='h3' mb='x16'>
 					{t('Some_ideas_to_get_you_started')}
 				</Box>
-				<Grid>
+				<Grid margin='neg-x8'>
 					{canAddUsers && (
 						<HomepageGridItem>
 							<AddUsersCard />

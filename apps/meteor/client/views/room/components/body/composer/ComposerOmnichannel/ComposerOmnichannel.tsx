@@ -56,9 +56,9 @@ const ComposerOmnichannel = (props: ComposerMessageProps): ReactElement => {
 	}
 
 	return (
-		<>
+		<footer className='rc-message-box footer'>
 			<ComposerMessage {...props} />
-		</>
+		</footer>
 	);
 };
 

@@ -12,15 +12,14 @@ import type {
 	IQueueMembershipSubscription,
 	IRegistrationInfo,
 } from '@rocket.chat/core-typings';
+import type { IVoipService } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 
-import type { IVoipService } from '../../sdk/types/IVoipService';
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { Logger } from '../../lib/logger/Logger';
 import { CommandHandler } from './connector/asterisk/CommandHandler';
 import { CommandType } from './connector/asterisk/Command';
 import { Commands } from './connector/asterisk/Commands';
 import { getServerConfigDataFromSettings, voipEnabled } from './lib/Helper';
-import { api } from '../../sdk/api';
 
 export class VoipService extends ServiceClassInternal implements IVoipService {
 	protected name = 'voip';
@@ -93,10 +92,6 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 
 	getServerConfigData(type: ServerType): IVoipCallServerConfig | IVoipManagementServerConfig {
 		return getServerConfigDataFromSettings(type);
-	}
-
-	getConnector(): CommandHandler {
-		return this.commandHandler;
 	}
 
 	async getQueueSummary(): Promise<IVoipConnectorResult> {

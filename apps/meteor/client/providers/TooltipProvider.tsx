@@ -41,7 +41,6 @@ const TooltipProvider: FC = ({ children }) => {
 				}
 				anchor.setAttribute('data-title', title);
 				anchor.setAttribute('data-tooltip', title);
-				anchor.removeAttribute('title');
 				lastAnchor.current = anchor;
 				setTooltip(<TooltipComponent title={title} anchor={anchor} />);
 			}, 300);

@@ -1,4 +1,5 @@
 import type { ITeamMember, IMessage } from '@rocket.chat/core-typings';
+import { Team } from '@rocket.chat/core-services';
 
 import { onLicense } from '../../license/server';
 import { overwriteClassOnLicense } from '../../license/server/license';
@@ -7,7 +8,6 @@ import { Spotlight } from '../../../../server/lib/spotlight';
 import { MentionQueries } from '../../../../app/mentions/server/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { MentionQueriesEnterprise } from './EEMentionQueries';
-import { Team } from '../../../../server/sdk';
 
 interface IExtraDataForNotification {
 	userMentions: any[];

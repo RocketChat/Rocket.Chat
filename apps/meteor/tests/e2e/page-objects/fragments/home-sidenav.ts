@@ -10,9 +10,11 @@ export class HomeSidenav {
 	}
 
 	get checkboxPrivateChannel(): Locator {
-		return this.page.locator(
-			'//*[@id="modal-root"]//*[contains(@class, "rcx-field") and contains(text(), "Private")]/../following-sibling::label/i',
-		);
+		return this.page.locator('#modal-root [data-qa="create-channel-modal"] [data-qa-type="channel-private-toggle"]');
+	}
+
+	get checkboxEncryption(): Locator {
+		return this.page.locator('role=dialog[name="Create Channel"] >> role=checkbox[name="Encrypted"]');
 	}
 
 	get inputChannelName(): Locator {
@@ -48,9 +50,9 @@ export class HomeSidenav {
 	}
 
 	async openChat(name: string): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-search"]').click();
-		await this.page.locator('[data-qa="sidebar-search-input"]').type(name);
-		await this.page.locator(`[data-qa="sidebar-item-title"] >> text="${name}"`).first().click();
+		await this.page.locator('role=navigation >> role=button[name=Search]').click();
+		await this.page.locator('role=search >> role=searchbox').type(name);
+		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).click();
 	}
 
 	async switchOmnichannelStatus(status: 'offline' | 'online') {

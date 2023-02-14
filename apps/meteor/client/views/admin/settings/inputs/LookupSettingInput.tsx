@@ -1,5 +1,5 @@
 import { Box, Field, Flex, Select } from '@rocket.chat/fuselage';
-import type { PathFor } from '@rocket.chat/rest-typings';
+import type { PathPattern } from '@rocket.chat/rest-typings';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -11,7 +11,7 @@ type LookupSettingInputProps = {
 	_id: string;
 	label: string;
 	value?: string;
-	lookupEndpoint: PathFor<'GET'>;
+	lookupEndpoint: PathPattern extends `/${infer U}` ? U : PathPattern;
 	placeholder?: string;
 	readonly?: boolean;
 	autocomplete?: boolean;
