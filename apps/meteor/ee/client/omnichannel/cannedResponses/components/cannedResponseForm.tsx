@@ -50,7 +50,7 @@ const CannedResponseForm: FC<{
 				<Field.Label w='full'>
 					<Box w='full' display='flex' flexDirection='row' justifyContent='space-between'>
 						{t('Message')}
-						<Box className={clickable} color='link' onClick={onPreview}>
+						<Box className={clickable} color='on-info' onClick={onPreview}>
 							{previewState ? t('Editor') : t('Preview')}
 						</Box>
 					</Box>

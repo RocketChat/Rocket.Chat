@@ -11,13 +11,12 @@ import {
 	useUser,
 	useUserPreference,
 } from '@rocket.chat/ui-contexts';
-import type { ReactElement, UIEvent } from 'react';
+import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { ChatMessage } from '../../../../../app/models/client';
 import { readMessage, RoomHistoryManager } from '../../../../../app/ui-utils/client';
-import { openUserCard } from '../../../../../app/ui/client/lib/UserCard';
 import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { callbacks } from '../../../../../lib/callbacks';
 import { isTruthy } from '../../../../../lib/isTruthy';
@@ -33,11 +32,9 @@ import MessageListErrorBoundary from '../../MessageList/MessageListErrorBoundary
 import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../../contexts/RoomContext';
 import { useToolboxContext } from '../../contexts/ToolboxContext';
-import { useLegacyMessageEvents } from '../../hooks/useLegacyMessageEvents';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessagesBar from './JumpToRecentMessagesBar';
 import LeaderBar from './LeaderBar';
-import LegacyMessageTemplateList from './LegacyMessageTemplateList';
 import LoadingMessagesIndicator from './LoadingMessagesIndicator';
 import NewMessagesButton from './NewMessagesButton';
 import RetentionPolicyWarning from './RetentionPolicyWarning';
@@ -65,8 +62,6 @@ const RoomBody = (): ReactElement => {
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab');
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
-	const useLegacyMessageTemplate = useUserPreference<boolean>('useLegacyMessageTemplate') ?? false;
-	const viewMode = useUserPreference<number>('messageViewMode');
 
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
 	const messagesBoxRef = useRef<HTMLDivElement | null>(null);
@@ -128,11 +123,6 @@ const RoomBody = (): ReactElement => {
 
 	const uploads = useSyncExternalStore(chat.uploads.subscribe, chat.uploads.get);
 
-	const messageViewMode = useMemo(() => {
-		const modes = ['', 'cozy', 'compact'] as const;
-		return modes[viewMode ?? 0] ?? modes[0];
-	}, [viewMode]);
-
 	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useRoomMessages();
 
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead') as boolean | undefined;
@@ -178,17 +168,13 @@ const RoomBody = (): ReactElement => {
 
 	const handleOpenUserCardButtonClick = useCallback(
 		(event: UIEvent, username: IUser['username']) => {
-			openUserCard({
-				username,
-				rid: room._id,
-				target: event.currentTarget,
-				open: (event: MouseEvent) => {
-					event.preventDefault();
-					if (username) toolbox.openRoomInfo(username);
-				},
-			});
+			if (!username) {
+				return;
+			}
+
+			chat?.userCard.open(username)(event);
 		},
-		[room._id, toolbox],
+		[chat?.userCard],
 	);
 
 	const handleUnreadBarJumpToButtonClick = useCallback(() => {
@@ -326,19 +312,6 @@ const RoomBody = (): ReactElement => {
 			readMessage.off(room._id, handleReadMessage);
 		};
 	}, [room._id, setUnreadCount]);
-
-	useLegacyMessageEvents({
-		messageListRef: {
-			get current() {
-				if (!useLegacyMessageTemplate) {
-					return null;
-				}
-
-				return wrapperRef.current?.querySelector('ul') ?? null;
-			},
-		},
-		onRequestScrollToBottom: sendToBottomIfNecessary,
-	});
 
 	useEffect(() => {
 		const wrapper = wrapperRef.current;
@@ -534,6 +507,21 @@ const RoomBody = (): ReactElement => {
 		chat.uploads.wipeFailedOnes();
 	}, [chat]);
 
+	const handleCloseFlexTab: MouseEventHandler<HTMLElement> = useCallback(
+		(e): void => {
+			if (!hideFlexTab) {
+				return;
+			}
+
+			if (e.target instanceof HTMLButtonElement) {
+				return;
+			}
+
+			toolbox.close();
+		},
+		[toolbox, hideFlexTab],
+	);
+
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <Announcement announcement={room.announcement} announcementDetails={undefined} />}
@@ -542,7 +530,7 @@ const RoomBody = (): ReactElement => {
 					className={`messages-container flex-tab-main-content ${admin ? 'admin' : ''}`}
 					id={`chat-window-${room._id}`}
 					aria-label={t('Channel')}
-					onClick={hideFlexTab ? toolbox.close : undefined}
+					onClick={handleCloseFlexTab}
 				>
 					<div className='messages-container-wrapper'>
 						<div className='messages-container-main' {...fileUploadTriggerProps}>
@@ -567,10 +555,7 @@ const RoomBody = (): ReactElement => {
 									/>
 								))}
 							</div>
-							<div
-								ref={messagesBoxRef}
-								className={['messages-box', messageViewMode, roomLeader && 'has-leader'].filter(isTruthy).join(' ')}
-							>
+							<div ref={messagesBoxRef} className={['messages-box', roomLeader && 'has-leader'].filter(isTruthy).join(' ')}>
 								<NewMessagesButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} />
 								<JumpToRecentMessagesBar visible={hasMoreNextMessages} onClick={handleJumpToRecentButtonClick} />
 								{!canPreview ? (
@@ -612,7 +597,7 @@ const RoomBody = (): ReactElement => {
 													)}
 												</>
 											) : null}
-											{useLegacyMessageTemplate ? <LegacyMessageTemplateList room={room} /> : <MessageList rid={room._id} />}
+											<MessageList rid={room._id} />
 											{hasMoreNextMessages ? (
 												<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 											) : null}

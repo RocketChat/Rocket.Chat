@@ -4,8 +4,8 @@ import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
 
 import { useTimeAgo } from '../../../hooks/useTimeAgo';
-import { useMessageActions } from '../../../views/room/contexts/MessageContext';
 import { useToggleFollowingThreadMutation } from '../../../views/room/contextualBar/Threads/hooks/useToggleFollowingThreadMutation';
+import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
 import { followStyle, anchor } from '../helpers/followSyle';
 import { useBlockRendered } from '../hooks/useBlockRendered';
 import AllMentionNotification from '../notification/AllMentionNotification';
@@ -30,9 +30,7 @@ const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, 
 
 	const format = useTimeAgo();
 
-	const {
-		actions: { openThread },
-	} = useMessageActions();
+	const goToThread = useGoToThread();
 
 	const dispatchToastMessage = useToastMessageDispatch();
 	const toggleFollowingThreadMutation = useToggleFollowingThreadMutation({
@@ -42,14 +40,14 @@ const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, 
 	});
 
 	const handleFollow = useCallback(() => {
-		toggleFollowingThreadMutation.mutate({ tmid: mid, follow: !following });
-	}, [following, mid, toggleFollowingThreadMutation]);
+		toggleFollowingThreadMutation.mutate({ rid, tmid: mid, follow: !following });
+	}, [following, rid, mid, toggleFollowingThreadMutation]);
 
 	return (
 		<MessageBlock className={followStyle}>
 			<div className={className} ref={ref} />
 			<MessageMetrics>
-				<MessageMetricsReply data-rid={rid} data-mid={mid} onClick={openThread(mid)}>
+				<MessageMetricsReply data-rid={rid} data-mid={mid} onClick={() => goToThread({ rid, tmid: mid })}>
 					{t('Reply')}
 				</MessageMetricsReply>
 				<MessageMetricsItem title={t('Replies')}>

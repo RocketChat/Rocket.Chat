@@ -4,50 +4,34 @@ import type { FC } from 'react';
 import React from 'react';
 
 import MarkdownText from '../../../../MarkdownText';
+import MessageCollapsible from '../../../MessageCollapsible';
 import MessageContentBody from '../../../MessageContentBody';
-import { useCollapse } from '../../../hooks/useCollapse';
 import Attachment from '../structure/Attachment';
 import AttachmentContent from '../structure/AttachmentContent';
-import AttachmentDescription from '../structure/AttachmentDescription';
-import AttachmentDownload from '../structure/AttachmentDownload';
 import AttachmentImage from '../structure/AttachmentImage';
-import AttachmentRow from '../structure/AttachmentRow';
-import AttachmentSize from '../structure/AttachmentSize';
-import AttachmentTitle from '../structure/AttachmentTitle';
 import { useLoadImage } from './hooks/useLoadImage';
 
 export const ImageAttachment: FC<ImageAttachmentProps> = ({
 	title,
 	image_url: url,
 	image_preview: imagePreview,
-	collapsed: collapsedDefault = false,
 	image_size: size,
 	image_dimensions: imageDimensions = {
-		height: 360,
-		width: 480,
+		width: 368,
+		height: 368,
 	},
 	description,
+	descriptionMd,
 	title_link: link,
 	title_link_download: hasDownload,
-	md,
 }) => {
 	const [loadImage, setLoadImage] = useLoadImage();
-	const [collapsed, collapse] = useCollapse(collapsedDefault);
 	const getURL = useMediaUrl();
+
 	return (
 		<Attachment>
-			{description && (
-				<AttachmentDescription>
-					{md ? <MessageContentBody md={md} /> : <MarkdownText parseEmoji variant='inline' content={description} />}
-				</AttachmentDescription>
-			)}
-			<AttachmentRow>
-				<AttachmentTitle>{title}</AttachmentTitle>
-				{size && <AttachmentSize size={size} />}
-				{collapse}
-				{hasDownload && link && <AttachmentDownload title={title} href={getURL(link)} />}
-			</AttachmentRow>
-			{!collapsed && (
+			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
+			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size}>
 				<AttachmentContent>
 					<AttachmentImage
 						{...imageDimensions}
@@ -58,7 +42,7 @@ export const ImageAttachment: FC<ImageAttachmentProps> = ({
 						previewUrl={`data:image/png;base64,${imagePreview}`}
 					/>
 				</AttachmentContent>
-			)}
+			</MessageCollapsible>
 		</Attachment>
 	);
 };

@@ -1,7 +1,7 @@
 import { Pagination, Tile } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactNode, ReactElement, Key, Ref } from 'react';
+import type { ReactNode, ReactElement, Key, Ref, RefAttributes } from 'react';
 import React, { useState, useEffect, forwardRef, useMemo } from 'react';
 import flattenChildren from 'react-keyed-flatten-children';
 
@@ -105,6 +105,8 @@ const GenericTable = forwardRef(function GenericTable<
 			)}
 		</>
 	);
-});
+}) as <TFilterProps extends { onChange?: (params: GenericTableParams) => void }, TResultProps extends { _id?: Key } | object>(
+	props: GenericTableProps<TFilterProps, TResultProps> & RefAttributes<HTMLElement>,
+) => ReactElement | null;
 
 export default GenericTable;

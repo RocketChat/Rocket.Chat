@@ -3,11 +3,13 @@ import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Blaze } from 'meteor/blaze';
+import type { UIEvent } from 'react';
+import { Tracker } from 'meteor/tracker';
 
 import { popover, MessageAction } from '../../../../../ui-utils/client';
 import { callWithErrorHandling } from '../../../../../../client/lib/utils/callWithErrorHandling';
 import { isURL } from '../../../../../../lib/utils/isURL';
-import { openUserCard } from '../../../lib/UserCard';
+import { closeUserCard, openUserCard } from '../../../lib/userCard';
 import { messageArgs } from '../../../../../../client/lib/utils/messageArgs';
 import { Messages, Rooms, Subscriptions } from '../../../../../models/client';
 import { t } from '../../../../../utils/client';
@@ -133,12 +135,15 @@ function handleOpenThreadButtonClick(event: JQuery.ClickEvent) {
 		msg: { rid, _id, tmid },
 	} = messageArgs(dataContext);
 	const room = Rooms.findOne({ _id: rid });
+	if (!room) {
+		throw new Error('Room not found');
+	}
 
 	FlowRouter.go(
 		FlowRouter.getRouteName(),
 		{
 			rid,
-			name: room.name,
+			name: room.name ?? '',
 			tab: 'thread',
 			context: tmid || _id,
 		},
@@ -177,10 +182,19 @@ function handleOpenUserCardButtonClick(event: JQuery.ClickEvent, template: Commo
 			username,
 			rid,
 			target: event.currentTarget,
-			open: (e: MouseEvent) => {
+			open: (e: UIEvent) => {
 				e.preventDefault();
 				tabBar.openRoomInfo(username);
 			},
+		});
+
+		Tracker.autorun((c) => {
+			FlowRouter.watchPathChange();
+
+			if (!c.firstRun) {
+				closeUserCard();
+				c.stop();
+			}
 		});
 	}
 }
@@ -192,6 +206,9 @@ async function handleMessageActionMenuClick(event: JQuery.ClickEvent, template: 
 	const messageContext = messageArgs(dataContext);
 	const { msg: message, u: user, context: ctx } = messageContext;
 	const room = Rooms.findOne({ _id: message.rid });
+	if (!room) {
+		throw new Error('Room not found');
+	}
 	const federationContext = isRoomFederated(room) ? 'federated' : '';
 	// @ts-ignore
 	const context = ctx || message.context || message.actionContext || federationContext || 'message';
@@ -272,10 +289,19 @@ function handleMentionLinkClick(event: JQuery.ClickEvent, template: CommonRoomTe
 			username,
 			rid,
 			target: event.currentTarget,
-			open: (e: MouseEvent) => {
+			open: (e: UIEvent) => {
 				e.preventDefault();
 				tabBar.openRoomInfo(username);
 			},
+		});
+
+		Tracker.autorun((c) => {
+			FlowRouter.watchPathChange();
+
+			if (!c.firstRun) {
+				closeUserCard();
+				c.stop();
+			}
 		});
 	}
 }

@@ -59,7 +59,7 @@ export class HomeContent {
 	}
 
 	get getFileDescription(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="attachment-description"]');
+		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="message-body"]');
 	}
 
 	get fileNameInput(): Locator {
@@ -99,7 +99,7 @@ export class HomeContent {
 	}
 
 	get btnVideoMessage(): Locator {
-		return this.page.locator('.rc-popover__content [data-id="video-message"]');
+		return this.page.locator('[data-id="video-message"]');
 	}
 
 	get btnRecordAudio(): Locator {
@@ -198,7 +198,7 @@ export class HomeContent {
 	}
 
 	get resumeOnHoldOmnichannelChatButton(): Locator {
-		return this.page.locator('button.rcx-button--primary >> text=Resume');
+		return this.page.locator('button.rcx-button--primary >> text="Resume"');
 	}
 
 	get btnOnHold(): Locator {

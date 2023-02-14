@@ -5,7 +5,6 @@ import $ from 'jquery';
 
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
-import './messageBoxActions';
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
 
@@ -22,7 +21,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		input.dispatchEvent(event);
 	};
 
-	const emitter = new Emitter<{ quotedMessagesUpdate: void; editing: void; recording: void; formatting: void }>();
+	const emitter = new Emitter<{ quotedMessagesUpdate: void; editing: void; recording: void; recordingVideo: void; formatting: void }>();
 
 	let _quotedMessages: IMessage[] = [];
 
@@ -153,6 +152,21 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		];
 	})();
 
+	const [recordingVideo, setRecordingVideo] = (() => {
+		let recordingVideo = false;
+
+		return [
+			{
+				get: () => recordingVideo,
+				subscribe: (callback: () => void) => emitter.on('recordingVideo', callback),
+			},
+			(value: boolean) => {
+				recordingVideo = value;
+				emitter.emit('recordingVideo');
+			},
+		];
+	})();
+
 	const setEditingMode = (editing: boolean): void => {
 		setEditing(editing);
 	};
@@ -257,6 +271,8 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		setEditingMode,
 		recording,
 		setRecordingMode,
+		recordingVideo,
+		setRecordingVideo,
 		insertText,
 		setText,
 		clear,

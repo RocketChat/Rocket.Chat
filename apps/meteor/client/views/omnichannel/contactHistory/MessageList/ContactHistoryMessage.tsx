@@ -28,7 +28,7 @@ import UiKitSurface from '../../../../components/message/content/UiKitSurface';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
-import { useMessageActions } from '../../../room/contexts/MessageContext';
+import { useChat } from '../../../room/contexts/ChatContext';
 
 const ContactHistoryMessage: FC<{
 	message: IMessage;
@@ -39,9 +39,7 @@ const ContactHistoryMessage: FC<{
 	const formatTime = useFormatTime();
 
 	const t = useTranslation();
-	const {
-		actions: { openUserCard },
-	} = useMessageActions();
+	const chat = useChat();
 
 	if (message.t === 'livechat-close') {
 		return (
@@ -51,7 +49,7 @@ const ContactHistoryMessage: FC<{
 						url={message.avatar}
 						username={message.u.username}
 						size={'x18'}
-						onClick={openUserCard(message.u.username)}
+						onClick={chat?.userCard.open(message.u.username)}
 						style={{ cursor: 'pointer' }}
 					/>
 				</MessageSystemLeftContainer>
@@ -78,7 +76,7 @@ const ContactHistoryMessage: FC<{
 							url={message.avatar}
 							username={message.u.username}
 							size={'x36'}
-							onClick={openUserCard(message.u.username)}
+							onClick={chat?.userCard.open(message.u.username)}
 							style={{ cursor: 'pointer' }}
 						/>
 					)}
