@@ -1515,7 +1515,7 @@ describe('LIVECHAT - rooms', function () {
 				.post(api(`omnichannel/${_id}/request-transcript`))
 				.set(credentials)
 				.expect(400);
-		}).timeout(15000);
+		});
 		it('should fail if no one is serving the room', async () => {
 			const visitor = await createVisitor();
 			const { _id } = await createLivechatRoom(visitor.token);
@@ -1524,7 +1524,7 @@ describe('LIVECHAT - rooms', function () {
 				.post(api(`omnichannel/${_id}/request-transcript`))
 				.set(credentials)
 				.expect(400);
-		}).timeout(15000);
+		});
 		let roomId: string;
 		it('should request a pdf transcript when all conditions are met', async () => {
 			await createAgent();
@@ -1539,13 +1539,13 @@ describe('LIVECHAT - rooms', function () {
 				.post(api(`omnichannel/${_id}/request-transcript`))
 				.set(credentials)
 				.expect(200);
-		}).timeout(15000);
+		});
 		it('should return immediately if transcript was already requested', async () => {
 			await request
 				.post(api(`omnichannel/${roomId}/request-transcript`))
 				.set(credentials)
 				.expect(200);
-		}).timeout(15000);
+		});
 	});
 
 	describe('it should mark room as unread when a new message arrives and the config is activated', () => {

@@ -19,11 +19,11 @@ COPY ./packages/model-typings/dist packages/model-typings/dist
 COPY ./packages/models/package.json packages/models/package.json
 COPY ./packages/models/dist packages/models/dist
 
-COPY ./packages/service-classes/package.json packages/service-classes/package.json
-COPY ./packages/service-classes/dist packages/service-classes/dist
+COPY ./ee/packages/omnichannel-services/package.json ee/packages/omnichannel-services/package.json
+COPY ./ee/packages/omnichannel-services/dist ee/packages/omnichannel-services/dist
 
-COPY ./packages/pdf-worker/package.json packages/pdf-worker/package.json
-COPY ./packages/pdf-worker/dist packages/pdf-worker/dist
+COPY ./ee/packages/pdf-worker/package.json ee/packages/pdf-worker/package.json
+COPY ./ee/packages/pdf-worker/dist ee/packages/pdf-worker/dist
 
 COPY ./packages/tools/package.json packages/tools/package.json
 COPY ./packages/tools/dist packages/tools/dist

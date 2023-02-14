@@ -6,6 +6,7 @@ import {
 	ServiceClass,
 	Upload as uploadService,
 	Message as messageService,
+	Room as roomService,
 	QueueWorker as queueService,
 	Translation as translationService,
 	Settings as settingsService,
@@ -14,7 +15,7 @@ import {
 import type { IOmnichannelTranscriptService } from '@rocket.chat/core-services';
 import { guessTimezone, guessTimezoneFromOffset } from '@rocket.chat/tools';
 
-import type { Logger } from '../../../apps/meteor/server/lib/logger/Logger';
+import type { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 
 const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result.status === 'rejected';
 
@@ -330,7 +331,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		// Remove `transcriptRequestedPdf` from room to allow another request
 		await LivechatRooms.unsetTranscriptRequestedPdfById(details.rid);
 
-		const { rid } = await messageService.createDirectMessage({ to: details.userId, from: 'rocket.cat' });
+		const { rid } = await roomService.createDirectMessage({ to: details.userId, from: 'rocket.cat' });
 		this.log.log(`Transcript for room ${details.rid} by user ${details.userId} - Sending error message to user`);
 		await messageService.sendMessage({
 			fromId: 'rocket.cat',
@@ -349,7 +350,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		try {
 			const [, { rid }] = await Promise.all([
 				LivechatRooms.setPdfTranscriptFileIdById(details.rid, file._id),
-				messageService.createDirectMessage({ to: details.userId, from: 'rocket.cat' }),
+				roomService.createDirectMessage({ to: details.userId, from: 'rocket.cat' }),
 			]);
 
 			this.log.log(`Transcript for room ${details.rid} by user ${details.userId} - Sending success message to user`);

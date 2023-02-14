@@ -4,7 +4,7 @@ import MessageQueue from 'mongo-message-queue';
 import { ServiceClass, api, License } from '@rocket.chat/core-services';
 import type { IQueueWorkerService, HealthAggResult } from '@rocket.chat/core-services';
 
-import type { Logger } from '../../../apps/meteor/server/lib/logger/Logger';
+import type { Logger } from '../../../../apps/meteor/server/lib/logger/Logger';
 
 export class QueueWorker extends ServiceClass implements IQueueWorkerService {
 	protected name = 'queue-worker';
