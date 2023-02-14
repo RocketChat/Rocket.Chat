@@ -28,9 +28,10 @@ type RoomMessageContentProps = {
 	unread: boolean;
 	mention: boolean;
 	all: boolean;
+	searchText?: string;
 };
 
-const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageContentProps): ReactElement => {
+const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomMessageContentProps): ReactElement => {
 	const encrypted = isE2EEMessage(message);
 	const { enabled: oembedEnabled } = useOembedLayout();
 	const subscription = useSubscriptionFromMessageQuery(message).data ?? undefined;
@@ -48,7 +49,12 @@ const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageConten
 			{!normalizedMessage.blocks?.length && !!normalizedMessage.md?.length && (
 				<>
 					{(!encrypted || normalizedMessage.e2e === 'done') && (
-						<MessageContentBody md={normalizedMessage.md} mentions={normalizedMessage.mentions} channels={normalizedMessage.channels} />
+						<MessageContentBody
+							md={normalizedMessage.md}
+							mentions={normalizedMessage.mentions}
+							channels={normalizedMessage.channels}
+							searchText={searchText}
+						/>
 					)}
 					{encrypted && normalizedMessage.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
 				</>
