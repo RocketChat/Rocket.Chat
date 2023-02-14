@@ -14,7 +14,6 @@ type AppsPageContentBodyProps = {
 	appsResult: AsyncState<
 		{ items: App[] } & { shouldShowSearchText: boolean } & PaginatedResult & { allApps: App[] } & { totalAppsLength: number }
 	>;
-	isRequested: boolean;
 	itemsPerPage: 25 | 50 | 100;
 	current: number;
 	onSetItemsPerPage: React.Dispatch<React.SetStateAction<25 | 50 | 100>>;
@@ -24,23 +23,18 @@ type AppsPageContentBodyProps = {
 		showingResultsLabel: (context: { count: number; current: number; itemsPerPage: 25 | 50 | 100 }) => string;
 	};
 	noErrorsOcurred: boolean;
-	isEnterprise: boolean;
-	isInstalled: boolean;
 };
 
 const AppsPageContentBody = ({
 	isMarketplace,
 	isFiltered,
 	appsResult,
-	isRequested,
 	itemsPerPage,
 	current,
 	onSetItemsPerPage,
 	onSetCurrent,
 	paginationProps,
 	noErrorsOcurred,
-	isEnterprise,
-	isInstalled,
 }: AppsPageContentBodyProps) => {
 	const t = useTranslation();
 
@@ -50,7 +44,7 @@ const AppsPageContentBody = ({
 				{noErrorsOcurred && (
 					<Box overflowY='scroll' height='100%'>
 						{isMarketplace && !isFiltered && <FeaturedAppsSections appsResult={appsResult?.value?.allApps || []} />}
-						<AppsList apps={appsResult?.value?.items || []} title={isRequested || isEnterprise || isInstalled ? '' : t('All_Apps')} />
+						<AppsList apps={appsResult?.value?.items || []} title={isMarketplace ? t('All_Apps') : ''} />
 					</Box>
 				)}
 			</Box>
