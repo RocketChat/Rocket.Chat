@@ -6,6 +6,7 @@ export const createPermissions = async (): Promise<void> => {
 	const livechatMonitorRole = 'livechat-monitor';
 	const livechatManagerRole = 'livechat-manager';
 	const adminRole = 'admin';
+	const livechatAgentRole = 'livechat-agent';
 
 	const monitorRole = await Roles.findOneById(livechatMonitorRole, { projection: { _id: 1 } });
 	if (!monitorRole) {
@@ -22,5 +23,6 @@ export const createPermissions = async (): Promise<void> => {
 		Permissions.create('manage-livechat-canned-responses', [adminRole, livechatManagerRole, livechatMonitorRole]),
 		Permissions.create('spy-voip-calls', [adminRole, livechatManagerRole, livechatMonitorRole]),
 		Permissions.create('outbound-voip-calls', [adminRole, livechatManagerRole]),
+		Permissions.create('request-pdf-transcript', [adminRole, livechatManagerRole, livechatMonitorRole, livechatAgentRole]),
 	]);
 };
