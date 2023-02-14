@@ -42,6 +42,7 @@ import type {
 	IPushTokenModel,
 	IPermissionsModel,
 	IReadReceiptsModel,
+	IMessageReadsModel,
 	IReportsModel,
 	IRolesModel,
 	IRoomsModel,
@@ -117,6 +118,7 @@ export const PbxEvents = proxify<IPbxEventsModel>('IPbxEventsModel');
 export const PushToken = proxify<IPushTokenModel>('IPushTokenModel');
 export const Permissions = proxify<IPermissionsModel>('IPermissionsModel');
 export const ReadReceipts = proxify<IReadReceiptsModel>('IReadReceiptsModel');
+export const MessageReads = proxify<IMessageReadsModel>('IMessageReadsModel');
 export const Reports = proxify<IReportsModel>('IReportsModel');
 export const Roles = proxify<IRolesModel>('IRolesModel');
 export const Rooms = proxify<IRoomsModel>('IRoomsModel');
