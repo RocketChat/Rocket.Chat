@@ -1,5 +1,5 @@
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, Document, FindOptions, DistinctOptions, UpdateResult, ModifyResult, Filter } from 'mongodb';
+import type { Collection, Db, Document, FindOptions, DistinctOptions, UpdateResult, ModifyResult, Filter, DeleteResult } from 'mongodb';
 import type {
 	ILivechatInquiryRecord,
 	IMessage,
@@ -177,5 +177,9 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 
 	unsetPriorityForRoom(_rid: string): Promise<ModifyResult<ILivechatInquiryRecord>> {
 		throw new Error('Method not implemented on the community edition.');
+	}
+
+	async removeByRoomId(rid: string): Promise<DeleteResult> {
+		return this.deleteOne({ rid });
 	}
 }

@@ -1,4 +1,4 @@
-import type { FindOptions, DistinctOptions, Document, UpdateResult } from 'mongodb';
+import type { FindOptions, DistinctOptions, Document, UpdateResult, DeleteResult } from 'mongodb';
 import type {
 	IMessage,
 	ILivechatInquiryRecord,
@@ -25,4 +25,5 @@ export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord
 		department: string;
 		queueSortBy: OmnichannelSortingMechanismSettingType;
 	}): Promise<(Pick<ILivechatInquiryRecord, '_id' | 'rid' | 'name' | 'ts' | 'status' | 'department'> & { position: number })[]>;
+	removeByRoomId(rid: string): Promise<DeleteResult>;
 }
