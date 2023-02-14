@@ -32,3 +32,8 @@ registerAccountRoute('/tokens', {
 	name: 'tokens',
 	component: lazy(() => import('./tokens/AccountTokensRoute')),
 });
+
+registerAccountRoute('/omnichannel', {
+	name: 'omnichannel',
+	component: lazy(() => import('./omnichannel/OmnichannelPreferencesPage')),
+});
