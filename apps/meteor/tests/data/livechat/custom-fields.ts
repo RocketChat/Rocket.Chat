@@ -39,8 +39,15 @@ export const createCustomField = (customField: ILivechatCustomField) => new Prom
 
 export const deleteCustomField = (customFieldID: string) => new Promise((resolve, reject) => {
     request
-        .post(methodCall('livechat:saveCustomField'))
-        .send(customFieldID)
+        .post(methodCall('livechat:removeCustomField'))
+        .send({
+            message: JSON.stringify({
+                method: 'livechat:removeCustomField',
+                params: [customFieldID],
+                id: 'id',
+                msg: 'method',
+            }),
+        })
         .set(credentials)
         .end((err: Error, res: Response): void => {
             if (err) {
