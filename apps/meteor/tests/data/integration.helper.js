@@ -32,15 +32,13 @@ export const removeIntegration = (integrationId, type) =>
 			})
 			.end((err, res) => {
 				if (err) {
-					reject(err);
-					return;
+					console.warn(err);
 				}
 
 				if (!res.body.success) {
-					reject(res.body);
-					return;
+					console.warn(res.body);
 				}
 
-				resolve(res);
+				resolve();
 			});
 	});
