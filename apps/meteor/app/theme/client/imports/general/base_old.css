@@ -293,10 +293,6 @@
 	}
 }
 
-.rc-old .search-form {
-	position: relative;
-}
-
 .rc-old .-autocomplete-container {
 	top: auto;
 
@@ -1713,62 +1709,6 @@
 
 	height: 100%;
 	flex-grow: 1;
-}
-
-.rc-old .list-view {
-	& .list {
-		position: relative;
-
-		display: flex;
-
-		width: 100%;
-		flex-flow: column nowrap;
-
-		& .message {
-			padding: 8px 0 4px 50px;
-		}
-	}
-
-	& > .title {
-		&:not(:last-child) {
-			margin: 0 0 20px;
-		}
-
-		& h2 {
-			font-size: 20px;
-			font-weight: 300;
-			line-height: 25px;
-		}
-
-		& p {
-			margin-top: 4px;
-
-			font-size: 12px;
-		}
-
-		& b {
-			font-weight: 600;
-		}
-
-		& .see-all {
-			float: right;
-
-			cursor: pointer;
-			text-decoration: underline;
-
-			border-width: 0;
-
-			&:hover {
-				text-decoration: none;
-			}
-		}
-	}
-
-	& .show-more-users {
-		display: block;
-
-		margin: 1em auto 0;
-	}
 }
 
 .rc-old #login-card {
