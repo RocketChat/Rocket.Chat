@@ -1,4 +1,6 @@
-<img src="https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png" data-canonical-src="https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png" width="500" />
+<p align="center"> 
+  <img  src="https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png" data-canonical-src="https://github.com/RocketChat/Rocket.Chat.Artwork/raw/master/Logos/2020/png/logo-horizontal-red.png" width="400" />
+</p>
 
 <h1 align="center">
   The ultimate Free Open Source Solution for team communications
@@ -19,12 +21,7 @@ We are the ultimate **Free Open Source Solution** for team communications, enabl
 
 Every day, tens of millions of users in over 150 countries and in organizations such as Deutsche Bahn, The US Navy, and Credit Suisse trust [Rocket.Chat](https://rocket.chat) to keep their communications completely private and secure.
 
-- [Review product documentation](https://docs.rocket.chat)
-- [Review developer documentation](https://developer.rocket.chat)
-
-Using our **self-managed** offerings you can deploy Rocket.Chat on your own server, or you can use SaaS Rocket.Chat. We offer support for both community as well as commercial plans.
-
-# 🚀 Product Offerings
+# 🚀 Product Offerings - Self Hosted and Cloud
 
 Rocket.Chat has four key product offerings: 
 
@@ -53,7 +50,7 @@ Free for 30 days. Afterwards, choose between continuing to host on our secure cl
 You can follow these instructions to setup a dev environment:
 
 - Install **Node 14.x (LTS)** either [manually](https://nodejs.org/dist/latest-v14.x/) or using a tool like [nvm](https://github.com/creationix/nvm) or [volta](volta.sh) (recommended)
-- Install **Meteor**: https://www.meteor.com/developers/install
+- Install **Meteor** ([version here](apps/meteor/.meteor/release)): https://www.meteor.com/developers/install
 - Install **yarn**: https://yarnpkg.com/getting-started/install
 - Clone this repo: `git clone https://github.com/RocketChat/Rocket.Chat.git`
 - Run `yarn` to install dependencies
@@ -61,7 +58,11 @@ You can follow these instructions to setup a dev environment:
 **Starting Rocket.Chat:**
 
 ```bash
-yarn dsv
+yarn dev # run all packages
+```
+OR
+```bash
+yarn dsv # run only meteor (front and back) with pre-built packages
 ```
 
 After initialized, you can access the server at http://localhost:3000
@@ -81,11 +82,26 @@ After initialized, you can access the server at http://localhost:4000
 Please see the [requirements documentation](https://docs.rocket.chat/installing-and-updating/minimum-requirements-for-using-rocket.chat) for system requirements and more information about supported operating systems.
 Please refer to [Install Rocket.Chat](https://rocket.chat/install) to install your Rocket.Chat instance.
 
-## 📱 Mobile Apps
+# 📱 Mobile Apps
 
 In addition to the web interface, you can also download Rocket.Chat clients for:
 
+
 [![Rocket.Chat on Apple App Store](https://user-images.githubusercontent.com/551004/29770691-a2082ff4-8bc6-11e7-89a6-964cd405ea8e.png)](https://itunes.apple.com/us/app/rocket-chat/id1148741252?mt=8) [![Rocket.Chat on Google Play](https://user-images.githubusercontent.com/551004/29770692-a20975c6-8bc6-11e7-8ab0-1cde275496e0.png)](https://play.google.com/store/apps/details?id=chat.rocket.android) [![](https://user-images.githubusercontent.com/551004/48210349-50649480-e35e-11e8-97d9-74a4331faf3a.png)](https://f-droid.org/en/packages/chat.rocket.android)
+
+You can also contribute to the Mobile open source code in [Rocket.Chat.ReactNative](https://github.com/RocketChat/Rocket.Chat.ReactNative) and check it out its [documentation](https://developer.rocket.chat/mobile-app/mobile-app-environment-setup) 
+
+# 🕹️ Apps Engine for Rocket.Chat
+
+You can develop your own app that can be integrated with Rocket.Chat. We provide an [Open Source Apps Engine framework](https://developer.rocket.chat/apps-engine/rocketchat-app) increasing the world of possibilities of integrations around the Rocket.Chat ecosystem
+
+# 📚 Learn More
+
+- [Product Documentation](https://docs.rocket.chat)
+- [Developer Documentation](https://developer.rocket.chat)
+- [API Documentation](https://developer.rocket.chat/reference/api)
+- [Apps Engine Development](https://developer.rocket.chat/apps-engine/rocketchat-app)
+- [See who's using Rocket.Chat](https://rocket.chat/customer-stories)
 
 # 🧩 Feature Request
 
@@ -102,17 +118,6 @@ Talk with Rocket.Chat's leadership at the [Community Open Call](https://www.yout
 
 Rocket.Chat is an open source project and we are very happy to accept community contributions. Please refer to the [How can I help?](https://docs.rocket.chat/contributors/how-can-i-help) for more details.
 
-## 🗒️ Credits
-
-- Emoji provided graciously by [JoyPixels](https://www.joypixels.com).
-- Testing with [BrowserStack](https://www.browserstack.com).
-- Translations done with [LingoHub](https://lingohub.com).
-
-
-## 📚 Learn More
-
-- [API](https://developer.rocket.chat/reference/api)
-- [See who's using Rocket.Chat](https://rocket.chat/customer-stories)
 
 ## 💼 Become a Rocketeer
 
@@ -128,3 +133,9 @@ We're hiring developers, support people, and product managers all the time. Plea
 
 
 Any other questions, reach out to us at [our website](https://rocket.chat/contact) or you can email us directly at [contact@rocket.chat](mailto:contact@rocket.chat). We’d be happy to help!
+
+## 🗒️ Credits
+
+- Emoji provided graciously by [JoyPixels](https://www.joypixels.com).
+- Testing with [BrowserStack](https://www.browserstack.com).
+- Translations done with [LingoHub](https://lingohub.com).
