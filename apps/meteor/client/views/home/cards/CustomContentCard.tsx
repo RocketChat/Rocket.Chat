@@ -88,13 +88,13 @@ const CustomContentCard = (): ReactElement | null => {
 	if (!willNotShowCustomContent && !isCustomContentOnly) {
 		return (
 			<Card>
-				<Box role='status' aria-label={customContentBody} mb='x8' color='info'>
-					<CustomHomepageContent />
+				<Box mb='x8' color='info'>
+					<CustomHomepageContent role='status' aria-label={customContentBody} />
 				</Box>
 			</Card>
 		);
 	}
-	return <CustomHomepageContent />;
+	return <CustomHomepageContent role='status' aria-label={customContentBody} />;
 };
 
 export default CustomContentCard;
