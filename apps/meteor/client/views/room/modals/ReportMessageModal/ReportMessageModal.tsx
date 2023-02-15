@@ -56,7 +56,7 @@ const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps): Reac
 			confirmText={t('Report_exclamation_mark')}
 		>
 			<Box mbe='x24' className={wordBreak}>
-				{message.md ? <MessageContentBody md={message.md} /> : <MarkdownText parseEmoji content={message.msg} />}
+				{message.md ? <MessageContentBody md={message.md} /> : <MarkdownText variant='inline' parseEmoji content={message.msg} />}
 			</Box>
 			<FieldGroup>
 				<Field>

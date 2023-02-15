@@ -26,9 +26,10 @@ export const addMessageToList = (messagesList: IMessage[], message: IMessage): I
 };
 
 const getMainMessageText = (message: IMessage): IMessage => {
-	message.msg = message.msg || message.attachments?.[0]?.description || message.attachments?.[0]?.title || '';
-	message.md = message.md || message.attachments?.[0]?.descriptionMd || undefined;
-	return { ...message };
+	const newMessage = { ...message };
+	newMessage.msg = newMessage.msg || newMessage.attachments?.[0]?.description || newMessage.attachments?.[0]?.title || '';
+	newMessage.md = newMessage.md || newMessage.attachments?.[0]?.descriptionMd || undefined;
+	return { ...newMessage };
 };
 
 Meteor.startup(async function () {
