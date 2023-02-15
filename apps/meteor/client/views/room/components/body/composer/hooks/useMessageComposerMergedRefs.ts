@@ -10,10 +10,7 @@ const isMutableRefObject = <T>(x: unknown): x is MutableRefObject<T> => typeof x
  *
  * @param refs The refs to merge.
  * @returns The merged ref callback.
- *
- *
  */
-
 export const useMessageComposerMergedRefs = <T>(...refs: Ref<T>[]): RefCallback<T> => {
 	return useCallback((refValue: T) => {
 		refs.filter(Boolean).forEach((ref) => {
