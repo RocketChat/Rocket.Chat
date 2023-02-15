@@ -21,7 +21,7 @@ const AppSecurity = ({ privacyPolicySummary, appPermissions, tosLink, privacyLin
 			<Box display='flex' flexDirection='column'>
 				<Margins block='x17'>
 					<Box is='section'>
-						<Box fontScale='h4' mbe='x8' color='title-labels'>
+						<Box fontScale='h4' mbe='x8' color='titles-labels'>
 							{t('Privacy_summary')}
 						</Box>
 						<Box is='p' lineHeight='x20'>
@@ -30,7 +30,7 @@ const AppSecurity = ({ privacyPolicySummary, appPermissions, tosLink, privacyLin
 					</Box>
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe='x8' color='title-labels'>
+						<Box fontScale='h4' mbe='x8' color='titles-labels'>
 							{t('Permissions')}
 						</Box>
 						<Box is='ol' type='1' style={{ listStyleType: 'decimal' }} mis='x24'>
@@ -39,7 +39,7 @@ const AppSecurity = ({ privacyPolicySummary, appPermissions, tosLink, privacyLin
 					</Box>
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe='x8' color='title-labels'>
+						<Box fontScale='h4' mbe='x8' color='titles-labels'>
 							{t('Policies')}
 						</Box>
 						<Box display='flex' flexDirection='column'>
