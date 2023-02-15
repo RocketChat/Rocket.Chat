@@ -20,7 +20,8 @@ export default {
 	},
 	outputDir: 'tests/e2e/.playwright',
 	reporter: [
-		process.env.CI ? ['github'] : ['list'],
+		['list'],
+		// process.env.CI ? ['github'] : ['list'],
 		[
 			'playwright-qase-reporter',
 			{
