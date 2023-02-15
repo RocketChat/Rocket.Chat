@@ -8,9 +8,10 @@ import type {
 	IRoom,
 	ILivechatAgent,
 } from '@rocket.chat/core-typings';
+import type { ILivechatService } from '@rocket.chat/core-services';
+import { ServiceClassInternal } from '@rocket.chat/core-services';
 
-import type { ILivechatService } from '../../sdk/types/ILivechatService';
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
+import { Livechat as LivechatTyped } from '../../../app/livechat/server/lib/LivechatTyped';
 import { Livechat } from '../../../app/livechat/server';
 
 export class LivechatService extends ServiceClassInternal implements ILivechatService {
@@ -52,7 +53,8 @@ export class LivechatService extends ServiceClassInternal implements ILivechatSe
 		comment: string;
 		options?: Record<string, unknown>;
 	}): Promise<boolean> {
-		return Livechat.closeRoom(props);
+		await LivechatTyped.closeRoom(props);
+		return true;
 	}
 
 	registerGuest(props: {

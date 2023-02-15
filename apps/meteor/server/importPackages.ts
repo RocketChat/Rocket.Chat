@@ -40,7 +40,6 @@ import '../app/integrations/server';
 import '../app/irc';
 import '../app/katex/server';
 import '../app/lib/server';
-import '../app/livestream/server';
 import '../app/logger';
 import '../app/token-login/server';
 import '../app/mailer';

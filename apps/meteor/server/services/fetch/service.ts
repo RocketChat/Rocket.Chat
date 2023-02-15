@@ -1,5 +1,6 @@
-import type { IFetchService } from '../../sdk/types/IFetchService';
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
+import type { IFetchService } from '@rocket.chat/core-services';
+import { ServiceClassInternal } from '@rocket.chat/core-services';
+
 import { fetch } from '../../lib/http/fetch';
 
 export class FetchService extends ServiceClassInternal implements IFetchService {

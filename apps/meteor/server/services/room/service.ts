@@ -5,6 +5,7 @@ import type { ICreateRoomParams, IRoomService, ICreateDiscussionParams } from '@
 
 import { createRoom, addUserToRoom as meteorAddUserToRoom } from '../../../app/lib/server/functions'; // TODO remove this import
 import { create as createDiscussion } from '../../../app/discussion/server/methods/createDiscussion';
+import { createDirectMessage } from '../../methods/createDirectMessage';
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
@@ -26,6 +27,18 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 
 		// TODO convert `createRoom` function to "raw" and move to here
 		return createRoom(type, name, user.username, members, readOnly, extraData, options) as unknown as IRoom;
+	}
+
+	async createDirectMessage({ to, from }: { to: string; from: string }): Promise<{ rid: string }> {
+		const [toUser, fromUser] = await Promise.all([
+			Users.findOneById(to, { projection: { username: 1 } }),
+			Users.findOneById(from, { projection: { _id: 1 } }),
+		]);
+
+		if (!toUser || !fromUser) {
+			throw new Error('error-invalid-user');
+		}
+		return createDirectMessage([toUser.username], fromUser._id);
 	}
 
 	async addMember(uid: string, rid: string): Promise<boolean> {

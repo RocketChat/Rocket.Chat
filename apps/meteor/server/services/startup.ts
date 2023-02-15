@@ -1,5 +1,6 @@
 import { MongoInternals } from 'meteor/mongo';
 import { api } from '@rocket.chat/core-services';
+import { OmnichannelTranscript, QueueWorker } from '@rocket.chat/omnichannel-services';
 
 import { AnalyticsService } from './analytics/service';
 import { AppsEngineService } from './apps-engine/service';
@@ -26,9 +27,12 @@ import { UserService } from './user/service';
 import { FederationService } from './federation/service';
 import { FetchService } from './fetch/service';
 import { LivechatService } from './livechat/service';
-import { MessageService } from './message/service';
 import { NotificationService } from './notification/service';
 import { SlashCommandService } from './slashcommand/service';
+import { MessageService } from './messages/service';
+import { TranslationService } from './translation/service';
+import { SettingsService } from './settings/service';
+import { Logger } from '../lib/logger/Logger';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -59,6 +63,10 @@ api.registerService(new LivechatService());
 api.registerService(new MessageService());
 api.registerService(new NotificationService());
 api.registerService(new SlashCommandService());
+api.registerService(new UploadService());
+api.registerService(new MessageService());
+api.registerService(new TranslationService());
+api.registerService(new SettingsService());
 
 // if the process is running in micro services mode we don't need to register services that will run separately
 if (!isRunningMs()) {
@@ -83,5 +91,10 @@ if (!isRunningMs()) {
 		api.registerService(new AppsManagerService());
 		api.registerService(new AppsVideoManagerService());
 		api.registerService(new AppsApiService());
+		// Run EE services defined outside of the main repo
+		// Otherwise, monolith would ignore them :(
+		// Always register the service and manage licensing inside the service (tbd)
+		api.registerService(new QueueWorker(db, Logger));
+		api.registerService(new OmnichannelTranscript(Logger));
 	})();
 }

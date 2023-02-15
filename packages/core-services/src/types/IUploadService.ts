@@ -10,14 +10,14 @@ export interface ISendFileMessageParams {
 	roomId: string;
 	userId: string;
 	file: IUpload;
-	message?: IMessage;
+	message?: Partial<IMessage>;
 }
 
 export interface ISendFileLivechatMessageParams {
 	roomId: string;
 	visitorToken: string;
 	file: IUpload;
-	message?: IMessage;
+	message?: Partial<IMessage>;
 }
 
 export interface IUploadService {
@@ -25,4 +25,5 @@ export interface IUploadService {
 	sendFileMessage(params: ISendFileMessageParams): Promise<IMessage | undefined>;
 	sendFileLivechatMessage(params: ISendFileLivechatMessageParams): Promise<IMessage | undefined>;
 	getBuffer(cb: Function): Promise<Buffer>;
+	getFileBuffer({ file }: { userId: string; file: IUpload }): Promise<Buffer>;
 }

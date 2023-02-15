@@ -46,4 +46,5 @@ export interface IRoomService {
 		inviter?: Pick<IUser, '_id' | 'username'>,
 		silenced?: boolean,
 	): Promise<boolean | unknown>;
+	createDirectMessage(data: { to: string; from: string }): Promise<{ rid: string }>;
 }

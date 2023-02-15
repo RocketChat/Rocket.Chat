@@ -23,7 +23,14 @@ import type {
 	ITeamAutocompleteResult,
 	IListRoomsFilter,
 } from './types/ITeamService';
-import type { IRoomService, ICreateRoomParams, ISubscriptionExtraData } from './types/IRoomService';
+import type { IMessageReadsService } from './types/IMessageReadsService';
+import type {
+	IRoomService,
+	ICreateRoomParams,
+	ISubscriptionExtraData,
+	ICreateDiscussionParams,
+	ICreateRoomExtraData,
+} from './types/IRoomService';
 import type { IMediaService, ResizeResult } from './types/IMediaService';
 import type { IVoipService } from './types/IVoipService';
 import type { IOmnichannelVoipService, FindVoipRoomsParams } from './types/IOmnichannelVoipService';
@@ -46,8 +53,12 @@ import type { ILivechatService } from './types/ILivechatService';
 import type { IMessageService } from './types/IMessageService';
 import type { INotificationService } from './types/INotificationService';
 import type { ISlashCommandService } from './types/ISlashCommandService';
-import type { ICloudService } from './types/ICloudService';
-import type { IUserService } from './types/IUserService';
+import type { ICloudService, IAccessToken } from './types/ICloudService';
+import type { IUserService, ISetUserAvatarParams } from './types/IUserService';
+import type { IOmnichannelTranscriptService } from './types/IOmnichannelTranscriptService';
+import type { IQueueWorkerService, HealthAggResult } from './types/IQueueWorkerService';
+import type { ITranslationService } from './types/ITranslationService';
+import type { ISettingsService } from './types/ISettingsService';
 
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
@@ -84,7 +95,10 @@ export {
 	IOmnichannelVoipService,
 	IPresence,
 	IPushService,
+	IMessageReadsService,
 	IRoomService,
+	ICreateDiscussionParams,
+	ICreateRoomExtraData,
 	ISAUMonitorService,
 	ISubscriptionExtraData,
 	ITeamAutocompleteResult,
@@ -124,7 +138,14 @@ export {
 	INotificationService,
 	ISlashCommandService,
 	ICloudService,
+	IAccessToken,
 	IUserService,
+	ISetUserAvatarParams,
+	IOmnichannelTranscriptService,
+	IQueueWorkerService,
+	HealthAggResult,
+	ITranslationService,
+	ISettingsService,
 };
 
 // TODO think in a way to not have to pass the service name to proxify here as well
@@ -137,6 +158,7 @@ export const Banner = proxifyWithWait<IBannerService>('banner');
 export const UiKitCoreApp = proxifyWithWait<IUiKitCoreAppService>('uikit-core-app');
 export const NPS = proxifyWithWait<INPSService>('nps');
 export const Team = proxifyWithWait<ITeamService>('team');
+export const MessageReads = proxifyWithWait<IMessageReadsService>('message-reads');
 export const Room = proxifyWithWait<IRoomService>('room');
 export const Media = proxifyWithWait<IMediaService>('media');
 export const Voip = proxifyWithWait<IVoipService>('voip');
@@ -160,6 +182,11 @@ export const LivechatService = proxifyWithWait<ILivechatService>('livechat');
 export const MessageService = proxifyWithWait<IMessageService>('message');
 export const NotificationService = proxifyWithWait<INotificationService>('notification');
 export const SlashCommandService = proxifyWithWait<ISlashCommandService>('slashcommand');
+export const QueueWorker = proxifyWithWait<IQueueWorkerService>('queue-worker');
+export const OmnichannelTranscript = proxifyWithWait<IOmnichannelTranscriptService>('omnichannel-transcript');
+export const Message = proxifyWithWait<IMessageService>('message');
+export const Translation = proxifyWithWait<ITranslationService>('translation');
+export const Settings = proxifyWithWait<ISettingsService>('settings');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available

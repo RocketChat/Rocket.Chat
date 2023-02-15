@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { ISetUserAvatarParams, IUserService } from '@rocket.chat/core-services';
+import { ServiceClassInternal } from '@rocket.chat/core-services';
 
-import type { ISetUserAvatarParams, IUserService } from '../../sdk/types/IUserService';
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { setUserAvatar } from '../../../app/lib/server';
 import { checkUsernameAvailability, deleteUser as meteorDeleteUser } from '../../../app/lib/server/functions';
 

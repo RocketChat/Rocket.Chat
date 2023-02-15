@@ -1,12 +1,11 @@
 import type { IMessage, RequiredField, SlashCommand, SlashCommandPreviews } from '@rocket.chat/core-typings';
 import type { ISlashCommandPreviewItem } from '@rocket.chat/apps-engine/definition/slashcommands';
 import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
+import type { ISlashCommandService } from '@rocket.chat/core-services';
+import { ServiceClassInternal, AppsConverter, AppsManager } from '@rocket.chat/core-services';
 
-import type { ISlashCommandService } from '../../sdk/types/ISlashCommandService';
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 import { slashCommands } from '../../../app/utils/server';
 import { parseParameters } from '../../../lib/utils/parseParameters';
-import { AppsConverter, AppsManager } from '../../sdk';
 
 export class SlashCommandService extends ServiceClassInternal implements ISlashCommandService {
 	protected name = 'slashcommand';

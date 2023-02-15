@@ -18,7 +18,6 @@ import {
 } from '../../../contexts/VideoConfContext';
 import { renderMessageBody } from '../../../lib/utils/renderMessageBody';
 import { useVideoConfWarning } from '../../../views/room/contextualBar/VideoConference/useVideoConfWarning';
-import { useBlockRendered } from '../hooks/useBlockRendered';
 
 let patched = false;
 const patchMessageParser = () => {
@@ -49,7 +48,6 @@ type UiKitSurfaceProps = {
 };
 
 const UiKitSurface = ({ mid: _mid, blocks, rid, appId }: UiKitSurfaceProps): ReactElement => {
-	const { ref, className } = useBlockRendered<HTMLDivElement>();
 	const joinCall = useVideoConfJoinCall();
 	const setPreferences = useVideoConfSetPreferences();
 	const isCalling = useVideoConfIsCalling();
@@ -113,7 +111,6 @@ const UiKitSurface = ({ mid: _mid, blocks, rid, appId }: UiKitSurfaceProps): Rea
 	return (
 		<MessageBlock fixedWidth>
 			<kitContext.Provider value={context}>
-				<div className={className} ref={ref} />
 				<UiKitComponent render={UiKitMessage} blocks={blocks} />
 			</kitContext.Provider>
 		</MessageBlock>

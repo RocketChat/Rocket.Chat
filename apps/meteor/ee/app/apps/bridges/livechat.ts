@@ -16,6 +16,7 @@ import { LivechatDepartment, LivechatVisitors, LivechatRooms, Users } from '@roc
 import { LivechatService } from '@rocket.chat/core-services';
 
 import type { AppServerOrchestrator } from '../orchestrator';
+import { Livechat as LivechatTyped } from '../../../../app/livechat/server/lib/LivechatTyped';
 
 export class AppLivechatBridge extends LivechatBridge {
 	constructor(private readonly orch: AppServerOrchestrator) {
@@ -120,7 +121,9 @@ export class AppLivechatBridge extends LivechatBridge {
 			...(visitor && { visitor }),
 		};
 
-		return LivechatService.closeRoom(closeData);
+		await LivechatTyped.closeRoom(closeData);
+
+		return true;
 	}
 
 	protected async findRooms(visitor: IVisitor, departmentId: string | null, appId: string): Promise<Array<ILivechatRoom>> {
