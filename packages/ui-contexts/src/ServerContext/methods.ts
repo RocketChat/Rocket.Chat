@@ -5,6 +5,8 @@ import type {
 	IMessage,
 	IPermission,
 	IRoom,
+	IMessageSearchProvider,
+	IMessageSearchSuggestion,
 	ISetting,
 	ISubscription,
 	ISupportedLanguage,
@@ -241,8 +243,9 @@ export interface ServerMethods {
 			| string
 			| string[]
 			| {
-					users: boolean;
-					rooms: boolean;
+					users?: boolean;
+					rooms?: boolean;
+					mentions?: boolean;
 			  }
 		)[]
 	) => {
@@ -254,6 +257,7 @@ export interface ServerMethods {
 			username: string;
 			outside: boolean;
 			avatarETag?: string;
+			nickname?: string;
 		}[];
 	};
 	'getPasswordPolicy': (params?: { token: string }) => {
@@ -267,6 +271,21 @@ export interface ServerMethods {
 	'private-settings/get': (updatedSince?: Date) => ISetting[] | { update: ISetting[]; remove: ISetting[] };
 	'pinMessage': (message: IMessage) => void;
 	'unpinMessage': (message: IMessage) => void;
+	'rocketchatSearch.getProvider': () => IMessageSearchProvider | undefined;
+	'rocketchatSearch.search': (
+		text: string,
+		context: { uid?: IUser['_id']; rid: IRoom['_id'] },
+		payload: unknown,
+	) => {
+		message: {
+			docs: IMessage[];
+		};
+	};
+	'rocketchatSearch.suggest': (
+		text: string,
+		context: { uid?: IUser['_id']; rid: IRoom['_id'] },
+		payload: unknown,
+	) => IMessageSearchSuggestion[];
 }
 
 export type ServerMethodName = keyof ServerMethods;

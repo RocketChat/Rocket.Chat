@@ -1,7 +1,6 @@
 import type { IRoom, RoomType, IUser, AtLeast, ValueOf } from '@rocket.chat/core-typings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { RouteOptions } from 'meteor/kadira:flow-router';
-import _ from 'underscore';
 
 import { hasPermission } from '../../../app/authorization/client';
 import { ChatRoom, ChatSubscription } from '../../../app/models/client';
@@ -186,7 +185,8 @@ class RoomCoordinatorClient extends RoomCoordinator {
 	}
 
 	getSortedTypes(): Array<{ config: IRoomTypeConfig; directives: IRoomTypeClientDirectives }> {
-		return _.sortBy(this.roomTypesOrder, 'order')
+		return this.roomTypesOrder
+			.sort((a, b) => a.order - b.order)
 			.map((type) => this.roomTypes[type.identifier] as { config: IRoomTypeConfig; directives: IRoomTypeClientDirectives })
 			.filter((type) => type.directives.condition());
 	}

@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { Meteor } from 'meteor/meteor';
-import s from 'underscore.string';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { Users } from '../../../models/server';
@@ -40,7 +38,7 @@ const _sendEmailChangeNotification = function (to: string, newEmail: string) {
 };
 
 const _setEmail = function (userId: string, email: string, shouldSendVerificationEmail = true) {
-	email = s.trim(email);
+	email = email.trim();
 	if (!userId) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { function: '_setEmail' });
 	}

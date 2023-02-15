@@ -1,6 +1,7 @@
 import { Modal, Box, Field, TextInput } from '@rocket.chat/fuselage';
 import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useEffect } from 'react';
+import { Trans } from 'react-i18next';
 
 type Props = {
 	email: string;
@@ -29,6 +30,7 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 	const handleResendRegistrationEmail = async () => {
 		try {
 			await createRegistrationIntent({ resend: true, email });
+			dispatchToastMessage({ type: 'success', message: t('Email_sent') });
 		} catch (error: unknown) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -66,7 +68,17 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 			</Modal.Header>
 			<Modal.Content>
 				<Box fontSize='p2'>
-					<Box is='p'>{t('RegisterWorkspace_Setup_Email_Confirmation', { email })}</Box>
+					<Box>
+						<Trans i18nKey='RegisterWorkspace_Setup_Email_Confirmation'>
+							<Box is='p'>
+								Email sent to{' '}
+								<Box is='span' fontScale='p2b'>
+									{email}{' '}
+								</Box>
+								with a confirmation link.
+							</Box>
+						</Trans>
+					</Box>
 					<Box is='p'>{t('RegisterWorkspace_Setup_Email_Verification')}</Box>
 					<Field pbs={10}>
 						<Field.Label>{t('Security_code')}</Field.Label>
