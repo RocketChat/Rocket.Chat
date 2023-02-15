@@ -159,9 +159,11 @@ Template.emojiPicker.helpers({
 	searchResults() {
 		return getEmojisBySearchTerm(Template.instance().currentSearchTerm.get(), Template.instance().searchTermItems.get());
 	},
-	emojiList(category) {
-		console.log(emojiListByCategory.get('recent'));
-		return emojiListByCategory.get(category);
+	emojiList() {
+		return (category) => {
+			console.log(category, emojiListByCategory.get('recent'));
+			return emojiListByCategory.get(category);
+		};
 	},
 	myList() {
 		return 'TEST';

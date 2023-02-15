@@ -2,11 +2,10 @@ import { Box } from '@rocket.chat/fuselage';
 import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { Fragment } from 'react';
 
-const EmojiPickerWrapper = ({ activeCategory, searching, searchResults, currentTone, emojiList, emojiCategories, ...props }) => {
+const EmojiPickerWrapper = ({ activeCategory, searching, searchResults, currentTone, list, emojiCategories, ...props }) => {
 	// const wrapperRef = useRef() as MutableRefObject<HTMLDivElement>;
 	const t = useTranslation();
 	const canManageEmoji = usePermission('manage-emoji');
-	console.log(props);
 
 	return (
 		// <div className='emoji-picker rc-popover__content'>
@@ -85,13 +84,12 @@ const EmojiPickerWrapper = ({ activeCategory, searching, searchResults, currentT
 					<Box dangerouslySetInnerHTML={{ __html: searchResults }} />
 				) : (
 					emojiCategories.map((category) => {
-						console.log(category);
 						return (
 							<Fragment key={category.key}>
 								<h4 className='emoji-list-category' id={`emoji-list-category-${category.key}`}>
 									{t(category.i18n)}
 								</h4>
-								<ul className={`emoji-list emoji-category-${category.key}`}></ul>
+								<ul className={`emoji-list emoji-category-${category.key}`}>{list(category.key)}</ul>
 							</Fragment>
 						);
 					})
