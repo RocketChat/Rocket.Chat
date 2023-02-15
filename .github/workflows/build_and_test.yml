@@ -120,10 +120,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js 14.21.2
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '14.21.2'
           cache: 'yarn'
 
       - name: yarn install
@@ -297,7 +297,7 @@ jobs:
       matrix:
         node-version: ['14.21.2']
         mongodb-version: ['4.4', '5.0', '6.0']
-        shard: [1, 2]
+        shard: [1, 2, 3, 4]
 
     steps:
       - name: Launch MongoDB
@@ -480,9 +480,9 @@ jobs:
             sleep 10
           done;
 
-      - name: E2E Test UI Test (${{ matrix.shard }}/${{ strategy.job-total }})
+      - name: E2E Test UI Test (${{ matrix.shard }}/4)
         working-directory: ./apps/meteor
-        run: yarn test:e2e --shard=${{ matrix.shard }}/${{ strategy.job-total }}
+        run: yarn test:e2e --shard=${{ matrix.shard }}/4
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v3
@@ -499,6 +499,7 @@ jobs:
       matrix:
         node-version: ['14.21.2']
         mongodb-version-ee: ['4.4']
+        shard: [1, 2, 3, 4]
 
     steps:
       - name: Launch MongoDB
@@ -675,7 +676,7 @@ jobs:
 
       - name: E2E Test UI
         working-directory: ./apps/meteor
-        run: E2E_COVERAGE=true IS_EE=true yarn test:e2e
+        run: E2E_COVERAGE=true IS_EE=true yarn test:e2e --shard=${{ matrix.shard }}/4
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v3
