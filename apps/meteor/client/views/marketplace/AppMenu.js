@@ -237,23 +237,6 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			}
 		};
 
-		if (!result.data) {
-			return;
-		}
-
-		if (app.migrated) {
-			setModal(
-				<UninstallGrandfatheredAppModal
-					context={context}
-					appName={app.name}
-					limit={result.data.limit}
-					handleUninstall={uninstall}
-					handleClose={closeModal}
-				/>,
-			);
-			return;
-		}
-
 		if (isSubscribed) {
 			const confirm = async () => {
 				await handleSubscription();
@@ -269,6 +252,23 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 					cancelText={t('Apps_Marketplace_Uninstall_Subscribed_App_Anyway')}
 				/>,
 			);
+		}
+
+		if (!result.data) {
+			return;
+		}
+
+		if (app.migrated) {
+			setModal(
+				<UninstallGrandfatheredAppModal
+					context={context}
+					appName={app.name}
+					limit={result.data.limit}
+					handleUninstall={uninstall}
+					handleClose={closeModal}
+				/>,
+			);
+			return;
 		}
 
 		setModal(
