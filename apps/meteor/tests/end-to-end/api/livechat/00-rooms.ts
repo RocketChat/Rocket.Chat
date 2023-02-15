@@ -4,14 +4,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { expect } from 'chai';
-import type {
-	IOmnichannelRoom,
-	ILivechatVisitor,
-	IUser,
-	IOmnichannelSystemMessage,
-	ILivechatCustomField,
-	ILivechatPriority,
-} from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, ILivechatVisitor, IUser, IOmnichannelSystemMessage, ILivechatPriority } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { Response } from 'supertest';
 import faker from '@faker-js/faker';
@@ -1359,7 +1352,7 @@ describe('LIVECHAT - rooms', function () {
 				scope: 'room',
 				visibility: 'visible',
 				regexp: '',
-			} as unknown as ILivechatCustomField & { field: string });
+			});
 
 			const newVisitor = await createVisitor();
 			const newRoom = await createLivechatRoom(newVisitor.token);
