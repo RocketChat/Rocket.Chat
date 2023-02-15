@@ -18,4 +18,20 @@ export class Marketplace {
 	get appRow(): Locator {
 		return this.page.locator('div[data-qa=appRow]');
 	}
+
+	get appKebabMenu(): Locator {
+		return this.page.locator('button[data-testid=menu]');
+	}
+
+	get viewLogs(): Locator {
+		return this.page.locator('text=View Logs');
+	}
+
+	get disable(): Locator {
+		return this.page.locator('text=Disable');
+	}
+
+	get uninstall(): Locator {
+		return this.page.locator('text=Uninstall');
+	}
 }

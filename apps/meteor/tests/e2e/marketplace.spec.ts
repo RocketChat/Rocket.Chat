@@ -22,5 +22,21 @@ test.describe.serial('marketplace', () => {
 
 			await expect(poMarketplace.noAppMatches).toBeVisible();
 		});
+
+		test.describe('Installed Apps Page', () => {
+			test.beforeEach(async ({ page }) => {
+				await page.goto('/marketplace/installed');
+			});
+
+			test('expect installed app kebab menu to have all possible options', async () => {
+				await poMarketplace.marketplaceFilter.type('Apps.RocketChat.Tester');
+
+				await poMarketplace.appKebabMenu.click();
+
+				await expect(poMarketplace.viewLogs).toBeVisible();
+				await expect(poMarketplace.disable).toBeVisible();
+				await expect(poMarketplace.uninstall).toBeVisible();
+			});
+		});
 	});
 });
