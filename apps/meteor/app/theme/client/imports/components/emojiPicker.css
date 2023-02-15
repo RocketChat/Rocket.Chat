@@ -43,6 +43,7 @@
 
 	&.show {
 		display: flex;
+		flex-direction: column;
 	}
 
 	& .filter-list {
