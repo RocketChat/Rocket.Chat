@@ -422,7 +422,8 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 
 		const update = {
 			$set: {
-				moderationInfo: { _hidden: true, hiddenAt: new Date(), moderatedBy: userId, reasonForHiding, actionTaken },
+				_hidden: true,
+				moderationInfo: { hiddenAt: new Date(), moderatedBy: userId, reasonForHiding, actionTaken },
 			},
 		};
 

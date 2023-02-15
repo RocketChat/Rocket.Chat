@@ -23,7 +23,11 @@ API.v1.addRoute(
 
 			const [reports] = await Promise.all([cursor.toArray()]);
 
-			const total = await Reports.countGroupedReports(latest ? new Date(latest) : new Date(), oldest && new Date(oldest), selector);
+			const total = await Reports.countGroupedReports(
+				latest ? new Date(latest) : new Date(),
+				oldest ? new Date(oldest) : undefined,
+				selector,
+			);
 
 			return API.v1.success({
 				reports,
