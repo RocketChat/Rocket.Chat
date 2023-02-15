@@ -1,4 +1,4 @@
-import { Icon, Menu, Skeleton, Option } from '@rocket.chat/fuselage';
+import { Box, Icon, Menu, Skeleton } from '@rocket.chat/fuselage';
 import {
 	useSetModal,
 	useEndpoint,
@@ -335,10 +335,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				isAdminUser && {
 					subscribe: {
 						label: (
-							<Option>
+							<Box>
 								<Icon name={incompatibleIconName(app, 'subscribe')} size='x16' marginInlineEnd='x4' />
 								{t('Subscription')}
-							</Option>
+							</Box>
 						),
 						action: handleSubscription,
 					},
@@ -349,10 +349,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			...(!app.installed && {
 				acquire: {
 					label: (
-						<Option disabled={requestedEndUser}>
+						<Box disabled={requestedEndUser}>
 							{isAdminUser && <Icon name={incompatibleIconName(app, 'install')} size='x16' marginInlineEnd='x4' />}
 							{t(button.label.replace(' ', '_'))}
-						</Option>
+						</Box>
 					),
 					action: requestedEndUser ? () => {} : handleAcquireApp,
 				},
@@ -365,10 +365,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				app.installed && {
 					viewLogs: {
 						label: (
-							<Option>
+							<Box>
 								<Icon name='desktop-text' size='x16' marginInlineEnd='x4' />
 								{t('View_Logs')}
-							</Option>
+							</Box>
 						),
 						action: handleViewLogs,
 					},
@@ -378,10 +378,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				!isAppDetailsPage && {
 					update: {
 						label: (
-							<Option>
+							<Box>
 								<Icon name={incompatibleIconName(app, 'update')} size='x16' marginInlineEnd='x4' />
 								{t('Update')}
-							</Option>
+							</Box>
 						),
 						action: handleUpdate,
 					},
@@ -391,10 +391,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				isAppEnabled && {
 					disable: {
 						label: (
-							<Option color='on-warning'>
+							<Box color='on-warning'>
 								<Icon name='ban' size='x16' marginInlineEnd='x4' />
 								{t('Disable')}
-							</Option>
+							</Box>
 						),
 						action: handleDisable,
 					},
@@ -404,10 +404,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				!isAppEnabled && {
 					enable: {
 						label: (
-							<Option>
+							<Box>
 								<Icon name='check' size='x16' marginInlineEnd='x4' />
 								{t('Enable')}
-							</Option>
+							</Box>
 						),
 						action: handleEnable,
 					},
@@ -422,10 +422,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				isAdminUser && {
 					uninstall: {
 						label: (
-							<Option color='danger'>
+							<Box color='danger'>
 								<Icon name='trash' size='x16' marginInlineEnd='x4' />
 								{t('Uninstall')}
-							</Option>
+							</Box>
 						),
 						action: handleUninstall,
 					},
