@@ -10,6 +10,7 @@ import CustomUserActiveConnections from './CustomUserActiveConnections';
 import CustomUserStatusFormWithData from './CustomUserStatusFormWithData';
 import CustomUserStatusService from './CustomUserStatusService';
 import CustomUserStatusTable from './CustomUserStatusTable';
+import { useIsEnterprise } from '/client/hooks/useIsEnterprise';
 
 const CustomUserStatusRoute = (): ReactElement => {
 	const t = useTranslation();
@@ -17,6 +18,7 @@ const CustomUserStatusRoute = (): ReactElement => {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 	const canManageUserStatus = usePermission('manage-user-status');
+	const isEnterprise = useIsEnterprise();
 
 	const handleItemClick = (id: string): void => {
 		route.push({
@@ -51,7 +53,7 @@ const CustomUserStatusRoute = (): ReactElement => {
 		<Page flexDirection='row'>
 			<Page name='admin-user-status'>
 				<Page.Header title={t('User_Status')}>
-					<CustomUserActiveConnections />
+					{!isEnterprise && <CustomUserActiveConnections />}
 					<ButtonGroup>
 						<Button onClick={handlePresenceServiceClick}>{t('Presence_service')}</Button>
 						<Button onClick={handleNewButtonClick}>{t('New_custom_status')}</Button>
