@@ -63,7 +63,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
 	const handleGoToSettings = useMutableCallback(() => {
-		userStatusRoute.push({});
+		userStatusRoute.push({ context: 'presence-service' });
 		closeModal();
 		onClose();
 	});

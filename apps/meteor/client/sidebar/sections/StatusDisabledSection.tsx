@@ -11,7 +11,7 @@ const StatusDisabledSection = ({ onDismiss }: { onDismiss: () => void }) => {
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
 	const handleGoToSettings = useMutableCallback(() => {
-		userStatusRoute.push({});
+		userStatusRoute.push({ context: 'presence-service' });
 		closeModal();
 	});
 	const isAdmin = useRole('admin');
