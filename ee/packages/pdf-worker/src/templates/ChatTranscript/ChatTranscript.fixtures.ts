@@ -91,7 +91,7 @@ export const exampleData = {
 		{ key: 'Date', value: 'Date' },
 		{ key: 'Customer', value: 'Customer' },
 		{ key: 'Time', value: 'Time' },
-		{ key: 'This_attachment_is_not_supported', value: 'This attachment is not supported' },
+		{ key: 'This_attachment_is_not_supported', value: 'Attachment format not supported' },
 	],
 	messages: [
 		{
