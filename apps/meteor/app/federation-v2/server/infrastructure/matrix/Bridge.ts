@@ -122,7 +122,7 @@ export class MatrixBridge implements IFederationBridge {
 		}
 	}
 
-	public async verifyInviteeId(externalInviteeId: string): Promise<void> {
+	public async verifyInviteeId(externalInviteeId: string): Promise<string> {
 		const [userId, homeserverUrl] = externalInviteeId.replace('@', '').split(':')
 		try {
 			const response = await fetch(`https://${homeserverUrl}/_matrix/client/v3/register/available?username=${userId}`)
@@ -132,17 +132,23 @@ export class MatrixBridge implements IFederationBridge {
 
 				if (responseBody.errcode === "M_USER_IN_USE") {
 					// user exists
+					return 'valid-invitee-id'
 				} else {
 					// notify we couldn't verify
+					return 'unable-to-verify'
 				}
 			}
 
 			if (response.status === 200) {
 				// user doesn't exists
+				return 'invalid-invitee-id'
 			}
 		} catch (e) {
 			// notify we couldn't verify
+			return 'unable-to-verify'
 		}
+
+		return 'unable-to-verify'
 	}
 
 	public async createUser(username: string, name: string, domain: string, avatarUrl?: string): Promise<string> {
