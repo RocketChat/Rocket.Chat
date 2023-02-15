@@ -32,8 +32,16 @@ export class OmnichannelTriggers {
 		return this.page.locator('[data-qa="TriggerTextInput-Description"]');
 	}
 
+	get selectCondition() {
+		return this.page.locator('[data-qa="TriggerSelect-Condition"]');
+	}
+
 	get inputConditionValue() {
 		return this.page.locator('[data-qa="TriggerTextInput-ConditionValue"]');
+	}
+
+	get selectAction() {
+		return this.page.locator('[data-qa="TriggerSelect-Action"]');
 	}
 
 	get inputActionAgentName() {
@@ -70,5 +78,9 @@ export class OmnichannelTriggers {
 
 	findTriggerRemoveBtn(name: string) {
 		return this.findRowByName(name).locator('button.rcx-button');
+	}
+
+	getOption(optionName: string) {
+		return this.page.locator(`div.rcx-option__content >> text="${optionName}"`);
 	}
 }

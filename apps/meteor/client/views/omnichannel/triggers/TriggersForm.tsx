@@ -161,7 +161,7 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, className }) => {
 			<Field className={className}>
 				<Field.Label>{t('Condition')}</Field.Label>
 				<Field.Row>
-					<Select options={conditionOptions} value={valueConditionName} onChange={handleConditionName} />
+					<Select data-qa='TriggerSelect-Condition' options={conditionOptions} value={valueConditionName} onChange={handleConditionName} />
 				</Field.Row>
 				{conditionValuePlaceholder && (
 					<Field.Row>
@@ -179,7 +179,13 @@ const TriggersForm: FC<TriggersFormProps> = ({ values, className }) => {
 					<TextInput value={t('Send_a_message')} disabled />
 				</Field.Row>
 				<Field.Row>
-					<Select options={senderOptions} value={valueActionSender} onChange={handleActionSender} placeholder={t('Select_an_option')} />
+					<Select
+						data-qa='TriggerSelect-Action'
+						options={senderOptions}
+						value={valueActionSender}
+						onChange={handleActionSender}
+						placeholder={t('Select_an_option')}
+					/>
 				</Field.Row>
 				{actionSender === 'custom' && (
 					<Field.Row>

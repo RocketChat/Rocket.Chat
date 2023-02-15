@@ -3,22 +3,20 @@ import type { PlaywrightTestConfig } from '@playwright/test';
 import * as constants from './tests/e2e/config/constants';
 
 export default {
-	// globalSetup: require.resolve('./tests/e2e/config/global-setup.ts'),
+	globalSetup: require.resolve('./tests/e2e/config/global-setup.ts'),
 	use: {
 		headless: true,
-		browserName: 'firefox', // Delete this
 		ignoreHTTPSErrors: true,
 		trace: 'retain-on-failure',
 		baseURL: constants.BASE_URL,
 		screenshot: process.env.CI ? 'off' : 'only-on-failure',
-		channel: 'firefox',
-		// channel: 'chrome',
+		channel: 'chrome',
 		launchOptions: {
 			// force GPU hardware acceleration
 			// (even in headless mode)
 			args: ['--use-gl=egl', '--use-fake-ui-for-media-stream'],
 		},
-		// permissions: ['microphone'],  --> Uncomment this
+		permissions: ['microphone'],
 	},
 	outputDir: 'tests/e2e/.playwright',
 	reporter: [
