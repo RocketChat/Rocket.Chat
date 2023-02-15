@@ -90,7 +90,7 @@ const CustomUserStatusService = () => {
 							</Box>
 							<Box fontScale='p2' mb='x8'>
 								{t('Larger_amounts_of_active_connections')}{' '}
-								<Box is='a' href='https://docs.rocket.chat/deploy/scaling-rocket.chat' target='_blank' color='status-font-on-info'>
+								<Box is='a' href='https://docs.rocket.chat/deploy/scaling-rocket.chat' target='_blank' color='info'>
 									{t('multiple_instance_solutions')}
 								</Box>
 							</Box>
