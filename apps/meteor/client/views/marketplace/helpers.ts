@@ -7,7 +7,7 @@ import { Utilities } from '../../../app/apps/lib/misc/Utilities';
 import { t } from '../../../app/utils/client';
 import { dispatchToastMessage } from '../../lib/toast';
 
-export const appEnabledStatuses = [AppStatus.AUTO_ENABLED, AppStatus.MANUALLY_ENABLED, AppStatus.INITIALIZED];
+export const appEnabledStatuses = [AppStatus.AUTO_ENABLED, AppStatus.MANUALLY_ENABLED];
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 interface ApiError {
@@ -39,7 +39,7 @@ type appButtonResponseProps = {
 export type appStatusSpanResponseProps = {
 	type?: 'failed' | 'warning';
 	icon?: 'warning' | 'checkmark-circled' | 'check';
-	label: 'Config Needed' | 'Failed' | 'Disabled' | 'Trial period' | 'Installed' | 'Incompatible' | 'request' | 'requests' | 'Requested';
+	label: 'Config Needed' | 'Failed' | 'Disabled' | 'Trial period' | 'Enabled' | 'Incompatible' | 'request' | 'requests' | 'Requested';
 	tooltipText?: string;
 };
 
@@ -295,7 +295,7 @@ export const appStatusSpanProps = (
 		if (isEnabled) {
 			return {
 				icon: 'check',
-				label: 'Installed',
+				label: 'Enabled',
 			};
 		}
 
