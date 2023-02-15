@@ -90,7 +90,7 @@ const CustomUserStatusService = () => {
 							</Box>
 							<Box fontScale='p2' mb='x8'>
 								{t('Larger_amounts_of_active_connections')}{' '}
-								<Box is='a' href='https://go.rocket.chat/i/presence-cap-learn-more' target='_blank' color='status-font-on-info'>
+								<Box is='a' href='https://docs.rocket.chat/deploy/scaling-rocket.chat' target='_blank' color='status-font-on-info'>
 									{t('multiple_instance_solutions')}
 								</Box>
 							</Box>
@@ -110,7 +110,7 @@ const CustomUserStatusService = () => {
 			{!isEnterprise && (
 				<VerticalBar.Footer borderBlockStartWidth='default' borderBlockColor='extra-light'>
 					<ButtonGroup stretch vertical>
-						<Button primary width='100%' is='a' href='https://go.rocket.chat/i/presence-cap-learn-more' target='_blank'>
+						<Button primary width='100%' is='a' href='https://www.rocket.chat/enterprise' target='_blank'>
 							{t('More_about_Enterprise_Edition')}
 						</Button>
 					</ButtonGroup>
