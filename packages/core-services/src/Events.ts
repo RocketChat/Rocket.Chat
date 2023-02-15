@@ -24,6 +24,7 @@ import type {
 	VoipEventDataSignature,
 	AtLeast,
 	UserStatus,
+	ILivechatPriority,
 	VideoConference,
 } from '@rocket.chat/core-typings';
 
@@ -151,4 +152,10 @@ export type EventSignatures = {
 	'connector.statuschanged'(enabled: boolean): void;
 	'message.update'(data: { message: AtLeast<IMessage, 'rid'> }): void;
 	'federation.userRoleChanged'(update: Record<string, any>): void;
+	'watch.priorities'(data: {
+		clientAction: ClientAction;
+		data: Partial<ILivechatPriority>;
+		id: string;
+		diff?: Record<string, string>;
+	}): void;
 };
