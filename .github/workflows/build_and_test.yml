@@ -289,7 +289,159 @@ jobs:
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
 
-  test:
+  test-api:
+    runs-on: ubuntu-20.04
+    needs: [build, release-versions]
+
+    strategy:
+      matrix:
+        node-version: ['14.21.2']
+        mongodb-version: ['4.4', '5.0', '6.0']
+        # shard: [1, 2, 3, 4]
+
+    steps:
+      - name: Launch MongoDB
+        uses: supercharge/mongodb-github-action@1.8.0
+        with:
+          mongodb-version: ${{ matrix.mongodb-version }}
+          mongodb-replica-set: rs0
+
+      - name: Docker env vars
+        id: docker-env
+        run: |
+          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+
+          echo "LOWERCASE_REPOSITORY: ${LOWERCASE_REPOSITORY}"
+          echo "::set-output name=lowercase-repo::${LOWERCASE_REPOSITORY}"
+
+          # test alpine image on mongo 5.0 (no special reason to be mongo 5.0 but we need to test alpine at least once)
+          if [[ '${{ matrix.mongodb-version }}' = '5.0' ]]; then
+            RC_DOCKERFILE="${{ github.workspace }}/apps/meteor/.docker/Dockerfile.alpine"
+            RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.alpine"
+          else
+            RC_DOCKERFILE="${{ github.workspace }}/apps/meteor/.docker/Dockerfile"
+            RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.official"
+          fi;
+
+          echo "RC_DOCKERFILE: ${RC_DOCKERFILE}"
+          echo "::set-output name=rc-dockerfile::${RC_DOCKERFILE}"
+
+          echo "RC_DOCKER_TAG: ${RC_DOCKER_TAG}"
+          echo "::set-output name=rc-docker-tag::${RC_DOCKER_TAG}"
+
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+
+      - name: yarn install
+        run: yarn
+
+      - name: TurboRepo local server
+        uses: felixmosh/turborepo-gh-artifacts@v2
+        if: "${{ env.TURBO_TEAM != '' }}"
+        with:
+          repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
+          server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
+
+      - name: Restore build
+        uses: actions/download-artifact@v2
+        with:
+          name: build
+          path: /tmp/build
+
+      - name: Unpack build
+        run: |
+          cd /tmp/build
+          tar xzf Rocket.Chat.tar.gz
+          rm Rocket.Chat.tar.gz
+
+      - name: Start containers
+        env:
+          MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
+          MONGO_OPLOG_URL: 'mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true'
+          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
+          RC_DOCKERFILE: ${{ steps.docker-env.outputs.rc-dockerfile }}
+          RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
+          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+        run: |
+          docker compose -f docker-compose-ci.yml up -d --build rocketchat
+
+      - name: Login to GitHub Container Registry
+        if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
+
+      - name: Publish Docker images to GitHub Container Registry
+        env:
+          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
+          RC_DOCKERFILE: ${{ steps.docker-env.outputs.rc-dockerfile }}
+          RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
+          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+        if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'
+        run: |
+          docker compose -f docker-compose-ci.yml push rocketchat
+
+          if [[ '${{ matrix.mongodb-version }}' = '4.4' ]]; then
+            IMAGE_NAME_BASE="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}"
+
+            echo "Push Docker image: ${IMAGE_NAME_BASE}"
+
+            docker tag ${IMAGE_NAME_BASE}.official $IMAGE_NAME_BASE
+            docker push $IMAGE_NAME_BASE
+          fi;
+
+      - name: Wait for Rocket.Chat to start up
+        env:
+          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
+          RC_DOCKERFILE: ${{ steps.docker-env.outputs.rc-dockerfile }}
+          RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
+          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+        run: |
+          docker ps
+
+          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING"; do
+            echo "Waiting Rocket.Chat to start up"
+            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs rocketchat && exit 1
+            sleep 10
+          done;
+
+      - name: E2E Test API
+        env:
+          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
+          RC_DOCKERFILE: ${{ steps.docker-env.outputs.rc-dockerfile }}
+          RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
+          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+        working-directory: ./apps/meteor
+        run: |
+          for i in $(seq 1 5); do
+            npm run testapi && s=0 && break || s=$?
+
+            docker compose -f ../../docker-compose-ci.yml logs rocketchat --tail=100
+
+            docker compose -f ../../docker-compose-ci.yml stop rocketchat
+
+            docker exec mongodb bash -c 'if command -v mongosh ; then mongosh --eval "use rocketchat" --eval "db.dropDatabase()" rocketchat; else mongo rocketchat --eval "db.dropDatabase()"; fi'
+
+            NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
+
+            docker compose -f ../../docker-compose-ci.yml restart rocketchat
+
+            until echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
+              echo "Waiting Rocket.Chat to start up"
+              ((c++)) && ((c==10)) && exit 1
+              sleep 10
+            done;
+          done;
+          exit $s
+
+  test-ui:
     runs-on: ubuntu-20.04
     needs: [build, release-versions]
 
@@ -346,9 +498,6 @@ jobs:
         with:
           repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
           server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
-
-      - name: Unit Test
-        run: yarn testunit --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
 
       - name: Restore build
         uses: actions/download-artifact@v2
@@ -704,7 +853,7 @@ jobs:
   deploy:
     runs-on: ubuntu-20.04
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
-    needs: [unit-test, test, test-ee, release-versions]
+    needs: [unit-test, test-ui, test-api, test-ee, release-versions]
 
     steps:
       - uses: actions/checkout@v3
