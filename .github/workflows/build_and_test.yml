@@ -223,11 +223,11 @@ jobs:
     strategy:
       matrix:
         node-version: ['14.21.2']
-        mongodb-version: ['4.2', '4.4', '5.0']
+        mongodb-version: ['4.4', '5.0', '6.0']
 
     steps:
       - name: Launch MongoDB
-        uses: supercharge/mongodb-github-action@1.7.0
+        uses: supercharge/mongodb-github-action@1.8.0
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
           mongodb-replica-set: rs0
@@ -356,7 +356,7 @@ jobs:
 
             docker compose -f ../../docker-compose-ci.yml stop rocketchat
 
-            docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
+            docker exec mongodb bash -c 'if command -v mongosh ; then mongosh --eval "use rocketchat" --eval "db.dropDatabase()" rocketchat; else mongo rocketchat --eval "db.dropDatabase()"; fi'
 
             NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
 
@@ -394,7 +394,7 @@ jobs:
 
           docker compose -f docker-compose-ci.yml stop rocketchat
 
-          docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
+          docker exec mongodb bash -c 'if command -v mongosh ; then mongosh --eval "use rocketchat" --eval "db.dropDatabase()" rocketchat; else mongo rocketchat --eval "db.dropDatabase()"; fi'
 
           NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
 
@@ -428,7 +428,7 @@ jobs:
 
     steps:
       - name: Launch MongoDB
-        uses: supercharge/mongodb-github-action@1.7.0
+        uses: supercharge/mongodb-github-action@1.8.0
         with:
           mongodb-version: ${{ matrix.mongodb-version-ee }}
           mongodb-replica-set: rs0
@@ -545,7 +545,7 @@ jobs:
 
             docker compose -f ../../docker-compose-ci.yml stop
 
-            docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
+            docker exec mongodb bash -c 'if command -v mongosh ; then mongosh --eval "use rocketchat" --eval "db.dropDatabase()" rocketchat; else mongo rocketchat --eval "db.dropDatabase()"; fi'
 
             NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
 
@@ -568,7 +568,7 @@ jobs:
         run: |
           docker compose -f docker-compose-ci.yml stop
 
-          docker exec mongodb mongo rocketchat --eval 'db.dropDatabase()'
+          docker exec mongodb bash -c 'if command -v mongosh ; then mongosh --eval "use rocketchat" --eval "db.dropDatabase()" rocketchat; else mongo rocketchat --eval "db.dropDatabase()"; fi'
 
           NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
 
@@ -690,7 +690,7 @@ jobs:
           aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
           curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-              "{\"nodeVersion\": \"14.21.2\", \"compatibleMongoVersions\": [\"4.2\", \"4.4\", \"5.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
+              "{\"nodeVersion\": \"14.21.2\", \"compatibleMongoVersions\": [\"4.4\", \"5.0\", \"6.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
               https://releases.rocket.chat/update
 
           # Makes build fail if the release isn't there

@@ -1,4 +1,5 @@
 import type { IOmnichannelRoom, IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
+import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-typings';
 
 import { CachedCollection } from '../../../ui-cached-collection/client';
 import type { SubscriptionWithRoom } from '../../../../client/definitions/SubscriptionWithRoom';
@@ -61,6 +62,9 @@ class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom> {
 				closedAt: 1,
 				responseBy: 1,
 				priorityId: 1,
+				priorityWeight: 1,
+				slaId: 1,
+				estimatedWaitingTimeQueue: 1,
 				livechatData: 1,
 				departmentId: 1,
 				source: 1,
@@ -71,7 +75,7 @@ class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom> {
 
 		const room = ChatRoom.findOne({ _id: subscription.rid }, options);
 
-		const lastRoomUpdate = room?.lm || subscription.ts || subscription._updatedAt;
+		const lastRoomUpdate = room?.lm || subscription.ts;
 
 		return {
 			...subscription,
@@ -110,6 +114,10 @@ class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom> {
 			waitingResponse: (room as IOmnichannelRoom | undefined)?.waitingResponse,
 			responseBy: (room as IOmnichannelRoom | undefined)?.responseBy,
 			priorityId: (room as IOmnichannelRoom | undefined)?.priorityId,
+			slaId: (room as IOmnichannelRoom | undefined)?.slaId,
+			priorityWeight: (room as IOmnichannelRoom | undefined)?.priorityWeight || LivechatPriorityWeight.NOT_SPECIFIED,
+			estimatedWaitingTimeQueue:
+				(room as IOmnichannelRoom | undefined)?.estimatedWaitingTimeQueue || DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
 			livechatData: (room as IOmnichannelRoom | undefined)?.livechatData,
 			departmentId: (room as IOmnichannelRoom | undefined)?.departmentId,
 			ts: room?.ts ?? subscription.ts,

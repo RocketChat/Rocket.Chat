@@ -1,200 +1,73 @@
 import { faker } from '@faker-js/faker';
-import type { Page } from '@playwright/test';
+import type { Browser, Page } from '@playwright/test';
 
 import { test, expect } from './utils/test';
-import { OmnichannelTriggers } from './page-objects';
+import { OmnichannelLiveChat, HomeOmnichannel } from './page-objects';
 
-test.use({ storageState: 'admin-session.json' });
+const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page; poHomeOmnichannel: HomeOmnichannel }> => {
+	const page = await browser.newPage({ storageState });
+	const poHomeOmnichannel = new HomeOmnichannel(page);
+	await page.goto('/omnichannel/triggers');
+	await page.locator('.main-content').waitFor();
+
+	return { page, poHomeOmnichannel };
+};
 
 test.describe.serial('omnichannel-triggers', () => {
-	let poOmnichannelTriggers: OmnichannelTriggers;
+	let triggersName: string;
+	let triggerMessage: string;
+	let poLiveChat: OmnichannelLiveChat;
+	let newUser: { email: string; name: string };
+	let agent: { page: Page; poHomeOmnichannel: HomeOmnichannel };
 
-	let trigger: {
-		enabled: boolean;
-		runOnce: boolean;
-		name: string;
-		description: string;
-		conditions: { name: string; value: string | number };
-		actions: {
-			name: string;
-			params: {
-				sender: string;
-				msg: string;
-				name: string;
-			};
+	test.beforeAll(async ({ api, browser }) => {
+		newUser = {
+			name: faker.name.firstName(),
+			email: faker.internet.email(),
 		};
-	}[];
-
-	test.beforeAll(() => {
-		trigger = [
-			{
-				name: faker.datatype.uuid(),
-				description: 'some description',
-				enabled: true,
-				runOnce: true,
-				conditions: {
-					name: 'Visitor page URL',
-					value: 'some value',
-				},
-				actions: {
-					name: '',
-					params: {
-						sender: 'Impersonate next agent from queue',
-						msg: 'some message',
-						name: '',
-					},
-				},
-			},
-			{
-				name: faker.datatype.uuid(),
-				description: 'some description',
-				enabled: true,
-				runOnce: true,
-				conditions: {
-					name: 'Visitor page URL',
-					value: 'some value',
-				},
-				actions: {
-					name: '',
-					params: {
-						sender: 'Impersonate next agent from queue',
-						msg: 'some message',
-						name: '',
-					},
-				},
-			},
-		];
+		triggersName = faker.datatype.uuid();
+		triggerMessage = 'Welcome to Rocket.chat';
+		await api.post('/livechat/users/agent', { username: 'user1' });
+		await api.post('/livechat/users/manager', { username: 'user1' });
+		agent = await createAuxContext(browser, 'user1-session.json');
 	});
 
-	test.beforeEach(async ({ page }: { page: Page }) => {
-		poOmnichannelTriggers = new OmnichannelTriggers(page);
+	test.beforeEach(async ({ page }) => {
+		poLiveChat = new OmnichannelLiveChat(page);
+	});
 
-		await page.goto('/omnichannel');
-		await poOmnichannelTriggers.sidenav.linkTriggers.click();
+	test.afterAll(async ({ api }) => {
+		await api.delete('/livechat/users/agent/user1');
+		await api.delete('/livechat/users/manager/user1');
 	});
 
 	test('expect create new trigger', async () => {
-		await poOmnichannelTriggers.btnNew.click();
-		await (trigger[0].enabled ? poOmnichannelTriggers.btnEnabled.check() : poOmnichannelTriggers.btnEnabled.uncheck());
-		await (trigger[0].runOnce ? poOmnichannelTriggers.btnRunOnce.check() : poOmnichannelTriggers.btnRunOnce.uncheck());
-		await poOmnichannelTriggers.inputName.fill(trigger[0].name);
-		await poOmnichannelTriggers.inputDescription.fill(trigger[0].description);
-		await poOmnichannelTriggers.selectCondition.click();
-		await poOmnichannelTriggers.getOption(trigger[0].conditions.name).click();
-		await poOmnichannelTriggers.inputConditionValue.fill(trigger[0].conditions.value as string);
-		await poOmnichannelTriggers.selectAction.click();
-		await poOmnichannelTriggers.getOption(trigger[0].actions.params.sender).click();
-		if (await poOmnichannelTriggers.inputActionAgentName.isVisible()) {
-			await poOmnichannelTriggers.inputActionAgentName.fill(trigger[0].actions.params.name);
-		}
-		await poOmnichannelTriggers.inputActionMsg.fill(trigger[0].actions.params.msg);
-		await poOmnichannelTriggers.btnSave.click();
-
-		await expect(poOmnichannelTriggers.findRowByName(trigger[0].name)).toBeVisible();
-
-		await poOmnichannelTriggers.btnNew.click();
-		await (trigger[1].enabled ? poOmnichannelTriggers.btnEnabled.check() : poOmnichannelTriggers.btnEnabled.uncheck());
-		await (trigger[1].runOnce ? poOmnichannelTriggers.btnRunOnce.check() : poOmnichannelTriggers.btnRunOnce.uncheck());
-		await poOmnichannelTriggers.inputName.fill(trigger[1].name);
-		await poOmnichannelTriggers.inputDescription.fill(trigger[1].description);
-		await poOmnichannelTriggers.selectCondition.click();
-		await poOmnichannelTriggers.getOption(trigger[1].conditions.name).click();
-		await poOmnichannelTriggers.inputConditionValue.fill(trigger[1].conditions.value as string);
-		await poOmnichannelTriggers.selectAction.click();
-		await poOmnichannelTriggers.getOption(trigger[1].actions.params.sender).click();
-		if (await poOmnichannelTriggers.inputActionAgentName.isVisible()) {
-			await poOmnichannelTriggers.inputActionAgentName.fill(trigger[1].actions.params.name);
-		}
-		await poOmnichannelTriggers.inputActionMsg.fill(trigger[1].actions.params.msg);
-		await poOmnichannelTriggers.btnSave.click();
-
-		await expect(poOmnichannelTriggers.findRowByName(trigger[1].name)).toBeVisible();
+		await agent.poHomeOmnichannel.triggers.createTrigger(triggersName, triggerMessage);
+		await expect(agent.poHomeOmnichannel.triggers.toastMessage).toBeVisible();
 	});
 
 	test('expect update trigger', async () => {
-		await expect(poOmnichannelTriggers.findRowByName(trigger[1].name)).toBeVisible();
-		await poOmnichannelTriggers.findRowByName(trigger[1].name).click();
-
-		trigger[1].name = `edited-${trigger[1].name}`;
-		trigger[1].description = 'edited description';
-		trigger[1].enabled = !trigger[1].enabled;
-		trigger[1].runOnce = !trigger[1].runOnce;
-		trigger[1].conditions.name = 'Visitor time on site';
-		trigger[1].conditions.value = '1';
-		trigger[1].actions.params.sender = 'Custom agent';
-		trigger[1].actions.params.name = 'agent name';
-		trigger[1].actions.params.msg = 'edited message';
-
-		await (trigger[1].enabled ? poOmnichannelTriggers.btnEnabled.check() : poOmnichannelTriggers.btnEnabled.uncheck());
-		await (trigger[1].runOnce ? poOmnichannelTriggers.btnRunOnce.check() : poOmnichannelTriggers.btnRunOnce.uncheck());
-		await poOmnichannelTriggers.inputName.fill(trigger[1].name);
-		await poOmnichannelTriggers.inputDescription.fill(trigger[1].description);
-		await poOmnichannelTriggers.selectCondition.click();
-		await poOmnichannelTriggers.getOption(trigger[1].conditions.name).click();
-		await poOmnichannelTriggers.inputConditionValue.fill(trigger[1].conditions.value as string);
-		await poOmnichannelTriggers.selectAction.click();
-		await poOmnichannelTriggers.getOption(trigger[1].actions.params.sender).click();
-		if (await poOmnichannelTriggers.inputActionAgentName.isVisible()) {
-			await poOmnichannelTriggers.inputActionAgentName.fill(trigger[1].actions.params.name);
-		}
-		await poOmnichannelTriggers.inputActionMsg.fill(trigger[1].actions.params.msg);
-		await poOmnichannelTriggers.btnSave.click();
-
-		await poOmnichannelTriggers.findRowByName(trigger[1].name).click();
-		await (trigger[1].enabled
-			? expect(poOmnichannelTriggers.btnEnabled).toBeChecked()
-			: expect(poOmnichannelTriggers.btnEnabled).not.toBeChecked());
-		await (trigger[1].runOnce
-			? expect(poOmnichannelTriggers.btnRunOnce).toBeChecked()
-			: expect(poOmnichannelTriggers.btnRunOnce).not.toBeChecked());
-		await expect(poOmnichannelTriggers.inputName).toHaveValue(trigger[1].name);
-		await expect(poOmnichannelTriggers.inputDescription).toHaveValue(trigger[1].description);
-		await expect(poOmnichannelTriggers.selectCondition).toContainText(trigger[1].conditions.name);
-		await expect(poOmnichannelTriggers.inputConditionValue).toHaveValue(trigger[1].conditions.value);
-		await expect(poOmnichannelTriggers.selectAction).toContainText(trigger[1].actions.params.sender);
-		if (await poOmnichannelTriggers.inputActionAgentName.isVisible()) {
-			await expect(poOmnichannelTriggers.inputActionAgentName).toHaveValue(trigger[1].actions.params.name);
-		}
-		await expect(poOmnichannelTriggers.inputActionMsg).toHaveValue(trigger[1].actions.params.msg);
+		const newTriggerName = `edited-${triggersName}`;
+		await agent.poHomeOmnichannel.triggers.firstRowInTriggerTable(triggersName).click();
+		await agent.poHomeOmnichannel.triggers.updateTrigger(newTriggerName);
+		await expect(agent.poHomeOmnichannel.triggers.toastMessage).toBeVisible();
 	});
 
-	test('expect switch trigger information', async () => {
-		await expect(poOmnichannelTriggers.findRowByName(trigger[0].name)).toBeVisible();
-		await expect(poOmnichannelTriggers.findRowByName(trigger[1].name)).toBeVisible();
-
-		await poOmnichannelTriggers.findRowByName(trigger[0].name).click();
-		await poOmnichannelTriggers.findRowByName(trigger[1].name).click();
-
-		await (trigger[1].enabled
-			? expect(poOmnichannelTriggers.btnEnabled).toBeChecked()
-			: expect(poOmnichannelTriggers.btnEnabled).not.toBeChecked());
-		await (trigger[1].runOnce
-			? expect(poOmnichannelTriggers.btnRunOnce).toBeChecked()
-			: expect(poOmnichannelTriggers.btnRunOnce).not.toBeChecked());
-		await expect(poOmnichannelTriggers.inputName).toHaveValue(trigger[1].name);
-		await expect(poOmnichannelTriggers.inputDescription).toHaveValue(trigger[1].description);
-		await expect(poOmnichannelTriggers.selectCondition).toContainText(trigger[1].conditions.name);
-		await expect(poOmnichannelTriggers.inputConditionValue).toHaveValue(trigger[1].conditions.value as string);
-		await expect(poOmnichannelTriggers.selectAction).toContainText(trigger[1].actions.params.sender);
-		if (await poOmnichannelTriggers.inputActionAgentName.isVisible()) {
-			await expect(poOmnichannelTriggers.inputActionAgentName).toHaveValue(trigger[1].actions.params.name);
-		}
-		await expect(poOmnichannelTriggers.inputActionMsg).toHaveValue(trigger[1].actions.params.msg);
+	test('expect triggers to be displaye on Livechat', async ({ page }) => {
+		await test.step('Expect send a message as a visitor', async () => {
+			await page.goto('/livechat');
+			await poLiveChat.btnOpenLiveChat('R').click();
+			if (await page.locator('[type="button"] >> text="Chat now"').isVisible()) {
+				await page.locator('[type="button"] >> text="Chat now"').click();
+			}
+			await poLiveChat.sendMessage(newUser, false);
+			await expect(page.locator(`text=${triggerMessage} >> nth=0`)).toBeVisible();
+		});
 	});
 
-	test('expect delete trigger', async () => {
-		await expect(poOmnichannelTriggers.findRowByName(trigger[1].name)).toBeVisible();
-
-		await poOmnichannelTriggers.findTriggerRemoveBtn(trigger[1].name).click();
-		await poOmnichannelTriggers.btnModalConfirmDelete.click();
-
-		await expect(poOmnichannelTriggers.findRowByName(trigger[1].name)).not.toBeVisible();
-
-		await expect(poOmnichannelTriggers.findRowByName(trigger[0].name)).toBeVisible();
-
-		await poOmnichannelTriggers.findTriggerRemoveBtn(trigger[0].name).click();
-		await poOmnichannelTriggers.btnModalConfirmDelete.click();
-
-		await expect(poOmnichannelTriggers.findRowByName(trigger[0].name)).not.toBeVisible();
+	test('expect deleting trigger', async () => {
+		await agent.poHomeOmnichannel.triggers.btnDeletefirstRowInTable.click();
+		await agent.poHomeOmnichannel.triggers.btnModalRemove.click();
+		await expect(agent.poHomeOmnichannel.triggers.removeToastMessage).toBeVisible();
 	});
 });

@@ -17,6 +17,7 @@ import React, { useCallback, useState, useEffect } from 'react';
 
 import { RoomManager } from '../../../../../../../app/ui-utils/client';
 import PlaceChatOnHoldModal from '../../../../../../../ee/app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
+import { useHasLicenseModule } from '../../../../../../../ee/client/hooks/useHasLicenseModule';
 import CloseChatModal from '../../../../../../components/Omnichannel/modals/CloseChatModal';
 import CloseChatModalData from '../../../../../../components/Omnichannel/modals/CloseChatModalData';
 import ForwardChatModal from '../../../../../../components/Omnichannel/modals/ForwardChatModal';
@@ -84,7 +85,7 @@ export const useQuickActions = (
 				closeModal();
 				dispatchToastMessage({
 					type: 'success',
-					message: t('Livechat_transcript_has_been_requested'),
+					message: t('Livechat_email_transcript_has_been_requested'),
 				});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
@@ -92,6 +93,20 @@ export const useQuickActions = (
 		},
 		[closeModal, dispatchToastMessage, requestTranscript, rid, t],
 	);
+
+	const sendTranscriptPDF = useEndpoint('POST', '/v1/omnichannel/:rid/request-transcript', { rid });
+
+	const handleSendTranscriptPDF = useCallback(async () => {
+		try {
+			await sendTranscriptPDF();
+			dispatchToastMessage({
+				type: 'success',
+				message: t('Livechat_transcript_has_been_requested'),
+			});
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		}
+	}, [dispatchToastMessage, sendTranscriptPDF, t]);
 
 	const sendTranscript = useMethod('livechat:sendTranscript');
 
@@ -164,19 +179,39 @@ export const useQuickActions = (
 		[closeModal, dispatchToastMessage, forwardChat, room.t, rid, homeRoute, t],
 	);
 
-	const closeChat = useMethod('livechat:closeRoom');
+	const closeChat = useEndpoint('POST', '/v1/livechat/room.closeByUser');
 
 	const handleClose = useCallback(
-		async (comment?: string, tags?: string[]) => {
+		async (
+			comment?: string,
+			tags?: string[],
+			preferences?: { omnichannelTranscriptPDF: boolean; omnichannelTranscriptEmail: boolean },
+			requestData?: { email: string; subject: string },
+		) => {
 			try {
-				await closeChat(rid, comment, { clientAction: true, tags });
+				await closeChat({
+					rid,
+					...(comment && { comment }),
+					...(tags && { tags }),
+					...(preferences?.omnichannelTranscriptPDF && { generateTranscriptPdf: true }),
+					...(preferences?.omnichannelTranscriptEmail && requestData
+						? {
+								transcriptEmail: {
+									sendToVisitor: preferences?.omnichannelTranscriptEmail,
+									requestData,
+								},
+						  }
+						: { transcriptEmail: { sendToVisitor: false } }),
+				});
+				homeRoute.push();
+				RoomManager.close(room.t + rid);
 				closeModal();
 				dispatchToastMessage({ type: 'success', message: t('Chat_closed_successfully') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
-		[closeChat, closeModal, dispatchToastMessage, rid, t],
+		[closeChat, closeModal, dispatchToastMessage, homeRoute, room.t, rid, t],
 	);
 
 	const returnChatToQueueMutation = useReturnChatToQueueMutation({
@@ -204,7 +239,7 @@ export const useQuickActions = (
 		},
 	});
 
-	const openModal = useMutableCallback(async (id: string) => {
+	const handleAction = useMutableCallback(async (id: string) => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
 				setModal(
@@ -216,7 +251,10 @@ export const useQuickActions = (
 					/>,
 				);
 				break;
-			case QuickActionsEnum.Transcript:
+			case QuickActionsEnum.TranscriptPDF:
+				handleSendTranscriptPDF();
+				break;
+			case QuickActionsEnum.TranscriptEmail:
 				const visitorEmail = await getVisitorEmail();
 
 				if (!visitorEmail) {
@@ -239,11 +277,12 @@ export const useQuickActions = (
 				setModal(<ForwardChatModal room={room} onForward={handleForwardChat} onCancel={closeModal} />);
 				break;
 			case QuickActionsEnum.CloseChat:
+				const email = await getVisitorEmail();
 				setModal(
 					room.departmentId ? (
-						<CloseChatModalData departmentId={room.departmentId} onConfirm={handleClose} onCancel={closeModal} />
+						<CloseChatModalData visitorEmail={email} departmentId={room.departmentId} onConfirm={handleClose} onCancel={closeModal} />
 					) : (
-						<CloseChatModal onConfirm={handleClose} onCancel={closeModal} />
+						<CloseChatModal visitorEmail={email} onConfirm={handleClose} onCancel={closeModal} />
 					),
 				);
 				break;
@@ -273,7 +312,9 @@ export const useQuickActions = (
 	const roomOpen = room?.open && (room.u?._id === uid || hasManagerRole) && room?.lastMessage?.t !== 'livechat-close';
 	const canMoveQueue = !!omnichannelRouteConfig?.returnQueue && room?.u !== undefined;
 	const canForwardGuest = usePermission('transfer-livechat-guest');
-	const canSendTranscript = usePermission('send-omnichannel-chat-transcript');
+	const canSendTranscriptEmail = usePermission('send-omnichannel-chat-transcript');
+	const hasLicense = useHasLicenseModule('livechat-enterprise');
+	const canSendTranscriptPDF = usePermission('request-pdf-transcript');
 	const canCloseRoom = usePermission('close-livechat-room');
 	const canCloseOthersRoom = usePermission('close-others-livechat-room');
 	const canPlaceChatOnHold = Boolean(!room.onHold && room.u && !(room as any).lastMessage?.token && manualOnHoldAllowed);
@@ -285,7 +326,11 @@ export const useQuickActions = (
 			case QuickActionsEnum.ChatForward:
 				return !!roomOpen && canForwardGuest;
 			case QuickActionsEnum.Transcript:
-				return canSendTranscript;
+				return canSendTranscriptEmail || (hasLicense && canSendTranscriptPDF);
+			case QuickActionsEnum.TranscriptEmail:
+				return canSendTranscriptEmail;
+			case QuickActionsEnum.TranscriptPDF:
+				return hasLicense && canSendTranscriptPDF;
 			case QuickActionsEnum.CloseChat:
 				return !!roomOpen && (canCloseRoom || canCloseOthersRoom);
 			case QuickActionsEnum.OnHoldChat:
@@ -296,14 +341,20 @@ export const useQuickActions = (
 		return false;
 	};
 
-	const visibleActions = actions.filter(({ id }) => hasPermissionButtons(id));
+	const visibleActions = actions.filter((action) => {
+		const { options, id } = action;
+		if (options) {
+			action.options = options.filter(({ id }) => hasPermissionButtons(id));
+		}
+		return hasPermissionButtons(id);
+	});
 
 	const actionDefault = useMutableCallback((actionId) => {
-		openModal(actionId);
+		handleAction(actionId);
 	});
 
 	const getAction = useMutableCallback((id) => {
-		openModal(id);
+		handleAction(id);
 	});
 
 	return { visibleActions, actionDefault, getAction };

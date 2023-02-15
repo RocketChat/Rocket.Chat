@@ -1,9 +1,6 @@
-import React, { lazy } from 'react';
+import { lazy } from 'react';
 
-import { appLayout } from '../../lib/appLayout';
 import { createRouteGroup } from '../../lib/createRouteGroup';
-import BlazeTemplate from '../root/BlazeTemplate';
-import MainLayout from '../root/MainLayout';
 
 export const registerAdminRoute = createRouteGroup(
 	'admin',
@@ -123,17 +120,6 @@ registerAdminRoute('/email-inboxes/:context?/:_id?', {
 registerAdminRoute('/settings/:group?', {
 	name: 'admin-settings',
 	component: lazy(() => import('./settings/SettingsRoute')),
-});
-
-registerAdminRoute('/chatpal', {
-	name: 'chatpal-admin',
-	action() {
-		appLayout.render(
-			<MainLayout>
-				<BlazeTemplate template='ChatpalAdmin' />
-			</MainLayout>,
-		);
-	},
 });
 
 registerAdminRoute('/upgrade/:type?', {
