@@ -409,6 +409,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 								{t('Enable')}
 							</Box>
 						),
+						disabled: !result.data.hasUnlimitedApps && result.data.enabled < result.data.limit,
 						action: handleEnable,
 					},
 				}),
@@ -439,14 +440,14 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		};
 	}, [
 		canAppBeSubscribed,
-		requestedEndUser,
 		isSubscribed,
+		isAdminUser,
 		incompatibleIconName,
 		app,
 		t,
 		handleSubscription,
-		isAdminUser,
-		button?.label,
+		requestedEndUser,
+		button.label,
 		handleAcquireApp,
 		context,
 		handleViewLogs,
@@ -455,6 +456,9 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		handleUpdate,
 		isAppEnabled,
 		handleDisable,
+		result.data.hasUnlimitedApps,
+		result.data.enabled,
+		result.data.limit,
 		handleEnable,
 		handleUninstall,
 	]);
