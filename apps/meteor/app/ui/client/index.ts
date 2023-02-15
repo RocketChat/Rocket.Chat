@@ -4,14 +4,8 @@ import './lib/iframeCommands';
 import './lib/parentTemplate';
 import './lib/codeMirror';
 import './views/app/roomSearch.html';
-import './views/app/userSearch.html';
 import './views/app/roomSearch';
 import './views/app/photoswipeContent.ts'; // without the *.ts extension, *.html gets loaded first
-import './components/icon';
-
-import './components/popupList.html';
-import './components/popupList';
-import './components/selectDropdown.html';
 
 export { UserAction, USER_ACTIVITIES } from './lib/UserAction';
 export { KonchatNotification } from './lib/notification';

@@ -1,4 +1,3 @@
-import s from 'underscore.string';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Users, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
 
@@ -7,6 +6,7 @@ import { Subscriptions, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 import { roomCoordinator } from './rooms/roomCoordinator';
+import { trim } from '../../lib/utils/stringUtils';
 
 export class Spotlight {
 	fetchRooms(userId, rooms) {
@@ -21,7 +21,7 @@ export class Spotlight {
 	}
 
 	searchRooms({ userId, text }) {
-		const regex = new RegExp(s.trim(escapeRegExp(text)), 'i');
+		const regex = new RegExp(trim(escapeRegExp(text)), 'i');
 
 		const roomOptions = {
 			limit: 5,

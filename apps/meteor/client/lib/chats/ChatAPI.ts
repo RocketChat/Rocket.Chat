@@ -22,6 +22,19 @@ export type ComposerAPI = {
 	insertNewLine(): void;
 	clear(): void;
 	focus(): void;
+	blur(): void;
+
+	getCursorPosition(): number | undefined;
+
+	substring(start: number, end?: number): string;
+
+	replaceText(
+		text: string,
+		selection: {
+			start: number;
+			end: number;
+		},
+	): void;
 
 	setCursorToEnd(): void;
 	setCursorToStart(): void;

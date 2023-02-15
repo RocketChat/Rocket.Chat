@@ -7,6 +7,9 @@ import { useLayout } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
 import React, { memo, useMemo } from 'react';
 
+import { useOmnichannelPriorities } from '../../../ee/client/omnichannel/hooks/useOmnichannelPriorities';
+import { PriorityIcon } from '../../../ee/client/omnichannel/priorities/PriorityIcon';
+import { InlineGroup } from '../../components/InlineGroup';
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import RoomMenu from '../RoomMenu';
@@ -125,6 +128,7 @@ function SideBarItemTemplateWithData({
 	);
 
 	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
+	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 
 	const threadUnread = tunread.length > 0;
 	const message = extended && getMessage(room, lastMessage, t);
@@ -134,13 +138,18 @@ function SideBarItemTemplateWithData({
 		((userMentions || tunreadUser.length) && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'ghost';
 	const isUnread = unread > 0 || threadUnread;
 	const showBadge = !hideUnreadStatus || (!hideMentionStatus && userMentions);
-	const badges =
-		showBadge && isUnread ? (
-			// TODO: Remove any
-			<Badge {...({ style: { flexShrink: 0 } } as any)} variant={variant}>
-				{unread + tunread?.length}
-			</Badge>
-		) : null;
+
+	const badges = (
+		<InlineGroup gap={8}>
+			{showBadge &&
+				isUnread && ( // TODO: Remove any
+					<Badge {...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)} variant={variant}>
+						{unread + tunread?.length}
+					</Badge>
+				)}
+			{isOmnichannelRoom(room) && isPriorityEnabled && <PriorityIcon level={room.priorityWeight} />}
+		</InlineGroup>
+	);
 
 	return (
 		<SideBarItemTemplate
@@ -165,7 +174,7 @@ function SideBarItemTemplateWithData({
 			actions={actions}
 			menu={
 				!isAnonymous &&
-				!isQueued &&
+				(!isQueued || (isQueued && isPriorityEnabled)) &&
 				((): ReactElement => (
 					<RoomMenu
 						alert={alert}
@@ -176,6 +185,7 @@ function SideBarItemTemplateWithData({
 						type={type}
 						cl={cl}
 						name={title}
+						hideDefaultOptions={isQueued}
 					/>
 				))
 			}
@@ -228,6 +238,14 @@ export default memo(SideBarItemTemplateWithData, (prevProps, nextProps) => {
 		return false;
 	}
 	if (prevProps.room.teamMain !== nextProps.room.teamMain) {
+		return false;
+	}
+
+	if (
+		isOmnichannelRoom(prevProps.room) &&
+		isOmnichannelRoom(nextProps.room) &&
+		prevProps.room.priorityWeight !== nextProps.room.priorityWeight
+	) {
 		return false;
 	}
 

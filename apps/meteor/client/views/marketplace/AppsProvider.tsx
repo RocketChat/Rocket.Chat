@@ -177,6 +177,7 @@ const AppsProvider: FC = ({ children }) => {
 		dispatchInstalledApps({ type: 'request', reload: async () => undefined });
 		dispatchPrivateApps({ type: 'request', reload: async () => undefined });
 
+		let allInstalledApps: App[] = [];
 		let installedApps: App[] = [];
 		let marketplaceApps: App[] = [];
 		let privateApps: App[] = [];
@@ -196,7 +197,7 @@ const AppsProvider: FC = ({ children }) => {
 		}
 
 		try {
-			installedApps = await Apps.getInstalledApps().then((result: App[]) =>
+			allInstalledApps = await Apps.getInstalledApps().then((result: App[]) =>
 				result.map((current: App) => ({
 					...current,
 					installed: true,
@@ -213,7 +214,18 @@ const AppsProvider: FC = ({ children }) => {
 		}
 
 		try {
-			privateApps = installedApps.filter((app: App) => app.private);
+			installedApps = allInstalledApps.filter((app: App) => !app.private);
+		} catch (e) {
+			dispatchInstalledApps({
+				type: 'failure',
+				error: e instanceof Error ? e : new Error(String(e)),
+				reload: fetch,
+			});
+			installedAppsError = true;
+		}
+
+		try {
+			privateApps = allInstalledApps.filter((app: App) => app.private);
 		} catch (e) {
 			dispatchPrivateApps({
 				type: 'failure',

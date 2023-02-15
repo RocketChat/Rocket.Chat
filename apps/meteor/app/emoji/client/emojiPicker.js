@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -8,6 +7,8 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { t } from '../../utils/client';
 import { EmojiPicker } from './lib/EmojiPicker';
 import { emoji } from '../lib/rocketchat';
+import { withThrottling } from '../../../lib/utils/highOrderFunctions';
+import { baseURI } from '../../../client/lib/baseURI';
 import './emojiPicker.html';
 
 const ESCAPE = 27;
@@ -21,6 +22,20 @@ const getEmojiElement = (emoji, image) =>
 const loadMoreLink = () => `<li class="emoji-picker-load-more"><a href="#load-more">${t('Load_more')}</a></li>`;
 
 let customItems = 90;
+
+const baseUrlFix = () => `${baseURI}${FlowRouter.current().path.substring(1)}`;
+
+const isMozillaFirefoxBelowVersion = (upperVersion) => {
+	const [, version] = navigator.userAgent.match(/Firefox\/(\d+)\.\d/) || [];
+	return parseInt(version, 10) < upperVersion;
+};
+
+const isGoogleChromeBelowVersion = (upperVersion) => {
+	const [, version] = navigator.userAgent.match(/Chrome\/(\d+)\.\d/) || [];
+	return parseInt(version, 10) < upperVersion;
+};
+
+const isBaseUrlFixNeeded = () => isMozillaFirefoxBelowVersion(55) || isGoogleChromeBelowVersion(55);
 
 const createEmojiList = (category, actualTone, limit = null) => {
 	const html =
@@ -167,6 +182,7 @@ Template.emojiPicker.helpers({
 	currentCategory() {
 		return EmojiPicker.currentCategory.get();
 	},
+	baseUrl: isBaseUrlFixNeeded() ? baseUrlFix : undefined,
 });
 
 Template.emojiPicker.events({
@@ -188,7 +204,7 @@ Template.emojiPicker.events({
 
 		return false;
 	},
-	'scroll .emojis': _.throttle((event, instance) => {
+	'scroll .emojis': withThrottling({ wait: 300 })((event, instance) => {
 		if (EmojiPicker.scrollingToCategory) {
 			return;
 		}
@@ -209,7 +225,7 @@ Template.emojiPicker.events({
 		const category = el.id.replace('emoji-list-category-', '');
 
 		EmojiPicker.currentCategory.set(category);
-	}, 300),
+	}),
 	'click .change-tone > a'(event, instance) {
 		event.stopPropagation();
 		event.preventDefault();
