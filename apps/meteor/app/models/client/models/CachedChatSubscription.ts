@@ -75,7 +75,7 @@ class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom> {
 
 		const room = ChatRoom.findOne({ _id: subscription.rid }, options);
 
-		const lastRoomUpdate = room?.lm || subscription.ts || subscription._updatedAt;
+		const lastRoomUpdate = room?.lm || subscription.ts;
 
 		return {
 			...subscription,
