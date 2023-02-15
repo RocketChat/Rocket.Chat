@@ -10,6 +10,6 @@ export const useCurrentChats = (query: GETLivechatRoomsParams): UseQueryResult<O
 	const debouncedQuery = useDebouncedValue(query, 500);
 
 	return useQuery(['current-chats', debouncedQuery], () => currentChats(debouncedQuery), {
-		refetchOnMount: false,
+		staleTime: Infinity,
 	});
 };
