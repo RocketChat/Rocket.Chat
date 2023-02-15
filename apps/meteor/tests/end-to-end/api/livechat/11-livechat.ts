@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-import type { ILivechatCustomField } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
@@ -89,9 +88,8 @@ describe('LIVECHAT - Utils', function () {
 				regexp: '',
 				public: true,
 				required: false,
-
 				options: '',
-			} as unknown as ILivechatCustomField & { field: string });
+			});
 
 			const { body } = await request.get(api('livechat/config')).set(credentials);
 
