@@ -6,7 +6,6 @@ import { useQuery } from '@tanstack/react-query';
 import type { CSSProperties, ReactElement, MutableRefObject } from 'react';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 
-import { settings } from '../../../../app/settings/client';
 import GenericTable from '../../../components/GenericTable';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
@@ -40,7 +39,6 @@ const useQueryLc = (
 	filter: string;
 	types: string[];
 	sort: string;
-	useFname: boolean;
 	count?: number;
 	offset?: number;
 } =>
@@ -49,7 +47,6 @@ const useQueryLc = (
 			filter: text || '',
 			types: types || [],
 			sort: JSON.stringify({ [column]: direction === 'asc' ? 1 : -1 }),
-			useFname: settings.get('UI_Allow_room_names_with_special_chars') as boolean,
 			...(itemsPerPage && { count: itemsPerPage }),
 			...(current && { offset: current }),
 		}),
@@ -73,15 +70,6 @@ const getRoomType = (room: IRoom): typeof roomTypeI18nMap[keyof typeof roomTypeI
 
 const getRoomDisplayName = (room: IRoom): string | undefined =>
 	room.t === 'd' ? room.usernames?.join(' x ') : roomCoordinator.getRoomName(room.t, room);
-
-const useDisplayData = (data: IRoom[] | undefined, isLoading: boolean, sort: [string, 'asc' | 'desc']): IRoom[] | undefined =>
-	useMemo(() => {
-		if (isLoading) {
-			return undefined;
-		}
-
-		return data ?? undefined;
-	}, [isLoading, sort]);
 
 const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): ReactElement => {
 	const t = useTranslation();
@@ -111,9 +99,6 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 		async () => {
 			const adminRooms = await getAdminRooms(query);
 
-			if (adminRooms.rooms.length === 0) {
-				throw new Error(t('No_results_found'));
-			}
 			return { ...adminRooms, rooms: adminRooms.rooms as IRoom[] };
 		},
 		{
@@ -153,7 +138,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 		[sort, setSort],
 	);
 
-	const displayData = useDisplayData(data?.rooms, isLoading, sort);
+	const displayData = !isLoading && data ? data.rooms : undefined;
 
 	const header = useMemo(
 		() =>

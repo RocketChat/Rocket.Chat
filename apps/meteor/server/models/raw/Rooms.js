@@ -75,7 +75,7 @@ export class RoomsRaw extends BaseRaw {
 					},
 			  };
 
-		const fnameQuery = useFname ? { fname: nameRegex } : {};
+		const fnameQuery = useFname ? [{ fname: nameRegex }] : [];
 
 		const query = {
 			t: {
@@ -84,7 +84,7 @@ export class RoomsRaw extends BaseRaw {
 			prid: { $exists: discussion },
 			$or: [
 				{ name: nameRegex },
-				fnameQuery,
+				...fnameQuery,
 				{
 					t: 'd',
 					usernames: nameRegex,
@@ -131,13 +131,13 @@ export class RoomsRaw extends BaseRaw {
 
 		const onlyTeamsCondition = onlyTeams ? { $and: [{ teamMain: { $exists: true } }, { teamMain: true }] } : {};
 
-		const fnameQuery = useFname ? { fname: nameRegex } : {};
+		const fnameQuery = useFname ? [{ fname: nameRegex }] : [];
 
 		const query = {
 			prid: { $exists: discussion },
 			$or: [
 				{ name: nameRegex },
-				fnameQuery,
+				...fnameQuery,
 				{
 					t: 'd',
 					usernames: nameRegex,

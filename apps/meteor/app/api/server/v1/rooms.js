@@ -333,7 +333,9 @@ API.v1.addRoute(
 		get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
-			const { types, filter, useFname } = this.requestParams();
+			const { types, filter } = this.requestParams();
+
+			const useFname = settings.get('UI_Allow_room_names_with_special_chars') ?? false;
 
 			return API.v1.success(
 				Promise.await(
