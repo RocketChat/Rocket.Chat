@@ -706,6 +706,11 @@ export class FileUploadClass {
 			streamOrBuffer = Promise.await(streamToBuffer(streamOrBuffer));
 		}
 
+		if (streamOrBuffer instanceof Uint8Array) {
+			// Services compat :)
+			streamOrBuffer = Buffer.from(streamOrBuffer);
+		}
+
 		// Check if the fileData matches store filter
 		const filter = this.store.getFilter();
 		if (filter && filter.check) {
