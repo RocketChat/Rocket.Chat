@@ -152,12 +152,19 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			const files = [];
 
 			for await (const attachment of message.attachments) {
-				if (isFileAttachment(attachment) && attachment.type !== 'file') {
-					this.log.error(`Invalid attachment type ${attachment.type} for file ${attachment.title} in room ${message.rid}!`);
+				if (!isFileAttachment(attachment)) {
+					this.log.error(`Invalid attachment type ${(attachment as any).type} for file ${attachment.title} in room ${message.rid}!`);
 					// ignore other types of attachments
 					continue;
 				}
-				if (isFileAttachment(attachment) && isFileImageAttachment(attachment) && !this.worker.isMimeTypeValid(attachment.image_type)) {
+				if (!isFileImageAttachment(attachment)) {
+					this.log.error(`Invalid attachment type ${attachment.type} for file ${attachment.title} in room ${message.rid}!`);
+					// ignore other types of attachments
+					files.push({ name: attachment.title, buffer: null });
+					continue;
+				}
+
+				if (!this.worker.isMimeTypeValid(attachment.image_type)) {
 					this.log.error(`Invalid mime type ${attachment.image_type} for file ${attachment.title} in room ${message.rid}!`);
 					// ignore invalid mime types
 					files.push({ name: attachment.title, buffer: null });
