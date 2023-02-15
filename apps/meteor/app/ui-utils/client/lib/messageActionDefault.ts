@@ -81,12 +81,8 @@ Meteor.startup(async function () {
 
 			chat?.composer?.quoteMessage(message);
 		},
-		condition({ subscription, room }) {
+		condition({ subscription }) {
 			if (subscription == null) {
-				return false;
-			}
-			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
-			if (isLivechatRoom) {
 				return false;
 			}
 

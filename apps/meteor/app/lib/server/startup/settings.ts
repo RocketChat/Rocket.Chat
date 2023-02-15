@@ -1179,6 +1179,23 @@ settingsRegistry.addGroup('Message', function () {
 			public: true,
 		});
 	});
+	this.section('Read_Receipts', function () {
+		this.add('Message_Read_Receipt_Enabled', false, {
+			type: 'boolean',
+			enterprise: true,
+			invalidValue: false,
+			modules: ['message-read-receipt'],
+			public: true,
+		});
+		this.add('Message_Read_Receipt_Store_Users', false, {
+			type: 'boolean',
+			enterprise: true,
+			invalidValue: false,
+			modules: ['message-read-receipt'],
+			public: true,
+			enableQuery: { _id: 'Message_Read_Receipt_Enabled', value: true },
+		});
+	});
 	this.add('Message_AllowEditing', true, {
 		type: 'boolean',
 		public: true,
