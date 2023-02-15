@@ -16,8 +16,10 @@ import { Apps } from '../../../app/apps/client/orchestrator';
 import WarningModal from '../../components/WarningModal';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import IframeModal from './IframeModal';
+import UninstallGrandfatheredAppModal from './components/UninstallGrandfatheredAppModal/UninstallGrandfatheredAppModal';
 import { appEnabledStatuses, handleAPIError, appButtonProps, warnEnableDisableApp } from './helpers';
 import { marketplaceActions } from './helpers/marketplaceActions';
+import { useAppsCountQuery } from './hooks/useAppsCountQuery';
 
 const openIncompatibleModal = async (app, action, cancel, setModal) => {
 	try {
@@ -58,6 +60,8 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 
 	const isAdminUser = usePermission('manage-apps');
 	const button = appButtonProps({ ...app, isAdminUser });
+
+	const result = useAppsCountQuery(context);
 
 	const cancelAction = useCallback(() => {
 		setModal(null);
@@ -207,6 +211,23 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			}
 		};
 
+		if (!result.data) {
+			return;
+		}
+
+		if (app.migrated) {
+			setModal(
+				<UninstallGrandfatheredAppModal
+					context={context}
+					appName={app.name}
+					limit={result.data.limit}
+					handleUninstall={uninstall}
+					handleClose={closeModal}
+				/>,
+			);
+			return;
+		}
+
 		if (isSubscribed) {
 			const confirm = async () => {
 				await handleSubscription();
@@ -228,18 +249,20 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			<WarningModal close={closeModal} confirm={uninstall} text={t('Apps_Marketplace_Uninstall_App_Prompt')} confirmText={t('Yes')} />,
 		);
 	}, [
-		app?.name,
-		closeModal,
-		context,
-		currentTab,
-		dispatchToastMessage,
-		handleSubscription,
+		result.data,
+		app.migrated,
+		app.name,
 		isSubscribed,
-		currentRouteParams,
-		router,
 		setModal,
+		closeModal,
 		t,
 		uninstallApp,
+		dispatchToastMessage,
+		context,
+		currentTab,
+		router,
+		currentRouteParams,
+		handleSubscription,
 	]);
 
 	const incompatibleIconName = useCallback(

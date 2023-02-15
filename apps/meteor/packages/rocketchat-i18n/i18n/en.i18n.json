@@ -5626,6 +5626,5 @@
   "Larger_amounts_of_active_connections": "For larger amounts of active connections you can consider our",
   "multiple_instance_solutions": "multiple instance solutions",
   "Uninstall_grandfathered_app": "Uninstall __appName__?",
-  "App_will_lose_grandfathered_status": "This app will loose it's grandfathered status.",
-  "Workspaces_grandfathered_apps": "Workspaces on Community Edition can have up to 5 apps enabled. Grandfathered apps count towards the limit but the limit is not applied to them."
+  "App_will_lose_grandfathered_status": "**This __context__ app will loose it's grandfathered status.**\n\nWorkspaces on Community Edition can have up to __limit__ __context__ apps enabled. Grandfathered apps count towards the limit but the limit is not applied to them."
 }
