@@ -16,8 +16,7 @@ const Template: ComponentStory<typeof AppInstallModal> = (args) => <AppInstallMo
 export const Default = Template.bind({});
 Default.storyName = 'AppInstallModal';
 Default.args = {
-	context: 'explore',
-	enable: 1,
+	enabled: 1,
 	limit: 3,
-	appName: 'Trello',
+	appName: 'Example-app-name',
 };
