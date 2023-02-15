@@ -73,9 +73,6 @@ test.describe.serial('e2e-encryption initial setup', () => {
 		await page.locator('#modal-root .rcx-button--primary').click();
 
 		await expect(page.locator('role=banner')).not.toBeVisible();
-
-		// Store the generated key
-		await page.context().storageState({ path: `admin-session.json` });
 	});
 
 	test('expect change the e2ee password', async ({ page }) => {
@@ -107,9 +104,6 @@ test.describe.serial('e2e-encryption initial setup', () => {
 		await page.locator('#modal-root .rcx-button--primary').click();
 
 		await expect(page.locator('role=banner')).not.toBeVisible();
-
-		// Store the current key
-		await page.context().storageState({ path: `admin-session.json` });
 	});
 });
 
