@@ -79,12 +79,13 @@ export const Markdown = new MarkdownClass();
 export const filterMarkdown = (message) => Markdown.filterMarkdownFromMessage(message);
 
 export const createMarkdownMessageRenderer = ({ ...options }) => {
-	return (message) => {
+	const markedParser = parsers.marked;
+	return (message, useMarkedParser = false) => {
 		if (!message?.html?.trim()) {
 			return message;
 		}
 
-		return parsers.original(message, options);
+		return useMarkedParser ? markedParser(message, options) : parsers.original(message, options);
 	};
 };
 
