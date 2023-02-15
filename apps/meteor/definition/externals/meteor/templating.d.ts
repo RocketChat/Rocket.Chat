@@ -5,6 +5,9 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
 declare module 'meteor/blaze' {
 	namespace Blaze {
+		interface View {
+			templateContentBlock?: View;
+		}
 		interface Template<D = any, T = Blaze.TemplateInstance<D>> {
 			events(
 				eventsMap: Record<
