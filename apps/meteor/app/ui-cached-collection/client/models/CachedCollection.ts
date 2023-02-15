@@ -33,7 +33,7 @@ const hasUnserializedUpdatedAt = <T>(record: T): record is T & { _updatedAt: Con
 	'_updatedAt' in record &&
 	!((record as unknown as { _updatedAt: unknown })._updatedAt instanceof Date);
 
-export class CachedCollection<T extends object> extends Emitter<{ changed: T; removed: T }> {
+export class CachedCollection<T extends object, U = T> extends Emitter<{ changed: T; removed: T }> {
 	private static MAX_CACHE_TIME = 60 * 60 * 24 * 30;
 
 	public collection: MinimongoCollection<T>;
@@ -147,13 +147,13 @@ export class CachedCollection<T extends object> extends Emitter<{ changed: T; re
 	private async callLoad() {
 		// TODO: workaround for bad function overload
 		const data = await call(`${this.name}/get`);
-		return data as unknown as T[];
+		return data as unknown as U[];
 	}
 
 	private async callSync(updatedSince: Date) {
 		// TODO: workaround for bad function overload
 		const data = await call(`${this.name}/get`, updatedSince);
-		return data as unknown as { update: T[]; remove: T[] };
+		return data as unknown as { update: U[]; remove: U[] };
 	}
 
 	private async loadFromServer() {
@@ -179,16 +179,16 @@ export class CachedCollection<T extends object> extends Emitter<{ changed: T; re
 		this.updatedAt = this.updatedAt === lastTime ? startTime : this.updatedAt;
 	}
 
-	protected handleLoadFromServer(record: T) {
-		return record;
+	protected handleLoadFromServer(record: U): T {
+		return record as unknown as T;
 	}
 
-	protected handleReceived(record: T, _action: 'removed' | 'changed') {
-		return record;
+	protected handleReceived(record: U, _action: 'removed' | 'changed'): T {
+		return record as unknown as T;
 	}
 
-	protected handleSync(record: T, _action: 'removed' | 'changed') {
-		return record;
+	protected handleSync(record: U, _action: 'removed' | 'changed'): T {
+		return record as unknown as T;
 	}
 
 	private async loadFromServerAndPopulate() {
