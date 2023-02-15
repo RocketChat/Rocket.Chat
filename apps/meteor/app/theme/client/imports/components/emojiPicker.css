@@ -34,18 +34,18 @@
 
 	margin-right: 22px;
 
-	white-space: initial;
-
-	opacity: 1;
-
-	background-color: rgba(255, 255, 255, 0.98);
-
 	padding: 0.5rem;
 	padding-bottom: 0;
 
 	animation: dropdown-show 0.1s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 
+	white-space: initial;
+
+	opacity: 1;
+
 	border-radius: var(--popover-radius);
+
+	background-color: rgba(255, 255, 255, 0.98);
 	box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
 
 	&.show {
