@@ -9,6 +9,7 @@ export interface IAppInfoRest extends IAppInfo {
 	languages: IAppStorageItem['languageContent'];
 	licenseValidation?: AppLicenseValidationResult;
 	private: boolean;
+	migrated: boolean;
 }
 
 export function formatAppInstanceForRest(app: ProxiedApp): IAppInfoRest {
@@ -16,7 +17,8 @@ export function formatAppInstanceForRest(app: ProxiedApp): IAppInfoRest {
 		...app.getInfo(),
 		status: app.getStatus(),
 		languages: app.getStorageItem().languageContent,
-		private: !app.getStorageItem().marketplaceInfo,
+		private: app.getStorageItem().installationSource === 'private',
+		migrated: !!app.getStorageItem().migrated,
 	};
 
 	const licenseValidation = app.getLatestLicenseValidationResult();
