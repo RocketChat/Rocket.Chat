@@ -11,10 +11,10 @@ Meteor.methods({
 		if (!hasPermission(this.userId, 'manage-oauth-apps')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'updateOAuthApp' });
 		}
-		if (!_.isString(application.name) || application.name.trim() === '') {
+		if (!application.name || typeof application.name.valueOf() !== 'string' || application.name.trim() === '') {
 			throw new Meteor.Error('error-invalid-name', 'Invalid name', { method: 'updateOAuthApp' });
 		}
-		if (!_.isString(application.redirectUri) || application.redirectUri.trim() === '') {
+		if (!application.redirectUri || typeof application.redirectUri.valueOf() !== 'string' || application.redirectUri.trim() === '') {
 			throw new Meteor.Error('error-invalid-redirectUri', 'Invalid redirectUri', {
 				method: 'updateOAuthApp',
 			});

@@ -1,10 +1,10 @@
 import _ from 'underscore';
-import s from 'underscore.string';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Base } from './_Base';
 import Messages from './Messages';
 import Subscriptions from './Subscriptions';
+import { trim } from '../../../../lib/utils/stringUtils';
 
 export class Rooms extends Base {
 	constructor(...args) {
@@ -296,7 +296,7 @@ export class Rooms extends Base {
 			return room;
 		}
 
-		let channelName = s.trim(name);
+		let channelName = trim(name);
 		try {
 			// TODO evaluate if this function call should be here
 			const { getValidRoomName } = Promise.await(import('../../../utils/server/lib/getValidRoomName'));
@@ -548,7 +548,7 @@ export class Rooms extends Base {
 	}
 
 	findChannelAndPrivateByNameStarting(name, sIds, options) {
-		const nameRegex = new RegExp(`^${s.trim(escapeRegExp(name))}`, 'i');
+		const nameRegex = new RegExp(`^${trim(escapeRegExp(name))}`, 'i');
 
 		const query = {
 			t: {
@@ -627,7 +627,7 @@ export class Rooms extends Base {
 	}
 
 	findByTypeAndNameContaining(type, name, options) {
-		const nameRegex = new RegExp(s.trim(escapeRegExp(name)), 'i');
+		const nameRegex = new RegExp(trim(escapeRegExp(name)), 'i');
 
 		const query = {
 			name: nameRegex,
@@ -638,7 +638,7 @@ export class Rooms extends Base {
 	}
 
 	findByTypeInIdsAndNameContaining(type, ids, name, options) {
-		const nameRegex = new RegExp(s.trim(escapeRegExp(name)), 'i');
+		const nameRegex = new RegExp(trim(escapeRegExp(name)), 'i');
 
 		const query = {
 			_id: {
@@ -1241,7 +1241,7 @@ export class Rooms extends Base {
 	// ############################
 	// Discussion
 	findDiscussionParentByNameStarting(name, options) {
-		const nameRegex = new RegExp(`^${s.trim(escapeRegExp(name))}`, 'i');
+		const nameRegex = new RegExp(`^${trim(escapeRegExp(name))}`, 'i');
 
 		const query = {
 			t: {

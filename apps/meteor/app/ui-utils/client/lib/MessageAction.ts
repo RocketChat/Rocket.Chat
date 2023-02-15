@@ -1,5 +1,4 @@
 import type { ComponentProps, ContextType } from 'react';
-import _ from 'underscore';
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -135,7 +134,7 @@ export const MessageAction = new (class {
 		return Tracker.nonreactive(() => {
 			const btns = this.buttons.get();
 			if (btns[id]) {
-				btns[id] = _.extend(btns[id], config);
+				btns[id] = Object.assign(btns[id], config);
 				return this.buttons.set(btns);
 			}
 		});
@@ -146,7 +145,9 @@ export const MessageAction = new (class {
 		return allButtons[id];
 	}
 
-	_getButtons = mem((): MessageActionConfigList => _.sortBy(_.toArray(this.buttons.get()), 'order'), { maxAge: 1000 });
+	_getButtons = mem((): MessageActionConfigList => Object.values(this.buttons.get()).sort((a, b) => (a.order ?? 0) - (b.order ?? 0)), {
+		maxAge: 1000,
+	});
 
 	async getButtonsByCondition(
 		prop: MessageActionConditionProps,
