@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Button, Tag, Box } from '@rocket.chat/fuselage';
-import { useContentBoxSize, useMergedRefs, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
@@ -13,16 +13,7 @@ import {
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type {
-	MouseEventHandler,
-	ReactElement,
-	FormEvent,
-	KeyboardEventHandler,
-	KeyboardEvent,
-	MutableRefObject,
-	Ref,
-	ClipboardEventHandler,
-} from 'react';
+import type { MouseEventHandler, ReactElement, FormEvent, KeyboardEventHandler, KeyboardEvent, Ref, ClipboardEventHandler } from 'react';
 import React, { memo, useRef, useReducer, useCallback } from 'react';
 import { useSubscription } from 'use-subscription';
 
@@ -45,12 +36,10 @@ import { useChat } from '../../../../contexts/ChatContext';
 import { useComposerPopup } from '../../../../contexts/ComposerPopupContext';
 import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
-import MessageBoxDropdown from './MessageBoxDropdown';
+import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
+import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
-import AudioMessageAction from './actions/AudioMessageAction';
-import FileUploadAction from './actions/FileUploadAction';
-import VideoMessageAction from './actions/VideoMessageAction';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -136,16 +125,16 @@ const MessageBox = ({
 	const messageComposerRef = useRef<HTMLElement>(null);
 	const shadowRef = useRef(null);
 
+	const storageID = `${rid}${tmid ? `-${tmid}` : ''}`;
+
 	const callbackRef = useCallback(
 		(node: HTMLTextAreaElement) => {
-			const storageID = `${rid}${tmid ? `-${tmid}` : ''}`;
 			if (node === null) {
 				return;
 			}
 			chat.setComposerAPI(createComposerAPI(node, storageID));
-			(textareaRef as MutableRefObject<HTMLTextAreaElement>).current = node;
 		},
-		[chat, rid, tmid],
+		[chat, storageID],
 	);
 
 	const useEmojis = useUserPreference<boolean>('useEmojis');
@@ -340,7 +329,7 @@ const MessageBox = ({
 		configurations: composerPopupConfig,
 	});
 
-	const mergedRefs = useMergedRefs(c, callbackRef);
+	const mergedRefs = useMessageComposerMergedRefs(c, textareaRef, callbackRef);
 
 	return (
 		<>
@@ -386,10 +375,14 @@ const MessageBox = ({
 							/>
 						)}
 						<MessageComposerActionsDivider />
-						<VideoMessageAction isRecording={isRecording} />
-						<AudioMessageAction disabled={!canSend || typing || isRecording} />
-						<FileUploadAction isRecording={isRecording} />
-						<MessageBoxDropdown isRecording={isRecording} rid={rid} tmid={tmid} />
+						<MessageBoxActionsToolbar
+							variant={sizes.inlineSize < 480 ? 'small' : 'large'}
+							isRecording={isRecording}
+							typing={typing}
+							canSend={canSend}
+							rid={rid}
+							tmid={tmid}
+						/>
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
 						{!canSend && (

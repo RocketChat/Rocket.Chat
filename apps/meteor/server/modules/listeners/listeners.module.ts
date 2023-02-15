@@ -377,5 +377,8 @@ export class ListenersModule {
 		service.onEvent('omnichannel.room', (roomId, data): void => {
 			notifications.streamLivechatRoom.emitWithoutBroadcast(roomId, data);
 		});
+		service.onEvent('watch.priorities', async ({ clientAction, diff, id }): Promise<void> => {
+			notifications.notifyLoggedInThisInstance('omnichannel.priority-changed', { id, clientAction, name: diff?.name });
+		});
 	}
 }

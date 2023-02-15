@@ -4,7 +4,15 @@ import fs from 'fs';
 import path from 'path';
 
 import { expect } from 'chai';
-import type { IOmnichannelRoom, ILivechatVisitor, IUser, IOmnichannelSystemMessage, ILivechatCustomField } from '@rocket.chat/core-typings';
+import type {
+	IOmnichannelRoom,
+	ILivechatVisitor,
+	IUser,
+	IOmnichannelSystemMessage,
+	ILivechatCustomField,
+	ILivechatPriority,
+} from '@rocket.chat/core-typings';
+import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { Response } from 'supertest';
 import faker from '@faker-js/faker';
 
@@ -20,13 +28,16 @@ import {
 	takeInquiry,
 	fetchInquiry,
 } from '../../../data/livechat/rooms';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { addPermissions, updateEEPermission, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { createUser, login } from '../../../data/users.helper.js';
 import { adminUsername, password } from '../../../data/user.js';
 import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
+import type { DummyResponse } from '../../../data/livechat/utils';
+import type { SuccessResult } from '../../../../app/api/server/api';
 import { sleep } from '../../../data/livechat/utils';
 import { IS_EE } from '../../../e2e/config/constants';
 import { createCustomField } from '../../../data/livechat/custom-fields';
+import { createSLA, getRandomPriority } from '../../../data/livechat/priorities';
 import { getSubscriptionForRoom } from '../../../data/subscriptions';
 
 describe('LIVECHAT - rooms', function () {
@@ -460,7 +471,7 @@ describe('LIVECHAT - rooms', function () {
 
 		it('should not be successful when no target (userId or departmentId) was specified', async () => {
 			await updatePermission('transfer-livechat-guest', ['admin']);
-			await updatePermission('view-l-room', ['admin']);
+			await updatePermission('view-l-room', ['admin', 'livechat-manager', 'livechat-agent']);
 
 			await request
 				.post(api('livechat/room.forward'))
@@ -1142,6 +1153,7 @@ describe('LIVECHAT - rooms', function () {
 			expect(body.history.length).to.equal(0);
 		});
 		it('should return the transfer history for a room', async () => {
+			await updatePermission('view-l-room', ['admin', 'livechat-manager', 'livechat-agent']);
 			const initialAgentAssignedToChat: IUser = await createUser();
 			const initialAgentCredentials = await login(initialAgentAssignedToChat.username, password);
 			await createAgent(initialAgentAssignedToChat.username);
@@ -1434,15 +1446,146 @@ describe('LIVECHAT - rooms', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(400);
 		});
-	});
+		(IS_EE ? it : it.skip)('should update room priority', async () => {
+			await addPermissions({
+				'save-others-livechat-room-info': ['admin', 'livechat-manager'],
+				'view-l-room': ['livechat-agent', 'admin', 'livechat-manager'],
+			});
 
+			const newVisitor = await createVisitor();
+			const newRoom = await createLivechatRoom(newVisitor.token);
+			const priority = await getRandomPriority();
+
+			await request
+				.post(api('livechat/room.saveInfo'))
+				.set(credentials)
+				.send({
+					roomData: {
+						_id: newRoom._id,
+						priorityId: priority._id,
+					},
+					guestData: {
+						_id: newVisitor._id,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const updatedRoom = await getLivechatRoomInfo(newRoom._id);
+			expect(updatedRoom).to.have.property('priorityId', priority._id);
+			expect(updatedRoom).to.have.property('priorityWeight', priority.sortItem);
+		});
+		(IS_EE ? it : it.skip)('should update room sla', async () => {
+			const newVisitor = await createVisitor();
+			const newRoom = await createLivechatRoom(newVisitor.token);
+			const sla = await createSLA();
+
+			await request
+				.post(api('livechat/room.saveInfo'))
+				.set(credentials)
+				.send({
+					roomData: {
+						_id: newRoom._id,
+						slaId: sla._id,
+					},
+					guestData: {
+						_id: newVisitor._id,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			const updatedRoom = await getLivechatRoomInfo(newRoom._id);
+			expect(updatedRoom).to.have.property('slaId', sla._id);
+		});
+	});
+	(IS_EE ? describe : describe.skip)('livechat/room/:rid/priority', async () => {
+		let priorities: ILivechatPriority[];
+		let chosenPriority: ILivechatPriority;
+		this.afterAll(async () => {
+			await updateEEPermission('manage-livechat-priorities', ['admin', 'livechat-manager']);
+			await updatePermission('view-l-room', ['admin', 'livechat-manager', 'livechat-agent']);
+		});
+		it('should return the list of priorities', async () => {
+			const response = await request
+				.get(api('livechat/priorities'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: DummyResponse<SuccessResult<{ priorities: ILivechatPriority[] }>>) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('priorities').and.to.be.an('array');
+					expect(res.body.priorities).to.have.length.greaterThan(0);
+				});
+			priorities = response.body.priorities;
+			const rnd = faker.datatype.number({ min: 0, max: priorities.length - 1 });
+			chosenPriority = priorities[rnd];
+		});
+		it('should prioritize the room', async () => {
+			const response = await request
+				.post(api(`livechat/room/${room._id}/priority`))
+				.set(credentials)
+				.send({
+					priorityId: chosenPriority._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(response.body).to.have.property('success', true);
+		});
+		it('should return the room with the new priority', async () => {
+			const updatedRoom = await getLivechatRoomInfo(room._id);
+			expect(updatedRoom).to.have.property('priorityId', chosenPriority._id);
+			expect(updatedRoom).to.have.property('priorityWeight', chosenPriority.sortItem);
+		});
+		it('should unprioritize the room', async () => {
+			const response = await request
+				.delete(api(`livechat/room/${room._id}/priority`))
+				.set(credentials)
+				.send()
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+			expect(response.body).to.have.property('success', true);
+		});
+		it('should return the room with the new priority', async () => {
+			const updatedRoom = await getLivechatRoomInfo(room._id);
+			expect(updatedRoom).to.not.have.property('priorityId');
+			expect(updatedRoom).to.have.property('priorityWeight', LivechatPriorityWeight.NOT_SPECIFIED);
+		});
+		it('should fail to return the priorities if lacking permissions', async () => {
+			await updatePermission('manage-livechat-priorities', []);
+			await updatePermission('view-l-room', []);
+			await request.get(api('livechat/priorities')).set(credentials).expect('Content-Type', 'application/json').expect(403);
+		});
+		it('should fail to prioritize the room from a lack of permissions', async () => {
+			await request
+				.post(api(`livechat/room/${room._id}/priority`))
+				.set(credentials)
+				.send({
+					priorityId: chosenPriority._id,
+				})
+				.expect(403);
+		});
+		it('should fail to unprioritize the room from a lack of permissions', async () => {
+			await request
+				.delete(api(`livechat/room/${room._id}/priority`))
+				.set(credentials)
+				.send()
+				.expect(403);
+		});
+	});
 	describe('livechat/rooms/filters', () => {
 		it('should fail if user doesnt have view-l-room permission', async () => {
 			await updatePermission('view-l-room', []);
 			await request.get(api('livechat/rooms/filters')).set(credentials).expect(403);
 		});
 		it('should return a list of available source filters', async () => {
-			await updatePermission('view-l-room', ['admin']);
+			await updatePermission('view-l-room', ['admin', 'livechat-agent', 'livechat-manager']);
 			const response = await request.get(api('livechat/rooms/filters')).set(credentials).expect(200);
 			expect(response.body).to.have.property('filters').and.to.be.an('array');
 			expect(response.body.filters.find((f: IOmnichannelRoom['source']) => f.type === 'api')).to.not.be.undefined;

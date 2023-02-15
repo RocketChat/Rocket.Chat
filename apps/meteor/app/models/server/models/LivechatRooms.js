@@ -109,6 +109,15 @@ export class LivechatRooms extends Base {
 			unsetData.tags = 1;
 		}
 
+		if (extra.priorityId === '') {
+			unsetData.priorityId = 1;
+			delete setData.priorityId;
+		}
+		if (extra.slaId === '') {
+			unsetData.slaId = 1;
+			delete setData.slaId;
+		}
+
 		if (livechatData) {
 			Object.keys(livechatData).forEach((key) => {
 				const value = s.trim(livechatData[key]);

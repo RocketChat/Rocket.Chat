@@ -7,6 +7,8 @@ import { settings } from '../../../settings/server';
 import { hasPermission, canSendMessage } from '../../../authorization/server';
 import { updateMessage } from '../functions';
 
+const allowedEditedFields = ['tshow', 'alias', 'attachments', 'avatar', 'emoji', 'msg'];
+
 Meteor.methods({
 	updateMessage(message) {
 		check(message, Match.ObjectIncluding({ _id: String }));
@@ -16,13 +18,19 @@ Meteor.methods({
 		}
 
 		const originalMessage = Messages.findOneById(message._id);
-
 		if (!originalMessage || !originalMessage._id) {
 			return;
 		}
 
-		const msgText = originalMessage?.attachments?.[0]?.description ?? originalMessage.msg;
+		Object.entries(message).forEach(([key, value]) => {
+			if (!allowedEditedFields.includes(key) && value !== originalMessage[key]) {
+				throw new Meteor.Error('error-invalid-update-key', `Cannot update the message ${key}`, {
+					method: 'updateMessage',
+				});
+			}
+		});
 
+		const msgText = originalMessage?.attachments?.[0]?.description ?? originalMessage.msg;
 		if (msgText === message.msg) {
 			return;
 		}
