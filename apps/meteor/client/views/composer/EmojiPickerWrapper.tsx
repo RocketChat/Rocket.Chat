@@ -1,31 +1,45 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Field, TextInput, Icon } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { Fragment } from 'react';
 
-const EmojiPickerWrapper = ({ activeCategory, searching, searchResults, currentTone, list, emojiCategories, ...props }) => {
-	// const wrapperRef = useRef() as MutableRefObject<HTMLDivElement>;
+type EmojiPickerWrapperProps = {
+	activeCategory: string;
+	searching: boolean;
+	searchResults: string;
+	currentTone: string;
+	emojiList: (category: string) => string;
+	emojiCategories: {
+		key: string;
+		i18n: TranslationKey;
+	}[];
+};
+
+const EmojiPickerWrapper = ({
+	activeCategory,
+	searching,
+	searchResults,
+	currentTone,
+	emojiList,
+	emojiCategories,
+}: EmojiPickerWrapperProps) => {
 	const t = useTranslation();
 	const canManageEmoji = usePermission('manage-emoji');
 
 	return (
-		// <div className='emoji-picker rc-popover__content'>
 		<>
-			<div className='emoji-top'>
-				<div className='rc-input'>
-					<label className='rc-input__label'>
-						<div className='rc-input__wrapper'>
-							<div className='rc-input__icon'>{/* {{> icon block='rc-input__icon-svg' icon='magnifier' }} */}</div>
-							<input
-								name='name'
-								type='text'
-								className='rc-input__element js-emojipicker-search'
-								placeholder='Search'
-								// autofocus
-								// autocomplete='off'
-							/>
-						</div>
-					</label>
-				</div>
+			<Box display='flex' className='emoji-top'>
+				<Field flexGrow={1} flexShrink={1}>
+					<Field.Row>
+						<TextInput
+							className='js-emojipicker-search'
+							addon={<Icon name='magnifier' size='x20' />}
+							placeholder={t('Search')}
+							aria-label={t('Search')}
+							autoComplete='off'
+						/>
+					</Field.Row>
+				</Field>
 				<div className='change-tone'>
 					<a href='#change-tone'>
 						<span className={`current-tone ${currentTone}`}></span>
@@ -63,8 +77,8 @@ const EmojiPickerWrapper = ({ activeCategory, searching, searchResults, currentT
 						</li>
 					</ul>
 				</div>
-			</div>
-			<div className='filter'>
+			</Box>
+			<Box color='default' className='filter'>
 				<ul className='filter-list'>
 					{emojiCategories.map((category) => (
 						<li
@@ -78,8 +92,8 @@ const EmojiPickerWrapper = ({ activeCategory, searching, searchResults, currentT
 						</li>
 					))}
 				</ul>
-			</div>
-			<div className='emojis'>
+			</Box>
+			<Box color='default' className='emojis'>
 				{searching ? (
 					<Box dangerouslySetInnerHTML={{ __html: searchResults }} />
 				) : (
@@ -89,22 +103,23 @@ const EmojiPickerWrapper = ({ activeCategory, searching, searchResults, currentT
 								<h4 className='emoji-list-category' id={`emoji-list-category-${category.key}`}>
 									{t(category.i18n)}
 								</h4>
-								<ul className={`emoji-list emoji-category-${category.key}`}>{list(category.key)}</ul>
+								<ul className={`emoji-list emoji-category-${category.key}`}>
+									<Box dangerouslySetInnerHTML={{ __html: emojiList(category.key) }} />
+								</ul>
 							</Fragment>
 						);
 					})
 				)}
-			</div>
-			<div className='emoji-footer'>
+			</Box>
+			<Box color='default' p='x4' className='emoji-footer'>
 				{canManageEmoji && (
 					<a className='add-custom' href='/admin/emoji-custom'>
 						{t('Add_custom_emoji')}
 					</a>
 				)}
-				{t('Emoji_provided_by_JoyPixels')}
-			</div>
+				<Box dangerouslySetInnerHTML={{ __html: t('Emoji_provided_by_JoyPixels') }} />
+			</Box>
 		</>
-		// </div>
 	);
 };
 

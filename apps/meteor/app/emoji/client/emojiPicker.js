@@ -161,12 +161,8 @@ Template.emojiPicker.helpers({
 	},
 	emojiList() {
 		return (category) => {
-			console.log(category, emojiListByCategory.get('recent'));
 			return emojiListByCategory.get(category);
 		};
-	},
-	myList() {
-		return 'TEST';
 	},
 	currentTone() {
 		return `tone-${Template.instance().tone}`;
