@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import { Base64 } from 'meteor/base64';
 import { EJSON } from 'meteor/ejson';
 import { Random } from 'meteor/random';
@@ -377,7 +376,7 @@ export class E2ERoom extends Emitter {
 
 	// Encrypts messages
 	async encryptText(data) {
-		if (!_.isObject(data)) {
+		if (!(typeof data === 'function' || (typeof data === 'object' && !!data))) {
 			data = new TextEncoder('UTF-8').encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) }));
 		}
 

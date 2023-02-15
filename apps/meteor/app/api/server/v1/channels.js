@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import _ from 'underscore';
 import { Integrations, Uploads, Messages as MessagesRaw, Rooms as RoomsRaw, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
 import { Team } from '@rocket.chat/core-services';
 
@@ -174,7 +173,7 @@ function createChannelValidator(params) {
 		throw new Error(`Param "${params.name.key}" is required`);
 	}
 
-	if (params.members && params.members.value && !_.isArray(params.members.value)) {
+	if (params.members && params.members.value && !Array.isArray(params.members.value)) {
 		throw new Error(`Param "${params.members.key}" must be an array if provided`);
 	}
 
