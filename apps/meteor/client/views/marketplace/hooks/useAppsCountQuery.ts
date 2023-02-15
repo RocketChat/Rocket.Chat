@@ -6,8 +6,8 @@ type Variant = 'success' | 'warning' | 'danger';
 
 const getProgressBarValues = (numberOfEnabledApps: number, enabledAppsLimit: number): { variant: Variant; percentage: number } => ({
 	variant: 'success',
-	...(numberOfEnabledApps < enabledAppsLimit - 1 && { variant: 'warning' }),
-	...(numberOfEnabledApps === enabledAppsLimit && { variant: 'danger' }),
+	...(numberOfEnabledApps + 1 === enabledAppsLimit && { variant: 'warning' }),
+	...(numberOfEnabledApps >= enabledAppsLimit && { variant: 'danger' }),
 	percentage: Math.round((numberOfEnabledApps / enabledAppsLimit) * 100),
 });
 

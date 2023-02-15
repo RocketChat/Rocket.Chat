@@ -169,23 +169,28 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			return;
 		}
 
-		if (result.hasUnlimitedApps) {
+		if (!result.data) {
+			return;
+		}
+
+		if (result.data.hasUnlimitedApps) {
 			acquireApp();
 		}
 
 		setModal(
 			<AppInstallModal
 				context={context}
-				enable={result.enable}
-				limit={result.limit}
+				enabled={result.data.enabled}
+				limit={result.data.limit}
 				appName={app.name}
+				handleClose={() => setModal(null)}
 				handleConfirm={acquireApp}
 				handleEnableUnlimitedApps={() => {
 					upgradeRoute.push();
 				}}
 			/>,
 		);
-	}, [app, result.hasUnlimitedApps, result.enable, result.limit, setModal, context, acquireApp, closeModal, upgradeRoute]);
+	}, [app, result.data, setModal, context, acquireApp, closeModal, upgradeRoute]);
 
 	const handleViewLogs = useCallback(() => {
 		router.push({ context, page: 'info', id: app.id, version: app.version, tab: 'logs' });
