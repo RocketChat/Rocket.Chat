@@ -126,6 +126,22 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	}, [app, setModal, closeModal, isSubscribed, buildExternalUrl, syncApp]);
 
 	const acquireApp = useCallback(async () => {
+		if (action === 'purchase' && !isAppPurchased) {
+			try {
+				const data = await Apps.buildExternalUrl(app.id, app.purchaseType, false);
+				setModal(<IframeModal url={data.url} cancel={cancelAction} confirm={showAppPermissionsReviewModal} />);
+			} catch (error) {
+				handleAPIError(error);
+			}
+			return;
+		}
+
+		showAppPermissionsReviewModal();
+	}, [action, app, isAppPurchased, showAppPermissionsReviewModal, setModal, cancelAction]);
+
+	const handleAcquireApp = useCallback(async () => {
+		setLoading(true);
+
 		const requestConfirmAction = (postMessage) => {
 			setModal(null);
 			setLoading(false);
@@ -139,7 +155,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			});
 		};
 
-		setLoading(true);
+		if (app?.versionIncompatible) {
+			openIncompatibleModal(app, 'subscribe', closeModal, setModal);
+			return;
+		}
 
 		if (action === 'request') {
 			try {
@@ -148,25 +167,6 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			} catch (error) {
 				handleAPIError(error);
 			}
-			return;
-		}
-
-		if (action === 'purchase' && !isAppPurchased) {
-			try {
-				const data = await Apps.buildExternalUrl(app.id, app.purchaseType, false);
-				setModal(<IframeModal url={data.url} cancel={cancelAction} confirm={showAppPermissionsReviewModal} />);
-			} catch (error) {
-				handleAPIError(error);
-			}
-			return;
-		}
-
-		showAppPermissionsReviewModal();
-	}, [action, app, isAppPurchased, showAppPermissionsReviewModal, setModal, dispatchToastMessage, notifyAdmins, cancelAction]);
-
-	const handleAcquireApp = useCallback(async () => {
-		if (app?.versionIncompatible) {
-			openIncompatibleModal(app, 'subscribe', closeModal, setModal);
 			return;
 		}
 
@@ -191,7 +191,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				}}
 			/>,
 		);
-	}, [app, result.data, setModal, context, acquireApp, closeModal, upgradeRoute]);
+	}, [app, action, result.data, setModal, context, acquireApp, dispatchToastMessage, notifyAdmins, closeModal, cancelAction, upgradeRoute]);
 
 	const handleViewLogs = useCallback(() => {
 		router.push({ context, page: 'info', id: app.id, version: app.version, tab: 'logs' });
@@ -349,12 +349,13 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			...(!app.installed && {
 				acquire: {
 					label: (
-						<Box disabled={requestedEndUser}>
+						<Box>
 							{isAdminUser && <Icon name={incompatibleIconName(app, 'install')} size='x16' marginInlineEnd='x4' />}
 							{t(button.label.replace(' ', '_'))}
 						</Box>
 					),
-					action: requestedEndUser ? () => {} : handleAcquireApp,
+					action: handleAcquireApp,
+					disabled: requestedEndUser,
 				},
 			}),
 		};
