@@ -3,6 +3,7 @@
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
+import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
 import { createVisitor, createLivechatRoom } from '../../../data/livechat/rooms';
 import { updateSetting } from '../../../data/permissions.helper';
 
@@ -74,6 +75,32 @@ describe('LIVECHAT - Utils', function () {
 			expect(body.config).to.have.property('enabled', true);
 			expect(body.config).to.have.property('settings');
 			expect(body.config).to.have.property('departments').that.is.an('array');
+		});
+		it('should have custom fields data', async () => {
+			const customFieldName = `new_custom_field_${Date.now()}`;
+			await createCustomField({
+				searchable: true,
+				field: customFieldName,
+				label: customFieldName,
+				defaultValue: 'test_default_address',
+				scope: 'visitor',
+				visibility: 'visible',
+				regexp: '',
+				public: true,
+				required: false,
+				options: '',
+			});
+
+			const { body } = await request.get(api('livechat/config')).set(credentials);
+
+			expect(body).to.have.property('config');
+			expect(body.config).to.have.property('customFields').that.is.an('array');
+			expect(body.config.customFields).to.have.length.greaterThan(0);
+			const customField = body.config.customFields.find((field: any) => field._id === customFieldName);
+			expect(customField).to.be.an('object');
+			expect(customField).to.have.property('label', customFieldName);
+
+			await deleteCustomField(customFieldName);
 		});
 	});
 
