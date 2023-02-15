@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
+import { Apps } from '@rocket.chat/core-services';
 
 import { saveCustomFields, passwordPolicy } from '../../app/lib/server';
 import { validateUserEditing } from '../../app/lib/server/functions/saveUser';
@@ -11,7 +12,6 @@ import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
 import { saveUserIdentity } from '../../app/lib/server/functions/saveUserIdentity';
 import { compareUserPassword } from '../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';
-import { Apps } from '../sdk';
 
 function saveUserProfile(settings, customFields) {
 	if (!rcSettings.get('Accounts_AllowUserProfileChange')) {

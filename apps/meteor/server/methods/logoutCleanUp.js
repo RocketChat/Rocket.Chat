@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
+import { Apps } from '@rocket.chat/core-services';
 
 import { callbacks } from '../../lib/callbacks';
-import { Apps } from '../sdk';
 
 Meteor.methods({
 	logoutCleanUp(user) {

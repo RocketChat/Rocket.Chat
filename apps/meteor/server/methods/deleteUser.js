@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
+import { Apps } from '@rocket.chat/core-services';
 
 import { Users } from '../../app/models/server';
 import { hasPermission } from '../../app/authorization';
 import { callbacks } from '../../lib/callbacks';
 import { deleteUser } from '../../app/lib/server';
-import { Apps } from '../sdk';
 
 Meteor.methods({
 	async deleteUser(userId, confirmRelinquish = false) {

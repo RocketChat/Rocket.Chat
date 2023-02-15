@@ -1,5 +1,6 @@
+import { Apps } from '@rocket.chat/core-services';
+
 import { addMigration } from '../../lib/migrations';
-import { Apps } from '../../sdk';
 
 addMigration({
 	version: 248,
