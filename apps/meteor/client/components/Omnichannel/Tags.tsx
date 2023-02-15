@@ -72,6 +72,7 @@ const Tags = ({
 			<Field.Label required={tagRequired} mb='x4'>
 				{t('Tags')}
 			</Field.Label>
+
 			{EETagsComponent && tagsResult?.tags && tagsResult?.tags.length ? (
 				<Field.Row>
 					<EETagsComponent
@@ -96,6 +97,7 @@ const Tags = ({
 							{t('Add')}
 						</Button>
 					</Field.Row>
+
 					<Field.Row justifyContent='flex-start'>
 						{tags?.map((tag, i) => (
 							<Chip key={i} onClick={(): void => removeTag(tag)} mie='x8'>

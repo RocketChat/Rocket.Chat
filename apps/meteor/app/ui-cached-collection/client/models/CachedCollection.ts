@@ -44,7 +44,7 @@ export class CachedCollection<T extends object> extends Emitter<{ changed: T; re
 
 	public eventType: EventType;
 
-	public version = 17;
+	public version = 18;
 
 	public userRelated: boolean;
 

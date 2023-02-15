@@ -11,10 +11,10 @@ export async function addOAuthApp(application, uid) {
 	if (!hasPermission(uid, 'manage-oauth-apps')) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'addOAuthApp' });
 	}
-	if (!_.isString(application.name) || application.name.trim() === '') {
+	if (!application.name || typeof application.name.valueOf() !== 'string' || application.name.trim() === '') {
 		throw new Meteor.Error('error-invalid-name', 'Invalid name', { method: 'addOAuthApp' });
 	}
-	if (!_.isString(application.redirectUri) || application.redirectUri.trim() === '') {
+	if (!application.redirectUri || typeof application.redirectUri.valueOf() !== 'string' || application.redirectUri.trim() === '') {
 		throw new Meteor.Error('error-invalid-redirectUri', 'Invalid redirectUri', {
 			method: 'addOAuthApp',
 		});
