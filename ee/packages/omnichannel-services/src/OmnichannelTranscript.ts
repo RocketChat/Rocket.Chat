@@ -329,8 +329,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 		const { rid } = await roomService.createDirectMessage({ to: details.userId, from: 'rocket.cat' });
 		this.log.info(`Transcript for room ${details.rid} by user ${details.userId} - Sending error message to user`);
-		await messageService.sendMessage({
-			fromId: 'rocket.cat',
+		await messageService.sendMessage('rocket.cat', {
 			rid,
 			msg: `${await translationService.translate('pdf_error_message', user)}: ${e.message}`,
 		});
