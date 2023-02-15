@@ -3570,7 +3570,7 @@
   "omnichannel_priority_change_history": "Priority changed: __user__ changed the priority to __priority__",
   "omnichannel_sla_change_history": "SLA Policy changed: __user__ changed the SLA Policy to __sla__",
   "Omnichannel_enable_department_removal": "Enable department removal",
-  "Omnichannel_enable_department_removal_alert": "Departments removed on Community Edition cannot be restored, we recommend archiving the department instead.",
+  "Omnichannel_enable_department_removal_alert": "Departments removed cannot be restored, we recommend archiving the department instead.",
   "On": "On",
   "on-hold-livechat-room": "On Hold Omnichannel Room",
   "on-hold-livechat-room_description": "Permission to on hold omnichannel room",
