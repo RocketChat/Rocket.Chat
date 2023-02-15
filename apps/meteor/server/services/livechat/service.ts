@@ -1,14 +1,6 @@
 import type { IVisitor } from '@rocket.chat/apps-engine/definition/livechat';
-import type {
-	IMessage,
-	ILivechatVisitor,
-	OmnichannelSourceType,
-	IOmnichannelRoom,
-	IUser,
-	IRoom,
-	ILivechatAgent,
-} from '@rocket.chat/core-typings';
-import type { ILivechatService } from '@rocket.chat/core-services';
+import type { IMessage, ILivechatVisitor, OmnichannelSourceType, IOmnichannelRoom, IRoom, ILivechatAgent } from '@rocket.chat/core-typings';
+import type { ILivechatService, CloseRoomParams } from '@rocket.chat/core-services';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 
 import { Livechat as LivechatTyped } from '../../../app/livechat/server/lib/LivechatTyped';
@@ -46,15 +38,8 @@ export class LivechatService extends ServiceClassInternal implements ILivechatSe
 		return Livechat.getRoom(props);
 	}
 
-	async closeRoom(props: {
-		user: IUser;
-		visitor: IVisitor;
-		room: IRoom;
-		comment: string;
-		options?: Record<string, unknown>;
-	}): Promise<boolean> {
+	async closeRoom(props: CloseRoomParams): Promise<void> {
 		await LivechatTyped.closeRoom(props);
-		return true;
 	}
 
 	registerGuest(props: {

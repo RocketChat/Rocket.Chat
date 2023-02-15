@@ -4,12 +4,42 @@ import type {
 	ILivechatVisitor,
 	OmnichannelSourceType,
 	IOmnichannelRoom,
-	IUser,
 	IRoom,
 	ILivechatAgent,
+	IUser,
 } from '@rocket.chat/core-typings';
 
 import type { IServiceClass } from './ServiceClass';
+
+type GenericCloseRoomParams = {
+	room: IOmnichannelRoom;
+	comment?: string;
+	options?: {
+		clientAction?: boolean;
+		tags?: string[];
+		emailTranscript?:
+			| {
+					sendToVisitor: false;
+			  }
+			| {
+					sendToVisitor: true;
+					requestData: NonNullable<IOmnichannelRoom['transcriptRequest']>;
+			  };
+		pdfTranscript?: {
+			requestedBy: string;
+		};
+	};
+};
+
+export type CloseRoomParamsByUser = {
+	user: IUser;
+} & GenericCloseRoomParams;
+
+export type CloseRoomParamsByVisitor = {
+	visitor: ILivechatVisitor;
+} & GenericCloseRoomParams;
+
+export type CloseRoomParams = CloseRoomParamsByUser | CloseRoomParamsByVisitor;
 
 export interface ILivechatService extends IServiceClass {
 	isOnline(department?: string, skipNoAgentSetting?: boolean, skipFallbackCheck?: boolean): Promise<boolean>;
@@ -24,7 +54,7 @@ export interface ILivechatService extends IServiceClass {
 		agent?: { agentId?: string; username?: string };
 		extraParams?: Record<string, any>;
 	}): Promise<{ room: IOmnichannelRoom; newRoom: boolean }>;
-	closeRoom(props: { user: IUser; visitor: IVisitor; room: IRoom; comment: string; options?: Record<string, unknown> }): Promise<boolean>;
+	closeRoom(props: CloseRoomParams): Promise<void>;
 	registerGuest(props: {
 		id?: string;
 		token: string;

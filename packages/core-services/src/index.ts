@@ -49,7 +49,7 @@ import type { IAppsService } from './types/IAppsService';
 import type { IAppsStatisticsService } from './types/IAppsStatisticsService';
 import type { IAppsVideoManagerService } from './types/IAppsVideoManagerService';
 import type { IFetchService } from './types/IFetchService';
-import type { ILivechatService } from './types/ILivechatService';
+import type { ILivechatService, CloseRoomParams } from './types/ILivechatService';
 import type { IMessageService } from './types/IMessageService';
 import type { INotificationService } from './types/INotificationService';
 import type { ISlashCommandService } from './types/ISlashCommandService';
@@ -134,6 +134,7 @@ export {
 	IRequestWithPrivateHash,
 	IFetchService,
 	ILivechatService,
+	CloseRoomParams,
 	IMessageService,
 	INotificationService,
 	ISlashCommandService,
