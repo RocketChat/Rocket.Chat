@@ -1,5 +1,6 @@
 import { States, StatesIcon, StatesTitle, Pagination } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, MutableRefObject } from 'react';
@@ -43,9 +44,9 @@ const UsersTable = ({ reload }: UsersTableProps): ReactElement | null => {
 				}),
 				query: JSON.stringify({
 					$or: [
-						{ 'emails.address': { $regex: text || '', $options: 'i' } },
-						{ username: { $regex: text || '', $options: 'i' } },
-						{ name: { $regex: text || '', $options: 'i' } },
+						{ 'emails.address': { $regex: escapeRegExp(text), $options: 'i' } },
+						{ username: { $regex: escapeRegExp(text), $options: 'i' } },
+						{ name: { $regex: escapeRegExp(text), $options: 'i' } },
 					],
 				}),
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,

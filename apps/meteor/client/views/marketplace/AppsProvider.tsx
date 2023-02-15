@@ -10,6 +10,7 @@ import type { AsyncState } from '../../lib/asyncState';
 import { AsyncStatePhase } from '../../lib/asyncState';
 import { AppsContext } from './AppsContext';
 import { handleAPIError } from './helpers';
+import { useInvalidateAppsCountQueryCallback } from './hooks/useAppsCountQuery';
 import type { App } from './types';
 
 type ListenersMapping = {
@@ -292,11 +293,15 @@ const AppsProvider: FC = ({ children }) => {
 		return [marketplaceAppsState, installedAppsState, privateAppsState];
 	});
 
+	const invalidateAppsCountQuery = useInvalidateAppsCountQueryCallback();
+
 	useEffect(() => {
 		const handleAppAddedOrUpdated = async (appId: string): Promise<void> => {
 			let marketplaceApp: { app: App; success: boolean } | undefined;
 			let installedApp: App;
 			let privateApp: App | undefined;
+
+			invalidateAppsCountQuery();
 
 			try {
 				const app = await Apps.getApp(appId);
@@ -396,6 +401,8 @@ const AppsProvider: FC = ({ children }) => {
 						marketplaceVersion: app?.marketplaceVersion,
 					},
 				});
+
+				invalidateAppsCountQuery();
 			},
 			APP_STATUS_CHANGE: ({ appId, status }: { appId: string; status: AppStatus }): void => {
 				const [updatedData] = getCurrentData();
@@ -434,6 +441,8 @@ const AppsProvider: FC = ({ children }) => {
 					},
 					reload: fetch,
 				});
+
+				invalidateAppsCountQuery();
 			},
 			APP_SETTING_UPDATED: ({ appId }: { appId: string }): void => {
 				dispatchInstalledApps({ type: 'invalidate', appId, reload: fetch });
@@ -448,11 +457,17 @@ const AppsProvider: FC = ({ children }) => {
 			// eslint-disable-next-line no-unsafe-finally
 			return unregisterListeners;
 		}
-	}, [fetch, getCurrentData, isAdminUser]);
+	}, [fetch, getCurrentData, invalidateAppsCountQuery, isAdminUser]);
+
 	return (
 		<AppsContext.Provider
 			children={children}
-			value={{ installedApps: installedAppsState, marketplaceApps: marketplaceAppsState, privateApps: privateAppsState, reload: fetch }}
+			value={{
+				installedApps: installedAppsState,
+				marketplaceApps: marketplaceAppsState,
+				privateApps: privateAppsState,
+				reload: fetch,
+			}}
 		/>
 	);
 };
