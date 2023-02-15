@@ -71,6 +71,16 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.find(query, options);
 	}
 
+	findUnarchivedByRoomId(roomId: string, options: FindOptions<ISubscription> = {}): FindCursor<ISubscription> {
+		const query = {
+			'rid': roomId,
+			'archived': { $ne: true },
+			'u._id': { $exists: true },
+		};
+
+		return this.find(query, options);
+	}
+
 	findByRoomIdAndNotUserId(roomId: string, userId: string, options: FindOptions<ISubscription> = {}): FindCursor<ISubscription> {
 		const query = {
 			'rid': roomId,
@@ -99,6 +109,15 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			'u._id': uid,
 		};
 
+		return this.col.countDocuments(query);
+	}
+
+	countUnarchivedByRoomId(rid: string): Promise<number> {
+		const query = {
+			rid,
+			'archived': { $ne: true },
+			'u._id': { $exists: true },
+		};
 		return this.col.countDocuments(query);
 	}
 
