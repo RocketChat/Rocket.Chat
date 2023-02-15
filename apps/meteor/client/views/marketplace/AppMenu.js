@@ -12,7 +12,7 @@ import {
 import React, { useMemo, useCallback, useState } from 'react';
 import semver from 'semver';
 
-import { Apps } from '../../../app/apps/client/orchestrator';
+import { Apps } from '../../../ee/client/apps/orchestrator';
 import WarningModal from '../../components/WarningModal';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import IframeModal from './IframeModal';

@@ -33,7 +33,7 @@ import { Users, VideoConference as VideoConferenceModel, Rooms, Messages, Subscr
 import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
 import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 
-import { Apps } from '../../../app/apps/server';
+import { Apps } from '../../../ee/server/apps';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { settings } from '../../../app/settings/server';
 import { videoConfProviders } from '../../lib/videoConfProviders';

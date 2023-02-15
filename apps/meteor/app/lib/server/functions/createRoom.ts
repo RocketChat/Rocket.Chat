@@ -5,7 +5,7 @@ import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typ
 import { Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 
-import { Apps } from '../../../apps/server';
+import { Apps } from '../../../../ee/server/apps';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
 import { callbacks } from '../../../../lib/callbacks';
 import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';

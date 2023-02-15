@@ -2,8 +2,8 @@ import { HTTP } from 'meteor/http';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { AppRequest, IUser, Pagination } from '@rocket.chat/core-typings';
 
-import { API } from '../../../api/server';
-import { getWorkspaceAccessToken } from '../../../cloud/server';
+import { API } from '../../../../app/api/server';
+import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
 import { sendDirectMessageToUsers } from '../../../../server/lib/sendDirectMessageToUsers';
 
 const ROCKET_CAT_USERID = 'rocket.cat';

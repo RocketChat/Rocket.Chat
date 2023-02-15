@@ -11,7 +11,7 @@ import { getTagColor } from './getTagColor';
 import type { ILicense, LicenseAppSources } from '../definition/ILicense';
 import type { ILicenseTag } from '../definition/ILicenseTag';
 import { isUnderAppLimits } from './lib/isUnderAppLimits';
-import type { AppServerOrchestrator } from '../../../../app/apps/server/orchestrator';
+import type { AppServerOrchestrator } from '../../../server/apps/orchestrator';
 
 const EnterpriseLicenses = new EventEmitter();
 
@@ -49,7 +49,7 @@ class LicenseClass {
 		 * We added a dynamic import here to avoid this issue
 		 */
 		// eslint-disable-next-line @typescript-eslint/naming-convention
-		import('../../../../app/apps/server').then(({ Apps }) => {
+		import('../../../server/apps').then(({ Apps }) => {
 			this.Apps = Apps;
 		});
 	}

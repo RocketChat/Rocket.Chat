@@ -1,7 +1,7 @@
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 
 import { AppsModel } from '../../../app/models/server';
-import { AppRealStorage } from '../../../app/apps/server/storage';
+import { AppRealStorage } from '../../../ee/server/apps/storage';
 import { addMigration } from '../../lib/migrations';
 
 addMigration({

@@ -2,8 +2,8 @@ import type { App } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useState, useEffect, useContext } from 'react';
 
-import type { ISettings } from '../../../../app/apps/client/@types/IOrchestrator';
-import { Apps } from '../../../../app/apps/client/orchestrator';
+import type { ISettings } from '../../../../ee/client/apps/@types/IOrchestrator';
+import { Apps } from '../../../../ee/client/apps/orchestrator';
 import { AppsContext } from '../AppsContext';
 import type { AppInfo } from '../definitions/AppInfo';
 

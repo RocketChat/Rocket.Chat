@@ -4,7 +4,7 @@ import { settings } from '../../settings/server';
 import { isTheLastMessage } from '../../lib/server';
 import { canAccessRoom, roomAccessAttributes } from '../../authorization/server';
 import { Subscriptions, Rooms, Messages } from '../../models/server';
-import { Apps, AppEvents } from '../../apps/server/orchestrator';
+import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
 
 Meteor.methods({
 	starMessage(message) {

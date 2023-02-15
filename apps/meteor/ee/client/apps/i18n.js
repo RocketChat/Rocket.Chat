@@ -1,8 +1,8 @@
 import { TAPi18next } from 'meteor/rocketchat:tap-i18n';
 
-import { Apps } from './orchestrator';
-import { Utilities } from '../lib/misc/Utilities';
+import { Utilities } from '../../../app/apps/lib/misc/Utilities';
 import { AppEvents } from './communication';
+import { Apps } from './orchestrator';
 
 export const loadAppI18nResources = (appId, languages) => {
 	Object.entries(languages).forEach(([language, translations]) => {

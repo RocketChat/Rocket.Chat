@@ -1,16 +1,18 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { AppClientManager } from '@rocket.chat/apps-engine/client/AppClientManager';
-import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
 import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
+import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage/IAppStorageItem';
-import { Meteor } from 'meteor/meteor';
 import type { AppScreenshot, AppRequestFilter, Serialized, AppRequestsStats, PaginatedAppRequests } from '@rocket.chat/core-typings';
+import { Meteor } from 'meteor/meteor';
 
-import type { App } from '../../../client/views/marketplace/types';
+import { hasAtLeastOnePermission } from '../../../app/authorization/client';
+import { CachedCollectionManager } from '../../../app/ui-cached-collection/client';
+import { APIClient } from '../../../app/utils/client';
 import { dispatchToastMessage } from '../../../client/lib/toast';
-import { CachedCollectionManager } from '../../ui-cached-collection/client';
+import type { App } from '../../../client/views/marketplace/types';
 import type {
 	// IAppFromMarketplace,
 	IAppLanguage,
@@ -20,11 +22,9 @@ import type {
 	// IAppScreenshots,
 	// IScreenshot,
 } from './@types/IOrchestrator';
+import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
 import { AppWebsocketReceiver } from './communication';
 import { handleI18nResources } from './i18n';
-import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
-import { APIClient } from '../../utils/client';
-import { hasAtLeastOnePermission } from '../../authorization/client';
 
 class AppClientOrchestrator {
 	private _appClientUIHost: RealAppsEngineUIHost;

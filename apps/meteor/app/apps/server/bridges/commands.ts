@@ -6,7 +6,7 @@ import type { IMessage, RequiredField, SlashCommand } from '@rocket.chat/core-ty
 
 import { slashCommands } from '../../../utils/server';
 import { Utilities } from '../../lib/misc/Utilities';
-import type { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { parseParameters } from '../../../../lib/utils/parseParameters';
 
 export class AppCommandsBridge extends CommandBridge {

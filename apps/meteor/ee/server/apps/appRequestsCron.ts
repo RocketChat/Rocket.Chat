@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
-import { settings } from '../../settings/server';
+import { settings } from '../../../app/settings/server';
 import { Apps } from './orchestrator';
-import { getWorkspaceAccessToken } from '../../cloud/server';
+import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { appRequestNotififyForUsers } from './marketplace/appRequestNotifyUsers';
 
 export const appsNotifyAppRequests = Meteor.bindEnvironment(function _appsNotifyAppRequests() {

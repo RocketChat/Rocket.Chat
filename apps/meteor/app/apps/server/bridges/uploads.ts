@@ -5,7 +5,7 @@ import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads
 
 import { FileUpload } from '../../../file-upload/server';
 import { determineFileType } from '../../lib/misc/determineFileType';
-import type { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 const getUploadDetails = (details: IUploadDetails): Partial<IUploadDetails> => {
 	if (details.visitorToken) {
