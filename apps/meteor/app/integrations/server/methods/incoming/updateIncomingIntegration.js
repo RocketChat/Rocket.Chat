@@ -10,7 +10,7 @@ const validChannelChars = ['@', '#'];
 
 Meteor.methods({
 	async updateIncomingIntegration(integrationId, integration) {
-		if (!integration.channel || typeof integration.channel.valueOf() === 'string' || integration.channel.trim() === '') {
+		if (!integration.channel || typeof integration.channel.valueOf() !== 'string' || integration.channel.trim() === '') {
 			throw new Meteor.Error('error-invalid-channel', 'Invalid channel', {
 				method: 'updateIncomingIntegration',
 			});

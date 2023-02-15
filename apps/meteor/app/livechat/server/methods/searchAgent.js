@@ -14,7 +14,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!username || typeof username.valueOf() === 'string') {
+		if (!username || typeof username.valueOf() !== 'string') {
 			throw new Meteor.Error('error-invalid-arguments', 'Invalid arguments', {
 				method: 'livechat:searchAgent',
 			});
