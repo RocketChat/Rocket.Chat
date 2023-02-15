@@ -40,6 +40,11 @@ export class HomeSidenav {
 		await this.page.locator(`li.rcx-option >> text="${text}"`).click();
 	}
 
+	async openInstalledApps(): Promise<void> {
+		await this.page.locator('//button[@title="Administration"]').click();
+		await this.page.locator('//div[contains(text(),"Installed")]').click();
+	}
+
 	async openNewByLabel(text: string): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-create"]').click();
 		await this.page.locator(`li.rcx-option >> text="${text}"`).click();
