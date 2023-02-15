@@ -6,27 +6,31 @@ type Variant = 'success' | 'warning' | 'danger';
 
 const getProgressBarValues = (numberOfEnabledApps: number, enabledAppsLimit: number): { variant: Variant; percentage: number } => ({
 	variant: 'success',
-	...(numberOfEnabledApps < enabledAppsLimit - 1 && { variant: 'warning' }),
-	...(numberOfEnabledApps === enabledAppsLimit && { variant: 'danger' }),
+	...(numberOfEnabledApps + 1 === enabledAppsLimit && { variant: 'warning' }),
+	...(numberOfEnabledApps >= enabledAppsLimit && { variant: 'danger' }),
 	percentage: Math.round((numberOfEnabledApps / enabledAppsLimit) * 100),
 });
 
 export const useAppsCountQuery = (context: 'private' | 'explore' | 'marketplace') => {
 	const getAppsCount = useEndpoint('GET', '/apps/count');
 
-	return useQuery(['apps/count'], async () => {
-		const data = await getAppsCount();
+	return useQuery(
+		['apps/count', { context }],
+		async () => {
+			const data = await getAppsCount();
 
-		const numberOfEnabledApps = context === 'private' ? data.totalPrivateEnabled : data.totalMarketplaceEnabled;
-		const enabledAppsLimit = context === 'private' ? data.maxPrivateApps : data.maxMarketplaceApps;
-		const hasUnlimitedApps = enabledAppsLimit === -1;
-		return {
-			hasUnlimitedApps,
-			enabled: numberOfEnabledApps,
-			limit: enabledAppsLimit,
-			...getProgressBarValues(numberOfEnabledApps, enabledAppsLimit),
-		};
-	});
+			const numberOfEnabledApps = context === 'private' ? data.totalPrivateEnabled : data.totalMarketplaceEnabled;
+			const enabledAppsLimit = context === 'private' ? data.maxPrivateApps : data.maxMarketplaceApps;
+			const hasUnlimitedApps = enabledAppsLimit === -1;
+			return {
+				hasUnlimitedApps,
+				enabled: numberOfEnabledApps,
+				limit: enabledAppsLimit,
+				...getProgressBarValues(numberOfEnabledApps, enabledAppsLimit),
+			};
+		},
+		{ staleTime: 10_000 },
+	);
 };
 
 export const useInvalidateAppsCountQueryCallback = () => {
