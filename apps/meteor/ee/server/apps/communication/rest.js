@@ -11,7 +11,7 @@ import { settings } from '../../../../app/settings/server';
 import { Info } from '../../../../app/utils';
 import { Users } from '../../../../app/models/server';
 import { Apps } from '../orchestrator';
-import { formatAppInstanceForRest } from '../../../../app/apps/lib/misc/formatAppInstanceForRest';
+import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { fetch } from '../../../../server/lib/http/fetch';
 import { apiDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
