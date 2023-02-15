@@ -26,6 +26,7 @@ import { IntegrationHistoryRaw } from '../../../server/models/raw/IntegrationHis
 import { IntegrationsRaw } from '../../../server/models/raw/Integrations';
 import { EmailInboxRaw } from '../../../server/models/raw/EmailInbox';
 import { PbxEventsRaw } from '../../../server/models/raw/PbxEvents';
+import { LivechatPriorityRaw } from '../models/raw/LivechatPriority';
 import { LivechatRoomsRaw } from '../../../server/models/raw/LivechatRooms';
 import { UploadsRaw } from '../../../server/models/raw/Uploads';
 import { LivechatVisitorsRaw } from '../../../server/models/raw/LivechatVisitors';
@@ -58,6 +59,7 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('IIntegrationsModel', () => new IntegrationsRaw(db));
 	registerModel('IEmailInboxModel', () => new EmailInboxRaw(db));
 	registerModel('IPbxEventsModel', () => new PbxEventsRaw(db));
+	registerModel('ILivechatPriorityModel', new LivechatPriorityRaw(db));
 	registerModel('ILivechatRoomsModel', () => new LivechatRoomsRaw(db));
 	registerModel('IUploadsModel', () => new UploadsRaw(db));
 	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));
