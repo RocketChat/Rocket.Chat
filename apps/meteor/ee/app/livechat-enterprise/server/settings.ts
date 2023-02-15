@@ -1,4 +1,5 @@
 import { Settings } from '@rocket.chat/models';
+import { OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
 
 import { settingsRegistry } from '../../../../app/settings/server';
 
@@ -151,6 +152,23 @@ export const createSettings = async (): Promise<void> => {
 				enterprise: true,
 				invalidValue: -1,
 				modules: ['livechat-enterprise'],
+			});
+
+			this.add('Omnichannel_sorting_mechanism', 'Timestamp', {
+				type: 'select',
+				values: [
+					{ key: OmnichannelSortingMechanismSettingType.Timestamp, i18nLabel: 'Timestamp' },
+					{ key: OmnichannelSortingMechanismSettingType.Priority, i18nLabel: 'Priorities' },
+					{ key: OmnichannelSortingMechanismSettingType.SLAs, i18nLabel: 'SLA_Policies' },
+				],
+				group: 'Omnichannel',
+				section: 'Queue_management',
+				i18nLabel: 'Sorting_mechanism',
+				enableQuery: [omnichannelEnabledQuery],
+				enterprise: true,
+				public: true,
+				modules: ['livechat-enterprise'],
+				invalidValue: '',
 			});
 		});
 	});
