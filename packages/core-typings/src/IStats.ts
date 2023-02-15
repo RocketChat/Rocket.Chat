@@ -136,6 +136,7 @@ export interface IStats {
 		livechatTags?: number;
 		cannedResponses?: number;
 		priorities?: number;
+		slas?: number;
 		businessUnits?: number;
 	};
 	createdAt: Date | string;

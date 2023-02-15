@@ -5,8 +5,6 @@ import { Random } from 'meteor/random';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
-import _ from 'underscore';
-import s from 'underscore.string';
 
 import { e2e } from '../../../e2e/client';
 import { Users, ChatSubscription } from '../../../models/client';
@@ -15,6 +13,7 @@ import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 import { CustomSounds } from '../../../custom-sounds/client/lib/CustomSounds';
 import { getAvatarAsPng } from '../../../../client/lib/utils/getAvatarAsPng';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
+import { stripTags } from '../../../../lib/utils/stringUtils';
 
 export const KonchatNotification = {
 	notificationStatus: new ReactiveVar(),
@@ -42,7 +41,7 @@ export const KonchatNotification = {
 				const requireInteraction = getUserPreference(Meteor.userId(), 'desktopNotificationRequireInteraction');
 				const n = new Notification(notification.title, {
 					icon: notification.icon || getUserAvatarURL(notification.payload.sender.username),
-					body: s.stripTags(message.msg),
+					body: stripTags(message.msg),
 					tag: notification.payload._id,
 					canReply: true,
 					silent: true,
@@ -173,8 +172,8 @@ export const KonchatNotification = {
 	newRoom(rid /* , withSound = true*/) {
 		Tracker.nonreactive(function () {
 			let newRoomSound = Session.get('newRoomSound');
-			if (newRoomSound != null) {
-				newRoomSound = _.union(newRoomSound, [rid]);
+			if (newRoomSound) {
+				newRoomSound = [...newRoomSound, rid];
 			} else {
 				newRoomSound = [rid];
 			}
@@ -183,11 +182,9 @@ export const KonchatNotification = {
 		});
 	},
 
-	// $('.link-room-' + rid).addClass('new-room-highlight')
-
 	removeRoomNotification(rid) {
-		let newRoomSound = Session.get('newRoomSound');
-		newRoomSound = _.without(newRoomSound, rid);
+		let newRoomSound = Session.get('newRoomSound') ?? [];
+		newRoomSound = newRoomSound.filter((_rid) => _rid !== rid);
 		Tracker.nonreactive(() => Session.set('newRoomSound', newRoomSound));
 
 		return $(`.link-room-${rid}`).removeClass('new-room-highlight');

@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import s from 'underscore.string';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
 
@@ -10,7 +9,7 @@ import { slashCommands } from '../../utils/lib/slashCommand';
 slashCommands.add({
 	command: 'me',
 	callback: function Me(_command: 'me', params, item): void {
-		if (s.trim(params)) {
+		if (params.trim()) {
 			const msg = item;
 			msg.msg = `_${params}_`;
 			Meteor.call('sendMessage', msg);
