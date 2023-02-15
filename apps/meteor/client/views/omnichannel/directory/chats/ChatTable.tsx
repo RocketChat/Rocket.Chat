@@ -74,7 +74,7 @@ const ChatTable: FC<{ setChatReload: Dispatch<SetStateAction<any>> }> = ({ setCh
 		}),
 	);
 
-	const { value: data, reload } = useEndpointData('/v1/livechat/rooms', query as any); // TODO: Check the typing for the livechat/rooms endpoint as it seems wrong
+	const { value: data, reload } = useEndpointData('/v1/livechat/rooms', { params: query }); // TODO: Check the typing for the livechat/rooms endpoint as it seems wrong
 
 	useEffect(() => {
 		setChatReload?.(() => reload);
