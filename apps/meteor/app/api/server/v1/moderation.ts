@@ -44,7 +44,11 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			const { reportId } = this.requestParams();
+			const { reportId, reasonForHiding, actionTaken } = this.requestParams();
+
+			const reasonProvided = reasonForHiding && reasonForHiding.trim() !== '';
+			const sanitizedReason = reasonProvided ? reasonForHiding : 'No reason provided';
+			const action = actionTaken || 'None';
 
 			const { userId } = this;
 
@@ -58,7 +62,7 @@ API.v1.addRoute(
 				return API.v1.failure('Report is already hidden');
 			}
 
-			const update = await Reports.hideReportById(reportId, userId);
+			const update = await Reports.hideReportById(reportId, userId, sanitizedReason, action);
 
 			const report = await Reports.findOneById(reportId);
 

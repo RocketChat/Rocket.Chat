@@ -71,6 +71,15 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 					_id: { message: '$msg.message', user: '$message.u._id' },
 					reports: { $first: '$$ROOT' },
 					count: { $sum: 1 },
+					roomMessageMap: {
+						$addToSet: {
+							rid: '$message.rid',
+							msgId: '$message._id',
+						},
+					},
+					reportIds: {
+						$push: '$_id',
+					},
 				},
 			},
 			{ $match: { ...query, ...cquery } },
@@ -307,6 +316,15 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 					_id: { message: '$message.msg', user: '$message.u._id' },
 					reports: { $first: '$$ROOT' },
 					count: { $sum: 1 },
+					roomMessageMap: {
+						$addToSet: {
+							rid: '$message.rid',
+							msgId: '$message._id',
+						},
+					},
+					reportIds: {
+						$push: '$_id',
+					},
 				},
 			},
 			{ $match: { ...query, ...cquery } },
@@ -367,6 +385,15 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 					_id: { message: '$message.msg', user: '$message.u._id' },
 					reports: { $first: '$$ROOT' },
 					count: { $sum: 1 },
+					roomMessageMap: {
+						$addToSet: {
+							rid: '$message.rid',
+							msgId: '$message._id',
+						},
+					},
+					reportIds: {
+						$push: '$_id',
+					},
 				},
 			},
 			{ $match: { ...query, ...cquery } },
@@ -388,16 +415,14 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 
 	// update
 
-	hideReportById(_id: string, userId: string): Promise<UpdateResult | Document> {
+	hideReportById(_id: string, userId: string, reasonForHiding: string, actionTaken: string): Promise<UpdateResult | Document> {
 		const query = {
 			_id,
 		};
 
 		const update = {
 			$set: {
-				_hidden: true,
-				_hiddenAt: new Date(),
-				_hiddenBy: userId,
+				moderationInfo: { _hidden: true, hiddenAt: new Date(), moderatedBy: userId, reasonForHiding, actionTaken },
 			},
 		};
 

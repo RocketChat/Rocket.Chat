@@ -1,6 +1,14 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IMessage } from './IMessage/IMessage';
 import type { IUser } from './IUser';
+import type { IRoom } from './IRoom';
+
+export interface IModerationInfo {
+	moderatedBy: IUser['_id'];
+	hiddenAt: Date;
+	actionTaken: string;
+	reasonForHiding: string;
+}
 
 export interface IReport extends IRocketChatRecord {
 	message: IMessage;
@@ -8,9 +16,8 @@ export interface IReport extends IRocketChatRecord {
 	ts: Date;
 	userId: string;
 	reportedBy?: Pick<IUser, '_id' | 'username' | 'avatarETag' | 'active' | 'name' | 'createdAt'>;
+	moderationInfo?: IModerationInfo;
 	_hidden?: boolean;
-	_hiddenAt?: Date;
-	_hiddenBy?: string;
 }
 
 export type MsgGroupedIReport = {
@@ -20,4 +27,9 @@ export type MsgGroupedIReport = {
 	};
 	reports: IReport[];
 	count: number;
+	roomMessageMap: {
+		roomId: IRoom['_id'];
+		msgId: IMessage['_id'];
+	}[];
+	reportIds: IReport['_id'][];
 };

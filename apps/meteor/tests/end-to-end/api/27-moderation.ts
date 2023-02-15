@@ -164,8 +164,10 @@ describe('[Moderation]', function () {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('report').and.to.be.an('object');
 					expect(res.body.report).to.have.property('_hidden', true);
-					expect(res.body.report).to.have.property('_hiddenAt');
-					expect(res.body.report).to.have.property('_hiddenBy').and.to.be.an('string');
+					expect(res.body.report.moderationInfo).to.have.property('hiddenAt');
+					expect(res.body.report.moderationInfo).to.have.property('moderatedBy').and.to.be.an('string');
+					expect(res.body.report.moderationInfo).to.have.property('resonForHiding').and.to.be.an('string');
+					expect(res.body.report.moderationInfo).to.have.property('hiddenBy').and.to.be.an('string');
 				})
 				.end(done);
 		});

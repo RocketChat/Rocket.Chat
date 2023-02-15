@@ -35,7 +35,7 @@ export interface IReportsModel extends IBaseModel<IReport> {
 
 	findReportsBeforeDate(oldest: Date, offset?: number, count?: number, sort?: any, selector?: string): AggregationCursor<MsgGroupedIReport>;
 
-	hideReportById(reportId: IReport['_id'], userId: string): Promise<UpdateResult | Document>;
+	hideReportById(reportId: IReport['_id'], userId: string, reasonForHiding: string, actionTaken: string): Promise<UpdateResult | Document>;
 
 	hideReportsByMessageId(messageId: IReport['message']['_id'], userId: string): Promise<UpdateResult | Document>;
 
