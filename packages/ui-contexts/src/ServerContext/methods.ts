@@ -5,6 +5,8 @@ import type {
 	IMessage,
 	IPermission,
 	IRoom,
+	IMessageSearchProvider,
+	IMessageSearchSuggestion,
 	ISetting,
 	ISubscription,
 	ISupportedLanguage,
@@ -52,7 +54,6 @@ export interface ServerMethods {
 	'authorization:deleteRole': (...args: any[]) => any;
 	'authorization:removeRoleFromPermission': (...args: any[]) => any;
 	'authorization:removeUserFromRole': (...args: any[]) => any;
-	'authorization:saveRole': (...args: any[]) => any;
 	'bbbEnd': (...args: any[]) => any;
 	'bbbJoin': (...args: any[]) => any;
 	'blockUser': (...args: any[]) => any;
@@ -69,6 +70,7 @@ export interface ServerMethods {
 	};
 	'cloud:checkUserLoggedIn': (...args: any[]) => any;
 	'cloud:connectWorkspace': (...args: any[]) => any;
+	'cloud:reconnectWorkspace': (...args: any[]) => any;
 	'cloud:disconnectWorkspace': (...args: any[]) => any;
 	'cloud:finishOAuthAuthorization': (...args: any[]) => any;
 	'cloud:getOAuthAuthorizationUrl': (...args: any[]) => any;
@@ -205,7 +207,6 @@ export interface ServerMethods {
 	'saveUserPreferences': SaveUserPreferencesMethod;
 	'saveUserProfile': (...args: any[]) => any;
 	'sendConfirmationEmail': (...args: any[]) => any;
-	'sendInvitationEmail': (...args: any[]) => any;
 	'sendMessage': (message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>) => any;
 	'setAdminStatus': (...args: any[]) => any;
 	'setAsset': (...args: any[]) => any;
@@ -242,8 +243,9 @@ export interface ServerMethods {
 			| string
 			| string[]
 			| {
-					users: boolean;
-					rooms: boolean;
+					users?: boolean;
+					rooms?: boolean;
+					mentions?: boolean;
 			  }
 		)[]
 	) => {
@@ -255,6 +257,7 @@ export interface ServerMethods {
 			username: string;
 			outside: boolean;
 			avatarETag?: string;
+			nickname?: string;
 		}[];
 	};
 	'getPasswordPolicy': (params?: { token: string }) => {
@@ -268,6 +271,21 @@ export interface ServerMethods {
 	'private-settings/get': (updatedSince?: Date) => ISetting[] | { update: ISetting[]; remove: ISetting[] };
 	'pinMessage': (message: IMessage) => void;
 	'unpinMessage': (message: IMessage) => void;
+	'rocketchatSearch.getProvider': () => IMessageSearchProvider | undefined;
+	'rocketchatSearch.search': (
+		text: string,
+		context: { uid?: IUser['_id']; rid: IRoom['_id'] },
+		payload: unknown,
+	) => {
+		message: {
+			docs: IMessage[];
+		};
+	};
+	'rocketchatSearch.suggest': (
+		text: string,
+		context: { uid?: IUser['_id']; rid: IRoom['_id'] },
+		payload: unknown,
+	) => IMessageSearchSuggestion[];
 }
 
 export type ServerMethodName = keyof ServerMethods;

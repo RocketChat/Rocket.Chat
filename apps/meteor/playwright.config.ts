@@ -20,7 +20,8 @@ export default {
 	},
 	outputDir: 'tests/e2e/.playwright',
 	reporter: [
-		process.env.CI ? ['github'] : ['list'],
+		['list'],
+		// process.env.CI ? ['github'] : ['list'],
 		[
 			'playwright-qase-reporter',
 			{
@@ -31,8 +32,7 @@ export default {
 	],
 	testDir: 'tests/e2e',
 	workers: 1,
-	retries: process.env.CI ? 2 : undefined,
 	timeout: 60 * 1000,
-	globalTimeout: 40 * 60 * 1000,
+	globalTimeout: (process.env.IS_EE === 'true' ? 50 : 40) * 60 * 1000,
 	maxFailures: process.env.CI ? 5 : undefined,
 } as PlaywrightTestConfig;
