@@ -7,7 +7,6 @@ import { api } from '@rocket.chat/core-services';
 import { hasPermission } from '../../../authorization';
 import { metrics } from '../../../metrics';
 import { settings } from '../../../settings/server';
-import { messageProperties } from '../../../ui-utils';
 import { Users, Messages } from '../../../models';
 import { sendMessage } from '../functions';
 import { RateLimiter } from '../lib';
@@ -43,9 +42,7 @@ export function executeSendMessage(uid, message) {
 	}
 
 	if (message.msg) {
-		const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(message.msg);
-
-		if (messageProperties.length(adjustedMessage) > settings.get('Message_MaxAllowedSize')) {
+		if (message.msg.length > settings.get('Message_MaxAllowedSize')) {
 			throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
 				method: 'sendMessage',
 			});

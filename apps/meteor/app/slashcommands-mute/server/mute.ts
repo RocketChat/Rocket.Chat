@@ -4,7 +4,7 @@ import { api } from '@rocket.chat/core-services';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
-import { Users, Subscriptions } from '../../models/server';
+import { Users } from '../../models/server';
 
 /*
  * Mute is a named function that will replace /mute commands
@@ -29,19 +29,7 @@ slashCommands.add({
 				}),
 			});
 		}
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(item.rid, mutedUser._id, {
-			fields: { _id: 1 },
-		});
-		if (!subscription) {
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Username_is_not_in_this_room', {
-					postProcess: 'sprintf',
-					sprintf: [username],
-					lng: settings.get('Language') || 'en',
-				}),
-			});
-			return;
-		}
+
 		Meteor.call('muteUserInRoom', {
 			rid: item.rid,
 			username,

@@ -29,17 +29,10 @@ declare module 'meteor/templating' {
 	>;
 
 	type BlazeTemplates = {
-		requiresPermission: BlazeTemplate;
 		emojiPicker: BlazeTemplate;
-		lazyloadImage: BlazeTemplate;
 		customFieldsForm: BlazeTemplate;
 		ExternalFrameContainer: BlazeTemplate;
-		broadcastView: BlazeTemplate;
-		liveStreamBroadcast: BlazeTemplate;
-		liveStreamTab: BlazeTemplate;
-		liveStreamView: BlazeTemplate;
 		inputAutocomplete: BlazeTemplate;
-		textareaAutocomplete: BlazeTemplate;
 		_autocompleteContainer: BlazeTemplate;
 		_noMatch: BlazeTemplate;
 		authorize: BlazeTemplate;
@@ -48,13 +41,6 @@ declare module 'meteor/templating' {
 			block?: string;
 			icon: string;
 		}>;
-		popupList: BlazeTemplate;
-		popupList_default: BlazeTemplate;
-		popupList_item_default: BlazeTemplate;
-		popupList_loading: BlazeTemplate;
-		popupList_item_channel: BlazeTemplate;
-		popupList_item_custom: BlazeTemplate;
-		selectDropdown: BlazeTemplate;
 		CodeMirror: BlazeTemplate;
 		photoswipeContent: BlazeTemplate;
 		roomSearch: BlazeTemplate<typeof AutoComplete>;
@@ -88,8 +74,6 @@ declare module 'meteor/templating' {
 		loading: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		collapseArrow: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		rc_modal: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		popout: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		popover: Blaze.Template<any, Blaze.TemplateInstance<any>>;
 		error: BlazeTemplate;
 		loading: BlazeTemplate;
 		messagePopupSlashCommandPreview: BlazeTemplate<{
@@ -98,8 +82,6 @@ declare module 'meteor/templating' {
 			getInput: () => HTMLTextAreaElement | null;
 		}>;
 		rc_modal: BlazeTemplate;
-		popout: BlazeTemplate;
-		popover: BlazeTemplate;
 		messagePopupCannedResponse: BlazeTemplate;
 	};
 

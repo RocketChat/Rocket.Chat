@@ -59,6 +59,7 @@ export * from './ICustomUserStatus';
 export * from './IEmailMessageHistory';
 
 export * from './ReadReceipt';
+export * from './MessageReads';
 export * from './IUpload';
 export * from './IOEmbedCache';
 export * from './IOembed';
@@ -110,6 +111,7 @@ export * from './IOmnichannelVoipServiceResult';
 export * from './IInquiry';
 export * from './ILivechatPriority';
 export * from './ILogs';
+export * from './IOmnichannelServiceLevelAgreements';
 
 export * from './IAutoTranslate';
 export * from './IVideoConference';
