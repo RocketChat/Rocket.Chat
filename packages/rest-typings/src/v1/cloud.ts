@@ -75,6 +75,11 @@ export type CloudEndpoints = {
 			intentData: CloudRegistrationIntentData;
 		};
 	};
+	'/v1/cloud.registerPreIntent': {
+		POST: () => {
+			offline: boolean;
+		};
+	};
 	'/v1/cloud.confirmationPoll': {
 		GET: (params: CloudConfirmationPoll) => {
 			pollData: CloudConfirmationPollData;

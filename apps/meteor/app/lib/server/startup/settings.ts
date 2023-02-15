@@ -524,6 +524,12 @@ settingsRegistry.addGroup('Accounts', function () {
 			public: true,
 			i18nLabel: 'Notifications_Sound_Volume',
 		});
+
+		this.add('Accounts_Default_User_Preferences_omnichannelTranscriptEmail', false, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'Omnichannel_transcript_email',
+		});
 	});
 
 	this.section('Avatar', function () {
@@ -1171,6 +1177,23 @@ settingsRegistry.addGroup('Message', function () {
 		this.add('Message_Audio_bitRate', 32, {
 			type: 'int',
 			public: true,
+		});
+	});
+	this.section('Read_Receipts', function () {
+		this.add('Message_Read_Receipt_Enabled', false, {
+			type: 'boolean',
+			enterprise: true,
+			invalidValue: false,
+			modules: ['message-read-receipt'],
+			public: true,
+		});
+		this.add('Message_Read_Receipt_Store_Users', false, {
+			type: 'boolean',
+			enterprise: true,
+			invalidValue: false,
+			modules: ['message-read-receipt'],
+			public: true,
+			enableQuery: { _id: 'Message_Read_Receipt_Enabled', value: true },
 		});
 	});
 	this.add('Message_AllowEditing', true, {

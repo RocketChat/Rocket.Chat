@@ -35,6 +35,8 @@ export class LivechatRooms extends Base {
 			},
 		);
 		this.tryEnsureIndex({ 'livechatData.$**': 1 });
+		this.tryEnsureIndex({ pdfTranscriptRequested: 1 }, { sparse: true });
+		this.tryEnsureIndex({ pdfFileId: 1 }, { sparse: true });
 	}
 
 	findOneByIdOrName(_idOrName, options) {
@@ -105,6 +107,15 @@ export class LivechatRooms extends Base {
 			setData.tags = tags;
 		} else {
 			unsetData.tags = 1;
+		}
+
+		if (extra.priorityId === '') {
+			unsetData.priorityId = 1;
+			delete setData.priorityId;
+		}
+		if (extra.slaId === '') {
+			unsetData.slaId = 1;
+			delete setData.slaId;
 		}
 
 		if (livechatData) {
@@ -646,66 +657,6 @@ export class LivechatRooms extends Base {
 				},
 			],
 			{ readPreference: readSecondaryPreferred() },
-		);
-	}
-
-	closeByRoomId(roomId, closeInfo) {
-		const { closer, closedBy, closedAt, chatDuration, serviceTimeDuration, ...extraData } = closeInfo;
-
-		return this.update(
-			{
-				_id: roomId,
-				t: 'l',
-			},
-			{
-				$set: {
-					closer,
-					closedBy,
-					closedAt,
-					'metrics.chatDuration': chatDuration,
-					'metrics.serviceTimeDuration': serviceTimeDuration,
-					'v.status': 'offline',
-					...extraData,
-				},
-				$unset: {
-					open: 1,
-				},
-			},
-		);
-	}
-
-	requestTranscriptByRoomId(roomId, transcriptInfo = {}) {
-		const { requestedAt, requestedBy, email, subject } = transcriptInfo;
-
-		return this.update(
-			{
-				_id: roomId,
-				t: 'l',
-			},
-			{
-				$set: {
-					transcriptRequest: {
-						requestedAt,
-						requestedBy,
-						email,
-						subject,
-					},
-				},
-			},
-		);
-	}
-
-	removeTranscriptRequestByRoomId(roomId) {
-		return this.update(
-			{
-				_id: roomId,
-				t: 'l',
-			},
-			{
-				$unset: {
-					transcriptRequest: 1,
-				},
-			},
 		);
 	}
 

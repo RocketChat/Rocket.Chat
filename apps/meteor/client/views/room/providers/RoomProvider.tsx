@@ -14,6 +14,7 @@ import RoomSkeleton from '../RoomSkeleton';
 import { useRoomRolesManagement } from '../components/body/useRoomRolesManagement';
 import { RoomAPIContext } from '../contexts/RoomAPIContext';
 import { RoomContext } from '../contexts/RoomContext';
+import ComposerPopupProvider from './ComposerPopupProvider';
 import ToolboxProvider from './ToolboxProvider';
 
 type RoomProviderProps = {
@@ -24,12 +25,12 @@ type RoomProviderProps = {
 const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	useRoomRolesManagement(rid);
 
-	const roomQuery = useReactiveQuery(['rooms', rid], ({ rooms }) => rooms.findOne({ _id: rid }));
+	const roomQuery = useReactiveQuery(['rooms', rid], ({ rooms }) => rooms.findOne({ _id: rid }) ?? null);
 
 	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
 	const homeRoute = useRoute('home');
 	useEffect(() => {
-		if (roomQuery.isSuccess && !roomQuery.data) {
+		if (roomQuery.isSuccess && roomQuery.data === undefined) {
 			homeRoute.push();
 		}
 	}, [roomQuery.isSuccess, roomQuery.data, homeRoute]);
@@ -102,13 +103,15 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	const api = useMemo(() => ({}), []);
 
 	if (!pseudoRoom) {
-		return roomQuery.isSuccess ? <RoomNotFound /> : <RoomSkeleton />;
+		return roomQuery.isSuccess && roomQuery.data === undefined ? <RoomNotFound /> : <RoomSkeleton />;
 	}
 
 	return (
 		<RoomAPIContext.Provider value={api}>
 			<RoomContext.Provider value={context}>
-				<ToolboxProvider room={pseudoRoom}>{children}</ToolboxProvider>
+				<ToolboxProvider room={pseudoRoom}>
+					<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
+				</ToolboxProvider>
 			</RoomContext.Provider>
 		</RoomAPIContext.Provider>
 	);

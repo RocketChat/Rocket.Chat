@@ -1059,10 +1059,36 @@ export class Messages extends Base {
 		return this.findOne(query, options);
 	}
 
-	setAsRead(rid, until) {
+	setVisibleMessagesAsRead(rid, until) {
 		return this.update(
 			{
 				rid,
+				unread: true,
+				ts: { $lt: until },
+				$or: [
+					{
+						tmid: { $exists: false },
+					},
+					{
+						tshow: true,
+					},
+				],
+			},
+			{
+				$unset: {
+					unread: 1,
+				},
+			},
+			{
+				multi: true,
+			},
+		);
+	}
+
+	setThreadMessagesAsRead(tmid, until) {
+		return this.update(
+			{
+				tmid,
 				unread: true,
 				ts: { $lt: until },
 			},
@@ -1090,10 +1116,37 @@ export class Messages extends Base {
 		);
 	}
 
-	findUnreadMessagesByRoomAndDate(rid, after) {
+	findVisibleUnreadMessagesByRoomAndDate(rid, after) {
 		const query = {
 			unread: true,
 			rid,
+			$or: [
+				{
+					tmid: { $exists: false },
+				},
+				{
+					tshow: true,
+				},
+			],
+		};
+
+		if (after) {
+			query.ts = { $gt: after };
+		}
+
+		return this.find(query, {
+			fields: {
+				_id: 1,
+			},
+		});
+	}
+
+	findUnreadThreadMessagesByDate(tmid, userId, after) {
+		const query = {
+			'u._id': { $ne: userId },
+			'unread': true,
+			tmid,
+			'tshow': { $exists: false },
 		};
 
 		if (after) {
