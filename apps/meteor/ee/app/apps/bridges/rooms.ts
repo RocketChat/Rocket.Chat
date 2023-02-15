@@ -5,9 +5,9 @@ import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import { Users, Subscriptions, Rooms } from '@rocket.chat/models';
+import { Room } from '@rocket.chat/core-services';
 
 import type { AppServerOrchestrator } from '../orchestrator';
-import { Room } from '../../../../server/sdk';
 
 export class AppRoomBridge extends RoomBridge {
 	// eslint-disable-next-line no-empty-function

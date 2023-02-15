@@ -1,4 +1,5 @@
-import { AppsStatistics, Apps } from '../../../../server/sdk';
+import { AppsStatistics, Apps } from '@rocket.chat/core-services';
+
 import { Info } from '../../../utils/server';
 
 export async function getAppsStatistics() {

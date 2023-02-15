@@ -4,10 +4,10 @@ import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting } from '@rocket.chat/core-typings';
 import type { IStreamer } from 'meteor/rocketchat:streamer';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import { Apps, AppsManager } from '@rocket.chat/core-services';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import notifications from '../../../notifications/server/lib/Notifications';
-import { Apps, AppsManager } from '../../../../server/sdk';
 
 export enum AppEvents {
 	APP_ADDED = 'app/added',

@@ -6,9 +6,9 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
+import { UiKitCoreApp, Apps, AppsConverter } from '@rocket.chat/core-services';
 
 import { settings } from '../../../settings/server';
-import { UiKitCoreApp, Apps, AppsConverter } from '../../../../server/sdk';
 import { authenticationMiddleware } from '../../../api/server/middlewares/authentication';
 
 const apiServer = express();

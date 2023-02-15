@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Settings } from '@rocket.chat/models';
+import { Apps } from '@rocket.chat/core-services';
 
 import { hasPermission } from '../../../authorization/server';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
-import { Apps } from '../../../../server/sdk';
 
 const waitToLoad = async function (): Promise<unknown> {
 	const isEnabled = await Apps.isEnabled();

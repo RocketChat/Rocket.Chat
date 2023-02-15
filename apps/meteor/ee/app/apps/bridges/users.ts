@@ -2,8 +2,8 @@ import { v4 as uuid } from 'uuid';
 import { UserBridge } from '@rocket.chat/apps-engine/server/bridges/UserBridge';
 import type { IUserCreationOptions, IUser, UserType } from '@rocket.chat/apps-engine/definition/users';
 import { Subscriptions, Users } from '@rocket.chat/models';
+import { User as UserService } from '@rocket.chat/core-services';
 
-import { User as UserService } from '../../../../server/sdk';
 import type { AppServerOrchestrator } from '../orchestrator';
 // TODO: extract to UserService to avoid Meteor imports
 import { getUserCreatedByApp, deleteUser } from '../../../../app/lib/server';

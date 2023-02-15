@@ -1,9 +1,9 @@
 import { HttpBridge } from '@rocket.chat/apps-engine/server/bridges/HttpBridge';
 import type { IHttpResponse } from '@rocket.chat/apps-engine/definition/accessors';
 import type { IHttpBridgeRequestInfo } from '@rocket.chat/apps-engine/server/bridges';
+import { FetchService } from '@rocket.chat/core-services';
 
 import type { AppServerOrchestrator } from '../orchestrator';
-import { FetchService } from '../../../../server/sdk';
 
 const isGetOrHead = (method: string): boolean => ['GET', 'HEAD'].includes(method.toUpperCase());
 

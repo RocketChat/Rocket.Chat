@@ -13,11 +13,11 @@ import type {
 	ISlashCommandPreview,
 	ISlashCommandPreviewItem,
 } from '@rocket.chat/apps-engine/definition/slashcommands';
+import { ServiceClass } from '@rocket.chat/core-services';
+import type { IAppsManagerService } from '@rocket.chat/core-services';
 
-import { ServiceClass } from '../../../server/sdk/types/ServiceClass';
 import type { AppServerOrchestrator } from './orchestrator';
 import { OrchestratorFactory } from './orchestratorFactory';
-import type { IAppsManagerService } from '../../../server/sdk/types/IAppsManagerService';
 
 export class AppsManagerService extends ServiceClass implements IAppsManagerService {
 	protected name = 'apps';

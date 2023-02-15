@@ -5,10 +5,10 @@ import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import type { Db } from 'mongodb';
 import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
 import type { IAppsPersistenceModel } from '@rocket.chat/model-typings';
+import type { IAppsService } from '@rocket.chat/core-services';
+import { ServiceClass } from '@rocket.chat/core-services';
 
-import type { IAppsService } from '../../../server/sdk/types/IAppsService';
 import { settings } from '../../../app/settings/server';
-import { ServiceClass } from '../../../server/sdk/types/ServiceClass';
 import type { AppServerOrchestrator } from './orchestrator';
 import { OrchestratorFactory } from './orchestratorFactory';
 import { AppEvents } from '../../../app/apps/server/communication';

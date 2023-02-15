@@ -1,7 +1,7 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import { ServiceClass } from '@rocket.chat/core-services';
+import type { IAppsStatisticsService } from '@rocket.chat/core-services';
 
-import { ServiceClass } from '../../../server/sdk/types/ServiceClass';
-import type { IAppsStatisticsService } from '../../../server/sdk/types/IAppsStatisticsService';
 import type { AppServerOrchestrator } from './orchestrator';
 import { OrchestratorFactory } from './orchestratorFactory';
 

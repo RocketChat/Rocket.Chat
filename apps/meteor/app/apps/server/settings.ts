@@ -1,8 +1,8 @@
 import type { SettingValue } from '@rocket.chat/core-typings';
 import { AppsLogs } from '@rocket.chat/models';
+import { Apps } from '@rocket.chat/core-services';
 
 import { settings, settingsRegistry } from '../../settings/server';
-import { Apps } from '../../../server/sdk';
 
 export function addAppsSettings() {
 	settingsRegistry.addGroup('General', function () {

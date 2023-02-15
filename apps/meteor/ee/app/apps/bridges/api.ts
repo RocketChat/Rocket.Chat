@@ -1,8 +1,8 @@
 import type { IApi, IApiEndpoint } from '@rocket.chat/apps-engine/definition/api';
 import { ApiBridge } from '@rocket.chat/apps-engine/server/bridges';
 import type { AppApi } from '@rocket.chat/apps-engine/server/managers/AppApi';
+import { AppsApiService } from '@rocket.chat/core-services';
 
-import { AppsApiService } from '../../../../server/sdk';
 import type { AppServerOrchestrator } from '../orchestrator';
 
 export class AppApisBridge extends ApiBridge {

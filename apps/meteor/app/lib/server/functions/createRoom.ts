@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import s from 'underscore.string';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
-import { Team } from '@rocket.chat/core-services';
+import { Team, Apps } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
@@ -11,7 +11,6 @@ import { callbacks } from '../../../../lib/callbacks';
 import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
 import { getValidRoomName } from '../../../utils/server';
 import { createDirectRoom } from './createDirectRoom';
-import { Apps } from '../../../../server/sdk';
 
 const isValidName = (name: unknown): name is string => {
 	return typeof name === 'string' && s.trim(name).length > 0;

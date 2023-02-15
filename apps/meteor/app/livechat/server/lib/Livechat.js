@@ -17,7 +17,7 @@ import {
 	Settings,
 	LivechatDepartment as LivechatDepartmentRaw,
 } from '@rocket.chat/models';
-import { VideoConf, api } from '@rocket.chat/core-services';
+import { VideoConf, api, Apps } from '@rocket.chat/core-services';
 
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -46,7 +46,6 @@ import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAge
 import { businessHourManager } from '../business-hour';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../server/lib/roles/removeUserFromRoles';
-import { Apps } from '../../../../server/sdk';
 
 const logger = new Logger('Livechat');
 

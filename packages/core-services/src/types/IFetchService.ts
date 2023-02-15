@@ -7,5 +7,5 @@ export interface IFetchService extends IServiceClass {
 		input: string,
 		options?: Parameters<typeof nodeFetch>[1] & { compress?: boolean; follow?: number; size?: number },
 		allowSelfSignedCerts?: boolean,
-	): Promise<Response>;
+	): ReturnType<typeof nodeFetch>;
 }

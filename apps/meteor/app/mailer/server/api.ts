@@ -8,10 +8,10 @@ import stripHtml from 'string-strip-html';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import type { ISetting } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
+import { Apps } from '@rocket.chat/core-services';
 
 import { settings } from '../../settings/server';
 import { replaceVariables } from './replaceVariables';
-import { Apps } from '../../../server/sdk';
 import { validateEmail } from '../../../lib/emailValidator';
 
 let contentHeader: string | undefined;

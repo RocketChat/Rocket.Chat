@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { Settings, Users } from '@rocket.chat/models';
+import { Apps, AppsConverter, AppsManager } from '@rocket.chat/core-services';
 
 import { API } from '../../../api/server';
 import { getUploadFormData } from '../../../api/server/lib/getUploadFormData';
@@ -10,7 +11,6 @@ import { Info } from '../../../utils';
 import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRest';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { fetch } from '../../../../server/lib/http/fetch';
-import { Apps, AppsConverter, AppsManager } from '../../../../server/sdk';
 import { notifyAppInstall } from '../marketplace/appInstall';
 
 const rocketChatVersion = Info.version;

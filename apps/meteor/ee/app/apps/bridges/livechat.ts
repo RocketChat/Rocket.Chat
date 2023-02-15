@@ -13,9 +13,9 @@ import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatVisitors, LivechatRooms, Users } from '@rocket.chat/models';
+import { LivechatService } from '@rocket.chat/core-services';
 
 import type { AppServerOrchestrator } from '../orchestrator';
-import { LivechatService } from '../../../../server/sdk';
 
 export class AppLivechatBridge extends LivechatBridge {
 	constructor(private readonly orch: AppServerOrchestrator) {

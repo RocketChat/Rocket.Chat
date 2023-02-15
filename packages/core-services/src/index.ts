@@ -35,6 +35,19 @@ import type { IDeviceManagementService } from './types/IDeviceManagementService'
 import type { IPushService } from './types/IPushService';
 import type { IOmnichannelService } from './types/IOmnichannelService';
 import type { ITelemetryEvent, TelemetryMap, TelemetryEvents } from './types/ITelemetryEvent';
+import type { IAppsApiService, IRequestWithPrivateHash } from './types/IAppsApiService';
+import type { IAppsConverterService } from './types/IAppsConverterService';
+import type { IAppsManagerService } from './types/IAppsManagerService';
+import type { IAppsService } from './types/IAppsService';
+import type { IAppsStatisticsService } from './types/IAppsStatisticsService';
+import type { IAppsVideoManagerService } from './types/IAppsVideoManagerService';
+import type { IFetchService } from './types/IFetchService';
+import type { ILivechatService } from './types/ILivechatService';
+import type { IMessageService } from './types/IMessageService';
+import type { INotificationService } from './types/INotificationService';
+import type { ISlashCommandService } from './types/ISlashCommandService';
+import type { ICloudService } from './types/ICloudService';
+import type { IUserService } from './types/IUserService';
 
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
@@ -98,6 +111,20 @@ export {
 	ISendFileMessageParams,
 	IUploadFileParams,
 	IUploadService,
+	IAppsService,
+	IAppsStatisticsService,
+	IAppsConverterService,
+	IAppsManagerService,
+	IAppsVideoManagerService,
+	IAppsApiService,
+	IRequestWithPrivateHash,
+	IFetchService,
+	ILivechatService,
+	IMessageService,
+	INotificationService,
+	ISlashCommandService,
+	ICloudService,
+	IUserService,
 };
 
 // TODO think in a way to not have to pass the service name to proxify here as well
@@ -120,6 +147,19 @@ export const SAUMonitor = proxifyWithWait<ISAUMonitorService>('sau-monitor');
 export const DeviceManagement = proxifyWithWait<IDeviceManagementService>('device-management');
 export const VideoConf = proxifyWithWait<IVideoConfService>('video-conference');
 export const Upload = proxifyWithWait<IUploadService>('upload');
+export const Cloud = proxifyWithWait<ICloudService>('cloud');
+export const User = proxifyWithWait<IUserService>('user');
+export const Apps = proxifyWithWait<IAppsService>('apps');
+export const AppsStatistics = proxifyWithWait<IAppsStatisticsService>('apps');
+export const AppsConverter = proxifyWithWait<IAppsConverterService>('apps');
+export const AppsManager = proxifyWithWait<IAppsManagerService>('apps');
+export const AppsVideoManager = proxifyWithWait<IAppsVideoManagerService>('apps');
+export const AppsApiService = proxifyWithWait<IAppsApiService>('apps');
+export const FetchService = proxifyWithWait<IFetchService>('fetch');
+export const LivechatService = proxifyWithWait<ILivechatService>('livechat');
+export const MessageService = proxifyWithWait<IMessageService>('message');
+export const NotificationService = proxifyWithWait<INotificationService>('notification');
+export const SlashCommandService = proxifyWithWait<ISlashCommandService>('slashcommand');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available

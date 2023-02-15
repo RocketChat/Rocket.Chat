@@ -2,9 +2,9 @@ import type { RequestMethod } from '@rocket.chat/apps-engine/definition/accessor
 import type { IApiEndpoint, IApiRequest } from '@rocket.chat/apps-engine/definition/api';
 import { Router } from 'express';
 import type { Request, Response, IRouter, RequestHandler, NextFunction } from 'express';
+import type { IAppsApiService, IRequestWithPrivateHash } from '@rocket.chat/core-services';
+import { ServiceClass } from '@rocket.chat/core-services';
 
-import type { IAppsApiService, IRequestWithPrivateHash } from '../../../server/sdk/types/IAppsApiService';
-import { ServiceClass } from '../../../server/sdk/types/ServiceClass';
 import type { AppServerOrchestrator } from './orchestrator';
 import { OrchestratorFactory } from './orchestratorFactory';
 

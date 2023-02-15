@@ -1,7 +1,7 @@
 import express from 'express';
 import { WebApp } from 'meteor/webapp';
+import { AppsApiService } from '@rocket.chat/core-services';
 
-import { AppsApiService } from '../../../../server/sdk';
 import { authenticationMiddleware } from '../../../api/server/middlewares/authentication';
 
 const apiServer = express();
