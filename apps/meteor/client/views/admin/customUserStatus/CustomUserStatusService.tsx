@@ -29,7 +29,15 @@ const CustomUserStatusService = () => {
 	const isEnterprise = useIsEnterprise();
 
 	if (result.isLoading || disablePresenceService.isLoading) {
-		return <Skeleton />;
+		return (
+			<Box pi='x16' pb='x8'>
+				<Skeleton />
+				<Skeleton />
+				<Skeleton />
+				<Skeleton />
+				<Skeleton />
+			</Box>
+		);
 	}
 	if (result.isError || disablePresenceService.isError) {
 		return (
