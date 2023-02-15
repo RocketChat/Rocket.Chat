@@ -122,6 +122,29 @@ export class MatrixBridge implements IFederationBridge {
 		}
 	}
 
+	public async verifyInviteeId(externalInviteeId: string): Promise<void> {
+		const [userId, homeserverUrl] = externalInviteeId.replace('@', '').split(':')
+		try {
+			const response = await fetch(`https://${homeserverUrl}/_matrix/client/v3/register/available?username=${userId}`)
+
+			if (response.status === 400) {
+				const responseBody = await response.json()
+
+				if (responseBody.errcode === "M_USER_IN_USE") {
+					// user exists
+				} else {
+					// notify we couldn't verify
+				}
+			}
+
+			if (response.status === 200) {
+				// user doesn't exists
+			}
+		} catch (e) {
+			// notify we couldn't verify
+		}
+	}
+
 	public async createUser(username: string, name: string, domain: string, avatarUrl?: string): Promise<string> {
 		if (!MatrixUserInstance) {
 			throw new Error('Error loading the Matrix User instance from the external library');
