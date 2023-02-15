@@ -17,6 +17,12 @@ export class HomeSidenav {
 		return this.page.locator('role=dialog[name="Create Channel"] >> role=checkbox[name="Encrypted"]');
 	}
 
+	get checkboxReadOnly(): Locator {
+		return this.page.locator(
+			'//*[@id="modal-root"]//*[contains(@class, "rcx-field") and contains(text(), "Read Only")]/../following-sibling::label/i',
+		);
+	}
+
 	get inputChannelName(): Locator {
 		return this.page.locator('#modal-root [data-qa="create-channel-modal"] [data-qa-type="channel-name-input"]');
 	}
@@ -32,6 +38,11 @@ export class HomeSidenav {
 	async openAdministrationByLabel(text: string): Promise<void> {
 		await this.page.locator('role=button[name="Administration"]').click();
 		await this.page.locator(`li.rcx-option >> text="${text}"`).click();
+	}
+
+	async openInstalledApps(): Promise<void> {
+		await this.page.locator('//button[@title="Administration"]').click();
+		await this.page.locator('//div[contains(text(),"Installed")]').click();
 	}
 
 	async openNewByLabel(text: string): Promise<void> {

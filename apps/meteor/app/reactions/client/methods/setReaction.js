@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { callbacks } from '../../../../lib/callbacks';
@@ -40,7 +39,7 @@ Meteor.methods({
 				delete message.reactions[reaction];
 			}
 
-			if (_.isEmpty(message.reactions)) {
+			if (!message.reactions || typeof message.reactions !== 'object' || Object.keys(message.reactions).length === 0) {
 				delete message.reactions;
 				Messages.update({ _id: messageId }, { $unset: { reactions: 1 } });
 				callbacks.run('unsetReaction', messageId, reaction);

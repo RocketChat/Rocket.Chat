@@ -1,4 +1,13 @@
-import type { ILivechatDepartment, IMessage, IRoom, IUser, MessageTypesValues, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type {
+	ILivechatDepartment,
+	ILivechatPriority,
+	IMessage,
+	IOmnichannelServiceLevelAgreements,
+	IRoom,
+	IUser,
+	MessageTypesValues,
+	RocketChatRecordDeleted,
+} from '@rocket.chat/core-typings';
 import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import type {
@@ -11,6 +20,8 @@ import type {
 	Filter,
 	FindOptions,
 	IndexDescription,
+	InsertOneResult,
+	DeleteResult,
 } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
@@ -222,6 +233,26 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
+	findLivechatMessages(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
+		return this.find(
+			{
+				rid,
+				$or: [{ t: { $exists: false } }, { t: 'livechat-close' }],
+			},
+			options,
+		);
+	}
+
+	findLivechatMessagesWithoutClosing(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
+		return this.find(
+			{
+				rid,
+				t: { $exists: false },
+			},
+			options,
+		);
+	}
+
 	async setBlocksById(_id: string, blocks: Required<IMessage>['blocks']): Promise<void> {
 		await this.updateOne(
 			{ _id },
@@ -403,5 +434,61 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				)
 				.toArray()
 		)[0] as IMessage;
+	}
+
+	createSLAHistoryWithRoomIdMessageAndUser(
+		roomId: string,
+		user: IMessage['u'],
+		sla?: Pick<IOmnichannelServiceLevelAgreements, 'name'>,
+	): Promise<InsertOneResult<IMessage>> {
+		return this.insertOne({
+			t: 'omnichannel_sla_change_history',
+			rid: roomId,
+			msg: '',
+			ts: new Date(),
+			groupable: false,
+			u: {
+				_id: user._id,
+				username: user.username,
+				name: user.name,
+			},
+			slaData: {
+				definedBy: {
+					_id: user._id,
+					username: user.username,
+				},
+				...(sla && { sla }),
+			},
+		});
+	}
+
+	createPriorityHistoryWithRoomIdMessageAndUser(
+		roomId: string,
+		user: IMessage['u'],
+		priority?: Pick<ILivechatPriority, 'name' | 'i18n'>,
+	): Promise<InsertOneResult<IMessage>> {
+		return this.insertOne({
+			t: 'omnichannel_priority_change_history',
+			rid: roomId,
+			msg: '',
+			ts: new Date(),
+			groupable: false,
+			u: {
+				_id: user._id,
+				username: user.username,
+				name: user.name,
+			},
+			priorityData: {
+				definedBy: {
+					_id: user._id,
+					username: user.username,
+				},
+				...(priority && { priority }),
+			},
+		});
+	}
+
+	removeByRoomId(roomId: string): Promise<DeleteResult> {
+		return this.deleteMany({ rid: roomId });
 	}
 }
