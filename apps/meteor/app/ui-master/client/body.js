@@ -1,5 +1,4 @@
 import Clipboard from 'clipboard';
-import s from 'underscore.string';
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Session } from 'meteor/session';
@@ -13,7 +12,7 @@ import GenericModal from '../../../client/components/GenericModal';
 import { fireGlobalEvent } from '../../../client/lib/utils/fireGlobalEvent';
 import { isLayoutEmbedded } from '../../../client/lib/utils/isLayoutEmbedded';
 import { dispatchToastMessage } from '../../../client/lib/toast';
-
+import { rtrim } from '../../../lib/utils/stringUtils';
 import './body.html';
 
 Template.body.onRendered(function () {
@@ -70,7 +69,7 @@ Template.body.onRendered(function () {
 
 	const handleMessageLinkClick = (event) => {
 		const link = event.currentTarget;
-		if (link.origin === s.rtrim(Meteor.absoluteUrl(), '/') && /msg=([a-zA-Z0-9]+)/.test(link.search)) {
+		if (link.origin === rtrim(Meteor.absoluteUrl(), '/') && /msg=([a-zA-Z0-9]+)/.test(link.search)) {
 			fireGlobalEvent('click-message-link', { link: link.pathname + link.search });
 		}
 	};
