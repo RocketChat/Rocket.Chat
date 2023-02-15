@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import s from 'underscore.string';
 import type { IUser } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
 
@@ -9,7 +8,7 @@ import { hasPermission } from '../../../authorization/server';
 import { RateLimiter } from '../lib';
 
 export const _setRealName = function (userId: string, name: string, fullUser: IUser): IUser | undefined {
-	name = s.trim(name);
+	name = name.trim();
 
 	if (!userId || (settings.get('Accounts_RequireNameForSignUp') && !name)) {
 		return;
@@ -22,7 +21,7 @@ export const _setRealName = function (userId: string, name: string, fullUser: IU
 	}
 
 	// User already has desired name, return
-	if (user.name && s.trim(user.name) === name) {
+	if (user.name && user.name.trim() === name) {
 		return user;
 	}
 

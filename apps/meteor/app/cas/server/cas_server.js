@@ -162,7 +162,7 @@ Accounts.registerLoginHandler('cas', function (options) {
 
 		_.each(attr_map, function (source, int_name) {
 			// Source is our String to interpolate
-			if (_.isString(source)) {
+			if (source && typeof source.valueOf() === 'string') {
 				let replacedValue = source;
 				_.each(ext_attrs, function (value, ext_name) {
 					replacedValue = replacedValue.replace(`%${ext_name}%`, ext_attrs[ext_name]);

@@ -8,8 +8,6 @@ import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { HTTP } from 'meteor/http';
-import _ from 'underscore';
-import s from 'underscore.string';
 import moment from 'moment-timezone';
 import UAParser from 'ua-parser-js';
 import {
@@ -53,6 +51,7 @@ import { Apps, AppEvents } from '../../../apps/server';
 import { businessHourManager } from '../business-hour';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../server/lib/roles/removeUserFromRoles';
+import { trim } from '../../../../lib/utils/stringUtils';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 
 const logger = new Logger('Livechat');
@@ -231,7 +230,7 @@ export const Livechat = {
 		if (guest.name) {
 			message.alias = guest.name;
 		}
-		return _.extend(sendMessage(guest, message, room), {
+		return Object.assign(sendMessage(guest, message, room), {
 			newRoom,
 			showConnecting: this.showConnecting(),
 		});
@@ -413,7 +412,7 @@ export const Livechat = {
 				if (!livechatData.hasOwnProperty(field._id)) {
 					continue;
 				}
-				const value = s.trim(livechatData[field._id]);
+				const value = trim(livechatData[field._id]);
 				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
 					const regexp = new RegExp(field.regexp);
 					if (!regexp.test(value)) {
@@ -549,7 +548,7 @@ export const Livechat = {
 				if (!livechatData.hasOwnProperty(field._id)) {
 					continue;
 				}
-				const value = s.trim(livechatData[field._id]);
+				const value = trim(livechatData[field._id]);
 				if (value !== '' && field.regexp !== undefined && field.regexp !== '') {
 					const regexp = new RegExp(field.regexp);
 					if (!regexp.test(value)) {
