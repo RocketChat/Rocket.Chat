@@ -467,26 +467,6 @@ settingsRegistry.addGroup('Accounts', function () {
 			public: true,
 			i18nLabel: 'Enter_Behaviour',
 		});
-
-		this.add('Accounts_Default_User_Preferences_messageViewMode', 0, {
-			type: 'select',
-			values: [
-				{
-					key: 0,
-					i18nLabel: 'Normal',
-				},
-				{
-					key: 1,
-					i18nLabel: 'Cozy',
-				},
-				{
-					key: 2,
-					i18nLabel: 'Compact',
-				},
-			],
-			public: true,
-			i18nLabel: 'MessageBox_view_mode',
-		});
 		this.add('Accounts_Default_User_Preferences_emailNotificationMode', 'mentions', {
 			type: 'select',
 			values: [
@@ -545,11 +525,10 @@ settingsRegistry.addGroup('Accounts', function () {
 			i18nLabel: 'Notifications_Sound_Volume',
 		});
 
-		this.add('Accounts_Default_User_Preferences_useLegacyMessageTemplate', false, {
+		this.add('Accounts_Default_User_Preferences_omnichannelTranscriptEmail', false, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'Use_Legacy_Message_Template',
-			alert: 'This_is_a_deprecated_feature_alert',
+			i18nLabel: 'Omnichannel_transcript_email',
 		});
 	});
 
@@ -1155,13 +1134,6 @@ settingsRegistry.addGroup('General', function () {
 
 settingsRegistry.addGroup('Message', function () {
 	this.section('Message_Attachments', function () {
-		this.add('Message_Attachments_GroupAttach', false, {
-			type: 'boolean',
-			public: true,
-			i18nDescription: 'Message_Attachments_GroupAttachDescription',
-			alert: 'This_is_a_deprecated_feature_alert',
-		});
-
 		this.add('Message_Attachments_Thumbnails_Enabled', true, {
 			type: 'boolean',
 			public: true,
@@ -1207,6 +1179,23 @@ settingsRegistry.addGroup('Message', function () {
 			public: true,
 		});
 	});
+	this.section('Read_Receipts', function () {
+		this.add('Message_Read_Receipt_Enabled', false, {
+			type: 'boolean',
+			enterprise: true,
+			invalidValue: false,
+			modules: ['message-read-receipt'],
+			public: true,
+		});
+		this.add('Message_Read_Receipt_Store_Users', false, {
+			type: 'boolean',
+			enterprise: true,
+			invalidValue: false,
+			modules: ['message-read-receipt'],
+			public: true,
+			enableQuery: { _id: 'Message_Read_Receipt_Enabled', value: true },
+		});
+	});
 	this.add('Message_AllowEditing', true, {
 		type: 'boolean',
 		public: true,
@@ -1235,11 +1224,6 @@ settingsRegistry.addGroup('Message', function () {
 	});
 	this.add('Message_AlwaysSearchRegExp', false, {
 		type: 'boolean',
-	});
-	this.add('Message_ShowEditedStatus', true, {
-		type: 'boolean',
-		public: true,
-		alert: 'This_is_a_deprecated_feature_alert',
 	});
 	this.add('Message_ShowDeletedStatus', false, {
 		type: 'boolean',
@@ -1273,14 +1257,6 @@ settingsRegistry.addGroup('Message', function () {
 		type: 'boolean',
 		public: true,
 	});
-	/**
-	 * @deprecated
-	 */
-	this.add('Message_ShowFormattingTips', true, {
-		type: 'boolean',
-		public: true,
-		alert: 'This_is_a_deprecated_feature_alert',
-	});
 	this.add('Message_GroupingPeriod', 300, {
 		type: 'int',
 		public: true,
@@ -1306,13 +1282,6 @@ settingsRegistry.addGroup('Message', function () {
 		type: 'action',
 		actionText: 'clear',
 		i18nLabel: 'clear_cache_now',
-	});
-	// TODO: deprecate this setting in favor of App
-	this.add('API_EmbedDisabledFor', '', {
-		type: 'string',
-		public: true,
-		i18nDescription: 'API_EmbedDisabledFor_Description',
-		alert: 'This_is_a_deprecated_feature_alert',
 	});
 	// TODO: deprecate this setting in favor of App
 	this.add('API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16', {
@@ -3240,10 +3209,20 @@ settingsRegistry.addGroup('Troubleshoot', function () {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Notifications_Alert',
 	});
+
+	// this settings will let clients know in case presence has been disabled
+	this.add('Presence_broadcast_disabled', false, {
+		type: 'boolean',
+		public: true,
+		blocked: true,
+	});
+
 	this.add('Troubleshoot_Disable_Presence_Broadcast', false, {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Presence_Broadcast_Alert',
+		enableQuery: { _id: 'Presence_broadcast_disabled', value: false },
 	});
+
 	this.add('Troubleshoot_Disable_Instance_Broadcast', false, {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Instance_Broadcast_Alert',

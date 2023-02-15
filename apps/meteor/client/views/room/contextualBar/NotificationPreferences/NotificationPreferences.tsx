@@ -68,7 +68,7 @@ const NotificationPreferences = ({
 					/>
 				)}
 				<FieldGroup>
-					<NotificationByDevice device={t('Desktop')} icon={'computer'}>
+					<NotificationByDevice device={t('Desktop')} icon='desktop'>
 						<Preferences
 							id={'DesktopAlert'}
 							onChange={formHandlers?.handleDesktopAlert}
@@ -86,7 +86,7 @@ const NotificationPreferences = ({
 							<IconButton icon='play' mis='x4' onClick={handlePlaySound} />
 						</Preferences>
 					</NotificationByDevice>
-					<NotificationByDevice device={t('Mobile')} icon={'mobile'}>
+					<NotificationByDevice device={t('Mobile')} icon='mobile'>
 						<Preferences
 							id={'MobileAlert'}
 							onChange={formHandlers?.handleMobileAlert}

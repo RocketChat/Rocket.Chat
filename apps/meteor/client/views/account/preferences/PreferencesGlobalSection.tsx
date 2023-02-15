@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Accordion, Field, FieldGroup, MultiSelect, ToggleSwitch, Callout } from '@rocket.chat/fuselage';
+import { Accordion, Field, FieldGroup, MultiSelect } from '@rocket.chat/fuselage';
 import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
@@ -11,7 +11,6 @@ const PreferencesGlobalSection = ({ onChange, commitRef, ...props }: FormSection
 	const t = useTranslation();
 
 	const userDontAskAgainList = useUserPreference<{ action: string; label: string }[]>('dontAskAgainList');
-	const userLegacyMessageTemplate = useUserPreference('useLegacyMessageTemplate');
 
 	const options = useMemo(
 		() => (userDontAskAgainList || []).map(({ action, label }) => [action, label]) as SelectOption[],
@@ -23,17 +22,15 @@ const PreferencesGlobalSection = ({ onChange, commitRef, ...props }: FormSection
 	const { values, handlers, commit } = useForm(
 		{
 			dontAskAgainList: selectedOptions,
-			useLegacyMessageTemplate: userLegacyMessageTemplate,
 		},
 		onChange,
 	);
 
-	const { dontAskAgainList, useLegacyMessageTemplate } = values as {
+	const { dontAskAgainList } = values as {
 		dontAskAgainList: string[];
-		useLegacyMessageTemplate: boolean;
 	};
 
-	const { handleDontAskAgainList, handleUseLegacyMessageTemplate } = handlers;
+	const { handleDontAskAgainList } = handlers;
 
 	commitRef.current.global = commit;
 
@@ -51,13 +48,6 @@ const PreferencesGlobalSection = ({ onChange, commitRef, ...props }: FormSection
 						/>
 					</Field.Row>
 				</Field>
-				<Field display='flex' alignItems='center' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-					<Field.Label>{t('Use_Legacy_Message_Template')}</Field.Label>
-					<Field.Row>
-						<ToggleSwitch checked={useLegacyMessageTemplate} onChange={handleUseLegacyMessageTemplate} />
-					</Field.Row>
-				</Field>
-				<Callout type='warning'>{t('This_is_a_deprecated_feature_alert')}</Callout>
 			</FieldGroup>
 		</Accordion.Item>
 	);

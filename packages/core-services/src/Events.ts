@@ -24,6 +24,8 @@ import type {
 	VoipEventDataSignature,
 	AtLeast,
 	UserStatus,
+	ILivechatPriority,
+	VideoConference,
 } from '@rocket.chat/core-typings';
 
 import type { AutoUpdateRecord } from './types/IMeteor';
@@ -91,6 +93,15 @@ export type EventSignatures = {
 	'user.roleUpdate'(update: Record<string, any>): void;
 	'user.updateCustomStatus'(userStatus: IUserStatus): void;
 	'user.typing'(data: { user: Partial<IUser>; isTyping: boolean; roomId: string }): void;
+	'user.video-conference'(data: {
+		userId: IUser['_id'];
+		action: string;
+		params: {
+			callId: VideoConference['_id'];
+			uid: IUser['_id'];
+			rid: IRoom['_id'];
+		};
+	}): void;
 	'presence.status'(data: {
 		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'>;
 		previousStatus: UserStatus | undefined;
@@ -140,4 +151,10 @@ export type EventSignatures = {
 	'watch.pbxevents'(data: { clientAction: ClientAction; data: Partial<IPbxEvent>; id: string }): void;
 	'connector.statuschanged'(enabled: boolean): void;
 	'message.update'(data: { message: AtLeast<IMessage, 'rid'> }): void;
+	'watch.priorities'(data: {
+		clientAction: ClientAction;
+		data: Partial<ILivechatPriority>;
+		id: string;
+		diff?: Record<string, string>;
+	}): void;
 };
