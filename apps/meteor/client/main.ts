@@ -15,3 +15,4 @@ import './views/admin';
 import './views/marketplace';
 import './views/account';
 import './views/teams';
+import './templates';

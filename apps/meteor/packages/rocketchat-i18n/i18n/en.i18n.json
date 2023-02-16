@@ -5684,4 +5684,5 @@
   "multiple_instance_solutions": "multiple instance solutions",
   "Uninstall_grandfathered_app": "Uninstall __appName__?",
   "App_will_lose_grandfathered_status": "**This __context__ app will loose it's grandfathered status.**\n\nWorkspaces on Community Edition can have up to __limit__ __context__ apps enabled. Grandfathered apps count towards the limit but the limit is not applied to them."
+  "Theme_Appearence": "Theme Appearence"
 }
