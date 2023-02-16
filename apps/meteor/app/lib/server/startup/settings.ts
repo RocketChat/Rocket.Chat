@@ -375,6 +375,25 @@ settingsRegistry.addGroup('Accounts', function () {
 			public: true,
 			i18nLabel: 'Group_by_Type',
 		});
+		this.add('Accounts_Default_User_Preferences_themeAppearence', 'auto', {
+			type: 'select',
+			values: [
+				{
+					key: 'auto',
+					i18nLabel: 'Theme_match_system',
+				},
+				{
+					key: 'light',
+					i18nLabel: 'Theme_light',
+				},
+				{
+					key: 'dark',
+					i18nLabel: 'Theme_dark',
+				},
+			],
+			public: true,
+			i18nLabel: 'Theme_Appearence',
+		});
 		this.add('Accounts_Default_User_Preferences_sidebarViewMode', 'medium', {
 			type: 'select',
 			values: [

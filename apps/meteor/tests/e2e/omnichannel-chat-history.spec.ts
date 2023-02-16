@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
 import type { Browser, Page } from '@playwright/test';
 
-import { test, expect } from './utils/test';
 import { OmnichannelLiveChat, HomeOmnichannel } from './page-objects';
+import { test, expect } from './utils/test';
 
 const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page; poHomeOmnichannel: HomeOmnichannel }> => {
 	const page = await browser.newPage({ storageState });
