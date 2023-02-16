@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { api, Team } from '@rocket.chat/core-services';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { hasPermission } from '../../app/authorization';
-import { Users, Subscriptions, Messages } from '../../app/models/server';
+import { Users, Subscriptions, Messages, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 
 Meteor.methods({
@@ -17,7 +18,8 @@ Meteor.methods({
 			});
 		}
 
-		if (!hasPermission(Meteor.userId(), 'set-moderator', rid)) {
+		const room = Rooms.findOneById(rid, { fields: { t: 1, federated: 1 } });
+		if (!hasPermission(Meteor.userId(), 'set-moderator', rid) && !isRoomFederated(room)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'addRoomModerator',
 			});
@@ -62,18 +64,22 @@ Meteor.methods({
 			Promise.await(Team.addRolesToMember(team._id, userId, ['moderator']));
 		}
 
+		const event = {
+			type: 'added',
+			_id: 'moderator',
+			u: {
+				_id: user._id,
+				username: user.username,
+				name: fromUser.name,
+			},
+			scope: rid,
+		};
+
 		if (settings.get('UI_DisplayRoles')) {
-			api.broadcast('user.roleUpdate', {
-				type: 'added',
-				_id: 'moderator',
-				u: {
-					_id: user._id,
-					username: user.username,
-					name: fromUser.name,
-				},
-				scope: rid,
-			});
+			api.broadcast('user.roleUpdate', event);
 		}
+
+		api.broadcast('federation.userRoleChanged', { ...event, givenByUserId: Meteor.userId() });
 
 		return true;
 	},
