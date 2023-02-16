@@ -51,6 +51,10 @@ export class OmnichannelPriorities {
 		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
 	}
 
+	get btnCloseToastSuccess(): Locator {
+		return this.toastSuccess.locator('button');
+	}
+
 	get btnReset() {
 		return this.page.locator('role=button[name="Reset"]');
 	}
