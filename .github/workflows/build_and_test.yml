@@ -861,6 +861,10 @@ jobs:
         working-directory: ./apps/meteor
         run: E2E_COVERAGE=true IS_EE=true yarn test:e2e
 
+      - name: Show server logs if E2E test failed
+        if: failure()
+        run: docker compose -f docker-compose-ci.yml logs rocketchat
+
       - name: Store playwright test trace
         uses: actions/upload-artifact@v3
         if: always()
