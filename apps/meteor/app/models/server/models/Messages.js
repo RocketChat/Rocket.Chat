@@ -1006,8 +1006,10 @@ export class Messages extends Base {
 		if (!limit) {
 			const count = this.remove(query);
 
-			// decrease message count
-			Rooms.decreaseMessageCountById(rid, count);
+			if (count) {
+				// decrease message count
+				Rooms.decreaseMessageCountById(rid, count);
+			}
 
 			return count;
 		}
@@ -1025,8 +1027,10 @@ export class Messages extends Base {
 			},
 		});
 
-		// decrease message count
-		Rooms.decreaseMessageCountById(rid, count);
+		if (count) {
+			// decrease message count
+			Rooms.decreaseMessageCountById(rid, count);
+		}
 
 		return count;
 	}
