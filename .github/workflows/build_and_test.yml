@@ -888,10 +888,19 @@ jobs:
           name: e2e-ee-coverage
           path: ./apps/meteor/coverage*
 
+  test:
+    runs-on: ubuntu-20.04
+    needs: [test-unit, test-api, test-e2e, test-ee-api, test-ee-e2e]
+
+    steps:
+      - name: Test finish aggregation
+        run: |
+          echo finished
+
   deploy:
     runs-on: ubuntu-20.04
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
-    needs: [test-unit, test-api, test-e2e, test-ee-api, test-ee-e2e, release-versions]
+    needs: [test, release-versions]
 
     steps:
       - uses: actions/checkout@v3
