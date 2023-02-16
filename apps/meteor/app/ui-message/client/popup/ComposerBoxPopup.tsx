@@ -2,7 +2,7 @@ import { Box, Option, OptionSkeleton, Tile } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useEffect, memo } from 'react';
+import React, { useEffect, memo, useMemo } from 'react';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 
 export type ComposerBoxPopupProps<
@@ -33,14 +33,14 @@ const ComposerBoxPopup = <
 	const t = useTranslation();
 	const id = useUniqueId();
 
-	const itemsFlat = items
+	const itemsFlat = useMemo(() => items
 		.flatMap((item) => {
 			if (item.isSuccess) {
 				return item.data;
 			}
 			return [];
 		})
-		.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0));
+		.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0)), [items])
 
 	const isLoading = items.some((item) => item.isLoading && item.fetchStatus !== 'idle');
 
