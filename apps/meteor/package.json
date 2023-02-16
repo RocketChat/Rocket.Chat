@@ -24,7 +24,7 @@
 		"migration:add": "ts-node-transpile-only --skip-project .scripts/make-migration.ts",
 		"debug": "meteor run --inspect",
 		"debug-brk": "meteor run --inspect-brk",
-		"lint": "meteor npm run stylelint && meteor npm run eslint",
+		"lint": "npm run stylelint && npm run eslint",
 		"eslint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"eslint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
 		"obj:dev": "TEST_MODE=true yarn dev",
