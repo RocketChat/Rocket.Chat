@@ -3,6 +3,7 @@ import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useMethod } from '@rocket.chat/ui-contexts';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 
+import ScrollableContentWrapper from '../../../../../../client/components/ScrollableContentWrapper';
 import { useChat } from '../../../../../../client/views/room/contexts/ChatContext';
 import type { ComposerBoxPopupProps } from '../../ComposerBoxPopup';
 
@@ -90,49 +91,50 @@ const ComposerBoxPopupPreview = forwardRef<
 
 	return (
 		<Box className='message-popup-position' position='relative'>
-			<Tile className='message-popup' padding={0} role='menu' mbe='x2' maxHeight='20rem' aria-labelledby={id}>
+			<Tile className='message-popup' padding='x8' role='menu' mbe='x2' aria-labelledby={id}>
 				{/* <Box bg='tint' pi='x16' pb='x8' id={id}>
 						{isLoading ? <Skeleton /> : data?.i18nTitle}
 					</Box> */}
-				{isLoading && <Skeleton />}
+				<Box role='listbox' display='flex' overflow='auto' fontSize={0} aria-busy={isLoading}>
+					{isLoading &&
+						Array(5)
+							.fill(5)
+							.map((_, index) => <Skeleton variant='rect' h='100px' w='120px' m='x2' key={index} />)}
 
-				{!isLoading && (
-					<>
-						<div className='message-popup-items preview-items' role='listbox'>
-							{itemsFlat.map((item) => {
-								return (
-									<Box
-										onClick={() => select(item)}
-										role='option'
-										className={['popup-item', item === focused && 'selected'].filter(Boolean).join(' ')}
-										id={`popup-item-${item._id}`}
-										key={item._id}
-										bg={item === focused ? 'selected' : undefined}
-										borderColor={item === focused ? 'highlight' : undefined}
-										tabIndex={item === focused ? 0 : -1}
-										aria-selected={item === focused}
-									>
-										{item.type === 'image' && <img src={item.value} alt={item._id} />}
-										{item.type === 'audio' && (
-											<audio controls>
-												<source src={item.value} />
-												Your browser does not support the audio element.
-											</audio>
-										)}
-										{item.type === 'video' && (
-											<video controls className='inline-video'>
-												<source src={item.value} />
-												Your browser does not support the video element.
-											</video>
-										)}
-										{item.type === 'text' && <h4>{item.value}</h4>}
-										{item.type === 'other' && <code>{item.value}</code>}
-									</Box>
-								);
-							})}
-						</div>
-					</>
-				)}
+					{!isLoading &&
+						itemsFlat.map((item) => (
+							<Box
+								onClick={() => select(item)}
+								role='option'
+								className={['popup-item', item === focused && 'selected'].filter(Boolean).join(' ')}
+								id={`popup-item-${item._id}`}
+								key={item._id}
+								bg={item === focused ? 'selected' : undefined}
+								borderColor={item === focused ? 'highlight' : 'transparent'}
+								tabIndex={item === focused ? 0 : -1}
+								aria-selected={item === focused}
+								m='x2'
+								borderWidth='default'
+								borderRadius='x4'
+							>
+								{item.type === 'image' && <img src={item.value} alt={item._id} />}
+								{item.type === 'audio' && (
+									<audio controls>
+										<source src={item.value} />
+										Your browser does not support the audio element.
+									</audio>
+								)}
+								{item.type === 'video' && (
+									<video controls className='inline-video'>
+										<source src={item.value} />
+										Your browser does not support the video element.
+									</video>
+								)}
+								{item.type === 'text' && <h4>{item.value}</h4>}
+								{item.type === 'other' && <code>{item.value}</code>}
+							</Box>
+						))}
+				</Box>
 			</Tile>
 		</Box>
 	);
