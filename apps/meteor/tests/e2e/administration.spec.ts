@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
 
-import { test, expect } from './utils/test';
-import { Admin } from './page-objects';
 import { IS_EE } from './config/constants';
+import { Admin } from './page-objects';
+import { test, expect } from './utils/test';
 
 test.use({ storageState: 'admin-session.json' });
 
@@ -33,7 +33,7 @@ test.describe.parallel('administration', () => {
 		test('expect find "user1" user', async ({ page }) => {
 			await poAdmin.inputSearchUsers.type('user1');
 
-			expect(page.locator('table tr[qa-user-id="user1"]')).toBeVisible();
+			await expect(page.locator('table tr[qa-user-id="user1"]')).toBeVisible();
 		});
 
 		test('expect create a user', async () => {

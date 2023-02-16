@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 
-import { test, expect } from './utils/test';
 import { Registration } from './page-objects';
+import { test, expect } from './utils/test';
 
 test.describe.parallel('Login', () => {
 	let poRegistration: Registration;
