@@ -6530,21 +6530,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/apps-engine@npm:1.36.0":
-  version: 1.36.0
-  resolution: "@rocket.chat/apps-engine@npm:1.36.0"
-  dependencies:
-    adm-zip: ^0.5.9
-    cryptiles: ^4.1.3
-    lodash.clonedeep: ^4.5.0
-    semver: ^5.7.1
-    stack-trace: 0.0.10
-    uuid: ^3.4.0
-    vm2: ^3.9.11
-  checksum: 2711a20cd128aa96eed368088ff432e70d4c964210379df5bd9a124781f6180052e750e0ba2ee20568cbff45a4e1c074c7fd0b19bfb637ab427b5823bb0e10cc
-  languageName: node
-  linkType: hard
-
 "@rocket.chat/apps-engine@npm:^1.32.0":
   version: 1.35.0
   resolution: "@rocket.chat/apps-engine@npm:1.35.0"
@@ -6557,6 +6542,22 @@ __metadata:
     uuid: ^3.4.0
     vm2: ^3.9.11
   checksum: 36c1aeeca2163a0bcde0de8f28eceedccb2cb0a55f014487c4924b72ba00e0969d9a28797a70aa40f8a6e3856b541608a0af251292b077e173c9e4fd9d0010f1
+  languageName: node
+  linkType: hard
+
+"@rocket.chat/apps-engine@npm:alpha":
+  version: 1.37.0-alpha.154
+  resolution: "@rocket.chat/apps-engine@npm:1.37.0-alpha.154"
+  dependencies:
+    adm-zip: ^0.5.9
+    cryptiles: ^4.1.3
+    jose: ^4.11.1
+    lodash.clonedeep: ^4.5.0
+    semver: ^5.7.1
+    stack-trace: 0.0.10
+    uuid: ^3.4.0
+    vm2: ^3.9.11
+  checksum: a822e4de41172c64043dec3fb27dd762d59aa52e4e4057417aecbef785488085b21b1711b14b86ffe2cb0b85b1ee11a94794414bba47d2f16c3273b75397300b
   languageName: node
   linkType: hard
 
@@ -7207,7 +7208,7 @@ __metadata:
     "@react-pdf/renderer": ^3.1.3
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
-    "@rocket.chat/apps-engine": 1.36.0
+    "@rocket.chat/apps-engine": alpha
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
@@ -25643,6 +25644,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jose@npm:^4.11.1":
+  version: 4.12.0
+  resolution: "jose@npm:4.12.0"
+  checksum: 09e67611768127ab54b6b507401de4b1f87e1e285cf2c2fc917e931e001b7e584c90081b421f483f13a6eec4fc44936e4a5f4b8ae2d59928061e886e35d33fa2
+  languageName: node
+  linkType: hard
+
 "joycon@npm:^3.1.1":
   version: 3.1.1
   resolution: "joycon@npm:3.1.1"
@@ -26209,7 +26217,7 @@ __metadata:
   resolution: "lamejs@https://github.com/zhuker/lamejs.git#commit=582bbba6a12f981b984d8fb9e1874499fed85675"
   dependencies:
     use-strict: 1.0.1
-  checksum: fa829e0c170a65573e653b4d908a44aaf06a50e1bbade3b1217a300a03ccd59a537e294e2d924a584f9d70c7726a12d4c3af9c675436d48d08be5fb94b5eb400
+  checksum: ed7f6f1c9629b53c17023eb04b4fc5a222e9c34fcb4a2f61214488fc64e5cfea825e4588d959c5fb20f3a91f0120103fa60307dd43df995d498ff5ddb6200cd9
   languageName: node
   linkType: hard
 
