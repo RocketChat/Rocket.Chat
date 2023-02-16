@@ -33,14 +33,18 @@ const ComposerBoxPopup = <
 	const t = useTranslation();
 	const id = useUniqueId();
 
-	const itemsFlat = useMemo(() => items
-		.flatMap((item) => {
-			if (item.isSuccess) {
-				return item.data;
-			}
-			return [];
-		})
-		.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0)), [items])
+	const itemsFlat = useMemo(
+		() =>
+			items
+				.flatMap((item) => {
+					if (item.isSuccess) {
+						return item.data;
+					}
+					return [];
+				})
+				.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0)),
+		[items],
+	);
 
 	const isLoading = items.some((item) => item.isLoading && item.fetchStatus !== 'idle');
 
