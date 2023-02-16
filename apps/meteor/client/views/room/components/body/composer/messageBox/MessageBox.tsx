@@ -1,4 +1,5 @@
 /* eslint-disable complexity */
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Button, Tag, Box } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -11,7 +12,7 @@ import {
 	MessageComposerActionsDivider,
 	MessageComposerToolbarSubmit,
 } from '@rocket.chat/ui-composer';
-import { useTranslation, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { MouseEventHandler, ReactElement, FormEvent, KeyboardEventHandler, KeyboardEvent, Ref, ClipboardEventHandler } from 'react';
 import React, { memo, useRef, useReducer, useCallback } from 'react';
@@ -24,6 +25,7 @@ import { formattingButtons } from '../../../../../../../app/ui-message/client/me
 import ComposerBoxPopup from '../../../../../../../app/ui-message/client/popup/ComposerBoxPopup';
 import ComposerBoxPopupPreview from '../../../../../../../app/ui-message/client/popup/components/composerBoxPopupPreview/ComposerBoxPopupPreview';
 import { useComposerBoxPopup } from '../../../../../../../app/ui-message/client/popup/hooks/useComposerBoxPopup';
+import { useHasLicenseModule } from '../../../../../../../ee/client/hooks/useHasLicenseModule';
 import { getImageExtensionFromMime } from '../../../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../../../hooks/useFormatDateAndTime';
 import { useReactiveValue } from '../../../../../../hooks/useReactiveValue';
@@ -34,6 +36,7 @@ import AudioMessageRecorder from '../../../../../composer/AudioMessageRecorder';
 import VideoMessageRecorder from '../../../../../composer/VideoMessageRecorder';
 import { useChat } from '../../../../contexts/ChatContext';
 import { useComposerPopup } from '../../../../contexts/ComposerPopupContext';
+import { useRoom } from '../../../../contexts/RoomContext';
 import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
@@ -121,6 +124,7 @@ const MessageBox = ({
 	if (!chat) {
 		throw new Error('Chat context not found');
 	}
+	const room = useRoom();
 
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 	const messageComposerRef = useRef<HTMLElement>(null);
@@ -271,7 +275,12 @@ const MessageBox = ({
 
 	const { textAreaStyle, shadowStyle } = useAutoGrow(textareaRef, shadowRef, isRecordingAudio);
 
+	const federationModuleEnabled = useHasLicenseModule('federation') === true;
+	const federationEnabled = useSetting('Federation_Matrix_enabled') === true;
+
 	const canSend = useReactiveValue(useCallback(() => roomCoordinator.verifyCanSendMessage(rid), [rid]));
+
+	const canJoin = !isRoomFederated(room) || (isRoomFederated(room) && federationModuleEnabled && federationEnabled);
 
 	const sizes = useContentBoxSize(textareaRef);
 
@@ -377,7 +386,7 @@ const MessageBox = ({
 					ref={mergedRefs as unknown as Ref<HTMLInputElement>}
 					aria-label={t('Message')}
 					name='msg'
-					disabled={isRecording}
+					disabled={isRecording || (!canJoin && !canSend)}
 					onChange={setTyping}
 					style={textAreaStyle}
 					placeholder={t('Message')}
@@ -389,14 +398,19 @@ const MessageBox = ({
 				<div ref={shadowRef} style={shadowStyle} />
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
-						<MessageComposerAction icon='emoji' disabled={!useEmojis || isRecording} onClick={handleOpenEmojiPicker} title={t('Emoji')} />
+						<MessageComposerAction
+							icon='emoji'
+							disabled={!useEmojis || isRecording || (!canJoin && !canSend)}
+							onClick={handleOpenEmojiPicker}
+							title={t('Emoji')}
+						/>
 						<MessageComposerActionsDivider />
 						{chat.composer && formatters.length > 0 && (
 							<MessageBoxFormattingToolbar
 								composer={chat.composer}
 								variant={sizes.inlineSize < 480 ? 'small' : 'large'}
 								items={formatters}
-								disabled={isRecording}
+								disabled={isRecording || (!canJoin && !canSend)}
 							/>
 						)}
 						<MessageComposerActionsDivider />
@@ -405,12 +419,13 @@ const MessageBox = ({
 							isRecording={isRecording}
 							typing={typing}
 							canSend={canSend}
+							canJoin={canJoin}
 							rid={rid}
 							tmid={tmid}
 						/>
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
-						{!canSend && (
+						{!canSend && canJoin && (
 							<Button small primary onClick={onJoin} disabled={joinMutation.isLoading}>
 								{t('Join')}
 							</Button>

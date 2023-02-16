@@ -344,13 +344,15 @@ export class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
-	findOneByNameAndType(name, type, options) {
+	findOneByNameAndType(name, type, options, includeFederatedRooms = false) {
 		const query = {
-			name,
 			t: type,
 			teamId: {
 				$exists: false,
 			},
+			...(includeFederatedRooms
+				? { $or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }] }
+				: { $or: [{ federated: { $exists: false } }, { federated: false }], name }),
 		};
 
 		return this.findOne(query, options);
@@ -480,10 +482,9 @@ export class Rooms extends Base {
 		return this._db.find(query, options);
 	}
 
-	findByNameAndTypeNotDefault(name, type, options) {
+	findByNameAndTypeNotDefault(name, type, options, includeFederatedRooms = false) {
 		const query = {
 			t: type,
-			name,
 			default: {
 				$ne: true,
 			},
@@ -497,13 +498,16 @@ export class Rooms extends Base {
 					teamMain: true,
 				},
 			],
+			...(includeFederatedRooms
+				? { $or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }] }
+				: { $or: [{ federated: { $exists: false } }, { federated: false }], name }),
 		};
 
 		// do not use cache
 		return this._db.find(query, options);
 	}
 
-	findByNameAndTypesNotInIds(name, types, ids, options) {
+	findByNameAndTypesNotInIds(name, types, ids, options, includeFederatedRooms = false) {
 		const query = {
 			_id: {
 				$nin: ids,
@@ -532,7 +536,11 @@ export class Rooms extends Base {
 					t: 'c',
 				},
 			],
-			name,
+			...(includeFederatedRooms
+				? {
+						$or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }],
+				  }
+				: { $or: [{ federated: { $exists: false } }, { federated: false }], name }),
 		};
 
 		// do not use cache
