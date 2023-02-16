@@ -1,4 +1,4 @@
-import { FederationUserTypingStatusEventDto } from '../../../application/input/UserReceiverDto';
+import { FederationUserTypingStatusEventDto } from '../../../application/listener/input/UserReceiverDto';
 import type { MatrixEventUserTypingStatusChanged } from '../definitions/events/UserTypingStatusChanged';
 import { convertExternalRoomIdToInternalRoomIdFormat } from './RoomReceiver';
 

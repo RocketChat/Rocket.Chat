@@ -10,10 +10,11 @@ import { useChat } from '../../../../../../contexts/ChatContext';
 type FileUploadActionProps = {
 	collapsed?: boolean;
 	isRecording: boolean;
+	canSend: boolean;
 	chatContext?: ChatAPI; // TODO: remove this when the composer is migrated to React
 };
 
-const FileUploadAction = ({ collapsed, chatContext, isRecording }: FileUploadActionProps) => {
+const FileUploadAction = ({ collapsed, chatContext, isRecording, canSend }: FileUploadActionProps) => {
 	const t = useTranslation();
 	const fileUploadEnabled = useSetting('FileUpload_Enabled');
 	const fileInputRef = useRef<HTMLInputElement>(null);
@@ -61,7 +62,7 @@ const FileUploadAction = ({ collapsed, chatContext, isRecording }: FileUploadAct
 			<MessageComposerAction
 				data-qa-id='file-upload'
 				icon='clip'
-				disabled={!fileUploadEnabled || isRecording}
+				disabled={!fileUploadEnabled || isRecording || !canSend}
 				onClick={handleUpload}
 				title={t('File')}
 			/>
