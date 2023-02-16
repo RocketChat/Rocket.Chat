@@ -127,6 +127,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 					const records = Subscriptions.find(
 						{
 							name: filterRegex,
+							$or: [{ federated: { $exists: false } }, { federated: false }],
 							t: {
 								$in: ['c', 'p'],
 							},

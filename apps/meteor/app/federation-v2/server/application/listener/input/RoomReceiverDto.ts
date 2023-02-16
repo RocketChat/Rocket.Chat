@@ -1,6 +1,7 @@
 import type { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
-import type { EVENT_ORIGIN } from '../../domain/IFederationBridge';
+import type { EVENT_ORIGIN } from '../../../domain/IFederationBridge';
+import type { ROCKET_CHAT_FEDERATION_ROLES } from '../../../infrastructure/rocket-chat/definitions/InternalFederatedRoomRoles';
 
 interface IFederationBaseInputDto {
 	externalEventId: string;
@@ -35,12 +36,18 @@ export interface IFederationChangeMembershipInputDto extends IFederationReceiver
 		avatarUrl?: string;
 		displayName?: string;
 	};
+	allInviteesExternalIdsWhenDM?: {
+		externalInviteeId: string;
+		normalizedInviteeId: string;
+		inviteeUsernameOnly: string;
+	}[];
 }
 
 export interface IFederationSendInternalMessageInputDto extends IFederationReceiverBaseRoomInputDto {
 	externalSenderId: string;
 	normalizedSenderId: string;
-	messageText: string;
+	rawMessage: string;
+	externalFormattedText: string;
 	replyToEventId?: string;
 }
 
@@ -60,6 +67,10 @@ export interface IFederationRoomTopicChangeInputDto extends IFederationReceiverB
 
 export interface IFederationRoomRedactEventInputDto extends IFederationReceiverBaseRoomInputDto {
 	redactsEvent: string;
+	externalSenderId: string;
+}
+export interface IFederationRoomChangePowerLevelsInputDto extends IFederationReceiverBaseRoomInputDto {
+	roleChangesToApply: IExternalRolesChangesToApplyInputDto;
 	externalSenderId: string;
 }
 
@@ -138,6 +149,7 @@ export class FederationRoomChangeMembershipDto extends FederationBaseRoomInputDt
 		externalRoomName,
 		externalEventId,
 		userProfile,
+		allInviteesExternalIdsWhenDM = [],
 	}: IFederationChangeMembershipInputDto) {
 		super({ externalRoomId, normalizedRoomId, externalEventId });
 		this.externalInviterId = externalInviterId;
@@ -151,6 +163,7 @@ export class FederationRoomChangeMembershipDto extends FederationBaseRoomInputDt
 		this.roomType = roomType;
 		this.externalRoomName = externalRoomName;
 		this.userProfile = userProfile;
+		this.allInviteesExternalIdsWhenDM = allInviteesExternalIdsWhenDM;
 	}
 
 	externalInviterId: string;
@@ -173,6 +186,12 @@ export class FederationRoomChangeMembershipDto extends FederationBaseRoomInputDt
 
 	externalRoomName?: string;
 
+	allInviteesExternalIdsWhenDM?: {
+		externalInviteeId: string;
+		normalizedInviteeId: string;
+		inviteeUsernameOnly: string;
+	}[];
+
 	userProfile?: { avatarUrl?: string; displayName?: string };
 }
 
@@ -194,14 +213,16 @@ export class FederationRoomReceiveExternalMessageDto extends ExternalMessageBase
 		normalizedRoomId,
 		externalSenderId,
 		normalizedSenderId,
-		messageText,
+		externalFormattedText,
+		rawMessage,
 		externalEventId,
 		replyToEventId,
 	}: IFederationSendInternalMessageInputDto) {
 		super({ externalRoomId, normalizedRoomId });
 		this.externalSenderId = externalSenderId;
 		this.normalizedSenderId = normalizedSenderId;
-		this.messageText = messageText;
+		this.externalFormattedText = externalFormattedText;
+		this.rawMessage = rawMessage;
 		this.replyToEventId = replyToEventId;
 		this.externalEventId = externalEventId;
 	}
@@ -210,7 +231,9 @@ export class FederationRoomReceiveExternalMessageDto extends ExternalMessageBase
 
 	normalizedSenderId: string;
 
-	messageText: string;
+	externalFormattedText: string;
+
+	rawMessage: string;
 
 	replyToEventId?: string;
 }
@@ -221,14 +244,20 @@ export class FederationRoomEditExternalMessageDto extends ExternalMessageBaseDto
 		normalizedRoomId,
 		externalSenderId,
 		normalizedSenderId,
-		newMessageText,
+		newRawMessage,
+		newExternalFormattedText,
 		editsEvent,
 		externalEventId,
-	}: IFederationSendInternalMessageBaseInputDto & { newMessageText: string; editsEvent: string }) {
+	}: IFederationSendInternalMessageBaseInputDto & {
+		newRawMessage: string;
+		newExternalFormattedText: string;
+		editsEvent: string;
+	}) {
 		super({ externalRoomId, normalizedRoomId, externalEventId });
 		this.externalSenderId = externalSenderId;
 		this.normalizedSenderId = normalizedSenderId;
-		this.newMessageText = newMessageText;
+		this.newRawMessage = newRawMessage;
+		this.newExternalFormattedText = newExternalFormattedText;
 		this.editsEvent = editsEvent;
 	}
 
@@ -236,7 +265,9 @@ export class FederationRoomEditExternalMessageDto extends ExternalMessageBaseDto
 
 	normalizedSenderId: string;
 
-	newMessageText: string;
+	newExternalFormattedText: string;
+
+	newRawMessage: string;
 
 	editsEvent: string;
 }
@@ -347,6 +378,27 @@ export class FederationRoomRedactEventDto extends FederationBaseRoomInputDto {
 	}
 
 	redactsEvent: string;
+
+	externalSenderId: string;
+}
+
+export interface IExternalRolesChangesToApplyInputDto {
+	[key: string]: { action: string; role: ROCKET_CHAT_FEDERATION_ROLES }[];
+}
+export class FederationRoomRoomChangePowerLevelsEventDto extends FederationBaseRoomInputDto {
+	constructor({
+		externalRoomId,
+		normalizedRoomId,
+		externalEventId,
+		roleChangesToApply,
+		externalSenderId,
+	}: IFederationRoomChangePowerLevelsInputDto) {
+		super({ externalRoomId, normalizedRoomId, externalEventId });
+		this.roleChangesToApply = roleChangesToApply;
+		this.externalSenderId = externalSenderId;
+	}
+
+	roleChangesToApply: IExternalRolesChangesToApplyInputDto;
 
 	externalSenderId: string;
 }
