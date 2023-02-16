@@ -166,6 +166,7 @@ describe('miscellaneous', function () {
 					'idleTimeLimit',
 					'sidebarShowFavorites',
 					'sidebarShowUnread',
+					'themeAppearence',
 					'sidebarSortby',
 					'sidebarViewMode',
 					'sidebarDisplayAvatar',
