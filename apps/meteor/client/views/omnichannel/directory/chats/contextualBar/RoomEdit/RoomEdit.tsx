@@ -3,7 +3,7 @@ import { Field, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useController, useForm } from 'react-hook-form';
 
 import { hasAtLeastOnePermission } from '../../../../../../../app/authorization/client';
@@ -115,20 +115,23 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 		}
 	});
 
-	const handleCustomFieldsError = useMutableCallback((validator) => {
-		const { livechatData } = errors;
-		const formattedErrors = livechatData ? Object.keys(livechatData).map((name) => ({ name })) : [];
-		const customFormErrors = validator(formattedErrors);
+	const handleCustomFieldsError = useCallback(
+		(validator) => {
+			const { livechatData } = errors;
+			const oldErrors = livechatData ? Object.keys(livechatData).map((name) => ({ name })) : [];
+			const newErrors = validator(oldErrors);
 
-		if (!customFormErrors.length) {
-			trigger('livechatData');
-			return;
-		}
+			if (oldErrors.length && !newErrors.length) {
+				trigger('livechatData');
+				return;
+			}
 
-		customFormErrors.forEach(({ name }: { name: string }) => {
-			setError(`livechatData.${name}`, { type: 'custom' });
-		});
-	});
+			newErrors.forEach(({ name }: { name: string }) => {
+				setError(`livechatData.${name}`, { type: 'custom' });
+			});
+		},
+		[errors, setError, trigger],
+	);
 
 	if (isCustomFieldsLoading || isSlaPoliciesLoading || isPrioritiesLoading) {
 		return (
