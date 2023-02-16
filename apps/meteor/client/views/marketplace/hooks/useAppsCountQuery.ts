@@ -11,7 +11,7 @@ const getProgressBarValues = (numberOfEnabledApps: number, enabledAppsLimit: num
 	percentage: Math.round((numberOfEnabledApps / enabledAppsLimit) * 100),
 });
 
-export const useAppsCountQuery = (context: 'private' | 'explore' | 'marketplace') => {
+export const useAppsCountQuery = (context: 'private' | 'explore' | 'installed' | 'enterprise' | 'requested') => {
 	const getAppsCount = useEndpoint('GET', '/apps/count');
 
 	return useQuery(

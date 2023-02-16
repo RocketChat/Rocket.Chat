@@ -14,7 +14,7 @@ const EnabledAppsCount = ({
 	percentage: number;
 	limit: number;
 	enabled: number;
-	context: 'private' | 'explore' | 'marketplace';
+	context: 'private' | 'explore' | 'installed' | 'enterprise' | 'requested';
 }): ReactElement | null => {
 	const t = useTranslation();
 

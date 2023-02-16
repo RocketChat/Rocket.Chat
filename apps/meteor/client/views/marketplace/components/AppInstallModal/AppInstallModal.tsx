@@ -5,7 +5,7 @@ import React from 'react';
 import MarkdownText from '../../../../components/MarkdownText';
 
 type AppsInstallationModalProps = {
-	context: 'private' | 'explore' | 'marketplace';
+	context: 'private' | 'explore' | 'installed' | 'enterprise' | 'requested';
 	enabled: number;
 	limit: number;
 	appName: string;
