@@ -1,3 +1,5 @@
+import type { IUser } from '@rocket.chat/core-typings';
+
 export interface IFederationInviterDto {
 	internalInviterId: string;
 }
@@ -30,7 +32,9 @@ export interface IFederationCreateDirectMessageDto extends IFederationInviterDto
 	invitees: string[];
 }
 
-export type IFederationBeforeAddUserToARoomDto = IFederationOnRoomCreationDto;
+export type IFederationBeforeAddUserToARoomDto = IFederationOnRoomCreationDto & {
+	internalInviter?: IUser;
+};
 
 export interface IFederationOnUserAddedToARoomDto extends IFederationOnRoomCreationDto {
 	inviteComesFromAnExternalHomeServer: boolean;
@@ -107,12 +111,15 @@ export class FederationBeforeDirectMessageRoomCreationDto {
 }
 
 export class FederationBeforeAddUserToARoomDto extends FederationBeforeDirectMessageRoomCreationDto {
-	constructor({ invitees, internalRoomId }: Omit<IFederationBeforeAddUserToARoomDto, 'internalInviterId'>) {
+	constructor({ invitees, internalRoomId, internalInviter }: Omit<IFederationBeforeAddUserToARoomDto, 'internalInviterId'>) {
 		super({ invitees });
 		this.internalRoomId = internalRoomId;
+		this.internalInviter = internalInviter;
 	}
 
 	internalRoomId: string;
+
+	internalInviter?: IUser;
 }
 
 export class FederationOnUsersAddedToARoomDto extends FederationOnRoomCreationDto {

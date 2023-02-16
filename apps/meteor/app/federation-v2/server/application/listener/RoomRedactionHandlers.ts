@@ -1,8 +1,8 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import type { FederatedUser } from '../domain/FederatedUser';
-import { Federation } from '../Federation';
-import type { RocketChatMessageAdapter } from '../infrastructure/rocket-chat/adapters/Message';
+import type { FederatedUser } from '../../domain/FederatedUser';
+import { Federation } from '../../Federation';
+import type { RocketChatMessageAdapter } from '../../infrastructure/rocket-chat/adapters/Message';
 
 export interface IRoomRedactionHandlers {
 	handle(): Promise<void>;
