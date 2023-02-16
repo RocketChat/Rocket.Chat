@@ -1,6 +1,6 @@
-import type { IRoom } from '@rocket.chat/core-typings';
-import type { Locator, Page } from '@playwright/test';
 import faker from '@faker-js/faker';
+import type { Locator, Page } from '@playwright/test';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { test, expect } from './utils/test';
 import { HomeChannel } from './page-objects';
@@ -8,22 +8,21 @@ import { setSettingValueById } from './utils/setSettingValueById';
 
 test.use({ storageState: 'admin-session.json' });
 
-// const userData = {
-// 	username: faker.datatype.uuid(),
-// 	name: faker.name.firstName(),
-// 	email: faker.internet.email(),
-// 	password: faker.internet.password(),
-// };
-
-const findSysMes = (page: Page, id: string): Locator => {
-	return page.locator(`[data-qa="system-message"][data-system-message-type="${id}"]`);
+const userData = {
+	username: faker.datatype.uuid(),
+	name: faker.name.firstName(),
+	email: faker.internet.email(),
+	password: faker.internet.password(),
 };
+
+const findSysMes = (page: Page, id: string): Locator => page.locator(`[data-qa="system-message"][data-system-message-type="${id}"]`);
 
 // There currently are over 33 system messages. Testing only a couple due to test being too slow right now.
 // Ideally, we should test all.
+
 test.describe.serial('System Messages', () => {
 	let poHomeChannel: HomeChannel;
-	const user = { _id: 'user1' };
+	let user: IUser;
 	let group: IRoom;
 
 	test.beforeAll(async ({ api }) => {
@@ -34,16 +33,13 @@ test.describe.serial('System Messages', () => {
 
 		group = (await groupResult.json()).group;
 
-		// const result = await api.post('/users.create', userData);
-		// expect(result.status()).toBe(200);
+		const result = await api.post('/users.create', userData);
+		expect(result.status()).toBe(200);
 
-		// user = (await result.json()).user;
+		user = (await result.json()).user;
 	});
 
 	test.beforeEach(async ({ page }) => {
-		// TODO debug - remove this
-		console.log('state ->', JSON.stringify(await page.context().storageState()));
-
 		poHomeChannel = new HomeChannel(page);
 		await page.goto('/home');
 

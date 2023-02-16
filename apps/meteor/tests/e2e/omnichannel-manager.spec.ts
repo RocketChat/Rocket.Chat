@@ -1,5 +1,5 @@
-import { test, expect } from './utils/test';
 import { OmnichannelManager } from './page-objects';
+import { test, expect } from './utils/test';
 
 test.use({ storageState: 'admin-session.json' });
 
