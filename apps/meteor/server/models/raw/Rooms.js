@@ -131,6 +131,7 @@ export class RoomsRaw extends BaseRaw {
 		const query = {
 			prid: { $exists: discussion },
 			$or: [
+				{ fname: nameRegex },
 				{ name: nameRegex },
 				{
 					t: 'd',
