@@ -52,6 +52,10 @@ export class OmnichannelDepartments {
 		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Save"');
 	}
 
+	get btnBack() {
+		return this.page.locator('button.rcx-button >> text=" Back"');
+	}
+
 	get allDepartmentsTab() {
 		return this.page.locator('[role="tab"]:first-child');
 	}
@@ -118,5 +122,13 @@ export class OmnichannelDepartments {
 
 	get toastSuccess(): Locator {
 		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
+	}
+
+	get btnCloseToastSuccess(): Locator {
+		return this.toastSuccess.locator('button');
+	}
+
+	btnTag(tagName: string) {
+		return this.page.locator('button', { hasText: tagName });
 	}
 }
