@@ -1,11 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import type { Locator, APIResponse } from '@playwright/test';
-import { test as baseTest } from '@playwright/test';
+import type { Locator, APIResponse, APIRequestContext } from '@playwright/test';
+import { test as baseTest, request as baseRequest } from '@playwright/test';
 import { v4 as uuid } from 'uuid';
 
-import { BASE_API_URL, BASE_URL, API_PREFIX, ADMIN_CREDENTIALS } from '../config/constants';
+import { BASE_API_URL, API_PREFIX, ADMIN_CREDENTIALS } from '../config/constants';
 
 const PATH_NYC_OUTPUT = path.join(process.cwd(), '.nyc_output');
 
@@ -13,7 +13,8 @@ export type AnyObj = { [key: string]: any };
 
 export type BaseTest = {
 	api: {
-		login(credentials: { username: string; password: string }): Promise<void>;
+		recreateContext(): Promise<void>;
+		login(credentials: { username: string; password: string }): Promise<APIRequestContext>;
 		get(uri: string, params?: AnyObj, prefix?: string): Promise<APIResponse>;
 		post(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
 		put(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
@@ -28,10 +29,7 @@ declare global {
 	}
 }
 
-const apiCredentials = {
-	authToken: '',
-	userId: '',
-};
+let apiContext: APIRequestContext;
 
 export const test = baseTest.extend<BaseTest>({
 	context: async ({ context }, use) => {
@@ -65,36 +63,41 @@ export const test = baseTest.extend<BaseTest>({
 	},
 
 	api: async ({ request }, use) => {
-		const login = async (credentials: { username: string; password: string }) => {
+		const login = async (credentials: { username: string; password: string }): Promise<APIRequestContext> => {
 			const resp = await request.post(`${BASE_API_URL}/login`, { data: credentials });
 			const json = await resp.json();
 
-			apiCredentials.authToken = json.data.authToken;
-			apiCredentials.userId = json.data.userId;
+			return baseRequest.newContext({
+				baseURL: BASE_API_URL,
+				extraHTTPHeaders: {
+					'X-Auth-Token': json.data.authToken,
+					'X-User-Id': json.data.userId,
+				},
+			});
 		};
 
-		if (!apiCredentials.authToken || !apiCredentials.userId) {
-			await login(ADMIN_CREDENTIALS);
+		const recreateContext = async () => {
+			apiContext = await login(ADMIN_CREDENTIALS);
+		};
+
+		if (!apiContext) {
+			await recreateContext();
 		}
 
-		const headers = {
-			'X-Auth-Token': apiCredentials.authToken,
-			'X-User-Id': apiCredentials.userId,
-		};
-
 		await use({
+			recreateContext,
 			login,
 			get(uri: string, params?: AnyObj, prefix = API_PREFIX) {
-				return request.get(BASE_URL + prefix + uri, { headers, params });
+				return apiContext.get(prefix + uri, { params });
 			},
 			post(uri: string, data: AnyObj, prefix = API_PREFIX) {
-				return request.post(BASE_URL + prefix + uri, { headers, data });
+				return apiContext.post(prefix + uri, { data });
 			},
 			put(uri: string, data: AnyObj, prefix = API_PREFIX) {
-				return request.put(BASE_URL + prefix + uri, { headers, data });
+				return apiContext.put(prefix + uri, { data });
 			},
 			delete(uri: string, params?: AnyObj, prefix = API_PREFIX) {
-				return request.delete(BASE_URL + prefix + uri, { headers, params });
+				return apiContext.delete(prefix + uri, { params });
 			},
 		});
 	},

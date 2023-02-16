@@ -42,8 +42,10 @@ test.describe.serial('e2e-encryption initial setup', () => {
 		await expect(statusCode).toBe(200);
 	});
 
-	test.afterEach(async ({ page }) => {
+	test.afterEach(async ({ page, api }) => {
 		await page.context().storageState({ path: 'admin-session.json' });
+
+		await api.recreateContext();
 	});
 
 	test("expect reset user's e2e encryption key", async ({ page }) => {
