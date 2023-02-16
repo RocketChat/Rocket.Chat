@@ -25,7 +25,6 @@ test.describe.serial('Omnichannel Priorities', () => {
 	});
 
 	test.beforeEach(async ({ page }) => {
-		console.log('running');
 		poOmnichannelPriorities = new OmnichannelPriorities(page);
 
 		await page.goto('/omnichannel');
