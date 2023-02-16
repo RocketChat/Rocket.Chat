@@ -1,10 +1,10 @@
+import faker from '@faker-js/faker';
 import type { Locator, Page } from '@playwright/test';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import faker from '@faker-js/faker';
 
-import { test, expect } from './utils/test';
 import { HomeChannel } from './page-objects';
 import { setSettingValueById } from './utils/setSettingValueById';
+import { test, expect } from './utils/test';
 
 test.use({ storageState: 'admin-session.json' });
 
