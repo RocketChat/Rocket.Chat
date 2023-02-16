@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
-import s from 'underscore.string';
 import { Integrations, Roles } from '@rocket.chat/models';
 
 import { Rooms, Users, Subscriptions } from '../../../../models/server';
@@ -11,13 +10,13 @@ const validChannelChars = ['@', '#'];
 
 Meteor.methods({
 	async updateIncomingIntegration(integrationId, integration) {
-		if (!_.isString(integration.channel) || integration.channel.trim() === '') {
+		if (!integration.channel || typeof integration.channel.valueOf() !== 'string' || integration.channel.trim() === '') {
 			throw new Meteor.Error('error-invalid-channel', 'Invalid channel', {
 				method: 'updateIncomingIntegration',
 			});
 		}
 
-		const channels = _.map(integration.channel.split(','), (channel) => s.trim(channel));
+		const channels = integration.channel.split(',').map((channel) => channel.trim());
 
 		for (const channel of channels) {
 			if (!validChannelChars.includes(channel[0])) {

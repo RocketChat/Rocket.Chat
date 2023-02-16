@@ -1,7 +1,6 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
-import s from 'underscore.string';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
@@ -14,7 +13,7 @@ import { getValidRoomName } from '../../../utils/server';
 import { createDirectRoom } from './createDirectRoom';
 
 const isValidName = (name: unknown): name is string => {
-	return typeof name === 'string' && s.trim(name).length > 0;
+	return typeof name === 'string' && name.trim().length > 0;
 };
 
 export const createRoom = function <T extends RoomType>(
