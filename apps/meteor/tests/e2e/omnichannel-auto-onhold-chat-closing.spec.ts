@@ -68,9 +68,11 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 		await agent.poHomeChannel.content.btnModalConfirm.click();
 
 		// expect to see a system message saying the chat was on-hold
-		expect(agent.poHomeChannel.content.lastSystemMessageBody).toHaveText(`Chat On Hold: The chat was manually placed On Hold by user1`);
-		expect(agent.poHomeChannel.content.inputMessage).not.toBeVisible();
-		expect(agent.poHomeChannel.content.resumeOnHoldOmnichannelChatButton).toBeVisible();
+		await expect(agent.poHomeChannel.content.lastSystemMessageBody).toHaveText(
+			`Chat On Hold: The chat was manually placed On Hold by user1`,
+		);
+		await expect(agent.poHomeChannel.content.inputMessage).not.toBeVisible();
+		await expect(agent.poHomeChannel.content.resumeOnHoldOmnichannelChatButton).toBeVisible();
 
 		// current url
 		const chatRoomUrl = agent.page.url();

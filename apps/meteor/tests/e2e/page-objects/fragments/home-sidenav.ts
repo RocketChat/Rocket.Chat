@@ -69,7 +69,7 @@ export class HomeSidenav {
 	async switchOmnichannelStatus(status: 'offline' | 'online') {
 		// button has a id of "omnichannel-status-toggle"
 		const toggleButton = this.page.locator('#omnichannel-status-toggle');
-		expect(toggleButton).toBeVisible();
+		await expect(toggleButton).toBeVisible();
 
 		enum StatusTitleMap {
 			offline = 'Turn on answer chats',

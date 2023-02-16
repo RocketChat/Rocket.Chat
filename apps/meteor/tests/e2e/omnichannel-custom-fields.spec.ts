@@ -42,6 +42,6 @@ test.describe.serial('omnichannel-agents', () => {
 		await poOmnichannelCustomFields.btnModalRemove.click();
 
 		await poOmnichannelCustomFields.inputSearch.fill(newField);
-		expect(poOmnichannelCustomFields.firstRowInTable(newField)).toBeHidden();
+		await expect(poOmnichannelCustomFields.firstRowInTable(newField)).toBeHidden();
 	});
 });

@@ -19,7 +19,7 @@ test.describe.serial('omnichannel-agents', () => {
 		await poOmnichannelAgents.btnAdd.click();
 
 		await poOmnichannelAgents.inputSearch.fill('user1');
-		expect(poOmnichannelAgents.firstRowInTable).toBeVisible();
+		await expect(poOmnichannelAgents.firstRowInTable).toBeVisible();
 	});
 
 	test('expect update "user1" status', async ({ page }) => {
@@ -38,6 +38,6 @@ test.describe.serial('omnichannel-agents', () => {
 		await poOmnichannelAgents.btnModalRemove.click();
 
 		await poOmnichannelAgents.inputSearch.fill('user1');
-		expect(poOmnichannelAgents.firstRowInTable).toBeHidden();
+		await expect(poOmnichannelAgents.firstRowInTable).toBeHidden();
 	});
 });

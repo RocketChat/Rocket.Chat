@@ -2,6 +2,42 @@ import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelSidenav } from './fragments';
 
+class OmnichannelManageSlaPolicy {
+	private readonly page: Page;
+
+	constructor(page: Page) {
+		this.page = page;
+	}
+
+	get inputName(): Locator {
+		return this.page.locator('[name="name"]');
+	}
+
+	get inputDescription(): Locator {
+		return this.page.locator('[name="description"]');
+	}
+
+	get inputEstimatedWaitTime(): Locator {
+		return this.page.locator('[name="dueTimeInMinutes"]');
+	}
+
+	get btnClose() {
+		return this.page.locator('button.rcx-button >> text="Close"');
+	}
+
+	get btnCancel() {
+		return this.page.locator('button.rcx-button >> text="Cancel"');
+	}
+
+	get btnSave() {
+		return this.page.locator('button.rcx-button >> text="Save"');
+	}
+
+	errorMessage(message: string): Locator {
+		return this.page.locator(`.rcx-field__error >> text="${message}"`);
+	}
+}
+
 export class OmnichannelSlaPolicies {
 	private readonly page: Page;
 
@@ -41,41 +77,5 @@ export class OmnichannelSlaPolicies {
 
 	get txtEmptyState() {
 		return this.page.locator('div >> text="No data found"');
-	}
-}
-
-class OmnichannelManageSlaPolicy {
-	private readonly page: Page;
-
-	constructor(page: Page) {
-		this.page = page;
-	}
-
-	get inputName(): Locator {
-		return this.page.locator('[name="name"]');
-	}
-
-	get inputDescription(): Locator {
-		return this.page.locator('[name="description"]');
-	}
-
-	get inputEstimatedWaitTime(): Locator {
-		return this.page.locator('[name="dueTimeInMinutes"]');
-	}
-
-	get btnClose() {
-		return this.page.locator('button.rcx-button >> text="Close"');
-	}
-
-	get btnCancel() {
-		return this.page.locator('button.rcx-button >> text="Cancel"');
-	}
-
-	get btnSave() {
-		return this.page.locator('button.rcx-button >> text="Save"');
-	}
-
-	errorMessage(message: string): Locator {
-		return this.page.locator(`.rcx-field__error >> text="${message}"`);
 	}
 }

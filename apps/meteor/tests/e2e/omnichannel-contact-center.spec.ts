@@ -155,7 +155,7 @@ test.describe('Omnichannel Contact Center', () => {
 		});
 
 		await test.step('edit contact', async () => {
-			poContacts.contactInfo.btnEdit.click();
+			await poContacts.contactInfo.btnEdit.click();
 			await page.waitForURL(URL.editContact);
 		});
 

@@ -18,19 +18,13 @@ const userData = {
 // There currently are over 33 system messages. Testing only a couple due to test being too slow right now.
 // Ideally, we should test all.
 
-const a = async () => {
-	console.log('das');
-};
 test.describe.serial('System Messages', () => {
 	let adminPage: Page;
 	let poHomeChannel: HomeChannel;
 	let group: IRoom;
 	let user: IUser;
 
-	const findSysMes = (id: string): Locator => {
-		a();
-		return adminPage.locator(`[data-qa="system-message"][data-system-message-type="${id}"]`);
-	};
+	const findSysMes = (id: string): Locator => adminPage.locator(`[data-qa="system-message"][data-system-message-type="${id}"]`);
 
 	test.beforeAll(async ({ api, browser }) => {
 		expect((await setSettingValueById(api, 'Hide_System_Messages', [])).status()).toBe(200);

@@ -33,7 +33,7 @@ test.describe.parallel('administration', () => {
 		test('expect find "user1" user', async ({ page }) => {
 			await poAdmin.inputSearchUsers.type('user1');
 
-			expect(page.locator('table tr[qa-user-id="user1"]')).toBeVisible();
+			await expect(page.locator('table tr[qa-user-id="user1"]')).toBeVisible();
 		});
 
 		test('expect create a user', async () => {
