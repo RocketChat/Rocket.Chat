@@ -1,7 +1,7 @@
 import 'meteor/templating';
 import type { Blaze } from 'meteor/blaze';
 import type { ReactiveVar } from 'meteor/reactive-var';
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IOAuthApps, IRoom } from '@rocket.chat/core-typings';
 
 declare module 'meteor/blaze' {
 	namespace Blaze {
@@ -35,7 +35,14 @@ declare module 'meteor/templating' {
 		inputAutocomplete: BlazeTemplate;
 		_autocompleteContainer: BlazeTemplate;
 		_noMatch: BlazeTemplate;
-		authorize: BlazeTemplate;
+		authorize: BlazeTemplate<
+			{
+				client_id: () => string;
+			},
+			{
+				oauthApp: ReactiveVar<IOAuthApps | undefined>;
+			}
+		>;
 		oauth404: BlazeTemplate;
 		icon: BlazeTemplate<{
 			block?: string;
