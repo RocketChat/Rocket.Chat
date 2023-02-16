@@ -53,7 +53,7 @@ test.describe.serial('omnichannel-triggers', () => {
 		await expect(agent.poHomeOmnichannel.triggers.toastMessage).toBeVisible();
 	});
 
-	test('expect triggers to be displaye on Livechat', async ({ page }) => {
+	test('expect triggers to be displayed on Livechat', async ({ page }) => {
 		await test.step('Expect send a message as a visitor', async () => {
 			await page.goto('/livechat');
 			await poLiveChat.btnOpenLiveChat('R').click();

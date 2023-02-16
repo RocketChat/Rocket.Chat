@@ -21,7 +21,7 @@ export type TriggersFormType = {
 const defaultNewFormValues = {
 	name: '',
 	description: '',
-	enabled: false,
+	enabled: true,
 	runOnce: false,
 	conditions: {
 		name: 'page-url',
