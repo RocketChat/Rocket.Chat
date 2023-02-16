@@ -22,6 +22,9 @@ const getCurrentUserId = (): string | undefined => {
 
 roomCoordinator.add(DirectMessageRoomType, {
 	allowRoomSettingChange(_room, setting) {
+		if (isRoomFederated(_room)) {
+			return Federation.isRoomSettingAllowed(_room, setting);
+		}
 		switch (setting) {
 			case RoomSettingsEnum.TYPE:
 			case RoomSettingsEnum.NAME:
@@ -39,9 +42,9 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 	},
 
-	allowMemberAction(room: IRoom, action) {
+	allowMemberAction(room: IRoom, action, userId) {
 		if (isRoomFederated(room)) {
-			return Federation.actionAllowed(room, action);
+			return Federation.actionAllowed(room, action, userId);
 		}
 		switch (action) {
 			case RoomMemberActions.BLOCK:

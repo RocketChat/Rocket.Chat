@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { api, Team } from '@rocket.chat/core-services';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { hasPermission, getUsersInRole } from '../../app/authorization/server';
-import { Users, Subscriptions, Messages } from '../../app/models/server';
+import { Users, Subscriptions, Messages, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 
 Meteor.methods({
@@ -19,7 +20,8 @@ Meteor.methods({
 			});
 		}
 
-		if (!hasPermission(uid, 'set-owner', rid)) {
+		const room = Rooms.findOneById(rid, { fields: { t: 1, federated: 1 } });
+		if (!hasPermission(uid, 'set-owner', rid) && !isRoomFederated(room)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'removeRoomOwner',
 			});
@@ -71,18 +73,20 @@ Meteor.methods({
 			await Team.removeRolesFromMember(team._id, userId, ['owner']);
 		}
 
+		const event = {
+			type: 'removed',
+			_id: 'owner',
+			u: {
+				_id: user._id,
+				username: user.username,
+				name: user.name,
+			},
+			scope: rid,
+		};
 		if (settings.get('UI_DisplayRoles')) {
-			api.broadcast('user.roleUpdate', {
-				type: 'removed',
-				_id: 'owner',
-				u: {
-					_id: user._id,
-					username: user.username,
-					name: user.name,
-				},
-				scope: rid,
-			});
+			api.broadcast('user.roleUpdate', event);
 		}
+		api.broadcast('federation.userRoleChanged', { ...event, givenByUserId: uid });
 		return true;
 	},
 });
