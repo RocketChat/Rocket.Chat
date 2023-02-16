@@ -1,5 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
+import { Message, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -62,21 +62,6 @@ const RoomMessage = ({ message, sequential, all, mention, unread, context, ignor
 			data-qa-type='message'
 			aria-busy={message.temp}
 		>
-			<MessageLeftContainer>
-				{!sequential && message.u.username && !selecting && (
-					<UserAvatar
-						url={message.avatar}
-						username={message.u.username}
-						size='x36'
-						{...(chat?.userCard && {
-							onClick: chat?.userCard.open(message.u.username),
-							style: { cursor: 'pointer' },
-						})}
-					/>
-				)}
-				{selecting && <CheckBox checked={selected} onChange={toggleSelected} />}
-				{sequential && <StatusIndicators message={message} />}
-			</MessageLeftContainer>
 
 			<MessageContainer>
 				{!sequential && <MessageHeader message={message} />}
