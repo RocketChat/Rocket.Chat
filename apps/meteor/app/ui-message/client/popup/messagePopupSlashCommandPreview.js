@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
@@ -6,6 +5,7 @@ import { Template } from 'meteor/templating';
 import { slashCommands } from '../../../utils';
 import { hasAtLeastOnePermission } from '../../../authorization';
 import './messagePopupSlashCommandPreview.html';
+import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
 const keys = {
 	TAB: 9,
@@ -51,7 +51,7 @@ Template.messagePopupSlashCommandPreview.onCreated(function () {
 	this.dragging = false;
 
 	const template = this;
-	template.fetchPreviews = _.debounce(function _previewFetcher(cmd, args) {
+	template.fetchPreviews = withDebouncing({ wait: 500 })(function _previewFetcher(cmd, args) {
 		const command = cmd;
 		const params = args;
 		const { rid, tmid } = template.data;
@@ -77,7 +77,7 @@ Template.messagePopupSlashCommandPreview.onCreated(function () {
 				template.verifySelection();
 			});
 		});
-	}, 500);
+	});
 
 	template.enterKeyAction = () => {
 		const current = template.find('.popup-item.selected');

@@ -1,10 +1,10 @@
-import s from 'underscore.string';
 import _ from 'underscore';
 import { Settings } from '@rocket.chat/models';
 
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
+import { trim } from '../../../../lib/utils/stringUtils';
 
 export class LivechatRooms extends Base {
 	constructor(...args) {
@@ -96,8 +96,8 @@ export class LivechatRooms extends Base {
 		const unsetData = {};
 
 		if (topic != null) {
-			if (!_.isEmpty(s.trim(topic))) {
-				setData.topic = s.trim(topic);
+			if (!_.isEmpty(trim(topic))) {
+				setData.topic = trim(topic);
 			} else {
 				unsetData.topic = 1;
 			}
@@ -120,7 +120,7 @@ export class LivechatRooms extends Base {
 
 		if (livechatData) {
 			Object.keys(livechatData).forEach((key) => {
-				const value = s.trim(livechatData[key]);
+				const value = trim(livechatData[key]);
 				if (value) {
 					setData[`livechatData.${key}`] = value;
 				} else {

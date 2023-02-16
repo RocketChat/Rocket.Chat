@@ -35,11 +35,12 @@ class Providers {
 	}
 
 	getProviderForUrl(url: string): OEmbedProvider | undefined {
-		return _.find(this.providers, function (provider) {
-			const candidate = _.find(provider.urls, function (re) {
-				return re.test(url);
-			});
-			return candidate != null;
+		return this.providers?.find(function (provider) {
+			return (
+				provider.urls?.some(function (re) {
+					return re.test(url);
+				}) ?? false
+			);
 		});
 	}
 }
@@ -154,10 +155,7 @@ callbacks.add(
 			return cleanupOembed(data);
 		}
 
-		let queryString = data.parsedUrl.query;
-		if (_.isString(data.parsedUrl.query)) {
-			queryString = QueryString.parse(data.parsedUrl.query);
-		}
+		const queryString = typeof data.parsedUrl.query === 'string' ? QueryString.parse(data.parsedUrl.query) : data.parsedUrl.query;
 
 		if (!queryString.url) {
 			return cleanupOembed(data);
@@ -175,7 +173,7 @@ callbacks.add(
 		try {
 			const metas = JSON.parse(data.content.body);
 			_.each(metas, function (value, key) {
-				if (_.isString(value)) {
+				if (value && typeof value.valueOf() === 'string') {
 					data.meta[camelCase(`oembed_${key}`)] = value;
 				}
 			});
