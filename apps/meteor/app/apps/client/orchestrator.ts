@@ -6,14 +6,11 @@ import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage/IAppStorageItem';
 import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
-import type { AppScreenshot, AppRequestFilter, Pagination, IRestResponse, Serialized, AppRequest } from '@rocket.chat/core-typings';
+import type { AppScreenshot, AppRequestFilter, Serialized, AppRequestsStats, PaginatedAppRequests } from '@rocket.chat/core-typings';
 
-import type { App } from '../../../client/views/admin/apps/types';
+import type { App } from '../../../client/views/marketplace/types';
 import { dispatchToastMessage } from '../../../client/lib/toast';
-import { settings } from '../../settings/client';
 import { CachedCollectionManager } from '../../ui-cached-collection/client';
-import { createDeferredValue } from '../lib/misc/DeferredValue';
 import type {
 	// IAppFromMarketplace,
 	IAppLanguage,
@@ -38,28 +35,19 @@ class AppClientOrchestrator {
 
 	private ws: AppWebsocketReceiver;
 
-	private setEnabled: (value: boolean | PromiseLike<boolean>) => void;
-
-	private deferredIsEnabled: Promise<boolean> | undefined;
-
 	constructor() {
 		this._appClientUIHost = new RealAppsEngineUIHost();
 		this._manager = new AppClientManager(this._appClientUIHost);
 		this.isLoaded = false;
-		const { promise, resolve } = createDeferredValue<boolean>();
-		this.deferredIsEnabled = promise;
-		this.setEnabled = resolve;
 	}
 
-	public async load(isEnabled: boolean): Promise<void> {
+	public async load(): Promise<void> {
 		if (!this.isLoaded) {
 			this.ws = new AppWebsocketReceiver();
 			this.isLoaded = true;
 		}
 
 		await handleI18nResources();
-
-		this.setEnabled(isEnabled);
 	}
 
 	public getWsListener(): AppWebsocketReceiver {
@@ -84,12 +72,8 @@ class AppClientOrchestrator {
 		return screenshots;
 	}
 
-	public isEnabled(): Promise<boolean> | undefined {
-		return this.deferredIsEnabled;
-	}
-
-	public async getApps(): Promise<App[]> {
-		const result = await APIClient.get<'/apps'>('/apps');
+	public async getInstalledApps(): Promise<App[]> {
+		const result = await APIClient.get<'/apps/installed'>('/apps/installed');
 
 		if ('apps' in result) {
 			// TODO: chapter day: multiple results are returned, but we only need one
@@ -98,8 +82,8 @@ class AppClientOrchestrator {
 		throw new Error('Invalid response from API');
 	}
 
-	public async getAppsFromMarketplace(): Promise<App[]> {
-		const result = await APIClient.get('/apps', { marketplace: 'true' });
+	public async getAppsFromMarketplace(isAdminUser?: string): Promise<App[]> {
+		const result = await APIClient.get('/apps/marketplace', { isAdminUser });
 
 		if (!Array.isArray(result)) {
 			// TODO: chapter day: multiple results are returned, but we only need one
@@ -107,15 +91,17 @@ class AppClientOrchestrator {
 		}
 
 		return (result as App[]).map((app: App) => {
-			const { latest, price, pricingPlans, purchaseType, isEnterpriseOnly, modifiedAt, bundledIn } = app;
+			const { latest, appRequestStats, price, pricingPlans, purchaseType, isEnterpriseOnly, modifiedAt, bundledIn, requestedEndUser } = app;
 			return {
 				...latest,
+				appRequestStats,
 				price,
 				pricingPlans,
 				purchaseType,
 				isEnterpriseOnly,
 				modifiedAt,
 				bundledIn,
+				requestedEndUser,
 			};
 		});
 	}
@@ -206,8 +192,7 @@ class AppClientOrchestrator {
 	}
 
 	public async buildExternalUrl(appId: string, purchaseType: 'buy' | 'subscription' = 'buy', details = false): Promise<IAppExternalURL> {
-		const result = await APIClient.get('/apps', {
-			buildExternalUrl: 'true',
+		const result = await APIClient.get('/apps/buildExternalUrl', {
 			appId,
 			purchaseType,
 			details: `${details}`,
@@ -218,6 +203,17 @@ class AppClientOrchestrator {
 		}
 
 		throw new Error('Failed to build external url');
+	}
+
+	public async buildExternalAppRequest(appId: string) {
+		const result = await APIClient.get('/apps/buildExternalAppRequest', {
+			appId,
+		});
+
+		if ('url' in result) {
+			return result;
+		}
+		throw new Error('Failed to build App Request external url');
 	}
 
 	public async buildIncompatibleExternalUrl(appId: string, appVersion: string, action: string): Promise<IAppExternalURL> {
@@ -236,28 +232,32 @@ class AppClientOrchestrator {
 
 	public async appRequests(
 		appId: string,
-		filter: AppRequestFilter,
-		sort: string,
-		pagination: Pagination,
-	): Promise<IRestResponse<AppRequest>> {
+		filter?: AppRequestFilter,
+		sort?: string,
+		limit?: number,
+		offset?: number,
+	): Promise<PaginatedAppRequests> {
 		try {
-			const response: IRestResponse<AppRequest> = await APIClient.get(
-				`/apps/app-request?appId=${appId}&q=${filter}&sort=${sort}&limit=${pagination.limit}&offset=${pagination.offset}`,
-			);
+			const response = await APIClient.get(`/apps/app-request?appId=${appId}&q=${filter}&sort=${sort}&limit=${limit}&offset=${offset}`);
 
-			const restResponse = {
-				data: response.data,
-				meta: response.meta,
-			};
-
-			return restResponse;
+			return response;
 		} catch (e: unknown) {
 			throw new Error('Could not get the list of app requests');
 		}
 	}
 
+	public async getAppRequestsStats(): Promise<AppRequestsStats> {
+		try {
+			const response = await APIClient.get('/apps/app-request/stats');
+
+			return response;
+		} catch (e: unknown) {
+			throw new Error('Could not get the app requests stats');
+		}
+	}
+
 	public async getCategories(): Promise<Serialized<ICategory[]>> {
-		const result = await APIClient.get('/apps', { categories: 'true' });
+		const result = await APIClient.get('/apps/categories');
 
 		if (Array.isArray(result)) {
 			// TODO: chapter day: multiple results are returned, but we only need one
@@ -275,19 +275,7 @@ export const Apps = new AppClientOrchestrator();
 
 Meteor.startup(() => {
 	CachedCollectionManager.onLogin(() => {
-		Meteor.call('apps/is-enabled', (error: Error, isEnabled: boolean) => {
-			if (error) {
-				Apps.handleError(error);
-				return;
-			}
-
-			Apps.getAppClientManager().initialize();
-			Apps.load(isEnabled);
-		});
-	});
-
-	Tracker.autorun(() => {
-		const isEnabled = settings.get('/Apps_Framework_enabled');
-		Apps.load(isEnabled);
+		Apps.getAppClientManager().initialize();
+		Apps.load();
 	});
 });

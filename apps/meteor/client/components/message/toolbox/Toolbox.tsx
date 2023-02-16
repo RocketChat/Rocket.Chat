@@ -84,7 +84,7 @@ const Toolbox = ({ message, messageContext, room, subscription }: ToolboxProps):
 				<MessageToolboxItem
 					onClick={(e): void => action.action(e, { message, tabbar: toolbox, room, chat, autoTranslateOptions })}
 					key={action.id}
-					icon={action.icon}
+					icon={action.icon as any} // TODO: the union type coming from fuselage seems broken; it should be fix asap
 					title={t(action.label)}
 					data-qa-id={action.label}
 					data-qa-type='message-action-menu'
