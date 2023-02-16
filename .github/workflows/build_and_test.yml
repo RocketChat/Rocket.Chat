@@ -380,18 +380,18 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
 
-      - name: yarn install
-        run: yarn
-
-      - name: yarn build
-        run: yarn build
-
       - name: TurboRepo local server
         uses: felixmosh/turborepo-gh-artifacts@v2
         if: "${{ env.TURBO_TEAM != '' }}"
         with:
           repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
           server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
+
+      - name: yarn install
+        run: yarn
+
+      - name: yarn build
+        run: yarn build --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
 
       - name: Restore build
         uses: actions/download-artifact@v2
@@ -534,18 +534,18 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
 
-      - name: yarn install
-        run: yarn
-
-      - name: yarn build
-        run: yarn build
-
       - name: TurboRepo local server
         uses: felixmosh/turborepo-gh-artifacts@v2
         if: "${{ env.TURBO_TEAM != '' }}"
         with:
           repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
           server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
+
+      - name: yarn install
+        run: yarn
+
+      - name: yarn build
+        run: yarn build --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
 
       - name: Restore build
         uses: actions/download-artifact@v2
@@ -645,7 +645,7 @@ jobs:
         run: yarn
 
       - name: yarn build
-        run: yarn build
+        run: yarn build --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
 
       - name: Restore build
         uses: actions/download-artifact@v2
@@ -787,7 +787,7 @@ jobs:
         run: yarn
 
       - name: yarn build
-        run: yarn build
+        run: yarn build --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
 
       - name: Restore build
         uses: actions/download-artifact@v2
