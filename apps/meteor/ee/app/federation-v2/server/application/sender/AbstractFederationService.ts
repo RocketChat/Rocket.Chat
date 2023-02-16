@@ -4,7 +4,7 @@ import type { RocketChatSettingsAdapter } from '../../../../../../app/federation
 import { FederatedUserEE } from '../../domain/FederatedUser';
 import type { IFederationBridgeEE } from '../../domain/IFederationBridge';
 import type { RocketChatUserAdapterEE } from '../../infrastructure/rocket-chat/adapters/User';
-import type { IFederationInviteeDto } from '../input/RoomSenderDto';
+import type { IFederationInviteeDto } from './input/RoomSenderDto';
 
 export abstract class FederationServiceEE extends FederationService {
 	constructor(

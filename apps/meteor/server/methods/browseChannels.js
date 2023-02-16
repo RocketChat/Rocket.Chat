@@ -79,6 +79,7 @@ async function getChannelsAndGroups(user, canViewAnon, searchTerm, sort, paginat
 				usersCount: 1,
 				prid: 1,
 				teamId: 1,
+				federated: 1,
 			},
 		},
 	);
