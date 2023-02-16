@@ -5643,5 +5643,6 @@
   "cloud.RegisterWorkspace_Token_Step_One": "1. Go to: <1>cloud.rocket.chat > Workspaces</1> and click <3>'Register self-managed'</3>.",
   "cloud.RegisterWorkspace_Setup_Terms_Privacy": "I agree with <1>Terms and Conditions</1> and <3>Privacy Policy</3>",
   "Larger_amounts_of_active_connections": "For larger amounts of active connections you can consider our",
-  "multiple_instance_solutions": "multiple instance solutions"
+  "multiple_instance_solutions": "multiple instance solutions",
+  "Theme_Appearence": "Theme Appearence"
 }
