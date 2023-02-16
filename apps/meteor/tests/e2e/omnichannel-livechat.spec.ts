@@ -23,7 +23,7 @@ test.describe('Livechat', () => {
 
 		test.beforeAll(async ({ browser, api }) => {
 			const statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
-			expect(statusCode).toBe(200);
+			await expect(statusCode).toBe(200);
 
 			page = await browser.newPage();
 			poLiveChat = new OmnichannelLiveChat(page);
