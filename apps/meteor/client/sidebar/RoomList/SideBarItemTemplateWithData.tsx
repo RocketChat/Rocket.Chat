@@ -1,7 +1,7 @@
 /* eslint-disable react/display-name */
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom, isMultipleDirectMessageRoom, isOmnichannelRoom, isVideoConfMessage } from '@rocket.chat/core-typings';
-import { Badge, Sidebar, SidebarItemAction } from '@rocket.chat/fuselage';
+import { Badge, Sidebar, SidebarItemAction, Margins } from '@rocket.chat/fuselage';
 import type { useTranslation } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
@@ -9,7 +9,6 @@ import React, { memo, useMemo } from 'react';
 
 import { useOmnichannelPriorities } from '../../../ee/client/omnichannel/hooks/useOmnichannelPriorities';
 import { PriorityIcon } from '../../../ee/client/omnichannel/priorities/PriorityIcon';
-import { InlineGroup } from '../../components/InlineGroup';
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import RoomMenu from '../RoomMenu';
@@ -84,7 +83,6 @@ function SideBarItemTemplateWithData({
 	SideBarItemTemplate,
 	AvatarTemplate,
 	t,
-	// sidebarViewMode,
 	isAnonymous,
 	videoConfActions,
 }: RoomListRowProps): ReactElement {
@@ -130,25 +128,25 @@ function SideBarItemTemplateWithData({
 	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 
-	const threadUnread = tunread.length > 0;
 	const message = extended && getMessage(room, lastMessage, t);
-
 	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
+
+	const threadUnread = tunread.length > 0;
 	const variant =
 		((userMentions || tunreadUser.length) && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'ghost';
+
 	const isUnread = unread > 0 || threadUnread;
-	const showBadge = !hideUnreadStatus || (!hideMentionStatus && userMentions);
+	const showBadge = !hideUnreadStatus || (!hideMentionStatus && Boolean(userMentions));
 
 	const badges = (
-		<InlineGroup gap={8}>
-			{showBadge &&
-				isUnread && ( // TODO: Remove any
-					<Badge {...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)} variant={variant}>
-						{unread + tunread?.length}
-					</Badge>
-				)}
+		<Margins inlineStart={8}>
+			{showBadge && isUnread && (
+				<Badge {...({ style: { display: 'inline-flex', flexShrink: 0 } } as any)} variant={variant}>
+					{unread + tunread?.length}
+				</Badge>
+			)}
 			{isOmnichannelRoom(room) && isPriorityEnabled && <PriorityIcon level={room.priorityWeight} />}
-		</InlineGroup>
+		</Margins>
 	);
 
 	return (
