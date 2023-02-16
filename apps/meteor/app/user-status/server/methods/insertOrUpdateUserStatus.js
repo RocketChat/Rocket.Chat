@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import s from 'underscore.string';
 import { CustomUserStatus } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
 import { hasPermission } from '../../../authorization';
+import { trim } from '../../../../lib/utils/stringUtils';
 
 Meteor.methods({
 	async insertOrUpdateUserStatus(userStatusData) {
@@ -11,7 +11,7 @@ Meteor.methods({
 			throw new Meteor.Error('not_authorized');
 		}
 
-		if (!s.trim(userStatusData.name)) {
+		if (!trim(userStatusData.name)) {
 			throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', {
 				method: 'insertOrUpdateUserStatus',
 				field: 'Name',

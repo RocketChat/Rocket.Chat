@@ -1,6 +1,6 @@
-import { expect, test } from './utils/test';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel, createTargetTeam, createDirectMessage } from './utils';
+import { expect, test } from './utils/test';
 
 test.use({ storageState: 'user1-session.json' });
 

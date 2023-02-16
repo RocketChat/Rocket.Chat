@@ -1,6 +1,6 @@
-import { test, expect } from './utils/test';
-import { HomeDiscussion } from './page-objects';
 import { IS_EE } from './config/constants';
+import { HomeDiscussion } from './page-objects';
+import { test, expect } from './utils/test';
 
 test.use({ storageState: 'admin-session.json' });
 
