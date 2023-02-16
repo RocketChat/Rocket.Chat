@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
 
-import { test, expect } from './utils/test';
-import { createTargetChannel } from './utils';
 import { HomeTeam } from './page-objects';
+import { createTargetChannel } from './utils';
+import { test, expect } from './utils/test';
 
 test.use({ storageState: 'admin-session.json' });
 

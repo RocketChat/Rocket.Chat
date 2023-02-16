@@ -1,10 +1,10 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import type { Locator, Page } from '@playwright/test';
 import faker from '@faker-js/faker';
+import type { Locator, Page } from '@playwright/test';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
-import { test, expect } from './utils/test';
-import { setSettingValueById } from './utils/setSettingValueById';
 import { HomeChannel } from './page-objects';
+import { setSettingValueById } from './utils/setSettingValueById';
+import { test, expect } from './utils/test';
 
 test.use({ storageState: 'admin-session.json' });
 
@@ -17,15 +17,14 @@ const userData = {
 
 // There currently are over 33 system messages. Testing only a couple due to test being too slow right now.
 // Ideally, we should test all.
+
 test.describe.serial('System Messages', () => {
 	let adminPage: Page;
 	let poHomeChannel: HomeChannel;
 	let group: IRoom;
 	let user: IUser;
 
-	const findSysMes = (id: string): Locator => {
-		return adminPage.locator(`[data-qa="system-message"][data-system-message-type="${id}"]`);
-	};
+	const findSysMes = (id: string): Locator => adminPage.locator(`[data-qa="system-message"][data-system-message-type="${id}"]`);
 
 	test.beforeAll(async ({ api, browser }) => {
 		expect((await setSettingValueById(api, 'Hide_System_Messages', [])).status()).toBe(200);
