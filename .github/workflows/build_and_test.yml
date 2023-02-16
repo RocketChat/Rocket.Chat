@@ -158,11 +158,11 @@ jobs:
         if: startsWith(github.ref, 'refs/pull/') == true
         env:
           METEOR_PROFILE: 1000
-        run: yarn build:ci --api="http://127.0.0.1:9080" -- --debug --directory dist
+        run: yarn build:ci --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc' -- --debug --directory dist
 
       - name: Build Rocket.Chat
         if: startsWith(github.ref, 'refs/pull/') != true
-        run: yarn build:ci --api="http://127.0.0.1:9080" -- --directory dist
+        run: yarn build:ci --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc' -- --directory dist
 
       - name: Prepare build
         run: |
