@@ -39,7 +39,18 @@ type appButtonResponseProps = {
 export type appStatusSpanResponseProps = {
 	type?: 'failed' | 'warning';
 	icon?: 'warning' | 'checkmark-circled' | 'check';
-	label: 'Config Needed' | 'Failed' | 'Disabled' | 'Trial period' | 'Installed' | 'Incompatible' | 'request' | 'requests' | 'Requested';
+	label:
+		| 'Config Needed'
+		| 'Failed'
+		| 'Disabled'
+		| 'Disabled*'
+		| 'Trial period'
+		| 'Enabled'
+		| 'Enabled*'
+		| 'Incompatible'
+		| 'request'
+		| 'requests'
+		| 'Requested';
 	tooltipText?: string;
 };
 
@@ -286,23 +297,32 @@ export const appIncompatibleStatusProps = (): appStatusSpanResponseProps => ({
 });
 
 export const appStatusSpanProps = (
-	{ installed, status, subscriptionInfo, appRequestStats }: App,
+	{ installed, status, subscriptionInfo, appRequestStats, migrated }: App,
 	context?: string,
 	isAppDetailsPage?: boolean,
 ): appStatusSpanResponseProps | undefined => {
 	const isEnabled = status && appEnabledStatuses.includes(status);
 	if (installed) {
 		if (isEnabled) {
-			return {
-				icon: 'check',
-				label: 'Installed',
-			};
+			return migrated
+				? {
+						label: 'Enabled*',
+						tooltipText: t('Grandfathered_app'),
+				  }
+				: {
+						label: 'Enabled',
+				  };
 		}
 
-		return {
-			type: 'warning',
-			label: 'Disabled',
-		};
+		return migrated
+			? {
+					label: 'Disabled*',
+					tooltipText: t('Grandfathered_app'),
+			  }
+			: {
+					type: 'warning',
+					label: 'Disabled',
+			  };
 	}
 
 	const isFailed = status && appErroredStatuses.includes(status);

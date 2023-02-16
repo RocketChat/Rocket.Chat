@@ -2297,6 +2297,7 @@
   "GoogleTagManager_id": "Google Tag Manager Id",
   "Got_it": "Got it",
   "Government": "Government",
+  "Grandfathered_app": "Grandfathered app - counts towards app limit but limit is not applied to this app",
   "Graphql_CORS": "GraphQL CORS",
   "Graphql_Enabled": "GraphQL Enabled",
   "Graphql_Subscription_Port": "GraphQL Subscription Port",
