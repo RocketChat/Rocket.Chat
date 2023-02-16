@@ -1051,19 +1051,18 @@
 	}
 }
 
-.rc-old .message-popup-items.preview-items {
-	display: flex;
-	overflow-y: auto;
-}
-
 .rc-old .preview-items .popup-item {
-	padding: 5px;
+	margin: 2px;
 
-	line-height: unset;
-}
+	padding: 0;
 
-.rc-old .message-popup.popup-with-reply-preview {
-	border-radius: 5px 5px 0 0;
+	cursor: pointer;
+
+	user-select: none;
+
+	border: solid 1px transparent;
+
+	line-height: initial;
 }
 
 .rc-old .message-popup {
@@ -1077,58 +1076,6 @@
 
 	border-radius: 5px;
 	box-shadow: 0 -1px 10px 0 rgba(0, 0, 0, 0.2), 0 1px 1px rgba(0, 0, 0, 0.16);
-}
-
-.rc-old .popup-item {
-	padding: 0 20px;
-
-	cursor: pointer;
-	user-select: none;
-
-	line-height: 32px;
-}
-
-.rc-old .popup-user-avatar {
-	display: inline-block;
-
-	width: 24px;
-	height: 24px;
-	margin: -7px 4px;
-
-	border-radius: 3px;
-	background-size: contain;
-}
-
-.rc-old .popup-user-not_in_channel {
-	overflow: hidden;
-
-	white-space: nowrap;
-	text-overflow: ellipsis;
-}
-
-.rc-old .popup-user {
-	display: flex;
-	align-items: center;
-
-	&-avatar_wrap,
-	&-name {
-		margin-right: 4px;
-		flex-shrink: 0;
-	}
-}
-
-.rc-old .popup-user-notice {
-	min-width: 0;
-	margin-left: auto;
-}
-
-.rc-old .popup-user-status {
-	display: inline-block;
-
-	width: 10px;
-	height: 10px;
-
-	border-radius: 10px;
 }
 
 .messages-box {
