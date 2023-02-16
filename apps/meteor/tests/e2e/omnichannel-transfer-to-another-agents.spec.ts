@@ -22,15 +22,15 @@ test.describe('omnichannel-transfer-to-another-agent', () => {
 	test.beforeAll(async ({ api, browser }) => {
 		// Set user user 1 as manager and agent
 		let statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
-		expect(statusCode).toBe(200);
+		await expect(statusCode).toBe(200);
 		statusCode = (await api.post('/livechat/users/agent', { username: 'user2' })).status();
-		expect(statusCode).toBe(200);
+		await expect(statusCode).toBe(200);
 		statusCode = (await api.post('/livechat/users/manager', { username: 'user1' })).status();
-		expect(statusCode).toBe(200);
+		await expect(statusCode).toBe(200);
 
 		// turn off setting which allows offline agents to chat
 		statusCode = (await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false })).status();
-		expect(statusCode).toBe(200);
+		await expect(statusCode).toBe(200);
 
 		agent1 = await createAuxContext(browser, 'user1-session.json');
 		agent2 = await createAuxContext(browser, 'user2-session.json');
@@ -56,15 +56,15 @@ test.describe('omnichannel-transfer-to-another-agent', () => {
 	test.afterAll(async ({ api }) => {
 		// delete "user-1" & "user-2" from agents & managers
 		let statusCode = (await api.delete('/livechat/users/agent/user1')).status();
-		expect(statusCode).toBe(200);
+		await expect(statusCode).toBe(200);
 		statusCode = (await api.delete('/livechat/users/manager/user1')).status();
-		expect(statusCode).toBe(200);
+		await expect(statusCode).toBe(200);
 		statusCode = (await api.delete('/livechat/users/agent/user2')).status();
-		expect(statusCode).toBe(200);
+		await expect(statusCode).toBe(200);
 
 		// turn on setting which allows offline agents to chat
 		statusCode = (await api.post('/settings/Livechat_enabled_when_agent_idle', { value: true })).status();
-		expect(statusCode).toBe(200);
+		await expect(statusCode).toBe(200);
 	});
 
 	test('transfer omnichannel chat to another agent', async () => {
