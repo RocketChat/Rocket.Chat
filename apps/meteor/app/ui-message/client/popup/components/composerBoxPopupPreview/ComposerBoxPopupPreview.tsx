@@ -1,66 +1,141 @@
 import { Box, Skeleton, Tile } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useQuery } from '@tanstack/react-query';
-import React from 'react';
+import { useMethod } from '@rocket.chat/ui-contexts';
+import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 
-type IComposerBoxPopupPreviewProps = {
-	title: string;
-};
+import { useChat } from '../../../../../../client/views/room/contexts/ChatContext';
+import type { ComposerBoxPopupProps } from '../../ComposerBoxPopup';
 
-const ComposerBoxPopupPreview = ({ title, ...props }: IComposerBoxPopupPreviewProps) => {
+type ComposerBoxPopupPreviewItem = { _id: string; type: 'image' | 'video' | 'audio' | 'text' | 'other'; value: string; sort?: number };
+
+const ComposerBoxPopupPreview = forwardRef<
+	| {
+			getFilter: () => unknown;
+			select?: (s: ComposerBoxPopupPreviewItem) => void;
+	  }
+	| undefined,
+	ComposerBoxPopupProps<ComposerBoxPopupPreviewItem> & {
+		rid: string;
+		tmid?: string;
+		suspended?: boolean;
+	}
+>(({ focused, items, rid, tmid, select, suspended }, ref) => {
 	const id = useUniqueId();
+	const chat = useChat();
+	const executeSlashCommandPreviewMethod = useMethod('executeSlashCommandPreview');
+	useImperativeHandle(
+		ref,
+		() => ({
+			getFilter: () => {
+				const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
+				if (!value) {
+					throw new Error('No value');
+				}
+				const matches = value.match(/(\/[\w\d\S]+ )([^]*)$/);
 
-	const items = useQuery<{
-		_id: string;
-	}>(['items'], async () => []);
+				if (!matches) {
+					throw new Error('No matches');
+				}
+
+				const cmd = matches[1].replace('/', '').trim().toLowerCase();
+
+				const params = matches[2];
+				return { cmd, params, msg: { rid, tmid } };
+			},
+			select: (item) => {
+				const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
+				if (!value) {
+					throw new Error('No value');
+				}
+				const matches = value.match(/(\/[\w\d\S]+ )([^]*)$/);
+
+				if (!matches) {
+					throw new Error('No matches');
+				}
+
+				const cmd = matches[1].replace('/', '').trim().toLowerCase();
+
+				const params = matches[2];
+				// TODO: Fix this solve the typing issue
+				executeSlashCommandPreviewMethod({ cmd, params, msg: { rid, tmid } }, { id: item._id, type: item.type, value: item.value });
+				chat?.composer?.setText('');
+			},
+		}),
+		[chat?.composer, executeSlashCommandPreviewMethod, rid, tmid],
+	);
+
+	const itemsFlat = items
+		.flatMap((item) => {
+			if (item.isSuccess) {
+				return item.data;
+			}
+			return [];
+		})
+		.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0));
+
+	const isLoading = items.some((item) => item.isLoading && item.fetchStatus !== 'idle');
+
+	useEffect(() => {
+		if (focused) {
+			const element = document.getElementById(`popup-item-${focused._id}`);
+			if (element) {
+				element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+			}
+		}
+	}, [focused]);
+
+	if (suspended) {
+		return null;
+	}
+
 	return (
-		<div className='message-popup-position'>
-			<Box className='message-popup-position' position='relative'>
-				<Tile className='message-popup' padding={0} role='menu' mbe='x2' maxHeight='20rem' aria-labelledby={id}>
-					<Box bg='tint' pi='x16' pb='x8' id={id}>
-						{title}
-					</Box>
-					{items.isLoading && <Skeleton />}
+		<Box className='message-popup-position' position='relative'>
+			<Tile className='message-popup' padding={0} role='menu' mbe='x2' maxHeight='20rem' aria-labelledby={id}>
+				{/* <Box bg='tint' pi='x16' pb='x8' id={id}>
+						{isLoading ? <Skeleton /> : data?.i18nTitle}
+					</Box> */}
+				{isLoading && <Skeleton />}
 
-					{items.isSuccess && (
-						<div className='message-popup-items preview-items'>
-							{items.data.map((item) => {
+				{!isLoading && (
+					<>
+						<div className='message-popup-items preview-items' role='listbox'>
+							{itemsFlat.map((item) => {
 								return (
-									<div className='popup-item' id={item._id} key={item._id}>
-										{/* //     {{ #if isType 'image' type }}
-                                //     <img src="{{value}}" alt="{{value}}">
-                                //         {{/if}}
-
-                                //         {{ #if isType 'audio' type }}
-                                //         <audio controls>
-                                //             <source src="{{value}}">
-                                //                 Your browser does not support the audio element.
-                                //         </audio>
-                                //         {{/if}}
-
-                                //         {{ #if isType 'video' type }}
-                                //         <video controls class="inline-video">
-                                //             <source src="{{value}}">
-                                //                 Your browser does not support the video element.
-                                //         </video>
-                                //         {{/if}}
-
-                                //         {{ #if isType 'text' type }}
-                                //         <h4>{{ value }}</h4> <!-- Not sure what to do here -->
-                                //         {{/if}}
-
-                                //         {{ #if isType 'other' type }}
-                                //         <code>{{ value }}</code>
-                                //         {{/if}} */}
-									</div>
+									<Box
+										onClick={() => select(item)}
+										role='option'
+										className={['popup-item', item === focused && 'selected'].filter(Boolean).join(' ')}
+										id={`popup-item-${item._id}`}
+										key={item._id}
+										bg={item === focused ? 'selected' : undefined}
+										borderColor={item === focused ? 'highlight' : undefined}
+										tabIndex={item === focused ? 0 : -1}
+										aria-selected={item === focused}
+									>
+										{item.type === 'image' && <img src={item.value} alt={item._id} />}
+										{item.type === 'audio' && (
+											<audio controls>
+												<source src={item.value} />
+												Your browser does not support the audio element.
+											</audio>
+										)}
+										{item.type === 'video' && (
+											<video controls className='inline-video'>
+												<source src={item.value} />
+												Your browser does not support the video element.
+											</video>
+										)}
+										{item.type === 'text' && <h4>{item.value}</h4>}
+										{item.type === 'other' && <code>{item.value}</code>}
+									</Box>
 								);
 							})}
 						</div>
-					)}
-				</Tile>
-			</Box>
-		</div>
+					</>
+				)}
+			</Tile>
+		</Box>
 	);
-};
+});
 
 export default ComposerBoxPopupPreview;
