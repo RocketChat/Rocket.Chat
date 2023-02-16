@@ -16,8 +16,8 @@ import {
 	useVideoConfManager,
 	useVideoConfSetPreferences,
 } from '../../../contexts/VideoConfContext';
-import { renderMessageBody } from '../../../lib/utils/renderMessageBody';
 import { useVideoConfWarning } from '../../../views/room/contextualBar/VideoConference/useVideoConfWarning';
+import ParsedText from './uikit/ParsedText';
 
 let patched = false;
 const patchMessageParser = () => {
@@ -33,11 +33,11 @@ const patchMessageParser = () => {
 			return <>{text}</>;
 		}
 
-		return <span dangerouslySetInnerHTML={{ __html: renderMessageBody({ msg: text }) }} />;
+		return <ParsedText text={text} />;
 	};
 
 	// TODO: move this to fuselage-ui-kit itself
-	messageParser.mrkdwn = ({ text }) => (text ? <span dangerouslySetInnerHTML={{ __html: renderMessageBody({ msg: text }) }} /> : null);
+	messageParser.mrkdwn = ({ text }) => <ParsedText text={text} />;
 };
 
 type UiKitSurfaceProps = {
