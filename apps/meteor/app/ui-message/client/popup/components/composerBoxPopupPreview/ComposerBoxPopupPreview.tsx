@@ -3,7 +3,6 @@ import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useMethod } from '@rocket.chat/ui-contexts';
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 
-import ScrollableContentWrapper from '../../../../../../client/components/ScrollableContentWrapper';
 import { useChat } from '../../../../../../client/views/room/contexts/ChatContext';
 import type { ComposerBoxPopupProps } from '../../ComposerBoxPopup';
 
