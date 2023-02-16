@@ -26,7 +26,7 @@
 		"debug-brk": "meteor run --inspect-brk",
 		"lint": "yarn stylelint && yarn eslint",
 		"eslint": "eslint  --ext .js,.jsx,.ts,.tsx .  --cache",
-		"eslint:fix": "eslint --ext .js,.jsx,.ts,.tsx './tests/e2e/**/*.ts' --fix --cache",
+		"eslint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix --cache",
 		"obj:dev": "TEST_MODE=true yarn dev",
 		"stylelint": "stylelint \"app/**/*.css\" \"client/**/*.css\" \"app/**/*.less\" \"client/**/*.less\" \"ee/**/*.less\"",
 		"stylelint:fix": "stylelint --fix \"app/**/*.css\" \"client/**/*.css\" \"app/**/*.less\" \"client/**/*.less\" \"ee/**/*.less\"",
