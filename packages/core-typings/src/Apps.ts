@@ -124,4 +124,5 @@ export type App = {
 	requestedEndUser?: boolean;
 	private: boolean;
 	documentationUrl: string;
+	migrated: boolean;
 };

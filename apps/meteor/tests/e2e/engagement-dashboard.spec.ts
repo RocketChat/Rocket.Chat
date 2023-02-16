@@ -1,5 +1,5 @@
-import { test, expect } from './utils/test';
 import { IS_EE } from './config/constants';
+import { test, expect } from './utils/test';
 
 test.skip(!IS_EE, 'Engagemente Dashboard > Enterprise Only');
 
