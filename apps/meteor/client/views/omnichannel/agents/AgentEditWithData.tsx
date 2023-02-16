@@ -20,16 +20,16 @@ const AgentEditWithData = ({ uid, reload }: AgentEditWithDataProps): ReactElemen
 
 	const getAgentDepartments = useEndpoint('GET', '/v1/livechat/agents/:agentId/departments', { agentId: uid });
 
-	const { data, isLoading: state, error } = useQuery(['getAgent'], async () => getAgent());
+	const { data, isInitialLoading: state, error } = useQuery(['getAgent'], async () => getAgent());
 	const {
 		data: userDepartments,
-		isLoading: userDepartmentsState,
+		isInitialLoading: userDepartmentsState,
 		error: userDepartmentsError,
-	} = useQuery(['getAgentDepartments'], async () => getAgentDepartments());
+	} = useQuery({ queryKey: ['getAgentDepartments'], queryFn: async () => getAgentDepartments(), cacheTime: 0 });
 
 	const {
 		data: availableDepartments,
-		isLoading: availableDepartmentsState,
+		isInitialLoading: availableDepartmentsState,
 		error: availableDepartmentsError,
 	} = useQuery(['getDepartments'], async () => getDepartments({ showArchived: 'true' }));
 
