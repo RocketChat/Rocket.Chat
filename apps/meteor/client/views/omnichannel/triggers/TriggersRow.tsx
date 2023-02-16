@@ -1,13 +1,12 @@
 import { Table, IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import type { Key } from 'react';
 import React, { memo } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 
 const TriggersRow = memo(function TriggersRow(props: {
-	_id?: Key;
+	_id: string;
 	name?: string;
 	description?: string;
 	enabled?: boolean;
@@ -28,7 +27,7 @@ const TriggersRow = memo(function TriggersRow(props: {
 	const handleClick = useMutableCallback(() => {
 		bhRoute.push({
 			context: 'edit',
-			id: _id as string,
+			id: _id,
 		});
 	});
 

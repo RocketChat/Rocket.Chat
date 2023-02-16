@@ -4,19 +4,15 @@ import type { Dispatch, Key, RefObject, SetStateAction } from 'react';
 import React from 'react';
 
 import GenericTable from '../../../components/GenericTable';
+import type { GenericTableParams } from '../../../components/GenericTable/GenericTable';
 import { useResizeInlineBreakpoint } from '../../../hooks/useResizeInlineBreakpoint';
 import TriggersRow from './TriggersRow';
-
-type paramsType = {
-	current: number;
-	itemsPerPage: 25 | 50 | 100;
-};
 
 type TriggersTableProps = {
 	triggers: Serialized<ILivechatTrigger>[];
 	totalTriggers: number;
-	params: paramsType;
-	onChangeParams: Dispatch<SetStateAction<paramsType>>;
+	params: GenericTableParams;
+	onChangeParams: Dispatch<SetStateAction<GenericTableParams>>;
 	onDelete: () => void;
 };
 
