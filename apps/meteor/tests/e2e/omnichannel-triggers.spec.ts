@@ -31,7 +31,6 @@ test.describe.serial('omnichannel-triggers', () => {
 			api.post('/livechat/users/agent', { username: 'user1' }),
 			api.post('/livechat/users/manager', { username: 'user1' }),
 		]);
-		console.log('--------------------- done');
 		agent = await createAuxContext(browser, 'user1-session.json');
 	});
 

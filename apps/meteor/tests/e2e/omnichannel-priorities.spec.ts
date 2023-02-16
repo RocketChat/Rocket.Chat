@@ -75,6 +75,7 @@ test.describe.serial('Omnichannel Priorities', () => {
 				await poOmnichannelPriorities.managePriority.btnSave.click();
 
 				await Promise.all([
+					poOmnichannelPriorities.btnCloseToastSuccess.click(),
 					expect(poOmnichannelPriorities.managePriority.inputName).not.toBeVisible(),
 					expect(poOmnichannelPriorities.findPriority(PRIORITY_NAME)).toBeVisible(),
 					expect(poOmnichannelPriorities.findPriority('Highest')).not.toBeVisible(),

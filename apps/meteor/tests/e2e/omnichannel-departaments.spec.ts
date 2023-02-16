@@ -124,8 +124,22 @@ test.describe.serial('omnichannel-departments', () => {
 	});
 
 	test('Tags', async () => {
+		const tagsDepartmentName = faker.datatype.uuid();
+
+		await test.step('expect create new department', async () => {
+			await poOmnichannelDepartments.btnNew.click();
+			await poOmnichannelDepartments.btnEnabled.click();
+			await poOmnichannelDepartments.inputName.fill(tagsDepartmentName);
+			await poOmnichannelDepartments.inputEmail.fill(faker.internet.email());
+			await poOmnichannelDepartments.btnSave.click();
+			await poOmnichannelDepartments.btnCloseToastSuccess.click();
+
+			await poOmnichannelDepartments.inputSearch.fill(tagsDepartmentName);
+			await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
+		});
+
 		await test.step('expect save form button be disabled', async () => {
-			await poOmnichannelDepartments.inputSearch.fill(departmentName);
+			await poOmnichannelDepartments.inputSearch.fill(tagsDepartmentName);
 			await poOmnichannelDepartments.firstRowInTableMenu.click();
 			await poOmnichannelDepartments.menuEditOption.click();
 			await expect(poOmnichannelDepartments.btnSave).toBeDisabled();
@@ -133,7 +147,7 @@ test.describe.serial('omnichannel-departments', () => {
 		});
 
 		await test.step('Disabled tags state', async () => {
-			await poOmnichannelDepartments.inputSearch.fill(departmentName);
+			await poOmnichannelDepartments.inputSearch.fill(tagsDepartmentName);
 			await poOmnichannelDepartments.firstRowInTableMenu.click();
 			await poOmnichannelDepartments.menuEditOption.click();
 
@@ -148,7 +162,7 @@ test.describe.serial('omnichannel-departments', () => {
 		});
 
 		await test.step('Enabled tags state', async () => {
-			await poOmnichannelDepartments.inputSearch.fill(departmentName);
+			await poOmnichannelDepartments.inputSearch.fill(tagsDepartmentName);
 			await poOmnichannelDepartments.firstRowInTableMenu.click();
 			await poOmnichannelDepartments.menuEditOption.click();
 
