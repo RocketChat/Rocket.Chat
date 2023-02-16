@@ -5,7 +5,7 @@ import { OAuthApps, Users } from '@rocket.chat/models';
 import { Random } from 'meteor/random';
 import { v4 as uuidv4 } from 'uuid';
 
-import type { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 export class AppOAuthAppsBridge extends OAuthAppsBridge {
 	constructor(private readonly orch: AppServerOrchestrator) {

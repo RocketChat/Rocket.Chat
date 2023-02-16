@@ -7,7 +7,7 @@ import type { IApiRequest, IApiEndpoint, IApi } from '@rocket.chat/apps-engine/d
 import type { AppApi } from '@rocket.chat/apps-engine/server/managers/AppApi';
 import type { RequestMethod } from '@rocket.chat/apps-engine/definition/accessors';
 
-import type { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { authenticationMiddleware } from '../../../api/server/middlewares/authentication';
 
 const apiServer = express();

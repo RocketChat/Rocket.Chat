@@ -1,8 +1,8 @@
 import type { AppSignatureManager } from '@rocket.chat/apps-engine/server/managers/AppSignatureManager';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 
-import { Apps } from '../../../app/apps/server';
-import type { AppRealStorage } from '../../../app/apps/server/storage';
+import { Apps } from '../../../ee/server/apps';
+import type { AppRealStorage } from '../../../ee/server/apps/storage';
 import { addMigration } from '../../lib/migrations';
 
 addMigration({

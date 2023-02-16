@@ -5,7 +5,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC, MutableRefObject } from 'react';
 import React, { useMemo, useEffect } from 'react';
 
-import type { ISettings } from '../../../../../../app/apps/client/@types/IOrchestrator';
+import type { ISettings } from '../../../../../../ee/client/apps/@types/IOrchestrator';
 import { useForm } from '../../../../../hooks/useForm';
 import AppSettingsAssembler from './AppSettingsAssembler';
 

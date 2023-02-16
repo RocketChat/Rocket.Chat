@@ -1,8 +1,8 @@
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 
-import { getWorkspaceAccessToken } from '../../../cloud/server';
-import { settings } from '../../../settings/server';
-import { Info } from '../../../utils/server';
+import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
+import { settings } from '../../../../app/settings/server';
+import { Info } from '../../../../app/utils/server';
 
 export type installAction = 'install' | 'update' | 'uninstall';
 

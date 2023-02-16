@@ -4,7 +4,7 @@ import { capitalize } from '@rocket.chat/string-helpers';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import type { ISettings } from '../../../../../../app/apps/client/@types/IOrchestrator';
+import type { ISettings } from '../../../../../../ee/client/apps/@types/IOrchestrator';
 import AppSetting from './AppSetting';
 
 type AppSettingsAssemblerProps = {

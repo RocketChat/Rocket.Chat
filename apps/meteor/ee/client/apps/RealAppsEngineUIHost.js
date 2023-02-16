@@ -1,10 +1,10 @@
+import { AppsEngineUIHost } from '@rocket.chat/apps-engine/client/AppsEngineUIHost';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
-import { AppsEngineUIHost } from '@rocket.chat/apps-engine/client/AppsEngineUIHost';
 
-import { Rooms } from '../../models/client';
-import { APIClient } from '../../utils/client';
-import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
+import { Rooms } from '../../../app/models/client';
+import { APIClient } from '../../../app/utils/client';
+import { getUserAvatarURL } from '../../../app/utils/lib/getUserAvatarURL';
 import { baseURI } from '../../../client/lib/baseURI';
 
 export class RealAppsEngineUIHost extends AppsEngineUIHost {

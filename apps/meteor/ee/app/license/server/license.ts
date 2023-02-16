@@ -11,7 +11,7 @@ import { getTagColor } from './getTagColor';
 import type { ILicense, LicenseAppSources } from '../definition/ILicense';
 import type { ILicenseTag } from '../definition/ILicenseTag';
 import { isUnderAppLimits } from './lib/isUnderAppLimits';
-import type { AppServerOrchestrator } from '../../../../app/apps/server/orchestrator';
+import type { AppServerOrchestrator } from '../../../server/apps/orchestrator';
 
 const EnterpriseLicenses = new EventEmitter();
 
@@ -47,9 +47,10 @@ class LicenseClass {
 		 * in the import order and ends up causing an error during the server initialization
 		 *
 		 * We added a dynamic import here to avoid this issue
+		 * @TODO as soon as the Apps-Engine service is available, use it instead of this dynamic import
 		 */
 		// eslint-disable-next-line @typescript-eslint/naming-convention
-		import('../../../../app/apps/server').then(({ Apps }) => {
+		import('../../../server/apps').then(({ Apps }) => {
 			this.Apps = Apps;
 		});
 	}

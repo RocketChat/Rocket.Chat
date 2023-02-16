@@ -4,19 +4,19 @@ import { Settings, Users as UsersRaw } from '@rocket.chat/models';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 
-import { API } from '../../../api/server';
-import { getUploadFormData } from '../../../api/server/lib/getUploadFormData';
-import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../cloud/server';
-import { settings } from '../../../settings/server';
-import { Info } from '../../../utils';
-import { Users } from '../../../models/server';
+import { API } from '../../../../app/api/server';
+import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormData';
+import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
+import { settings } from '../../../../app/settings/server';
+import { Info } from '../../../../app/utils';
+import { Users } from '../../../../app/models/server';
 import { Apps } from '../orchestrator';
-import { formatAppInstanceForRest } from '../../lib/misc/formatAppInstanceForRest';
+import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { fetch } from '../../../../server/lib/http/fetch';
-import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+import { apiDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
 import { notifyAppInstall } from '../marketplace/appInstall';
-import { canEnableApp } from '../../../../ee/app/license/server/license';
+import { canEnableApp } from '../../../app/license/server/license';
 import { appsCountHandler } from './endpoints/appsCountHandler';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
 

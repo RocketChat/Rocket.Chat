@@ -1,6 +1,6 @@
 import type { App, AppPermission } from '@rocket.chat/core-typings';
 
-import { Apps } from '../../../../app/apps/client/orchestrator';
+import { Apps } from '../../../../ee/client/apps/orchestrator';
 import { handleAPIError, warnStatusChange } from '../helpers';
 
 type updateAppProps = App & {

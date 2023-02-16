@@ -1,6 +1,6 @@
+import { Avatar } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
-import { Avatar } from '@rocket.chat/fuselage';
 
 import VerticalBar from '../../../../client/components/VerticalBar';
 import type { IGame } from './GameCenter';

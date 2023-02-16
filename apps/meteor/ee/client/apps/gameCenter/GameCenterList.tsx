@@ -1,10 +1,10 @@
 import { Avatar, Icon, Table, TableBody, TableCell, TableHead, TableRow } from '@rocket.chat/fuselage';
+import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
-import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 
-import VerticalBar from '../../../../client/components/VerticalBar';
 import { FormSkeleton } from '../../../../client/components/Skeleton';
+import VerticalBar from '../../../../client/components/VerticalBar';
 import type { IGame } from './GameCenter';
 import GameCenterInvitePlayersModal from './GameCenterInvitePlayersModal';
 

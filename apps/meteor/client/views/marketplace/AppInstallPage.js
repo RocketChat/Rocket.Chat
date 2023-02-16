@@ -11,7 +11,7 @@ import {
 } from '@rocket.chat/ui-contexts';
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { Apps } from '../../../app/apps/client/orchestrator';
+import { Apps } from '../../../ee/client/apps/orchestrator';
 import Page from '../../components/Page';
 import { useFileInput } from '../../hooks/useFileInput';
 import { useForm } from '../../hooks/useForm';
