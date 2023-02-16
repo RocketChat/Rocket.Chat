@@ -19,22 +19,5 @@ export default {
 export const Default: ComponentStory<typeof TriggersForm> = (args) => <TriggersForm {...args} />;
 Default.storyName = 'TriggersForm';
 Default.args = {
-	values: {
-		name: '',
-		description: '',
-		enabled: true,
-		runOnce: false,
-		conditions: {
-			name: 'page-url',
-			value: '',
-		},
-		actions: {
-			name: '',
-			params: {
-				sender: 'queue',
-				msg: '',
-				name: '',
-			},
-		},
-	},
+	onSave: () => Promise.resolve(),
 };
