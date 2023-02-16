@@ -335,10 +335,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				isAdminUser && {
 					subscribe: {
 						label: (
-							<Box>
+							<>
 								<Icon name={incompatibleIconName(app, 'subscribe')} size='x16' marginInlineEnd='x4' />
 								{t('Subscription')}
-							</Box>
+							</>
 						),
 						action: handleSubscription,
 					},
@@ -349,10 +349,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			...(!app.installed && {
 				acquire: {
 					label: (
-						<Box>
+						<>
 							{isAdminUser && <Icon name={incompatibleIconName(app, 'install')} size='x16' marginInlineEnd='x4' />}
 							{t(button.label.replace(' ', '_'))}
-						</Box>
+						</>
 					),
 					action: handleAcquireApp,
 					disabled: requestedEndUser,
@@ -366,10 +366,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				app.installed && {
 					viewLogs: {
 						label: (
-							<Box>
+							<>
 								<Icon name='desktop-text' size='x16' marginInlineEnd='x4' />
 								{t('View_Logs')}
-							</Box>
+							</>
 						),
 						action: handleViewLogs,
 					},
@@ -379,10 +379,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				!isAppDetailsPage && {
 					update: {
 						label: (
-							<Box>
+							<>
 								<Icon name={incompatibleIconName(app, 'update')} size='x16' marginInlineEnd='x4' />
 								{t('Update')}
-							</Box>
+							</>
 						),
 						action: handleUpdate,
 					},
@@ -405,10 +405,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				!isAppEnabled && {
 					enable: {
 						label: (
-							<Box>
+							<>
 								<Icon name='check' size='x16' marginInlineEnd='x4' />
 								{t('Enable')}
-							</Box>
+							</>
 						),
 						disabled: !result.data.hasUnlimitedApps && result.data.enabled < result.data.limit,
 						action: handleEnable,
@@ -424,7 +424,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				isAdminUser && {
 					uninstall: {
 						label: (
-							<Box color='danger'>
+							<Box color='on-danger'>
 								<Icon name='trash' size='x16' marginInlineEnd='x4' />
 								{t('Uninstall')}
 							</Box>
@@ -448,7 +448,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		t,
 		handleSubscription,
 		requestedEndUser,
-		button.label,
+		button?.label,
 		handleAcquireApp,
 		context,
 		handleViewLogs,
@@ -457,9 +457,9 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		handleUpdate,
 		isAppEnabled,
 		handleDisable,
-		result.data.hasUnlimitedApps,
-		result.data.enabled,
-		result.data.limit,
+		result?.data?.hasUnlimitedApps,
+		result?.data?.enabled,
+		result?.data?.limit,
 		handleEnable,
 		handleUninstall,
 	]);
