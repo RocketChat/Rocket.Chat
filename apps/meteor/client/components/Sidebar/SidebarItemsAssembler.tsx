@@ -1,4 +1,5 @@
 import { Box, Divider } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { memo } from 'react';
@@ -13,6 +14,8 @@ type SidebarItemsAssemblerProps = {
 
 const SidebarItemsAssembler: FC<SidebarItemsAssemblerProps> = ({ items, currentPath }) => {
 	const t = useTranslation();
+
+	const isTranslationKey = (tag: any): tag is TranslationKey => t.has(tag as Parameters<typeof t>[0]);
 
 	return (
 		<>
@@ -30,7 +33,7 @@ const SidebarItemsAssembler: FC<SidebarItemsAssemblerProps> = ({ items, currentP
 						icon={icon}
 						label={t((i18nLabel || name) as Parameters<typeof t>[0])}
 						currentPath={currentPath}
-						tag={t.has(tag as Parameters<typeof t>[0]) ? t(tag as Parameters<typeof t>[0]) : undefined}
+						tag={isTranslationKey(tag) ? t(tag as Parameters<typeof t>[0]) : undefined}
 						externalUrl={externalUrl}
 					/>
 				</Box>
