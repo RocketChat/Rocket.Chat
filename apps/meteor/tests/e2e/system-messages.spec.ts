@@ -1,4 +1,4 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import type { Locator, Page } from '@playwright/test';
 import faker from '@faker-js/faker';
 
@@ -8,12 +8,12 @@ import { setSettingValueById } from './utils/setSettingValueById';
 
 test.use({ storageState: 'admin-session.json' });
 
-const userData = {
-	username: faker.datatype.uuid(),
-	name: faker.name.firstName(),
-	email: faker.internet.email(),
-	password: faker.internet.password(),
-};
+// const userData = {
+// 	username: faker.datatype.uuid(),
+// 	name: faker.name.firstName(),
+// 	email: faker.internet.email(),
+// 	password: faker.internet.password(),
+// };
 
 const findSysMes = (page: Page, id: string): Locator => {
 	return page.locator(`[data-qa="system-message"][data-system-message-type="${id}"]`);
@@ -23,7 +23,7 @@ const findSysMes = (page: Page, id: string): Locator => {
 // Ideally, we should test all.
 test.describe.serial('System Messages', () => {
 	let poHomeChannel: HomeChannel;
-	let user: IUser;
+	const user = { _id: 'user1' };
 	let group: IRoom;
 
 	const openGroup = async () => {
@@ -41,10 +41,10 @@ test.describe.serial('System Messages', () => {
 
 		group = (await groupResult.json()).group;
 
-		const result = await api.post('/users.create', userData);
-		expect(result.status()).toBe(200);
+		// const result = await api.post('/users.create', userData);
+		// expect(result.status()).toBe(200);
 
-		user = (await result.json()).user;
+		// user = (await result.json()).user;
 	});
 
 	test.beforeEach(async ({ page }) => {
