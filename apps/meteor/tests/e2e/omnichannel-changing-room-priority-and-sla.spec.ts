@@ -1,11 +1,11 @@
 import { faker } from '@faker-js/faker';
 import type { Browser, Page } from '@playwright/test';
 
-import { test, expect } from './utils/test';
-import { OmnichannelLiveChat, HomeChannel } from './page-objects';
 import { ADMIN_CREDENTIALS, IS_EE } from './config/constants';
-import { createSLA } from './utils/omnichannel/sla';
+import { OmnichannelLiveChat, HomeChannel } from './page-objects';
 import { getPriorityByi18nLabel } from './utils/omnichannel/priority';
+import { createSLA } from './utils/omnichannel/sla';
+import { test, expect } from './utils/test';
 
 const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page; poHomeChannel: HomeChannel }> => {
 	const page = await browser.newPage({ storageState });

@@ -1,9 +1,9 @@
-import type { Page } from '@playwright/test';
 import faker from '@faker-js/faker';
+import type { Page } from '@playwright/test';
 
-import { test, expect } from './utils/test';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
+import { test, expect } from './utils/test';
 
 test.use({ storageState: 'admin-session.json' });
 

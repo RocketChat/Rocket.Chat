@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { v4 as uuid } from 'uuid';
 import type { Locator, APIResponse } from '@playwright/test';
 import { test as baseTest } from '@playwright/test';
+import { v4 as uuid } from 'uuid';
 
 import { BASE_API_URL, BASE_URL, API_PREFIX, ADMIN_CREDENTIALS } from '../config/constants';
 
