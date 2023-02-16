@@ -102,7 +102,7 @@ test.describe.serial('Omnichannel Priorities', () => {
 				await expect(poOmnichannelPriorities.btnReset).toBeEnabled();
 				await poOmnichannelPriorities.btnReset.click();
 				await poOmnichannelPriorities.btnResetConfirm.click();
-				await await poOmnichannelPriorities.btnCloseToastSuccess.click();
+				await poOmnichannelPriorities.btnCloseToastSuccess.click();
 
 				await expect(poOmnichannelPriorities.btnReset).not.toBeEnabled();
 				await expect(poOmnichannelPriorities.findPriority(PRIORITY_NAME)).not.toBeVisible();
