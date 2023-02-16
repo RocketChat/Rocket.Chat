@@ -47,6 +47,7 @@ class LicenseClass {
 		 * in the import order and ends up causing an error during the server initialization
 		 *
 		 * We added a dynamic import here to avoid this issue
+		 * @TODO as soon as the Apps-Engine service is available, use it instead of this dynamic import
 		 */
 		// eslint-disable-next-line @typescript-eslint/naming-convention
 		import('../../../server/apps').then(({ Apps }) => {
