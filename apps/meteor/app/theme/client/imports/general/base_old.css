@@ -1056,15 +1056,14 @@
 
 	padding: 0;
 
-	line-height: initial;
+	cursor: pointer;
+
+	user-select: none;
 
 	border: solid 1px transparent;
 
-
-	cursor: pointer;
-	user-select: none;
+	line-height: initial;
 }
-
 
 .rc-old .message-popup {
 	position: absolute;
