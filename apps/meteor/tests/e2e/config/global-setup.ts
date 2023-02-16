@@ -34,7 +34,7 @@ export default async function (): Promise<void> {
 
 	await page.waitForTimeout(1000);
 
-	await page.context().storageState({ path: `admin-session.json` });
+	await page.context().storageState({ path: 'admin-session.json' });
 
 	await browser.close();
 

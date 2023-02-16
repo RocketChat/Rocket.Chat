@@ -13,11 +13,17 @@ export type AnyObj = { [key: string]: any };
 
 export type BaseTest = {
 	api: {
+		login(credentials: { username: string; password: string }): Promise<void>;
 		get(uri: string, params?: AnyObj, prefix?: string): Promise<APIResponse>;
 		post(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
 		put(uri: string, data: AnyObj, prefix?: string): Promise<APIResponse>;
 		delete(uri: string, params?: AnyObj, prefix?: string): Promise<APIResponse>;
 	};
+};
+
+const apiCredentials = {
+	authToken: '',
+	userId: '',
 };
 
 export const test = baseTest.extend<BaseTest>({
@@ -52,15 +58,25 @@ export const test = baseTest.extend<BaseTest>({
 	},
 
 	api: async ({ request }, use) => {
-		const resp = await request.post(`${BASE_API_URL}/login`, { data: ADMIN_CREDENTIALS });
-		const json = await resp.json();
+		const login = async (credentials: { username: string; password: string }) => {
+			const resp = await request.post(`${BASE_API_URL}/login`, { data: credentials });
+			const json = await resp.json();
+
+			apiCredentials.authToken = json.data.authToken;
+			apiCredentials.userId = json.data.userId;
+		};
+
+		if (!apiCredentials.authToken || !apiCredentials.userId) {
+			await login(ADMIN_CREDENTIALS);
+		}
 
 		const headers = {
-			'X-Auth-Token': json.data.authToken,
-			'X-User-Id': json.data.userId,
+			'X-Auth-Token': apiCredentials.authToken,
+			'X-User-Id': apiCredentials.userId,
 		};
 
 		await use({
+			login,
 			get(uri: string, params?: AnyObj, prefix = API_PREFIX) {
 				return request.get(BASE_URL + prefix + uri, { headers, params });
 			},
