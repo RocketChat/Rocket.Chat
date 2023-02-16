@@ -42,14 +42,17 @@ const FileUploadAction = ({ collapsed, chatContext, isRecording }: FileUploadAct
 
 	if (collapsed) {
 		return (
-			<Option
-				{...((!fileUploadEnabled || isRecording) && { title: t('Not_Available') })}
-				disabled={!fileUploadEnabled || isRecording}
-				onClick={handleUpload}
-			>
-				<OptionIcon name='clip' />
-				<OptionContent>{t('File')}</OptionContent>
-			</Option>
+			<>
+				<Option
+					{...((!fileUploadEnabled || isRecording) && { title: t('Not_Available') })}
+					disabled={!fileUploadEnabled || isRecording}
+					onClick={handleUpload}
+				>
+					<OptionIcon name='clip' />
+					<OptionContent>{t('File')}</OptionContent>
+				</Option>
+				<input ref={fileInputRef} type='file' onChange={handleUploadChange} multiple style={{ display: 'none' }} />
+			</>
 		);
 	}
 
