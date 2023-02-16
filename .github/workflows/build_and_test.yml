@@ -487,7 +487,7 @@ jobs:
           done;
           exit $s
 
-  test-e2e:
+  test-ui:
     runs-on: ubuntu-20.04
     needs: [build, lint, ts-typecheck, release-versions]
 
@@ -752,7 +752,7 @@ jobs:
           done;
           exit $s
 
-  test-ee-e2e:
+  test-ee-ui:
     runs-on: ubuntu-20.04
     needs: [build, lint, ts-typecheck, release-versions]
 
@@ -890,7 +890,7 @@ jobs:
 
   test:
     runs-on: ubuntu-20.04
-    needs: [test-unit, test-api, test-e2e, test-ee-api, test-ee-e2e]
+    needs: [test-unit, test-api, test-ui, test-ee-api, test-ee-ui]
 
     steps:
       - name: Test finish aggregation
