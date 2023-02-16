@@ -410,7 +410,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 								{t('Enable')}
 							</>
 						),
-						disabled: !result.data.hasUnlimitedApps && result.data.enabled < result.data.limit,
+						disabled: !result?.data?.hasUnlimitedApps && result?.data?.enabled >= result?.data?.limit,
 						action: handleEnable,
 					},
 				}),
