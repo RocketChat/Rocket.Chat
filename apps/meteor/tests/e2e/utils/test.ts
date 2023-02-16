@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { v4 as uuid } from 'uuid';
 import type { Locator, APIResponse } from '@playwright/test';
 import { test as baseTest } from '@playwright/test';
+import { v4 as uuid } from 'uuid';
 
 import { BASE_API_URL, BASE_URL, API_PREFIX, ADMIN_CREDENTIALS } from '../config/constants';
 
@@ -19,6 +19,13 @@ export type BaseTest = {
 		delete(uri: string, params?: AnyObj, prefix?: string): Promise<APIResponse>;
 	};
 };
+declare global {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface Window {
+		collectIstanbulCoverage: (coverageJSON: string) => void;
+		__coverage__: Record<string, unknown>;
+	}
+}
 
 export const test = baseTest.extend<BaseTest>({
 	context: async ({ context }, use) => {
@@ -30,7 +37,7 @@ export const test = baseTest.extend<BaseTest>({
 		}
 
 		await context.addInitScript(() =>
-			window.addEventListener('beforeunload', () => (window as any).collectIstanbulCoverage(JSON.stringify((window as any).__coverage__))),
+			window.addEventListener('beforeunload', () => window.collectIstanbulCoverage(JSON.stringify(window.__coverage__))),
 		);
 
 		await fs.promises.mkdir(PATH_NYC_OUTPUT, { recursive: true });
@@ -45,7 +52,7 @@ export const test = baseTest.extend<BaseTest>({
 
 		await Promise.all(
 			context.pages().map(async (page) => {
-				await page.evaluate(() => (window as any).collectIstanbulCoverage(JSON.stringify((window as any).__coverage__)));
+				await page.evaluate(() => window.collectIstanbulCoverage(JSON.stringify(window.__coverage__)));
 				await page.close();
 			}),
 		);

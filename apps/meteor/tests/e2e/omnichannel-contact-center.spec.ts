@@ -1,9 +1,9 @@
 import faker from '@faker-js/faker';
 
+import { createToken } from '../../client/lib/utils/createToken';
 import { OmnichannelContacts } from './page-objects/omnichannel-contacts-list';
 import { OmnichannelSection } from './page-objects/omnichannel-section';
 import { test, expect } from './utils/test';
-import { createToken } from '../../client/lib/utils/createToken';
 
 const createContact = (generateToken = false) => ({
 	id: null,
@@ -155,7 +155,7 @@ test.describe('Omnichannel Contact Center', () => {
 		});
 
 		await test.step('edit contact', async () => {
-			poContacts.contactInfo.btnEdit.click();
+			await poContacts.contactInfo.btnEdit.click();
 			await page.waitForURL(URL.editContact);
 		});
 
