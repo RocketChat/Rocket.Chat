@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { test, expect } from './utils/test';
-import { OmnichannelDepartments } from './page-objects';
 import { IS_EE } from './config/constants';
+import { OmnichannelDepartments } from './page-objects';
+import { test, expect } from './utils/test';
 
 test.use({ storageState: 'admin-session.json' });
 
@@ -19,7 +19,7 @@ test.describe.serial('omnichannel-departments', () => {
 		departmentName = faker.datatype.uuid();
 		// turn on department removal
 		const statusCode = (await api.post('/settings/Omnichannel_enable_department_removal', { value: true })).status();
-		expect(statusCode).toBe(200);
+		await expect(statusCode).toBe(200);
 	});
 
 	test.beforeEach(async ({ page }: { page: Page }) => {

@@ -38,6 +38,7 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarGroupByType?: boolean;
 		muteFocusedConversations?: boolean;
 		dontAskAgainList?: Array<{ action: string; label: string }>;
+		themeAppearence?: 'auto' | 'light' | 'dark';
 		receiveLoginDetectionEmail?: boolean;
 		idleTimeLimit?: number;
 		omnichannelTranscriptEmail?: boolean;
@@ -188,6 +189,10 @@ const UsersSetPreferencesParamsPostSchema = {
 							label: { type: 'string' },
 						},
 					},
+					nullable: true,
+				},
+				themeAppearence: {
+					type: 'string',
 					nullable: true,
 				},
 				receiveLoginDetectionEmail: {
