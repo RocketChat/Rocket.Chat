@@ -45,7 +45,7 @@
 
 	border-radius: var(--popover-radius);
 
-	background-color: rgba(255, 255, 255, 0.98);
+	background-color: var(--rcx-color-surface-light, white);
 	box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 12px 0 rgba(47, 52, 61, 0.12);
 
 	&.show {
