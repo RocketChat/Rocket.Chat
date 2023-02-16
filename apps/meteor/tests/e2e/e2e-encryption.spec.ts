@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { test, expect } from './utils/test';
-import { AccountProfile, HomeChannel } from './page-objects';
 import * as constants from './config/constants';
+import { AccountProfile, HomeChannel } from './page-objects';
+import { test, expect } from './utils/test';
 
 // OK Enable e2ee on admin
 // OK Test banner and check password, logout and use password

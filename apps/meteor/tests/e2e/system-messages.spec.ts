@@ -1,9 +1,9 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import type { Locator, Page } from '@playwright/test';
 import faker from '@faker-js/faker';
+import type { IRoom } from '@rocket.chat/core-typings';
 
-import { test, expect } from './utils/test';
 import { HomeChannel } from './page-objects';
+import { test, expect } from './utils/test';
 import { setSettingValueById } from './utils/setSettingValueById';
 
 test.use({ storageState: 'admin-session.json' });
@@ -21,6 +21,7 @@ const findSysMes = (page: Page, id: string): Locator => {
 
 // There currently are over 33 system messages. Testing only a couple due to test being too slow right now.
 // Ideally, we should test all.
+
 test.describe.serial('System Messages', () => {
 	let poHomeChannel: HomeChannel;
 	const user = { _id: 'user1' };

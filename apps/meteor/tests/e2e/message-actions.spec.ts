@@ -1,8 +1,8 @@
 import type { Page } from '@playwright/test';
 
-import { expect, test } from './utils/test';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
+import { expect, test } from './utils/test';
 
 test.use({ storageState: 'admin-session.json' });
 
