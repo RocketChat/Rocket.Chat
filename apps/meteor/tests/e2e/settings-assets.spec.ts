@@ -7,9 +7,6 @@ test.describe.serial('settings-assets', () => {
 	let poAdmin: Admin;
 
 	test.beforeEach(async ({ page }) => {
-		// TODO debug - remove this
-		console.log('state ->', JSON.stringify(await page.context().storageState()));
-
 		poAdmin = new Admin(page);
 		await page.goto('/admin/settings');
 
