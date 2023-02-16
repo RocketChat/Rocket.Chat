@@ -1,7 +1,7 @@
 import React from 'react';
 import { OptionColumn, OptionContent } from '@rocket.chat/fuselage';
 
-import Emoji from '../../../../../client/components/Emoji';
+import Emoji from '../../../../../../client/components/Emoji';
 
 export type ComposerBoxPopupEmojiProps = {
 	_id: string;
