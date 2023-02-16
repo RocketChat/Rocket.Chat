@@ -14,7 +14,7 @@
 			"cache": false
 		},
 		"testunit": {
-			"dependsOn": ["build"],
+			"dependsOn": ["^build"],
 			"outputs": []
 		},
 		"lint": {
@@ -38,10 +38,6 @@
 		},
 		"ms": {
 			"dependsOn": ["^build"]
-		},
-		"@rocket.chat/ui-contexts#build": {
-			"dependsOn": ["^build"],
-			"cache": false
 		}
 	}
 }
