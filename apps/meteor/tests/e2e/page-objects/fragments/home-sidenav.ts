@@ -76,7 +76,7 @@ export class HomeSidenav {
 			online = 'Turn off answer chats',
 		}
 
-		const currentStatus: StatusTitleMap = (await toggleButton.getAttribute('data-tooltip')) as any;
+		const currentStatus = await toggleButton.getAttribute('data-tooltip');
 		if (status === 'offline') {
 			if (currentStatus === StatusTitleMap.online) {
 				await toggleButton.click();
@@ -87,7 +87,7 @@ export class HomeSidenav {
 
 		await this.page.waitForTimeout(500);
 
-		const newStatus: StatusTitleMap = (await this.page.locator('#omnichannel-status-toggle').getAttribute('data-tooltip')) as any;
+		const newStatus = await this.page.locator('#omnichannel-status-toggle').getAttribute('data-tooltip');
 		expect(newStatus).toBe(status === 'offline' ? StatusTitleMap.offline : StatusTitleMap.online);
 	}
 
