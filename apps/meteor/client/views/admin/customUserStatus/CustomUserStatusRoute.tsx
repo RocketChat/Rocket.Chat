@@ -5,12 +5,12 @@ import React, { useCallback, useRef } from 'react';
 
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
+import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import CustomUserActiveConnections from './CustomUserActiveConnections';
 import CustomUserStatusFormWithData from './CustomUserStatusFormWithData';
 import CustomUserStatusService from './CustomUserStatusService';
 import CustomUserStatusTable from './CustomUserStatusTable';
-import { useIsEnterprise } from '/client/hooks/useIsEnterprise';
 
 const CustomUserStatusRoute = (): ReactElement => {
 	const t = useTranslation();
