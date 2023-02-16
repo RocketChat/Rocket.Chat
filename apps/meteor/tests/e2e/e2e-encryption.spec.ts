@@ -39,7 +39,7 @@ test.describe.serial('e2e-encryption initial setup', () => {
 	test.beforeAll(async ({ api }) => {
 		const statusCode = (await api.post('/settings/E2E_Enable', { value: true })).status();
 
-		expect(statusCode).toBe(200);
+		await expect(statusCode).toBe(200);
 	});
 
 	test.afterEach(async ({ page }) => {

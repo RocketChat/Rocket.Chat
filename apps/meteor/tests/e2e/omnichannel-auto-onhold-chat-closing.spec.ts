@@ -25,19 +25,19 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 	test.beforeAll(async ({ api, browser }) => {
 		// make "user-1" an agent and manager
 		let statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
-		expect(statusCode).toBe(200);
+		await expect(statusCode).toBe(200);
 
 		// turn on auto selection routing
 		statusCode = (await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' })).status();
-		expect(statusCode).toBe(200);
+		await expect(statusCode).toBe(200);
 
 		// make auto close on-hold chats timeout to be 5 seconds
 		statusCode = (await api.post('/settings/Livechat_auto_close_on_hold_chats_timeout', { value: 5 })).status();
-		expect(statusCode).toBe(200);
+		await expect(statusCode).toBe(200);
 
 		// allow agents to manually place chats on-hold
 		statusCode = (await api.post('/settings/Livechat_allow_manual_on_hold', { value: true })).status();
-		expect(statusCode).toBe(200);
+		await expect(statusCode).toBe(200);
 
 		agent = await createAuxContext(browser, 'user1-session.json');
 	});
@@ -68,9 +68,11 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 		await agent.poHomeChannel.content.btnModalConfirm.click();
 
 		// expect to see a system message saying the chat was on-hold
-		expect(agent.poHomeChannel.content.lastSystemMessageBody).toHaveText(`Chat On Hold: The chat was manually placed On Hold by user1`);
-		expect(agent.poHomeChannel.content.inputMessage).not.toBeVisible();
-		expect(agent.poHomeChannel.content.resumeOnHoldOmnichannelChatButton).toBeVisible();
+		await expect(agent.poHomeChannel.content.lastSystemMessageBody).toHaveText(
+			`Chat On Hold: The chat was manually placed On Hold by user1`,
+		);
+		await expect(agent.poHomeChannel.content.inputMessage).not.toBeVisible();
+		await expect(agent.poHomeChannel.content.resumeOnHoldOmnichannelChatButton).toBeVisible();
 
 		// current url
 		const chatRoomUrl = agent.page.url();
@@ -88,14 +90,14 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 	test.afterAll(async ({ api }) => {
 		// delete "user-1" from agents
 		let statusCode = (await api.delete('/livechat/users/agent/user1')).status();
-		expect(statusCode).toBe(200);
+		await expect(statusCode).toBe(200);
 
 		// reset auto close on-hold chats timeout
 		statusCode = (await api.post('/settings/Livechat_auto_close_on_hold_chats_timeout', { value: 3600 })).status();
-		expect(statusCode).toBe(200);
+		await expect(statusCode).toBe(200);
 
 		// reset setting which allows agents to manually place chats on-hold
 		statusCode = (await api.post('/settings/Livechat_allow_manual_on_hold', { value: false })).status();
-		expect(statusCode).toBe(200);
+		await expect(statusCode).toBe(200);
 	});
 });
