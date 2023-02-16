@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import type { Page, Locator } from '@playwright/test';
 
 import { OmnichannelSidenav } from './fragments';
 
@@ -68,6 +68,14 @@ export class OmnichannelDepartments {
 		return this.page.locator('table tr:first-child [data-testid="menu"]');
 	}
 
+	findDepartment(name: string) {
+		return this.page.locator('tr', { has: this.page.locator(`td >> text="${name}`) });
+	}
+
+	selectedDepartmentMenu(name: string) {
+		return this.page.locator('tr', { has: this.page.locator(`td >> text="${name}"`) }).locator('[data-testid="menu"]');
+	}
+
 	get menuEditOption() {
 		return this.page.locator('[role=option][value="edit"]');
 	}
@@ -106,5 +114,9 @@ export class OmnichannelDepartments {
 
 	get btnUpgradeDepartmentsModalUpgrade() {
 		return this.page.locator('[data-qa-id="upgrade-now"]');
+	}
+
+	get toastSuccess(): Locator {
+		return this.page.locator('.rcx-toastbar.rcx-toastbar--success');
 	}
 }
