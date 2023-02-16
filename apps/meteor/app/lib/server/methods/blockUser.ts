@@ -9,14 +9,15 @@ Meteor.methods({
 	blockUser({ rid, blocked }) {
 		check(rid, String);
 		check(blocked, String);
+		const userId = Meteor.userId();
 
-		if (!Meteor.userId()) {
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'blockUser' });
 		}
 
 		const room = Rooms.findOne({ _id: rid });
 
-		if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.BLOCK)) {
+		if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.BLOCK, userId)) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'blockUser' });
 		}
 
