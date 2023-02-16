@@ -20,8 +20,6 @@ async function login(page: Page): Promise<void> {
 	await page.locator('[name=password]').type(constants.ADMIN_CREDENTIALS.password);
 	await page.locator('role=button >> text="Login"').click();
 	await page.waitForTimeout(1000);
-
-	await page.context().storageState({ path: `admin-session.json` });
 }
 
 test.use({ storageState: 'admin-session.json' });
@@ -41,7 +39,13 @@ test.describe.serial('e2e-encryption initial setup', () => {
 	test.beforeAll(async ({ api }) => {
 		const statusCode = (await api.post('/settings/E2E_Enable', { value: true })).status();
 
-		expect(statusCode).toBe(200);
+		await expect(statusCode).toBe(200);
+	});
+
+	test.afterEach(async ({ page, api }) => {
+		await page.context().storageState({ path: 'admin-session.json' });
+
+		await api.recreateContext();
 	});
 
 	test("expect reset user's e2e encryption key", async ({ page }) => {
@@ -73,9 +77,6 @@ test.describe.serial('e2e-encryption initial setup', () => {
 		await page.locator('#modal-root .rcx-button--primary').click();
 
 		await expect(page.locator('role=banner')).not.toBeVisible();
-
-		// Store the generated key
-		await page.context().storageState({ path: `admin-session.json` });
 	});
 
 	test('expect change the e2ee password', async ({ page }) => {
@@ -107,9 +108,6 @@ test.describe.serial('e2e-encryption initial setup', () => {
 		await page.locator('#modal-root .rcx-button--primary').click();
 
 		await expect(page.locator('role=banner')).not.toBeVisible();
-
-		// Store the current key
-		await page.context().storageState({ path: `admin-session.json` });
 	});
 });
 
@@ -134,9 +132,7 @@ test.describe.serial('e2e-encryption', () => {
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
 		await poHomeChannel.sidenav.inputChannelName.type(channelName);
-		await poHomeChannel.sidenav.checkboxEncryption.click({
-			force: true,
-		});
+		await poHomeChannel.sidenav.checkboxEncryption.check({ force: true });
 		await poHomeChannel.sidenav.btnCreate.click();
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
