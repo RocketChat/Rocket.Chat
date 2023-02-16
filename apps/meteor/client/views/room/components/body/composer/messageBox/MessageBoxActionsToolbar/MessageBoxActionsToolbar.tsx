@@ -17,7 +17,7 @@ type MessageBoxActionsToolbarProps = {
 
 const MessageBoxActionsToolbar = ({ variant = 'large', isRecording, typing, canSend, rid, tmid }: MessageBoxActionsToolbarProps) => {
 	const actions = [
-		<VideoMessageAction key='video' collapsed={variant === 'small'} isRecording={isRecording} />,
+		<VideoMessageAction key='video' collapsed={variant === 'small'} disabled={!canSend || typing || isRecording} />,
 		<AudioMessageAction key='audio' disabled={!canSend || typing || isRecording} />,
 		<FileUploadAction key='file' collapsed={variant === 'small'} isRecording={isRecording} />,
 	];
