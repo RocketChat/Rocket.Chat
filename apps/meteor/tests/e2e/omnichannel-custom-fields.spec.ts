@@ -1,5 +1,5 @@
-import { test, expect } from './utils/test';
 import { OmnichannelCustomFields } from './page-objects';
+import { test, expect } from './utils/test';
 
 test.use({ storageState: 'admin-session.json' });
 
@@ -42,6 +42,6 @@ test.describe.serial('omnichannel-agents', () => {
 		await poOmnichannelCustomFields.btnModalRemove.click();
 
 		await poOmnichannelCustomFields.inputSearch.fill(newField);
-		expect(poOmnichannelCustomFields.firstRowInTable(newField)).toBeHidden();
+		await expect(poOmnichannelCustomFields.firstRowInTable(newField)).toBeHidden();
 	});
 });
