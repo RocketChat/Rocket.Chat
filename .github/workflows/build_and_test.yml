@@ -340,7 +340,7 @@ jobs:
     strategy:
       matrix:
         node-version: ['14.21.2']
-        mongodb-version: ['4.4', '5.0', '6.0']
+        mongodb-version: ['4.4', '6.0']
 
     steps:
       - name: Launch MongoDB
@@ -357,8 +357,8 @@ jobs:
           echo "LOWERCASE_REPOSITORY: ${LOWERCASE_REPOSITORY}"
           echo "::set-output name=lowercase-repo::${LOWERCASE_REPOSITORY}"
 
-          # test alpine image on mongo 5.0 (no special reason to be mongo 5.0 but we need to test alpine at least once)
-          if [[ '${{ matrix.mongodb-version }}' = '5.0' ]]; then
+          # test alpine image on mongo 6.0 (no special reason to be mongo 6.0 but we need to test alpine at least once)
+          if [[ '${{ matrix.mongodb-version }}' = '6.0' ]]; then
             RC_DOCKERFILE="${{ github.workspace }}/apps/meteor/.docker/Dockerfile.alpine"
             RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.alpine"
           else
@@ -494,7 +494,8 @@ jobs:
     strategy:
       matrix:
         node-version: ['14.21.2']
-        mongodb-version: ['4.4', '5.0', '6.0']
+        mongodb-version: ['4.4', '6.0']
+        shard: [1, 2, 3, 4]
 
     steps:
       - name: Launch MongoDB
@@ -511,8 +512,8 @@ jobs:
           echo "LOWERCASE_REPOSITORY: ${LOWERCASE_REPOSITORY}"
           echo "::set-output name=lowercase-repo::${LOWERCASE_REPOSITORY}"
 
-          # test alpine image on mongo 5.0 (no special reason to be mongo 5.0 but we need to test alpine at least once)
-          if [[ '${{ matrix.mongodb-version }}' = '5.0' ]]; then
+          # test alpine image on mongo 6.0 (no special reason to be mongo 6.0 but we need to test alpine at least once)
+          if [[ '${{ matrix.mongodb-version }}' = '6.0' ]]; then
             RC_DOCKERFILE="${{ github.workspace }}/apps/meteor/.docker/Dockerfile.alpine"
             RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.alpine"
           else
@@ -599,9 +600,9 @@ jobs:
         working-directory: ./apps/meteor
         run: npx playwright install --with-deps
 
-      - name: E2E Test UI
+      - name: E2E Test UI (${{ matrix.shard }}/4)
         working-directory: ./apps/meteor
-        run: yarn test:e2e
+        run: yarn test:e2e --shard=${{ matrix.shard }}/4
 
       - name: Store playwright test trace
         uses: actions/upload-artifact@v3
