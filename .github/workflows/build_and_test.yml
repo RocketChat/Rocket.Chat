@@ -263,7 +263,7 @@ jobs:
 
   build-docker-preview:
     runs-on: ubuntu-20.04
-    needs: [build, lint, ts-typecheck release-versions]
+    needs: [build, lint, ts-typecheck, release-versions]
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
     steps:
       - uses: actions/checkout@v3
