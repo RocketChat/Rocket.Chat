@@ -15,6 +15,7 @@ import type {
 	ParsedUrl,
 	OEmbedMeta,
 	OEmbedUrlContent,
+	IOmnichannelRoom,
 } from '@rocket.chat/core-typings';
 
 import type { Logger } from '../app/logger/server';
@@ -22,6 +23,7 @@ import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour
 import { getRandomId } from './random';
 import type { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
 import { compareByRanking } from './utils/comparisons';
+import type { CloseRoomParams } from '../app/livechat/server/lib/LivechatTyped.d';
 
 enum CallbackPriority {
 	HIGH = -1000,
@@ -42,14 +44,14 @@ type EventLikeCallbackSignatures = {
 	'afterDeleteMessage': (message: IMessage, room: IRoom) => void;
 	'validateUserRoles': (userData: Partial<IUser>) => void;
 	'workspaceLicenseChanged': (license: string) => void;
-	'afterReadMessages': (rid: IRoom['_id'], params: { uid: IUser['_id']; lastSeen: Date }) => void;
+	'afterReadMessages': (rid: IRoom['_id'], params: { uid: IUser['_id']; lastSeen?: Date; tmid?: IMessage['_id'] }) => void;
 	'beforeReadMessages': (rid: IRoom['_id'], uid: IUser['_id']) => void;
 	'afterDeleteUser': (user: IUser) => void;
 	'afterFileUpload': (params: { user: IUser; room: IRoom; message: IMessage }) => void;
 	'afterSaveMessage': (message: IMessage, room: IRoom, uid?: string) => void;
 	'livechat.removeAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.saveAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
-	'livechat.closeRoom': (room: IRoom) => void;
+	'livechat.closeRoom': (params: { room: IOmnichannelRoom; options: CloseRoomParams['options'] }) => void;
 	'livechat.saveRoom': (room: IRoom) => void;
 	'livechat:afterReturnRoomAsInquiry': (params: { room: IRoom }) => void;
 	'livechat.setUserStatusLivechat': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
@@ -112,7 +114,6 @@ type ChainedCallbackSignatures = {
 		agentsId: ILivechatAgent['_id'][];
 	};
 	'livechat.applySimultaneousChatRestrictions': (_: undefined, params: { departmentId?: ILivechatDepartmentRecord['_id'] }) => undefined;
-	'livechat.beforeCloseRoom': (params: { room: IRoom; options: unknown }) => { room: IRoom; options: unknown };
 	'livechat.beforeDelegateAgent': (agent: ILivechatAgent, params: { department?: ILivechatDepartmentRecord }) => ILivechatAgent | null;
 	'livechat.applyDepartmentRestrictions': (
 		query: FilterOperators<ILivechatDepartmentRecord>,
@@ -122,6 +123,7 @@ type ChainedCallbackSignatures = {
 	'on-business-hour-start': (params: { BusinessHourBehaviorClass: { new (): IBusinessHourBehavior } }) => {
 		BusinessHourBehaviorClass: { new (): IBusinessHourBehavior };
 	};
+	'livechat.saveInfo': (newRoom: IOmnichannelRoom, { user, oldRoom }: { user: IUser; oldRoom: IOmnichannelRoom }) => IOmnichannelRoom;
 	'renderMessage': <T extends IMessage & { html: string }>(message: T) => T;
 	'oembed:beforeGetUrlContent': (data: {
 		urlObj: Omit<UrlWithParsedQuery, 'host' | 'search'> & { host?: unknown; search?: unknown };
