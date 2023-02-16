@@ -761,6 +761,7 @@ jobs:
       matrix:
         node-version: ['14.21.2']
         mongodb-version-ee: ['4.4']
+        shard: [1, 2, 3, 4]
 
     steps:
       - name: Launch MongoDB
@@ -858,9 +859,9 @@ jobs:
         working-directory: ./apps/meteor
         run: npx playwright install --with-deps
 
-      - name: E2E Test UI
+      - name: E2E Test UI (${{ matrix.shard }}/4)
         working-directory: ./apps/meteor
-        run: E2E_COVERAGE=true IS_EE=true yarn test:e2e
+        run: E2E_COVERAGE=true IS_EE=true yarn test:e2e --shard=${{ matrix.shard }}/4
 
       - name: Show server logs if E2E test failed
         if: failure()
