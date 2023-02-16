@@ -2,7 +2,6 @@ import type { IEditedMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
-import _ from 'underscore';
 
 import { hasAtLeastOnePermission, hasPermission } from '../../app/authorization/client';
 import { ChatMessage } from '../../app/models/client';
@@ -50,10 +49,10 @@ Meteor.methods({
 			return false;
 		}
 
-		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
+		const blockEditInMinutes = Number(settings.get('Message_AllowEditing_BlockEditInMinutes') as number | undefined);
 		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete');
 
-		if (!bypassBlockTimeLimit && _.isNumber(blockEditInMinutes) && blockEditInMinutes !== 0) {
+		if (!bypassBlockTimeLimit && blockEditInMinutes !== 0) {
 			if (originalMessage.ts) {
 				const msgTs = moment(originalMessage.ts);
 				if (msgTs) {
