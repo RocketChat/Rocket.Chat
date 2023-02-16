@@ -173,8 +173,8 @@ router.post('/:appId', async (req, res, next) => {
 		// Using ?? to always send something in the response, even if the app had no result.
 		res.send(result ?? {});
 	} catch (e) {
-		if (e instanceof Error) res.status(500).send({ error: e.message });
-		else res.status(500).send({ error: e });
+		const error = e instanceof Error ? e.message : e;
+		res.status(500).send({ error });
 	}
 });
 
@@ -214,7 +214,8 @@ const appsRoutes =
 
 					res.send(result);
 				} catch (e) {
-					res.status(500).send(e); // e.message
+					const error = e instanceof Error ? e.message : e;
+					res.status(500).send({ error });
 				}
 				break;
 			}
@@ -244,7 +245,8 @@ const appsRoutes =
 
 					res.send(result);
 				} catch (e) {
-					res.status(500).send(e); // e.message
+					const error = e instanceof Error ? e.message : e;
+					res.status(500).send({ error });
 				}
 				break;
 			}
@@ -268,7 +270,8 @@ const appsRoutes =
 
 					res.send(result);
 				} catch (e) {
-					res.status(500).send(e); // e.message
+					const error = e instanceof Error ? e.message : e;
+					res.status(500).send({ error });
 				}
 				break;
 			}
@@ -305,7 +308,8 @@ const appsRoutes =
 
 					res.send(result);
 				} catch (e) {
-					res.status(500).send(e); // e.message
+					const error = e instanceof Error ? e.message : e;
+					res.status(500).send({ error });
 				}
 				break;
 			}
