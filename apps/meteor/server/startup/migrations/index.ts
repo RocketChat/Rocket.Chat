@@ -50,5 +50,4 @@ import './v288';
 import './v289';
 import './v290';
 import './v291';
-import './v292';
 import './xrun';
