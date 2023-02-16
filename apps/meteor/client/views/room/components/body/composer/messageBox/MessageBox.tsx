@@ -22,7 +22,8 @@ import { EmojiPicker } from '../../../../../../../app/emoji/client';
 import { createComposerAPI } from '../../../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
-import { ComposerBoxPopup } from '../../../../../../../app/ui-message/client/popup/ComposerBoxPopup';
+import ComposerBoxPopup from '../../../../../../../app/ui-message/client/popup/ComposerBoxPopup';
+import ComposerBoxPopupPreview from '../../../../../../../app/ui-message/client/popup/components/composerBoxPopupPreview/ComposerBoxPopupPreview';
 import { useComposerBoxPopup } from '../../../../../../../app/ui-message/client/popup/hooks/useComposerBoxPopup';
 import { useHasLicenseModule } from '../../../../../../../ee/client/hooks/useHasLicenseModule';
 import { getImageExtensionFromMime } from '../../../../../../../lib/getImageExtensionFromMime';
@@ -34,7 +35,6 @@ import { keyCodes } from '../../../../../../lib/utils/keyCodes';
 import AudioMessageRecorder from '../../../../../composer/AudioMessageRecorder';
 import VideoMessageRecorder from '../../../../../composer/VideoMessageRecorder';
 import { useChat } from '../../../../contexts/ChatContext';
-// import BlazeTemplate from '../../../BlazeTemplate';
 import { useComposerPopup } from '../../../../contexts/ComposerPopupContext';
 import { useRoom } from '../../../../contexts/RoomContext';
 import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
@@ -43,6 +43,7 @@ import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedR
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
+import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -140,6 +141,8 @@ const MessageBox = ({
 		},
 		[chat, storageID],
 	);
+
+	const autofocusRef = useMessageBoxAutoFocus();
 
 	const useEmojis = useUserPreference<boolean>('useEmojis');
 
@@ -332,13 +335,15 @@ const MessageBox = ({
 		focused,
 		items,
 		ariaActiveDescendant,
+		suspended,
 		select,
+		commandsRef,
 		callbackRef: c,
 	} = useComposerBoxPopup<{ _id: string; sort?: number }>({
 		configurations: composerPopupConfig,
 	});
 
-	const mergedRefs = useMessageComposerMergedRefs(c, textareaRef, callbackRef);
+	const mergedRefs = useMessageComposerMergedRefs(c, textareaRef, callbackRef, autofocusRef);
 
 	return (
 		<>
@@ -346,7 +351,27 @@ const MessageBox = ({
 
 			{/* <BlazeTemplate w='full' name='messagePopupSlashCommandPreview' tmid={tmid} rid={rid} getInput={() => textareaRef.current} /> */}
 
-			{popup && <ComposerBoxPopup select={select} items={items} focused={focused} title={popup.title} renderItem={popup.renderItem} />}
+			{popup && !popup.preview && (
+				<ComposerBoxPopup select={select} items={items} focused={focused} title={popup.title} renderItem={popup.renderItem} />
+			)}
+			{/*
+				SlashCommand Preview popup works in a weird way
+				There is only one trigger for all the commands: "/"
+				After that we need to the slashcommand list and check if the command exists and provide the preview
+				if not the query is `suspend` which means the slashcommand is not found or doesn't have a preview
+			*/}
+			{popup?.preview && (
+				<ComposerBoxPopupPreview
+					select={select}
+					items={items as any}
+					focused={focused as any}
+					renderItem={popup.renderItem}
+					ref={commandsRef}
+					rid={rid}
+					tmid={tmid}
+					suspended={suspended}
+				/>
+			)}
 
 			{readOnly && (
 				<Box mbe='x4'>
