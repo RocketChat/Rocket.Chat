@@ -2,7 +2,7 @@ import React from 'react';
 import { OptionColumn, OptionContent } from '@rocket.chat/fuselage';
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import { RoomIcon } from '../../../../../client/components/RoomIcon';
+import { RoomIcon } from '../../../../../../client/components/RoomIcon';
 
 export type ComposerBoxPopupRoomProps = Pick<IRoom, 't' | 'name' | 'fname' | '_id' | 'prid' | 'teamMain' | 'u'>;
 

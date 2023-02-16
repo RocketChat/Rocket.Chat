@@ -1,5 +1,6 @@
-import { useDarkMode, useSessionStorage } from '@rocket.chat/fuselage-hooks';
-import type { Dispatch, SetStateAction } from 'react';
+import { useDarkMode } from '@rocket.chat/fuselage-hooks';
+import { useEndpoint, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useCallback } from 'react';
 
 type ThemeMode = 'light' | 'dark' | 'auto';
 
@@ -9,8 +10,13 @@ type ThemeMode = 'light' | 'dark' | 'auto';
  * @returns [currentThemeMode, setThemeMode, resolvedThemeMode]
  */
 
-export const useThemeMode = (value: ThemeMode = 'auto'): [ThemeMode, Dispatch<SetStateAction<ThemeMode>>, 'light' | 'dark'] => {
-	const [theme, setTheme] = useSessionStorage<ThemeMode>(`rcx-theme`, value);
+export const useThemeMode = (): [ThemeMode, (value: ThemeMode) => () => void, 'light' | 'dark'] => {
+	const theme = useUserPreference<ThemeMode>('themeAppearence') || 'auto';
+
+	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
+
+	const setTheme = (value: ThemeMode): (() => void) =>
+		useCallback(() => saveUserPreferences({ data: { themeAppearence: value } }), [value]);
 
 	return [theme, setTheme, useDarkMode(theme === 'auto' ? undefined : theme === 'dark') ? 'dark' : 'light'];
 };

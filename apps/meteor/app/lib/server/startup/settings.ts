@@ -375,6 +375,25 @@ settingsRegistry.addGroup('Accounts', function () {
 			public: true,
 			i18nLabel: 'Group_by_Type',
 		});
+		this.add('Accounts_Default_User_Preferences_themeAppearence', 'auto', {
+			type: 'select',
+			values: [
+				{
+					key: 'auto',
+					i18nLabel: 'Theme_match_system',
+				},
+				{
+					key: 'light',
+					i18nLabel: 'Theme_light',
+				},
+				{
+					key: 'dark',
+					i18nLabel: 'Theme_dark',
+				},
+			],
+			public: true,
+			i18nLabel: 'Theme_Appearence',
+		});
 		this.add('Accounts_Default_User_Preferences_sidebarViewMode', 'medium', {
 			type: 'select',
 			values: [
@@ -1578,7 +1597,7 @@ settingsRegistry.addGroup('Layout', function () {
 			public: true,
 		});
 	});
-	this.section('Content', function () {
+	this.section('Layout_Home_Page_Content_Title', function () {
 		this.add('Layout_Home_Title', 'Home', {
 			type: 'string',
 			public: true,
@@ -1587,18 +1606,56 @@ settingsRegistry.addGroup('Layout', function () {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('Layout_Custom_Body_Only', false, {
-			i18nDescription: 'Layout_Custom_Body_Only_description',
-			type: 'boolean',
-			invalidValue: false,
-			enterprise: true,
-			public: true,
-		});
 		this.add('Layout_Home_Body', '', {
+			i18nDescription: 'Layout_Custom_Content_Description',
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
 			public: true,
+		});
+		this.add('Layout_Home_Custom_Block_Visible', false, {
+			type: 'boolean',
+			invalidValue: false,
+			public: true,
+			enableQuery: [
+				{
+					_id: 'Layout_Home_Body',
+					value: {
+						$exists: true,
+						$ne: '',
+					},
+				},
+				{
+					_id: 'Layout_Custom_Body_Only',
+					value: {
+						$exists: true,
+						$ne: true,
+					},
+				},
+			],
+		});
+		this.add('Layout_Custom_Body_Only', false, {
+			i18nDescription: 'Layout_Custom_Body_Only_Description',
+			type: 'boolean',
+			invalidValue: false,
+			enterprise: true,
+			public: true,
+			enableQuery: [
+				{
+					_id: 'Layout_Home_Body',
+					value: {
+						$exists: true,
+						$ne: '',
+					},
+				},
+				{
+					_id: 'Layout_Home_Custom_Block_Visible',
+					value: {
+						$exists: true,
+						$ne: false,
+					},
+				},
+			],
 		});
 		this.add('Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS &rarr; Layout to customize this page.', {
 			type: 'code',
