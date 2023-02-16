@@ -33,7 +33,6 @@ import { keyCodes } from '../../../../../../lib/utils/keyCodes';
 import AudioMessageRecorder from '../../../../../composer/AudioMessageRecorder';
 import VideoMessageRecorder from '../../../../../composer/VideoMessageRecorder';
 import { useChat } from '../../../../contexts/ChatContext';
-// import BlazeTemplate from '../../../BlazeTemplate';
 import { useComposerPopup } from '../../../../contexts/ComposerPopupContext';
 import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
@@ -41,6 +40,7 @@ import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedR
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
+import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
@@ -137,6 +137,8 @@ const MessageBox = ({
 		},
 		[chat, storageID],
 	);
+
+	const autofocusRef = useMessageBoxAutoFocus();
 
 	const useEmojis = useUserPreference<boolean>('useEmojis');
 
@@ -332,7 +334,7 @@ const MessageBox = ({
 		configurations: composerPopupConfig,
 	});
 
-	const mergedRefs = useMessageComposerMergedRefs(c, textareaRef, callbackRef);
+	const mergedRefs = useMessageComposerMergedRefs(c, textareaRef, callbackRef, autofocusRef);
 
 	return (
 		<>
