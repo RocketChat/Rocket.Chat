@@ -13,8 +13,6 @@ test.describe.serial('omnichannel-departments', () => {
 
 	let departmentName: string;
 
-	let url: string;
-
 	test.beforeAll(async ({ api }) => {
 		departmentName = faker.datatype.uuid();
 		// turn on department removal
@@ -55,19 +53,59 @@ test.describe.serial('omnichannel-departments', () => {
 		await poOmnichannelDepartments.btnUpgradeDepartmentsModalClose.click();
 	});
 
-	test('expect update department name', async ({ page }) => {
-		await poOmnichannelDepartments.inputSearch.fill(departmentName);
+	test('expect to update and archive department', async ({ page }) => {
+		let url: string;
+		test.step('expect update department name', async () => {
+			await poOmnichannelDepartments.inputSearch.fill(departmentName);
 
-		await poOmnichannelDepartments.firstRowInTableMenu.click();
-		await poOmnichannelDepartments.menuEditOption.click();
+			await expect(page.locator('role=table')).not.toHaveAttribute('aria-busy', 'true');
 
-		url = await page.url();
+			await poOmnichannelDepartments.firstRowInTableMenu.click();
 
-		await poOmnichannelDepartments.inputName.fill(`edited-${departmentName}`);
-		await poOmnichannelDepartments.btnSave.click();
+			await poOmnichannelDepartments.menuEditOption.click();
 
-		await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
-		await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
+			url = await page.url();
+
+			await poOmnichannelDepartments.inputName.fill(`edited-${departmentName}`);
+			await poOmnichannelDepartments.btnSave.click();
+
+			await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
+			await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
+		});
+
+		test.step('expect archive and unarchive department', async () => {
+			await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
+
+			await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
+
+			await poOmnichannelDepartments.firstRowInTableMenu.click();
+
+			await poOmnichannelDepartments.menuArchiveOption.click();
+
+			await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
+
+			await expect(poOmnichannelDepartments.firstRowInTable).toHaveCount(0);
+
+			// Try to edit
+
+			await page.goto(url);
+
+			await expect(poOmnichannelDepartments.btnEnabled).not.toBeVisible();
+
+			await page.goBack();
+
+			await poOmnichannelDepartments.archivedDepartmentsTab.click();
+
+			await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
+
+			await poOmnichannelDepartments.firstRowInTableMenu.click();
+
+			await poOmnichannelDepartments.menuUnarchiveOption.click();
+
+			await expect(poOmnichannelDepartments.firstRowInTable).toHaveCount(0);
+
+			await poOmnichannelDepartments.allDepartmentsTab.click();
+		});
 	});
 
 	test.describe('Tags', () => {
@@ -77,11 +115,10 @@ test.describe.serial('omnichannel-departments', () => {
 			await poOmnichannelDepartments.menuEditOption.click();
 		});
 
-		test('expect save form button be disabled', async () => {
-			await expect(poOmnichannelDepartments.btnSave).toBeDisabled();
-		});
-
-		test('Disabled tags state', async () => {
+		test('Disabled tags state', async ({ page }) => {
+			await test.step('expect save form button be disabled', async () => {
+				await expect(poOmnichannelDepartments.btnSave).toBeDisabled();
+			});
 			await test.step('expect to have department tags toggle button', async () => {
 				await expect(poOmnichannelDepartments.toggleRequestTags).toBeVisible();
 			});
@@ -89,13 +126,6 @@ test.describe.serial('omnichannel-departments', () => {
 				await expect(poOmnichannelDepartments.inputTags).not.toBeVisible();
 				await expect(poOmnichannelDepartments.btnTagsAdd).not.toBeVisible();
 			});
-		});
-
-		test('Enabled tags state', async ({ page }) => {
-			await test.step('expect to have form save option disabled', async () => {
-				await expect(poOmnichannelDepartments.btnSave).toBeDisabled();
-			});
-
 			await test.step('expect clicking on toggle button to enable tags', async () => {
 				await poOmnichannelDepartments.toggleRequestTags.click();
 				await expect(poOmnichannelDepartments.inputTags).toBeVisible();
@@ -105,7 +135,6 @@ test.describe.serial('omnichannel-departments', () => {
 				await expect(poOmnichannelDepartments.btnSave).toBeDisabled();
 				await expect(poOmnichannelDepartments.invalidInputTags).toBeVisible();
 			});
-
 			await test.step('expect to be not possible adding empty tags', async () => {
 				await poOmnichannelDepartments.inputTags.fill('');
 				await expect(poOmnichannelDepartments.btnTagsAdd).toBeDisabled();
@@ -132,40 +161,6 @@ test.describe.serial('omnichannel-departments', () => {
 				await expect(poOmnichannelDepartments.btnTagsAdd).toBeDisabled();
 			});
 		});
-	});
-
-	test('expect archive and unarchive department', async ({ page }) => {
-		await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
-
-		await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
-
-		await poOmnichannelDepartments.firstRowInTableMenu.click();
-
-		await poOmnichannelDepartments.menuArchiveOption.click();
-
-		await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
-
-		await expect(poOmnichannelDepartments.firstRowInTable).toHaveCount(0);
-
-		// Try to edit
-
-		await page.goto(url);
-
-		await expect(poOmnichannelDepartments.btnEnabled).not.toBeVisible();
-
-		await page.goBack();
-
-		await poOmnichannelDepartments.archivedDepartmentsTab.click();
-
-		await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
-
-		await poOmnichannelDepartments.firstRowInTableMenu.click();
-
-		await poOmnichannelDepartments.menuUnarchiveOption.click();
-
-		await expect(poOmnichannelDepartments.firstRowInTable).toHaveCount(0);
-
-		await poOmnichannelDepartments.allDepartmentsTab.click();
 	});
 
 	test('expect delete department', async () => {
