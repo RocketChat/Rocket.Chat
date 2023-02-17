@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { MatrixUserReceiverConverter } from '../../../../../../../../../app/federation-v2/server/infrastructure/matrix/converters/UserReceiver';
-import { FederationUserTypingStatusEventDto } from '../../../../../../../../../app/federation-v2/server/application/input/UserReceiverDto';
+import { FederationUserTypingStatusEventDto } from '../../../../../../../../../app/federation-v2/server/application/listener/input/UserReceiverDto';
 
 describe('Federation - Infrastructure - Matrix - MatrixUserReceiverConverter', () => {
 	describe('#toUserTypingDto()', () => {
