@@ -1,13 +1,13 @@
 import faker from '@faker-js/faker';
 
-import { test, expect, setupTesting, tearDownTesting } from '../../utils/test';
-import { FederationChannel } from '../../page-objects/channel';
 import * as constants from '../../config/constants';
-import { registerUser } from '../../utils/register-user';
-import { formatIntoFullMatrixUsername } from '../../utils/format';
+import { FederationAdmin } from '../../page-objects/admin';
+import { FederationChannel } from '../../page-objects/channel';
 import { doLogin } from '../../utils/auth';
 import { createChannelUsingAPI } from '../../utils/channel';
-import { FederationAdmin } from '../../page-objects/admin';
+import { formatIntoFullMatrixUsername } from '../../utils/format';
+import { registerUser } from '../../utils/register-user';
+import { test, expect, setupTesting, tearDownTesting } from '../../utils/test';
 
 test.describe.parallel('Federation - Admin Panel - Rooms', () => {
 	let poFederationChannelServer1: FederationChannel;
