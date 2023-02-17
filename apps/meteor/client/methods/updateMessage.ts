@@ -80,7 +80,7 @@ Meteor.methods({
 				msg: message.msg,
 			};
 
-			if (originalMessage.attachments) {
+			if (originalMessage.attachments?.length) {
 				if (originalMessage.attachments[0].description !== undefined) {
 					delete messageObject.msg;
 					originalMessage.attachments[0].description = message.msg;
