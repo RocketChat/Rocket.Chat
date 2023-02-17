@@ -18,7 +18,7 @@ const CustomUserStatusRoute = (): ReactElement => {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 	const canManageUserStatus = usePermission('manage-user-status');
-	const isEnterprise = useIsEnterprise();
+	const { data: license } = useIsEnterprise();
 
 	const handleItemClick = (id: string): void => {
 		route.push({
@@ -53,7 +53,7 @@ const CustomUserStatusRoute = (): ReactElement => {
 		<Page flexDirection='row'>
 			<Page name='admin-user-status'>
 				<Page.Header title={t('User_Status')}>
-					{!isEnterprise && <CustomUserActiveConnections />}
+					{!license?.isEnterprise && <CustomUserActiveConnections />}
 					<ButtonGroup>
 						<Button onClick={handlePresenceServiceClick}>{t('Presence_service')}</Button>
 						<Button onClick={handleNewButtonClick}>{t('New_custom_status')}</Button>
