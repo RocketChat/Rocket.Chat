@@ -1,4 +1,5 @@
 import { AutoComplete, Option, Box } from '@rocket.chat/fuselage';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement, ComponentProps } from 'react';
@@ -7,7 +8,7 @@ import React, { memo, useMemo, useState } from 'react';
 import RoomAvatar from '../avatar/RoomAvatar';
 import Avatar from './Avatar';
 
-const query = (
+const generateQuery = (
 	term = '',
 ): {
 	selector: string;
@@ -23,7 +24,9 @@ const RoomAutoComplete = <T,>(props: RoomAutoCompleteProps<T>): ReactElement => 
 	const [filter, setFilter] = useState('');
 	const autocomplete = useEndpoint('GET', '/v1/rooms.autocomplete.channelAndPrivate');
 
-	const result = useQuery(['rooms.autocomplete.channelAndPrivate', filter], () => autocomplete(query(filter)), {
+	const query = useDebouncedValue(generateQuery(filter), 300);
+
+	const result = useQuery(['rooms.autocomplete.channelAndPrivate', query], () => autocomplete(query), {
 		keepPreviousData: true,
 	});
 
