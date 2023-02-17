@@ -8,6 +8,7 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
 import GenericTable, { GenericTableLoadingTable } from '../../../../components/GenericTable';
+import { queryClient } from '../../../../lib/queryClient';
 import { useCurrentChats } from '../../currentChats/hooks/useCurrentChats';
 
 const useQuery = (
@@ -164,14 +165,13 @@ const ChatTable: FC<{ setChatReload: Dispatch<SetStateAction<any>> }> = ({ setCh
 	const result = useCurrentChats(query);
 
 	useEffect(() => {
-		setChatReload?.(() => result.refetch);
+		setChatReload?.(() => queryClient.invalidateQueries({ queryKey: ['current-chats'] }));
 	}, [result.refetch, setChatReload]);
 
 	if (result.isLoading) {
 		return <GenericTableLoadingTable headerCells={6} />;
 	}
 	if (result.error) {
-		console.error(result.error);
 		return <Box mbs='x16'>{t('Something_went_wrong')}</Box>;
 	}
 
