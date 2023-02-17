@@ -58,7 +58,7 @@ const DEFAULT_FORM_VALUES = {
 const TriggersForm: FC<TriggersFormProps> = ({ onSave, className, initialValues = DEFAULT_FORM_VALUES }) => {
 	const {
 		register,
-		formState: { errors, isValid, isDirty },
+		formState: { errors, isDirty },
 		watch,
 		handleSubmit,
 		control,
@@ -75,6 +75,7 @@ const TriggersForm: FC<TriggersFormProps> = ({ onSave, className, initialValues 
 	const { field: actionSenderField } = useController({
 		name: 'actions.params.sender',
 		control,
+		rules: { required: false },
 	});
 	const { field: conditionNameField } = useController({
 		name: 'conditions.name',
@@ -113,7 +114,7 @@ const TriggersForm: FC<TriggersFormProps> = ({ onSave, className, initialValues 
 		[t],
 	);
 
-	const canSave = isValid && isDirty;
+	const canSave = watch('name') && watch('actions.params.msg') && isDirty;
 
 	return (
 		<form onSubmit={handleSubmit(onSave)}>
