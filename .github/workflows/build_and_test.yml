@@ -570,6 +570,14 @@ jobs:
         working-directory: ./apps/meteor
         run: npx playwright install --with-deps
 
+      - name: Wait for Rocket.Chat to start up
+        uses: cygnetdigital/wait_for_response@v2.0.0
+        with:
+          url: 'http://localhost:3000/health'
+          responseCode: '200'
+          timeout: 10000
+          interval: 500
+
       - name: E2E Test UI (${{ matrix.shard }}/4)
         working-directory: ./apps/meteor
         run: yarn test:e2e --shard=${{ matrix.shard }}/4
@@ -818,6 +826,14 @@ jobs:
       - name: Install Playwright
         working-directory: ./apps/meteor
         run: npx playwright install --with-deps
+
+      - name: Wait for Rocket.Chat to start up
+        uses: cygnetdigital/wait_for_response@v2.0.0
+        with:
+          url: 'http://localhost:3000/health'
+          responseCode: '200'
+          timeout: 10000
+          interval: 500
 
       - name: E2E Test UI (${{ matrix.shard }}/4)
         working-directory: ./apps/meteor
