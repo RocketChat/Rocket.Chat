@@ -185,7 +185,7 @@ describe('[OAuthApps]', function () {
 				});
 		});
 
-		it('should update an app name, its Active and Redirect URI fields correctly by its id', async () => {
+		it('should update an app's name, its Active and Redirect URI fields correctly by its id', async () => {
 			const name = `new app ${Date.now()}`;
 			const redirectUri = 'http://localhost:3000';
 			const active = false;
