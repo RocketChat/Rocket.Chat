@@ -1,12 +1,12 @@
 /* eslint no-await-in-loop: 0 */
 
-import { chromium } from '@playwright/test';
+import { chromium, expect } from '@playwright/test';
 
 import injectInitialData from '../fixtures/inject-initial-data';
 import insertApp from '../fixtures/insert-apps';
 import * as constants from './constants';
 
-const loginProcedure = async (credentials: { username: string; password: string }) => {
+const loginProcedure = async (credentials: { name: string; username: string; password: string }) => {
 	const browser = await chromium.launch();
 	const page = await browser.newPage();
 
@@ -15,9 +15,10 @@ const loginProcedure = async (credentials: { username: string; password: string 
 	await page.locator('[name=username]').type(credentials.username);
 	await page.locator('[name=password]').type(credentials.password);
 	await page.locator('role=button >> text="Login"').click();
+	
+	await expect(await page.locator('role=button >> text="Login"')).toHaveCount(0);
 
-	await page.waitForSelector('[data-qa-id="home-header"]');
-	await page.context().storageState({ path: `${credentials.username}-session.json` });
+	await page.context().storageState({ path: `${credentials.name}-session.json` });
 
 	await browser.close();
 };
@@ -28,15 +29,11 @@ export default async function (): Promise<void> {
 
 	await page.goto(constants.BASE_URL);
 
-	await page.locator('[name=username]').type(constants.ADMIN_CREDENTIALS.email);
-	await page.locator('[name=password]').type(constants.ADMIN_CREDENTIALS.password);
-	await page.locator('role=button >> text="Login"').click();
-
-	await page.waitForTimeout(1000);
-
-	await page.context().storageState({ path: 'admin-session.json' });
-
-	await browser.close();
+	await loginProcedure({
+		name: 'admin',
+		username: constants.ADMIN_CREDENTIALS.email,
+		password: constants.ADMIN_CREDENTIALS.password,
+	});
 
 	const { usersFixtures } = await injectInitialData();
 
@@ -44,6 +41,7 @@ export default async function (): Promise<void> {
 		await loginProcedure({
 			username: user.username,
 			password: 'any_password',
+			name: user.username,
 		});
 	}
 
