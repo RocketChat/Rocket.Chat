@@ -23,21 +23,12 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 	let agent: { page: Page; poHomeChannel: HomeChannel };
 
 	test.beforeAll(async ({ api, browser }) => {
-		// make "user-1" an agent and manager
-		let statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
-		await expect(statusCode).toBe(200);
-
-		// turn on auto selection routing
-		statusCode = (await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' })).status();
-		await expect(statusCode).toBe(200);
-
-		// make auto close on-hold chats timeout to be 5 seconds
-		statusCode = (await api.post('/settings/Livechat_auto_close_on_hold_chats_timeout', { value: 5 })).status();
-		await expect(statusCode).toBe(200);
-
-		// allow agents to manually place chats on-hold
-		statusCode = (await api.post('/settings/Livechat_allow_manual_on_hold', { value: true })).status();
-		await expect(statusCode).toBe(200);
+		await Promise.all([
+			api.post('/livechat/users/agent', { username: 'user1' }).then((res) => expect(res.status()).toBe(200)),
+			api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }).then((res) => expect(res.status()).toBe(200)),
+			api.post('/settings/Livechat_auto_close_on_hold_chats_timeout', { value: 5 }).then((res) => expect(res.status()).toBe(200)),
+			api.post('/settings/Livechat_allow_manual_on_hold', { value: true }).then((res) => expect(res.status()).toBe(200)),
+		]);
 
 		agent = await createAuxContext(browser, 'user1-session.json');
 	});
@@ -88,16 +79,12 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		// delete "user-1" from agents
-		let statusCode = (await api.delete('/livechat/users/agent/user1')).status();
-		await expect(statusCode).toBe(200);
+		await Promise.all([
+			api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
+			api.post('/settings/Livechat_auto_close_on_hold_chats_timeout', { value: 3600 }).then((res) => expect(res.status()).toBe(200)),
+			api.post('/settings/Livechat_allow_manual_on_hold', { value: false }).then((res) => expect(res.status()).toBe(200)),
+		]);
 
-		// reset auto close on-hold chats timeout
-		statusCode = (await api.post('/settings/Livechat_auto_close_on_hold_chats_timeout', { value: 3600 })).status();
-		await expect(statusCode).toBe(200);
-
-		// reset setting which allows agents to manually place chats on-hold
-		statusCode = (await api.post('/settings/Livechat_allow_manual_on_hold', { value: false })).status();
-		await expect(statusCode).toBe(200);
+		await agent.page.close();
 	});
 });

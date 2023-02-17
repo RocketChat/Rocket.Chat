@@ -24,19 +24,12 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 	let agent2: { page: Page; poHomeChannel: HomeChannel };
 
 	test.beforeAll(async ({ api, browser }) => {
-		// make "user-1" & "user-2" an agent
-		let statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
-		await expect(statusCode).toBe(200);
-		statusCode = (await api.post('/livechat/users/agent', { username: 'user2' })).status();
-		await expect(statusCode).toBe(200);
-
-		// turn on auto selection routing
-		statusCode = (await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' })).status();
-		await expect(statusCode).toBe(200);
-
-		// make auto close on-hold chats timeout to be 5 seconds
-		statusCode = (await api.post('/settings/Livechat_auto_transfer_chat_timeout', { value: 5 })).status();
-		await expect(statusCode).toBe(200);
+		await Promise.all([
+			api.post('/livechat/users/agent', { username: 'user1' }).then((res) => expect(res.status()).toBe(200)),
+			api.post('/livechat/users/agent', { username: 'user2' }).then((res) => expect(res.status()).toBe(200)),
+			api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }).then((res) => expect(res.status()).toBe(200)),
+			api.post('/settings/Livechat_auto_transfer_chat_timeout', { value: 5 }).then((res) => expect(res.status()).toBe(200)),
+		]);
 
 		agent1 = await createAuxContext(browser, 'user1-session.json');
 		agent2 = await createAuxContext(browser, 'user2-session.json');
@@ -72,16 +65,13 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		// delete "user-1" from agents
-		let statusCode = (await api.delete('/livechat/users/agent/user1')).status();
-		await expect(statusCode).toBe(200);
+		await Promise.all([
+			api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
+			api.delete('/livechat/users/agent/user2').then((res) => expect(res.status()).toBe(200)),
+			api.post('/settings/Livechat_auto_transfer_chat_timeout', { value: 0 }).then((res) => expect(res.status()).toBe(200)),
+		]);
 
-		// delete "user-2" from agents
-		statusCode = (await api.delete('/livechat/users/agent/user2')).status();
-		await expect(statusCode).toBe(200);
-
-		// reset auto close on-hold chats timeout
-		statusCode = (await api.post('/settings/Livechat_auto_transfer_chat_timeout', { value: 0 })).status();
-		await expect(statusCode).toBe(200);
+		await agent1.page.close();
+		await agent2.page.close();
 	});
 });
