@@ -18,6 +18,9 @@ export const PublicRoomType = getPublicRoomType(roomCoordinator);
 
 roomCoordinator.add(PublicRoomType, {
 	allowRoomSettingChange(room, setting) {
+		if (isRoomFederated(room as IRoom)) {
+			return Federation.isRoomSettingAllowed(room, setting);
+		}
 		switch (setting) {
 			case RoomSettingsEnum.BROADCAST:
 				return Boolean(room.broadcast);
@@ -33,9 +36,9 @@ roomCoordinator.add(PublicRoomType, {
 		}
 	},
 
-	allowMemberAction(_room, action) {
+	allowMemberAction(_room, action, showingUserId, userSubscription) {
 		if (isRoomFederated(_room as IRoom)) {
-			return Federation.actionAllowed(_room, action);
+			return Federation.actionAllowed(_room, action, showingUserId, userSubscription);
 		}
 		switch (action) {
 			case RoomMemberActions.BLOCK:
@@ -46,7 +49,7 @@ roomCoordinator.add(PublicRoomType, {
 	},
 
 	roomName(roomData) {
-		if (roomData.prid) {
+		if (roomData.prid || isRoomFederated(roomData)) {
 			return roomData.fname;
 		}
 		if (settings.get('UI_Allow_room_names_with_special_chars')) {
@@ -87,6 +90,9 @@ roomCoordinator.add(PublicRoomType, {
 		}
 		if (room.teamMain) {
 			return 'team';
+		}
+		if (isRoomFederated(room)) {
+			return 'globe';
 		}
 
 		return PublicRoomType.icon;
