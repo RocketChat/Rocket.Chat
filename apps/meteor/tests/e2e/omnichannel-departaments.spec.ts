@@ -27,15 +27,6 @@ test.describe.serial('omnichannel-departments', () => {
 		await poOmnichannelDepartments.sidenav.linkDepartments.click();
 	});
 
-	// whole suit is running on EE only, so this isn't gonna run anyways
-	test.skip('expect to not be possible adding a second department ', async () => {
-		await poOmnichannelDepartments.btnNew.click();
-
-		await expect(poOmnichannelDepartments.upgradeDepartmentsModal).toBeVisible();
-
-		await poOmnichannelDepartments.btnUpgradeDepartmentsModalClose.click();
-	});
-
 	test('Manage departments', async ({ page }) => {
 		let url: string;
 		await test.step('expect page to be empty', async () => {
