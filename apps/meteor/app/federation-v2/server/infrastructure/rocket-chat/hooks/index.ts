@@ -2,13 +2,15 @@ import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isMessageFromMatrixFederation, isRoomFederated, isEditedMessage } from '@rocket.chat/core-typings';
 
 import { callbacks } from '../../../../../../lib/callbacks';
+import type { FederationRoomServiceSender } from '../../../application/sender/RoomServiceSender';
+import { settings } from '../../../../../settings/server';
 
 export class FederationHooks {
 	public static afterUserLeaveRoom(callback: (user: IUser, room: IRoom) => Promise<void>): void {
 		callbacks.add(
 			'afterLeaveRoom',
 			(user: IUser, room: IRoom | undefined): void => {
-				if (!room || !isRoomFederated(room)) {
+				if (!room || !isRoomFederated(room) || !user || !settings.get('Federation_Matrix_enabled')) {
 					return;
 				}
 				Promise.await(callback(user, room));
@@ -22,7 +24,14 @@ export class FederationHooks {
 		callbacks.add(
 			'afterRemoveFromRoom',
 			(params: { removedUser: IUser; userWhoRemoved: IUser }, room: IRoom | undefined): void => {
-				if (!room || !isRoomFederated(room)) {
+				if (
+					!room ||
+					!isRoomFederated(room) ||
+					!params ||
+					!params.removedUser ||
+					!params.userWhoRemoved ||
+					!settings.get('Federation_Matrix_enabled')
+				) {
 					return;
 				}
 				Promise.await(callback(params.removedUser, room, params.userWhoRemoved));
@@ -34,12 +43,11 @@ export class FederationHooks {
 
 	public static canAddFederatedUserToNonFederatedRoom(callback: (user: IUser | string, room: IRoom) => Promise<void>): void {
 		callbacks.add(
-			'federation.beforeAddUserAToRoom',
+			'federation.beforeAddUserToARoom',
 			(params: { user: IUser | string; inviter?: IUser }, room: IRoom): void => {
 				if (!params || !params.user || !room) {
 					return;
 				}
-
 				Promise.await(callback(params.user, room));
 			},
 			callbacks.priority.HIGH,
@@ -49,9 +57,9 @@ export class FederationHooks {
 
 	public static canAddFederatedUserToFederatedRoom(callback: (user: IUser | string, inviter: IUser, room: IRoom) => Promise<void>): void {
 		callbacks.add(
-			'federation.beforeAddUserAToRoom',
+			'federation.beforeAddUserToARoom',
 			(params: { user: IUser | string; inviter: IUser }, room: IRoom): void => {
-				if (!params || !params.user || !room) {
+				if (!params || !params.user || !params.inviter || !room || !settings.get('Federation_Matrix_enabled')) {
 					return;
 				}
 
@@ -66,6 +74,9 @@ export class FederationHooks {
 		callbacks.add(
 			'federation.beforeCreateDirectMessage',
 			(members: IUser[]): void => {
+				if (!members || !settings.get('Federation_Matrix_enabled')) {
+					return;
+				}
 				Promise.await(callback(members));
 			},
 			callbacks.priority.HIGH,
@@ -76,11 +87,18 @@ export class FederationHooks {
 	public static afterMessageReacted(callback: (message: IMessage, user: IUser, reaction: string) => Promise<void>): void {
 		callbacks.add(
 			'afterSetReaction',
-			(message: IMessage, { user, reaction }: { user: IUser; reaction: string }): void => {
-				if (!message || !isMessageFromMatrixFederation(message)) {
+			(message: IMessage, params: { user: IUser; reaction: string }): void => {
+				if (
+					!message ||
+					!isMessageFromMatrixFederation(message) ||
+					!params ||
+					!params.user ||
+					!params.reaction ||
+					!settings.get('Federation_Matrix_enabled')
+				) {
 					return;
 				}
-				Promise.await(callback(message, user, reaction));
+				Promise.await(callback(message, params.user, params.reaction));
 			},
 			callbacks.priority.HIGH,
 			'federation-v2-after-message-reacted',
@@ -90,11 +108,19 @@ export class FederationHooks {
 	public static afterMessageunReacted(callback: (message: IMessage, user: IUser, reaction: string) => Promise<void>): void {
 		callbacks.add(
 			'afterUnsetReaction',
-			(message: IMessage, { user, reaction, oldMessage }: any): void => {
-				if (!message || !isMessageFromMatrixFederation(message)) {
+			(message: IMessage, params: { user: IUser; reaction: string; oldMessage: IMessage }): void => {
+				if (
+					!message ||
+					!isMessageFromMatrixFederation(message) ||
+					!params ||
+					!params.user ||
+					!params.reaction ||
+					!params.oldMessage ||
+					!settings.get('Federation_Matrix_enabled')
+				) {
 					return;
 				}
-				Promise.await(callback(oldMessage, user, reaction));
+				Promise.await(callback(params.oldMessage, params.user, params.reaction));
 			},
 			callbacks.priority.HIGH,
 			'federation-v2-after-message-unreacted',
@@ -105,7 +131,13 @@ export class FederationHooks {
 		callbacks.add(
 			'afterDeleteMessage',
 			(message: IMessage, room: IRoom): void => {
-				if (!room || !isRoomFederated(room) || !isMessageFromMatrixFederation(message)) {
+				if (
+					!room ||
+					!message ||
+					!isRoomFederated(room) ||
+					!isMessageFromMatrixFederation(message) ||
+					!settings.get('Federation_Matrix_enabled')
+				) {
 					return;
 				}
 				Promise.await(callback(message, room._id));
@@ -119,7 +151,13 @@ export class FederationHooks {
 		callbacks.add(
 			'afterSaveMessage',
 			(message: IMessage, room: IRoom): IMessage => {
-				if (!room || !isRoomFederated(room) || !isMessageFromMatrixFederation(message)) {
+				if (
+					!room ||
+					!isRoomFederated(room) ||
+					!message ||
+					!isMessageFromMatrixFederation(message) ||
+					!settings.get('Federation_Matrix_enabled')
+				) {
 					return message;
 				}
 				if (!isEditedMessage(message)) {
@@ -137,13 +175,13 @@ export class FederationHooks {
 		callbacks.add(
 			'afterSaveMessage',
 			(message: IMessage, room: IRoom): IMessage => {
-				if (!room || !isRoomFederated(room)) {
+				if (!room || !isRoomFederated(room) || !message || !settings.get('Federation_Matrix_enabled')) {
 					return message;
 				}
 				if (isEditedMessage(message)) {
 					return message;
 				}
-				Promise.await(callback(message, room._id, message.u._id));
+				Promise.await(callback(message, room._id, message.u?._id));
 				return message;
 			},
 			callbacks.priority.HIGH,
@@ -151,8 +189,40 @@ export class FederationHooks {
 		);
 	}
 
+	public static afterRoomRoleChanged(federationRoomService: FederationRoomServiceSender, data: Record<string, any>): void {
+		if (!data || !settings.get('Federation_Matrix_enabled')) {
+			return;
+		}
+		const {
+			_id: role,
+			type: action,
+			scope: internalRoomId,
+			u: { _id: internalTargetUserId = undefined } = {},
+			givenByUserId: internalUserId,
+		} = data;
+		const roleEventsInterestedIn = ['moderator', 'owner'];
+		if (!roleEventsInterestedIn.includes(role)) {
+			return;
+		}
+		const handlers: Record<string, (internalUserId: string, internalTargetUserId: string, internalRoomId: string) => Promise<void>> = {
+			'owner-added': (internalUserId: string, internalTargetUserId: string, internalRoomId: string): Promise<void> =>
+				federationRoomService.onRoomOwnerAdded(internalUserId, internalTargetUserId, internalRoomId),
+			'owner-removed': (internalUserId: string, internalTargetUserId: string, internalRoomId: string): Promise<void> =>
+				federationRoomService.onRoomOwnerRemoved(internalUserId, internalTargetUserId, internalRoomId),
+			'moderator-added': (internalUserId: string, internalTargetUserId: string, internalRoomId: string): Promise<void> =>
+				federationRoomService.onRoomModeratorAdded(internalUserId, internalTargetUserId, internalRoomId),
+			'moderator-removed': (internalUserId: string, internalTargetUserId: string, internalRoomId: string): Promise<void> =>
+				federationRoomService.onRoomModeratorRemoved(internalUserId, internalTargetUserId, internalRoomId),
+		};
+
+		if (!handlers[`${role}-${action}`]) {
+			return;
+		}
+		Promise.await(handlers[`${role}-${action}`](internalUserId, internalTargetUserId, internalRoomId));
+	}
+
 	public static removeCEValidation(): void {
-		callbacks.remove('federation.beforeAddUserAToRoom', 'federation-v2-can-add-federated-user-to-federated-room');
+		callbacks.remove('federation.beforeAddUserToARoom', 'federation-v2-can-add-federated-user-to-federated-room');
 		callbacks.remove('federation.beforeCreateDirectMessage', 'federation-v2-can-create-direct-message-from-ui-ce');
 	}
 }
