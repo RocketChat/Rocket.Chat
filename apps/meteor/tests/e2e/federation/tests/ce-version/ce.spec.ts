@@ -1,12 +1,12 @@
 import faker from '@faker-js/faker';
 
-import { test, expect, setupTesting, tearDownTesting } from '../../utils/test';
-import { FederationChannel } from '../../page-objects/channel';
 import * as constants from '../../config/constants';
+import { FederationChannel } from '../../page-objects/channel';
 import { doLogin } from '../../utils/auth';
-import { registerUser } from '../../utils/register-user';
-import { formatIntoFullMatrixUsername } from '../../utils/format';
 import { createGroupAndInviteRemoteUserToCreateLocalUser } from '../../utils/channel';
+import { formatIntoFullMatrixUsername } from '../../utils/format';
+import { registerUser } from '../../utils/register-user';
+import { test, expect, setupTesting, tearDownTesting } from '../../utils/test';
 
 test.describe.parallel('Federation - CE version', () => {
 	let poFederationChannelServer2: FederationChannel;
