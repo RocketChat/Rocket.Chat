@@ -40,6 +40,7 @@ test.describe.serial('omnichannel-triggers', () => {
 
 	test.afterAll(async ({ api }) => {
 		await Promise.all([api.delete('/livechat/users/agent/user1'), api.delete('/livechat/users/manager/user1')]);
+		await agent.page.close();
 	});
 
 	test('Triggers', async ({ page }) => {

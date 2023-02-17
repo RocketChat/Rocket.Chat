@@ -84,5 +84,7 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 			api.post('/settings/Livechat_auto_close_on_hold_chats_timeout', { value: 3600 }).then((res) => expect(res.status()).toBe(200)),
 			api.post('/settings/Livechat_allow_manual_on_hold', { value: false }).then((res) => expect(res.status()).toBe(200)),
 		]);
+
+		await agent.page.close();
 	});
 });
