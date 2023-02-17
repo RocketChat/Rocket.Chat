@@ -14,7 +14,6 @@
 @import 'imports/forms/popup-list.css';
 @import 'imports/forms/switch.css';
 @import 'imports/forms/tags.css';
-@import 'imports/forms/checkbox.css';
 
 /* Typography */
 @import 'imports/general/typography.css';
@@ -25,8 +24,6 @@
 @import 'imports/components/main-content.css';
 @import 'imports/components/message-box.css';
 @import 'imports/components/avatar.css';
-@import 'imports/components/popover.css';
-@import 'imports/components/popout.css';
 @import 'imports/components/modal.css';
 @import 'imports/components/messages.css';
 @import 'imports/components/emojiPicker.css';

@@ -7,7 +7,7 @@ import {
 	FederationAfterRemoveUserFromRoomDto,
 	FederationCreateDMAndInviteUserDto,
 	FederationRoomSendExternalMessageDto,
-} from '../../../../../../../../../app/federation-v2/server/application/input/RoomSenderDto';
+} from '../../../../../../../../../app/federation-v2/server/application/sender/input/RoomSenderDto';
 
 describe('Federation - Infrastructure - RocketChat - FederationRoomSenderConverter', () => {
 	describe('#toCreateDirectMessageRoomDto()', () => {

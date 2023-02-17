@@ -13,7 +13,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useLayout, useRoute, useLogout, useSetting, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
+import { useLayout, useRole, useRoute, useLogout, useSetting, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
 import { useThemeMode } from '@rocket.chat/ui-theming/src/hooks/useThemeMode';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -58,6 +58,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	const logout = useLogout();
 	const { isMobile } = useLayout();
 	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
+	const isAdmin = useRole('admin');
 
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
@@ -130,17 +131,28 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 						color='status-font-on-info'
 						onClick={() =>
 							setModal(
-								<GenericModal
-									title={t('User_status_disabled_learn_more')}
-									cancelText={t('Close')}
-									confirmText={t('Go_to_workspace_settings')}
-									children={t('User_status_disabled_learn_more_description')}
-									onConfirm={handleGoToSettings}
-									onClose={closeModal}
-									onCancel={closeModal}
-									icon={null}
-									variant='warning'
-								/>,
+								isAdmin ? (
+									<GenericModal
+										title={t('User_status_disabled_learn_more')}
+										cancelText={t('Close')}
+										confirmText={t('Go_to_workspace_settings')}
+										children={t('User_status_disabled_learn_more_description')}
+										onConfirm={handleGoToSettings}
+										onClose={closeModal}
+										onCancel={closeModal}
+										icon={null}
+										variant='warning'
+									/>
+								) : (
+									<GenericModal
+										title={t('User_status_disabled_learn_more')}
+										confirmText={t('Close')}
+										children={t('User_status_disabled_learn_more_description')}
+										onConfirm={closeModal}
+										onClose={closeModal}
+										icon={null}
+									/>
+								),
 							)
 						}
 					>
@@ -180,21 +192,21 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 				<OptionIcon name='sun' />
 				<OptionContent>{t('Theme_light')}</OptionContent>
 				<OptionColumn>
-					<RadioButton checked={selectedTheme === 'light'} onChange={(): void => setTheme('light')} m='x4' />
+					<RadioButton checked={selectedTheme === 'light'} onChange={setTheme('light')} m='x4' />
 				</OptionColumn>
 			</Option>
 			<Option>
 				<OptionIcon name='moon' />
 				<OptionContent>{t('Theme_dark')}</OptionContent>
 				<OptionColumn>
-					<RadioButton checked={selectedTheme === 'dark'} onChange={(): void => setTheme('dark')} m='x4' />
+					<RadioButton checked={selectedTheme === 'dark'} onChange={setTheme('dark')} m='x4' />
 				</OptionColumn>
 			</Option>
 			<Option>
 				<OptionIcon name='desktop' />
 				<OptionContent>{t('Theme_match_system')}</OptionContent>
 				<OptionColumn>
-					<RadioButton checked={selectedTheme === 'auto'} onChange={(): void => setTheme('auto')} m='x4' />
+					<RadioButton checked={selectedTheme === 'auto'} onChange={setTheme('auto')} m='x4' />
 				</OptionColumn>
 			</Option>
 			<OptionDivider />

@@ -38,8 +38,11 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarGroupByType?: boolean;
 		muteFocusedConversations?: boolean;
 		dontAskAgainList?: Array<{ action: string; label: string }>;
+		themeAppearence?: 'auto' | 'light' | 'dark';
 		receiveLoginDetectionEmail?: boolean;
 		idleTimeLimit?: number;
+		omnichannelTranscriptEmail?: boolean;
+		omnichannelTranscriptPDF?: boolean;
 	};
 };
 
@@ -188,12 +191,24 @@ const UsersSetPreferencesParamsPostSchema = {
 					},
 					nullable: true,
 				},
+				themeAppearence: {
+					type: 'string',
+					nullable: true,
+				},
 				receiveLoginDetectionEmail: {
 					type: 'boolean',
 					nullable: true,
 				},
 				idleTimeLimit: {
 					type: 'number',
+					nullable: true,
+				},
+				omnichannelTranscriptEmail: {
+					type: 'boolean',
+					nullable: true,
+				},
+				omnichannelTranscriptPDF: {
+					type: 'boolean',
 					nullable: true,
 				},
 			},

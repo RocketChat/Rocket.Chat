@@ -8,13 +8,13 @@ test.describe('anonymous-user', () => {
 	let poHomeChannel: HomeChannel;
 
 	test.beforeAll(async ({ api }) => {
-		expect((await setSettingValueById(api, 'Accounts_AllowAnonymousRead', true)).status()).toBe(200);
-		expect((await setSettingValueById(api, 'Accounts_AllowAnonymousWrite', true)).status()).toBe(200);
+		await expect((await setSettingValueById(api, 'Accounts_AllowAnonymousRead', true)).status()).toBe(200);
+		await expect((await setSettingValueById(api, 'Accounts_AllowAnonymousWrite', true)).status()).toBe(200);
 	});
 
 	test.afterAll(async ({ api }) => {
-		expect((await setSettingValueById(api, 'Accounts_AllowAnonymousRead', false)).status()).toBe(200);
-		expect((await setSettingValueById(api, 'Accounts_AllowAnonymousWrite', false)).status()).toBe(200);
+		await expect((await setSettingValueById(api, 'Accounts_AllowAnonymousRead', false)).status()).toBe(200);
+		await expect((await setSettingValueById(api, 'Accounts_AllowAnonymousWrite', false)).status()).toBe(200);
 	});
 
 	test.beforeEach(async ({ page }) => {
