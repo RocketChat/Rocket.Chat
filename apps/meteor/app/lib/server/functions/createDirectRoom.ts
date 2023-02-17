@@ -7,7 +7,7 @@ import type { MatchKeysAndValues } from 'mongodb';
 import type { ICreateRoomParams } from '@rocket.chat/core-services';
 
 import { Users, Rooms } from '../../../models/server';
-import { Apps } from '../../../apps/server';
+import { Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/server';
