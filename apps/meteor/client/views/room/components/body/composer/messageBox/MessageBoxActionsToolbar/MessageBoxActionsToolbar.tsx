@@ -11,15 +11,24 @@ type MessageBoxActionsToolbarProps = {
 	isRecording: boolean;
 	typing: boolean;
 	canSend: boolean;
+	canJoin: boolean;
 	rid: IRoom['_id'];
 	tmid?: string;
 };
 
-const MessageBoxActionsToolbar = ({ variant = 'large', isRecording, typing, canSend, rid, tmid }: MessageBoxActionsToolbarProps) => {
+const MessageBoxActionsToolbar = ({
+	variant = 'large',
+	isRecording,
+	typing,
+	canSend,
+	rid,
+	tmid,
+	canJoin,
+}: MessageBoxActionsToolbarProps) => {
 	const actions = [
-		<VideoMessageAction key='video' collapsed={variant === 'small'} isRecording={isRecording} />,
-		<AudioMessageAction key='audio' disabled={!canSend || typing || isRecording} />,
-		<FileUploadAction key='file' collapsed={variant === 'small'} isRecording={isRecording} />,
+		<VideoMessageAction key='video' collapsed={variant === 'small'} isRecording={isRecording} canSend={canJoin || canSend} />,
+		<AudioMessageAction key='audio' disabled={(!canJoin && !canSend) || typing || isRecording} />,
+		<FileUploadAction key='file' collapsed={variant === 'small'} isRecording={isRecording} canSend={canSend} />,
 	];
 
 	let featuredAction;
