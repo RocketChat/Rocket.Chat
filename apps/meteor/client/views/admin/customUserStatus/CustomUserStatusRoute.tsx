@@ -1,7 +1,7 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRoute, useRouteParameter, usePermission, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useEffect } from 'react';
 
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
@@ -19,6 +19,11 @@ const CustomUserStatusRoute = (): ReactElement => {
 	const id = useRouteParameter('id');
 	const canManageUserStatus = usePermission('manage-user-status');
 	const { data: license } = useIsEnterprise();
+	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
+
+	useEffect(() => {
+		presenceDisabled && route.push({ context: 'presence-service' });
+	}, [presenceDisabled, route]);
 
 	const handleItemClick = (id: string): void => {
 		route.push({
