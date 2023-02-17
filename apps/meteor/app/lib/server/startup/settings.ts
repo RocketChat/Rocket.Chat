@@ -355,6 +355,24 @@ settingsRegistry.addGroup('Accounts', function () {
 			public: true,
 			i18nLabel: 'Hide_usernames',
 		});
+		this.add('Accounts_Default_User_Preferences_messagesLayout', 'full_name', {
+			type: 'select',
+			values: [
+				{
+					key: 'full_name',
+					i18nLabel: 'Show_only_full_name',
+				},
+				{
+					key: 'username',
+					i18nLabel: 'Show_only_username',
+				},
+				{
+					key: 'username_and_full_name',
+					i18nLabel: 'Show_both_full_name_and_username',
+				},
+			],
+			public: true,
+		});
 		this.add('Accounts_Default_User_Preferences_hideRoles', false, {
 			type: 'boolean',
 			public: true,
