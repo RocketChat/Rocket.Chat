@@ -22,6 +22,13 @@ const styles = StyleSheet.create({
 		marginTop: 6,
 		fontSize: fontScales.p2.fontSize,
 	},
+	nestedQuote: {
+		borderWidth: 1,
+		borderColor: colors.n250,
+		borderLeftColor: colors.n600,
+		marginHorizontal: 16,
+		paddingBottom: 16,
+	},
 });
 
 export const Quotes = ({ quotes }: { quotes: Quote[] }) => (
@@ -41,13 +48,9 @@ export const Quotes = ({ quotes }: { quotes: Quote[] }) => (
 				nestedComponents = (
 					<View
 						style={{
-							borderWidth: 1,
+							...styles.nestedQuote,
 							borderBottomWidth: hasNestedQuote ? 0 : 1,
 							borderTopWidth: isEven ? 1 : 0,
-							borderColor: colors.n250,
-							borderLeftColor: colors.n600,
-							marginHorizontal: 16,
-							paddingBottom: 16,
 						}}
 					>
 						{nestedComponents}
