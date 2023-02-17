@@ -7,7 +7,6 @@ import { Apps } from '../../../../ee/server/apps';
 import { isURL } from '../../../../lib/utils/isURL';
 import { FileUpload } from '../../../file-upload/server';
 import { hasPermission } from '../../../authorization/server';
-import { SystemLogger } from '../../../../server/lib/logger/system';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
 import notifications from '../../../notifications/server/lib/Notifications';
