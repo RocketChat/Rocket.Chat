@@ -34,7 +34,7 @@ const ADMIN_PERMISSIONS = [
 ];
 
 const AdministrationList = ({ accountBoxItems, onDismiss }: AdministrationListProps): ReactElement => {
-	const hasAuditLicense = Boolean(useHasLicenseModule('auditing'));
+	const hasAuditLicense = useHasLicenseModule('auditing') === true;
 	const hasAdminPermission = useAtLeastOnePermission(ADMIN_PERMISSIONS);
 	const hasManageAppsPermission = usePermission('manage-apps');
 	const hasAuditPermission = usePermission('can-audit') && hasAuditLicense;
