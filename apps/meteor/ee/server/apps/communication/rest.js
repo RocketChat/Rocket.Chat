@@ -442,7 +442,6 @@ export class AppsRestApi {
 							projection: {
 								username: 1,
 								name: 1,
-								emails: 1,
 								nickname: 1,
 							},
 						}).toArray();
@@ -453,7 +452,6 @@ export class AppsRestApi {
 								username: a.username,
 								name: a.name,
 								nickname: a.nickname,
-								emails: a.emails.map((e) => e.address),
 							};
 						});
 					} catch (e) {
