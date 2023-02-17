@@ -3,7 +3,7 @@ import { Scrollbars } from 'rc-scrollbars';
 import type { MutableRefObject, CSSProperties, ReactNode, ReactElement } from 'react';
 import React, { useMemo, memo, forwardRef } from 'react';
 
-const styleDefault = {
+const styleDefault: CSSProperties = {
 	width: '100%',
 	height: '100%',
 	flexGrow: 1,
@@ -21,11 +21,11 @@ export type CustomScrollbarsProps = {
 	autoHide?: boolean;
 };
 
-const ScrollableContentWrapper = forwardRef<HTMLElement, CustomScrollbarsProps>(function WrappedComponent(
+const ScrollableContentWrapper = forwardRef<HTMLElement, CustomScrollbarsProps>(function ScrollableContentWrapper(
 	{ children, style, onScroll, overflowX, renderView },
 	ref,
 ) {
-	const scrollbarsStyle = useMemo(() => ({ ...style, ...styleDefault }), [style]) as CSSProperties;
+	const scrollbarsStyle = useMemo((): CSSProperties => ({ ...style, ...styleDefault }), [style]);
 
 	return (
 		<Scrollbars

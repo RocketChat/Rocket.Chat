@@ -12,7 +12,7 @@ const createAuxContext = async (browser: Browser, storageState: string): Promise
 };
 
 const newUser = {
-	name: faker.name.firstName(),
+	name: `${faker.name.firstName()} ${faker.datatype.uuid()}}`,
 	email: faker.internet.email(),
 };
 test.describe('Livechat', () => {

@@ -18,8 +18,10 @@ test.describe.serial('Omnichannel Priorities', () => {
 	let poOmnichannelPriorities: OmnichannelPriorities;
 
 	test.beforeAll(async ({ api }) => {
-		await api.post('/livechat/users/agent', { username: 'user1' });
-		await api.post('/livechat/users/manager', { username: 'user1' });
+		await Promise.all([
+			api.post('/livechat/users/agent', { username: 'user1' }),
+			api.post('/livechat/users/manager', { username: 'user1' }),
+		]);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -30,17 +32,18 @@ test.describe.serial('Omnichannel Priorities', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await api.delete('/livechat/users/agent/user1');
-		await api.delete('/livechat/users/manager/user1');
+		await Promise.all([api.delete('/livechat/users/agent/user1'), api.delete('/livechat/users/manager/user1')]);
 	});
 
 	test('Manage Priorities', async () => {
 		await test.step('All default priorities should be visible', async () => {
-			await expect(poOmnichannelPriorities.findPriority('Highest')).toBeVisible();
-			await expect(poOmnichannelPriorities.findPriority('High')).toBeVisible();
-			await expect(poOmnichannelPriorities.findPriority('Medium')).toBeVisible();
-			await expect(poOmnichannelPriorities.findPriority('Low')).toBeVisible();
-			await expect(poOmnichannelPriorities.findPriority('Lowest')).toBeVisible();
+			await Promise.all([
+				expect(poOmnichannelPriorities.findPriority('Highest')).toBeVisible(),
+				expect(poOmnichannelPriorities.findPriority('High')).toBeVisible(),
+				expect(poOmnichannelPriorities.findPriority('Medium')).toBeVisible(),
+				expect(poOmnichannelPriorities.findPriority('Low')).toBeVisible(),
+				expect(poOmnichannelPriorities.findPriority('Lowest')).toBeVisible(),
+			]);
 		});
 
 		await test.step('Add new priority', async () => {
@@ -48,9 +51,11 @@ test.describe.serial('Omnichannel Priorities', () => {
 			await poOmnichannelPriorities.findPriority('Highest').click();
 
 			await test.step('default state', async () => {
-				await expect(poOmnichannelPriorities.managePriority.btnSave).toBeDisabled();
-				await expect(poOmnichannelPriorities.managePriority.btnReset).not.toBeVisible();
-				await expect(poOmnichannelPriorities.managePriority.inputName).toHaveValue('Highest');
+				await Promise.all([
+					expect(poOmnichannelPriorities.managePriority.btnSave).toBeDisabled(),
+					expect(poOmnichannelPriorities.managePriority.btnReset).not.toBeVisible(),
+					expect(poOmnichannelPriorities.managePriority.inputName).toHaveValue('Highest'),
+				]);
 			});
 
 			await test.step('field name is required', async () => {
@@ -63,13 +68,18 @@ test.describe.serial('Omnichannel Priorities', () => {
 
 			await test.step('edit and save priority', async () => {
 				await poOmnichannelPriorities.managePriority.inputName.fill(PRIORITY_NAME);
-				await expect(poOmnichannelPriorities.managePriority.btnReset).toBeVisible();
-				await expect(poOmnichannelPriorities.managePriority.btnSave).toBeEnabled();
+				await Promise.all([
+					expect(poOmnichannelPriorities.managePriority.btnReset).toBeVisible(),
+					expect(poOmnichannelPriorities.managePriority.btnSave).toBeEnabled(),
+				]);
 				await poOmnichannelPriorities.managePriority.btnSave.click();
 
-				await expect(poOmnichannelPriorities.managePriority.inputName).not.toBeVisible();
-				await expect(poOmnichannelPriorities.findPriority(PRIORITY_NAME)).toBeVisible();
-				await expect(poOmnichannelPriorities.findPriority('Highest')).not.toBeVisible();
+				await Promise.all([
+					poOmnichannelPriorities.btnCloseToastSuccess.click(),
+					expect(poOmnichannelPriorities.managePriority.inputName).not.toBeVisible(),
+					expect(poOmnichannelPriorities.findPriority(PRIORITY_NAME)).toBeVisible(),
+					expect(poOmnichannelPriorities.findPriority('Highest')).not.toBeVisible(),
+				]);
 			});
 		});
 
@@ -78,11 +88,14 @@ test.describe.serial('Omnichannel Priorities', () => {
 				await poOmnichannelPriorities.findPriority(PRIORITY_NAME).click();
 				await expect(poOmnichannelPriorities.managePriority.btnReset).toBeVisible();
 				await poOmnichannelPriorities.managePriority.btnReset.click();
-				await expect(poOmnichannelPriorities.managePriority.inputName).toHaveValue('Highest');
-				await expect(poOmnichannelPriorities.managePriority.btnReset).not.toBeVisible();
+				await Promise.all([
+					expect(poOmnichannelPriorities.managePriority.inputName).toHaveValue('Highest'),
+					expect(poOmnichannelPriorities.managePriority.btnReset).not.toBeVisible(),
+				]);
 
 				await expect(poOmnichannelPriorities.managePriority.btnSave).toBeEnabled();
 				await poOmnichannelPriorities.managePriority.btnSave.click();
+				await poOmnichannelPriorities.btnCloseToastSuccess.click();
 				await expect(poOmnichannelPriorities.findPriority('Highest')).toBeVisible();
 				await expect(poOmnichannelPriorities.btnReset).not.toBeEnabled();
 			});
@@ -91,22 +104,28 @@ test.describe.serial('Omnichannel Priorities', () => {
 				await poOmnichannelPriorities.findPriority('Highest').click();
 
 				await poOmnichannelPriorities.managePriority.inputName.fill(PRIORITY_NAME);
-				await expect(poOmnichannelPriorities.managePriority.btnReset).toBeVisible();
-				await expect(poOmnichannelPriorities.managePriority.btnSave).toBeEnabled();
+				await Promise.all([
+					expect(poOmnichannelPriorities.managePriority.btnReset).toBeVisible(),
+					expect(poOmnichannelPriorities.managePriority.btnSave).toBeEnabled(),
+				]);
 				await poOmnichannelPriorities.managePriority.btnSave.click();
-
-				await expect(poOmnichannelPriorities.managePriority.inputName).not.toBeVisible();
-				await expect(poOmnichannelPriorities.findPriority(PRIORITY_NAME)).toBeVisible();
-				await expect(poOmnichannelPriorities.findPriority('Highest')).not.toBeVisible();
+				await poOmnichannelPriorities.btnCloseToastSuccess.click();
+				await Promise.all([
+					expect(poOmnichannelPriorities.managePriority.inputName).not.toBeVisible(),
+					expect(poOmnichannelPriorities.findPriority(PRIORITY_NAME)).toBeVisible(),
+					expect(poOmnichannelPriorities.findPriority('Highest')).not.toBeVisible(),
+				]);
 
 				await expect(poOmnichannelPriorities.btnReset).toBeEnabled();
 				await poOmnichannelPriorities.btnReset.click();
 				await poOmnichannelPriorities.btnResetConfirm.click();
-				await expect(poOmnichannelPriorities.toastSuccess).toBeVisible();
 
-				await expect(poOmnichannelPriorities.btnReset).not.toBeEnabled();
-				await expect(poOmnichannelPriorities.findPriority(PRIORITY_NAME)).not.toBeVisible();
-				await expect(poOmnichannelPriorities.findPriority('Highest')).toBeVisible();
+				await Promise.all([
+					expect(poOmnichannelPriorities.toastSuccess).toBeVisible(),
+					expect(poOmnichannelPriorities.btnReset).not.toBeEnabled(),
+					expect(poOmnichannelPriorities.findPriority(PRIORITY_NAME)).not.toBeVisible(),
+					expect(poOmnichannelPriorities.findPriority('Highest')).toBeVisible(),
+				]);
 			});
 		});
 	});
