@@ -23,19 +23,17 @@ describe('AdministrationList', () => {
 	};
 
 	it('should render all model list', async () => {
-		const AdministrationList = loadMock();
+		const AdministrationList = loadMock({
+			'../../../ee/client/hooks/useHasLicenseModule': {
+				useHasLicenseModule: () => false,
+			},
+			'@rocket.chat/ui-contexts': {
+				useHasPermission: (key: string) => ['can-audit-log', 'manage-apps', 'can-audit'].includes(key),
+				useAtLeastOnePermission: (keys: string[]) => keys.some((key) => ['manage-emoji'].includes(key)),
+			},
+		});
 
-		render(
-			<AdministrationList
-				accountBoxItems={[{} as any]}
-				hasAuditPermission
-				hasAuditLogPermission
-				hasManageApps
-				hasAdminPermission
-				hasAuditLicense={false}
-				onDismiss={() => null}
-			/>,
-		);
+		render(<AdministrationList accountBoxItems={[{} as any]} onDismiss={() => null} />);
 
 		expect(screen.getByText('Administration Model List')).to.exist;
 		expect(screen.getByText('Apps Model List')).to.exist;
@@ -43,19 +41,18 @@ describe('AdministrationList', () => {
 	});
 
 	it('should render administration model list when has account box item', async () => {
-		const AdministrationList = loadMock();
+		const AdministrationList = loadMock({
+			'../../../ee/client/hooks/useHasLicenseModule': {
+				'useHasLicenseModule': () => false,
 
-		render(
-			<AdministrationList
-				hasAdminPermission={false}
-				hasAuditLicense={false}
-				hasAuditLogPermission={false}
-				hasAuditPermission={false}
-				hasManageApps={false}
-				accountBoxItems={[{} as any]}
-				onDismiss={() => null}
-			/>,
-		);
+				'@rocket.chat/ui-contexts': {
+					useHasPermission: () => false,
+					useAtLeastOnePermission: () => false,
+				},
+			},
+		});
+
+		render(<AdministrationList accountBoxItems={[{} as any]} onDismiss={() => null} />);
 
 		expect(screen.getByText('Administration Model List')).to.exist;
 		expect(screen.queryByText('Apps Model List')).to.exist;
@@ -68,19 +65,15 @@ describe('AdministrationList', () => {
 				AccountBoxItem: {},
 				isAppAccountBoxItem: () => true,
 			},
+			'../../../ee/client/hooks/useHasLicenseModule': {
+				'@rocket.chat/ui-contexts': {
+					useHasPermission: () => false,
+					useAtLeastOnePermission: () => false,
+				},
+			},
 		});
 
-		render(
-			<AdministrationList
-				hasAdminPermission={false}
-				hasAuditLicense={false}
-				hasAuditLogPermission={false}
-				hasAuditPermission={false}
-				hasManageApps={false}
-				accountBoxItems={[{} as any]}
-				onDismiss={() => null}
-			/>,
-		);
+		render(<AdministrationList accountBoxItems={[{} as any]} onDismiss={() => null} />);
 
 		expect(screen.getByText('Apps Model List')).to.exist;
 		expect(screen.queryByText('Administration Model List')).to.not.exist;
