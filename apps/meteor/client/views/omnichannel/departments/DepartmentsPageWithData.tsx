@@ -23,12 +23,11 @@ const DepartmentsPageWithData = (): ReactElement => {
 		['omnichannel', 'departments', debouncedText, pagination, sort],
 		() =>
 			getDepartments({
-				onlyMyDepartments: 'true' as const,
+				onlyMyDepartments: 'true',
 				text: debouncedText,
 				sort: JSON.stringify({ [sort.sortBy]: sort.sortDirection === 'asc' ? 1 : -1 }),
 				...(pagination.current && { offset: pagination.current }),
 				...(pagination.itemsPerPage && { count: pagination.itemsPerPage }),
-				fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
 			}),
 		{
 			keepPreviousData: true,

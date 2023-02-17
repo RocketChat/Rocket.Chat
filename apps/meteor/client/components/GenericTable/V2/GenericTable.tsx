@@ -13,7 +13,8 @@ export const GenericTable = forwardRef<HTMLElement, GenericTableProps>(function 
 	return (
 		<Box mi='neg-x24' pi='x24' flexShrink={1} flexGrow={1} ref={ref} overflow='hidden'>
 			<ScrollableContentWrapper overflowX>
-				<Table fixed={fixed} sticky {...props}>
+				{/* TODO: Fix fuselage */}
+				<Table fixed={fixed} sticky {...(props as any)}>
 					{children}
 				</Table>
 			</ScrollableContentWrapper>
