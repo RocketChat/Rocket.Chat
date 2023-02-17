@@ -31,8 +31,8 @@ export class Presence extends ServiceClass implements IPresence {
 				return;
 			}
 
-			// check total connections if there is no license
-			if (!this.hasLicense && diff?.hasOwnProperty('extraInformation.conns')) {
+			// always store the number of connections per instance so we can show correct in the UI
+			if (diff?.hasOwnProperty('extraInformation.conns')) {
 				this.connsPerInstance.set(id, diff['extraInformation.conns']);
 
 				this.validateAvailability();
@@ -73,7 +73,7 @@ export class Presence extends ServiceClass implements IPresence {
 		clearTimeout(this.lostConTimeout);
 	}
 
-	toggleBroadcast(enabled: boolean): void {
+	async toggleBroadcast(enabled: boolean): Promise<void> {
 		if (!this.hasLicense && this.getTotalConnections() > MAX_CONNECTIONS) {
 			throw new Error('Cannot enable broadcast when there are more than 200 connections');
 		}
@@ -81,7 +81,7 @@ export class Presence extends ServiceClass implements IPresence {
 
 		// update the setting only to turn it on, because it may have been disabled via the troubleshooting setting, which doesn't affect the setting
 		if (enabled) {
-			Settings.updateValueById('Presence_broadcast_disabled', false);
+			await Settings.updateValueById('Presence_broadcast_disabled', false);
 		}
 	}
 

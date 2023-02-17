@@ -29,37 +29,16 @@ declare module 'meteor/templating' {
 	>;
 
 	type BlazeTemplates = {
-		requiresPermission: BlazeTemplate;
 		emojiPicker: BlazeTemplate;
-		lazyloadImage: BlazeTemplate;
 		customFieldsForm: BlazeTemplate;
 		ExternalFrameContainer: BlazeTemplate;
-		broadcastView: BlazeTemplate;
-		liveStreamBroadcast: BlazeTemplate;
-		liveStreamTab: BlazeTemplate;
-		liveStreamView: BlazeTemplate;
 		inputAutocomplete: BlazeTemplate;
-		textareaAutocomplete: BlazeTemplate;
 		_autocompleteContainer: BlazeTemplate;
 		_noMatch: BlazeTemplate;
-		authorize: BlazeTemplate;
-		oauth404: BlazeTemplate;
-		icon: BlazeTemplate<{
-			block?: string;
-			icon: string;
-		}>;
-		popupList: BlazeTemplate;
-		popupList_default: BlazeTemplate;
-		popupList_item_default: BlazeTemplate;
-		popupList_loading: BlazeTemplate;
-		popupList_item_channel: BlazeTemplate;
-		popupList_item_custom: BlazeTemplate;
-		selectDropdown: BlazeTemplate;
 		CodeMirror: BlazeTemplate;
 		photoswipeContent: BlazeTemplate;
 		roomSearch: BlazeTemplate<typeof AutoComplete>;
 		roomSearchEmpty: BlazeTemplate;
-		avatar: BlazeTemplate;
 		username: BlazeTemplate<
 			Record<string, never>,
 			{
@@ -84,27 +63,12 @@ declare module 'meteor/templating' {
 				validate: () => unknown;
 			}
 		>;
-		error: BlazeTemplate;
 		loading: BlazeTemplate;
-		messagePopup: BlazeTemplate;
-		messagePopupChannel: BlazeTemplate;
-		messagePopupConfig: BlazeTemplate<{
-			rid: IRoom['_id'];
-			tmid?: IMessage['_id'];
-			getInput: () => HTMLTextAreaElement | null;
-		}>;
-		messagePopupEmoji: BlazeTemplate;
-		messagePopupSlashCommand: BlazeTemplate;
 		messagePopupSlashCommandPreview: BlazeTemplate<{
 			tmid?: IMessage['_id'];
 			rid: IRoom['_id'];
 			getInput: () => HTMLTextAreaElement | null;
 		}>;
-		messagePopupUser: BlazeTemplate;
-		rc_modal: BlazeTemplate;
-		popout: BlazeTemplate;
-		popover: BlazeTemplate;
-		messagePopupCannedResponse: BlazeTemplate;
 	};
 
 	interface TemplateStatic extends BlazeTemplates {

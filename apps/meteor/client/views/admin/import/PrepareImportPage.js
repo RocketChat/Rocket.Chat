@@ -2,7 +2,6 @@ import { Badge, Box, Button, ButtonGroup, Icon, Margins, Throbber, Tabs } from '
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useEndpoint, useTranslation, useStream } from '@rocket.chat/ui-contexts';
 import React, { useEffect, useState, useMemo } from 'react';
-import s from 'underscore.string';
 
 import {
 	ProgressStep,
@@ -12,6 +11,7 @@ import {
 	ImportingStartedStates,
 	ImportingErrorStates,
 } from '../../../../app/importer/lib/ImporterProgressStep';
+import { numberFormat } from '../../../../lib/utils/stringUtils';
 import Page from '../../../components/Page';
 import PrepareChannels from './PrepareChannels';
 import PrepareUsers from './PrepareUsers';
@@ -221,7 +221,7 @@ function PrepareImportPage() {
 								{progressRate ? (
 									<Box display='flex' justifyContent='center' fontScale='p2'>
 										<Box is='progress' value={(progressRate * 10).toFixed(0)} max='1000' marginInlineEnd='x24' />
-										<Box is='span'>{s.numberFormat(progressRate, 0)}%</Box>
+										<Box is='span'>{numberFormat(progressRate, 0)}%</Box>
 									</Box>
 								) : (
 									<Throbber justifyContent='center' />

@@ -151,6 +151,8 @@ describe('miscellaneous', function () {
 					'emailNotificationMode',
 					'unreadAlert',
 					'notificationsSoundVolume',
+					'omnichannelTranscriptEmail',
+					IS_EE ? 'omnichannelTranscriptPDF' : false,
 					'desktopNotifications',
 					'pushNotifications',
 					'enableAutoAway',
@@ -164,12 +166,13 @@ describe('miscellaneous', function () {
 					'idleTimeLimit',
 					'sidebarShowFavorites',
 					'sidebarShowUnread',
+					'themeAppearence',
 					'sidebarSortby',
 					'sidebarViewMode',
 					'sidebarDisplayAvatar',
 					'sidebarGroupByType',
 					'muteFocusedConversations',
-				];
+				].filter((p) => Boolean(p));
 
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('_id', credentials['X-User-Id']);
