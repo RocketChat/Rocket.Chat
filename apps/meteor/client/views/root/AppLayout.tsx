@@ -1,5 +1,3 @@
-import { PaletteStyleTag } from '@rocket.chat/ui-theming/src/PaletteStyleTag';
-import { SidebarPaletteStyleTag } from '@rocket.chat/ui-theming/src/SidebarPaletteStyleTag';
 import type { ReactElement } from 'react';
 import React, { useEffect, Suspense } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
@@ -30,8 +28,6 @@ const AppLayout = (): ReactElement => {
 
 	return (
 		<>
-			<PaletteStyleTag />
-			<SidebarPaletteStyleTag />
 			<Suspense fallback={<PageLoading />}>{layout}</Suspense>
 			{portals}
 		</>
