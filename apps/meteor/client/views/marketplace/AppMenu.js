@@ -1,4 +1,4 @@
-import { Icon, Menu, Skeleton, Option } from '@rocket.chat/fuselage';
+import { Box, Icon, Menu, Skeleton } from '@rocket.chat/fuselage';
 import {
 	useSetModal,
 	useEndpoint,
@@ -126,6 +126,22 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	}, [app, setModal, closeModal, isSubscribed, buildExternalUrl, syncApp]);
 
 	const acquireApp = useCallback(async () => {
+		if (action === 'purchase' && !isAppPurchased) {
+			try {
+				const data = await Apps.buildExternalUrl(app.id, app.purchaseType, false);
+				setModal(<IframeModal url={data.url} cancel={cancelAction} confirm={showAppPermissionsReviewModal} />);
+			} catch (error) {
+				handleAPIError(error);
+			}
+			return;
+		}
+
+		showAppPermissionsReviewModal();
+	}, [action, app, isAppPurchased, showAppPermissionsReviewModal, setModal, cancelAction]);
+
+	const handleAcquireApp = useCallback(async () => {
+		setLoading(true);
+
 		const requestConfirmAction = (postMessage) => {
 			setModal(null);
 			setLoading(false);
@@ -139,7 +155,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			});
 		};
 
-		setLoading(true);
+		if (app?.versionIncompatible) {
+			openIncompatibleModal(app, 'subscribe', closeModal, setModal);
+			return;
+		}
 
 		if (action === 'request') {
 			try {
@@ -148,25 +167,6 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			} catch (error) {
 				handleAPIError(error);
 			}
-			return;
-		}
-
-		if (action === 'purchase' && !isAppPurchased) {
-			try {
-				const data = await Apps.buildExternalUrl(app.id, app.purchaseType, false);
-				setModal(<IframeModal url={data.url} cancel={cancelAction} confirm={showAppPermissionsReviewModal} />);
-			} catch (error) {
-				handleAPIError(error);
-			}
-			return;
-		}
-
-		showAppPermissionsReviewModal();
-	}, [action, app, isAppPurchased, showAppPermissionsReviewModal, setModal, dispatchToastMessage, notifyAdmins, cancelAction]);
-
-	const handleAcquireApp = useCallback(async () => {
-		if (app?.versionIncompatible) {
-			openIncompatibleModal(app, 'subscribe', closeModal, setModal);
 			return;
 		}
 
@@ -191,7 +191,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				}}
 			/>,
 		);
-	}, [app, result.data, setModal, context, acquireApp, closeModal, upgradeRoute]);
+	}, [app, action, result.data, setModal, context, acquireApp, dispatchToastMessage, notifyAdmins, closeModal, cancelAction, upgradeRoute]);
 
 	const handleViewLogs = useCallback(() => {
 		router.push({ context, page: 'info', id: app.id, version: app.version, tab: 'logs' });
@@ -237,23 +237,6 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			}
 		};
 
-		if (!result.data) {
-			return;
-		}
-
-		if (app.migrated) {
-			setModal(
-				<UninstallGrandfatheredAppModal
-					context={context}
-					appName={app.name}
-					limit={result.data.limit}
-					handleUninstall={uninstall}
-					handleClose={closeModal}
-				/>,
-			);
-			return;
-		}
-
 		if (isSubscribed) {
 			const confirm = async () => {
 				await handleSubscription();
@@ -269,6 +252,23 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 					cancelText={t('Apps_Marketplace_Uninstall_Subscribed_App_Anyway')}
 				/>,
 			);
+		}
+
+		if (!result.data) {
+			return;
+		}
+
+		if (app.migrated) {
+			setModal(
+				<UninstallGrandfatheredAppModal
+					context={context}
+					appName={app.name}
+					limit={result.data.limit}
+					handleUninstall={uninstall}
+					handleClose={closeModal}
+				/>,
+			);
+			return;
 		}
 
 		setModal(
@@ -335,10 +335,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				isAdminUser && {
 					subscribe: {
 						label: (
-							<Option>
+							<>
 								<Icon name={incompatibleIconName(app, 'subscribe')} size='x16' marginInlineEnd='x4' />
 								{t('Subscription')}
-							</Option>
+							</>
 						),
 						action: handleSubscription,
 					},
@@ -349,12 +349,13 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			...(!app.installed && {
 				acquire: {
 					label: (
-						<Option disabled={requestedEndUser}>
+						<>
 							{isAdminUser && <Icon name={incompatibleIconName(app, 'install')} size='x16' marginInlineEnd='x4' />}
 							{t(button.label.replace(' ', '_'))}
-						</Option>
+						</>
 					),
-					action: requestedEndUser ? () => {} : handleAcquireApp,
+					action: handleAcquireApp,
+					disabled: requestedEndUser,
 				},
 			}),
 		};
@@ -365,10 +366,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				app.installed && {
 					viewLogs: {
 						label: (
-							<Option>
+							<>
 								<Icon name='desktop-text' size='x16' marginInlineEnd='x4' />
 								{t('View_Logs')}
-							</Option>
+							</>
 						),
 						action: handleViewLogs,
 					},
@@ -378,10 +379,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				!isAppDetailsPage && {
 					update: {
 						label: (
-							<Option>
+							<>
 								<Icon name={incompatibleIconName(app, 'update')} size='x16' marginInlineEnd='x4' />
 								{t('Update')}
-							</Option>
+							</>
 						),
 						action: handleUpdate,
 					},
@@ -391,10 +392,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				isAppEnabled && {
 					disable: {
 						label: (
-							<Option color='on-warning'>
+							<Box color='on-warning'>
 								<Icon name='ban' size='x16' marginInlineEnd='x4' />
 								{t('Disable')}
-							</Option>
+							</Box>
 						),
 						action: handleDisable,
 					},
@@ -404,11 +405,12 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				!isAppEnabled && {
 					enable: {
 						label: (
-							<Option>
+							<>
 								<Icon name='check' size='x16' marginInlineEnd='x4' />
 								{t('Enable')}
-							</Option>
+							</>
 						),
+						disabled: !result?.data?.hasUnlimitedApps && result?.data?.enabled >= result?.data?.limit,
 						action: handleEnable,
 					},
 				}),
@@ -422,10 +424,10 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				isAdminUser && {
 					uninstall: {
 						label: (
-							<Option color='danger'>
+							<Box color='on-danger'>
 								<Icon name='trash' size='x16' marginInlineEnd='x4' />
 								{t('Uninstall')}
-							</Option>
+							</Box>
 						),
 						action: handleUninstall,
 					},
@@ -439,13 +441,13 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		};
 	}, [
 		canAppBeSubscribed,
-		requestedEndUser,
 		isSubscribed,
+		isAdminUser,
 		incompatibleIconName,
 		app,
 		t,
 		handleSubscription,
-		isAdminUser,
+		requestedEndUser,
 		button?.label,
 		handleAcquireApp,
 		context,
@@ -455,6 +457,9 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		handleUpdate,
 		isAppEnabled,
 		handleDisable,
+		result?.data?.hasUnlimitedApps,
+		result?.data?.enabled,
+		result?.data?.limit,
 		handleEnable,
 		handleUninstall,
 	]);
