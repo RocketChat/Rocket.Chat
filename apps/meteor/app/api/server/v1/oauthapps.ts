@@ -3,7 +3,7 @@ import { OAuthApps } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
-import { addOAuthApp } from '../../../oauth2-server-config/server/admin/methods/addOAuthApp';
+import { addOAuthApp } from '../../../oauth2-server-config/server/admin/functions/addOAuthApp';
 
 API.v1.addRoute(
 	'oauth-apps.list',
@@ -51,6 +51,10 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
+			if (!(await hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
+				return API.v1.unauthorized();
+			}
+
 			const { appId } = this.bodyParams;
 
 			const result = Meteor.call('updateOAuthApp', appId, this.bodyParams);
@@ -68,6 +72,10 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
+			if (!(await hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
+				return API.v1.unauthorized();
+			}
+
 			const { appId } = this.bodyParams;
 
 			const result = Meteor.call('deleteOAuthApp', appId);
@@ -85,6 +93,10 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
+			if (!(await hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
+				return API.v1.unauthorized();
+			}
+
 			const application = await addOAuthApp(this.bodyParams, this.userId);
 
 			return API.v1.success({ application });

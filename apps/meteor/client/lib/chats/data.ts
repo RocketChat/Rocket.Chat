@@ -1,4 +1,4 @@
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import moment from 'moment';
 
 import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
@@ -86,17 +86,19 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 			return false;
 		}
 
-		const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
+		const canEditMessage = hasAtLeastOnePermission('edit-message', message.rid);
 		const editAllowed = (settings.get('Message_AllowEditing') as boolean | undefined) ?? false;
 		const editOwn = message?.u && message.u._id === Meteor.userId();
 
-		if (!hasPermission && (!editAllowed || !editOwn)) {
+		if (!canEditMessage && (!editAllowed || !editOwn)) {
 			return false;
 		}
 
 		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes') as number | undefined;
+		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete');
+
 		const elapsedMinutes = moment().diff(message.ts, 'minutes');
-		if (elapsedMinutes && blockEditInMinutes && elapsedMinutes > blockEditInMinutes) {
+		if (!bypassBlockTimeLimit && elapsedMinutes && blockEditInMinutes && elapsedMinutes > blockEditInMinutes) {
 			return false;
 		}
 
@@ -206,8 +208,9 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		}
 
 		const blockDeleteInMinutes = settings.get('Message_AllowDeleting_BlockDeleteInMinutes') as number | undefined;
+		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete');
 		const elapsedMinutes = moment().diff(message.ts, 'minutes');
-		const onTimeForDelete = !blockDeleteInMinutes || !elapsedMinutes || elapsedMinutes <= blockDeleteInMinutes;
+		const onTimeForDelete = bypassBlockTimeLimit || !blockDeleteInMinutes || !elapsedMinutes || elapsedMinutes <= blockDeleteInMinutes;
 
 		return deleteAllowed && onTimeForDelete;
 	};
@@ -263,6 +266,33 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		return discussion;
 	};
 
+	const createStrictGetter = <TFind extends (...args: any[]) => Promise<any>>(
+		find: TFind,
+		errorMessage: string,
+	): ((...args: Parameters<TFind>) => Promise<Exclude<Awaited<ReturnType<TFind>>, undefined>>) => {
+		return async (...args) => {
+			const result = await find(...args);
+
+			if (!result) {
+				throw new Error(errorMessage);
+			}
+
+			return result;
+		};
+	};
+
+	const findSubscription = async (): Promise<ISubscription | undefined> => {
+		return ChatSubscription.findOne({ rid }, { reactive: false });
+	};
+
+	const getSubscription = createStrictGetter(findSubscription, 'Subscription not found');
+
+	const findSubscriptionFromMessage = async (message: IMessage): Promise<ISubscription | undefined> => {
+		return ChatSubscription.findOne({ rid: message.rid }, { reactive: false });
+	};
+
+	const getSubscriptionFromMessage = createStrictGetter(findSubscriptionFromMessage, 'Subscription not found');
+
 	return {
 		composeMessage,
 		findMessageByID,
@@ -290,5 +320,9 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		markRoomAsRead,
 		findDiscussionByID,
 		getDiscussionByID,
+		findSubscription,
+		getSubscription,
+		findSubscriptionFromMessage,
+		getSubscriptionFromMessage,
 	};
 };

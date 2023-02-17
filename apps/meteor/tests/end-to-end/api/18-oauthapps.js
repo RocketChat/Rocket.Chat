@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
-import { updatePermission } from '../../data/permissions.helper.js';
+import { updatePermission } from '../../data/permissions.helper';
 
 describe('[OAuthApps]', function () {
 	this.retries(0);
@@ -185,7 +185,7 @@ describe('[OAuthApps]', function () {
 				});
 		});
 
-		it('should update an app name, active and redirect URI correctly by its id', async () => {
+		it('should update an app's name, its Active and Redirect URI fields correctly by its id', async () => {
 			const name = `new app ${Date.now()}`;
 			const redirectUri = 'http://localhost:3000';
 			const active = false;

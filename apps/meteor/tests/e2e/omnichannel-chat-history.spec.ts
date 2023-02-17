@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
 import type { Browser, Page } from '@playwright/test';
 
-import { test, expect } from './utils/test';
 import { OmnichannelLiveChat, HomeOmnichannel } from './page-objects';
+import { test, expect } from './utils/test';
 
 const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page; poHomeOmnichannel: HomeOmnichannel }> => {
 	const page = await browser.newPage({ storageState });
@@ -37,6 +37,7 @@ test.describe('Omnichannel chat histr', () => {
 	test.afterAll(async ({ api }) => {
 		await api.delete('/livechat/users/agent/user1');
 		await api.delete('/livechat/users/manager/user1');
+		await agent.page.close();
 	});
 
 	test('Receiving a message from visitor', async ({ page }) => {

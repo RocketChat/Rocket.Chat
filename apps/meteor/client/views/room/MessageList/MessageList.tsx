@@ -1,4 +1,4 @@
-import type { IRoom, IThreadMessage } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 import { MessageDivider } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
@@ -32,9 +32,7 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 	return (
 		<MessageListProvider>
 			<SelectedMessagesProvider>
-				{messages.map((message, index, arr) => {
-					const previous = arr[index - 1];
-
+				{messages.map((message, index, { [index - 1]: previous }) => {
 					const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
 
 					const newDay = isMessageNewDay(message, previous);
@@ -49,6 +47,7 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 					const unread = Boolean(subscription?.tunread?.includes(message._id));
 					const mention = Boolean(subscription?.tunreadUser?.includes(message._id));
 					const all = Boolean(subscription?.tunreadGroup?.includes(message._id));
+					const ignoredUser = Boolean(subscription?.ignored?.includes(message.u._id));
 
 					return (
 						<Fragment key={message._id}>
@@ -58,7 +57,16 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 								</MessageDivider>
 							)}
 
-							{visible && <RoomMessage message={message} sequential={shouldShowAsSequential} unread={unread} mention={mention} all={all} />}
+							{visible && (
+								<RoomMessage
+									message={message}
+									sequential={shouldShowAsSequential}
+									unread={unread}
+									mention={mention}
+									all={all}
+									ignoredUser={ignoredUser}
+								/>
+							)}
 
 							{isThreadMessage(message) && (
 								<ThreadMessagePreview
@@ -67,7 +75,7 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 									data-unread={firstUnread}
 									data-sequential={sequential}
 									sequential={shouldShowAsSequential}
-									message={message as IThreadMessage}
+									message={message}
 								/>
 							)}
 

@@ -9,13 +9,15 @@ import type { ReactElement, UIEvent } from 'react';
 import React, { useCallback, useMemo } from 'react';
 
 import { emoji } from '../../../app/emoji/client';
-import { useUserCard } from '../../hooks/useUserCard';
 import type { MessageWithMdEnforced } from '../../lib/parseMessageTextToAstMarkdown';
 import { fireGlobalEvent } from '../../lib/utils/fireGlobalEvent';
+import { useChat } from '../../views/room/contexts/ChatContext';
 import { useGoToRoom } from '../../views/room/hooks/useGoToRoom';
 import { useMessageListHighlights } from './list/MessageListContext';
 
-type MessageContentBodyProps = Pick<MessageWithMdEnforced, 'mentions' | 'channels' | 'md'>;
+type MessageContentBodyProps = Pick<MessageWithMdEnforced, 'mentions' | 'channels' | 'md'> & {
+	searchText?: string;
+};
 
 const detectEmoji = (text: string): { name: string; className: string; image?: string; content: string }[] => {
 	const html = Object.values(emoji.packages)
@@ -31,7 +33,7 @@ const detectEmoji = (text: string): { name: string; className: string; image?: s
 	}));
 };
 
-const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps): ReactElement => {
+const MessageContentBody = ({ mentions, channels, md, searchText }: MessageContentBodyProps): ReactElement => {
 	const highlights = useMessageListHighlights();
 	const highlightRegex = useMemo(() => {
 		if (!highlights || !highlights.length) {
@@ -43,6 +45,14 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 
 		return (): RegExp => new RegExp(expression, 'gmi');
 	}, [highlights]);
+
+	const markRegex = useMemo(() => {
+		if (!searchText) {
+			return;
+		}
+
+		return (): RegExp => new RegExp(`(${searchText})(?![^<]*>)`, 'gi');
+	}, [searchText]);
 
 	const resolveUserMention = useCallback(
 		(mention: string) => {
@@ -58,7 +68,7 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 		[mentions],
 	);
 
-	const { open: openUserCard } = useUserCard();
+	const chat = useChat();
 
 	const goToRoom = useGoToRoom();
 
@@ -70,10 +80,10 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 
 			return (event: UIEvent): void => {
 				event.stopPropagation();
-				openUserCard(username)(event);
+				chat?.userCard.open(username)(event);
 			};
 		},
-		[openUserCard],
+		[chat?.userCard],
 	);
 
 	const resolveChannelMention = useCallback((mention: string) => channels?.find(({ name }) => name === mention), [channels]);
@@ -146,6 +156,7 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 					value={{
 						detectEmoji,
 						highlightRegex,
+						markRegex,
 						resolveUserMention,
 						onUserMentionClick,
 						resolveChannelMention,

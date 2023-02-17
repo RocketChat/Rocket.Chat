@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import s from 'underscore.string';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import * as Mailer from '../../../../mailer';
@@ -9,6 +8,7 @@ import { metrics } from '../../../../metrics';
 import { callbacks } from '../../../../../lib/callbacks';
 import { getURL } from '../../../../utils/server';
 import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
+import { ltrim } from '../../../../../lib/utils/stringUtils';
 
 let advice = '';
 let goToMessage = '';
@@ -101,7 +101,7 @@ function getEmailContent({ message, user, room }) {
 const getButtonUrl = (room, subscription, message) => {
 	const basePath = roomCoordinator.getRouteLink(room.t, subscription).replace(Meteor.absoluteUrl(), '');
 
-	const path = `${s.ltrim(basePath, '/')}?msg=${message._id}`;
+	const path = `${ltrim(basePath, '/')}?msg=${message._id}`;
 	return getURL(path, {
 		full: true,
 		cloud: settings.get('Offline_Message_Use_DeepLink'),

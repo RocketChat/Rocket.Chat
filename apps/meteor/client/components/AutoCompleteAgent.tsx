@@ -9,12 +9,17 @@ import { useAgentsList } from './Omnichannel/hooks/useAgentsList';
 
 type AutoCompleteAgentProps = {
 	value: string;
+	error?: string;
+	placeholder?: string;
 	onChange: (value: string) => void;
 	haveAll?: boolean;
 	haveNoAgentsSelectedOption?: boolean;
 };
+
 const AutoCompleteAgent = ({
 	value,
+	error,
+	placeholder,
 	onChange,
 	haveAll = false,
 	haveNoAgentsSelectedOption = false,
@@ -46,6 +51,8 @@ const AutoCompleteAgent = ({
 	return (
 		<PaginatedSelectFiltered
 			value={value}
+			error={error}
+			placeholder={placeholder}
 			onChange={onChange}
 			flexShrink={0}
 			filter={agentsFilter}

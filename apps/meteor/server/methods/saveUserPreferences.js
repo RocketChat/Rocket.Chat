@@ -22,7 +22,6 @@ Meteor.methods({
 			pushNotifications: Match.Optional(String),
 			enableAutoAway: Match.Optional(Boolean),
 			highlights: Match.Optional([String]),
-			messageViewMode: Match.Optional(Number),
 			hideUsernames: Match.Optional(Boolean),
 			hideRoles: Match.Optional(Boolean),
 			displayAvatars: Match.Optional(Boolean),
@@ -36,6 +35,8 @@ Meteor.methods({
 			sidebarDisplayAvatar: Match.Optional(Boolean),
 			sidebarGroupByType: Match.Optional(Boolean),
 			muteFocusedConversations: Match.Optional(Boolean),
+			omnichannelTranscriptEmail: Match.Optional(Boolean),
+			omnichannelTranscriptPDF: Match.Optional(Boolean),
 		};
 		check(settings, Match.ObjectIncluding(keys));
 		const user = Meteor.user();
