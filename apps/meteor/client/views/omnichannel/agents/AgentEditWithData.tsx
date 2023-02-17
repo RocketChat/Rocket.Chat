@@ -20,20 +20,20 @@ const AgentEditWithData = ({ uid, reload }: AgentEditWithDataProps): ReactElemen
 
 	const getAgentDepartments = useEndpoint('GET', '/v1/livechat/agents/:agentId/departments', { agentId: uid });
 
-	const { data, isInitialLoading: state, error } = useQuery(['getAgent'], async () => getAgent());
+	const { data, isInitialLoading: isLoading, error } = useQuery(['getAgent'], async () => getAgent());
 	const {
 		data: userDepartments,
-		isInitialLoading: userDepartmentsState,
+		isInitialLoading: isUserDepartmentsLoading,
 		error: userDepartmentsError,
 	} = useQuery({ queryKey: ['getAgentDepartments'], queryFn: async () => getAgentDepartments(), cacheTime: 0 });
 
 	const {
 		data: availableDepartments,
-		isInitialLoading: availableDepartmentsState,
+		isInitialLoading: isAvailableDepartmentsLoading,
 		error: availableDepartmentsError,
 	} = useQuery(['getDepartments'], async () => getDepartments({ showArchived: 'true' }));
 
-	if (state || availableDepartmentsState || userDepartmentsState || !userDepartments || !availableDepartments) {
+	if (isLoading || isAvailableDepartmentsLoading || isUserDepartmentsLoading || !userDepartments || !availableDepartments) {
 		return <FormSkeleton />;
 	}
 
