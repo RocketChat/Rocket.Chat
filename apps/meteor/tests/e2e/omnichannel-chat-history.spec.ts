@@ -37,6 +37,7 @@ test.describe('Omnichannel chat histr', () => {
 	test.afterAll(async ({ api }) => {
 		await api.delete('/livechat/users/agent/user1');
 		await api.delete('/livechat/users/manager/user1');
+		await agent.page.close();
 	});
 
 	test('Receiving a message from visitor', async ({ page }) => {

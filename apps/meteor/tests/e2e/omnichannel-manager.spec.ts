@@ -13,18 +13,19 @@ test.describe.serial('omnichannel-manager', () => {
 		await poOmnichannelManagers.sidenav.linkManagers.click();
 	});
 
-	test('expect add "user1" as manager', async ({ page }) => {
-		await poOmnichannelManagers.inputUsername.type('user1 ', { delay: 1000 });
-		await page.keyboard.press('Enter');
-		await poOmnichannelManagers.btnAdd.click();
+	test('Managers', async ({ page }) => {
+		await test.step('expect add "user1" as manager', async () => {
+			await poOmnichannelManagers.inputUsername.type('user1 ', { delay: 1000 });
+			await page.keyboard.press('Enter');
+			await poOmnichannelManagers.btnAdd.click();
 
-		await expect(poOmnichannelManagers.firstRowInTable('user1')).toBeVisible();
-	});
+			await expect(poOmnichannelManagers.firstRowInTable('user1')).toBeVisible();
+		});
+		await test.step('expect remove "user1" as manager', async () => {
+			await poOmnichannelManagers.btnDeleteSelectedAgent('user1').click();
+			await poOmnichannelManagers.btnModalRemove.click();
 
-	test('expect remove "user1" as manager', async () => {
-		await poOmnichannelManagers.btnDeleteFirstRowInTable.click();
-		await poOmnichannelManagers.btnModalRemove.click();
-
-		await expect(poOmnichannelManagers.firstRowInTable('user1')).toBeHidden();
+			await expect(poOmnichannelManagers.firstRowInTable('user1')).toBeHidden();
+		});
 	});
 });
