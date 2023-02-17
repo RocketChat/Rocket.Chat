@@ -23,13 +23,13 @@ const AgentEditWithData = ({ uid, reload }: AgentEditWithDataProps): ReactElemen
 	const { data, isInitialLoading: isLoading, error } = useQuery(['getAgent'], async () => getAgent());
 	const {
 		data: userDepartments,
-		isInitialLoading: isUserDepartmentsLoading,
+		isLoading: isUserDepartmentsLoading,
 		error: userDepartmentsError,
 	} = useQuery({ queryKey: ['getAgentDepartments'], queryFn: async () => getAgentDepartments(), cacheTime: 0 });
 
 	const {
 		data: availableDepartments,
-		isInitialLoading: isAvailableDepartmentsLoading,
+		isLoading: isAvailableDepartmentsLoading,
 		error: availableDepartmentsError,
 	} = useQuery(['getDepartments'], async () => getDepartments({ showArchived: 'true' }));
 
