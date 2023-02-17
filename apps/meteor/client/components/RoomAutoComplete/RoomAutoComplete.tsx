@@ -22,11 +22,10 @@ type RoomAutoCompleteProps<T> = Omit<ComponentProps<typeof AutoComplete>, 'value
 /* @deprecated */
 const RoomAutoComplete = <T,>(props: RoomAutoCompleteProps<T>): ReactElement => {
 	const [filter, setFilter] = useState('');
+	const filterDebounced = useDebouncedValue(filter, 300);
 	const autocomplete = useEndpoint('GET', '/v1/rooms.autocomplete.channelAndPrivate');
 
-	const query = useDebouncedValue(generateQuery(filter), 300);
-
-	const result = useQuery(['rooms.autocomplete.channelAndPrivate', query], () => autocomplete(query), {
+	const result = useQuery(['rooms.autocomplete.channelAndPrivate', filterDebounced], () => autocomplete(generateQuery(filterDebounced)), {
 		keepPreviousData: true,
 	});
 
