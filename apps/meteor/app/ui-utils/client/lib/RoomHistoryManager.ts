@@ -1,10 +1,9 @@
-import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { v4 as uuidv4 } from 'uuid';
 import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
 import { Emitter } from '@rocket.chat/emitter';
-import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import type { MutableRefObject } from 'react';
 
 import { waitForElement } from '../../../../client/lib/utils/waitForElement';
@@ -17,19 +16,17 @@ import {
 	setHighlightMessage,
 	clearHighlightMessage,
 } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
-import { normalizeThreadMessage } from '../../../../client/lib/normalizeThreadMessage';
+import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
 
 export async function upsertMessage(
 	{
 		msg,
 		subscription,
-		uid = Tracker.nonreactive(() => Meteor.userId()) ?? undefined,
 	}: {
 		msg: IMessage & { ignored?: boolean };
 		subscription?: ISubscription;
-		uid?: IUser['_id'];
 	},
-	{ direct } = ChatMessage,
+	{ direct }: MinimongoCollection<IMessage> = ChatMessage,
 ) {
 	const userId = msg.u?._id;
 
@@ -42,34 +39,22 @@ export async function upsertMessage(
 	}
 	msg = (await onClientMessageReceived(msg)) || msg;
 
-	const { _id, ...messageToUpsert } = msg;
+	const { _id } = msg;
 
-	if (msg.tcount) {
-		direct.update(
-			{ tmid: _id },
-			{
-				$set: {
-					following: uid && (msg.replies?.includes(uid) ?? false),
-					threadMsg: normalizeThreadMessage(messageToUpsert),
-					repliesCount: msg.tcount,
-				},
-			},
-			{ multi: true },
-		);
-	}
-
-	return direct.upsert({ _id }, messageToUpsert);
+	return direct.upsert({ _id }, msg);
 }
 
-export function upsertMessageBulk({ msgs, subscription }: { msgs: IMessage[]; subscription?: ISubscription }, collection = ChatMessage) {
-	const uid = Tracker.nonreactive(() => Meteor.userId()) ?? undefined;
+export function upsertMessageBulk(
+	{ msgs, subscription }: { msgs: IMessage[]; subscription?: ISubscription },
+	collection: MinimongoCollection<IMessage> = ChatMessage,
+) {
 	const { queries } = collection;
 	collection.queries = [];
 	msgs.forEach((msg, index) => {
 		if (index === msgs.length - 1) {
 			collection.queries = queries;
 		}
-		upsertMessage({ msg, subscription, uid }, collection);
+		upsertMessage({ msg, subscription }, collection);
 	});
 }
 

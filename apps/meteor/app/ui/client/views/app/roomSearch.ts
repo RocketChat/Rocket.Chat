@@ -3,7 +3,7 @@ import { Template } from 'meteor/templating';
 import { roomCoordinator } from '../../../../../client/lib/rooms/roomCoordinator';
 
 Template.roomSearch.helpers({
-	roomIcon() {
+	roomIcon(this: any) {
 		if (this.type === 'u') {
 			return 'icon-at';
 		}
@@ -11,7 +11,7 @@ Template.roomSearch.helpers({
 			return roomCoordinator.getIcon(this);
 		}
 	},
-	userStatus() {
+	userStatus(this: any) {
 		if (this.type === 'u') {
 			return `status-${this.status}`;
 		}

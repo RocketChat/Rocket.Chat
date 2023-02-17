@@ -4,7 +4,7 @@ import React, { useMemo } from 'react';
 
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
-import { FormSkeleton } from '../../Skeleton';
+import { FormSkeleton } from '../../components/FormSkeleton';
 import ContactNewEdit from './ContactNewEdit';
 
 function ContactEditWithData({ id, close }) {

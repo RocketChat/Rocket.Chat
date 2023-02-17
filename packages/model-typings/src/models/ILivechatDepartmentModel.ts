@@ -4,6 +4,7 @@ import type { ILivechatDepartmentRecord } from '@rocket.chat/core-typings';
 import type { IBaseModel } from './IBaseModel';
 
 export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartmentRecord> {
+	countTotal(): Promise<number>;
 	findInIds(departmentsIds: string[], options: FindOptions<ILivechatDepartmentRecord>): FindCursor<ILivechatDepartmentRecord>;
 	findByNameRegexWithExceptionsAndConditions(
 		searchTerm: string,
@@ -30,4 +31,7 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 	removeBusinessHourFromDepartmentsByIdsAndBusinessHourId(ids: string[], businessHourId: string): Promise<Document | UpdateResult>;
 
 	removeBusinessHourFromDepartmentsByBusinessHourId(businessHourId: string): Promise<Document | UpdateResult>;
+	createOrUpdateDepartment(_id: string, data: ILivechatDepartmentRecord): Promise<ILivechatDepartmentRecord>;
+
+	unsetFallbackDepartmentByDepartmentId(departmentId: string): Promise<Document | UpdateResult>;
 }

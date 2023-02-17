@@ -1,5 +1,5 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import { faker } from '@faker-js/faker';
+import type { IUser } from '@rocket.chat/core-typings';
 
 type UserFixture = IUser & {
 	username: string;
