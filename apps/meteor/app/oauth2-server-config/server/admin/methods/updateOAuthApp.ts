@@ -1,34 +1,49 @@
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 import { OAuthApps } from '@rocket.chat/models';
+import type { IOAuthApps } from '@rocket.chat/core-typings';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { Users } from '../../../../models/server';
 import { parseUriList } from '../functions/parseUriList';
 import { methodDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		updateOAuthApp: (applicationId: IOAuthApps['_id'], application: { name: string; redirectUri: string; active: boolean }) => void;
+	}
+}
+
 Meteor.methods({
-	async updateOAuthApp(applicationId, application) {
+	async updateOAuthApp(applicationId: IOAuthApps['_id'], application: Pick<IOAuthApps, 'name' | 'redirectUri' | 'active'>) {
 		methodDeprecationLogger.warn(
 			'updateOAuthApp is deprecated and will be removed in future versions of Rocket.Chat. Use the REST endpoint /v1/oauth-apps.update instead',
 		);
+ 
+		if (!this.userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'updateOAuthApp' });
+		}
 
-		if (!this.userId || (await !hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
+		if (await !hasPermissionAsync(this.userId, 'manage-oauth-apps')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'updateOAuthApp' });
 		}
-		if (!_.isString(application.name) || application.name.trim() === '') {
+
+		if (!application.name || typeof application.name.valueOf() !== 'string' || application.name.trim() === '') {
 			throw new Meteor.Error('error-invalid-name', 'Invalid name', { method: 'updateOAuthApp' });
 		}
-		if (!_.isString(application.redirectUri) || application.redirectUri.trim() === '') {
+
+		if (!application.redirectUri || typeof application.redirectUri.valueOf() !== 'string' || application.redirectUri.trim() === '') {
 			throw new Meteor.Error('error-invalid-redirectUri', 'Invalid redirectUri', {
 				method: 'updateOAuthApp',
 			});
 		}
-		if (!_.isBoolean(application.active)) {
+
+		if (typeof application.active !== 'boolean') {
 			throw new Meteor.Error('error-invalid-arguments', 'Invalid arguments', {
 				method: 'updateOAuthApp',
 			});
 		}
+
 		const currentApplication = await OAuthApps.findOneById(applicationId);
 		if (currentApplication == null) {
 			throw new Meteor.Error('error-application-not-found', 'Application not found', {

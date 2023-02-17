@@ -3,7 +3,7 @@ import { OAuthApps } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
-import { addOAuthApp } from '../../../oauth2-server-config/server/admin/methods/addOAuthApp';
+import { addOAuthApp } from '../../../oauth2-server-config/server/admin/functions/addOAuthApp';
 
 API.v1.addRoute(
 	'oauth-apps.list',

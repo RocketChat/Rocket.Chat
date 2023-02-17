@@ -1,6 +1,6 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
-import { FederationRoomServiceListener } from '../application/RoomServiceListener';
+import { FederationRoomServiceListener } from '../application/listener/RoomServiceListener';
 import { FederationRoomServiceSender } from '../application/sender/RoomServiceSender';
 import { MatrixBridge } from './matrix/Bridge';
 import { MatrixEventsHandler } from './matrix/handlers';
@@ -12,6 +12,7 @@ import {
 	MatrixRoomMembershipChangedHandler,
 	MatrixRoomMessageSentHandler,
 	MatrixRoomNameChangedHandler,
+	MatrixRoomPowerLevelsChangedHandler,
 	MatrixRoomTopicChangedHandler,
 } from './matrix/handlers/Room';
 import { InMemoryQueue } from './queue/InMemoryQueue';
@@ -24,10 +25,10 @@ import { FederationHooks } from './rocket-chat/hooks';
 import { FederationRoomSenderConverter } from './rocket-chat/converters/RoomSender';
 import { FederationRoomInternalHooksValidator } from '../application/sender/RoomInternalHooksValidator';
 import { RocketChatFileAdapter } from './rocket-chat/adapters/File';
-import { FederationMessageServiceListener } from '../application/MessageServiceListener';
+import { FederationMessageServiceListener } from '../application/listener/MessageServiceListener';
 import { MatrixMessageReactedHandler } from './matrix/handlers/Message';
 import { FederationMessageServiceSender } from '../application/sender/MessageServiceSender';
-import { FederationUserServiceListener } from '../application/UserServiceListener';
+import { FederationUserServiceListener } from '../application/listener/UserServiceListener';
 import { MatrixUserTypingStatusChangedHandler } from './matrix/handlers/User';
 import { FederationUserServiceSender } from '../application/sender/UserServiceSender';
 import { RocketChatNotificationAdapter } from './rocket-chat/adapters/Notification';
@@ -61,13 +62,14 @@ export class FederationFactory {
 		return new InMemoryQueue();
 	}
 
-	public static buildRoomServiceReceiver(
+	public static buildRoomServiceListener(
 		rocketRoomAdapter: RocketChatRoomAdapter,
 		rocketUserAdapter: RocketChatUserAdapter,
 		rocketMessageAdapter: RocketChatMessageAdapter,
 		rocketFileAdapter: RocketChatFileAdapter,
 		rocketSettingsAdapter: RocketChatSettingsAdapter,
 		rocketNotificationAdapter: RocketChatNotificationAdapter,
+		federationQueueInstance: InMemoryQueue,
 		bridge: IFederationBridge,
 	): FederationRoomServiceListener {
 		return new FederationRoomServiceListener(
@@ -77,6 +79,7 @@ export class FederationFactory {
 			rocketFileAdapter,
 			rocketSettingsAdapter,
 			rocketNotificationAdapter,
+			federationQueueInstance,
 			bridge,
 		);
 	}
@@ -199,13 +202,14 @@ export class FederationFactory {
 		return [
 			new MatrixRoomCreatedHandler(roomServiceReceiver),
 			new MatrixRoomMembershipChangedHandler(roomServiceReceiver, rocketSettingsAdapter),
-			new MatrixRoomMessageSentHandler(roomServiceReceiver, rocketSettingsAdapter),
+			new MatrixRoomMessageSentHandler(roomServiceReceiver),
 			new MatrixRoomJoinRulesChangedHandler(roomServiceReceiver),
 			new MatrixRoomNameChangedHandler(roomServiceReceiver),
 			new MatrixRoomTopicChangedHandler(roomServiceReceiver),
 			new MatrixRoomEventRedactedHandler(roomServiceReceiver),
 			new MatrixMessageReactedHandler(messageServiceReceiver),
 			new MatrixUserTypingStatusChangedHandler(userServiceReceiver),
+			new MatrixRoomPowerLevelsChangedHandler(roomServiceReceiver),
 		];
 	}
 

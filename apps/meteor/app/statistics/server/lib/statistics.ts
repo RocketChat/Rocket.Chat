@@ -120,7 +120,7 @@ export const statistics = {
 		statistics.totalThreads = Messages.countThreads();
 
 		// livechat visitors
-		statistics.totalLivechatVisitors = await LivechatVisitors.find().count();
+		statistics.totalLivechatVisitors = await LivechatVisitors.col.estimatedDocumentCount();
 
 		// livechat agents
 		statistics.totalLivechatAgents = Users.findAgents().count();
@@ -207,12 +207,9 @@ export const statistics = {
 
 		// Amount of VoIP Extensions connected
 		statsPms.push(
-			UsersRaw.col
-				.find({ extension: { $exists: true } })
-				.count()
-				.then((count) => {
-					statistics.voipExtensions = count;
-				}),
+			UsersRaw.col.countDocuments({ extension: { $exists: true } }).then((count) => {
+				statistics.voipExtensions = count;
+			}),
 		);
 
 		// Amount of Calls that ended properly
@@ -310,11 +307,9 @@ export const statistics = {
 
 		statistics.enterpriseReady = true;
 		statsPms.push(
-			Uploads.find()
-				.count()
-				.then((count) => {
-					statistics.uploadsTotal = count;
-				}),
+			Uploads.col.estimatedDocumentCount().then((count) => {
+				statistics.uploadsTotal = count;
+			}),
 		);
 		statsPms.push(
 			Uploads.col
@@ -335,12 +330,9 @@ export const statistics = {
 
 		statistics.migration = getControl();
 		statsPms.push(
-			InstanceStatus.col
-				.find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } })
-				.count()
-				.then((count) => {
-					statistics.instanceCount = count;
-				}),
+			InstanceStatus.col.countDocuments({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).then((count) => {
+				statistics.instanceCount = count;
+			}),
 		);
 
 		const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();

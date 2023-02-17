@@ -1,6 +1,7 @@
-import type { IInstanceStatus, IStats } from '@rocket.chat/core-typings';
+import type { IStats, Serialized } from '@rocket.chat/core-typings';
 import { Callout, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
-import { usePermission, useServerInformation, useEndpoint, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
+import type { IInstance } from '@rocket.chat/rest-typings';
+import { usePermission, useServerInformation, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useState, useEffect, memo } from 'react';
 
@@ -19,10 +20,10 @@ const InformationRoute = (): ReactElement => {
 	const [isLoading, setLoading] = useState(true);
 	const [error, setError] = useState(false);
 	const [statistics, setStatistics] = useState<IStats>();
-	const [instances, setInstances] = useState<IInstanceStatus[]>([]);
+	const [instances, setInstances] = useState<Serialized<IInstance[]>>([]);
 	const [fetchStatistics, setFetchStatistics] = useState<fetchStatisticsCallback>(() => (): void => undefined);
 	const getStatistics = useEndpoint('GET', '/v1/statistics');
-	const getInstances = useMethod('instances/get');
+	const getInstances = useEndpoint('GET', '/v1/instances.get');
 
 	useEffect(() => {
 		let didCancel = false;
@@ -32,13 +33,13 @@ const InformationRoute = (): ReactElement => {
 			setError(false);
 
 			try {
-				const [statistics, instances] = await Promise.all([getStatistics({ refresh: refresh ? 'true' : 'false' }), getInstances()]);
+				const [statistics, instancesData] = await Promise.all([getStatistics({ refresh: refresh ? 'true' : 'false' }), getInstances()]);
 
 				if (didCancel) {
 					return;
 				}
 				setStatistics(statistics);
-				setInstances(instances as IInstanceStatus[]);
+				setInstances(instancesData.instances);
 			} catch (error) {
 				setError(!!error);
 			} finally {
