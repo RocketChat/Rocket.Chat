@@ -3,12 +3,11 @@ import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hoo
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
-import type { FC, ReactElement, Dispatch, SetStateAction } from 'react';
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import type { FC, ReactElement } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
 import GenericTable, { GenericTableLoadingTable } from '../../../../components/GenericTable';
-import { queryClient } from '../../../../lib/queryClient';
 import { useCurrentChats } from '../../currentChats/hooks/useCurrentChats';
 
 const useQuery = (
@@ -43,7 +42,7 @@ const useQuery = (
 		[column, current, direction, itemsPerPage, userIdLoggedIn, text],
 	);
 
-const ChatTable: FC<{ setChatReload: Dispatch<SetStateAction<any>> }> = ({ setChatReload }) => {
+const ChatTable: FC = () => {
 	const [params, setParams] = useState<{ text?: string; current: number; itemsPerPage: 25 | 50 | 100 }>({
 		text: '',
 		current: 0,
@@ -163,10 +162,6 @@ const ChatTable: FC<{ setChatReload: Dispatch<SetStateAction<any>> }> = ({ setCh
 	);
 
 	const result = useCurrentChats(query);
-
-	useEffect(() => {
-		setChatReload?.(() => queryClient.invalidateQueries({ queryKey: ['current-chats'] }));
-	}, [result.refetch, setChatReload]);
 
 	if (result.isLoading) {
 		return <GenericTableLoadingTable headerCells={6} />;
