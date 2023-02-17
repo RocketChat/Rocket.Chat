@@ -28,7 +28,7 @@ describe('AdministrationList', () => {
 				useHasLicenseModule: () => false,
 			},
 			'@rocket.chat/ui-contexts': {
-				useHasPermission: (key: string) => ['can-audit-log', 'manage-apps', 'can-audit'].includes(key),
+				usePermission: (key: string) => ['can-audit-log', 'manage-apps', 'can-audit'].includes(key),
 				useAtLeastOnePermission: (keys: string[]) => keys.some((key) => ['manage-emoji'].includes(key)),
 			},
 		});
@@ -46,7 +46,7 @@ describe('AdministrationList', () => {
 				'useHasLicenseModule': () => false,
 
 				'@rocket.chat/ui-contexts': {
-					useHasPermission: () => false,
+					usePermission: () => false,
 					useAtLeastOnePermission: () => false,
 				},
 			},
@@ -67,7 +67,7 @@ describe('AdministrationList', () => {
 			},
 			'../../../ee/client/hooks/useHasLicenseModule': {
 				'@rocket.chat/ui-contexts': {
-					useHasPermission: () => false,
+					usePermission: () => false,
 					useAtLeastOnePermission: () => false,
 				},
 			},
