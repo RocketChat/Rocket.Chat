@@ -172,7 +172,7 @@ export class AppServerOrchestrator {
 
 		await this.getBridges().getSchedulerBridge().startScheduler();
 
-		console.log(`Loaded the Apps Framework and loaded a total of ${this.getManager().get({ enabled: true }).length} Apps!`);
+		this._rocketchatLogger.info(`Loaded the Apps Framework and loaded a total of ${this.getManager().get({ enabled: true }).length} Apps!`);
 	}
 
 	async unload() {
@@ -184,8 +184,8 @@ export class AppServerOrchestrator {
 
 		return this._manager
 			.unload()
-			.then(() => console.log('Unloaded the Apps Framework.'))
-			.catch((err) => console.warn('Failed to unload the Apps Framework!', err));
+			.then(() => this._rocketchatLogger.info('Unloaded the Apps Framework.'))
+			.catch((err) => this._rocketchatLogger.error({ msg: 'Failed to unload the Apps Framework!', err }));
 	}
 
 	async updateAppsMarketplaceInfo(apps = []) {
