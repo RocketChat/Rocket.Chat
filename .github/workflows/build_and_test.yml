@@ -153,11 +153,11 @@ jobs:
         if: startsWith(github.ref, 'refs/pull/') == true
         env:
           METEOR_PROFILE: 1000
-        run: yarn build:ci --api="http://127.0.0.1:9080" -- --debug --directory dist
+        run: yarn build:ci -- --debug --directory dist
 
       - name: Build Rocket.Chat
         if: startsWith(github.ref, 'refs/pull/') != true
-        run: yarn build:ci --api="http://127.0.0.1:9080" -- --directory dist
+        run: yarn build:ci -- --directory dist
 
       - name: Prepare build
         run: |
@@ -821,7 +821,10 @@ jobs:
 
       - name: E2E Test UI (${{ matrix.shard }}/4)
         working-directory: ./apps/meteor
-        run: E2E_COVERAGE=true IS_EE=true yarn test:e2e --shard=${{ matrix.shard }}/5
+        env:
+          E2E_COVERAGE: 'true'
+          IS_EE: 'true'
+        run: yarn test:e2e --shard=${{ matrix.shard }}/5
 
       - name: Show server logs if E2E test failed
         if: failure()
