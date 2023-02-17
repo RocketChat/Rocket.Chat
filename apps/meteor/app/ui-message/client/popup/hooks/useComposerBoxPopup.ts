@@ -1,40 +1,32 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UseQueryResult } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
-import { useEffect, useCallback, useState } from 'react';
+import type { MutableRefObject } from 'react';
+import { useEffect, useCallback, useState, useRef } from 'react';
 
 import { useChat } from '../../../../../client/views/room/contexts/ChatContext';
+import type { ComposerPopupOption } from '../../../../../client/views/room/contexts/ComposerPopupContext';
 import { useComposerBoxPopupQueries } from './useComposerBoxPopupQueries';
 
-export type ComposerBoxPopupOptions<T extends { _id: string }> = {
-	title?: string;
-	getItemsFromLocal: (filter: string) => Promise<T[]>;
-	getItemsFromServer: (filter: string) => Promise<T[]>;
-	focused?: T | undefined;
-	blurOnSelectItem?: boolean;
-	closeOnEsc?: boolean;
+export type ComposerBoxPopupImperativeCommands<T> = MutableRefObject<
+	| {
+			getFilter: () => unknown;
+			select?: (s: T) => void;
+	  }
+	| undefined
+>;
 
-	trigger?: string;
-	triggerAnywhere?: boolean;
-
-	suffix?: string;
-	prefix?: string;
-
-	matchSelectorRegex?: RegExp;
-
-	getValue(item: T): string;
-
-	renderItem?: ({ item }: { item: T }) => ReactElement;
-};
+type ComposerBoxPopupOptions<T extends { _id: string; sort?: number | undefined }> = ComposerPopupOption<T>;
 
 type ComposerBoxPopupResult<T extends { _id: string; sort?: number }> =
 	| {
-			popup: ComposerBoxPopupOptions<T>;
+			popup: ComposerPopupOption<T>;
 			items: UseQueryResult<T[]>[];
 			focused: T | undefined;
 			ariaActiveDescendant: string | undefined;
 			select: (item: T) => void;
 			callbackRef: (node: HTMLElement) => void;
+			commandsRef: ComposerBoxPopupImperativeCommands<T>;
+			suspended: boolean;
 	  }
 	| {
 			popup: undefined;
@@ -43,6 +35,8 @@ type ComposerBoxPopupResult<T extends { _id: string; sort?: number }> =
 			ariaActiveDescendant: undefined;
 			callbackRef: (node: HTMLElement) => void;
 			select: undefined;
+			commandsRef: ComposerBoxPopupImperativeCommands<T>;
+			suspended: boolean;
 	  };
 
 const keys = {
@@ -62,7 +56,9 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 }): ComposerBoxPopupResult<T> => {
 	const [popup, setPopup] = useState<ComposerBoxPopupOptions<T> | undefined>(undefined);
 	const [focused, setFocused] = useState<T | undefined>(undefined);
-	const [filter, setFilter] = useState('');
+	const [filter, setFilter] = useState<unknown>('');
+
+	const commandsRef: ComposerBoxPopupImperativeCommands<T> = useRef();
 
 	const items = useComposerBoxPopupQueries(filter, popup) as unknown as UseQueryResult<T[]>[];
 
@@ -88,20 +84,24 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 			throw new Error('No popup is open');
 		}
 
-		const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
-		const selector =
-			popup.matchSelectorRegex ??
-			(popup.triggerAnywhere ? new RegExp(`(?:^| |\n)(${popup.trigger})([^\\s]*$)`) : new RegExp(`(?:^)(${popup.trigger})([^\\s]*$)`));
+		if (commandsRef.current?.select) {
+			commandsRef.current.select(item);
+		} else {
+			const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
+			const selector =
+				popup.matchSelectorRegex ??
+				(popup.triggerAnywhere ? new RegExp(`(?:^| |\n)(${popup.trigger})([^\\s]*$)`) : new RegExp(`(?:^)(${popup.trigger})([^\\s]*$)`));
 
-		const result = value?.match(selector);
-		if (!result || !value) {
-			return;
+			const result = value?.match(selector);
+			if (!result || !value) {
+				return;
+			}
+
+			chat?.composer?.replaceText((popup.prefix ?? popup.trigger ?? '') + popup.getValue(item) + (popup.suffix ?? ''), {
+				start: value.lastIndexOf(result[1] + result[2]),
+				end: chat?.composer?.selection.start,
+			});
 		}
-
-		chat?.composer?.replaceText((popup.prefix ?? popup.trigger ?? '') + popup.getValue(item) + (popup.suffix ?? ''), {
-			start: value.lastIndexOf(result[1] + result[2]),
-			end: chat?.composer?.selection.start,
-		});
 
 		setPopup(undefined);
 		setFocused(undefined);
@@ -135,7 +135,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 					? new RegExp(`(?:^| |\n)(${configuration.trigger})([^\\s]*$)`)
 					: new RegExp(`(?:^)(${configuration.trigger})([^\\s]*$)`));
 			const result = value.match(selector);
-			setFilter(result ? result[2] : '');
+			setFilter(commandsRef.current?.getFilter() ?? (result ? result[2] : ''));
 		}
 		return configuration;
 	});
@@ -193,7 +193,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 
 				const focusedIndex = list.findIndex((item) => item === focused);
 
-				return (focusedIndex > -1 ? list[focusedIndex - 1] : list[list.length - 1]) as T;
+				return (focusedIndex > 0 ? list[focusedIndex - 1] : list[list.length - 1]) as T;
 			});
 			event.preventDefault();
 			event.stopPropagation();
@@ -241,6 +241,8 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 			ariaActiveDescendant: undefined,
 			popup: undefined,
 			select: undefined,
+			suspended: true,
+			commandsRef,
 		};
 	}
 
@@ -251,6 +253,9 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 		popup,
 		select,
 
+		suspended: items.every((item) => item.isLoading && item.fetchStatus === 'idle'),
+
+		commandsRef,
 		callbackRef,
 	};
 };
