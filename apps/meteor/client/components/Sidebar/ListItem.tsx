@@ -1,4 +1,4 @@
-import { Badge, Option, OptionColumn, OptionContent, OptionIcon, OptionSkeleton } from '@rocket.chat/fuselage';
+import { Option, OptionColumn, OptionContent, OptionIcon } from '@rocket.chat/fuselage';
 import type { ComponentProps, MouseEventHandler, ReactElement, ReactNode } from 'react';
 import React from 'react';
 
@@ -7,27 +7,17 @@ type ListItemProps = {
 	icon?: ComponentProps<typeof OptionIcon>['name'];
 	input?: any;
 	loading?: boolean;
-	notifications?: number | null;
 	action?: MouseEventHandler<HTMLOrSVGElement>;
+	children?: ReactNode;
 };
 
-const ListItem = ({ text, icon, input, action, loading, notifications }: ListItemProps): ReactElement => {
-	if (loading) {
-		return <OptionSkeleton />;
-	}
-
-	return (
-		<Option onClick={action}>
-			{icon && <OptionIcon name={icon} />}
-			<OptionContent>{text}</OptionContent>
-			{input && <OptionColumn>{input}</OptionColumn>}
-			{notifications && (
-				<OptionColumn>
-					<Badge variant='primary'>{notifications}</Badge>
-				</OptionColumn>
-			)}
-		</Option>
-	);
-};
+const ListItem = ({ text, icon, input, action, children }: ListItemProps): ReactElement => (
+	<Option onClick={action}>
+		{icon && <OptionIcon name={icon} />}
+		<OptionContent>{text}</OptionContent>
+		{input && <OptionColumn>{input}</OptionColumn>}
+		{children && <OptionColumn>{children}</OptionColumn>}
+	</Option>
+);
 
 export default ListItem;

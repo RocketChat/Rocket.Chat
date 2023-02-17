@@ -1,4 +1,4 @@
-import { OptionTitle } from '@rocket.chat/fuselage';
+import { Badge, OptionSkeleton, OptionTitle } from '@rocket.chat/fuselage';
 import { useTranslation, useRoute, usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -20,7 +20,7 @@ const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsMo
 	const page = 'list';
 
 	const isAdminUser = usePermission('manage-apps');
-	const { data: appRequestStats, isLoading } = useAppRequestStats(isAdminUser);
+	const appRequestStats = useAppRequestStats(isAdminUser);
 
 	return (
 		<>
@@ -45,16 +45,23 @@ const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsMo
 					/>
 
 					{appsManagementAllowed && (
-						<ListItem
-							icon='cube'
-							text={t('Requested')}
-							action={(): void => {
-								marketplaceRoute.push({ context: 'requested', page });
-								onDismiss();
-							}}
-							loading={isLoading}
-							notifications={appRequestStats?.data.totalUnseen ? appRequestStats?.data.totalUnseen : null}
-						/>
+						<>
+							{appRequestStats.isLoading && <OptionSkeleton />}
+							{appRequestStats.isSuccess && (
+								<ListItem
+									icon='cube'
+									text={t('Requested')}
+									action={(): void => {
+										marketplaceRoute.push({ context: 'requested', page });
+										onDismiss();
+									}}
+								>
+									{appRequestStats.isSuccess && appRequestStats.data.data.totalUnseen > 0 && (
+										<Badge variant='primary'>{appRequestStats.data.data.totalUnseen}</Badge>
+									)}
+								</ListItem>
+							)}
+						</>
 					)}
 				</>
 				{appBoxItems.length > 0 && (

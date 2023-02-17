@@ -17,16 +17,8 @@ type SidebarGenericItemProps = {
 };
 
 const SidebarGenericItem = ({ href, active, externalUrl, children, ...props }: SidebarGenericItemProps): ReactElement => (
-	<SidebarItem {...{ ...props, selected: active }} clickable is='a' href={href} {...(externalUrl && { target: '_blank' })}>
-		<Box
-			color={externalUrl ? 'hint' : 'titles-labels'}
-			display='flex'
-			flexDirection='row'
-			alignItems='center'
-			pb='x8'
-			pi='x12'
-			width='100%'
-		>
+	<SidebarItem selected={active} clickable is='a' href={href} {...(externalUrl && { target: '_blank' })} {...props}>
+		<Box display='flex' flexDirection='row' alignItems='center' pb='x8'>
 			{children}
 		</Box>
 	</SidebarItem>

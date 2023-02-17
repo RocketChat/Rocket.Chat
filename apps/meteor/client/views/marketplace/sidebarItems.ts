@@ -32,13 +32,13 @@ export const {
 		href: 'marketplace/private/list',
 		icon: 'lock',
 		i18nLabel: 'Private_Apps',
-		divider: true,
 	},
+	{ divider: true, i18nLabel: 'marketplace/private/list' },
 	{
 		href: 'https://go.rocket.chat/i/developing-an-app',
 		icon: 'new-window',
 		i18nLabel: 'Documentation',
-		divider: true,
 		externalUrl: true,
 	},
+	{ divider: true, i18nLabel: 'marketplace/Documentation' },
 ]);

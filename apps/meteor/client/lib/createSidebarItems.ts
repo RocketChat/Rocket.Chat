@@ -1,7 +1,7 @@
 import type { IconProps } from '@rocket.chat/fuselage';
 
-export type SidebarItem = {
-	i18nLabel?: string;
+type Item = {
+	i18nLabel: string;
 	href?: string;
 	icon?: IconProps['name'];
 	tag?: 'Alpha';
@@ -9,9 +9,10 @@ export type SidebarItem = {
 	pathSection?: string;
 	pathGroup?: string;
 	name?: string;
-	divider?: boolean;
 	externalUrl?: boolean;
 };
+export type SidebarItem = Item | { divider: boolean; i18nLabel: string }; // TODO: Remove this when we have a better way to handle dividers
+export const isSidebarItem = (item: SidebarItem): item is Item => !('divider' in item);
 
 export const createSidebarItems = (
 	initialItems: SidebarItem[] = [],
