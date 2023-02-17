@@ -420,10 +420,6 @@
 	}
 }
 
-.rc-old .oauth-panel .buttons-group .button:first-child {
-	flex-grow: 0;
-}
-
 .rc-old .arrow {
 	z-index: 100;
 	top: calc(50% - 13px);

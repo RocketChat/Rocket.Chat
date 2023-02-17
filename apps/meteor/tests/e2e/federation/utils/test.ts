@@ -1,8 +1,8 @@
 import type { APIResponse } from '@playwright/test';
 import { test as baseTest } from '@playwright/test';
 
-import * as constants from '../config/constants';
 import { API_PREFIX } from '../../config/constants';
+import * as constants from '../config/constants';
 
 export type AnyObj = { [key: string]: any };
 

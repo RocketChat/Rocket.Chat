@@ -25,6 +25,13 @@ export const addMessageToList = (messagesList: IMessage[], message: IMessage): I
 	return messagesList;
 };
 
+const getMainMessageText = (message: IMessage): IMessage => {
+	const newMessage = { ...message };
+	newMessage.msg = newMessage.msg || newMessage.attachments?.[0]?.description || newMessage.attachments?.[0]?.title || '';
+	newMessage.md = newMessage.md || newMessage.attachments?.[0]?.descriptionMd || undefined;
+	return { ...newMessage };
+};
+
 Meteor.startup(async function () {
 	MessageAction.addButton({
 		id: 'reply-directly',
@@ -123,7 +130,8 @@ Meteor.startup(async function () {
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			navigator.clipboard.writeText(message.msg);
+			const msgText = getMainMessageText(message).msg;
+			navigator.clipboard.writeText(msgText);
 			dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
 		},
 		condition({ subscription }) {
@@ -212,8 +220,7 @@ Meteor.startup(async function () {
 			imperativeModal.open({
 				component: ReportMessageModal,
 				props: {
-					messageText: message.msg || message.attachments?.[0]?.description || message.file?.name,
-					messageId: message._id,
+					message: getMainMessageText(message),
 					onClose: imperativeModal.close,
 				},
 			});
