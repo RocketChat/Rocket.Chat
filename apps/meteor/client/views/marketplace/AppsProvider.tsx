@@ -3,10 +3,10 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { FC, Reducer } from 'react';
 import React, { useEffect, useReducer, useCallback } from 'react';
 
-import { AppEvents } from '../../../../app/apps/client/communication';
-import { Apps } from '../../../../app/apps/client/orchestrator';
-import type { AsyncState } from '../../../lib/asyncState';
-import { AsyncStatePhase } from '../../../lib/asyncState';
+import { AppEvents } from '../../../ee/client/apps/communication';
+import { Apps } from '../../../ee/client/apps/orchestrator';
+import type { AsyncState } from '../../lib/asyncState';
+import { AsyncStatePhase } from '../../lib/asyncState';
 import { AppsContext } from './AppsContext';
 import { handleAPIError } from './helpers';
 import type { App } from './types';

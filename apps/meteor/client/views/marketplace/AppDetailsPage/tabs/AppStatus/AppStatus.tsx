@@ -6,7 +6,7 @@ import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useState, memo, Fragment } from 'react';
 
-import { Apps } from '../../../../../../../app/apps/client/orchestrator';
+import { Apps } from '../../../../../../ee/client/apps/orchestrator';
 import AppPermissionsReviewModal from '../../../AppPermissionsReviewModal';
 import IframeModal from '../../../IframeModal';
 import { appButtonProps, appMultiStatusProps, handleAPIError, handleInstallError } from '../../../helpers';

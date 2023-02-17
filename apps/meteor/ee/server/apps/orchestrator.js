@@ -4,9 +4,9 @@ import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { Meteor } from 'meteor/meteor';
 
 import { Logger } from '../../../server/lib/logger/Logger';
-import { AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../models/server';
-import { settings, settingsRegistry } from '../../settings/server';
-import { RealAppBridges } from './bridges';
+import { AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../../app/models/server';
+import { settings, settingsRegistry } from '../../../app/settings/server';
+import { RealAppBridges } from '../../../app/apps/server/bridges';
 import { AppMethods, AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
 import {
 	AppMessagesConverter,
@@ -14,10 +14,10 @@ import {
 	AppSettingsConverter,
 	AppUsersConverter,
 	AppVideoConferencesConverter,
-} from './converters';
-import { AppDepartmentsConverter } from './converters/departments';
-import { AppUploadsConverter } from './converters/uploads';
-import { AppVisitorsConverter } from './converters/visitors';
+	AppDepartmentsConverter,
+	AppUploadsConverter,
+	AppVisitorsConverter,
+} from '../../../app/apps/server/converters';
 import { AppRealLogsStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
 
 function isTesting() {

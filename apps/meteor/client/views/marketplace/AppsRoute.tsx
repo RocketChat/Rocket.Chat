@@ -2,8 +2,8 @@ import { useRouteParameter, useRoute, usePermission, useMethod } from '@rocket.c
 import type { ReactElement } from 'react';
 import React, { useState, useEffect } from 'react';
 
-import PageSkeleton from '../../../components/PageSkeleton';
-import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
+import PageSkeleton from '../../components/PageSkeleton';
+import NotAuthorizedPage from '../notAuthorized/NotAuthorizedPage';
 import AppDetailsPage from './AppDetailsPage';
 import AppInstallPage from './AppInstallPage';
 import AppsPage from './AppsPage/AppsPage';

@@ -6,9 +6,9 @@ import { useTranslation, useCurrentRoute, useRoute, useRouteParameter, useToastM
 import type { ReactElement } from 'react';
 import React, { useState, useCallback, useRef } from 'react';
 
-import type { ISettings } from '../../../../../app/apps/client/@types/IOrchestrator';
-import { Apps } from '../../../../../app/apps/client/orchestrator';
-import Page from '../../../../components/Page';
+import type { ISettings } from '../../../../ee/client/apps/@types/IOrchestrator';
+import { Apps } from '../../../../ee/client/apps/orchestrator';
+import Page from '../../../components/Page';
 import { handleAPIError } from '../helpers';
 import { useAppInfo } from '../hooks/useAppInfo';
 import AppDetailsPageHeader from './AppDetailsPageHeader';

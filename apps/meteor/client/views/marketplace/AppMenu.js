@@ -11,8 +11,8 @@ import {
 import React, { useMemo, useCallback, useState } from 'react';
 import semver from 'semver';
 
-import { Apps } from '../../../../app/apps/client/orchestrator';
-import WarningModal from '../../../components/WarningModal';
+import { Apps } from '../../../ee/client/apps/orchestrator';
+import WarningModal from '../../components/WarningModal';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import IframeModal from './IframeModal';
 import { appEnabledStatuses, handleAPIError, appButtonProps, warnEnableDisableApp } from './helpers';

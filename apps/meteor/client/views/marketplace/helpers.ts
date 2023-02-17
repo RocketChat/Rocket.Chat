@@ -3,9 +3,9 @@ import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/a
 import type { App, AppPricingPlan, PurchaseType } from '@rocket.chat/core-typings';
 import semver from 'semver';
 
-import { Utilities } from '../../../../app/apps/lib/misc/Utilities';
-import { t } from '../../../../app/utils/client';
-import { dispatchToastMessage } from '../../../lib/toast';
+import { t } from '../../../app/utils/client';
+import { Utilities } from '../../../ee/lib/misc/Utilities';
+import { dispatchToastMessage } from '../../lib/toast';
 
 export const appEnabledStatuses = [AppStatus.AUTO_ENABLED, AppStatus.MANUALLY_ENABLED, AppStatus.INITIALIZED];
 

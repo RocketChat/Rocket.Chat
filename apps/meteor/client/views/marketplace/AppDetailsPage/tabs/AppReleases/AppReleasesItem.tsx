@@ -3,7 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { useTimeAgo } from '../../../../../../hooks/useTimeAgo';
+import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 
 type IRelease = {
 	version: string;

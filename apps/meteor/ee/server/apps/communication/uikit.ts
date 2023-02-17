@@ -8,10 +8,10 @@ import { UIKitIncomingInteractionType } from '@rocket.chat/apps-engine/definitio
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { UiKitCoreApp } from '@rocket.chat/core-services';
 
-import { settings } from '../../../settings/server';
+import { settings } from '../../../../app/settings/server';
 import type { AppServerOrchestrator } from '../orchestrator';
 import { Apps } from '../orchestrator';
-import { authenticationMiddleware } from '../../../api/server/middlewares/authentication';
+import { authenticationMiddleware } from '../../../../app/api/server/middlewares/authentication';
 
 const apiServer = express();
 

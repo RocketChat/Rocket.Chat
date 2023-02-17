@@ -3,7 +3,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React from 'react';
 
-import { useHighlightedCode } from '../../../../../../hooks/useHighlightedCode';
+import { useHighlightedCode } from '../../../../../hooks/useHighlightedCode';
 
 type AppLogsItemEntryProps = {
 	severity: string;

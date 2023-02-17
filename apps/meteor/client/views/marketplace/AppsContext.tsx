@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react';
 
-import type { AsyncState } from '../../../lib/asyncState';
-import { AsyncStatePhase } from '../../../lib/asyncState';
+import type { AsyncState } from '../../lib/asyncState';
+import { AsyncStatePhase } from '../../lib/asyncState';
 import type { App } from './types';
 
 type AppsContextValue = {
