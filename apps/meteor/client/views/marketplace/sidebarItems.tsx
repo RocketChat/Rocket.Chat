@@ -1,5 +1,24 @@
+import { Badge, Skeleton } from '@rocket.chat/fuselage';
+import React from 'react';
+
 import { hasPermission } from '../../../app/authorization/client';
 import { createSidebarItems } from '../../lib/createSidebarItems';
+import { useAppRequestStats } from './hooks/useAppRequestStats';
+
+const MarketplaceRequestBadge = () => {
+	const requestSeatsResult = useAppRequestStats();
+
+	if (requestSeatsResult.isLoading)
+		return requestSeatsResult.fetchStatus !== 'idle' ? <Skeleton variant='rect' height='x16' width='x16' /> : null;
+
+	if (requestSeatsResult.isError) return null;
+
+	if (!requestSeatsResult.data.data.totalUnseen) {
+		return null;
+	}
+
+	return <Badge variant='primary'>{requestSeatsResult.data.data.totalUnseen}</Badge>;
+};
 
 export const {
 	registerSidebarItem: registerMarketplaceSidebarItem,
@@ -26,6 +45,7 @@ export const {
 		href: 'marketplace/requested/list',
 		icon: 'cube',
 		i18nLabel: 'Requested',
+		badge: () => <MarketplaceRequestBadge />,
 		permissionGranted: (): boolean => hasPermission('manage-apps'),
 	},
 	{

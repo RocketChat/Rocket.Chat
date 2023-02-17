@@ -1,5 +1,5 @@
 import { Badge, OptionSkeleton, OptionTitle } from '@rocket.chat/fuselage';
-import { useTranslation, useRoute, usePermission } from '@rocket.chat/ui-contexts';
+import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -19,8 +19,7 @@ const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsMo
 	const marketplaceRoute = useRoute('marketplace');
 	const page = 'list';
 
-	const isAdminUser = usePermission('manage-apps');
-	const appRequestStats = useAppRequestStats(isAdminUser);
+	const appRequestStats = useAppRequestStats();
 
 	return (
 		<>

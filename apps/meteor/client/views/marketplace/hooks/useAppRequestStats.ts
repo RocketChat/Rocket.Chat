@@ -1,7 +1,9 @@
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
-export const useAppRequestStats = (isAdminUser?: boolean) => {
+export const useAppRequestStats = () => {
+	const canManageApp = usePermission('manage-apps');
+
 	const fetchRequestStats = useEndpoint('GET', '/apps/app-request/stats');
 
 	return useQuery({
@@ -9,6 +11,6 @@ export const useAppRequestStats = (isAdminUser?: boolean) => {
 		queryFn: async () => fetchRequestStats(),
 		refetchOnWindowFocus: false,
 		retry: false,
-		enabled: isAdminUser,
+		enabled: canManageApp,
 	});
 };
