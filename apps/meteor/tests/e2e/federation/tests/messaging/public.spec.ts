@@ -2,13 +2,13 @@
 import faker from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
-import { test, expect, setupTesting, tearDownTesting } from '../../utils/test';
-import { FederationChannel } from '../../page-objects/channel';
 import * as constants from '../../config/constants';
-import { registerUser } from '../../utils/register-user';
-import { formatIntoFullMatrixUsername, formatUsernameAndDomainIntoMatrixFormat } from '../../utils/format';
+import { FederationChannel } from '../../page-objects/channel';
 import { doLogin } from '../../utils/auth';
 import { createChannelAndInviteRemoteUserToCreateLocalUser } from '../../utils/channel';
+import { formatIntoFullMatrixUsername, formatUsernameAndDomainIntoMatrixFormat } from '../../utils/format';
+import { registerUser } from '../../utils/register-user';
+import { test, expect, setupTesting, tearDownTesting } from '../../utils/test';
 
 test.describe.parallel('Federation - Channel Messaging', () => {
 	let poFederationChannelServer1: FederationChannel;
