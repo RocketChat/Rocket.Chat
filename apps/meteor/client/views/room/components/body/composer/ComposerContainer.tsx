@@ -1,10 +1,15 @@
-import { isOmnichannelRoom, isVoipRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, isRoomFederated, isVoipRoom } from '@rocket.chat/core-typings';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
+import { useHasLicenseModule } from '../../../../../../ee/client/hooks/useHasLicenseModule';
 import { useRoom } from '../../../contexts/RoomContext';
 import { ComposerAnonymous } from './ComposerAnonymous';
 import { ComposerBlocked } from './ComposerBlocked';
+import { ComposerFederationDisabled } from './ComposerFederationDisabled';
+import { ComposerFederationJoinRoomDisabled } from './ComposerFederationJoinRoomDisabled';
 import { ComposerJoinWithPassword } from './ComposerJoinWithPassword';
 import type { ComposerMessageProps } from './ComposerMessage';
 import ComposerMessage from './ComposerMessage';
@@ -14,6 +19,34 @@ import ComposerVoIP from './ComposerVoIP';
 import { useMessageComposerIsAnonymous } from './hooks/useMessageComposerIsAnonymous';
 import { useMessageComposerIsBlocked } from './hooks/useMessageComposerIsBlocked';
 import { useMessageComposerIsReadOnly } from './hooks/useMessageComposerIsReadOnly';
+
+const handleFederation = (
+	room: IRoom,
+	federationEnabled: boolean,
+	federationModuleEnabled: boolean,
+	{ children, ...props }: ComposerMessageProps,
+): ReactElement => {
+	if (!federationEnabled) {
+		return (
+			<footer className='rc-message-box footer'>
+				<ComposerFederationDisabled />
+			</footer>
+		);
+	}
+	if (!props.subscription && !federationModuleEnabled) {
+		return (
+			<footer className='rc-message-box footer'>
+				<ComposerFederationJoinRoomDisabled />
+			</footer>
+		);
+	}
+	return (
+		<footer className='rc-message-box footer'>
+			{children}
+			<ComposerMessage readOnly={room.ro} {...props} />
+		</footer>
+	);
+};
 
 const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactElement => {
 	const room = useRoom();
@@ -28,7 +61,13 @@ const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactE
 
 	const isOmnichannel = isOmnichannelRoom(room);
 
+	const isFederation = isRoomFederated(room);
+
 	const isVoip = isVoipRoom(room);
+
+	const federationModuleEnabled = useHasLicenseModule('federation') === true;
+
+	const federationEnabled = useSetting('Federation_Matrix_enabled') === true;
 
 	if (isOmnichannel) {
 		return <ComposerOmnichannel {...props} />;
@@ -36,6 +75,10 @@ const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactE
 
 	if (isVoip) {
 		return <ComposerVoIP />;
+	}
+
+	if (isFederation) {
+		return handleFederation(room, federationEnabled, federationModuleEnabled, { children, ...props });
 	}
 
 	if (isAnonymous) {
