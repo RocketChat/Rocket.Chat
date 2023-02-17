@@ -40,16 +40,16 @@ const CustomContentCard = (): ReactElement | null => {
 	const isEnterprise = data?.isEnterprise;
 	const willNotShowCustomContent = isCustomContentBodyEmpty || !isCustomContentVisible;
 
-	const userVisibilityButtonText = !isCustomContentVisible ? t('Now_Its_Visible_Only_For_Admins') : t('Now_Its_Visible_For_Everyone');
+	const userVisibilityTooltipText = !isCustomContentVisible ? t('Now_Its_Visible_Only_For_Admins') : t('Now_Its_Visible_For_Everyone');
 
-	let customContentOnlyButtonText;
+	let customContentOnlyTooltipText;
 
 	if (isCustomContentBodyEmpty || !isCustomContentVisible) {
-		customContentOnlyButtonText = t('Action_Available_After_Custom_Content_Added_And_Visible');
+		customContentOnlyTooltipText = t('Action_Available_After_Custom_Content_Added_And_Visible');
 	} else if (isCustomContentOnly) {
-		customContentOnlyButtonText = t('It_Will_Show_All_Other_Content_Blocks_In_The_Homepage');
+		customContentOnlyTooltipText = t('It_Will_Show_All_Other_Content_Blocks_In_The_Homepage');
 	} else {
-		customContentOnlyButtonText = t('It_Will_Hide_All_Other_Content_Blocks_In_The_Homepage');
+		customContentOnlyTooltipText = t('It_Will_Hide_All_Other_Content_Blocks_In_The_Homepage');
 	}
 
 	if (isAdmin) {
@@ -76,7 +76,7 @@ const CustomContentCard = (): ReactElement | null => {
 						</Button>
 						<Button
 							disabled={isCustomContentBodyEmpty || (isCustomContentVisible && isCustomContentOnly)}
-							title={isCustomContentBodyEmpty ? t('Action_Available_After_Custom_Content_Added') : userVisibilityButtonText}
+							title={isCustomContentBodyEmpty ? t('Action_Available_After_Custom_Content_Added') : userVisibilityTooltipText}
 							onClick={handleChangeCustomContentVisibility}
 							role='button'
 						>
@@ -85,7 +85,7 @@ const CustomContentCard = (): ReactElement | null => {
 						</Button>
 						<Button
 							disabled={willNotShowCustomContent || !isEnterprise}
-							title={!isEnterprise ? t('Enterprise_Only') : customContentOnlyButtonText}
+							title={!isEnterprise ? t('Enterprise_Only') : customContentOnlyTooltipText}
 							onClick={handleOnlyShowCustomContent}
 							role='button'
 						>
