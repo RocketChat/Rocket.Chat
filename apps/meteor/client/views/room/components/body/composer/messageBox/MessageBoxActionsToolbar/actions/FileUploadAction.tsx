@@ -12,7 +12,7 @@ type FileUploadActionProps = {
 	chatContext?: ChatAPI; // TODO: remove this when the composer is migrated to React
 } & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>;
 
-const FileUploadAction = ({ collapsed, chatContext, disabled }: FileUploadActionProps) => {
+const FileUploadAction = ({ collapsed, chatContext, disabled, ...props }: FileUploadActionProps) => {
 	const t = useTranslation();
 	const fileUploadEnabled = useSetting('FileUpload_Enabled');
 	const fileInputRef = useRef<HTMLInputElement>(null);
@@ -63,6 +63,7 @@ const FileUploadAction = ({ collapsed, chatContext, disabled }: FileUploadAction
 				disabled={!fileUploadEnabled || disabled}
 				onClick={handleUpload}
 				title={t('File')}
+				{...props}
 			/>
 			<input ref={fileInputRef} type='file' onChange={handleUploadChange} multiple style={{ display: 'none' }} />
 		</>
