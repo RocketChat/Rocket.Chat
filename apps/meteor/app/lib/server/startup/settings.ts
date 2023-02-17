@@ -3271,7 +3271,7 @@ settingsRegistry.addGroup('Troubleshoot', function () {
 	this.add('Presence_broadcast_disabled', false, {
 		type: 'boolean',
 		public: true,
-		blocked: true,
+		readonly: true,
 	});
 
 	this.add('Troubleshoot_Disable_Presence_Broadcast', false, {

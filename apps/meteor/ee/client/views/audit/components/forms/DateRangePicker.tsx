@@ -48,56 +48,44 @@ type DateRangeAction =
 const dateRangeReducer = (state: DateRange, action: DateRangeAction): DateRange => {
 	switch (action) {
 		case 'today': {
-			const now = moment();
-
 			return {
-				start: now.startOf('day').toDate(),
-				end: now.endOf('day').toDate(),
+				start: moment().startOf('day').toDate(),
+				end: moment().endOf('day').toDate(),
 			};
 		}
 
 		case 'yesterday': {
-			const now = moment();
-
 			return {
-				start: now.subtract(1, 'day').startOf('day').toDate(),
-				end: now.subtract(1, 'day').endOf('day').toDate(),
+				start: moment().subtract(1, 'day').startOf('day').toDate(),
+				end: moment().subtract(1, 'day').endOf('day').toDate(),
 			};
 		}
 
 		case 'this-week': {
-			const now = moment();
-
 			return {
-				start: now.startOf('week').toDate(),
-				end: now.endOf('week').toDate(),
+				start: moment().startOf('week').toDate(),
+				end: moment().endOf('day').toDate(),
 			};
 		}
 
 		case 'last-week': {
-			const now = moment();
-
 			return {
-				start: now.subtract(1, 'week').startOf('week').toDate(),
-				end: now.subtract(1, 'week').endOf('week').toDate(),
+				start: moment().subtract(1, 'week').startOf('week').toDate(),
+				end: moment().subtract(1, 'week').endOf('week').toDate(),
 			};
 		}
 
 		case 'this-month': {
-			const now = moment();
-
 			return {
-				start: now.startOf('month').toDate(),
-				end: now.endOf('month').toDate(),
+				start: moment().startOf('month').toDate(),
+				end: moment().endOf('day').toDate(),
 			};
 		}
 
 		case 'last-month': {
-			const now = moment();
-
 			return {
-				start: now.subtract(1, 'month').startOf('month').toDate(),
-				end: now.subtract(1, 'month').endOf('month').toDate(),
+				start: moment().subtract(1, 'month').startOf('month').toDate(),
+				end: moment().subtract(1, 'month').endOf('month').toDate(),
 			};
 		}
 
