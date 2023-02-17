@@ -1,7 +1,6 @@
 import { View, StyleSheet } from '@react-pdf/renderer';
 import { fontScales } from '@rocket.chat/fuselage-tokens/typography.json';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import type { ReactNode } from 'react';
 
 import type { Quote as QuoteType } from '..';
 import { MessageHeader } from './MessageHeader';
@@ -13,12 +12,9 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderColor: colors.n250,
 		borderLeftColor: colors.n600,
-		paddingBottom: 16,
+		padding: 16,
 		borderTopWidth: 1,
 		borderBottomWidth: 1,
-	},
-	quote: {
-		padding: 16,
 	},
 	quoteMessage: {
 		marginTop: 6,
@@ -26,15 +22,14 @@ const styles = StyleSheet.create({
 	},
 });
 
-const Quote = ({ quote, children, index }: { quote: QuoteType; children: ReactNode | null; index: number }) => (
+const Quote = ({ quote, children, index }: { quote: QuoteType; children: JSX.Element | null; index: number }) => (
 	<View
 		style={{
 			...styles.wrapper,
-			marginHorizontal: index ? 16 : 0,
-			marginTop: !index ? 4 : 0,
+			marginTop: !index ? 4 : 16,
 		}}
 	>
-		<View style={styles.quote}>
+		<View>
 			<MessageHeader name={quote.name} time={quote.ts} light />
 			<View style={styles.quoteMessage}>
 				<Markup tokens={quote.md} />
@@ -46,7 +41,7 @@ const Quote = ({ quote, children, index }: { quote: QuoteType; children: ReactNo
 );
 
 export const Quotes = ({ quotes }: { quotes: QuoteType[] }) =>
-	quotes.reduceRight<ReactNode | null>(
+	quotes.reduceRight<JSX.Element | null>(
 		(lastQuote, quote, index) => (
 			<Quote quote={quote} index={index}>
 				{lastQuote}
