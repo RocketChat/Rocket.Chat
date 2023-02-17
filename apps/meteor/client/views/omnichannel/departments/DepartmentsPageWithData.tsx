@@ -17,20 +17,23 @@ const DepartmentsPageWithData = (): ReactElement => {
 	const pagination = usePagination();
 	const sort = useSort<'name' | 'email' | 'active'>('name');
 
-	const query = {
-		onlyMyDepartments: 'true' as const,
-		text: debouncedText,
-		sort: JSON.stringify({ [sort.sortBy]: sort.sortDirection === 'asc' ? 1 : -1 }),
-		...(pagination.current && { offset: pagination.current }),
-		...(pagination.itemsPerPage && { count: pagination.itemsPerPage }),
-		fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
-	};
-
 	const getDepartments = useEndpoint('GET', '/v1/livechat/department');
 
-	const result = useQuery(['omnichannel', 'departments', query], () => getDepartments(query), {
-		keepPreviousData: true,
-	});
+	const result = useQuery(
+		['omnichannel', 'departments', debouncedText, pagination, sort],
+		() =>
+			getDepartments({
+				onlyMyDepartments: 'true' as const,
+				text: debouncedText,
+				sort: JSON.stringify({ [sort.sortBy]: sort.sortDirection === 'asc' ? 1 : -1 }),
+				...(pagination.current && { offset: pagination.current }),
+				...(pagination.itemsPerPage && { count: pagination.itemsPerPage }),
+				fields: JSON.stringify({ name: 1, username: 1, emails: 1, avatarETag: 1 }),
+			}),
+		{
+			keepPreviousData: true,
+		},
+	);
 
 	const removeButton = (dep: Omit<ILivechatDepartment, '_updatedAt'>) => <DepartmentItemMenu dep={dep} />;
 
