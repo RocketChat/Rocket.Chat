@@ -25,7 +25,7 @@ import AppDetails from './tabs/AppDetails';
 import AppLogs from './tabs/AppLogs';
 import AppReleases from './tabs/AppReleases';
 import AppRequests from './tabs/AppRequests/AppRequests';
-import AppSecurity from './tabs/AppSecurity';
+import AppSecurity from './tabs/AppSecurity/AppSecurity';
 import AppSettings from './tabs/AppSettings';
 
 const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {

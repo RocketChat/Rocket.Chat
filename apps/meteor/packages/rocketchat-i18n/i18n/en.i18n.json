@@ -481,6 +481,7 @@
   "Apps_context_explore": "Explore",
   "Apps_context_enterprise": "Enterprise",
   "Apps_context_installed": "Installed",
+  "Apps_context_requested": "Requested",
   "Apps_context_private": "Private Apps",
   "Apps_Count_Enabled": "__count__ app enabled",
   "Apps_Count_Enabled_plural": "__count__ apps enabled",

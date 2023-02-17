@@ -4,7 +4,8 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import AppPermissionsList from '../../components/AppPermissionsList';
+import AppPermissionsList from '../../../components/AppPermissionsList';
+import AppSecurityLabel from './AppSecurityLabel';
 
 type AppSecurityProps = {
 	privacyPolicySummary?: string;
@@ -21,27 +22,21 @@ const AppSecurity = ({ privacyPolicySummary, appPermissions, tosLink, privacyLin
 			<Box display='flex' flexDirection='column'>
 				<Margins block='x17'>
 					<Box is='section'>
-						<Box fontScale='h4' mbe='x8' color='titles-labels'>
-							{t('Privacy_summary')}
-						</Box>
+						<AppSecurityLabel>{t('Privacy_summary')}</AppSecurityLabel>
 						<Box is='p' lineHeight='x20'>
 							{privacyPolicySummary?.length && privacyPolicySummary}
 						</Box>
 					</Box>
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe='x8' color='titles-labels'>
-							{t('Permissions')}
-						</Box>
+						<AppSecurityLabel>{t('Permissions')}</AppSecurityLabel>
 						<Box is='ol' type='1' style={{ listStyleType: 'decimal' }} mis='x24'>
 							<AppPermissionsList appPermissions={appPermissions} />
 						</Box>
 					</Box>
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe='x8' color='titles-labels'>
-							{t('Policies')}
-						</Box>
+						<AppSecurityLabel>{t('Policies')}</AppSecurityLabel>
 						<Box display='flex' flexDirection='column'>
 							{tosLink && (
 								<Box is='a' href={tosLink} target='_blank'>

@@ -85,12 +85,12 @@ const AppDetails = ({ app }: { app: AppInfo }): ReactElement => {
 							</Box>
 						</Box>
 						{documentationUrl && (
-							<Box>
+							<>
 								<Box fontScale='h4' color='hint'>
 									{t('Documentation')}
 								</Box>
 								<ExternalLink to={documentationUrl} />
-							</Box>
+							</>
 						)}
 					</Box>
 
