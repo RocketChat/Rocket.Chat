@@ -25,10 +25,10 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 
 	test.beforeAll(async ({ api, browser }) => {
 		await Promise.all([
-			api.post('/livechat/users/agent', { username: 'user1' }).then((res) => expect(res.status).toBe(200)),
-			api.post('/livechat/users/agent', { username: 'user2' }).then((res) => expect(res.status).toBe(200)),
-			api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }).then((res) => expect(res.status).toBe(200)),
-			api.post('/settings/Livechat_auto_transfer_chat_timeout', { value: 5 }).then((res) => expect(res.status).toBe(200)),
+			api.post('/livechat/users/agent', { username: 'user1' }).then((res) => expect(res.status()).toBe(200)),
+			api.post('/livechat/users/agent', { username: 'user2' }).then((res) => expect(res.status()).toBe(200)),
+			api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }).then((res) => expect(res.status()).toBe(200)),
+			api.post('/settings/Livechat_auto_transfer_chat_timeout', { value: 5 }).then((res) => expect(res.status()).toBe(200)),
 		]);
 
 		agent1 = await createAuxContext(browser, 'user1-session.json');
@@ -66,9 +66,9 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 
 	test.afterAll(async ({ api }) => {
 		await Promise.all([
-			api.delete('/livechat/users/agent/user1').then((res) => expect(res.status).toBe(200)),
-			api.delete('/livechat/users/agent/user2').then((res) => expect(res.status).toBe(200)),
-			api.post('/settings/Livechat_auto_transfer_chat_timeout', { value: 0 }).then((res) => expect(res.status).toBe(200)),
+			api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
+			api.delete('/livechat/users/agent/user2').then((res) => expect(res.status()).toBe(200)),
+			api.post('/settings/Livechat_auto_transfer_chat_timeout', { value: 0 }).then((res) => expect(res.status()).toBe(200)),
 		]);
 
 		await agent1.page.close();
