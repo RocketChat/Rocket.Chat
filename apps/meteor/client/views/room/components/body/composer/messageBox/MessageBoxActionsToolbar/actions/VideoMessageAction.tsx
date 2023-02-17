@@ -9,10 +9,11 @@ import { useChat } from '../../../../../../contexts/ChatContext';
 type VideoMessageActionProps = {
 	collapsed?: boolean;
 	isRecording: boolean;
+	canSend: boolean;
 	chatContext?: ChatAPI; // TODO: remove this when the composer is migrated to React
 };
 
-const VideoMessageAction = ({ collapsed, chatContext, isRecording }: VideoMessageActionProps) => {
+const VideoMessageAction = ({ collapsed, chatContext, isRecording, canSend }: VideoMessageActionProps) => {
 	const t = useTranslation();
 	const fileUploadEnabled = useSetting('FileUpload_Enabled');
 	const messageVideoRecorderEnabled = useSetting('Message_VideoRecorderEnabled');
@@ -57,7 +58,7 @@ const VideoMessageAction = ({ collapsed, chatContext, isRecording }: VideoMessag
 		<MessageComposerAction
 			data-qa-id='video-message'
 			icon='video'
-			disabled={!enableVideoMessage || isRecording}
+			disabled={!enableVideoMessage || isRecording || !canSend}
 			onClick={handleOpenVideoMessage}
 			title={t('Video_message')}
 		/>

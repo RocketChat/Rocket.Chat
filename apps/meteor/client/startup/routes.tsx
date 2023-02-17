@@ -10,7 +10,6 @@ import { KonchatNotification } from '../../app/ui/client';
 import { APIClient } from '../../app/utils/client';
 import { appLayout } from '../lib/appLayout';
 import { dispatchToastMessage } from '../lib/toast';
-import BlazeTemplate from '../views/root/BlazeTemplate';
 import MainLayout from '../views/root/MainLayout';
 
 const PageLoading = lazy(() => import('../views/root/PageLoading'));
@@ -30,6 +29,9 @@ const MeetPage = lazy(() => import('../views/meet/MeetPage'));
 const DirectoryPage = lazy(() => import('../views/directory'));
 const OmnichannelDirectoryPage = lazy(() => import('../views/omnichannel/directory/OmnichannelDirectoryPage'));
 const OmnichannelQueueList = lazy(() => import('../views/omnichannel/queueList'));
+
+const OAuthAuthorizationPage = lazy(() => import('../views/oauth/OAuthAuthorizationPage'));
+const OAuthErrorPage = lazy(() => import('../views/oauth/OAuthErrorPage'));
 
 FlowRouter.wait();
 
@@ -238,22 +240,14 @@ FlowRouter.route('/reset-password/:token', {
 FlowRouter.route('/oauth/authorize', {
 	name: 'oauth/authorize',
 	action() {
-		appLayout.render(
-			<MainLayout>
-				<BlazeTemplate template='authorize' />
-			</MainLayout>,
-		);
+		appLayout.render(<OAuthAuthorizationPage />);
 	},
 });
 
 FlowRouter.route('/oauth/error/:error', {
 	name: 'oauth/error',
 	action() {
-		appLayout.render(
-			<MainLayout>
-				<BlazeTemplate template='oauth404' />
-			</MainLayout>,
-		);
+		appLayout.render(<OAuthErrorPage />);
 	},
 });
 
