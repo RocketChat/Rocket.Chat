@@ -1,4 +1,4 @@
-import type { IOmnichannelRoom, IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IRoomWithRetentionPolicy, ISubscription } from '@rocket.chat/core-typings';
 import { DEFAULT_SLA_CONFIG, LivechatPriorityWeight } from '@rocket.chat/core-typings';
 
 import { CachedCollection } from '../../../ui-cached-collection/client';
@@ -6,16 +6,16 @@ import type { SubscriptionWithRoom } from '../../../../client/definitions/Subscr
 import { ChatRoom } from './ChatRoom';
 import { CachedChatRoom } from './CachedChatRoom';
 
-class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom> {
+class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom, ISubscription> {
 	constructor() {
 		super({ name: 'subscriptions' });
 	}
 
-	protected handleLoadFromServer(record: SubscriptionWithRoom) {
+	protected handleLoadFromServer(record: ISubscription) {
 		return this.mergeWithRoom(record);
 	}
 
-	protected handleReceived(record: SubscriptionWithRoom, action: 'changed' | 'removed') {
+	protected handleReceived(record: ISubscription, action: 'changed' | 'removed') {
 		const newRecord = this.mergeWithRoom(record);
 
 		if (action === 'removed') {
@@ -26,11 +26,11 @@ class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom> {
 		return newRecord;
 	}
 
-	protected handleSync(record: SubscriptionWithRoom) {
+	protected handleSync(record: ISubscription) {
 		return this.mergeWithRoom(record);
 	}
 
-	private mergeWithRoom(subscription: SubscriptionWithRoom): SubscriptionWithRoom {
+	private mergeWithRoom(subscription: ISubscription): SubscriptionWithRoom {
 		const options = {
 			fields: {
 				lm: 1,
@@ -75,7 +75,7 @@ class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom> {
 
 		const room = ChatRoom.findOne({ _id: subscription.rid }, options);
 
-		const lastRoomUpdate = room?.lm || subscription.ts;
+		const lastRoomUpdate = room?.lm || subscription.ts || room?.ts;
 
 		return {
 			...subscription,
@@ -124,7 +124,7 @@ class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom> {
 			source: (room as IOmnichannelRoom | undefined)?.source,
 			queuedAt: (room as IOmnichannelRoom | undefined)?.queuedAt,
 			federated: room?.federated,
-			lm: subscription.lr ? new Date(Math.max(subscription.lr.getTime(), lastRoomUpdate.getTime())) : lastRoomUpdate,
+			lm: subscription.lr ? new Date(Math.max(subscription.lr.getTime(), lastRoomUpdate?.getTime() || 0)) : lastRoomUpdate,
 		};
 	}
 

@@ -43,7 +43,6 @@ export interface ServerMethods {
 	'2fa:enable': (...args: any[]) => any;
 	'2fa:regenerateCodes': (...args: any[]) => any;
 	'2fa:validateTempToken': (...args: any[]) => any;
-	'addOAuthApp': (...args: any[]) => any;
 	'addOAuthService': (...args: any[]) => any;
 	'addUsersToRoom': (...args: any[]) => any;
 	'addWebdavAccount': AddWebdavAccount;
@@ -83,7 +82,6 @@ export interface ServerMethods {
 	'deleteCustomUserStatus': (...args: any[]) => any;
 	'deleteFileMessage': (...args: any[]) => any;
 	'deleteMessage': ({ _id }: Pick<IMessage, '_id'>) => void;
-	'deleteOAuthApp': (...args: any[]) => any;
 	'deleteUserOwnAccount': (...args: any[]) => any;
 	'e2e.resetOwnE2EKey': (...args: any[]) => any;
 	'eraseRoom': (...args: any[]) => any;
@@ -224,7 +222,6 @@ export interface ServerMethods {
 	'unsetAsset': (...args: any[]) => any;
 	'updateIncomingIntegration': (...args: any[]) => any;
 	'updateMessage': (message: Pick<IMessage, '_id'> & Partial<Omit<IMessage, '_id'>>) => void;
-	'updateOAuthApp': (...args: any[]) => any;
 	'updateOutgoingIntegration': (...args: any[]) => any;
 	'uploadCustomSound': (...args: any[]) => any;
 	'uploadFileToWebdav': UploadFileToWebdav;
