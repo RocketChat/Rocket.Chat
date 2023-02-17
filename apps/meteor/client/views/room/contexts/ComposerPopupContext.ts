@@ -1,12 +1,10 @@
 import type { ReactElement } from 'react';
 import { useContext, createContext } from 'react';
 
-type ComposerPopupItem<T> = T extends { _id: string; sort?: number } ? T : never;
-
 export type ComposerPopupOption<T extends { _id: string; sort?: number } = { _id: string; sort?: number }> = {
 	title?: string;
-	getItemsFromLocal: (filter: string) => Promise<T[]>;
-	getItemsFromServer: (filter: string) => Promise<T[]>;
+	getItemsFromLocal?: (filter: any) => Promise<T[]>;
+	getItemsFromServer?: (filter: any) => Promise<T[]>;
 	blurOnSelectItem?: boolean;
 	closeOnEsc?: boolean;
 
@@ -17,8 +15,9 @@ export type ComposerPopupOption<T extends { _id: string; sort?: number } = { _id
 	prefix?: string;
 
 	matchSelectorRegex?: RegExp;
+	preview?: boolean;
 
-	getValue: (item: ComposerPopupItem<T>) => string;
+	getValue: (item: T) => string;
 
 	renderItem?: ({ item }: { item: T }) => ReactElement;
 };

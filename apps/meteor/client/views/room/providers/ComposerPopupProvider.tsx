@@ -8,15 +8,15 @@ import type { ReactNode } from 'react';
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { emoji, EmojiPicker } from '../../../../app/emoji/client';
 import { Subscriptions } from '../../../../app/models/client';
-import ComposerPopupCannedResponse from '../../../../app/ui-message/client/popup/components/ComposerBoxPopupCannedResponse';
-import type { ComposerBoxPopupEmojiProps } from '../../../../app/ui-message/client/popup/components/ComposerBoxPopupEmoji';
-import ComposerPopupEmoji from '../../../../app/ui-message/client/popup/components/ComposerBoxPopupEmoji';
-import type { ComposerBoxPopupRoomProps } from '../../../../app/ui-message/client/popup/components/ComposerBoxPopupRoom';
-import ComposerBoxPopupRoom from '../../../../app/ui-message/client/popup/components/ComposerBoxPopupRoom';
-import type { ComposerBoxPopupSlashCommandProps } from '../../../../app/ui-message/client/popup/components/ComposerBoxPopupSlashCommand';
-import ComposerPopupSlashCommand from '../../../../app/ui-message/client/popup/components/ComposerBoxPopupSlashCommand';
-import ComposerBoxPopupUser from '../../../../app/ui-message/client/popup/components/ComposerBoxPopupUser';
-import type { ComposerBoxPopupUserProps } from '../../../../app/ui-message/client/popup/components/ComposerBoxPopupUser';
+import ComposerPopupCannedResponse from '../../../../app/ui-message/client/popup/components/composerBoxPopup/ComposerBoxPopupCannedResponse';
+import type { ComposerBoxPopupEmojiProps } from '../../../../app/ui-message/client/popup/components/composerBoxPopup/ComposerBoxPopupEmoji';
+import ComposerPopupEmoji from '../../../../app/ui-message/client/popup/components/composerBoxPopup/ComposerBoxPopupEmoji';
+import type { ComposerBoxPopupRoomProps } from '../../../../app/ui-message/client/popup/components/composerBoxPopup/ComposerBoxPopupRoom';
+import ComposerBoxPopupRoom from '../../../../app/ui-message/client/popup/components/composerBoxPopup/ComposerBoxPopupRoom';
+import type { ComposerBoxPopupSlashCommandProps } from '../../../../app/ui-message/client/popup/components/composerBoxPopup/ComposerBoxPopupSlashCommand';
+import ComposerPopupSlashCommand from '../../../../app/ui-message/client/popup/components/composerBoxPopup/ComposerBoxPopupSlashCommand';
+import ComposerBoxPopupUser from '../../../../app/ui-message/client/popup/components/composerBoxPopup/ComposerBoxPopupUser';
+import type { ComposerBoxPopupUserProps } from '../../../../app/ui-message/client/popup/components/composerBoxPopup/ComposerBoxPopupUser';
 import { usersFromRoomMessages } from '../../../../app/ui-message/client/popup/messagePopupConfig';
 import { slashCommands } from '../../../../app/utils/client';
 import { CannedResponse } from '../../../../ee/app/canned-responses/client/collections/CannedResponse';
@@ -31,6 +31,8 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 	const isOmnichannel = isOmnichannelRoom(room);
 
 	const t = useTranslation();
+
+	const call = useMethod('getSlashCommandPreviews');
 	const value: ComposerPopupContextValue = useMemo(() => {
 		return [
 			createMessageBoxPopupConfig({
@@ -125,6 +127,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 					const records = Subscriptions.find(
 						{
 							name: filterRegex,
+							$or: [{ federated: { $exists: false } }, { federated: false }],
 							t: {
 								$in: ['c', 'p'],
 							},
@@ -328,8 +331,20 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 						return item.text;
 					},
 				}),
+			createMessageBoxPopupConfig({
+				matchSelectorRegex: /(?:^)(\/[\w\d\S]+ )[^]*$/,
+				preview: true,
+				getItemsFromLocal: async ({ cmd, params, tmid }: { cmd: string; params: string; tmid: string }) => {
+					const { items } = await call({ cmd, params, msg: { rid, tmid } });
+					return items.map((item) => ({
+						_id: item.id,
+						value: item.value,
+						type: item.type,
+					}));
+				},
+			}),
 		].filter(Boolean);
-	}, [t, cannedResponseEnabled, isOmnichannel, suggestionsCount, userSpotlight, rid]);
+	}, [t, cannedResponseEnabled, isOmnichannel, suggestionsCount, userSpotlight, rid, call]);
 
 	return <ComposerPopupContext.Provider value={value} children={children} />;
 };

@@ -26,7 +26,7 @@ const { FederatedRoom } = proxyquire.noCallThru().load('../../../../../../../app
 	},
 });
 
-import { FederationMessageServiceListener } from '../../../../../../../app/federation-v2/server/application/MessageServiceListener';
+import { FederationMessageServiceListener } from '../../../../../../../app/federation-v2/server/application/listener/MessageServiceListener';
 
 describe('Federation - Application - FederationMessageServiceListener', () => {
 	let service: FederationMessageServiceListener;
