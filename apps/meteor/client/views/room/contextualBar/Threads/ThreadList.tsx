@@ -107,9 +107,9 @@ const ThreadList: VFC = () => {
 	const goToThread = useGoToThread({ replace: true });
 	const handleThreadClick = useCallback(
 		(tmid: IMessage['_id']) => {
-			goToThread(tmid);
+			goToThread({ rid, tmid });
 		},
-		[goToThread],
+		[rid, goToThread],
 	);
 
 	return (

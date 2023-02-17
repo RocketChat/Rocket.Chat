@@ -38,9 +38,11 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarGroupByType?: boolean;
 		muteFocusedConversations?: boolean;
 		dontAskAgainList?: Array<{ action: string; label: string }>;
+		themeAppearence?: 'auto' | 'light' | 'dark';
 		receiveLoginDetectionEmail?: boolean;
-		useLegacyMessageTemplate?: boolean;
 		idleTimeLimit?: number;
+		omnichannelTranscriptEmail?: boolean;
+		omnichannelTranscriptPDF?: boolean;
 	};
 };
 
@@ -189,8 +191,8 @@ const UsersSetPreferencesParamsPostSchema = {
 					},
 					nullable: true,
 				},
-				useLegacyMessageTemplate: {
-					type: 'boolean',
+				themeAppearence: {
+					type: 'string',
 					nullable: true,
 				},
 				receiveLoginDetectionEmail: {
@@ -199,6 +201,14 @@ const UsersSetPreferencesParamsPostSchema = {
 				},
 				idleTimeLimit: {
 					type: 'number',
+					nullable: true,
+				},
+				omnichannelTranscriptEmail: {
+					type: 'boolean',
+					nullable: true,
+				},
+				omnichannelTranscriptPDF: {
+					type: 'boolean',
 					nullable: true,
 				},
 			},
