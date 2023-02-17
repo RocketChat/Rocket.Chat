@@ -62,11 +62,7 @@ const CustomUserStatusService = () => {
 						<ToggleSwitch
 							disabled={disablePresenceService.isLoading || !presenceDisabled || percentage === 100}
 							checked={!presenceDisabled}
-							onClick={
-								!(disablePresenceService.isLoading || !presenceDisabled || percentage === 100)
-									? () => disablePresenceService.mutate()
-									: undefined
-							}
+							onChange={() => disablePresenceService.mutate()}
 						/>
 					</Box>
 					<Box display='flex' fontScale='c1' justifyContent='space-between' mb='x16'>
