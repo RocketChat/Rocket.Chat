@@ -7,8 +7,8 @@ import type { FC, ReactElement, Dispatch, SetStateAction } from 'react';
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
-import GenericTable from '../../../../components/GenericTable';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
+import GenericTable, { GenericTableLoadingTable } from '../../../../components/GenericTable';
+import { useCurrentChats } from '../../currentChats/hooks/useCurrentChats';
 
 const useQuery = (
 	{
@@ -73,12 +73,6 @@ const ChatTable: FC<{ setChatReload: Dispatch<SetStateAction<any>> }> = ({ setCh
 			id,
 		}),
 	);
-
-	const { value: data, reload } = useEndpointData('/v1/livechat/rooms', { params: query }); // TODO: Check the typing for the livechat/rooms endpoint as it seems wrong
-
-	useEffect(() => {
-		setChatReload?.(() => reload);
-	}, [reload, setChatReload]);
 
 	const header = useMemo(
 		() =>
@@ -167,12 +161,26 @@ const ChatTable: FC<{ setChatReload: Dispatch<SetStateAction<any>> }> = ({ setCh
 		[onRowClick],
 	);
 
+	const result = useCurrentChats(query);
+
+	useEffect(() => {
+		setChatReload?.(() => result.refetch);
+	}, [result.refetch, setChatReload]);
+
+	if (result.isLoading) {
+		return <GenericTableLoadingTable headerCells={6} />;
+	}
+	if (result.error) {
+		console.error(result.error);
+		return <Box mbs='x16'>{t('Something_went_wrong')}</Box>;
+	}
+
 	return (
 		<GenericTable
 			header={header}
 			renderRow={renderRow}
-			results={data?.rooms}
-			total={data?.total}
+			results={result.data?.rooms}
+			total={result.data?.total}
 			setParams={setParams}
 			params={params}
 			renderFilter={({ onChange, ...props }: any): ReactElement => <FilterByText onChange={onChange} {...props} />}
