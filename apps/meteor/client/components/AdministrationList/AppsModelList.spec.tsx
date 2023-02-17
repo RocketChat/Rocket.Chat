@@ -18,6 +18,7 @@ describe('AppsModelList', () => {
 				useAppRequestStats: () => {
 					return {
 						isLoading: false,
+						isSuccess: true,
 						data: {
 							data: {
 								totalUnseen: 5,

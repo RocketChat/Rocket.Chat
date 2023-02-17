@@ -25,7 +25,7 @@ describe('AdministrationList', () => {
 	it('should render all model list', async () => {
 		const AdministrationList = loadMock({
 			'../../../ee/client/hooks/useHasLicenseModule': {
-				useHasLicenseModule: () => false,
+				useHasLicenseModule: () => true,
 			},
 			'@rocket.chat/ui-contexts': {
 				usePermission: (key: string) => ['can-audit-log', 'manage-apps', 'can-audit'].includes(key),
@@ -66,6 +66,8 @@ describe('AdministrationList', () => {
 				isAppAccountBoxItem: () => true,
 			},
 			'../../../ee/client/hooks/useHasLicenseModule': {
+				'useHasLicenseModule': () => false,
+
 				'@rocket.chat/ui-contexts': {
 					usePermission: () => false,
 					useAtLeastOnePermission: () => false,
