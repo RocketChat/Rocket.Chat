@@ -151,6 +151,7 @@ export type EventSignatures = {
 	'watch.pbxevents'(data: { clientAction: ClientAction; data: Partial<IPbxEvent>; id: string }): void;
 	'connector.statuschanged'(enabled: boolean): void;
 	'message.update'(data: { message: AtLeast<IMessage, 'rid'> }): void;
+	'federation.userRoleChanged'(update: Record<string, any>): void;
 	'watch.priorities'(data: {
 		clientAction: ClientAction;
 		data: Partial<ILivechatPriority>;
