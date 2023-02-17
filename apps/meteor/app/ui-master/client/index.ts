@@ -1,2 +1,1 @@
-import './body';
 import './loading';
