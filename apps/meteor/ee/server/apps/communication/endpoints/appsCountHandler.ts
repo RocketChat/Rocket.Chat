@@ -3,6 +3,14 @@ import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { API } from '../../../../../app/api/server';
 import type { AppsRestApi } from '../rest';
 import { getAppsConfig } from '../../../../app/license/server/license';
+import type { SuccessResult } from '../../../../../app/api/server/api';
+
+export type AppsCountResult = {
+	totalMarketplaceEnabled: number;
+	totalPrivateEnabled: number;
+	maxMarketplaceApps: number;
+	maxPrivateApps: number;
+};
 
 export const appsCountHandler = (apiManager: AppsRestApi) =>
 	[
@@ -10,7 +18,7 @@ export const appsCountHandler = (apiManager: AppsRestApi) =>
 			authRequired: false,
 		},
 		{
-			get(): any {
+			get(): SuccessResult<AppsCountResult> {
 				const manager = apiManager._manager as AppManager;
 
 				const apps = manager.get({ enabled: true });
