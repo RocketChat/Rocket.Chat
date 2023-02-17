@@ -15,8 +15,8 @@ const loginProcedure = async (credentials: { name: string; username: string; pas
 	await page.locator('[name=username]').type(credentials.username);
 	await page.locator('[name=password]').type(credentials.password);
 	await page.locator('role=button >> text="Login"').click();
-
-	expect(await page.locator('role=button >> text="Login"')).not.toBeVisible();
+	
+	expect(await page.locator('role=button >> text="Login"')).toHaveCount(0);
 
 	await page.context().storageState({ path: `${name}-session.json` });
 
