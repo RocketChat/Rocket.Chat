@@ -51,7 +51,7 @@ export class AppUploadBridge extends UploadBridge {
 
 		const fileStore = FileUpload.getStore('Uploads');
 
-		details.type = determineFileType(buffer, details.name);
+		details.type = await determineFileType(buffer, details.name);
 
 		return new Promise(
 			Meteor.bindEnvironment((resolve, reject) => {
