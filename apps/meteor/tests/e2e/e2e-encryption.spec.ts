@@ -127,7 +127,7 @@ test.describe.serial('e2e-encryption initial setup', () => {
 test.describe.serial('e2e-encryption', () => {
 	let poHomeChannel: HomeChannel;
 
-	test.beforeEach(async ({ page }) => {
+	test.beforeEach(async ({ page, api }) => {
 		const statusCode = (await api.post('/settings/E2E_Enable', { value: true })).status();
 
 		await expect(statusCode).toBe(200);

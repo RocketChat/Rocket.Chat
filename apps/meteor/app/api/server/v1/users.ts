@@ -18,7 +18,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { IExportOperation, IPersonalAccessToken, IUser } from '@rocket.chat/core-typings';
+import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser } from '@rocket.chat/core-typings';
 import { Users as UsersRaw } from '@rocket.chat/models';
 import type { Filter } from 'mongodb';
 import { Team, api } from '@rocket.chat/core-services';
@@ -673,16 +673,17 @@ API.v1.addRoute(
 
 			const user = Users.getLoginTokensByUserId(this.userId).fetch()[0] as IUser | undefined;
 
+			const isPersonalAccessToken = (loginToken: ILoginToken | IPersonalAccessToken): loginToken is IPersonalAccessToken =>
+				'type' in loginToken && loginToken.type === 'personalAccessToken';
+
 			return API.v1.success({
 				tokens:
-					user?.services?.resume?.loginTokens
-						?.filter((loginToken: any) => loginToken.type === 'personalAccessToken')
-						.map((loginToken: IPersonalAccessToken) => ({
-							name: loginToken.name,
-							createdAt: loginToken.createdAt.toISOString(),
-							lastTokenPart: loginToken.lastTokenPart,
-							bypassTwoFactor: Boolean(loginToken.bypassTwoFactor),
-						})) || [],
+					user?.services?.resume?.loginTokens?.filter(isPersonalAccessToken).map((loginToken) => ({
+						name: loginToken.name,
+						createdAt: loginToken.createdAt.toISOString(),
+						lastTokenPart: loginToken.lastTokenPart,
+						bypassTwoFactor: Boolean(loginToken.bypassTwoFactor),
+					})) || [],
 			});
 		},
 	},
@@ -862,12 +863,12 @@ API.v1.addRoute(
 
 			const token = me.services?.resume?.loginTokens?.find((token) => token.hashedToken === hashedToken);
 
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			const tokenExpires = new Date(token!.when.getTime() + settings.get<number>('Accounts_LoginExpiration') * 1000);
+			const tokenExpires =
+				(token && 'when' in token && new Date(token.when.getTime() + settings.get<number>('Accounts_LoginExpiration') * 1000)) || undefined;
 
 			return API.v1.success({
 				token: xAuthToken,
-				tokenExpires: tokenExpires.toISOString() || '',
+				tokenExpires: tokenExpires?.toISOString() || '',
 			});
 		},
 	},
