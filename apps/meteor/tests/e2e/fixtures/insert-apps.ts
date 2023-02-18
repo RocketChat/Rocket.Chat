@@ -15,12 +15,6 @@ export default async function insertApp(): Promise<void> {
 		'X-User-Id': jsonToken.data.userId,
 	};
 
-	const { value } = await (await api.get(`${BASE_API_URL}/settings/Apps_Framework_Development_Mode`, { headers })).json();
-
-	if (!value) {
-		await api.post(`${BASE_API_URL}/settings/Apps_Framework_enabled`, { data: { value: true }, headers });
-		await api.post(`${BASE_API_URL}/settings/Apps_Framework_Development_Mode`, { data: { value: true }, headers });
-		await api.post(`${BASE_URL}/api/apps`, { data: { url: APP_URL }, headers });
-		await api.post(`${BASE_API_URL}/settings/VideoConf_Default_Provider`, { data: { value: 'test' }, headers });
-	}
+	await api.post(`${BASE_URL}/api/apps`, { data: { url: APP_URL }, headers });
+	await api.post(`${BASE_API_URL}/settings/VideoConf_Default_Provider`, { data: { value: 'test' }, headers });
 }
