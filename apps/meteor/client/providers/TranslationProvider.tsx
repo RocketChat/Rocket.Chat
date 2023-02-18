@@ -17,7 +17,7 @@ type TranslationNamespace = Extract<TranslationKey, `${string}.${string}`> exten
 		: never
 	: never;
 
-const namespacesDefault = ['onboarding', 'registration', 'cloud'] as TranslationNamespace[];
+const namespacesDefault = ['core', 'onboarding', 'registration', 'cloud'] as TranslationNamespace[];
 
 const parseToJSON = (customTranslations: string) => {
 	try {
@@ -39,10 +39,15 @@ const useI18next = (lng: string): typeof i18next => {
 		const result: { [key: string]: any } = {};
 
 		for (const [key, value] of Object.entries(source)) {
-			const prefix = (Array.isArray(namespaces) ? namespaces : [namespaces]).find((namespace) => key.startsWith(`${namespace}.`));
+			const [prefix] = key.split('.');
 
-			if (prefix) {
+			if (prefix && Array.isArray(namespaces) ? namespaces.includes(prefix) : prefix === namespaces) {
 				result[key.slice(prefix.length + 1)] = value;
+				continue;
+			}
+
+			if (Array.isArray(namespaces) ? namespaces.includes('core') : namespaces === 'core') {
+				result[key] = value;
 			}
 		}
 

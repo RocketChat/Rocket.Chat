@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Inject } from 'meteor/meteorhacks:inject-initial';
 import { Tracker } from 'meteor/tracker';
-import _ from 'underscore';
 import { Settings } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { settings } from '../../settings/server';
 import { applyHeadInjections, headInjections, injectIntoBody, injectIntoHead } from './inject';
+import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
 
 import './scripts';
 
@@ -124,7 +124,7 @@ Meteor.startup(() => {
 	injectIntoHead('css-theme', '');
 });
 
-const renderDynamicCssList = _.debounce(
+const renderDynamicCssList = withDebouncing({ wait: 500 })(
 	Meteor.bindEnvironment(async () => {
 		// const variables = RocketChat.models.Settings.findOne({_id:'theme-custom-variables'}, {fields: { value: 1}});
 		const colors = await Settings.find({ _id: /theme-color-rc/i }, { projection: { value: 1, editor: 1 } }).toArray();
@@ -139,14 +139,9 @@ const renderDynamicCssList = _.debounce(
 			.join('\n');
 		injectIntoBody('dynamic-variables', `<style id='css-variables'> :root {${css}}</style>`);
 	}),
-	500,
 );
 
 renderDynamicCssList();
-
-// RocketChat.models.Settings.find({_id:'theme-custom-variables'}, {fields: { value: 1}}).observe({
-// 	changed: renderDynamicCssList
-// });
 
 settings.watchByRegex(/theme-color-rc/i, renderDynamicCssList);
 
