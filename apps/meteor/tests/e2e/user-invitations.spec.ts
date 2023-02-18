@@ -1,6 +1,7 @@
+import { Users } from './fixtures/userStates';
 import { test, expect } from './utils/test';
 
-test.use({ storageState: 'admin-session.json' });
+test.use({ storageState: Users.admin.state });
 
 test.describe.serial('user-invites', () => {
 	test.beforeEach(async ({ page }) => {
