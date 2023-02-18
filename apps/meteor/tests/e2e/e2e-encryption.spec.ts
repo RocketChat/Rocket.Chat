@@ -128,16 +128,19 @@ test.describe.serial('e2e-encryption', () => {
 	let poHomeChannel: HomeChannel;
 
 	test.beforeEach(async ({ page }) => {
+		const statusCode = (await api.post('/settings/E2E_Enable', { value: true })).status();
+
+		await expect(statusCode).toBe(200);
+
 		poHomeChannel = new HomeChannel(page);
 
 		await page.goto('/home');
-		// TODO: remove
-		// await page.evaluate(() => localStorage.setItem('rc-config-debug', 'true'));
-		// TODO: remove block
-		// await page.locator('role=banner >> text="Enter your E2E password"').click();
-		// await page.locator('#modal-root input').type('new password');
-		// await page.locator('#modal-root .rcx-button--primary').click();
-		// await expect(page.locator('role=banner')).not.toBeVisible();
+	});
+
+	test.afterAll(async ({ api }) => {
+		const statusCode = (await api.post('/settings/E2E_Enable', { value: false })).status();
+
+		await expect(statusCode).toBe(200);
 	});
 
 	test('expect create a private channel encrypted and send an encrypted message', async ({ page }) => {
