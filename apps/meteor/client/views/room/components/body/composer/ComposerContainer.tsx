@@ -43,7 +43,6 @@ const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactE
 
 	if (isFederation) {
 		return <FederationComposer room={room} {...props} />;
-		// return handleFederation(room, federationEnabled, federationModuleEnabled, { children, ...props });
 	}
 
 	if (isAnonymous) {
