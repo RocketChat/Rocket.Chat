@@ -1,7 +1,7 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IAppsEngineService } from '@rocket.chat/core-services';
 
-import { Apps, AppEvents } from '../../../app/apps/server/orchestrator';
+import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
 
 export class AppsEngineService extends ServiceClassInternal implements IAppsEngineService {
 	protected name = 'apps-engine';

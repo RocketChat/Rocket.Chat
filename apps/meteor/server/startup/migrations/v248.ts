@@ -1,5 +1,5 @@
 import { addMigration } from '../../lib/migrations';
-import { Apps } from '../../../app/apps/server/orchestrator';
+import { Apps } from '../../../ee/server/apps/orchestrator';
 
 addMigration({
 	version: 248,

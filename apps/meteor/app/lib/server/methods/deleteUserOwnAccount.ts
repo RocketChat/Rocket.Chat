@@ -6,7 +6,7 @@ import { SHA256 } from 'meteor/sha';
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
 import { deleteUser } from '../functions';
-import { AppEvents, Apps } from '../../../apps/server/orchestrator';
+import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { trim } from '../../../../lib/utils/stringUtils';
 
 Meteor.methods({
