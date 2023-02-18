@@ -2,7 +2,9 @@ import crypto from 'crypto';
 
 import polka from 'polka';
 import WebSocket from 'ws';
+import { throttle } from 'underscore';
 import { MeteorService, Presence, ServiceClass } from '@rocket.chat/core-services';
+import { InstanceStatus } from '@rocket.chat/instance-status';
 
 import type { NotificationsModule } from '../../../../apps/meteor/server/modules/notifications/notifications.module';
 import { ListenersModule } from '../../../../apps/meteor/server/modules/listeners/listeners.module';
@@ -49,6 +51,11 @@ export class DDPStreamer extends ServiceClass {
 			Autoupdate.updateVersion(versions);
 		});
 	}
+
+	// update connections count every 30 seconds
+	updateConnections = throttle(() => {
+		InstanceStatus.updateConnections(this.wss?.clients.size ?? 0);
+	}, 30000);
 
 	async created(): Promise<void> {
 		if (!this.context) {
@@ -98,6 +105,8 @@ export class DDPStreamer extends ServiceClass {
 			const { userId, connection } = info;
 
 			Presence.newConnection(userId, connection.id, nodeID);
+			this.updateConnections();
+
 			this.api?.broadcast('accounts.login', { userId, connection });
 		});
 
@@ -105,6 +114,8 @@ export class DDPStreamer extends ServiceClass {
 			const { userId, connection } = info;
 
 			this.api?.broadcast('accounts.logout', { userId, connection });
+
+			this.updateConnections();
 
 			if (!userId) {
 				return;
@@ -116,6 +127,8 @@ export class DDPStreamer extends ServiceClass {
 			const { userId, connection } = info;
 
 			this.api?.broadcast('socket.disconnected', connection);
+
+			this.updateConnections();
 
 			if (!userId) {
 				return;
@@ -162,6 +175,8 @@ export class DDPStreamer extends ServiceClass {
 		this.wss = new WebSocket.Server({ server: this.app.server });
 
 		this.wss.on('connection', (ws, req) => new Client(ws, req.url !== '/websocket', req));
+
+		InstanceStatus.registerInstance('ddp-streamer', {});
 	}
 
 	async stopped(): Promise<void> {

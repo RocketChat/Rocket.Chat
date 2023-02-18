@@ -9,7 +9,7 @@ import type { soundDataType } from './lib';
 import { validate, createSoundData } from './lib';
 
 type AddCustomSoundProps = {
-	goToNew: (where: string) => () => void;
+	goToNew: (_id: string) => () => void;
 	close: () => void;
 	onChange: () => void;
 };
@@ -22,7 +22,6 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	const [sound, setSound] = useState<{ name: string }>();
 
 	const uploadCustomSound = useMethod('uploadCustomSound');
-
 	const insertOrUpdateSound = useMethod('insertOrUpdateSound');
 
 	const handleChangeFile = useCallback((soundFile) => {
@@ -74,11 +73,8 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	const handleSave = useCallback(async () => {
 		try {
 			const result = await saveAction(name, sound);
-			if (!result) {
-				throw new Error('error-something-went-wrong');
-			}
-			goToNew(result);
 			dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });
+			result && goToNew(result);
 			onChange();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

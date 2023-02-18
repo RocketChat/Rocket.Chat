@@ -3,8 +3,8 @@ import type { ReactElement } from 'react';
 import { LoginForm } from './LoginForm';
 import ResetPasswordForm from './ResetPasswordForm';
 import { useLoginRouter } from './hooks/useLoginRouter';
-import HorizontalTemplate from './template/HorizontalTemplate';
 import RegisterSecretPageRouter from './RegisterSecretPageRouter';
+import RegisterTemplate from './RegisterTemplate';
 
 export const RegistrationPageRouter = ({
 	defaultRoute = 'login',
@@ -15,17 +15,17 @@ export const RegistrationPageRouter = ({
 
 	if (route === 'login') {
 		return (
-			<HorizontalTemplate>
+			<RegisterTemplate>
 				<LoginForm setLoginRoute={setLoginRoute} />
-			</HorizontalTemplate>
+			</RegisterTemplate>
 		);
 	}
 
 	if (route === 'reset-password') {
 		return (
-			<HorizontalTemplate>
+			<RegisterTemplate>
 				<ResetPasswordForm setLoginRoute={setLoginRoute} />
-			</HorizontalTemplate>
+			</RegisterTemplate>
 		);
 	}
 

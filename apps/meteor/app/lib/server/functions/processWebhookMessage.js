@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
-import s from 'underscore.string';
 
 import { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOptionToJoin';
 import { sendMessage } from './sendMessage';
 import { validateRoomMessagePermissions } from '../../../authorization/server/functions/canSendMessage';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { trim } from '../../../../lib/utils/stringUtils';
 
 export const processWebhookMessage = function (messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }) {
 	const sentData = [];
@@ -71,7 +71,7 @@ export const processWebhookMessage = function (messageObj, user, defaultValues =
 
 		const message = {
 			alias: messageObj.username || messageObj.alias || defaultValues.alias,
-			msg: s.trim(messageObj.text || messageObj.msg || ''),
+			msg: trim(messageObj.text || messageObj.msg || ''),
 			attachments: messageObj.attachments || [],
 			parseUrls: messageObj.parseUrls !== undefined ? messageObj.parseUrls : !messageObj.attachments,
 			bot: messageObj.bot,
@@ -89,11 +89,11 @@ export const processWebhookMessage = function (messageObj, user, defaultValues =
 			message.emoji = defaultValues.emoji;
 		}
 
-		if (_.isArray(message.attachments)) {
+		if (Array.isArray(message.attachments)) {
 			for (let i = 0; i < message.attachments.length; i++) {
 				const attachment = message.attachments[i];
 				if (attachment.msg) {
-					attachment.text = s.trim(attachment.msg);
+					attachment.text = trim(attachment.msg);
 					delete attachment.msg;
 				}
 			}

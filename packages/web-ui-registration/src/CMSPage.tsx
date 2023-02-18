@@ -1,10 +1,9 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { VerticalWizardLayout, VerticalWizardLayoutFooter, VerticalWizardLayoutForm, VerticalWizardLayoutTitle } from '@rocket.chat/layout';
-import { useRoute, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRoute, useSetting, useTranslation, useAssetPath } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 
 import { LoginPoweredBy } from './components/LoginPoweredBy';
-import { useAssetPath } from './hooks/useAssetPath';
 
 type CMSPageProps = {
 	page: 'Layout_Terms_of_Service' | 'Layout_Privacy_Policy' | 'Layout_Legal_Notice';

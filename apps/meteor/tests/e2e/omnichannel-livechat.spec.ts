@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
 import type { Browser, Page } from '@playwright/test';
 
-import { test, expect } from './utils/test';
 import { HomeOmnichannel, OmnichannelLiveChat } from './page-objects';
+import { test, expect } from './utils/test';
 
 const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page; poHomeOmnichannel: HomeOmnichannel }> => {
 	const page = await browser.newPage({ storageState });
@@ -12,7 +12,7 @@ const createAuxContext = async (browser: Browser, storageState: string): Promise
 };
 
 const newUser = {
-	name: faker.name.firstName(),
+	name: `${faker.name.firstName()} ${faker.datatype.uuid()}}`,
 	email: faker.internet.email(),
 };
 test.describe('Livechat', () => {
@@ -23,7 +23,7 @@ test.describe('Livechat', () => {
 
 		test.beforeAll(async ({ browser, api }) => {
 			const statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
-			expect(statusCode).toBe(200);
+			await expect(statusCode).toBe(200);
 
 			page = await browser.newPage();
 			poLiveChat = new OmnichannelLiveChat(page);

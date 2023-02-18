@@ -1,4 +1,4 @@
-import type Url from 'url';
+import type { UrlWithParsedQuery } from 'url';
 
 import { Meteor } from 'meteor/meteor';
 import type { FilterOperators } from 'mongodb';
@@ -15,6 +15,8 @@ import type {
 	ParsedUrl,
 	OEmbedMeta,
 	OEmbedUrlContent,
+	Username,
+	IOmnichannelRoom,
 } from '@rocket.chat/core-typings';
 
 import type { Logger } from '../app/logger/server';
@@ -22,6 +24,7 @@ import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour
 import { getRandomId } from './random';
 import type { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
 import { compareByRanking } from './utils/comparisons';
+import type { CloseRoomParams } from '../app/livechat/server/lib/LivechatTyped.d';
 
 enum CallbackPriority {
 	HIGH = -1000,
@@ -42,20 +45,20 @@ type EventLikeCallbackSignatures = {
 	'afterDeleteMessage': (message: IMessage, room: IRoom) => void;
 	'validateUserRoles': (userData: Partial<IUser>) => void;
 	'workspaceLicenseChanged': (license: string) => void;
-	'afterReadMessages': (rid: IRoom['_id'], params: { uid: IUser['_id']; lastSeen: Date }) => void;
+	'afterReadMessages': (rid: IRoom['_id'], params: { uid: IUser['_id']; lastSeen?: Date; tmid?: IMessage['_id'] }) => void;
 	'beforeReadMessages': (rid: IRoom['_id'], uid: IUser['_id']) => void;
 	'afterDeleteUser': (user: IUser) => void;
 	'afterFileUpload': (params: { user: IUser; room: IRoom; message: IMessage }) => void;
 	'afterSaveMessage': (message: IMessage, room: IRoom, uid?: string) => void;
 	'livechat.removeAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.saveAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
-	'livechat.closeRoom': (room: IRoom) => void;
+	'livechat.closeRoom': (params: { room: IOmnichannelRoom; options: CloseRoomParams['options'] }) => void;
 	'livechat.saveRoom': (room: IRoom) => void;
 	'livechat:afterReturnRoomAsInquiry': (params: { room: IRoom }) => void;
 	'livechat.setUserStatusLivechat': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
 	'livechat.agentStatusChanged': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
 	'livechat.afterTakeInquiry': (inq: ILivechatInquiryRecord, agent: ILivechatAgent) => void;
-	'afterAddedToRoom': (params: { user: IUser; inviter: IUser }, room: IRoom) => void;
+	'afterAddedToRoom': (params: { user: IUser; inviter?: IUser }, room: IRoom) => void;
 	'beforeAddedToRoom': (params: { user: IUser; inviter: IUser }) => void;
 	'afterCreateDirectRoom': (params: IRoom, second: { members: IUser[]; creatorId: IUser['_id'] }) => void;
 	'beforeDeleteRoom': (params: IRoom) => void;
@@ -71,7 +74,8 @@ type EventLikeCallbackSignatures = {
 		message: IMessage,
 		{ user, reaction }: { user: IUser; reaction: string; shouldReact: boolean; oldMessage: IMessage },
 	) => void;
-	'federation.beforeAddUserAToRoom': (params: { user: IUser | string; inviter: IUser }, room: IRoom) => void;
+	'federation.beforeAddUserToARoom': (params: { user: IUser | string; inviter: IUser }, room: IRoom) => void;
+	'federation.onAddUsersToARoom': (params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom) => void;
 	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;
 	'usernameSet': () => void;
 };
@@ -107,12 +111,11 @@ type ChainedCallbackSignatures = {
 		oldDepartmentId: ILivechatDepartmentRecord['_id'];
 	};
 	'livechat.afterInquiryQueued': (inquiry: ILivechatInquiryRecord) => ILivechatInquiryRecord;
-	'livechat.afterRemoveDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => {
+	'livechat.afterRemoveDepartment': (params: { department: ILivechatDepartmentRecord; agentsId: ILivechatAgent['_id'][] }) => {
 		departmentId: ILivechatDepartmentRecord['_id'];
 		agentsId: ILivechatAgent['_id'][];
 	};
 	'livechat.applySimultaneousChatRestrictions': (_: undefined, params: { departmentId?: ILivechatDepartmentRecord['_id'] }) => undefined;
-	'livechat.beforeCloseRoom': (params: { room: IRoom; options: unknown }) => { room: IRoom; options: unknown };
 	'livechat.beforeDelegateAgent': (agent: ILivechatAgent, params: { department?: ILivechatDepartmentRecord }) => ILivechatAgent | null;
 	'livechat.applyDepartmentRestrictions': (
 		query: FilterOperators<ILivechatDepartmentRecord>,
@@ -122,12 +125,13 @@ type ChainedCallbackSignatures = {
 	'on-business-hour-start': (params: { BusinessHourBehaviorClass: { new (): IBusinessHourBehavior } }) => {
 		BusinessHourBehaviorClass: { new (): IBusinessHourBehavior };
 	};
+	'livechat.saveInfo': (newRoom: IOmnichannelRoom, { user, oldRoom }: { user: IUser; oldRoom: IOmnichannelRoom }) => IOmnichannelRoom;
 	'renderMessage': <T extends IMessage & { html: string }>(message: T) => T;
 	'oembed:beforeGetUrlContent': (data: {
-		urlObj: Omit<Url.UrlWithParsedQuery, 'host' | 'search'> & { host?: unknown; search?: unknown };
+		urlObj: Omit<UrlWithParsedQuery, 'host' | 'search'> & { host?: unknown; search?: unknown };
 		parsedUrl: ParsedUrl;
 	}) => {
-		urlObj: Url.UrlWithParsedQuery;
+		urlObj: UrlWithParsedQuery;
 		parsedUrl: ParsedUrl;
 	};
 	'oembed:afterParseContent': (data: {
@@ -171,18 +175,6 @@ type Hook =
 	| 'beforeSaveMessage'
 	| 'beforeSendMessageNotifications'
 	| 'beforeValidateLogin'
-	| 'cachedCollection-loadFromServer-rooms'
-	| 'cachedCollection-loadFromServer-subscriptions'
-	| 'cachedCollection-received-rooms'
-	| 'cachedCollection-received-subscriptions'
-	| 'cachedCollection-sync-rooms'
-	| 'cachedCollection-sync-subscriptions'
-	| 'cachedCollection-after-loadFromServer-rooms'
-	| 'cachedCollection-after-loadFromServer-subscriptions'
-	| 'cachedCollection-after-received-rooms'
-	| 'cachedCollection-after-received-subscriptions'
-	| 'cachedCollection-after-sync-rooms'
-	| 'cachedCollection-after-sync-subscriptions'
 	| 'enter-room'
 	| 'livechat.beforeForwardRoomToDepartment'
 	| 'livechat.beforeInquiry'
@@ -387,14 +379,6 @@ class Callbacks {
 		this.setCallbacks(hook, hooks);
 	}
 
-	/**
-	 * Successively run all of a hook's callbacks on an item
-	 *
-	 * @param hook the name of the hook
-	 * @param item the post, comment, modifier, etc. on which to run the callbacks
-	 * @param constant an optional constant that will be passed along to each callback
-	 * @returns returns the item after it's been through all the callbacks for this hook
-	 */
 	run<THook extends keyof EventLikeCallbackSignatures>(hook: THook, ...args: Parameters<EventLikeCallbackSignatures[THook]>): void;
 
 	run<THook extends keyof ChainedCallbackSignatures>(
@@ -404,10 +388,20 @@ class Callbacks {
 
 	run<TItem, TConstant, TNextItem = TItem>(hook: Hook, item: TItem, constant?: TConstant): TNextItem;
 
+	/**
+	 * Successively run all of a hook's callbacks on an item
+	 *
+	 * @param hook the name of the hook
+	 * @param item the post, comment, modifier, etc. on which to run the callbacks
+	 * @param constant an optional constant that will be passed along to each callback
+	 * @returns returns the item after it's been through all the callbacks for this hook
+	 */
 	run(hook: Hook, item: unknown, constant?: unknown): unknown {
 		const runner = this.sequentialRunners.get(hook) ?? ((item: unknown, _constant?: unknown): unknown => item);
 		return runner(item, constant);
 	}
+
+	runAsync<THook extends keyof EventLikeCallbackSignatures>(hook: THook, ...args: Parameters<EventLikeCallbackSignatures[THook]>): void;
 
 	/**
 	 * Successively run all of a hook's callbacks on an item, in async mode (only works on server)
@@ -417,8 +411,6 @@ class Callbacks {
 	 * @param constant an optional constant that will be passed along to each callback
 	 * @returns the post, comment, modifier, etc. on which to run the callbacks
 	 */
-	runAsync<THook extends keyof EventLikeCallbackSignatures>(hook: THook, ...args: Parameters<EventLikeCallbackSignatures[THook]>): void;
-
 	runAsync(hook: Hook, item: unknown, constant?: unknown): unknown {
 		const runner = this.asyncRunners.get(hook) ?? ((item: unknown, _constant?: unknown): unknown => item);
 		return runner(item, constant);

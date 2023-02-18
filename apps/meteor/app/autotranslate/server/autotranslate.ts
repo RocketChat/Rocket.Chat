@@ -165,7 +165,7 @@ export abstract class AutoTranslate {
 	tokenizeURLs(message: IMessage): IMessage {
 		let count = message.tokens?.length || 0;
 
-		const schemes = settings.get<string>('Markdown_SupportSchemesForLink')?.split(',').join('|');
+		const schemes = 'http,https';
 
 		// Support ![alt text](http://image url) and [text](http://link)
 		message.msg = message.msg.replace(
@@ -305,10 +305,13 @@ export abstract class AutoTranslate {
 			Meteor.defer(() => {
 				for (const [index, attachment] of message.attachments?.entries() ?? []) {
 					if (attachment.description || attachment.text) {
-						const translations = this._translateAttachmentDescriptions(attachment, targetLanguages);
+						// Removes the initial link `[ ](quoterl)` from quote message before translation
+						const translatedText = attachment?.text?.replace(/\[(.*?)\]\(.*?\)/g, '$1') || attachment?.text;
+						const attachmentMessage = { ...attachment, text: translatedText };
+						const translations = this._translateAttachmentDescriptions(attachmentMessage, targetLanguages);
+
 						if (!_.isEmpty(translations)) {
 							Messages.addAttachmentTranslations(message._id, index, translations);
-							Messages.addTranslations(message._id, translations, TranslationProviderRegistry[Provider]);
 						}
 					}
 				}
