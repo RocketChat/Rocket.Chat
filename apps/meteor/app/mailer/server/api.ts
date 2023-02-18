@@ -10,7 +10,7 @@ import { Settings } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
 import { replaceVariables } from './replaceVariables';
-import { Apps } from '../../apps/server';
+import { Apps } from '../../../ee/server/apps';
 import { validateEmail } from '../../../lib/emailValidator';
 import { strLeft, strRightBack } from '../../../lib/utils/stringUtils';
 

@@ -5,7 +5,7 @@ import { Users } from '../../app/models/server';
 import { hasPermission } from '../../app/authorization';
 import { callbacks } from '../../lib/callbacks';
 import { deleteUser } from '../../app/lib/server';
-import { AppEvents, Apps } from '../../app/apps/server/orchestrator';
+import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
 
 Meteor.methods({
 	async deleteUser(userId, confirmRelinquish = false) {
