@@ -1,6 +1,7 @@
 import { Option, OptionIcon, OptionContent } from '@rocket.chat/fuselage';
 import { MessageComposerAction } from '@rocket.chat/ui-composer';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
+import type { AllHTMLAttributes } from 'react';
 import React from 'react';
 
 import type { ChatAPI } from '../../../../../../../../lib/chats/ChatAPI';
@@ -10,9 +11,9 @@ type VideoMessageActionProps = {
 	collapsed?: boolean;
 	isRecording: boolean;
 	chatContext?: ChatAPI; // TODO: remove this when the composer is migrated to React
-};
+} & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>;
 
-const VideoMessageAction = ({ collapsed, chatContext, isRecording }: VideoMessageActionProps) => {
+const VideoMessageAction = ({ collapsed, chatContext, isRecording, disabled, ...props }: VideoMessageActionProps) => {
 	const t = useTranslation();
 	const fileUploadEnabled = useSetting('FileUpload_Enabled');
 	const messageVideoRecorderEnabled = useSetting('Message_VideoRecorderEnabled');
@@ -43,8 +44,8 @@ const VideoMessageAction = ({ collapsed, chatContext, isRecording }: VideoMessag
 	if (collapsed) {
 		return (
 			<Option
-				{...((!enableVideoMessage || isRecording) && { title: t('Not_Available') })}
-				disabled={!enableVideoMessage || isRecording}
+				{...((!enableVideoMessage || disabled) && { title: t('Not_Available') })}
+				disabled={!enableVideoMessage || disabled}
 				onClick={handleOpenVideoMessage}
 			>
 				<OptionIcon name='video' />
@@ -60,6 +61,7 @@ const VideoMessageAction = ({ collapsed, chatContext, isRecording }: VideoMessag
 			disabled={!enableVideoMessage || isRecording}
 			onClick={handleOpenVideoMessage}
 			title={t('Video_message')}
+			{...props}
 		/>
 	);
 };

@@ -5,3 +5,5 @@ export class AppsModel extends Base {
 		super('apps');
 	}
 }
+
+export default new AppsModel();

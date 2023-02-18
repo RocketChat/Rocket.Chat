@@ -1,7 +1,7 @@
 import { Option, OptionContent, OptionIcon } from '@rocket.chat/fuselage';
 import { MessageComposerAction } from '@rocket.chat/ui-composer';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent } from 'react';
+import type { ChangeEvent, AllHTMLAttributes } from 'react';
 import React, { useRef } from 'react';
 
 import type { ChatAPI } from '../../../../../../../../lib/chats/ChatAPI';
@@ -11,9 +11,9 @@ type FileUploadActionProps = {
 	collapsed?: boolean;
 	isRecording: boolean;
 	chatContext?: ChatAPI; // TODO: remove this when the composer is migrated to React
-};
+} & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>;
 
-const FileUploadAction = ({ collapsed, chatContext, isRecording }: FileUploadActionProps) => {
+const FileUploadAction = ({ collapsed, chatContext, disabled, isRecording, ...props }: FileUploadActionProps) => {
 	const t = useTranslation();
 	const fileUploadEnabled = useSetting('FileUpload_Enabled');
 	const fileInputRef = useRef<HTMLInputElement>(null);
@@ -44,8 +44,8 @@ const FileUploadAction = ({ collapsed, chatContext, isRecording }: FileUploadAct
 		return (
 			<>
 				<Option
-					{...((!fileUploadEnabled || isRecording) && { title: t('Not_Available') })}
-					disabled={!fileUploadEnabled || isRecording}
+					{...((!fileUploadEnabled || disabled) && { title: t('Not_Available') })}
+					disabled={!fileUploadEnabled || disabled}
 					onClick={handleUpload}
 				>
 					<OptionIcon name='clip' />
@@ -64,6 +64,7 @@ const FileUploadAction = ({ collapsed, chatContext, isRecording }: FileUploadAct
 				disabled={!fileUploadEnabled || isRecording}
 				onClick={handleUpload}
 				title={t('File')}
+				{...props}
 			/>
 			<input ref={fileInputRef} type='file' onChange={handleUploadChange} multiple style={{ display: 'none' }} />
 		</>
