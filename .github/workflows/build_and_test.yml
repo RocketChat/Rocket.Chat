@@ -139,15 +139,10 @@ jobs:
       - name: yarn install
         run: yarn
 
-      - name: TurboRepo local server
-        uses: felixmosh/turborepo-gh-artifacts@v2
-        if: "${{ env.TURBO_TEAM != '' }}"
-        with:
-          repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
-          server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
+      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: Translation check
-        run: yarn turbo run translation-check --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
+        run: yarn turbo run translation-check
 
       - name: Reset Meteor
         if: startsWith(github.ref, 'refs/tags/') == 'true' || github.ref == 'refs/heads/develop'
@@ -158,11 +153,11 @@ jobs:
         if: startsWith(github.ref, 'refs/pull/') == true
         env:
           METEOR_PROFILE: 1000
-        run: yarn build:ci --api="http://127.0.0.1:9080" -- --debug --directory dist
+        run: yarn build:ci -- --debug --directory dist
 
       - name: Build Rocket.Chat
         if: startsWith(github.ref, 'refs/pull/') != true
-        run: yarn build:ci --api="http://127.0.0.1:9080" -- --directory dist
+        run: yarn build:ci -- --directory dist
 
       - name: Prepare build
         run: |
@@ -208,15 +203,10 @@ jobs:
       - name: yarn install
         run: yarn
 
-      - name: TurboRepo local server
-        uses: felixmosh/turborepo-gh-artifacts@v2
-        if: "${{ env.TURBO_TEAM != '' }}"
-        with:
-          repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
-          server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
+      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: TS typecheck
-        run: yarn turbo run typecheck --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
+        run: yarn turbo run typecheck
 
   lint:
     runs-on: ubuntu-20.04
@@ -251,15 +241,10 @@ jobs:
       - name: yarn install
         run: yarn
 
-      - name: TurboRepo local server
-        uses: felixmosh/turborepo-gh-artifacts@v2
-        if: "${{ env.TURBO_TEAM != '' }}"
-        with:
-          repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
-          server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
+      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: Lint
-        run: yarn lint --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
+        run: yarn lint
 
   build-docker-preview:
     runs-on: ubuntu-20.04
@@ -323,15 +308,10 @@ jobs:
       - name: yarn install
         run: yarn
 
-      - name: TurboRepo local server
-        uses: felixmosh/turborepo-gh-artifacts@v2
-        if: "${{ env.TURBO_TEAM != '' }}"
-        with:
-          repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
-          server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
+      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: Unit Test
-        run: yarn testunit --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
+        run: yarn testunit
 
   test-api:
     runs-on: ubuntu-20.04
@@ -380,18 +360,13 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
 
-      - name: TurboRepo local server
-        uses: felixmosh/turborepo-gh-artifacts@v2
-        if: "${{ env.TURBO_TEAM != '' }}"
-        with:
-          repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
-          server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
+      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: yarn install
         run: yarn
 
       - name: yarn build
-        run: yarn build --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
+        run: yarn build
 
       - name: Restore build
         uses: actions/download-artifact@v2
@@ -535,18 +510,13 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
 
-      - name: TurboRepo local server
-        uses: felixmosh/turborepo-gh-artifacts@v2
-        if: "${{ env.TURBO_TEAM != '' }}"
-        with:
-          repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
-          server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
+      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: yarn install
         run: yarn
 
       - name: yarn build
-        run: yarn build --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
+        run: yarn build
 
       - name: Restore build
         uses: actions/download-artifact@v2
@@ -600,6 +570,14 @@ jobs:
         working-directory: ./apps/meteor
         run: npx playwright install --with-deps
 
+      - name: Wait for Rocket.Chat to start up
+        uses: cygnetdigital/wait_for_response@v2.0.0
+        with:
+          url: 'http://localhost:3000/health'
+          responseCode: '200'
+          timeout: 10000
+          interval: 500
+
       - name: E2E Test UI (${{ matrix.shard }}/4)
         working-directory: ./apps/meteor
         run: yarn test:e2e --shard=${{ matrix.shard }}/4
@@ -635,18 +613,13 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
 
-      - name: TurboRepo local server
-        uses: felixmosh/turborepo-gh-artifacts@v2
-        if: "${{ env.TURBO_TEAM != '' }}"
-        with:
-          repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
-          server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
+      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: yarn install
         run: yarn
 
       - name: yarn build
-        run: yarn build --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
+        run: yarn build
 
       - name: Restore build
         uses: actions/download-artifact@v2
@@ -778,18 +751,13 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'yarn'
 
-      - name: TurboRepo local server
-        uses: felixmosh/turborepo-gh-artifacts@v2
-        if: "${{ env.TURBO_TEAM != '' }}"
-        with:
-          repo-token: ${{ secrets.RC_TURBO_GH_TOKEN }}
-          server-token: ${{ secrets.TURBO_SERVER_TOKEN }}
+      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: yarn install
         run: yarn
 
       - name: yarn build
-        run: yarn build --api="http://127.0.0.1:9080" --token="${{ secrets.TURBO_SERVER_TOKEN }}" --team='rc'
+        run: yarn build
 
       - name: Restore build
         uses: actions/download-artifact@v2
@@ -859,9 +827,20 @@ jobs:
         working-directory: ./apps/meteor
         run: npx playwright install --with-deps
 
+      - name: Wait for Rocket.Chat to start up
+        uses: cygnetdigital/wait_for_response@v2.0.0
+        with:
+          url: 'http://localhost:3000/health'
+          responseCode: '200'
+          timeout: 10000
+          interval: 500
+
       - name: E2E Test UI (${{ matrix.shard }}/4)
         working-directory: ./apps/meteor
-        run: E2E_COVERAGE=true IS_EE=true yarn test:e2e --shard=${{ matrix.shard }}/5
+        env:
+          E2E_COVERAGE: 'true'
+          IS_EE: 'true'
+        run: yarn test:e2e --shard=${{ matrix.shard }}/5
 
       - name: Show server logs if E2E test failed
         if: failure()
