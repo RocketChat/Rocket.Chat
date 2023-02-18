@@ -10,7 +10,7 @@ import { Messages, Users, Subscriptions } from '../../../models/server';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import notifications from '../../../notifications/server/lib/Notifications';
-import type { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 export class AppMessageBridge extends MessageBridge {
 	// eslint-disable-next-line no-empty-function
