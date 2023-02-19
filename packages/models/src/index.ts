@@ -42,6 +42,7 @@ import type {
 	IPushTokenModel,
 	IPermissionsModel,
 	IReadReceiptsModel,
+	IMessageReadsModel,
 	IReportsModel,
 	IRolesModel,
 	IRoomsModel,
@@ -62,6 +63,7 @@ import type {
 	IWebdavAccountsModel,
 	IMatrixBridgedRoomModel,
 	IMatrixBridgedUserModel,
+	IOmnichannelServiceLevelAgreementsModel,
 } from '@rocket.chat/model-typings';
 
 import { proxify } from './proxify';
@@ -116,6 +118,7 @@ export const PbxEvents = proxify<IPbxEventsModel>('IPbxEventsModel');
 export const PushToken = proxify<IPushTokenModel>('IPushTokenModel');
 export const Permissions = proxify<IPermissionsModel>('IPermissionsModel');
 export const ReadReceipts = proxify<IReadReceiptsModel>('IReadReceiptsModel');
+export const MessageReads = proxify<IMessageReadsModel>('IMessageReadsModel');
 export const Reports = proxify<IReportsModel>('IReportsModel');
 export const Roles = proxify<IRolesModel>('IRolesModel');
 export const Rooms = proxify<IRoomsModel>('IRoomsModel');
@@ -136,3 +139,6 @@ export const VoipRoom = proxify<IVoipRoomModel>('IVoipRoomModel');
 export const WebdavAccounts = proxify<IWebdavAccountsModel>('IWebdavAccountsModel');
 export const MatrixBridgedRoom = proxify<IMatrixBridgedRoomModel>('IMatrixBridgedRoomModel');
 export const MatrixBridgedUser = proxify<IMatrixBridgedUserModel>('IMatrixBridgedUserModel');
+export const OmnichannelServiceLevelAgreements = proxify<IOmnichannelServiceLevelAgreementsModel>(
+	'IOmnichannelServiceLevelAgreementsModel',
+);

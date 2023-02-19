@@ -1,8 +1,8 @@
 import type { Page } from '@playwright/test';
 
-import { expect, test } from './utils/test';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
+import { expect, test } from './utils/test';
 
 test.use({ storageState: 'admin-session.json' });
 
@@ -84,7 +84,7 @@ test.describe.serial('message-actions', () => {
 		await page.locator('[data-qa-id="permalink"]').click();
 	});
 
-	test.describe('Preference Hide Right Sidebar with Click Enabled', () => {
+	test.describe('Preference Hide Contextual Bar by clicking outside of it Enabled', () => {
 		let adminPage: Page;
 
 		test.beforeAll(async ({ browser }) => {
@@ -92,7 +92,7 @@ test.describe.serial('message-actions', () => {
 
 			await adminPage.goto('/account/preferences');
 			await adminPage.locator('role=heading[name="Messages"]').click();
-			await adminPage.locator('text="Hide Right Sidebar with Click"').click();
+			await adminPage.locator('text="Hide Contextual Bar by clicking outside of it"').click();
 		});
 
 		test.afterAll(async ({ browser }) => {
@@ -100,7 +100,7 @@ test.describe.serial('message-actions', () => {
 
 			await adminPage.goto('/account/preferences');
 			await adminPage.locator('role=heading[name="Messages"]').click();
-			await adminPage.locator('text="Hide Right Sidebar with Click"').click();
+			await adminPage.locator('text="Hide Contextual Bar by clicking outside of it"').click();
 			await adminPage.close();
 		});
 

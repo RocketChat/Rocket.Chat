@@ -6,7 +6,7 @@ import { RateLimiter } from '../../../lib/server';
 import { settings } from '../../../settings/server';
 import { canAccessRoomId } from '../../../authorization/server';
 import { follow } from '../functions';
-import { Apps, AppEvents } from '../../../apps/server/orchestrator';
+import { Apps, AppEvents } from '../../../../ee/server/apps/orchestrator';
 
 Meteor.methods({
 	followMessage({ mid }) {

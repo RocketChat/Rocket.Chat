@@ -9,7 +9,6 @@ Meteor.startup(() => {
 			return;
 		}
 		c.stop();
-		import('./startup/messageBoxActions');
 		import('./startup/sync');
 		import('./actionButton');
 	});
