@@ -1,8 +1,8 @@
 import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocketchat:streamer';
 import type { ISubscription, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
+import { Authorization, VideoConf } from '@rocket.chat/core-services';
 
-import { Authorization, VideoConf } from '../../sdk';
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { SystemLogger } from '../../lib/logger/system';
 import { streamDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';

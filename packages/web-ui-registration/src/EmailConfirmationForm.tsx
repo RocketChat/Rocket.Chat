@@ -2,7 +2,6 @@ import { FieldGroup, TextInput, Field, ButtonGroup, Button, Callout } from '@roc
 import { Form, ActionLink } from '@rocket.chat/layout';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useLoginSendEmailConfirmation } from './hooks/useLoginSendEmailConfirmation';

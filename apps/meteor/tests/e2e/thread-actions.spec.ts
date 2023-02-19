@@ -1,6 +1,6 @@
-import { expect, test } from './utils/test';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
+import { expect, test } from './utils/test';
 
 test.use({ storageState: 'admin-session.json' });
 
@@ -58,7 +58,7 @@ test.describe.serial('message-actions', () => {
 		await page.locator('[name="msg"]').last().fill('this is a quote message');
 		await page.keyboard.press('Enter');
 
-		await expect(poHomeChannel.content.waitForLastThreadMessageTextAttachmentEqualsText).toContainText('this is a message for reply');
+		await expect(poHomeChannel.content.lastThreadMessageTextAttachmentEqualsText).toContainText('this is a message for reply');
 	});
 
 	test('expect star the thread message', async ({ page }) => {
@@ -80,6 +80,7 @@ test.describe.serial('message-actions', () => {
 		await expect(page).toHaveURL(/.*thread/);
 
 		await expect(page.locator('//main//aside >> [data-qa-type="message"]')).toBeVisible();
+		await expect(page.locator('[name="msg"]').last()).toBeFocused();
 		await page.keyboard.press('Escape');
 
 		await expect(page).not.toHaveURL(/.*thread/);

@@ -15,7 +15,10 @@ export const USER_ACTIVITIES = {
 	USER_RECORDING: 'user-recording',
 	USER_TYPING: 'user-typing',
 	USER_UPLOADING: 'user-uploading',
+	USER_PLAYING: 'user-playing',
 };
+
+export type USER_ACTIVITIES_TYPES = 'user-recording' | 'user-typing' | 'user-uploading' | 'user-playing';
 
 const activityTimeouts = new Map();
 const activityRenews = new Map();

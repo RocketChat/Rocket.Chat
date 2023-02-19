@@ -1,8 +1,12 @@
 import type {
 	AtLeast,
 	ICreatedRoom,
+	IInstanceStatus,
 	IMessage,
+	IPermission,
 	IRoom,
+	IMessageSearchProvider,
+	IMessageSearchSuggestion,
 	ISetting,
 	ISubscription,
 	ISupportedLanguage,
@@ -39,18 +43,14 @@ export interface ServerMethods {
 	'2fa:enable': (...args: any[]) => any;
 	'2fa:regenerateCodes': (...args: any[]) => any;
 	'2fa:validateTempToken': (...args: any[]) => any;
-	'addOAuthApp': (...args: any[]) => any;
 	'addOAuthService': (...args: any[]) => any;
 	'addUsersToRoom': (...args: any[]) => any;
 	'addWebdavAccount': AddWebdavAccount;
-	'apps/go-enable': (...args: any[]) => any;
-	'apps/is-enabled': (...args: any[]) => any;
 	'authorization:addPermissionToRole': (...args: any[]) => any;
 	'authorization:addUserToRole': (...args: any[]) => any;
 	'authorization:deleteRole': (...args: any[]) => any;
 	'authorization:removeRoleFromPermission': (...args: any[]) => any;
 	'authorization:removeUserFromRole': (...args: any[]) => any;
-	'authorization:saveRole': (...args: any[]) => any;
 	'bbbEnd': (...args: any[]) => any;
 	'bbbJoin': (...args: any[]) => any;
 	'blockUser': (...args: any[]) => any;
@@ -67,6 +67,7 @@ export interface ServerMethods {
 	};
 	'cloud:checkUserLoggedIn': (...args: any[]) => any;
 	'cloud:connectWorkspace': (...args: any[]) => any;
+	'cloud:reconnectWorkspace': (...args: any[]) => any;
 	'cloud:disconnectWorkspace': (...args: any[]) => any;
 	'cloud:finishOAuthAuthorization': (...args: any[]) => any;
 	'cloud:getOAuthAuthorizationUrl': (...args: any[]) => any;
@@ -79,7 +80,6 @@ export interface ServerMethods {
 	'deleteCustomUserStatus': (...args: any[]) => any;
 	'deleteFileMessage': (...args: any[]) => any;
 	'deleteMessage': ({ _id }: Pick<IMessage, '_id'>) => void;
-	'deleteOAuthApp': (...args: any[]) => any;
 	'deleteUserOwnAccount': (...args: any[]) => any;
 	'e2e.resetOwnE2EKey': (...args: any[]) => any;
 	'eraseRoom': (...args: any[]) => any;
@@ -144,14 +144,14 @@ export interface ServerMethods {
 	'ignoreUser': (...args: any[]) => any;
 	'insertOrUpdateSound': (args: { previousName?: string; name?: string; _id?: string; extension: string }) => string;
 	'insertOrUpdateUserStatus': (...args: any[]) => any;
-	'instances/get': (...args: any[]) => any;
+	'instances/get': () => IInstanceStatus[];
 	'joinRoom': JoinRoomMethod;
 	'leaveRoom': (...args: any[]) => any;
 	'loadHistory': (
 		rid: IRoom['_id'],
 		ts?: Date,
 		limit?: number,
-		ls?: number,
+		ls?: string,
 		showThreadMessages?: boolean,
 	) => {
 		messages: IMessage[];
@@ -169,11 +169,13 @@ export interface ServerMethods {
 	'loadSurroundingMessages': (
 		message: Pick<IMessage, '_id' | 'rid'> & { ts?: Date },
 		limit?: number,
-	) => {
-		messages: IMessage[];
-		moreBefore: boolean;
-		moreAfter: boolean;
-	};
+	) =>
+		| {
+				messages: IMessage[];
+				moreBefore: boolean;
+				moreAfter: boolean;
+		  }
+		| false;
 	'logoutCleanUp': (user: IUser) => void;
 	'Mailer.sendMail': (from: string, subject: string, body: string, dryrun: boolean, query: string) => any;
 	'muteUserInRoom': (...args: any[]) => any;
@@ -183,6 +185,7 @@ export interface ServerMethods {
 	'personalAccessTokens:removeToken': (...args: any[]) => any;
 	'e2e.requestSubscriptionKeys': (...args: any[]) => any;
 	'readMessages': (...args: any[]) => any;
+	'readThreads': (tmid: IMessage['_id']) => void;
 	'refreshClients': (...args: any[]) => any;
 	'refreshOAuthService': (...args: any[]) => any;
 	'registerUser': (...args: any[]) => any;
@@ -200,7 +203,6 @@ export interface ServerMethods {
 	'saveUserPreferences': SaveUserPreferencesMethod;
 	'saveUserProfile': (...args: any[]) => any;
 	'sendConfirmationEmail': (...args: any[]) => any;
-	'sendInvitationEmail': (...args: any[]) => any;
 	'sendMessage': (message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>) => any;
 	'setAdminStatus': (...args: any[]) => any;
 	'setAsset': (...args: any[]) => any;
@@ -218,7 +220,6 @@ export interface ServerMethods {
 	'unsetAsset': (...args: any[]) => any;
 	'updateIncomingIntegration': (...args: any[]) => any;
 	'updateMessage': (message: Pick<IMessage, '_id'> & Partial<Omit<IMessage, '_id'>>) => void;
-	'updateOAuthApp': (...args: any[]) => any;
 	'updateOutgoingIntegration': (...args: any[]) => any;
 	'uploadCustomSound': (...args: any[]) => any;
 	'uploadFileToWebdav': UploadFileToWebdav;
@@ -237,8 +238,9 @@ export interface ServerMethods {
 			| string
 			| string[]
 			| {
-					users: boolean;
-					rooms: boolean;
+					users?: boolean;
+					rooms?: boolean;
+					mentions?: boolean;
 			  }
 		)[]
 	) => {
@@ -250,12 +252,35 @@ export interface ServerMethods {
 			username: string;
 			outside: boolean;
 			avatarETag?: string;
+			nickname?: string;
 		}[];
 	};
 	'getPasswordPolicy': (params?: { token: string }) => {
 		enabled: boolean;
 		policy: [name: TranslationKey, options?: Record<string, unknown>][];
 	};
+	'rooms/get': (updatedSince?: Date) => IRoom[] | { update: IRoom[]; remove: IRoom[] };
+	'subscriptions/get': (updatedSince?: Date) => ISubscription[] | { update: ISubscription[]; remove: ISubscription[] };
+	'permissions/get': (updatedSince?: Date) => IPermission[] | { update: IPermission[]; remove: IPermission[] };
+	'public-settings/get': (updatedSince?: Date) => ISetting[] | { update: ISetting[]; remove: ISetting[] };
+	'private-settings/get': (updatedSince?: Date) => ISetting[] | { update: ISetting[]; remove: ISetting[] };
+	'pinMessage': (message: IMessage) => void;
+	'unpinMessage': (message: IMessage) => void;
+	'rocketchatSearch.getProvider': () => IMessageSearchProvider | undefined;
+	'rocketchatSearch.search': (
+		text: string,
+		context: { uid?: IUser['_id']; rid: IRoom['_id'] },
+		payload: unknown,
+	) => {
+		message: {
+			docs: IMessage[];
+		};
+	};
+	'rocketchatSearch.suggest': (
+		text: string,
+		context: { uid?: IUser['_id']; rid: IRoom['_id'] },
+		payload: unknown,
+	) => IMessageSearchSuggestion[];
 }
 
 export type ServerMethodName = keyof ServerMethods;

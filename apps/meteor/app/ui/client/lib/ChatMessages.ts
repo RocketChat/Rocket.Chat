@@ -1,12 +1,11 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { UIEvent } from 'react';
 
-import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
 import {
 	setHighlightMessage,
 	clearHighlightMessage,
 } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
 import type { ChatAPI, ComposerAPI, DataAPI, UploadsAPI } from '../../../../client/lib/chats/ChatAPI';
-import { createDataAPI } from '../../../../client/lib/chats/data';
 import { uploadFiles } from '../../../../client/lib/chats/flows/uploadFiles';
 import { processSlashCommand } from '../../../../client/lib/chats/flows/processSlashCommand';
 import { requestMessageDeletion } from '../../../../client/lib/chats/flows/requestMessageDeletion';
@@ -14,8 +13,37 @@ import { processMessageEditing } from '../../../../client/lib/chats/flows/proces
 import { processTooLongMessage } from '../../../../client/lib/chats/flows/processTooLongMessage';
 import { processSetReaction } from '../../../../client/lib/chats/flows/processSetReaction';
 import { sendMessage } from '../../../../client/lib/chats/flows/sendMessage';
+import { UserAction } from '..';
+import { replyBroadcast } from '../../../../client/lib/chats/flows/replyBroadcast';
+import { createDataAPI } from '../../../../client/lib/chats/data';
+import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
+
+type DeepWritable<T> = T extends (...args: any) => any
+	? T
+	: {
+			-readonly [P in keyof T]: DeepWritable<T[P]>;
+	  };
 
 export class ChatMessages implements ChatAPI {
+	public composer: ComposerAPI | undefined;
+
+	public setComposerAPI = (composer: ComposerAPI): void => {
+		this.composer?.release();
+		this.composer = composer;
+	};
+
+	public data: DataAPI;
+
+	public uploads: UploadsAPI;
+
+	public userCard: { open(username: string): (event: UIEvent) => void; close(): void };
+
+	public action: {
+		start(action: 'typing'): void;
+		stop(action: 'typing' | 'recording' | 'uploading' | 'playing'): void;
+		performContinuously(action: 'recording' | 'uploading' | 'playing'): void;
+	};
+
 	private currentEditingMID?: string;
 
 	public messageEditing: ChatAPI['messageEditing'] = {
@@ -61,8 +89,7 @@ export class ChatMessages implements ChatAPI {
 			await this.currentEditing.cancel();
 		},
 		editMessage: async (message: IMessage, { cursorAtStart = false }: { cursorAtStart?: boolean } = {}) => {
-			const text = (await this.data.getDraft(message._id)) || message.attachments?.[0].description || message.msg;
-			const cursorPosition = cursorAtStart ? 0 : text.length;
+			const text = (await this.data.getDraft(message._id)) || message.attachments?.[0]?.description || message.msg;
 
 			await this.currentEditing?.stop();
 
@@ -72,24 +99,48 @@ export class ChatMessages implements ChatAPI {
 
 			this.currentEditingMID = message._id;
 			setHighlightMessage(message._id);
-			this.composer?.setEditingMode(true);
+			this.composer.setEditingMode(true);
 
-			this.composer.setText(text, { selection: { start: cursorPosition, end: cursorPosition } });
-			this.composer?.focus();
+			this.composer.setText(text);
+			cursorAtStart && this.composer.setCursorToStart();
+			!cursorAtStart && this.composer.setCursorToEnd();
+			this.composer.focus();
 		},
 	};
 
-	public composer: ComposerAPI | undefined;
+	public flows: DeepWritable<ChatAPI['flows']>;
 
-	public readonly data: DataAPI;
+	public constructor(
+		private params: {
+			rid: IRoom['_id'];
+			tmid?: IMessage['_id'];
+		},
+	) {
+		const { rid, tmid } = params;
+		this.data = createDataAPI({ rid, tmid });
+		this.uploads = createUploadsAPI({ rid, tmid });
 
-	public readonly uploads: UploadsAPI;
+		const unimplemented = () => {
+			throw new Error('Flow is not implemented');
+		};
 
-	public readonly flows: ChatAPI['flows'];
+		this.userCard = {
+			open: unimplemented,
+			close: unimplemented,
+		};
 
-	public constructor(private params: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
-		this.data = createDataAPI({ rid: params.rid, tmid: params.tmid });
-		this.uploads = createUploadsAPI({ rid: params.rid, tmid: params.tmid });
+		this.action = {
+			start: async (action: 'typing') => {
+				UserAction.start(params.rid, `user-${action}`, { tmid: params.tmid });
+			},
+			performContinuously: async (action: 'recording' | 'uploading' | 'playing') => {
+				UserAction.performContinuously(params.rid, `user-${action}`, { tmid: params.tmid });
+			},
+			stop: async (action: 'typing' | 'recording' | 'uploading' | 'playing') => {
+				UserAction.stop(params.rid, `user-${action}`, { tmid: params.tmid });
+			},
+		};
+
 		this.flows = {
 			uploadFiles: uploadFiles.bind(null, this),
 			sendMessage: sendMessage.bind(this, this),
@@ -98,12 +149,8 @@ export class ChatMessages implements ChatAPI {
 			processMessageEditing: processMessageEditing.bind(null, this),
 			processSetReaction: processSetReaction.bind(null, this),
 			requestMessageDeletion: requestMessageDeletion.bind(this, this),
+			replyBroadcast: replyBroadcast.bind(null, this),
 		};
-	}
-
-	public setComposerAPI(composer: ComposerAPI): void {
-		this.composer?.release();
-		this.composer = composer;
 	}
 
 	public get currentEditing() {
@@ -156,44 +203,12 @@ export class ChatMessages implements ChatAPI {
 		};
 	}
 
-	private async release() {
-		this.composer?.release();
+	public async release() {
 		if (this.currentEditing) {
 			if (!this.params.tmid) {
 				await this.currentEditing.cancel();
 			}
 			this.composer?.clear();
-		}
-	}
-
-	private static refs = new Map<string, { instance: ChatMessages; count: number }>();
-
-	private static getID({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }): string {
-		return `${rid}${tmid ? `-${tmid}` : ''}`;
-	}
-
-	public static hold({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
-		const id = this.getID({ rid, tmid });
-
-		const ref = this.refs.get(id) ?? { instance: new ChatMessages({ rid, tmid }), count: 0 };
-		ref.count++;
-		this.refs.set(id, ref);
-
-		return ref.instance;
-	}
-
-	public static release({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
-		const id = this.getID({ rid, tmid });
-
-		const ref = this.refs.get(id);
-		if (!ref) {
-			return;
-		}
-
-		ref.count--;
-		if (ref.count === 0) {
-			this.refs.delete(id);
-			ref.instance.release();
 		}
 	}
 }

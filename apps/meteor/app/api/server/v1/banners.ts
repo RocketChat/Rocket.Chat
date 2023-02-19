@@ -1,8 +1,8 @@
 import { Match, check } from 'meteor/check';
 import { BannerPlatform } from '@rocket.chat/core-typings';
+import { Banner } from '@rocket.chat/core-services';
 
 import { API } from '../api';
-import { Banner } from '../../../../server/sdk';
 
 /**
  * @deprecated

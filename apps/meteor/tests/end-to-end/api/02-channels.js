@@ -3,11 +3,10 @@ import { expect } from 'chai';
 import { getCredentials, api, request, credentials, apiPublicChannelName, channel, reservedWords } from '../../data/api-data.js';
 import { adminUsername, password } from '../../data/user.js';
 import { createUser, login } from '../../data/users.helper';
-import { imgURL } from '../../data/interactions.js';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
-import { createVisitor } from '../../data/livechat/rooms';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
+import { testFileUploads } from '../../data/uploads.helper';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve /* , reject*/) => {
@@ -63,6 +62,21 @@ describe('[Channels]', function () {
 				.expect(200)
 				.expect((res) => {
 					testChannel = res.body.channel;
+				})
+				.end(done);
+		});
+		it('should fail to create the same channel twice', (done) => {
+			request
+				.post(api('channels.create'))
+				.set(credentials)
+				.send({
+					name: apiPublicChannelName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.contain('error-duplicate-channel-name');
 				})
 				.end(done);
 		});
@@ -303,150 +317,8 @@ describe('[Channels]', function () {
 		});
 	});
 
-	describe('[/channels.files]', () => {
-		before(() => updateSetting('VoIP_Enabled', true));
-		const createVoipRoom = async () => {
-			const testUser = await createUser({ roles: ['user', 'livechat-agent'] });
-			const testUserCredentials = await login(testUser.username, password);
-			const visitor = await createVisitor();
-			const roomResponse = await createRoom({
-				token: visitor.token,
-				type: 'v',
-				agentId: testUser._id,
-				credentials: testUserCredentials,
-			});
-			return roomResponse.body.room;
-		};
-		it('should fail if invalid channel', (done) => {
-			request
-				.get(api('channels.files'))
-				.set(credentials)
-				.query({
-					roomId: 'invalid',
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-room-not-found');
-				})
-				.end(done);
-		});
-
-		it('should fail for room type v', async () => {
-			const { _id } = await createVoipRoom();
-			request
-				.get(api('channels.files'))
-				.set(credentials)
-				.query({
-					roomId: _id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-room-not-found');
-				});
-		});
-
-		it('should succeed when searching by roomId', (done) => {
-			request
-				.get(api('channels.files'))
-				.set(credentials)
-				.query({
-					roomId: channel._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('files').and.to.be.an('array');
-				})
-				.end(done);
-		});
-
-		it('should succeed when searching by roomId even requested with count and offset params', (done) => {
-			request
-				.get(api('channels.files'))
-				.set(credentials)
-				.query({
-					roomId: channel._id,
-					count: 5,
-					offset: 0,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('files').and.to.be.an('array');
-				})
-				.end(done);
-		});
-
-		it('should succeed when searching by roomName', (done) => {
-			request
-				.get(api('channels.files'))
-				.set(credentials)
-				.query({
-					roomName: channel.name,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('files').and.to.be.an('array');
-				})
-				.end(done);
-		});
-
-		it('should succeed when searching by roomName even requested with count and offset params', (done) => {
-			request
-				.get(api('channels.files'))
-				.set(credentials)
-				.query({
-					roomName: channel.name,
-					count: 5,
-					offset: 0,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('files').and.to.be.an('array');
-				})
-				.end(done);
-		});
-
-		it('should not return thumbnails', async function () {
-			await request
-				.post(api(`rooms.upload/${channel._id}`))
-				.set(credentials)
-				.attach('file', imgURL)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-				});
-
-			await request
-				.get(api('channels.files'))
-				.set(credentials)
-				.query({
-					roomId: channel._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('files').and.to.be.an('array').with.lengthOf(1);
-
-					const { files } = res.body;
-
-					files.forEach((file) => {
-						expect(file).to.not.have.property('originalFileId');
-					});
-				});
-		});
+	describe('[/channels.files]', async function () {
+		await testFileUploads('channels.files', channel);
 	});
 
 	describe('[/channels.join]', () => {
@@ -664,6 +536,36 @@ describe('[Channels]', function () {
 			.end(done);
 	});
 
+	it('/channels.addModerator should fail with missing room Id', (done) => {
+		request
+			.post(api('channels.addModerator'))
+			.set(credentials)
+			.send({
+				userId: 'rocket.cat',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(400)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', false);
+			})
+			.end(done);
+	});
+
+	it('/channels.addModerator should fail with missing user Id', (done) => {
+		request
+			.post(api('channels.addModerator'))
+			.set(credentials)
+			.send({
+				roomId: channel._id,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(400)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', false);
+			})
+			.end(done);
+	});
+
 	it('/channels.removeModerator', (done) => {
 		request
 			.post(api('channels.removeModerator'))
@@ -676,6 +578,36 @@ describe('[Channels]', function () {
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
+			})
+			.end(done);
+	});
+
+	it('/channels.removeModerator should fail on invalid room id', (done) => {
+		request
+			.post(api('channels.removeModerator'))
+			.set(credentials)
+			.send({
+				userId: 'rocket.cat',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(400)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', false);
+			})
+			.end(done);
+	});
+
+	it('/channels.removeModerator should fail on invalid user id', (done) => {
+		request
+			.post(api('channels.removeModerator'))
+			.set(credentials)
+			.send({
+				roomId: channel._id,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(400)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', false);
 			})
 			.end(done);
 	});

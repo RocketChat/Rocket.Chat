@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import s from 'underscore.string';
 import { check } from 'meteor/check';
 import { CustomSounds } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-services';
 
 import { hasPermission } from '../../../authorization/server';
-import { api } from '../../../../server/sdk/api';
 import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
+import { trim } from '../../../../lib/utils/stringUtils';
 
 Meteor.methods({
 	async insertOrUpdateSound(soundData) {
@@ -13,7 +13,7 @@ Meteor.methods({
 			throw new Meteor.Error('not_authorized');
 		}
 
-		if (!s.trim(soundData.name)) {
+		if (!trim(soundData.name)) {
 			throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', {
 				method: 'insertOrUpdateSound',
 				field: 'Name',

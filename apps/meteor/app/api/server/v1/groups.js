@@ -1,7 +1,7 @@
-import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Integrations, Messages as MessagesRaw, Uploads, Rooms as RoomsRaw, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
+import { Team } from '@rocket.chat/core-services';
 
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { Subscriptions, Rooms, Messages, Users } from '../../../models/server';
@@ -14,7 +14,6 @@ import {
 } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
-import { Team } from '../../../../server/sdk';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 
@@ -277,7 +276,7 @@ API.v1.addRoute(
 				return API.v1.failure('Body param "name" is required');
 			}
 
-			if (this.bodyParams.members && !_.isArray(this.bodyParams.members)) {
+			if (this.bodyParams.members && !Array.isArray(this.bodyParams.members)) {
 				return API.v1.failure('Body param "members" must be an array if provided');
 			}
 

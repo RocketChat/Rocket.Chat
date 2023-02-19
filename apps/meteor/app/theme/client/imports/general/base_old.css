@@ -293,10 +293,6 @@
 	}
 }
 
-.rc-old .search-form {
-	position: relative;
-}
-
 .rc-old .-autocomplete-container {
 	top: auto;
 
@@ -422,10 +418,6 @@
 			flex-grow: 1;
 		}
 	}
-}
-
-.rc-old .oauth-panel .buttons-group .button:first-child {
-	flex-grow: 0;
 }
 
 .rc-old .arrow {
@@ -1055,106 +1047,18 @@
 	}
 }
 
-.rc-old .message-popup-position {
-	position: relative;
-
-	.message-popup {
-		display: flex;
-		flex-direction: column;
-
-		max-height: 20rem;
-		align-items: stretch;
-
-		.message-popup-items {
-			overflow-y: auto;
-
-			.popup-slash-command {
-				display: flex;
-				flex-flow: row wrap;
-
-				&-format {
-					flex-grow: 1;
-				}
-
-				&-description {
-					text-align: right;
-
-					font-style: italic;
-					flex-grow: 2;
-				}
-			}
-		}
-	}
-}
-
-.rc-old .message-popup-items.preview-items {
-	display: flex;
-	overflow-y: auto;
-}
-
 .rc-old .preview-items .popup-item {
-	padding: 5px;
+	margin: 2px;
 
-	line-height: unset;
-}
+	padding: 0;
 
-.rc-old .rc-message-box .reply-preview__wrap {
-	position: relative;
-}
+	cursor: pointer;
 
-.rc-old .rc-message-box .reply-preview {
-	position: relative;
+	user-select: none;
 
-	display: flex;
+	border: solid 1px transparent;
 
-	padding-top: 0.5rem;
-	padding-bottom: 0.5rem;
-
-	padding-left: 15px;
-
-	background-color: #ffffff;
-	align-items: center;
-	justify-content: space-between;
-
-	.message {
-		flex: 1;
-
-		padding: 0;
-
-		background-color: transparent;
-	}
-}
-
-.rc-old .rc-message-box .reply-preview:not(:last-child)::before {
-	position: absolute;
-	right: 15px;
-
-	bottom: 0;
-	left: 15px;
-
-	height: 2px;
-
-	content: '';
-
-	background: rgba(31, 35, 41, 0.08);
-}
-
-.rc-old .rc-message-box .reply-preview-with-popup {
-	border-top-left-radius: 0;
-	border-top-right-radius: 0;
-	border-bottom-left-radius: 5px;
-}
-
-.rc-old .reply-preview .cancel-reply {
-	padding: 10px;
-}
-
-.rc-message-box__icon.cancel-reply .rc-input__icon-svg--cross {
-	font-size: 1em;
-}
-
-.rc-old .message-popup.popup-with-reply-preview {
-	border-radius: 5px 5px 0 0;
+	line-height: initial;
 }
 
 .rc-old .message-popup {
@@ -1168,68 +1072,6 @@
 
 	border-radius: 5px;
 	box-shadow: 0 -1px 10px 0 rgba(0, 0, 0, 0.2), 0 1px 1px rgba(0, 0, 0, 0.16);
-}
-
-.rc-old .message-popup-title {
-	padding: 0 20px;
-
-	border-width: 0 0 1px;
-
-	font-size: 14px;
-	font-weight: 300;
-	line-height: 32px;
-}
-
-.rc-old .popup-item {
-	padding: 0 20px;
-
-	cursor: pointer;
-	user-select: none;
-
-	line-height: 32px;
-}
-
-.rc-old .popup-user-avatar {
-	display: inline-block;
-
-	width: 24px;
-	height: 24px;
-	margin: -7px 4px;
-
-	border-radius: 3px;
-	background-size: contain;
-}
-
-.rc-old .popup-user-not_in_channel {
-	overflow: hidden;
-
-	white-space: nowrap;
-	text-overflow: ellipsis;
-}
-
-.rc-old .popup-user {
-	display: flex;
-	align-items: center;
-
-	&-avatar_wrap,
-	&-name {
-		margin-right: 4px;
-		flex-shrink: 0;
-	}
-}
-
-.rc-old .popup-user-notice {
-	min-width: 0;
-	margin-left: auto;
-}
-
-.rc-old .popup-user-status {
-	display: inline-block;
-
-	width: 10px;
-	height: 10px;
-
-	border-radius: 10px;
 }
 
 .messages-box {
@@ -1812,62 +1654,6 @@
 	flex-grow: 1;
 }
 
-.rc-old .list-view {
-	& .list {
-		position: relative;
-
-		display: flex;
-
-		width: 100%;
-		flex-flow: column nowrap;
-
-		& .message {
-			padding: 8px 0 4px 50px;
-		}
-	}
-
-	& > .title {
-		&:not(:last-child) {
-			margin: 0 0 20px;
-		}
-
-		& h2 {
-			font-size: 20px;
-			font-weight: 300;
-			line-height: 25px;
-		}
-
-		& p {
-			margin-top: 4px;
-
-			font-size: 12px;
-		}
-
-		& b {
-			font-weight: 600;
-		}
-
-		& .see-all {
-			float: right;
-
-			cursor: pointer;
-			text-decoration: underline;
-
-			border-width: 0;
-
-			&:hover {
-				text-decoration: none;
-			}
-		}
-	}
-
-	& .show-more-users {
-		display: block;
-
-		margin: 1em auto 0;
-	}
-}
-
 .rc-old #login-card {
 	position: relative;
 	z-index: 1;
@@ -2218,46 +2004,6 @@
 
 	border-radius: 15px;
 	background-color: var(--selection-background);
-}
-
-.rc-old .dropzone {
-	& .dropzone-overlay {
-		position: absolute;
-		z-index: 1000000;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		left: 0;
-
-		display: none;
-
-		animation-name: zoomIn;
-		animation-duration: 0.1s;
-
-		text-align: center;
-
-		background: rgba(255, 255, 255, 0.8);
-
-		font-size: 42px;
-		align-items: center;
-		justify-content: center;
-
-		&--enabled {
-			color: var(--color-blue);
-
-			border: 4px dashed var(--color-blue);
-		}
-
-		&--disabled {
-			color: var(--color-red);
-
-			border: 4px dashed var(--color-red);
-		}
-	}
-
-	&.over .dropzone-overlay {
-		display: flex;
-	}
 }
 
 @keyframes zoomIn {

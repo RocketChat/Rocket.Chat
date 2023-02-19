@@ -6,10 +6,10 @@ import { Livechat } from 'meteor/rocketchat:livechat';
 import Fiber from 'fibers';
 import Future from 'fibers/future';
 import _ from 'underscore';
-import s from 'underscore.string';
 import moment from 'moment';
 import { Integrations } from '@rocket.chat/models';
 
+import * as s from '../../../../lib/utils/stringUtils';
 import { incomingLogger } from '../logger';
 import { processWebhookMessage } from '../../../lib/server';
 import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';

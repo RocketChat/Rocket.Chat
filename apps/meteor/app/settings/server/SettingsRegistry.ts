@@ -200,7 +200,7 @@ export class SettingsRegistry {
 	/*
 	 * Add a setting group
 	 */
-	async addGroup(_id: string, cb: addGroupCallback): Promise<void>;
+	async addGroup(_id: string, cb?: addGroupCallback): Promise<void>;
 
 	// eslint-disable-next-line no-dupe-class-members
 	async addGroup(_id: string, groupOptions: ISettingAddGroupOptions | addGroupCallback = {}, cb?: addGroupCallback): Promise<void> {

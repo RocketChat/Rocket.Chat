@@ -1,11 +1,11 @@
 // Kick is a named function that will replace /kick commands
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { api } from '@rocket.chat/core-services';
 
-import { Users, Subscriptions } from '../../models/server';
+import { Users } from '../../models/server';
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
-import { api } from '../../../server/sdk/api';
 
 slashCommands.add({
 	command: 'kick',
@@ -31,19 +31,6 @@ slashCommands.add({
 			return;
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(item.rid, userId, {
-			fields: { _id: 1 },
-		});
-		if (!subscription) {
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Username_is_not_in_this_room', {
-					postProcess: 'sprintf',
-					sprintf: [username],
-					lng,
-				}),
-			});
-			return;
-		}
 		const { rid } = item;
 		Meteor.call('removeUserFromRoom', { rid, username });
 	},

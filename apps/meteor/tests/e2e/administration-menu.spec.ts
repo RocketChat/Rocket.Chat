@@ -1,6 +1,6 @@
-import { test, expect } from './utils/test';
-import { HomeDiscussion } from './page-objects';
 import { IS_EE } from './config/constants';
+import { HomeDiscussion } from './page-objects';
+import { test, expect } from './utils/test';
 
 test.use({ storageState: 'admin-session.json' });
 
@@ -30,18 +30,6 @@ test.describe.serial('administration-menu', () => {
 		await poHomeDiscussion.sidenav.openAdministrationByLabel('Omnichannel');
 
 		await expect(page).toHaveURL('omnichannel/current');
-	});
-
-	test('expect open app marketplace page', async ({ page }) => {
-		await poHomeDiscussion.sidenav.openAdministrationByLabel('Marketplace');
-
-		await expect(page).toHaveURL('admin/marketplace/all/list');
-	});
-
-	test('expect open app installed page', async ({ page }) => {
-		await poHomeDiscussion.sidenav.openAdministrationByLabel('Installed');
-
-		await expect(page).toHaveURL('admin/marketplace/installed/list');
 	});
 
 	test.describe('user', () => {

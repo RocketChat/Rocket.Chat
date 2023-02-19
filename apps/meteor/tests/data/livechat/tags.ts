@@ -1,7 +1,7 @@
 import faker from '@faker-js/faker';
-import { ILivechatTag } from '@rocket.chat/core-typings';
+import type { ILivechatTag } from '@rocket.chat/core-typings';
 import { credentials, methodCall, request } from '../api-data';
-import { DummyResponse } from './utils';
+import type { DummyResponse } from './utils';
 
 export const saveTags = (): Promise<ILivechatTag> => {
     return new Promise((resolve, reject) => {

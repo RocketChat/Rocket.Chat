@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { api } from '@rocket.chat/core-services';
 
 import MentionsServer from './Mentions';
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { Users, Subscriptions, Rooms } from '../../models/server';
-import { api } from '../../../server/sdk/api';
 
 export class MentionQueries {
 	getUsers(usernames) {
@@ -28,7 +28,20 @@ export class MentionQueries {
 	}
 
 	getChannels(channels) {
-		return Rooms.find({ name: { $in: [...new Set(channels)] }, t: { $in: ['c', 'p'] } }, { fields: { _id: 1, name: 1 } }).fetch();
+		return Rooms.find(
+			{
+				$and: [
+					{
+						$or: [
+							{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name: { $in: [...new Set(channels)] } }] },
+							{ federated: true, fname: { $in: [...new Set(channels)] } },
+						],
+					},
+				],
+				t: { $in: ['c', 'p'] },
+			},
+			{ fields: { _id: 1, name: 1, fname: 1, federated: 1 } },
+		).fetch();
 	}
 }
 

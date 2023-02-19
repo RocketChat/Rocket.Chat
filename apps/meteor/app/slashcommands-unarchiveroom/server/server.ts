@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { api } from '@rocket.chat/core-services';
 
 import { Rooms, Messages } from '../../models/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
-import { api } from '../../../server/sdk/api';
 import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 
@@ -36,7 +36,7 @@ slashCommands.add({
 		}
 
 		// You can not archive direct messages.
-		if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.ARCHIVE)) {
+		if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.ARCHIVE, userId)) {
 			return;
 		}
 

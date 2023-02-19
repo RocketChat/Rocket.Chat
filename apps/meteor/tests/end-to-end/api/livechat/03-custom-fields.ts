@@ -1,6 +1,5 @@
 /* eslint-env mocha */
 
-import type { ILivechatCustomField } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
@@ -117,7 +116,7 @@ describe('LIVECHAT - custom fields', function () {
 				scope: 'visitor',
 				visibility: 'public',
 				regexp: '',
-			} as unknown as ILivechatCustomField & { field: string });
+			});
 
 			const { body } = await request
 				.post(api('livechat/custom.field'))
@@ -176,7 +175,7 @@ describe('LIVECHAT - custom fields', function () {
 				scope: 'visitor',
 				visibility: 'public',
 				regexp: '',
-			} as unknown as ILivechatCustomField & { field: string });
+			});
 
 			const { body } = await request
 				.post(api('livechat/custom.fields'))

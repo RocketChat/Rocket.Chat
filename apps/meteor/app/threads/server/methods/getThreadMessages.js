@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
+import { callbacks } from '../../../../lib/callbacks';
 import { Messages, Rooms } from '../../../models/server';
 import { canAccessRoom } from '../../../authorization/server';
 import { settings } from '../../../settings/server';
@@ -33,6 +34,11 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getThreadMessages' });
 		}
 
+		if (!thread.tcount) {
+			return [];
+		}
+
+		callbacks.run('beforeReadMessages', thread.rid, user._id);
 		readThread({ userId: user._id, rid: thread.rid, tmid });
 
 		const result = Messages.findVisibleThreadByThreadId(tmid, {
@@ -40,6 +46,7 @@ Meteor.methods({
 			...(limit && { limit }),
 			sort: { ts: -1 },
 		}).fetch();
+		callbacks.runAsync('afterReadMessages', room._id, { uid: user._id, tmid });
 
 		return [thread, ...result];
 	},
