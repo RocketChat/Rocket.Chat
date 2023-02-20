@@ -33,6 +33,9 @@ jobs:
       rc-docker-tag: '${{ steps.docker.outputs.gh-docker-tag }}.official'
       rc-dockerfile-alpine: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile.alpine'
       rc-docker-tag-alpine: '${{ steps.docker.outputs.gh-docker-tag }}.alpine'
+      # this is 100% intentional, secrets are not available for forks, so ee-tests will always fail
+      # to avoid this, we are using a dummy license, expiring at 2023-06-30
+      enterprise-license: Z2Dg0RC3kyxjuklSE6qfqyvD2xSD+oTYcS9OesJG0523r7rSPjv59LTQqPcp5E61qQYM3MOKoW3mDrurw4h78nVbsfrF2DoJZeNjRFQfIbgwcdPwtmnqPpDvAslszHY16VzM7O7EYqAqp/9mlnRzs1iJY+W3w1r6HWBlVMb9u41bl5HBSpX6Nxw8YxL4mizwOpjxewQbPQvNTLJNAW6w0nCzF5A3CKBhD9fziadedVMLOuXBuR8kIl8zbIAfqpHmL8SvakvQAbZEjWWQshmH+C9CKA5PppkmA8Q1DNWQoVtHSiYDK8RRjAEx+0oGflklzFyhJFDvD+ohZduNtNCgrJmxP5VFrVrLSK4BXgTSwwnaSKa2N+Qx0CmuRfu7nCPc1Cf6h6+k2TXvzkE4Z0ZJnDV1khu611glAr99bHdwF+bMX3XZI66bS8KqnHEukCt5xei25iKJ2xrfmGuiAkAuKHKzBmTEmXM0pGhkfDhA9jhxG3Atoj1A5y8vdrs88voF+UuNFZ6k9sKtdvrWIWClnkatPE+41ggbzCsOhFz07BvRWaEtw2Kenipl4Vtag4qmFpUaUfsuouH99M3gDlysDZO3x5aH8yfzvFeL5WDMvsmdEHNLpHl89WsPCONvx0JjRSdwcCA1NrRuVy1Ncu0S0bRByn7HZqoY9u6HPkXKBxQ=
     steps:
       - id: var
         run: |
@@ -377,7 +380,6 @@ jobs:
       - name: Start containers
         env:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
-          MONGO_OPLOG_URL: 'mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true'
         run: |
           docker compose -f docker-compose-ci.yml up -d --build rocketchat
 
@@ -490,7 +492,6 @@ jobs:
       - name: Start containers
         env:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
-          MONGO_OPLOG_URL: 'mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true'
         run: |
           docker compose -f docker-compose-ci.yml up -d --build rocketchat
 
@@ -542,6 +543,11 @@ jobs:
     needs: [build, lint, ts-typecheck, release-versions]
     env:
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
+      RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
+      RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
+      DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      ENTERPRISE_LICENSE: ${{ needs.release-versions.outputs.enterprise-license }}
+      TRANSPORTER: nats://nats:4222
 
     strategy:
       matrix:
@@ -586,13 +592,6 @@ jobs:
       - name: Start containers
         env:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
-          RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
-          RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
-          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
-          TRANSPORTER: nats://nats:4222
-          # this is 100% intentional, secrets are not available for forks, so ee-tests will always fail
-          # to avoid this, we are using a dummy license, expiring at 2023-06-30
-          ENTERPRISE_LICENSE: Z2Dg0RC3kyxjuklSE6qfqyvD2xSD+oTYcS9OesJG0523r7rSPjv59LTQqPcp5E61qQYM3MOKoW3mDrurw4h78nVbsfrF2DoJZeNjRFQfIbgwcdPwtmnqPpDvAslszHY16VzM7O7EYqAqp/9mlnRzs1iJY+W3w1r6HWBlVMb9u41bl5HBSpX6Nxw8YxL4mizwOpjxewQbPQvNTLJNAW6w0nCzF5A3CKBhD9fziadedVMLOuXBuR8kIl8zbIAfqpHmL8SvakvQAbZEjWWQshmH+C9CKA5PppkmA8Q1DNWQoVtHSiYDK8RRjAEx+0oGflklzFyhJFDvD+ohZduNtNCgrJmxP5VFrVrLSK4BXgTSwwnaSKa2N+Qx0CmuRfu7nCPc1Cf6h6+k2TXvzkE4Z0ZJnDV1khu611glAr99bHdwF+bMX3XZI66bS8KqnHEukCt5xei25iKJ2xrfmGuiAkAuKHKzBmTEmXM0pGhkfDhA9jhxG3Atoj1A5y8vdrs88voF+UuNFZ6k9sKtdvrWIWClnkatPE+41ggbzCsOhFz07BvRWaEtw2Kenipl4Vtag4qmFpUaUfsuouH99M3gDlysDZO3x5aH8yfzvFeL5WDMvsmdEHNLpHl89WsPCONvx0JjRSdwcCA1NrRuVy1Ncu0S0bRByn7HZqoY9u6HPkXKBxQ=
         run: |
           docker compose -f docker-compose-ci.yml up -d --build
 
@@ -606,9 +605,6 @@ jobs:
 
       - name: Publish Docker images to GitHub Container Registry
         if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'
-        env:
-          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
-          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
         run: |
           docker compose -f docker-compose-ci.yml push \
             authorization-service \
@@ -618,11 +614,6 @@ jobs:
             stream-hub-service
 
       - name: Wait services to start up
-        env:
-          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
-          RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
-          RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
-          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         run: |
           docker ps
 
@@ -639,11 +630,6 @@ jobs:
           done;
 
       - name: E2E Test API
-        env:
-          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
-          RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
-          RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
-          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         working-directory: ./apps/meteor
         run: |
           for i in $(seq 1 5); do
@@ -670,6 +656,13 @@ jobs:
   test-ee-ui:
     runs-on: ubuntu-20.04
     needs: [build, lint, ts-typecheck, release-versions]
+    env:
+      LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
+      RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
+      RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
+      DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      ENTERPRISE_LICENSE: ${{ needs.release-versions.outputs.enterprise-license }}
+      TRANSPORTER: nats://nats:4222
 
     strategy:
       matrix:
@@ -712,34 +705,13 @@ jobs:
           tar xzf Rocket.Chat.tar.gz
           rm Rocket.Chat.tar.gz
 
-      - name: Docker env vars
-        id: docker-env
-        run: |
-          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-
-          echo "LOWERCASE_REPOSITORY: ${LOWERCASE_REPOSITORY}"
-          echo "lowercase-repo=${LOWERCASE_REPOSITORY}" >> $GITHUB_OUTPUT
-
       - name: Start containers
         env:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
-          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
-          RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
-          RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
-          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
-          TRANSPORTER: nats://nats:4222
-          # this is 100% intentional, secrets are not available for forks, so ee-tests will always fail
-          # to avoid this, we are using a dummy license, expiring at 2023-06-30
-          ENTERPRISE_LICENSE: Z2Dg0RC3kyxjuklSE6qfqyvD2xSD+oTYcS9OesJG0523r7rSPjv59LTQqPcp5E61qQYM3MOKoW3mDrurw4h78nVbsfrF2DoJZeNjRFQfIbgwcdPwtmnqPpDvAslszHY16VzM7O7EYqAqp/9mlnRzs1iJY+W3w1r6HWBlVMb9u41bl5HBSpX6Nxw8YxL4mizwOpjxewQbPQvNTLJNAW6w0nCzF5A3CKBhD9fziadedVMLOuXBuR8kIl8zbIAfqpHmL8SvakvQAbZEjWWQshmH+C9CKA5PppkmA8Q1DNWQoVtHSiYDK8RRjAEx+0oGflklzFyhJFDvD+ohZduNtNCgrJmxP5VFrVrLSK4BXgTSwwnaSKa2N+Qx0CmuRfu7nCPc1Cf6h6+k2TXvzkE4Z0ZJnDV1khu611glAr99bHdwF+bMX3XZI66bS8KqnHEukCt5xei25iKJ2xrfmGuiAkAuKHKzBmTEmXM0pGhkfDhA9jhxG3Atoj1A5y8vdrs88voF+UuNFZ6k9sKtdvrWIWClnkatPE+41ggbzCsOhFz07BvRWaEtw2Kenipl4Vtag4qmFpUaUfsuouH99M3gDlysDZO3x5aH8yfzvFeL5WDMvsmdEHNLpHl89WsPCONvx0JjRSdwcCA1NrRuVy1Ncu0S0bRByn7HZqoY9u6HPkXKBxQ=
         run: |
           docker compose -f docker-compose-ci.yml up -d --build
 
       - name: Wait services to start up
-        env:
-          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
-          RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
-          RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
-          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         run: |
           docker ps
 
@@ -927,9 +899,7 @@ jobs:
       - name: Get Docker image name
         id: gh-docker
         run: |
-          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-
-          GH_IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}.${{ matrix.release }}"
+          GH_IMAGE_NAME="ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}.${{ matrix.release }}"
 
           echo "GH_IMAGE_NAME: $GH_IMAGE_NAME"
 
@@ -1004,9 +974,7 @@ jobs:
       - name: Get Docker image name
         id: gh-docker
         run: |
-          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-
-          GH_IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${{ matrix.service }}-service:${{ needs.release-versions.outputs.gh-docker-tag }}"
+          GH_IMAGE_NAME="ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/${{ matrix.service }}-service:${{ needs.release-versions.outputs.gh-docker-tag }}"
 
           echo "GH_IMAGE_NAME: $GH_IMAGE_NAME"
 
