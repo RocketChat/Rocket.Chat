@@ -37,7 +37,7 @@ jobs:
             RELEASE="release-candidate"
           fi
           echo "RELEASE: ${RELEASE}"
-          echo "::set-output name=release::${RELEASE}"
+          echo "release=${RELEASE}" >> $GITHUB_OUTPUT
 
       - id: latest
         run: |
@@ -46,7 +46,7 @@ jobs:
               awk -F/ '$NF !~ /rc|beta/ { print $NF; exit }'
           )"
           echo "LATEST_RELEASE: ${LATEST_RELEASE}"
-          echo "::set-output name=latest-release::${LATEST_RELEASE}"
+          echo "latest-release=${LATEST_RELEASE}" >> $GITHUB_OUTPUT
 
       - id: docker
         run: |
@@ -56,7 +56,7 @@ jobs:
             DOCKER_TAG="gh-${{ github.run_id }}"
           fi
           echo "DOCKER_TAG: ${DOCKER_TAG}"
-          echo "::set-output name=gh-docker-tag::${DOCKER_TAG}"
+          echo "gh-docker-tag=${DOCKER_TAG}" >> $GITHUB_OUTPUT
 
   build:
     runs-on: ubuntu-20.04
@@ -335,7 +335,7 @@ jobs:
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
           echo "LOWERCASE_REPOSITORY: ${LOWERCASE_REPOSITORY}"
-          echo "::set-output name=lowercase-repo::${LOWERCASE_REPOSITORY}"
+          echo "lowercase-repo=${LOWERCASE_REPOSITORY}" >> $GITHUB_OUTPUT
 
           # test alpine image on mongo 6.0 (no special reason to be mongo 6.0 but we need to test alpine at least once)
           if [[ '${{ matrix.mongodb-version }}' = '6.0' ]]; then
@@ -347,10 +347,10 @@ jobs:
           fi;
 
           echo "RC_DOCKERFILE: ${RC_DOCKERFILE}"
-          echo "::set-output name=rc-dockerfile::${RC_DOCKERFILE}"
+          echo "rc-dockerfile=${RC_DOCKERFILE}" >> $GITHUB_OUTPUT
 
           echo "RC_DOCKER_TAG: ${RC_DOCKER_TAG}"
-          echo "::set-output name=rc-docker-tag::${RC_DOCKER_TAG}"
+          echo "rc-docker-tag=${RC_DOCKER_TAG}" >> $GITHUB_OUTPUT
 
       - uses: actions/checkout@v3
 
@@ -485,7 +485,7 @@ jobs:
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
           echo "LOWERCASE_REPOSITORY: ${LOWERCASE_REPOSITORY}"
-          echo "::set-output name=lowercase-repo::${LOWERCASE_REPOSITORY}"
+          echo "lowercase-repo=${LOWERCASE_REPOSITORY}" >> $GITHUB_OUTPUT
 
           # test alpine image on mongo 6.0 (no special reason to be mongo 6.0 but we need to test alpine at least once)
           if [[ '${{ matrix.mongodb-version }}' = '6.0' ]]; then
@@ -497,10 +497,10 @@ jobs:
           fi;
 
           echo "RC_DOCKERFILE: ${RC_DOCKERFILE}"
-          echo "::set-output name=rc-dockerfile::${RC_DOCKERFILE}"
+          echo "rc-dockerfile=${RC_DOCKERFILE}" >> $GITHUB_OUTPUT
 
           echo "RC_DOCKER_TAG: ${RC_DOCKER_TAG}"
-          echo "::set-output name=rc-docker-tag::${RC_DOCKER_TAG}"
+          echo "rc-docker-tag=${RC_DOCKER_TAG}" >> $GITHUB_OUTPUT
 
       - uses: actions/checkout@v3
 
@@ -639,7 +639,7 @@ jobs:
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
           echo "LOWERCASE_REPOSITORY: ${LOWERCASE_REPOSITORY}"
-          echo "::set-output name=lowercase-repo::${LOWERCASE_REPOSITORY}"
+          echo "lowercase-repo=${LOWERCASE_REPOSITORY}" >> $GITHUB_OUTPUT
 
       - name: Start containers
         env:
@@ -777,7 +777,7 @@ jobs:
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
           echo "LOWERCASE_REPOSITORY: ${LOWERCASE_REPOSITORY}"
-          echo "::set-output name=lowercase-repo::${LOWERCASE_REPOSITORY}"
+          echo "lowercase-repo=${LOWERCASE_REPOSITORY}" >> $GITHUB_OUTPUT
 
       - name: Start containers
         env:
@@ -992,7 +992,7 @@ jobs:
 
           echo "GH_IMAGE_NAME: $GH_IMAGE_NAME"
 
-          echo "::set-output name=gh-image-name::${GH_IMAGE_NAME}"
+          echo "gh-image-name=${GH_IMAGE_NAME}" >> $GITHUB_OUTPUT
 
       - name: Pull Docker image
         run: docker pull ${{ steps.gh-docker.outputs.gh-image-name }}
@@ -1069,7 +1069,7 @@ jobs:
 
           echo "GH_IMAGE_NAME: $GH_IMAGE_NAME"
 
-          echo "::set-output name=gh-image-name::${GH_IMAGE_NAME}"
+          echo "gh-image-name=${GH_IMAGE_NAME}" >> $GITHUB_OUTPUT
 
       - name: Pull Docker image
         run: docker pull ${{ steps.gh-docker.outputs.gh-image-name }}
