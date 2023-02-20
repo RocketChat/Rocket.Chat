@@ -185,8 +185,12 @@ jobs:
           name: build
           path: /tmp/Rocket.Chat.tar.gz
 
-  ts-typecheck:
+  checks:
     runs-on: ubuntu-20.04
+
+    strategy:
+      matrix:
+        check: ['ts', 'lint']
 
     steps:
       - name: Set Swap Space
@@ -221,49 +225,16 @@ jobs:
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: TS typecheck
+        if: matrix.check == 'ts'
         run: yarn turbo run typecheck
 
-  lint:
-    runs-on: ubuntu-20.04
-
-    steps:
-      - name: Set Swap Space
-        uses: pierotofy/set-swap-space@master
-        with:
-          swap-size-gb: 4
-
-      - uses: actions/checkout@v3
-
-      - name: Use Node.js 14.21.2
-        uses: actions/setup-node@v3
-        with:
-          node-version: '14.21.2'
-          cache: 'yarn'
-
-      - name: Free disk space
-        run: |
-          sudo apt clean
-          docker rmi $(docker image ls -aq)
-          df -h
-
-      - name: Versions
-        run: |
-          npm --versions
-          yarn -v
-          node -v
-          git version
-
-      - name: yarn install
-        run: yarn
-
-      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
-
       - name: Lint
+        if: matrix.check == 'lint'
         run: yarn lint
 
   build-docker-preview:
     runs-on: ubuntu-20.04
-    needs: [build, lint, ts-typecheck, release-versions]
+    needs: [build, checks, release-versions]
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
     steps:
       - uses: actions/checkout@v3
@@ -298,7 +269,7 @@ jobs:
 
   test-unit:
     runs-on: ubuntu-20.04
-    needs: [build, lint, ts-typecheck, release-versions]
+    needs: [build, checks, release-versions]
 
     strategy:
       matrix:
@@ -330,7 +301,7 @@ jobs:
 
   test-api:
     runs-on: ubuntu-20.04
-    needs: [build, lint, ts-typecheck, release-versions]
+    needs: [build, checks, release-versions]
     env:
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
       RC_DOCKERFILE: ${{ matrix.mongodb-version == '6.0' && needs.release-versions.outputs.rc-dockerfile-alpine || needs.release-versions.outputs.rc-dockerfile }}
@@ -441,7 +412,7 @@ jobs:
 
   test-ui:
     runs-on: ubuntu-20.04
-    needs: [build, lint, ts-typecheck, release-versions]
+    needs: [build, checks, release-versions]
     env:
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
       RC_DOCKERFILE: ${{ matrix.mongodb-version == '6.0' && needs.release-versions.outputs.rc-dockerfile-alpine || needs.release-versions.outputs.rc-dockerfile }}
@@ -540,7 +511,7 @@ jobs:
 
   test-ee-api:
     runs-on: ubuntu-20.04
-    needs: [build, lint, ts-typecheck, release-versions]
+    needs: [build, checks, release-versions]
     env:
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
       RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
@@ -655,7 +626,7 @@ jobs:
 
   test-ee-ui:
     runs-on: ubuntu-20.04
-    needs: [build, lint, ts-typecheck, release-versions]
+    needs: [build, checks, release-versions]
     env:
       LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
       RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
