@@ -31,10 +31,10 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		selector?: string,
 	): AggregationCursor<MsgGroupedIReport> {
 		const query = {
-			'reports._hidden': {
+			_hidden: {
 				$ne: true,
 			},
-			'reports.ts': {
+			ts: {
 				$lt: latest,
 				$gt: oldest,
 			},
@@ -44,19 +44,19 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			? {
 					$or: [
 						{
-							'reports.message.msg': {
+							'message.msg': {
 								$regex: selector,
 								$options: 'i',
 							},
 						},
 						{
-							'reports.description': {
+							description: {
 								$regex: selector,
 								$options: 'i',
 							},
 						},
 						{
-							'reports.message.u.username': {
+							'message.u.username': {
 								$regex: selector,
 								$options: 'i',
 							},
@@ -66,9 +66,10 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			: {};
 
 		const params = [
+			{ $match: { ...query, ...cquery } },
 			{
 				$group: {
-					_id: { message: '$msg.message', user: '$message.u._id' },
+					_id: { user: '$message.u._id' },
 					reports: { $first: '$$ROOT' },
 					count: { $sum: 1 },
 					roomMessageMap: {
@@ -82,7 +83,6 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 					},
 				},
 			},
-			{ $match: { ...query, ...cquery } },
 			{
 				$sort: sort || {
 					ts: -1,
@@ -277,10 +277,10 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 
 	findReportsAfterDate(oldest: Date, offset = 0, count = 20, sort?: any, selector?: string): AggregationCursor<MsgGroupedIReport> {
 		const query = {
-			'reports._hidden': {
+			_hidden: {
 				$ne: true,
 			},
-			'reports.ts': {
+			ts: {
 				$gt: oldest,
 			},
 		};
@@ -289,19 +289,19 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			? {
 					$or: [
 						{
-							'reports.message.msg': {
+							'message.msg': {
 								$regex: selector,
 								$options: 'i',
 							},
 						},
 						{
-							'reports.description': {
+							description: {
 								$regex: selector,
 								$options: 'i',
 							},
 						},
 						{
-							'reports.message.u.username': {
+							'message.u.username': {
 								$regex: selector,
 								$options: 'i',
 							},
@@ -311,9 +311,10 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			: {};
 
 		const params = [
+			{ $match: { ...query, ...cquery } },
 			{
 				$group: {
-					_id: { message: '$message.msg', user: '$message.u._id' },
+					_id: { user: '$message.u._id' },
 					reports: { $first: '$$ROOT' },
 					count: { $sum: 1 },
 					roomMessageMap: {
@@ -327,7 +328,6 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 					},
 				},
 			},
-			{ $match: { ...query, ...cquery } },
 			{
 				$sort: sort || {
 					'reports.ts': -1,
@@ -346,10 +346,10 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 
 	findReportsBeforeDate(latest: Date, offset = 0, count = 20, sort?: any, selector?: string): AggregationCursor<MsgGroupedIReport> {
 		const query = {
-			'reports._hidden': {
+			_hidden: {
 				$ne: true,
 			},
-			'reports.ts': {
+			ts: {
 				$lt: latest,
 			},
 		};
@@ -358,19 +358,19 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			? {
 					$or: [
 						{
-							'reports.message.msg': {
+							'message.msg': {
 								$regex: selector,
 								$options: 'i',
 							},
 						},
 						{
-							'reports.description': {
+							description: {
 								$regex: selector,
 								$options: 'i',
 							},
 						},
 						{
-							'reports.message.u.username': {
+							'message.u.username': {
 								$regex: selector,
 								$options: 'i',
 							},
@@ -380,9 +380,10 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			: {};
 
 		const params = [
+			{ $match: { ...query, ...cquery } },
 			{
 				$group: {
-					_id: { message: '$message.msg', user: '$message.u._id' },
+					_id: { user: '$message.u._id' },
 					reports: { $first: '$$ROOT' },
 					count: { $sum: 1 },
 					roomMessageMap: {
@@ -396,7 +397,6 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 					},
 				},
 			},
-			{ $match: { ...query, ...cquery } },
 			{
 				$sort: sort || {
 					'reports.ts': -1,
@@ -473,11 +473,11 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 
 	async countGroupedReports(latest?: Date, oldest?: Date, selector?: string): Promise<number> {
 		const query = {
-			'reports._hidden': {
+			_hidden: {
 				$ne: true,
 			},
-			'reports.ts': {
-				$lt: latest || new Date(),
+			ts: {
+				$lt: latest,
 				$gt: oldest || new Date(0),
 			},
 		};
@@ -486,19 +486,19 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			? {
 					$or: [
 						{
-							'reports.message.msg': {
+							'message.msg': {
 								$regex: selector,
 								$options: 'i',
 							},
 						},
 						{
-							'reports.description': {
+							description: {
 								$regex: selector,
 								$options: 'i',
 							},
 						},
 						{
-							'reports.message.u.username': {
+							'message.u.username': {
 								$regex: selector,
 								$options: 'i',
 							},
@@ -508,13 +508,14 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			: {};
 
 		const params = [
+			{ $match: { ...query, ...cquery } },
+
 			{
 				$group: {
-					_id: { message: '$message.msg', user: '$message.u._id' },
+					_id: { user: '$message.u._id' },
 					reports: { $push: '$$ROOT' },
 				},
 			},
-			{ $match: { ...query, ...cquery } },
 			{
 				$count: 'total_count',
 			},
