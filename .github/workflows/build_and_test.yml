@@ -189,6 +189,7 @@ jobs:
     runs-on: ubuntu-20.04
 
     strategy:
+      fail-fast: false
       matrix:
         check: ['ts', 'lint']
 
@@ -309,6 +310,7 @@ jobs:
       DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
 
     strategy:
+      fail-fast: false
       matrix:
         node-version: ['14.21.2']
         mongodb-version: ['4.4', '6.0']
@@ -402,8 +404,8 @@ jobs:
         with:
           url: 'http://localhost:3000/health'
           responseCode: '200'
-          timeout: 10000
-          interval: 500
+          timeout: 600000
+          interval: 1000
 
       - name: E2E Test API
         if: matrix.type == 'api'
@@ -649,8 +651,8 @@ jobs:
         with:
           url: 'http://localhost:3000/health'
           responseCode: '200'
-          timeout: 10000
-          interval: 500
+          timeout: 600000
+          interval: 1000
 
       - name: E2E Test UI (${{ matrix.shard }}/4)
         working-directory: ./apps/meteor
