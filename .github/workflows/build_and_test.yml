@@ -315,11 +315,19 @@ jobs:
         node-version: ['14.21.2']
         mongodb-version: ['4.4', '6.0']
         type: ['ui', 'api']
+        shard: [1, 2, 3, 4]
+        total-shard: [4]
         include:
           - type: 'api'
             publish-container: true
-          - type: 'ui'
-            shard: [1, 2, 3, 4]
+        exclude:
+          - type: 'api'
+            shard: 2
+          - type: 'api'
+            shard: 3
+          - type: 'api'
+            shard: 4
+
 
     steps:
       - name: Launch MongoDB
@@ -432,10 +440,10 @@ jobs:
           done;
           exit $s
 
-      - name: E2E Test UI (${{ matrix.shard }}/4)
+      - name: E2E Test UI (${{ matrix.shard }}/${{ matrix.total-shard }})
         if: matrix.type == 'ui'
         working-directory: ./apps/meteor
-        run: yarn test:e2e --shard=${{ matrix.shard }}/4
+        run: yarn test:e2e --shard=${{ matrix.shard }}/${{ matrix.total-shard }}
 
       - name: Store playwright test trace
         if: matrix.type == 'ui' && always()
