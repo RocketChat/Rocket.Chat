@@ -1,4 +1,4 @@
-import type { IReport, MsgGroupedIReport } from '@rocket.chat/core-typings';
+import type { IReport, IModerationAudit } from '@rocket.chat/core-typings';
 
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { ArchiveReportProps } from './ArchiveReportProps';
@@ -8,7 +8,7 @@ export type ModerationEndpoints = {
 	// API endpoint to fetch the reported messages
 	'/v1/moderation.getReports': {
 		GET: (params: ReportHistoryProps) => PaginatedResult<{
-			reports: MsgGroupedIReport[];
+			reports: IModerationAudit[];
 			count: number;
 			offset: number;
 			total: number;
