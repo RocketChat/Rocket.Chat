@@ -1,4 +1,4 @@
-import type { IMessage, IReport, RocketChatRecordDeleted, MsgGroupedIReport } from '@rocket.chat/core-typings';
+import type { IMessage, IReport, RocketChatRecordDeleted, IModerationAudit } from '@rocket.chat/core-typings';
 import type { FindPaginated, IReportsModel } from '@rocket.chat/model-typings';
 import type { Db, Collection, FindCursor, UpdateResult, Document, AggregationCursor } from 'mongodb';
 
@@ -29,7 +29,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		count = 20,
 		sort?: any,
 		selector?: string,
-	): AggregationCursor<MsgGroupedIReport> {
+	): AggregationCursor<IModerationAudit> {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -71,21 +71,13 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 				$group: {
 					_id: { user: '$message.u._id' },
 					reports: { $first: '$$ROOT' },
+					roomIds: { $addToSet: '$message.rid' },
 					count: { $sum: 1 },
-					roomMessageMap: {
-						$addToSet: {
-							rid: '$message.rid',
-							msgId: '$message._id',
-						},
-					},
-					reportIds: {
-						$push: '$_id',
-					},
 				},
 			},
 			{
 				$sort: sort || {
-					ts: -1,
+					'reports.ts': -1,
 				},
 			},
 			{
@@ -93,6 +85,166 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			},
 			{
 				$limit: count,
+			},
+			{
+				$project: {
+					_id: 0,
+					reports: 0,
+					message: '$reports.message.msg',
+					ts: '$reports.ts',
+					userId: '$_id.user',
+					username: '$reports.message.u.username',
+					name: '$reports.message.u.name',
+					count: 1,
+					roomIds: 1,
+				},
+			},
+		];
+
+		return this.col.aggregate(params, { allowDiskUse: true });
+	}
+
+	findReportsAfterDate(oldest: Date, offset = 0, count = 20, sort?: any, selector?: string): AggregationCursor<IModerationAudit> {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+			ts: {
+				$gt: oldest,
+			},
+		};
+
+		const cquery = selector
+			? {
+					$or: [
+						{
+							'message.msg': {
+								$regex: selector,
+								$options: 'i',
+							},
+						},
+						{
+							description: {
+								$regex: selector,
+								$options: 'i',
+							},
+						},
+						{
+							'message.u.username': {
+								$regex: selector,
+								$options: 'i',
+							},
+						},
+					],
+			  }
+			: {};
+
+		const params = [
+			{ $match: { ...query, ...cquery } },
+			{
+				$group: {
+					_id: { userId: '$message.u._id', userName: '$message.u.username' },
+					reports: { $first: '$$ROOT' },
+					roomIds: { $addToSet: '$message.rid' },
+					count: { $sum: 1 },
+				},
+			},
+			{
+				$sort: sort || {
+					'reports.ts': -1,
+				},
+			},
+			{
+				$skip: offset,
+			},
+			{
+				$limit: count,
+			},
+			{
+				$project: {
+					_id: 0,
+					reports: 0,
+					message: '$reports.message.msg',
+					ts: '$reports.ts',
+					userId: '$_id.user',
+					username: '$reports.message.u.username',
+					name: '$reports.message.u.name',
+					count: 1,
+					roomIds: 1,
+				},
+			},
+		];
+
+		return this.col.aggregate(params, { allowDiskUse: true });
+	}
+
+	findReportsBeforeDate(latest: Date, offset = 0, count = 20, sort?: any, selector?: string): AggregationCursor<IModerationAudit> {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+			ts: {
+				$lt: latest,
+			},
+		};
+
+		const cquery = selector
+			? {
+					$or: [
+						{
+							'message.msg': {
+								$regex: selector,
+								$options: 'i',
+							},
+						},
+						{
+							description: {
+								$regex: selector,
+								$options: 'i',
+							},
+						},
+						{
+							'message.u.username': {
+								$regex: selector,
+								$options: 'i',
+							},
+						},
+					],
+			  }
+			: {};
+
+		const params = [
+			{ $match: { ...query, ...cquery } },
+			{
+				$group: {
+					_id: { user: '$message.u._id', userName: '$message.u.username' },
+					reports: { $first: '$$ROOT' },
+					roomIds: { $addToSet: '$message.rid' },
+					count: { $sum: 1 },
+				},
+			},
+			{
+				$sort: sort || {
+					'reports.ts': -1,
+				},
+			},
+			{
+				$skip: offset,
+			},
+			{
+				$limit: count,
+			},
+			{
+				$project: {
+					_id: 0,
+					message: '$reports.message.msg',
+					ts: '$reports.ts',
+					username: '$reports.message.u.username',
+					name: '$reports.message.u.name',
+					userId: '$_id.user',
+					count: 1,
+					roomIds: 1,
+				},
 			},
 		];
 
@@ -273,144 +425,6 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		const reports: Document[] = await this.col.aggregate(lookup, { readPreference: readSecondaryPreferred() }).toArray();
 
 		return reports as IReport[];
-	}
-
-	findReportsAfterDate(oldest: Date, offset = 0, count = 20, sort?: any, selector?: string): AggregationCursor<MsgGroupedIReport> {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			ts: {
-				$gt: oldest,
-			},
-		};
-
-		const cquery = selector
-			? {
-					$or: [
-						{
-							'message.msg': {
-								$regex: selector,
-								$options: 'i',
-							},
-						},
-						{
-							description: {
-								$regex: selector,
-								$options: 'i',
-							},
-						},
-						{
-							'message.u.username': {
-								$regex: selector,
-								$options: 'i',
-							},
-						},
-					],
-			  }
-			: {};
-
-		const params = [
-			{ $match: { ...query, ...cquery } },
-			{
-				$group: {
-					_id: { user: '$message.u._id' },
-					reports: { $first: '$$ROOT' },
-					count: { $sum: 1 },
-					roomMessageMap: {
-						$addToSet: {
-							rid: '$message.rid',
-							msgId: '$message._id',
-						},
-					},
-					reportIds: {
-						$push: '$_id',
-					},
-				},
-			},
-			{
-				$sort: sort || {
-					'reports.ts': -1,
-				},
-			},
-			{
-				$skip: offset,
-			},
-			{
-				$limit: count,
-			},
-		];
-
-		return this.col.aggregate(params, { allowDiskUse: true });
-	}
-
-	findReportsBeforeDate(latest: Date, offset = 0, count = 20, sort?: any, selector?: string): AggregationCursor<MsgGroupedIReport> {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			ts: {
-				$lt: latest,
-			},
-		};
-
-		const cquery = selector
-			? {
-					$or: [
-						{
-							'message.msg': {
-								$regex: selector,
-								$options: 'i',
-							},
-						},
-						{
-							description: {
-								$regex: selector,
-								$options: 'i',
-							},
-						},
-						{
-							'message.u.username': {
-								$regex: selector,
-								$options: 'i',
-							},
-						},
-					],
-			  }
-			: {};
-
-		const params = [
-			{ $match: { ...query, ...cquery } },
-			{
-				$group: {
-					_id: { user: '$message.u._id' },
-					reports: { $first: '$$ROOT' },
-					count: { $sum: 1 },
-					roomMessageMap: {
-						$addToSet: {
-							rid: '$message.rid',
-							msgId: '$message._id',
-						},
-					},
-					reportIds: {
-						$push: '$_id',
-					},
-				},
-			},
-			{
-				$sort: sort || {
-					'reports.ts': -1,
-				},
-			},
-			{
-				$skip: offset,
-			},
-			{
-				$limit: count,
-			},
-		];
-
-		return this.col.aggregate(params, { allowDiskUse: true });
 	}
 
 	// update

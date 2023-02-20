@@ -15,21 +15,34 @@ export interface IReport extends IRocketChatRecord {
 	description: string;
 	ts: Date;
 	userId: string;
-	reportedBy?: Pick<IUser, '_id' | 'username' | 'avatarETag' | 'active' | 'name' | 'createdAt'>;
 	moderationInfo?: IModerationInfo;
 	_hidden?: boolean;
 }
 
-export type MsgGroupedIReport = {
-	_id: {
-		message: IMessage['msg'];
-		user: IUser['_id'];
-	};
-	reports: IReport[];
+export interface IModerationAudit {
+	userId: IUser['_id'];
+	username: IUser['username'];
+	name: IUser['name'];
+	message: IMessage['_id'];
+	roomIds: IRoom['_id'][];
+	ts: IReport['ts'];
 	count: number;
-	roomMessageMap: {
-		roomId: IRoom['_id'];
-		msgId: IMessage['_id'];
-	}[];
-	reportIds: IReport['_id'][];
-};
+}
+
+export interface IUserReportedMessages {
+	userId: IUser['_id'];
+	username: IUser['username'];
+	avatarETag?: IUser['avatarETag'];
+	createdAt?: IUser['createdAt'];
+	name?: IUser['name'];
+	count: number;
+	messages: IMessage[];
+}
+
+export interface IReportedMessageInfo {
+	_id: IReport['_id'];
+	description: IReport['description'];
+	ts: IReport['ts'];
+	reporter: Pick<IUser, '_id' | 'username' | 'avatarETag' | 'active' | 'name' | 'createdAt'>;
+	count: number;
+}

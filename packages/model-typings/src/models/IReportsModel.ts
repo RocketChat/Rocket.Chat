@@ -1,4 +1,4 @@
-import type { IReport, IMessage, MsgGroupedIReport } from '@rocket.chat/core-typings';
+import type { IReport, IMessage, IModerationAudit } from '@rocket.chat/core-typings';
 import type { AggregationCursor, Document, FindCursor, UpdateResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -17,7 +17,11 @@ export interface IReportsModel extends IBaseModel<IReport> {
 		count?: number,
 		sort?: any,
 		selector?: string,
-	): AggregationCursor<MsgGroupedIReport>;
+	): AggregationCursor<IModerationAudit>;
+
+	findReportsAfterDate(latest: Date, offset?: number, count?: number, sort?: any, selector?: string): AggregationCursor<IModerationAudit>;
+
+	findReportsBeforeDate(oldest: Date, offset?: number, count?: number, sort?: any, selector?: string): AggregationCursor<IModerationAudit>;
 
 	findReportsByRoom(roomId: string, offset?: number, count?: number, sort?: any, selector?: string): FindPaginated<FindCursor<IReport>>;
 
@@ -30,10 +34,6 @@ export interface IReportsModel extends IBaseModel<IReport> {
 		sort?: any,
 		selector?: string,
 	): Promise<IReport[]>;
-
-	findReportsAfterDate(latest: Date, offset?: number, count?: number, sort?: any, selector?: string): AggregationCursor<MsgGroupedIReport>;
-
-	findReportsBeforeDate(oldest: Date, offset?: number, count?: number, sort?: any, selector?: string): AggregationCursor<MsgGroupedIReport>;
 
 	hideReportById(reportId: IReport['_id'], userId: string, reasonForHiding: string, actionTaken: string): Promise<UpdateResult | Document>;
 
