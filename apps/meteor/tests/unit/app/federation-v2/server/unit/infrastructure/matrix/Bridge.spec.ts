@@ -46,7 +46,7 @@ describe('Federation - Infrastructure - Matrix - Bridge', () => {
 
 	describe('#verifyInviteeId()', () => {
 		it('should return `valid-invitee-id` when the matrixId exists', async () => {
-			fetchStub.fetch = () => Promise.resolve({ status: 400, json: () => Promise.resolve({ errcode: 'M_USER_IN_USE' }) })
+			fetchStub.fetch = () => Promise.resolve({ status: 400, json: () => Promise.resolve({ errcode: 'M_USER_IN_USE' }) });
 
 			const verificationStatus = await bridge.verifyInviteeId('@user:server.com');
 
