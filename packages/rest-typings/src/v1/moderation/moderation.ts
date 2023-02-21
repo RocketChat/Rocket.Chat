@@ -1,4 +1,4 @@
-import type { IReport, IModerationAudit } from '@rocket.chat/core-typings';
+import type { IReport, IModerationAudit, IUserReportedMessages } from '@rocket.chat/core-typings';
 
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { ArchiveReportProps } from './ArchiveReportProps';
@@ -13,6 +13,9 @@ export type ModerationEndpoints = {
 			offset: number;
 			total: number;
 		}>;
+	};
+	'/v1/moderation.user.getMessageHistory': {
+		GET: (params: { userId: string; sort?: string; selector?: string; count?: number }) => IUserReportedMessages;
 	};
 	'/v1/moderation.markChecked': {
 		POST: (params: ArchiveReportProps) => {

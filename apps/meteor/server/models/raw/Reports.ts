@@ -1,4 +1,4 @@
-import type { IMessage, IReport, RocketChatRecordDeleted, IModerationAudit } from '@rocket.chat/core-typings';
+import type { IMessage, IReport, RocketChatRecordDeleted, IModerationAudit, IUserReportedMessages } from '@rocket.chat/core-typings';
 import type { FindPaginated, IReportsModel } from '@rocket.chat/model-typings';
 import type { Db, Collection, FindCursor, UpdateResult, Document, AggregationCursor } from 'mongodb';
 
@@ -244,6 +244,61 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 					userId: '$_id.user',
 					count: 1,
 					roomIds: 1,
+				},
+			},
+		];
+
+		return this.col.aggregate(params, { allowDiskUse: true });
+	}
+
+	findUserMessages(userId: string, offset = 0, count = 50, sort?: any, selector?: string): AggregationCursor<IUserReportedMessages> {
+		const query = {
+			'_hidden': {
+				$ne: true,
+			},
+			'message.u._id': userId,
+		};
+
+		const cquery = selector
+			? {
+					$or: [
+						{
+							'message.msg': {
+								$regex: selector,
+								$options: 'i',
+							},
+						},
+					],
+			  }
+			: {};
+
+		const params = [
+			{ $match: { ...query, ...cquery } },
+			{
+				$group: {
+					_id: {
+						user: '$message.u._id',
+					},
+					messages: { $push: '$message' },
+					count: { $sum: 1 },
+				},
+			},
+			{
+				$sort: sort || {
+					'messages.ts': -1,
+				},
+			},
+			{
+				$skip: offset,
+			},
+			{
+				$limit: count,
+			},
+			{
+				$project: {
+					_id: 0,
+					messages: 1,
+					count: 1,
 				},
 			},
 		];

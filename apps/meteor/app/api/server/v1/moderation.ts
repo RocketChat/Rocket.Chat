@@ -40,6 +40,36 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
+	'moderation.user.getMessageHistory',
+	{
+		authRequired: true,
+		permissionsRequired: ['view-moderation-console'],
+	},
+	{
+		async get() {
+			const { userId } = this.queryParams;
+
+			const { sort } = this.parseJsonQuery();
+
+			const { pagCount = 50, offset = 0 } = this.getPaginationItems();
+
+			if (!userId) {
+				return API.v1.failure('The required "userId" query param is missing.');
+			}
+
+			const cursor = Reports.findUserMessages(userId, offset, pagCount, sort);
+
+			const [{ messages = [], count = 0 } = {}] = await cursor.toArray();
+
+			return API.v1.success({
+				messages,
+				count,
+			});
+		},
+	},
+);
+
+API.v1.addRoute(
 	'moderation.markChecked',
 	{
 		authRequired: true,

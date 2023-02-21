@@ -30,11 +30,6 @@ export interface IModerationAudit {
 }
 
 export interface IUserReportedMessages {
-	userId: IUser['_id'];
-	username: IUser['username'];
-	avatarETag?: IUser['avatarETag'];
-	createdAt?: IUser['createdAt'];
-	name?: IUser['name'];
 	count: number;
 	messages: IMessage[];
 }
