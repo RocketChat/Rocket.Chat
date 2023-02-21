@@ -17,8 +17,8 @@ import {
 	makeAgentAvailable,
 	getLivechatRoomInfo,
 	sendMessage,
-	closeRoomWithMethodCall,
 	startANewLivechatRoomAndTakeIt,
+	closeOmnichanelRoom,
 } from '../../../data/livechat/rooms';
 import { addPermissions, updateEEPermission, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { createUser, login } from '../../../data/users.helper.js';
@@ -297,7 +297,7 @@ describe('LIVECHAT - rooms', function () {
 			// Create and close a room
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
-			await closeRoomWithMethodCall(room._id);
+			await closeOmnichanelRoom(room._id);
 
 			const { body } = await request.get(api('livechat/rooms')).query({ open: false, roomName: room.fname }).set(credentials).expect(200);
 			expect(body.rooms.every((room: IOmnichannelRoom) => !!room.closedAt)).to.be.true;
@@ -307,7 +307,7 @@ describe('LIVECHAT - rooms', function () {
 			// Create and close a room
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
-			await closeRoomWithMethodCall(room._id);
+			await closeOmnichanelRoom(room._id);
 
 			const { body } = await request.get(api('livechat/rooms')).query({ open: true, roomName: room.fname }).set(credentials).expect(200);
 			expect(body.rooms.every((room: IOmnichannelRoom) => room.open)).to.be.true;
@@ -317,7 +317,7 @@ describe('LIVECHAT - rooms', function () {
 			// Create and close a room
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
-			await closeRoomWithMethodCall(room._id);
+			await closeOmnichanelRoom(room._id);
 
 			const { body } = await request.get(api('livechat/rooms')).set(credentials).expect(200);
 			expect(body.rooms.some((room: IOmnichannelRoom) => !!room.closedAt)).to.be.true;
@@ -1699,7 +1699,8 @@ describe('LIVECHAT - rooms', function () {
 		});
 	});
 
-	(IS_EE ? describe : describe.skip)('omnichannel/:rid/request-transcript', () => {
+	// eslint-disable-next-line no-restricted-properties
+	(IS_EE ? describe.only : describe.skip)('omnichannel/:rid/request-transcript', () => {
 		before(async () => {
 			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 			// Wait for one sec to be sure routing stops
@@ -1733,7 +1734,7 @@ describe('LIVECHAT - rooms', function () {
 		it('should fail if no one is serving the room', async () => {
 			const visitor = await createVisitor();
 			const { _id } = await createLivechatRoom(visitor.token);
-			await closeRoomWithMethodCall(_id);
+			await closeOmnichanelRoom(_id);
 			await request
 				.post(api(`omnichannel/${_id}/request-transcript`))
 				.set(credentials)
@@ -1746,7 +1747,7 @@ describe('LIVECHAT - rooms', function () {
 			} = await startANewLivechatRoomAndTakeIt();
 
 			// close room since pdf transcript is only generated for closed rooms
-			await closeRoomWithMethodCall(roomId);
+			await closeOmnichanelRoom(roomId);
 
 			await request
 				.post(api(`omnichannel/${roomId}/request-transcript`))
