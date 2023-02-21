@@ -277,7 +277,7 @@ export const fetchMessages = (roomId: string, visitorToken: string): Promise<IMe
 };
 
 // Closes room using methodCall
-export const closeRoom = (roomId: string): Promise<boolean> => {
+export const closeRoomWithMethodCall = (roomId: string): Promise<boolean> => {
 	return new Promise((resolve, reject) => {
 		request
 			.post(methodCall('livechat:closeRoom'))
@@ -316,4 +316,15 @@ export const bulkCreateLivechatRooms = async (
 	}
 
 	return rooms;
+};
+
+export const startANewLivechatRoomAndTakeIt = async (): Promise<{ room: IOmnichannelRoom; visitor: ILivechatVisitor }> => {
+	const visitor = await createVisitor();
+	const room = await createLivechatRoom(visitor.token);
+	const { _id: roomId } = room;
+	const inq = await fetchInquiry(roomId);
+	await takeInquiry(inq._id);
+	await sendMessage(roomId, 'test message', visitor.token);
+
+	return { room, visitor };
 };
