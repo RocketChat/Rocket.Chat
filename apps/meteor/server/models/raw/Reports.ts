@@ -279,8 +279,12 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 					_id: {
 						user: '$message.u._id',
 					},
-					messages: { $push: '$message' },
-					count: { $sum: 1 },
+					messages: { $addToSet: '$message' },
+				},
+			},
+			{
+				$addFields: {
+					count: { $size: '$messages' },
 				},
 			},
 			{
