@@ -7,6 +7,8 @@ automerge_label = ["stat: ready to merge", "automerge"]
 block_on_neutral_required_check_runs = true
 blocking_labels = ["stat: needs QA", "Invalid PR Title"]
 prioritize_ready_to_merge =  true
+blocking_title_regex = "\[(FIX|NEW|BREAK)\]"
+merge.do_not_merge=true
 
 [merge.message]
 title = "pull_request_title"
@@ -16,4 +18,3 @@ include_coauthors=true
 [merge.automerge_dependencies]
 versions = ["minor", "patch"]
 usernames = ["dependabot"]
-

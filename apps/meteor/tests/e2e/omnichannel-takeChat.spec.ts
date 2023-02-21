@@ -20,17 +20,11 @@ test.describe('omnichannel-takeChat', () => {
 	let agent: { page: Page; poHomeChannel: HomeChannel };
 
 	test.beforeAll(async ({ api, browser }) => {
-		// make "user-1" an agent and manager
-		let statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
-		await expect(statusCode).toBe(200);
-
-		// turn on manual selection routing
-		statusCode = (await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' })).status();
-		await expect(statusCode).toBe(200);
-
-		// turn off setting which allows offline agents to chat
-		statusCode = (await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false })).status();
-		await expect(statusCode).toBe(200);
+		await Promise.all([
+			await api.post('/livechat/users/agent', { username: 'user1' }).then((res) => expect(res.status()).toBe(200)),
+			await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' }).then((res) => expect(res.status()).toBe(200)),
+			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false }).then((res) => expect(res.status()).toBe(200)),
+		]);
 
 		agent = await createAuxContext(browser, 'user1-session.json');
 	});
@@ -41,7 +35,7 @@ test.describe('omnichannel-takeChat', () => {
 
 		// start a new chat for each test
 		newVisitor = {
-			name: faker.name.firstName(),
+			name: `${faker.name.firstName()} ${faker.datatype.uuid()}`,
 			email: faker.internet.email(),
 		};
 		poLiveChat = new OmnichannelLiveChat(page);
@@ -53,17 +47,13 @@ test.describe('omnichannel-takeChat', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		// turn off manual selection routing
-		let statusCode = (await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' })).status();
-		await expect(statusCode).toBe(200);
+		await Promise.all([
+			await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }).then((res) => expect(res.status()).toBe(200)),
+			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false }).then((res) => expect(res.status()).toBe(200)),
+			await api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
+		]);
 
-		// turn on setting which allows offline agents to chat
-		statusCode = (await api.post('/settings/Livechat_enabled_when_agent_idle', { value: true })).status();
-		await expect(statusCode).toBe(200);
-
-		// delete "user-1" from agents
-		statusCode = (await api.delete('/livechat/users/agent/user1')).status();
-		await expect(statusCode).toBe(200);
+		await agent.page.close();
 	});
 
 	test('expect "user1" to be able to take the chat from the queue', async () => {

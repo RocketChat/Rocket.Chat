@@ -28,6 +28,10 @@ export class OmnichannelManager {
 		return this.page.locator('button[title="Remove"]');
 	}
 
+	btnDeleteSelectedAgent(text: string) {
+		return this.page.locator('tr', { has: this.page.locator(`td >> text="${text}"`) }).locator('button[title="Remove"]');
+	}
+
 	get btnModalRemove(): Locator {
 		return this.page.locator('#modal-root dialog .rcx-modal__inner .rcx-modal__footer .rcx-button--danger');
 	}
