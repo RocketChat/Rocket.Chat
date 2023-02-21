@@ -308,6 +308,11 @@ jobs:
       RC_DOCKERFILE: ${{ matrix.mongodb-version == '6.0' && needs.release-versions.outputs.rc-dockerfile-alpine || needs.release-versions.outputs.rc-dockerfile }}
       RC_DOCKER_TAG: ${{ matrix.mongodb-version == '6.0' && needs.release-versions.outputs.rc-docker-tag-alpine || needs.release-versions.outputs.rc-docker-tag }}
       DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      # ENTERPRISE_LICENSE: ${{ needs.release-versions.outputs.enterprise-license }}
+      # TRANSPORTER: nats://nats:4222
+      # Not sure if it will work since the else is a empty string rather than a undefined value
+      TRANSPORTER: ${{ matrix.release == 'ee' && 'nats://nats:4222' }}
+      ENTERPRISE_LICENSE: ${{ matrix.release == 'ee' && needs.release-versions.outputs.enterprise-license }}
 
     strategy:
       fail-fast: false
@@ -317,6 +322,7 @@ jobs:
         type: ['ui', 'api']
         shard: [1, 2, 3, 4]
         total-shard: [4]
+        release: ['ce', 'ee']
         include:
           - type: 'api'
             publish-container: true
@@ -327,7 +333,8 @@ jobs:
             shard: 3
           - type: 'api'
             shard: 4
-
+          - release: 'ee'
+            mongodb-version: '6.0'
 
     steps:
       - name: Launch MongoDB
@@ -365,10 +372,18 @@ jobs:
           rm Rocket.Chat.tar.gz
 
       - name: Start containers
+        if: matrix.release == 'ce'
         env:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
         run: |
           docker compose -f docker-compose-ci.yml up -d --build rocketchat
+
+      - name: Start containers
+        if: matrix.release == 'ee'
+        env:
+          MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
+        run: |
+          docker compose -f docker-compose-ci.yml up -d --build
 
       - name: Login to GitHub Container Registry
         if: matrix.publish-container == true && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
@@ -392,6 +407,16 @@ jobs:
             docker push $IMAGE_NAME_BASE
           fi;
 
+      - name: Publish Docker images (serices) to GitHub Container Registry
+        if: matrix.publish-container == true && matrix.release == 'ee' && github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'
+        run: |
+          docker compose -f docker-compose-ci.yml push \
+            authorization-service \
+            account-service \
+            ddp-streamer-service \
+            presence-service \
+            stream-hub-service
+
       - name: Cache Playwright binaries
         if: matrix.type == 'ui'
         uses: actions/cache@v3
@@ -412,130 +437,13 @@ jobs:
         with:
           url: 'http://localhost:3000/health'
           responseCode: '200'
-          timeout: 600000
+          timeout: 60000
           interval: 1000
 
-      - name: E2E Test API
-        if: matrix.type == 'api'
-        working-directory: ./apps/meteor
-        run: |
-          for i in $(seq 1 5); do
-            npm run testapi && s=0 && break || s=$?
-
-            docker compose -f ../../docker-compose-ci.yml logs rocketchat --tail=100
-
-            docker compose -f ../../docker-compose-ci.yml stop rocketchat
-
-            docker exec mongodb bash -c 'if command -v mongosh ; then mongosh --eval "use rocketchat" --eval "db.dropDatabase()" rocketchat; else mongo rocketchat --eval "db.dropDatabase()"; fi'
-
-            NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
-
-            docker compose -f ../../docker-compose-ci.yml restart rocketchat
-
-            until echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
-              echo "Waiting Rocket.Chat to start up"
-              ((c++)) && ((c==10)) && exit 1
-              sleep 10
-            done;
-          done;
-          exit $s
-
-      - name: E2E Test UI (${{ matrix.shard }}/${{ matrix.total-shard }})
-        if: matrix.type == 'ui'
-        working-directory: ./apps/meteor
-        run: yarn test:e2e --shard=${{ matrix.shard }}/${{ matrix.total-shard }}
-
-      - name: Store playwright test trace
-        if: matrix.type == 'ui' && always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: playwright-test-trace
-          path: ./apps/meteor/tests/e2e/.playwright*
-
-  test-ee-api:
-    runs-on: ubuntu-20.04
-    needs: [build, checks, release-versions]
-    env:
-      LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
-      RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
-      RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
-      DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
-      ENTERPRISE_LICENSE: ${{ needs.release-versions.outputs.enterprise-license }}
-      TRANSPORTER: nats://nats:4222
-
-    strategy:
-      matrix:
-        node-version: ['14.21.2']
-        mongodb-version-ee: ['4.4']
-
-    steps:
-      - name: Launch MongoDB
-        uses: supercharge/mongodb-github-action@1.8.0
-        with:
-          mongodb-version: ${{ matrix.mongodb-version-ee }}
-          mongodb-replica-set: rs0
-
-      - uses: actions/checkout@v3
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
-
-      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
-
-      - name: yarn install
-        run: yarn
-
-      - name: yarn build
-        run: yarn build
-
-      - name: Restore build
-        uses: actions/download-artifact@v2
-        with:
-          name: build
-          path: /tmp/build
-
-      - name: Unpack build
-        run: |
-          cd /tmp/build
-          tar xzf Rocket.Chat.tar.gz
-          rm Rocket.Chat.tar.gz
-
-      - name: Start containers
-        env:
-          MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
-        run: |
-          docker compose -f docker-compose-ci.yml up -d --build
-
-      - name: Login to GitHub Container Registry
-        if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ secrets.CR_USER }}
-          password: ${{ secrets.CR_PAT }}
-
-      - name: Publish Docker images to GitHub Container Registry
-        if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'
-        run: |
-          docker compose -f docker-compose-ci.yml push \
-            authorization-service \
-            account-service \
-            ddp-streamer-service \
-            presence-service \
-            stream-hub-service
-
       - name: Wait services to start up
+        if: matrix.release == 'ee'
         run: |
           docker ps
-
-          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING"; do
-            echo "Waiting Rocket.Chat to start up"
-            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs rocketchat && exit 1
-            sleep 10
-          done;
 
           until echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully"; do
             echo "Waiting 'ddp-streamer' to start up"
@@ -544,10 +452,13 @@ jobs:
           done;
 
       - name: E2E Test API
+        if: matrix.type == 'api'
         working-directory: ./apps/meteor
+        env:
+          IS_EE: ${{ matrix.release == 'ee' && 'true' || 'false' }}
         run: |
           for i in $(seq 1 5); do
-            IS_EE=true npm run testapi && s=0 && break || s=$?
+            npm run testapi && s=0 && break || s=$?
 
             docker compose -f ../../docker-compose-ci.yml logs --tail=100
 
@@ -567,130 +478,39 @@ jobs:
           done;
           exit $s
 
-  test-ee-ui:
-    runs-on: ubuntu-20.04
-    needs: [build, checks, release-versions]
-    env:
-      LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
-      RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
-      RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
-      DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
-      ENTERPRISE_LICENSE: ${{ needs.release-versions.outputs.enterprise-license }}
-      TRANSPORTER: nats://nats:4222
-
-    strategy:
-      matrix:
-        node-version: ['14.21.2']
-        mongodb-version-ee: ['4.4']
-        shard: [1, 2, 3, 4, 5]
-
-    steps:
-      - name: Launch MongoDB
-        uses: supercharge/mongodb-github-action@1.8.0
-        with:
-          mongodb-version: ${{ matrix.mongodb-version-ee }}
-          mongodb-replica-set: rs0
-
-      - uses: actions/checkout@v3
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
-
-      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
-
-      - name: yarn install
-        run: yarn
-
-      - name: yarn build
-        run: yarn build
-
-      - name: Restore build
-        uses: actions/download-artifact@v2
-        with:
-          name: build
-          path: /tmp/build
-
-      - name: Unpack build
-        run: |
-          cd /tmp/build
-          tar xzf Rocket.Chat.tar.gz
-          rm Rocket.Chat.tar.gz
-
-      - name: Start containers
+      - name: E2E Test UI (${{ matrix.shard }}/${{ matrix.total-shard }})
+        if: matrix.type == 'ui'
         env:
-          MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
-        run: |
-          docker compose -f docker-compose-ci.yml up -d --build
-
-      - name: Wait services to start up
-        run: |
-          docker ps
-
-          until echo "$(docker compose -f docker-compose-ci.yml logs rocketchat)" | grep -q "SERVER RUNNING"; do
-            echo "Waiting Rocket.Chat to start up"
-            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs rocketchat && exit 1
-            sleep 10
-          done;
-
-          until echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully"; do
-            echo "Waiting 'ddp-streamer' to start up"
-            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer-service && exit 1
-            sleep 10
-          done;
-
-      - name: Cache Playwright binaries
-        uses: actions/cache@v3
-        id: cache-playwright
-        with:
-          path: |
-            ~/.cache/ms-playwright
-          # This is the version of Playwright that we are using, if you are willing to upgrade, you should update this.
-          key: playwright-1.23.1
-
-      - name: Install Playwright
+          E2E_COVERAGE: ${{ matrix.release == 'ee' && 'true' || 'false' }}
+          IS_EE: ${{ matrix.release == 'ee' && 'true' || 'false' }}
         working-directory: ./apps/meteor
-        run: npx playwright install --with-deps
-
-      - name: Wait for Rocket.Chat to start up
-        uses: cygnetdigital/wait_for_response@v2.0.0
-        with:
-          url: 'http://localhost:3000/health'
-          responseCode: '200'
-          timeout: 600000
-          interval: 1000
-
-      - name: E2E Test UI (${{ matrix.shard }}/4)
-        working-directory: ./apps/meteor
-        env:
-          E2E_COVERAGE: 'true'
-          IS_EE: 'true'
-        run: yarn test:e2e --shard=${{ matrix.shard }}/5
-
-      - name: Show server logs if E2E test failed
-        if: failure()
-        run: docker compose -f docker-compose-ci.yml logs rocketchat
+        run: yarn test:e2e --shard=${{ matrix.shard }}/${{ matrix.total-shard }}
 
       - name: Store playwright test trace
+        if: matrix.type == 'ui' && always()
         uses: actions/upload-artifact@v3
-        if: always()
         with:
-          name: e2e-ee-testtrace
+          name: playwright-test-trace${{ matrix.release }}
           path: ./apps/meteor/tests/e2e/.playwright*
 
+      - name: Show server logs if E2E test failed
+        if: matrix.type == 'ui' && failure()
+        run: docker compose -f docker-compose-ci.yml logs rocketchat
+
       - name: Extract e2e:ee:coverage
+        if: matrix.type == 'ui' && matrix.release == 'ee'
         working-directory: ./apps/meteor
         run: yarn test:e2e:nyc
 
       - uses: codecov/codecov-action@v3
+        if: matrix.type == 'ui' && matrix.release == 'ee'
         with:
           directory: ./apps/meteor
           flags: e2e
           verbose: true
 
       - name: Store e2e-ee-coverage
+        if: matrix.type == 'ui' && matrix.release == 'ee'
         uses: actions/upload-artifact@v3
         with:
           name: e2e-ee-coverage
@@ -698,7 +518,7 @@ jobs:
 
   tests-done:
     runs-on: ubuntu-20.04
-    needs: [test-unit, test, test-ee-api, test-ee-ui]
+    needs: [test-unit, test]
 
     steps:
       - name: Test finish aggregation
