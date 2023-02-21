@@ -2,10 +2,12 @@
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 
+const fetchStub = {
+	fetch: () => Promise.resolve({}),
+};
+
 const { MatrixBridge } = proxyquire.noCallThru().load('../../../../../../../../app/federation-v2/server/infrastructure/matrix/Bridge', {
-	'meteor/fetch': {
-		'@global': true,
-	},
+	'../../../../../server/lib/http/fetch': fetchStub,
 });
 
 describe('Federation - Infrastructure - Matrix - Bridge', () => {
@@ -44,17 +46,7 @@ describe('Federation - Infrastructure - Matrix - Bridge', () => {
 
 	describe('#verifyInviteeId()', () => {
 		it('should return `valid-invitee-id` when the matrixId exists', async () => {
-			const fetchStub = {
-				fetch: () => Promise.resolve({ status: 400, json: () => Promise.resolve({ errcode: 'M_USER_IN_USE' }) }),
-			};
-
-			const { MatrixBridge } = proxyquire
-				.noCallThru()
-				.load('../../../../../../../../app/federation-v2/server/infrastructure/matrix/Bridge', {
-					'../../../../../server/lib/http/fetch': fetchStub,
-				});
-
-			const bridge = new MatrixBridge('', '', defaultProxyDomain, '', 3030, {} as any, () => {}); // eslint-disable-line
+			fetchStub.fetch = () => Promise.resolve({ status: 400, json: () => Promise.resolve({ errcode: 'M_USER_IN_USE' }) })
 
 			const verificationStatus = await bridge.verifyInviteeId('@user:server.com');
 
@@ -62,17 +54,7 @@ describe('Federation - Infrastructure - Matrix - Bridge', () => {
 		});
 
 		it('should return `invalid-invitee-id` when the matrixId does not exists', async () => {
-			const fetchStub = {
-				fetch: () => Promise.resolve({ status: 200 }),
-			};
-
-			const { MatrixBridge } = proxyquire
-				.noCallThru()
-				.load('../../../../../../../../app/federation-v2/server/infrastructure/matrix/Bridge', {
-					'../../../../../server/lib/http/fetch': fetchStub,
-				});
-
-			const bridge = new MatrixBridge('', '', defaultProxyDomain, '', 3030, {} as any, () => {}); // eslint-disable-line
+			fetchStub.fetch = () => Promise.resolve({ status: 200, json: () => Promise.resolve({}) });
 
 			const verificationStatus = await bridge.verifyInviteeId('@user:server.com');
 
@@ -80,17 +62,7 @@ describe('Federation - Infrastructure - Matrix - Bridge', () => {
 		});
 
 		it('should return `unable-to-verify` when the fetch() call fails', async () => {
-			const fetchStub = {
-				fetch: () => Promise.reject(new Error('Error')),
-			};
-
-			const { MatrixBridge } = proxyquire
-				.noCallThru()
-				.load('../../../../../../../../app/federation-v2/server/infrastructure/matrix/Bridge', {
-					'../../../../../server/lib/http/fetch': fetchStub,
-				});
-
-			const bridge = new MatrixBridge('', '', defaultProxyDomain, '', 3030, {} as any, () => {}); // eslint-disable-line
+			fetchStub.fetch = () => Promise.reject(new Error('Error'));
 
 			const verificationStatus = await bridge.verifyInviteeId('@user:server.com');
 
@@ -98,17 +70,7 @@ describe('Federation - Infrastructure - Matrix - Bridge', () => {
 		});
 
 		it('should return `unable-to-verify` when an unexepected status comes', async () => {
-			const fetchStub = {
-				fetch: () => Promise.resolve({ status: 500 }),
-			};
-
-			const { MatrixBridge } = proxyquire
-				.noCallThru()
-				.load('../../../../../../../../app/federation-v2/server/infrastructure/matrix/Bridge', {
-					'../../../../../server/lib/http/fetch': fetchStub,
-				});
-
-			const bridge = new MatrixBridge('', '', defaultProxyDomain, '', 3030, {} as any, () => {}); // eslint-disable-line
+			fetchStub.fetch = () => Promise.resolve({ status: 500 });
 
 			const verificationStatus = await bridge.verifyInviteeId('@user:server.com');
 
