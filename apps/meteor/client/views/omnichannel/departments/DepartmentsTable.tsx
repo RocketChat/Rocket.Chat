@@ -1,7 +1,7 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ReactElement, TableHTMLAttributes } from 'react';
 import React, { useMemo } from 'react';
 
 import {
@@ -20,9 +20,9 @@ type DepartmentsTableProps = {
 	pagination: any;
 	sort: any;
 	loading: boolean;
-};
+} & TableHTMLAttributes<HTMLTableElement>;
 
-function DepartmentsTable({ data, removeButton, pagination, sort, loading }: DepartmentsTableProps) {
+function DepartmentsTable({ data, removeButton, pagination, sort, loading, ...props }: DepartmentsTableProps) {
 	const t = useTranslation();
 
 	const { departments } = data || {};
@@ -46,14 +46,14 @@ function DepartmentsTable({ data, removeButton, pagination, sort, loading }: Dep
 			<GenericTableHeaderCell key='showOnRegistration' direction={sortDirection} active={sortBy === 'showOnRegistration'} onClick={setSort}>
 				{t('Show_on_registration_page')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell w={40} />,
+			<GenericTableHeaderCell key='spacer' w={40} />,
 		],
 		[setSort, sortBy, sortDirection, t],
 	);
 
 	return (
 		<>
-			<GenericTable>
+			<GenericTable {...props}>
 				<GenericTableHeader>{headers}</GenericTableHeader>
 				<GenericTableBody>
 					{departments && !loading ? (
