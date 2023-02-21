@@ -1699,8 +1699,7 @@ describe('LIVECHAT - rooms', function () {
 		});
 	});
 
-	// eslint-disable-next-line no-restricted-properties
-	(IS_EE ? describe.only : describe.skip)('omnichannel/:rid/request-transcript', () => {
+	(IS_EE ? describe : describe.skip)('omnichannel/:rid/request-transcript', () => {
 		before(async () => {
 			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 			// Wait for one sec to be sure routing stops
