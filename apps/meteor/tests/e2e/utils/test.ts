@@ -6,6 +6,7 @@ import { test as baseTest, request as baseRequest } from '@playwright/test';
 import { v4 as uuid } from 'uuid';
 
 import { BASE_API_URL, API_PREFIX, ADMIN_CREDENTIALS } from '../config/constants';
+import { Users } from '../fixtures/userStates';
 
 const PATH_NYC_OUTPUT = path.join(process.cwd(), '.nyc_output');
 
@@ -64,6 +65,16 @@ export const test = baseTest.extend<BaseTest>({
 
 	api: async ({ request }, use) => {
 		const login = async (credentials: { username: string; password: string }): Promise<APIRequestContext> => {
+			if (credentials.username === Users.admin.data.username) {
+				return baseRequest.newContext({
+					baseURL: BASE_API_URL,
+					extraHTTPHeaders: {
+						'X-Auth-Token': Users.admin.data.loginToken,
+						'X-User-Id': Users.admin.data.username,
+					},
+				});
+			}
+
 			const resp = await request.post(`${BASE_API_URL}/login`, { data: credentials });
 			const json = await resp.json();
 
