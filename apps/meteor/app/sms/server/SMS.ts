@@ -1,8 +1,23 @@
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../settings/server';
+import type { ISMSProvider, ISMSProviderConstructor } from './types';
 
-export const SMS = {
+type SMSWorker = {
+	enabled: boolean;
+	department: string | null;
+	service: string | null;
+	services: Record<string, ISMSProviderConstructor>;
+	accountSid: string | null;
+	authToken: string | null;
+	fromNumber: string | null;
+
+	registerService(name: string, service: ISMSProviderConstructor): void;
+	getService(name: string): ISMSProvider;
+	isConfiguredService(name: string): boolean;
+};
+
+export const SMS: SMSWorker = {
 	enabled: false,
 	department: null,
 	service: null,
@@ -11,7 +26,7 @@ export const SMS = {
 	authToken: null,
 	fromNumber: null,
 
-	registerService(name, service) {
+	registerService(name: string, service: ISMSProviderConstructor) {
 		this.services[name] = service;
 	},
 
@@ -31,14 +46,14 @@ export const SMS = {
 	},
 };
 
-settings.watch('SMS_Enabled', function (value) {
+settings.watch<boolean>('SMS_Enabled', function (value) {
 	SMS.enabled = value;
 });
 
-settings.watch('SMS_Default_Omnichannel_Department', function (value) {
+settings.watch<string>('SMS_Default_Omnichannel_Department', function (value) {
 	SMS.department = value;
 });
 
-settings.watch('SMS_Service', (value) => {
+settings.watch<string>('SMS_Service', (value) => {
 	SMS.service = value.toLowerCase();
 });
