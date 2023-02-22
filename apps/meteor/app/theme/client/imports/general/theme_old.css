@@ -1,3 +1,23 @@
+* {
+	-webkit-overflow-scrolling: touch;
+
+	&::-webkit-scrollbar {
+		width: 8px;
+		height: 8px;
+
+		background: var(--transparent-dark);
+	}
+
+	&::-webkit-scrollbar-thumb {
+		border-radius: 50px;
+		background-color: var(--custom-scrollbar-color);
+	}
+
+	&::-webkit-scrollbar-corner {
+		background-color: var(--transparent-dark);
+	}
+}
+
 .content-background-color {
 	background-color: var(--content-background-color);
 }
