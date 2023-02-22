@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test';
 
 import { IS_EE } from './config/constants';
+import { Users } from './fixtures/userStates';
 import { expect, test } from './utils/test';
 
 const CardIds = {
@@ -12,7 +13,7 @@ const CardIds = {
 	Docs: 'homepage-documentation-card',
 	Custom: 'homepage-custom-card',
 };
-test.use({ storageState: 'admin-session.json' });
+test.use({ storageState: Users.admin.state });
 
 test.describe.serial('homepage', () => {
 	let regularUserPage: Page;
@@ -20,7 +21,7 @@ test.describe.serial('homepage', () => {
 
 	test.describe('layout for admins', () => {
 		test.beforeAll(async ({ browser }) => {
-			adminPage = await browser.newPage({ storageState: 'admin-session.json' });
+			adminPage = await browser.newPage({ storageState: Users.admin.state });
 			await adminPage.goto('/home');
 			await adminPage.waitForSelector('[data-qa-id="home-header"]');
 		});
@@ -39,7 +40,7 @@ test.describe.serial('homepage', () => {
 
 		test.describe('custom body with empty custom content', () => {
 			test.beforeAll(async ({ api }) => {
-				expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
+				await expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
 			});
 
 			test('expect default value in custom body', async () => {
@@ -60,7 +61,7 @@ test.describe.serial('homepage', () => {
 
 		test.describe('custom body with custom content', () => {
 			test.beforeAll(async ({ api }) => {
-				expect((await api.post('/settings/Layout_Home_Body', { value: 'Hello admin' })).status()).toBe(200);
+				await expect((await api.post('/settings/Layout_Home_Body', { value: 'Hello admin' })).status()).toBe(200);
 			});
 
 			test('expect custom body to be visible', async () => {
@@ -77,9 +78,9 @@ test.describe.serial('homepage', () => {
 
 				test.describe('display custom content only', () => {
 					test.beforeAll(async ({ api }) => {
-						expect((await api.post('/settings/Layout_Home_Body', { value: 'Hello admin' })).status()).toBe(200);
-						expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: true })).status()).toBe(200);
-						expect((await api.post('/settings/Layout_Custom_Body_Only', { value: true })).status()).toBe(200);
+						await expect((await api.post('/settings/Layout_Home_Body', { value: 'Hello admin' })).status()).toBe(200);
+						await expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: true })).status()).toBe(200);
+						await expect((await api.post('/settings/Layout_Custom_Body_Only', { value: true })).status()).toBe(200);
 					});
 
 					test('expect default layout to not be visible (show only custom content card)', async () => {
@@ -99,19 +100,19 @@ test.describe.serial('homepage', () => {
 		});
 
 		test.afterAll(async ({ api }) => {
-			expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: false })).status()).toBe(200);
-			expect((await api.post('/settings/Layout_Custom_Body_Only', { value: false })).status()).toBe(200);
+			await expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: false })).status()).toBe(200);
+			await expect((await api.post('/settings/Layout_Custom_Body_Only', { value: false })).status()).toBe(200);
 			await adminPage.close();
 		});
 	});
 
 	test.describe('layout for regular users', () => {
 		test.beforeAll(async ({ api }) => {
-			expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
+			await expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
 		});
 
 		test.beforeAll(async ({ browser }) => {
-			regularUserPage = await browser.newPage({ storageState: 'user2-session.json' });
+			regularUserPage = await browser.newPage({ storageState: Users.user2.state });
 			await regularUserPage.goto('/home');
 			await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
 		});
@@ -148,12 +149,12 @@ test.describe.serial('homepage', () => {
 
 		test.describe('custom values', () => {
 			test.beforeAll(async ({ api }) => {
-				expect((await api.post('/settings/Site_Name', { value: 'NewSiteName' })).status()).toBe(200);
-				expect((await api.post('/settings/Layout_Home_Title', { value: 'NewTitle' })).status()).toBe(200);
+				await expect((await api.post('/settings/Site_Name', { value: 'NewSiteName' })).status()).toBe(200);
+				await expect((await api.post('/settings/Layout_Home_Title', { value: 'NewTitle' })).status()).toBe(200);
 			});
 
 			test.beforeAll(async ({ browser }) => {
-				regularUserPage = await browser.newPage({ storageState: 'user2-session.json' });
+				regularUserPage = await browser.newPage({ storageState: Users.user2.state });
 				await regularUserPage.goto('/home');
 				await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
 			});
@@ -167,8 +168,8 @@ test.describe.serial('homepage', () => {
 			});
 
 			test.afterAll(async ({ api }) => {
-				expect((await api.post('/settings/Site_Name', { value: 'Rocket.Chat' })).status()).toBe(200);
-				expect((await api.post('/settings/Layout_Home_Title', { value: 'Home' })).status()).toBe(200);
+				await expect((await api.post('/settings/Site_Name', { value: 'Rocket.Chat' })).status()).toBe(200);
+				await expect((await api.post('/settings/Layout_Home_Title', { value: 'Home' })).status()).toBe(200);
 			});
 		});
 
@@ -180,12 +181,12 @@ test.describe.serial('homepage', () => {
 
 		test.describe('custom body with content', () => {
 			test.beforeAll(async ({ api }) => {
-				expect((await api.post('/settings/Layout_Home_Body', { value: 'Hello' })).status()).toBe(200);
-				expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: true })).status()).toBe(200);
+				await expect((await api.post('/settings/Layout_Home_Body', { value: 'Hello' })).status()).toBe(200);
+				await expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: true })).status()).toBe(200);
 			});
 
 			test.beforeAll(async ({ browser }) => {
-				regularUserPage = await browser.newPage({ storageState: 'user2-session.json' });
+				regularUserPage = await browser.newPage({ storageState: Users.user2.state });
 				await regularUserPage.goto('/home');
 				await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
 			});
@@ -198,7 +199,7 @@ test.describe.serial('homepage', () => {
 				test.skip(!IS_EE, 'Enterprise Only');
 
 				test.beforeAll(async ({ api }) => {
-					expect((await api.post('/settings/Layout_Custom_Body_Only', { value: true })).status()).toBe(200);
+					await expect((await api.post('/settings/Layout_Custom_Body_Only', { value: true })).status()).toBe(200);
 				});
 
 				test('expect default layout to not be visible', async () => {
@@ -210,13 +211,13 @@ test.describe.serial('homepage', () => {
 				});
 
 				test.afterAll(async ({ api }) => {
-					expect((await api.post('/settings/Layout_Custom_Body_Only', { value: false })).status()).toBe(200);
+					await expect((await api.post('/settings/Layout_Custom_Body_Only', { value: false })).status()).toBe(200);
 				});
 			});
 
 			test.afterAll(async ({ api }) => {
-				expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
-				expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: false })).status()).toBe(200);
+				await expect((await api.post('/settings/Layout_Home_Body', { value: '' })).status()).toBe(200);
+				await expect((await api.post('/settings/Layout_Home_Custom_Block_Visible', { value: false })).status()).toBe(200);
 			});
 		});
 	});

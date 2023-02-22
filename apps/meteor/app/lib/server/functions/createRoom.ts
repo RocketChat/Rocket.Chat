@@ -5,7 +5,7 @@ import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typ
 import { Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 
-import { Apps } from '../../../apps/server';
+import { Apps } from '../../../../ee/server/apps';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
 import { callbacks } from '../../../../lib/callbacks';
 import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
@@ -133,7 +133,7 @@ export const createRoom = function <T extends RoomType>(
 			}
 
 			try {
-				callbacks.run('federation.beforeAddUserAToRoom', { user: member, inviter: owner }, room);
+				callbacks.run('federation.beforeAddUserToARoom', { user: member, inviter: owner }, room);
 			} catch (error) {
 				continue;
 			}
@@ -167,7 +167,7 @@ export const createRoom = function <T extends RoomType>(
 	}
 	callbacks.runAsync('afterCreateRoom', owner, room);
 	if (shouldBeHandledByFederation) {
-		callbacks.run('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members as string[] });
+		callbacks.runAsync('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members as string[] });
 	}
 
 	Apps.triggerEvent('IPostRoomCreate', room);
