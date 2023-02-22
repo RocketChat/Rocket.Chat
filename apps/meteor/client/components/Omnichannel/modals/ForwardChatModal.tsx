@@ -44,17 +44,6 @@ const ForwardChatModal = ({
 	const { phase: departmentsPhase, items: departments, itemCount: departmentsTotal } = useRecordList(departmentsList);
 	const hasDepartments = useMemo(() => departments && departments.length > 0, [departments]);
 
-	const departmentOptions = useMemo(() => {
-		if (!departments) {
-			return [];
-		}
-
-		return departments.map((department) => ({
-			value: department.value.value,
-			label: department.label,
-		}));
-	}, [departments]);
-
 	const _id = { $ne: room.servedBy?._id };
 	const conditions = {
 		_id,
@@ -121,7 +110,7 @@ const ForwardChatModal = ({
 								withTitle
 								filter={departmentsFilter as string}
 								setFilter={setDepartmentsFilter}
-								options={departmentOptions}
+								options={departments}
 								maxWidth='100%'
 								placeholder={t('Select_an_option')}
 								onChange={(value: string): void => {
