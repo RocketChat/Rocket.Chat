@@ -66,16 +66,18 @@ const InterchangeableChart = ({
 			if (!result?.chartLabel || !result?.dataLabels || !result?.dataPoints) {
 				throw new Error('Error! fetching chart data. Details: livechat:getAnalyticsChartData => Missing Data');
 			}
-			context.current = await drawLineChart(
-				canvas.current as HTMLCanvasElement,
-				context.current as ChartType<'line', number, string>,
-				[result.chartLabel],
-				result.dataLabels,
-				[result.dataPoints],
-				{
-					tooltipCallbacks,
-				},
-			);
+			(context.current || typeof context.current === 'undefined') &&
+				canvas.current &&
+				(context.current = await drawLineChart(
+					canvas.current,
+					context.current,
+					[result.chartLabel],
+					result.dataLabels,
+					[result.dataPoints],
+					{
+						tooltipCallbacks,
+					},
+				));
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -92,7 +94,7 @@ const InterchangeableChart = ({
 		});
 	}, [chartName, departmentId, draw, end, start, t, loadData]);
 
-	return <Chart /* border='none' pi='none'*/ ref={canvas} {...props} />;
+	return <Chart ref={canvas} {...props} />;
 };
 
 export default InterchangeableChart;

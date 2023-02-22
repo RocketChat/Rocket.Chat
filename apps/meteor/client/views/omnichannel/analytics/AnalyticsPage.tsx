@@ -10,14 +10,6 @@ import DateRangePicker from './DateRangePicker';
 import InterchangeableChart from './InterchangeableChart';
 import Overview from './Overview';
 
-type DepartmentType =
-	| string
-	| {
-			value: string;
-			label: string;
-	  }
-	| undefined;
-
 const useOptions = (type: string): SelectOption[] => {
 	const t = useTranslation();
 	return useMemo(() => {
@@ -40,9 +32,9 @@ const useOptions = (type: string): SelectOption[] => {
 const AnalyticsPage = () => {
 	const t = useTranslation();
 	const [type, setType] = useState('Conversations');
-	const [department, setDepartment] = useState<DepartmentType>('');
+	const [department, setDepartment] = useState<string | null>(null);
 	const [dateRange, setDateRange] = useState({ start: '', end: '' });
-	const [chartName, setChartName] = useState('');
+	const [chartName, setChartName] = useState<string | undefined>();
 
 	const typeOptions: SelectOption[] = useMemo(
 		() => [
@@ -70,23 +62,12 @@ const AnalyticsPage = () => {
 						</Box>
 						<Box maxWidth='40%' display='flex' mi='x4' flexGrow={1} flexDirection='column'>
 							<Label mb='x4'>{t('Departments')}</Label>
-							<AutoCompleteDepartment value={department} onChange={setDepartment} onlyMyDepartments />
+							<AutoCompleteDepartment value={department || undefined} onChange={setDepartment} onlyMyDepartments />
 						</Box>
 						<DateRangePicker mi='x4' flexGrow={1} onChange={setDateRange} />
 					</Box>
 					<Box>
-						<Overview
-							type={type}
-							dateRange={dateRange}
-							departmentId={
-								(
-									department as {
-										value: string;
-										label: string;
-									}
-								)?.value
-							}
-						/>
+						<Overview type={type} dateRange={dateRange} departmentId={department || ''} />
 					</Box>
 					<Box display='flex' flexDirection='row'>
 						<Margins inline='x2'>
@@ -103,31 +84,13 @@ const AnalyticsPage = () => {
 							flexShrink={1}
 							w='66%'
 							h='100%'
-							chartName={chartName}
-							departmentId={
-								(
-									department as {
-										value: string;
-										label: string;
-									}
-								)?.value
-							}
+							chartName={chartName || ''}
+							departmentId={department || ''}
 							dateRange={dateRange}
 							alignSelf='stretch'
 						/>
 						<Box display='flex' w='33%' flexDirection='row' justifyContent='stretch' p='x10' mis='x4'>
-							<AgentOverview
-								type={chartName}
-								dateRange={dateRange}
-								departmentId={
-									(
-										department as {
-											value: string;
-											label: string;
-										}
-									)?.value
-								}
-							/>
+							<AgentOverview type={chartName || ''} dateRange={dateRange} departmentId={department || ''} />
 						</Box>
 					</Box>
 				</Margins>
