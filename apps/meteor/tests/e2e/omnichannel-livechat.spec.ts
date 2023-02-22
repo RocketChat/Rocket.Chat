@@ -1,15 +1,10 @@
 import { faker } from '@faker-js/faker';
-import type { Browser, Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
+import { createAuxContext } from './fixtures/createAuxContext';
+import { Users } from './fixtures/userStates';
 import { HomeOmnichannel, OmnichannelLiveChat } from './page-objects';
 import { test, expect } from './utils/test';
-
-const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page; poHomeOmnichannel: HomeOmnichannel }> => {
-	const page = await browser.newPage({ storageState });
-	const poHomeOmnichannel = new HomeOmnichannel(page);
-	await page.goto('/');
-	return { page, poHomeOmnichannel };
-};
 
 const newUser = {
 	name: `${faker.name.firstName()} ${faker.datatype.uuid()}}`,
@@ -27,7 +22,9 @@ test.describe('Livechat', () => {
 
 			page = await browser.newPage();
 			poLiveChat = new OmnichannelLiveChat(page);
-			poAuxContext = await createAuxContext(browser, 'user1-session.json');
+
+			const { page: pageCtx } = await createAuxContext(browser, Users.user1);
+			poAuxContext = { page: pageCtx, poHomeOmnichannel: new HomeOmnichannel(pageCtx) };
 
 			await page.goto('/livechat');
 		});
