@@ -1,6 +1,64 @@
 
 # 6.0.0 (Under Release Candidate Process)
 
+## 6.0.0-rc.1
+`2023-02-22  ·  1 🐛  ·  10 🔍  ·  11 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Filtering users by status username is broken in Administration -> Users ([#27706](https://github.com/RocketChat/Rocket.Chat/pull/27706))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Move all variables to first step and reduce code duplication ([#28106](https://github.com/RocketChat/Rocket.Chat/pull/28106))
+
+- Chore: Playwright test improvements ([#28100](https://github.com/RocketChat/Rocket.Chat/pull/28100))
+
+- i18n: Language update from LingoHub 🤖 on 2023-02-14Z ([#28036](https://github.com/RocketChat/Rocket.Chat/pull/28036))
+
+- Regression: Broken message jump onto threads ([#28095](https://github.com/RocketChat/Rocket.Chat/pull/28095))
+
+- Regression: Change wording on department removal setting ([#28051](https://github.com/RocketChat/Rocket.Chat/pull/28051))
+
+- Regression: Fix agent departments select value ([#28077](https://github.com/RocketChat/Rocket.Chat/pull/28077))
+
+- Regression: Fix department edit breaking ([#28053](https://github.com/RocketChat/Rocket.Chat/pull/28053))
+
+- Regression: Gracefully stop DDP Streamer publication and close WS ([#28121](https://github.com/RocketChat/Rocket.Chat/pull/28121))
+
+- Regression: Re-add app signature migration to fix the faulty previous one ([#28107](https://github.com/RocketChat/Rocket.Chat/pull/28107))
+
+  Previously merged migration files ended up in a faulty migration
+
+- Regression: Video Recorder "record" button alignment ([#28122](https://github.com/RocketChat/Rocket.Chat/pull/28122))
+
+  ### Before
+  <img width="100" alt="image" src="https://user-images.githubusercontent.com/2263066/220740337-82668932-0ac4-4b43-8a26-07fdb4cb0cd4.png">
+  <img width="100" alt="image" src="https://user-images.githubusercontent.com/2263066/220740566-a1d14f75-c207-4f7f-8422-3e15386a6b11.png">
+
+  ### After
+  <img width="100" alt="image" src="https://user-images.githubusercontent.com/2263066/220740404-7dd22522-5f55-4538-aa3d-ddf70cecc9a5.png">
+  <img width="100" alt="image" src="https://user-images.githubusercontent.com/2263066/220740699-7b34e5e6-2f6c-4169-ac13-55d73b5263bf.png">
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@LucianoPierdona](https://github.com/LucianoPierdona)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@d-gubert](https://github.com/d-gubert)
+- [@dougfabris](https://github.com/dougfabris)
+- [@ggazzo](https://github.com/ggazzo)
+- [@murtaza98](https://github.com/murtaza98)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+- [@totoi690](https://github.com/totoi690)
+
 ## 6.0.0-rc.0
 `2023-02-18  ·  18 ️️️⚠️  ·  12 🎉  ·  13 🚀  ·  54 🐛  ·  135 🔍  ·  54 👩‍💻👨‍💻`
 

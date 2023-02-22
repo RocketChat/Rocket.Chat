@@ -100774,6 +100774,136 @@
           ]
         }
       ]
+    },
+    "6.0.0-rc.1": {
+      "node_version": "14.21.2",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.4",
+        "5.0",
+        "6.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "28122",
+          "title": "Regression: Video Recorder \"record\" button alignment",
+          "userLogin": "tassoevan",
+          "description": "### Before\r\n<img width=\"100\" alt=\"image\" src=\"https://user-images.githubusercontent.com/2263066/220740337-82668932-0ac4-4b43-8a26-07fdb4cb0cd4.png\">\r\n<img width=\"100\" alt=\"image\" src=\"https://user-images.githubusercontent.com/2263066/220740566-a1d14f75-c207-4f7f-8422-3e15386a6b11.png\">\r\n\r\n### After\r\n<img width=\"100\" alt=\"image\" src=\"https://user-images.githubusercontent.com/2263066/220740404-7dd22522-5f55-4538-aa3d-ddf70cecc9a5.png\">\r\n<img width=\"100\" alt=\"image\" src=\"https://user-images.githubusercontent.com/2263066/220740699-7b34e5e6-2f6c-4169-ac13-55d73b5263bf.png\">",
+          "milestone": "6.0.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "28107",
+          "title": "Regression: Re-add app signature migration to fix the faulty previous one",
+          "userLogin": "d-gubert",
+          "description": "Previously merged migration files ended up in a faulty migration",
+          "milestone": "6.0.0",
+          "contributors": [
+            "d-gubert"
+          ]
+        },
+        {
+          "pr": "28121",
+          "title": "Regression: Gracefully stop DDP Streamer publication and close WS",
+          "userLogin": "sampaiodiego",
+          "milestone": "6.0.0",
+          "contributors": [
+            "sampaiodiego",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28051",
+          "title": "Regression: Change wording on department removal setting",
+          "userLogin": "KevLehman",
+          "milestone": "6.0.0",
+          "contributors": [
+            "KevLehman",
+            "web-flow",
+            "murtaza98",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "28053",
+          "title": "Regression: Fix department edit breaking",
+          "userLogin": "MartinSchoeler",
+          "milestone": "6.0.0",
+          "contributors": [
+            "MartinSchoeler",
+            "web-flow",
+            "KevLehman",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "28095",
+          "title": "Regression: Broken message jump onto threads",
+          "userLogin": "tassoevan",
+          "milestone": "6.0.0",
+          "contributors": [
+            "tassoevan",
+            "web-flow",
+            "ggazzo",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "28077",
+          "title": "Regression: Fix agent departments select value",
+          "userLogin": "MartinSchoeler",
+          "milestone": "6.0.0",
+          "contributors": [
+            "MartinSchoeler",
+            "web-flow",
+            "murtaza98",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "28106",
+          "title": "Chore: Move all variables to first step and reduce code duplication",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "27706",
+          "title": "[FIX] Filtering users by status username is broken in Administration -> Users",
+          "userLogin": "totoi690",
+          "milestone": "6.1.0",
+          "contributors": [
+            "totoi690",
+            "web-flow",
+            "LucianoPierdona",
+            "ggazzo",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "28036",
+          "title": "i18n: Language update from LingoHub 🤖 on 2023-02-14Z",
+          "userLogin": "lingohub[bot]",
+          "contributors": [
+            "dougfabris",
+            "kodiakhq[bot]",
+            "web-flow",
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "28100",
+          "title": "Chore: Playwright test improvements",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok"
+          ]
+        }
+      ]
     }
   },
   "5.4.0-rc.0": {
