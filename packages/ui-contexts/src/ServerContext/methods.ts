@@ -46,8 +46,6 @@ export interface ServerMethods {
 	'addOAuthService': (...args: any[]) => any;
 	'addUsersToRoom': (...args: any[]) => any;
 	'addWebdavAccount': AddWebdavAccount;
-	'apps/go-enable': (...args: any[]) => any;
-	'apps/is-enabled': (...args: any[]) => any;
 	'authorization:addPermissionToRole': (...args: any[]) => any;
 	'authorization:addUserToRole': (...args: any[]) => any;
 	'authorization:deleteRole': (...args: any[]) => any;

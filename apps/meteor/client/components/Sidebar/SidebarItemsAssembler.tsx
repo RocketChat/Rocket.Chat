@@ -1,8 +1,10 @@
+import { Divider } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
-import React, { memo } from 'react';
+import React, { Fragment, memo } from 'react';
 
 import type { SidebarItem } from '../../lib/createSidebarItems';
+import { isSidebarItem } from '../../lib/createSidebarItems';
 import SidebarNavigationItem from './SidebarNavigationItem';
 
 type SidebarItemsAssemblerProps = {
@@ -12,19 +14,26 @@ type SidebarItemsAssemblerProps = {
 
 const SidebarItemsAssembler: FC<SidebarItemsAssemblerProps> = ({ items, currentPath }) => {
 	const t = useTranslation();
+
 	return (
 		<>
-			{items.map(({ href, pathSection, i18nLabel, name, icon, permissionGranted, pathGroup, tag }) => (
-				<SidebarNavigationItem
-					permissionGranted={permissionGranted}
-					pathGroup={pathGroup || ''}
-					pathSection={href || pathSection || ''}
-					icon={icon}
-					label={t((i18nLabel || name) as Parameters<typeof t>[0])}
-					key={i18nLabel || name}
-					currentPath={currentPath}
-					tag={t.has(tag as Parameters<typeof t>[0]) ? t(tag as Parameters<typeof t>[0]) : undefined}
-				/>
+			{items.map((props) => (
+				<Fragment key={props.i18nLabel}>
+					{isSidebarItem(props) ? (
+						<SidebarNavigationItem
+							permissionGranted={props.permissionGranted}
+							pathGroup={props.pathGroup || ''}
+							pathSection={props.href ?? props.pathSection ?? ''}
+							icon={props.icon}
+							label={t((props.i18nLabel || props.name) as Parameters<typeof t>[0])}
+							currentPath={currentPath}
+							tag={t.has(props.tag) ? t(props.tag) : props.tag}
+							externalUrl={props.externalUrl}
+						/>
+					) : (
+						<Divider />
+					)}
+				</Fragment>
 			))}
 		</>
 	);
