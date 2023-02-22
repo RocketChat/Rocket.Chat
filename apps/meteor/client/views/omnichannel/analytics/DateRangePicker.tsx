@@ -27,7 +27,7 @@ const getWeekRange = (daysToSubtractFromStart: number, daysToSubtractFromEnd: nu
 };
 
 type DateRangePickerProps = Omit<ComponentProps<typeof Box>, 'onChange'> & {
-	onChange?: (dateRange: { start: string; end: string }) => void;
+	onChange: (dateRange: { start: string; end: string }) => void;
 };
 
 const DateRangePicker = ({ onChange, ...props }: DateRangePickerProps): ReactElement => {
@@ -42,7 +42,7 @@ const DateRangePicker = ({ onChange, ...props }: DateRangePickerProps): ReactEle
 			end: range.end,
 		};
 		setRange(rangeObj);
-		onChange?.(rangeObj);
+		onChange(rangeObj);
 	});
 
 	const handleEnd = useMutableCallback(({ currentTarget }) => {
