@@ -13,7 +13,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
 import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './LivechatTyped.d';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
-import { Apps, AppEvents } from '../../../apps/server';
+import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { Messages as LegacyMessage } from '../../../models/server';
 
 class LivechatClass {

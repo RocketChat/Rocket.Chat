@@ -6,7 +6,7 @@ import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWar
 import { deleteRoom } from '../../app/lib/server/functions/deleteRoom';
 import { hasPermission } from '../../app/authorization/server';
 import { Rooms, Messages } from '../../app/models/server';
-import { Apps } from '../../app/apps/server';
+import { Apps } from '../../ee/server/apps';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
 export async function eraseRoom(rid: string, uid: string): Promise<void> {
