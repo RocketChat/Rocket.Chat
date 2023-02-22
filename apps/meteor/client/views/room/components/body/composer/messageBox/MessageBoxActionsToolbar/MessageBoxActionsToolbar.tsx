@@ -26,9 +26,9 @@ const MessageBoxActionsToolbar = ({
 	canJoin,
 }: MessageBoxActionsToolbarProps) => {
 	const actions = [
-		<VideoMessageAction key='video' collapsed={variant === 'small'} isRecording={isRecording} canSend={canJoin || canSend} />,
+		<VideoMessageAction key='video' collapsed={variant === 'small'} disabled={(!canJoin && !canSend) || typing || isRecording} />,
 		<AudioMessageAction key='audio' disabled={(!canJoin && !canSend) || typing || isRecording} />,
-		<FileUploadAction key='file' collapsed={variant === 'small'} isRecording={isRecording} canSend={canSend} />,
+		<FileUploadAction key='file' collapsed={variant === 'small'} disabled={!canSend || isRecording} />,
 	];
 
 	let featuredAction;

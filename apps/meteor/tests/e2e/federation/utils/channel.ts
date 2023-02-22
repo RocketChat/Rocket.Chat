@@ -5,6 +5,22 @@ import type { FederationChannel } from '../page-objects/channel';
 import { doLogin } from './auth';
 import type { API } from './test';
 
+const doLoginAndGoToHome = async (
+	page: Page,
+	server: {
+		url: string;
+		username: string;
+		password: string;
+	},
+): Promise<void> => {
+	await doLogin({
+		page,
+		server,
+	});
+
+	await page.goto(`${server.url}/home`);
+};
+
 export const createChannelAndInviteRemoteUserToCreateLocalUser = async ({
 	page,
 	poFederationChannelServer,
@@ -34,22 +50,6 @@ export const createChannelAndInviteRemoteUserToCreateLocalUser = async ({
 	return channelName;
 };
 
-const doLoginAndGoToHome = async (
-	page: Page,
-	server: {
-		url: string;
-		username: string;
-		password: string;
-	},
-): Promise<void> => {
-	await doLogin({
-		page,
-		server,
-	});
-
-	await page.goto(`${server.url}/home`);
-};
-
 export const createGroupAndInviteRemoteUserToCreateLocalUser = async ({
 	page,
 	poFederationChannelServer,
@@ -71,7 +71,7 @@ export const createGroupAndInviteRemoteUserToCreateLocalUser = async ({
 	await doLoginAndGoToHome(page, server);
 
 	await poFederationChannelServer.createPrivateGroupAndInviteUsersUsingCreationModal(groupName, [fullUsernameFromServer]);
-	page.close();
+	await page.close();
 
 	return groupName;
 };

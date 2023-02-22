@@ -7,7 +7,7 @@ import { messageBox } from '../../../ui-utils/client';
 import { applyButtonFilters } from './lib/applyButtonFilters';
 import { triggerActionButtonAction } from '../ActionManager';
 import { t } from '../../../utils/client';
-import { Utilities } from '../../../apps/lib/misc/Utilities';
+import { Utilities } from '../../../../ee/lib/misc/Utilities';
 
 const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `${appId}/${actionId}`;
 

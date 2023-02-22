@@ -35,17 +35,10 @@ declare module 'meteor/templating' {
 		inputAutocomplete: BlazeTemplate;
 		_autocompleteContainer: BlazeTemplate;
 		_noMatch: BlazeTemplate;
-		authorize: BlazeTemplate;
-		oauth404: BlazeTemplate;
-		icon: BlazeTemplate<{
-			block?: string;
-			icon: string;
-		}>;
 		CodeMirror: BlazeTemplate;
 		photoswipeContent: BlazeTemplate;
 		roomSearch: BlazeTemplate<typeof AutoComplete>;
 		roomSearchEmpty: BlazeTemplate;
-		avatar: BlazeTemplate;
 		username: BlazeTemplate<
 			Record<string, never>,
 			{
@@ -70,19 +63,12 @@ declare module 'meteor/templating' {
 				validate: () => unknown;
 			}
 		>;
-		error: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		loading: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		collapseArrow: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		rc_modal: Blaze.Template<any, Blaze.TemplateInstance<any>>;
-		error: BlazeTemplate;
 		loading: BlazeTemplate;
 		messagePopupSlashCommandPreview: BlazeTemplate<{
 			tmid?: IMessage['_id'];
 			rid: IRoom['_id'];
 			getInput: () => HTMLTextAreaElement | null;
 		}>;
-		rc_modal: BlazeTemplate;
-		messagePopupCannedResponse: BlazeTemplate;
 	};
 
 	interface TemplateStatic extends BlazeTemplates {

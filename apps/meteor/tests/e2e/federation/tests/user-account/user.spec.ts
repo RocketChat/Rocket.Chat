@@ -1,14 +1,14 @@
-import type { Page } from '@playwright/test';
 import faker from '@faker-js/faker';
+import type { Page } from '@playwright/test';
 
-import { test, expect, setupTesting, tearDownTesting } from '../../utils/test';
-import { FederationChannel } from '../../page-objects/channel';
-import { registerUser } from '../../utils/register-user';
-import { createChannelAndInviteRemoteUserToCreateLocalUser } from '../../utils/channel';
-import { doLogin } from '../../utils/auth';
 import * as constants from '../../config/constants';
-import { formatIntoFullMatrixUsername, formatUsernameAndDomainIntoMatrixFormat } from '../../utils/format';
 import { FederationAccountProfile } from '../../page-objects/account-profile';
+import { FederationChannel } from '../../page-objects/channel';
+import { doLogin } from '../../utils/auth';
+import { createChannelAndInviteRemoteUserToCreateLocalUser } from '../../utils/channel';
+import { formatIntoFullMatrixUsername, formatUsernameAndDomainIntoMatrixFormat } from '../../utils/format';
+import { registerUser } from '../../utils/register-user';
+import { test, expect, setupTesting, tearDownTesting } from '../../utils/test';
 
 test.describe.parallel('Federation - User Account Pannel', () => {
 	let poFederationChannelServer1: FederationChannel;
