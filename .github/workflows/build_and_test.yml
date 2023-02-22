@@ -18,11 +18,12 @@ env:
   MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
   MONGO_OPLOG_URL: mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true
   TOOL_NODE_FLAGS: --max_old_space_size=4096
-  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+  # TODO: Remove from reference later
   node-version: '14.21.2'
 
 jobs:
   release-versions:
+    name: Variables Setup
     runs-on: ubuntu-latest
     outputs:
       release: ${{ steps.by-tag.outputs.release }}
@@ -34,16 +35,23 @@ jobs:
       rc-docker-tag: '${{ steps.docker.outputs.gh-docker-tag }}.official'
       rc-dockerfile-alpine: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile.alpine'
       rc-docker-tag-alpine: '${{ steps.docker.outputs.gh-docker-tag }}.alpine'
+      node-version: ${{ steps.var.outputs.node-version }}
       # this is 100% intentional, secrets are not available for forks, so ee-tests will always fail
       # to avoid this, we are using a dummy license, expiring at 2023-06-30
       enterprise-license: Z2Dg0RC3kyxjuklSE6qfqyvD2xSD+oTYcS9OesJG0523r7rSPjv59LTQqPcp5E61qQYM3MOKoW3mDrurw4h78nVbsfrF2DoJZeNjRFQfIbgwcdPwtmnqPpDvAslszHY16VzM7O7EYqAqp/9mlnRzs1iJY+W3w1r6HWBlVMb9u41bl5HBSpX6Nxw8YxL4mizwOpjxewQbPQvNTLJNAW6w0nCzF5A3CKBhD9fziadedVMLOuXBuR8kIl8zbIAfqpHmL8SvakvQAbZEjWWQshmH+C9CKA5PppkmA8Q1DNWQoVtHSiYDK8RRjAEx+0oGflklzFyhJFDvD+ohZduNtNCgrJmxP5VFrVrLSK4BXgTSwwnaSKa2N+Qx0CmuRfu7nCPc1Cf6h6+k2TXvzkE4Z0ZJnDV1khu611glAr99bHdwF+bMX3XZI66bS8KqnHEukCt5xei25iKJ2xrfmGuiAkAuKHKzBmTEmXM0pGhkfDhA9jhxG3Atoj1A5y8vdrs88voF+UuNFZ6k9sKtdvrWIWClnkatPE+41ggbzCsOhFz07BvRWaEtw2Kenipl4Vtag4qmFpUaUfsuouH99M3gDlysDZO3x5aH8yfzvFeL5WDMvsmdEHNLpHl89WsPCONvx0JjRSdwcCA1NrRuVy1Ncu0S0bRByn7HZqoY9u6HPkXKBxQ=
     steps:
+      - uses: actions/checkout@v3
+
       - id: var
         run: |
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
           echo "LOWERCASE_REPOSITORY: ${LOWERCASE_REPOSITORY}"
           echo "lowercase-repo=${LOWERCASE_REPOSITORY}" >> $GITHUB_OUTPUT
+
+          NODE_VERSION=$(node -p "require('./package.json').volta.node")
+          echo "NODE_VERSION: ${NODE_VERSION}"
+          echo "node-version=${NODE_VERSION}" >> $GITHUB_OUTPUT
 
       - id: by-tag
         run: |
@@ -75,6 +83,7 @@ jobs:
           echo "gh-docker-tag=${DOCKER_TAG}" >> $GITHUB_OUTPUT
 
   build:
+    name: Build
     runs-on: ubuntu-20.04
 
     steps:
@@ -95,11 +104,8 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - name: Use Node.js ${{ env.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.node-version }}
-          cache: 'yarn'
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
 
       - name: Free disk space
         run: |
@@ -187,52 +193,8 @@ jobs:
           path: /tmp/Rocket.Chat.tar.gz
 
   checks:
-    runs-on: ubuntu-20.04
-
-    strategy:
-      fail-fast: false
-      matrix:
-        check: ['ts', 'lint']
-
-    steps:
-      - name: Set Swap Space
-        uses: pierotofy/set-swap-space@master
-        with:
-          swap-size-gb: 4
-
-      - uses: actions/checkout@v3
-
-      - name: Use Node.js ${{ env.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.node-version }}
-          cache: 'yarn'
-
-      - name: Free disk space
-        run: |
-          sudo apt clean
-          docker rmi $(docker image ls -aq)
-          df -h
-
-      - name: Versions
-        run: |
-          npm --versions
-          yarn -v
-          node -v
-          git version
-
-      - name: yarn install
-        run: yarn
-
-      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
-
-      - name: TS typecheck
-        if: matrix.check == 'ts'
-        run: yarn turbo run typecheck
-
-      - name: Lint
-        if: matrix.check == 'lint'
-        run: yarn lint
+    name: Code Check
+    uses: ./.github/workflows/code-check.yml
 
   build-docker-preview:
     runs-on: ubuntu-20.04
@@ -241,11 +203,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
 
       - name: Restore build
         uses: actions/download-artifact@v2
@@ -270,36 +229,10 @@ jobs:
           password: ${{ secrets.CR_PAT }}
 
   test-unit:
-    name: Test Unit / MongoDB ${{ matrix.mongodb-version }}
-    runs-on: ubuntu-20.04
+    name: Test Unit
     needs: [build, checks, release-versions]
 
-    strategy:
-      matrix:
-        mongodb-version: ['4.4', '5.0', '6.0']
-
-    steps:
-      - name: Launch MongoDB
-        uses: supercharge/mongodb-github-action@1.8.0
-        with:
-          mongodb-version: ${{ matrix.mongodb-version }}
-          mongodb-replica-set: rs0
-
-      - uses: actions/checkout@v3
-
-      - name: Use Node.js ${{ env.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.node-version }}
-          cache: 'yarn'
-
-      - name: yarn install
-        run: yarn
-
-      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
-
-      - name: Unit Test
-        run: yarn testunit
+    uses: ./.github/workflows/test-unit.yml
 
   test-api:
     name: Test API (CE)
@@ -309,7 +242,6 @@ jobs:
     with:
       type: api
       release: ce
-      # node-version: ${{ env.node-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
@@ -330,7 +262,6 @@ jobs:
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
       shard: '[1, 2, 3, 4]'
       total-shard: 4
-      # node-version: ${{ env.node-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
@@ -351,7 +282,6 @@ jobs:
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
       mongodb-version: "['4.4']"
       publish-container: true
-      # node-version: ${{ env.node-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
@@ -373,7 +303,6 @@ jobs:
       shard: '[1, 2, 3, 4, 5]'
       total-shard: 5
       mongodb-version: "['4.4']"
-      # node-version: ${{ env.node-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
@@ -455,7 +384,7 @@ jobs:
           aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
           curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-              "{\"nodeVersion\": \"${{ env.node-version }}\", \"compatibleMongoVersions\": [\"4.4\", \"5.0\", \"6.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
+              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"compatibleMongoVersions\": [\"4.4\", \"5.0\", \"6.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
               https://releases.rocket.chat/update
 
           # Makes build fail if the release isn't there

@@ -25,10 +25,6 @@ on:
         type: string
       transporter:
         type: string
-      node-version:
-        default: '14.21.2'
-        required: false
-        type: string
       mongodb-version:
         default: "['4.4', '6.0']"
         required: false
@@ -75,12 +71,10 @@ jobs:
       DOCKER_TAG: ${{ inputs.gh-docker-tag }}
 
     strategy:
-      fail-fast: false
       matrix:
         mongodb-version: ${{ fromJSON(inputs.mongodb-version) }}
         shard: ${{ fromJSON(inputs.shard) }}
 
-    # name: NodeJS ${{ inputs.node-version }} - MongoDB ${{ matrix.mongodb-version }} (${{ matrix.shard }}/${{ inputs.total-shard }})
     name: MongoDB ${{ matrix.mongodb-version }} (${{ matrix.shard }}/${{ inputs.total-shard }})
 
     steps:
@@ -92,11 +86,8 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - name: Use Node.js ${{ inputs.node-version }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ inputs.node-version }}
-          cache: 'yarn'
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
 
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
