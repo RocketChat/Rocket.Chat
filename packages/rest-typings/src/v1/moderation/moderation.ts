@@ -1,4 +1,4 @@
-import type { IReport, IModerationAudit, IUserReportedMessages } from '@rocket.chat/core-typings';
+import type { IReport, IModerationAudit, IUserReportedMessages, IUser } from '@rocket.chat/core-typings';
 import type { UpdateResult, Document } from 'mongodb';
 
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
@@ -17,6 +17,14 @@ export type ModerationEndpoints = {
 	};
 	'/v1/moderation.user.getMessageHistory': {
 		GET: (params: { userId: string; sort?: string; selector?: string; count?: number }) => IUserReportedMessages;
+	};
+	'/v1/moderation.user.deleteMessageHistory': {
+		POST: (params: { userId: string; reasonForHiding?: string }) => void;
+	};
+	'/v1/moderation.user.deactivate': {
+		POST: (params: { userId: string; reasonForHiding?: string }) => {
+			user: IUser;
+		};
 	};
 	'/v1/moderation.markChecked': {
 		POST: (params: ArchiveReportProps) => {

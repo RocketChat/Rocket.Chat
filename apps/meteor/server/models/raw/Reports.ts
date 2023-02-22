@@ -251,7 +251,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		return this.col.aggregate(params, { allowDiskUse: true });
 	}
 
-	findUserMessages(userId: string, offset = 0, count = 50, sort?: any, selector?: string): AggregationCursor<IUserReportedMessages> {
+	findUserMessages(userId: string, offset = 0, count?: number, sort?: any, selector?: string): AggregationCursor<IUserReportedMessages> {
 		const query = {
 			'_hidden': {
 				$ne: true,
@@ -295,9 +295,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			{
 				$skip: offset,
 			},
-			{
-				$limit: count,
-			},
+			...(count !== undefined ? [{ $limit: count }] : []),
 			{
 				$project: {
 					_id: 0,

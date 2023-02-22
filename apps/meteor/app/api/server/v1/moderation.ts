@@ -2,6 +2,7 @@ import { isReportHistoryProps, isArchiveReportProps } from '@rocket.chat/rest-ty
 import { Reports } from '@rocket.chat/models';
 
 import { API } from '../api';
+import { deleteReportedMessages } from '../../../../server/lib/moderation/deleteReportedMessages';
 
 API.v1.addRoute(
 	'moderation.getReports',
@@ -70,11 +71,68 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
+	'moderation.user.deleteMessageHistory',
+	{
+		authRequired: true,
+		permissionsRequired: ['manage-moderation-actions'],
+	},
+	{
+		async post() {
+			const { userId, reasonForHiding } = this.requestParams();
+
+			const reasonProvided = reasonForHiding && reasonForHiding.trim() !== '';
+			const sanitizedReason = reasonProvided ? reasonForHiding : 'No reason provided';
+
+			const { user: modUser } = this;
+
+			if (!userId) {
+				return API.v1.failure('The required "userId" body param is missing.');
+			}
+
+			const cursor = Reports.findUserMessages(userId);
+
+			const [{ messages = [], count = 0 } = {}] = await cursor.toArray();
+
+			if (count < 0) {
+				return API.v1.failure('No messages found for this user.');
+			}
+
+			await deleteReportedMessages(messages, modUser);
+
+			await Reports.hideReportsByUserId(userId, this.userId, sanitizedReason, 'DELETE Messages');
+
+			return API.v1.success();
+		},
+	},
+);
+
+// API.v1.addRoute(
+// 	'moderation.user.deactivate',
+// 	{
+// 		authRequired: true,
+// 		permissionsRequired: ['view-moderation-console'],
+// 	},
+// 	{
+// 		async post() {
+// 			const { userId } = this.bodyParams;
+
+// 			if (!userId) {
+// 				return API.v1.failure('The required "userId" body param is missing.');
+// 			}
+
+// 			const { user } = await API.v1.runAction('users.deactivate', { userId });
+
+// 			return API.v1.success({ user });
+// 		},
+// 	},
+// );
+
+API.v1.addRoute(
 	'moderation.markChecked',
 	{
 		authRequired: true,
 		validateParams: isArchiveReportProps,
-		permissionsRequired: ['view-moderation-console'],
+		permissionsRequired: ['manage-moderation-actions'],
 	},
 	{
 		async post() {
