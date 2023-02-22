@@ -4,6 +4,7 @@ import { useCurrentRoute, useRoute, useUserId, useSetting } from '@rocket.chat/u
 import type { ReactNode } from 'react';
 import React, { useMemo } from 'react';
 
+import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import type { ToolboxContextValue } from '../contexts/ToolboxContext';
 import { ToolboxContext } from '../contexts/ToolboxContext';
 import type { Store } from '../lib/Toolbox/generator';
@@ -20,8 +21,9 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 		setList((list) => new Map(list));
 	});
 	const { listen, actions } = useToolboxActions(room);
+	const isLayoutEmbedded = useEmbeddedLayout();
 
-	const [routeName, params, queryStringParams] = useCurrentRoute();
+	const [routeName, params] = useCurrentRoute();
 	const router = useRoute(routeName || '');
 
 	const tab = params?.tab;
@@ -39,7 +41,7 @@ const ToolboxProvider = ({ children, room }: { children: ReactNode; room: IRoom 
 				tab: '',
 				context: '',
 			},
-			queryStringParams,
+			isLayoutEmbedded ? { layout: 'embedded' } : undefined,
 		);
 	});
 
