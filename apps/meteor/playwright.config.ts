@@ -10,6 +10,7 @@ export default {
 		trace: 'retain-on-failure',
 		baseURL: constants.BASE_URL,
 		screenshot: process.env.CI ? 'off' : 'only-on-failure',
+		video: process.env.CI ? 'off' : 'retain-on-failure',
 		channel: 'chrome',
 		launchOptions: {
 			// force GPU hardware acceleration
@@ -31,6 +32,7 @@ export default {
 		],
 	],
 	testDir: 'tests/e2e',
+	testIgnore: 'tests/e2e/federation/**',
 	workers: 1,
 	timeout: 60 * 1000,
 	globalTimeout: (process.env.IS_EE === 'true' ? 50 : 40) * 60 * 1000,

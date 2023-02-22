@@ -1,9 +1,10 @@
 import faker from '@faker-js/faker';
 
+import { createToken } from '../../client/lib/utils/createToken';
+import { Users } from './fixtures/userStates';
 import { OmnichannelContacts } from './page-objects/omnichannel-contacts-list';
 import { OmnichannelSection } from './page-objects/omnichannel-section';
 import { test, expect } from './utils/test';
-import { createToken } from '../../client/lib/utils/createToken';
 
 const createContact = (generateToken = false) => ({
 	id: null,
@@ -36,7 +37,7 @@ const ERROR = {
 	existingPhone: 'Phone already exists',
 };
 
-test.use({ storageState: 'admin-session.json' });
+test.use({ storageState: Users.admin.state });
 
 test.describe('Omnichannel Contact Center', () => {
 	let poContacts: OmnichannelContacts;
@@ -155,7 +156,7 @@ test.describe('Omnichannel Contact Center', () => {
 		});
 
 		await test.step('edit contact', async () => {
-			poContacts.contactInfo.btnEdit.click();
+			await poContacts.contactInfo.btnEdit.click();
 			await page.waitForURL(URL.editContact);
 		});
 

@@ -1,20 +1,13 @@
 import { faker } from '@faker-js/faker';
-import type { Browser, Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
-import { test, expect } from './utils/test';
-import { OmnichannelLiveChat, HomeChannel } from './page-objects';
 import { ADMIN_CREDENTIALS, IS_EE } from './config/constants';
-import { createSLA } from './utils/omnichannel/sla';
+import { createAuxContext } from './fixtures/createAuxContext';
+import { Users } from './fixtures/userStates';
+import { OmnichannelLiveChat, HomeChannel } from './page-objects';
 import { getPriorityByi18nLabel } from './utils/omnichannel/priority';
-
-const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page; poHomeChannel: HomeChannel }> => {
-	const page = await browser.newPage({ storageState });
-	const poHomeChannel = new HomeChannel(page);
-	await page.goto('/');
-	await page.locator('.main-content').waitFor();
-
-	return { page, poHomeChannel };
-};
+import { createSLA } from './utils/omnichannel/sla';
+import { test, expect } from './utils/test';
 
 const getRoomId = (page: Page): string => {
 	// url is of the form: http://localhost:3000/live/:rid/room-info
@@ -37,15 +30,17 @@ test.describe('omnichannel-changing-room-priority-and-sla', () => {
 
 	test.beforeAll(async ({ api, browser }) => {
 		let statusCode = (await api.post('/livechat/users/agent', { username: ADMIN_CREDENTIALS.username })).status();
-		expect(statusCode).toBe(200);
+		await expect(statusCode).toBe(200);
 
 		statusCode = (await api.post('/livechat/users/manager', { username: ADMIN_CREDENTIALS.username })).status();
-		expect(statusCode).toBe(200);
+		await expect(statusCode).toBe(200);
 
 		statusCode = (await api.post('/settings/Livechat_Routing_Method', { value: 'Manual_Selection' })).status();
-		expect(statusCode).toBe(200);
+		await expect(statusCode).toBe(200);
 
-		agent = await createAuxContext(browser, 'admin-session.json');
+		const { page } = await createAuxContext(browser, Users.admin);
+		agent = { page, poHomeChannel: new HomeChannel(page) };
+
 		await agent.poHomeChannel.sidenav.switchStatus('online');
 	});
 
@@ -69,12 +64,12 @@ test.describe('omnichannel-changing-room-priority-and-sla', () => {
 
 		await test.step('change priority of room to the new priority', async () => {
 			const status = (await api.post(`/livechat/room/${getRoomId(agent.page)}/priority`, { priorityId: priority._id })).status();
-			expect(status).toBe(200);
+			await expect(status).toBe(200);
 
 			await agent.page.waitForTimeout(1000);
 		});
 
-		expect(agent.poHomeChannel.content.lastSystemMessageBody).toHaveText(
+		await expect(agent.poHomeChannel.content.lastSystemMessageBody).toHaveText(
 			`Priority changed: ${ADMIN_CREDENTIALS.username} changed the priority to ${priority.name || priority.i18n}`,
 		);
 	});
@@ -88,7 +83,7 @@ test.describe('omnichannel-changing-room-priority-and-sla', () => {
 			await agent.page.waitForTimeout(1000);
 		});
 
-		expect(agent.poHomeChannel.content.lastSystemMessageBody).toHaveText(
+		await expect(agent.poHomeChannel.content.lastSystemMessageBody).toHaveText(
 			`SLA Policy changed: ${ADMIN_CREDENTIALS.username} changed the SLA Policy to ${sla.name}`,
 		);
 
@@ -100,12 +95,12 @@ test.describe('omnichannel-changing-room-priority-and-sla', () => {
 
 	test.afterAll(async ({ api }) => {
 		let statusCode = (await api.delete(`/livechat/users/agent/${ADMIN_CREDENTIALS.username}`)).status();
-		expect(statusCode).toBe(200);
+		await expect(statusCode).toBe(200);
 
 		statusCode = (await api.delete(`/livechat/users/manager/${ADMIN_CREDENTIALS.username}`)).status();
-		expect(statusCode).toBe(200);
+		await expect(statusCode).toBe(200);
 
 		statusCode = (await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' })).status();
-		expect(statusCode).toBe(200);
+		await expect(statusCode).toBe(200);
 	});
 });
