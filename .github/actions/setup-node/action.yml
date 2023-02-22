@@ -2,8 +2,9 @@ name: 'Setup Node'
 
 inputs:
   node-version:
-    default: '14.21.2'
-    required: false
+    # default: '14.21.2'
+    required: true
+    type: string
 
 outputs:
   node-version:

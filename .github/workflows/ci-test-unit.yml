@@ -3,16 +3,17 @@ name: Tests Unit
 on:
   workflow_call:
     inputs:
+      node-version:
+        required: true
+        type: string
       mongodb-version:
         default: "['4.4', '6.0']"
         required: false
         type: string
 
 env:
-  CI: true
   MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
-  MONGO_OPLOG_URL: mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true
-  TOOL_NODE_FLAGS: --max_old_space_size=4096
+  TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
 
 jobs:
   test:
@@ -35,6 +36,8 @@ jobs:
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ inputs.node-version }}
 
       - name: yarn install
         run: yarn

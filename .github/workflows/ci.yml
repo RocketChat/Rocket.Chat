@@ -14,16 +14,11 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  CI: true
-  MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
-  MONGO_OPLOG_URL: mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true
-  TOOL_NODE_FLAGS: --max_old_space_size=4096
-  # TODO: Remove from reference later
-  node-version: '14.21.2'
+  TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
 
 jobs:
   release-versions:
-    name: Variables Setup
+    name: ⚙️ Variables Setup
     runs-on: ubuntu-latest
     outputs:
       release: ${{ steps.by-tag.outputs.release }}
@@ -40,7 +35,9 @@ jobs:
       # to avoid this, we are using a dummy license, expiring at 2023-06-30
       enterprise-license: Z2Dg0RC3kyxjuklSE6qfqyvD2xSD+oTYcS9OesJG0523r7rSPjv59LTQqPcp5E61qQYM3MOKoW3mDrurw4h78nVbsfrF2DoJZeNjRFQfIbgwcdPwtmnqPpDvAslszHY16VzM7O7EYqAqp/9mlnRzs1iJY+W3w1r6HWBlVMb9u41bl5HBSpX6Nxw8YxL4mizwOpjxewQbPQvNTLJNAW6w0nCzF5A3CKBhD9fziadedVMLOuXBuR8kIl8zbIAfqpHmL8SvakvQAbZEjWWQshmH+C9CKA5PppkmA8Q1DNWQoVtHSiYDK8RRjAEx+0oGflklzFyhJFDvD+ohZduNtNCgrJmxP5VFrVrLSK4BXgTSwwnaSKa2N+Qx0CmuRfu7nCPc1Cf6h6+k2TXvzkE4Z0ZJnDV1khu611glAr99bHdwF+bMX3XZI66bS8KqnHEukCt5xei25iKJ2xrfmGuiAkAuKHKzBmTEmXM0pGhkfDhA9jhxG3Atoj1A5y8vdrs88voF+UuNFZ6k9sKtdvrWIWClnkatPE+41ggbzCsOhFz07BvRWaEtw2Kenipl4Vtag4qmFpUaUfsuouH99M3gDlysDZO3x5aH8yfzvFeL5WDMvsmdEHNLpHl89WsPCONvx0JjRSdwcCA1NrRuVy1Ncu0S0bRByn7HZqoY9u6HPkXKBxQ=
     steps:
-      - uses: actions/checkout@v3
+      - uses: Bhacaz/checkout-files@v2
+        with:
+          files: package.json
 
       - id: var
         run: |
@@ -83,7 +80,8 @@ jobs:
           echo "gh-docker-tag=${DOCKER_TAG}" >> $GITHUB_OUTPUT
 
   build:
-    name: Build
+    name: 📦 Build
+    needs: [release-versions]
     runs-on: ubuntu-20.04
 
     steps:
@@ -106,12 +104,14 @@ jobs:
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ needs.release-versions.outputs.node-version }}
 
-      - name: Free disk space
-        run: |
-          sudo apt clean
-          docker rmi $(docker image ls -aq)
-          df -h
+      # - name: Free disk space
+      #   run: |
+      #     sudo apt clean
+      #     docker rmi $(docker image ls -aq)
+      #     df -h
 
       - name: Cache meteor local
         uses: actions/cache@v3
@@ -193,55 +193,30 @@ jobs:
           path: /tmp/Rocket.Chat.tar.gz
 
   checks:
-    name: Code Check
-    uses: ./.github/workflows/code-check.yml
+    needs: [release-versions]
 
-  build-docker-preview:
-    runs-on: ubuntu-20.04
-    needs: [build, checks, release-versions]
-    if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup NodeJS
-        uses: ./.github/actions/setup-node
-
-      - name: Restore build
-        uses: actions/download-artifact@v2
-        with:
-          name: build
-          path: /tmp/build
-
-      - name: Unpack build
-        run: |
-          cd /tmp/build
-          tar xzf Rocket.Chat.tar.gz
-          rm Rocket.Chat.tar.gz
-
-      - name: Build Docker image
-        id: build-docker-image-preview
-        uses: ./.github/actions/build-docker-image
-        with:
-          root-dir: /tmp/build
-          docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-          release: preview
-          username: ${{ secrets.CR_USER }}
-          password: ${{ secrets.CR_PAT }}
+    name: 🔎 Code Check
+    uses: ./.github/workflows/ci-code-check.yml
+    with:
+      node-version: ${{ needs.release-versions.outputs.node-version }}
 
   test-unit:
-    name: Test Unit
+    name: 🔨 Test Unit
     needs: [build, checks, release-versions]
 
-    uses: ./.github/workflows/test-unit.yml
+    uses: ./.github/workflows/ci-test-unit.yml
+    with:
+      node-version: ${{ needs.release-versions.outputs.node-version }}
 
   test-api:
-    name: Test API (CE)
+    name: 🔨 Test API (CE)
     needs: [build, checks, release-versions]
 
-    uses: ./.github/workflows/test-e2e.yml
+    uses: ./.github/workflows/ci-test-e2e.yml
     with:
       type: api
       release: ce
+      node-version: ${{ needs.release-versions.outputs.node-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
@@ -251,10 +226,10 @@ jobs:
     secrets: inherit
 
   test-ui:
-    name: Test UI (CE)
+    name: 🔨 Test UI (CE)
     needs: [build, checks, release-versions]
 
-    uses: ./.github/workflows/test-e2e.yml
+    uses: ./.github/workflows/ci-test-e2e.yml
     with:
       type: ui
       release: ce
@@ -262,6 +237,7 @@ jobs:
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
       shard: '[1, 2, 3, 4]'
       total-shard: 4
+      node-version: ${{ needs.release-versions.outputs.node-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
@@ -271,10 +247,10 @@ jobs:
     secrets: inherit
 
   test-api-ee:
-    name: Test API (EE)
+    name: 🔨 Test API (EE)
     needs: [build, checks, release-versions]
 
-    uses: ./.github/workflows/test-e2e.yml
+    uses: ./.github/workflows/ci-test-e2e.yml
     with:
       type: api
       release: ee
@@ -282,6 +258,7 @@ jobs:
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
       mongodb-version: "['4.4']"
       publish-container: true
+      node-version: ${{ needs.release-versions.outputs.node-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
@@ -291,10 +268,10 @@ jobs:
     secrets: inherit
 
   test-ui-ee:
-    name: Test UI (EE)
+    name: 🔨 Test UI (EE)
     needs: [build, checks, release-versions]
 
-    uses: ./.github/workflows/test-e2e.yml
+    uses: ./.github/workflows/ci-test-e2e.yml
     with:
       type: api
       release: ee
@@ -303,6 +280,7 @@ jobs:
       shard: '[1, 2, 3, 4, 5]'
       total-shard: 5
       mongodb-version: "['4.4']"
+      node-version: ${{ needs.release-versions.outputs.node-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
@@ -312,6 +290,7 @@ jobs:
     secrets: inherit
 
   tests-done:
+    name: ✅ Testes Done
     runs-on: ubuntu-20.04
     needs: [test-unit, test-api, test-ui, test-api-ee, test-ui-ee]
 
@@ -321,6 +300,7 @@ jobs:
           echo finished
 
   deploy:
+    name: 🚀 Publish build and update our registry
     runs-on: ubuntu-20.04
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
     needs: [tests-done, release-versions]
@@ -399,7 +379,38 @@ jobs:
               -d '{"tag":"'$GIT_TAG'"}'
           fi
 
+  build-docker-preview:
+    name: 🚢 Build Docker Image (preview)
+    runs-on: ubuntu-20.04
+    needs: [build, checks, release-versions]
+    if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Restore build
+        uses: actions/download-artifact@v2
+        with:
+          name: build
+          path: /tmp/build
+
+      - name: Unpack build
+        run: |
+          cd /tmp/build
+          tar xzf Rocket.Chat.tar.gz
+          rm Rocket.Chat.tar.gz
+
+      - name: Build Docker image
+        id: build-docker-image-preview
+        uses: ./.github/actions/build-docker-image
+        with:
+          root-dir: /tmp/build
+          docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+          release: preview
+          username: ${{ secrets.CR_USER }}
+          password: ${{ secrets.CR_PAT }}
+
   docker-image-publish:
+    name: 🚀 Publish Docker Image (main)
     runs-on: ubuntu-20.04
     needs: [deploy, build-docker-preview, release-versions]
 
@@ -479,6 +490,7 @@ jobs:
           fi
 
   services-docker-image-publish:
+    name: 🚀 Publish Docker Image (services)
     runs-on: ubuntu-20.04
     needs: [deploy, release-versions]
 

@@ -3,6 +3,9 @@ name: Tests E2E
 on:
   workflow_call:
     inputs:
+      node-version:
+        required: true
+        type: string
       lowercase-repo:
         required: true
         type: string
@@ -55,20 +58,17 @@ on:
         required: true
 
 env:
-  CI: true
   MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
-  MONGO_OPLOG_URL: mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true
-  TOOL_NODE_FLAGS: --max_old_space_size=4096
-  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+  TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
+  LOWERCASE_REPOSITORY: ${{ inputs.lowercase-repo }}
+  DOCKER_TAG: ${{ inputs.gh-docker-tag }}
 
 jobs:
   test:
     runs-on: ubuntu-20.04
     env:
-      LOWERCASE_REPOSITORY: ${{ inputs.lowercase-repo }}
       RC_DOCKERFILE: ${{ matrix.mongodb-version == '6.0' && inputs.rc-dockerfile-alpine || inputs.rc-dockerfile }}
       RC_DOCKER_TAG: ${{ matrix.mongodb-version == '6.0' && inputs.rc-docker-tag-alpine || inputs.rc-docker-tag }}
-      DOCKER_TAG: ${{ inputs.gh-docker-tag }}
 
     strategy:
       matrix:
@@ -88,6 +88,8 @@ jobs:
 
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ inputs.node-version }}
 
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
