@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { callbacks } from '../../lib/callbacks';
-import { AppEvents, Apps } from '../../app/apps/server/orchestrator';
+import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
 
 Meteor.methods({
 	logoutCleanUp(user) {
