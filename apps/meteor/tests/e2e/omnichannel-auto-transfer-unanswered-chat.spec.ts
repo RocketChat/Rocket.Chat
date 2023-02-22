@@ -1,18 +1,11 @@
 import { faker } from '@faker-js/faker';
-import type { Browser, Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
 import { IS_EE } from './config/constants';
+import { createAuxContext } from './fixtures/createAuxContext';
+import { Users } from './fixtures/userStates';
 import { OmnichannelLiveChat, HomeChannel } from './page-objects';
 import { test, expect } from './utils/test';
-
-const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page; poHomeChannel: HomeChannel }> => {
-	const page = await browser.newPage({ storageState });
-	const poHomeChannel = new HomeChannel(page);
-	await page.goto('/');
-	await page.locator('.main-content').waitFor();
-
-	return { page, poHomeChannel };
-};
 
 test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 	test.skip(!IS_EE, 'Enterprise Only');
@@ -31,8 +24,11 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 			api.post('/settings/Livechat_auto_transfer_chat_timeout', { value: 5 }).then((res) => expect(res.status()).toBe(200)),
 		]);
 
-		agent1 = await createAuxContext(browser, 'user1-session.json');
-		agent2 = await createAuxContext(browser, 'user2-session.json');
+		const { page } = await createAuxContext(browser, Users.user1);
+		agent1 = { page, poHomeChannel: new HomeChannel(page) };
+
+		const { page: page2 } = await createAuxContext(browser, Users.user2);
+		agent2 = { page: page2, poHomeChannel: new HomeChannel(page2) };
 	});
 
 	test.beforeEach(async ({ page }) => {

@@ -1,10 +1,11 @@
 import { faker } from '@faker-js/faker';
 
 import { IS_EE } from './config/constants';
+import { Users } from './fixtures/userStates';
 import { Admin } from './page-objects';
 import { test, expect } from './utils/test';
 
-test.use({ storageState: 'admin-session.json' });
+test.use({ storageState: Users.admin.state });
 
 test.describe.parallel('administration', () => {
 	let poAdmin: Admin;
