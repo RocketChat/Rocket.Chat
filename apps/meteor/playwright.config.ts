@@ -10,6 +10,7 @@ export default {
 		trace: 'retain-on-failure',
 		baseURL: constants.BASE_URL,
 		screenshot: process.env.CI ? 'off' : 'only-on-failure',
+		video: process.env.CI ? 'off' : 'retain-on-failure',
 		channel: 'chrome',
 		launchOptions: {
 			// force GPU hardware acceleration
