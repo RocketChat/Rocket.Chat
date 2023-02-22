@@ -28,7 +28,22 @@ jobs:
       latest-release: ${{ steps.latest.outputs.latest-release }}
       docker-tag: ${{ steps.docker.outputs.docker-tag }}
       gh-docker-tag: ${{ steps.docker.outputs.gh-docker-tag }}
+      lowercase-repo: ${{ steps.var.outputs.lowercase-repo }}
+      rc-dockerfile: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
+      rc-docker-tag: '${{ steps.docker.outputs.gh-docker-tag }}.official'
+      rc-dockerfile-alpine: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile.alpine'
+      rc-docker-tag-alpine: '${{ steps.docker.outputs.gh-docker-tag }}.alpine'
+      # this is 100% intentional, secrets are not available for forks, so ee-tests will always fail
+      # to avoid this, we are using a dummy license, expiring at 2023-06-30
+      enterprise-license: Z2Dg0RC3kyxjuklSE6qfqyvD2xSD+oTYcS9OesJG0523r7rSPjv59LTQqPcp5E61qQYM3MOKoW3mDrurw4h78nVbsfrF2DoJZeNjRFQfIbgwcdPwtmnqPpDvAslszHY16VzM7O7EYqAqp/9mlnRzs1iJY+W3w1r6HWBlVMb9u41bl5HBSpX6Nxw8YxL4mizwOpjxewQbPQvNTLJNAW6w0nCzF5A3CKBhD9fziadedVMLOuXBuR8kIl8zbIAfqpHmL8SvakvQAbZEjWWQshmH+C9CKA5PppkmA8Q1DNWQoVtHSiYDK8RRjAEx+0oGflklzFyhJFDvD+ohZduNtNCgrJmxP5VFrVrLSK4BXgTSwwnaSKa2N+Qx0CmuRfu7nCPc1Cf6h6+k2TXvzkE4Z0ZJnDV1khu611glAr99bHdwF+bMX3XZI66bS8KqnHEukCt5xei25iKJ2xrfmGuiAkAuKHKzBmTEmXM0pGhkfDhA9jhxG3Atoj1A5y8vdrs88voF+UuNFZ6k9sKtdvrWIWClnkatPE+41ggbzCsOhFz07BvRWaEtw2Kenipl4Vtag4qmFpUaUfsuouH99M3gDlysDZO3x5aH8yfzvFeL5WDMvsmdEHNLpHl89WsPCONvx0JjRSdwcCA1NrRuVy1Ncu0S0bRByn7HZqoY9u6HPkXKBxQ=
     steps:
+      - id: var
+        run: |
+          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
+
+          echo "LOWERCASE_REPOSITORY: ${LOWERCASE_REPOSITORY}"
+          echo "lowercase-repo=${LOWERCASE_REPOSITORY}" >> $GITHUB_OUTPUT
+
       - id: by-tag
         run: |
           if echo "$GITHUB_REF_NAME" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$' ; then
@@ -37,7 +52,7 @@ jobs:
             RELEASE="release-candidate"
           fi
           echo "RELEASE: ${RELEASE}"
-          echo "::set-output name=release::${RELEASE}"
+          echo "release=${RELEASE}" >> $GITHUB_OUTPUT
 
       - id: latest
         run: |
@@ -46,7 +61,7 @@ jobs:
               awk -F/ '$NF !~ /rc|beta/ { print $NF; exit }'
           )"
           echo "LATEST_RELEASE: ${LATEST_RELEASE}"
-          echo "::set-output name=latest-release::${LATEST_RELEASE}"
+          echo "latest-release=${LATEST_RELEASE}" >> $GITHUB_OUTPUT
 
       - id: docker
         run: |
@@ -56,7 +71,7 @@ jobs:
             DOCKER_TAG="gh-${{ github.run_id }}"
           fi
           echo "DOCKER_TAG: ${DOCKER_TAG}"
-          echo "::set-output name=gh-docker-tag::${DOCKER_TAG}"
+          echo "gh-docker-tag=${DOCKER_TAG}" >> $GITHUB_OUTPUT
 
   build:
     runs-on: ubuntu-20.04
@@ -316,6 +331,11 @@ jobs:
   test-api:
     runs-on: ubuntu-20.04
     needs: [build, lint, ts-typecheck, release-versions]
+    env:
+      LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
+      RC_DOCKERFILE: ${{ matrix.mongodb-version == '6.0' && needs.release-versions.outputs.rc-dockerfile-alpine || needs.release-versions.outputs.rc-dockerfile }}
+      RC_DOCKER_TAG: ${{ matrix.mongodb-version == '6.0' && needs.release-versions.outputs.rc-docker-tag-alpine || needs.release-versions.outputs.rc-docker-tag }}
+      DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
 
     strategy:
       matrix:
@@ -328,29 +348,6 @@ jobs:
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
           mongodb-replica-set: rs0
-
-      - name: Docker env vars
-        id: docker-env
-        run: |
-          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-
-          echo "LOWERCASE_REPOSITORY: ${LOWERCASE_REPOSITORY}"
-          echo "::set-output name=lowercase-repo::${LOWERCASE_REPOSITORY}"
-
-          # test alpine image on mongo 6.0 (no special reason to be mongo 6.0 but we need to test alpine at least once)
-          if [[ '${{ matrix.mongodb-version }}' = '6.0' ]]; then
-            RC_DOCKERFILE="${{ github.workspace }}/apps/meteor/.docker/Dockerfile.alpine"
-            RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.alpine"
-          else
-            RC_DOCKERFILE="${{ github.workspace }}/apps/meteor/.docker/Dockerfile"
-            RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.official"
-          fi;
-
-          echo "RC_DOCKERFILE: ${RC_DOCKERFILE}"
-          echo "::set-output name=rc-dockerfile::${RC_DOCKERFILE}"
-
-          echo "RC_DOCKER_TAG: ${RC_DOCKER_TAG}"
-          echo "::set-output name=rc-docker-tag::${RC_DOCKER_TAG}"
 
       - uses: actions/checkout@v3
 
@@ -383,11 +380,6 @@ jobs:
       - name: Start containers
         env:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
-          MONGO_OPLOG_URL: 'mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true'
-          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
-          RC_DOCKERFILE: ${{ steps.docker-env.outputs.rc-dockerfile }}
-          RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
-          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         run: |
           docker compose -f docker-compose-ci.yml up -d --build rocketchat
 
@@ -400,11 +392,6 @@ jobs:
           password: ${{ secrets.CR_PAT }}
 
       - name: Publish Docker images to GitHub Container Registry
-        env:
-          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
-          RC_DOCKERFILE: ${{ steps.docker-env.outputs.rc-dockerfile }}
-          RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
-          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'
         run: |
           docker compose -f docker-compose-ci.yml push rocketchat
@@ -419,11 +406,6 @@ jobs:
           fi;
 
       - name: Wait for Rocket.Chat to start up
-        env:
-          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
-          RC_DOCKERFILE: ${{ steps.docker-env.outputs.rc-dockerfile }}
-          RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
-          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         run: |
           docker ps
 
@@ -434,11 +416,6 @@ jobs:
           done;
 
       - name: E2E Test API
-        env:
-          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
-          RC_DOCKERFILE: ${{ steps.docker-env.outputs.rc-dockerfile }}
-          RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
-          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         working-directory: ./apps/meteor
         run: |
           for i in $(seq 1 5); do
@@ -465,6 +442,11 @@ jobs:
   test-ui:
     runs-on: ubuntu-20.04
     needs: [build, lint, ts-typecheck, release-versions]
+    env:
+      LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
+      RC_DOCKERFILE: ${{ matrix.mongodb-version == '6.0' && needs.release-versions.outputs.rc-dockerfile-alpine || needs.release-versions.outputs.rc-dockerfile }}
+      RC_DOCKER_TAG: ${{ matrix.mongodb-version == '6.0' && needs.release-versions.outputs.rc-docker-tag-alpine || needs.release-versions.outputs.rc-docker-tag }}
+      DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
 
     strategy:
       matrix:
@@ -478,29 +460,6 @@ jobs:
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
           mongodb-replica-set: rs0
-
-      - name: Docker env vars
-        id: docker-env
-        run: |
-          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-
-          echo "LOWERCASE_REPOSITORY: ${LOWERCASE_REPOSITORY}"
-          echo "::set-output name=lowercase-repo::${LOWERCASE_REPOSITORY}"
-
-          # test alpine image on mongo 6.0 (no special reason to be mongo 6.0 but we need to test alpine at least once)
-          if [[ '${{ matrix.mongodb-version }}' = '6.0' ]]; then
-            RC_DOCKERFILE="${{ github.workspace }}/apps/meteor/.docker/Dockerfile.alpine"
-            RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.alpine"
-          else
-            RC_DOCKERFILE="${{ github.workspace }}/apps/meteor/.docker/Dockerfile"
-            RC_DOCKER_TAG="${{ needs.release-versions.outputs.gh-docker-tag }}.official"
-          fi;
-
-          echo "RC_DOCKERFILE: ${RC_DOCKERFILE}"
-          echo "::set-output name=rc-dockerfile::${RC_DOCKERFILE}"
-
-          echo "RC_DOCKER_TAG: ${RC_DOCKER_TAG}"
-          echo "::set-output name=rc-docker-tag::${RC_DOCKER_TAG}"
 
       - uses: actions/checkout@v3
 
@@ -533,20 +492,10 @@ jobs:
       - name: Start containers
         env:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
-          MONGO_OPLOG_URL: 'mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true'
-          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
-          RC_DOCKERFILE: ${{ steps.docker-env.outputs.rc-dockerfile }}
-          RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
-          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         run: |
           docker compose -f docker-compose-ci.yml up -d --build rocketchat
 
       - name: Wait for Rocket.Chat to start up
-        env:
-          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
-          RC_DOCKERFILE: ${{ steps.docker-env.outputs.rc-dockerfile }}
-          RC_DOCKER_TAG: ${{ steps.docker-env.outputs.rc-docker-tag }}
-          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         run: |
           docker ps
 
@@ -592,6 +541,13 @@ jobs:
   test-ee-api:
     runs-on: ubuntu-20.04
     needs: [build, lint, ts-typecheck, release-versions]
+    env:
+      LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
+      RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
+      RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
+      DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      ENTERPRISE_LICENSE: ${{ needs.release-versions.outputs.enterprise-license }}
+      TRANSPORTER: nats://nats:4222
 
     strategy:
       matrix:
@@ -633,25 +589,9 @@ jobs:
           tar xzf Rocket.Chat.tar.gz
           rm Rocket.Chat.tar.gz
 
-      - name: Docker env vars
-        id: docker-env
-        run: |
-          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-
-          echo "LOWERCASE_REPOSITORY: ${LOWERCASE_REPOSITORY}"
-          echo "::set-output name=lowercase-repo::${LOWERCASE_REPOSITORY}"
-
       - name: Start containers
         env:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
-          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
-          RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
-          RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
-          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
-          TRANSPORTER: nats://nats:4222
-          # this is 100% intentional, secrets are not available for forks, so ee-tests will always fail
-          # to avoid this, we are using a dummy license, expiring at 2023-06-30
-          ENTERPRISE_LICENSE: Z2Dg0RC3kyxjuklSE6qfqyvD2xSD+oTYcS9OesJG0523r7rSPjv59LTQqPcp5E61qQYM3MOKoW3mDrurw4h78nVbsfrF2DoJZeNjRFQfIbgwcdPwtmnqPpDvAslszHY16VzM7O7EYqAqp/9mlnRzs1iJY+W3w1r6HWBlVMb9u41bl5HBSpX6Nxw8YxL4mizwOpjxewQbPQvNTLJNAW6w0nCzF5A3CKBhD9fziadedVMLOuXBuR8kIl8zbIAfqpHmL8SvakvQAbZEjWWQshmH+C9CKA5PppkmA8Q1DNWQoVtHSiYDK8RRjAEx+0oGflklzFyhJFDvD+ohZduNtNCgrJmxP5VFrVrLSK4BXgTSwwnaSKa2N+Qx0CmuRfu7nCPc1Cf6h6+k2TXvzkE4Z0ZJnDV1khu611glAr99bHdwF+bMX3XZI66bS8KqnHEukCt5xei25iKJ2xrfmGuiAkAuKHKzBmTEmXM0pGhkfDhA9jhxG3Atoj1A5y8vdrs88voF+UuNFZ6k9sKtdvrWIWClnkatPE+41ggbzCsOhFz07BvRWaEtw2Kenipl4Vtag4qmFpUaUfsuouH99M3gDlysDZO3x5aH8yfzvFeL5WDMvsmdEHNLpHl89WsPCONvx0JjRSdwcCA1NrRuVy1Ncu0S0bRByn7HZqoY9u6HPkXKBxQ=
         run: |
           docker compose -f docker-compose-ci.yml up -d --build
 
@@ -665,9 +605,6 @@ jobs:
 
       - name: Publish Docker images to GitHub Container Registry
         if: github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'
-        env:
-          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
-          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
         run: |
           docker compose -f docker-compose-ci.yml push \
             authorization-service \
@@ -677,11 +614,6 @@ jobs:
             stream-hub-service
 
       - name: Wait services to start up
-        env:
-          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
-          RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
-          RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
-          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         run: |
           docker ps
 
@@ -698,11 +630,6 @@ jobs:
           done;
 
       - name: E2E Test API
-        env:
-          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
-          RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
-          RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
-          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         working-directory: ./apps/meteor
         run: |
           for i in $(seq 1 5); do
@@ -729,6 +656,13 @@ jobs:
   test-ee-ui:
     runs-on: ubuntu-20.04
     needs: [build, lint, ts-typecheck, release-versions]
+    env:
+      LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
+      RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
+      RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
+      DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      ENTERPRISE_LICENSE: ${{ needs.release-versions.outputs.enterprise-license }}
+      TRANSPORTER: nats://nats:4222
 
     strategy:
       matrix:
@@ -771,34 +705,13 @@ jobs:
           tar xzf Rocket.Chat.tar.gz
           rm Rocket.Chat.tar.gz
 
-      - name: Docker env vars
-        id: docker-env
-        run: |
-          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-
-          echo "LOWERCASE_REPOSITORY: ${LOWERCASE_REPOSITORY}"
-          echo "::set-output name=lowercase-repo::${LOWERCASE_REPOSITORY}"
-
       - name: Start containers
         env:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
-          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
-          RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
-          RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
-          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
-          TRANSPORTER: nats://nats:4222
-          # this is 100% intentional, secrets are not available for forks, so ee-tests will always fail
-          # to avoid this, we are using a dummy license, expiring at 2023-06-30
-          ENTERPRISE_LICENSE: Z2Dg0RC3kyxjuklSE6qfqyvD2xSD+oTYcS9OesJG0523r7rSPjv59LTQqPcp5E61qQYM3MOKoW3mDrurw4h78nVbsfrF2DoJZeNjRFQfIbgwcdPwtmnqPpDvAslszHY16VzM7O7EYqAqp/9mlnRzs1iJY+W3w1r6HWBlVMb9u41bl5HBSpX6Nxw8YxL4mizwOpjxewQbPQvNTLJNAW6w0nCzF5A3CKBhD9fziadedVMLOuXBuR8kIl8zbIAfqpHmL8SvakvQAbZEjWWQshmH+C9CKA5PppkmA8Q1DNWQoVtHSiYDK8RRjAEx+0oGflklzFyhJFDvD+ohZduNtNCgrJmxP5VFrVrLSK4BXgTSwwnaSKa2N+Qx0CmuRfu7nCPc1Cf6h6+k2TXvzkE4Z0ZJnDV1khu611glAr99bHdwF+bMX3XZI66bS8KqnHEukCt5xei25iKJ2xrfmGuiAkAuKHKzBmTEmXM0pGhkfDhA9jhxG3Atoj1A5y8vdrs88voF+UuNFZ6k9sKtdvrWIWClnkatPE+41ggbzCsOhFz07BvRWaEtw2Kenipl4Vtag4qmFpUaUfsuouH99M3gDlysDZO3x5aH8yfzvFeL5WDMvsmdEHNLpHl89WsPCONvx0JjRSdwcCA1NrRuVy1Ncu0S0bRByn7HZqoY9u6HPkXKBxQ=
         run: |
           docker compose -f docker-compose-ci.yml up -d --build
 
       - name: Wait services to start up
-        env:
-          LOWERCASE_REPOSITORY: ${{ steps.docker-env.outputs.lowercase-repo }}
-          RC_DOCKERFILE: '${{ github.workspace }}/apps/meteor/.docker/Dockerfile'
-          RC_DOCKER_TAG: '${{ needs.release-versions.outputs.gh-docker-tag }}.official'
-          DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
         run: |
           docker ps
 
@@ -986,13 +899,11 @@ jobs:
       - name: Get Docker image name
         id: gh-docker
         run: |
-          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-
-          GH_IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}.${{ matrix.release }}"
+          GH_IMAGE_NAME="ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}.${{ matrix.release }}"
 
           echo "GH_IMAGE_NAME: $GH_IMAGE_NAME"
 
-          echo "::set-output name=gh-image-name::${GH_IMAGE_NAME}"
+          echo "gh-image-name=${GH_IMAGE_NAME}" >> $GITHUB_OUTPUT
 
       - name: Pull Docker image
         run: docker pull ${{ steps.gh-docker.outputs.gh-image-name }}
@@ -1063,13 +974,11 @@ jobs:
       - name: Get Docker image name
         id: gh-docker
         run: |
-          LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
-
-          GH_IMAGE_NAME="ghcr.io/${LOWERCASE_REPOSITORY}/${{ matrix.service }}-service:${{ needs.release-versions.outputs.gh-docker-tag }}"
+          GH_IMAGE_NAME="ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/${{ matrix.service }}-service:${{ needs.release-versions.outputs.gh-docker-tag }}"
 
           echo "GH_IMAGE_NAME: $GH_IMAGE_NAME"
 
-          echo "::set-output name=gh-image-name::${GH_IMAGE_NAME}"
+          echo "gh-image-name=${GH_IMAGE_NAME}" >> $GITHUB_OUTPUT
 
       - name: Pull Docker image
         run: docker pull ${{ steps.gh-docker.outputs.gh-image-name }}

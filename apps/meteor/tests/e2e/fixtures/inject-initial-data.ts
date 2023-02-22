@@ -2,17 +2,20 @@ import { MongoClient } from 'mongodb';
 
 import * as constants from '../config/constants';
 import { createUserFixture } from './collections/users';
+import { Users } from './userStates';
 
 export default async function injectInitialData() {
 	const connection = await MongoClient.connect(constants.URL_MONGODB);
 
-	const usersFixtures = [createUserFixture('user1'), createUserFixture('user2'), createUserFixture('user3')];
+	const usersFixtures = [createUserFixture(Users.user1), createUserFixture(Users.user2), createUserFixture(Users.user3)];
 
 	await Promise.all(
 		usersFixtures.map((user) =>
 			connection.db().collection('users').updateOne({ username: user.username }, { $set: user }, { upsert: true }),
 		),
 	);
+
+	await connection.db().collection('users').updateOne({ username: Users.admin.data.username }, { $addToSet: {'services.resume.loginTokens': {when: Users.admin.data.loginExpire, hashedToken: Users.admin.data.hashedToken}} });
 
 	await Promise.all(
 		[
