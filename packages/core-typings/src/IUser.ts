@@ -31,7 +31,7 @@ export interface IUserEmailCode {
 	expire: Date;
 }
 
-type LoginToken = IMeteorLoginToken & IPersonalAccessToken;
+type LoginToken = IMeteorLoginToken | IPersonalAccessToken;
 export type Username = string;
 
 export type ILoginUsername =

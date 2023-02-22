@@ -92,7 +92,7 @@ export function isAuthorizedForToken(connection: IMethodConnection, user: IUser,
 		return false;
 	}
 
-	if (tokenObject.bypassTwoFactor === true) {
+	if ('bypassTwoFactor' in tokenObject && tokenObject.bypassTwoFactor === true) {
 		return true;
 	}
 
