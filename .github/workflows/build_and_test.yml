@@ -1,4 +1,4 @@
-name: Build and Test
+name: CI
 
 on:
   release:
@@ -19,6 +19,7 @@ env:
   MONGO_OPLOG_URL: mongodb://mongodb:27017/local?replicaSet=rs0&directConnection=true
   TOOL_NODE_FLAGS: --max_old_space_size=4096
   TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+  node-version: '14.21.2'
 
 jobs:
   release-versions:
@@ -94,10 +95,10 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - name: Use Node.js 14.21.2
+      - name: Use Node.js ${{ env.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: '14.21.2'
+          node-version: ${{ env.node-version }}
           cache: 'yarn'
 
       - name: Free disk space
@@ -201,10 +202,10 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - name: Use Node.js 14.21.2
+      - name: Use Node.js ${{ env.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: '14.21.2'
+          node-version: ${{ env.node-version }}
           cache: 'yarn'
 
       - name: Free disk space
@@ -269,12 +270,12 @@ jobs:
           password: ${{ secrets.CR_PAT }}
 
   test-unit:
+    name: Test Unit / MongoDB ${{ matrix.mongodb-version }}
     runs-on: ubuntu-20.04
     needs: [build, checks, release-versions]
 
     strategy:
       matrix:
-        node-version: ['14.21.2']
         mongodb-version: ['4.4', '5.0', '6.0']
 
     steps:
@@ -286,10 +287,10 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js ${{ env.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ env.node-version }}
           cache: 'yarn'
 
       - name: yarn install
@@ -301,37 +302,25 @@ jobs:
         run: yarn testunit
 
   test-api:
+    name: Test API (CE)
     needs: [build, checks, release-versions]
 
     uses: ./.github/workflows/test-e2e.yml
     with:
       type: api
       release: ce
-      # mongodb-version: ${{ matrix.mongodb-version }}
-      # TODO: publish once
-      publish-container: true
+      # node-version: ${{ env.node-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
-      rc-dockerfile: ${{ matrix.mongodb-version == '6.0' && needs.release-versions.outputs.rc-dockerfile-alpine || needs.release-versions.outputs.rc-dockerfile }}
-      rc-docker-tag: ${{ matrix.mongodb-version == '6.0' && needs.release-versions.outputs.rc-docker-tag-alpine || needs.release-versions.outputs.rc-docker-tag }}
+      rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
+      rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
+      rc-dockerfile-alpine: ${{ needs.release-versions.outputs.rc-dockerfile-alpine }}
+      rc-docker-tag-alpine: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-      # enterprise-license: ${{ matrix.release == 'ee' && needs.release-versions.outputs.enterprise-license }}
-      # transporter: ${{ matrix.release == 'ee' && 'nats://nats:4222' }}
     secrets: inherit
 
   test-ui:
+    name: Test UI (CE)
     needs: [build, checks, release-versions]
-    # env:
-    #   LOWERCASE_REPOSITORY: ${{ needs.release-versions.outputs.lowercase-repo }}
-    #   RC_DOCKERFILE: ${{ matrix.mongodb-version == '6.0' && needs.release-versions.outputs.rc-dockerfile-alpine || needs.release-versions.outputs.rc-dockerfile }}
-    #   RC_DOCKER_TAG: ${{ matrix.mongodb-version == '6.0' && needs.release-versions.outputs.rc-docker-tag-alpine || needs.release-versions.outputs.rc-docker-tag }}
-    #   DOCKER_TAG: ${{ needs.release-versions.outputs.gh-docker-tag }}
-    #   # ENTERPRISE_LICENSE: ${{ needs.release-versions.outputs.enterprise-license }}
-    #   # TRANSPORTER: nats://nats:4222
-    #   # Not sure if it will work since the else is a empty string rather than a undefined value
-    #   TRANSPORTER: ${{ matrix.release == 'ee' && 'nats://nats:4222' }}
-    #   ENTERPRISE_LICENSE: ${{ matrix.release == 'ee' && needs.release-versions.outputs.enterprise-license }}
-
-
 
     uses: ./.github/workflows/test-e2e.yml
     with:
@@ -341,201 +330,18 @@ jobs:
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
       shard: '[1, 2, 3, 4]'
       total-shard: 4
-      # mongodb-version: ${{ matrix.mongodb-version }}
+      # node-version: ${{ env.node-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
-      rc-dockerfile: ${{ matrix.mongodb-version == '6.0' && needs.release-versions.outputs.rc-dockerfile-alpine || needs.release-versions.outputs.rc-dockerfile }}
-      rc-docker-tag: ${{ matrix.mongodb-version == '6.0' && needs.release-versions.outputs.rc-docker-tag-alpine || needs.release-versions.outputs.rc-docker-tag }}
+      rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
+      rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
+      rc-dockerfile-alpine: ${{ needs.release-versions.outputs.rc-dockerfile-alpine }}
+      rc-docker-tag-alpine: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
     secrets: inherit
 
-    # steps:
-    #   - name: Launch MongoDB
-    #     uses: supercharge/mongodb-github-action@1.8.0
-    #     with:
-    #       mongodb-version: ${{ matrix.mongodb-version }}
-    #       mongodb-replica-set: rs0
-
-    #   - uses: actions/checkout@v3
-
-    #   - name: Use Node.js ${{ matrix.node-version }}
-    #     uses: actions/setup-node@v3
-    #     with:
-    #       node-version: ${{ matrix.node-version }}
-    #       cache: 'yarn'
-
-    #   - uses: dtinth/setup-github-actions-caching-for-turbo@v1
-
-    #   - name: yarn install
-    #     run: yarn
-
-    #   - name: yarn build
-    #     run: yarn build
-
-    #   - name: Restore build
-    #     uses: actions/download-artifact@v2
-    #     with:
-    #       name: build
-    #       path: /tmp/build
-
-    #   - name: Unpack build
-    #     run: |
-    #       cd /tmp/build
-    #       tar xzf Rocket.Chat.tar.gz
-    #       rm Rocket.Chat.tar.gz
-
-    #   - name: Start containers
-    #     if: matrix.release == 'ce'
-    #     env:
-    #       MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
-    #     run: |
-    #       docker compose -f docker-compose-ci.yml up -d --build rocketchat
-
-    #   - name: Start containers
-    #     if: matrix.release == 'ee'
-    #     env:
-    #       MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
-    #     run: |
-    #       docker compose -f docker-compose-ci.yml up -d --build
-
-    #   - name: Login to GitHub Container Registry
-    #     if: matrix.publish-container == true && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-    #     uses: docker/login-action@v2
-    #     with:
-    #       registry: ghcr.io
-    #       username: ${{ secrets.CR_USER }}
-    #       password: ${{ secrets.CR_PAT }}
-
-    #   - name: Publish Docker images to GitHub Container Registry
-    #     if: matrix.publish-container == true && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-    #     run: |
-    #       docker compose -f docker-compose-ci.yml push rocketchat
-
-    #       if [[ '${{ matrix.mongodb-version }}' = '4.4' ]]; then
-    #         IMAGE_NAME_BASE="ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}"
-
-    #         echo "Push Docker image: ${IMAGE_NAME_BASE}"
-
-    #         docker tag ${IMAGE_NAME_BASE}.official $IMAGE_NAME_BASE
-    #         docker push $IMAGE_NAME_BASE
-    #       fi;
-
-    #   - name: Publish Docker images (serices) to GitHub Container Registry
-    #     if: matrix.publish-container == true && matrix.release == 'ee' && github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'
-    #     run: |
-    #       docker compose -f docker-compose-ci.yml push \
-    #         authorization-service \
-    #         account-service \
-    #         ddp-streamer-service \
-    #         presence-service \
-    #         stream-hub-service
-
-    #   - name: Cache Playwright binaries
-    #     if: matrix.type == 'ui'
-    #     uses: actions/cache@v3
-    #     id: cache-playwright
-    #     with:
-    #       path: |
-    #         ~/.cache/ms-playwright
-    #       # This is the version of Playwright that we are using, if you are willing to upgrade, you should update this.
-    #       key: playwright-1.23.1
-
-    #   - name: Install Playwright
-    #     if: matrix.type == 'ui' && steps.cache-playwright.outputs.cache-hit != 'true'
-    #     working-directory: ./apps/meteor
-    #     run: npx playwright install --with-deps
-
-    #   - name: Wait for Rocket.Chat to start up
-    #     uses: cygnetdigital/wait_for_response@v2.0.0
-    #     with:
-    #       url: 'http://localhost:3000/health'
-    #       responseCode: '200'
-    #       timeout: 60000
-    #       interval: 1000
-
-    #   - name: Wait services to start up
-    #     if: matrix.release == 'ee'
-    #     run: |
-    #       docker ps
-
-    #       until echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully"; do
-    #         echo "Waiting 'ddp-streamer' to start up"
-    #         ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer-service && exit 1
-    #         sleep 10
-    #       done;
-
-    #   - name: E2E Test API
-    #     if: matrix.type == 'api'
-    #     working-directory: ./apps/meteor
-    #     env:
-    #       IS_EE: ${{ matrix.release == 'ee' && 'true' || 'false' }}
-    #     run: |
-    #       for i in $(seq 1 5); do
-    #         npm run testapi && s=0 && break || s=$?
-
-    #         docker compose -f ../../docker-compose-ci.yml logs --tail=100
-
-    #         docker compose -f ../../docker-compose-ci.yml stop
-
-    #         docker exec mongodb bash -c 'if command -v mongosh ; then mongosh --eval "use rocketchat" --eval "db.dropDatabase()" rocketchat; else mongo rocketchat --eval "db.dropDatabase()"; fi'
-
-    #         NOW=$(date "+%Y-%m-%dT%H:%M:%S.000Z")
-
-    #         docker compose -f ../../docker-compose-ci.yml restart
-
-    #         until echo "$(docker compose -f ../../docker-compose-ci.yml logs rocketchat --since $NOW)" | grep -q "SERVER RUNNING"; do
-    #           echo "Waiting Rocket.Chat to start up"
-    #           ((c++)) && ((c==10)) && exit 1
-    #           sleep 10
-    #         done;
-    #       done;
-    #       exit $s
-
-    #   - name: E2E Test UI (${{ matrix.shard }}/${{ matrix.total-shard }})
-    #     if: matrix.type == 'ui'
-    #     env:
-    #       E2E_COVERAGE: ${{ matrix.release == 'ee' && 'true' || 'false' }}
-    #       IS_EE: ${{ matrix.release == 'ee' && 'true' || 'false' }}
-    #     working-directory: ./apps/meteor
-    #     run: yarn test:e2e --shard=${{ matrix.shard }}/${{ matrix.total-shard }}
-
-    #   - name: Store playwright test trace
-    #     if: matrix.type == 'ui' && always()
-    #     uses: actions/upload-artifact@v3
-    #     with:
-    #       name: playwright-test-trace${{ matrix.release }}
-    #       path: ./apps/meteor/tests/e2e/.playwright*
-
-    #   - name: Show server logs if E2E test failed
-    #     if: matrix.type == 'ui' && failure()
-    #     run: docker compose -f docker-compose-ci.yml logs rocketchat
-
-    #   - name: Extract e2e:ee:coverage
-    #     if: matrix.type == 'ui' && matrix.release == 'ee'
-    #     working-directory: ./apps/meteor
-    #     run: yarn test:e2e:nyc
-
-    #   - uses: codecov/codecov-action@v3
-    #     if: matrix.type == 'ui' && matrix.release == 'ee'
-    #     with:
-    #       directory: ./apps/meteor
-    #       flags: e2e
-    #       verbose: true
-
-    #   - name: Store e2e-ee-coverage
-    #     if: matrix.type == 'ui' && matrix.release == 'ee'
-    #     uses: actions/upload-artifact@v3
-    #     with:
-    #       name: e2e-ee-coverage
-    #       path: ./apps/meteor/coverage*
-
   test-api-ee:
+    name: Test API (EE)
     needs: [build, checks, release-versions]
-
-    # strategy:
-    #   fail-fast: false
-    #   matrix:
-    #     node-version: ['14.21.2']
-    #     mongodb-version: ['4.4']
 
     uses: ./.github/workflows/test-e2e.yml
     with:
@@ -543,22 +349,20 @@ jobs:
       release: ee
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-      # mongodb-version: ${{ matrix.mongodb-version }}
+      mongodb-version: "['4.4']"
+      publish-container: true
+      # node-version: ${{ env.node-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
+      rc-dockerfile-alpine: ${{ needs.release-versions.outputs.rc-dockerfile-alpine }}
+      rc-docker-tag-alpine: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
     secrets: inherit
 
   test-ui-ee:
+    name: Test UI (EE)
     needs: [build, checks, release-versions]
-
-    # strategy:
-    #   fail-fast: false
-    #   matrix:
-    #     node-version: ['14.21.2']
-    #     mongodb-version: ['4.4']
-    #     shard: [1, 2, 3, 4, 5]
 
     uses: ./.github/workflows/test-e2e.yml
     with:
@@ -568,10 +372,13 @@ jobs:
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
       shard: '[1, 2, 3, 4, 5]'
       total-shard: 5
-      # mongodb-version: ${{ matrix.mongodb-version }}
+      mongodb-version: "['4.4']"
+      # node-version: ${{ env.node-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
       rc-docker-tag: ${{ needs.release-versions.outputs.rc-docker-tag }}
+      rc-dockerfile-alpine: ${{ needs.release-versions.outputs.rc-dockerfile-alpine }}
+      rc-docker-tag-alpine: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
     secrets: inherit
 
@@ -648,7 +455,7 @@ jobs:
           aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
           curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-              "{\"nodeVersion\": \"14.21.2\", \"compatibleMongoVersions\": [\"4.4\", \"5.0\", \"6.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
+              "{\"nodeVersion\": \"${{ env.node-version }}\", \"compatibleMongoVersions\": [\"4.4\", \"5.0\", \"6.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
               https://releases.rocket.chat/update
 
           # Makes build fail if the release isn't there

@@ -12,6 +12,12 @@ on:
       rc-docker-tag:
         required: true
         type: string
+      rc-dockerfile-alpine:
+        required: true
+        type: string
+      rc-docker-tag-alpine:
+        required: true
+        type: string
       gh-docker-tag:
         required: true
         type: string
@@ -19,9 +25,14 @@ on:
         type: string
       transporter:
         type: string
-      # mongodb-version:
-      #   required: true
-      #   type: string
+      node-version:
+        default: '14.21.2'
+        required: false
+        type: string
+      mongodb-version:
+        default: "['4.4', '6.0']"
+        required: false
+        type: string
       release:
         required: true
         type: string
@@ -29,10 +40,11 @@ on:
         default: false
         type: boolean
       shard:
-        default: '[]'
+        default: '[1]'
         required: false
         type: string
       total-shard:
+        default: 1
         required: false
         type: number
       type:
@@ -58,18 +70,18 @@ jobs:
     runs-on: ubuntu-20.04
     env:
       LOWERCASE_REPOSITORY: ${{ inputs.lowercase-repo }}
-      RC_DOCKERFILE: ${{ inputs.rc-dockerfile }}
-      RC_DOCKER_TAG: ${{ inputs.rc-docker-tag }}
+      RC_DOCKERFILE: ${{ matrix.mongodb-version == '6.0' && inputs.rc-dockerfile-alpine || inputs.rc-dockerfile }}
+      RC_DOCKER_TAG: ${{ matrix.mongodb-version == '6.0' && inputs.rc-docker-tag-alpine || inputs.rc-docker-tag }}
       DOCKER_TAG: ${{ inputs.gh-docker-tag }}
-      ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
-      TRANSPORTER: ${{ inputs.transporter }}
 
     strategy:
       fail-fast: false
       matrix:
-        node-version: ['14.21.2']
-        mongodb-version: ['4.4', '6.0']
+        mongodb-version: ${{ fromJSON(inputs.mongodb-version) }}
         shard: ${{ fromJSON(inputs.shard) }}
+
+    # name: NodeJS ${{ inputs.node-version }} - MongoDB ${{ matrix.mongodb-version }} (${{ matrix.shard }}/${{ inputs.total-shard }})
+    name: MongoDB ${{ matrix.mongodb-version }} (${{ matrix.shard }}/${{ inputs.total-shard }})
 
     steps:
       - name: Launch MongoDB
@@ -80,10 +92,10 @@ jobs:
 
       - uses: actions/checkout@v3
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js ${{ inputs.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ inputs.node-version }}
           cache: 'yarn'
 
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
@@ -117,6 +129,8 @@ jobs:
         if: inputs.release == 'ee'
         env:
           MONGO_URL: 'mongodb://host.docker.internal:27017/rocketchat?replicaSet=rs0&directConnection=true'
+          ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
+          TRANSPORTER: ${{ inputs.transporter }}
         run: |
           docker compose -f docker-compose-ci.yml up -d --build
 
@@ -142,7 +156,7 @@ jobs:
             docker push $IMAGE_NAME_BASE
           fi;
 
-      - name: Publish Docker images (serices) to GitHub Container Registry
+      - name: Publish Docker images (services) to GitHub Container Registry
         if: inputs.publish-container == true && inputs.release == 'ee' && github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'
         run: |
           docker compose -f docker-compose-ci.yml push \
@@ -190,7 +204,7 @@ jobs:
         if: inputs.type == 'api'
         working-directory: ./apps/meteor
         env:
-          IS_EE: ${{ inputs.release == 'ee' && 'true' || 'false' }}
+          IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
         run: |
           for i in $(seq 1 5); do
             npm run testapi && s=0 && break || s=$?
@@ -216,8 +230,8 @@ jobs:
       - name: E2E Test UI (${{ matrix.shard }}/${{ inputs.total-shard }})
         if: inputs.type == 'ui'
         env:
-          E2E_COVERAGE: ${{ inputs.release == 'ee' && 'true' || 'false' }}
-          IS_EE: ${{ inputs.release == 'ee' && 'true' || 'false' }}
+          E2E_COVERAGE: ${{ inputs.release == 'ee' && 'true' || '' }}
+          IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
         working-directory: ./apps/meteor
         run: yarn test:e2e --shard=${{ matrix.shard }}/${{ inputs.total-shard }}
 
@@ -250,12 +264,3 @@ jobs:
         with:
           name: e2e-ee-coverage
           path: ./apps/meteor/coverage*
-
-  # tests-done:
-  #   runs-on: ubuntu-20.04
-  #   needs: [test-unit, test]
-
-  #   steps:
-  #     - name: Test finish aggregation
-  #       run: |
-  #         echo finished
