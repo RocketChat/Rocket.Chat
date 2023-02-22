@@ -5,9 +5,14 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { canDeleteMessage } from '../../../authorization/server/functions/canDeleteMessage';
 import { Messages } from '../../../models/server';
 import { deleteMessage } from '../functions';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 Meteor.methods({
 	async deleteMessage(message) {
+		methodDeprecationLogger.warn(
+			'deleteMessage method is deprecated, instead use the `deleteMessage` function under the `apps/meteor/app/lib/server/functions`',
+		);
+
 		check(
 			message,
 			Match.ObjectIncluding({
