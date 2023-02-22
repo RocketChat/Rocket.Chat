@@ -488,7 +488,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 
 	// update
 
-	hideReportById(_id: string, userId: string, reasonForHiding: string, actionTaken: string): Promise<UpdateResult | Document> {
+	async hideReportById(_id: string, userId: string, reasonForHiding: string, actionTaken: string): Promise<UpdateResult | Document> {
 		const query = {
 			_id,
 		};
@@ -503,7 +503,12 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		return this.updateOne(query, update);
 	}
 
-	hideReportsByMessageId(messageId: string, userId: string): Promise<UpdateResult | Document> {
+	async hideReportsByMessageId(
+		messageId: string,
+		userId: string,
+		reasonForHiding: string,
+		actionTaken: string,
+	): Promise<UpdateResult | Document> {
 		const query = {
 			'message._id': messageId,
 		};
@@ -511,8 +516,27 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		const update = {
 			$set: {
 				_hidden: true,
-				_hiddenAt: new Date(),
-				_hiddenBy: userId,
+				moderationInfo: { hiddenAt: new Date(), moderatedBy: userId, reasonForHiding, actionTaken },
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	async hideReportsByUserId(
+		userId: string,
+		moderatorId: string,
+		reasonForHiding: string,
+		actionTaken: string,
+	): Promise<UpdateResult | Document> {
+		const query = {
+			'message.u._id': userId,
+		};
+
+		const update = {
+			$set: {
+				_hidden: true,
+				moderationInfo: { hiddenAt: new Date(), moderatedBy: moderatorId, reasonForHiding, actionTaken },
 			},
 		};
 

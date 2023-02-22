@@ -1,4 +1,5 @@
 import type { IReport, IModerationAudit, IUserReportedMessages } from '@rocket.chat/core-typings';
+import type { UpdateResult, Document } from 'mongodb';
 
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { ArchiveReportProps } from './ArchiveReportProps';
@@ -19,7 +20,7 @@ export type ModerationEndpoints = {
 	};
 	'/v1/moderation.markChecked': {
 		POST: (params: ArchiveReportProps) => {
-			report: IReport | null;
+			update: Document | UpdateResult;
 		};
 	};
 	'/v1/moderation.reportsByMessage': {

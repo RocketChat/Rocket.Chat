@@ -51,7 +51,7 @@ API.v1.addRoute(
 
 			const { sort } = this.parseJsonQuery();
 
-			const { pagCount = 50, offset = 0 } = this.getPaginationItems();
+			const { count: pagCount = 50, offset = 0 } = this.getPaginationItems();
 
 			if (!userId) {
 				return API.v1.failure('The required "userId" query param is missing.');
@@ -74,33 +74,23 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isArchiveReportProps,
-		hasPermission: 'manage-moderation-actions',
+		permissionsRequired: ['view-moderation-console'],
 	},
 	{
 		async post() {
-			const { reportId, reasonForHiding, actionTaken } = this.requestParams();
+			const { userId, msgId, reasonForHiding, actionTaken } = this.requestParams();
 
 			const reasonProvided = reasonForHiding && reasonForHiding.trim() !== '';
 			const sanitizedReason = reasonProvided ? reasonForHiding : 'No reason provided';
 			const action = actionTaken || 'None';
 
-			const { userId } = this;
+			const { userId: modId } = this;
 
-			const reportDoc = await Reports.findOneById(reportId);
+			const update = userId
+				? await Reports.hideReportsByUserId(userId, modId, sanitizedReason, action)
+				: await Reports.hideReportsByMessageId(msgId, modId, sanitizedReason, action);
 
-			if (!reportDoc) {
-				return API.v1.failure('Report not found');
-			}
-
-			if (reportDoc._hidden) {
-				return API.v1.failure('Report is already hidden');
-			}
-
-			const update = await Reports.hideReportById(reportId, userId, sanitizedReason, action);
-
-			const report = await Reports.findOneById(reportId);
-
-			return API.v1.success({ report, update });
+			return API.v1.success({ update });
 		},
 	},
 );

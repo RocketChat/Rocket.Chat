@@ -1,4 +1,4 @@
-import type { IReport } from '@rocket.chat/core-typings';
+import type { IReport, IUser } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({ coerceTypes: true });
@@ -6,21 +6,20 @@ const ajv = new Ajv({ coerceTypes: true });
 // Define the type of the request body of call to hide the reported message
 
 export type ArchiveReportProps = {
-	reportId: IReport['_id'];
+	userId: IUser['_id'];
 	actionTaken?: string;
-	messageId?: IReport['message']['_id'];
+	msgId?: IReport['message']['_id'];
 	reasonForHiding?: string;
 };
 
 const ArchiveReportPropsSchema = {
 	type: 'object',
 	properties: {
-		reportId: {
+		userId: {
 			type: 'string',
 		},
-		messageId: {
+		msgId: {
 			type: 'string',
-			nullable: true,
 		},
 		reasonForHiding: {
 			type: 'string',
@@ -31,7 +30,7 @@ const ArchiveReportPropsSchema = {
 			nullable: true,
 		},
 	},
-	required: ['reportId'],
+	oneOf: [{ required: ['msgId'] }, { required: ['userId'] }],
 	additionalProperties: false,
 };
 
