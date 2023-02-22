@@ -1,1 +1,1 @@
-export { setReaction } from './setReaction';
+import './setReaction';
