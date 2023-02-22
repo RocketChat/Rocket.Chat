@@ -1,8 +1,9 @@
+import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
 import { test, expect } from './utils/test';
 
-test.use({ storageState: 'user2-session.json' });
+test.use({ storageState: Users.user2.state });
 
 test.describe.serial('permissions', () => {
 	let poHomeChannel: HomeChannel;
@@ -73,7 +74,7 @@ test.describe.serial('permissions', () => {
 	});
 
 	test.describe.serial('Pin message', () => {
-		test.use({ storageState: 'admin-session.json' });
+		test.use({ storageState: Users.admin.state });
 
 		test.beforeAll(async ({ api }) => {
 			const statusCode = (await api.post('/settings/Message_AllowPinning', { value: false })).status();

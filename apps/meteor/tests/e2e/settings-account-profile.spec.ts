@@ -1,9 +1,10 @@
 import { faker } from '@faker-js/faker';
 
+import { Users } from './fixtures/userStates';
 import { HomeChannel, AccountProfile } from './page-objects';
 import { test, expect } from './utils/test';
 
-test.use({ storageState: 'user3-session.json' });
+test.use({ storageState: Users.user3.state });
 
 test.describe.serial('settings-account-profile', () => {
 	let poHomeChannel: HomeChannel;
