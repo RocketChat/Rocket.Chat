@@ -44,7 +44,7 @@ const CustomContentCard = (): ReactElement | null => {
 
 	let customContentOnlyTooltipText;
 
-	if (isCustomContentBodyEmpty || !isCustomContentVisible) {
+	if (willNotShowCustomContent) {
 		customContentOnlyTooltipText = t('Action_Available_After_Custom_Content_Added_And_Visible');
 	} else if (isCustomContentOnly) {
 		customContentOnlyTooltipText = t('It_Will_Show_All_Other_Content_Blocks_In_The_Homepage');
