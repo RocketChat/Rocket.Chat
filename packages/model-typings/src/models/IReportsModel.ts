@@ -33,7 +33,7 @@ export interface IReportsModel extends IBaseModel<IReport> {
 		count?: number,
 		sort?: any,
 		selector?: string,
-	): Promise<IReport[]>;
+	): AggregationCursor<IUserReportedMessages>;
 
 	findUserMessages(
 		userId: string,

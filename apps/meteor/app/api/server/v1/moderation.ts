@@ -105,7 +105,7 @@ API.v1.addRoute(
 		async get() {
 			const { msgId } = this.queryParams;
 
-			const { count = 20, offset = 0 } = this.getPaginationItems();
+			const { count = 50, offset = 0 } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 			const { selector } = this.queryParams;
 
@@ -113,7 +113,9 @@ API.v1.addRoute(
 				return API.v1.failure('The required "msgId" query param is missing.');
 			}
 
-			const reports = await Reports.findReportsByMessageId(msgId, offset, count, sort, selector);
+			const cursor = await Reports.findReportsByMessageId(msgId, offset, count, sort, selector);
+
+			const reports = await cursor.toArray();
 
 			return API.v1.success({
 				reports,

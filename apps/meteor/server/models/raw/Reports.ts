@@ -400,7 +400,13 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		);
 	}
 
-	async findReportsByMessageId(messageId: string, offset = 0, count?: number, sort?: any, selector?: string): Promise<IReport[]> {
+	findReportsByMessageId(
+		messageId: string,
+		offset = 0,
+		count?: number,
+		sort?: any,
+		selector?: string,
+	): AggregationCursor<IUserReportedMessages> {
 		const query = {
 			'_hidden': {
 				$ne: true,
@@ -437,6 +443,12 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 
 		const lookup = [
 			{
+				$match: {
+					...query,
+					...cquery,
+				},
+			},
+			{
 				$lookup: {
 					from: 'users',
 					localField: 'userId',
@@ -453,13 +465,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 							},
 						},
 					],
-					as: 'reportedBy',
-				},
-			},
-			{
-				$match: {
-					...query,
-					...cquery,
+					as: 'reporter',
 				},
 			},
 			{
@@ -479,11 +485,18 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 					preserveNullAndEmptyArrays: true,
 				},
 			},
+			{
+				$project: {
+					_id: 1,
+					userId: 1,
+					description: 1,
+					ts: 1,
+					reporter: 1,
+				},
+			},
 		];
 
-		const reports: Document[] = await this.col.aggregate(lookup, { readPreference: readSecondaryPreferred() }).toArray();
-
-		return reports as IReport[];
+		return this.col.aggregate(lookup, { readPreference: readSecondaryPreferred() });
 	}
 
 	// update
