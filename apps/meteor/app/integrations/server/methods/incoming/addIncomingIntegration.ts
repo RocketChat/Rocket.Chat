@@ -26,6 +26,7 @@ Meteor.methods({
 				alias: Match.Maybe(String),
 				emoji: Match.Maybe(String),
 				scriptEnabled: Boolean,
+				overrideDestinationChannelEnabled: Boolean,
 				script: Match.Maybe(String),
 				avatar: Match.Maybe(String),
 			}),

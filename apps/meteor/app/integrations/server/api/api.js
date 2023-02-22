@@ -267,9 +267,8 @@ function executeIntegrationRest() {
 		return API.v1.success();
 	}
 
-	// Use default values defined in the webhook configuration
-	if (this.bodyParams.channel || this.bodyParams.roomId) {
-		return API.v1.failure("'channel' and 'roomId' are deprecated, please remove these values to proceed");
+	if ((this.bodyParams.channel || this.bodyParams.roomId) && !this.integration.overrideDestinationChannelEnabled) {
+		return API.v1.failure('overriding destination channel is disabled for this integration');
 	}
 
 	this.bodyParams.bot = { i: this.integration._id };

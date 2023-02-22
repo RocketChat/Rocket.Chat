@@ -55,6 +55,7 @@ describe('[Incoming Integrations]', function () {
 						alias: 'test',
 						username: 'rocket.cat',
 						scriptEnabled: false,
+						overrideDestinationChannelEnabled: true,
 						channel: '#general',
 					})
 					.expect('Content-Type', 'application/json')
@@ -79,6 +80,7 @@ describe('[Incoming Integrations]', function () {
 						alias: 'test',
 						username: 'rocket.cat',
 						scriptEnabled: false,
+						overrideDestinationChannelEnabled: true,
 						channel: '#general',
 					})
 					.expect('Content-Type', 'application/json')
@@ -102,6 +104,7 @@ describe('[Incoming Integrations]', function () {
 					alias: 'test',
 					username: 'rocket.cat',
 					scriptEnabled: false,
+					overrideDestinationChannelEnabled: true,
 					channel: '#general',
 				})
 				.expect('Content-Type', 'application/json')
@@ -126,6 +129,7 @@ describe('[Incoming Integrations]', function () {
 						alias: 'test',
 						username: 'rocket.cat',
 						scriptEnabled: false,
+						overrideDestinationChannelEnabled: false,
 						channel: '#general',
 					})
 					.expect('Content-Type', 'application/json')
@@ -152,6 +156,7 @@ describe('[Incoming Integrations]', function () {
 							alias: 'test2',
 							username: 'rocket.cat',
 							scriptEnabled: false,
+							overrideDestinationChannelEnabled: true,
 							channel: '#general',
 						})
 						.expect('Content-Type', 'application/json')
@@ -176,7 +181,7 @@ describe('[Incoming Integrations]', function () {
 				.end(done);
 		});
 
-		it("should return an error when sending 'channel' field telling its deprecated", (done) => {
+		it("should return an error when sending 'channel' field telling its configuration is disabled", (done) => {
 			request
 				.post(`/hooks/${integration._id}/${integration.token}`)
 				.send({
@@ -186,12 +191,12 @@ describe('[Incoming Integrations]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', "'channel' and 'roomId' are deprecated, please remove these values to proceed");
+					expect(res.body).to.have.property('error', 'overriding destination channel is disabled for this integration');
 				})
 				.end(done);
 		});
 
-		it("should return an error when sending 'roomId' field telling its deprecated", (done) => {
+		it("should return an error when sending 'roomId' field telling its configuration is disabled", (done) => {
 			request
 				.post(`/hooks/${integration._id}/${integration.token}`)
 				.send({
@@ -201,7 +206,7 @@ describe('[Incoming Integrations]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', "'channel' and 'roomId' are deprecated, please remove these values to proceed");
+					expect(res.body).to.have.property('error', 'overriding destination channel is disabled for this integration');
 				})
 				.end(done);
 		});
