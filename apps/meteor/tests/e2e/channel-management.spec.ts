@@ -1,11 +1,12 @@
 import faker from '@faker-js/faker';
 import type { Page } from '@playwright/test';
 
+import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
 import { test, expect } from './utils/test';
 
-test.use({ storageState: 'admin-session.json' });
+test.use({ storageState: Users.admin.state });
 
 test.describe.serial('channel-management', () => {
 	let poHomeChannel: HomeChannel;
@@ -14,7 +15,7 @@ test.describe.serial('channel-management', () => {
 
 	test.beforeAll(async ({ api, browser }) => {
 		targetChannel = await createTargetChannel(api);
-		regularUserPage = await browser.newPage({ storageState: 'user2-session.json' });
+		regularUserPage = await browser.newPage({ storageState: Users.user2.state });
 		await regularUserPage.goto('/home');
 		await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
 	});

@@ -36,13 +36,17 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 				if (room._id !== name && type === 'd') {
 					// Redirect old url using username to rid
 					RoomManager.close(type + name);
-					return FlowRouter.go('direct', { rid: room._id }, FlowRouter.current().queryParams);
+					FlowRouter.go('direct', { rid: room._id }, FlowRouter.current().queryParams);
+					return;
 				}
 
 				RoomManager.open({ typeName: type + name, rid: room._id });
 
 				c.stop();
-				if (room._id === Session.get('openedRoom') && !FlowRouter.getQueryParam('msg')) {
+
+				const messageId = FlowRouter.getQueryParam('msg');
+
+				if (room._id === Session.get('openedRoom') && !messageId) {
 					return;
 				}
 
@@ -72,31 +76,27 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 					await callWithErrorHandling('openRoom', room._id);
 				}
 
-				if (FlowRouter.getQueryParam('msg')) {
-					const messageId = FlowRouter.getQueryParam('msg');
+				if (messageId) {
 					const msg = { _id: messageId, rid: room._id };
 
 					const message = Messages.findOne({ _id: msg._id }) || (await callWithErrorHandling('getMessages', [msg._id]))[0];
 
 					if (message && (message.tmid || message.tcount)) {
-						return FlowRouter.setParams({ tab: 'thread', context: message.tmid || message._id });
+						FlowRouter.withReplaceState(() => {
+							FlowRouter.setParams({ tab: 'thread', context: message.tmid || message._id });
+						});
+						return;
 					}
 
 					RoomHistoryManager.getSurroundingMessages(msg);
-					FlowRouter.setQueryParams({
-						msg: null,
-					});
+					FlowRouter.setQueryParams({ msg: null });
 				}
 
 				return callbacks.run('enter-room', sub);
 			} catch (error) {
 				c.stop();
 
-				if (FlowRouter.getQueryParam('msg')) {
-					FlowRouter.setQueryParams({
-						msg: null,
-					});
-				}
+				FlowRouter.setQueryParams({ msg: null });
 
 				if (type === 'd') {
 					try {
@@ -107,6 +107,7 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 						console.error(error);
 					}
 				}
+
 				appLayout.render(
 					<MainLayout>
 						<RoomNotFound />

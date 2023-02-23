@@ -1,0 +1,22 @@
+name: 'Setup Node'
+
+inputs:
+  node-version:
+    # default: '14.21.2'
+    required: true
+    type: string
+
+outputs:
+  node-version:
+    value: ${{ steps.node-version.outputs.node-version }}
+
+runs:
+  using: composite
+
+  steps:
+    - name: Use Node.js ${{ inputs.node-version }}
+      id: node-version
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: 'yarn'

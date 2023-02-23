@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test';
 
 import { IS_EE } from './config/constants';
+import { Users } from './fixtures/userStates';
 import { expect, test } from './utils/test';
 
 const CardIds = {
@@ -12,7 +13,7 @@ const CardIds = {
 	Docs: 'homepage-documentation-card',
 	Custom: 'homepage-custom-card',
 };
-test.use({ storageState: 'admin-session.json' });
+test.use({ storageState: Users.admin.state });
 
 test.describe.serial('homepage', () => {
 	let regularUserPage: Page;
@@ -20,7 +21,7 @@ test.describe.serial('homepage', () => {
 
 	test.describe('layout for admins', () => {
 		test.beforeAll(async ({ browser }) => {
-			adminPage = await browser.newPage({ storageState: 'admin-session.json' });
+			adminPage = await browser.newPage({ storageState: Users.admin.state });
 			await adminPage.goto('/home');
 			await adminPage.waitForSelector('[data-qa-id="home-header"]');
 		});
@@ -111,7 +112,7 @@ test.describe.serial('homepage', () => {
 		});
 
 		test.beforeAll(async ({ browser }) => {
-			regularUserPage = await browser.newPage({ storageState: 'user2-session.json' });
+			regularUserPage = await browser.newPage({ storageState: Users.user2.state });
 			await regularUserPage.goto('/home');
 			await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
 		});
@@ -153,7 +154,7 @@ test.describe.serial('homepage', () => {
 			});
 
 			test.beforeAll(async ({ browser }) => {
-				regularUserPage = await browser.newPage({ storageState: 'user2-session.json' });
+				regularUserPage = await browser.newPage({ storageState: Users.user2.state });
 				await regularUserPage.goto('/home');
 				await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
 			});
@@ -185,7 +186,7 @@ test.describe.serial('homepage', () => {
 			});
 
 			test.beforeAll(async ({ browser }) => {
-				regularUserPage = await browser.newPage({ storageState: 'user2-session.json' });
+				regularUserPage = await browser.newPage({ storageState: Users.user2.state });
 				await regularUserPage.goto('/home');
 				await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
 			});

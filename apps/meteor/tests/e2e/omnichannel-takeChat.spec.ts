@@ -1,17 +1,10 @@
 import { faker } from '@faker-js/faker';
-import type { Browser, Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
+import { createAuxContext } from './fixtures/createAuxContext';
+import { Users } from './fixtures/userStates';
 import { OmnichannelLiveChat, HomeChannel } from './page-objects';
 import { test, expect } from './utils/test';
-
-const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page; poHomeChannel: HomeChannel }> => {
-	const page = await browser.newPage({ storageState });
-	const poHomeChannel = new HomeChannel(page);
-	await page.goto('/');
-	await page.locator('.main-content').waitFor();
-
-	return { page, poHomeChannel };
-};
 
 test.describe('omnichannel-takeChat', () => {
 	let poLiveChat: OmnichannelLiveChat;
@@ -26,7 +19,8 @@ test.describe('omnichannel-takeChat', () => {
 			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false }).then((res) => expect(res.status()).toBe(200)),
 		]);
 
-		agent = await createAuxContext(browser, 'user1-session.json');
+		const { page } = await createAuxContext(browser, Users.user1);
+		agent = { page, poHomeChannel: new HomeChannel(page) };
 	});
 
 	test.beforeEach(async ({ page }) => {
