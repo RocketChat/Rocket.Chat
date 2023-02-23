@@ -192,6 +192,7 @@
   "Last_Chat": "Último chat",
   "Last_Message": "Última mensaxe",
   "LDAP_Authentication": "Activar",
+  "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "Tes que enviar primeiro un token de API para utilizar a integración.",
   "LDAP_Enable": "Activar",
   "LDAP_Find_User_After_Login": "Procurar usuario despois do inicio de sesión",
   "LDAP_Sync_AutoLogout_Enabled": "Habilitar peche de sesión automático",
