@@ -26,22 +26,7 @@ runs:
       with:
         path: |
           node_modules
-          packages/fuselage-ui-kit/node_modules
-          packages/tools/node_modules
-          packages/web-ui-registration/node_modules
-          packages/livechat/node_modules
-          packages/gazzodown/node_modules
-          apps/meteor/ee/server/services/node_modules
-          apps/meteor/node_modules
-          apps/meteor/packages/meteor-jalik-ufs/.npm/package/node_modules
-          apps/meteor/packages/rocketchat-livechat/.npm/plugin/Livechat/node_modules
-          ee/packages/presence/node_modules
-          ee/packages/omnichannel-services/node_modules
-          ee/packages/pdf-worker/node_modules
-          ee/apps/omnichannel-transcript/node_modules
-          ee/apps/account-service/node_modules
-          ee/apps/ddp-streamer/node_modules
-          ee/apps/queue-worker/node_modules
+          **/node_modules
         key: node-modules-${{ hashFiles('yarn.lock') }}
 
     - name: Use Node.js ${{ inputs.node-version }}
