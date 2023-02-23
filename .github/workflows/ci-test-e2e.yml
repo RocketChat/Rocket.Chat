@@ -136,7 +136,7 @@ jobs:
           password: ${{ secrets.CR_PAT }}
 
       - name: Publish Docker images to GitHub Container Registry
-        if: inputs.publish-container == true && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+        if: inputs.publish-container == true && inputs.release == 'ce' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
         run: |
           docker compose -f docker-compose-ci.yml push rocketchat
 
