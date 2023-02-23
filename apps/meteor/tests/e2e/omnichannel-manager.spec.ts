@@ -1,7 +1,8 @@
+import { Users } from './fixtures/userStates';
 import { OmnichannelManager } from './page-objects';
 import { test, expect } from './utils/test';
 
-test.use({ storageState: 'admin-session.json' });
+test.use({ storageState: Users.admin.state });
 
 test.describe.serial('omnichannel-manager', () => {
 	let poOmnichannelManagers: OmnichannelManager;

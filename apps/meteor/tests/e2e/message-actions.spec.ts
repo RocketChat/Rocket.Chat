@@ -1,10 +1,11 @@
 import type { Page } from '@playwright/test';
 
+import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
 import { expect, test } from './utils/test';
 
-test.use({ storageState: 'admin-session.json' });
+test.use({ storageState: Users.admin.state });
 
 test.describe.serial('message-actions', () => {
 	let poHomeChannel: HomeChannel;
@@ -88,7 +89,7 @@ test.describe.serial('message-actions', () => {
 		let adminPage: Page;
 
 		test.beforeAll(async ({ browser }) => {
-			adminPage = await browser.newPage({ storageState: 'admin-session.json' });
+			adminPage = await browser.newPage({ storageState: Users.admin.state });
 
 			await adminPage.goto('/account/preferences');
 			await adminPage.locator('role=heading[name="Messages"]').click();
@@ -96,7 +97,7 @@ test.describe.serial('message-actions', () => {
 		});
 
 		test.afterAll(async ({ browser }) => {
-			adminPage = await browser.newPage({ storageState: 'admin-session.json' });
+			adminPage = await browser.newPage({ storageState: Users.admin.state });
 
 			await adminPage.goto('/account/preferences');
 			await adminPage.locator('role=heading[name="Messages"]').click();
