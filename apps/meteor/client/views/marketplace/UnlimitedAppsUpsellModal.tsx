@@ -1,5 +1,4 @@
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import React, { useCallback } from 'react';
 
 import UpsellModal from '../../components/UpsellModal';
