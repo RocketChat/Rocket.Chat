@@ -106,6 +106,8 @@ jobs:
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
+          cache-modules: true
+          install: true
 
       # - name: Free disk space
       #   run: |
@@ -158,9 +160,6 @@ jobs:
           meteor node -v
           git version
 
-      - name: yarn install
-        run: yarn
-
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: Translation check
@@ -175,15 +174,15 @@ jobs:
         if: startsWith(github.ref, 'refs/pull/') == true
         env:
           METEOR_PROFILE: 1000
-        run: yarn build:ci -- --debug --directory dist
+        run: yarn build:ci -- --debug --directory /tmp/dist
 
       - name: Build Rocket.Chat
         if: startsWith(github.ref, 'refs/pull/') != true
-        run: yarn build:ci -- --directory dist
+        run: yarn build:ci -- --directory /tmp/dist
 
       - name: Prepare build
         run: |
-          cd apps/meteor/dist
+          cd /tmp/dist
           tar czf /tmp/Rocket.Chat.tar.gz bundle
 
       - name: Store build
@@ -216,6 +215,7 @@ jobs:
     with:
       type: api
       release: ce
+      publish-container: true
       node-version: ${{ needs.release-versions.outputs.node-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
@@ -256,8 +256,8 @@ jobs:
       release: ee
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-      mongodb-version: "['4.4']"
       publish-container: true
+      mongodb-version: "['4.4']"
       node-version: ${{ needs.release-versions.outputs.node-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       rc-dockerfile: ${{ needs.release-versions.outputs.rc-dockerfile }}
@@ -309,7 +309,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Restore build
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: build
           path: /tmp/build
@@ -388,7 +388,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Restore build
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: build
           path: /tmp/build
