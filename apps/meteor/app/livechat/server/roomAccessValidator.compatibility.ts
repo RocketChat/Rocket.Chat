@@ -1,9 +1,13 @@
+import type { IUser, ILivechatDepartment, ILivechatDepartmentAgents, IOmnichannelRoom } from '@rocket.chat/core-typings';
+
 import { hasPermission, hasRole } from '../../authorization/server';
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry, LivechatRooms } from '../../models/server';
 import { RoutingManager } from './lib/RoutingManager';
 
-export const validators = [
-	function (room, user) {
+type OmniRoomAccessValidator = (room: IOmnichannelRoom, user?: Pick<IUser, '_id'>, extraData?: Record<string, any>) => Promise<boolean>;
+
+export const validators: OmniRoomAccessValidator[] = [
+	function (_room, user) {
 		if (!user?._id) {
 			return false;
 		}
@@ -13,15 +17,16 @@ export const validators = [
 		if (!user?._id) {
 			return false;
 		}
+
 		const { _id: userId } = user;
 		const { servedBy: { _id: agentId } = {} } = room;
 		return userId === agentId || (!room.open && hasPermission(user._id, 'view-livechat-room-closed-by-another-agent'));
 	},
-	function (room, user, extraData) {
-		if (extraData && extraData.rid) {
+	function (room, _user, extraData) {
+		if (extraData?.rid) {
 			room = LivechatRooms.findOneById(extraData.rid);
 		}
-		return extraData && extraData.visitorToken && room.v && room.v.token === extraData.visitorToken;
+		return extraData?.visitorToken && room.v && room.v.token === extraData.visitorToken;
 	},
 	function (room, user) {
 		if (!user?._id) {
@@ -36,10 +41,10 @@ export const validators = [
 		if (!hasRole(user._id, 'livechat-manager')) {
 			const departmentAgents = LivechatDepartmentAgents.findByAgentId(user._id)
 				.fetch()
-				.map((d) => d.departmentId);
+				.map((d: ILivechatDepartmentAgents) => d.departmentId);
 			departmentIds = LivechatDepartment.find({ _id: { $in: departmentAgents }, enabled: true })
 				.fetch()
-				.map((d) => d._id);
+				.map((d: ILivechatDepartment) => d._id);
 		}
 
 		const filter = {
@@ -70,7 +75,7 @@ export const validators = [
 		}
 		return hasPermission(user._id, 'view-livechat-room-closed-same-department');
 	},
-	function (room, user) {
+	function (_room, user) {
 		// Check if user is rocket.cat
 		if (!user?._id) {
 			return false;
