@@ -27,7 +27,7 @@ const MessageComposerInput = forwardRef<HTMLInputElement, ComponentProps<typeof 
 				{...props}
 				borderWidth={0}
 				is='textarea'
-				className={[messageComposerInputStyle, className]}
+				className={[messageComposerInputStyle, className].filter(Boolean).join(' ')}
 			/>
 		</Box>
 	),
