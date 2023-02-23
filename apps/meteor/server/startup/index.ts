@@ -3,7 +3,6 @@ import './appcache';
 import './callbacks';
 import './cron';
 import './initialData';
-import './instance';
 import './serverRunning';
 import './coreApps';
 import './presenceTroubleshoot';
@@ -16,5 +15,4 @@ import { isRunningMs } from '../lib/isRunningMs';
 if (!isRunningMs()) {
 	require('./localServices');
 	require('./watchDb');
-	require('./presence');
 }

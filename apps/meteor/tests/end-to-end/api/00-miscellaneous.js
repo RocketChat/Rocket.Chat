@@ -4,6 +4,7 @@ import { getCredentials, api, login, request, credentials } from '../../data/api
 import { adminEmail, adminUsername, adminPassword, password } from '../../data/user.js';
 import { createUser, login as doLogin } from '../../data/users.helper';
 import { updateSetting } from '../../data/permissions.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('miscellaneous', function () {
 	this.retries(0);
@@ -150,13 +151,13 @@ describe('miscellaneous', function () {
 					'emailNotificationMode',
 					'unreadAlert',
 					'notificationsSoundVolume',
+					'omnichannelTranscriptEmail',
+					IS_EE ? 'omnichannelTranscriptPDF' : false,
 					'desktopNotifications',
 					'pushNotifications',
 					'enableAutoAway',
-					'useLegacyMessageTemplate',
 					// 'highlights',
 					'desktopNotificationRequireInteraction',
-					'messageViewMode',
 					'hideUsernames',
 					'hideRoles',
 					'displayAvatars',
@@ -165,12 +166,13 @@ describe('miscellaneous', function () {
 					'idleTimeLimit',
 					'sidebarShowFavorites',
 					'sidebarShowUnread',
+					'themeAppearence',
 					'sidebarSortby',
 					'sidebarViewMode',
 					'sidebarDisplayAvatar',
 					'sidebarGroupByType',
 					'muteFocusedConversations',
-				];
+				].filter((p) => Boolean(p));
 
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('_id', credentials['X-User-Id']);
@@ -597,23 +599,38 @@ describe('miscellaneous', function () {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+
 					expect(res.body).to.have.property('instances').and.to.be.an('array').with.lengthOf(1);
 
-					const {
-						instances: [instance],
-					} = res.body;
+					const { instances } = res.body;
 
-					expect(instance).to.have.property('_id');
-					expect(instance).to.have.property('extraInformation');
-					expect(instance).to.have.property('name');
-					expect(instance).to.have.property('pid');
+					const instanceName = IS_EE ? 'ddp-streamer' : 'rocket.chat';
 
-					const { extraInformation } = instance;
+					const instance = instances.filter((i) => i.instanceRecord.name === instanceName)[0];
 
-					expect(extraInformation).to.have.property('host');
-					expect(extraInformation).to.have.property('port');
-					expect(extraInformation).to.have.property('os').and.to.have.property('cpus').to.be.a('number');
-					expect(extraInformation).to.have.property('nodeVersion');
+					expect(instance).to.have.property('instanceRecord');
+					expect(instance).to.have.property('currentStatus');
+
+					expect(instance.currentStatus).to.have.property('connected');
+
+					expect(instance.instanceRecord).to.have.property('_id');
+					expect(instance.instanceRecord).to.have.property('extraInformation');
+					expect(instance.instanceRecord).to.have.property('name');
+					expect(instance.instanceRecord).to.have.property('pid');
+
+					if (!IS_EE) {
+						expect(instance).to.have.property('address');
+
+						expect(instance.currentStatus).to.have.property('lastHeartbeatTime');
+						expect(instance.currentStatus).to.have.property('local');
+
+						const { extraInformation } = instance.instanceRecord;
+
+						expect(extraInformation).to.have.property('host');
+						expect(extraInformation).to.have.property('port');
+						expect(extraInformation).to.have.property('os').and.to.have.property('cpus').to.be.a('number');
+						expect(extraInformation).to.have.property('nodeVersion');
+					}
 				})
 				.end(done);
 		});

@@ -4,7 +4,7 @@ import { Reports, Rooms } from '@rocket.chat/models';
 
 import { Messages } from '../../app/models/server';
 import { canAccessRoomAsync } from '../../app/authorization/server/functions/canAccessRoom';
-import { AppEvents, Apps } from '../../app/apps/server';
+import { AppEvents, Apps } from '../../ee/server/apps';
 
 Meteor.methods({
 	async reportMessage(messageId, description) {

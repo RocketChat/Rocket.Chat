@@ -45,14 +45,12 @@ const isMessageSequential = (current: IMessage, previous: IMessage | undefined, 
 
 type ThreadMessageListProps = {
 	mainMessage: IThreadMainMessage;
-	jumpTo?: string;
-	onJumpTo?: (mid: IMessage['_id']) => void;
 };
 
-const ThreadMessageList = ({ mainMessage, jumpTo, onJumpTo }: ThreadMessageListProps): ReactElement => {
+const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElement => {
 	const { messages, loading } = useLegacyThreadMessages(mainMessage._id);
 	const { listWrapperRef: listWrapperScrollRef, listRef: listScrollRef, onScroll: handleScroll } = useLegacyThreadMessageListScrolling();
-	const { parentRef: listJumpRef } = useLegacyThreadMessageJump(jumpTo, { enabled: !loading, onJumpTo });
+	const { parentRef: listJumpRef } = useLegacyThreadMessageJump({ enabled: !loading });
 
 	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, listJumpRef);
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');

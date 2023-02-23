@@ -4,7 +4,6 @@ import _ from 'underscore';
 
 import { canAccessRoom, hasPermission } from '../../../authorization/server';
 import { Subscriptions, Messages, Rooms } from '../../../models/server';
-import { settings } from '../../../settings/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
 
@@ -40,12 +39,12 @@ Meteor.methods({
 		}
 
 		// Ensure latest is always defined.
-		if (_.isUndefined(latest)) {
+		if (latest === undefined) {
 			latest = new Date();
 		}
 
 		// Verify oldest is a date if it exists
-		if (!_.isUndefined(oldest) && !_.isDate(oldest)) {
+		if (oldest !== undefined && !_.isDate(oldest)) {
 			throw new Meteor.Error('error-invalid-date', 'Invalid date', { method: 'getChannelHistory' });
 		}
 
@@ -59,28 +58,25 @@ Meteor.methods({
 			limit: count,
 		};
 
-		if (!settings.get('Message_ShowEditedStatus')) {
-			options.fields = { editedAt: 0 };
-		}
-
-		const records = _.isUndefined(oldest)
-			? Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(
-					rid,
-					latest,
-					hiddenMessageTypes,
-					options,
-					showThreadMessages,
-					inclusive,
-			  ).fetch()
-			: Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
-					rid,
-					oldest,
-					latest,
-					hiddenMessageTypes,
-					options,
-					showThreadMessages,
-					inclusive,
-			  ).fetch();
+		const records =
+			oldest === undefined
+				? Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(
+						rid,
+						latest,
+						hiddenMessageTypes,
+						options,
+						showThreadMessages,
+						inclusive,
+				  ).fetch()
+				: Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+						rid,
+						oldest,
+						latest,
+						hiddenMessageTypes,
+						options,
+						showThreadMessages,
+						inclusive,
+				  ).fetch();
 
 		const messages = normalizeMessagesForUser(records, fromUserId);
 
@@ -88,9 +84,9 @@ Meteor.methods({
 			let unreadNotLoaded = 0;
 			let firstUnread = undefined;
 
-			if (!_.isUndefined(oldest)) {
+			if (oldest !== undefined) {
 				const firstMsg = messages[messages.length - 1];
-				if (!_.isUndefined(firstMsg) && firstMsg.ts > oldest) {
+				if (firstMsg !== undefined && firstMsg.ts > oldest) {
 					const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
 						rid,
 						oldest,

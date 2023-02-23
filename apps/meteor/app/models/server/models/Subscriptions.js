@@ -118,7 +118,7 @@ export class Subscriptions extends Base {
 		}
 
 		const query = { 'u._id': userId };
-		if (!_.isUndefined(scope)) {
+		if (scope !== undefined) {
 			query.rid = scope;
 		}
 		return query;
