@@ -38,9 +38,8 @@ jobs:
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ inputs.node-version }}
-
-      - name: yarn install
-        run: yarn
+          cache-modules: true
+          install: true
 
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 

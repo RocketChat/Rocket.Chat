@@ -106,6 +106,8 @@ jobs:
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
+          cache-modules: true
+          install: true
 
       # - name: Free disk space
       #   run: |
@@ -157,9 +159,6 @@ jobs:
           meteor npm --versions
           meteor node -v
           git version
-
-      - name: yarn install
-        run: yarn
 
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
