@@ -68,6 +68,14 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		const params = [
 			{ $match: { ...query, ...cquery } },
 			{
+				$lookup: {
+					from: 'rooms',
+					localField: 'message.rid',
+					foreignField: '_id',
+					as: 'room',
+				},
+			},
+			{
 				$group: {
 					_id: { user: '$message.u._id' },
 					reports: { $first: '$$ROOT' },
@@ -91,6 +99,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 					_id: 0,
 					reports: 0,
 					message: '$reports.message.msg',
+					msgId: '$reports.message._id',
 					ts: '$reports.ts',
 					userId: '$_id.user',
 					username: '$reports.message.u.username',
@@ -165,6 +174,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 					_id: 0,
 					reports: 0,
 					message: '$reports.message.msg',
+					msgId: '$reports.message._id',
 					ts: '$reports.ts',
 					userId: '$_id.user',
 					username: '$reports.message.u.username',
@@ -216,10 +226,50 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		const params = [
 			{ $match: { ...query, ...cquery } },
 			{
+				$lookup: {
+					from: 'rocketchat_room',
+					localField: 'message.rid',
+					foreignField: '_id',
+					as: 'roomRaw',
+					pipeline: [
+						{
+							$project: {
+								_id: 0,
+								name: {
+									$switch: {
+										branches: [
+											{
+												case: { and: [{ $eq: ['$t', 'c'] }, { $ifNull: ['$prid', false] }] },
+												then: '$name',
+											},
+											{
+												case: { and: [{ $eq: ['$t', 'c'] }, { $ifNull: ['$prid', true] }] },
+												then: '$fname',
+											},
+											{
+												case: { $eq: ['$t', 'p'] },
+												then: 'private',
+											},
+											{
+												case: { $eq: ['$t', 'd'] },
+												then: 'directMessage',
+											},
+										],
+										default: 'notExist',
+									},
+								},
+							},
+						},
+					],
+				},
+			},
+
+			{
 				$group: {
 					_id: { user: '$message.u._id', userName: '$message.u.username' },
 					reports: { $first: '$$ROOT' },
 					roomIds: { $addToSet: '$message.rid' },
+					roomNames: { $addToSet: '$roomRaw.name' },
 					count: { $sum: 1 },
 				},
 			},
@@ -238,12 +288,23 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 				$project: {
 					_id: 0,
 					message: '$reports.message.msg',
+					msgId: '$reports.message._id',
 					ts: '$reports.ts',
 					username: '$reports.message.u.username',
 					name: '$reports.message.u.name',
 					userId: '$_id.user',
 					count: 1,
 					roomIds: 1,
+					room: 1,
+					roomNames: {
+						$reduce: {
+							input: { $ifNull: ['$reports.roomNames', ['notExist']] },
+							initialValue: '',
+							in: {
+								$concat: ['$$value', { $cond: [{ $eq: ['$$value', ''] }, '', ', '] }, '$$this'],
+							},
+						},
+					},
 				},
 			},
 		];

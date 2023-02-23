@@ -1,4 +1,4 @@
-import type { IMessage, IReport } from '@rocket.chat/core-typings';
+import type { IMessage, IModerationAudit, IReportedMessageInfo } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
@@ -77,7 +77,7 @@ describe('[Moderation]', function () {
 	// test for testing out the moderation.markChecked endpoint
 
 	describe('[/moderation.markChecked]', () => {
-		let reportedMessage: IReport;
+		let reportedMessage: IModerationAudit;
 		let message: IMessage;
 
 		// post a new message to the channel 'general' by sending a request to chat.postMessage
@@ -151,33 +151,43 @@ describe('[Moderation]', function () {
 				.end(done);
 		});
 
-		it('should hide a report', (done) => {
+		it('should hide reports of a user', (done) => {
 			request
 				.post(api('moderation.markChecked'))
 				.set(credentials)
 				.send({
-					reportId: reportedMessage._id,
+					userId: reportedMessage.userId,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('report').and.to.be.an('object');
-					expect(res.body.report).to.have.property('_hidden', true);
-					expect(res.body.report.moderationInfo).to.have.property('hiddenAt');
-					expect(res.body.report.moderationInfo).to.have.property('moderatedBy').and.to.be.an('string');
-					expect(res.body.report.moderationInfo).to.have.property('resonForHiding').and.to.be.an('string');
-					expect(res.body.report.moderationInfo).to.have.property('hiddenBy').and.to.be.an('string');
 				})
 				.end(done);
 		});
 
-		it('should return an error when the reportId is not provided', (done) => {
+		it('should hide reports of a message', (done) => {
 			request
 				.post(api('moderation.markChecked'))
 				.set(credentials)
 				.send({
-					reportId: '',
+					messageId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should return an error when the userId && msgId is not provided', (done) => {
+			request
+				.post(api('moderation.markChecked'))
+				.set(credentials)
+				.send({
+					userId: '',
+					msgId: '',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -246,7 +256,7 @@ describe('[Moderation]', function () {
 				.end(done);
 		});
 
-		it('should return the report information', (done) => {
+		it('should return the reports for a message', (done) => {
 			request
 				.get(api('moderation.reportsByMessage'))
 				.set(credentials)
@@ -258,7 +268,7 @@ describe('[Moderation]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
-					expect(res.body.reports[0].message).to.have.property('_id', message._id);
+					expect(res.body.reports[0]).to.have.property('reporter').and.to.be.an('array');
 				})
 				.end(done);
 		});
@@ -284,7 +294,7 @@ describe('[Moderation]', function () {
 
 	describe('[/moderation.getReportInfo]', () => {
 		let message: IMessage;
-		let reportedMessage: IReport;
+		let reportedMessage: IReportedMessageInfo;
 
 		// post a new message to the channel 'general' by sending a request to chat.postMessage
 		before((done) => {
@@ -411,6 +421,223 @@ describe('[Moderation]', function () {
 				.set(credentials)
 				.query({
 					reportId: '123456789012345678901234',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error').and.to.be.a('string');
+				})
+				.end(done);
+		});
+	});
+
+	// test for testing out the moderation.user.getMessageHistory endpoint
+
+	describe('[/moderation.user.getMessageHistory]', () => {
+		let message: IMessage;
+		let reportedMessage: IReportedMessageInfo;
+
+		// post a new message to the channel 'general' by sending a request to chat.postMessage
+		before((done) => {
+			request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					channel: 'general',
+					text: 'messageId',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('message').and.to.be.an('object');
+					message = res.body.message;
+				})
+				.end(done);
+		});
+
+		// create a reported message by sending a request to chat.reportMessage
+		before((done) => {
+			request
+				.post(api('chat.reportMessage'))
+				.set(credentials)
+				.send({
+					messageId: message._id,
+					description: 'sample report',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		// get the report information by sending a request to moderation.reportsByMessage
+		before((done) => {
+			request
+				.get(api('moderation.reportsByMessage'))
+				.set(credentials)
+				.query({
+					msgId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('reports').and.to.be.an('array');
+					reportedMessage = res.body.reports[0];
+				})
+				.end(done);
+		});
+
+		after((done) => {
+			request
+				.post(api('chat.delete'))
+				.set(credentials)
+				.send({
+					roomId: 'GENERAL',
+					msgId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should return the message history', (done) => {
+			request
+				.get(api('moderation.user.getMessageHistory'))
+				.set(credentials)
+				.query({
+					userId: reportedMessage.reporter._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+				})
+				.end(done);
+		});
+
+		it('should return an error when the userId is not provided', (done) => {
+			request
+				.get(api('moderation.user.getMessageHistory'))
+				.set(credentials)
+				.query({
+					userId: '',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error').and.to.be.a('string');
+				})
+				.end(done);
+		});
+	});
+
+	// test for testing out the moderation.user.deleteMessageHistory endpoint
+
+	describe('[/moderation.user.deleteMessageHistory]', () => {
+		let message: IMessage;
+		let reportedMessage: IReportedMessageInfo;
+
+		// post a new message to the channel 'general' by sending a request to chat.postMessage
+		before((done) => {
+			request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					channel: 'general',
+					text: 'messageId',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('message').and.to.be.an('object');
+					message = res.body.message;
+				})
+				.end(done);
+		});
+
+		// create a reported message by sending a request to chat.reportMessage
+		before((done) => {
+			request
+				.post(api('chat.reportMessage'))
+				.set(credentials)
+				.send({
+					messageId: message._id,
+					description: 'sample report',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		// get the report information by sending a request to moderation.reportsByMessage
+		before((done) => {
+			request
+				.get(api('moderation.reportsByMessage'))
+				.set(credentials)
+				.query({
+					msgId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('reports').and.to.be.an('array');
+					reportedMessage = res.body.reports[0];
+				})
+				.end(done);
+		});
+
+		after((done) => {
+			request
+				.post(api('chat.delete'))
+				.set(credentials)
+				.send({
+					roomId: 'GENERAL',
+					msgId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should delete the message history', (done) => {
+			request
+				.post(api('moderation.user.deleteMessageHistory'))
+				.set(credentials)
+				.send({
+					userId: reportedMessage.reporter._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				})
+				.end(done);
+		});
+
+		it('should return an error when the userId is not provided', (done) => {
+			request
+				.post(api('moderation.user.deleteMessageHistory'))
+				.set(credentials)
+				.send({
+					userId: '',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)

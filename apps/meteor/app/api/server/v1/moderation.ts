@@ -196,27 +196,3 @@ API.v1.addRoute(
 		},
 	},
 );
-
-// api endpoint to get counts of reports by msgId
-
-API.v1.addRoute(
-	'moderation.countReportsByMsgId',
-	{
-		authRequired: true,
-		pemissionsRequired: ['view-moderation-console'],
-	},
-	{
-		async get() {
-			const { msgId } = this.queryParams;
-			const { count } = this.getPaginationItems();
-
-			if (!msgId) {
-				return API.v1.failure('The required "msgId" query param is missing.');
-			}
-
-			const reportCounts = await Reports.countReportsByMessageId(msgId, count);
-
-			return API.v1.success({ reportCounts, count });
-		},
-	},
-);

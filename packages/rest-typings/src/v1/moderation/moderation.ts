@@ -1,4 +1,4 @@
-import type { IReport, IModerationAudit, IUserReportedMessages } from '@rocket.chat/core-typings';
+import type { IReport, IModerationAudit, IUserReportedMessages, IReportedMessageInfo } from '@rocket.chat/core-typings';
 import type { UpdateResult, Document } from 'mongodb';
 
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
@@ -28,18 +28,12 @@ export type ModerationEndpoints = {
 	};
 	'/v1/moderation.reportsByMessage': {
 		GET: (params: { msgId: string; sort?: string; selector?: string; count?: number }) => {
-			reports: IUserReportedMessages[];
+			reports: IReportedMessageInfo[];
 		};
 	};
 	'/v1/moderation.getReportInfo': {
 		GET: (params: { reportId: string }) => {
 			report: IReport | null;
-		};
-	};
-	'/v1/moderation.countReportsByMsgId': {
-		GET: (params: { msgId: string; count?: number }) => {
-			count: number;
-			reportCounts: number;
 		};
 	};
 };

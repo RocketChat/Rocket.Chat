@@ -23,7 +23,8 @@ export interface IModerationAudit {
 	userId: IUser['_id'];
 	username: IUser['username'];
 	name: IUser['name'];
-	message: IMessage['_id'];
+	message: IMessage['msg'];
+	msgId: IMessage['_id'];
 	roomIds: IRoom['_id'][];
 	ts: IReport['ts'];
 	count: number;
