@@ -9,7 +9,7 @@ import { callbacks } from '../../../lib/callbacks';
 import { emoji } from '../../emoji/server';
 import { isTheLastMessage, msgStream } from '../../lib/server';
 import { canAccessRoom, hasPermission } from '../../authorization/server';
-import { AppEvents, Apps } from '../../apps/server/orchestrator';
+import { AppEvents, Apps } from '../../../ee/server/apps/orchestrator';
 
 const removeUserReaction = (message, reaction, username) => {
 	message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(username), 1);

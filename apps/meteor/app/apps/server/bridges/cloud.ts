@@ -3,7 +3,7 @@ import { CloudWorkspaceBridge } from '@rocket.chat/apps-engine/server/bridges/Cl
 import type { IWorkspaceToken } from '@rocket.chat/apps-engine/definition/cloud/IWorkspaceToken';
 
 import { getWorkspaceAccessTokenWithScope } from '../../../cloud/server';
-import type { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 const boundGetWorkspaceAccessToken = Meteor.bindEnvironment(getWorkspaceAccessTokenWithScope);
 

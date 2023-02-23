@@ -12,7 +12,7 @@ const messageComposerInputStyle = css`
 `;
 
 const MessageComposerInput = forwardRef<HTMLInputElement, ComponentProps<typeof Box>>(
-	(props, ref): ReactElement => (
+	({ className, ...props }, ref): ReactElement => (
 		<Box is='label' width='full' fontSize={0}>
 			<Box
 				color='default'
@@ -27,7 +27,7 @@ const MessageComposerInput = forwardRef<HTMLInputElement, ComponentProps<typeof 
 				{...props}
 				borderWidth={0}
 				is='textarea'
-				className={[messageComposerInputStyle]}
+				className={[messageComposerInputStyle, className]}
 			/>
 		</Box>
 	),
