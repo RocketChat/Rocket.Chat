@@ -9,7 +9,7 @@ import { useComposerBoxPopupQueries } from './useComposerBoxPopupQueries';
 
 export type ComposerBoxPopupImperativeCommands<T> = MutableRefObject<
 	| {
-			getFilter: () => unknown;
+			getFilter?: () => unknown;
 			select?: (s: T) => void;
 	  }
 	| undefined
@@ -60,7 +60,10 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 
 	const commandsRef: ComposerBoxPopupImperativeCommands<T> = useRef();
 
-	const items = useComposerBoxPopupQueries(filter, popup) as unknown as UseQueryResult<T[]>[];
+	const { queries: items, suspended } = useComposerBoxPopupQueries(filter, popup) as {
+		queries: UseQueryResult<T[]>[];
+		suspended: boolean;
+	};
 
 	const chat = useChat();
 
@@ -135,7 +138,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 					? new RegExp(`(?:^| |\n)(${configuration.trigger})([^\\s]*$)`)
 					: new RegExp(`(?:^)(${configuration.trigger})([^\\s]*$)`));
 			const result = value.match(selector);
-			setFilter(commandsRef.current?.getFilter() ?? (result ? result[2] : ''));
+			setFilter(commandsRef.current?.getFilter?.() ?? (result ? result[2] : ''));
 		}
 		return configuration;
 	});
@@ -165,7 +168,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 	});
 
 	const keydown = useMutableCallback((event: KeyboardEvent) => {
-		if (!popup) {
+		if (!popup || popup.preview) {
 			return;
 		}
 
@@ -253,7 +256,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 		popup,
 		select,
 
-		suspended: items.every((item) => item.isLoading && item.fetchStatus === 'idle'),
+		suspended,
 
 		commandsRef,
 		callbackRef,
