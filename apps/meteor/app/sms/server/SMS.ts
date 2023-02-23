@@ -1,21 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import type { ISMSProvider, ISMSProviderConstructor } from '@rocket.chat/core-typings';
+import type { ISMSProviderConstructor, SMSWorker } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
-
-type SMSWorker = {
-	enabled: boolean;
-	department: string | null;
-	service: string | null;
-	services: Record<string, ISMSProviderConstructor>;
-	accountSid: string | null;
-	authToken: string | null;
-	fromNumber: string | null;
-
-	registerService(name: string, service: ISMSProviderConstructor): void;
-	getService(name: string): ISMSProvider;
-	isConfiguredService(name: string): boolean;
-};
 
 export const SMS: SMSWorker = {
 	enabled: false,
