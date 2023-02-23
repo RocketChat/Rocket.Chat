@@ -28,6 +28,9 @@ runs:
     #       node_modules
     #       **/node_modules
     #     key: node-modules-${{ hashFiles('yarn.lock') }}
+    #
+    # Could use this command to list all paths to save:
+    # find . -name 'node_modules' -prune | grep -v "/\.meteor/" | grep -v "/meteor/packages/"
 
     - name: Use Node.js ${{ inputs.node-version }}
       id: node-version
