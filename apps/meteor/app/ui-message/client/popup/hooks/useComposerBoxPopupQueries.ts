@@ -18,25 +18,28 @@ export const useComposerBoxPopupQueries = <T extends { _id: string; sort?: numbe
 			Boolean(slashCommands.commands[(filter as any)?.cmd]) &&
 			slashCommands.commands[(filter as any)?.cmd].providesPreview);
 
-	return useQueries({
-		queries: [
-			popup?.getItemsFromLocal && {
-				keepPreviousData: true,
-				queryKey: ['message-popup', 'local', filter, popup],
-				queryFn: () => popup?.getItemsFromLocal && popup.getItemsFromLocal(filter),
-				onSuccess: (args: T[]) => {
-					if (args.length < 5) {
-						setCounter(1);
-					}
+	return {
+		queries: useQueries({
+			queries: [
+				popup?.getItemsFromLocal && {
+					keepPreviousData: true,
+					queryKey: ['message-popup', 'local', filter, popup],
+					queryFn: () => popup?.getItemsFromLocal && popup.getItemsFromLocal(filter),
+					onSuccess: (args: T[]) => {
+						if (args.length < 5) {
+							setCounter(1);
+						}
+					},
+					enabled: enableQuery,
 				},
-				enabled: enableQuery,
-			},
-			popup?.getItemsFromServer && {
-				keepPreviousData: true,
-				queryKey: ['message-popup', 'server', filter, popup],
-				queryFn: () => popup?.getItemsFromServer && popup.getItemsFromServer(filter),
-				enabled: counter > 0,
-			},
-		].filter(Boolean) as any,
-	}) as QueriesResults<T[]>;
+				popup?.getItemsFromServer && {
+					keepPreviousData: true,
+					queryKey: ['message-popup', 'server', filter, popup],
+					queryFn: () => popup?.getItemsFromServer && popup.getItemsFromServer(filter),
+					enabled: counter > 0,
+				},
+			].filter(Boolean) as any,
+		}) as QueriesResults<T[]>,
+		suspended: !enableQuery,
+	};
 };

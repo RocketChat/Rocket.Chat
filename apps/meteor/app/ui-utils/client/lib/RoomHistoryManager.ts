@@ -272,7 +272,7 @@ class RoomHistoryManagerClass extends Emitter {
 	}
 
 	public async getSurroundingMessages(message?: Pick<IMessage, '_id' | 'rid'> & { ts?: Date }, atBottomRef?: MutableRefObject<boolean>) {
-		if (!message || !message.rid) {
+		if (!message?.rid) {
 			return;
 		}
 
@@ -295,12 +295,7 @@ class RoomHistoryManagerClass extends Emitter {
 				500,
 			);
 
-			msgElement.addClass('highlight');
 			setHighlightMessage(message._id);
-
-			setTimeout(() => {
-				msgElement.removeClass('highlight');
-			}, 500);
 
 			setTimeout(() => {
 				clearHighlightMessage();
@@ -342,16 +337,11 @@ class RoomHistoryManagerClass extends Emitter {
 				500,
 			);
 
-			msgElement.addClass('highlight');
 			setHighlightMessage(message._id);
 
 			room.isLoading.set(false);
 			const messages = wrapper[0];
 			if (atBottomRef) atBottomRef.current = !result.moreAfter && messages.scrollTop >= messages.scrollHeight - messages.clientHeight;
-
-			setTimeout(() => {
-				msgElement.removeClass('highlight');
-			}, 500);
 
 			setTimeout(() => {
 				clearHighlightMessage();
