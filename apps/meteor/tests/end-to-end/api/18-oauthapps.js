@@ -77,7 +77,7 @@ describe('[OAuthApps]', function () {
 					active: false,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
+				.expect(403)
 				.expect((res) => {
 					console.log('res.body ->', res.body);
 					expect(res.body).to.have.property('success', false);
