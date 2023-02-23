@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+import type { ISMSProvider, ISMSProviderConstructor } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
-import type { ISMSProvider, ISMSProviderConstructor } from './types';
 
 type SMSWorker = {
 	enabled: boolean;

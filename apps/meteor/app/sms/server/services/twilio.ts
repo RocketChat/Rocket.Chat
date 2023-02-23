@@ -1,5 +1,6 @@
 import twilio from 'twilio';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import type { ISMSProvider, ServiceData, SMSProviderResponse, SMSProviderResult } from '@rocket.chat/core-typings';
 import filesize from 'filesize';
 import { api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
@@ -8,7 +9,6 @@ import { settings } from '../../../settings/server';
 import { SMS } from '../SMS';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import type { ISMSProvider, ServiceData, SMSProviderResponse, SMSProviderResult } from '../types';
 
 type TwilioData = {
 	From: string;

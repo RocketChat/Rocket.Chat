@@ -42,3 +42,17 @@ export const isServiceData = (data: unknown): data is ServiceData => {
 
 	return typeof from === 'string' && typeof to === 'string' && typeof body === 'string';
 };
+
+export type SMSWorker = {
+	enabled: boolean;
+	department: string | null;
+	service: string | null;
+	services: Record<string, ISMSProviderConstructor>;
+	accountSid: string | null;
+	authToken: string | null;
+	fromNumber: string | null;
+
+	registerService(name: string, service: ISMSProviderConstructor): void;
+	getService(name: string): ISMSProvider;
+	isConfiguredService(name: string): boolean;
+};

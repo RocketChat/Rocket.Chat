@@ -3,13 +3,13 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
 import { api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
+import type { ISMSProvider, ServiceData, SMSProviderResponse } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
 import { SMS } from '../SMS';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import type { ISMSProvider, ServiceData, SMSProviderResponse } from '../types';
 
 type VoxtelesysData = {
 	from: string;
