@@ -11,7 +11,7 @@ const messageComposerInputStyle = css`
 	}
 `;
 
-const MessageComposerInput = forwardRef<HTMLTextAreaElement, ComponentProps<typeof Box>>(
+const MessageComposerInput = forwardRef<HTMLInputElement, ComponentProps<typeof Box>>(
 	(props, ref): ReactElement => (
 		<Box is='label' width='full' fontSize={0}>
 			<Box
