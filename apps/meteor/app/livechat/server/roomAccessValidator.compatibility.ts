@@ -4,7 +4,7 @@ import { hasPermission, hasRole } from '../../authorization/server';
 import { LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry, LivechatRooms } from '../../models/server';
 import { RoutingManager } from './lib/RoutingManager';
 
-type OmniRoomAccessValidator = (room: IOmnichannelRoom, user?: Pick<IUser, '_id'>, extraData?: Record<string, any>) => Promise<boolean>;
+type OmniRoomAccessValidator = (room: IOmnichannelRoom, user?: Pick<IUser, '_id'>, extraData?: Record<string, any>) => boolean;
 
 export const validators: OmniRoomAccessValidator[] = [
 	function (_room, user) {
