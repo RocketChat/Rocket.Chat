@@ -380,5 +380,9 @@ export class ListenersModule {
 		service.onEvent('watch.priorities', async ({ clientAction, diff, id }): Promise<void> => {
 			notifications.notifyLoggedInThisInstance('omnichannel.priority-changed', { id, clientAction, name: diff?.name });
 		});
+
+		service.onEvent('apps.added', (appId: string) => {
+			notifications.streamApps.emitWithoutBroadcast('app/added', appId);
+		});
 	}
 }

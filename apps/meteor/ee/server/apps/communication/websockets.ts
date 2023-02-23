@@ -3,6 +3,7 @@ import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting } from '@rocket.chat/core-typings';
 import type { IStreamer } from 'meteor/rocketchat:streamer';
+import { api } from '@rocket.chat/core-services';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import notifications from '../../../../app/notifications/server/lib/Notifications';
@@ -153,8 +154,9 @@ export class AppServerNotifier {
 	}
 
 	async appAdded(appId: string): Promise<void> {
-		this.engineStreamer.emit(AppEvents.APP_ADDED, appId);
-		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_ADDED, appId);
+		// this.engineStreamer.emit(AppEvents.APP_ADDED, appId);
+		// this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_ADDED, appId);
+		api.broadcast('apps.added', appId);
 	}
 
 	async appRemoved(appId: string): Promise<void> {

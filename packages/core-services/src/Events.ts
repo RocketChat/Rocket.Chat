@@ -158,4 +158,5 @@ export type EventSignatures = {
 		id: string;
 		diff?: Record<string, string>;
 	}): void;
+	'apps.added'(appId: string): void;
 };
