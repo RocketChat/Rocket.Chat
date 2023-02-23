@@ -11,6 +11,7 @@ import {
 	hasTranslationLanguageInAttachments,
 	hasTranslationLanguageInMessage,
 } from '../../../../client/views/room/MessageList/lib/autoTranslate';
+import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 
 Meteor.startup(() => {
 	AutoTranslate.init();
@@ -33,18 +34,21 @@ Meteor.startup(() => {
 					const action = 'autoTranslateShowInverse' in message ? '$unset' : '$set';
 					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
 				},
-				condition({ message, subscription, user }) {
+				condition({ message, subscription, user, room }) {
 					if (!user) {
 						return false;
 					}
-					const language = subscription?.autoTranslateLanguage || AutoTranslate.getLanguage(message.rid) || '';
+					const language = AutoTranslate.getLanguage(message.rid);
+					const isLivechatRoom = roomCoordinator.isLivechatRoom(room?.t);
+					const differentUser = message?.u && message.u._id !== user._id;
 
 					return Boolean(
-						(message?.u &&
-							message.u._id !== user._id &&
-							subscription?.autoTranslate &&
+						(differentUser &&
+							(subscription?.autoTranslate || isLivechatRoom) &&
 							(message as { autoTranslateShowInverse?: boolean }).autoTranslateShowInverse) ||
-							(!hasTranslationLanguageInMessage(message, language) && !hasTranslationLanguageInAttachments(message.attachments, language)),
+							(differentUser &&
+								!hasTranslationLanguageInMessage(message, language) &&
+								!hasTranslationLanguageInAttachments(message.attachments, language)),
 					);
 				},
 				order: 90,
@@ -65,8 +69,9 @@ Meteor.startup(() => {
 					const action = 'autoTranslateShowInverse' in message ? '$unset' : '$set';
 					Messages.update({ _id: message._id }, { [action]: { autoTranslateShowInverse: true } });
 				},
-				condition({ message, subscription, user }) {
+				condition({ message, subscription, user, room }) {
 					const language = subscription?.autoTranslateLanguage || AutoTranslate.getLanguage(message.rid) || '';
+					const isLivechatRoom = roomCoordinator.isLivechatRoom(room?.t);
 					if (!user) {
 						return false;
 					}
@@ -74,7 +79,7 @@ Meteor.startup(() => {
 					return Boolean(
 						message?.u &&
 							message.u._id !== user._id &&
-							subscription?.autoTranslate &&
+							(subscription?.autoTranslate || isLivechatRoom) &&
 							!(message as { autoTranslateShowInverse?: boolean }).autoTranslateShowInverse &&
 							(hasTranslationLanguageInMessage(message, language) || hasTranslationLanguageInAttachments(message.attachments, language)),
 					);
