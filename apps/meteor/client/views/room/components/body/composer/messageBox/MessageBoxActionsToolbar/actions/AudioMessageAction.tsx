@@ -72,7 +72,7 @@ const AudioMessageAction = ({ chatContext, disabled, isMicrophoneDenied, ...prop
 
 	return (
 		<MessageComposerAction
-			title={!isAllowed ? t('error-not-allowed') : t('Audio_message')}
+			title={!isAllowed ? t('Microphone_access_not_allowed') : t('Audio_message')}
 			icon='mic'
 			disabled={disabled || !isAllowed}
 			className='rc-message-box__icon rc-message-box__audio-message-mic'

@@ -3377,6 +3377,7 @@
   "Method": "Method",
   "Mic_on": "Mic On",
   "Microphone": "Microphone",
+  "Microphone_access_not_allowed": "Microphone access was not allowed, please check your browser settings.",
   "Mic_off": "Mic Off",
   "Min_length_is": "Min length is %s",
   "Minimum": "Minimum",
