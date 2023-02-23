@@ -8,9 +8,10 @@ import { useChat } from '../../../../../../contexts/ChatContext';
 
 type AudioMessageActionProps = {
 	chatContext?: ChatAPI;
+	isMicrophoneDenied?: boolean;
 } & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>;
 
-const AudioMessageAction = ({ chatContext, ...props }: AudioMessageActionProps) => {
+const AudioMessageAction = ({ chatContext, isMicrophoneDenied, ...props }: AudioMessageActionProps) => {
 	const t = useTranslation();
 	const chat = useChat() ?? chatContext;
 
@@ -18,7 +19,7 @@ const AudioMessageAction = ({ chatContext, ...props }: AudioMessageActionProps) 
 
 	return (
 		<MessageComposerAction
-			title={t('Audio_message')}
+			title={isMicrophoneDenied ? 'Mic denied' : t('Audio_message')}
 			icon='mic'
 			className='rc-message-box__icon rc-message-box__audio-message-mic'
 			data-qa-id='audio-record'

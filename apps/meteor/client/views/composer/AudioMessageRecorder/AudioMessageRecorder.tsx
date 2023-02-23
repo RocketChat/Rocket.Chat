@@ -16,14 +16,14 @@ type AudioMessageRecorderProps = {
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
 	chatContext?: ChatAPI; // TODO: remove this when the composer is migrated to React
+	isMicrophoneDenied?: boolean;
 } & Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
 
-const AudioMessageRecorder = ({ rid, chatContext }: AudioMessageRecorderProps): ReactElement | null => {
+const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMessageRecorderProps): ReactElement | null => {
 	const t = useTranslation();
 
 	const [state, setState] = useState<'loading' | 'recording'>('recording');
 	const [time, setTime] = useState('00:00');
-	const [isMicrophoneDenied, setIsMicrophoneDenied] = useState(false);
 	const [recordingInterval, setRecordingInterval] = useState<ReturnType<typeof setInterval> | null>(null);
 	const [recordingRoomId, setRecordingRoomId] = useState<IRoom['_id'] | null>(null);
 
@@ -36,22 +36,30 @@ const AudioMessageRecorder = ({ rid, chatContext }: AudioMessageRecorderProps): 
 
 		setTime('00:00');
 
-		const blob = await new Promise<Blob>((resolve) => audioRecorder.stop(resolve));
-
 		chat?.action.stop('recording');
 
 		chat?.composer?.setRecordingMode(false);
 
+		const blob = await new Promise<Blob>((resolve) => audioRecorder.stop(resolve));
+
 		return blob;
+	});
+
+	const handleMicrophoneDenied = useMutableCallback(async (isDenied) => {
+		if (isDenied) {
+			stopRecording();
+		}
+
+		chat?.composer?.setIsMicrophoneDenied(isDenied);
 	});
 
 	const handleMount = useMutableCallback(async (): Promise<void> => {
 		if (navigator.permissions) {
 			try {
 				const permissionStatus = await navigator.permissions.query({ name: 'microphone' as PermissionName });
-				setIsMicrophoneDenied(permissionStatus.state === 'denied');
+				handleMicrophoneDenied(permissionStatus.state === 'denied');
 				permissionStatus.onchange = (): void => {
-					setIsMicrophoneDenied(permissionStatus.state === 'denied');
+					handleMicrophoneDenied(permissionStatus.state === 'denied');
 				};
 				return;
 			} catch (error) {
@@ -60,13 +68,13 @@ const AudioMessageRecorder = ({ rid, chatContext }: AudioMessageRecorderProps): 
 		}
 
 		if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-			setIsMicrophoneDenied(true);
+			handleMicrophoneDenied(true);
 			return;
 		}
 
 		try {
 			if (!(await navigator.mediaDevices.enumerateDevices()).some(({ kind }) => kind === 'audioinput')) {
-				setIsMicrophoneDenied(true);
+				handleMicrophoneDenied(true);
 				return;
 			}
 		} catch (error) {
@@ -101,7 +109,7 @@ const AudioMessageRecorder = ({ rid, chatContext }: AudioMessageRecorderProps): 
 			setRecordingRoomId(rid);
 		} catch (error) {
 			console.log(error);
-			setIsMicrophoneDenied(true);
+			handleMicrophoneDenied(true);
 			chat?.composer?.setRecordingMode(false);
 		}
 	});

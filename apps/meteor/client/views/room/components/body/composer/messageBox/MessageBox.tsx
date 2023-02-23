@@ -261,6 +261,11 @@ const MessageBox = ({
 		subscribe: chat.composer?.recording.subscribe ?? emptySubscribe,
 	});
 
+	const isMicrophoneDenied = useSubscription({
+		getCurrentValue: chat.composer?.isMicrophoneDenied.get ?? getEmptyFalse,
+		subscribe: chat.composer?.isMicrophoneDenied.subscribe ?? emptySubscribe,
+	});
+
 	const isRecordingVideo = useSubscription({
 		getCurrentValue: chat.composer?.recordingVideo.get ?? getEmptyFalse,
 		subscribe: chat.composer?.recordingVideo.subscribe ?? emptySubscribe,
@@ -381,7 +386,7 @@ const MessageBox = ({
 
 			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={rid} tmid={tmid} />}
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
-				{isRecordingAudio && <AudioMessageRecorder rid={rid} tmid={tmid} disabled={!canSend || typing} />}
+				{isRecordingAudio && <AudioMessageRecorder rid={rid} tmid={tmid} disabled={!canSend || typing} isMicrophoneDenied={isMicrophoneDenied} />}
 				<MessageComposerInput
 					ref={mergedRefs as unknown as Ref<HTMLInputElement>}
 					aria-label={t('Message')}
@@ -422,6 +427,7 @@ const MessageBox = ({
 							canJoin={canJoin}
 							rid={rid}
 							tmid={tmid}
+							isMicrophoneDenied={isMicrophoneDenied}
 						/>
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
