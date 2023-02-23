@@ -525,10 +525,6 @@ const LivechatDepartmentSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		fields: {
-			type: 'string',
-			nullable: true,
-		},
 	},
 	additionalProperties: false,
 };
