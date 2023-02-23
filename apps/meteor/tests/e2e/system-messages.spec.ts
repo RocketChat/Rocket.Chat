@@ -2,11 +2,12 @@ import faker from '@faker-js/faker';
 import type { Locator, Page } from '@playwright/test';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
+import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
 
-test.use({ storageState: 'admin-session.json' });
+test.use({ storageState: Users.admin.state });
 
 const userData = {
 	username: faker.datatype.uuid(),
