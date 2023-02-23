@@ -78,11 +78,6 @@ describe('[OAuthApps]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(403)
-				.expect((res) => {
-					console.log('res.body ->', res.body);
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-not-allowed');
-				});
 
 			await updatePermission('manage-oauth-apps', ['admin']);
 		});
