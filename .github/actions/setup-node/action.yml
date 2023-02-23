@@ -34,7 +34,7 @@ runs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ inputs.node-version }}
-        # cache: 'yarn'
+        cache: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' && 'yarn' || '' }}
 
     - name: yarn install
       if: inputs.install && steps.cache-node-modules.outputs.cache-hit != 'true'
