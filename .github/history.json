@@ -98073,6 +98073,82 @@
           ]
         }
       ]
+    },
+    "5.4.2": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "27740",
+          "title": "[FIX] OmnichannelRoomIconProvider order breaking VideoConfPopup",
+          "userLogin": "dougfabris",
+          "description": "Jira Issue [VC-39]",
+          "milestone": "5.4.2",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "27617",
+          "title": "[FIX] `*.files` endpoints returning hidden files",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.4.2",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "23301",
+          "title": "[FIX] Showing thumbnails on files list",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.4.2",
+          "contributors": [
+            "carlosrodrigues94",
+            "ostjen",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "27000",
+          "title": "[FIX] New users aren't mapped to rooms with OAuth groups/channels map",
+          "userLogin": "carlosrodrigues94",
+          "description": "This change deals with the problem with the new users coming from key cloak, this users were not being mapped to the correct channels on RC.",
+          "milestone": "5.4.2",
+          "contributors": [
+            "carlosrodrigues94",
+            "matheusbsilva137",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "27816",
+          "title": "[FIX] Not all messages in chat conversations are available when forwarding between agents or departments.",
+          "userLogin": "filipemarins",
+          "milestone": "5.3.6",
+          "contributors": [
+            "filipemarins",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27745",
+          "title": "[IMPROVE] Emoji picker for large amount of custom emojis",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.2.2",
+          "contributors": [
+            "sampaiodiego",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        }
+      ]
     }
   },
   "5.4.0-rc.0": {

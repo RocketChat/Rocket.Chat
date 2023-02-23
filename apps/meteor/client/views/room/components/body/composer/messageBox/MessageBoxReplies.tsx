@@ -38,6 +38,7 @@ const MessageBoxReplies = (): ReactElement | null => {
 							attachment={
 								{
 									text: reply.msg,
+									md: reply.md,
 									author_name: reply.u.username,
 									author_icon: `/avatar/${reply.u.username}`,
 									ts: reply.ts,

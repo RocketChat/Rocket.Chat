@@ -1,10 +1,10 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Meteor } from 'meteor/meteor';
-import s from 'underscore.string';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { MessageTypes } from './MessageTypes';
 import { settings } from '../../settings';
+import { trim } from '../../../lib/utils/stringUtils';
 
 export const Message = {
 	parse(msg, language) {
@@ -30,7 +30,7 @@ export const Message = {
 			return msg.html;
 		}
 		msg.html = msg.msg;
-		if (s.trim(msg.html) !== '') {
+		if (trim(msg.html) !== '') {
 			msg.html = escapeHTML(msg.html);
 		}
 		msg.html = msg.html.replace(/\n/gm, '<br/>');
