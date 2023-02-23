@@ -257,6 +257,7 @@ jobs:
       release: ee
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
+      publish-container: true
       mongodb-version: "['4.4']"
       node-version: ${{ needs.release-versions.outputs.node-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
