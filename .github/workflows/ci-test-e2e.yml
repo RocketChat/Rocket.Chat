@@ -150,7 +150,7 @@ jobs:
           fi;
 
       - name: Publish Docker images (services) to GitHub Container Registry
-        if: inputs.publish-container == true && inputs.release == 'ee' && github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'
+        if: inputs.publish-container == true && inputs.release == 'ee' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
         run: |
           docker compose -f docker-compose-ci.yml push \
             authorization-service \
