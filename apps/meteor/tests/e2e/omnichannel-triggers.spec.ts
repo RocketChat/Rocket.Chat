@@ -9,6 +9,8 @@ import { test, expect } from './utils/test';
 test.describe.serial('omnichannel-triggers', () => {
 	let triggersName: string;
 	let triggerMessage: string;
+	let testName: string;
+	let testMessage: string;
 	let poLiveChat: OmnichannelLiveChat;
 	let newUser: { email: string; name: string };
 	let agent: { page: Page; poHomeOmnichannel: HomeOmnichannel };
@@ -20,6 +22,8 @@ test.describe.serial('omnichannel-triggers', () => {
 		};
 		triggersName = faker.datatype.uuid();
 		triggerMessage = 'Welcome to Rocket.chat';
+		testName = faker.datatype.uuid();
+		testMessage = 'test';
 		await Promise.all([
 			api.post('/livechat/users/agent', { username: 'user1' }),
 			api.post('/livechat/users/manager', { username: 'user1' }),
@@ -45,6 +49,14 @@ test.describe.serial('omnichannel-triggers', () => {
 		await test.step('expect create new trigger', async () => {
 			await agent.poHomeOmnichannel.triggers.createTrigger(triggersName, triggerMessage);
 			await expect(agent.poHomeOmnichannel.triggers.toastMessage).toBeVisible();
+			await agent.poHomeOmnichannel.triggers.createTrigger(testName, testMessage);
+			await expect(agent.poHomeOmnichannel.triggers.toastMessage).toBeVisible();
+		});
+		await test.step('expect switch trigger information', async () => {
+			await agent.poHomeOmnichannel.triggers.findRowByName(triggersName).click();
+			await agent.poHomeOmnichannel.triggers.findRowByName(testName).click();
+			await expect(agent.poHomeOmnichannel.triggers.Name).toHaveValue(testName);
+			await expect(agent.poHomeOmnichannel.triggers.textArea).toHaveValue(testMessage);
 		});
 		await test.step('expect update trigger', async () => {
 			const newTriggerName = `edited-${triggersName}`;

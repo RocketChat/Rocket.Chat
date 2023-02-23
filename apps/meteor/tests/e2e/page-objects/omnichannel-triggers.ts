@@ -96,6 +96,14 @@ export class OmnichannelTriggers {
 		return this.page.locator('text=Trigger removed');
 	}
 
+	findTdByName(name: string) {
+		return this.page.locator(`td >> text="${name}"`);
+	}
+
+	findRowByName(name: string) {
+		return this.page.locator('tr', { has: this.findTdByName(name) });
+	}
+
 	public async createTrigger(triggersName: string, triggerMessage: string) {
 		await this.btnNew.click();
 		await this.Name.fill(triggersName);
