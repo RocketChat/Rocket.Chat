@@ -106,27 +106,6 @@ API.v1.addRoute(
 	},
 );
 
-// API.v1.addRoute(
-// 	'moderation.user.deactivate',
-// 	{
-// 		authRequired: true,
-// 		permissionsRequired: ['view-moderation-console'],
-// 	},
-// 	{
-// 		async post() {
-// 			const { userId } = this.bodyParams;
-
-// 			if (!userId) {
-// 				return API.v1.failure('The required "userId" body param is missing.');
-// 			}
-
-// 			const { user } = await API.v1.runAction('users.deactivate', { userId });
-
-// 			return API.v1.success({ user });
-// 		},
-// 	},
-// );
-
 API.v1.addRoute(
 	'moderation.markChecked',
 	{
@@ -137,6 +116,12 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { userId, msgId, reasonForHiding, actionTaken } = this.requestParams();
+
+			// check if at least one of the required params is present
+
+			if (!userId || !msgId) {
+				return API.v1.failure('The required "userId" or "msgId" body param is missing.');
+			}
 
 			const reasonProvided = reasonForHiding && reasonForHiding.trim() !== '';
 			const sanitizedReason = reasonProvided ? reasonForHiding : 'No reason provided';
