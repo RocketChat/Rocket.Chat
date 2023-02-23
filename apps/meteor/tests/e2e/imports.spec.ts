@@ -3,10 +3,11 @@ import * as path from 'path';
 
 import { parse } from 'csv-parse';
 
+import { Users } from './fixtures/userStates';
 import { Admin } from './page-objects';
 import { test, expect } from './utils/test';
 
-test.use({ storageState: 'admin-session.json' });
+test.use({ storageState: Users.admin.state });
 
 const rowUserName: string[] = [];
 const slackCsvDir = path.resolve(__dirname, 'fixtures', 'files', 'slack_export_users.csv');
