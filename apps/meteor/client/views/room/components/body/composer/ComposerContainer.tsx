@@ -1,10 +1,11 @@
-import { isOmnichannelRoom, isVoipRoom } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, isRoomFederated, isVoipRoom } from '@rocket.chat/core-typings';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
 import { useRoom } from '../../../contexts/RoomContext';
 import { ComposerAnonymous } from './ComposerAnonymous';
 import { ComposerBlocked } from './ComposerBlocked';
+import { FederationComposer } from './ComposerFederation';
 import { ComposerJoinWithPassword } from './ComposerJoinWithPassword';
 import type { ComposerMessageProps } from './ComposerMessage';
 import ComposerMessage from './ComposerMessage';
@@ -28,6 +29,8 @@ const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactE
 
 	const isOmnichannel = isOmnichannelRoom(room);
 
+	const isFederation = isRoomFederated(room);
+
 	const isVoip = isVoipRoom(room);
 
 	if (isOmnichannel) {
@@ -36,6 +39,10 @@ const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactE
 
 	if (isVoip) {
 		return <ComposerVoIP />;
+	}
+
+	if (isFederation) {
+		return <FederationComposer room={room} {...props} />;
 	}
 
 	if (isAnonymous) {
