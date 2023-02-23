@@ -290,7 +290,7 @@ jobs:
     secrets: inherit
 
   tests-done:
-    name: ✅ Testes Done
+    name: ✅ Tests Done
     runs-on: ubuntu-20.04
     needs: [test-unit, test-api, test-ui, test-api-ee, test-ui-ee]
 
