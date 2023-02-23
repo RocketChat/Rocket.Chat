@@ -35,16 +35,6 @@
 			right: 50%;
 			left: auto;
 		}
-
-		&.compact {
-			& .message {
-				padding: 5px 45px 5px 15px;
-
-				&.collapsed .thumb {
-					margin: 0;
-				}
-			}
-		}
 	}
 
 	& .container-bars {
@@ -217,64 +207,6 @@
 
 			&::after {
 				transform: rotate(45deg);
-			}
-		}
-	}
-
-	& .message {
-		padding-right: 70px;
-		padding-left: 20px;
-
-		& .user {
-			margin-right: 0;
-			margin-left: 5px;
-		}
-
-		& .thumb {
-			right: 20px;
-			left: auto;
-		}
-
-		& .title .edited {
-			margin-right: 3px;
-			margin-left: auto;
-		}
-
-		& .private {
-			margin-right: 10px;
-			margin-left: auto;
-		}
-
-		&.sequential {
-			padding-top: 4px;
-
-			& .title {
-				right: 5px;
-				left: auto;
-
-				text-align: left;
-
-				& .edited {
-					margin-right: 0;
-					margin-left: auto;
-					padding-right: 0;
-					padding-left: auto;
-
-					border-right: 0;
-				}
-
-				& .message-action {
-					float: right;
-
-					margin-right: 1px;
-					margin-left: auto;
-				}
-			}
-		}
-
-		&.collapsed {
-			& > .thumb {
-				margin: 0 16px 0 0;
 			}
 		}
 	}
