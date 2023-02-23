@@ -390,7 +390,6 @@ const MessageBox = ({
 					onChange={setTyping}
 					style={textAreaStyle}
 					placeholder={t('Message')}
-					className='rc-message-box__textarea js-input-message'
 					onKeyDown={handler}
 					onPaste={handlePaste}
 					aria-activedescendant={ariaActiveDescendant}

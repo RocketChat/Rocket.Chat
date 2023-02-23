@@ -8,6 +8,7 @@ import React, { Fragment } from 'react';
 
 import { MessageTypes } from '../../../../../../app/ui-utils/client';
 import { isTruthy } from '../../../../../../lib/isTruthy';
+import ScrollableContentWrapper from '../../../../../components/ScrollableContentWrapper';
 import SystemMessage from '../../../../../components/message/variants/SystemMessage';
 import ThreadMessage from '../../../../../components/message/variants/ThreadMessage';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
@@ -45,14 +46,12 @@ const isMessageSequential = (current: IMessage, previous: IMessage | undefined, 
 
 type ThreadMessageListProps = {
 	mainMessage: IThreadMainMessage;
-	jumpTo?: string;
-	onJumpTo?: (mid: IMessage['_id']) => void;
 };
 
-const ThreadMessageList = ({ mainMessage, jumpTo, onJumpTo }: ThreadMessageListProps): ReactElement => {
+const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElement => {
 	const { messages, loading } = useLegacyThreadMessages(mainMessage._id);
 	const { listWrapperRef: listWrapperScrollRef, listRef: listScrollRef, onScroll: handleScroll } = useLegacyThreadMessageListScrolling();
-	const { parentRef: listJumpRef } = useLegacyThreadMessageJump(jumpTo, { enabled: !loading, onJumpTo });
+	const { parentRef: listJumpRef } = useLegacyThreadMessageJump({ enabled: !loading });
 
 	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, listJumpRef);
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
@@ -64,48 +63,49 @@ const ThreadMessageList = ({ mainMessage, jumpTo, onJumpTo }: ThreadMessageListP
 
 	return (
 		<div
-			ref={listWrapperScrollRef}
 			className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}
 			style={{ scrollBehavior: 'smooth' }}
 			onScroll={handleScroll}
 		>
-			<ul ref={listRef} className='thread'>
-				{loading ? (
-					<li className='load-more'>
-						<LoadingMessagesIndicator />
-					</li>
-				) : (
-					<MessageListProvider>
-						{[mainMessage, ...messages].map((message, index, { [index - 1]: previous }) => {
-							const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
-							const newDay = isMessageNewDay(message, previous);
-							const firstUnread = isMessageFirstUnread(subscription, message, previous);
-							const showDivider = newDay || firstUnread;
+			<ScrollableContentWrapper ref={listWrapperScrollRef}>
+				<ul className='thread' ref={listRef}>
+					{loading ? (
+						<li className='load-more'>
+							<LoadingMessagesIndicator />
+						</li>
+					) : (
+						<MessageListProvider>
+							{[mainMessage, ...messages].map((message, index, { [index - 1]: previous }) => {
+								const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
+								const newDay = isMessageNewDay(message, previous);
+								const firstUnread = isMessageFirstUnread(subscription, message, previous);
+								const showDivider = newDay || firstUnread;
 
-							const shouldShowAsSequential = sequential && !newDay;
+								const shouldShowAsSequential = sequential && !newDay;
 
-							const system = MessageTypes.isSystemMessage(message);
+								const system = MessageTypes.isSystemMessage(message);
 
-							return (
-								<Fragment key={message._id}>
-									{showDivider && (
-										<MessageDivider unreadLabel={firstUnread ? t('Unread_Messages').toLowerCase() : undefined}>
-											{newDay && formatDate(message.ts)}
-										</MessageDivider>
-									)}
-									<li>
-										{system ? (
-											<SystemMessage message={message} />
-										) : (
-											<ThreadMessage message={message} sequential={shouldShowAsSequential} unread={firstUnread} />
+								return (
+									<Fragment key={message._id}>
+										{showDivider && (
+											<MessageDivider unreadLabel={firstUnread ? t('Unread_Messages').toLowerCase() : undefined}>
+												{newDay && formatDate(message.ts)}
+											</MessageDivider>
 										)}
-									</li>
-								</Fragment>
-							);
-						})}
-					</MessageListProvider>
-				)}
-			</ul>
+										<li>
+											{system ? (
+												<SystemMessage message={message} />
+											) : (
+												<ThreadMessage message={message} sequential={shouldShowAsSequential} unread={firstUnread} />
+											)}
+										</li>
+									</Fragment>
+								);
+							})}
+						</MessageListProvider>
+					)}
+				</ul>
+			</ScrollableContentWrapper>
 		</div>
 	);
 };
