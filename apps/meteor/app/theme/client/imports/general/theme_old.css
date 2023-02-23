@@ -183,7 +183,6 @@ textarea {
 	}
 }
 
-.message,
 .flex-tab {
 	a i,
 	a[class^='icon-'] {
@@ -211,34 +210,8 @@ textarea {
 	background-color: var(--success-background);
 }
 
-.message.editing {
-	background-color: var(--message-box-editing-color);
-}
-
 .messages-box {
 	&.selectable .selected {
-		background-color: var(--selection-background);
-	}
-}
-
-.message {
-	&.new-day::before {
-		background-color: var(--content-background-color);
-	}
-
-	&.new-day::after {
-		border-color: var(--component-color);
-	}
-
-	a {
-		color: var(--link-font-color);
-
-		&:hover {
-			opacity: 0.6;
-		}
-	}
-
-	.highlight-text {
 		background-color: var(--selection-background);
 	}
 }
