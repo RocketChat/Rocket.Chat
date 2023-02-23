@@ -5,7 +5,7 @@ import { Subscriptions, Users as UsersRaw } from '@rocket.chat/models';
 
 import { setUserAvatar, checkUsernameAvailability, deleteUser, getUserCreatedByApp } from '../../../lib/server/functions';
 import { Users } from '../../../models/server';
-import type { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 export class AppUserBridge extends UserBridge {
 	// eslint-disable-next-line no-empty-function
