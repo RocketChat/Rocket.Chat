@@ -1166,6 +1166,12 @@
 	}
 }
 
+.rcx-message {
+	&.highlight {
+		animation: highlight 6s;
+	}
+}
+
 .rc-old .image-labels {
 	display: flex;
 

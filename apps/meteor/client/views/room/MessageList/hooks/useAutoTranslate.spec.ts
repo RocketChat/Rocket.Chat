@@ -86,9 +86,7 @@ describe('room/MessageList/hooks/useAutoTranslate', () => {
 
 		expect(result.current.showAutoTranslate({ u: { _id: 2 } })).to.be.equal(false);
 		expect(result.current.showAutoTranslate({ u: { _id: 1 }, translations: { default: 'translated' } })).to.be.equal(false);
-		expect(result.current.showAutoTranslate({ u: { _id: 2 }, translations: { default: 'translated' }, msg: 'saddasdas' })).to.be.equal(
-			true,
-		);
+		expect(result.current.showAutoTranslate({ u: { _id: 2 }, translations: { default: 'translated' } })).to.be.equal(true);
 	});
 
 	it('should return enabled false if no auto translate language', () => {
