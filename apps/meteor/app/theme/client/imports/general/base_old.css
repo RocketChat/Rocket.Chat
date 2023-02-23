@@ -770,6 +770,12 @@
 	}
 }
 
+.rcx-message {
+	&.highlight {
+		animation: highlight 6s;
+	}
+}
+
 .rc-old .attachment-description {
 	margin: 6px;
 

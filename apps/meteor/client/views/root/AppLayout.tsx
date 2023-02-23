@@ -11,10 +11,10 @@ import { useMessageLinkClicks } from './hooks/useMessageLinkClicks';
 
 const AppLayout = (): ReactElement => {
 	useEffect(() => {
-		document.body.classList.add('color-primary-font-color');
+		document.body.classList.add('color-primary-font-color', 'rcx-content--main');
 
 		return () => {
-			document.body.classList.add('color-primary-font-color');
+			document.body.classList.add('color-primary-font-color', 'rcx-content--main');
 		};
 	}, []);
 
