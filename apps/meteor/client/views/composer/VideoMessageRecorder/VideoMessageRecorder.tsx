@@ -33,7 +33,7 @@ const VideoMessageRecorder = ({ rid, tmid, chatContext, reference }: VideoMessag
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const [time, setTime] = useState('');
+	const [time, setTime] = useState<string | undefined>();
 	const [recordingState, setRecordingState] = useState<'idle' | 'loading' | 'recording'>('idle');
 	const [recordingInterval, setRecordingInterval] = useState<ReturnType<typeof setInterval> | null>(null);
 	const isRecording = recordingState === 'recording';
@@ -81,14 +81,14 @@ const VideoMessageRecorder = ({ rid, tmid, chatContext, reference }: VideoMessag
 		};
 
 		VideoRecorder.stop(cb);
-		setTime('');
+		setTime(undefined);
 		stopVideoRecording(rid, tmid);
 	};
 
 	const handleCancel = () => {
 		VideoRecorder.stop();
 		chat?.composer?.setRecordingVideo(false);
-		setTime('');
+		setTime(undefined);
 		stopVideoRecording(rid, tmid);
 	};
 
@@ -106,15 +106,15 @@ const VideoMessageRecorder = ({ rid, tmid, chatContext, reference }: VideoMessag
 
 	return (
 		<PositionAnimated visible='visible' anchor={reference} placement='top-end'>
-			<Box bg='light' padding='x4' borderRadius='x4' elevation='2'>
-				<Box className={videoContainerClass} overflow='hidden' height='240px' borderRadius='x4'>
-					<video ref={videoRef} width='320' height='240'></video>
+			<Box bg='light' padding={4} borderRadius={4} elevation='2'>
+				<Box className={videoContainerClass} overflow='hidden' height={240} borderRadius={4}>
+					<video ref={videoRef} width={320} height={240} />
 				</Box>
-				<Box mbs='x4' display='flex' justifyContent='space-between'>
+				<Box mbs={4} display='flex' justifyContent='space-between'>
 					<Button small onClick={handleRecord}>
-						<Box display='flex' alignItems='center'>
-							<Icon size='x16' mie='x4' name={isRecording ? 'stop-unfilled' : 'rec'} />
-							<span>{time}</span>
+						<Box is='span' display='flex' alignItems='center'>
+							<Icon size={16} mie={time ? 4 : undefined} name={isRecording ? 'stop-unfilled' : 'rec'} />
+							{time && <span>{time}</span>}
 						</Box>
 					</Button>
 					<ButtonGroup>

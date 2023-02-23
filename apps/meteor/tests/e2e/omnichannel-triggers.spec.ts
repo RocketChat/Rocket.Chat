@@ -1,17 +1,10 @@
 import { faker } from '@faker-js/faker';
-import type { Browser, Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
+import { createAuxContext } from './fixtures/createAuxContext';
+import { Users } from './fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from './page-objects';
 import { test, expect } from './utils/test';
-
-const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page; poHomeOmnichannel: HomeOmnichannel }> => {
-	const page = await browser.newPage({ storageState });
-	const poHomeOmnichannel = new HomeOmnichannel(page);
-	await page.goto('/omnichannel/triggers');
-	await page.locator('.main-content').waitFor();
-
-	return { page, poHomeOmnichannel };
-};
 
 test.describe.serial('omnichannel-triggers', () => {
 	let triggersName: string;
@@ -31,7 +24,12 @@ test.describe.serial('omnichannel-triggers', () => {
 			api.post('/livechat/users/agent', { username: 'user1' }),
 			api.post('/livechat/users/manager', { username: 'user1' }),
 		]);
-		agent = await createAuxContext(browser, 'user1-session.json');
+
+		const { page } = await createAuxContext(browser, Users.user1);
+		agent = { page, poHomeOmnichannel: new HomeOmnichannel(page) };
+
+		await page.goto('/omnichannel/triggers');
+		await page.locator('.main-content').waitFor();
 	});
 
 	test.beforeEach(async ({ page }) => {
