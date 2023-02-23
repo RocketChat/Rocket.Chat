@@ -1,15 +1,18 @@
+import type { IRoom, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IRoomModel, FindPaginated } from '@rocket.chat/model-typings';
+import type { Collection, FindCursor, Db, Filter, FindOptions, InsertOneResult, UpdateResult, WithId } from 'mongodb';
 import { ReadPreference } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
-export class RoomsRaw extends BaseRaw {
-	constructor(db, trash) {
+export class RoomsRaw extends BaseRaw<IRoom> implements IRoomModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IRoom>>) {
 		super(db, 'room', trash);
 	}
 
-	findOneByRoomIdAndUserId(rid, uid, options = {}) {
+	findOneByRoomIdAndUserId(rid: IRoom['_id'], uid: IUser['_id'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
 		const query = {
 			'_id': rid,
 			'u._id': uid,
@@ -18,7 +21,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findManyByRoomIds(roomIds, options = {}) {
+	findManyByRoomIds(roomIds: Array<IRoom['_id']>, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		const query = {
 			_id: {
 				$in: roomIds,
@@ -28,7 +31,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findPaginatedByIds(roomIds, options) {
+	findPaginatedByIds(roomIds: Array<IRoom['_id']>, options: FindOptions<IRoom> = {}) {
 		return this.findPaginated(
 			{
 				_id: { $in: roomIds },
@@ -37,7 +40,7 @@ export class RoomsRaw extends BaseRaw {
 		);
 	}
 
-	async getMostRecentAverageChatDurationTime(numberMostRecentChats, department) {
+	async getMostRecentAverageChatDurationTime(numberMostRecentChats: number, department: string | object) {
 		const aggregate = [
 			{
 				$match: {
@@ -62,7 +65,14 @@ export class RoomsRaw extends BaseRaw {
 		return statistic;
 	}
 
-	findByNameContainingAndTypes(name, types, discussion = false, teams = false, showOnlyTeams = false, options = {}) {
+	findByNameContainingAndTypes(
+		name: NonNullable<IRoom['name']>,
+		types: Array<IRoom['t']>,
+		discussion: boolean = false,
+		teams: boolean = false,
+		showOnlyTeams: boolean = false,
+		options: FindOptions<IRoom> = {},
+	): FindPaginated<FindCursor<IRoom>> {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
 		const onlyTeamsQuery = showOnlyTeams ? { teamMain: { $exists: true } } : {};
@@ -75,7 +85,7 @@ export class RoomsRaw extends BaseRaw {
 					},
 			  };
 
-		const query = {
+		const query: Filter<IRoom> = {
 			t: {
 				$in: types,
 			},
@@ -102,7 +112,13 @@ export class RoomsRaw extends BaseRaw {
 		return this.findPaginated(query, options);
 	}
 
-	findByTypes(types, discussion = false, teams = false, onlyTeams = false, options = {}) {
+	findByTypes(
+		types: Array<IRoom['t']>,
+		discussion: boolean = false,
+		teams: boolean = false,
+		onlyTeams: boolean = false,
+		options: FindOptions<IRoom> = {},
+	): FindPaginated<FindCursor<IRoom>> {
 		const teamCondition = teams
 			? {}
 			: {
