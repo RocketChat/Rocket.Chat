@@ -64,25 +64,6 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 		};
 	}, [selectedMessageStore]);
 
-	// TODO: chapter day frontend -  after 5.0 remove
-	useEffect(() => {
-		const $root = $(`#chat-window-${rid}`);
-
-		$('.messages-box', $root).addClass('selectable');
-
-		const handler = function (this: any): void {
-			selectedMessageStore.toggle(this.id);
-			this.classList.toggle('selected');
-		};
-
-		$('.messages-box .message', $root).on('click', handler);
-
-		return (): void => {
-			$('.messages-box', $root).removeClass('selectable');
-			$('.messages-box .message', $root).off('click', handler).filter('.selected').removeClass('selected');
-		};
-	}, [rid, messageList, selectedMessageStore]);
-
 	const { handleToUsers, handleAdditionalEmails, handleSubject } = handlers;
 
 	const onChangeUsers = useMutableCallback((value, action) => {
