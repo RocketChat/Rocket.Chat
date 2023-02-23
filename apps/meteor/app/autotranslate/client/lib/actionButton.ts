@@ -38,17 +38,16 @@ Meteor.startup(() => {
 					if (!user) {
 						return false;
 					}
-					const language = AutoTranslate.getLanguage(message.rid);
+					const language = subscription?.autoTranslateLanguage || AutoTranslate.getLanguage(message.rid) || '';
 					const isLivechatRoom = roomCoordinator.isLivechatRoom(room?.t);
 					const differentUser = message?.u && message.u._id !== user._id;
+					const autoTranslateEnabled = subscription?.autoTranslate || isLivechatRoom;
+					const hasLanguage =
+						hasTranslationLanguageInMessage(message, language) || hasTranslationLanguageInAttachments(message.attachments, language);
 
 					return Boolean(
-						(differentUser &&
-							(subscription?.autoTranslate || isLivechatRoom) &&
-							(message as { autoTranslateShowInverse?: boolean }).autoTranslateShowInverse) ||
-							(differentUser &&
-								!hasTranslationLanguageInMessage(message, language) &&
-								!hasTranslationLanguageInAttachments(message.attachments, language)),
+						(message as { autoTranslateShowInverse?: boolean }).autoTranslateShowInverse ||
+							(differentUser && autoTranslateEnabled && !hasLanguage),
 					);
 				},
 				order: 90,
@@ -75,13 +74,16 @@ Meteor.startup(() => {
 					if (!user) {
 						return false;
 					}
+					const differentUser = message?.u && message.u._id !== user._id;
+					const autoTranslateEnabled = subscription?.autoTranslate || isLivechatRoom;
+					const hasLanguage =
+						hasTranslationLanguageInMessage(message, language) || hasTranslationLanguageInAttachments(message.attachments, language);
 
 					return Boolean(
-						message?.u &&
-							message.u._id !== user._id &&
-							(subscription?.autoTranslate || isLivechatRoom) &&
-							!(message as { autoTranslateShowInverse?: boolean }).autoTranslateShowInverse &&
-							(hasTranslationLanguageInMessage(message, language) || hasTranslationLanguageInAttachments(message.attachments, language)),
+						!(message as { autoTranslateShowInverse?: boolean }).autoTranslateShowInverse &&
+							differentUser &&
+							autoTranslateEnabled &&
+							hasLanguage,
 					);
 				},
 				order: 90,

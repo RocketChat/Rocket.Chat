@@ -15,10 +15,9 @@ export type AutoTranslateOptions = {
 
 export const useAutoTranslate = (subscription?: ISubscription): AutoTranslateOptions => {
 	const autoTranslateSettingEnabled = Boolean(useSetting('AutoTranslate_Enabled'));
-	const autoTranslateEnabled = Boolean(
-		(autoTranslateSettingEnabled && subscription?.autoTranslateLanguage && subscription?.autoTranslate) ||
-			(subscription && roomCoordinator.isLivechatRoom(subscription?.t)),
-	);
+	const isSubscriptionEnabled = autoTranslateSettingEnabled && subscription?.autoTranslateLanguage && subscription?.autoTranslate;
+	const isLivechatRoom = useMemo(() => subscription && roomCoordinator.isLivechatRoom(subscription?.t), [subscription]);
+	const autoTranslateEnabled = Boolean(isSubscriptionEnabled || isLivechatRoom);
 	const autoTranslateLanguage = autoTranslateEnabled && subscription ? AutoTranslate.getLanguage(subscription.rid) : undefined;
 
 	const showAutoTranslate = useCallback(
