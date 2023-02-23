@@ -99,7 +99,7 @@ jobs:
         run: yarn build
 
       - name: Restore build
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: build
           path: /tmp/build
