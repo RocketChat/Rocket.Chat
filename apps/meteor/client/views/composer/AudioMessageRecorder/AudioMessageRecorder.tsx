@@ -1,9 +1,9 @@
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Throbber } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { MessageComposerAction } from '@rocket.chat/ui-composer';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement, AllHTMLAttributes } from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { AudioRecorder } from '../../../../app/ui/client';
@@ -14,10 +14,9 @@ const audioRecorder = new AudioRecorder();
 
 type AudioMessageRecorderProps = {
 	rid: IRoom['_id'];
-	tmid?: IMessage['_id'];
 	chatContext?: ChatAPI; // TODO: remove this when the composer is migrated to React
 	isMicrophoneDenied?: boolean;
-} & Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
+};
 
 const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMessageRecorderProps): ReactElement | null => {
 	const t = useTranslation();
@@ -43,43 +42,6 @@ const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMes
 		const blob = await new Promise<Blob>((resolve) => audioRecorder.stop(resolve));
 
 		return blob;
-	});
-
-	const handleMicrophoneDenied = useMutableCallback(async (isDenied) => {
-		if (isDenied) {
-			stopRecording();
-		}
-
-		chat?.composer?.setIsMicrophoneDenied(isDenied);
-	});
-
-	const handleMount = useMutableCallback(async (): Promise<void> => {
-		if (navigator.permissions) {
-			try {
-				const permissionStatus = await navigator.permissions.query({ name: 'microphone' as PermissionName });
-				handleMicrophoneDenied(permissionStatus.state === 'denied');
-				permissionStatus.onchange = (): void => {
-					handleMicrophoneDenied(permissionStatus.state === 'denied');
-				};
-				return;
-			} catch (error) {
-				console.warn(error);
-			}
-		}
-
-		if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-			handleMicrophoneDenied(true);
-			return;
-		}
-
-		try {
-			if (!(await navigator.mediaDevices.enumerateDevices()).some(({ kind }) => kind === 'audioinput')) {
-				handleMicrophoneDenied(true);
-				return;
-			}
-		} catch (error) {
-			console.warn(error);
-		}
 	});
 
 	const handleUnmount = useMutableCallback(async () => {
@@ -109,7 +71,6 @@ const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMes
 			setRecordingRoomId(rid);
 		} catch (error) {
 			console.log(error);
-			handleMicrophoneDenied(true);
 			chat?.composer?.setRecordingMode(false);
 		}
 	});
@@ -132,29 +93,12 @@ const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMes
 	});
 
 	useEffect(() => {
-		handleMount();
 		handleRecord();
 
 		return () => {
 			handleUnmount();
 		};
-	}, [handleMount, handleUnmount, handleRecord]);
-
-	const isFileUploadEnabled = useSetting('FileUpload_Enabled') as boolean;
-	const isAudioRecorderEnabled = useSetting('Message_AudioRecorderEnabled') as boolean;
-	const fileUploadMediaTypeBlackList = useSetting('FileUpload_MediaTypeBlackList') as string;
-	const fileUploadMediaTypeWhiteList = useSetting('FileUpload_MediaTypeWhiteList') as string;
-
-	const isAllowed = useMemo(
-		() =>
-			audioRecorder.isSupported() &&
-			!isMicrophoneDenied &&
-			isFileUploadEnabled &&
-			isAudioRecorderEnabled &&
-			(!fileUploadMediaTypeBlackList || !fileUploadMediaTypeBlackList.match(/audio\/mp3|audio\/\*/i)) &&
-			(!fileUploadMediaTypeWhiteList || fileUploadMediaTypeWhiteList.match(/audio\/mp3|audio\/\*/i)),
-		[fileUploadMediaTypeBlackList, fileUploadMediaTypeWhiteList, isAudioRecorderEnabled, isFileUploadEnabled, isMicrophoneDenied],
-	);
+	}, [handleUnmount, handleRecord]);
 
 	const stateClass = useMemo(() => {
 		if (recordingRoomId && recordingRoomId !== rid) {
@@ -164,7 +108,7 @@ const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMes
 		return state && `rc-message-box__audio-message--${state}`;
 	}, [recordingRoomId, rid, state]);
 
-	if (!isAllowed) {
+	if (isMicrophoneDenied) {
 		return null;
 	}
 

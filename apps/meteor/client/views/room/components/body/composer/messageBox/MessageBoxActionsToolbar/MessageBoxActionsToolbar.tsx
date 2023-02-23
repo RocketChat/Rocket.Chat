@@ -1,4 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import React, { memo } from 'react';
 
 import ActionsToolbarDropdown from './ActionsToolbarDropdown';
@@ -13,7 +13,7 @@ type MessageBoxActionsToolbarProps = {
 	canSend: boolean;
 	canJoin: boolean;
 	rid: IRoom['_id'];
-	tmid?: string;
+	tmid?: IMessage['_id'];
 	isMicrophoneDenied?: boolean;
 };
 
