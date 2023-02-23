@@ -103,26 +103,6 @@
 	border-color: var(--transparent-dark);
 }
 
-* {
-	-webkit-overflow-scrolling: touch;
-
-	&::-webkit-scrollbar {
-		width: 8px;
-		height: 8px;
-
-		background: var(--transparent-dark);
-	}
-
-	&::-webkit-scrollbar-thumb {
-		border-radius: 50px;
-		background-color: var(--custom-scrollbar-color);
-	}
-
-	&::-webkit-scrollbar-corner {
-		background-color: var(--transparent-dark);
-	}
-}
-
 .filter-item {
 	&:hover {
 		border-color: var(--info-font-color);
@@ -203,7 +183,6 @@ textarea {
 	}
 }
 
-.message,
 .flex-tab {
 	a i,
 	a[class^='icon-'] {
@@ -231,34 +210,8 @@ textarea {
 	background-color: var(--success-background);
 }
 
-.message.editing {
-	background-color: var(--message-box-editing-color);
-}
-
 .messages-box {
 	&.selectable .selected {
-		background-color: var(--selection-background);
-	}
-}
-
-.message {
-	&.new-day::before {
-		background-color: var(--content-background-color);
-	}
-
-	&.new-day::after {
-		border-color: var(--component-color);
-	}
-
-	a {
-		color: var(--link-font-color);
-
-		&:hover {
-			opacity: 0.6;
-		}
-	}
-
-	.highlight-text {
 		background-color: var(--selection-background);
 	}
 }
