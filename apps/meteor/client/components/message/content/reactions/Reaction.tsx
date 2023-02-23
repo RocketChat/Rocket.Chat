@@ -62,8 +62,8 @@ const Reaction = ({ hasReacted, counter, name, names, ...props }: ReactionProps)
 					openTooltip(
 						<MarkdownText
 							content={t(key, {
-								counter: names.length,
-								users: names.join(', '),
+								counter: names.length > 15 ? names.length - 15 : names.length,
+								users: names.slice(0, 15).join(', '),
 								emoji: name,
 							})}
 							variant='inline'
