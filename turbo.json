@@ -3,11 +3,13 @@
 	"pipeline": {
 		"build:ci": {
 			"dependsOn": ["^build"],
-			"outputs": ["dist/**"]
+			"outputs": ["dist/**"],
+			"cache": false
 		},
 		"build": {
 			"dependsOn": ["^build"],
-			"outputs": ["dist/**"]
+			"outputs": ["dist/**"],
+			"cache": false
 		},
 		"@rocket.chat/ui-contexts#build": {
 			"dependsOn": ["^build"],
