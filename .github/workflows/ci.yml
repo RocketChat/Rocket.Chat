@@ -273,7 +273,7 @@ jobs:
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
-      type: api
+      type: ui
       release: ee
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
