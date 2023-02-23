@@ -1,4 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { isThreadMessage } from '@rocket.chat/core-typings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { ChatRoom } from '../../../app/models/client';
@@ -10,21 +11,22 @@ export const jumpToMessage = async (message: IMessage) => {
 		(Template.instance() as any)?.tabBar?.close();
 	}
 
-	if (message.tmid) {
-		return FlowRouter.go(
-			FlowRouter.getRouteName(),
+	if (isThreadMessage(message)) {
+		const { route, queryParams } = FlowRouter.current();
+		FlowRouter.go(
+			route?.name ?? '/',
 			{
 				tab: 'thread',
 				context: message.tmid,
 				rid: message.rid,
-				jump: message._id,
 				name: ChatRoom.findOne({ _id: message.rid })?.name ?? '',
 			},
 			{
-				...FlowRouter.current().queryParams,
-				jump: message._id,
+				...queryParams,
+				msg: message._id,
 			},
 		);
+		return;
 	}
 
 	if (Session.get('openedRoom') === message.rid) {
