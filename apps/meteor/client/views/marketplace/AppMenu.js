@@ -184,7 +184,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				enabled={result.data.enabled}
 				limit={result.data.limit}
 				appName={app.name}
-				handleClose={() => setModal(null)}
+				handleClose={closeModal}
 				handleConfirm={acquireApp}
 				handleEnableUnlimitedApps={() => {
 					upgradeRoute.push();
