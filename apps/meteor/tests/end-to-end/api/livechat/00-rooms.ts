@@ -1652,7 +1652,7 @@ describe('LIVECHAT - rooms', function () {
 				.set(credentials)
 				.expect(400);
 		});
-		it('should fail if no one is serving the room', async () => {
+		it('should return OK if no one is serving the room (queued)', async () => {
 			const visitor = await createVisitor();
 			const { _id } = await createLivechatRoom(visitor.token);
 			await closeRoom(_id);
