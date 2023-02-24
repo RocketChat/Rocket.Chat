@@ -5,8 +5,11 @@ import { settings } from '../../../../settings/server';
 import { RoutingManager } from '../RoutingManager';
 import { Users } from '../../../../models/server';
 import { SystemLogger } from '../../../../../server/lib/logger/system';
+import type { IRoutingMethod, RoutingMethodConfig, SelectedAgent } from '../../types';
 
-class ExternalQueue {
+class ExternalQueue implements IRoutingMethod {
+	config: RoutingMethodConfig;
+
 	constructor() {
 		this.config = {
 			previewRoom: false,
@@ -19,7 +22,7 @@ class ExternalQueue {
 		};
 	}
 
-	getNextAgent(department, ignoreAgentId) {
+	getNextAgent(department?: string, ignoreAgentId?: string): Promise<SelectedAgent | null | undefined> {
 		for (let i = 0; i < 10; i++) {
 			try {
 				let queryString = department ? `?departmentId=${department}` : '';
@@ -35,14 +38,14 @@ class ExternalQueue {
 					},
 				});
 
-				if (result && result.data && result.data.username) {
+				if (result?.data?.username) {
 					const agent = Users.findOneOnlineAgentByUserList(result.data.username);
 
 					if (agent) {
-						return {
+						return Promise.resolve({
 							agentId: agent._id,
 							username: agent.username,
-						};
+						});
 					}
 				}
 			} catch (err) {

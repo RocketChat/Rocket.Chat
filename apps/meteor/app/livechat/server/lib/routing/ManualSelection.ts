@@ -1,15 +1,18 @@
 import { RoutingManager } from '../RoutingManager';
+import type { IRoutingMethod, RoutingMethodConfig, SelectedAgent } from '../../types';
 
 /* Manual Selection Queuing Method:
  *
- * An incomming livechat is created as an Inquiry
+ * An incoming livechat is created as an Inquiry
  * which is picked up from an agent.
  * An Inquiry is visible to all agents
  *
  * A room is still created with the initial message, but it is occupied by
  * only the client until paired with an agent
  */
-class ManualSelection {
+class ManualSelection implements IRoutingMethod {
+	config: RoutingMethodConfig;
+
 	constructor() {
 		this.config = {
 			previewRoom: true,
@@ -22,7 +25,9 @@ class ManualSelection {
 		};
 	}
 
-	getNextAgent() {}
+	getNextAgent(_department?: string, _excludeAgent?: string): Promise<SelectedAgent | null | undefined> {
+		return Promise.resolve(undefined);
+	}
 }
 
 RoutingManager.registerMethod('Manual_Selection', ManualSelection);
