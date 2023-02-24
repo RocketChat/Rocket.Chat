@@ -91,4 +91,12 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	): Promise<InsertOneResult<IMessage>>;
 
 	removeByRoomId(roomId: IRoom['_id']): Promise<DeleteResult>;
+
+	findVisibleByRoomIdNotContainingTypesAndUsers(
+		roomId: IRoom['_id'],
+		types: IMessage['t'][],
+		users?: string[],
+		options?: FindOptions<IMessage>,
+		showThreadMessages?: boolean,
+	): FindCursor<IMessage>;
 }

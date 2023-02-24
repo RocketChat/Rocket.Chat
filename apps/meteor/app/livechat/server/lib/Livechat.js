@@ -1129,7 +1129,8 @@ export const Livechat = {
 			'livechat-started',
 			'livechat_video_call',
 		];
-		const messages = Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, {
+		// Exclude rocket.cat messages from transcript
+		const messages = await MessagesRaw.findVisibleByRoomIdNotContainingTypesAndUsers(rid, ignoredMessageTypes, ['rocket.cat'], {
 			sort: { ts: 1 },
 		});
 

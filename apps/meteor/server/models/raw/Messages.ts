@@ -243,6 +243,38 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
+	findVisibleByRoomIdNotContainingTypesAndUsers(
+		roomId: IRoom['_id'],
+		types: IMessage['t'][],
+		users?: string[],
+		options?: FindOptions<IMessage>,
+		showThreadMessages = true,
+	): FindCursor<IMessage> {
+		const query: Filter<IMessage> = {
+			_hidden: {
+				$ne: true,
+			},
+			...(Array.isArray(users) && users.length > 0 && { 'u._id': { $nin: users } }),
+			rid: roomId,
+			...(!showThreadMessages && {
+				$or: [
+					{
+						tmid: { $exists: false },
+					},
+					{
+						tshow: true,
+					},
+				],
+			}),
+		};
+
+		if (types.length > 0) {
+			query.t = { $nin: types };
+		}
+
+		return this.find(query, options);
+	}
+
 	findLivechatMessagesWithoutClosing(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
 		return this.find(
 			{
