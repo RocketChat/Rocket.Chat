@@ -32,35 +32,17 @@ function ViewModeList(): ReactElement {
 				<ListItem
 					icon={'extended-view'}
 					text={t('Extended')}
-					input={
-						<RadioButton
-							pis='x24'
-							onChange={setToExtended}
-							name='sidebarViewMode'
-							value='extended'
-							checked={sidebarViewMode === 'extended'}
-						/>
-					}
+					input={<RadioButton pis='x24' onChange={setToExtended} value='extended' checked={sidebarViewMode === 'extended'} />}
 				/>
 				<ListItem
 					icon={'medium-view'}
 					text={t('Medium')}
-					input={
-						<RadioButton pis='x24' onChange={setToMedium} name='sidebarViewMode' value='medium' checked={sidebarViewMode === 'medium'} />
-					}
+					input={<RadioButton pis='x24' onChange={setToMedium} value='medium' checked={sidebarViewMode === 'medium'} />}
 				/>
 				<ListItem
 					icon={'condensed-view'}
 					text={t('Condensed')}
-					input={
-						<RadioButton
-							pis='x24'
-							onChange={setToCondensed}
-							name='sidebarViewMode'
-							value='condensed'
-							checked={sidebarViewMode === 'condensed'}
-						/>
-					}
+					input={<RadioButton pis='x24' onChange={setToCondensed} value='condensed' checked={sidebarViewMode === 'condensed'} />}
 				/>
 				<ListItem
 					icon={'user-rounded'}
