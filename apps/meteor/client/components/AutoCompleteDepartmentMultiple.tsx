@@ -35,17 +35,6 @@ const AutoCompleteDepartmentMultiple = ({
 
 	const { phase: departmentsPhase, items: departmentsItems, itemCount: departmentsTotal } = useRecordList(departmentsList);
 
-	const sortedByName = departmentsItems.sort((a, b) => {
-		if (a.label > b.label) {
-			return 1;
-		}
-		if (a.label < b.label) {
-			return -1;
-		}
-
-		return 0;
-	});
-
 	return (
 		<PaginatedMultiSelectFiltered
 			withTitle
@@ -53,7 +42,7 @@ const AutoCompleteDepartmentMultiple = ({
 			onChange={onChange}
 			filter={departmentsFilter}
 			setFilter={setDepartmentsFilter as (value?: string | number) => void}
-			options={sortedByName}
+			options={departmentsItems}
 			width='100%'
 			flexShrink={0}
 			flexGrow={0}
