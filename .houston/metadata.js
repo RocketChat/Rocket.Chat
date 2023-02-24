@@ -9,7 +9,7 @@ const getMongoVersion = async function({ version, git }) {
 			return [];
 		}
 
-		return mongoMatch[1].replace(/["' ]/g, '').split(',');
+		return mongoMatch[1].replace(/["'\\ ]/g, '').split(',');
 	} catch (e) {
 		console.error(e);
 	}
