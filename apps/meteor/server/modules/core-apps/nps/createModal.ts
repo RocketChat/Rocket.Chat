@@ -4,7 +4,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../../app/settings/server';
 
-export type ModalParams = {
+type ModalParams = {
 	id: string;
 	type: string;
 	appId: string;

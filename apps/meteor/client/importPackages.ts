@@ -26,7 +26,6 @@ import '../app/importer-slack-users/client';
 import '../app/lib/client';
 import '../app/logger/client';
 import '../app/markdown/client';
-import '../app/message-attachments/client';
 import '../app/message-mark-as-unread/client';
 import '../app/nextcloud/client';
 import '../app/otr/client';

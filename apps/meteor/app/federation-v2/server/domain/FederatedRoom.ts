@@ -8,7 +8,7 @@ export const isAnInternalIdentifier = (fromOriginName: string, localOriginName: 
 	return fromOriginName === localOriginName;
 };
 
-export abstract class AbstractFederatedRoom {
+abstract class AbstractFederatedRoom {
 	protected externalId: string;
 
 	protected internalId: string;

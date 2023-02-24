@@ -17,7 +17,7 @@ export const hasAnyRoleAsync = async (
 	return Roles.isUserInRoles(userId, roleIds, scope);
 };
 
-export const hasRoleAsync = async (userId: IUser['_id'], roleId: IRole['_id'], scope?: IRoom['_id'] | undefined): Promise<boolean> => {
+const hasRoleAsync = async (userId: IUser['_id'], roleId: IRole['_id'], scope?: IRoom['_id'] | undefined): Promise<boolean> => {
 	if (Array.isArray(roleId)) {
 		throw new Error('error-invalid-arguments');
 	}

@@ -8,10 +8,6 @@ import type { OEmbedMeta, OEmbedUrlContent, ParsedUrl, OEmbedProvider } from '@r
 import { callbacks } from '../../../lib/callbacks';
 import { SystemLogger } from '../../../server/lib/logger/system';
 
-type OEmbedExecutor = {
-	providers: Providers;
-};
-
 class Providers {
 	private providers: OEmbedProvider[];
 
@@ -91,10 +87,6 @@ providers.registerProvider({
 	endPoint: 'https://open.spotify.com/oembed',
 });
 
-export const oembed: OEmbedExecutor = {
-	providers,
-};
-
 callbacks.add(
 	'oembed:beforeGetUrlContent',
 	function (data) {
@@ -172,7 +164,7 @@ callbacks.add(
 
 		try {
 			const metas = JSON.parse(data.content.body);
-			_.each(metas, function (value, key) {
+			metas.forEach(function (value: string, key: string) {
 				if (value && typeof value.valueOf() === 'string') {
 					data.meta[camelCase(`oembed_${key}`)] = value;
 				}

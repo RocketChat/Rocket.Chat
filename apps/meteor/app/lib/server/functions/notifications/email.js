@@ -176,10 +176,6 @@ export function sendEmailFromData(data) {
 	return Mailer.send(data);
 }
 
-export function sendEmail({ message, user, subscription, room, emailAddress, hasMentionToUser }) {
-	return sendEmailFromData(getEmailData({ message, user, subscription, room, emailAddress, hasMentionToUser }));
-}
-
 export function shouldNotifyEmail({
 	disableAllMessageNotifications,
 	statusConnection,

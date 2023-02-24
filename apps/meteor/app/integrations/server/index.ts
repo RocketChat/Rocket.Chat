@@ -11,8 +11,3 @@ import './methods/clearIntegrationHistory';
 import './api/api';
 import './lib/triggerHandler';
 import './triggers';
-
-export {
-	mountIntegrationQueryBasedOnPermissions,
-	mountIntegrationHistoryQueryBasedOnPermissions,
-} from './lib/mountQueriesBasedOnPermission';

@@ -1,3 +1,1 @@
-import { fileUploadHandler } from './lib/fileUploadHandler';
-
-export { fileUploadHandler };
+import './lib/fileUploadHandler';

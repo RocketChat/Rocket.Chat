@@ -42,8 +42,8 @@ export const createFakeSubscription = (overrides?: Partial<ISubscription>): ISub
 	...overrides,
 });
 
-export function createFakeMessage<TMessage extends IMessage>(overrides?: Partial<TMessage>): TMessage;
-export function createFakeMessage(overrides?: Partial<IMessage>): IMessage {
+function createFakeMessage<TMessage extends IMessage>(overrides?: Partial<TMessage>): TMessage;
+function createFakeMessage(overrides?: Partial<IMessage>): IMessage {
 	return {
 		_id: faker.database.mongodbObjectId(),
 		_updatedAt: faker.date.recent(),
