@@ -143,7 +143,7 @@ const cleanupOembed = (data: {
 callbacks.add(
 	'oembed:afterParseContent',
 	function (data) {
-		if (!data || !data.url || !data.content?.body || !data.parsedUrl?.query) {
+		if (!data?.url || !data.content?.body || !data.parsedUrl?.query) {
 			return cleanupOembed(data);
 		}
 
@@ -164,8 +164,8 @@ callbacks.add(
 
 		try {
 			const metas = JSON.parse(data.content.body);
-			metas.forEach(function (value: string, key: string) {
-				if (value && typeof value.valueOf() === 'string') {
+			Object.entries(metas).forEach(([key, value]) => {
+				if (value && typeof value === 'string') {
 					data.meta[camelCase(`oembed_${key}`)] = value;
 				}
 			});
