@@ -36,7 +36,7 @@ const detectEmoji = (text: string): { name: string; className: string; image?: s
 const MessageContentBody = ({ mentions, channels, md, searchText }: MessageContentBodyProps): ReactElement => {
 	const highlights = useMessageListHighlights();
 	const highlightRegex = useMemo(() => {
-		if (!highlights || !highlights.length) {
+		if (!highlights?.length) {
 			return;
 		}
 
