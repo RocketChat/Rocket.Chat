@@ -12,7 +12,7 @@ export class FederationHomeContent {
 	}
 
 	get messagePopUpItems(): Locator {
-		return this.page.locator('.message-popup-items');
+		return this.page.locator('role=menu[name="People"]');
 	}
 
 	get lastUserMessage(): Locator {
@@ -73,12 +73,12 @@ export class FederationHomeContent {
 	}
 
 	async sendVideoRecordedMessage(): Promise<void> {
-		await this.btnMenuMoreActions.click();
 		await this.btnVideoMessage.click();
-		await this.page.locator('.vrec-dialog button.record').click();
+		await this.page.locator('.rcx-box.rcx-box--full.rcx-icon--name-rec').click();
 		await this.page.waitForTimeout(5000);
-		await this.page.locator('.vrec-dialog button.record').click();
-		await this.page.locator('.vrec-dialog button.ok').click();
+		await this.page.locator('.rcx-box.rcx-box--full.rcx-icon--name-stop-unfilled').click();
+		await this.page.waitForTimeout(5000);
+		await this.page.locator('button >> text="Send"').click();
 		await this.btnModalConfirm.click();
 	}
 
@@ -159,7 +159,7 @@ export class FederationHomeContent {
 	}
 
 	get btnVideoMessage(): Locator {
-		return this.page.locator('.rc-popover__content [data-id="video-message"]');
+		return this.page.locator('[data-qa-id="video-message"]');
 	}
 
 	get btnRecordAudio(): Locator {
@@ -201,9 +201,7 @@ export class FederationHomeContent {
 	}
 
 	async sendFileMessage(fileName: string): Promise<void> {
-		await this.btnMenuMoreActions.click();
-		await this.btnOptionFileUpload.click();
-		await this.page.locator('input[type=file]#fileupload-input').setInputFiles(`./tests/e2e/federation/files/${fileName}`);
+		await this.page.locator('input[type=file]').setInputFiles(`./tests/e2e/federation/files/${fileName}`);
 	}
 
 	async openLastMessageMenu(): Promise<void> {
@@ -222,7 +220,7 @@ export class FederationHomeContent {
 	async reactToMessage(emoji: string): Promise<void> {
 		await this.openLastMessageMenu();
 		await this.page.locator('[data-qa-id="reaction-message"]').click();
-		await this.page.locator('.js-emojipicker-search').fill(emoji);
+		await this.page.locator('input.js-emojipicker-search').type(emoji);
 		await this.page.locator(`[data-emoji="${emoji}"]`).last().click();
 	}
 

@@ -57,6 +57,7 @@ export const setupTesting = async (api: API) => {
 	await api.post('/settings/Message_AudioRecorderEnabled', { value: true });
 	await api.post('/settings/Accounts_ManuallyApproveNewUsers', { value: false });
 	await api.post('/settings/API_Enable_Rate_Limiter', { value: false });
+	await api.post('/settings/UI_Use_Real_Name', { value: false });
 	await api.post('/settings/Rate_Limiter_Limit_RegisterUser', { value: 10 });
 	await api.post('/settings/Accounts_RegistrationForm', { value: 'Public' });
 	await api.post('/permissions.update', { permissions: [{ _id: 'force-delete-message', roles: ['admin', 'user'] }] });

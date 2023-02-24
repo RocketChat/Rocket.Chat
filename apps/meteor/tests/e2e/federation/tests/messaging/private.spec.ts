@@ -297,6 +297,8 @@ test.describe.parallel('Federation - Group Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
 				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await page.reload();
+				await pageForServer2.reload();
 
 				await poFederationChannelServer1.content.sendVideoRecordedMessage();
 
@@ -317,7 +319,9 @@ test.describe.parallel('Federation - Group Messaging', () => {
 
 				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
 				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
-
+				await page.reload();
+				await pageForServer2.reload();
+				
 				await poFederationChannelServer2.content.sendVideoRecordedMessage();
 
 				await expect(
@@ -442,15 +446,13 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
 				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
 
-				await poFederationChannelServer1.content.inputMessage.type(`@${userFromServer2UsernameOnly}`);
+				await poFederationChannelServer1.content.inputMessage.type(`@${userFromServer2UsernameOnly}`, { delay: 100 });
+				await poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`).waitFor();
+				await expect(poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`)).toBeVisible();
 
-				await expect(poFederationChannelServer1.content.messagePopUpItems.locator(`text=${usernameWithDomainFromServer2}`)).toBeVisible();
-
-				await poFederationChannelServer2.content.inputMessage.type(`@${constants.RC_SERVER_1.username}`);
-
-				await expect(
-					poFederationChannelServer2.content.messagePopUpItems.locator(`text=${adminUsernameWithDomainFromServer1}`),
-				).toBeVisible();
+				await poFederationChannelServer2.content.inputMessage.type(`@${constants.RC_SERVER_1.username}`, { delay: 100 });
+				await poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`).waitFor();
+				await expect(poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`)).toBeVisible();
 
 				await poFederationChannelServer1.content.inputMessage.fill('');
 				await poFederationChannelServer2.content.inputMessage.fill('');
@@ -474,15 +476,13 @@ test.describe.parallel('Federation - Group Messaging', () => {
 				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
 				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
 
-				await poFederationChannelServer2.content.inputMessage.type(`@${constants.RC_SERVER_1.username}`);
+				await poFederationChannelServer2.content.inputMessage.type(`@${constants.RC_SERVER_1.username}`, { delay: 100 });
+				await poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`).waitFor();
+				await expect(poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`)).toBeVisible();
 
-				await expect(
-					poFederationChannelServer2.content.messagePopUpItems.locator(`text=${adminUsernameWithDomainFromServer1}`),
-				).toBeVisible();
-
-				await poFederationChannelServer1.content.inputMessage.type(`@${userFromServer2UsernameOnly}`);
-
-				await expect(poFederationChannelServer1.content.messagePopUpItems.locator(`text=${usernameWithDomainFromServer2}`)).toBeVisible();
+				await poFederationChannelServer1.content.inputMessage.type(`@${userFromServer2UsernameOnly}`, { delay: 100 });
+				await poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`).waitFor();
+				await expect(poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`)).toBeVisible();
 
 				await poFederationChannelServer1.content.inputMessage.fill('');
 				await poFederationChannelServer2.content.inputMessage.fill('');
