@@ -1,7 +1,7 @@
 import { PersistenceBridge } from '@rocket.chat/apps-engine/server/bridges/PersistenceBridge';
 import type { RocketChatAssociationRecord } from '@rocket.chat/apps-engine/definition/metadata';
 
-import type { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 export class AppPersistenceBridge extends PersistenceBridge {
 	// eslint-disable-next-line no-empty-function
