@@ -40,7 +40,7 @@ const CustomContentCard = (): ReactElement | null => {
 	const isEnterprise = data?.isEnterprise;
 	const willNotShowCustomContent = isCustomContentBodyEmpty || !isCustomContentVisible;
 
-	const userVisibilityTooltipText = !isCustomContentVisible ? t('Now_Its_Visible_Only_For_Admins') : t('Now_Its_Visible_For_Everyone');
+	const userVisibilityTooltipText = isCustomContentVisible ? t('Now_Its_Visible_For_Everyone') : t('Now_Its_Visible_Only_For_Admins');
 
 	let customContentOnlyTooltipText = t('It_Will_Hide_All_Other_Content_Blocks_In_The_Homepage');
 	if (willNotShowCustomContent) {
