@@ -377,7 +377,7 @@ const MessageBox = ({
 					ref={mergedRefs as unknown as Ref<HTMLInputElement>}
 					aria-label={t('Message')}
 					name='msg'
-					disabled={isRecording || !canSend}
+					disabled={isRecording}
 					onChange={setTyping}
 					style={textAreaStyle}
 					placeholder={t('Message')}
@@ -388,19 +388,14 @@ const MessageBox = ({
 				<div ref={shadowRef} style={shadowStyle} />
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
-						<MessageComposerAction
-							icon='emoji'
-							disabled={!useEmojis || isRecording || !canSend}
-							onClick={handleOpenEmojiPicker}
-							title={t('Emoji')}
-						/>
+						<MessageComposerAction icon='emoji' disabled={!useEmojis || isRecording} onClick={handleOpenEmojiPicker} title={t('Emoji')} />
 						<MessageComposerActionsDivider />
 						{chat.composer && formatters.length > 0 && (
 							<MessageBoxFormattingToolbar
 								composer={chat.composer}
 								variant={sizes.inlineSize < 480 ? 'small' : 'large'}
 								items={formatters}
-								disabled={isRecording || !canSend}
+								disabled={isRecording}
 							/>
 						)}
 						<MessageComposerActionsDivider />
