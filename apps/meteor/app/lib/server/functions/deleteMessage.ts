@@ -7,7 +7,7 @@ import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
 import { Messages, Rooms } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Apps } from '../../../apps/server';
+import { Apps } from '../../../../ee/server/apps';
 
 export const deleteMessage = async function (message: IMessage, user: IUser): Promise<void> {
 	const deletedMsg = Messages.findOneById(message._id);

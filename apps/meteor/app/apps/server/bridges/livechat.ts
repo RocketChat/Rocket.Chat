@@ -16,7 +16,7 @@ import { LivechatVisitors } from '@rocket.chat/models';
 import { getRoom } from '../../../livechat/server/api/lib/livechat';
 import { Livechat } from '../../../livechat/server/lib/Livechat';
 import { Users, LivechatDepartment, LivechatRooms } from '../../../models/server';
-import type { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
 
 export class AppLivechatBridge extends LivechatBridge {

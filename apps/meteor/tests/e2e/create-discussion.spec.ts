@@ -1,9 +1,10 @@
 import { faker } from '@faker-js/faker';
 
+import { Users } from './fixtures/userStates';
 import { HomeDiscussion } from './page-objects';
 import { test, expect } from './utils/test';
 
-test.use({ storageState: 'admin-session.json' });
+test.use({ storageState: Users.admin.state });
 
 test.describe.serial('create-discussion', () => {
 	let poHomeDiscussion: HomeDiscussion;

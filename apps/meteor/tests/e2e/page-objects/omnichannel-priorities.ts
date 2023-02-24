@@ -59,6 +59,10 @@ export class OmnichannelPriorities {
 		return this.page.locator('.rcx-modal').locator('role=button[name="Reset"]');
 	}
 
+	get btnCloseToastSuccess(): Locator {
+		return this.toastSuccess.locator('button');
+	}
+
 	findPriority(name: string) {
 		return this.page.locator('tr', { has: this.page.locator(`td >> text="${name}"`) });
 	}
