@@ -6,7 +6,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import CounterItem from '../realTimeMonitoring/counter/CounterItem';
 import CounterRow from '../realTimeMonitoring/counter/CounterRow';
 
-const initialData = Array.from({ length: 3 }).map(() => ({ title: '', value: '' }));
+const initialData: { title?: TranslationKey; value: string }[] = Array.from({ length: 3 }).map(() => ({ title: undefined, value: '' }));
 
 const conversationsInitialData = [initialData, initialData];
 const productivityInitialData = [initialData];
@@ -63,7 +63,7 @@ const Overview = ({ type, dateRange, departmentId }: { type: string; dateRange: 
 							pb='x8'
 							flexBasis='100%'
 							key={i}
-							title={title ? t(title as TranslationKey) : <Skeleton width='x60' />}
+							title={title ? t(title) : <Skeleton width='x60' />}
 							count={value}
 						/>
 					))}
