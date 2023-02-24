@@ -1,4 +1,4 @@
-import { Logger } from '../../logger';
+import { Logger } from '../../logger/server';
 
 export const logger = new Logger('SlackBridge');
 

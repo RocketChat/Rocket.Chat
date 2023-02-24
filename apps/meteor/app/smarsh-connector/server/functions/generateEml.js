@@ -6,7 +6,7 @@ import { SmarshHistory } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { Rooms, Messages, Users } from '../../../models/server';
-import { MessageTypes } from '../../../ui-utils';
+import { MessageTypes } from '../../../ui-utils/server';
 import { smarsh } from '../lib/rocketchat';
 import 'moment-timezone';
 
