@@ -1510,6 +1510,7 @@
   "Department_name": "Department name",
   "Department_not_found": "Department not found",
   "Department_removed": "Department removed",
+  "Department_Removal_Disabled": "Delete option disabled by admin",
   "Department_unarchived": "Department unarchived",
   "Departments": "Departments",
   "Deployment_ID": "Deployment ID",
