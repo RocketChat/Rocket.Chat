@@ -54,8 +54,8 @@ API.v1.addRoute(
 
 			const { count: pagCount = 50, offset = 0 } = this.getPaginationItems();
 
-			if (!userId) {
-				return API.v1.failure('The required "userId" query param is missing.');
+			if (!userId || userId.trim() === '') {
+				return API.v1.failure('The required "userId" body param is missing or empty.');
 			}
 
 			const cursor = Reports.findUserMessages(userId, offset, pagCount, sort);
@@ -85,8 +85,8 @@ API.v1.addRoute(
 
 			const { user: modUser } = this;
 
-			if (!userId) {
-				return API.v1.failure('The required "userId" body param is missing.');
+			if (!userId || userId.trim() === '') {
+				return API.v1.failure('The required "userId" body param is missing or empty.');
 			}
 
 			const cursor = Reports.findUserMessages(userId);
@@ -119,8 +119,8 @@ API.v1.addRoute(
 
 			// check if at least one of the required params is present
 
-			if (!userId || !msgId) {
-				return API.v1.failure('The required "userId" or "msgId" body param is missing.');
+			if (!userId && !msgId) {
+				return API.v1.failure('Either "userId" or "msgId" body param is required.');
 			}
 
 			const reasonProvided = reasonForHiding && reasonForHiding.trim() !== '';

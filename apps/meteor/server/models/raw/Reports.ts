@@ -97,13 +97,12 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			{
 				$project: {
 					_id: 0,
-					reports: 0,
 					message: '$reports.message.msg',
 					msgId: '$reports.message._id',
 					ts: '$reports.ts',
-					userId: '$_id.user',
 					username: '$reports.message.u.username',
 					name: '$reports.message.u.name',
+					userId: '$_id.user',
 					count: 1,
 					roomIds: 1,
 				},

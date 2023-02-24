@@ -130,7 +130,7 @@ describe('[Moderation]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
-					reportedMessage = res.body.reports.reports[0];
+					reportedMessage = res.body.reports[0];
 				})
 				.end(done);
 		});
@@ -171,7 +171,7 @@ describe('[Moderation]', function () {
 				.post(api('moderation.markChecked'))
 				.set(credentials)
 				.send({
-					messageId: message._id,
+					msgId: message._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -513,7 +513,7 @@ describe('[Moderation]', function () {
 				.get(api('moderation.user.getMessageHistory'))
 				.set(credentials)
 				.query({
-					userId: reportedMessage.reporter._id,
+					userId: reportedMessage.reporter[0]._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -622,7 +622,7 @@ describe('[Moderation]', function () {
 				.post(api('moderation.user.deleteMessageHistory'))
 				.set(credentials)
 				.send({
-					userId: reportedMessage.reporter._id,
+					userId: reportedMessage.reporter[0]._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
