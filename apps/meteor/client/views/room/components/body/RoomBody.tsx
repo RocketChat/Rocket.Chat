@@ -43,6 +43,7 @@ import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import UploadProgressIndicator from './UploadProgressIndicator';
 import ComposerContainer from './composer/ComposerContainer';
 import { useFileUploadDropTarget } from './useFileUploadDropTarget';
+import { useJumpToMessage } from './useJumpToMessage';
 import { useRetentionPolicy } from './useRetentionPolicy';
 import { useUnreadMessages } from './useUnreadMessages';
 
@@ -62,10 +63,11 @@ const RoomBody = (): ReactElement => {
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab');
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
+	const msgParameter = useQueryStringParameter('msg');
 
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
 	const messagesBoxRef = useRef<HTMLDivElement | null>(null);
-	const atBottomRef = useRef(!useQueryStringParameter('msg'));
+	const atBottomRef = useRef(!msgParameter);
 	const lastScrollTopRef = useRef(0);
 
 	const chat = useChat();
@@ -201,6 +203,8 @@ const RoomBody = (): ReactElement => {
 	);
 
 	const retentionPolicy = useRetentionPolicy(room);
+
+	useJumpToMessage(msgParameter);
 
 	useEffect(() => {
 		callbacks.add(
