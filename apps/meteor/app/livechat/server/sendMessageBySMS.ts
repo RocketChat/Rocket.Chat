@@ -1,3 +1,4 @@
+import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
 
 import { callbacks } from '../../../lib/callbacks';
@@ -11,7 +12,7 @@ callbacks.add(
 	function (message, room) {
 		callbackLogger.debug('Attempting to send SMS message');
 		// skips this callback if the message was edited
-		if (message.editedAt) {
+		if (isEditedMessage(message)) {
 			callbackLogger.debug('Message was edited, skipping SMS send');
 			return message;
 		}
@@ -22,7 +23,7 @@ callbacks.add(
 		}
 
 		// only send the sms by SMS if it is a livechat room with SMS set to true
-		if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.sms && room.v && room.v.token)) {
+		if (!(isOmnichannelRoom(room) && room.sms && room.v && room.v.token)) {
 			callbackLogger.debug('Room is not a livechat room, skipping SMS send');
 			return message;
 		}
@@ -42,6 +43,7 @@ callbacks.add(
 		let extraData;
 		if (message.file) {
 			message = Promise.await(normalizeMessageFileUpload(message));
+			// @ts-expect-error TODO: investigate from where fileUpload comes
 			const { fileUpload, rid, u: { _id: userId } = {} } = message;
 			extraData = Object.assign({}, { rid, userId, fileUpload });
 		}
@@ -58,7 +60,7 @@ callbacks.add(
 			return message;
 		}
 
-		const visitor = Promise.await(LivechatVisitors.getVisitorByToken(room.v.token));
+		const visitor = Promise.await(LivechatVisitors.getVisitorByToken(room.v.token, { projection: { phone: 1 } }));
 
 		if (!visitor || !visitor.phone || visitor.phone.length === 0) {
 			callbackLogger.debug('Visitor does not have a phone number, skipping SMS send');
