@@ -100904,6 +100904,164 @@
           ]
         }
       ]
+    },
+    "6.0.0-rc.2": {
+      "node_version": "14.21.2",
+      "npm_version": "6.14.17",
+      "apps_engine_version": "1.37.0-alpha.157",
+      "mongo_versions": [
+        "4.4",
+        "5.0",
+        "6.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "28050",
+          "title": "Regression: Fix improper usage of useEndpointData",
+          "userLogin": "KevLehman",
+          "milestone": "6.0.0",
+          "contributors": [
+            "KevLehman",
+            "rodrigok",
+            "web-flow",
+            "murtaza98",
+            "MartinSchoeler"
+          ]
+        },
+        {
+          "pr": "28120",
+          "title": "Regression: View mode preferences without the selected option by default",
+          "userLogin": "hugocostadev",
+          "description": "After removing all Meteor Blaze templates from the project, the View mode preferences started presenting the issue:\r\n\r\nNo option is selected by default when the view mode preferences are open.\r\n\r\nPossible reason: React does allow you to use name attributes in the input tag, but it may cause some issues with radio buttons. One possible reason is that React uses a synthetic event system that does not rely on native HTML attributes, since we had the wrapper and several blaze templates in the project, this could be effecting this behavior ignoring the name attribute in the inputs.\r\n\r\n\r\n**Previous:**\r\n![image](https://user-images.githubusercontent.com/20212776/220721444-51e32397-5106-4f16-8af9-7b7e5d7209ea.png)\r\n\r\n\r\n**Current:**\r\n![image](https://user-images.githubusercontent.com/20212776/220721529-77af023b-951a-44f6-82a8-b2c18a7d0950.png)",
+          "milestone": "6.0.0",
+          "contributors": [
+            "hugocostadev",
+            "sampaiodiego",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28129",
+          "title": "Chore: Fix fetching Apps-Engine and MongoDB versions for release notes",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego",
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28142",
+          "title": "Regression: Slash commands detected at any line",
+          "userLogin": "tassoevan",
+          "milestone": "6.0.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "28111",
+          "title": "Regression: App requests notify admin function generating wrong link",
+          "userLogin": "rique223",
+          "description": "Fixed a development oversight in which the link of the app request Rocket.Cat message was generated without the marketplace version of the app nor the requests tab param.\r\nDemo gif (before):\r\n![notify-admin-before](https://user-images.githubusercontent.com/43561537/220368522-084a171c-52ab-48b4-aa43-f73f6cc12ca6.gif)\r\n\r\nDemo gif (after):\r\n![notify-admin-after](https://user-images.githubusercontent.com/43561537/220368591-93c6e157-922f-4b48-b474-f5c65c2b04b8.gif)",
+          "contributors": [
+            "rique223",
+            "web-flow",
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "28128",
+          "title": "Chore: Improve time of meteor build",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "28079",
+          "title": "Chore: Update tokens",
+          "userLogin": "juliajforesti",
+          "contributors": [
+            "juliajforesti",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28125",
+          "title": "Regression:  Fix sidebar horizontal scrolling",
+          "userLogin": "ggazzo",
+          "milestone": "6.0.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28058",
+          "title": "Chore: Presence cap tweaks",
+          "userLogin": "juliajforesti",
+          "contributors": [
+            "juliajforesti",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27993",
+          "title": "Regression: Fix Custom CSS ",
+          "userLogin": "juliajforesti",
+          "contributors": [
+            "juliajforesti",
+            "ggazzo",
+            "web-flow",
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "28138",
+          "title": "Chore: Fix CI Docker Alpine build missing",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "28134",
+          "title": "Chore: Fix CI docker publish",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok"
+          ]
+        },
+        {
+          "pr": "28108",
+          "title": "Chore: Refactor CI to improve code reusability and organization",
+          "userLogin": "rodrigok",
+          "contributors": [
+            "rodrigok",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28127",
+          "title": "Regression: Fix slash command with preview",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "28126",
+          "title": "Chore: Purge styles of the legacy `message` template",
+          "userLogin": "tassoevan",
+          "milestone": "6.0.0",
+          "contributors": [
+            "tassoevan"
+          ]
+        }
+      ]
     }
   },
   "5.4.0-rc.0": {
