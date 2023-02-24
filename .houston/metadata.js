@@ -2,9 +2,9 @@ const { execSync } = require('child_process');
 
 const getMongoVersion = async function({ version, git }) {
 	try {
-		const workflows = await git.show([`${ version }:.github/workflows/build_and_test.yml`]);
+		const workflows = await git.show([`${ version }:.github/workflows/ci.yml`]);
 
-		const mongoMatch = workflows.match(/mongodb\-version: \[([^\]]+)\]/);
+		const mongoMatch = workflows.match(/compatibleMongoVersions\\": \[([^\]]+)\]/);
 		if (!mongoMatch) {
 			return [];
 		}
