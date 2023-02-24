@@ -23,6 +23,16 @@ test.describe('omnichannel-takeChat', () => {
 		agent = { page, poHomeChannel: new HomeChannel(page) };
 	});
 
+	test.afterAll(async ({ api }) => {
+		await Promise.all([
+			await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }).then((res) => expect(res.status()).toBe(200)),
+			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false }).then((res) => expect(res.status()).toBe(200)),
+			await api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
+		]);
+
+		await agent.page.close();
+	});
+
 	test.beforeEach(async ({ page }) => {
 		// make "user-1" online
 		await agent.poHomeChannel.sidenav.switchStatus('online');
@@ -38,16 +48,6 @@ test.describe('omnichannel-takeChat', () => {
 		await poLiveChat.sendMessage(newVisitor, false);
 		await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');
 		await poLiveChat.btnSendMessageToOnlineAgent.click();
-	});
-
-	test.afterAll(async ({ api }) => {
-		await Promise.all([
-			await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' }).then((res) => expect(res.status()).toBe(200)),
-			await api.post('/settings/Livechat_enabled_when_agent_idle', { value: false }).then((res) => expect(res.status()).toBe(200)),
-			await api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
-		]);
-
-		await agent.page.close();
 	});
 
 	test('expect "user1" to be able to take the chat from the queue', async () => {

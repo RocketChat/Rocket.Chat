@@ -31,6 +31,17 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 		agent2 = { page: page2, poHomeChannel: new HomeChannel(page2) };
 	});
 
+	test.afterAll(async ({ api }) => {
+		await Promise.all([
+			api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
+			api.delete('/livechat/users/agent/user2').then((res) => expect(res.status()).toBe(200)),
+			api.post('/settings/Livechat_auto_transfer_chat_timeout', { value: 0 }).then((res) => expect(res.status()).toBe(200)),
+		]);
+
+		await agent1.page.close();
+		await agent2.page.close();
+	});
+
 	test.beforeEach(async ({ page }) => {
 		// make "user-1" online
 		await agent1.poHomeChannel.sidenav.switchOmnichannelStatus('online');
@@ -58,16 +69,5 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 		await agent1.page.waitForTimeout(7000);
 
 		await agent2.poHomeChannel.sidenav.openChat(newVisitor.name);
-	});
-
-	test.afterAll(async ({ api }) => {
-		await Promise.all([
-			api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
-			api.delete('/livechat/users/agent/user2').then((res) => expect(res.status()).toBe(200)),
-			api.post('/settings/Livechat_auto_transfer_chat_timeout', { value: 0 }).then((res) => expect(res.status()).toBe(200)),
-		]);
-
-		await agent1.page.close();
-		await agent2.page.close();
 	});
 });
