@@ -90,17 +90,16 @@ jobs:
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ inputs.node-version }}
+          cache-modules: true
+          install: true
 
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
-
-      - name: yarn install
-        run: yarn
 
       - name: yarn build
         run: yarn build
 
       - name: Restore build
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: build
           path: /tmp/build
