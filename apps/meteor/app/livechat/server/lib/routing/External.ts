@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
+import type { IRoutingMethod, RoutingMethodConfig, SelectedAgent } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../../settings/server';
 import { RoutingManager } from '../RoutingManager';
 import { Users } from '../../../../models/server';
 import { SystemLogger } from '../../../../../server/lib/logger/system';
-import type { IRoutingMethod, RoutingMethodConfig, SelectedAgent } from '../../types';
 
 class ExternalQueue implements IRoutingMethod {
 	config: RoutingMethodConfig;

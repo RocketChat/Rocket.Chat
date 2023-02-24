@@ -1,7 +1,8 @@
+import type { IRoutingMethod, RoutingMethodConfig, SelectedAgent } from '@rocket.chat/core-typings';
+
 import { RoutingManager } from '../RoutingManager';
 import { LivechatDepartmentAgents, Users } from '../../../../models/server';
 import { callbacks } from '../../../../../lib/callbacks';
-import type { IRoutingMethod, RoutingMethodConfig, SelectedAgent } from '../../types';
 
 /* Auto Selection Queuing method:
  *

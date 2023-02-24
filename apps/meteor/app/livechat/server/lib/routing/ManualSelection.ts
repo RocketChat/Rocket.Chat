@@ -1,5 +1,6 @@
+import type { IRoutingMethod, RoutingMethodConfig, SelectedAgent } from '@rocket.chat/core-typings';
+
 import { RoutingManager } from '../RoutingManager';
-import type { IRoutingMethod, RoutingMethodConfig, SelectedAgent } from '../../types';
 
 /* Manual Selection Queuing Method:
  *
