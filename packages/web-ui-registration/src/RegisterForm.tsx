@@ -8,6 +8,7 @@ import { Trans } from 'react-i18next';
 
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import { useRegisterMethod } from './hooks/useRegisterMethod';
+import EmailConfirmationForm from './EmailConfirmationForm';
 
 type LoginRegisterPayload = {
 	name: string;
@@ -37,6 +38,8 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 		handleSubmit,
 		setError,
 		watch,
+		getValues,
+		clearErrors,
 		formState: { errors },
 	} = useForm<LoginRegisterPayload>();
 
@@ -63,6 +66,15 @@ export const LoginRegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 			},
 		);
 	};
+
+	if (errors.email?.type === 'invalid-email') {
+		return (
+			<EmailConfirmationForm
+				onBackToLogin={() => clearErrors('email')}
+				email={getValues('username')?.includes('@') ? getValues('username') : undefined}
+			/>
+		);
+	}
 
 	return (
 		<Form aria-labelledby={formLabelId} onSubmit={handleSubmit(handleRegister)}>
