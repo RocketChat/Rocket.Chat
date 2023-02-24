@@ -10,7 +10,7 @@ type ComposerBoxPopupPreviewItem = { _id: string; type: 'image' | 'video' | 'aud
 
 const ComposerBoxPopupPreview = forwardRef<
 	| {
-			getFilter: () => unknown;
+			getFilter?: () => unknown;
 			select?: (s: ComposerBoxPopupPreviewItem) => void;
 	  }
 	| undefined,
@@ -25,43 +25,46 @@ const ComposerBoxPopupPreview = forwardRef<
 	const executeSlashCommandPreviewMethod = useMethod('executeSlashCommandPreview');
 	useImperativeHandle(
 		ref,
-		() => ({
-			getFilter: () => {
-				const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
-				if (!value) {
-					throw new Error('No value');
-				}
-				const matches = value.match(/(\/[\w\d\S]+ )([^]*)$/);
+		() =>
+			suspended
+				? {}
+				: {
+						getFilter: () => {
+							const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
+							if (!value) {
+								throw new Error('No value');
+							}
+							const matches = value.match(/(\/[\w\d\S]+ )([^]*)$/);
 
-				if (!matches) {
-					throw new Error('No matches');
-				}
+							if (!matches) {
+								throw new Error('No matches');
+							}
 
-				const cmd = matches[1].replace('/', '').trim().toLowerCase();
+							const cmd = matches[1].replace('/', '').trim().toLowerCase();
 
-				const params = matches[2];
-				return { cmd, params, msg: { rid, tmid } };
-			},
-			select: (item) => {
-				const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
-				if (!value) {
-					throw new Error('No value');
-				}
-				const matches = value.match(/(\/[\w\d\S]+ )([^]*)$/);
+							const params = matches[2];
+							return { cmd, params, msg: { rid, tmid } };
+						},
+						select: (item) => {
+							const value = chat?.composer?.substring(0, chat?.composer?.selection.start);
+							if (!value) {
+								throw new Error('No value');
+							}
+							const matches = value.match(/(\/[\w\d\S]+ )([^]*)$/);
 
-				if (!matches) {
-					throw new Error('No matches');
-				}
+							if (!matches) {
+								throw new Error('No matches');
+							}
 
-				const cmd = matches[1].replace('/', '').trim().toLowerCase();
+							const cmd = matches[1].replace('/', '').trim().toLowerCase();
 
-				const params = matches[2];
-				// TODO: Fix this solve the typing issue
-				executeSlashCommandPreviewMethod({ cmd, params, msg: { rid, tmid } }, { id: item._id, type: item.type, value: item.value });
-				chat?.composer?.setText('');
-			},
-		}),
-		[chat?.composer, executeSlashCommandPreviewMethod, rid, tmid],
+							const params = matches[2];
+							// TODO: Fix this solve the typing issue
+							executeSlashCommandPreviewMethod({ cmd, params, msg: { rid, tmid } }, { id: item._id, type: item.type, value: item.value });
+							chat?.composer?.setText('');
+						},
+				  },
+		[chat?.composer, executeSlashCommandPreviewMethod, rid, tmid, suspended],
 	);
 
 	const itemsFlat = items

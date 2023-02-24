@@ -16,7 +16,7 @@ import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
 import './settings';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
-import { AppEvents, Apps } from '../../../apps/server/orchestrator';
+import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { safeHtmlDots } from '../../../../lib/utils/safeHtmlDots';
 

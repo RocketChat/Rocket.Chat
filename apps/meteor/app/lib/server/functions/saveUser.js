@@ -14,7 +14,7 @@ import { saveUserIdentity } from './saveUserIdentity';
 import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setStatusText } from '.';
 import { Users } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { AppEvents, Apps } from '../../../apps/server/orchestrator';
+import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { trim } from '../../../../lib/utils/stringUtils';
 
