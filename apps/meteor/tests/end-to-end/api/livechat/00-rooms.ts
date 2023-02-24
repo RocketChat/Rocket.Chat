@@ -1659,7 +1659,7 @@ describe('LIVECHAT - rooms', function () {
 			await request
 				.post(api(`omnichannel/${_id}/request-transcript`))
 				.set(credentials)
-				.expect(400);
+				.expect(200);
 		});
 		let roomId: string;
 		it('should request a pdf transcript when all conditions are met', async () => {
