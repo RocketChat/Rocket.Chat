@@ -3,12 +3,12 @@ import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hoo
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
-import type { FC, ReactElement, Dispatch, SetStateAction } from 'react';
-import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import type { FC, ReactElement } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 
 import FilterByText from '../../../../components/FilterByText';
-import GenericTable from '../../../../components/GenericTable';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
+import GenericTable, { GenericTableLoadingTable } from '../../../../components/GenericTable';
+import { useCurrentChats } from '../../currentChats/hooks/useCurrentChats';
 
 const useQuery = (
 	{
@@ -42,7 +42,7 @@ const useQuery = (
 		[column, current, direction, itemsPerPage, userIdLoggedIn, text],
 	);
 
-const ChatTable: FC<{ setChatReload: Dispatch<SetStateAction<any>> }> = ({ setChatReload }) => {
+const ChatTable: FC = () => {
 	const [params, setParams] = useState<{ text?: string; current: number; itemsPerPage: 25 | 50 | 100 }>({
 		text: '',
 		current: 0,
@@ -73,12 +73,6 @@ const ChatTable: FC<{ setChatReload: Dispatch<SetStateAction<any>> }> = ({ setCh
 			id,
 		}),
 	);
-
-	const { value: data, reload } = useEndpointData('/v1/livechat/rooms', query as any); // TODO: Check the typing for the livechat/rooms endpoint as it seems wrong
-
-	useEffect(() => {
-		setChatReload?.(() => reload);
-	}, [reload, setChatReload]);
 
 	const header = useMemo(
 		() =>
@@ -167,12 +161,21 @@ const ChatTable: FC<{ setChatReload: Dispatch<SetStateAction<any>> }> = ({ setCh
 		[onRowClick],
 	);
 
+	const result = useCurrentChats(query);
+
+	if (result.isLoading) {
+		return <GenericTableLoadingTable headerCells={6} />;
+	}
+	if (result.error) {
+		return <Box mbs='x16'>{t('Something_went_wrong')}</Box>;
+	}
+
 	return (
 		<GenericTable
 			header={header}
 			renderRow={renderRow}
-			results={data?.rooms}
-			total={data?.total}
+			results={result.data?.rooms}
+			total={result.data?.total}
 			setParams={setParams}
 			params={params}
 			renderFilter={({ onChange, ...props }: any): ReactElement => <FilterByText onChange={onChange} {...props} />}
