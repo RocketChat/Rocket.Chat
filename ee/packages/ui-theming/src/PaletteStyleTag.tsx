@@ -2,12 +2,12 @@ import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { createPortal } from 'react-dom';
 
-import { convertToCss } from './convertToCss';
-import { filterOnlyChangedColors } from './filterOnlyChangedColors';
+import { convertToCss } from './helpers/convertToCss';
+import { filterOnlyChangedColors } from './helpers/filterOnlyChangedColors';
 import { defaultPalette } from './palette';
 import { darkPalette } from './paletteDark';
 import { useThemeMode } from './hooks/useThemeMode';
-import { useCreateStyleContainer } from './hooks/useCreateStyleContainer';
+import { useCreateStyleContainer } from './helpers/createStyleContainer';
 
 export const PaletteStyleTag = memo((): ReactElement | null => {
 	const [, , theme] = useThemeMode();

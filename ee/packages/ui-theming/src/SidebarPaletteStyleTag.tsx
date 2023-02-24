@@ -5,10 +5,10 @@ import { createPortal } from 'react-dom';
 import { sidebarPaletteDark } from './sidebarPaletteDark';
 import { defaultSidebarPalette } from './sidebarPalette';
 import { darkPalette } from './paletteDark';
-import { filterOnlyChangedColors } from './filterOnlyChangedColors';
-import { convertToCss } from './convertToCss';
+import { filterOnlyChangedColors } from './helpers/filterOnlyChangedColors';
+import { convertToCss } from './helpers/convertToCss';
 import { useThemeMode } from './hooks/useThemeMode';
-import { useCreateStyleContainer } from './hooks/useCreateStyleContainer';
+import { createStyleContainer } from './helpers/createStyleContainer';
 
 export const SidebarPaletteStyleTag = memo((): ReactElement | null => {
 	const [, , theme] = useThemeMode();
@@ -18,5 +18,5 @@ export const SidebarPaletteStyleTag = memo((): ReactElement | null => {
 		'.rcx-sidebar--main',
 	);
 
-	return createPortal(palette, useCreateStyleContainer('sidebar-palette'));
+	return createPortal(palette, createStyleContainer('sidebar-palette'));
 });
