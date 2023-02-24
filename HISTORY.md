@@ -1,6 +1,80 @@
 
 # 6.0.0 (Under Release Candidate Process)
 
+## 6.0.0-rc.2
+`2023-02-23  ·  15 🔍  ·  11 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Fix CI Docker Alpine build missing ([#28138](https://github.com/RocketChat/Rocket.Chat/pull/28138))
+
+- Chore: Fix CI docker publish ([#28134](https://github.com/RocketChat/Rocket.Chat/pull/28134))
+
+- Chore: Fix fetching Apps-Engine and MongoDB versions for release notes ([#28129](https://github.com/RocketChat/Rocket.Chat/pull/28129))
+
+- Chore: Improve time of meteor build ([#28128](https://github.com/RocketChat/Rocket.Chat/pull/28128))
+
+- Chore: Presence cap tweaks ([#28058](https://github.com/RocketChat/Rocket.Chat/pull/28058))
+
+- Chore: Purge styles of the legacy `message` template ([#28126](https://github.com/RocketChat/Rocket.Chat/pull/28126))
+
+- Chore: Refactor CI to improve code reusability and organization ([#28108](https://github.com/RocketChat/Rocket.Chat/pull/28108))
+
+- Chore: Update tokens ([#28079](https://github.com/RocketChat/Rocket.Chat/pull/28079))
+
+- Regression:  Fix sidebar horizontal scrolling ([#28125](https://github.com/RocketChat/Rocket.Chat/pull/28125))
+
+- Regression: App requests notify admin function generating wrong link ([#28111](https://github.com/RocketChat/Rocket.Chat/pull/28111))
+
+  Fixed a development oversight in which the link of the app request Rocket.Cat message was generated without the marketplace version of the app nor the requests tab param.
+  Demo gif (before):
+  ![notify-admin-before](https://user-images.githubusercontent.com/43561537/220368522-084a171c-52ab-48b4-aa43-f73f6cc12ca6.gif)
+
+  Demo gif (after):
+  ![notify-admin-after](https://user-images.githubusercontent.com/43561537/220368591-93c6e157-922f-4b48-b474-f5c65c2b04b8.gif)
+
+- Regression: Fix Custom CSS  ([#27993](https://github.com/RocketChat/Rocket.Chat/pull/27993))
+
+- Regression: Fix improper usage of useEndpointData ([#28050](https://github.com/RocketChat/Rocket.Chat/pull/28050))
+
+- Regression: Fix slash command with preview ([#28127](https://github.com/RocketChat/Rocket.Chat/pull/28127))
+
+- Regression: Slash commands detected at any line ([#28142](https://github.com/RocketChat/Rocket.Chat/pull/28142))
+
+- Regression: View mode preferences without the selected option by default ([#28120](https://github.com/RocketChat/Rocket.Chat/pull/28120))
+
+  After removing all Meteor Blaze templates from the project, the View mode preferences started presenting the issue:
+
+  No option is selected by default when the view mode preferences are open.
+
+  Possible reason: React does allow you to use name attributes in the input tag, but it may cause some issues with radio buttons. One possible reason is that React uses a synthetic event system that does not rely on native HTML attributes, since we had the wrapper and several blaze templates in the project, this could be effecting this behavior ignoring the name attribute in the inputs.
+
+
+  **Previous:**
+  ![image](https://user-images.githubusercontent.com/20212776/220721444-51e32397-5106-4f16-8af9-7b7e5d7209ea.png)
+
+
+  **Current:**
+  ![image](https://user-images.githubusercontent.com/20212776/220721529-77af023b-951a-44f6-82a8-b2c18a7d0950.png)
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@dougfabris](https://github.com/dougfabris)
+- [@ggazzo](https://github.com/ggazzo)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@juliajforesti](https://github.com/juliajforesti)
+- [@murtaza98](https://github.com/murtaza98)
+- [@rique223](https://github.com/rique223)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 6.0.0-rc.1
 `2023-02-22  ·  1 🐛  ·  10 🔍  ·  11 👩‍💻👨‍💻`
 
