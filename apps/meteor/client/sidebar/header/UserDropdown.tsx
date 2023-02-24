@@ -118,7 +118,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 			{presenceDisabled && (
 				<Box fontScale='p2' mi='x12' mb='x4'>
 					<Box mbe='x4'>{t('User_status_disabled')}</Box>
-					<Box is='a' color='status-font-on-info' onClick={handleStatusDisabledModal}>
+					<Box is='a' color='info' onClick={handleStatusDisabledModal}>
 						{t('Learn_more')}
 					</Box>
 				</Box>
