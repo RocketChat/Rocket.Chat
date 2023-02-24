@@ -1,4 +1,11 @@
-import type { IMessage, IReport, RocketChatRecordDeleted, IModerationAudit, IUserReportedMessages } from '@rocket.chat/core-typings';
+import type {
+	IMessage,
+	IReport,
+	RocketChatRecordDeleted,
+	IModerationAudit,
+	IUserReportedMessages,
+	IReportedMessageInfo,
+} from '@rocket.chat/core-typings';
 import type { FindPaginated, IReportsModel } from '@rocket.chat/model-typings';
 import type { Db, Collection, FindCursor, UpdateResult, Document, AggregationCursor } from 'mongodb';
 
@@ -84,6 +91,40 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 				},
 			},
 			{
+				$lookup: {
+					from: 'rocketchat_room',
+					localField: 'roomIds',
+					foreignField: '_id',
+					as: 'room',
+					pipeline: [
+						{
+							$project: {
+								_id: 1,
+								name: {
+									$switch: {
+										branches: [
+											{
+												case: { $eq: ['$t', 'd'] },
+												then: 'private',
+											},
+											{
+												case: { $ifNull: ['$prid', false] },
+												then: '$fname',
+											},
+											{
+												case: { $ifNull: ['$prid', true] },
+												then: '$name',
+											},
+										],
+										default: 'notExist',
+									},
+								},
+							},
+						},
+					],
+				},
+			},
+			{
 				$sort: sort || {
 					'reports.ts': -1,
 				},
@@ -105,6 +146,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 					userId: '$_id.user',
 					count: 1,
 					roomIds: 1,
+					room: 1,
 				},
 			},
 		];
@@ -158,6 +200,40 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 				},
 			},
 			{
+				$lookup: {
+					from: 'rocketchat_room',
+					localField: 'roomIds',
+					foreignField: '_id',
+					as: 'room',
+					pipeline: [
+						{
+							$project: {
+								_id: 1,
+								name: {
+									$switch: {
+										branches: [
+											{
+												case: { $eq: ['$t', 'd'] },
+												then: 'private',
+											},
+											{
+												case: { $ifNull: ['$prid', false] },
+												then: '$fname',
+											},
+											{
+												case: { $ifNull: ['$prid', true] },
+												then: '$name',
+											},
+										],
+										default: 'notExist',
+									},
+								},
+							},
+						},
+					],
+				},
+			},
+			{
 				$sort: sort || {
 					'reports.ts': -1,
 				},
@@ -180,6 +256,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 					name: '$reports.message.u.name',
 					count: 1,
 					roomIds: 1,
+					room: 1,
 				},
 			},
 		];
@@ -225,33 +302,37 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		const params = [
 			{ $match: { ...query, ...cquery } },
 			{
+				$group: {
+					_id: { user: '$message.u._id', userName: '$message.u.username' },
+					reports: { $first: '$$ROOT' },
+					roomIds: { $addToSet: '$message.rid' },
+					count: { $sum: 1 },
+				},
+			},
+			{
 				$lookup: {
 					from: 'rocketchat_room',
-					localField: 'message.rid',
+					localField: 'roomIds',
 					foreignField: '_id',
-					as: 'roomRaw',
+					as: 'room',
 					pipeline: [
 						{
 							$project: {
-								_id: 0,
+								_id: 1,
 								name: {
 									$switch: {
 										branches: [
 											{
-												case: { and: [{ $eq: ['$t', 'c'] }, { $ifNull: ['$prid', false] }] },
-												then: '$name',
-											},
-											{
-												case: { and: [{ $eq: ['$t', 'c'] }, { $ifNull: ['$prid', true] }] },
-												then: '$fname',
-											},
-											{
-												case: { $eq: ['$t', 'p'] },
+												case: { $eq: ['$t', 'd'] },
 												then: 'private',
 											},
 											{
-												case: { $eq: ['$t', 'd'] },
-												then: 'directMessage',
+												case: { $ifNull: ['$prid', false] },
+												then: '$fname',
+											},
+											{
+												case: { $ifNull: ['$prid', true] },
+												then: '$name',
 											},
 										],
 										default: 'notExist',
@@ -260,16 +341,6 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 							},
 						},
 					],
-				},
-			},
-
-			{
-				$group: {
-					_id: { user: '$message.u._id', userName: '$message.u.username' },
-					reports: { $first: '$$ROOT' },
-					roomIds: { $addToSet: '$message.rid' },
-					roomNames: { $addToSet: '$roomRaw.name' },
-					count: { $sum: 1 },
 				},
 			},
 			{
@@ -295,15 +366,6 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 					count: 1,
 					roomIds: 1,
 					room: 1,
-					roomNames: {
-						$reduce: {
-							input: { $ifNull: ['$reports.roomNames', ['notExist']] },
-							initialValue: '',
-							in: {
-								$concat: ['$$value', { $cond: [{ $eq: ['$$value', ''] }, '', ', '] }, '$$this'],
-							},
-						},
-					},
 				},
 			},
 		];
@@ -335,6 +397,40 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		const params = [
 			{ $match: { ...query, ...cquery } },
 			{
+				$lookup: {
+					from: 'rocketchat_room',
+					localField: 'message.rid',
+					foreignField: '_id',
+					as: 'message.room',
+					pipeline: [
+						{
+							$project: {
+								_id: 1,
+								name: {
+									$switch: {
+										branches: [
+											{
+												case: { $eq: ['$t', 'd'] },
+												then: 'private',
+											},
+											{
+												case: { $ifNull: ['$prid', false] },
+												then: '$fname',
+											},
+											{
+												case: { $ifNull: ['$prid', true] },
+												then: '$name',
+											},
+										],
+										default: 'notExist',
+									},
+								},
+							},
+						},
+					],
+				},
+			},
+			{
 				$group: {
 					_id: {
 						user: '$message.u._id',
@@ -342,6 +438,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 					messages: { $addToSet: '$message' },
 				},
 			},
+
 			{
 				$addFields: {
 					count: { $size: '$messages' },
@@ -361,6 +458,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 					_id: 0,
 					messages: 1,
 					count: 1,
+					room: 1,
 				},
 			},
 		];
@@ -464,7 +562,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		count?: number,
 		sort?: any,
 		selector?: string,
-	): AggregationCursor<IUserReportedMessages> {
+	): AggregationCursor<IReportedMessageInfo> {
 		const query = {
 			'_hidden': {
 				$ne: true,

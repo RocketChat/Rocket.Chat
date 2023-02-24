@@ -1,4 +1,4 @@
-import type { IReport, IMessage, IModerationAudit, IUserReportedMessages } from '@rocket.chat/core-typings';
+import type { IReport, IMessage, IModerationAudit, IUserReportedMessages, IReportedMessageInfo } from '@rocket.chat/core-typings';
 import type { AggregationCursor, Document, FindCursor, UpdateResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -33,7 +33,7 @@ export interface IReportsModel extends IBaseModel<IReport> {
 		count?: number,
 		sort?: any,
 		selector?: string,
-	): AggregationCursor<IUserReportedMessages>;
+	): AggregationCursor<IReportedMessageInfo>;
 
 	findUserMessages(
 		userId: string,

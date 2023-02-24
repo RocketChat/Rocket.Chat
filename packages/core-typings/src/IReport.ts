@@ -10,6 +10,15 @@ export interface IModerationInfo {
 	reasonForHiding: string;
 }
 
+export interface IRoomInfo {
+	_id: IRoom['_id'];
+	name: IRoom['name'];
+}
+
+export interface IMessageWithRoom extends IMessage {
+	room: IRoomInfo;
+}
+
 export interface IReport extends IRocketChatRecord {
 	message: IMessage;
 	description: string;
@@ -28,11 +37,12 @@ export interface IModerationAudit {
 	roomIds: IRoom['_id'][];
 	ts: IReport['ts'];
 	count: number;
+	rooms: IRoomInfo[];
 }
 
 export interface IUserReportedMessages {
 	count: number;
-	messages: IMessage[];
+	messages: IMessageWithRoom[];
 }
 
 export interface IReportedMessageInfo {
