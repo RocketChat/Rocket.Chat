@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
 import { MessageAction } from '../../../app/ui-utils/client';
-// import { legacyJumpToMessage } from '../../lib/utils/legacyJumpToMessage';
 import { messageArgs } from '../../lib/utils/messageArgs';
 import { setMessageJumpQueryStringParameter } from '../../lib/utils/setMessageJumpQueryStringParameter';
 
