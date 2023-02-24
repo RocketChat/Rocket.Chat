@@ -13,6 +13,7 @@ import Notifications from '../../../notifications/client/lib/Notifications';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { call } from '../../../../client/lib/utils/call';
 import { omit } from '../../../../lib/utils/omit';
+import { settings } from '../../../settings/client';
 
 const wrap =
 	(fn) =>
@@ -25,6 +26,10 @@ const wrap =
 				return resolve(result);
 			});
 		});
+
+localforage.config({
+	name: settings.get('Site_Url'),
+});
 
 const localforageGetItem = wrap(localforage.getItem);
 
