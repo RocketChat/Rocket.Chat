@@ -26,12 +26,12 @@ function SortModeList(): ReactElement {
 				<ListItem
 					icon={'clock'}
 					text={t('Activity')}
-					input={<RadioButton pis='x24' name='sidebarSortby' onChange={setToActivity} checked={sidebarSortBy === 'activity'} />}
+					input={<RadioButton pis='x24' onChange={setToActivity} checked={sidebarSortBy === 'activity'} />}
 				/>
 				<ListItem
 					icon={'sort-az'}
 					text={t('Name')}
-					input={<RadioButton pis='x24' name='sidebarSortby' onChange={setToAlphabetical} checked={sidebarSortBy === 'alphabetical'} />}
+					input={<RadioButton pis='x24' onChange={setToAlphabetical} checked={sidebarSortBy === 'alphabetical'} />}
 				/>
 			</ul>
 
