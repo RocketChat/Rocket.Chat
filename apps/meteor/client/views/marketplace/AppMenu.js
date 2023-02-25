@@ -176,7 +176,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		}
 
 		if (result.data.hasUnlimitedApps) {
-			acquireApp();
+			return acquireApp();
 		}
 
 		setModal(
