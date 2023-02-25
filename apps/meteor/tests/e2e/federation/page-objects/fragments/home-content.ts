@@ -60,30 +60,30 @@ export class FederationHomeContent {
 		await this.openLastMessageMenu();
 		await this.btnOptionReplyDirectly.click();
 		await this.page.waitForTimeout(2000);
-		await this.page.locator('[name="msg"]').fill(message);
+		await this.page.locator('[name="msg"]').type(message, { delay: 100 });
+		await this.page.waitForTimeout(2000);
 		await this.page.keyboard.press('Enter');
 	}
 
 	async sendAudioRecordedMessage(): Promise<void> {
 		await this.btnRecordAudio.click();
-		await this.page.waitForTimeout(2000);
+		await this.page.waitForTimeout(3000);
 		await this.page.locator('.rc-message-box__icon.rc-message-box__audio-message-done').click();
 		await this.btnModalConfirm.click();
-		await this.page.waitForTimeout(5000);
 	}
 
 	async sendVideoRecordedMessage(): Promise<void> {
 		await this.btnVideoMessage.click();
 		await this.page.locator('.rcx-box.rcx-box--full.rcx-icon--name-rec').click();
-		await this.page.waitForTimeout(5000);
+		await this.page.waitForTimeout(3000);
 		await this.page.locator('.rcx-box.rcx-box--full.rcx-icon--name-stop-unfilled').click();
-		await this.page.waitForTimeout(5000);
 		await this.page.locator('button >> text="Send"').click();
+		await this.page.waitForTimeout(3000);
 		await this.btnModalConfirm.click();
 	}
 
 	async dispatchSlashCommand(text: string): Promise<void> {
-		await this.page.locator('[name="msg"]').type(text);
+		await this.page.locator('[name="msg"]').fill(text);
 		await this.page.locator('button[aria-label="Send"]').waitFor();
 		await this.page.locator('button[aria-label="Send"]').click();
 	}
