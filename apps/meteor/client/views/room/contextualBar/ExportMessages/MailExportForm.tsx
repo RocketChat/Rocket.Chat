@@ -39,8 +39,6 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 	const messages = selectedMessageStore.getSelectedMessages();
 	const count = useCountSelected();
 
-	const messageList = useMessages({ rid });
-
 	const { values, handlers } = useForm({
 		dateFrom: '',
 		dateTo: '',

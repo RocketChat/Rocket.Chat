@@ -311,7 +311,6 @@
 .rc-old label.required::after {
 	content: ' *';
 }
-/* rooms-box */
 
 .rc-old.flex-nav {
 	position: fixed;
