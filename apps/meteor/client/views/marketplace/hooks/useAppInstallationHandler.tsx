@@ -8,8 +8,8 @@ import AppInstallModal from '../components/AppInstallModal/AppInstallModal';
 import type { Actions } from '../helpers';
 import { handleAPIError } from '../helpers';
 import { isMarketplaceRouteContext, useAppsCountQuery } from './useAppsCountQuery';
+import { useOpenAppPermissionsReviewModal } from './useOpenAppPermissionsReviewModal';
 import { useOpenIncompatibleModal } from './useOpenIncompatibleModal';
-import { useShowAppPermissionsReviewModal } from './useShowAppPermissionsReviewModal';
 
 export type AppInstallationHandlerParams = {
 	app: App;
@@ -46,7 +46,7 @@ export function useAppInstallationHandler({ app, action, isAppPurchased, onDismi
 		[action, onSuccess, setModal],
 	);
 
-	const openPermissionModal = useShowAppPermissionsReviewModal({ app, onCancel: closeModal, onConfirm: success });
+	const openPermissionModal = useOpenAppPermissionsReviewModal({ app, onCancel: closeModal, onConfirm: success });
 
 	const acquireApp = useCallback(async () => {
 		if (action === 'purchase' && !isAppPurchased) {

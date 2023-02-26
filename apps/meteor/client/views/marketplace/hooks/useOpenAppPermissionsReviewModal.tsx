@@ -5,7 +5,7 @@ import React, { useCallback } from 'react';
 import type { AppPermissionsReviewModalProps } from '../AppPermissionsReviewModal';
 import AppPermissionsReviewModal from '../AppPermissionsReviewModal';
 
-export const useShowAppPermissionsReviewModal: (params: {
+export const useOpenAppPermissionsReviewModal: (params: {
 	app: App;
 	onCancel: AppPermissionsReviewModalProps['onCancel'];
 	onConfirm: AppPermissionsReviewModalProps['onConfirm'];

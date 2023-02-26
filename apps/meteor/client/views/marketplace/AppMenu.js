@@ -19,8 +19,8 @@ import { appEnabledStatuses, handleAPIError, appButtonProps, warnEnableDisableAp
 import { marketplaceActions } from './helpers/marketplaceActions';
 import { useAppInstallationHandler } from './hooks/useAppInstallationHandler';
 import { useAppsCountQuery } from './hooks/useAppsCountQuery';
+import { useOpenAppPermissionsReviewModal } from './hooks/useOpenAppPermissionsReviewModal';
 import { useOpenIncompatibleModal } from './hooks/useOpenIncompatibleModal';
-import { useShowAppPermissionsReviewModal } from './hooks/useShowAppPermissionsReviewModal';
 
 function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const t = useTranslation();
@@ -78,7 +78,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		[app, setLoading],
 	);
 
-	const openPermissionModal = useShowAppPermissionsReviewModal({
+	const openPermissionModal = useOpenAppPermissionsReviewModal({
 		app,
 		onCancel: closeModal,
 		onConfirm: (permissionsGranted) => installationSuccess(action, permissionsGranted),
