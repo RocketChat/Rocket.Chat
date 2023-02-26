@@ -1,4 +1,4 @@
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 
 import UpsellModal from '../../components/UpsellModal';
@@ -11,14 +11,16 @@ const UnlimitedAppsUpsellModal = ({ onClose }: UnlimitedAppsUpsellModalProps) =>
 	const t = useTranslation();
 	const cloudWorkspaceHadTrial = useSetting('Cloud_Workspace_Had_Trial') as boolean;
 	const urls = {
-		goFullyFeaturedRegistered: 'admin/upgrade/go-fully-featured-registered',
-		talkToSales: 'https://www.rocket.chat/sales-contact',
+		goFullyFeaturedRegistered: '/upgrade/go-fully-featured-registered',
+		talkToSales: 'https://go.rocket.chat/i/contact-sales',
 	};
 
+	const adminRoute = useRoute('admin-index');
+
 	const goFullyFeaturedRegistered = useCallback(() => {
-		window.open(urls.goFullyFeaturedRegistered, '_self');
+		adminRoute.push({ context: urls.goFullyFeaturedRegistered });
 		onClose();
-	}, [onClose, urls.goFullyFeaturedRegistered]);
+	}, [adminRoute, onClose, urls.goFullyFeaturedRegistered]);
 
 	const goToTalkSales = useCallback(() => {
 		window.open(urls.talkToSales, '_blank');
