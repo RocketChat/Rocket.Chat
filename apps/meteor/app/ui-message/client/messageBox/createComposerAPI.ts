@@ -241,7 +241,15 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 
 	const insertNewLine = (): void => insertText('\n');
 
-	setText(Meteor._localStorage.getItem(storageID) ?? '');
+	const params = new URLSearchParams(window.location.search);
+
+	const messageQuery = params.get('message');
+
+	if (messageQuery !== null) {
+		setText(messageQuery);
+	} else {
+		setText(Meteor._localStorage.getItem(storageID) ?? '');
+	}
 
 	// Gets the text that is connected to the cursor and replaces it with the given text
 	const replaceText = (text: string, selection: { readonly start: number; readonly end: number }): void => {
