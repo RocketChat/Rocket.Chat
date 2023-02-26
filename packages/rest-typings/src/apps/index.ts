@@ -180,7 +180,7 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/notify-admins': {
-		POST: (params: { appId: string; appName: string; message: string }) => void;
+		POST: (params: { appId: string; appName: string; appVersion: string; message: string }) => void;
 	};
 
 	'/apps': {
