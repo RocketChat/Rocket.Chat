@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -45,27 +45,32 @@ const AppsFilters = ({
 	statusFilterOnSelected,
 }: AppsFiltersProps): ReactElement => {
 	const t = useTranslation();
+	const context = useRouteParameter('context');
 
 	const shouldFiltersStack = useMediaQuery('(max-width: 1060px)');
 	const hasFilterStackMargin = shouldFiltersStack ? '' : 'x8';
 	const hasNotFilterStackMargin = shouldFiltersStack ? 'x8' : '';
 
+	const isPrivateAppsPage = context === 'private';
+
 	return (
 		<Box pi='x24'>
 			<FilterByText placeholder={t('Search_Apps')} onChange={({ text }): void => setText(text)} shouldFiltersStack={shouldFiltersStack}>
-				<RadioDropDown
-					group={freePaidFilterStructure}
-					onSelected={freePaidFilterOnSelected}
-					mie={hasFilterStackMargin}
-					mb={hasNotFilterStackMargin}
-				/>
+				{!isPrivateAppsPage && (
+					<RadioDropDown
+						group={freePaidFilterStructure}
+						onSelected={freePaidFilterOnSelected}
+						mie={hasFilterStackMargin}
+						mb={hasNotFilterStackMargin}
+					/>
+				)}
 				<RadioDropDown
 					group={statusFilterStructure}
 					onSelected={statusFilterOnSelected}
 					mie={hasFilterStackMargin}
 					mbe={hasNotFilterStackMargin}
 				/>
-				<CategoryDropDown data={categories} selectedCategories={selectedCategories} onSelected={onSelected} />
+				{!isPrivateAppsPage && <CategoryDropDown data={categories} selectedCategories={selectedCategories} onSelected={onSelected} />}
 				<RadioDropDown
 					group={sortFilterStructure}
 					onSelected={sortFilterOnSelected}
