@@ -6,6 +6,7 @@ import { ChatRoom } from '../../../app/models/client';
 import { RoomHistoryManager } from '../../../app/ui-utils/client';
 import { goToRoomById } from './goToRoomById';
 
+/** @deprecated */
 export const legacyJumpToMessage = async (message: IMessage) => {
 	FlowRouter.setQueryParams({ msg: null });
 
@@ -25,7 +26,6 @@ export const legacyJumpToMessage = async (message: IMessage) => {
 			},
 			{
 				...queryParams,
-				msg: message._id,
 			},
 		);
 		return;
