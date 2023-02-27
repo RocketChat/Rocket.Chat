@@ -25,12 +25,7 @@ const Markup = ({ tokens }: MarkupProps): ReactElement => (
 					return <BigEmojiBlock key={index} emoji={block.value} />;
 
 				case 'PARAGRAPH':
-					return (
-						<>
-							<ParagraphBlock key={index} children={block.value} />
-							<br key={index} />
-						</>
-					);
+					return <ParagraphBlock key={index} children={block.value} />;
 
 				case 'HEADING':
 					return <HeadingBlock key={index} level={block.level} children={block.value} />;
