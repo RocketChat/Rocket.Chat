@@ -24,7 +24,11 @@ test.describe.serial('Messaging', () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 		const { page } = await createAuxContext(browser, Users.user2);
 		const auxContext = { page, poHomeChannel: new HomeChannel(page) };
+
 		await auxContext.poHomeChannel.sidenav.openChat(targetChannel);
+
+		await poHomeChannel.content.joinRoom();
+		await auxContext.poHomeChannel.content.joinRoom();
 
 		await poHomeChannel.content.sendMessage('hello world');
 

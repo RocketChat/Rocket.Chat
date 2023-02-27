@@ -29,6 +29,14 @@ export class HomeContent {
 		return this.page.locator('.rcx-room-header button > i.rcx-icon--name-key');
 	}
 
+	get btnJoinRoom(): Locator {
+		return this.page.locator('//button[contains(text(), "Join")]');
+	}
+
+	async joinRoom(): Promise<void> {
+		await this.btnJoinRoom.click();
+	}
+
 	async sendMessage(text: string): Promise<void> {
 		await this.page.locator('[name="msg"]').type(text);
 		await this.page.keyboard.press('Enter');
