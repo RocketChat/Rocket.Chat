@@ -240,7 +240,8 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 	let notificationMessage = callbacks.run('beforeSendMessageNotifications', message.msg);
 	const user = await Users.findOneById(message.u._id, { projection: { 'settings.preferences': 1 } });
 	const defaultMessagesLayout = settings.get('Accounts_Default_User_Preferences_messagesLayout');
-	if (mentionIds.length > 0 && (user?.settings?.preferences?.messagesLayout || defaultMessagesLayout) !== 'username') {
+	const useRealName = (user?.settings?.preferences?.messagesLayout || defaultMessagesLayout) !== 'username';
+	if (mentionIds.length > 0 && useRealName) {
 		notificationMessage = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
 	}
 
