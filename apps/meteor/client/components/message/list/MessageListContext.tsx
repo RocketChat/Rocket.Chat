@@ -1,4 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import type { RefObject } from 'react';
 import { createContext, useContext } from 'react';
 
 export type MessageListContextValue = {
@@ -24,6 +25,8 @@ export type MessageListContextValue = {
 	};
 	autoTranslateLanguage?: string;
 	showColors: boolean;
+	jumpToMessageParam?: string;
+	wrapperRef: RefObject<HTMLDivElement>;
 };
 
 export const MessageListContext = createContext<MessageListContextValue>({
@@ -44,6 +47,7 @@ export const MessageListContext = createContext<MessageListContextValue>({
 	showRealName: false,
 	showUsername: false,
 	showColors: false,
+	wrapperRef: { current: null },
 });
 
 export const useShowTranslated: MessageListContextValue['useShowTranslated'] = (...args) =>
@@ -59,6 +63,9 @@ export const useMessageListShowRealName = (): MessageListContextValue['showRealN
 export const useMessageListShowUsername = (): MessageListContextValue['showUsername'] => useContext(MessageListContext).showUsername;
 export const useMessageListHighlights = (): MessageListContextValue['highlights'] => useContext(MessageListContext).highlights;
 export const useMessageListKatex = (): MessageListContextValue['katex'] => useContext(MessageListContext).katex;
+export const useMessageListJumpToMessageParam = (): MessageListContextValue['jumpToMessageParam'] =>
+	useContext(MessageListContext).jumpToMessageParam;
+export const useMessageListWrapperRef = (): MessageListContextValue['wrapperRef'] => useContext(MessageListContext).wrapperRef;
 
 export const useUserHasReacted: MessageListContextValue['useUserHasReacted'] = (message: IMessage) =>
 	useContext(MessageListContext).useUserHasReacted(message);

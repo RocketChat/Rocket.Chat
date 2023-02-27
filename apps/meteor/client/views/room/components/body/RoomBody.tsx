@@ -27,6 +27,7 @@ import { useReactiveQuery } from '../../../../hooks/useReactiveQuery';
 import { RoomManager as NewRoomManager } from '../../../../lib/RoomManager';
 import type { Upload } from '../../../../lib/chats/Upload';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
+import { setMessageJumpQueryStringParameter } from '../../../../lib/utils/setMessageJumpQueryStringParameter';
 import Announcement from '../../Announcement';
 import { MessageList } from '../../MessageList/MessageList';
 import MessageListErrorBoundary from '../../MessageList/MessageListErrorBoundary';
@@ -44,7 +45,6 @@ import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import UploadProgressIndicator from './UploadProgressIndicator';
 import ComposerContainer from './composer/ComposerContainer';
 import { useFileUploadDropTarget } from './useFileUploadDropTarget';
-import { useJumpToMessage } from './useJumpToMessage';
 import { useRetentionPolicy } from './useRetentionPolicy';
 import { useUnreadMessages } from './useUnreadMessages';
 
@@ -64,11 +64,10 @@ const RoomBody = (): ReactElement => {
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab');
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
-	const msgParameter = useQueryStringParameter('msg');
 
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
 	const messagesBoxRef = useRef<HTMLDivElement | null>(null);
-	const atBottomRef = useRef(!msgParameter);
+	const atBottomRef = useRef(!useQueryStringParameter('msg'));
 	const lastScrollTopRef = useRef(0);
 
 	const chat = useChat();
@@ -187,7 +186,10 @@ const RoomBody = (): ReactElement => {
 		if (!message) {
 			message = ChatMessage.findOne({ rid, ts: { $gt: unread?.since } }, { sort: { ts: 1 }, limit: 1 });
 		}
-		RoomHistoryManager.getSurroundingMessages(message, atBottomRef);
+		if (!message) {
+			return;
+		}
+		setMessageJumpQueryStringParameter(message?._id);
 		setUnreadCount(0);
 	}, [room._id, unread?.since, setUnreadCount]);
 
@@ -204,8 +206,6 @@ const RoomBody = (): ReactElement => {
 	);
 
 	const retentionPolicy = useRetentionPolicy(room);
-
-	useJumpToMessage(msgParameter);
 
 	useEffect(() => {
 		callbacks.add(
@@ -596,7 +596,7 @@ const RoomBody = (): ReactElement => {
 														)}
 													</>
 												) : null}
-												<MessageList rid={room._id} />
+												<MessageList rid={room._id} wrapperRef={wrapperRef} />
 												{hasMoreNextMessages ? (
 													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 												) : null}

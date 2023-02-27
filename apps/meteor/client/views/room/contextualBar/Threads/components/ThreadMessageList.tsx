@@ -74,7 +74,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 							<LoadingMessagesIndicator />
 						</li>
 					) : (
-						<MessageListProvider>
+						<MessageListProvider wrapperRef={listWrapperScrollRef}>
 							{[mainMessage, ...messages].map((message, index, { [index - 1]: previous }) => {
 								const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
 								const newDay = isMessageNewDay(message, previous);

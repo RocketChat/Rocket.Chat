@@ -8,14 +8,17 @@ import { goToRoomById } from './goToRoomById';
 
 /** @deprecated */
 export const legacyJumpToMessage = async (message: IMessage) => {
-	FlowRouter.setQueryParams({ msg: null });
-
 	if (matchMedia('(max-width: 500px)').matches) {
 		(Template.instance() as any)?.tabBar?.close();
 	}
 
 	if (isThreadMessage(message) || message.tcount) {
-		const { route, queryParams } = FlowRouter.current();
+		const { route, queryParams, params } = FlowRouter.current();
+
+		if (params.tab === 'thread' && (params.context === message.tmid || params.context === message._id)) {
+			return;
+		}
+
 		FlowRouter.go(
 			route?.name ?? '/',
 			{
@@ -26,6 +29,7 @@ export const legacyJumpToMessage = async (message: IMessage) => {
 			},
 			{
 				...queryParams,
+				msg: message._id,
 			},
 		);
 		return;

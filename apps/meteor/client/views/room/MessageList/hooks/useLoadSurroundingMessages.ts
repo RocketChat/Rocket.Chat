@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 
 import { legacyJumpToMessage } from '../../../../lib/utils/legacyJumpToMessage';
 
-export const useJumpToMessage = (msgId?: IMessage['_id']) => {
+export const useLoadSurroundingMessages = (msgId?: IMessage['_id']) => {
 	const queryClient = useQueryClient();
 	const getMessage = useEndpoint('GET', '/v1/chat.getMessage');
 

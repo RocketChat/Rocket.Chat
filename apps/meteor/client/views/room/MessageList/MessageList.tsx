@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 import { MessageDivider } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ReactElement, RefObject } from 'react';
 import React, { Fragment, memo } from 'react';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
@@ -20,9 +20,10 @@ import MessageListProvider from './providers/MessageListProvider';
 
 type MessageListProps = {
 	rid: IRoom['_id'];
+	wrapperRef: RefObject<HTMLDivElement>;
 };
 
-export const MessageList = ({ rid }: MessageListProps): ReactElement => {
+export const MessageList = ({ rid, wrapperRef }: MessageListProps): ReactElement => {
 	const t = useTranslation();
 	const messages = useMessages({ rid });
 	const subscription = useRoomSubscription();
@@ -30,7 +31,7 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 	const formatDate = useFormatDate();
 
 	return (
-		<MessageListProvider>
+		<MessageListProvider wrapperRef={wrapperRef}>
 			<SelectedMessagesProvider>
 				{messages.map((message, index, { [index - 1]: previous }) => {
 					const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
