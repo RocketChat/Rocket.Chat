@@ -11,7 +11,6 @@ import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import DepartmentsPage from './DepartmentsPage';
 import EditDepartment from './EditDepartment';
 import EditDepartmentWithData from './EditDepartmentWithData';
-import RemoveDepartmentButton from './RemoveDepartmentButton';
 
 type SortingParams = [column: string, direction: 'asc' | 'desc'];
 
