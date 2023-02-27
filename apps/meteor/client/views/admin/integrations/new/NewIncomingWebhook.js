@@ -15,7 +15,7 @@ const initialState = {
 	avatar: '',
 	emoji: '',
 	scriptEnabled: false,
-	overrideDestinationChannelEnabled: true,
+	overrideDestinationChannelEnabled: false,
 	script: '',
 };
 
