@@ -155,24 +155,21 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 				<OptionIcon name='sun' />
 				<OptionContent>{t('Theme_light')}</OptionContent>
 				<OptionColumn>
-					<RadioButton checked={selectedTheme === 'light'} onChange={setTheme('light')} m='x4'
-						onClick={() => { if (selectedTheme === 'dark' || (selectedTheme === 'auto' && selectedTheme != 'light')) window.location.reload(); }} />
+					<RadioButton checked={selectedTheme === 'light'} onChange={setTheme('light')} m='x4' />
 				</OptionColumn>
 			</Option>
 			<Option>
 				<OptionIcon name='moon' />
 				<OptionContent>{t('Theme_dark')}</OptionContent>
 				<OptionColumn>
-					<RadioButton checked={selectedTheme === 'dark'} onChange={setTheme('dark')} m='x4'
-						onClick={() => { if (selectedTheme == 'light' || (selectedTheme === 'auto' && selectedTheme != 'dark')) window.location.reload(); }} />
+					<RadioButton checked={selectedTheme === 'dark'} onChange={setTheme('dark')} m='x4' />
 				</OptionColumn>
 			</Option>
 			<Option>
 				<OptionIcon name='desktop' />
 				<OptionContent>{t('Theme_match_system')}</OptionContent>
 				<OptionColumn>
-					<RadioButton checked={selectedTheme === 'auto'} onChange={setTheme('auto')} m='x4'
-						onClick={() => { window.location.reload() }} />
+					<RadioButton checked={selectedTheme === 'auto'} onChange={setTheme('auto')} m='x4' />
 				</OptionColumn>
 			</Option>
 			<OptionDivider />
