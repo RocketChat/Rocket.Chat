@@ -9,15 +9,14 @@ import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
 const DefaultParentRoomField = ({ defaultParentRoom }: { defaultParentRoom: string }): ReactElement => {
 	const t = useTranslation();
-	const { value, phase } = useEndpointData(
-		'/v1/rooms.info',
-		useMemo(
+	const { value, phase } = useEndpointData('/v1/rooms.info', {
+		params: useMemo(
 			() => ({
 				roomId: defaultParentRoom,
 			}),
 			[defaultParentRoom],
 		),
-	);
+	});
 
 	if (phase === AsyncStatePhase.LOADING) {
 		return <Skeleton width='full' />;

@@ -4,15 +4,16 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MouseEventHandler, ReactElement, ReactNode } from 'react';
 import React, { memo } from 'react';
 
-import RawText from '../../../../../components/RawText';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
-import * as NotificationStatus from '../../../../../components/message/NotificationStatus';
 import { followStyle, anchor } from '../../../../../components/message/helpers/followSyle';
+import AllMentionNotification from '../../../../../components/message/notification/AllMentionNotification';
+import MeMentionNotification from '../../../../../components/message/notification/MeMentionNotification';
+import UnreadMessagesNotification from '../../../../../components/message/notification/UnreadMessagesNotification';
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 
 type ThreadListMessageProps = {
 	_id: IMessage['_id'];
-	msg: IMessage['msg'];
+	msg: ReactNode;
 	following: boolean;
 	username: IMessage['u']['username'];
 	name?: IMessage['u']['name'];
@@ -50,7 +51,7 @@ const ThreadListMessage = ({
 	const actionLabel = t(!following ? 'Not_Following' : 'Following');
 	return (
 		<Box className={[className, !following && followStyle].flat()}>
-			<Box pbs='x16' is={Message} {...props}>
+			<Box pbs={16} is={Message} {...props}>
 				<Message.LeftContainer>
 					<UserAvatar username={username} className='rcx-message__avatar' size='x36' />
 				</Message.LeftContainer>
@@ -59,9 +60,7 @@ const ThreadListMessage = ({
 						<Message.Name title={username}>{name}</Message.Name>
 						<Message.Timestamp>{formatDate(ts)}</Message.Timestamp>
 					</Message.Header>
-					<Message.Body clamp={2}>
-						<RawText>{msg}</RawText>
-					</Message.Body>
+					<Message.Body clamp={2}>{msg}</Message.Body>
 					<Message.Block>
 						<Message.Metrics>
 							<Message.Metrics.Item>
@@ -94,7 +93,7 @@ const ThreadListMessage = ({
 						aria-label={actionLabel}
 					/>
 					<Box mb={24}>
-						{(mention && <NotificationStatus.Me />) || (all && <NotificationStatus.All />) || (unread && <NotificationStatus.Unread />)}
+						{(mention && <MeMentionNotification />) || (all && <AllMentionNotification />) || (unread && <UnreadMessagesNotification />)}
 					</Box>
 				</Message.ContainerFixed>
 			</Box>

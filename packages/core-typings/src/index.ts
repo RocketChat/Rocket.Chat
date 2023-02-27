@@ -1,6 +1,8 @@
 export * from './Apps';
 export * from './AppOverview';
 export * from './FeaturedApps';
+export * from './AppRequests';
+export * from './MarketplaceRest';
 export * from './IRoom';
 export * from './UIKit';
 export * from './IMessage';
@@ -57,6 +59,7 @@ export * from './ICustomUserStatus';
 export * from './IEmailMessageHistory';
 
 export * from './ReadReceipt';
+export * from './MessageReads';
 export * from './IUpload';
 export * from './IOEmbedCache';
 export * from './IOembed';
@@ -108,6 +111,7 @@ export * from './IOmnichannelVoipServiceResult';
 export * from './IInquiry';
 export * from './ILivechatPriority';
 export * from './ILogs';
+export * from './IOmnichannelServiceLevelAgreements';
 
 export * from './IAutoTranslate';
 export * from './IVideoConference';
@@ -115,3 +119,5 @@ export * from './VideoConferenceCapabilities';
 export * from './VideoConferenceOptions';
 
 export * from './SpotlightUser';
+
+export * from './search';

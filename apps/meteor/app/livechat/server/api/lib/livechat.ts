@@ -209,7 +209,7 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 	};
 }
 
-export async function getExtraConfigInfo(room: IOmnichannelRoom): Promise<any> {
+export async function getExtraConfigInfo(room?: IOmnichannelRoom): Promise<any> {
 	return callbacks.run('livechat.onLoadConfigApi', { room });
 }
 

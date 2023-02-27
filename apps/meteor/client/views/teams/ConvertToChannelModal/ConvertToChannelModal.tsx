@@ -20,10 +20,9 @@ type ConvertToChannelModalProps = {
 const ConvertToChannelModal: FC<ConvertToChannelModalProps> = ({ onClose, onCancel, onConfirm, teamId, userId }) => {
 	const t = useTranslation();
 
-	const { value, phase } = useEndpointData(
-		'/v1/teams.listRoomsOfUser',
-		useMemo(() => ({ teamId, userId, canUserDelete: 'true' }), [teamId, userId]),
-	);
+	const { value, phase } = useEndpointData('/v1/teams.listRoomsOfUser', {
+		params: useMemo(() => ({ teamId, userId, canUserDelete: 'true' }), [teamId, userId]),
+	});
 
 	if (phase === AsyncStatePhase.LOADING) {
 		return (

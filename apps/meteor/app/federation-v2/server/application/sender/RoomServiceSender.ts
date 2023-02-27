@@ -1,6 +1,7 @@
 import type { IMessage, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { isDeletedMessage, isEditedMessage, isMessageFromMatrixFederation, isQuoteAttachment } from '@rocket.chat/core-typings';
 
+import type { FederatedRoom } from '../../domain/FederatedRoom';
 import { DirectMessageFederatedRoom } from '../../domain/FederatedRoom';
 import { FederatedUser } from '../../domain/FederatedUser';
 import type { IFederationBridge } from '../../domain/IFederationBridge';
@@ -16,8 +17,10 @@ import type {
 	FederationAfterRemoveUserFromRoomDto,
 	FederationCreateDMAndInviteUserDto,
 	FederationRoomSendExternalMessageDto,
-} from '../input/RoomSenderDto';
+} from './input/RoomSenderDto';
 import { getExternalMessageSender } from './MessageSenders';
+import { MATRIX_POWER_LEVELS } from '../../infrastructure/matrix/definitions/MatrixPowerLevels';
+import { ROCKET_CHAT_FEDERATION_ROLES } from '../../infrastructure/rocket-chat/definitions/InternalFederatedRoomRoles';
 
 export class FederationRoomServiceSender extends FederationService {
 	constructor(
@@ -261,6 +264,201 @@ export class FederationRoomServiceSender extends FederationService {
 			federatedUser.getExternalId(),
 			internalMessage.federation?.eventId as string,
 			internalMessage.msg,
+		);
+	}
+
+	public async onRoomOwnerAdded(internalUserId: string, internalTargetUserId: string, internalRoomId: string): Promise<void> {
+		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		const federatedUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalUserId);
+		if (!federatedUser) {
+			return;
+		}
+
+		const federatedTargetUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalTargetUserId);
+		if (!federatedTargetUser) {
+			return;
+		}
+
+		const userRoomRoles = await this.internalRoomAdapter.getInternalRoomRolesByUserId(internalRoomId, internalUserId);
+		const myself = federatedUser.getInternalId() === federatedTargetUser.getInternalId();
+		if (!userRoomRoles?.includes(ROCKET_CHAT_FEDERATION_ROLES.OWNER) && !myself) {
+			throw new Error('Federation_Matrix_not_allowed_to_change_owner');
+		}
+
+		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
+			this.bridge.extractHomeserverOrigin(federatedUser.getExternalId()),
+			this.internalSettingsAdapter.getHomeServerDomain(),
+		);
+		if (!isUserFromTheSameHomeServer) {
+			return;
+		}
+		try {
+			await this.bridge.setRoomPowerLevels(
+				federatedRoom.getExternalId(),
+				federatedUser.getExternalId(),
+				federatedTargetUser.getExternalId(),
+				MATRIX_POWER_LEVELS.ADMIN,
+			);
+		} catch (e) {
+			await this.rollbackRoomRoles(federatedRoom, federatedTargetUser, federatedUser, [], [ROCKET_CHAT_FEDERATION_ROLES.OWNER]);
+		}
+	}
+
+	public async onRoomOwnerRemoved(internalUserId: string, internalTargetUserId: string, internalRoomId: string): Promise<void> {
+		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		const federatedUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalUserId);
+		if (!federatedUser) {
+			return;
+		}
+
+		const federatedTargetUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalTargetUserId);
+		if (!federatedTargetUser) {
+			return;
+		}
+
+		const userRoomRoles = await this.internalRoomAdapter.getInternalRoomRolesByUserId(internalRoomId, internalUserId);
+		const myself = federatedUser.getInternalId() === federatedTargetUser.getInternalId();
+		if (!userRoomRoles?.includes(ROCKET_CHAT_FEDERATION_ROLES.OWNER) && !myself) {
+			throw new Error('Federation_Matrix_not_allowed_to_change_owner');
+		}
+
+		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
+			this.bridge.extractHomeserverOrigin(federatedUser.getExternalId()),
+			this.internalSettingsAdapter.getHomeServerDomain(),
+		);
+		if (!isUserFromTheSameHomeServer) {
+			return;
+		}
+		try {
+			await this.bridge.setRoomPowerLevels(
+				federatedRoom.getExternalId(),
+				federatedUser.getExternalId(),
+				federatedTargetUser.getExternalId(),
+				MATRIX_POWER_LEVELS.USER,
+			);
+		} catch (e) {
+			await this.rollbackRoomRoles(federatedRoom, federatedTargetUser, federatedUser, [ROCKET_CHAT_FEDERATION_ROLES.OWNER], []);
+		}
+	}
+
+	public async onRoomModeratorAdded(internalUserId: string, internalTargetUserId: string, internalRoomId: string): Promise<void> {
+		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		const federatedUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalUserId);
+		if (!federatedUser) {
+			return;
+		}
+		const federatedTargetUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalTargetUserId);
+		if (!federatedTargetUser) {
+			return;
+		}
+
+		const userRoomRoles = await this.internalRoomAdapter.getInternalRoomRolesByUserId(internalRoomId, internalUserId);
+		const myself = federatedUser.getInternalId() === federatedTargetUser.getInternalId();
+		if (
+			!userRoomRoles?.includes(ROCKET_CHAT_FEDERATION_ROLES.OWNER) &&
+			!userRoomRoles?.includes(ROCKET_CHAT_FEDERATION_ROLES.MODERATOR) &&
+			!myself
+		) {
+			throw new Error('Federation_Matrix_not_allowed_to_change_moderator');
+		}
+
+		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
+			this.bridge.extractHomeserverOrigin(federatedUser.getExternalId()),
+			this.internalSettingsAdapter.getHomeServerDomain(),
+		);
+		if (!isUserFromTheSameHomeServer) {
+			return;
+		}
+
+		try {
+			await this.bridge.setRoomPowerLevels(
+				federatedRoom.getExternalId(),
+				federatedUser.getExternalId(),
+				federatedTargetUser.getExternalId(),
+				MATRIX_POWER_LEVELS.MODERATOR,
+			);
+		} catch (e) {
+			await this.rollbackRoomRoles(federatedRoom, federatedTargetUser, federatedUser, [], [ROCKET_CHAT_FEDERATION_ROLES.MODERATOR]);
+		}
+	}
+
+	public async onRoomModeratorRemoved(internalUserId: string, internalTargetUserId: string, internalRoomId: string): Promise<void> {
+		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		const federatedUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalUserId);
+		if (!federatedUser) {
+			return;
+		}
+
+		const federatedTargetUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalTargetUserId);
+		if (!federatedTargetUser) {
+			return;
+		}
+
+		const userRoomRoles = await this.internalRoomAdapter.getInternalRoomRolesByUserId(internalRoomId, internalUserId);
+		const myself = federatedUser.getInternalId() === federatedTargetUser.getInternalId();
+		if (
+			!userRoomRoles?.includes(ROCKET_CHAT_FEDERATION_ROLES.OWNER) &&
+			!userRoomRoles?.includes(ROCKET_CHAT_FEDERATION_ROLES.MODERATOR) &&
+			!myself
+		) {
+			throw new Error('Federation_Matrix_not_allowed_to_change_moderator');
+		}
+
+		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
+			this.bridge.extractHomeserverOrigin(federatedUser.getExternalId()),
+			this.internalSettingsAdapter.getHomeServerDomain(),
+		);
+		if (!isUserFromTheSameHomeServer) {
+			return;
+		}
+
+		try {
+			await this.bridge.setRoomPowerLevels(
+				federatedRoom.getExternalId(),
+				federatedUser.getExternalId(),
+				federatedTargetUser.getExternalId(),
+				MATRIX_POWER_LEVELS.USER,
+			);
+		} catch (e) {
+			await this.rollbackRoomRoles(federatedRoom, federatedTargetUser, federatedUser, [ROCKET_CHAT_FEDERATION_ROLES.MODERATOR], []);
+		}
+	}
+
+	private async rollbackRoomRoles(
+		federatedRoom: FederatedRoom,
+		targetFederatedUser: FederatedUser,
+		fromUser: FederatedUser,
+		rolesToAdd: ROCKET_CHAT_FEDERATION_ROLES[],
+		rolesToRemove: ROCKET_CHAT_FEDERATION_ROLES[],
+	): Promise<void> {
+		await this.internalRoomAdapter.applyRoomRolesToUser({
+			federatedRoom,
+			targetFederatedUser,
+			fromUser,
+			rolesToAdd,
+			rolesToRemove,
+			notifyChannel: false,
+		});
+		this.internalNotificationAdapter.notifyWithEphemeralMessage(
+			'Federation_Matrix_error_applying_room_roles',
+			fromUser.getInternalId(),
+			federatedRoom.getInternalId(),
 		);
 	}
 }

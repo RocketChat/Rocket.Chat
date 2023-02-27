@@ -13,10 +13,7 @@ const wordBreak = css`
 `;
 
 function ContactManagerInfo({ username }) {
-	const { value: data, phase: state } = useEndpointData(
-		`/v1/users.info`,
-		useMemo(() => ({ username }), [username]),
-	);
+	const { value: data, phase: state } = useEndpointData('/v1/users.info', { params: useMemo(() => ({ username }), [username]) });
 	if (!data && state === AsyncStatePhase.LOADING) {
 		return null;
 	}

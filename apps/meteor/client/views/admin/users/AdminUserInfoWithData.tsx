@@ -1,7 +1,9 @@
+import { isUserFederated } from '@rocket.chat/core-typings';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useRolesDescription, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting, useRolesDescription, useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
@@ -11,8 +13,6 @@ import UserCard from '../../../components/UserCard';
 import UserInfo from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
 import VerticalBar from '../../../components/VerticalBar';
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
 import AdminUserInfoActions from './AdminUserInfoActions';
 
@@ -26,19 +26,28 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 	const getRoles = useRolesDescription();
 	const approveManuallyUsers = useSetting('Accounts_ManuallyApproveNewUsers');
 
-	const {
-		value: data,
-		phase: state,
-		error,
-		reload: reloadUserInfo,
-	} = useEndpointData(
-		'/v1/users.info',
-		useMemo(() => ({ userId: uid }), [uid]),
+	const getUsersInfo = useEndpoint('GET', '/v1/users.info');
+
+	const query = useMemo(() => ({ userId: uid }), [uid]);
+
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const { data, isLoading, error, refetch } = useQuery(
+		['users', query, 'admin'],
+		async () => {
+			const usersInfo = await getUsersInfo(query);
+			return usersInfo;
+		},
+		{
+			onError: (error) => {
+				dispatchToastMessage({ type: 'error', message: error });
+			},
+		},
 	);
 
 	const onChange = useMutableCallback(() => {
 		onReload();
-		reloadUserInfo();
+		refetch();
 	});
 
 	const user = useMemo(() => {
@@ -85,7 +94,7 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 		};
 	}, [approveManuallyUsers, data, getRoles]);
 
-	if (state === AsyncStatePhase.LOADING) {
+	if (isLoading) {
 		return (
 			<VerticalBar.Content>
 				<FormSkeleton />
@@ -110,7 +119,7 @@ const AdminUserInfoWithData = ({ uid, onReload }: AdminUserInfoWithDataProps): R
 					isAdmin={data?.user.roles.includes('admin')}
 					userId={data?.user._id}
 					username={user.username}
-					isAFederatedUser={data?.user.federated}
+					isFederatedUser={isUserFederated(data?.user as unknown as IUser)}
 					onChange={onChange}
 					onReload={onReload}
 				/>

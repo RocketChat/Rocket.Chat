@@ -11,13 +11,13 @@ const AddManager = ({ reload }: { reload: () => void }): ReactElement => {
 	const t = useTranslation();
 	const [username, setUsername] = useState('');
 
-	const saveAction = useEndpointAction('POST', '/v1/livechat/users/manager', { username });
+	const saveAction = useEndpointAction('POST', '/v1/livechat/users/manager');
 
 	const handleSave = useMutableCallback(async () => {
 		if (!username) {
 			return;
 		}
-		const result = await saveAction();
+		const result = await saveAction({ username });
 		if (!result?.success) {
 			return;
 		}

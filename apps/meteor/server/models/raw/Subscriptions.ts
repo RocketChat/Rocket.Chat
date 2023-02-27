@@ -71,6 +71,16 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.find(query, options);
 	}
 
+	findUnarchivedByRoomId(roomId: string, options: FindOptions<ISubscription> = {}): FindCursor<ISubscription> {
+		const query = {
+			'rid': roomId,
+			'archived': { $ne: true },
+			'u._id': { $exists: true },
+		};
+
+		return this.find(query, options);
+	}
+
 	findByRoomIdAndNotUserId(roomId: string, userId: string, options: FindOptions<ISubscription> = {}): FindCursor<ISubscription> {
 		const query = {
 			'rid': roomId,
@@ -99,6 +109,15 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			'u._id': uid,
 		};
 
+		return this.col.countDocuments(query);
+	}
+
+	countUnarchivedByRoomId(rid: string): Promise<number> {
+		const query = {
+			rid,
+			'archived': { $ne: true },
+			'u._id': { $exists: true },
+		};
 		return this.col.countDocuments(query);
 	}
 
@@ -448,5 +467,36 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			},
 		};
 		return this.updateMany(query, update);
+	}
+
+	updateNameAndFnameByRoomId(roomId: string, name: string, fname: string): Promise<UpdateResult | Document> {
+		const query = { rid: roomId };
+
+		const update = {
+			$set: {
+				name,
+				fname,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	async setGroupE2EKey(_id: string, key: string): Promise<ISubscription | null> {
+		const query = { _id };
+		const update = { $set: { E2EKey: key } };
+		await this.updateOne(query, update);
+		return this.findOneById(_id);
+	}
+
+	setGroupE2ESuggestedKey(_id: string, key: string): Promise<UpdateResult | Document> {
+		const query = { _id };
+		const update = { $set: { E2ESuggestedKey: key } };
+		return this.updateOne(query, update);
+	}
+
+	unsetGroupE2ESuggestedKey(_id: string): Promise<UpdateResult | Document> {
+		const query = { _id };
+		return this.updateOne(query, { $unset: { E2ESuggestedKey: 1 } });
 	}
 }

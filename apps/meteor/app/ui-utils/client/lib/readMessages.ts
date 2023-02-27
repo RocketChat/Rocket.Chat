@@ -134,7 +134,7 @@ export class ReadMessage extends Emitter {
 			lastReadRecord = { ts: new Date(0) };
 		}
 
-		room.unreadSince.set((lastReadRecord || unreadNotLoaded.get() > 0) && subscription.ls);
+		room.unreadSince.set(lastReadRecord || unreadNotLoaded.get() > 0 ? subscription.ls : undefined);
 
 		if (!lastReadRecord) {
 			return;

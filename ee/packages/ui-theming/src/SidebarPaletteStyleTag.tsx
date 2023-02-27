@@ -1,24 +1,22 @@
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { createPortal } from 'react-dom';
-import { useSessionStorage } from '@rocket.chat/fuselage-hooks';
 
 import { sidebarPaletteDark } from './sidebarPaletteDark';
 import { defaultSidebarPalette } from './sidebarPalette';
 import { darkPalette } from './paletteDark';
 import { filterOnlyChangedColors } from './filterOnlyChangedColors';
 import { convertToCss } from './convertToCss';
+import { useThemeMode } from './hooks/useThemeMode';
+import { useCreateStyleContainer } from './hooks/useCreateStyleContainer';
 
 export const SidebarPaletteStyleTag = memo((): ReactElement | null => {
-	const [theme] = useSessionStorage<'dark' | 'light'>(`rcx-theme`, 'light');
+	const [, , theme] = useThemeMode();
 
-	return createPortal(
-		<style id='sidebar-palette' data-style={theme}>
-			{convertToCss(
-				theme === 'dark' ? filterOnlyChangedColors(darkPalette, sidebarPaletteDark) : { ...darkPalette, ...defaultSidebarPalette },
-				'.rcx-sidebar--main',
-			)}
-		</style>,
-		document.head,
+	const palette = convertToCss(
+		theme === 'dark' ? filterOnlyChangedColors(darkPalette, sidebarPaletteDark) : { ...darkPalette, ...defaultSidebarPalette },
+		'.rcx-sidebar--main',
 	);
+
+	return createPortal(palette, useCreateStyleContainer('sidebar-palette'));
 });
