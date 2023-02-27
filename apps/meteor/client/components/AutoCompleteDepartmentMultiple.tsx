@@ -50,7 +50,12 @@ const AutoCompleteDepartmentMultiple = ({
 			endReached={
 				departmentsPhase === AsyncStatePhase.LOADING
 					? () => undefined
-					: (start: number) => loadMoreDepartments(start, Math.min(50, departmentsTotal))
+					: (start?: number) => {
+							if (start === undefined) {
+								return;
+							}
+							return loadMoreDepartments(start, Math.min(50, departmentsTotal));
+					  }
 			}
 		/>
 	);

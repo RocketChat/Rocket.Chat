@@ -43,10 +43,16 @@ export const DepartmentForwarding = ({ departmentId, value, handler, label }: De
 						onChange={handler}
 						options={departmentsItems}
 						value={value}
+						placeholder={t('Select_an_option')}
 						endReached={
 							departmentsPhase === AsyncStatePhase.LOADING
 								? () => undefined
-								: (start: number) => loadMoreDepartments(start, Math.min(50, departmentsTotal))
+								: (start?: number) => {
+										if (start === undefined) {
+											return;
+										}
+										loadMoreDepartments(start, Math.min(50, departmentsTotal));
+								  }
 						}
 					/>
 				</Box>
