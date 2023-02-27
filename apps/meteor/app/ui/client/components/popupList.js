@@ -1,6 +1,6 @@
 import { Template } from 'meteor/templating';
 
-import { settings } from '../../../settings';
+import { getMessagesLayoutPreference } from '../../../utils/lib/getMessagesLayoutPreference';
 
 Template.popupList.helpers({
 	config() {
@@ -42,6 +42,6 @@ Template.popupList_default.helpers({
 
 Template.popupList_item_default.helpers({
 	showRealNames() {
-		return settings.get('UI_Use_Real_Name');
+		return getMessagesLayoutPreference() !== 'username';
 	},
 });

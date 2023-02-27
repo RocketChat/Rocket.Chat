@@ -188,11 +188,11 @@ Template.message.helpers({
 		if (!msg.u) {
 			return '';
 		}
-		return (settings.UI_Use_Real_Name && msg.u.name) || msg.u.username;
+		return (settings.messagesLayout !== 'username' && msg.u.name) || msg.u.username;
 	},
 	showUsername() {
 		const { msg, settings } = this;
-		return msg.alias || (settings.UI_Use_Real_Name && msg.u && msg.u.name);
+		return msg.alias || (settings.messagesLayout !== 'username' && msg.u && msg.u.name);
 	},
 	own() {
 		const { msg, u = {} } = this;

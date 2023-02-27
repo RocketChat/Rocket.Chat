@@ -3,6 +3,7 @@ import { Tracker } from 'meteor/tracker';
 
 import { Users } from '../../../app/models/client';
 import { settings } from '../../../app/settings/client';
+import { getMessagesLayoutPreference } from '../../../app/utils/lib/getMessagesLayoutPreference';
 import { callbacks } from '../../../lib/callbacks';
 
 Meteor.startup(() => {
@@ -11,7 +12,7 @@ Meteor.startup(() => {
 		const options = {
 			me: uid && Users.findOne(uid, { fields: { username: 1 } })?.username,
 			pattern: settings.get('UTF8_User_Names_Validation'),
-			useRealName: settings.get('UI_Use_Real_Name'),
+			useRealName: getMessagesLayoutPreference() !== 'username',
 		};
 
 		import('../../../app/mentions/client').then(({ createMentionsMessageRenderer }) => {

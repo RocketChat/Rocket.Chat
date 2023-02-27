@@ -7,6 +7,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { t } from '../../../utils/client';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
+import { getMessagesLayoutPreference } from '../../../utils/lib/getMessagesLayoutPreference';
 
 Meteor.methods({
 	sendMessage(message) {
@@ -23,7 +24,7 @@ Meteor.methods({
 			_id: Meteor.userId(),
 			username: user.username,
 		};
-		if (settings.get('UI_Use_Real_Name')) {
+		if (getMessagesLayoutPreference() !== 'username') {
 			message.u.name = user.name;
 		}
 		message.temp = true;

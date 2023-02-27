@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import { useSetting } from '@rocket.chat/ui-contexts';
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -13,7 +13,7 @@ type ReactionsProps = {
 };
 
 const Reactions = ({ reactions, onClick }: ReactionsProps): ReactElement => {
-	const useRealName = useSetting('UI_Use_Real_Name');
+	const useRealName = useUserPreference('messagesLayout') !== 'username';
 	return (
 		<Box display='flex' flexDirection='column'>
 			{Object.entries(reactions).map(([reaction, { names = [], usernames }]) => (

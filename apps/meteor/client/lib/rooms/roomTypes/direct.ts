@@ -9,6 +9,7 @@ import { Subscriptions, Users, ChatRoom } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getUserPreference } from '../../../../app/utils/client';
 import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
+import { getMessagesLayoutPreference } from '../../../../app/utils/lib/getMessagesLayoutPreference';
 import { getUserAvatarURL } from '../../../../app/utils/lib/getUserAvatarURL';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
@@ -69,7 +70,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 			return;
 		}
 
-		if (settings.get('UI_Use_Real_Name') && subscription.fname) {
+		if (getMessagesLayoutPreference() !== 'username' && subscription.fname) {
 			return subscription.fname;
 		}
 

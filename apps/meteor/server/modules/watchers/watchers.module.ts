@@ -73,6 +73,14 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 		{ maxAge: 10000 },
 	);
 
+	const getMessagesLayoutPreferenceCached = mem(
+		async (userId: string): Promise<string | undefined> => {
+			const user = await Users.findOne<Pick<IUser, 'settings'>>(userId, { projection: { 'settings.preferences': 1 } });
+			return user?.settings?.preferences?.messagesLayout || getSettingCached('Accounts_Default_User_Preferences_messagesLayout');
+		},
+		{ maxAge: 10000 },
+	);
+
 	watcher.on<IMessage>(Messages.getCollectionName(), async ({ clientAction, id, data }) => {
 		switch (clientAction) {
 			case 'inserted':
@@ -83,7 +91,9 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 				}
 
 				if (message._hidden !== true && message.imported == null) {
-					const UseRealName = (await getSettingCached('UI_Use_Real_Name')) === true;
+					const UseRealName = message.u?._id
+						? (await getMessagesLayoutPreferenceCached(message.u?._id)) !== 'username'
+						: (await getSettingCached('Accounts_Default_User_Preferences_messagesLayout')) !== 'username';
 
 					if (UseRealName) {
 						if (message.u?._id) {

@@ -55,7 +55,7 @@ const ThreadMessageList = ({ mainMessage, jumpTo, onJumpTo }: ThreadMessageListP
 	const { parentRef: listJumpRef } = useLegacyThreadMessageJump(jumpTo, { enabled: !loading, onJumpTo });
 
 	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, listJumpRef);
-	const hideUsernames = useUserPreference<boolean>('hideUsernames');
+	const hideUsernames = useUserPreference<string>('messagesLayout') === 'full_name';
 
 	const subscription = useRoomSubscription();
 	const formatDate = useFormatDate();

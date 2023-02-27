@@ -24,7 +24,7 @@ export type UsersSetPreferencesParamsPOST = {
 		highlights?: string[];
 		alsoSendThreadToChannel?: 'never' | 'always' | 'default';
 		desktopNotificationRequireInteraction?: boolean;
-		hideUsernames?: boolean;
+		messagesLayout?: string;
 		hideRoles?: boolean;
 		displayAvatars?: boolean;
 		hideFlexTab?: boolean;
@@ -125,8 +125,8 @@ const UsersSetPreferencesParamsPostSchema = {
 					type: 'boolean',
 					nullable: true,
 				},
-				hideUsernames: {
-					type: 'boolean',
+				messagesLayout: {
+					type: 'string',
 					nullable: true,
 				},
 				hideRoles: {

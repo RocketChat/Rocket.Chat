@@ -44,6 +44,7 @@ import { availabilityErrors } from '../../../lib/videoConference/constants';
 import { callbacks } from '../../../lib/callbacks';
 import { Notifications } from '../../../app/notifications/server';
 import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
+import { getMessagesLayoutPreference } from '../../../app/utils/lib/getMessagesLayoutPreference';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -316,7 +317,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		if (call.messages.started) {
 			const name =
-				(settings.get<boolean>('UI_Use_Real_Name') ? call.createdBy.name : call.createdBy.username) || call.createdBy.username || '';
+				(getMessagesLayoutPreference() !== 'username' ? call.createdBy.name : call.createdBy.username) || call.createdBy.username || '';
 			const text = TAPi18n.__('video_livechat_missed', { username: name });
 			await Messages.setBlocksById(call.messages.started, [this.buildMessageBlock(text)]);
 		}
@@ -535,7 +536,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async createLivechatMessage(call: ILivechatVideoConference, user: IUser, url: string): Promise<IMessage['_id']> {
-		const username = (settings.get<boolean>('UI_Use_Real_Name') ? user.name : user.username) || user.username || '';
+		const username = (getMessagesLayoutPreference() !== 'username' ? user.name : user.username) || user.username || '';
 		const text = TAPi18n.__('video_livechat_started', {
 			username,
 		});

@@ -10,7 +10,7 @@ import {
 	useMergedRefs,
 } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { useUserPreference, useUserSubscriptions, useSetting, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useUserSubscriptions, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { Meteor } from 'meteor/meteor';
@@ -178,7 +178,7 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 	const itemIndexRef = useRef(0);
 
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
-	const useRealName = useSetting('UI_Use_Real_Name');
+	const useRealName = useUserPreference('messagesLayout') !== 'username';
 
 	const sideBarItemTemplate = useTemplateByViewMode();
 	const avatarTemplate = useAvatarTemplate();

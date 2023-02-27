@@ -22,7 +22,7 @@ export const useRoomMessageContext = (room: IRoom) => {
 	const hasPermissionDeleteOwnMessage = usePermission('delete-own-message');
 	const displayRoles = useSetting('UI_DisplayRoles');
 	const hideRoles = useUserPreference('hideRoles');
-	const useRealName = useSetting('UI_Use_Real_Name');
+	const messagesLayout = useUserPreference('messagesLayout');
 	const chatopsUsername = useSetting('Chatops_Username');
 	const autoTranslateEnabled = useSetting('AutoTranslate_Enabled');
 	const allowEditing = useSetting('Message_AllowEditing');
@@ -47,7 +47,7 @@ export const useRoomMessageContext = (room: IRoom) => {
 				hasPermissionDeleteMessage,
 				hasPermissionDeleteOwnMessage,
 				hideRoles: !displayRoles || hideRoles,
-				UI_Use_Real_Name: useRealName,
+				messagesLayout,
 				Chatops_Username: chatopsUsername,
 				AutoTranslate_Enabled: autoTranslateEnabled,
 				Message_AllowEditing: allowEditing,
@@ -75,7 +75,7 @@ export const useRoomMessageContext = (room: IRoom) => {
 			subscription,
 			translateLanguage,
 			uid,
-			useRealName,
+			messagesLayout,
 			user,
 		],
 	);

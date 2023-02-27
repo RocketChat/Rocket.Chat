@@ -1,11 +1,18 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Accordion, Field, Select, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useUserPreference, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useMemo } from 'react';
 
 import { useForm } from '../../../hooks/useForm';
 import type { FormSectionProps } from './AccountPreferencesPage';
+
+const messagesLayoutOptionsLabelMap = {
+	full_name: 'Show_only_full_name',
+	username: 'Show_only_username',
+	username_and_full_name: 'Show_both_full_name_and_username',
+};
 
 type Values = {
 	unreadAlert: boolean;
@@ -15,7 +22,7 @@ type Values = {
 	autoImageLoad: boolean;
 	saveMobileBandwidth: boolean;
 	collapseMediaByDefault: boolean;
-	hideUsernames: boolean;
+	messagesLayout: string;
 	hideRoles: boolean;
 	hideFlexTab: boolean;
 	displayAvatars: boolean;
@@ -36,7 +43,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 		autoImageLoad: useUserPreference('autoImageLoad'),
 		saveMobileBandwidth: useUserPreference('saveMobileBandwidth'),
 		collapseMediaByDefault: useUserPreference('collapseMediaByDefault'),
-		hideUsernames: useUserPreference('hideUsernames'),
+		messagesLayout: useUserPreference('messagesLayout'),
 		hideRoles: useUserPreference('hideRoles'),
 		hideFlexTab: useUserPreference('hideFlexTab'),
 		clockMode: useUserPreference('clockMode') ?? 0,
@@ -54,7 +61,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 		autoImageLoad,
 		saveMobileBandwidth,
 		collapseMediaByDefault,
-		hideUsernames,
+		messagesLayout,
 		hideRoles,
 		hideFlexTab,
 		displayAvatars,
@@ -70,7 +77,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 		handleAutoImageLoad,
 		handleSaveMobileBandwidth,
 		handleCollapseMediaByDefault,
-		handleHideUsernames,
+		handleMessagesLayout,
 		handleHideRoles,
 		handleHideFlexTab,
 		handleDisplayAvatars,
@@ -104,6 +111,22 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 		],
 		[t],
 	);
+
+	const defaultMessagesLayout = useSetting(
+		'Accounts_Default_User_Preferences_messagesLayout',
+	) as keyof typeof messagesLayoutOptionsLabelMap;
+
+	const messagesLayoutOptions = useMemo(
+		() => Object.entries(messagesLayoutOptionsLabelMap).map(([key, val]) => t.has(val) && [key, t(val)]),
+		[t],
+	) as SelectOption[];
+
+	const messagesLayoutSelectOptions = useMemo<SelectOption[]>((): SelectOption[] => {
+		console.log('Default: ', defaultMessagesLayout);
+		const optionsCp = messagesLayoutOptions.slice();
+		optionsCp.unshift(['default', `${t('Default')} (${t(messagesLayoutOptionsLabelMap[defaultMessagesLayout] as TranslationKey)})`]);
+		return optionsCp;
+	}, [defaultMessagesLayout, messagesLayoutOptions, t]);
 
 	commitRef.current.messages = commit;
 
@@ -207,14 +230,14 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 				)}
 				{useMemo(
 					() => (
-						<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
-							<Field.Label>{t('Hide_usernames')}</Field.Label>
+						<Field>
+							<Field.Label>{t('Messages_Layout')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch checked={hideUsernames} onChange={handleHideUsernames} />
+								<Select value={messagesLayout} onChange={handleMessagesLayout} options={messagesLayoutSelectOptions} />
 							</Field.Row>
 						</Field>
 					),
-					[handleHideUsernames, hideUsernames, t],
+					[handleMessagesLayout, messagesLayout, t],
 				)}
 				{useMemo(
 					() =>

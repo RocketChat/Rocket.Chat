@@ -1,5 +1,5 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Users } from '@rocket.chat/models';
 
 import { settings } from '../../../../settings/server';
 import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
@@ -30,7 +30,11 @@ export async function getPushData({
 	receiver,
 	shouldOmitMessage = true,
 }) {
-	const username = settings.get('Push_show_username_room') ? (settings.get('UI_Use_Real_Name') && senderName) || senderUsername : '';
+	const user = await Users.findOneById(userId, { projection: { 'settings.preferences': 1 } });
+	const defaultMessagesLayout = settings.get('Accounts_Default_User_Preferences_messagesLayout');
+	const useRealName = (user?.settings?.preferences?.messagesLayout || defaultMessagesLayout) !== 'username';
+
+	const username = settings.get('Push_show_username_room') ? (useRealName && senderName) || senderUsername : '';
 
 	const lng = receiver.language || settings.get('Language') || 'en';
 

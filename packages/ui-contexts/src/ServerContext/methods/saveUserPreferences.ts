@@ -15,7 +15,7 @@ type UserPreferences = {
 	pushNotifications: string;
 	enableAutoAway: boolean;
 	highlights: string[];
-	hideUsernames: boolean;
+	messagesLayout: string;
 	hideRoles: boolean;
 	displayAvatars: boolean;
 	hideFlexTab: boolean;

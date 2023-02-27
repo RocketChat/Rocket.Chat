@@ -3,7 +3,7 @@ import { ReactiveDict } from 'meteor/reactive-dict';
 import { debounce } from 'lodash';
 import type { IExtras, IRoomActivity, IActionsObject, IUser } from '@rocket.chat/core-typings';
 
-import { settings } from '../../../settings/client';
+import { getMessagesLayoutPreference } from '../../../utils/lib/getMessagesLayoutPreference';
 import { Notifications } from '../../../notifications/client';
 
 const TIMEOUT = 15000;
@@ -32,7 +32,7 @@ const shownName = function (user: IUser | null | undefined): string | undefined 
 	if (!user) {
 		return;
 	}
-	if (settings.get('UI_Use_Real_Name')) {
+	if (getMessagesLayoutPreference() !== 'username') {
 		return user.name;
 	}
 	return user.username;

@@ -24,6 +24,7 @@ import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 import { getURL } from '../../../utils/lib/getURL';
+import { getMessagesLayoutPreference } from '../../../utils/lib/getMessagesLayoutPreference';
 import { getLogs } from '../../../../server/stream/stdout';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { passwordPolicy } from '../../../lib/server';
@@ -257,7 +258,7 @@ API.v1.addRoute(
 					const user = this.getUserFromParams();
 
 					// Respect the server's choice for using their real names or not
-					if (user.name && settings.get('UI_Use_Real_Name')) {
+					if (user.name && getMessagesLayoutPreference() !== 'username') {
 						text = `${user.name}`;
 					} else {
 						text = `@${user.username}`;

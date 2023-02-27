@@ -57,8 +57,7 @@ export const createMessageContext = ({
 	hasPermissionDeleteMessage = hasPermission('delete-message', rid),
 	hasPermissionDeleteOwnMessage = hasPermission('delete-own-message'),
 	hideRoles = !settings.get('UI_DisplayRoles') || getUserPreference(user, 'hideRoles'),
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	UI_Use_Real_Name = settings.get('UI_Use_Real_Name'),
+	messagesLayout = getUserPreference(user, 'messagesLayout'),
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	Chatops_Username = settings.get('Chatops_Username'),
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -88,7 +87,7 @@ export const createMessageContext = ({
 	hasPermissionDeleteMessage?: unknown;
 	hasPermissionDeleteOwnMessage?: unknown;
 	hideRoles?: unknown;
-	UI_Use_Real_Name?: unknown;
+	messagesLayout?: unknown;
 	Chatops_Username?: unknown;
 	AutoTranslate_Enabled?: unknown;
 	Message_AllowEditing?: unknown;
@@ -110,7 +109,7 @@ export const createMessageContext = ({
 			hasPermissionDeleteMessage,
 			hasPermissionDeleteOwnMessage,
 			hideRoles,
-			UI_Use_Real_Name,
+			messagesLayout,
 			Chatops_Username,
 			AutoTranslate_Enabled,
 			Message_AllowEditing,

@@ -350,11 +350,6 @@ settingsRegistry.addGroup('Accounts', function () {
 			public: true,
 			i18nLabel: 'Collapse_Embedded_Media_By_Default',
 		});
-		this.add('Accounts_Default_User_Preferences_hideUsernames', false, {
-			type: 'boolean',
-			public: true,
-			i18nLabel: 'Hide_usernames',
-		});
 		this.add('Accounts_Default_User_Preferences_messagesLayout', 'full_name', {
 			type: 'select',
 			values: [
@@ -1656,10 +1651,6 @@ settingsRegistry.addGroup('Layout', function () {
 			public: false,
 		});
 		this.add('UI_Use_Name_Avatar', false, {
-			type: 'boolean',
-			public: true,
-		});
-		this.add('UI_Use_Real_Name', false, {
 			type: 'boolean',
 			public: true,
 		});
