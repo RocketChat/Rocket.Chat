@@ -141,11 +141,11 @@ function DepartmentsRoute() {
 	}
 
 	if (context === 'new') {
-		return <EditDepartment id={id} reload={reload} title={t('New_Department')} />;
+		return <EditDepartment id={id} title={t('New_Department')} />;
 	}
 
 	if (context === 'edit') {
-		return <EditDepartmentWithData reload={reload} id={id} title={t('Edit_Department')} />;
+		return <EditDepartmentWithData id={id} title={t('Edit_Department')} />;
 	}
 
 	return (

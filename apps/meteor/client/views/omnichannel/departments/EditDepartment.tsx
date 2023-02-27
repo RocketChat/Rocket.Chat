@@ -37,7 +37,6 @@ export type DataType = {
 export type EditDepartmentProps = {
 	data?: DataType;
 	id: string | undefined;
-	reload: () => void;
 	title: string;
 	allowedToForwardData?: Serialized<{
 		departments: ILivechatDepartment[];

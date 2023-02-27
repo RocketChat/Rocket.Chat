@@ -12,7 +12,7 @@ import EditDepartmentWithAllowedForwardData from './EditDepartmentWithAllowedFor
 
 const params: LivechatDepartmentId = { onlyMyDepartments: 'true' };
 
-function EditDepartmentWithData({ id, reload, title }: Pick<EditDepartmentProps, 'id' | 'reload' | 'title'>) {
+function EditDepartmentWithData({ id, title }: Pick<EditDepartmentProps, 'id' | 'title'>) {
 	const t = useTranslation();
 	const { value, phase: state, error } = useEndpointData('/v1/livechat/department/:_id', { keys: { _id: id || '' }, params });
 	const data = value as DataType;
@@ -32,9 +32,9 @@ function EditDepartmentWithData({ id, reload, title }: Pick<EditDepartmentProps,
 	return (
 		<>
 			{data?.department?.departmentsAllowedToForward && data.department.departmentsAllowedToForward.length > 0 ? (
-				<EditDepartmentWithAllowedForwardData reload={reload} id={id} data={data} title={title} />
+				<EditDepartmentWithAllowedForwardData id={id} data={data} title={title} />
 			) : (
-				<EditDepartment reload={reload} id={id} data={data} title={title} />
+				<EditDepartment id={id} data={data} title={title} />
 			)}
 		</>
 	);
