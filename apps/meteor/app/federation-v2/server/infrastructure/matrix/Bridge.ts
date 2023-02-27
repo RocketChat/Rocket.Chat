@@ -4,6 +4,9 @@ import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appser
 import { fetch } from '../../../../../server/lib/http/fetch';
 import type { IExternalUserProfileInformation, IFederationBridge, IFederationBridgeRegistrationFile } from '../../domain/IFederationBridge';
 import { federationBridgeLogger } from '../rocket-chat/adapters/logger';
+import { extractUserIdAndHomeserverFromMatrixId } from '../helpers/MatrixIdStringTools';
+import { HttpStatusCodes } from '../helpers/HtttpStatusCodes';
+import { VerificationStatus, MATRIX_USER_IN_USE } from '../helpers/MatrixIdVerificationTypes';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './converters/MessageTextParser';
 import { convertEmojisFromRCFormatToMatrixFormat } from './converters/MessageReceiver';
 import type { AbstractMatrixEvent } from './definitions/AbstractMatrixEvent';
@@ -146,31 +149,27 @@ export class MatrixBridge implements IFederationBridge {
 		}
 	}
 
-	public async verifyInviteeId(externalInviteeId: string): Promise<string> {
-		const [userId, homeserverUrl] = externalInviteeId.replace('@', '').split(':');
+	public async verifyInviteeId(externalInviteeId: string): Promise<VerificationStatus> {
+		const [userId, homeserverUrl] = extractUserIdAndHomeserverFromMatrixId(externalInviteeId);
 		try {
 			const response = await fetch(`https://${homeserverUrl}/_matrix/client/v3/register/available?username=${userId}`);
 
-			if (response.status === 400) {
+			if (response.status === HttpStatusCodes.BAD_REQUEST) {
 				const responseBody = await response.json();
 
-				if (responseBody.errcode === 'M_USER_IN_USE') {
-					// user exists
-					return 'valid-invitee-id';
+				if (responseBody.errcode === MATRIX_USER_IN_USE) {
+					return VerificationStatus.VERIFIED;
 				}
 			}
 
-			if (response.status === 200) {
-				// user doesn't exists
-				return 'invalid-invitee-id';
+			if (response.status === HttpStatusCodes.OK) {
+				return VerificationStatus.UNVERIFIED;
 			}
 		} catch (e) {
-			// notify we couldn't verify
-			return 'unable-to-verify';
+			return VerificationStatus.UNABLE_TO_VERIFY;
 		}
 
-		// notify we couldn't verify
-		return 'unable-to-verify';
+		return VerificationStatus.UNABLE_TO_VERIFY;
 	}
 
 	public async createUser(username: string, name: string, domain: string, avatarUrl?: string): Promise<string> {

@@ -32,22 +32,28 @@ import type {
 import { MATRIX_POWER_LEVELS } from '../definitions/MatrixPowerLevels';
 import { ROCKET_CHAT_FEDERATION_ROLES } from '../../rocket-chat/definitions/InternalFederatedRoomRoles';
 
+/** @deprecated export from {@link ../../helpers/MatrixIdStringTools.ts} instead */
 export const removeExternalSpecificCharsFromExternalIdentifier = (matrixIdentifier = ''): string => {
 	return matrixIdentifier.replace('@', '').replace('!', '').replace('#', '');
 };
 
+/** @deprecated export from {@link ../../helpers/MatrixIdStringTools.ts} instead */
 export const formatExternalUserIdToInternalUsernameFormat = (matrixUserId = ''): string => {
 	return matrixUserId.split(':')[0]?.replace('@', '');
 };
 
+/** @deprecated export from {@link ../../helpers/MatrixIdStringTools.ts} instead */
 export const formatExternalAliasIdToInternalFormat = (alias = ''): string => {
 	return alias.split(':')[0]?.replace('#', '');
 };
 
+/** @deprecated export from {@link ../../helpers/MatrixIdStringTools.ts} instead */
 export const isAnExternalIdentifierFormat = (identifier: string): boolean => identifier.includes(':');
 
+/** @deprecated export from {@link ../../helpers/MatrixIdStringTools.ts} instead */
 export const isAnExternalUserIdFormat = (userId: string): boolean => isAnExternalIdentifierFormat(userId) && userId.includes('@');
 
+/** @deprecated export from {@link ../../helpers/MatrixIdStringTools.ts} instead */
 export const extractServerNameFromExternalIdentifier = (identifier = ''): string => {
 	const splitted = identifier.split(':');
 
