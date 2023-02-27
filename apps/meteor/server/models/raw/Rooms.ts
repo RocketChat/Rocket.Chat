@@ -1,11 +1,11 @@
 import type { IRoom, ITeam, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { IRoomModel, FindPaginated } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, Filter, FindOptions, InsertOneResult, UpdateResult, WithId } from 'mongodb';
-import { ReadPreference } from 'mongodb';
+import type { FindPaginated, IRoomModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { Collection, Db, Document, Filter, FindCursor, FindOptions, UpdateFilter, UpdateResult } from 'mongodb';
+import { ReadPreference } from 'mongodb';
 
-import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { BaseRaw } from './BaseRaw';
 
 export class RoomsRaw extends BaseRaw<IRoom> implements IRoomModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IRoom>>) {
@@ -261,7 +261,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomModel {
 		return this.find(query, options);
 	}
 
-	findRoomsByNameOrFnameStarting(name: NonNullable<IRoom['name'] | IRoom['fname']>, options: FindOptions<IRoom>): FindCursor<IRoom> {
+	findRoomsByNameOrFnameStarting(name: NonNullable<IRoom['name'] | IRoom['fname']>, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
 
 		const query: Filter<IRoom> = {
@@ -281,10 +281,14 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomModel {
 		return this.find(query, options);
 	}
 
-	findRoomsWithoutDiscussionsByRoomIds(name, roomIds, options) {
+	findRoomsWithoutDiscussionsByRoomIds(
+		name: NonNullable<IRoom['name']>,
+		roomIds: Array<IRoom['_id']>,
+		options: FindOptions<IRoom> = {},
+	): FindCursor<IRoom> {
 		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
 
-		const query = {
+		const query: Filter<IRoom> = {
 			_id: {
 				$in: roomIds,
 			},
@@ -314,10 +318,14 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomModel {
 		return this.find(query, options);
 	}
 
-	findPaginatedRoomsWithoutDiscussionsByRoomIds(name, roomIds, options) {
+	findPaginatedRoomsWithoutDiscussionsByRoomIds(
+		name: NonNullable<IRoom['name']>,
+		roomIds: Array<IRoom['_id']>,
+		options: FindOptions<IRoom> = {},
+	): FindPaginated<FindCursor<IRoom>> {
 		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
 
-		const query = {
+		const query: Filter<IRoom> = {
 			_id: {
 				$in: roomIds,
 			},
@@ -347,10 +355,14 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomModel {
 		return this.findPaginated(query, options);
 	}
 
-	findChannelAndGroupListWithoutTeamsByNameStartingByOwner(uid, name, groupsToAccept, options) {
+	findChannelAndGroupListWithoutTeamsByNameStartingByOwner(
+		name: NonNullable<IRoom['name']>,
+		groupsToAccept: Array<IRoom['_id']>,
+		options: FindOptions<IRoom> = {},
+	): FindCursor<IRoom> {
 		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
 
-		const query = {
+		const query: Filter<IRoom> = {
 			teamId: {
 				$exists: false,
 			},
@@ -366,9 +378,9 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomModel {
 		return this.find(query, options);
 	}
 
-	unsetTeamId(teamId, options = {}) {
-		const query = { teamId };
-		const update = {
+	unsetTeamId(teamId: ITeam['_id'], options: FindOptions<IRoom> = {}): Promise<Document | UpdateResult> {
+		const query: Filter<IRoom> = { teamId };
+		const update: UpdateFilter<IRoom> = {
 			$unset: {
 				teamId: '',
 				teamDefault: '',
