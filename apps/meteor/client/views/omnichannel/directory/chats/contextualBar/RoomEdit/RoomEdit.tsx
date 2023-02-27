@@ -1,6 +1,5 @@
 import type { ILivechatVisitor, IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
 import { Field, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
-import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import React, { useCallback } from 'react';
@@ -8,7 +7,7 @@ import { useController, useForm } from 'react-hook-form';
 
 import { hasAtLeastOnePermission } from '../../../../../../../app/authorization/client';
 import { useOmnichannelPriorities } from '../../../../../../../ee/client/omnichannel/hooks/useOmnichannelPriorities';
-import CustomFieldsForm from '../../../../../../components/CustomFieldsForm';
+import { CustomFieldsForm } from '../../../../../../components/CustomFieldsFormV2';
 import Tags from '../../../../../../components/Omnichannel/Tags';
 import VerticalBar from '../../../../../../components/VerticalBar';
 import { useFormsSubscription } from '../../../../additionalForms';
@@ -64,73 +63,52 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 
 	const {
 		register,
-		getValues: getFormValues,
 		control,
-		formState: { isDirty: isFormDirty, isValid: isFormValid, errors },
-		setError,
+		formState: { isDirty: isFormDirty, isValid: isFormValid },
 		handleSubmit,
-		trigger,
 	} = useForm({
-		mode: 'onBlur',
+		mode: 'onChange',
 		defaultValues: getInitialValuesRoom(room),
 	});
 
-	const { field: livechatDataField } = useController({ control, name: 'livechatData' });
 	const { field: tagsField } = useController({ control, name: 'tags' });
 	const { field: slaIdField } = useController({ control, name: 'slaId' });
 	const { field: priorityIdField } = useController({ control, name: 'priorityId' });
 
-	const handleSave = useMutableCallback(async (e) => {
-		e.preventDefault();
-
-		if (!isFormValid) {
-			return;
-		}
-
-		const { topic, tags, livechatData, slaId, priorityId } = getFormValues();
-
-		const guestData = {
-			_id: visitor._id,
-		};
-
-		const roomData = {
-			_id: room._id,
-			topic,
-			tags: tags.sort(),
-			livechatData,
-			priorityId,
-			...(slaId && { slaId }),
-		};
-
-		try {
-			await saveRoom({ guestData, roomData });
-			await queryClient.invalidateQueries(['/v1/rooms.info', room._id]);
-
-			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			reload?.();
-			reloadInfo?.();
-			onClose();
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	});
-
-	const handleCustomFieldsError = useCallback(
-		(validator) => {
-			const { livechatData } = errors;
-			const oldErrors = livechatData ? Object.keys(livechatData).map((name) => ({ name })) : [];
-			const newErrors = validator(oldErrors);
-
-			if (oldErrors.length && !newErrors.length) {
-				trigger('livechatData');
+	const handleSave = useCallback(
+		async (data) => {
+			if (!isFormValid) {
 				return;
 			}
 
-			newErrors.forEach(({ name }: { name: string }) => {
-				setError(`livechatData.${name}`, { type: 'custom' });
-			});
+			const { topic, tags, livechatData, slaId, priorityId } = data;
+
+			const guestData = {
+				_id: visitor._id,
+			};
+
+			const roomData = {
+				_id: room._id,
+				topic,
+				tags: tags.sort(),
+				livechatData,
+				priorityId,
+				...(slaId && { slaId }),
+			};
+
+			try {
+				await saveRoom({ guestData, roomData });
+				await queryClient.invalidateQueries(['/v1/rooms.info', room._id]);
+
+				dispatchToastMessage({ type: 'success', message: t('Saved') });
+				reload?.();
+				reloadInfo?.();
+				onClose();
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
 		},
-		[errors, setError, trigger],
+		[dispatchToastMessage, isFormValid, onClose, queryClient, reload, reloadInfo, room._id, saveRoom, t, visitor._id],
 	);
 
 	if (isCustomFieldsLoading || isSlaPoliciesLoading || isPrioritiesLoading) {
@@ -145,12 +123,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 		<>
 			<VerticalBar.ScrollableContent is='form' onSubmit={handleSubmit(handleSave)}>
 				{canViewCustomFields && customFieldsMetadata && (
-					<CustomFieldsForm
-						jsonCustomFields={customFieldsMetadata}
-						customFieldsData={livechatDataField.value}
-						setCustomFieldsData={livechatDataField.onChange}
-						setCustomFieldsError={handleCustomFieldsError}
-					/>
+					<CustomFieldsForm formName='livechatData' formControl={control} metadata={customFieldsMetadata} />
 				)}
 
 				<Field>
@@ -179,7 +152,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 						{t('Cancel')}
 					</Button>
 
-					<Button mie='none' flexGrow={1} onClick={handleSave} disabled={!isFormValid || !isFormDirty} primary>
+					<Button mie='none' flexGrow={1} onClick={handleSubmit(handleSave)} disabled={!isFormValid || !isFormDirty} primary>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
