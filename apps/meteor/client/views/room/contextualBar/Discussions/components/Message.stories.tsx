@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Message from './Message';
+import DiscussionMessage from './DiscussionMessage';
 
 const message = {
 	msg: 'hello world',
@@ -22,11 +22,11 @@ const noReplies = {
 
 export default {
 	title: 'Room/Contextual Bar/Discussion/Message',
-	component: Message,
+	component: DiscussionMessage,
 };
 
-export const Basic = () => <Message {...message} />;
+export const Basic = () => <DiscussionMessage {...(message as any)} />;
 
-export const LargeText = () => <Message {...largeText} />;
+export const LargeText = () => <DiscussionMessage {...(largeText as any)} />;
 
-export const NoReplies = () => <Message {...noReplies} />;
+export const NoReplies = () => <DiscussionMessage {...(noReplies as any)} />;

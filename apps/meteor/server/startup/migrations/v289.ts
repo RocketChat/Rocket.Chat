@@ -1,63 +1,22 @@
 import { Settings } from '@rocket.chat/models';
 
 import { addMigration } from '../../lib/migrations';
-import { Users } from '../../../app/models/server';
 
 addMigration({
 	version: 289,
 	async up() {
-		const useRealName = await Settings.findOneById('UI_Use_Real_Name');
-		const hideUsernames = await Settings.findOneById('Accounts_Default_User_Preferences_hideUsernames');
+		const deprecatedSettings = [
+			'LiveStream & Broadcasting',
+			'Livestream_enabled',
+			'Broadcasting_enabled',
+			'Broadcasting_client_id',
+			'Broadcasting_client_secret',
+			'Broadcasting_api_key',
+			'Broadcasting_media_server_url',
+		];
 
-		const getNewSettingValue = (hideUsernames: boolean): string => {
-			if (useRealName?.value) {
-				return hideUsernames ? 'full_name' : 'username_and_full_name';
-			}
-			return 'username';
-		};
-
-		const newValue = getNewSettingValue(!!hideUsernames?.value);
-		await Settings.removeById('Accounts_Default_User_Preferences_hideUsernames');
-		await Settings.removeById('UI_Use_Real_Name');
-
-		Settings.update(
-			{
-				_id: 'Accounts_Default_User_Preferences_messagesLayout',
-			},
-			{
-				$set: {
-					value: newValue,
-				},
-			},
-			{
-				upsert: true,
-			},
-		);
-
-		Users.update(
-			{ 'settings.preferences.hideUsernames': true },
-			{
-				$unset: {
-					'settings.preferences.hideUsernames': 1,
-				},
-				$set: {
-					'settings.preferences.messagesLayout': getNewSettingValue(true),
-				},
-			},
-			{ multi: true },
-		);
-
-		Users.update(
-			{ 'settings.preferences.hideUsernames': false },
-			{
-				$unset: {
-					'settings.preferences.hideUsernames': 1,
-				},
-				$set: {
-					'settings.preferences.messagesLayout': getNewSettingValue(false),
-				},
-			},
-			{ multi: true },
-		);
+		await Settings.deleteMany({
+			_id: { $in: deprecatedSettings },
+		});
 	},
 });

@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import s from 'underscore.string';
 
 import { ChatMessage, Rooms } from '../../../models/client';
 import { settings } from '../../../settings';
@@ -8,10 +7,11 @@ import { t } from '../../../utils/client';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import { getMessagesLayoutPreference } from '../../../utils/lib/getMessagesLayoutPreference';
+import { trim } from '../../../../lib/utils/stringUtils';
 
 Meteor.methods({
 	sendMessage(message) {
-		if (!Meteor.userId() || s.trim(message.msg) === '') {
+		if (!Meteor.userId() || trim(message.msg) === '') {
 			return false;
 		}
 		const messageAlreadyExists = message._id && ChatMessage.findOne({ _id: message._id });

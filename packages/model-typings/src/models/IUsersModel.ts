@@ -138,6 +138,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	resetTOTPById(userId: any): any;
 
 	unsetLoginTokens(userId: any): any;
+
 	unsetOneLoginToken(userId: IUser['_id'], token: string): Promise<UpdateResult>;
 
 	removeNonPATLoginTokensExcept(userId: any, authToken: any): any;
@@ -187,4 +188,10 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	): Promise<UpdateResult>;
 
 	setFederationAvatarUrlById(userId: string, federationAvatarUrl: string): Promise<void>;
+
+	findSearchedServerNamesByUserId(userId: string): Promise<string[]>;
+
+	addServerNameToSearchedServerNamesList(userId: string, serverName: string): Promise<UpdateResult>;
+
+	removeServerNameFromSearchedServerNamesList(userId: string, serverName: string): Promise<UpdateResult>;
 }

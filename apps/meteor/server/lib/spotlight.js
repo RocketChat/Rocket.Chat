@@ -1,4 +1,3 @@
-import s from 'underscore.string';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Users, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
 
@@ -8,6 +7,7 @@ import { settings } from '../../app/settings/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 import { roomCoordinator } from './rooms/roomCoordinator';
 import { getMessagesLayoutPreference } from '../../app/utils/lib/getMessagesLayoutPreference';
+import { trim } from '../../lib/utils/stringUtils';
 
 export class Spotlight {
 	fetchRooms(userId, rooms) {
@@ -21,16 +21,18 @@ export class Spotlight {
 		});
 	}
 
-	searchRooms({ userId, text }) {
-		const regex = new RegExp(s.trim(escapeRegExp(text)), 'i');
+	searchRooms({ userId, text, includeFederatedRooms = false }) {
+		const regex = new RegExp(trim(escapeRegExp(text)), 'i');
 
 		const roomOptions = {
 			limit: 5,
 			fields: {
 				t: 1,
 				name: 1,
+				fname: 1,
 				joinCodeRequired: 1,
 				lastMessage: 1,
+				federated: true,
 			},
 			sort: {
 				name: 1,
@@ -42,7 +44,7 @@ export class Spotlight {
 				return [];
 			}
 
-			return this.fetchRooms(userId, Rooms.findByNameAndTypeNotDefault(regex, 'c', roomOptions).fetch());
+			return this.fetchRooms(userId, Rooms.findByNameAndTypeNotDefault(regex, 'c', roomOptions, includeFederatedRooms).fetch());
 		}
 
 		if (!hasAllPermission(userId, ['view-outside-room', 'view-c-room'])) {
@@ -56,12 +58,15 @@ export class Spotlight {
 		})
 			.fetch()
 			.map((s) => s.rid);
-		const exactRoom = Rooms.findOneByNameAndType(text, searchableRoomTypeIds, roomOptions);
+		const exactRoom = Rooms.findOneByNameAndType(text, searchableRoomTypeIds, roomOptions, includeFederatedRooms);
 		if (exactRoom) {
 			roomIds.push(exactRoom.rid);
 		}
 
-		return this.fetchRooms(userId, Rooms.findByNameAndTypesNotInIds(regex, searchableRoomTypeIds, roomIds, roomOptions).fetch());
+		return this.fetchRooms(
+			userId,
+			Rooms.findByNameAndTypesNotInIds(regex, searchableRoomTypeIds, roomIds, roomOptions, includeFederatedRooms).fetch(),
+		);
 	}
 
 	mapOutsiders(u) {

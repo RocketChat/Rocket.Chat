@@ -21,6 +21,7 @@ import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling
 import { callbacks } from '../../../../../lib/callbacks';
 import { isTruthy } from '../../../../../lib/isTruthy';
 import { withDebouncing, withThrottling } from '../../../../../lib/utils/highOrderFunctions';
+import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
 import { useReactiveQuery } from '../../../../hooks/useReactiveQuery';
 import { RoomManager as NewRoomManager } from '../../../../lib/RoomManager';
@@ -567,7 +568,6 @@ const RoomBody = (): ReactElement => {
 									/>
 								) : null}
 								<div
-									ref={wrapperRef}
 									className={[
 										'wrapper',
 										hasMoreNextMessages && 'has-more-next',
@@ -578,24 +578,26 @@ const RoomBody = (): ReactElement => {
 										.join(' ')}
 								>
 									<MessageListErrorBoundary>
-										<ul className='messages-list' aria-live='polite'>
-											{canPreview ? (
-												<>
-													{hasMorePreviousMessages ? (
-														<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
-													) : (
-														<li className='start color-info-font-color'>
-															{retentionPolicy ? <RetentionPolicyWarning {...retentionPolicy} /> : null}
-															<RoomForeword user={user} room={room} />
-														</li>
-													)}
-												</>
-											) : null}
-											<MessageList rid={room._id} />
-											{hasMoreNextMessages ? (
-												<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
-											) : null}
-										</ul>
+										<ScrollableContentWrapper ref={wrapperRef}>
+											<ul className='messages-list' aria-live='polite'>
+												{canPreview ? (
+													<>
+														{hasMorePreviousMessages ? (
+															<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
+														) : (
+															<li className='start color-info-font-color'>
+																{retentionPolicy ? <RetentionPolicyWarning {...retentionPolicy} /> : null}
+																<RoomForeword user={user} room={room} />
+															</li>
+														)}
+													</>
+												) : null}
+												<MessageList rid={room._id} />
+												{hasMoreNextMessages ? (
+													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
+												) : null}
+											</ul>
+										</ScrollableContentWrapper>
 									</MessageListErrorBoundary>
 								</div>
 							</div>

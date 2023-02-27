@@ -21,6 +21,9 @@ export const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
 
 roomCoordinator.add(DirectMessageRoomType, {
 	allowRoomSettingChange(_room, setting) {
+		if (isRoomFederated(_room as IRoom)) {
+			return Federation.isRoomSettingAllowed(_room, setting);
+		}
 		switch (setting) {
 			case RoomSettingsEnum.TYPE:
 			case RoomSettingsEnum.NAME:
@@ -38,9 +41,9 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 	},
 
-	allowMemberAction(room, action) {
+	allowMemberAction(room, action, showingUserId, userSubscription) {
 		if (isRoomFederated(room as IRoom)) {
-			return Federation.actionAllowed(room, action);
+			return Federation.actionAllowed(room, action, showingUserId, userSubscription);
 		}
 		switch (action) {
 			case RoomMemberActions.BLOCK:
@@ -124,6 +127,10 @@ roomCoordinator.add(DirectMessageRoomType, {
 	},
 
 	getIcon(room) {
+		if (isRoomFederated(room)) {
+			return 'globe';
+		}
+
 		if (this.isGroupChat(room)) {
 			return 'balloon';
 		}
