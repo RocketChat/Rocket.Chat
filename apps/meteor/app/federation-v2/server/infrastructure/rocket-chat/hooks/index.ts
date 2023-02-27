@@ -45,7 +45,7 @@ export class FederationHooks {
 		callbacks.add(
 			'federation.beforeAddUserToARoom',
 			(params: { user: IUser | string; inviter?: IUser }, room: IRoom): void => {
-				if (!params || !params.user || !room) {
+				if (!params?.user || !room) {
 					return;
 				}
 				Promise.await(callback(params.user, room));
@@ -59,7 +59,7 @@ export class FederationHooks {
 		callbacks.add(
 			'federation.beforeAddUserToARoom',
 			(params: { user: IUser | string; inviter: IUser }, room: IRoom): void => {
-				if (!params || !params.user || !params.inviter || !room || !settings.get('Federation_Matrix_enabled')) {
+				if (!params?.user || !params.inviter || !room || !settings.get('Federation_Matrix_enabled')) {
 					return;
 				}
 
@@ -160,7 +160,7 @@ export class FederationHooks {
 				) {
 					return message;
 				}
-				if (!isEditedMessage(message)) {
+				if (!isEditedMessage(message) || !message.editedBy) {
 					return message;
 				}
 				Promise.await(callback(message, room._id, message.editedBy._id));
