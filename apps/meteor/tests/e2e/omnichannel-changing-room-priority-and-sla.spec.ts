@@ -44,6 +44,19 @@ test.describe('omnichannel-changing-room-priority-and-sla', () => {
 		await agent.poHomeChannel.sidenav.switchStatus('online');
 	});
 
+	test.afterAll(async ({ api }) => {
+		let statusCode = (await api.delete(`/livechat/users/agent/${ADMIN_CREDENTIALS.username}`)).status();
+		await expect(statusCode).toBe(200);
+
+		statusCode = (await api.delete(`/livechat/users/manager/${ADMIN_CREDENTIALS.username}`)).status();
+		await expect(statusCode).toBe(200);
+
+		statusCode = (await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' })).status();
+		await expect(statusCode).toBe(200);
+
+		await agent.page.close();
+	});
+
 	test('expect to initiate a new livechat conversation', async ({ page }) => {
 		newVisitor = {
 			name: faker.name.firstName(),
@@ -91,16 +104,5 @@ test.describe('omnichannel-changing-room-priority-and-sla', () => {
 			const status = (await api.delete(`/livechat/sla/${sla._id}`)).status();
 			expect(status).toBe(200);
 		});
-	});
-
-	test.afterAll(async ({ api }) => {
-		let statusCode = (await api.delete(`/livechat/users/agent/${ADMIN_CREDENTIALS.username}`)).status();
-		await expect(statusCode).toBe(200);
-
-		statusCode = (await api.delete(`/livechat/users/manager/${ADMIN_CREDENTIALS.username}`)).status();
-		await expect(statusCode).toBe(200);
-
-		statusCode = (await api.post('/settings/Livechat_Routing_Method', { value: 'Auto_Selection' })).status();
-		await expect(statusCode).toBe(200);
 	});
 });

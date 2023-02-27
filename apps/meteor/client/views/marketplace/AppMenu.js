@@ -151,6 +151,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			notifyAdmins({
 				appId: app.id,
 				appName: app.name,
+				appVersion: app.marketplaceVersion,
 				message: postMessage.message,
 			});
 		};

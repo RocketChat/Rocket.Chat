@@ -67,6 +67,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		notifyAdmins({
 			appId: app.id,
 			appName: app.name,
+			appVersion: app.marketplaceVersion,
 			message: postMessage.message,
 		});
 	};
