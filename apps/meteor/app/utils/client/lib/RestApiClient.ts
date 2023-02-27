@@ -32,7 +32,7 @@ APIClient.use(async function (request, next) {
 	try {
 		return await next(...request);
 	} catch (error) {
-		if (!(error instanceof Response) || error.status !== 400) {
+		if (!(error instanceof Response)) {
 			throw error;
 		}
 

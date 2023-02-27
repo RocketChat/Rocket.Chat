@@ -67,7 +67,7 @@ const RoomActions = ({ room, reload }) => {
 		labelButton: t('Delete'),
 		content: (
 			<>
-				<Box is='span' size='14px' color='danger-500' fontWeight='600'>
+				<Box is='span' size='14px' color='status-font-on-danger' fontWeight='600'>
 					{t('Team_Delete_Channel_modal_content_danger')}
 				</Box>
 				<Box is='span' size='14px'>
@@ -141,7 +141,7 @@ const RoomActions = ({ room, reload }) => {
 						<CheckBox checked={room.teamDefault} />
 					</Option>
 				) : (
-					<Box color='danger-600'>
+					<Box color='status-font-on-danger'>
 						<Option {...props} label={label} icon={icon} />
 					</Box>
 				)

@@ -1,7 +1,7 @@
 import { MatrixBaseEventHandler } from './BaseEvent';
 import { MatrixEventType } from '../definitions/MatrixEventType';
 import { MatrixUserReceiverConverter } from '../converters/UserReceiver';
-import type { FederationUserServiceListener } from '../../../application/UserServiceListener';
+import type { FederationUserServiceListener } from '../../../application/listener/UserServiceListener';
 import type { MatrixEventUserTypingStatusChanged } from '../definitions/events/UserTypingStatusChanged';
 
 export class MatrixUserTypingStatusChangedHandler extends MatrixBaseEventHandler {

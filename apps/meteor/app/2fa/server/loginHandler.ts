@@ -26,7 +26,11 @@ Accounts.registerLoginHandler('totp', function (options) {
 callbacks.add(
 	'onValidateLogin',
 	(login) => {
-		if (login.type === 'resume' || login.type === 'proxy' || login.methodName === 'verifyEmail') {
+		if (login.methodName === 'verifyEmail') {
+			throw new Meteor.Error('verify-email', 'E-mail verified');
+		}
+
+		if (login.type === 'resume' || login.type === 'proxy') {
 			return login;
 		}
 		// CAS login doesn't yet support 2FA.

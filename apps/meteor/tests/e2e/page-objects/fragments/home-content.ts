@@ -13,8 +13,8 @@ export class HomeContent {
 		return this.page.locator('[name="msg"]');
 	}
 
-	get messagePopUpItems(): Locator {
-		return this.page.locator('.message-popup-items');
+	get messagePopupUsers(): Locator {
+		return this.page.locator('role=menu[name="People"]');
 	}
 
 	get lastUserMessage(): Locator {
@@ -59,7 +59,7 @@ export class HomeContent {
 	}
 
 	get getFileDescription(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="attachment-description"]');
+		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="message-body"]');
 	}
 
 	get fileNameInput(): Locator {
@@ -99,7 +99,7 @@ export class HomeContent {
 	}
 
 	get btnVideoMessage(): Locator {
-		return this.page.locator('.rc-popover__content [data-id="video-message"]');
+		return this.page.locator('[data-id="video-message"]');
 	}
 
 	get btnRecordAudio(): Locator {
@@ -128,6 +128,14 @@ export class HomeContent {
 
 	get btnSendTranscript(): Locator {
 		return this.page.locator('[data-qa-id="ToolBoxAction-mail-arrow-top-right"]');
+	}
+
+	get btnSendTranscriptToEmail(): Locator {
+		return this.page.locator('li.rcx-option', { hasText: 'Send via email' });
+	}
+
+	get btnSendTranscriptAsPDF(): Locator {
+		return this.page.locator('li.rcx-option', { hasText: 'Export as PDF' });
 	}
 
 	get btnCannedResponses(): Locator {
@@ -198,7 +206,7 @@ export class HomeContent {
 	}
 
 	get resumeOnHoldOmnichannelChatButton(): Locator {
-		return this.page.locator('button.rcx-button--primary >> text=Resume');
+		return this.page.locator('button.rcx-button--primary >> text="Resume"');
 	}
 
 	get btnOnHold(): Locator {

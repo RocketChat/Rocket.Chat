@@ -1,5 +1,5 @@
-import { test, expect } from './utils/test';
 import { Registration } from './page-objects';
+import { test, expect } from './utils/test';
 
 test.describe.parallel('Forgot Password', () => {
 	let poRegistration: Registration;

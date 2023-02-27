@@ -78,7 +78,6 @@ export const roomFields = {
 	// @TODO create an API to register this fields based on room type
 	tags: 1,
 	sms: 1,
-	facebook: 1,
 	code: 1,
 	joinCodeRequired: 1,
 	open: 1,
@@ -95,6 +94,9 @@ export const roomFields = {
 	// Omnichannel fields
 	livechatData: 1,
 	priorityId: 1,
+	priorityWeight: 1,
+	slaId: 1,
+	estimatedWaitingTimeQueue: 1,
 	v: 1,
 	departmentId: 1,
 	servedBy: 1,

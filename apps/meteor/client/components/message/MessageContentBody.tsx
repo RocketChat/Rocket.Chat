@@ -9,12 +9,15 @@ import type { ReactElement, UIEvent } from 'react';
 import React, { useCallback, useMemo } from 'react';
 
 import { emoji } from '../../../app/emoji/client';
+import type { MessageWithMdEnforced } from '../../lib/parseMessageTextToAstMarkdown';
 import { fireGlobalEvent } from '../../lib/utils/fireGlobalEvent';
-import { useMessageListHighlights } from '../../views/room/MessageList/contexts/MessageListContext';
-import type { MessageWithMdEnforced } from '../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
-import { useMessageActions } from '../../views/room/contexts/MessageContext';
+import { useChat } from '../../views/room/contexts/ChatContext';
+import { useGoToRoom } from '../../views/room/hooks/useGoToRoom';
+import { useMessageListHighlights } from './list/MessageListContext';
 
-type MessageContentBodyProps = Pick<MessageWithMdEnforced, 'mentions' | 'channels' | 'md'>;
+type MessageContentBodyProps = Pick<MessageWithMdEnforced, 'mentions' | 'channels' | 'md'> & {
+	searchText?: string;
+};
 
 const detectEmoji = (text: string): { name: string; className: string; image?: string; content: string }[] => {
 	const html = Object.values(emoji.packages)
@@ -30,7 +33,7 @@ const detectEmoji = (text: string): { name: string; className: string; image?: s
 	}));
 };
 
-const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps): ReactElement => {
+const MessageContentBody = ({ mentions, channels, md, searchText }: MessageContentBodyProps): ReactElement => {
 	const highlights = useMessageListHighlights();
 	const highlightRegex = useMemo(() => {
 		if (!highlights || !highlights.length) {
@@ -42,6 +45,14 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 
 		return (): RegExp => new RegExp(expression, 'gmi');
 	}, [highlights]);
+
+	const markRegex = useMemo(() => {
+		if (!searchText) {
+			return;
+		}
+
+		return (): RegExp => new RegExp(`(${searchText})(?![^<]*>)`, 'gi');
+	}, [searchText]);
 
 	const resolveUserMention = useCallback(
 		(mention: string) => {
@@ -57,9 +68,9 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 		[mentions],
 	);
 
-	const {
-		actions: { openRoom, openUserCard },
-	} = useMessageActions();
+	const chat = useChat();
+
+	const goToRoom = useGoToRoom();
 
 	const onUserMentionClick = useCallback(
 		({ username }: UserMention) => {
@@ -69,10 +80,10 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 
 			return (event: UIEvent): void => {
 				event.stopPropagation();
-				openUserCard(username)(event);
+				chat?.userCard.open(username)(event);
 			};
 		},
-		[openUserCard],
+		[chat?.userCard],
 	);
 
 	const resolveChannelMention = useCallback((mention: string) => channels?.find(({ name }) => name === mention), [channels]);
@@ -90,20 +101,18 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 				}
 
 				event.stopPropagation();
-				openRoom(rid)(event);
+				goToRoom(rid);
 			},
-		[isEmbedded, openRoom],
+		[isEmbedded, goToRoom],
 	);
 
 	// TODO:  this style should go to Fuselage <MessageBody> repository
 	const messageBodyAdditionalStyles = css`
 		> blockquote {
 			padding-inline: 8px;
+			border: 1px solid ${Palette.stroke['stroke-extra-light']};
 			border-radius: 2px;
-			border-width: 1px;
-			border-style: solid;
 			background-color: ${Palette.surface['surface-tint']};
-			border-color: ${Palette.stroke['stroke-extra-light']};
 			border-inline-start-color: ${Palette.stroke['stroke-medium']};
 
 			&:hover,
@@ -126,6 +135,16 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 			margin-inline-start: 0;
 			padding-inline-start: 0;
 		}
+		a {
+			color: ${Palette.text['font-info']};
+			&:hover {
+				text-decoration: underline;
+			}
+			&:focus {
+				border: 2px solid ${Palette.stroke['stroke-extra-light-highlight']};
+				border-radius: 2px;
+			}
+		}
 	`;
 
 	const convertAsciiToEmoji = useUserPreference<boolean>('convertAsciiEmoji', true);
@@ -137,6 +156,7 @@ const MessageContentBody = ({ mentions, channels, md }: MessageContentBodyProps)
 					value={{
 						detectEmoji,
 						highlightRegex,
+						markRegex,
 						resolveUserMention,
 						onUserMentionClick,
 						resolveChannelMention,

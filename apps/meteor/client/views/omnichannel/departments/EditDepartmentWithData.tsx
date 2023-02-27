@@ -21,15 +21,20 @@ function EditDepartmentWithData({ id, reload, title }: Pick<EditDepartmentProps,
 		return <FormSkeleton />;
 	}
 
-	if (error || (id && !data.department)) {
-		return <Box mbs='x16'>{t('Department_not_found')}</Box>;
+	if (error || (id && !data?.department)) {
+		return <Box mbs={16}>{t('Department_not_found')}</Box>;
 	}
+
+	if (data.department && data.department.archived === true) {
+		return <Box mbs={16}>{t('Department_archived')}</Box>;
+	}
+
 	return (
 		<>
-			{data?.department?.departmentsAllowedToForward && data.department?.departmentsAllowedToForward.length > 0 ? (
-				<EditDepartmentWithAllowedForwardData id={id} data={data} reload={reload} title={title} />
+			{data?.department?.departmentsAllowedToForward && data.department.departmentsAllowedToForward.length > 0 ? (
+				<EditDepartmentWithAllowedForwardData reload={reload} id={id} data={data} title={title} />
 			) : (
-				<EditDepartment id={id} data={data} reload={reload} title={title} />
+				<EditDepartment reload={reload} id={id} data={data} title={title} />
 			)}
 		</>
 	);

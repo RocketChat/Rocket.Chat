@@ -1,11 +1,10 @@
 import { Field, TextInput, Chip, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ChangeEvent, ReactElement } from 'react';
 import React, { useState } from 'react';
 
-import { AsyncStatePhase } from '../../hooks/useAsyncState';
-import { useEndpointData } from '../../hooks/useEndpointData';
 import { useFormsSubscription } from '../../views/omnichannel/additionalForms';
 import { FormSkeleton } from './Skeleton';
 
@@ -23,12 +22,15 @@ const Tags = ({
 	const t = useTranslation();
 	const forms = useFormsSubscription() as any;
 
-	const { value: tagsResult, phase: stateTags } = useEndpointData('/v1/livechat/tags');
-
 	// TODO: Refactor the formsSubscription to use components instead of hooks (since the only thing the hook does is return a component)
 	const { useCurrentChatTags } = forms;
 	// Conditional hook was required since the whole formSubscription uses hooks in an incorrect manner
 	const EETagsComponent = useCurrentChatTags?.();
+
+	const getTags = useEndpoint('GET', '/v1/livechat/tags');
+	const { data: tagsResult, isInitialLoading } = useQuery(['/v1/livechat/tags'], () => getTags({ text: '' }), {
+		enabled: Boolean(EETagsComponent),
+	});
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -61,7 +63,7 @@ const Tags = ({
 		handleTagValue('');
 	});
 
-	if ([stateTags].includes(AsyncStatePhase.LOADING)) {
+	if (isInitialLoading) {
 		return <FormSkeleton />;
 	}
 
@@ -70,6 +72,7 @@ const Tags = ({
 			<Field.Label required={tagRequired} mb='x4'>
 				{t('Tags')}
 			</Field.Label>
+
 			{EETagsComponent && tagsResult?.tags && tagsResult?.tags.length ? (
 				<Field.Row>
 					<EETagsComponent
@@ -94,6 +97,7 @@ const Tags = ({
 							{t('Add')}
 						</Button>
 					</Field.Row>
+
 					<Field.Row justifyContent='flex-start'>
 						{tags?.map((tag, i) => (
 							<Chip key={i} onClick={(): void => removeTag(tag)} mie='x8'>

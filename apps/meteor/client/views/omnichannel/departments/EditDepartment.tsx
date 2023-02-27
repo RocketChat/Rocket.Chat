@@ -73,7 +73,7 @@ function withDefault<T>(key: T, defaultValue: T) {
 	return key || defaultValue;
 }
 
-function EditDepartment({ data, id, title, reload, allowedToForwardData }: EditDepartmentProps) {
+function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmentProps) {
 	const t = useTranslation();
 	const departmentsRoute = useRoute('omnichannel-departments');
 
@@ -190,7 +190,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }: EditD
 	};
 
 	const saveDepartmentInfo = useMethod('livechat:saveDepartment');
-	const saveDepartmentAgentsInfoOnEdit = useEndpoint('POST', `/v1/livechat/department/:departmentId/agents`, { departmentId: id || '' });
+	const saveDepartmentAgentsInfoOnEdit = useEndpoint('POST', `/v1/livechat/department/:_id/agents`, { _id: id || '' });
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -274,7 +274,6 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }: EditD
 				await saveDepartmentInfo(id, payload, agentList);
 			}
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			reload();
 			departmentsRoute.push({});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -471,6 +470,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }: EditD
 									value={fallbackForwardDepartment}
 									onChange={handleFallbackForwardDepartment}
 									onlyMyDepartments
+									showArchived
 								/>
 							</Field>
 						)}
