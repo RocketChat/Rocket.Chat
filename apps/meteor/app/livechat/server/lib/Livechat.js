@@ -1133,7 +1133,7 @@ export const Livechat = {
 		const messages = await MessagesRaw.findVisibleByRoomIdNotContainingTypesBeforeTs(
 			rid,
 			ignoredMessageTypes,
-			new Date(closingMessage.ts),
+			closingMessage?.ts ? new Date(closingMessage.ts) : new Date(),
 			{
 				sort: { ts: 1 },
 			},
