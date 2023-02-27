@@ -1,9 +1,10 @@
 import { AutoComplete, Box, Option, OptionAvatar, OptionContent, OptionDescription, Chip } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useUserSubscriptions } from '@rocket.chat/ui-contexts';
+import { useUser, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useMemo, useState } from 'react';
 
+import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import UserAvatar from '../avatar/UserAvatar';
 
 const query = { open: { $ne: false } };
@@ -23,13 +24,16 @@ type UserAndRoomAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoCompl
 	};
 
 const UserAndRoomAutoCompleteMultiple = ({ onChange, ...props }: UserAndRoomAutoCompleteMultipleProps): ReactElement => {
+	const user = useUser();
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
 	const rooms = useUserSubscriptions(query).filter((item) => item.name.toLocaleLowerCase().includes(debouncedFilter.toLocaleLowerCase()));
 
+	const filteredRooms = rooms.filter((room) => user && !roomCoordinator.readOnly(room.rid, user));
+
 	const parseItems = useMemo(
 		() =>
-			rooms.map((subscription) => {
+			filteredRooms.map((subscription) => {
 				return {
 					_id: subscription.rid,
 					value: subscription.name,
@@ -37,7 +41,7 @@ const UserAndRoomAutoCompleteMultiple = ({ onChange, ...props }: UserAndRoomAuto
 					t: subscription.t,
 				};
 			}),
-		[rooms],
+		[filteredRooms],
 	);
 
 	const options = [...parseItems];
