@@ -318,7 +318,6 @@
   "Apply": "primijeniti",
   "Apply_and_refresh_all_clients": "Primjeni i osvježi sve klijente",
   "Apps": "Apps",
-  "Apps_Framework_enabled": "Omogućite Okvir za aplikacije",
   "Apps_Settings": "Postavke aplikacije",
   "Apps_WhatIsIt": "Aplikacije: Koje su to?",
   "Apps_WhatIsIt_paragraph1": "Nova ikona na području administracije! Što to znači i koje su aplikacije?",
@@ -2736,7 +2735,15 @@
   "registration.component.login": "Prijava",
   "registration.component.login.userNotFound": "Korisnik nije pronađen",
   "registration.component.resetPassword": "Resetiraj lozinku",
+  "registration.component.form.username": "Korisničko ime",
+  "registration.component.form.name": "Ime",
+  "registration.component.form.emailAlreadyExists": "Email već postoji",
+  "registration.component.form.usernameAlreadyExists": "Korisničko ime već postoji. Pokušajte s drugim korisničkim imenom.",
+  "registration.component.form.invalidEmail": "Uneseni e-mail nije valjan",
   "registration.component.form.password": "Lozinka",
   "registration.component.form.divider": "ili",
-  "registration.component.form.submit": "Pošalji"
+  "registration.component.form.submit": "Pošalji",
+  "registration.component.form.reasonToJoin": "Razlog pridruživanja",
+  "registration.component.form.invalidConfirmPass": "Potvrda lozinke se ne slaže sa lozinkom",
+  "registration.component.form.confirmPassword": "Potvrdi svoju lozinku"
 }

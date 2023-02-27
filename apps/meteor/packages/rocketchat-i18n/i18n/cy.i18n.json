@@ -318,7 +318,6 @@
   "Apply": "Gwneud cais",
   "Apply_and_refresh_all_clients": "Gwneud cais a adnewyddu pob cleient",
   "Apps": "Apps",
-  "Apps_Framework_enabled": "Galluogi'r Fframwaith App",
   "Apps_Settings": "Gosodiadau'r App",
   "Apps_WhatIsIt": "Apps: Beth Ydyn nhw?",
   "Apps_WhatIsIt_paragraph1": "Eicon newydd yn yr ardal weinyddol! Beth mae hyn yn ei olygu a beth yw Apps?",
@@ -2738,8 +2737,16 @@
   "registration.component.login": "Mewngofnodi",
   "registration.component.login.userNotFound": "Defnyddiwr heb ei ddarganfod",
   "registration.component.resetPassword": "Ailosod cyfrinair",
+  "registration.component.form.username": "Enw Defnyddiwr",
+  "registration.component.form.name": "Enw",
+  "registration.component.form.emailAlreadyExists": "Ebost eisoes yn bodoli",
+  "registration.component.form.usernameAlreadyExists": "Mae enw defnyddiwr eisoes yn bodoli. Rhowch gynnig ar enw defnyddiwr arall.",
+  "registration.component.form.invalidEmail": "Mae'r e-bost a roddwyd yn annilys",
   "registration.component.form.email": "E-bost",
   "registration.component.form.password": "Cyfrinair",
   "registration.component.form.divider": "neu",
-  "registration.component.form.submit": "Cyflwyno"
+  "registration.component.form.submit": "Cyflwyno",
+  "registration.component.form.reasonToJoin": "Rheswm i Ymuno",
+  "registration.component.form.invalidConfirmPass": "Nid yw'r cadarnhad cyfrinair yn cyfateb i'r cyfrinair",
+  "registration.component.form.confirmPassword": "Cadarnhau eich cyfrinair"
 }

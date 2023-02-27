@@ -317,7 +317,6 @@
   "Apply": "Bikaranîn",
   "Apply_and_refresh_all_clients": "Apply û refresh hemû mişterîyên",
   "Apps": "Apps",
-  "Apps_Framework_enabled": "Çalakiya Frameworkê çalak bikin",
   "Apps_Settings": "Mîhengên App App",
   "Apps_WhatIsIt": "Apps: Ew çi ye?",
   "Apps_WhatIsIt_paragraph1": "Mîhengek nû ya di rêveberiya îdarî de! Ev çi tê wateya û çi ye?",
@@ -2738,7 +2737,15 @@
   "registration.component.login": "چوونەژوور",
   "registration.component.login.userNotFound": "Bikarhêner nehat dîtin",
   "registration.component.resetPassword": "تێپەڕەوشە دابنێرەوە",
+  "registration.component.form.username": "Navê bikarhêner",
+  "registration.component.form.name": "ناو",
+  "registration.component.form.emailAlreadyExists": "Email jixwe heye",
+  "registration.component.form.usernameAlreadyExists": "Ev nav tê bikaranîn. Ji kerema xwe bikarhênerek din bixwazin.",
+  "registration.component.form.invalidEmail": "ئیمەیڵی نوسراو هەڵەیە.",
   "registration.component.form.password": "Şîfre",
   "registration.component.form.divider": "an",
-  "registration.component.form.submit": "ناردن"
+  "registration.component.form.submit": "ناردن",
+  "registration.component.form.reasonToJoin": "Reason to join",
+  "registration.component.form.invalidConfirmPass": "دووبارەکراوەی تێپەڕەوشە یەکناگرێتەوە لەگەڵ تێپەڕەوشە",
+  "registration.component.form.confirmPassword": "تێپەڕەوشەکەت پشتڕاستکەوە"
 }

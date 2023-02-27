@@ -2553,8 +2553,16 @@
   "registration.component.login": "Пријава",
   "registration.component.login.userNotFound": "Корисник није пронађен",
   "registration.component.resetPassword": "Поново постави лозинку",
+  "registration.component.form.username": "Корисничко име",
+  "registration.component.form.name": "Име",
+  "registration.component.form.emailAlreadyExists": "Е-пошта већ постоји",
+  "registration.component.form.usernameAlreadyExists": "Корисничко име већ постоји. Молимо покушајте друго корисничко име.",
+  "registration.component.form.invalidEmail": "Унета је неисправна адреса е-поште",
   "registration.component.form.email": "Е-пошта",
   "registration.component.form.password": "Лозинка",
   "registration.component.form.divider": "или",
-  "registration.component.form.submit": "Пошаљи"
+  "registration.component.form.submit": "Пошаљи",
+  "registration.component.form.reasonToJoin": "Разлог за придруживање",
+  "registration.component.form.invalidConfirmPass": "Потврдна лозинка се не поклапа са лозинком",
+  "registration.component.form.confirmPassword": "Потврдите лозинку"
 }

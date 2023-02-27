@@ -333,7 +333,6 @@
   "Apply": "应用",
   "Apply_and_refresh_all_clients": "申请并刷新所有客户",
   "Apps": "应用",
-  "Apps_Framework_enabled": "启用应用程序框架",
   "Apps_Marketplace_Deactivate_App_Prompt": "是否確定要禁用此應用程序？",
   "Apps_Marketplace_Modify_App_Subscription": "修改訂閱",
   "Apps_Marketplace_Uninstall_App_Prompt": "是否確定要卸載此應用程序？",
@@ -2761,8 +2760,16 @@
   "registration.component.login": "登录",
   "registration.component.login.userNotFound": "未找到用户",
   "registration.component.resetPassword": "重设密码",
+  "registration.component.form.username": "用户名",
+  "registration.component.form.name": "姓名",
+  "registration.component.form.emailAlreadyExists": "邮件已存在",
+  "registration.component.form.usernameAlreadyExists": "此用户名已存在。请尝试其他用户名。",
+  "registration.component.form.invalidEmail": "无效的电子邮件",
   "registration.component.form.email": "电子邮件",
   "registration.component.form.password": "密码",
   "registration.component.form.divider": "要么",
-  "registration.component.form.submit": "提交"
+  "registration.component.form.submit": "提交",
+  "registration.component.form.reasonToJoin": "加入的理由",
+  "registration.component.form.invalidConfirmPass": "第二次密码输入与第一次不匹配",
+  "registration.component.form.confirmPassword": "确认密码"
 }

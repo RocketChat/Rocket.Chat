@@ -1234,7 +1234,12 @@
   "registration.component.login.userNotFound": "ئەزا يوق",
   "registration.component.resetPassword": "پارولنى قايتا بېكىتىش",
   "registration.component.form.emailOrUsername": "ئىلخەت ياكى ئەزا نامى",
+  "registration.component.form.name": "ئىسىم فامىلە",
+  "registration.component.form.emailAlreadyExists": "ئىلخەت ئاللىبۇرۇن بار",
+  "registration.component.form.invalidEmail": "كىرگۈزۈلگەن ئىلخەت ئادرېسى ئىناۋەتسىز",
   "registration.component.form.email": "ئىلخەت",
   "registration.component.form.password": "پارول",
-  "registration.component.form.submit": "تاپشۇرۇش"
+  "registration.component.form.submit": "تاپشۇرۇش",
+  "registration.component.form.invalidConfirmPass": "ئىككىنچى قېتىم كىرگۈزۈلگەن مەخپىي نومۇر بىلەن بىرىنچى قېتىم كىرگۈزۈلگىنى بىلەن ماس كەلمىدى.",
+  "registration.component.form.confirmPassword": "مەخپىي نومۇرنى جەزملەشتۈرۈش"
 }

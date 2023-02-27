@@ -318,7 +318,6 @@
   "Apply": "Приложи",
   "Apply_and_refresh_all_clients": "Приложете и опреснете всички клиенти",
   "Apps": "Apps",
-  "Apps_Framework_enabled": "Активирайте App Framework",
   "Apps_Settings": "Настройките на приложението",
   "Apps_WhatIsIt": "Приложения: Какви са те?",
   "Apps_WhatIsIt_paragraph1": "Нова икона в административната област! Какво означава това и какви са приложенията?",
@@ -2739,8 +2738,16 @@
   "registration.component.login": "Влез",
   "registration.component.login.userNotFound": "Потребителят не е намерен",
   "registration.component.resetPassword": "Нулиране на паролата",
+  "registration.component.form.username": "Потребителско име",
+  "registration.component.form.name": "Име",
+  "registration.component.form.emailAlreadyExists": "Електроната поща вече съсществува",
+  "registration.component.form.usernameAlreadyExists": "Потребителското име вече съществува. Моля, опитайте с друго потребителско име.",
+  "registration.component.form.invalidEmail": "Въведеният имейл адрес е невалиден",
   "registration.component.form.email": "Електрона поща",
   "registration.component.form.password": "Парола",
   "registration.component.form.divider": "или",
-  "registration.component.form.submit": "Подайте"
+  "registration.component.form.submit": "Подайте",
+  "registration.component.form.reasonToJoin": "Причина за присъединяване",
+  "registration.component.form.invalidConfirmPass": "Потвърждението на паролата не съвпада с паролата",
+  "registration.component.form.confirmPassword": "Потвърдите паролата"
 }

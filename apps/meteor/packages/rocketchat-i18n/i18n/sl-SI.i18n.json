@@ -316,7 +316,6 @@
   "Apply": "Uporabi",
   "Apply_and_refresh_all_clients": "Dodaj in osveži vse stranke",
   "Apps": "Aplikacije",
-  "Apps_Framework_enabled": "Omogoči okvir za aplikacije",
   "Apps_Settings": "Nastavitve aplikacije",
   "Apps_WhatIsIt": "Aplikacije: kaj so?",
   "Apps_WhatIsIt_paragraph1": "Nova ikona v upravnem območju! Kaj to pomeni in kakšne so aplikacije?",
@@ -2732,8 +2731,16 @@
   "registration.component.login": "Prijava",
   "registration.component.login.userNotFound": "Uporabnik ni bil najden",
   "registration.component.resetPassword": "Ponastavitev gesla",
+  "registration.component.form.username": "Uporabniško ime",
+  "registration.component.form.name": "Ime",
+  "registration.component.form.emailAlreadyExists": "E-potšni naslov že obstaja",
+  "registration.component.form.usernameAlreadyExists": "Uporabniško ime že obstaja. Poskusite drugo uporabniško ime.",
+  "registration.component.form.invalidEmail": "Vneseni e-poštni naslov je neveljaven",
   "registration.component.form.email": "E-poštni naslov",
   "registration.component.form.password": "Geslo",
   "registration.component.form.divider": "ali",
-  "registration.component.form.submit": "Pošlji"
+  "registration.component.form.submit": "Pošlji",
+  "registration.component.form.reasonToJoin": "Razlog za pridružitev",
+  "registration.component.form.invalidConfirmPass": "Potrditev gesla se ne ujema z geslom",
+  "registration.component.form.confirmPassword": "Potrdi geslo"
 }

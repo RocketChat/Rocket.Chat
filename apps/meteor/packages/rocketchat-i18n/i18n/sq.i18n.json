@@ -318,7 +318,6 @@
   "Apply": "aplikoni",
   "Apply_and_refresh_all_clients": "Aplikoni dhe rifreskoni të gjithë klientët",
   "Apps": "Apps",
-  "Apps_Framework_enabled": "Aktivizo kornizën e aplikacioneve",
   "Apps_Settings": "Cilësimet e aplikacionit",
   "Apps_WhatIsIt": "Aplikacionet: Cilat janë ato?",
   "Apps_WhatIsIt_paragraph1": "Një ikonë e re në zonën e administratës! Çfarë do të thotë kjo dhe cilat janë Apps?",
@@ -2744,7 +2743,15 @@
   "registration.component.login": "Hyrje",
   "registration.component.login.userNotFound": "Përdoruesi nuk u gjet",
   "registration.component.resetPassword": "Rivendos fjalëkalimin",
+  "registration.component.form.username": "Emri i përdoruesit",
+  "registration.component.form.name": "Emër",
+  "registration.component.form.emailAlreadyExists": "Emaili ekziston",
+  "registration.component.form.usernameAlreadyExists": "Emri i përdoruesit tashmë ekziston. Të lutem provo një tjetër emër përdoruesi.",
+  "registration.component.form.invalidEmail": "Email-i vendosur është i pavlefshëm",
   "registration.component.form.password": "Fjalëkalim",
   "registration.component.form.divider": "ose",
-  "registration.component.form.submit": "Paraqit"
+  "registration.component.form.submit": "Paraqit",
+  "registration.component.form.reasonToJoin": "Arsyeja për t'u bashkuar",
+  "registration.component.form.invalidConfirmPass": "Konfirmimi Fjalëkalimi nuk përputhet me fjalëkalimin",
+  "registration.component.form.confirmPassword": "Konfirmoni fjalëkalimin tuaj"
 }

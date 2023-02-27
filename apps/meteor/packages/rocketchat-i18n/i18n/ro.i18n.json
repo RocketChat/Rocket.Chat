@@ -318,7 +318,6 @@
   "Apply": "aplica",
   "Apply_and_refresh_all_clients": "Se aplică și actualizați toți clienții",
   "Apps": "Aplicații",
-  "Apps_Framework_enabled": "Activați cadrul aplicației",
   "Apps_Settings": "Setările aplicației",
   "Apps_WhatIsIt": "Aplicații: Ce sunt acestea?",
   "Apps_WhatIsIt_paragraph1": "O nouă pictogramă în zona de administrare! Ce înseamnă aceasta și ce sunt aplicațiile?",
@@ -2742,8 +2741,16 @@
   "registration.component.login": "Autentificare",
   "registration.component.login.userNotFound": "Utilizatorul nu a fost găsit",
   "registration.component.resetPassword": "Resetează parola",
+  "registration.component.form.username": "Utilizator",
+  "registration.component.form.name": "Nume",
+  "registration.component.form.emailAlreadyExists": "Adresa de e-mail există deja",
+  "registration.component.form.usernameAlreadyExists": "Nume de utilizator deja existent. Încercați un alt nume de utilizator.",
+  "registration.component.form.invalidEmail": "Adresa de email folosită este invalidă",
   "registration.component.form.email": "E-mail",
   "registration.component.form.password": "Parolă",
   "registration.component.form.divider": "sau",
-  "registration.component.form.submit": "Trimite"
+  "registration.component.form.submit": "Trimite",
+  "registration.component.form.reasonToJoin": "Motivul de a te alătura",
+  "registration.component.form.invalidConfirmPass": "Confirmarea parolei nu se potrivește cu parola introdusă",
+  "registration.component.form.confirmPassword": "Confirmați parola"
 }

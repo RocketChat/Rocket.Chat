@@ -1,6 +1,6 @@
 {
   "500": "កំហុសខាងក្នុងម៉ាស៊ីនម៉េ",
-  "__count__empty_rooms_will_be_removed_automatically": null,
+  "__count__empty_rooms_will_be_removed_automatically": "ចំនួនបន្ទប់ដែលនៅសល់នឹងត្រូវលុបចោលដោយស្វ័យប្រវត្តិ។",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "__count__ នឹងត្រូវលុបចោលដោយស្វ័យប្រវត្តិ៖ <br/> __rooms__ ។",
   "__username__is_no_longer__role__defined_by__user_by_": "__username__  មិនមាន __role__by __user_by__",
   "__username__was_set__role__by__user_by_": "__username__ ត្រូវបានកំណត់តួនាទីជា __role__ ដោយ __user_by__",
@@ -380,9 +380,6 @@
   "Apply_and_refresh_all_clients": "អនុវត្តនិងធ្វើឱ្យអតិថិជនទាំងអស់",
   "Apps": "កម្មវិធី",
   "Apps_Engine_Version": "កំណែកម្មវិធីម៉ាស៊ីន",
-  "Apps_Framework_Development_Mode": "បើកដំណើរការរបៀបអភិវឌ្ឍន៍។",
-  "Apps_Framework_Development_Mode_Description": "របៀបអភិវឌន៍អនុញ្ញាតឱ្យតំឡើងកម្មវិធីដែលមិនមកពីផ្សាររបស់ Rocket.Chat ។",
-  "Apps_Framework_enabled": "បើកដំណើរការ App Framework",
   "Apps_Marketplace_Deactivate_App_Prompt": "តើអ្នកពិតជាចង់បិទកម្មវិធីនេះមែនទេ?",
   "Apps_Marketplace_Login_Required_Description": "ការទិញកម្មវិធីពីផ្សាររ៉ក់ខេត។ តំរូវអោយចុះឈ្មោះកន្លែងធ្វើការរបស់អ្នកហើយចូល។",
   "Apps_Marketplace_Login_Required_Title": "តំរូវអោយចូលផ្សារ។",
@@ -3103,8 +3100,15 @@
   "registration.component.login": "ឡុក​ចូល",
   "registration.component.login.userNotFound": "រកមិនឃើញអ្នកប្រើ",
   "registration.component.resetPassword": "កំណត់​ពាក្យ​សម្ងាត់​ឡើងវិញ",
+  "registration.component.form.username": "ឈ្មោះ​អ្នកប្រើប្រាស់",
+  "registration.component.form.emailAlreadyExists": "អ៊ី​ម៉ែ​ល​ដែល​មាន​រួច​ហើយ",
+  "registration.component.form.usernameAlreadyExists": "ឈ្មោះ​របស់​អ្នកប្រើប្រាស់​ធ្លាប់​មាន​ហើយ។ សូមសាកល្បងឈ្មោះអ្នកប្រើប្រាស់ផ្សេងទៀត។",
+  "registration.component.form.invalidEmail": "អ៊ី​មែល​ដែល​បញ្ចូល​មិន​ត្រឹម​ត្រូវ",
   "registration.component.form.email": "អ៊ីម៉ែល",
   "registration.component.form.password": "ពាក្យសម្ងាត់",
   "registration.component.form.divider": "ឬ",
-  "registration.component.form.submit": "បញ្ចូល"
+  "registration.component.form.submit": "បញ្ចូល",
+  "registration.component.form.reasonToJoin": "ហេតុផលដើម្បីចូលរួម",
+  "registration.component.form.invalidConfirmPass": "ពាក្យ​សម្ងាត់​បញ្ជាក់​មិន​ដូច​ពាក្យ​សម្ងាត់​បាន​បញ្ចូល​",
+  "registration.component.form.confirmPassword": "បញ្ជាក់​ពាក្យ​សម្ងាត់"
 }

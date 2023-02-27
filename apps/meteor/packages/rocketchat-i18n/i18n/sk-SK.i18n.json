@@ -320,7 +320,6 @@
   "Apply": "Použiť",
   "Apply_and_refresh_all_clients": "Použiť a obnoviť všetkých klientov",
   "Apps": "aplikácie",
-  "Apps_Framework_enabled": "Povoliť aplikačný rámec",
   "Apps_Settings": "Nastavenia aplikácií",
   "Apps_WhatIsIt": "Aplikácie: Čo sú zač?",
   "Apps_WhatIsIt_paragraph1": "Nová ikona v administratívnej oblasti! Čo to znamená a čo sú aplikácie?",
@@ -2752,8 +2751,16 @@
   "registration.component.login": "Prihlásiť sa",
   "registration.component.login.userNotFound": "Užívateľ Nenájdený",
   "registration.component.resetPassword": "Obnoviť heslo",
+  "registration.component.form.username": "Používateľské meno",
+  "registration.component.form.name": "Názov",
+  "registration.component.form.emailAlreadyExists": "Email už existuje",
+  "registration.component.form.usernameAlreadyExists": "Užívateľské meno už existuje. Skúste iné používateľské meno.",
+  "registration.component.form.invalidEmail": "Zadaný e-mail je neplatný",
   "registration.component.form.email": "e-mail",
   "registration.component.form.password": "Heslo",
   "registration.component.form.divider": "alebo",
-  "registration.component.form.submit": "Predložiť"
+  "registration.component.form.submit": "Predložiť",
+  "registration.component.form.reasonToJoin": "Dôvod pripojenia",
+  "registration.component.form.invalidConfirmPass": "Potvrdenie hesla sa nezhoduje s heslom",
+  "registration.component.form.confirmPassword": "Potvrďte svoje heslo"
 }
