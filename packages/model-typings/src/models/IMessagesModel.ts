@@ -99,4 +99,13 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		options?: FindOptions<IMessage>,
 		showThreadMessages?: boolean,
 	): FindCursor<IMessage>;
+	findVisibleByRoomIdNotContainingTypesBeforeTs(
+		roomId: IRoom['_id'],
+		types: IMessage['t'][],
+		ts: Date,
+		options?: FindOptions<IMessage>,
+		showThreadMessages?: boolean,
+	): FindCursor<IMessage>;
+
+	findLivechatClosingMessage(rid: IRoom['_id'], options?: FindOptions<IMessage>): Promise<IMessage | null>;
 }

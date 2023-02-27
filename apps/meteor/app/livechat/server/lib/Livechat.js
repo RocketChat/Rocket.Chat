@@ -1121,6 +1121,7 @@ export const Livechat = {
 		}
 
 		const showAgentInfo = settings.get('Livechat_show_agent_info');
+		const closingMessage = await MessagesRaw.findLivechatClosingMessage(rid, { projection: { ts: 1 } });
 		const ignoredMessageTypes = [
 			'livechat_navigation_history',
 			'livechat_transcript_history',
@@ -1129,13 +1130,17 @@ export const Livechat = {
 			'livechat-started',
 			'livechat_video_call',
 		];
-		// Exclude rocket.cat messages from transcript
-		const messages = await MessagesRaw.findVisibleByRoomIdNotContainingTypesAndUsers(rid, ignoredMessageTypes, ['rocket.cat'], {
-			sort: { ts: 1 },
-		});
+		const messages = await MessagesRaw.findVisibleByRoomIdNotContainingTypesBeforeTs(
+			rid,
+			ignoredMessageTypes,
+			new Date(closingMessage.ts),
+			{
+				sort: { ts: 1 },
+			},
+		);
 
 		let html = '<div> <hr>';
-		messages.forEach((message) => {
+		await messages.forEach((message) => {
 			let author;
 			if (message.u._id === visitor._id) {
 				author = TAPi18n.__('You', { lng: userLanguage });
