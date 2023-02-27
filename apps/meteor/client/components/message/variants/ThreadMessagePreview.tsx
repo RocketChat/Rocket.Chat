@@ -79,7 +79,7 @@ const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePr
 									{translated && (
 										<>
 											{' '}
-											<MessageStatusIndicatorItem name='language' color='font-on-info' title={t('Translated')} />
+											<MessageStatusIndicatorItem name='language' color='info' title={t('Translated')} />
 										</>
 									)}
 								</>

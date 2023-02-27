@@ -8,7 +8,7 @@ type ReadReceiptIndicatorProps = {
 
 const ReadReceiptIndicator = ({ unread }: ReadReceiptIndicatorProps): ReactElement | null => (
 	<Box position='absolute' insetBlockStart={2} insetInlineEnd={8}>
-		<Icon name='check' size='x16' color={unread ? 'annotation' : 'on-info'} />
+		<Icon name='check' size='x16' color={unread ? 'annotation' : 'info'} />
 	</Box>
 );
 
