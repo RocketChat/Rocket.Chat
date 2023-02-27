@@ -98,7 +98,6 @@ const PreferencesNotificationsSection = ({ onChange, commitRef, ...props }: Form
 	) as SelectOption[];
 
 	const desktopNotificationOptions = useMemo<SelectOption[]>((): SelectOption[] => {
-		console.log(' default dn: ', defaultDesktopNotifications);
 		const optionsCp = notificationOptions.slice();
 		optionsCp.unshift(['default', `${t('Default')} (${t(notificationOptionsLabelMap[defaultDesktopNotifications] as TranslationKey)})`]);
 		return optionsCp;
