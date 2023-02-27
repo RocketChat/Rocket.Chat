@@ -40,14 +40,14 @@ Meteor.startup(() => {
 					}
 					const language = subscription?.autoTranslateLanguage || AutoTranslate.getLanguage(message.rid) || '';
 					const isLivechatRoom = roomCoordinator.isLivechatRoom(room?.t);
-					const differentUser = message?.u && message.u._id !== user._id;
+					const isDifferentUser = message?.u && message.u._id !== user._id;
 					const autoTranslateEnabled = subscription?.autoTranslate || isLivechatRoom;
 					const hasLanguage =
 						hasTranslationLanguageInMessage(message, language) || hasTranslationLanguageInAttachments(message.attachments, language);
 
 					return Boolean(
 						(message as { autoTranslateShowInverse?: boolean }).autoTranslateShowInverse ||
-							(differentUser && autoTranslateEnabled && !hasLanguage),
+							(isDifferentUser && autoTranslateEnabled && !hasLanguage),
 					);
 				},
 				order: 90,
@@ -74,14 +74,14 @@ Meteor.startup(() => {
 					if (!user) {
 						return false;
 					}
-					const differentUser = message?.u && message.u._id !== user._id;
+					const isDifferentUser = message?.u && message.u._id !== user._id;
 					const autoTranslateEnabled = subscription?.autoTranslate || isLivechatRoom;
 					const hasLanguage =
 						hasTranslationLanguageInMessage(message, language) || hasTranslationLanguageInAttachments(message.attachments, language);
 
 					return Boolean(
 						!(message as { autoTranslateShowInverse?: boolean }).autoTranslateShowInverse &&
-							differentUser &&
+							isDifferentUser &&
 							autoTranslateEnabled &&
 							hasLanguage,
 					);
