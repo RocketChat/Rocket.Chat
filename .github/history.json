@@ -101062,6 +101062,247 @@
           ]
         }
       ]
+    },
+    "6.0.0-rc.3": {
+      "node_version": "14.21.2",
+      "npm_version": "6.14.17",
+      "apps_engine_version": "1.37.0-alpha.157",
+      "mongo_versions": [
+        "4.4",
+        "5.0",
+        "6.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "28132",
+          "title": "Regression: \"Enable unlimited apps\" button on installation modal doesn't do anything",
+          "userLogin": "AllanPazRibeiro",
+          "milestone": "6.0.0",
+          "contributors": [
+            "AllanPazRibeiro",
+            "felipe-rod123",
+            "web-flow",
+            "casalsgh",
+            "d-gubert",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "28048",
+          "title": "Regression: Avoid rendering unsupported media on PDFs & update quote styling",
+          "userLogin": "KevLehman",
+          "description": "- Fix faulty logic when deciding which attachment to render based on the mime type of it\r\n\r\n- Replace media query syntax `(width < 767px)` with `(max-width: 767px)` since the first one isn't supported on safari\r\n- Fix a bug when has bold text in multiple rows.",
+          "milestone": "6.0.0",
+          "contributors": [
+            "KevLehman",
+            "filipemarins",
+            "murtaza98",
+            "aleksandernsilva",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "28133",
+          "title": "Regression: Denied Microphone permission disables composer",
+          "userLogin": "yash-rajpal",
+          "description": "![Kapture 2023-02-23 at 13 10 38](https://user-images.githubusercontent.com/27704687/220964655-b2a3b69c-9b32-4f82-b585-49ac0118297a.gif)",
+          "milestone": "6.0.0",
+          "contributors": [
+            "yash-rajpal",
+            "dougfabris",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "28206",
+          "title": "Regression:  Fix mentioning rooms with special chars",
+          "userLogin": "ggazzo",
+          "milestone": "6.0.0",
+          "contributors": [
+            "ggazzo",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28151",
+          "title": "Regression: Incorrect system message upon adding/editing SLA policy for a room.",
+          "userLogin": "murtaza98",
+          "milestone": "6.0.0",
+          "contributors": [
+            "murtaza98",
+            "web-flow",
+            "KevLehman",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "28171",
+          "title": "Chore: anonymous e2e test dispatch error",
+          "userLogin": "ggazzo",
+          "milestone": "6.0.0",
+          "contributors": [
+            "ggazzo",
+            "tassoevan",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28165",
+          "title": "Regression: Remove unnecessary messages from Email transcript",
+          "userLogin": "KevLehman",
+          "milestone": "6.0.0",
+          "contributors": [
+            "KevLehman",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28197",
+          "title": "Regression: Update color tokens for voip footer",
+          "userLogin": "KevLehman",
+          "milestone": "6.0.0",
+          "contributors": [
+            "KevLehman",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28149",
+          "title": "Regression: Image Attachment Description size",
+          "userLogin": "hugocostadev",
+          "description": "The Image Attachment is breaking lines to match the size of the image, should follow the same size of the normal message.\r\n\r\n**Previous:** \r\n![image](https://user-images.githubusercontent.com/20212776/221175529-e574fbdb-9069-48ae-9946-d6ea475ba4bf.png)\r\n\r\n**Current:** \r\n![image](https://user-images.githubusercontent.com/20212776/221175349-486b4c40-16a2-40ab-9593-089963b6315b.png)",
+          "milestone": "6.0.0",
+          "contributors": [
+            "hugocostadev",
+            "web-flow",
+            "sampaiodiego",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "28117",
+          "title": "Regression: Fix omnichannel chat forwarding not working",
+          "userLogin": "murtaza98",
+          "milestone": "6.0.0",
+          "contributors": [
+            "murtaza98",
+            "MartinSchoeler",
+            "web-flow",
+            "KevLehman",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "28162",
+          "title": "Regression: Support generating pdfs from queue",
+          "userLogin": "KevLehman",
+          "description": "This removes a code validation that prevented PDF files from being generated for rooms that were closed directly from the queue.\r\n\r\nAfter discussing with product, this is a behavior we want and so we're removing the code preventing it and updating the translation keys.",
+          "milestone": "6.0.0",
+          "contributors": [
+            "KevLehman",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28148",
+          "title": "Regression: Regular users were not able to leave federated rooms",
+          "userLogin": "MarcosSpessatto",
+          "description": "When regular users (not owners, nor moderators) tried to leave federated rooms, they were not allowed to do so due to a bad permission check.\r\n\r\nJira: FED-88",
+          "milestone": "6.0.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28168",
+          "title": "Regression: Fix slash commands",
+          "userLogin": "ggazzo",
+          "milestone": "6.0.0",
+          "contributors": [
+            "ggazzo",
+            "web-flow",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "28173",
+          "title": "Regression: Incorrect installation flow on app detail and upload app pages",
+          "userLogin": "d-gubert",
+          "description": "The install button displayed in the App detail page of an app from the Marketplace that hasn't been installed in the workspace didn't follow the same installation steps performed in the app list on Explore or Enterprise pages.\r\n\r\nThis PR isolates the installation handler so the exact same functions are used in both places.\r\n\r\nThe same problem was solved in the Upload App page",
+          "milestone": "6.0.0",
+          "contributors": [
+            "d-gubert",
+            "casalsgh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28164",
+          "title": "Chore: Replace deprecated color tokens",
+          "userLogin": "juliajforesti",
+          "contributors": [
+            "juliajforesti",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28161",
+          "title": "Regression: Fix toggle theme breaking UI",
+          "userLogin": "juliajforesti",
+          "milestone": "6.0.0",
+          "contributors": [
+            "juliajforesti"
+          ]
+        },
+        {
+          "pr": "28170",
+          "title": "Chore: Remove `meteor build --debug` option",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "28154",
+          "title": "Regression: Hide Workspace registration feature for non-admin users",
+          "userLogin": "csuadev",
+          "milestone": "6.0.0",
+          "contributors": [
+            "csuadev"
+          ]
+        },
+        {
+          "pr": "28156",
+          "title": "Regression: Fix RegisterForm Translations",
+          "userLogin": "dougfabris",
+          "milestone": "6.0.0",
+          "contributors": [
+            "dougfabris"
+          ]
+        },
+        {
+          "pr": "28152",
+          "title": "Chore: e2e omnichannel tests - Close every opened page after the test",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "28153",
+          "title": "Chore: Remove fail-fast from matrix strategy",
+          "userLogin": "ggazzo",
+          "contributors": [
+            "ggazzo"
+          ]
+        }
+      ]
     }
   },
   "5.4.0-rc.0": {
