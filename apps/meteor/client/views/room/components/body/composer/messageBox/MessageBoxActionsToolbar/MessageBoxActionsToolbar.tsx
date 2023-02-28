@@ -11,7 +11,6 @@ type MessageBoxActionsToolbarProps = {
 	isRecording: boolean;
 	typing: boolean;
 	canSend: boolean;
-	canJoin: boolean;
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
 	isMicrophoneDenied?: boolean;
@@ -24,14 +23,13 @@ const MessageBoxActionsToolbar = ({
 	canSend,
 	rid,
 	tmid,
-	canJoin,
 	isMicrophoneDenied,
 }: MessageBoxActionsToolbarProps) => {
 	const actions = [
-		<VideoMessageAction key='video' collapsed={variant === 'small'} disabled={(!canJoin && !canSend) || typing || isRecording} />,
+		<VideoMessageAction key='video' collapsed={variant === 'small'} disabled={!canSend || typing || isRecording} />,
 		<AudioMessageAction
 			key='audio'
-			disabled={(!canJoin && !canSend) || typing || isRecording || isMicrophoneDenied}
+			disabled={!canSend || typing || isRecording || isMicrophoneDenied}
 			isMicrophoneDenied={isMicrophoneDenied}
 		/>,
 		<FileUploadAction key='file' collapsed={variant === 'small'} disabled={!canSend || isRecording} />,
