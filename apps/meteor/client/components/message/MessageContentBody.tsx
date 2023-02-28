@@ -136,7 +136,7 @@ const MessageContentBody = ({ mentions, channels, md, searchText }: MessageConte
 			padding-inline-start: 0;
 		}
 		a {
-			color: ${Palette.statusColor['status-font-on-info']};
+			color: ${Palette.text['font-info']};
 			&:hover {
 				text-decoration: underline;
 			}

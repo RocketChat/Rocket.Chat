@@ -18,7 +18,11 @@ const useOverviewData = (): [eventCount: ReactNode, userCount: ReactNode, server
 	}
 
 	if (result.isError) {
-		return [<Box color='on-danger'>Error</Box>, <Box color='on-danger'>Error</Box>, <Box color='on-danger'>Error</Box>];
+		return [
+			<Box color='status-font-on-danger'>Error</Box>,
+			<Box color='status-font-on-danger'>Error</Box>,
+			<Box color='status-font-on-danger'>Error</Box>,
+		];
 	}
 
 	const { data } = result.data;
