@@ -270,6 +270,7 @@ describe('[Incoming Integrations]', function () {
 								alias: 'test',
 								username: 'rocket.cat',
 								scriptEnabled: false,
+								overrideDestinationChannelEnabled: true,
 								channel: '#general',
 							},
 							userCredentials,
@@ -451,6 +452,7 @@ describe('[Incoming Integrations]', function () {
 					alias: 'test updated',
 					username: 'rocket.cat',
 					scriptEnabled: true,
+					overrideDestinationChannelEnabled: true,
 					channel: '#general',
 					integrationId: integration._id,
 				})
