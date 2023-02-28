@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -8,7 +8,7 @@ import FilterByText from '../../../components/FilterByText';
 import CategoryDropDown from '../components/CategoryFilter/CategoryDropDown';
 import TagList from '../components/CategoryFilter/TagList';
 import RadioDropDown from '../components/RadioDropDown/RadioDropDown';
-import type { CategoryDropdownItem, CategoryOnSelected, selectedCategoriesList } from '../definitions/CategoryDropdownDefinitions';
+import type { CategoryDropDownListProps, CategoryOnSelected, selectedCategoriesList } from '../definitions/CategoryDropdownDefinitions';
 import type { RadioDropDownGroup, RadioDropDownOnSelected } from '../definitions/RadioDropDownDefinitions';
 
 type AppsFiltersProps = {
@@ -18,10 +18,7 @@ type AppsFiltersProps = {
 	};
 	freePaidFilterStructure: RadioDropDownGroup;
 	freePaidFilterOnSelected: RadioDropDownOnSelected;
-	categories: {
-		label?: string | undefined;
-		items: CategoryDropdownItem[];
-	}[];
+	categories: CategoryDropDownListProps['categories'];
 	selectedCategories: selectedCategoriesList;
 	onSelected: CategoryOnSelected;
 	sortFilterStructure: RadioDropDownGroup;
@@ -29,6 +26,7 @@ type AppsFiltersProps = {
 	categoryTagList: selectedCategoriesList;
 	statusFilterStructure: RadioDropDownGroup;
 	statusFilterOnSelected: RadioDropDownOnSelected;
+	context: string;
 };
 
 const AppsFilters = ({
@@ -43,15 +41,15 @@ const AppsFilters = ({
 	categoryTagList,
 	statusFilterStructure,
 	statusFilterOnSelected,
+	context,
 }: AppsFiltersProps): ReactElement => {
 	const t = useTranslation();
-	const context = useRouteParameter('context');
+
+	const isPrivateAppsPage = context === 'private';
 
 	const shouldFiltersStack = useMediaQuery('(max-width: 1060px)');
 	const hasFilterStackMargin = shouldFiltersStack ? '' : 'x8';
 	const hasNotFilterStackMargin = shouldFiltersStack ? 'x8' : '';
-
-	const isPrivateAppsPage = context === 'private';
 
 	return (
 		<Box pi='x24'>
@@ -70,13 +68,15 @@ const AppsFilters = ({
 					mie={hasFilterStackMargin}
 					mbe={hasNotFilterStackMargin}
 				/>
-				{!isPrivateAppsPage && <CategoryDropDown data={categories} selectedCategories={selectedCategories} onSelected={onSelected} />}
-				<RadioDropDown
-					group={sortFilterStructure}
-					onSelected={sortFilterOnSelected}
-					mis={hasFilterStackMargin}
-					mbs={hasNotFilterStackMargin}
-				/>
+				{!isPrivateAppsPage && (
+					<CategoryDropDown
+						categories={categories}
+						selectedCategories={selectedCategories}
+						onSelected={onSelected}
+						mie={hasFilterStackMargin}
+					/>
+				)}
+				<RadioDropDown group={sortFilterStructure} onSelected={sortFilterOnSelected} mbs={hasNotFilterStackMargin} />
 			</FilterByText>
 			<TagList categories={categoryTagList} onClick={onSelected} />
 		</Box>
