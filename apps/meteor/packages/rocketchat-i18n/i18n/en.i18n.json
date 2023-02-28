@@ -5685,7 +5685,7 @@
   "Customer": "Customer",
   "Time": "Time",
   "Omnichannel_Agent": "Omnichannel Agent",
-  "This_attachment_is_not_supported": "This attachment is not supported",
+  "This_attachment_is_not_supported": "Attachment format not supported",
   "Send_transcript": "Send transcript",
   "Undo_request": "Undo request",
 	"No_permission": "No permission",
