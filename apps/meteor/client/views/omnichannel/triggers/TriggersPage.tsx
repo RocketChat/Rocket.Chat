@@ -59,7 +59,7 @@ const TriggersPage = () => {
 			});
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			id && queryClient.invalidateQueries(['/v1/livechat/triggers/:_id', id], { exact: true });
-			queryClient.invalidateQueries(['/v1/livechat/triggers'], { exact: true });
+			queryClient.invalidateQueries(['/v1/livechat/triggers']);
 			router.push({});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
