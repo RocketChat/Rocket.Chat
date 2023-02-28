@@ -1,3 +1,4 @@
+import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { AutoComplete, Box, Option, OptionAvatar, OptionContent, OptionDescription, Chip } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useUser, useUserSubscriptions } from '@rocket.chat/ui-contexts';
@@ -29,7 +30,17 @@ const UserAndRoomAutoCompleteMultiple = ({ onChange, ...props }: UserAndRoomAuto
 	const debouncedFilter = useDebouncedValue(filter, 1000);
 	const rooms = useUserSubscriptions(query).filter((item) => item.name.toLocaleLowerCase().includes(debouncedFilter.toLocaleLowerCase()));
 
-	const filteredRooms = rooms.filter((room) => user && !roomCoordinator.readOnly(room.rid, user));
+	const filteredRooms = rooms.filter((room) => {
+		if (!user) {
+			return;
+		}
+
+		if (isDirectMessageRoom(room) && (room.blocked || room.blocker)) {
+			return;
+		}
+
+		return !roomCoordinator.readOnly(room.rid, user);
+	});
 
 	const parseItems = useMemo(
 		() =>
