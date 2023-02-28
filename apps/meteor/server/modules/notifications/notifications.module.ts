@@ -214,7 +214,7 @@ export class NotificationsModule {
 				}
 
 				// TODO consider using something to cache settings
-				const key = getMessagesLayoutPreference() !== 'username' ? 'name' : 'username';
+				const key = getMessagesLayoutPreference(userId) !== 'username' ? 'name' : 'username';
 
 				const user = await Users.findOneById<Pick<IUser, 'name' | 'username'>>(userId, {
 					projection: {
