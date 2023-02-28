@@ -1,16 +1,24 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
-import { useLayout, useUserPreference } from '@rocket.chat/ui-contexts';
+import { Box, Palette } from '@rocket.chat/fuselage';
+import { useSessionStorage } from '@rocket.chat/fuselage-hooks';
+import { useLayout, useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import SidebarRoomList from './RoomList';
 import SidebarFooter from './footer';
 import SidebarHeader from './header';
+import StatusDisabledSection from './sections/StatusDisabledSection';
 
 const Sidebar = () => {
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
 	const sidebarHideAvatar = !useUserPreference('sidebarDisplayAvatar');
 	const { isMobile, sidebar } = useLayout();
+	const [bannerDismissed, setBannerDismissed] = useSessionStorage('presence_cap_notifier', false);
+	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
+
+	const sideBarBackground = css`
+		background-color: ${Palette.surface['surface-tint']};
+	`;
 
 	const sideBarStyle = css`
 		position: relative;
@@ -23,7 +31,6 @@ const Sidebar = () => {
 		height: 100%;
 		user-select: none;
 		transition: transform 0.3s;
-		background-color: var(--sidebar-background);
 
 		&.opened {
 			box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px 1px;
@@ -89,11 +96,13 @@ const Sidebar = () => {
 						'rcx-sidebar--main',
 						`rcx-sidebar rcx-sidebar--${sidebarViewMode}`,
 						sidebarHideAvatar && 'rcx-sidebar--hide-avatar',
+						sideBarBackground,
 					].filter(Boolean)}
 					role='navigation'
 					data-qa-opened={sidebar.isCollapsed ? 'false' : 'true'}
 				>
 					<SidebarHeader />
+					{presenceDisabled && !bannerDismissed && <StatusDisabledSection onDismiss={() => setBannerDismissed(true)} />}
 					<SidebarRoomList />
 					<SidebarFooter />
 				</Box>

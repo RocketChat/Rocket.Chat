@@ -2,9 +2,8 @@ import type { IEditedMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
-import _ from 'underscore';
 
-import { hasAtLeastOnePermission } from '../../app/authorization/client';
+import { hasAtLeastOnePermission, hasPermission } from '../../app/authorization/client';
 import { ChatMessage } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
 import { t } from '../../app/utils/client';
@@ -23,7 +22,7 @@ Meteor.methods({
 		if (!originalMessage) {
 			return;
 		}
-		const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
+		const canEditMessage = hasAtLeastOnePermission('edit-message', message.rid);
 		const editAllowed = settings.get('Message_AllowEditing');
 		let editOwn = false;
 
@@ -42,7 +41,7 @@ Meteor.methods({
 			return false;
 		}
 
-		if (!(hasPermission || (editAllowed && editOwn))) {
+		if (!(canEditMessage || (editAllowed && editOwn))) {
 			dispatchToastMessage({
 				type: 'error',
 				message: t('error-action-not-allowed', { action: t('Message_editing') }),
@@ -50,8 +49,10 @@ Meteor.methods({
 			return false;
 		}
 
-		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
-		if (_.isNumber(blockEditInMinutes) && blockEditInMinutes !== 0) {
+		const blockEditInMinutes = Number(settings.get('Message_AllowEditing_BlockEditInMinutes') as number | undefined);
+		const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete');
+
+		if (!bypassBlockTimeLimit && blockEditInMinutes !== 0) {
 			if (originalMessage.ts) {
 				const msgTs = moment(originalMessage.ts);
 				if (msgTs) {
@@ -79,7 +80,7 @@ Meteor.methods({
 				msg: message.msg,
 			};
 
-			if (originalMessage.attachments) {
+			if (originalMessage.attachments?.length) {
 				if (originalMessage.attachments[0].description !== undefined) {
 					delete messageObject.msg;
 					originalMessage.attachments[0].description = message.msg;

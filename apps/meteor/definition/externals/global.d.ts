@@ -7,6 +7,11 @@ declare global {
 		readonly userLanguage?: string;
 	}
 
+	const __meteor_runtime_config__: {
+		ROOT_URL_PATH_PREFIX: string;
+		ROOT_URL: string;
+	};
+
 	interface Window {
 		setLanguage?: (language: string) => void;
 		defaultUserLanguage?: () => string;

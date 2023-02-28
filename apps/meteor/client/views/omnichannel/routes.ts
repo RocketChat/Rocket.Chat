@@ -53,19 +53,14 @@ registerOmnichannelRoute('/tags/:context?/:id?', {
 	component: lazy(() => import('../../../ee/client/omnichannel/tags/TagsRoute')),
 });
 
-registerOmnichannelRoute('/priorities/:context?/:id?', {
-	name: 'omnichannel-priorities',
-	component: lazy(() => import('../../../ee/client/omnichannel/priorities/PrioritiesRoute')),
+registerOmnichannelRoute('/sla-policies/:context?/:id?', {
+	name: 'omnichannel-sla-policies',
+	component: lazy(() => import('../../../ee/client/omnichannel/slaPolicies/SlasRoute')),
 });
 
 registerOmnichannelRoute('/triggers/:context?/:id?', {
 	name: 'omnichannel-triggers',
 	component: lazy(() => import('./triggers/TriggersPage')),
-});
-
-registerOmnichannelRoute('/facebook', {
-	name: 'omnichannel-facebook',
-	component: lazy(() => import('./facebook/FacebookPageContainer')),
 });
 
 registerOmnichannelRoute('/current/:id?/:tab?/:context?', {

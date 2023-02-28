@@ -52,10 +52,6 @@ export class LivechatDepartmentAgents extends Base {
 		this.remove({ departmentId, agentId });
 	}
 
-	removeByDepartmentId(departmentId) {
-		this.remove({ departmentId });
-	}
-
 	getNextAgentForDepartment(departmentId, ignoreAgentId, extraQuery) {
 		const agents = this.findByDepartmentId(departmentId).fetch();
 

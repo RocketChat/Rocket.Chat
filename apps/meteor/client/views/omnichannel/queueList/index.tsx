@@ -104,7 +104,7 @@ const QueueList = (): ReactElement => {
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
 	const query = useQuery(debouncedParams, debouncedSort);
-	const { value: data } = useEndpointData('/v1/livechat/queue', query);
+	const { value: data } = useEndpointData('/v1/livechat/queue', { params: query });
 
 	return (
 		<QueueListPage title={t('Livechat_Queue')} header={header} data={data} renderRow={renderRow} params={params} setParams={setParams} />

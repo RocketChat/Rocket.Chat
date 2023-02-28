@@ -1,8 +1,8 @@
 import { Settings } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
-import s from 'underscore.string';
 
 import { hasPermission } from '../../../authorization/server';
+import { trim } from '../../../../lib/utils/stringUtils';
 
 Meteor.methods({
 	async 'livechat:saveIntegration'(values) {
@@ -14,11 +14,11 @@ Meteor.methods({
 		}
 
 		if (typeof values.Livechat_webhookUrl !== 'undefined') {
-			await Settings.updateValueById('Livechat_webhookUrl', s.trim(values.Livechat_webhookUrl));
+			await Settings.updateValueById('Livechat_webhookUrl', trim(values.Livechat_webhookUrl));
 		}
 
 		if (typeof values.Livechat_secret_token !== 'undefined') {
-			await Settings.updateValueById('Livechat_secret_token', s.trim(values.Livechat_secret_token));
+			await Settings.updateValueById('Livechat_secret_token', trim(values.Livechat_secret_token));
 		}
 
 		if (typeof values.Livechat_webhook_on_start !== 'undefined') {

@@ -6,23 +6,18 @@ import { isSetNotNull } from './function-isSet';
 import { RoomManager } from '../../../ui-utils/client';
 import { emoji, EmojiPicker } from '../../../emoji/client';
 import { CachedCollectionManager } from '../../../ui-cached-collection/client';
-import { APIClient } from '../../../utils/client';
+import { APIClient, getURL } from '../../../utils/client';
 
 export const getEmojiUrlFromName = function (name, extension) {
-	Session.get;
-
-	const key = `emoji_random_${name}`;
-
-	let random = 0;
-	if (isSetNotNull(() => Session.keys[key])) {
-		random = Session.keys[key];
-	}
-
 	if (name == null) {
 		return;
 	}
-	const path = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
-	return `${path}/emoji-custom/${encodeURIComponent(name)}.${extension}?_dc=${random}`;
+
+	const key = `emoji_random_${name}`;
+
+	const random = isSetNotNull(() => Session.keys[key]) ? Session.keys[key] : 0;
+
+	return getURL(`/emoji-custom/${encodeURIComponent(name)}.${extension}?_dc=${random}`);
 };
 
 export const deleteEmojiCustom = function (emojiData) {
@@ -200,8 +195,6 @@ Meteor.startup(() =>
 					};
 				}
 			}
-
-			EmojiPicker.updateRecent('rocket');
 		} catch (e) {
 			console.error('Error getting custom emoji', e);
 		}

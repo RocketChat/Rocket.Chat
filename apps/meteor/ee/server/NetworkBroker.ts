@@ -2,6 +2,8 @@ import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 import { asyncLocalStorage } from '@rocket.chat/core-services';
 import type { IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
 
+import { EnterpriseCheck } from './lib/EnterpriseCheck';
+
 const events: { [k: string]: string } = {
 	onNodeConnected: '$node.connected',
 	onNodeUpdated: '$node.updated',
@@ -76,7 +78,7 @@ export class NetworkBroker implements IBroker {
 		this.broker.destroyService(name);
 	}
 
-	createService(instance: IServiceClass): void {
+	createService(instance: IServiceClass, serviceDependencies?: string[]): void {
 		const methods = (
 			instance.constructor?.name === 'Object'
 				? Object.getOwnPropertyNames(instance)
@@ -90,27 +92,18 @@ export class NetworkBroker implements IBroker {
 			return;
 		}
 
-		if (!instance.isInternal()) {
-			instance.onEvent('shutdown', async (services) => {
-				if (!services[name]?.includes(this.broker.nodeID)) {
-					this.broker.logger.info({ msg: 'Not shutting down, different node.', nodeID: this.broker.nodeID });
-					return;
-				}
-				this.broker.logger.warn({ msg: 'Received shutdown event, destroying service.', nodeID: this.broker.nodeID });
-				this.destroyService(instance);
-			});
-		}
-
 		const instanceEvents = instance.getEvents();
 		if (!instanceEvents && !methods.length) {
 			return;
 		}
 
-		const dependencies = name !== 'license' ? { dependencies: ['license'] } : {};
+		// Allow services to depend on other services too
+		const dependencies = name !== 'license' ? { dependencies: ['license', ...(serviceDependencies || [])] } : {};
 
 		const service: ServiceSchema = {
 			name,
 			actions: {},
+			mixins: !instance.isInternal() ? [EnterpriseCheck] : [],
 			...dependencies,
 			events: instanceEvents.reduce<Record<string, (ctx: Context) => void>>((map, eventName) => {
 				map[eventName] = /^\$/.test(eventName)

@@ -3,13 +3,13 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from 'meteor/random';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
-import s from 'underscore.string';
 import moment from 'moment';
 import Fiber from 'fibers';
 import Future from 'fibers/future';
 import { Integrations, IntegrationHistory } from '@rocket.chat/models';
 
 import * as Models from '../../../models/server';
+import * as s from '../../../../lib/utils/stringUtils';
 import { settings } from '../../../settings/server';
 import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from '../../../lib/server';
 import { outgoingLogger } from '../logger';

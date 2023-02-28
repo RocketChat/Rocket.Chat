@@ -17,6 +17,10 @@ export interface IRolesModel extends IBaseModel<IRole> {
 	findOneByIdOrName<P>(_idOrName: IRole['_id'] | IRole['name'], options?: any): Promise<IRole | P | null>;
 	findOneByName<P = IRole>(name: IRole['name'], options?: any): Promise<IRole | P | null>;
 	findInIds<P>(ids: IRole['_id'][], options?: FindOptions<IRole>): P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole>;
+	findInIdsOrNames<P>(
+		_idsOrNames: IRole['_id'][] | IRole['name'][],
+		options?: FindOptions<IRole>,
+	): P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole>;
 	findAllExceptIds<P>(ids: IRole['_id'][], options?: FindOptions<IRole>): P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole>;
 	findByScope(scope: IRole['scope'], options?: FindOptions<IRole>): FindCursor<IRole>;
 	updateById(

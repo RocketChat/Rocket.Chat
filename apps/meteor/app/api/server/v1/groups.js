@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Integrations, Messages as MessagesRaw, Uploads, Rooms as RoomsRaw, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
@@ -280,7 +279,7 @@ API.v1.addRoute(
 				return API.v1.failure('Body param "name" is required');
 			}
 
-			if (this.bodyParams.members && !_.isArray(this.bodyParams.members)) {
+			if (this.bodyParams.members && !Array.isArray(this.bodyParams.members)) {
 				return API.v1.failure('Body param "members" must be an array if provided');
 			}
 

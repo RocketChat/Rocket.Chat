@@ -4,9 +4,10 @@ import { getCredentials, api, request, credentials } from '../../data/api-data.j
 import { password } from '../../data/user';
 import { closeRoom, createRoom } from '../../data/rooms.helper';
 import { imgURL } from '../../data/interactions.js';
-import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
 import { sendSimpleMessage } from '../../data/chat.helper';
 import { createUser } from '../../data/users.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('[Rooms]', function () {
 	this.retries(0);
@@ -997,6 +998,64 @@ describe('[Rooms]', function () {
 				})
 				.end(done);
 		});
+
+		describe('it should create a *private* discussion if the parent channel is public and inside a private team', async () => {
+			let privateTeam;
+
+			it('should create a team', (done) => {
+				request
+					.post(api('teams.create'))
+					.set(credentials)
+					.send({
+						name: `test-team-${Date.now()}`,
+						type: 1,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('team');
+						expect(res.body).to.have.nested.property('team._id');
+						privateTeam = res.body.team;
+					})
+					.end(done);
+			});
+
+			it('should add the public channel to the team', (done) => {
+				request
+					.post(api('teams.addRooms'))
+					.set(credentials)
+					.send({
+						rooms: [testChannel._id],
+						teamId: privateTeam._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success');
+					})
+					.end(done);
+			});
+
+			it('should create a private discussion inside the public channel', (done) => {
+				request
+					.post(api('rooms.createDiscussion'))
+					.set(credentials)
+					.send({
+						prid: testChannel._id,
+						t_name: `discussion-create-from-tests-${testChannel.name}-team`,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('discussion').and.to.be.an('object');
+						expect(res.body.discussion).to.have.property('prid').and.to.be.equal(testChannel._id);
+						expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${testChannel.name}-team`);
+						expect(res.body.discussion).to.have.property('t').and.to.be.equal('p');
+					})
+					.end(done);
+			});
+		});
 	});
 
 	describe('/rooms.getDiscussions', () => {
@@ -1181,8 +1240,8 @@ describe('[Rooms]', function () {
 					.end(done);
 			});
 		});
-		it('should return an error when the required parameter "selector" is not provided', (done) => {
-			updatePermission('can-audit', ['admin']).then(() => {
+		(IS_EE ? it : it.skip)('should return an error when the required parameter "selector" is not provided', (done) => {
+			updateEEPermission('can-audit', ['admin']).then(() => {
 				request
 					.get(api('rooms.autocomplete.adminRooms'))
 					.set(credentials)

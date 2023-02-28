@@ -73,6 +73,10 @@ const MarkdownTextEditor: FC<{ onChange: any; value: string }> = ({ onChange, va
 			return;
 		}
 
+		if (!textAreaRef?.current) {
+			throw new Error('Missing textAreaRef');
+		}
+
 		EmojiPicker.open(textAreaRef.current, (emoji: string): void => {
 			onClickEmoji(emoji);
 		});
