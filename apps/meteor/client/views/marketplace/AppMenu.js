@@ -326,7 +326,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				isAppEnabled && {
 					disable: {
 						label: (
-							<Box color='on-warning'>
+							<Box color='status-font-on-warning'>
 								<Icon name='ban' size='x16' marginInlineEnd='x4' />
 								{t('Disable')}
 							</Box>
@@ -358,7 +358,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				isAdminUser && {
 					uninstall: {
 						label: (
-							<Box color='on-danger'>
+							<Box color='status-font-on-danger'>
 								<Icon name='trash' size='x16' marginInlineEnd='x4' />
 								{t('Uninstall')}
 							</Box>
