@@ -2,30 +2,17 @@ import type { App } from '@rocket.chat/core-typings';
 import { Box, Button, Icon, Throbber, Tag, Margins } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import {
-	useRouteParameter,
-	usePermission,
-	useSetModal,
-	useTranslation,
-	useToastMessageDispatch,
-	useEndpoint,
-} from '@rocket.chat/ui-contexts';
+import { useRouteParameter, usePermission, useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback, useState, memo } from 'react';
 import semver from 'semver';
 
-import { Apps } from '../../../../../../ee/client/apps/orchestrator';
-import AppPermissionsReviewModal from '../../../AppPermissionsReviewModal';
-import IframeModal from '../../../IframeModal';
 import type { appStatusSpanResponseProps } from '../../../helpers';
-import { appButtonProps, appMultiStatusProps, handleAPIError, handleInstallError } from '../../../helpers';
+import { appButtonProps, appMultiStatusProps } from '../../../helpers';
 import { marketplaceActions } from '../../../helpers/marketplaceActions';
+import type { AppInstallationHandlerParams } from '../../../hooks/useAppInstallationHandler';
+import { useAppInstallationHandler } from '../../../hooks/useAppInstallationHandler';
 import AppStatusPriceDisplay from './AppStatusPriceDisplay';
-
-type AppRequestPostMessage = {
-	message: string;
-	status: string;
-};
 
 type AppStatusProps = {
 	app: App;
@@ -38,7 +25,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const t = useTranslation();
 	const [endUserRequested, setEndUserRequested] = useState(false);
 	const [loading, setLoading] = useSafely(useState(false));
-	const [isAppPurchased, setPurchased] = useSafely(useState(app?.isPurchased));
+	const [isAppPurchased, setPurchased] = useSafely(useState(!!app?.isPurchased));
 	const setModal = useSetModal();
 	const isAdminUser = usePermission('manage-apps');
 	const context = useRouteParameter('context');
@@ -54,114 +41,42 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const totalSeenRequests = app?.appRequestStats?.totalSeen;
 	const totalUnseenRequests = app?.appRequestStats?.totalUnseen;
-	const dispatchToastMessage = useToastMessageDispatch();
-
-	const notifyAdmins = useEndpoint('POST', '/apps/notify-admins');
-	const requestConfirmAction = (postMessage: AppRequestPostMessage) => {
-		setModal(null);
-		setLoading(false);
-		dispatchToastMessage({ type: 'success', message: 'App request submitted' });
-
-		setEndUserRequested(true);
-
-		notifyAdmins({
-			appId: app.id,
-			appName: app.name,
-			appVersion: app.marketplaceVersion,
-			message: postMessage.message,
-		});
-	};
-
-	if (button?.action === undefined && button?.action) {
-		throw new Error('action must not be null');
-	}
 
 	const action = button?.action;
-	const confirmAction = useCallback(
-		(permissionsGranted) => {
-			setModal(null);
 
-			if (action === undefined) {
-				setLoading(false);
-				return;
+	const confirmAction = useCallback<AppInstallationHandlerParams['onSuccess']>(
+		async (action, permissionsGranted) => {
+			if (action !== 'request' && !!permissionsGranted) {
+				setPurchased(true);
+				await marketplaceActions[action]({ ...app, permissionsGranted });
+			} else {
+				setEndUserRequested(true);
 			}
 
-			if (action !== 'request') {
-				marketplaceActions[action]({ ...app, permissionsGranted }).then(() => {
-					setLoading(false);
-				});
-			}
+			setLoading(false);
 		},
-		[setModal, action, app, setLoading],
+		[app, setLoading, setPurchased],
 	);
+
 	const cancelAction = useCallback(() => {
 		setLoading(false);
 		setModal(null);
 	}, [setLoading, setModal]);
 
-	const showAppPermissionsReviewModal = (): void => {
-		if (!isAppPurchased) {
-			setPurchased(true);
-		}
+	const appInstallationHandler = useAppInstallationHandler({
+		app,
+		action: action || 'purchase',
+		isAppPurchased,
+		onDismiss: cancelAction,
+		onSuccess: confirmAction,
+	});
 
-		if (!app.permissions || app.permissions.length === 0) {
-			return confirmAction(app.permissions);
-		}
-
-		if (!Array.isArray(app.permissions)) {
-			handleInstallError(new Error('The "permissions" property from the app manifest is invalid'));
-		}
-
-		return setModal(<AppPermissionsReviewModal appPermissions={app.permissions} onCancel={cancelAction} onConfirm={confirmAction} />);
-	};
-
-	const openIncompatibleModal = async (app: App, action: string, cancel: () => void): Promise<void> => {
-		try {
-			const incompatibleData = await Apps.buildIncompatibleExternalUrl(app.id, app.marketplaceVersion, action);
-			setModal(<IframeModal url={incompatibleData.url} cancel={cancel} confirm={cancel} />);
-		} catch (e: any) {
-			handleAPIError(e);
-		}
-	};
-
-	const openPurchaseModal = async (app: App): Promise<void> => {
-		try {
-			const data = await Apps.buildExternalUrl(app.id, app.purchaseType, false);
-			setModal(<IframeModal url={data.url} cancel={cancelAction} confirm={showAppPermissionsReviewModal} />);
-		} catch (error) {
-			handleAPIError(error);
-		}
-	};
-
-	const handleClick = async (e: React.MouseEvent<HTMLElement>): Promise<void> => {
-		e.preventDefault();
-		e.stopPropagation();
-
+	const handleAcquireApp = useCallback(() => {
 		setLoading(true);
+		appInstallationHandler();
+	}, [appInstallationHandler, setLoading]);
 
-		if (action === 'request') {
-			try {
-				const data = await Apps.buildExternalAppRequest(app.id);
-				setModal(<IframeModal url={data?.url} wrapperHeight={'x460'} cancel={cancelAction} confirm={requestConfirmAction} />);
-			} catch (error) {
-				handleAPIError(error);
-			}
-			return;
-		}
-
-		if (app.versionIncompatible && action !== undefined) {
-			openIncompatibleModal(app, action, cancelAction);
-			return;
-		}
-
-		if (action !== undefined && action === 'purchase' && !isAppPurchased) {
-			openPurchaseModal(app);
-			return;
-		}
-
-		showAppPermissionsReviewModal();
-	};
-
+	// @TODO we should refactor this to not use the label to determine the variant
 	const getStatusVariant = (status: appStatusSpanResponseProps) => {
 		if (isAppRequestsPage && totalUnseenRequests && (status.label === 'request' || status.label === 'requests')) {
 			return 'primary';
@@ -171,7 +86,8 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 			return undefined;
 		}
 
-		if (status.label === 'Disabled') {
+		// includes() here because the label can be 'Disabled' or 'Disabled*'
+		if (status.label.includes('Disabled')) {
 			return 'secondary-danger';
 		}
 
@@ -211,7 +127,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 						primary
 						small
 						disabled={loading || (action === 'request' && (app?.requestedEndUser || endUserRequested))}
-						onClick={handleClick}
+						onClick={handleAcquireApp}
 						mie='x8'
 					>
 						{loading ? (
