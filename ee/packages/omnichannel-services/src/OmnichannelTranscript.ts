@@ -118,7 +118,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			throw new Error('room-still-open');
 		}
 
-		if (!room.servedBy || !room.v) {
+		if (!room.v) {
 			throw new Error('improper-room-state');
 		}
 
@@ -208,15 +208,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	private async getTranslations(): Promise<Array<{ key: string; value: string }>> {
-		const keys: string[] = [
-			'Agent',
-			'Date',
-			'Customer',
-			'Omnichannel_Agent',
-			'Time',
-			'Chat_transcript',
-			'This_attachment_is_not_supported',
-		];
+		const keys: string[] = ['Agent', 'Date', 'Customer', 'Not_assigned', 'Time', 'Chat_transcript', 'This_attachment_is_not_supported'];
 
 		return Promise.all(
 			keys.map(async (key) => {
