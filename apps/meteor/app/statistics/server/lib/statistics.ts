@@ -22,6 +22,8 @@ import {
 	Roles as RolesRaw,
 	InstanceStatus,
 	Settings,
+	LivechatTrigger,
+	LivechatCustomField,
 } from '@rocket.chat/models';
 import { Analytics, Team, VideoConf } from '@rocket.chat/core-services';
 
@@ -124,6 +126,7 @@ export const statistics = {
 
 		// livechat agents
 		statistics.totalLivechatAgents = Users.findAgents().count();
+		statistics.totalLivechatManagers = await UsersRaw.col.countDocuments({ roles: 'livechat-manager' });
 
 		// livechat enabled
 		statistics.livechatEnabled = settings.get('Livechat_enabled');
@@ -146,6 +149,30 @@ export const statistics = {
 		statsPms.push(
 			LivechatDepartment.col.count().then((count) => {
 				statistics.departments = count;
+			}),
+		);
+
+		// Number of archived departments
+		statsPms.push(
+			LivechatDepartment.col.countDocuments({ archived: true }).then((count) => {
+				statistics.archivedDepartments = count;
+			}),
+		);
+
+		// Workspace allows dpeartment removal
+		statistics.isDepartmentRemovalEnabled = settings.get('Omnichannel_enable_department_removal');
+
+		// Number of triggers
+		statsPms.push(
+			LivechatTrigger.col.count().then((count) => {
+				statistics.totalTriggers = count;
+			}),
+		);
+
+		// Number of custom fields
+		statsPms.push(
+			LivechatCustomField.col.count().then((count) => {
+				statistics.totalCustomFields = count;
 			}),
 		);
 
