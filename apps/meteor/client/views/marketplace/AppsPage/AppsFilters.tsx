@@ -59,13 +59,15 @@ const AppsFilters = ({
 						group={freePaidFilterStructure}
 						onSelected={freePaidFilterOnSelected}
 						mie={hasFilterStackMargin}
-						mb={hasNotFilterStackMargin}
+						mbs={hasNotFilterStackMargin}
+						mbe={hasNotFilterStackMargin}
 					/>
 				)}
 				<RadioDropDown
 					group={statusFilterStructure}
 					onSelected={statusFilterOnSelected}
 					mie={hasFilterStackMargin}
+					mbs={shouldFiltersStack && isPrivateAppsPage ? 'x8' : ''}
 					mbe={hasNotFilterStackMargin}
 				/>
 				{!isPrivateAppsPage && (
@@ -74,9 +76,10 @@ const AppsFilters = ({
 						selectedCategories={selectedCategories}
 						onSelected={onSelected}
 						mie={hasFilterStackMargin}
+						mbe={hasNotFilterStackMargin}
 					/>
 				)}
-				<RadioDropDown group={sortFilterStructure} onSelected={sortFilterOnSelected} mbs={hasNotFilterStackMargin} />
+				<RadioDropDown group={sortFilterStructure} onSelected={sortFilterOnSelected} />
 			</FilterByText>
 			<TagList categories={categoryTagList} onClick={onSelected} />
 		</Box>
