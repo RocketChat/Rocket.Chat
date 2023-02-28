@@ -1,4 +1,4 @@
-import type { IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IOmnichannelServiceLevelAgreements, IUser } from '@rocket.chat/core-typings';
 import { OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
@@ -11,7 +11,10 @@ const updateSLA = async (room: IOmnichannelRoom, user: Required<Pick<IUser, '_id
 		return removeRoomSLA(room._id, user);
 	}
 
-	const sla = await OmnichannelServiceLevelAgreements.findOneById(slaId, { projection: { _id: 1, dueTimeInMinutes: 1 } });
+	const sla: Pick<IOmnichannelServiceLevelAgreements, '_id' | 'name' | 'dueTimeInMinutes'> | null =
+		await OmnichannelServiceLevelAgreements.findOneById(slaId, {
+			projection: { _id: 1, name: 1, dueTimeInMinutes: 1 },
+		});
 	if (!sla) {
 		throw new Error(`SLA not found with id: ${slaId}`);
 	}

@@ -184,6 +184,7 @@ type Hook =
 	| 'livechat.chatQueued'
 	| 'livechat.checkAgentBeforeTakeInquiry'
 	| 'livechat.checkDefaultAgentOnNewRoom'
+	| 'livechat.sendTranscript'
 	| 'livechat.closeRoom'
 	| 'livechat.leadCapture'
 	| 'livechat.newRoom'
