@@ -6,6 +6,7 @@ import type { IRoom } from './IRoom';
 export interface IModerationInfo {
 	moderatedBy: IUser['_id'];
 	hiddenAt: Date;
+	// TODO convert this to enum
 	actionTaken: string;
 	reasonForHiding: string;
 }
@@ -19,16 +20,17 @@ export interface IMessageWithRoom extends IMessage {
 	room: IRoomInfo;
 }
 
+// new one
 export interface IReport extends IRocketChatRecord {
 	message: IMessage;
 	description: string;
 	ts: Date;
-	roomInfo: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'federated'>;
+	room: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'federated'>;
 	reportedBy: Pick<IUser, '_id' | 'username' | 'avatarETag' | 'active' | 'name' | 'createdAt'>;
 	moderationInfo?: IModerationInfo;
 	_hidden?: boolean;
 }
-
+// old one
 // export interface IReport extends IRocketChatRecord {
 // 	message: IMessage;
 // 	description: string;
@@ -44,7 +46,6 @@ export interface IModerationAudit {
 	msgId: IMessage['_id'];
 	roomIds: IRoom['_id'][];
 	ts: IReport['ts'];
-	count: number;
 	rooms: IRoomInfo[];
 }
 
@@ -57,6 +58,5 @@ export interface IReportedMessageInfo {
 	_id: IReport['_id'];
 	description: IReport['description'];
 	ts: IReport['ts'];
-	reporter: Pick<IUser, '_id' | 'username' | 'avatarETag' | 'active' | 'name' | 'createdAt'>;
-	count: number;
+	reportedBy: IReport['reportedBy'];
 }

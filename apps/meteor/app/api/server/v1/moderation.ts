@@ -18,9 +18,14 @@ API.v1.addRoute(
 			const { count = 20, offset = 0 } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 
-			const cursor = oldest
-				? Reports.findReportsBetweenDates(latest ? new Date(latest) : new Date(), new Date(oldest), offset, count, sort, selector)
-				: Reports.findReportsBeforeDate(latest ? new Date(latest) : new Date(), offset, count, sort, selector);
+			const cursor = Reports.findGroupedReports(
+				latest ? new Date(latest) : new Date(),
+				oldest ? new Date(oldest) : undefined,
+				offset,
+				count,
+				sort,
+				selector,
+			);
 
 			const [reports] = await Promise.all([cursor.toArray()]);
 
@@ -58,13 +63,14 @@ API.v1.addRoute(
 				return API.v1.failure('The required "userId" body param is missing or empty.');
 			}
 
-			const cursor = Reports.findUserMessages(userId, offset, pagCount, sort);
+			const { cursor, totalCount } = Reports.findUserMessages(userId, offset, pagCount, sort);
 
-			const [{ messages = [], count = 0 } = {}] = await cursor.toArray();
+			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				messages,
-				count,
+				count: messages.length,
+				total,
 			});
 		},
 	},
@@ -156,15 +162,15 @@ API.v1.addRoute(
 				return API.v1.failure('The required "msgId" query param is missing.');
 			}
 
-			const cursor = await Reports.findReportsByMessageId(msgId, offset, count, sort, selector);
+			const { cursor, totalCount } = Reports.findReportsByMessageId(msgId, offset, count, sort, selector);
 
-			const reports = await cursor.toArray();
+			const [reports, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				reports,
 				count: reports.length,
 				offset,
-				total: reports.length || 0,
+				total,
 			});
 		},
 	},

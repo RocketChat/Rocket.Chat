@@ -1,4 +1,4 @@
-import type { IReport, IMessage, IModerationAudit, IUserReportedMessages, IReportedMessageInfo } from '@rocket.chat/core-typings';
+import type { IReport, IMessage, IModerationAudit, IReportedMessageInfo } from '@rocket.chat/core-typings';
 import type { AggregationCursor, Document, FindCursor, UpdateResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -8,21 +8,17 @@ export interface IReportsModel extends IBaseModel<IReport> {
 		message: IMessage,
 		description: string,
 		reportedBy: IReport['reportedBy'],
-		roomInfo: IReport['roomInfo'],
+		room: IReport['room'],
 	): ReturnType<IBaseModel<IReport>['insertOne']>;
 
-	findReportsBetweenDates(
-		latest: Date,
-		oldest: Date,
+	findGroupedReports(
+		latest?: Date,
+		oldest?: Date,
 		offset?: number,
 		count?: number,
 		sort?: any,
 		selector?: string,
 	): AggregationCursor<IModerationAudit>;
-
-	findReportsAfterDate(latest: Date, offset?: number, count?: number, sort?: any, selector?: string): AggregationCursor<IModerationAudit>;
-
-	findReportsBeforeDate(oldest: Date, offset?: number, count?: number, sort?: any, selector?: string): AggregationCursor<IModerationAudit>;
 
 	findReportsByRoom(roomId: string, offset?: number, count?: number, sort?: any, selector?: string): FindPaginated<FindCursor<IReport>>;
 
@@ -34,7 +30,7 @@ export interface IReportsModel extends IBaseModel<IReport> {
 		count?: number,
 		sort?: any,
 		selector?: string,
-	): AggregationCursor<IReportedMessageInfo>;
+	): FindPaginated<FindCursor<IReportedMessageInfo>>;
 
 	findUserMessages(
 		userId: string,
@@ -42,7 +38,7 @@ export interface IReportsModel extends IBaseModel<IReport> {
 		count?: number,
 		sort?: any,
 		selector?: string,
-	): AggregationCursor<IUserReportedMessages>;
+	): FindPaginated<FindCursor<Pick<IReport, '_id' | 'message' | 'ts' | 'room'>>>;
 
 	hideReportById(reportId: IReport['_id'], userId: string, reasonForHiding: string, actionTaken: string): Promise<UpdateResult | Document>;
 
