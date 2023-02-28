@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Palette } from '@rocket.chat/fuselage';
-import { useMethod, useUserPreference, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
+import { useMethod, useUserPreference, useSetting, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactElement } from 'react';
 import React, { useCallback, memo } from 'react';
 
@@ -51,7 +51,10 @@ const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, onClick }: Th
 		[toggleFollowMessage],
 	);
 
-	const showRealNames = useUserPreference('messagesLayout') !== 'username';
+	const messagesLayoutPreference = useUserPreference('messagesLayout');
+	const defaultMessagesLayout = useSetting('Accounts_Default_User_Preferences_messagesLayout');
+	const showRealNames =
+		messagesLayoutPreference !== 'default' ? messagesLayoutPreference !== 'username' : defaultMessagesLayout !== 'username';
 
 	const handleListItemClick = useCallback(
 		(event: MouseEvent<HTMLElement>): void => {

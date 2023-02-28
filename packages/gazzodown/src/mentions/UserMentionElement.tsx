@@ -1,4 +1,4 @@
-import { useLayout, useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
+import { useLayout, useUserPreference, useSetting, useUserId } from '@rocket.chat/ui-contexts';
 import { memo, ReactElement, useContext, useMemo } from 'react';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
@@ -15,7 +15,12 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 
 	const { isMobile } = useLayout();
 	const uid = useUserId();
-	const showRealName = useUserPreference('messagesLayout') !== 'username' && !isMobile;
+
+	const messagesLayoutPreference = useUserPreference('messagesLayout');
+	const defaultMessagesLayout = useSetting('Accounts_Default_User_Preferences_messagesLayout');
+	const useRealName =
+		messagesLayoutPreference !== 'default' ? messagesLayoutPreference !== 'username' : defaultMessagesLayout !== 'username';
+	const showRealName = useRealName && !isMobile;
 
 	if (mention === 'all') {
 		return <span className='mention-link mention-link--all mention-link--group'>all</span>;

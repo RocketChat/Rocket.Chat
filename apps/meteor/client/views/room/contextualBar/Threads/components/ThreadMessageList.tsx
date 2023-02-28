@@ -54,7 +54,10 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 	const { parentRef: listJumpRef } = useLegacyThreadMessageJump({ enabled: !loading });
 
 	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, listJumpRef);
-	const hideUsernames = useUserPreference<string>('messagesLayout') === 'full_name';
+	const messagesLayoutPreference = useUserPreference<string>('messagesLayout');
+	const defaultMessagesLayout = useSetting('Accounts_Default_User_Preferences_messagesLayout');
+	const messagesLayout = messagesLayoutPreference !== 'default' ? messagesLayoutPreference : defaultMessagesLayout;
+	const hideUsernames = messagesLayout === 'full_name';
 
 	const subscription = useRoomSubscription();
 	const formatDate = useFormatDate();

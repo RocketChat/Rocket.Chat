@@ -1,4 +1,4 @@
-import { useUserPreference } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 export const useQueryOptions = (): {
@@ -16,7 +16,10 @@ export const useQueryOptions = (): {
 		  };
 } => {
 	const sortBy = useUserPreference('sidebarSortby');
-	const showRealName = useUserPreference('messagesLayout') !== 'username';
+	const messagesLayoutPreference = useUserPreference('messagesLayout');
+	const defaultMessagesLayout = useSetting('Accounts_Default_User_Preferences_messagesLayout');
+	const showRealName =
+		messagesLayoutPreference !== 'default' ? messagesLayoutPreference !== 'username' : defaultMessagesLayout !== 'username';
 
 	return useMemo(
 		() => ({

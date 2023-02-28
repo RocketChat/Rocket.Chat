@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { PositionAnimated, AnimatedVisibility, Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useUserPreference, useRolesDescription } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useSetting, useRolesDescription } from '@rocket.chat/ui-contexts';
 import type { ReactElement, UIEvent } from 'react';
 import React, { useMemo, useRef } from 'react';
 
@@ -25,7 +25,11 @@ type UserCardWithDataProps = {
 const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWithDataProps): ReactElement => {
 	const ref = useRef(target);
 	const getRoles = useRolesDescription();
-	const showRealNames = useUserPreference('messagesLayout') !== 'username';
+
+	const messagesLayoutPreference = useUserPreference('messagesLayout');
+	const defaultMessagesLayout = useSetting('Accounts_Default_User_Preferences_messagesLayout');
+	const showRealNames =
+		messagesLayoutPreference !== 'default' ? messagesLayoutPreference !== 'username' : defaultMessagesLayout !== 'username';
 
 	const query = useMemo(() => ({ username }), [username]);
 	const { value: data, phase: state } = useEndpointData('/v1/users.info', { params: query });

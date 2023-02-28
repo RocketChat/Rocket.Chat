@@ -1,6 +1,6 @@
 import { Box, Icon, TextInput, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useAutoFocus } from '@rocket.chat/fuselage-hooks';
-import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -11,7 +11,10 @@ import Row from './Row';
 import { withData } from './withData';
 
 function DiscussionList({ total = 10, discussions = [], loadMoreItems, loading, onClose, error, userId, text, setText }) {
-	const showRealNames = useUserPreference('messagesLayout') !== 'username';
+	const messagesLayoutPreference = useUserPreference('messagesLayout');
+	const defaultMessagesLayout = useSetting('Accounts_Default_User_Preferences_messagesLayout');
+	const showRealNames =
+		messagesLayoutPreference !== 'default' ? messagesLayoutPreference !== 'username' : defaultMessagesLayout !== 'username';
 
 	const t = useTranslation();
 	const inputRef = useAutoFocus(true);

@@ -34,6 +34,10 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 	const t = useTranslation();
 
 	const showRoles = useSetting('UI_DisplayRoles');
+	const messagesLayoutPreference = useUserPreference<string>('messagesLayout');
+	const defaultMessagesLayout = useSetting(
+		'Accounts_Default_User_Preferences_messagesLayout',
+	) as keyof typeof messagesLayoutOptionsLabelMap;
 
 	const settings = {
 		unreadAlert: useUserPreference('unreadAlert'),
@@ -43,7 +47,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 		autoImageLoad: useUserPreference('autoImageLoad'),
 		saveMobileBandwidth: useUserPreference('saveMobileBandwidth'),
 		collapseMediaByDefault: useUserPreference('collapseMediaByDefault'),
-		messagesLayout: useUserPreference('messagesLayout'),
+		messagesLayout: messagesLayoutPreference !== 'default' ? messagesLayoutPreference : defaultMessagesLayout,
 		hideRoles: useUserPreference('hideRoles'),
 		hideFlexTab: useUserPreference('hideFlexTab'),
 		clockMode: useUserPreference('clockMode') ?? 0,
@@ -111,10 +115,6 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 		],
 		[t],
 	);
-
-	const defaultMessagesLayout = useSetting(
-		'Accounts_Default_User_Preferences_messagesLayout',
-	) as keyof typeof messagesLayoutOptionsLabelMap;
 
 	const messagesLayoutOptions = useMemo(
 		() => Object.entries(messagesLayoutOptionsLabelMap).map(([key, val]) => t.has(val) && [key, t(val)]),

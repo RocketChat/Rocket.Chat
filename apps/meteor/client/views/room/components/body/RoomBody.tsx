@@ -61,7 +61,12 @@ const RoomBody = (): ReactElement => {
 	const [hasNewMessages, setHasNewMessages] = useState(false);
 
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab');
-	const hideUsernames = useUserPreference<string>('messagesLayout') === 'full_name';
+
+	const messagesLayoutPreference = useUserPreference<string>('messagesLayout');
+	const defaultMessagesLayout = useSetting('Accounts_Default_User_Preferences_messagesLayout');
+	const messagesLayout = messagesLayoutPreference !== 'default' ? messagesLayoutPreference : defaultMessagesLayout;
+	const hideUsernames = messagesLayout === 'full_name';
+
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
 
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -148,7 +153,7 @@ const RoomBody = (): ReactElement => {
 		return subscribed;
 	}, [allowAnonymousRead, canPreviewChannelRoom, room, subscribed]);
 
-	const useRealName = useUserPreference('messagesLayout') !== 'username';
+	const useRealName = messagesLayout !== 'username';
 
 	const { data: roomLeader } = useReactiveQuery(['rooms', room._id, 'leader', { not: user?._id }], ({ roomRoles }) => {
 		const leaderRoomRole = roomRoles.findOne({

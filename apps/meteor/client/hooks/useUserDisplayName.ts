@@ -1,10 +1,14 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { useUserPreference } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
 
 import { getUserDisplayName } from '../lib/getUserDisplayName';
 
 export const useUserDisplayName = ({ name, username }: Pick<IUser, 'name' | 'username'>): string | undefined => {
-	const useRealName = useUserPreference('messagesLayout') !== 'username';
+	const messagesLayoutPreference = useUserPreference('messagesLayout');
+	const defaultMessagesLayout = useSetting('Accounts_Default_User_Preferences_messagesLayout');
+	const useRealName =
+		messagesLayoutPreference !== 'default' ? messagesLayoutPreference !== 'username' : defaultMessagesLayout !== 'username';
 
-	return getUserDisplayName(name, username, !!useRealName);
+	console.log('useRealName: ', useRealName);
+	return getUserDisplayName(name, username, useRealName);
 };

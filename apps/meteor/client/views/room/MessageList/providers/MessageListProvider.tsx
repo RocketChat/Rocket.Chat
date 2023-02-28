@@ -32,13 +32,17 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children }) => {
 
 	const { isMobile } = useLayout();
 
-	const showRealName = Boolean(useUserPreference<string>('messagesLayout') !== 'username');
 	const showColors = useSetting('HexColorPreview_Enabled') as boolean;
 
 	const displayRolesGlobal = Boolean(useSetting('UI_DisplayRoles'));
 	const hideRolesPreference = Boolean(!useUserPreference<boolean>('hideRoles') && !isMobile);
 	const showRoles = displayRolesGlobal && hideRolesPreference;
-	const showUsername = Boolean(useUserPreference<string>('messagesLayout') !== 'full_name' && !isMobile);
+
+	const messagesLayoutPreference = useUserPreference<string>('messagesLayout');
+	const defaultMessagesLayout = useSetting('Accounts_Default_User_Preferences_messagesLayout');
+	const messagesLayout = messagesLayoutPreference !== 'default' ? messagesLayoutPreference : defaultMessagesLayout;
+	const showUsername = messagesLayout !== 'full_name' && !isMobile;
+	const showRealName = messagesLayout !== 'username';
 	const highlights = useUserPreference<string[]>('highlights');
 
 	const { showAutoTranslate, autoTranslateLanguage } = useAutoTranslate(subscription);
