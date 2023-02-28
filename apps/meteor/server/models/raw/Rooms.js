@@ -133,6 +133,7 @@ export class RoomsRaw extends BaseRaw {
 			prid: { $exists: discussion },
 			$or: [
 				{ name: nameRegex },
+				{ fname: nameRegex },
 				{
 					t: 'd',
 					usernames: nameRegex,
