@@ -48,7 +48,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 			{ pass: password, ...formData },
 			{
 				onError: (error: any) => {
-					if (error.errorType === 'error-invalid-email') {
+					if ([error.error, error.errorType].includes('error-invalid-email')) {
 						setError('email', { type: 'invalid-email', message: t('registration.component.form.invalidEmail') });
 					}
 					if (error.errorType === 'error-user-already-exists') {
@@ -68,12 +68,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 	};
 
 	if (errors.email?.type === 'invalid-email') {
-		return (
-			<EmailConfirmationForm
-				onBackToLogin={() => clearErrors('email')}
-				email={getValues('username')?.includes('@') ? getValues('username') : undefined}
-			/>
-		);
+		return <EmailConfirmationForm onBackToLogin={() => clearErrors('email')} email={getValues('email')} />;
 	}
 
 	return (
