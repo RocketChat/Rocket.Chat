@@ -49,11 +49,7 @@ const TriggersFormWithData = ({ onSave, id }: { onSave: (values: TriggerFormValu
 		return <Callout>{t('Error')}: error</Callout>;
 	}
 
-	return (
-		<>
-			<TriggersForm initialValues={getInitialValues(data.trigger)} onSave={onSave} />
-		</>
-	);
+	return <TriggersForm initialValues={getInitialValues(data.trigger)} onSave={onSave} />;
 };
 
 export default TriggersFormWithData;

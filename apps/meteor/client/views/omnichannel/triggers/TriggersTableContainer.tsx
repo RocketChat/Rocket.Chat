@@ -13,7 +13,9 @@ const TriggersTableContainer = () => {
 	const { current, itemsPerPage } = params;
 
 	const getTriggers = useEndpoint('GET', '/v1/livechat/triggers');
-	const { data, refetch, isError } = useQuery(['/v1/livechat/triggers'], () => getTriggers({ offset: current, count: itemsPerPage }));
+	const { data, refetch, isError } = useQuery(['/v1/livechat/triggers', current, itemsPerPage], () =>
+		getTriggers({ offset: current, count: itemsPerPage }),
+	);
 
 	if (isError) {
 		return <Callout>{t('Error')}: error</Callout>;
@@ -22,7 +24,7 @@ const TriggersTableContainer = () => {
 	return (
 		<TriggersTable
 			triggers={data?.triggers || []}
-			totalTriggers={data?.triggers.length || 0}
+			totalTriggers={data?.total || 0}
 			params={params}
 			onChangeParams={setParams}
 			onDelete={refetch}
