@@ -20,23 +20,21 @@ export const ComposerAnonymous = (): ReactElement => {
 
 	const anonymousUser = useMethod('registerUser');
 
-	const registerAnonymous = useMutation({
-		mutationFn: async (...params: Parameters<typeof anonymousUser>) => {
+	const registerAnonymous = useMutation(
+		async (...params: Parameters<typeof anonymousUser>) => {
 			const result = await anonymousUser(...params);
 			await loginWithToken(result.token);
 			return result;
 		},
-	});
-
-	const joinAnonymous = async () => {
-		await registerAnonymous.mutate(
-			{ email: null },
-			{
-				onError: (error) => {
-					dispatch({ type: 'error', message: error });
-				},
+		{
+			onError: (error) => {
+				dispatch({ type: 'error', message: error });
 			},
-		);
+		},
+	);
+
+	const joinAnonymous = () => {
+		registerAnonymous.mutate({ email: null });
 	};
 
 	const setForceLogin = useSessionDispatch('forceLogin');
