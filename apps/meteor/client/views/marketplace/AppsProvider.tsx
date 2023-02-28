@@ -201,7 +201,6 @@ const AppsProvider: FC = ({ children }) => {
 				result.map((current: App) => ({
 					...current,
 					installed: true,
-					marketplace: false,
 				})),
 			);
 		} catch (e) {
@@ -264,6 +263,7 @@ const AppsProvider: FC = ({ children }) => {
 					}),
 					bundledIn: app.bundledIn,
 					marketplaceVersion: app.version,
+					migrated: installedApp.migrated,
 				};
 
 				installedAppsData.push(appData);
