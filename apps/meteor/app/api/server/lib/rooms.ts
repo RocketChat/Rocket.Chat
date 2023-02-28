@@ -10,7 +10,6 @@ export async function findAdminRooms({
 	filter,
 	types = [],
 	pagination: { offset, count, sort },
-	useFname = false,
 }: {
 	uid: string;
 	filter: string;
@@ -40,11 +39,11 @@ export async function findAdminRooms({
 
 	let result;
 	if (name && showTypes.length) {
-		result = Rooms.findByNameContainingAndTypes(name, showTypes, discussion, includeTeams, showOnlyTeams, useFname, options);
+		result = Rooms.findByNameContainingAndTypes(name, showTypes, discussion, includeTeams, showOnlyTeams, options);
 	} else if (showTypes.length) {
 		result = Rooms.findByTypes(showTypes, discussion, includeTeams, showOnlyTeams, options);
 	} else {
-		result = Rooms.findByNameContaining(name, discussion, includeTeams, showOnlyTeams, useFname, options);
+		result = Rooms.findByNameContaining(name, discussion, includeTeams, showOnlyTeams, options);
 	}
 
 	const { cursor, totalCount } = result;

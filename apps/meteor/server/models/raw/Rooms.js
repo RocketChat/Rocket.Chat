@@ -62,7 +62,7 @@ export class RoomsRaw extends BaseRaw {
 		return statistic;
 	}
 
-	findByNameContainingAndTypes(name, types, discussion = false, teams = false, showOnlyTeams = false, useFname = false, options = {}) {
+	findByNameOrFnameContainingAndTypes(name, types, discussion = false, teams = false, showOnlyTeams = false, options = {}) {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
 		const onlyTeamsQuery = showOnlyTeams ? { teamMain: { $exists: true } } : {};
@@ -75,8 +75,6 @@ export class RoomsRaw extends BaseRaw {
 					},
 			  };
 
-		const fnameQuery = useFname ? [{ fname: nameRegex }] : [];
-
 		const query = {
 			t: {
 				$in: types,
@@ -84,7 +82,7 @@ export class RoomsRaw extends BaseRaw {
 			prid: { $exists: discussion },
 			$or: [
 				{ name: nameRegex },
-				...fnameQuery,
+				{ fname: nameRegex },
 				{
 					t: 'd',
 					usernames: nameRegex,
@@ -118,7 +116,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.findPaginated(query, options);
 	}
 
-	findByNameContaining(name, discussion = false, teams = false, onlyTeams = false, useFname = false, options = {}) {
+	findByNameOrFnameContaining(name, discussion = false, teams = false, onlyTeams = false, options = {}) {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
 		const teamCondition = teams
@@ -131,13 +129,10 @@ export class RoomsRaw extends BaseRaw {
 
 		const onlyTeamsCondition = onlyTeams ? { $and: [{ teamMain: { $exists: true } }, { teamMain: true }] } : {};
 
-		const fnameQuery = useFname ? [{ fname: nameRegex }] : [];
-
 		const query = {
 			prid: { $exists: discussion },
 			$or: [
 				{ name: nameRegex },
-				...fnameQuery,
 				{
 					t: 'd',
 					usernames: nameRegex,

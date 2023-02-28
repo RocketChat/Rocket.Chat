@@ -335,15 +335,12 @@ API.v1.addRoute(
 			const { sort } = this.parseJsonQuery();
 			const { types, filter } = this.requestParams();
 
-			const useFname = settings.get('UI_Allow_room_names_with_special_chars') ?? false;
-
 			return API.v1.success(
 				Promise.await(
 					findAdminRooms({
 						uid: this.userId,
 						filter,
 						types,
-						useFname,
 						pagination: {
 							offset,
 							count,
