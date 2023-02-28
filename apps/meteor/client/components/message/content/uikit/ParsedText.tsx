@@ -17,7 +17,17 @@ type ParsedTextProps = {
 };
 
 const ParsedText = ({ text, mentions, channels, searchText }: ParsedTextProps) => {
-	const tokens = useMemo(() => parse(text, { emoticons: true }), [text]);
+	const tokens = useMemo(() => {
+		if (!text) {
+			return undefined;
+		}
+
+		return parse(text, { emoticons: true });
+	}, [text]);
+
+	if (!tokens) {
+		return null;
+	}
 
 	return <GazzodownText tokens={tokens} mentions={mentions} channels={channels} searchText={searchText} />;
 };
