@@ -37,12 +37,25 @@ export class HomeContent {
 		await this.btnJoinRoom.click();
 	}
 
+	async joinRoomIfNeeded(): Promise<void> {
+		if (await this.inputMessage.isEnabled()) {
+			return;
+		}
+		if (!(await this.btnJoinRoom.isVisible())) {
+			return;
+		}
+		await this.joinRoom();
+	}
+
 	async sendMessage(text: string): Promise<void> {
+		await this.joinRoomIfNeeded();
+		await this.page.waitForSelector('[name="msg"]:not([disabled])');
 		await this.page.locator('[name="msg"]').type(text);
 		await this.page.keyboard.press('Enter');
 	}
 
 	async dispatchSlashCommand(text: string): Promise<void> {
+		await this.joinRoomIfNeeded();
 		await this.page.locator('[name="msg"]').type(text);
 		await this.page.keyboard.press('Enter');
 		await this.page.keyboard.press('Enter');

@@ -28,8 +28,6 @@ test.describe.serial('permissions', () => {
 
 		test('expect option(edit) not be visible', async ({ page }) => {
 			await poHomeChannel.sidenav.openChat(targetChannel);
-			await poHomeChannel.content.joinRoom();
-			await expect(poHomeChannel.content.inputMessage).toBeEnabled();
 
 			await poHomeChannel.content.sendMessage('expect option(edit) not be visible');
 

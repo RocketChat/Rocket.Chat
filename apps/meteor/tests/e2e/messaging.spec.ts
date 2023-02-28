@@ -27,11 +27,6 @@ test.describe.serial('Messaging', () => {
 
 		await auxContext.poHomeChannel.sidenav.openChat(targetChannel);
 
-		await poHomeChannel.content.joinRoom();
-		await auxContext.poHomeChannel.content.joinRoom();
-
-		await expect(poHomeChannel.content.inputMessage).toBeEnabled();
-
 		await poHomeChannel.content.sendMessage('hello world');
 
 		await expect(auxContext.poHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
