@@ -174,7 +174,7 @@ jobs:
         if: startsWith(github.ref, 'refs/pull/') == true
         env:
           METEOR_PROFILE: 1000
-        run: yarn build:ci -- --debug --directory /tmp/dist
+        run: yarn build:ci -- --directory /tmp/dist
 
       - name: Build Rocket.Chat
         if: startsWith(github.ref, 'refs/pull/') != true
