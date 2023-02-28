@@ -31,6 +31,7 @@ Meteor.methods({
 		}
 
 		const uid = Meteor.userId();
+		const user = Meteor.user();
 		const { rid } = message;
 		// If the user can't access the room where the message is, report that the message id is invalid
 		const room = await Rooms.findOneById(rid);
@@ -40,7 +41,20 @@ Meteor.methods({
 			});
 		}
 
-		await Reports.createWithMessageDescriptionAndUserId(message, description, uid);
+		const reportedBy = {
+			_id: user._id,
+			username: user.username,
+			name: user.name,
+			active: user.active,
+			avatarETag: user.avatarETag,
+		};
+
+		const roomInfo = {
+			rid,
+			name: room.name,
+		};
+
+		await Reports.createWithMessageDescriptionAndUserId(message, description, roomInfo, reportedBy);
 
 		Promise.await(Apps.triggerEvent(AppEvents.IPostMessageReported, message, Meteor.user(), description));
 

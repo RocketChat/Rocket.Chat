@@ -23,10 +23,18 @@ export interface IReport extends IRocketChatRecord {
 	message: IMessage;
 	description: string;
 	ts: Date;
-	userId: string;
+	roomInfo: IRoomInfo;
+	reportedBy: Pick<IUser, '_id' | 'username' | 'avatarETag' | 'active' | 'name' | 'createdAt'>;
 	moderationInfo?: IModerationInfo;
 	_hidden?: boolean;
 }
+
+// export interface IReport extends IRocketChatRecord {
+// 	message: IMessage;
+// 	description: string;
+// 	ts: Date;
+// 	userId: string;
+// }
 
 export interface IModerationAudit {
 	userId: IUser['_id'];

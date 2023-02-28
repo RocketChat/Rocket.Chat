@@ -7,7 +7,8 @@ export interface IReportsModel extends IBaseModel<IReport> {
 	createWithMessageDescriptionAndUserId(
 		message: IMessage,
 		description: string,
-		userId: string,
+		reportedBy: IReport['reportedBy'],
+		roomInfo: IReport['roomInfo'],
 	): ReturnType<IBaseModel<IReport>['insertOne']>;
 
 	findReportsBetweenDates(

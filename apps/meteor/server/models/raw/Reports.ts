@@ -17,12 +17,18 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		super(db, 'reports', trash);
 	}
 
-	createWithMessageDescriptionAndUserId(message: IMessage, description: string, userId: string): ReturnType<BaseRaw<IReport>['insertOne']> {
-		const record: Pick<IReport, 'message' | 'description' | 'ts' | 'userId'> = {
+	createWithMessageDescriptionAndUserId(
+		message: IMessage,
+		description: string,
+		reportedBy: IReport['reportedBy'],
+		roomInfo: IReport['roomInfo'],
+	): ReturnType<BaseRaw<IReport>['insertOne']> {
+		const record: Pick<IReport, 'message' | 'description' | 'ts' | 'reportedBy' | 'roomInfo'> = {
 			message,
 			description,
+			reportedBy,
+			roomInfo,
 			ts: new Date(),
-			userId,
 		};
 		return this.insertOne(record);
 	}
