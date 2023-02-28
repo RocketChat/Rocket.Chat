@@ -1,5 +1,5 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
-import { Icon, Menu } from '@rocket.chat/fuselage';
+import { Box, Icon, Menu } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useRoute, useSetModal, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -65,10 +65,10 @@ const DepartmentItemMenu = ({ dep }: { dep: Omit<ILivechatDepartment, '_updatedA
 		},
 		delete: {
 			label: (
-				<>
+				<Box data-tooltip={!departmentRemovalEnabled ? t('Department_Removal_Disabled') : undefined}>
 					<Icon name='trash' size='x16' marginInlineEnd='x4' />
 					{t('Delete')}
-				</>
+				</Box>
 			),
 			action: (): void => handlePermanentDepartmentRemoval(),
 			disabled: !departmentRemovalEnabled,

@@ -52,7 +52,7 @@ const ArchivedItemMenu = ({ dep }: { dep: Omit<ILivechatDepartment, '_updatedAt'
 
 		delete: {
 			label: (
-				<Box title={!departmentRemovalEnabled ? t('Department_Removal_Disabled') : undefined}>
+				<Box data-tooltip={!departmentRemovalEnabled ? t('Department_Removal_Disabled') : undefined}>
 					<Icon name='trash' size='x16' marginInlineEnd='x4' />
 					{t('Delete')}
 				</Box>
