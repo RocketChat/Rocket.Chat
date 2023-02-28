@@ -9,6 +9,5 @@ export const useUserDisplayName = ({ name, username }: Pick<IUser, 'name' | 'use
 	const useRealName =
 		messagesLayoutPreference !== 'default' ? messagesLayoutPreference !== 'username' : defaultMessagesLayout !== 'username';
 
-	console.log('useRealName: ', useRealName);
 	return getUserDisplayName(name, username, useRealName);
 };
