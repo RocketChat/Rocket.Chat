@@ -81,7 +81,7 @@ export class RoomsRaw extends BaseRaw {
 			},
 			prid: { $exists: discussion },
 			$or: [
-				{ name: nameRegex },
+				{ name: nameRegex, federated: { $ne: true } },
 				{ fname: nameRegex },
 				{
 					t: 'd',
@@ -132,7 +132,7 @@ export class RoomsRaw extends BaseRaw {
 		const query = {
 			prid: { $exists: discussion },
 			$or: [
-				{ name: nameRegex },
+				{ name: nameRegex, federated: { $ne: true } },
 				{ fname: nameRegex },
 				{
 					t: 'd',
