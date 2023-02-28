@@ -503,6 +503,11 @@ export const statistics = {
 
 		statistics.matrixFederation = await getMatrixFederationStatistics();
 
+		// Omnichannel call stats
+		statistics.webRTCEnabled = settings.get('WebRTC_Enabled');
+		statistics.webRTCEnabledForOmnichannel = settings.get('Omnichannel_call_provider') === 'WebRTC';
+		statistics.omnichannelWebRTCCalls = await RoomsRaw.findCountOfRoomsWithActiveCalls();
+
 		await Promise.all(statsPms).catch(log);
 
 		return statistics;
