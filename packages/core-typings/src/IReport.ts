@@ -23,7 +23,7 @@ export interface IReport extends IRocketChatRecord {
 	message: IMessage;
 	description: string;
 	ts: Date;
-	roomInfo: IRoomInfo;
+	roomInfo: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'federated'>;
 	reportedBy: Pick<IUser, '_id' | 'username' | 'avatarETag' | 'active' | 'name' | 'createdAt'>;
 	moderationInfo?: IModerationInfo;
 	_hidden?: boolean;

@@ -52,6 +52,9 @@ Meteor.methods({
 		const roomInfo = {
 			rid,
 			name: room.name,
+			t: room.t,
+			federated: room.federated,
+			fname: room.fname,
 		};
 
 		await Reports.createWithMessageDescriptionAndUserId(message, description, roomInfo, reportedBy);
