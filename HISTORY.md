@@ -1,6 +1,107 @@
 
 # 6.0.0 (Under Release Candidate Process)
 
+## 6.0.0-rc.3
+`2023-02-28  ·  21 🔍  ·  18 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: anonymous e2e test dispatch error ([#28171](https://github.com/RocketChat/Rocket.Chat/pull/28171))
+
+- Chore: e2e omnichannel tests - Close every opened page after the test ([#28152](https://github.com/RocketChat/Rocket.Chat/pull/28152))
+
+- Chore: Remove `meteor build --debug` option ([#28170](https://github.com/RocketChat/Rocket.Chat/pull/28170))
+
+- Chore: Remove fail-fast from matrix strategy ([#28153](https://github.com/RocketChat/Rocket.Chat/pull/28153))
+
+- Chore: Replace deprecated color tokens ([#28164](https://github.com/RocketChat/Rocket.Chat/pull/28164))
+
+- Regression:  Fix mentioning rooms with special chars ([#28206](https://github.com/RocketChat/Rocket.Chat/pull/28206))
+
+- Regression: "Enable unlimited apps" button on installation modal doesn't do anything ([#28132](https://github.com/RocketChat/Rocket.Chat/pull/28132))
+
+- Regression: Avoid rendering unsupported media on PDFs & update quote styling ([#28048](https://github.com/RocketChat/Rocket.Chat/pull/28048))
+
+  - Fix faulty logic when deciding which attachment to render based on the mime type of it
+  
+  - Replace media query syntax `(width < 767px)` with `(max-width: 767px)` since the first one isn't supported on safari  
+  - Fix a bug when has bold text in multiple rows.
+
+- Regression: Denied Microphone permission disables composer ([#28133](https://github.com/RocketChat/Rocket.Chat/pull/28133))
+
+  ![Kapture 2023-02-23 at 13 10 38](https://user-images.githubusercontent.com/27704687/220964655-b2a3b69c-9b32-4f82-b585-49ac0118297a.gif)
+
+- Regression: Fix omnichannel chat forwarding not working ([#28117](https://github.com/RocketChat/Rocket.Chat/pull/28117))
+
+- Regression: Fix RegisterForm Translations ([#28156](https://github.com/RocketChat/Rocket.Chat/pull/28156))
+
+- Regression: Fix slash commands ([#28168](https://github.com/RocketChat/Rocket.Chat/pull/28168))
+
+- Regression: Fix toggle theme breaking UI ([#28161](https://github.com/RocketChat/Rocket.Chat/pull/28161))
+
+- Regression: Hide Workspace registration feature for non-admin users ([#28154](https://github.com/RocketChat/Rocket.Chat/pull/28154))
+
+- Regression: Image Attachment Description size ([#28149](https://github.com/RocketChat/Rocket.Chat/pull/28149))
+
+  The Image Attachment is breaking lines to match the size of the image, should follow the same size of the normal message.
+
+  **Previous:** 
+  ![image](https://user-images.githubusercontent.com/20212776/221175529-e574fbdb-9069-48ae-9946-d6ea475ba4bf.png)
+
+  **Current:** 
+  ![image](https://user-images.githubusercontent.com/20212776/221175349-486b4c40-16a2-40ab-9593-089963b6315b.png)
+
+- Regression: Incorrect installation flow on app detail and upload app pages ([#28173](https://github.com/RocketChat/Rocket.Chat/pull/28173))
+
+  The install button displayed in the App detail page of an app from the Marketplace that hasn't been installed in the workspace didn't follow the same installation steps performed in the app list on Explore or Enterprise pages.
+
+  This PR isolates the installation handler so the exact same functions are used in both places.
+
+  The same problem was solved in the Upload App page
+
+- Regression: Incorrect system message upon adding/editing SLA policy for a room. ([#28151](https://github.com/RocketChat/Rocket.Chat/pull/28151))
+
+- Regression: Regular users were not able to leave federated rooms ([#28148](https://github.com/RocketChat/Rocket.Chat/pull/28148))
+
+  When regular users (not owners, nor moderators) tried to leave federated rooms, they were not allowed to do so due to a bad permission check.
+
+  Jira: FED-88
+
+- Regression: Remove unnecessary messages from Email transcript ([#28165](https://github.com/RocketChat/Rocket.Chat/pull/28165))
+
+- Regression: Support generating pdfs from queue ([#28162](https://github.com/RocketChat/Rocket.Chat/pull/28162))
+
+  This removes a code validation that prevented PDF files from being generated for rooms that were closed directly from the queue.
+
+  After discussing with product, this is a behavior we want and so we're removing the code preventing it and updating the translation keys.
+
+- Regression: Update color tokens for voip footer ([#28197](https://github.com/RocketChat/Rocket.Chat/pull/28197))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@AllanPazRibeiro](https://github.com/AllanPazRibeiro)
+- [@KevLehman](https://github.com/KevLehman)
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@aleksandernsilva](https://github.com/aleksandernsilva)
+- [@casalsgh](https://github.com/casalsgh)
+- [@csuadev](https://github.com/csuadev)
+- [@d-gubert](https://github.com/d-gubert)
+- [@dougfabris](https://github.com/dougfabris)
+- [@felipe-rod123](https://github.com/felipe-rod123)
+- [@filipemarins](https://github.com/filipemarins)
+- [@ggazzo](https://github.com/ggazzo)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@juliajforesti](https://github.com/juliajforesti)
+- [@murtaza98](https://github.com/murtaza98)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+- [@yash-rajpal](https://github.com/yash-rajpal)
+
 ## 6.0.0-rc.2
 `2023-02-23  ·  15 🔍  ·  11 👩‍💻👨‍💻`
 
