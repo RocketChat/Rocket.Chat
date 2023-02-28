@@ -200,4 +200,7 @@ export interface IStats {
 	matrixFederation: {
 		enabled: boolean;
 	};
+	webRTCEnabled: boolean;
+	webRTCEnabledForOmnichannel: boolean;
+	omnichannelWebRTCCalls: number;
 }
