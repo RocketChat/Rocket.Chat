@@ -24,7 +24,7 @@ export const preferences = {
 		enableAutoAway: true,
 		highlights: [],
 		desktopNotificationRequireInteraction: false,
-		hideUsernames: false,
+		messagesLayout: 'default',
 		hideRoles: false,
 		displayAvatars: true,
 		hideFlexTab: false,
