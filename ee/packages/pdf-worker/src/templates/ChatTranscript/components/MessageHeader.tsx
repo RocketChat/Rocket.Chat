@@ -14,14 +14,13 @@ const styles = StyleSheet.create({
 	},
 	time: {
 		fontSize: fontScales.c1.fontSize,
-		color: colors.n700,
 		marginLeft: 4,
 	},
 });
 
-export const MessageHeader = ({ name, time }: { name: string; time: string }) => (
+export const MessageHeader = ({ name, time, light }: { name: string; time: string; light?: boolean }) => (
 	<View style={styles.header} wrap={false}>
 		<Text style={styles.name}>{name}</Text>
-		<Text style={styles.time}>{time}</Text>
+		<Text style={{ ...styles.time, color: light ? colors.n600 : colors.n700 }}>{time}</Text>
 	</View>
 );

@@ -9,7 +9,7 @@ type CodeBlockProps = {
 };
 
 const CodeBlock = ({ lines }: CodeBlockProps): ReactElement => (
-	<View style={codeStyles.wrapper}>
+	<View style={{ ...codeStyles.wrapper, padding: 8 }}>
 		{lines.map((line, index) => (
 			<Text key={index} style={codeStyles.code}>
 				{line.value?.value || ' '}
