@@ -134,6 +134,7 @@ Meteor.methods({
 					channel: channels,
 					script: integration.script,
 					scriptEnabled: integration.scriptEnabled,
+					overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled,
 					_updatedAt: new Date(),
 					_updatedBy: Users.findOne(this.userId, { fields: { username: 1 } }),
 				},

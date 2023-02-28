@@ -156,7 +156,7 @@ describe('[Incoming Integrations]', function () {
 							alias: 'test2',
 							username: 'rocket.cat',
 							scriptEnabled: false,
-							overrideDestinationChannelEnabled: true,
+							overrideDestinationChannelEnabled: false,
 							channel: '#general',
 						})
 						.expect('Content-Type', 'application/json')
@@ -233,6 +233,50 @@ describe('[Incoming Integrations]', function () {
 							expect(!!res.body.messages.find((m) => m.msg === successfulMesssage)).to.be.true;
 						})
 						.end(done);
+				});
+		});
+		it('should send a message for a channel that is not specified in the webhooks configuration', async () => {
+			await request
+				.put(api('integrations.update'))
+				.set(credentials)
+				.send({
+					type: 'webhook-incoming',
+					overrideDestinationChannelEnabled: true,
+					integrationId: integration._id,
+					username: 'rocket.cat',
+					channel: '#general',
+					scriptEnabled: true,
+					enabled: true,
+					name: integration.name,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('integration');
+					expect(res.body.integration.overrideDestinationChannelEnabled).to.be.equal(true);
+				});
+			const successfulMesssage = `Message sent successfully at #${Date.now()}`;
+			await request
+				.post(`/hooks/${integration._id}/${integration.token}`)
+				.send({
+					text: successfulMesssage,
+					channel: [testChannelName],
+				})
+				.expect(200);
+
+			return request
+				.get(api('channels.messages'))
+				.set(credentials)
+				.query({
+					roomId: channel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').and.to.be.an('array');
+					expect(!!res.body.messages.find((m) => m.msg === successfulMesssage)).to.be.true;
 				});
 		});
 	});
