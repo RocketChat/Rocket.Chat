@@ -12,24 +12,15 @@ import {
 import React, { useMemo, useCallback, useState } from 'react';
 import semver from 'semver';
 
-import { Apps } from '../../../ee/client/apps/orchestrator';
 import WarningModal from '../../components/WarningModal';
-import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import IframeModal from './IframeModal';
-import AppInstallModal from './components/AppInstallModal/AppInstallModal';
 import UninstallGrandfatheredAppModal from './components/UninstallGrandfatheredAppModal/UninstallGrandfatheredAppModal';
 import { appEnabledStatuses, handleAPIError, appButtonProps, warnEnableDisableApp } from './helpers';
 import { marketplaceActions } from './helpers/marketplaceActions';
+import { useAppInstallationHandler } from './hooks/useAppInstallationHandler';
 import { useAppsCountQuery } from './hooks/useAppsCountQuery';
-
-const openIncompatibleModal = async (app, action, cancel, setModal) => {
-	try {
-		const incompatibleData = await Apps.buildIncompatibleExternalUrl(app.id, app.marketplaceVersion, action);
-		setModal(<IframeModal url={incompatibleData.url} cancel={cancel} />);
-	} catch (e) {
-		handleAPIError(e);
-	}
-};
+import { useOpenAppPermissionsReviewModal } from './hooks/useOpenAppPermissionsReviewModal';
+import { useOpenIncompatibleModal } from './hooks/useOpenIncompatibleModal';
 
 function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const t = useTranslation();
@@ -41,7 +32,6 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		throw new Error('No current route name');
 	}
 	const router = useRoute(currentRouteName);
-	const upgradeRoute = useRoute('upgradeRoute');
 
 	const context = useRouteParameter('context');
 	const currentTab = useRouteParameter('tab');
@@ -50,7 +40,6 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const buildExternalUrl = useEndpoint('GET', '/apps');
 	const syncApp = useEndpoint('POST', `/apps/${app.id}/sync`);
 	const uninstallApp = useEndpoint('DELETE', `/apps/${app.id}`);
-	const notifyAdmins = useEndpoint('POST', `/apps/notify-admins`);
 
 	const [loading, setLoading] = useState(false);
 	const [requestedEndUser, setRequestedEndUser] = useState(app.requestedEndUser);
@@ -61,43 +50,56 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 	const [isAppPurchased, setPurchased] = useState(app?.isPurchased);
 
 	const isAdminUser = usePermission('manage-apps');
+	const appCountQuery = useAppsCountQuery(context);
+	const openIncompatibleModal = useOpenIncompatibleModal();
+
 	const button = appButtonProps({ ...app, isAdminUser });
-
-	const result = useAppsCountQuery(context);
-
-	const cancelAction = useCallback(() => {
-		setModal(null);
-		setLoading(false);
-	}, [setModal]);
-
 	const action = button?.action || '';
-	const confirmAction = useCallback(
-		async (permissionsGranted) => {
-			setModal(null);
-
-			await marketplaceActions[action]({ ...app, permissionsGranted });
-
-			setLoading(false);
-		},
-		[setModal, action, app, setLoading],
-	);
-
-	const showAppPermissionsReviewModal = useCallback(() => {
-		if (!isAppPurchased) {
-			setPurchased(true);
-		}
-
-		return setModal(<AppPermissionsReviewModal appPermissions={app.permissions} onCancel={cancelAction} onConfirm={confirmAction} />);
-	}, [app.permissions, cancelAction, confirmAction, isAppPurchased, setModal, setPurchased]);
 
 	const closeModal = useCallback(() => {
 		setModal(null);
 		setLoading(false);
-	}, [setModal]);
+	}, [setModal, setLoading]);
+
+	const installationSuccess = useCallback(
+		async (action, permissionsGranted) => {
+			if (action === 'purchase') {
+				setPurchased(true);
+			}
+
+			if (action === 'request') {
+				setRequestedEndUser(true);
+			} else {
+				await marketplaceActions[action]({ ...app, permissionsGranted });
+			}
+
+			setLoading(false);
+		},
+		[app, setLoading],
+	);
+
+	const openPermissionModal = useOpenAppPermissionsReviewModal({
+		app,
+		onCancel: closeModal,
+		onConfirm: (permissionsGranted) => installationSuccess(action, permissionsGranted),
+	});
+
+	const appInstallationHandler = useAppInstallationHandler({
+		app,
+		isAppPurchased,
+		action,
+		onDismiss: closeModal,
+		onSuccess: installationSuccess,
+	});
+
+	const handleAcquireApp = useCallback(() => {
+		setLoading(true);
+		appInstallationHandler();
+	}, [appInstallationHandler, setLoading]);
 
 	const handleSubscription = useCallback(async () => {
 		if (app?.versionIncompatible && !isSubscribed) {
-			openIncompatibleModal(app, 'subscribe', closeModal, setModal);
+			openIncompatibleModal(app, 'subscribe', closeModal);
 			return;
 		}
 
@@ -123,76 +125,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		};
 
 		setModal(<IframeModal url={data.url} confirm={confirm} cancel={closeModal} />);
-	}, [app, setModal, closeModal, isSubscribed, buildExternalUrl, syncApp]);
-
-	const acquireApp = useCallback(async () => {
-		if (action === 'purchase' && !isAppPurchased) {
-			try {
-				const data = await Apps.buildExternalUrl(app.id, app.purchaseType, false);
-				setModal(<IframeModal url={data.url} cancel={cancelAction} confirm={showAppPermissionsReviewModal} />);
-			} catch (error) {
-				handleAPIError(error);
-			}
-			return;
-		}
-
-		showAppPermissionsReviewModal();
-	}, [action, app, isAppPurchased, showAppPermissionsReviewModal, setModal, cancelAction]);
-
-	const handleAcquireApp = useCallback(async () => {
-		setLoading(true);
-
-		const requestConfirmAction = (postMessage) => {
-			setModal(null);
-			setLoading(false);
-			setRequestedEndUser(true);
-			dispatchToastMessage({ type: 'success', message: 'App request submitted' });
-
-			notifyAdmins({
-				appId: app.id,
-				appName: app.name,
-				appVersion: app.marketplaceVersion,
-				message: postMessage.message,
-			});
-		};
-
-		if (app?.versionIncompatible) {
-			openIncompatibleModal(app, 'subscribe', closeModal, setModal);
-			return;
-		}
-
-		if (action === 'request') {
-			try {
-				const data = await Apps.buildExternalAppRequest(app.id);
-				setModal(<IframeModal url={data.url} wrapperHeight={'x460'} cancel={cancelAction} confirm={requestConfirmAction} />);
-			} catch (error) {
-				handleAPIError(error);
-			}
-			return;
-		}
-
-		if (!result.data) {
-			return;
-		}
-
-		if (result.data.hasUnlimitedApps) {
-			acquireApp();
-		}
-
-		setModal(
-			<AppInstallModal
-				context={context}
-				enabled={result.data.enabled}
-				limit={result.data.limit}
-				appName={app.name}
-				handleClose={() => setModal(null)}
-				handleConfirm={acquireApp}
-				handleEnableUnlimitedApps={() => {
-					upgradeRoute.push();
-				}}
-			/>,
-		);
-	}, [app, action, result.data, setModal, context, acquireApp, dispatchToastMessage, notifyAdmins, closeModal, cancelAction, upgradeRoute]);
+	}, [app, isSubscribed, setModal, closeModal, openIncompatibleModal, buildExternalUrl, syncApp]);
 
 	const handleViewLogs = useCallback(() => {
 		router.push({ context, page: 'info', id: app.id, version: app.version, tab: 'logs' });
@@ -255,7 +188,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			);
 		}
 
-		if (!result.data) {
+		if (!appCountQuery.data) {
 			return;
 		}
 
@@ -264,7 +197,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 				<UninstallGrandfatheredAppModal
 					context={context}
 					appName={app.name}
-					limit={result.data.limit}
+					limit={appCountQuery.data.limit}
 					handleUninstall={uninstall}
 					handleClose={closeModal}
 				/>,
@@ -276,7 +209,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 			<WarningModal close={closeModal} confirm={uninstall} text={t('Apps_Marketplace_Uninstall_App_Prompt')} confirmText={t('Yes')} />,
 		);
 	}, [
-		result.data,
+		appCountQuery.data,
 		app.migrated,
 		app.name,
 		isSubscribed,
@@ -320,12 +253,12 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		setLoading(true);
 
 		if (app?.versionIncompatible) {
-			openIncompatibleModal(app, 'update', closeModal, setModal);
+			openIncompatibleModal(app, 'update', closeModal);
 			return;
 		}
 
-		showAppPermissionsReviewModal();
-	}, [app, closeModal, setModal, showAppPermissionsReviewModal]);
+		openPermissionModal();
+	}, [app, openPermissionModal, openIncompatibleModal, closeModal]);
 
 	const canUpdate = app.installed && app.version && app.marketplaceVersion && semver.lt(app.version, app.marketplaceVersion);
 
@@ -411,7 +344,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 								{t('Enable')}
 							</>
 						),
-						disabled: !result?.data?.hasUnlimitedApps && result?.data?.enabled >= result?.data?.limit,
+						disabled: !appCountQuery?.data?.hasUnlimitedApps && appCountQuery?.data?.enabled >= appCountQuery?.data?.limit,
 						action: handleEnable,
 					},
 				}),
@@ -458,9 +391,9 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 		handleUpdate,
 		isAppEnabled,
 		handleDisable,
-		result?.data?.hasUnlimitedApps,
-		result?.data?.enabled,
-		result?.data?.limit,
+		appCountQuery?.data?.hasUnlimitedApps,
+		appCountQuery?.data?.enabled,
+		appCountQuery?.data?.limit,
 		handleEnable,
 		handleUninstall,
 	]);
