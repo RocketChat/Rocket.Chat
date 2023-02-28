@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
 });
 
 export const ChatTranscriptPDF = ({ header, messages, t }: ChatTranscriptData) => {
-	const agentValue = header.agent?.name || header.agent?.username || t('Omnichannel_Agent');
+	const agentValue = header.agent?.name || header.agent?.username || t('Not_assigned');
 	const customerValue = header.visitor?.name || header.visitor?.username;
 	const dateValue = header.date;
 	const timeValue = header.time;

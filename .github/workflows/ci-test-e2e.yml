@@ -71,6 +71,7 @@ jobs:
       RC_DOCKER_TAG: ${{ matrix.mongodb-version == '6.0' && inputs.rc-docker-tag-alpine || inputs.rc-docker-tag }}
 
     strategy:
+      fail-fast: false
       matrix:
         mongodb-version: ${{ fromJSON(inputs.mongodb-version) }}
         shard: ${{ fromJSON(inputs.shard) }}
@@ -90,17 +91,16 @@ jobs:
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ inputs.node-version }}
+          cache-modules: true
+          install: true
 
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
-
-      - name: yarn install
-        run: yarn
 
       - name: yarn build
         run: yarn build
 
       - name: Restore build
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: build
           path: /tmp/build
@@ -136,7 +136,7 @@ jobs:
           password: ${{ secrets.CR_PAT }}
 
       - name: Publish Docker images to GitHub Container Registry
-        if: inputs.publish-container == true && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+        if: inputs.publish-container == true && inputs.release == 'ce' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
         run: |
           docker compose -f docker-compose-ci.yml push rocketchat
 
@@ -150,7 +150,7 @@ jobs:
           fi;
 
       - name: Publish Docker images (services) to GitHub Container Registry
-        if: inputs.publish-container == true && inputs.release == 'ee' && github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop'
+        if: inputs.publish-container == true && inputs.release == 'ee' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
         run: |
           docker compose -f docker-compose-ci.yml push \
             authorization-service \

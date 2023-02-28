@@ -33,6 +33,8 @@ jobs:
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ inputs.node-version }}
+          cache-modules: true
+          install: true
 
       # - name: Free disk space
       #   run: |
@@ -40,19 +42,9 @@ jobs:
       #     docker rmi $(docker image ls -aq)
       #     df -h
 
-      # - name: Versions
-      #   run: |
-      #     npm --versions
-      #     yarn -v
-      #     node -v
-      #     git version
-
-      - name: yarn install
-        run: yarn
-
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
-      - name: TS typecheck
+      - name: TS TypeCheck
         if: matrix.check == 'ts'
         run: yarn turbo run typecheck
 

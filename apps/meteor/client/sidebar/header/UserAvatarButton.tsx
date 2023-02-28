@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Dropdown } from '@rocket.chat/fuselage';
-import { useUser } from '@rocket.chat/ui-contexts';
+import { useSetting, useUser } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo, useRef } from 'react';
 import { createPortal } from 'react-dom';
@@ -22,6 +22,7 @@ const UserAvatarButton = (): ReactElement => {
 	const user = useUser();
 
 	const { status = !user ? 'online' : 'offline', username, avatarETag, statusText } = user || anon;
+	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
 
 	// const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 
@@ -59,7 +60,7 @@ const UserAvatarButton = (): ReactElement => {
 					mie='neg-x2'
 					mbe='neg-x2'
 				>
-					<UserStatus small status={status} statusText={statusText} />
+					<UserStatus small status={presenceDisabled ? 'disabled' : status} statusText={statusText} />
 				</Box>
 			</Box>
 			{user &&
