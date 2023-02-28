@@ -4,7 +4,7 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
 import { Users } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
-import { Livechat } from '../lib/Livechat';
+import { Livechat } from '../lib/LivechatTyped';
 
 Meteor.methods({
 	'livechat:sendTranscript'(token, rid, email, subject) {
