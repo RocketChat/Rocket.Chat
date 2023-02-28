@@ -40,6 +40,7 @@ import type { EventSignatures } from '@rocket.chat/core-services';
 
 import { subscriptionFields, roomFields } from './publishFields';
 import type { DatabaseWatcher } from '../../database/DatabaseWatcher';
+import { getMessagesLayoutPreference } from '../../../app/utils/lib/getMessagesLayoutPreference';
 
 type BroadcastCallback = <T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>) => Promise<void>;
 
@@ -77,8 +78,7 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 
 	const getMessagesLayoutPreferenceCached = mem(
 		async (userId: string): Promise<string | undefined> => {
-			const user = await Users.findOne<Pick<IUser, 'settings'>>(userId, { projection: { 'settings.preferences': 1 } });
-			return user?.settings?.preferences?.messagesLayout || getSettingCached('Accounts_Default_User_Preferences_messagesLayout');
+			return getMessagesLayoutPreference(userId);
 		},
 		{ maxAge: 10000 },
 	);

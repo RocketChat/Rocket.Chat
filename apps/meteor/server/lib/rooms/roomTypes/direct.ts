@@ -7,8 +7,9 @@ import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomType
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
 import { roomCoordinator } from '../roomCoordinator';
-import { Subscriptions, Users } from '../../../../app/models/server';
+import { Subscriptions } from '../../../../app/models/server';
 import { Federation } from '../../../../app/federation-v2/server/Federation';
+import { getMessagesLayoutPreference } from '../../../../app/utils/lib/getMessagesLayoutPreference';
 
 export const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
 
@@ -76,15 +77,13 @@ roomCoordinator.add(DirectMessageRoomType, {
 			return Subscriptions.findOne({ rid: room._id }, { fields: { name: 1, fname: 1 } });
 		})();
 
-		if (!subscription) {
+		const uid = userId || getCurrentUserId();
+
+		if (!subscription || !uid) {
 			return;
 		}
 
-		const uid = userId || getCurrentUserId();
-		const user = Users.findOneById(uid, { projection: { 'settings.preferences': 1 } });
-		const defaultMessagesLayout = settings.get<string>('Accounts_Default_User_Preferences_messagesLayout');
-
-		const useRealName = (user?.settings?.preferences?.messagesLayout || defaultMessagesLayout) !== 'username';
+		const useRealName = getMessagesLayoutPreference(uid) !== 'username';
 		if (useRealName && room.fname) {
 			return subscription.fname;
 		}
@@ -97,9 +96,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 	},
 
 	getNotificationDetails(room, sender, notificationMessage, userId) {
-		const user = Users.findOneById(userId, { projection: { 'settings.preferences': 1 } });
-		const defaultMessagesLayout = settings.get<string>('Accounts_Default_User_Preferences_messagesLayout');
-		const useRealName = (user?.settings?.preferences?.messagesLayout || defaultMessagesLayout) !== 'username';
+		const useRealName = getMessagesLayoutPreference(userId) !== 'username';
 
 		if (this.isGroupChat(room)) {
 			return {

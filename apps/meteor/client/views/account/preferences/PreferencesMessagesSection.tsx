@@ -122,7 +122,6 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 	) as SelectOption[];
 
 	const messagesLayoutSelectOptions = useMemo<SelectOption[]>((): SelectOption[] => {
-		console.log('Default: ', defaultMessagesLayout);
 		const optionsCp = messagesLayoutOptions.slice();
 		optionsCp.unshift(['default', `${t('Default')} (${t(messagesLayoutOptionsLabelMap[defaultMessagesLayout] as TranslationKey)})`]);
 		return optionsCp;
@@ -237,7 +236,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 							</Field.Row>
 						</Field>
 					),
-					[handleMessagesLayout, messagesLayout, t],
+					[handleMessagesLayout, messagesLayout, messagesLayoutSelectOptions, t],
 				)}
 				{useMemo(
 					() =>

@@ -17,6 +17,7 @@ import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notificatio
 import { Notification } from '../../../notification-queue/server/NotificationQueue';
 import { getMentions } from './notifyUsersOnMessage';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
+import { getMessagesLayoutPreference } from '../../../utils/lib/getMessagesLayoutPreference';
 
 let TroubleshootDisableNotifications;
 
@@ -238,9 +239,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 	mentionIds.push(...usersInThread);
 
 	let notificationMessage = callbacks.run('beforeSendMessageNotifications', message.msg);
-	const user = await Users.findOneById(message.u._id, { projection: { 'settings.preferences': 1 } });
-	const defaultMessagesLayout = settings.get('Accounts_Default_User_Preferences_messagesLayout');
-	if (mentionIds.length > 0 && (user?.settings?.preferences?.messagesLayout || defaultMessagesLayout) !== 'username') {
+	if (mentionIds.length > 0 && getMessagesLayoutPreference(message.u._id) !== 'username') {
 		notificationMessage = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
 	}
 

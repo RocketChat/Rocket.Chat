@@ -1,8 +1,9 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Subscriptions, Users } from '@rocket.chat/models';
+import { Subscriptions } from '@rocket.chat/models';
 
 import { settings } from '../../../../settings/server';
 import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
+import { getMessagesLayoutPreference } from '../../../../utils/lib/getMessagesLayoutPreference';
 
 const CATEGORY_MESSAGE = 'MESSAGE';
 const CATEGORY_MESSAGE_NOREPLY = 'MESSAGE_NOREPLY';
@@ -30,9 +31,7 @@ export async function getPushData({
 	receiver,
 	shouldOmitMessage = true,
 }) {
-	const user = await Users.findOneById(userId, { projection: { 'settings.preferences': 1 } });
-	const defaultMessagesLayout = settings.get('Accounts_Default_User_Preferences_messagesLayout');
-	const useRealName = (user?.settings?.preferences?.messagesLayout || defaultMessagesLayout) !== 'username';
+	const useRealName = getMessagesLayoutPreference(userId) !== 'username';
 
 	const username = settings.get('Push_show_username_room') ? (useRealName && senderName) || senderUsername : '';
 
