@@ -110,7 +110,7 @@
 		&-bottom {
 			@include tail {
 				bottom: 100%;
-				left: calc(50% - #{$tail-size});
+				left: calc(65% - #{$tail-size});
 
 				border-top-color: transparent;
 				border-right-color: transparent;
@@ -146,7 +146,7 @@
 
 		margin: 0;
 
-		transform: translate(-50%, #{$tail-size});
+		transform: translate(-65%, #{$tail-size});
 
 		&.tooltip--placement {
 			&-left {
