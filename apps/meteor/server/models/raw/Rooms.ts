@@ -1,13 +1,25 @@
 import type { IRoom, ITeam, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { FindPaginated, IRoomModel } from '@rocket.chat/model-typings';
+import type { FindPaginated, IRoomsModel } from '@rocket.chat/model-typings';
+import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { Collection, Db, Document, Filter, FindCursor, FindOptions, UpdateFilter, UpdateResult } from 'mongodb';
+import type {
+    AggregationCursor,
+    Collection,
+    Db,
+    Document,
+    Filter,
+    FindCursor,
+    FindOptions,
+    UpdateFilter,
+    UpdateOptions,
+    UpdateResult
+} from 'mongodb';
 import { ReadPreference } from 'mongodb';
 
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { BaseRaw } from './BaseRaw';
 
-export class RoomsRaw extends BaseRaw<IRoom> implements IRoomModel {
+export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IRoom>>) {
 		super(db, 'room', trash);
 	}
@@ -378,7 +390,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomModel {
 		return this.find(query, options);
 	}
 
-	unsetTeamId(teamId: ITeam['_id'], options: FindOptions<IRoom> = {}): Promise<Document | UpdateResult> {
+	unsetTeamId(teamId: ITeam['_id'], options: UpdateOptions = {}): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = { teamId };
 		const update: UpdateFilter<IRoom> = {
 			$unset: {
@@ -391,27 +403,46 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomModel {
 		return this.updateMany(query, update, options);
 	}
 
-	unsetTeamById(rid, options = {}) {
+	unsetTeamById(rid: IRoom['_id'], options: UpdateOptions = {}): Promise<UpdateResult> {
 		return this.updateOne({ _id: rid }, { $unset: { teamId: '', teamDefault: '' } }, options);
 	}
 
-	setTeamById(rid, teamId, teamDefault, options = {}) {
+	setTeamById(
+		rid: IRoom['_id'],
+		teamId: ITeam['_id'],
+		teamDefault: IRoom['teamDefault'],
+		options: UpdateOptions = {},
+	): Promise<UpdateResult> {
 		return this.updateOne({ _id: rid }, { $set: { teamId, teamDefault } }, options);
 	}
 
-	setTeamMainById(rid, teamId, options = {}) {
+	setTeamMainById(rid: IRoom['_id'], teamId: ITeam['_id'], options: UpdateOptions = {}): Promise<UpdateResult> {
 		return this.updateOne({ _id: rid }, { $set: { teamId, teamMain: true } }, options);
 	}
 
-	setTeamByIds(rids, teamId, options = {}) {
+	setTeamByIds(rids: Array<IRoom['_id']>, teamId: ITeam['_id'], options: UpdateOptions = {}): Promise<Document | UpdateResult> {
 		return this.updateMany({ _id: { $in: rids } }, { $set: { teamId } }, options);
 	}
 
-	setTeamDefaultById(rid, teamDefault, options = {}) {
+	setTeamDefaultById(rid: IRoom['_id'], teamDefault: IRoom['teamDefault'], options: UpdateOptions = {}): Promise<UpdateResult> {
 		return this.updateOne({ _id: rid }, { $set: { teamDefault } }, options);
 	}
 
-	findChannelsWithNumberOfMessagesBetweenDate({ start, end, startOfLastWeek, endOfLastWeek, onlyCount = false, options = {} }) {
+	findChannelsWithNumberOfMessagesBetweenDate({
+		start,
+		end,
+		startOfLastWeek,
+		endOfLastWeek,
+		onlyCount = false,
+		options = {},
+	}: {
+		start: number;
+		end: number;
+		startOfLastWeek: number;
+		endOfLastWeek: number;
+		onlyCount: boolean;
+		options: PaginatedRequest;
+	}): AggregationCursor<IRoom> {
 		const readPreference = ReadPreference.SECONDARY_PREFERRED;
 		const lookup = {
 			$lookup: {
@@ -502,7 +533,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomModel {
 			presentationProject,
 		];
 		const sort = { $sort: options.sort || { messages: -1 } };
-		const params = [...firstParams, sort];
+		const params: Exclude<Parameters<Collection<IRoom>['aggregate']>[0], undefined> = [...firstParams, sort];
 
 		if (onlyCount) {
 			params.push({ $count: 'total' });
@@ -516,14 +547,14 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomModel {
 			params.push({ $limit: options.count });
 		}
 
-		return this.col.aggregate(params, { allowDiskUse: true, readPreference });
+		return this.col.aggregate<IRoom>(params, { allowDiskUse: true, readPreference });
 	}
 
-	findOneByName(name, options = {}) {
+	findOneByName(name: IRoom['name'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
 		return this.col.findOne({ name }, options);
 	}
 
-	findDefaultRoomsForTeam(teamId) {
+	findDefaultRoomsForTeam(teamId: ITeam['_id']): FindCursor<IRoom> {
 		return this.col.find({
 			teamId,
 			teamDefault: true,
