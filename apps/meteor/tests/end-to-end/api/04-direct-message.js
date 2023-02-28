@@ -231,8 +231,8 @@ describe('[Direct Messages]', function () {
 	});
 
 	context("Setting: 'Use Real Name': true", () => {
-		before(async () => updateSetting('UI_Use_Real_Name', true));
-		after(async () => updateSetting('UI_Use_Real_Name', false));
+		before(async () => updateSetting('Accounts_Default_User_Preferences_messagesLayout', 'username_and_full_name'));
+		after(async () => updateSetting('Accounts_Default_User_Preferences_messagesLayout', 'username'));
 
 		it('/im.list', (done) => {
 			request

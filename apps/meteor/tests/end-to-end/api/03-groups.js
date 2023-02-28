@@ -1586,7 +1586,7 @@ describe('[Groups]', function () {
 		let realNameGroup;
 
 		before(async () => {
-			await updateSetting('UI_Use_Real_Name', true);
+			await updateSetting('Accounts_Default_User_Preferences_messagesLayout', 'username_and_full_name');
 
 			await request
 				.post(api('groups.create'))
@@ -1615,7 +1615,7 @@ describe('[Groups]', function () {
 				});
 		});
 		after(async () => {
-			await updateSetting('UI_Use_Real_Name', false);
+			await updateSetting('Accounts_Default_User_Preferences_messagesLayout', 'username');
 
 			await request
 				.post(api('groups.delete'))

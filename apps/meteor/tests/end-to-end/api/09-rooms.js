@@ -1310,7 +1310,7 @@ describe('[Rooms]', function () {
 		});
 
 		it('should update group name if user changes username', (done) => {
-			updateSetting('UI_Use_Real_Name', false).then(() => {
+			updateSetting('Accounts_Default_User_Preferences_messagesLayout', 'username').then(() => {
 				request
 					.post(api('users.update'))
 					.set(credentials)
@@ -1335,7 +1335,7 @@ describe('[Rooms]', function () {
 		});
 
 		it('should update group name if user changes name', (done) => {
-			updateSetting('UI_Use_Real_Name', true).then(() => {
+			updateSetting('Accounts_Default_User_Preferences_messagesLayout', 'username_and_full_name').then(() => {
 				request
 					.post(api('users.update'))
 					.set(credentials)
