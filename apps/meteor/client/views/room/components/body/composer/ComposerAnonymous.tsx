@@ -5,7 +5,7 @@ import React from 'react';
 
 import { useRegisterAnonymousUserMutation } from '../../../../../hooks/useRegisterAnonymousUserMutation';
 
-export const ComposerAnonymous = (): ReactElement => {
+const ComposerAnonymous = (): ReactElement => {
 	const isAnonymousWriteEnabled = useSetting('Accounts_AllowAnonymousWrite');
 
 	const loginWithToken = useLoginWithToken();
@@ -40,3 +40,5 @@ export const ComposerAnonymous = (): ReactElement => {
 		</ButtonGroup>
 	);
 };
+
+export default ComposerAnonymous;
