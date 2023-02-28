@@ -19,15 +19,29 @@ const AudioMessageAction = ({ chatContext, disabled, isMicrophoneDenied, ...prop
 	const t = useTranslation();
 	const chat = useChat() ?? chatContext;
 
+	const stopRecording = useMutableCallback(() => {
+		chat?.action.stop('recording');
+
+		chat?.composer?.setRecordingMode(false);
+	});
+
+	const setMicrophoneDenied = useMutableCallback((isDenied) => {
+		if (isDenied) {
+			stopRecording();
+		}
+
+		chat?.composer?.setIsMicrophoneDenied(isDenied);
+	});
+
 	const handleRecordButtonClick = () => chat?.composer?.setRecordingMode(true);
 
 	const handleMount = useMutableCallback(async (): Promise<void> => {
 		if (navigator.permissions) {
 			try {
 				const permissionStatus = await navigator.permissions.query({ name: 'microphone' as PermissionName });
-				chat?.composer?.setIsMicrophoneDenied(permissionStatus.state === 'denied');
+				setMicrophoneDenied(permissionStatus.state === 'denied');
 				permissionStatus.onchange = (): void => {
-					chat?.composer?.setIsMicrophoneDenied(permissionStatus.state === 'denied');
+					setMicrophoneDenied(permissionStatus.state === 'denied');
 				};
 				return;
 			} catch (error) {
@@ -36,13 +50,13 @@ const AudioMessageAction = ({ chatContext, disabled, isMicrophoneDenied, ...prop
 		}
 
 		if (!navigator.mediaDevices?.enumerateDevices) {
-			chat?.composer?.setIsMicrophoneDenied(true);
+			setMicrophoneDenied(true);
 			return;
 		}
 
 		try {
 			if (!(await navigator.mediaDevices.enumerateDevices()).some(({ kind }) => kind === 'audioinput')) {
-				chat?.composer?.setIsMicrophoneDenied(true);
+				setMicrophoneDenied(true);
 				return;
 			}
 		} catch (error) {
@@ -70,9 +84,29 @@ const AudioMessageAction = ({ chatContext, disabled, isMicrophoneDenied, ...prop
 		[fileUploadMediaTypeBlackList, fileUploadMediaTypeWhiteList, isAudioRecorderEnabled, isFileUploadEnabled, isMicrophoneDenied],
 	);
 
+	const getTranslationKey = useMemo(() => {
+		if (isMicrophoneDenied) {
+			return t('Microphone_access_not_allowed');
+		}
+
+		if (!isFileUploadEnabled) {
+			return t('File_Upload_Disabled');
+		}
+
+		if (!isAudioRecorderEnabled) {
+			return t('Message_Audio_Recording_Disabled');
+		}
+
+		if (!isAllowed) {
+			return t('error-not-allowed');
+		}
+
+		return t('Audio_message');
+	}, [isMicrophoneDenied, isFileUploadEnabled, isAudioRecorderEnabled, isAllowed, t]);
+
 	return (
 		<MessageComposerAction
-			title={!isAllowed ? t('Microphone_access_not_allowed') : t('Audio_message')}
+			title={getTranslationKey}
 			icon='mic'
 			disabled={disabled || !isAllowed}
 			className='rc-message-box__icon rc-message-box__audio-message-mic'
