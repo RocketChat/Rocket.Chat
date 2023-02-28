@@ -1652,14 +1652,14 @@ describe('LIVECHAT - rooms', function () {
 				.set(credentials)
 				.expect(400);
 		});
-		it('should fail if no one is serving the room', async () => {
+		it('should return OK if no one is serving the room (queued)', async () => {
 			const visitor = await createVisitor();
 			const { _id } = await createLivechatRoom(visitor.token);
 			await closeRoom(_id);
 			await request
 				.post(api(`omnichannel/${_id}/request-transcript`))
 				.set(credentials)
-				.expect(400);
+				.expect(200);
 		});
 		let roomId: string;
 		it('should request a pdf transcript when all conditions are met', async () => {
