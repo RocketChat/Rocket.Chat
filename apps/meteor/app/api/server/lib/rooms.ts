@@ -15,7 +15,6 @@ export async function findAdminRooms({
 	filter: string;
 	types: string[];
 	pagination: { offset: number; count: number; sort: [string, number][] };
-	useFname: boolean;
 }): Promise<{
 	rooms: IRoom[];
 	count: number;
