@@ -3,6 +3,7 @@ import type { RefObject } from 'react';
 import { useLayoutEffect } from 'react';
 
 import { useMessageListJumpToMessageParam, useMessageListScroll } from '../../../../components/message/list/MessageListContext';
+import { setMessageJumpQueryStringParameter } from '../../../../lib/utils/setMessageJumpQueryStringParameter';
 import { setHighlightMessage, clearHighlightMessage } from '../providers/messageHighlightSubscription';
 
 // this is an arbitrary value so that there's a gap between the header and the message;
@@ -32,6 +33,7 @@ export const useJumpToMessage = (messageId: IMessage['_id'], messageRef: RefObje
 				return { top: newScrollPosition, behavior: 'smooth' };
 			});
 
+			setMessageJumpQueryStringParameter(null);
 			setHighlightMessage(messageId);
 			setTimeout(clearHighlightMessage, 2000);
 		}, 500);
