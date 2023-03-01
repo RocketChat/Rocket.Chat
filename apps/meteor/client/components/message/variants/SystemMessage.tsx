@@ -12,7 +12,7 @@ import {
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
@@ -44,6 +44,7 @@ const SystemMessage = ({ message }: SystemMessageProps): ReactElement => {
 	const formatDateAndTime = useFormatDateAndTime();
 	const chat = useChat();
 
+	const showUserAvatar = useUserPreference<boolean>('displayAvatars');
 	const showRealName = useMessageListShowRealName();
 	const user: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
 	const usernameAndRealNameAreSame = !user.name || user.username === user.name;
@@ -65,7 +66,7 @@ const SystemMessage = ({ message }: SystemMessageProps): ReactElement => {
 			data-system-message-type={message.t}
 		>
 			<MessageSystemLeftContainer>
-				{!isSelecting && <UserAvatar username={message.u.username} size='x18' />}
+				{!isSelecting && showUserAvatar && <UserAvatar username={message.u.username} size='x18' />}
 				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>

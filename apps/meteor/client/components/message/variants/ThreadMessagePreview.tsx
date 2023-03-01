@@ -12,7 +12,7 @@ import {
 	CheckBox,
 	MessageStatusIndicatorItem,
 } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -49,6 +49,7 @@ const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePr
 
 	const messageType = parentMessage.isSuccess ? MessageTypes.getType(parentMessage.data) : null;
 	const messageBody = useMessageBody(parentMessage.data, message.rid);
+	const showUserAvatar = useUserPreference<boolean>('displayAvatars');
 
 	const previewMessage = isParsedMessage(messageBody) ? { md: messageBody } : { msg: messageBody };
 
@@ -93,7 +94,7 @@ const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePr
 			)}
 			<ThreadMessageRow onClick={!isSelecting ? () => goToThread({ rid: message.rid, tmid: message.tmid, jump: message._id }) : undefined}>
 				<ThreadMessageLeftContainer>
-					{!isSelecting && <UserAvatar username={message.u.username} size='x18' />}
+					{!isSelecting && showUserAvatar && <UserAvatar username={message.u.username} size='x18' />}
 					{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 				</ThreadMessageLeftContainer>
 				<ThreadMessageContainer>

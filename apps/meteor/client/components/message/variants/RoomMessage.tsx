@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import { useUserId } from '@rocket.chat/ui-contexts';
+import { useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
@@ -39,6 +39,7 @@ const RoomMessage = ({ message, sequential, all, mention, unread, context, ignor
 	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
 	const chat = useChat();
 
+	const showUserAvatar = useUserPreference<boolean>('displayAvatars');
 	const selecting = useIsSelecting();
 	const toggleSelected = useToggleSelect(message._id);
 	const selected = useIsSelectedMessage(message._id);
@@ -63,7 +64,7 @@ const RoomMessage = ({ message, sequential, all, mention, unread, context, ignor
 			aria-busy={message.temp}
 		>
 			<MessageLeftContainer>
-				{!sequential && message.u.username && !selecting && (
+				{!sequential && message.u.username && !selecting && showUserAvatar && (
 					<UserAvatar
 						url={message.avatar}
 						username={message.u.username}
