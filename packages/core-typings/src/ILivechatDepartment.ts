@@ -13,6 +13,7 @@ export interface ILivechatDepartment {
 	_updatedAt?: Date;
 	businessHourId?: string;
 	fallbackForwardDepartment?: string;
+	archived?: boolean;
 	// extra optional fields
 	[k: string]: any;
 }

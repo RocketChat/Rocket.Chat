@@ -30,7 +30,7 @@ const VoipExtensionsPage: FC = () => {
 		[itemsPerPage, current],
 	);
 
-	const { value: data, reload } = useEndpointData('/v1/omnichannel/extensions', query);
+	const { value: data, reload } = useEndpointData('/v1/omnichannel/extensions', { params: query });
 
 	const header = useMemo(
 		() =>

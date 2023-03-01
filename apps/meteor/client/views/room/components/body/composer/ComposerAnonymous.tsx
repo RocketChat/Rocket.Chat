@@ -1,28 +1,58 @@
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import {
+	useSessionDispatch,
+	useSetting,
+	useTranslation,
+	useLoginWithToken,
+	useToastMessageDispatch,
+	useMethod,
+} from '@rocket.chat/ui-contexts';
+import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-export const ComposerAnonymous = (): ReactElement => {
+const ComposerAnonymous = (): ReactElement => {
 	const isAnonymousWriteEnabled = useSetting('Accounts_AllowAnonymousWrite');
-	// 'click .js-register'(event: JQuery.ClickEvent) {
-	// 	event.stopPropagation();
-	// 	event.preventDefault();
 
-	// 	Session.set('forceLogin', true);
-	// },
-	// async 'click .js-register-anonymous'(event: JQuery.ClickEvent) {
-	// 	event.stopPropagation();
-	// 	event.preventDefault();
+	const dispatch = useToastMessageDispatch();
 
-	// 	const { token } = await call('registerUser', {});
-	// 	Meteor.loginWithToken(token);
-	// },
+	const loginWithToken = useLoginWithToken();
+
+	const anonymousUser = useMethod('registerUser');
+
+	const registerAnonymous = useMutation(
+		async (...params: Parameters<typeof anonymousUser>) => {
+			const result = await anonymousUser(...params);
+			await loginWithToken(result.token);
+			return result;
+		},
+		{
+			onError: (error) => {
+				dispatch({ type: 'error', message: error });
+			},
+		},
+	);
+
+	const joinAnonymous = () => {
+		registerAnonymous.mutate({ email: null });
+	};
+
+	const setForceLogin = useSessionDispatch('forceLogin');
 
 	const t = useTranslation();
+
 	return (
-		<div className='rc-button-group'>
-			<button className='rc-button rc-button--primary rc-button--small js-register'>{t('Sign_in_to_start_talking')}</button>
-			{isAnonymousWriteEnabled && <button className='rc-button rc-button--small js-register-anonymous'>{t('Or_talk_as_anonymous')}</button>}
-		</div>
+		<ButtonGroup marginBlock='x16'>
+			<Button small primary onClick={() => setForceLogin(true)}>
+				{t('Sign_in_to_start_talking')}
+			</Button>
+			{isAnonymousWriteEnabled && (
+				<Button small secondary onClick={() => joinAnonymous()}>
+					{t('Or_talk_as_anonymous')}
+				</Button>
+			)}
+		</ButtonGroup>
 	);
 };
+
+export default ComposerAnonymous;

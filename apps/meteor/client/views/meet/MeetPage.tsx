@@ -75,7 +75,7 @@ const MeetPage: FC = () => {
 	if (status === 'ended') {
 		return (
 			<Flex.Container direction='column' justifyContent='center'>
-				<Box width='full' minHeight='sh' alignItems='center' backgroundColor='neutral-900' overflow='hidden' position='relative'>
+				<Box width='full' minHeight='sh' alignItems='center' backgroundColor='dark' overflow='hidden' position='relative'>
 					<Box
 						position='absolute'
 						style={{
@@ -83,7 +83,7 @@ const MeetPage: FC = () => {
 							right: '2%',
 						}}
 						className='Self_Video'
-						backgroundColor='#2F343D'
+						backgroundColor='dark'
 						alignItems='center'
 					>
 						<UserAvatar
@@ -127,7 +127,7 @@ const MeetPage: FC = () => {
 						</p>
 					</Box>
 					<Box position='absolute' alignItems='center' style={{ bottom: '20%' }}>
-						<Button square title='Close Window' onClick={closeCallTab} backgroundColor='#2F343D' borderColor='#2F343D'>
+						<Button square title='Close Window' onClick={closeCallTab} backgroundColor='dark' borderColor='extra-dark'>
 							<Icon name='cross' size='x16' color='white' />
 						</Button>
 					</Box>

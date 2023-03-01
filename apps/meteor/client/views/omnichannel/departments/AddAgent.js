@@ -9,7 +9,7 @@ import { useEndpointAction } from '../../../hooks/useEndpointAction';
 function AddAgent({ agentList, setAgentsAdded, setAgentList, ...props }) {
 	const t = useTranslation();
 	const [userId, setUserId] = useState();
-	const getAgent = useEndpointAction('GET', `/v1/livechat/users/agent/${userId}`);
+	const getAgent = useEndpointAction('GET', '/v1/livechat/users/agent/:_id', { keys: { _id: userId } });
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const handleAgent = useMutableCallback((e) => setUserId(e));

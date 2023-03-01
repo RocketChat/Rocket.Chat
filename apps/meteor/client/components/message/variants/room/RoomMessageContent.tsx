@@ -1,120 +1,118 @@
-import type { IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
 import { useUserData } from '../../../../hooks/useUserData';
 import type { UserPresence } from '../../../../lib/presence';
-import { useTranslateAttachments, useMessageListShowReadReceipt } from '../../../../views/room/MessageList/contexts/MessageListContext';
-import type { MessageWithMdEnforced } from '../../../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
-import { useMessageActions, useMessageOembedIsEnabled, useMessageRunActionLink } from '../../../../views/room/contexts/MessageContext';
+import { useChat } from '../../../../views/room/contexts/ChatContext';
 import MessageContentBody from '../../MessageContentBody';
 import ReadReceiptIndicator from '../../ReadReceiptIndicator';
 import Attachments from '../../content/Attachments';
 import BroadcastMetrics from '../../content/BroadcastMetrics';
-import DicussionMetrics from '../../content/DicussionMetrics';
+import DiscussionMetrics from '../../content/DiscussionMetrics';
 import Location from '../../content/Location';
 import MessageActions from '../../content/MessageActions';
 import Reactions from '../../content/Reactions';
 import ThreadMetrics from '../../content/ThreadMetrics';
 import UiKitSurface from '../../content/UiKitSurface';
 import UrlPreviews from '../../content/UrlPreviews';
+import { useNormalizedMessage } from '../../hooks/useNormalizedMessage';
+import { useOembedLayout } from '../../hooks/useOembedLayout';
+import { useSubscriptionFromMessageQuery } from '../../hooks/useSubscriptionFromMessageQuery';
 
 type RoomMessageContentProps = {
-	message: MessageWithMdEnforced<IThreadMessage | IThreadMainMessage>;
+	message: IMessage;
 	unread: boolean;
 	mention: boolean;
 	all: boolean;
+	searchText?: string;
 };
 
-const RoomMessageContent = ({ message, unread, all, mention }: RoomMessageContentProps): ReactElement => {
+const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomMessageContentProps): ReactElement => {
+	const encrypted = isE2EEMessage(message);
+	const { enabled: oembedEnabled } = useOembedLayout();
+	const subscription = useSubscriptionFromMessageQuery(message).data ?? undefined;
+	const broadcast = subscription?.broadcast ?? false;
 	const uid = useUserId();
-	const {
-		broadcast,
-		actions: { openRoom, openThread, replyBroadcast },
-	} = useMessageActions();
-
+	const messageUser: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
+	const readReceiptEnabled = useSetting('Message_Read_Receipt_Enabled', false);
+	const chat = useChat();
 	const t = useTranslation();
 
-	const runActionLink = useMessageRunActionLink();
-
-	const oembedIsEnabled = useMessageOembedIsEnabled();
-	const shouldShowReadReceipt = useMessageListShowReadReceipt();
-	const user: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
-
-	const shouldShowReactionList = message.reactions && Object.keys(message.reactions).length;
-
-	const mineUid = useUserId();
-
-	const isEncryptedMessage = isE2EEMessage(message);
-
-	const messageAttachments = useTranslateAttachments({ message });
+	const normalizedMessage = useNormalizedMessage(message);
 
 	return (
 		<>
-			{!message.blocks?.length && !!message.md?.length && (
+			{!normalizedMessage.blocks?.length && !!normalizedMessage.md?.length && (
 				<>
-					{(!isEncryptedMessage || message.e2e === 'done') && (
-						<MessageContentBody md={message.md} mentions={message.mentions} channels={message.channels} />
+					{(!encrypted || normalizedMessage.e2e === 'done') && (
+						<MessageContentBody
+							md={normalizedMessage.md}
+							mentions={normalizedMessage.mentions}
+							channels={normalizedMessage.channels}
+							searchText={searchText}
+						/>
 					)}
-					{isEncryptedMessage && message.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
+					{encrypted && normalizedMessage.e2e === 'pending' && t('E2E_message_encrypted_placeholder')}
 				</>
 			)}
 
-			{message.blocks && <UiKitSurface mid={message._id} blocks={message.blocks} appId rid={message.rid} />}
+			{normalizedMessage.blocks && (
+				<UiKitSurface mid={normalizedMessage._id} blocks={normalizedMessage.blocks} appId rid={normalizedMessage.rid} />
+			)}
 
-			{!!messageAttachments.length && <Attachments attachments={messageAttachments} file={message.file} />}
+			{!!normalizedMessage?.attachments?.length && (
+				<Attachments attachments={normalizedMessage.attachments} file={normalizedMessage.file} />
+			)}
 
-			{oembedIsEnabled && !!message.urls?.length && <UrlPreviews urls={message.urls} />}
+			{oembedEnabled && !!normalizedMessage.urls?.length && <UrlPreviews urls={normalizedMessage.urls} />}
 
-			{message.actionLinks?.length && (
+			{normalizedMessage.actionLinks?.length && (
 				<MessageActions
-					mid={message._id}
-					actions={message.actionLinks.map(({ method_id: methodId, i18nLabel, ...action }) => ({
+					message={normalizedMessage}
+					actions={normalizedMessage.actionLinks.map(({ method_id: methodId, i18nLabel, ...action }) => ({
 						methodId,
 						i18nLabel: i18nLabel as TranslationKey,
 						...action,
 					}))}
-					runAction={runActionLink(message)}
 				/>
 			)}
 
-			{shouldShowReactionList && <Reactions message={message} />}
+			{normalizedMessage.reactions && Object.keys(normalizedMessage.reactions).length && <Reactions message={normalizedMessage} />}
 
-			{isThreadMainMessage(message) && (
+			{chat && isThreadMainMessage(normalizedMessage) && (
 				<ThreadMetrics
-					openThread={openThread(message._id)}
-					counter={message.tcount}
-					following={Boolean(mineUid && message?.replies?.indexOf(mineUid) > -1)}
-					mid={message._id}
-					rid={message.rid}
-					lm={message.tlm}
+					counter={normalizedMessage.tcount}
+					following={Boolean(uid && normalizedMessage?.replies?.indexOf(uid) > -1)}
+					mid={normalizedMessage._id}
+					rid={normalizedMessage.rid}
+					lm={normalizedMessage.tlm}
 					unread={unread}
 					mention={mention}
 					all={all}
-					participants={message?.replies?.length}
+					participants={normalizedMessage?.replies?.length}
 				/>
 			)}
 
-			{isDiscussionMessage(message) && (
-				<DicussionMetrics
-					count={message.dcount}
-					drid={message.drid}
-					lm={message.dlm}
-					rid={message.rid}
-					openDiscussion={openRoom(message.drid)}
+			{isDiscussionMessage(normalizedMessage) && (
+				<DiscussionMetrics
+					count={normalizedMessage.dcount}
+					drid={normalizedMessage.drid}
+					lm={normalizedMessage.dlm}
+					rid={normalizedMessage.rid}
 				/>
 			)}
 
-			{message.location && <Location location={message.location} />}
+			{normalizedMessage.location && <Location location={normalizedMessage.location} />}
 
-			{broadcast && !!user.username && message.u._id !== uid && (
-				<BroadcastMetrics replyBroadcast={(): void => replyBroadcast(message)} mid={message._id} username={user.username} />
+			{broadcast && !!messageUser.username && normalizedMessage.u._id !== uid && (
+				<BroadcastMetrics username={messageUser.username} message={normalizedMessage} />
 			)}
 
-			{shouldShowReadReceipt && <ReadReceiptIndicator unread={message.unread} />}
+			{readReceiptEnabled && <ReadReceiptIndicator unread={normalizedMessage.unread} />}
 		</>
 	);
 };

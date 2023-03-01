@@ -152,18 +152,6 @@ export class LivechatDepartment extends Base {
 
 		return this.find(query, options);
 	}
-
-	unsetFallbackDepartmentByDepartmentId(_id) {
-		return this.update(
-			{ fallbackForwardDepartment: _id },
-			{
-				$unset: {
-					fallbackForwardDepartment: 1,
-				},
-			},
-			{ multi: true },
-		);
-	}
 }
 
 export default new LivechatDepartment();

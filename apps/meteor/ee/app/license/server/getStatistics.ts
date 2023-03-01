@@ -1,6 +1,6 @@
 import { log } from 'console';
 
-import { CannedResponse, LivechatPriority, LivechatTag, LivechatUnit } from '@rocket.chat/models';
+import { CannedResponse, OmnichannelServiceLevelAgreements, LivechatRooms, LivechatTag, LivechatUnit } from '@rocket.chat/models';
 import { Analytics } from '@rocket.chat/core-services';
 
 import { getModules, getTags, hasLicense } from './license';
@@ -17,7 +17,10 @@ type EEOnlyStats = {
 	livechatTags: number;
 	cannedResponses: number;
 	priorities: number;
+	slas: number;
 	businessUnits: number;
+	omnichannelPdfTranscriptRequested: number;
+	omnichannelPdfTranscriptSucceeded: number;
 };
 
 export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
@@ -63,10 +66,10 @@ async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
 		}),
 	);
 
-	// Number of Priorities
+	// Number of Service Level Agreements
 	statsPms.push(
-		LivechatPriority.col.count().then((count) => {
-			statistics.priorities = count;
+		OmnichannelServiceLevelAgreements.col.count().then((count) => {
+			statistics.slas = count;
 			return true;
 		}),
 	);
@@ -78,6 +81,24 @@ async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
 			.then((count) => {
 				statistics.businessUnits = count;
 				return true;
+			}),
+	);
+
+	// Number of PDF transcript requested
+	statsPms.push(
+		LivechatRooms.find({ pdfTranscriptRequested: { $exists: true } })
+			.count()
+			.then((count) => {
+				statistics.omnichannelPdfTranscriptRequested = count;
+			}),
+	);
+
+	// Number of PDF transcript that succeeded
+	statsPms.push(
+		LivechatRooms.find({ pdfFileId: { $exists: true } })
+			.count()
+			.then((count) => {
+				statistics.omnichannelPdfTranscriptSucceeded = count;
 			}),
 	);
 
