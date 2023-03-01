@@ -11,7 +11,7 @@ import {
 	useUser,
 	useUserPreference,
 } from '@rocket.chat/ui-contexts';
-import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
+import type { ComponentProps, MouseEventHandler, ReactElement, UIEvent } from 'react';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
@@ -67,7 +67,7 @@ const RoomBody = (): ReactElement => {
 
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
 	const messagesBoxRef = useRef<HTMLDivElement | null>(null);
-	const atBottomRef = useRef(!useQueryStringParameter('msg'));
+	const atBottomRef = useRef(true);
 	const lastScrollTopRef = useRef(0);
 
 	const chat = useChat();
@@ -92,12 +92,31 @@ const RoomBody = (): ReactElement => {
 		return false;
 	}, []);
 
-	const sendToBottom = useCallback(() => {
+	// Passing a callback instead of the values so that the wrapper is exposed
+	const scrollMessageList: ComponentProps<typeof MessageList>['scrollMessageList'] = useCallback((callback) => {
 		const wrapper = wrapperRef.current;
 
-		wrapper?.scrollTo(30, wrapper.scrollHeight);
-		setHasNewMessages(false);
+		if (!wrapper) {
+			return;
+		}
+
+		const options = callback(wrapperRef.current);
+
+		// allow for bailout
+		if (!options) {
+			return;
+		}
+
+		wrapper.scrollTo(options);
 	}, []);
+
+	const sendToBottom = useCallback(() => {
+		scrollMessageList((wrapper) => {
+			return { left: 30, top: wrapper?.scrollHeight };
+		});
+
+		setHasNewMessages(false);
+	}, [scrollMessageList]);
 
 	const sendToBottomIfNecessary = useCallback(() => {
 		if (atBottomRef.current === true) {
@@ -596,7 +615,7 @@ const RoomBody = (): ReactElement => {
 														)}
 													</>
 												) : null}
-												<MessageList rid={room._id} wrapperRef={wrapperRef} />
+												<MessageList rid={room._id} scrollMessageList={scrollMessageList} />
 												{hasMoreNextMessages ? (
 													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 												) : null}

@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isMessageReactionsNormalized, isThreadMainMessage } from '@rocket.chat/core-typings';
 import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useQueryStringParameter } from '@rocket.chat/ui-contexts';
-import type { VFC, ReactNode, RefObject } from 'react';
+import type { VFC, ReactNode } from 'react';
 import React, { useMemo, memo } from 'react';
 
 import { EmojiPicker } from '../../../../../app/emoji/client';
@@ -16,10 +16,10 @@ import { useLoadSurroundingMessages } from '../hooks/useLoadSurroundingMessages'
 
 type MessageListProviderProps = {
 	children: ReactNode;
-	wrapperRef: RefObject<HTMLDivElement>;
+	scrollMessageList: MessageListContextValue['scrollMessageList'];
 };
 
-const MessageListProvider: VFC<MessageListProviderProps> = ({ children, wrapperRef }) => {
+const MessageListProvider: VFC<MessageListProviderProps> = ({ children, scrollMessageList }) => {
 	const room = useRoom();
 
 	if (!room) {
@@ -97,7 +97,7 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children, wrapperR
 			showRoles,
 			showRealName,
 			showUsername,
-			wrapperRef,
+			scrollMessageList,
 			jumpToMessageParam: msgParameter,
 			...(katexEnabled && {
 				katex: {
@@ -140,7 +140,7 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children, wrapperR
 			reactToMessage,
 			showColors,
 			msgParameter,
-			wrapperRef,
+			scrollMessageList,
 		],
 	);
 
