@@ -1,6 +1,6 @@
+import type { IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Meteor } from 'meteor/meteor';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
 
 import { settings } from '../../../../../app/settings/server';
@@ -8,7 +8,17 @@ import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 import { LivechatEnterprise } from './LivechatEnterprise';
 import { logger } from './logger';
 
+const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result && result.status === 'rejected';
+
 export class VisitorInactivityMonitor {
+	_started: boolean;
+
+	_name: string;
+
+	messageCache: Map<string, string>;
+
+	user: IUser;
+
 	constructor() {
 		this._started = false;
 		this._name = 'Omnichannel Visitor Inactivity Monitor';
@@ -18,7 +28,10 @@ export class VisitorInactivityMonitor {
 	async start() {
 		this._startMonitoring();
 		this._initializeMessageCache();
-		this.user = await Users.findOneById('rocket.cat');
+		const cat = await Users.findOneById('rocket.cat');
+		if (cat) {
+			this.user = cat;
+		}
 	}
 
 	_startMonitoring() {
@@ -55,7 +68,7 @@ export class VisitorInactivityMonitor {
 		this.messageCache.set('default', settings.get('Livechat_abandoned_rooms_closed_custom_message') || TAPi18n.__('Closed_automatically'));
 	}
 
-	async _getDepartmentAbandonedCustomMessage(departmentId) {
+	async _getDepartmentAbandonedCustomMessage(departmentId: string) {
 		if (this.messageCache.has('departmentId')) {
 			return this.messageCache.get('departmentId');
 		}
@@ -67,7 +80,7 @@ export class VisitorInactivityMonitor {
 		return department.abandonedRoomsCloseCustomMessage;
 	}
 
-	async closeRooms(room) {
+	async closeRooms(room: IOmnichannelRoom) {
 		let comment = this.messageCache.get('default');
 		if (room.departmentId) {
 			comment = (await this._getDepartmentAbandonedCustomMessage(room.departmentId)) || comment;
@@ -79,13 +92,17 @@ export class VisitorInactivityMonitor {
 		});
 	}
 
-	async placeRoomOnHold(room) {
-		const timeout = settings.get('Livechat_visitor_inactivity_timeout');
+	async placeRoomOnHold(room: IOmnichannelRoom) {
+		const timeout = settings.get<number>('Livechat_visitor_inactivity_timeout');
 
 		const { v: { _id: visitorId } = {} } = room;
+		if (!visitorId) {
+			throw new Error('error-invalid_visitor');
+		}
+
 		const visitor = await LivechatVisitors.findOneById(visitorId);
 		if (!visitor) {
-			throw new Meteor.Error('error-invalid_visitor', 'Visitor Not found');
+			throw new Error('error-invalid_visitor');
 		}
 
 		const guest = visitor.name || visitor.username;
@@ -95,7 +112,7 @@ export class VisitorInactivityMonitor {
 			LivechatEnterprise.placeRoomOnHold(room, comment, this.user),
 			LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id),
 		]);
-		const rejected = result.filter((r) => r.status === 'rejected').map((r) => r.reason);
+		const rejected = result.filter(isPromiseRejectedResult).map((r) => r.reason);
 		if (rejected.length) {
 			logger.error({ msg: 'Error placing room on hold', error: rejected });
 
@@ -104,28 +121,32 @@ export class VisitorInactivityMonitor {
 	}
 
 	async handleAbandonedRooms() {
-		const action = settings.get('Livechat_abandoned_rooms_action');
+		const action = settings.get<string>('Livechat_abandoned_rooms_action');
 		if (!action || action === 'none') {
 			return;
 		}
-		const result = await Promise.allSettled(
-			LivechatRooms.findAbandonedOpenRooms(new Date()).forEach(async (room) => {
-				switch (action) {
-					case 'close': {
-						await this.closeRooms(room);
-						break;
-					}
-					case 'on-hold': {
-						await this.placeRoomOnHold(room);
-						break;
-					}
+
+		const promises: Promise<void>[] = [];
+		await LivechatRooms.findAbandonedOpenRooms(new Date()).forEach((room) => {
+			switch (action) {
+				case 'close': {
+					promises.push(this.closeRooms(room));
+					break;
 				}
-			}),
-		);
-		const rejected = result.filter((r) => r.status === 'rejected').map((r) => r.reason);
-		if (rejected.length) {
-			logger.error({ msg: `Error while removing priority from ${rejected.length} rooms`, reason: rejected[0] });
-			logger.debug({ msg: 'Rejection results', rejected });
+				case 'on-hold': {
+					promises.push(this.placeRoomOnHold(room));
+					break;
+				}
+			}
+		});
+
+		const result = await Promise.allSettled(promises);
+
+		const errors = result.filter(isPromiseRejectedResult).map((r) => r.reason);
+
+		if (errors.length) {
+			logger.error({ msg: `Error while removing priority from ${errors.length} rooms`, reason: errors[0] });
+			logger.debug({ msg: 'Rejection results', errors });
 		}
 
 		this._initializeMessageCache();

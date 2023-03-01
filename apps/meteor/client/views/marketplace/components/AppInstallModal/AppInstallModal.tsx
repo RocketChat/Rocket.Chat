@@ -56,6 +56,8 @@ const AppInstallationModal = ({
 		return t('Workspaces_on_Community_edition_install_app', { context: context === 'private' ? context : '', enabled, limit });
 	};
 
+	const confirmButtonOverlimitLabel = context === 'private' ? t('Upload_anyway') : t('Install_anyway');
+
 	return (
 		<>
 			<Modal>
@@ -80,7 +82,7 @@ const AppInstallationModal = ({
 							{t('Enable_unlimited_apps')}
 						</Button>
 						<Button {...(enabled < limit && { primary: true })} onClick={handleConfirm}>
-							{enabled < limit ? t('Next') : t('Upload_anyway')}
+							{enabled < limit ? t('Next') : confirmButtonOverlimitLabel}
 						</Button>
 					</Modal.FooterControllers>
 				</Modal.Footer>
