@@ -160,7 +160,7 @@ export class FederationHooks {
 				) {
 					return message;
 				}
-				if (!isEditedMessage(message) || !message.editedBy) {
+				if (!isEditedMessage(message)) {
 					return message;
 				}
 				Promise.await(callback(message, room._id, message.editedBy._id));

@@ -208,11 +208,19 @@ export type MessageSystem = {
 };
 
 export interface IEditedMessage extends IMessage {
-	editedAt: Date | null;
-	editedBy: Pick<IUser, '_id' | 'username'> | null;
+	editedAt: Date;
+	editedBy: Pick<IUser, '_id' | 'username'>;
 }
 
-export const isEditedMessage = (message: IMessage): message is IEditedMessage => 'editedAt' in message && 'editedBy' in message;
+export const isEditedMessage = (message: IMessage): message is IEditedMessage =>
+	'editedAt' in message &&
+	(message as { editedAt?: unknown }).editedAt instanceof Date &&
+	'editedBy' in message &&
+	typeof (message as { editedBy?: unknown }).editedBy === 'object' &&
+	(message as { editedBy?: unknown }).editedBy !== null &&
+	'_id' in (message as IEditedMessage).editedBy &&
+	typeof (message as IEditedMessage).editedBy._id === 'string';
+
 export const isDeletedMessage = (message: IMessage): message is IEditedMessage => isEditedMessage(message) && message.t === 'rm';
 export const isMessageFromMatrixFederation = (message: IMessage): boolean =>
 	'federation' in message && Boolean(message.federation?.eventId);

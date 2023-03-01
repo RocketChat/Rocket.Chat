@@ -31,7 +31,7 @@ const StatusIndicators = ({ message }: StatusIndicatorsProps): ReactElement => {
 			{following && <MessageStatusIndicatorItem name='bell' title={t('Following')} />}
 
 			{message.sentByEmail && <MessageStatusIndicatorItem name='mail' title={t('Message_sent_by_email')} />}
-			{isEditedMessage(message) && message.editedBy !== null && message.editedAt && (
+			{isEditedMessage(message) && (
 				<MessageStatusIndicatorItem
 					name='edit'
 					color={message.u._id !== message.editedBy._id ? 'danger' : undefined}

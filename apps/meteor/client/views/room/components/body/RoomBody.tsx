@@ -207,7 +207,7 @@ const RoomBody = (): ReactElement => {
 		callbacks.add(
 			'streamNewMessage',
 			(msg: IMessage) => {
-				if (room._id !== msg.rid || (isEditedMessage(msg) && msg.editedAt) || msg.tmid) {
+				if (room._id !== msg.rid || isEditedMessage(msg) || msg.tmid) {
 					return;
 				}
 
