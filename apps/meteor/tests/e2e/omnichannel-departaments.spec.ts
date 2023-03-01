@@ -13,11 +13,9 @@ test.describe.serial('omnichannel-departments', () => {
 	let poOmnichannelDepartments: OmnichannelDepartments;
 
 	let departmentName: string;
-	let editedDepartmentName: string;
 
 	test.beforeAll(async ({ api }) => {
 		departmentName = faker.datatype.uuid();
-		editedDepartmentName = `edited-${departmentName}`;
 		// turn on department removal
 		const statusCode = (await api.post('/settings/Omnichannel_enable_department_removal', { value: true })).status();
 		await expect(statusCode).toBe(200);
@@ -97,82 +95,126 @@ test.describe.serial('omnichannel-departments', () => {
 
 			await expect(poOmnichannelDepartments.firstRowInTable).toHaveCount(0);
 		});
+
+		await test.step('expect delete department', async () => {
+			await poOmnichannelDepartments.allDepartmentsTab.click();
+
+			await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
+
+			await poOmnichannelDepartments.selectedDepartmentMenu(`edited-${departmentName}`).click();
+
+			await poOmnichannelDepartments.menuDeleteOption.click();
+
+			await poOmnichannelDepartments.inputModalConfirmDelete.fill(`edited-${departmentName}`);
+
+			await poOmnichannelDepartments.btnModalConfirmDelete.click();
+
+			await poOmnichannelDepartments.inputSearch.fill(`edited-${departmentName}`);
+
+			await expect(poOmnichannelDepartments.firstRowInTable).toHaveCount(0);
+		});
 	});
 
 	test.describe('Agents', () => {
 		test.beforeAll(async ({ api }) => {
 			const statusCode = (await api.post('/livechat/users/agent', { username: 'user1' })).status();
-
 			await expect(statusCode).toBe(200);
-		});
-
-		test.beforeEach(async () => {
-			await poOmnichannelDepartments.inputSearch.fill(departmentName);
-			await poOmnichannelDepartments.firstRowInTable.locator(`text=${departmentName}`).click();
 		});
 
 		test.afterAll(async ({ api }) => {
 			await api.delete('/livechat/users/agent/user1');
 		});
 
-		test('expect add new agent', async () => {
-			const newAgent = 'user1';
-			await poOmnichannelDepartments.selectAgentToAdd.click();
-			await poOmnichannelDepartments.getAgentOptionToAdd(newAgent).click();
-			await poOmnichannelDepartments.btnAddAgent.click();
+		test('Manage Agents', async ({ page }) => {
+			const agentsDepartmentName = faker.datatype.uuid();
 
-			await expect(poOmnichannelDepartments.findRowByName(newAgent)).toBeVisible();
+			await test.step('expect create new department', async () => {
+				await poOmnichannelDepartments.btnNew.click();
+				await poOmnichannelDepartments.btnEnabled.click();
+				await poOmnichannelDepartments.inputName.fill(agentsDepartmentName);
+				await poOmnichannelDepartments.inputEmail.fill(faker.internet.email());
+				await poOmnichannelDepartments.btnSave.click();
+				await poOmnichannelDepartments.btnCloseToastSuccess.click();
 
-			await poOmnichannelDepartments.btnSave.click();
+				await poOmnichannelDepartments.inputSearch.fill(agentsDepartmentName);
+				await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
+			});
 
-			await poOmnichannelDepartments.inputSearch.fill(departmentName);
-			await poOmnichannelDepartments.firstRowInTable.locator(`text=${departmentName}`).click();
+			await test.step('expect add new agent', async () => {
+				const newAgent = 'user1';
+				await poOmnichannelDepartments.gotoEditDepartment(agentsDepartmentName);
+				await poOmnichannelDepartments.selectAgentToAdd.click();
+				await poOmnichannelDepartments.getAgentOptionToAdd(newAgent).click();
+				await poOmnichannelDepartments.btnAddAgent.click();
 
-			await expect(poOmnichannelDepartments.findRowByName(newAgent)).toBeVisible();
+				await expect(poOmnichannelDepartments.findRowByName(newAgent)).toBeVisible();
+
+				await poOmnichannelDepartments.btnSave.click();
+
+				await poOmnichannelDepartments.inputSearch.fill(agentsDepartmentName);
+				await poOmnichannelDepartments.firstRowInTableMenu.click();
+				await poOmnichannelDepartments.menuEditOption.click();
+
+				await expect(poOmnichannelDepartments.findRowByName(newAgent)).toBeVisible();
+				await page.goBack();
+			});
+
+			await test.step('expect update agent count and number value', async () => {
+				const newAgent = 'user1';
+				const newValue = 1;
+				await poOmnichannelDepartments.gotoEditDepartment(agentsDepartmentName);
+				await expect(poOmnichannelDepartments.findRowByName(newAgent)).toBeVisible();
+
+				await poOmnichannelDepartments.findAgentCountInput(newAgent).fill(`${newValue}`);
+				await poOmnichannelDepartments.findAgentNumberInput(newAgent).fill(`${newValue}`);
+				await poOmnichannelDepartments.btnSave.click();
+
+				await poOmnichannelDepartments.inputSearch.fill(agentsDepartmentName);
+				await poOmnichannelDepartments.firstRowInTableMenu.click();
+				await poOmnichannelDepartments.menuEditOption.click();
+
+				await expect(poOmnichannelDepartments.findAgentCountInput(newAgent)).toHaveValue(`${newValue}`);
+				await expect(poOmnichannelDepartments.findAgentNumberInput(newAgent)).toHaveValue(`${newValue}`);
+				await page.goBack();
+			});
+
+			await test.step('expect remove new agent', async () => {
+				const newAgent = 'user1';
+				await poOmnichannelDepartments.gotoEditDepartment(agentsDepartmentName);
+				await expect(poOmnichannelDepartments.findRowByName(newAgent)).toBeVisible();
+
+				await poOmnichannelDepartments.findAgentRemoveBtn(newAgent).click();
+				await poOmnichannelDepartments.btnModalConfirmDelete.click();
+
+				await expect(poOmnichannelDepartments.findRowByName(newAgent)).not.toBeVisible();
+				await poOmnichannelDepartments.btnSave.click();
+
+				await poOmnichannelDepartments.inputSearch.fill(agentsDepartmentName);
+				await poOmnichannelDepartments.firstRowInTableMenu.click();
+				await poOmnichannelDepartments.menuEditOption.click();
+
+				await expect(poOmnichannelDepartments.findRowByName(newAgent)).not.toBeVisible();
+				await page.goBack();
+			});
+
+			await test.step('expect delete department', async () => {
+				await poOmnichannelDepartments.allDepartmentsTab.click();
+
+				await poOmnichannelDepartments.inputSearch.fill(agentsDepartmentName);
+
+				await poOmnichannelDepartments.selectedDepartmentMenu(agentsDepartmentName).click();
+
+				await poOmnichannelDepartments.menuDeleteOption.click();
+
+				await poOmnichannelDepartments.inputModalConfirmDelete.fill(agentsDepartmentName);
+
+				await poOmnichannelDepartments.btnModalConfirmDelete.click();
+
+				await poOmnichannelDepartments.inputSearch.fill(agentsDepartmentName);
+
+				await expect(poOmnichannelDepartments.firstRowInTable).toHaveCount(0);
+			});
 		});
-
-		test('expect update agent count and number value', async () => {
-			const newAgent = 'user1';
-			const newValue = 1;
-			await expect(poOmnichannelDepartments.findRowByName(newAgent)).toBeVisible();
-
-			await poOmnichannelDepartments.findAgentCountInput(newAgent).fill(`${newValue}`);
-			await poOmnichannelDepartments.findAgentNumberInput(newAgent).fill(`${newValue}`);
-			await poOmnichannelDepartments.btnSave.click();
-
-			await poOmnichannelDepartments.inputSearch.fill(departmentName);
-			await poOmnichannelDepartments.firstRowInTable.locator(`text=${departmentName}`).click();
-
-			await expect(poOmnichannelDepartments.findAgentCountInput(newAgent)).toHaveValue(`${newValue}`);
-			await expect(poOmnichannelDepartments.findAgentNumberInput(newAgent)).toHaveValue(`${newValue}`);
-		});
-
-		test('expect remove new agent', async () => {
-			const newAgent = 'user1';
-			await expect(poOmnichannelDepartments.findRowByName(newAgent)).toBeVisible();
-
-			await poOmnichannelDepartments.findAgentRemoveBtn(newAgent).click();
-			await poOmnichannelDepartments.btnModalConfirmDelete.click();
-
-			await expect(poOmnichannelDepartments.findRowByName(newAgent)).not.toBeVisible();
-			await poOmnichannelDepartments.btnSave.click();
-
-			await poOmnichannelDepartments.inputSearch.fill(departmentName);
-			await poOmnichannelDepartments.firstRowInTable.locator(`text=${departmentName}`).click();
-
-			await expect(poOmnichannelDepartments.findRowByName(newAgent)).not.toBeVisible();
-		});
-	});
-
-	test('expect update department name', async () => {
-		await poOmnichannelDepartments.inputSearch.fill(departmentName);
-
-		await poOmnichannelDepartments.firstRowInTable.locator(`text=${departmentName}`).click();
-		await poOmnichannelDepartments.inputName.fill(editedDepartmentName);
-		await poOmnichannelDepartments.btnSave.click();
-
-		await poOmnichannelDepartments.inputSearch.fill(editedDepartmentName);
-		await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
 	});
 
 	test('Tags', async () => {
@@ -258,20 +300,5 @@ test.describe.serial('omnichannel-departments', () => {
 				await expect(poOmnichannelDepartments.btnTagsAdd).toBeDisabled();
 			});
 		});
-	});
-
-	test('expect delete department', async ({ page }) => {
-		await expect(poOmnichannelDepartments.firstRowInTable).toBeVisible();
-
-		await poOmnichannelDepartments.inputSearch.fill(editedDepartmentName);
-
-		await page.waitForRequest('**/livechat/department**');
-
-		await poOmnichannelDepartments.btnDeleteFirstRowInTable.click();
-		await poOmnichannelDepartments.btnModalConfirmDelete.click();
-
-		await poOmnichannelDepartments.inputSearch.fill(editedDepartmentName);
-
-		await expect(poOmnichannelDepartments.firstRowInTable).toHaveCount(0);
 	});
 });

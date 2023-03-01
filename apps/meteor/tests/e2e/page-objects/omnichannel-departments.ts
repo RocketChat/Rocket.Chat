@@ -167,4 +167,10 @@ export class OmnichannelDepartments {
 	btnTag(tagName: string) {
 		return this.page.locator('button', { hasText: tagName });
 	}
+
+	public async gotoEditDepartment(departmentName: string) {
+		await this.inputSearch.fill(departmentName);
+		await this.firstRowInTableMenu.click();
+		await this.menuEditOption.click();
+	}
 }
