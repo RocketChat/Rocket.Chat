@@ -4,7 +4,7 @@ import {
 	FederationRoomInviteUserDto,
 	FederationOnRoomCreationDto,
 	FederationSetupRoomDto,
-} from '../../../../../../../../app/federation-v2/server/application/input/RoomSenderDto';
+} from '../../../../../../../../app/federation-v2/server/application/sender/input/RoomSenderDto';
 import { FederationRoomSenderConverterEE } from '../../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/converters/RoomSender';
 
 describe('FederationEE - Infrastructure - Matrix - FederationRoomSenderConverterEE', () => {
@@ -204,6 +204,23 @@ describe('FederationEE - Infrastructure - Matrix - FederationRoomSenderConverter
 				{ _id: 'inviterId', username: 'username' },
 				{ _id: '_id', username: 'usernameToBeInvited' },
 			]);
+		});
+	});
+
+	describe('#toJoinExternalPublicRoomDto()', () => {
+		it('should return the basic room properties correctly (normalizedRoomId without any "!" and only the part before the ":") if any', () => {
+			const result = FederationRoomSenderConverterEE.toJoinExternalPublicRoomDto('internalUserId', '!externalRoomId:server.com');
+			expect(result.externalRoomId).to.be.equal('!externalRoomId:server.com');
+			expect(result.normalizedRoomId).to.be.equal('externalRoomId');
+		});
+
+		it('should return the dto correctly', () => {
+			const result = FederationRoomSenderConverterEE.toJoinExternalPublicRoomDto('internalUserId', '!externalRoomId:server.com');
+
+			expect(result.externalRoomId).to.be.equal('!externalRoomId:server.com');
+			expect(result.normalizedRoomId).to.be.equal('externalRoomId');
+			expect(result.internalUserId).to.be.equal('internalUserId');
+			expect(result.externalRoomHomeServerName).to.be.equal('server.com');
 		});
 	});
 });

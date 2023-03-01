@@ -1,5 +1,7 @@
+import { Subscriptions } from '@rocket.chat/models';
+
 import { callbacks } from '../../../../../lib/callbacks';
-import { LivechatInquiry, Subscriptions, LivechatRooms } from '../../../../../app/models/server';
+import { LivechatInquiry, LivechatRooms } from '../../../../../app/models/server';
 import { queueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { settings } from '../../../../../app/settings/server';
 import { cbLogger } from '../lib/logger';
@@ -29,7 +31,7 @@ const handleOnAgentAssignmentFailed = async ({
 		const { _id: inquiryId } = inquiry;
 		LivechatInquiry.queueInquiryAndRemoveDefaultAgent(inquiryId);
 		LivechatRooms.removeAgentByRoomId(roomId);
-		Subscriptions.removeByRoomId(roomId);
+		await Subscriptions.removeByRoomId(roomId);
 		dispatchAgentDelegated(roomId, null);
 
 		const newInquiry = LivechatInquiry.findOneById(inquiryId);

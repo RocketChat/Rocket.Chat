@@ -14,7 +14,7 @@ import React, { useCallback } from 'react';
 import { UiTextContext } from '../../../../../definition/IRoomTypeConfig';
 import { GenericModalDoNotAskAgain } from '../../../../components/GenericModal';
 import { useDontAskAgain } from '../../../../hooks/useDontAskAgain';
-import { useEndpointActionExperimental } from '../../../../hooks/useEndpointActionExperimental';
+import { useEndpointAction } from '../../../../hooks/useEndpointAction';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { useTabBarClose, useTabBarOpen } from '../../../room/contexts/ToolboxContext';
 import ConvertToChannelModal from '../../ConvertToChannelModal';
@@ -55,9 +55,9 @@ const TeamsInfoWithLogic = ({ room, openEditing }) => {
 	const setModal = useSetModal();
 	const closeModal = useMutableCallback(() => setModal());
 
-	const deleteTeam = useEndpointActionExperimental('POST', '/v1/teams.delete');
-	const leaveTeam = useEndpointActionExperimental('POST', '/v1/teams.leave');
-	const convertTeamToChannel = useEndpointActionExperimental('POST', '/v1/teams.convertToChannel');
+	const deleteTeam = useEndpointAction('POST', '/v1/teams.delete');
+	const leaveTeam = useEndpointAction('POST', '/v1/teams.leave');
+	const convertTeamToChannel = useEndpointAction('POST', '/v1/teams.convertToChannel');
 
 	const hideTeam = useMethod('hideRoom');
 

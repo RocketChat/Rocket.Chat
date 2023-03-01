@@ -5,7 +5,6 @@ import $ from 'jquery';
 
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
-import './messageBoxActions';
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
 
@@ -22,7 +21,14 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		input.dispatchEvent(event);
 	};
 
-	const emitter = new Emitter<{ quotedMessagesUpdate: void; editing: void; recording: void; formatting: void }>();
+	const emitter = new Emitter<{
+		quotedMessagesUpdate: void;
+		editing: void;
+		recording: void;
+		recordingVideo: void;
+		formatting: void;
+		mircophoneDenied: void;
+	}>();
 
 	let _quotedMessages: IMessage[] = [];
 
@@ -153,6 +159,36 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		];
 	})();
 
+	const [recordingVideo, setRecordingVideo] = (() => {
+		let recordingVideo = false;
+
+		return [
+			{
+				get: () => recordingVideo,
+				subscribe: (callback: () => void) => emitter.on('recordingVideo', callback),
+			},
+			(value: boolean) => {
+				recordingVideo = value;
+				emitter.emit('recordingVideo');
+			},
+		];
+	})();
+
+	const [isMicrophoneDenied, setIsMicrophoneDenied] = (() => {
+		let isMicrophoneDenied = false;
+
+		return [
+			{
+				get: () => isMicrophoneDenied,
+				subscribe: (callback: () => void) => emitter.on('mircophoneDenied', callback),
+			},
+			(value: boolean) => {
+				isMicrophoneDenied = value;
+				emitter.emit('mircophoneDenied');
+			},
+		];
+	})();
+
 	const setEditingMode = (editing: boolean): void => {
 		setEditing(editing);
 	};
@@ -229,8 +265,42 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 
 	setText(Meteor._localStorage.getItem(storageID) ?? '');
 
+	// Gets the text that is connected to the cursor and replaces it with the given text
+	const replaceText = (text: string, selection: { readonly start: number; readonly end: number }): void => {
+		const { selectionStart, selectionEnd } = input;
+
+		// Selects the text that is connected to the cursor
+		input.setSelectionRange(selection.start ?? 0, selection.end ?? text.length);
+		const textAreaTxt = input.value;
+
+		if (!document.execCommand || !document.execCommand('insertText', false, text)) {
+			input.value = textAreaTxt.substring(0, selection.start) + text + textAreaTxt.substring(selection.end);
+		}
+
+		input.selectionStart = selectionStart + text.length;
+		input.selectionEnd = selectionStart + text.length;
+		if (selectionStart !== selectionEnd) {
+			input.selectionStart = selectionStart;
+		}
+
+		triggerEvent(input, 'input');
+		triggerEvent(input, 'change');
+
+		focus();
+	};
+
 	return {
+		replaceText,
 		insertNewLine,
+		blur: () => input.blur(),
+
+		substring: (start: number, end?: number) => {
+			return input.value.substring(start, end);
+		},
+
+		getCursorPosition: () => {
+			return input.selectionStart;
+		},
 		setCursorToEnd: () => {
 			input.selectionEnd = input.value.length;
 			input.selectionStart = input.selectionEnd;
@@ -257,6 +327,8 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		setEditingMode,
 		recording,
 		setRecordingMode,
+		recordingVideo,
+		setRecordingVideo,
 		insertText,
 		setText,
 		clear,
@@ -267,5 +339,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		dismissAllQuotedMessages,
 		quotedMessages,
 		formatters,
+		isMicrophoneDenied,
+		setIsMicrophoneDenied,
 	};
 };

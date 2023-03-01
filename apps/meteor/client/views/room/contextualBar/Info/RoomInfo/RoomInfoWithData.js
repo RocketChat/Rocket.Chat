@@ -18,9 +18,10 @@ import { RoomManager } from '../../../../../../app/ui-utils/client';
 import { UiTextContext } from '../../../../../../definition/IRoomTypeConfig';
 import GenericModal from '../../../../../components/GenericModal';
 import WarningModal from '../../../../../components/WarningModal';
-import { useEndpointActionExperimental } from '../../../../../hooks/useEndpointActionExperimental';
+import { useEndpointAction } from '../../../../../hooks/useEndpointAction';
 import * as Federation from '../../../../../lib/federation/Federation';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
+import { useRoomSubscription } from '../../../contexts/RoomContext';
 import { useTabBarClose } from '../../../contexts/ToolboxContext';
 import ChannelToTeamModal from '../ChannelToTeamModal/ChannelToTeamModal';
 import RoomInfo from './RoomInfo';
@@ -45,6 +46,7 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	const room = useUserRoom(rid);
 	room.type = room.t;
 	room.rid = rid;
+	const subscription = useRoomSubscription();
 
 	const { type, fname, name, prid, joined = true } = room; // TODO implement joined
 
@@ -65,19 +67,17 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	const leaveRoom = useMethod('leaveRoom');
 	const router = useRoute('home');
 
-	const moveChannelToTeam = useEndpointActionExperimental('POST', '/v1/teams.addRooms', t('Rooms_added_successfully'));
-	const convertRoomToTeam = useEndpointActionExperimental(
-		'POST',
-		type === 'c' ? '/v1/channels.convertToTeam' : '/v1/groups.convertToTeam',
-		t('Success'),
-	);
+	const moveChannelToTeam = useEndpointAction('POST', '/v1/teams.addRooms', { successMessage: t('Rooms_added_successfully') });
+	const convertRoomToTeam = useEndpointAction('POST', type === 'c' ? '/v1/channels.convertToTeam' : '/v1/groups.convertToTeam', {
+		successMessage: t('Success'),
+	});
 
 	const isFederated = isRoomFederated(room);
 	const hasPermissionToDelete = usePermission(type === 'c' ? 'delete-c' : 'delete-p', rid);
 	const hasPermissionToEdit = usePermission('edit-room', rid);
 	const hasPermissionToConvertRoomToTeam = usePermission('create-team');
-	const canDelete = isFederated ? Federation.isEditableByTheUser(user, room) && hasPermissionToDelete : hasPermissionToDelete;
-	const canEdit = isFederated ? Federation.isEditableByTheUser(user, room) && hasPermissionToEdit : hasPermissionToEdit;
+	const canDelete = isFederated ? false : hasPermissionToDelete;
+	const canEdit = isFederated ? Federation.isEditableByTheUser(user, room, subscription) && hasPermissionToEdit : hasPermissionToEdit;
 	const canConvertRoomToTeam = isFederated ? false : hasPermissionToConvertRoomToTeam;
 	const canLeave = usePermission(type === 'c' ? 'leave-c' : 'leave-p') && room.cl !== false && joined;
 

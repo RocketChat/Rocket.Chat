@@ -3,11 +3,6 @@
     {{> autocompleteContainer}}
 </template>
 
-<template name="textareaAutocomplete">
-    <textarea {{attributes}}>{{> UI.contentBlock}}</textarea>
-    {{> autocompleteContainer}}
-</template>
-
 <template name="_autocompleteContainer">
     {{#if isShowing}}
     <div class='-autocomplete-container'>
