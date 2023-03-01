@@ -36,14 +36,10 @@ const assets: IRocketChatAssets = {
 	},
 	logo_dark: {
 		label: 'logo - dark theme (svg, png, jpg)',
-		defaultUrl: 'images/logo/logo.svg',
+		defaultUrl: 'images/logo/logo_dark.svg',
 		constraints: {
 			type: 'image',
 			extensions: ['svg', 'png', 'jpg', 'jpeg'],
-		},
-		wizard: {
-			step: 3,
-			order: 2,
 		},
 	},
 	background: {
