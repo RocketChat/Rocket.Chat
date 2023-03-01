@@ -778,13 +778,13 @@ export const Livechat = {
 			return HTTP.post(settings.get('Livechat_webhookUrl'), options);
 		} catch (err) {
 			Livechat.webhookLogger.error({ msg: `Response error on ${11 - attempts} try ->`, err });
-			// try 10 times after 10 seconds each
-			attempts - 1 && Livechat.webhookLogger.warn('Will try again in 10 seconds ...');
+			// try 10 times after 20 seconds each
+			attempts - 1 && Livechat.webhookLogger.warn('Will try again in 20 seconds ...');
 			setTimeout(
 				Meteor.bindEnvironment(function () {
 					Livechat.sendRequest(postData, callback, attempts - 1);
 				}),
-				10000,
+				20000,
 			);
 		}
 	},
