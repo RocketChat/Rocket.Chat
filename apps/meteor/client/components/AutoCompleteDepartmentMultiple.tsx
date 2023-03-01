@@ -41,7 +41,7 @@ const AutoCompleteDepartmentMultiple = ({
 			value={value}
 			onChange={onChange}
 			filter={departmentsFilter}
-			setFilter={setDepartmentsFilter as (value?: string | number) => void}
+			setFilter={setDepartmentsFilter}
 			options={departmentsItems}
 			width='100%'
 			flexShrink={0}

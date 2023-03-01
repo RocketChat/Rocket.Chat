@@ -39,7 +39,7 @@ export const DepartmentForwarding = ({ departmentId, value = [], handler, label 
 						w='100%'
 						flexGrow={1}
 						filter={debouncedDepartmentsFilter}
-						setFilter={setDepartmentsFilter as (type?: string | number) => void}
+						setFilter={setDepartmentsFilter}
 						onChange={handler}
 						options={departmentsItems}
 						value={value}
