@@ -121,7 +121,7 @@ export class VisitorInactivityMonitor {
 	}
 
 	async handleAbandonedRooms() {
-		const action = settings.get('Livechat_abandoned_rooms_action');
+		const action = settings.get<string>('Livechat_abandoned_rooms_action');
 		if (!action || action === 'none') {
 			return;
 		}
@@ -140,7 +140,14 @@ export class VisitorInactivityMonitor {
 			}
 		});
 
-		await Promise.allSettled(promises);
+		const result = await Promise.allSettled(promises);
+
+		const errors = result.filter(isPromiseRejectedResult).map((r) => r.reason);
+
+		if (errors.length) {
+			logger.error({ msg: `Error while removing priority from ${errors.length} rooms`, reason: errors[0] });
+			logger.debug({ msg: 'Rejection results', errors });
+		}
 
 		this._initializeMessageCache();
 	}
