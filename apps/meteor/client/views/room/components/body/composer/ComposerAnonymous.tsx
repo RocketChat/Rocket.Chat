@@ -11,7 +11,7 @@ import { useMutation } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-export const ComposerAnonymous = (): ReactElement => {
+const ComposerAnonymous = (): ReactElement => {
 	const isAnonymousWriteEnabled = useSetting('Accounts_AllowAnonymousWrite');
 
 	const dispatch = useToastMessageDispatch();
@@ -54,3 +54,5 @@ export const ComposerAnonymous = (): ReactElement => {
 		</ButtonGroup>
 	);
 };
+
+export default ComposerAnonymous;
