@@ -222,7 +222,7 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	pdfTranscriptRequested?: boolean;
 	// The ID of the pdf file generated for the transcript
 	// This will help if we want to have this file shown on other places of the UI
-	pdfFileId?: string;
+	pdfTranscriptFileId?: string;
 
 	metrics?: {
 		serviceTimeDuration?: number;
