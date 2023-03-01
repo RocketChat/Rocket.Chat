@@ -62,11 +62,13 @@ Meteor.methods({
 				rid: roomId,
 				ts: new Date(),
 				msg: '',
-				file: {
-					_id: file._id,
-					name: file.name,
-					type: file.type,
-				},
+				files: [
+					{
+						_id: file._id,
+						name: file.name,
+						type: file.type,
+					},
+				],
 				groupable: false,
 				attachments: [attachment],
 				token: visitorToken,
