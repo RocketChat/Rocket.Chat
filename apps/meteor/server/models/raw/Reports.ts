@@ -1,4 +1,4 @@
-import type { IMessage, IReport, RocketChatRecordDeleted, IModerationAudit, IReportedMessageInfo } from '@rocket.chat/core-typings';
+import type { IMessage, IReport, RocketChatRecordDeleted, IModerationAudit } from '@rocket.chat/core-typings';
 import type { FindPaginated, IReportsModel } from '@rocket.chat/model-typings';
 import type { Db, Collection, FindCursor, UpdateResult, Document, AggregationCursor } from 'mongodb';
 
@@ -144,7 +144,6 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 				_id: 1,
 				message: 1,
 				ts: 1,
-				description: 0,
 				room: 1,
 			},
 		};
@@ -248,7 +247,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		count?: number,
 		sort?: any,
 		selector?: string,
-	): FindPaginated<FindCursor<IReportedMessageInfo>> {
+	): FindPaginated<FindCursor<Pick<IReport, '_id' | 'description' | 'reportedBy' | 'ts' | 'room'>>> {
 		const query = {
 			'_hidden': {
 				$ne: true,
@@ -294,6 +293,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 				description: 1,
 				ts: 1,
 				reportedBy: 1,
+				room: 1,
 			},
 		};
 

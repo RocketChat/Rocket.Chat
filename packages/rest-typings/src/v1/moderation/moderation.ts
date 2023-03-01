@@ -1,4 +1,4 @@
-import type { IReport, IModerationAudit, IUserReportedMessages, IReportedMessageInfo } from '@rocket.chat/core-typings';
+import type { IReport, IModerationAudit } from '@rocket.chat/core-typings';
 import type { UpdateResult, Document } from 'mongodb';
 
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
@@ -16,7 +16,9 @@ export type ModerationEndpoints = {
 		}>;
 	};
 	'/v1/moderation.user.getMessageHistory': {
-		GET: (params: { userId: string; sort?: string; selector?: string; count?: number }) => IUserReportedMessages;
+		GET: (params: { userId: string; sort?: string; selector?: string; count?: number }) => PaginatedResult<{
+			messages: Pick<IReport, 'message' | 'ts' | 'room'>[];
+		}>;
 	};
 	'/v1/moderation.user.deleteMessageHistory': {
 		POST: (params: { userId: string; reasonForHiding?: string }) => void;
@@ -27,9 +29,9 @@ export type ModerationEndpoints = {
 		};
 	};
 	'/v1/moderation.reportsByMessage': {
-		GET: (params: { msgId: string; sort?: string; selector?: string; count?: number }) => {
-			reports: IReportedMessageInfo[];
-		};
+		GET: (params: { msgId: string; sort?: string; selector?: string; count?: number }) => PaginatedResult<{
+			reports: Pick<IReport, '_id' | 'description' | 'reportedBy' | 'ts' | 'room'>[];
+		}>;
 	};
 	'/v1/moderation.getReportInfo': {
 		GET: (params: { reportId: string }) => {

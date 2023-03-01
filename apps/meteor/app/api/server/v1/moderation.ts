@@ -71,6 +71,7 @@ API.v1.addRoute(
 				messages,
 				count: messages.length,
 				total,
+				offset,
 			});
 		},
 	},
