@@ -159,7 +159,7 @@ const MessageBox = ({
 			return;
 		}
 
-		EmojiPicker.open(e.currentTarget, (emoji: string) => chat?.composer?.insertText(`:${emoji}: `));
+		EmojiPicker.open(e.currentTarget, (emoji: string) => chat?.composer?.insertText(` :${emoji}: `));
 	});
 
 	const handleSendMessage = useMutableCallback(() => {
