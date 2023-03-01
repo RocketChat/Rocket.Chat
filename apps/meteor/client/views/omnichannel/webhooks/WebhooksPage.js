@@ -1,4 +1,4 @@
-import { Box, FieldGroup, Field, TextInput, MultiSelect, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, FieldGroup, Field, TextInput, MultiSelect, Button, ButtonGroup, NumberInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useMethod, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
@@ -28,6 +28,7 @@ const getInitialValues = ({
 	Livechat_webhook_on_offline_msg,
 	Livechat_webhook_on_visitor_message,
 	Livechat_webhook_on_agent_message,
+	Livechat_http_timeout,
 }) => {
 	const sendOptions = {
 		Livechat_webhook_on_start,
@@ -38,6 +39,7 @@ const getInitialValues = ({
 		Livechat_webhook_on_offline_msg,
 		Livechat_webhook_on_visitor_message,
 		Livechat_webhook_on_agent_message,
+		Livechat_http_timeout,
 	};
 
 	const mappedSendOptions = reduceSendOptions(sendOptions);
@@ -45,6 +47,7 @@ const getInitialValues = ({
 	return {
 		Livechat_webhookUrl,
 		Livechat_secret_token,
+		Livechat_http_timeout,
 		sendOn: mappedSendOptions,
 	};
 };
@@ -58,9 +61,9 @@ const WebhooksPage = ({ settings }) => {
 	const save = useMethod('livechat:saveIntegration');
 	const test = useEndpoint('POST', '/v1/livechat/webhook.test');
 
-	const { Livechat_webhookUrl, Livechat_secret_token, sendOn } = values;
+	const { Livechat_webhookUrl, Livechat_secret_token, Livechat_http_timeout, sendOn } = values;
 
-	const { handleLivechat_webhookUrl, handleLivechat_secret_token, handleSendOn } = handlers;
+	const { handleLivechat_webhookUrl, handleLivechat_secret_token, handleLivechat_http_timeout, handleSendOn } = handlers;
 
 	const sendOptions = useMemo(
 		() => [
@@ -83,7 +86,7 @@ const WebhooksPage = ({ settings }) => {
 		}, {});
 
 		try {
-			await save({ Livechat_webhookUrl, Livechat_secret_token, ...sendOnObj });
+			await save({ Livechat_webhookUrl, Livechat_secret_token, Livechat_http_timeout, ...sendOnObj });
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			commit();
 		} catch (error) {
@@ -143,6 +146,12 @@ const WebhooksPage = ({ settings }) => {
 								<Box w='full' display='flex' alignItems='stretch' justifyContent='stretch'>
 									<MultiSelect w='full' value={sendOn} onChange={handleSendOn} options={sendOptions} placeholder={t('Select_an_option')} />
 								</Box>
+							</Field.Row>
+						</Field>
+						<Field>
+							<Field.Label>{t('Http_timeout')}</Field.Label>
+							<Field.Row>
+								<NumberInput value={Livechat_http_timeout} onChange={handleLivechat_http_timeout} placeholder={t('Http_timeout_value')} />
 							</Field.Row>
 						</Field>
 					</FieldGroup>

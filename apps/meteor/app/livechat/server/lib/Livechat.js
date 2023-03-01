@@ -773,19 +773,20 @@ export const Livechat = {
 		const options = {
 			data: postData,
 			...(secretToken !== '' && secretToken !== undefined && { headers }),
-			timeout: 5000,
+			timeout: settings.get('Livechat_http_timeout'),
 		};
 		try {
 			return HTTP.post(settings.get('Livechat_webhookUrl'), options);
 		} catch (err) {
 			Livechat.webhookLogger.error({ msg: `Response error on ${11 - attempts} try ->`, err });
 			// try 10 times after 20 seconds each
-			attempts - 1 && Livechat.webhookLogger.warn('Will try again in 20 seconds ...');
+			attempts - 1 &&
+				Livechat.webhookLogger.warn(`Will try again in ${(settings.get('Livechat_http_timeout') / 1000).toPrecision(2) * 4} seconds ...`);
 			setTimeout(
 				Meteor.bindEnvironment(function () {
 					Livechat.sendRequest(postData, callback, attempts - 1);
 				}),
-				20000,
+				settings.get('Livechat_http_timeout') * 4,
 			);
 		}
 	},

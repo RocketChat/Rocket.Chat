@@ -21,6 +21,10 @@ Meteor.methods({
 			await Settings.updateValueById('Livechat_secret_token', trim(values.Livechat_secret_token));
 		}
 
+		if (typeof values.Livechat_http_timeout !== 'undefined') {
+			await Settings.updateValueById('Livechat_http_timeout', Number(values.Livechat_http_timeout));
+		}
+
 		if (typeof values.Livechat_webhook_on_start !== 'undefined') {
 			await Settings.updateValueById('Livechat_webhook_on_start', !!values.Livechat_webhook_on_start);
 		}

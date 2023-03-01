@@ -348,6 +348,14 @@ Meteor.startup(function () {
 			},
 		);
 
+		this.add('Livechat_http_timeout', 5000, {
+			type: 'int',
+			group: 'Omnichannel',
+			section: 'CRM_Integration',
+			i18nLabel: 'Livechat_http_timeout',
+			enableQuery: omnichannelEnabledQuery,
+		});
+
 		this.add('Livechat_history_monitor_type', 'url', {
 			type: 'select',
 			group: 'Omnichannel',
