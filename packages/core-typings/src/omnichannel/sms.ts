@@ -30,6 +30,17 @@ export interface ISMSProvider {
 
 	sendBatch?(from: string, to: string[], message: string): Promise<SMSProviderResult>;
 	response(): SMSProviderResponse;
+	send(
+		fromNumber: string,
+		toNumber: string,
+		message: string,
+		extraData?: {
+			fileUpload?: { size: number; type: string; publicFilePath: string };
+			location?: { coordinates: [number, number] };
+			rid?: string;
+			userId?: string;
+		},
+	): Promise<SMSProviderResult | void>;
 	error(error: Error & { reason?: string }): SMSProviderResponse;
 }
 

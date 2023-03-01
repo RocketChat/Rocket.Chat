@@ -40,7 +40,7 @@ callbacks.add(
 			return message;
 		}
 
-		let extraData;
+		let extraData = {};
 		if (message.file) {
 			message = Promise.await(normalizeMessageFileUpload(message));
 			// @ts-expect-error TODO: investigate from where fileUpload comes
@@ -62,7 +62,7 @@ callbacks.add(
 
 		const visitor = Promise.await(LivechatVisitors.getVisitorByToken(room.v.token, { projection: { phone: 1 } }));
 
-		if (!visitor || !visitor.phone || visitor.phone.length === 0) {
+		if (!visitor?.phone || visitor.phone.length === 0) {
 			callbackLogger.debug('Visitor does not have a phone number, skipping SMS send');
 			return message;
 		}

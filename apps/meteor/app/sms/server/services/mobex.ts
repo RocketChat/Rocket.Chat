@@ -85,19 +85,23 @@ class Mobex implements ISMSProvider {
 		return returnData;
 	}
 
+	// @ts-expect-error -- typings :) for this method are wrong
 	async send(
 		fromNumber: string,
 		toNumber: string,
 		message: string,
-		username?: string,
-		password?: string,
-		address?: string,
+		extraData: {
+			username?: string;
+			password?: string;
+			address?: string;
+		},
 	): Promise<SMSProviderResult> {
 		let currentFrom = this.from;
 		let currentUsername = this.username;
 		let currentAddress = this.address;
 		let currentPassword = this.password;
 
+		const { username, password, address } = extraData;
 		if (fromNumber) {
 			currentFrom = fromNumber;
 		}
@@ -200,4 +204,5 @@ class Mobex implements ISMSProvider {
 	}
 }
 
+// @ts-expect-error -- typings :) for this class are wrong
 SMS.registerService('mobex', Mobex);

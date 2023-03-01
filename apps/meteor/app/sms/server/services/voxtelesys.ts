@@ -94,11 +94,11 @@ class Voxtelesys implements ISMSProvider {
 		fromNumber: string,
 		toNumber: string,
 		message: string,
-		extraData: {
-			fileUpload: { size: number; type: string; publicFilePath: string };
-			location: { coordinates: [number, number] };
-			rid: string;
-			userId: string;
+		extraData?: {
+			fileUpload?: { size: number; type: string; publicFilePath: string };
+			location?: { coordinates: [number, number] };
+			rid?: string;
+			userId?: string;
 		},
 	): Promise<void> {
 		let media;

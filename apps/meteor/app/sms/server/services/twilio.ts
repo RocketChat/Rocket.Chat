@@ -120,11 +120,11 @@ class Twilio implements ISMSProvider {
 		fromNumber: string,
 		toNumber: string,
 		message: string,
-		extraData: {
-			fileUpload: { size: number; type: string; publicFilePath: string };
-			location: { coordinates: [number, number] };
-			rid: string;
-			userId: string;
+		extraData?: {
+			fileUpload?: { size: number; type: string; publicFilePath: string };
+			location?: { coordinates: [number, number] };
+			rid?: string;
+			userId?: string;
 		},
 	): Promise<SMSProviderResult> {
 		const client = twilio(this.accountSid, this.authToken);
