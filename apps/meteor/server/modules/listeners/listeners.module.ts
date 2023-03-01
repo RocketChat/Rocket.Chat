@@ -7,6 +7,7 @@ import { EnterpriseSettings } from '@rocket.chat/core-services';
 
 import type { NotificationsModule } from '../notifications/notifications.module';
 import { settings } from '../../../app/settings/server/cached';
+import { AppEvents } from '../../../ee/server/apps/communication';
 
 const isMessageParserDisabled = process.env.DISABLE_MESSAGE_PARSER === 'true';
 
@@ -383,43 +384,43 @@ export class ListenersModule {
 		});
 
 		service.onEvent('apps.added', (appId: string) => {
-			notifications.streamApps.emitWithoutBroadcast('app/added', appId);
+			notifications.streamApps.emitWithoutBroadcast(AppEvents.APP_ADDED, appId);
 		});
 
 		service.onEvent('apps.removed', (appId: string) => {
-			notifications.streamApps.emitWithoutBroadcast('app/removed', appId);
+			notifications.streamApps.emitWithoutBroadcast(AppEvents.APP_REMOVED, appId);
 		});
 
 		service.onEvent('apps.updated', (appId: string) => {
-			notifications.streamApps.emitWithoutBroadcast('app/updated', appId);
+			notifications.streamApps.emitWithoutBroadcast(AppEvents.APP_UPDATED, appId);
 		});
 
 		service.onEvent('apps.statusUpdate', (appId: string, status: AppStatus) => {
-			notifications.streamApps.emitWithoutBroadcast('app/statusUpdate', appId, status);
+			notifications.streamApps.emitWithoutBroadcast(AppEvents.APP_STATUS_CHANGE, { appId, status });
 		});
 
 		service.onEvent('apps.settingUpdated', (appId: string, setting: ISetting) => {
-			notifications.streamApps.emitWithoutBroadcast('app/settingUpdated', appId, setting);
+			notifications.streamApps.emitWithoutBroadcast(AppEvents.APP_SETTING_UPDATED, { appId, setting });
 		});
 
 		service.onEvent('command.added', (command: string) => {
-			notifications.streamApps.emitWithoutBroadcast('command/added', command);
+			notifications.streamApps.emitWithoutBroadcast(AppEvents.COMMAND_ADDED, command);
 		});
 
 		service.onEvent('command.disabled', (command: string) => {
-			notifications.streamApps.emitWithoutBroadcast('command/disabled', command);
+			notifications.streamApps.emitWithoutBroadcast(AppEvents.COMMAND_DISABLED, command);
 		});
 
 		service.onEvent('command.updated', (command: string) => {
-			notifications.streamApps.emitWithoutBroadcast('command/updated', command);
+			notifications.streamApps.emitWithoutBroadcast(AppEvents.COMMAND_UPDATED, command);
 		});
 
 		service.onEvent('command.removed', (command: string) => {
-			notifications.streamApps.emitWithoutBroadcast('command/removed', command);
+			notifications.streamApps.emitWithoutBroadcast(AppEvents.COMMAND_REMOVED, command);
 		});
 
 		service.onEvent('actions.changed', () => {
-			notifications.streamApps.emitWithoutBroadcast('actions/changed');
+			notifications.streamApps.emitWithoutBroadcast(AppEvents.ACTIONS_CHANGED);
 		});
 	}
 }
