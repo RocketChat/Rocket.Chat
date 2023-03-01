@@ -1,7 +1,8 @@
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import React, { useState, useMemo, useCallback, FC } from 'react';
+import type { FC } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 
 import GenericTable from '../../../../components/GenericTable';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
@@ -74,7 +75,7 @@ const CallTable: FC = () => {
 		);
 	});
 
-	const { value: data } = useEndpointData('/v1/voip/rooms', query);
+	const { value: data } = useEndpointData('/v1/voip/rooms', { params: query });
 
 	const header = useMemo(
 		() =>

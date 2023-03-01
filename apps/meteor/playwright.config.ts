@@ -10,6 +10,7 @@ export default {
 		trace: 'retain-on-failure',
 		baseURL: constants.BASE_URL,
 		screenshot: process.env.CI ? 'off' : 'only-on-failure',
+		video: process.env.CI ? 'off' : 'retain-on-failure',
 		channel: 'chrome',
 		launchOptions: {
 			// force GPU hardware acceleration
@@ -19,11 +20,21 @@ export default {
 		permissions: ['microphone'],
 	},
 	outputDir: 'tests/e2e/.playwright',
-	reporter: process.env.CI ? 'github' : 'list',
+	reporter: [
+		['list'],
+		// process.env.CI ? ['github'] : ['list'],
+		[
+			'playwright-qase-reporter',
+			{
+				projectCode: 'RC',
+				// uploadAttachments: true,
+			},
+		],
+	],
 	testDir: 'tests/e2e',
+	testIgnore: 'tests/e2e/federation/**',
 	workers: 1,
-	retries: process.env.CI ? 2 : undefined,
 	timeout: 60 * 1000,
-	globalTimeout: 40 * 60 * 1000,
+	globalTimeout: (process.env.IS_EE === 'true' ? 50 : 40) * 60 * 1000,
 	maxFailures: process.env.CI ? 5 : undefined,
 } as PlaywrightTestConfig;

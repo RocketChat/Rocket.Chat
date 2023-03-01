@@ -34,7 +34,13 @@ const InlineElements = ({ children }: InlineElementsProps): ReactElement => (
 					return <ItalicSpan key={index} children={child.value} />;
 
 				case 'LINK':
-					return <LinkSpan key={index} href={child.value.src.value} label={child.value.label} />;
+					return (
+						<LinkSpan
+							key={index}
+							href={child.value.src.value}
+							label={Array.isArray(child.value.label) ? child.value.label : [child.value.label]}
+						/>
+					);
 
 				case 'PLAIN_TEXT':
 					return <PlainSpan key={index} text={child.value} />;

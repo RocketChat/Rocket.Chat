@@ -1,8 +1,9 @@
 import { ConnectionStatusContext } from '@rocket.chat/ui-contexts';
 import { action } from '@storybook/addon-actions';
 import { Title, Description, Stories } from '@storybook/addon-docs';
-import { ComponentMeta, ComponentStory } from '@storybook/react';
-import React, { ContextType, ReactElement } from 'react';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ContextType, ReactElement } from 'react';
+import React from 'react';
 
 import ConnectionStatusBar from './ConnectionStatusBar';
 

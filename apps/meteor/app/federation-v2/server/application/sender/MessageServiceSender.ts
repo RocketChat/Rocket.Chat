@@ -51,7 +51,7 @@ export class FederationMessageServiceSender {
 			reaction,
 		);
 		federatedSender.getUsername() &&
-			(await this.internalMessageAdapter.setExternalFederationEventOnMessage(
+			(await this.internalMessageAdapter.setExternalFederationEventOnMessageReaction(
 				federatedSender.getUsername() as string,
 				internalMessage,
 				reaction,
@@ -93,6 +93,6 @@ export class FederationMessageServiceSender {
 		}
 		const normalizedEventId = Federation.unescapeExternalFederationEventId(externalEventId);
 		await this.bridge.redactEvent(federatedRoom.getExternalId(), federatedSender.getExternalId(), normalizedEventId);
-		await this.internalMessageAdapter.unsetExternalFederationEventOnMessage(externalEventId, internalMessage, reaction);
+		await this.internalMessageAdapter.unsetExternalFederationEventOnMessageReaction(externalEventId, internalMessage, reaction);
 	}
 }

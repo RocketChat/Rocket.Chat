@@ -6,7 +6,7 @@ import type { IProcessor, IOnetimeSchedule, IRecurringSchedule, IJobContext } fr
 import { StartupType } from '@rocket.chat/apps-engine/definition/scheduler';
 import { SchedulerBridge } from '@rocket.chat/apps-engine/server/bridges/SchedulerBridge';
 
-import type { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 function _callProcessor(processor: IProcessor['processor']): (job: Job) => Promise<void> {
 	return (job) => {
@@ -17,7 +17,13 @@ function _callProcessor(processor: IProcessor['processor']): (job: Job) => Promi
 
 		data.jobId = job.attrs._id.toString();
 
-		return (processor as (jobContext: IJobContext) => Promise<void>)(data);
+		return (processor as (jobContext: IJobContext) => Promise<void>)(data).then(() => {
+			// ensure the 'normal' ('onetime' in our vocab) type job is removed after it is run
+			// as Agenda does not remove it from the DB
+			if (job.attrs.type === 'normal') {
+				job.agenda.cancel({ _id: job.attrs._id });
+			}
+		});
 	};
 }
 
@@ -107,7 +113,7 @@ export class AppSchedulerBridge extends SchedulerBridge {
 	}
 
 	private async scheduleOnceAfterRegister(job: IOnetimeSchedule, appId: string): Promise<void | string> {
-		const scheduledJobs = await this.scheduler.jobs({ name: job.id, type: 'normal' });
+		const scheduledJobs = await this.scheduler.jobs({ name: job.id, type: 'normal' }, {}, 1);
 		if (!scheduledJobs.length) {
 			return this.scheduleOnce(job, appId);
 		}

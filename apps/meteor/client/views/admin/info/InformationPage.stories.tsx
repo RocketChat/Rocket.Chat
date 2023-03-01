@@ -1,4 +1,4 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import InformationPage from './InformationPage';
@@ -232,10 +232,8 @@ export default {
 			customScript: 0,
 			tabInvites: 0,
 			totalEmailInvitation: 0,
-			totalRoomsWithSnippet: 0,
 			totalRoomsWithStarred: 0,
 			totalRoomsWithPinned: 0,
-			totalSnippet: 0,
 			totalStarred: 0,
 			totalPinned: 0,
 			totalE2ERooms: 0,
@@ -287,8 +285,10 @@ export default {
 			totalSubscriptionRoles: 0,
 			totalUserRoles: 0,
 			totalWebRTCCalls: 0,
-			matrixBridgeEnabled: false,
 			uncaughtExceptionsCount: 0,
+			matrixFederation: {
+				enabled: false,
+			},
 		},
 		instances: [],
 	},

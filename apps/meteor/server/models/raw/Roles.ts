@@ -131,9 +131,31 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 
 	findInIds<P>(ids: IRole['_id'][], options?: FindOptions<IRole>): P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole> {
 		const query: Filter<IRole> = {
-			name: {
+			_id: {
 				$in: ids,
 			},
+		};
+
+		return this.find(query, options || {}) as P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole>;
+	}
+
+	findInIdsOrNames<P>(
+		_idsOrNames: IRole['_id'][] | IRole['name'][],
+		options?: FindOptions<IRole>,
+	): P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole> {
+		const query: Filter<IRole> = {
+			$or: [
+				{
+					_id: {
+						$in: _idsOrNames,
+					},
+				},
+				{
+					name: {
+						$in: _idsOrNames,
+					},
+				},
+			],
 		};
 
 		return this.find(query, options || {}) as P extends Pick<IRole, '_id'> ? FindCursor<P> : FindCursor<IRole>;
@@ -189,7 +211,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 		roleId: IRole['_id'],
 		scope: IRoom['_id'] | undefined,
 		options?: any | undefined,
-	): Promise<FindCursor<IUser> | FindCursor<P>> {
+	): Promise<FindCursor<IUser | P>> {
 		if (process.env.NODE_ENV === 'development' && (scope === 'Users' || scope === 'Subscriptions')) {
 			throw new Error('Roles.findUsersInRole method received a role scope instead of a scope value.');
 		}

@@ -1,10 +1,11 @@
 import { faker } from '@faker-js/faker';
 
-import { test, expect } from './utils/test';
-import { createTargetChannel } from './utils';
+import { Users } from './fixtures/userStates';
 import { HomeTeam } from './page-objects';
+import { createTargetChannel } from './utils';
+import { test, expect } from './utils/test';
 
-test.use({ storageState: 'admin-session.json' });
+test.use({ storageState: Users.admin.state });
 
 test.describe.serial('teams-management', () => {
 	let poHomeTeam: HomeTeam;
@@ -33,8 +34,9 @@ test.describe.serial('teams-management', () => {
 	test('expect throw validation error if team name already exists', async () => {
 		await poHomeTeam.sidenav.openNewByLabel('Team');
 		await poHomeTeam.inputTeamName.type(targetTeam);
+		await poHomeTeam.btnTeamCreate.click();
 
-		await expect(poHomeTeam.btnTeamCreate).toBeDisabled();
+		await expect(poHomeTeam.inputTeamName).toHaveAttribute('aria-invalid', 'true');
 	});
 
 	test('expect send hello in the "targetTeam" and reply in a thread', async ({ page }) => {
@@ -43,7 +45,7 @@ test.describe.serial('teams-management', () => {
 		await poHomeTeam.content.openLastMessageMenu();
 
 		await page.locator('[data-qa-id="reply-in-thread"]').click();
-		await page.locator('.rcx-vertical-bar .js-input-message').type('any-reply-message');
+		await page.locator('.rcx-vertical-bar').locator('role=textbox[name="Message"]').type('any-reply-message');
 		await page.keyboard.press('Enter');
 
 		await expect(poHomeTeam.tabs.flexTabViewThreadMessage).toHaveText('any-reply-message');

@@ -44,8 +44,8 @@ class NotificationClass {
 		setTimeout(() => {
 			try {
 				this.worker();
-			} catch (e) {
-				SystemLogger.error('Error sending notification', e);
+			} catch (err) {
+				SystemLogger.error({ msg: 'Error sending notification', err });
 				this.executeWorkerLater();
 			}
 		}, this.cyclePause);

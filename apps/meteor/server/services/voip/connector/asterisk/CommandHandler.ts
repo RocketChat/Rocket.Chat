@@ -130,9 +130,9 @@ export class CommandHandler {
 			return {
 				status: 'connected',
 			};
-		} catch (error: any) {
-			this.logger.error({ msg: 'checkManagementConnection() Connection Error', error });
-			throw error;
+		} catch (err: unknown) {
+			this.logger.error({ msg: 'checkManagementConnection() Connection Error', err });
+			throw err;
 		}
 	}
 
@@ -150,9 +150,9 @@ export class CommandHandler {
 			return {
 				status: 'connected',
 			};
-		} catch (error: any) {
-			this.logger.error({ msg: 'checkManagementConnection() Connection Error', error });
-			throw error;
+		} catch (err: unknown) {
+			this.logger.error({ msg: 'checkManagementConnection() Connection Error', err });
+			throw err;
 		}
 	}
 

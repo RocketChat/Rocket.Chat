@@ -220,7 +220,7 @@ export class HipChatEnterpriseImporter extends Base {
 			} else if (m.GuestAccessMessage) {
 				this.logger.warn('Guess Access Notification was ignored.');
 			} else {
-				this.logger.error("HipChat Enterprise importer isn't configured to handle this message:", m);
+				this.logger.error({ msg: "HipChat Enterprise importer isn't configured to handle this message:", file: m });
 			}
 		}
 
@@ -327,7 +327,7 @@ export class HipChatEnterpriseImporter extends Base {
 			);
 
 			this.extract.on('error', (err) => {
-				this.logger.error('extract error:', err);
+				this.logger.error({ msg: 'extract error:', err });
 				reject(new Meteor.Error('error-import-file-extract-error'));
 			});
 
@@ -342,7 +342,7 @@ export class HipChatEnterpriseImporter extends Base {
 			const gunzip = this.zlib.createGunzip();
 
 			gunzip.on('error', (err) => {
-				this.logger.error('extract error:', err);
+				this.logger.error({ msg: 'extract error:', err });
 				reject(new Meteor.Error('error-import-file-extract-error'));
 			});
 			this.logger.debug('start extracting import file');

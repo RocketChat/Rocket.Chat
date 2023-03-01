@@ -1,23 +1,25 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { isPOSTLivechatRoomPriorityParams } from '@rocket.chat/rest-typings';
+import { LivechatRooms } from '@rocket.chat/models';
 
 import { API } from '../../../../../app/api/server';
 import { hasPermission } from '../../../../../app/authorization/server';
-import { Subscriptions, LivechatRooms } from '../../../../../app/models/server';
+import { Subscriptions } from '../../../../../app/models/server';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
+import { removePriorityFromRoom, updateRoomPriority } from './lib/priorities';
 
 API.v1.addRoute(
 	'livechat/room.onHold',
 	{ authRequired: true, permissionsRequired: ['on-hold-livechat-room'] },
 	{
-		post() {
+		async post() {
 			const { roomId } = this.bodyParams;
 			if (!roomId || roomId.trim() === '') {
 				return API.v1.failure('Invalid room Id');
 			}
 
-			const room: IOmnichannelRoom = LivechatRooms.findOneById(roomId);
+			const room = await LivechatRooms.findOneById(roomId);
 			if (!room || room.t !== 'l') {
 				return API.v1.failure('Invalid room Id');
 			}
@@ -49,7 +51,56 @@ API.v1.addRoute(
 				user: onHoldBy.name || `@${onHoldBy.username}`,
 			});
 
-			LivechatEnterprise.placeRoomOnHold(room, comment, onHoldBy);
+			await LivechatEnterprise.placeRoomOnHold(room, comment, onHoldBy);
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/room/:rid/priority',
+	{
+		authRequired: true,
+		validateParams: { POST: isPOSTLivechatRoomPriorityParams },
+		permissionsRequired: {
+			POST: { permissions: ['view-l-room'], operation: 'hasAny' },
+			DELETE: { permissions: ['view-l-room'], operation: 'hasAny' },
+		},
+	},
+	{
+		async post() {
+			const { rid } = this.urlParams;
+			const { priorityId } = this.bodyParams;
+
+			if (!this.user.username) {
+				return API.v1.failure('Invalid user');
+			}
+
+			await updateRoomPriority(
+				rid,
+				{
+					_id: this.user._id,
+					name: this.user.name || '',
+					username: this.user.username,
+				},
+				priorityId,
+			);
+
+			return API.v1.success();
+		},
+		async delete() {
+			const { rid } = this.urlParams;
+
+			if (!this.user.username) {
+				return API.v1.failure('Invalid user');
+			}
+
+			await removePriorityFromRoom(rid, {
+				_id: this.user._id,
+				name: this.user.name || '',
+				username: this.user.username,
+			});
 
 			return API.v1.success();
 		},

@@ -106,7 +106,7 @@ export class LivechatDepartment extends Base {
 		return this.find(query, fields && { fields });
 	}
 
-	findEnabledWithAgentsAndBusinessUnit(_, fields = undefined) {
+	findEnabledWithAgentsAndBusinessUnit(_, fields) {
 		const query = {
 			numAgents: { $gt: 0 },
 			enabled: true,
@@ -151,18 +151,6 @@ export class LivechatDepartment extends Base {
 		};
 
 		return this.find(query, options);
-	}
-
-	unsetFallbackDepartmentByDepartmentId(_id) {
-		return this.update(
-			{ fallbackForwardDepartment: _id },
-			{
-				$unset: {
-					fallbackForwardDepartment: 1,
-				},
-			},
-			{ multi: true },
-		);
 	}
 }
 

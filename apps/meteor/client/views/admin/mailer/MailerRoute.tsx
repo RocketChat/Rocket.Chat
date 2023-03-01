@@ -1,5 +1,6 @@
-import { useToastMessageDispatch, usePermission, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import { useToastMessageDispatch, usePermission, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import { Mailer } from './Mailer';
@@ -15,7 +16,7 @@ export type sendMailObject = {
 type useSendMailType = () => ({ fromEmail, subject, emailBody, dryRun, query }: sendMailObject) => void;
 
 const useSendMail: useSendMailType = () => {
-	const meteorSendMail = useMethod('Mailer.sendMail');
+	const meteorSendMail = useEndpoint('POST', '/v1/mailer');
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -42,7 +43,7 @@ const useSendMail: useSendMailType = () => {
 			return;
 		}
 
-		meteorSendMail(fromEmail.value, subject, emailBody, dryRun, query.value);
+		meteorSendMail({ from: fromEmail.value, subject, body: emailBody, dryrun: dryRun, query: query.value });
 		dispatchToastMessage({
 			type: 'success',
 			message: t('The_emails_are_being_sent'),

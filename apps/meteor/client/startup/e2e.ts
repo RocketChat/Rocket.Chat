@@ -53,44 +53,57 @@ Meteor.startup(() => {
 		Notifications.onUser('e2ekeyRequest', handle);
 
 		observable = Subscriptions.find().observe({
-			changed: async (doc: ISubscription) => {
-				if (!doc.encrypted && !doc.E2EKey) {
-					e2e.removeInstanceByRoomId(doc.rid);
-					return;
-				}
+			changed: async (sub: ISubscription) => {
+				Meteor.defer(async () => {
+					if (!sub.encrypted && !sub.E2EKey) {
+						e2e.removeInstanceByRoomId(sub.rid);
+						return;
+					}
 
-				const e2eRoom = await e2e.getInstanceByRoomId(doc.rid);
-				if (!e2eRoom) {
-					return;
-				}
+					const e2eRoom = await e2e.getInstanceByRoomId(sub.rid);
+					if (!e2eRoom) {
+						return;
+					}
 
-				doc.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+					if (sub.E2ESuggestedKey) {
+						if (await e2eRoom.importGroupKey(sub.E2ESuggestedKey)) {
+							e2e.acceptSuggestedKey(sub.rid);
+						} else {
+							console.warn('Invalid E2ESuggestedKey, rejecting', sub.E2ESuggestedKey);
+							e2e.rejectSuggestedKey(sub.rid);
+						}
+					}
 
-				// Cover private groups and direct messages
-				if (!e2eRoom.isSupportedRoomType(doc.t)) {
-					e2eRoom.disable();
-					return;
-				}
+					sub.encrypted ? e2eRoom.resume() : e2eRoom.pause();
 
-				if (doc.E2EKey && e2eRoom.isWaitingKeys()) {
-					e2eRoom.keyReceived();
-					return;
-				}
+					// Cover private groups and direct messages
+					if (!e2eRoom.isSupportedRoomType(sub.t)) {
+						e2eRoom.disable();
+						return;
+					}
 
-				if (!e2eRoom.isReady()) {
-					return;
-				}
+					if (sub.E2EKey && e2eRoom.isWaitingKeys()) {
+						e2eRoom.keyReceived();
+						return;
+					}
 
-				e2eRoom.decryptSubscription();
+					if (!e2eRoom.isReady()) {
+						return;
+					}
+
+					e2eRoom.decryptSubscription();
+				});
 			},
-			added: async (doc: ISubscription) => {
-				if (!doc.encrypted && !doc.E2EKey) {
-					return;
-				}
-				return e2e.getInstanceByRoomId(doc.rid);
+			added: async (sub: ISubscription) => {
+				Meteor.defer(async () => {
+					if (!sub.encrypted && !sub.E2EKey) {
+						return;
+					}
+					return e2e.getInstanceByRoomId(sub.rid);
+				});
 			},
-			removed: (doc: ISubscription) => {
-				e2e.removeInstanceByRoomId(doc.rid);
+			removed: (sub: ISubscription) => {
+				e2e.removeInstanceByRoomId(sub.rid);
 			},
 		});
 

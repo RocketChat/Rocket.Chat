@@ -36,6 +36,7 @@ export interface ILivechatVisitor extends IRocketChatRecord {
 	ip?: string;
 	host?: string;
 	visitorEmails?: IVisitorEmail[];
+	status?: 'loading' | 'online' | 'busy' | 'away' | 'offline';
 	lastAgent?: {
 		username: string;
 		agentId: string;
@@ -61,7 +62,7 @@ export interface ILivechatVisitorDTO {
 		overwrite: boolean;
 	}[];
 	connectionData?: {
-		httpHeaders: Record<string, string>;
+		httpHeaders: Record<string, string | string[] | undefined>;
 	};
 }
 

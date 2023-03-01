@@ -1,19 +1,22 @@
-import { isOmnichannelRoom, isVoipRoom } from '@rocket.chat/core-typings';
-import React, { memo, ReactElement } from 'react';
+import { isOmnichannelRoom, isRoomFederated, isVoipRoom } from '@rocket.chat/core-typings';
+import type { ReactElement } from 'react';
+import React, { memo } from 'react';
 
 import { useRoom } from '../../../contexts/RoomContext';
-import { ComposerAnonymous } from './ComposerAnonymous';
-import { ComposerBlocked } from './ComposerBlocked';
-import { ComposerJoinWithPassword } from './ComposerJoinWithPassword';
-import ComposerMessage, { ComposerMessageProps } from './ComposerMessage';
+import ComposerAnonymous from './ComposerAnonymous';
+import ComposerBlocked from './ComposerBlocked';
+import ComposerFederation from './ComposerFederation';
+import ComposerJoinWithPassword from './ComposerJoinWithPassword';
+import type { ComposerMessageProps } from './ComposerMessage';
+import ComposerMessage from './ComposerMessage';
 import ComposerOmnichannel from './ComposerOmnichannel/ComposerOmnichannel';
-import { ComposerReadOnly } from './ComposerReadOnly';
+import ComposerReadOnly from './ComposerReadOnly';
 import ComposerVoIP from './ComposerVoIP';
 import { useMessageComposerIsAnonymous } from './hooks/useMessageComposerIsAnonymous';
 import { useMessageComposerIsBlocked } from './hooks/useMessageComposerIsBlocked';
 import { useMessageComposerIsReadOnly } from './hooks/useMessageComposerIsReadOnly';
 
-const ComposerContainer = (props: ComposerMessageProps): ReactElement => {
+const ComposerContainer = ({ children, ...props }: ComposerMessageProps): ReactElement => {
 	const room = useRoom();
 
 	const mustJoinWithCode = !props.subscription && room.joinCodeRequired;
@@ -26,6 +29,8 @@ const ComposerContainer = (props: ComposerMessageProps): ReactElement => {
 
 	const isOmnichannel = isOmnichannelRoom(room);
 
+	const isFederation = isRoomFederated(room);
+
 	const isVoip = isVoipRoom(room);
 
 	if (isOmnichannel) {
@@ -34,6 +39,10 @@ const ComposerContainer = (props: ComposerMessageProps): ReactElement => {
 
 	if (isVoip) {
 		return <ComposerVoIP />;
+	}
+
+	if (isFederation) {
+		return <ComposerFederation room={room} {...props} />;
 	}
 
 	if (isAnonymous) {
@@ -53,11 +62,7 @@ const ComposerContainer = (props: ComposerMessageProps): ReactElement => {
 	}
 
 	if (isReadOnly) {
-		return (
-			<footer className='rc-message-box footer'>
-				<ComposerReadOnly />
-			</footer>
-		);
+		return <ComposerReadOnly />;
 	}
 
 	if (isBlockedOrBlocker) {
@@ -68,7 +73,12 @@ const ComposerContainer = (props: ComposerMessageProps): ReactElement => {
 		);
 	}
 
-	return <ComposerMessage {...props} />;
+	return (
+		<footer className='rc-message-box footer'>
+			{children}
+			<ComposerMessage readOnly={room.ro} {...props} />
+		</footer>
+	);
 };
 
 export default memo(ComposerContainer);

@@ -2,7 +2,6 @@ import { Box } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { BlockContext, ElementType } from '@rocket.chat/ui-kit';
 import type { FC } from 'react';
-import React from 'react';
 
 import type { BlockProps } from '../../utils/BlockProps';
 
@@ -28,7 +27,7 @@ export const ContextElementItem: FC<{
     case ElementType.PLAIN_TEXT:
     case ElementType.MARKDOWN:
       return (
-        <Box is='span' withTruncatedText fontScale='c1' color='info' margin={4}>
+        <Box is='span' withTruncatedText fontScale='c1' color='hint' margin={4}>
           {renderedElement}
         </Box>
       );

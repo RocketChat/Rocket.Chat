@@ -1,4 +1,4 @@
-import type { IRoomClosingInfo, IVoipRoom, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IVoipRoomClosingInfo, IVoipRoom, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, IVoipRoomModel } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, Document } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -81,7 +81,7 @@ export class VoipRoomRaw extends BaseRaw<IVoipRoom> implements IVoipRoomModel {
 		return this.findOne(query, options);
 	}
 
-	closeByRoomId(roomId: IVoipRoom['_id'], closeInfo: IRoomClosingInfo): Promise<Document | UpdateResult> {
+	closeByRoomId(roomId: IVoipRoom['_id'], closeInfo: IVoipRoomClosingInfo): Promise<Document | UpdateResult> {
 		const { closer, closedBy, closedAt, callDuration, serviceTimeDuration, ...extraData } = closeInfo;
 
 		return this.updateOne(

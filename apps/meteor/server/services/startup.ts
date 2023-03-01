@@ -1,7 +1,8 @@
 import { MongoInternals } from 'meteor/mongo';
+import { api } from '@rocket.chat/core-services';
+import { OmnichannelTranscript, QueueWorker } from '@rocket.chat/omnichannel-services';
 
 import { AnalyticsService } from './analytics/service';
-import { api } from '../sdk/api';
 import { AppsEngineService } from './apps-engine/service';
 import { AuthorizationLivechat } from '../../app/livechat/server/roomAccessValidator.internalService';
 import { BannerService } from './banner/service';
@@ -20,6 +21,12 @@ import { VideoConfService } from './video-conference/service';
 import { isRunningMs } from '../lib/isRunningMs';
 import { PushService } from './push/service';
 import { DeviceManagementService } from './device-management/service';
+import { FederationService } from './federation/service';
+import { UploadService } from './upload/service';
+import { MessageService } from './messages/service';
+import { TranslationService } from './translation/service';
+import { SettingsService } from './settings/service';
+import { Logger } from '../lib/logger/Logger';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -41,6 +48,11 @@ api.registerService(new UiKitCoreApp());
 api.registerService(new PushService());
 api.registerService(new DeviceManagementService());
 api.registerService(new VideoConfService());
+api.registerService(new FederationService());
+api.registerService(new UploadService());
+api.registerService(new MessageService());
+api.registerService(new TranslationService());
+api.registerService(new SettingsService());
 
 // if the process is running in micro services mode we don't need to register services that will run separately
 if (!isRunningMs()) {
@@ -51,5 +63,11 @@ if (!isRunningMs()) {
 
 		api.registerService(new Presence());
 		api.registerService(new Authorization());
+
+		// Run EE services defined outside of the main repo
+		// Otherwise, monolith would ignore them :(
+		// Always register the service and manage licensing inside the service (tbd)
+		api.registerService(new QueueWorker(db, Logger));
+		api.registerService(new OmnichannelTranscript(Logger));
 	})();
 }

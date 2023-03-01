@@ -1,8 +1,9 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { createContext, useContext } from 'react';
-import { Subscription, useSubscription } from 'use-subscription';
+import type { Subscription } from 'use-subscription';
+import { useSubscription } from 'use-subscription';
 
-import { DirectCallParams, ProviderCapabilities, CallPreferences } from '../lib/VideoConfManager';
+import type { DirectCallParams, ProviderCapabilities, CallPreferences, VideoConfManager } from '../lib/VideoConfManager';
 
 export type VideoConfPopupPayload = {
 	id: string;
@@ -17,6 +18,7 @@ export type VideoConfIncomingCall = {
 };
 
 type VideoConfContextValue = {
+	manager: typeof VideoConfManager;
 	dispatchOutgoing: (options: Omit<VideoConfPopupPayload, 'id'>) => void;
 	dismissOutgoing: () => void;
 	startCall: (rid: IRoom['_id'], title?: string) => void;
@@ -72,3 +74,5 @@ export const useVideoConfPreferences = (): CallPreferences => {
 	const { queryPreferences } = useVideoConfContext();
 	return useSubscription(queryPreferences);
 };
+
+export const useVideoConfManager = (): typeof VideoConfManager | undefined => useContext(VideoConfContext)?.manager;

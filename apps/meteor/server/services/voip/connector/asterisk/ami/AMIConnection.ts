@@ -101,20 +101,20 @@ export class AMIConnection implements IConnection {
 		setTimeout(async () => {
 			try {
 				await this.attemptConnection();
-			} catch (error: unknown) {
-				this.logger.error({ msg: 'reconnect () attemptConnection() has thrown error', error });
+			} catch (err: unknown) {
+				this.logger.error({ msg: 'reconnect () attemptConnection() has thrown error', err });
 			}
 		}, backoffTime);
 		this.currentReconnectionAttempt += 1;
 	}
 
-	onManagerError(reject: any, error: unknown): void {
-		this.logger.error({ msg: 'onManagerError () Connection Error', error });
+	onManagerError(reject: any, err: unknown): void {
+		this.logger.error({ msg: 'onManagerError () Connection Error', err });
 		this.cleanup();
 		this.connectionState = 'ERROR';
 		if (this.currentReconnectionAttempt === this.totalReconnectionAttempts) {
 			this.logger.error({ msg: 'onManagerError () reconnection attempts exhausted. Please check connection settings' });
-			reject(error);
+			reject(err);
 		} else {
 			this.reconnect();
 		}

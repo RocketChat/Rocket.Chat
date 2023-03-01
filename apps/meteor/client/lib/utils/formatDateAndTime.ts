@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
-import moment, { MomentInput } from 'moment';
+import type { MomentInput } from 'moment';
+import moment from 'moment';
 
 import { settings } from '../../../app/settings/client';
 import { getUserPreference } from '../../../app/utils/lib/getUserPreference';

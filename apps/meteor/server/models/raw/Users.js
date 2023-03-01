@@ -1169,4 +1169,58 @@ export class UsersRaw extends BaseRaw {
 	findOneByResetToken(token, options) {
 		return this.findOne({ 'services.password.reset.token': token }, options);
 	}
+
+	setFederationAvatarUrlById(userId, federationAvatarUrl) {
+		return this.updateOne(
+			{
+				_id: userId,
+			},
+			{
+				$set: {
+					'federation.avatarUrl': federationAvatarUrl,
+				},
+			},
+		);
+	}
+
+	async findSearchedServerNamesByUserId(userId) {
+		const user = await this.findOne(
+			{
+				_id: userId,
+			},
+			{
+				projection: {
+					'federation.searchedServerNames': 1,
+				},
+			},
+		);
+
+		return user.federation?.searchedServerNames || [];
+	}
+
+	addServerNameToSearchedServerNamesList(userId, serverName) {
+		return this.updateOne(
+			{
+				_id: userId,
+			},
+			{
+				$addToSet: {
+					'federation.searchedServerNames': serverName,
+				},
+			},
+		);
+	}
+
+	removeServerNameFromSearchedServerNamesList(userId, serverName) {
+		return this.updateOne(
+			{
+				_id: userId,
+			},
+			{
+				$pull: {
+					'federation.searchedServerNames': serverName,
+				},
+			},
+		);
+	}
 }

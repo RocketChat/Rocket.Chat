@@ -16,6 +16,7 @@ import { getURL } from '../../utils/lib/getURL';
 import { getExtension } from '../../utils/lib/mimeTypes';
 import { hasPermission } from '../../authorization/server';
 import { RocketChatFile } from '../../file';
+import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 
 const RocketChatAssetsInstance = new RocketChatFile.GridFS({
 	name: 'assets',
@@ -33,8 +34,23 @@ const assets: IRocketChatAssets = {
 			order: 2,
 		},
 	},
+	logo_dark: {
+		label: 'logo - dark theme (svg, png, jpg)',
+		defaultUrl: 'images/logo/logo_dark.svg',
+		constraints: {
+			type: 'image',
+			extensions: ['svg', 'png', 'jpg', 'jpeg'],
+		},
+	},
 	background: {
 		label: 'login background (svg, png, jpg)',
+		constraints: {
+			type: 'image',
+			extensions: ['svg', 'png', 'jpg', 'jpeg'],
+		},
+	},
+	background_dark: {
+		label: 'login background - dark theme (svg, png, jpg)',
 		constraints: {
 			type: 'image',
 			extensions: ['svg', 'png', 'jpg', 'jpeg'],
@@ -416,6 +432,8 @@ WebAppHashing.calculateClientHash = function (manifest, includeFilter, runtimeCo
 
 Meteor.methods({
 	refreshClients() {
+		methodDeprecationLogger.warn('refreshClients will be deprecated in future versions of Rocket.Chat');
+
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'refreshClients',

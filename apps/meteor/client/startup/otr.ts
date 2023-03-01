@@ -1,4 +1,4 @@
-import { IMessage, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 

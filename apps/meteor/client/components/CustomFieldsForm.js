@@ -112,13 +112,7 @@ const CustomFieldsAssembler = ({ formValues, formHandlers, customFields, ...prop
 		return null;
 	});
 
-export default function CustomFieldsForm({
-	jsonCustomFields = undefined,
-	customFieldsData,
-	setCustomFieldsData,
-	onLoadFields = () => {},
-	...props
-}) {
+export default function CustomFieldsForm({ jsonCustomFields, customFieldsData, setCustomFieldsData, onLoadFields = () => {}, ...props }) {
 	const accountsCustomFieldsJson = useSetting('Accounts_CustomFields');
 
 	const [customFields] = useState(() => {
@@ -129,7 +123,7 @@ export default function CustomFieldsForm({
 		}
 	});
 
-	const hasCustomFields = Boolean(Object.values(customFields).length);
+	const hasCustomFields = useMemo(() => Object.values(customFields).length > 0, [customFields]);
 	const defaultFields = useMemo(
 		() =>
 			Object.entries(customFields).reduce((data, [key, value]) => {
@@ -142,11 +136,14 @@ export default function CustomFieldsForm({
 	const { values, handlers } = useForm({ ...defaultFields, ...customFieldsData });
 
 	useEffect(() => {
-		onLoadFields(hasCustomFields);
+		onLoadFields?.(hasCustomFields);
+	}, [onLoadFields, hasCustomFields]);
+
+	useEffect(() => {
 		if (hasCustomFields) {
 			setCustomFieldsData(values);
 		}
-	}, [hasCustomFields, onLoadFields, setCustomFieldsData, values]);
+	}, [hasCustomFields, setCustomFieldsData, values]);
 
 	if (!hasCustomFields) {
 		return null;

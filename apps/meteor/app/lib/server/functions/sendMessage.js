@@ -3,11 +3,10 @@ import { Match, check } from 'meteor/check';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Messages } from '../../../models/server';
-import { Apps } from '../../../apps/server';
+import { Apps } from '../../../../ee/server/apps';
 import { isURL } from '../../../../lib/utils/isURL';
 import { FileUpload } from '../../../file-upload/server';
 import { hasPermission } from '../../../authorization/server';
-import { SystemLogger } from '../../../../server/lib/logger/system';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
 import notifications from '../../../notifications/server/lib/Notifications';
@@ -220,10 +219,6 @@ export const sendMessage = function (user, message, room, upsert = false) {
 	if (Apps && Apps.isLoaded()) {
 		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message));
 		if (prevent) {
-			if (settings.get('Apps_Framework_Development_Mode')) {
-				SystemLogger.info({ msg: 'A Rocket.Chat App prevented the message sending.', message });
-			}
-
 			return;
 		}
 
@@ -276,6 +271,7 @@ export const sendMessage = function (user, message, room, upsert = false) {
 		/*
 		Defer other updates as their return is not interesting to the user
 		*/
+
 		// Execute all callbacks
 		callbacks.runAsync('afterSaveMessage', message, room);
 		return message;

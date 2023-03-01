@@ -3,10 +3,11 @@ import { FuselageSurfaceRenderer } from './FuselageSurfaceRenderer';
 import MessageSurface from './MessageSurface';
 import ModalSurface from './ModalSurface';
 import { createSurfaceRenderer } from './createSurfaceRenderer';
+import { FuselageMessageSurfaceRenderer } from './MessageSurfaceRenderer';
 
 // export const attachmentParser = new FuselageSurfaceRenderer();
 export const bannerParser = new FuselageSurfaceRenderer();
-export const messageParser = new FuselageSurfaceRenderer();
+export const messageParser = new FuselageMessageSurfaceRenderer();
 export const modalParser = new FuselageSurfaceRenderer();
 
 // export const UiKitAttachment = createSurfaceRenderer(AttachmentSurface, attachmentParser);

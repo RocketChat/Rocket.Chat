@@ -1,6 +1,7 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import _ from 'underscore';
+
+import { isTruthy } from '../../../../lib/isTruthy';
 
 export const ChannelSettings = new (class {
 	constructor() {
@@ -26,18 +27,20 @@ export const ChannelSettings = new (class {
 	}
 
 	getOptions(currentData = {}, group) {
-		const allOptions = _.toArray(this.options.get());
-		const allowedOptions = _.compact(
-			_.map(allOptions, function (option) {
+		return Object.entries(this.options.get())
+			.map((option) => {
 				const ret = { ...option };
 				if (option.validation == null || option.validation(currentData)) {
 					ret.data = Object.assign({}, typeof option.data === 'function' ? option.data() : option.data, currentData);
 					return ret;
 				}
-			}),
-		).filter(function (option) {
-			return !group || !option.group || option.group.includes(group);
-		});
-		return _.sortBy(allowedOptions, 'order');
+
+				return null;
+			})
+			.filter(isTruthy)
+			.filter(function (option) {
+				return !group || !option.group || option.group.includes(group);
+			})
+			.sort((a, b) => a.order - b.order);
 	}
 })();

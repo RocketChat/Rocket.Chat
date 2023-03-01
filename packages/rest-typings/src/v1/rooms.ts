@@ -75,6 +75,23 @@ export const isRoomsAutocompleteAvailableForTeamsProps = ajv.compile<RoomsAutoco
 	RoomsAutocompleteAvailableForTeamsSchema,
 );
 
+type RoomsAutocompleteAdminRoomsPayload = { selector: string };
+
+const RoomsAutocompleteAdminRoomsPayloadSchema = {
+	type: 'object',
+	properties: {
+		selector: {
+			type: 'string',
+		},
+	},
+	required: ['selector'],
+	additionalProperties: false,
+};
+
+export const isRoomsAutocompleteAdminRoomsPayload = ajv.compile<RoomsAutocompleteAdminRoomsPayload>(
+	RoomsAutocompleteAdminRoomsPayloadSchema,
+);
+
 type RoomsInfoProps = { roomId: string } | { roomName: string };
 
 const RoomsInfoSchema = {
@@ -405,6 +422,11 @@ export type RoomsEndpoints = {
 			items: IRoom[];
 		};
 	};
+	'/v1/rooms.autocomplete.adminRooms': {
+		GET: (params: RoomsAutocompleteAdminRoomsPayload) => {
+			items: IRoom[];
+		};
+	};
 
 	'/v1/rooms.info': {
 		GET: (params: RoomsInfoProps) => {
@@ -490,6 +512,7 @@ export type RoomsEndpoints = {
 			success: boolean;
 		};
 	};
+
 	'/v1/rooms.favorite': {
 		POST: (
 			params:
@@ -503,9 +526,14 @@ export type RoomsEndpoints = {
 				  },
 		) => void;
 	};
+
 	'/v1/rooms.nameExists': {
 		GET: (params: { roomName: string }) => {
 			exists: boolean;
 		};
+	};
+
+	'/v1/rooms.delete': {
+		POST: (params: { roomId: string }) => void;
 	};
 };

@@ -18,7 +18,7 @@ callbacks.add(
 		}
 
 		const { ancestors } = department;
-		LivechatRooms.updateDepartmentAncestorsById(room._id, ancestors);
+		Promise.await(LivechatRooms.updateDepartmentAncestorsById(room._id, ancestors));
 
 		return room;
 	},

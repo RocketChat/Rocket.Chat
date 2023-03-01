@@ -24,7 +24,7 @@ export async function findMonitors({
 		});
 	}
 
-	const { cursor, totalCount } = Users.findPaginatedUsersInRolesWithQuery('livechat-monitor', query, {
+	const { cursor, totalCount } = Users.findPaginatedUsersInRolesWithQuery<ILivechatMonitor>('livechat-monitor', query, {
 		sort: sort || { name: 1 },
 		skip: offset,
 		limit: count,

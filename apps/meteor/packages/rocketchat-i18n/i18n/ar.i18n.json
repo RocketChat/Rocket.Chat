@@ -1,5 +1,4 @@
 {
-  "403": "ممنوع",
   "500": "خطأ محلي في الخادم",
   "__count__empty_rooms_will_be_removed_automatically": "ستتم إزالة __count__ من الغرف الفارغة تلقائيًا.",
   "__count__empty_rooms_will_be_removed_automatically__rooms__": "ستتم إزالة __count__ من الغرف الفارغة تلقائيًا: <br/> __rooms__",
@@ -248,8 +247,10 @@
   "Accounts_TwoFactorAuthentication_RememberFor_Description": "لا تطلب رمز المصادقة الثنائية إذا سبق توفيره من قبل في الوقت المحدد.",
   "Accounts_UseDefaultBlockedDomainsList": "استخدام قائمة النطاقات المحظورة الافتراضية",
   "Accounts_UseDNSDomainCheck": "استخدام فحص مجال DNS",
+  "API_EmbedDisabledFor": "تعطيل التضمين للمستخدمين",
   "Accounts_UserAddedEmail_Default": "<h1>مرحبًا بكم في<strong> [Site_Name]</strong></h1> <p> انتقل إلى<a href=\"[Site_URL]\"> [Site_URL] </a>وجرب أفضل حل للدردشة مفتوحة المصدر متاح اليوم!</p> <p> يمكنك تسجيل الدخول باستخدام بريدك الإلكتروني: [email] وكلمة المرور: [password]. قد يُطلب منك تغييرها بعد تسجيل الدخول في المرة الأولى.",
   "Accounts_UserAddedEmail_Description": "يمكنك استخدام العناصر النائبة التالية:<br/><ul><li> [name]، [fname]، [lname] لاسم المستخدم الكامل أو الاسم الأول أو اسم العائلة، على التوالي.</li><li>[email] للبريد الإلكتروني للمستخدم.</li><li>[password] لكلمة مرور المستخدم. </li><li>[Site_Name] و[Site_URL] لاسم التطبيق وعنوان URL الخاص به على التوالي.</li></ul>",
+  "API_EmbedDisabledFor_Description": "قائمة أسماء المستخدمين مفصولة بفواصل لتعطيل معاينات الرابط المضمن.",
   "Accounts_UserAddedEmailSubject_Default": "لقد تمت إضافتك إلى [Site_Name]",
   "Action": "الإجراء",
   "Action_required": "الإجراء المطلوب",
@@ -293,7 +294,6 @@
   "Additional_emails": "رسائل بريد إلكتروني إضافية",
   "Additional_Feedback": "ملاحظات إضافية",
   "additional_integrations_Bots": "إذا كنت تبحث عن كيفية دمج الروبوت الخاص بك، فلن تجد أفضل من محول Hubot الخاص بنا. <a href=\"https://github.com/RocketChat/hubot-rocketchat\" target=\"_blank\">https://github.com/RocketChat/hubot-rocketchat</a>",
-  "additional_integrations_Zapier": "هل تتطلع إلى دمج البرامج والتطبيقات الأخرى مع Rocket.Chat ولكن ليس لديك الوقت للقيام بذلك يدويًا؟ ننصحك باستخدام Zapier الذي ندعمه بالكامل. يمكنك قراءة المزيد عنه على وثائقنا. <a href=\"https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/\" target=\"_blank\">https://rocket.chat/docs/administrator-guides/integrations/zapier/using-zaps/</a>",
   "Admin_disabled_encryption": "لم يقوم المسؤول لديك بتمكين التشفير بين الوحدات الطرفية.",
   "Admin_Info": "معلومات المسؤول",
   "Administration": "الإدارة",
@@ -315,14 +315,23 @@
   "Alias_Format": "تنسيق الاسم المستعار",
   "Alias_Format_Description": "استيراد الرسائل من Slack باسم مستعار؛ يتم استبدال %s باسم المستخدم. إذا كان فارغًا، فلن يتم استخدام اسم مستعار.",
   "Alias_Set": "مجموعة الأسماء المستعارة",
+  "AutoLinker_Email": "AutoLinker للبريد الإلكتروني",
   "Aliases": "الأسماء المستعارة",
+  "AutoLinker_Phone": "AutoLinker للهاتف",
+  "AutoLinker_Phone_Description": "مرتبط آليًا بأرقام الهواتف. مثل: `‎`‎‎(123) 456-7890",
   "All": "الكل",
+  "AutoLinker_StripPrefix": "بادئة شريط AutoLinker",
   "All_Apps": "كل التطبيقات",
+  "AutoLinker_StripPrefix_Description": "عرض قصير. مثل:  https://rocket.chat => rocket.chat",
   "All_added_tokens_will_be_required_by_the_user": "ستكون جميع الرموز المميزة المضافة مطلوبة من قِبل المستخدم",
   "All_categories": "كل الفئات",
+  "AutoLinker_Urls_Scheme": "مخطط AutoLinker:// عناوين URL",
   "All_channels": "كل القنوات",
+  "AutoLinker_Urls_TLD": "عناوين URL لمجالات المستوى الأعلى لـ AutoLinker",
   "All_closed_chats_have_been_removed": "تمت إزالة كل الدردشات المغلقة",
+  "AutoLinker_Urls_www": "عناوين URL ‏'www' لـ AutoLinker",
   "All_logs": "كل السجلات",
+  "AutoLinker_UrlsRegExp": "التعبير النمطي لعنوان URL الخاص بـ AutoLinker",
   "All_messages": "كل الرسائل",
   "All_users": "جميع المستخدمين",
   "All_users_in_the_channel_can_write_new_messages": "يمكن لجميع المستخدمين في القناة كتابة رسائل جديدة",
@@ -364,14 +373,12 @@
   "API_Drupal_URL_Description": "مثال: https://domain.com (باستثناء الشرطة المائلة اللاحقة)",
   "API_Embed": "معاينات تضمين الرابط",
   "API_Embed_Description": "ما إذا تم تمكين معاينات الرابط المضمن أم لا عندما ينشر المستخدم رابطًا إلى موقع ويب.",
-  "API_Embed_UserAgent": "وكيل مستخدم طلب التضمين",
-  "API_EmbedCacheExpirationDays": "تضمين أيام انتهاء صلاحية ذاكرة التخزين المؤقت",
-  "API_EmbedDisabledFor": "تعطيل التضمين للمستخدمين",
-  "API_EmbedDisabledFor_Description": "قائمة أسماء المستخدمين مفصولة بفواصل لتعطيل معاينات الرابط المضمن.",
   "API_EmbedIgnoredHosts": "تضمين المضيفين الذين تم تجاهلهم",
   "API_EmbedIgnoredHosts_Description": "قائمة المضيفين أو عناوين CIDR مفصولة بفواصل، مثل: المضيف المحلي، ‎127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16",
   "API_EmbedSafePorts": "منافذ آمنة",
   "API_EmbedSafePorts_Description": "قائمة بالمنافذ المسموح بها للمعاينة مفصولة بفواصل.",
+  "API_Embed_UserAgent": "وكيل مستخدم طلب التضمين",
+  "API_EmbedCacheExpirationDays": "تضمين أيام انتهاء صلاحية ذاكرة التخزين المؤقت",
   "API_Enable_CORS": "تمكين CORS",
   "API_Enable_Direct_Message_History_EndPoint": "تمكين نقطة نهاية محفوظات الرسائل المباشرة",
   "API_Enable_Direct_Message_History_EndPoint_Description": "يمكّن ذلك ‎`/api/v1/im.history.others`‎ الذي يسمح بعرض الرسائل المباشرة المرسلة من قِبل المستخدمين الآخرين الذين لا يكون المتصل جزءًا منهم.",
@@ -532,6 +539,7 @@
   "Apps_Manual_Update_Modal_Title": "سبق تثبيت هذا التطبيق",
   "Apps_Manual_Update_Modal_Body": "هل تريد تحديثه؟",
   "Apps_User_Already_Exists": "اسم المستخدم \"__username__\" قيد الاستخدام مسبقًا. أعِد التسمية أو قم بإزالة مستخدم الاسم لتثبيت هذا التطبيق",
+  "AutoLinker": "AutoLinker",
   "Apps_WhatIsIt": "التطبيقات: ما هي؟",
   "Apps_WhatIsIt_paragraph1": "رمز جديد في منطقة الإدارة! ماذا يعني هذا، وما المقصود بالتطبيقات؟",
   "Apps_WhatIsIt_paragraph2": "أولاً، لا تشير التطبيقات في هذا السياق إلى تطبيقات الهاتف المحمول. بل سيكون من الأفضل في الواقع التفكير فيها من حيث المكونات الإضافية أو التكاملات المتقدمة.",
@@ -583,16 +591,6 @@
   "Auto_Translate": "ترجمة تلقائية",
   "auto-translate": "ترجمة تلقائية",
   "auto-translate_description": "إذن لاستخدام أداة الترجمة التلقائية",
-  "AutoLinker": "AutoLinker",
-  "AutoLinker_Email": "AutoLinker للبريد الإلكتروني",
-  "AutoLinker_Phone": "AutoLinker للهاتف",
-  "AutoLinker_Phone_Description": "مرتبط آليًا بأرقام الهواتف. مثل: `‎`‎‎(123) 456-7890",
-  "AutoLinker_StripPrefix": "بادئة شريط AutoLinker",
-  "AutoLinker_StripPrefix_Description": "عرض قصير. مثل:  https://rocket.chat => rocket.chat",
-  "AutoLinker_Urls_Scheme": "مخطط AutoLinker:// عناوين URL",
-  "AutoLinker_Urls_TLD": "عناوين URL لمجالات المستوى الأعلى لـ AutoLinker",
-  "AutoLinker_Urls_www": "عناوين URL ‏'www' لـ AutoLinker",
-  "AutoLinker_UrlsRegExp": "التعبير النمطي لعنوان URL الخاص بـ AutoLinker",
   "Automatic_Translation": "ترجمة تلقائية",
   "AutoTranslate": "ترجمة تلقائية",
   "AutoTranslate_APIKey": "مفتاح واجهة برمجة التطبيقات",
@@ -703,7 +701,6 @@
   "Busy": "مشغول",
   "By": "بواسطة",
   "by": "بواسطة",
-  "By_author": "بواسطة __author__",
   "cache_cleared": "تم محو التخزين المؤقت",
   "Call": "مكالمة",
   "Calling": "يتم الآن الاتصال",
@@ -807,58 +804,7 @@
   "Chatops_Enabled": "تمكين Chatops",
   "Chatops_Title": "لوحة Chatops",
   "Chatops_Username": "اسم مستخدم Chatops",
-  "Chatpal_AdminPage": "صفحة مسؤول Chatops",
-  "Chatpal_All_Results": "الكل",
-  "Chatpal_API_Key": "مفتاح واجهة برمجة التطبيقات",
-  "Chatpal_API_Key_Description": "ألم تمتلك بعدُ <strong>مفتاح واجهة برمجة التطبيقات</strong>؟ <a class=\"chatpal-admin-link\" href=\"./admin/chatpal\">احصل على مفتاح!</a>",
-  "Chatpal_Backend": "نوع الخلفية",
-  "Chatpal_Backend_Description": "حدد ما إذا كنت تريد استخدام Chatpal كخدمة أو كتثبيت في الموقع",
-  "Chatpal_Base_URL": "عنوان Url الأساسي",
-  "Chatpal_Base_URL_Description": "ابحث عن وصف لكيفية تشغيل مثيل محلي <a target=\"_blank\" class=\"chatpal-admin-link\" href=\"https://github.com/chatpal/chatpal-search-standalone\">على Gitub</a>. يجب أن يكون عنوان URL مطلقًا وأن يشير إلى أساس chatpal، مثل، HTThttp://localhost:8983/solr/chatpal.‎",
-  "Chatpal_Batch_Size": "حجم دفعة المؤشر",
-  "Chatpal_Batch_Size_Description": "حجم الدفعة لمستندات الفهرس (عند بدء تمهيد تشغيل الكمبيوتر)",
-  "Chatpal_channel_not_joined_yet": "لم يتم الانضمام إلى Channel بعد",
-  "Chatpal_create_key": "إنشاء مفتاح",
-  "Chatpal_created_key_successfully": "تم إنشاء مفتاح واجهة برمجة التطبيقات بنجاح",
-  "Chatpal_Current_Room_Only": "الغرفة نفسها",
-  "Chatpal_Default_Result_Type": "نوع النتيجة الافتراضية",
-  "Chatpal_Default_Result_Type_Description": "يحدّد نوع النتيجة الذي يظهر بالنتيجة. يشير \"الكل\" إلى أنه يتم توفير نظرة عامة على جميع الأنواع.",
   "Chat_Duration": "مدة الدردشة",
-  "Chatpal_Email_Address": "عنوان البريد الإلكتروني",
-  "Chatpal_ERROR_Email_must_be_set": "يلزم تعيين البريد الإلكتروني",
-  "Chatpal_ERROR_Email_must_be_valid": "يجب أن يكون البريد الاكتروني صالحًا",
-  "Chatpal_ERROR_TAC_must_be_checked": "يجب التحقق من الشروط والأحكام",
-  "Chatpal_ERROR_username_already_exists": "سبق وجود اسم المستخدم",
-  "Chatpal_Get_more_information_about_chatpal_on_our_website": "احصل على مزيد من المعلومات حول Chatpal على <a target=\"_blank\" href=\"http://chatpal.io\">http://chatpal.io</a>!",
-  "Chatpal_go_to_message": "الانتقال السريع",
-  "Chatpal_go_to_room": "الانتقال السريع",
-  "Chatpal_go_to_user": "إرسال رسالة مباشرة",
-  "Chatpal_HTTP_Headers": "عناوين Http",
-  "Chatpal_HTTP_Headers_Description": "قائمة عناويين HTTP، عنوان واحد في كل سطر. التنسيق:الاسم:القيمة",
-  "Chatpal_Include_All_Public_Channels": "تضمين كل Channels العامة",
-  "Chatpal_Include_All_Public_Channels_Description": "البحث في كل القنوات العامة، حتى لو لم تنضم إليها بعد.",
-  "Chatpal_Main_Language": "اللغة الرئيسية",
-  "Chatpal_Main_Language_Description": "اللغة الأكثر استخدامًا في المحادثات",
-  "Chatpal_Messages": "الرسائل",
-  "Chatpal_Messages_Only": "الرسائل",
-  "Chatpal_More": "المزيد",
-  "Chatpal_No_Results": "لا توجد نتائج",
-  "Chatpal_no_search_results": "لا توجد نتيجة",
-  "Chatpal_one_search_result": "تم العثور على نتيجة واحدة",
-  "Chatpal_Rooms": "Room",
-  "Chatpal_run_search": "بحث",
-  "Chatpal_search_page_of": "الصفحة ‎%s من ‎%s",
-  "Chatpal_search_results": "تم العثور على ‎%s‎ من النتائج",
-  "Chatpal_Search_Results": "نتائج البحث",
-  "Chatpal_Suggestion_Enabled": "تم تمكين الاقتراحات",
-  "Chatpal_TAC_read": "لقد قرأت الشروط والأحكام",
-  "Chatpal_Terms_and_Conditions": "الشروط والأحكام",
-  "Chatpal_Timeout_Size": "مهلة المؤشر",
-  "Chatpal_Timeout_Size_Description": "الوقت بين نافذتي الفهرس بالملي ثانية (عند تمهيد تشغيل الكمبيوتر)",
-  "Chatpal_Users": "المستخدمون",
-  "Chatpal_Welcome": "استفد ببحثك!",
-  "Chatpal_Window_Size": "حجم نافذة الفهرس",
-  "Chatpal_Window_Size_Description": "حجم نوافذ الفهرس بالساعات (عند تمهيد تشغيل الكمبيوتر)",
   "Chats_removed": "تمت إزالة الدردشات",
   "Check_All": "التحقق من الكل",
   "Check_if_the_spelling_is_correct": "التحقق مما إذا كانت التهجئة صحيحة",
@@ -962,7 +908,6 @@
   "Comment": "تعليق",
   "Common_Access": "الوصول المشترك",
   "Community": "المجتمع",
-  "Compact": "مدمج",
   "Composer_not_available_phone_calls": "الرسائل غير متوافرة في المكالمات الهاتفية",
   "Condensed": "مكثف",
   "Condition": "حالة",
@@ -1178,6 +1123,7 @@
   "Country_Nepal": "نيبال",
   "Country_Netherlands": "هولندا",
   "Country_Netherlands_Antilles": "جزر الأنتيل الهولندية",
+  "If_you_dont_have_one_send_an_email_to_omni_rocketchat_to_get_yours": "إذا لم يكن لديك، فأرسل بريدًا إلكترونيًا إلى [omni@rocket.chat](mailto:omni@rocket.chat) للحصول عليه.",
   "Country_New_Caledonia": "كاليدونيا الجديدة",
   "Country_New_Zealand": "نيوزيلاندا",
   "Country_Nicaragua": "نيكاراغوا",
@@ -1266,7 +1212,6 @@
   "Country_Yemen": "اليمن",
   "Country_Zambia": "زامبيا",
   "Country_Zimbabwe": "زيمبابوي",
-  "Cozy": "كوزي",
   "Create": "إنشاء",
   "Create_Canned_Response": "إنشاء رد مسجَّل",
   "Create_channel": "إنشاء Channel",
@@ -1432,8 +1377,11 @@
   "Desktop_Notifications_Not_Enabled": "إشعارات سطح المكتب غير ممكّنة",
   "Details": "التفاصيل",
   "Different_Style_For_User_Mentions": "نمط مختلف لإشارات المستخدم",
+  "Livechat_Facebook_API_Key": "مفتاح واجهة برمجة تطبيقات Channel متعددة الاتجاهات",
   "Direct": "مباشر",
+  "Livechat_Facebook_API_Secret": "سر واجهة برمجة تطبيقات Channel متعددة الاتجاهات",
   "Direct_Message": "رسالة مباشرة",
+  "Livechat_Facebook_Enabled": "تم تمكين تكامل Facebook",
   "Direct_message_creation_description": "أنت على وشك إنشاء دردشة مع عدة مستخدمين. أضف الأشخاص الذين تود التحدث إليهم، كل شخص في المكان نفسه، باستخدام الرسائل المباشرة.",
   "Direct_message_someone": "رسالة مباشرة لشخص ما",
   "Direct_message_you_have_joined": "لقد انضممت إلى رسالة مباشرة جديدة مع ",
@@ -1515,13 +1463,23 @@
   "Dry_run": "تشغيل تجريبي",
   "Dry_run_description": "سيتم إرسال بريد إلكتروني واحد فقط، إلى العنوان نفسه الموجود في حقل \"من\". يجب أن يكون البريد الإلكتروني لمستخدم صالح.",
   "Duplicate_archived_channel_name": "توجد Channel مؤرشفة باسم `‎#%s` ",
+  "Markdown_Headers": "السماح برؤوس Markdown في الرسائل",
+  "Markdown_Marked_Breaks": "تمكين الفواصل المحددة",
   "Duplicate_archived_private_group_name": "توجد مجموعة خاصة مؤرشفة باسم '‎%s'",
   "Duplicate_channel_name": "توجد Channel باسم `‎%s` ",
+  "Markdown_Marked_GFM": "تمكين GFM المحدد",
   "Duplicate_file_name_found": "تم العثور على اسم ملف مكرر.",
+  "Markdown_Marked_Pedantic": "تمكين Pedantic المحدد",
+  "Markdown_Marked_SmartLists": "تمكين القوائم الذكية المحددة",
   "Duplicate_private_group_name": "توجد مجموعة خاصة باسم '‎%s'",
+  "Markdown_Marked_Smartypants": "تمكين Smartypants المحدد",
   "Duplicated_Email_address_will_be_ignored": "سيتم تجاهل عنوان البريد الإلكتروني المكرر.",
+  "Markdown_Marked_Tables": "تمكين الجداول المحددة",
   "duplicated-account": "حساب مكرر",
   "E2E Encryption": "التشفير بين الطرفيات",
+  "Markdown_Parser": "محلل Markdown",
+  "Markdown_SupportSchemesForLink": "مخططات دعم Markdown للرابط",
+  "Markdown_SupportSchemesForLink_Description": "قائمة المخططات المسموح بها مفصولة بفواصل",
   "E2E_enable": "تمكين التشفير بين الطرفيات",
   "E2E_disable": "تعطيل التشفير بين الطرفيات",
   "E2E_Enable_alert": "تبقى هذه الميزة حاليًا في مرحلة تجريبية! يُرجى الإبلاغ عن الأخطاء إلى github.com/RocketChat/Rocket.Chat/issues وكن على دراية بما يأتي: <br/>- لن يتم العثور على الرسائل المشفرة للغرف المشفرة من خلال عمليات البحث.<br/>- قد لا تدعم تطبيقات الهاتف المحمول الرسائل المشفرة (يتم تنفيذها).<br/>- قد لا تتمكن الروبوتات من رؤية الرسائل المشفرة حتى تقوم بتنفيذ الدعم لها.<br/>- لن يتم تشفير عمليات الرفع في هذا الإصدار.",
@@ -1545,6 +1503,7 @@
   "Edit_Canned_Responses": "تحرير الردود المسجلة",
   "Edit_Custom_Field": "تحرير حقل مخصص",
   "Edit_Department": "تحرير قسم",
+  "Message_AllowSnippeting": "السماح بالقصاصات البرمجية للرسائل",
   "Edit_Invite": "تحرير دعوة",
   "Edit_previous_message": "`‎%s` - تحرير الرسالة السابقة",
   "Edit_Priority": "تحرير الأولوية",
@@ -1552,6 +1511,8 @@
   "Edit_Tag": "تحرير العلامة",
   "Edit_Trigger": "تحرير المُشغل",
   "Edit_Unit": "تحرير الوحدة",
+  "Message_Attachments_GroupAttach": "أزرار مرفقات المجموعة",
+  "Message_Attachments_GroupAttachDescription": "يعمل هذا على تجميع الرموز ضمن قائمة قابلة للتوسيع. تشغل مساحة أقل على الشاشة.",
   "Edit_User": "تحرير المستخدم",
   "edit-livechat-room-customfields": "تحرير الحقل المخصصة لـ Livechat Room‎",
   "edit-livechat-room-customfields_description": "إذن لتعديل الحقول المخصصة لغرفة Livechat",
@@ -1584,7 +1545,9 @@
   "Editing_room": "يتم تحرير الغرفة",
   "Editing_user": "يتم تحرير المستخدم",
   "Editor": "أداة التحرير",
+  "Message_ShowEditedStatus": "عرض الحالة المحررة",
   "Education": "التعليم",
+  "Message_ShowFormattingTips": "عرض نصائح التنسيق",
   "Email": "البريد الإلكتروني",
   "Email_address_to_send_offline_messages": "عنوان البريد الإلكتروني لإرسال رسائل من دون اتصال",
   "Email_already_exists": "سبق وجود البريد الإلكتروني",
@@ -1612,7 +1575,6 @@
   "Email_subject": "موضوع البريد الإلكتروني",
   "Email_verified": "تم التحقق من البريد الإلكتروني",
   "Email_sent": "تم إرسال البريد الإلكتروني",
-  "Emails_sent_successfully!": "تم إرسال رسائل البريد الإلكتروني بنجاح",
   "Emoji": "رمز تعبيري",
   "Emoji_provided_by_JoyPixels": "رموز تعبيرية مقدمة من <strong>JoyPixels</strong>",
   "EmojiCustomFilesystem": "نظام ملفات الرموز التعبيرية المخصصة",
@@ -1786,6 +1748,7 @@
   "error-password-policy-not-met-oneLowercase": "لا تتوافق كلمة المرور مع سياسة الخادم التي تقتضي استخدام حرف صغير واحد على الأقل",
   "error-password-policy-not-met-oneNumber": "لا تتوافق كلمة المرور مع سياسة الخادم التي تقتضي استخدام رمز رقمي واحد على الأقل",
   "error-password-policy-not-met-oneSpecial": "لا تتوافق كلمة المرور مع سياسة الخادم التي تقتضي استخدام رمز خاص واحد على الأقل",
+  "Please_go_to_the_Administration_page_then_Livechat_Facebook": "يرجى الانتقال إلى صفحة الإدارة ثم القناة متعددة الاتجاهات > Facebook",
   "error-password-policy-not-met-oneUppercase": "لا تتوافق كلمة المرور مع سياسة الخادم التي تقتضي استخدام حرف كبير واحد على الأقل",
   "error-password-policy-not-met-repeatingCharacters": "لا تتوافق كلمة المرور مع سياسة الخادم التي تقتضي منع استخدام الرموز المكررة (لديك عدد كبير من الرموز نفسها إلى جانب بعضها)",
   "error-password-same-as-current": "أدخلت كلمة المرور التي هي نفسها كلمة المرور الحالية",
@@ -1824,8 +1787,6 @@
   "error-you-are-last-owner": "أنت المالك الأخير. يُرجى تعيين مالك جديد قبل مغادرة الغرفة.",
   "Errors_and_Warnings": "الأخطاء والتحذيرات",
   "Esc_to": "خروج إلى",
-  "Estimated_due_time": "وقت الاستحقاق المقدر",
-  "Estimated_due_time_in_minutes": "وقت الاستحقاق المقدر (الوقت بالدقائق)",
   "Event_Trigger": "مشغل الحدث",
   "Event_Trigger_Description": "حدد نوع الحدث الذي سيؤدي إلى تشغيل تكامل خطاف الويب الصادر هذا",
   "every_5_minutes": "مرة كل 5 دقائق",
@@ -1889,7 +1850,6 @@
   "Feature_Limiting": "وضع حد للميزة",
   "Features": "الميزات",
   "Features_Enabled": "الميزات الممكّنة",
-  "Feature_Disabled": "الميزات المعطلة",
   "Federation": "اتحاد",
   "Federation_Adding_Federated_Users": "إضافة مستخدمين متحدين",
   "Federation_Adding_to_your_server": "إضافة اتحاد إلى الخادم الخاص بك",
@@ -1944,6 +1904,7 @@
   "FEDERATION_Test_Setup": "إعداد الاختبار",
   "FEDERATION_Test_Setup_Error": "تعذر العثور على الخادم الخاص بك باستخدام الإعداد الخاص بك، تُرجى مراجعة الإعدادات الخاصة بك.",
   "FEDERATION_Test_Setup_Success": "إعداد الاتحاد الخاص بك يعمل ويمكن أن تعثر عليك الخوادم الأخرى!",
+  "Retry_Count": "عدد مرات إعادة المحاولة",
   "FEDERATION_Unique_Id": "معرف فريد",
   "FEDERATION_Unique_Id_Description": "هذا هو معرف الاتحاد الفريد الخاص بك والمستخدم لتحديد نظيرك على الشبكة.",
   "Federation_Matrix": "اتحاد",
@@ -2123,8 +2084,11 @@
   "Graphql_CORS": "GraphQL CORS",
   "Graphql_Enabled": "تم تمكين GraphQL",
   "Graphql_Subscription_Port": "منفذ اشتراك GraphQL",
+  "Snippet_Messages": "رسائل القصاصات البرمجية",
   "Group_by": "تجميع حسب",
   "Group_by_Type": "تجميع حسب النوع",
+  "snippet-message": "رسالة القصاصة البرمجية",
+  "snippet-message_description": "إذن لإنشاء رسالة قصاصة برمجية",
   "Group_discussions": "مناقشات جماعية",
   "Group_favorites": "مفضلات المجموعة",
   "Group_mentions_disabled_x_members": "تم تعطيل إشارات المجموعة `‎@all` و`‎@here` للغرف التي بها أكثر من __total__ من الأعضاء.",
@@ -2182,7 +2146,6 @@
   "If_you_are_sure_type_in_your_username": "إذا كنت متأكدًا، فأدخل اسم المستخدم الخاصة بك:",
   "If_you_didnt_ask_for_reset_ignore_this_email": "إذا لم تطلب إعادة تعيين كلمة المرور الخاصة بك، فيمكنك تجاهل هذا البريد الإلكتروني.",
   "If_you_didnt_try_to_login_in_your_account_please_ignore_this_email": "إذا لم تحاول تسجيل الدخول إلى حسابك، فيرجى تجاهل هذا البريد الإلكتروني.",
-  "If_you_dont_have_one_send_an_email_to_omni_rocketchat_to_get_yours": "إذا لم يكن لديك، فأرسل بريدًا إلكترونيًا إلى [omni@rocket.chat](mailto:omni@rocket.chat) للحصول عليه.",
   "Iframe_Integration": "تكامل Iframe",
   "Iframe_Integration_receive_enable": "تمكين الاستقبال",
   "Iframe_Integration_receive_enable_Description": "السماح للنافذة الأم بإرسال أوامر إلى Rocket.Chat",
@@ -2525,6 +2488,7 @@
   "LDAP_Authentication_UserDN": "الاسم المميز للمستخدم",
   "LDAP_Authentication_UserDN_Description": "مستخدم LDAP الذي يجري عمليات بحث عن المستخدمين لمصادقة مستخدمين آخرين عند تسجيل الدخول. <br/>هذا عادةً حساب خدمة تم إنشاؤه خصوصًا لعمليات تكامل الجهات الخارجية. استخدم اسمًا مؤهلاً بالكامل مثل \"cn=Administrator،‏ cn=Users،‏ dc=Example،‏ dc=com\".",
   "LDAP_Avatar_Field": "حقل الصورة الرمزية للمستخدم",
+  "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "يجب عليك أولاً تعيين الرمز المميز لواجهة برمجة التطبيقات من أجل استخدام التكامل.",
   "LDAP_Avatar_Field_Description": "الحقل الذي سيتم استخدامه كـ *صورة رمزية* للمستخدمين. اتركه فارغًا لاستخدام \"thumbnailPhoto\" أولاً و\"jpegPhoto\" كبديل.",
   "LDAP_Background_Sync": "مزامنة الخلفية",
   "LDAP_Background_Sync_Avatars": "مزامنة خلفية الصورة الرمزية",
@@ -2688,9 +2652,6 @@
   "Livechat_DepartmentOfflineMessageToChannel": "إرسال رسائل Livechat الخاصة بهذا القسم من دون اتصال إلى قناة",
   "Livechat_enable_message_character_limit": "تمكين حد أحرف الرسالة",
   "Livechat_enabled": "تم تمكين القناة متعددة الاتجاهات",
-  "Livechat_Facebook_API_Key": "مفتاح واجهة برمجة تطبيقات Channel متعددة الاتجاهات",
-  "Livechat_Facebook_API_Secret": "سر واجهة برمجة تطبيقات Channel متعددة الاتجاهات",
-  "Livechat_Facebook_Enabled": "تم تمكين تكامل Facebook",
   "Livechat_forward_open_chats": "إعادة توجيه الدردشات المفتوحة",
   "Livechat_forward_open_chats_timeout": "مهلة إعادة توجيه الدردشات (بالثواني)",
   "Livechat_guest_count": "عداد الضيوف",
@@ -2854,7 +2815,6 @@
   "Manager_added": "تمت إضافة المدير",
   "Manager_removed": "تمت إزالة المدير",
   "Managers": "المديرون",
-  "manage-chatpal": "إدارة Chatpal",
   "Management_Server": "خادم الإدارة",
   "Managing_assets": "إدارة الأصول",
   "Managing_integrations": "إدارة عمليات التكامل",
@@ -2869,16 +2829,6 @@
   "Mark_as_unread": "وضع علامة كغير مقروءة",
   "Mark_read": "وضع علامة مقروءة",
   "Mark_unread": "وضع علامة غير مقروءة",
-  "Markdown_Headers": "السماح برؤوس Markdown في الرسائل",
-  "Markdown_Marked_Breaks": "تمكين الفواصل المحددة",
-  "Markdown_Marked_GFM": "تمكين GFM المحدد",
-  "Markdown_Marked_Pedantic": "تمكين Pedantic المحدد",
-  "Markdown_Marked_SmartLists": "تمكين القوائم الذكية المحددة",
-  "Markdown_Marked_Smartypants": "تمكين Smartypants المحدد",
-  "Markdown_Marked_Tables": "تمكين الجداول المحددة",
-  "Markdown_Parser": "محلل Markdown",
-  "Markdown_SupportSchemesForLink": "مخططات دعم Markdown للرابط",
-  "Markdown_SupportSchemesForLink_Description": "قائمة المخططات المسموح بها مفصولة بفواصل",
   "Marketplace": "السوق",
   "Marketplace_view_marketplace": "عرض السوق",
   "Marketplace_error": "يتعذّر الاتصال بالإنترنت أو قد تكون مساحة العمل الخاصة بك مثبتة من دون اتصال.",
@@ -2917,15 +2867,12 @@
   "Message_AllowEditing_BlockEditInMinutesDescription": "إدخال 0 لتعطيل الحظر.",
   "Message_AllowPinning": "السماح بتثبيت الرسائل",
   "Message_AllowPinning_Description": "السماح بتثبيت الرسائل في أي من القنوات.",
-  "Message_AllowSnippeting": "السماح بالقصاصات البرمجية للرسائل",
   "Message_AllowStarring": "السماح بتمييز الرسائل بنجمة",
   "Message_AllowUnrecognizedSlashCommand": "السماح بأوامر الشرطة المائلة غير المعروفة",
   "Message_Already_Sent": "سبق إرسال هذه الرسالة ويتم معالجتها بواسطة الخادم",
   "Message_AlwaysSearchRegExp": "البحث دائمًا باستخدام التعبير النمطي",
   "Message_AlwaysSearchRegExp_Description": "نوصي بتعين \"صواب\" إذا كانت لغتك غير مدعومة في <a target=\"_blank\" href=\"https://docs.mongodb.org/manual/reference/text-search-languages/#text-search-languages\">البحث عن نص MongoDB</a> .",
   "Message_Attachments": "مرفقات الرسائل",
-  "Message_Attachments_GroupAttach": "أزرار مرفقات المجموعة",
-  "Message_Attachments_GroupAttachDescription": "يعمل هذا على تجميع الرموز ضمن قائمة قابلة للتوسيع. تشغل مساحة أقل على الشاشة.",
   "Message_Attachments_Thumbnails_Enabled": "تمكين الصور المصغرة لحفظ النطاق الترددي",
   "Message_Attachments_Thumbnails_Width": "أقصى عرض للصورة المصغرة (بالبكسل)",
   "Message_Attachments_Thumbnails_Height": "أقصى ارتفاع للصورة المصغرة (بالبكسل)",
@@ -3013,8 +2960,6 @@
   "Message_removed": "تمت إزالة الرسالة",
   "Message_sent_by_email": "تم إرسال الرسالة عبر البريد الإلكتروني",
   "Message_ShowDeletedStatus": "عرض الحالة المحذوفة",
-  "Message_ShowEditedStatus": "عرض الحالة المحررة",
-  "Message_ShowFormattingTips": "عرض نصائح التنسيق",
   "Message_starring": "تمييز الرسالة بنجمة",
   "Message_Time": "وقت الرسالة",
   "Message_TimeAndDateFormat": "تنسيق الوقت والتاريخ",
@@ -3023,10 +2968,10 @@
   "Message_TimeFormat_Description": "انظر أيضًا: <a href=\"http://momentjs.com/docs/#/displaying/format/\" target=\"momemt\">Moment.js</a>",
   "Message_too_long": "الرسالة طويلة جدًا",
   "Message_UserId": "معرّف المستخدم",
-  "Message_VideoRecorderEnabled": "تم تمكين مُسجّل الفيديو",
-  "Message_VideoRecorderEnabledDescription": "يتطلب أن تكون ملفات \"video/webm\" نوع وسائط مقبولاً ضمن إعدادات \"تحميل الملف\".",
   "Message_view_mode_info": "هذا يغير مقدار المساحة التي تشغلها الرسائل على الشاشة.",
+  "Message_VideoRecorderEnabled": "تم تمكين مُسجّل الفيديو",
   "MessageBox_view_mode": "وضع عرض MessageBox",
+  "Message_VideoRecorderEnabledDescription": "يتطلب أن تكون ملفات \"video/webm\" نوع وسائط مقبولاً ضمن إعدادات \"تحميل الملف\".",
   "messages": "الرسائل",
   "Messages": "الرسائل",
   "Messages_sent": "تم إرسال الرسائل",
@@ -3194,8 +3139,8 @@
   "Node_version": "إصدار العقدة",
   "None": "لا يوجد",
   "Nonprofit": "غير ربحية",
-  "Normal": "عادي",
   "Not_authorized": "غير مخول",
+  "Normal": "عادي",
   "Not_Available": "غير متاح",
   "Not_enough_data": "لا توجد بيانات كافية",
   "Not_following": "عدم المتابعة",
@@ -3411,7 +3356,6 @@
   "Please_fill_all_the_information": "يرجى إدخال كل المعلومات",
   "Please_fill_an_email": "يرجى إدخال بريد إلكتروني",
   "Please_fill_name_and_email": "يرجى إدخال اسم وبريد إلكتروني",
-  "Please_go_to_the_Administration_page_then_Livechat_Facebook": "يرجى الانتقال إلى صفحة الإدارة ثم القناة متعددة الاتجاهات > Facebook",
   "Please_select_an_user": "يرجى تحديد مستخدم",
   "Please_select_enabled_yes_or_no": "يرجى تحديد خيار لتمكينه",
   "Please_select_visibility": "يرجى تحديد رؤية",
@@ -3524,6 +3468,7 @@
   "Reactions": "التفاعلات",
   "Read_by": "قراءة بواسطة",
   "Read_only": "القراءة فقط",
+  "This_room_is_read_only": "يُمكن قراءة دردشة هذه الغرفة فقط",
   "Read_only_changed_successfully": "تم تغيير وضع القراءة فقط بنجاح",
   "Read_only_channel": "Channel للقراءة فقط",
   "Read_only_group": "مجموعة القراءة فقط",
@@ -3675,7 +3620,6 @@
   "RetentionPolicyRoom_OverrideGlobal": "تجاوز نهج الاستبقاء العام",
   "RetentionPolicyRoom_ReadTheDocs": "احترس! يمكن أن يؤدي التغيير والتبديل في هذه الإعدادات دون أقصى قدر من العناية إلى تدمير كل محفوظات الرسائل. يرجى قراءة الوثائق قبل تشغيل الميزة <a href=\"https://rocket.chat/docs/administrator-guides/retention-policies/\">هنا</a>.",
   "Retry": "إعادة المحاولة",
-  "Retry_Count": "عدد مرات إعادة المحاولة",
   "Return_to_home": "العودة إلى الصفحة الرئيسية",
   "Return_to_previous_page": "العودة إلى الصفحة السابقة",
   "Return_to_the_queue": "العودة إلى قائمة الانتظار",
@@ -4044,10 +3988,7 @@
   "SMTP_Test_Button": "اختبار إعدادات SMTP",
   "SMTP_Username": "اسم مستخدم SMTP",
   "Snippet_Added": "تم الإنشاء في %s",
-  "Snippet_Messages": "رسائل القصاصات البرمجية",
   "Snippet_name": "اسم القصاصة البرمجية",
-  "snippet-message": "رسالة القصاصة البرمجية",
-  "snippet-message_description": "إذن لإنشاء رسالة قصاصة برمجية",
   "Snippeted_a_message": "تم إنشاء قصاصة برمجية __snippetLink__",
   "Social_Network": "الشبكة الاجتماعية",
   "Sorry_page_you_requested_does_not_exist_or_was_deleted": "عذرًا، الصفحة التي طلبتها غير موجودة أو تم حذفها!",
@@ -4293,11 +4234,8 @@
   "theme-color-status-offline": "لون الحالة غير متصل",
   "theme-color-status-online": "لون الحالة متصل",
   "theme-color-success-color": "لون النجاح",
-  "theme-color-tertiary-font-color": "لون الخط الثلاثي",
   "theme-color-transparent-dark": "شفاف داكن",
   "theme-color-transparent-darker": "شفاف أدكن",
-  "theme-color-transparent-light": "شفاف فاتح",
-  "theme-color-transparent-lighter": "شفاف أفتح",
   "theme-color-transparent-lightest": "الشفاف الأفتح",
   "theme-color-unread-notification-color": "لون الإشعارات غير المقروءة",
   "theme-custom-css": "CSS المخصصة",
@@ -4450,6 +4388,7 @@
   "unarchive-room": "إلغاء أرشفة Room",
   "unarchive-room_description": "إذن لإلغاء أرشفة القنوات",
   "Unassigned": "غير مخصص",
+  "unauthorized": "غير مخول",
   "Unavailable": "غير متوفر",
   "Unblock_User": "إلغاء حظر المستخدم",
   "Uncheck_All": "إلغاء تحديد الكل",
@@ -4525,7 +4464,7 @@
   "User Search (Group Validation)": "البحث عن المستخدم (التحقق من المجموعة)",
   "User__username__is_now_a_leader_of__room_name_": "أصبح المستخدم __username__ الآن قائدًا لـ __room_name__",
   "User__username__is_now_a_moderator_of__room_name_": "المستخدم __username__ هو الآن مشرف على __room_name__",
-  "User__username__is_now_a_owner_of__room_name_": "المستخدم __username__ هو الآن مالك __room_name__",
+  "User__username__is_now_an_owner_of__room_name_": "المستخدم __username__ هو الآن مالك __room_name__",
   "User__username__muted_in_room__roomName__": "تم كتم صوت المستخدم __username__ في الغرفة __roomName__",
   "User__username__removed_from__room_name__leaders": "تمت إزالة المستخدم __username__ من قادة __room_name__",
   "User__username__removed_from__room_name__moderators": "تمت إزالة المستخدم __username__ من مشرفي __room_name__",
@@ -4597,8 +4536,6 @@
   "UserDataDownload_CompletedRequestExistedWithLink_Text": "سبق إنشاء ملف البيانات الخاص بك. انقر <a href=\"__download_link__\" target=\"_blank\">هنا</a> لتنزيله.",
   "UserDataDownload_EmailBody": "ملف البيانات الخاص بك جاهز الآن للتنزيل. انقر <a href=\"__download_link__\">هنا</a> لتنزيله.",
   "UserDataDownload_EmailSubject": "ملف البيانات الخاص بك جاهز للتنزيل",
-  "UserDataDownload_FeatureDisabled": "عذرًا، لم يتم تمكين عمليات تصدير بيانات المستخدم على هذا الخادم!",
-  "UserDataDownload_LoginNeeded": "تحتاج إلى تسجيل الدخول إلى حساب Rocket.Chat لتنزيل تصدير البيانات هذا. انقر فوق الرابط الموجود أدناه للقيام بذلك، ثم حاول مرة أخرى.",
   "UserDataDownload_Requested": "تنزيل الملف مطلوب",
   "UserDataDownload_Requested_Text": "سيتم إنشاء ملف البيانات الخاص بك. سيتم إرسال رابط لتنزيله إلى عنوان بريدك الإلكتروني عندما يكون جاهزًا. هناك <strong>__pending_operations__</strong> عمليات في قائمة الانتظار سيتم إجراؤها قبل إجرائك.",
   "UserDataDownload_RequestExisted_Text": "يتم إنشاء ملف البيانات الخاص بك. سيتم إرسال رابط لتنزيله إلى عنوان بريدك الإلكتروني عندما يكون جاهزًا. هناك <strong>__pending_operations__</strong>  عمليات في قائمة الانتظار سيتم إجراؤها قبل إجرائك.",
@@ -4613,7 +4550,6 @@
   "Username_ended_the_OTR_session": "__username__ أنهى جلسة المراسلة خارج نطاق السجل (OTR)",
   "Username_invalid": "<strong>%s</strong> ليس اسم مستخدم صالحًا،<br/> استخدم فقط الأحرف والأرقام والنقاط والواصلات والشرطات السفلية",
   "Username_is_already_in_here": "سبق وجود `‎@%s` هنا.",
-  "Username_is_not_in_this_room": "المستخدم \"#%s\" غير موجود في هذه الغرفة",
   "Username_Placeholder": "يرجى إدخال أسماء المستخدمين...",
   "Username_title": "تسجيل اسم المستخدم",
   "Username_wants_to_start_otr_Do_you_want_to_accept": "__username__ يريد بدء  مراسلة خارج نطاق السجل (OTR). هل توافق؟",
@@ -4658,13 +4594,13 @@
   "Videocall_declined": "تم رفض مكالمة الفيديو.",
   "Video_and_Audio_Call": "مكالمة الفيديو والصوت",
   "Videos": "مقاطع الفيديو",
+  "View_mode": "عرض الوضع",
   "View_All": "عرض كل الأعضاء",
   "View_channels": "عرض Channels",
   "view-import-operations": "عرض عمليات الاستيراد",
   "view-omnichannel-contact-center": "عرض مركز اتصال القناة متعددة الاتجاهات",
   "view-omnichannel-contact-center_description": "إذن لعرض مركز اتصال القناة متعددة الاتجاهات والتفاعل معه",
   "View_Logs": "عرض السجلات",
-  "View_mode": "عرض الوضع",
   "View_original": "عرض الأصل",
   "View_the_Logs_for": "عرض سجلات: \"__name__\"",
   "view-broadcast-member-list": "عرض قائمة الأعضاء في Room البث",
@@ -4861,7 +4797,6 @@
   "You_have_n_codes_remaining": "يتبقى لديك __number__ من الرموز.",
   "You_have_not_verified_your_email": "لم تقم بالتحقق من بريدك الإلكتروني.",
   "You_have_successfully_unsubscribed": "لقد تم إلغاء اشتراكك بنجاح من القائمة البريدية الخاصة بنا.",
-  "You_have_to_set_an_API_token_first_in_order_to_use_the_integration": "يجب عليك أولاً تعيين الرمز المميز لواجهة برمجة التطبيقات من أجل استخدام التكامل.",
   "You_must_join_to_view_messages_in_this_channel": "يجب عليك الانضمام لعرض الرسائل في هذه القناة",
   "You_need_confirm_email": "تحتاج إلى تأكيد بريدك الإلكتروني لتسجيل الدخول!",
   "You_need_install_an_extension_to_allow_screen_sharing": "تحتاج إلى تثبيت امتداد للسماح بمشاركة الشاشة",
@@ -4888,7 +4823,6 @@
   "Your_invite_link_will_expire_on__date__": "ستنتهي صلاحية رابط الدعوة في __date__.",
   "Your_invite_link_will_expire_on__date__or_after__usesLeft__uses": "ستنتهي صلاحية رابط دعوتك في __date__ أو بعد استخدامات __usesLeft__.",
   "Your_invite_link_will_never_expire": "لن تنتهي صلاحية رابط الدعوة الخاص بك.",
-  "Your_mail_was_sent_to_s": "تم إرسال بريدك إلى %s",
   "your_message": "رسالتك",
   "your_message_optional": "رسالتك (اختياري)",
   "Your_new_email_is_email": "عنوان بريدك الإلكتروني الجديد هو <strong>[email]</strong>.",
@@ -4901,13 +4835,30 @@
   "Your_TOTP_has_been_reset": "تمت إعادة تعيين TOTP الثنائي.",
   "Your_workspace_is_ready": "مساحة العمل الخاصة بك جاهزة للاستخدام 🎉",
   "Zapier": "Zapier",
+  "registration.page.login.errors.wrongCredentials": "لم يتم العثور على المستخدم أو كلمة المرور غير صحيحة",
+  "registration.page.login.errors.loginBlockedForIp": "تم حظر تسجيل الدخول مؤقتًا لعنوان IP هذا",
+  "registration.page.login.errors.loginBlockedForUser": "تم حظر تسجيل الدخول مؤقتا لهذا المستخدم",
+  "registration.page.login.errors.licenseUserLimitReached": "تم بلوغ الحد الأقصى لعدد المستخدمين.",
+  "registration.page.login.errors.AppUserNotAllowedToLogin": "لا يُسمح لمستخدمي التطبيق بتسجيل الدخول مباشرة.",
+  "registration.page.registration.waitActivationWarning": "قبل أن تتمكن من تسجيل الدخول، يجب تفعيل حسابك يدويًا بواسطة المسؤول.",
+  "registration.page.login.forgot": "نسيت كلمة السر",
+  "registration.page.resetPassword.sent": "إن كان البريد الإلكتروني مسجلاً، فسنرسل تعليمات إعادة تعيين كلمة المرور الخاصة بك. إذا لم تتلقَّ بريداً إلكترونيًا في وقت قريب، فيرجى العودة والمحاولة مرة أخرى.",
+  "registration.component.login": "تسجيل الدخول",
+  "registration.component.login.userNotFound": "لم يتم العثور على المستخدم",
+  "registration.component.resetPassword": "إعادة تعيين كلمة السر",
+  "registration.component.form.emailOrUsername": "البريد الإلكتروني أو اسم المستخدم",
+  "registration.component.form.email": "البريد الإلكتروني",
+  "registration.component.form.password": "كلمة المرور",
+  "registration.component.form.divider": "أو",
+  "registration.component.form.submit": "إرسال",
+  "registration.component.form.requiredField": "هذا الحقل مطلوب",
+  "onboarding.component.form.requiredField": "هذا الحقل مطلوب",
   "onboarding.component.form.steps": "الخطوة {{currentStep}} من {{stepCount}}",
   "onboarding.component.form.action.back": "عودة",
   "onboarding.component.form.action.next": "التالي",
   "onboarding.component.form.action.skip": "تخطي هذه الخطوة",
   "onboarding.component.form.action.register": "تسجيل",
   "onboarding.component.form.action.confirm": "تأكيد",
-  "onboarding.component.form.requiredField": "هذا الحقل مطلوب",
   "onboarding.component.form.termsAndConditions": "أوافق على <1>البنود والشروط</1> و<3>سياسة الخصوصية</3>",
   "onboarding.component.emailCodeFallback": "ألم تتلق رسالة بريد إلكتروني؟ <1>إعادة الإرسال</1> or <3>تغيير البريد الإلكتروني</3>",
   "onboarding.page.form.title": "دعنا <1>نطلق</1> مساحة العمل الخاصة بك",
@@ -4975,5 +4926,11 @@
   "onboarding.form.standaloneServerForm.title": "تأكيد الخادم المستقل",
   "onboarding.form.standaloneServerForm.servicesUnavailable": "لن تكون بعض الخدمات متاحة أو ستتطلب إعدادًا يدويًا",
   "onboarding.form.standaloneServerForm.publishOwnApp": "لإرسال الإشعارات، تحتاج إلى تجميع تطبيقك الخاص ونشره على Google Play وApp Store",
-  "onboarding.form.standaloneServerForm.manuallyIntegrate": "تحتاج إلى التكامل مع الخدمات الخارجية يدويًا"
+  "onboarding.form.standaloneServerForm.manuallyIntegrate": "تحتاج إلى التكامل مع الخدمات الخارجية يدويًا",
+  "Awaiting_confirmation": "بانتظار التأكيد",
+  "RegisterWorkspace_Features_MobileNotifications_Title": "الإشعارات المرسلة عبر الهاتف المحمول",
+  "RegisterWorkspace_Features_Marketplace_Title": "السوق",
+  "RegisterWorkspace_Features_Omnichannel_Title": "قناة متعددة الاتجاهات",
+  "RegisterWorkspace_Setup_Label": "البريد الإلكتروني لحساب السحابة",
+  "cloud.RegisterWorkspace_Setup_Terms_Privacy": "أوافق على <1>البنود والشروط</1> و<3>سياسة الخصوصية</3>"
 }

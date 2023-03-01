@@ -10,3 +10,4 @@ import './v1/room';
 import './v1/videoCall';
 import './v1/transfer';
 import './v1/contact';
+import './v1/webhooks';

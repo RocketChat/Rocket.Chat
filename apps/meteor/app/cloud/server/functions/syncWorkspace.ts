@@ -1,5 +1,6 @@
 import { HTTP } from 'meteor/http';
 import { Settings } from '@rocket.chat/models';
+import { NPS, Banner } from '@rocket.chat/core-services';
 
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
@@ -7,7 +8,6 @@ import { getWorkspaceAccessToken } from './getWorkspaceAccessToken';
 import { getWorkspaceLicense } from './getWorkspaceLicense';
 import { settings } from '../../../settings/server';
 import { getAndCreateNpsSurvey } from '../../../../server/services/nps/getAndCreateNpsSurvey';
-import { NPS, Banner } from '../../../../server/sdk';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export async function syncWorkspace(reconnectCheck = false) {
@@ -38,6 +38,7 @@ export async function syncWorkspace(reconnectCheck = false) {
 	} catch (err: any) {
 		SystemLogger.error({
 			msg: 'Failed to sync with Rocket.Chat Cloud',
+			url: '/client',
 			...(err.response?.data && { cloudError: err.response.data }),
 			err,
 		});

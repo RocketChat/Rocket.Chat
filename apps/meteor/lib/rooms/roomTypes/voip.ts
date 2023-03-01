@@ -14,7 +14,7 @@ export function getVoipRoomType(coordinator: RoomCoordinator): IRoomTypeConfig {
 				return coordinator.openRoom('v', id);
 			},
 			link({ rid }): Record<string, string> {
-				return { id: rid || '' };
+				return { id: rid || '', tab: 'voip-room-info' };
 			},
 		},
 

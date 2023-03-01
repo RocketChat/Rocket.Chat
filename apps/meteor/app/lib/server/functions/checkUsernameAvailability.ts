@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import s from 'underscore.string';
 import _ from 'underscore';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { Team } from '@rocket.chat/core-services';
 
 import { settings } from '../../../settings/server';
-import { Team } from '../../../../server/sdk';
 import { validateName } from './validateName';
 
 let usernameBlackList: RegExp[] = [];
@@ -16,7 +15,7 @@ settings.watch('Accounts_BlockedUsernameList', (value: string) => {
 });
 
 const usernameIsBlocked = (username: string, usernameBlackList: RegExp[]): boolean | number =>
-	usernameBlackList.length && usernameBlackList.some((restrictedUsername) => restrictedUsername.test(s.trim(escapeRegExp(username))));
+	usernameBlackList.length && usernameBlackList.some((restrictedUsername) => restrictedUsername.test(escapeRegExp(username).trim()));
 
 export const checkUsernameAvailability = function (username: string): boolean {
 	if (usernameIsBlocked(username, usernameBlackList) || !validateName(username)) {

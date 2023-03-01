@@ -1,9 +1,10 @@
 import { faker } from '@faker-js/faker';
 
-import { test, expect } from './utils/test';
+import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
+import { test, expect } from './utils/test';
 
-test.use({ storageState: 'admin-session.json' });
+test.use({ storageState: Users.admin.state });
 
 test.describe.serial('channel-management', () => {
 	let poHomeChannel: HomeChannel;
@@ -20,7 +21,7 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
 		await poHomeChannel.sidenav.checkboxPrivateChannel.click();
 		await poHomeChannel.sidenav.inputChannelName.type(channelName);
-		await poHomeChannel.sidenav.btnCreateChannel.click();
+		await poHomeChannel.sidenav.btnCreate.click();
 
 		await expect(page).toHaveURL(`/channel/${channelName}`);
 	});
@@ -30,7 +31,7 @@ test.describe.serial('channel-management', () => {
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
 		await poHomeChannel.sidenav.inputChannelName.type(channelName);
-		await poHomeChannel.sidenav.btnCreateChannel.click();
+		await poHomeChannel.sidenav.btnCreate.click();
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 	});

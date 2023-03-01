@@ -1,6 +1,7 @@
-import type { IDeviceManagementService } from '../../sdk/types/IDeviceManagementService';
+import type { IDeviceManagementService } from '@rocket.chat/core-services';
+import { ServiceClassInternal } from '@rocket.chat/core-services';
+
 import { deviceManagementEvents } from './events';
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
 
 export class DeviceManagementService extends ServiceClassInternal implements IDeviceManagementService {
 	protected name = 'device-management';

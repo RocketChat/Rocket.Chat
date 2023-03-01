@@ -1,7 +1,8 @@
-import { IUser, IRoom } from '@rocket.chat/core-typings';
+import type { IUser, IRoom } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
 import { useRolesDescription, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
 import { FormSkeleton } from '../../../../components/Skeleton';
@@ -30,10 +31,7 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 		value: data,
 		phase: state,
 		error,
-	} = useEndpointData(
-		'/v1/users.info',
-		useMemo(() => ({ userId: uid, username }), [uid, username]),
-	);
+	} = useEndpointData('/v1/users.info', { params: useMemo(() => ({ userId: uid, username }), [uid, username]) });
 
 	const isLoading = state === AsyncStatePhase.LOADING;
 

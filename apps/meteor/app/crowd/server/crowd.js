@@ -197,9 +197,9 @@ export class CROWD {
 
 			try {
 				crowdUser = self.fetchCrowdUser(crowd_username);
-			} catch (error) {
-				logger.debug(error);
-				logger.error('Could not sync user with username', crowd_username);
+			} catch (err) {
+				logger.debug({ err });
+				logger.error({ msg: 'Could not sync user with username', crowd_username });
 
 				const email = user.emails[0].address;
 				logger.info('Attempting to find for user by email', email);
@@ -272,8 +272,8 @@ export class CROWD {
 			return {
 				userId: crowdUser._id,
 			};
-		} catch (error) {
-			logger.error('Error creating new crowd user.', error.message);
+		} catch (err) {
+			logger.error({ msg: 'Error creating new crowd user.', err });
 		}
 	}
 }
@@ -304,8 +304,8 @@ Accounts.registerLoginHandler('crowd', function (loginRequest) {
 		}
 
 		return crowd.updateUserCollection(user);
-	} catch (error) {
-		logger.debug(error);
+	} catch (err) {
+		logger.debug({ err });
 		logger.error('Crowd user not authenticated due to an error');
 	}
 });
@@ -362,10 +362,11 @@ Meteor.methods({
 				message: 'Connection success',
 				params: [],
 			};
-		} catch (error) {
-			logger.error(
-				'Invalid crowd connection details, check the url and application username/password and make sure this server is allowed to speak to crowd',
-			);
+		} catch (err) {
+			logger.error({
+				msg: 'Invalid crowd connection details, check the url and application username/password and make sure this server is allowed to speak to crowd',
+				err,
+			});
 			throw new Meteor.Error('Invalid connection details', '', { method: 'crowd_test_connection' });
 		}
 	},
@@ -392,8 +393,8 @@ Meteor.methods({
 				message: `User data synced in ${actual} seconds`,
 				params: [],
 			};
-		} catch (error) {
-			logger.error('Error syncing user data. ', error.message);
+		} catch (err) {
+			logger.error({ msg: 'Error syncing user data. ', err });
 			throw new Meteor.Error('Error syncing user data', '', { method: 'crowd_sync_users' });
 		}
 	},

@@ -1,4 +1,4 @@
-import { IOmnichannelRoom, IRoom, IRoomWithRetentionPolicy, ISubscription } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IRoom, IRoomWithRetentionPolicy, ISubscription } from '@rocket.chat/core-typings';
 
 export type SubscriptionWithRoom = ISubscription &
 	Pick<
@@ -28,6 +28,9 @@ export type SubscriptionWithRoom = ISubscription &
 		| 'waitingResponse'
 		| 'responseBy'
 		| 'priorityId'
+		| 'priorityWeight'
+		| 'slaId'
+		| 'estimatedWaitingTimeQueue'
 		| 'livechatData'
 		| 'departmentId'
 		| 'queuedAt'

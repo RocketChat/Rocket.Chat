@@ -86,9 +86,9 @@ class Mobex {
 			} else {
 				result.resultMsg = `Could not able to send SMS. Code:  ${response.statusCode}`;
 			}
-		} catch (e) {
-			result.resultMsg = `Error while sending SMS with Mobex. Detail: ${e}`;
-			SystemLogger.error('Error while sending SMS with Mobex', e);
+		} catch (err) {
+			result.resultMsg = `Error while sending SMS with Mobex. Detail: ${err}`;
+			SystemLogger.error({ msg: 'Error while sending SMS with Mobex', err });
 		}
 
 		return result;
@@ -129,9 +129,9 @@ class Mobex {
 			result.isSuccess = true;
 			result.resultMsg = 'Success';
 			result.response = response;
-		} catch (e) {
-			result.resultMsg = `Error while sending SMS with Mobex. Detail: ${e}`;
-			SystemLogger.error('Error while sending SMS with Mobex', e);
+		} catch (err) {
+			result.resultMsg = `Error while sending SMS with Mobex. Detail: ${err}`;
+			SystemLogger.error({ msg: 'Error while sending SMS with Mobex', err });
 		}
 
 		return result;

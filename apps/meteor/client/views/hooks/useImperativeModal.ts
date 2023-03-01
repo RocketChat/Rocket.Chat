@@ -1,4 +1,5 @@
-import { createElement, useEffect, Dispatch, SetStateAction, ReactNode } from 'react';
+import type { Dispatch, SetStateAction, ReactNode } from 'react';
+import { createElement, useEffect } from 'react';
 
 import { imperativeModal } from '../../lib/imperativeModal';
 

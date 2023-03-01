@@ -1,6 +1,7 @@
 import { Accordion, Box, Button, ButtonGroup, Skeleton } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import Page from '../../../components/Page';
 import Section from './Section';

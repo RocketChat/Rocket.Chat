@@ -87,8 +87,7 @@ export class IMAPInterceptor extends EventEmitter {
 		});
 
 		this.imap.on('error', async (err: Error) => {
-			logger.error({ err });
-			logger.error(`IMAP error: ${err.message}`);
+			logger.error({ msg: 'IMAP error', err });
 			this.retries++;
 			await this.reconnect();
 		});
@@ -176,7 +175,7 @@ export class IMAPInterceptor extends EventEmitter {
 				const bodycb = (stream: NodeJS.ReadableStream, _info: ImapMessageBodyInfo): void => {
 					simpleParser(stream, (_err, email) => {
 						if (this.options.rejectBeforeTS && email.date && email.date < this.options.rejectBeforeTS) {
-							logger.error(`Rejecting email on inbox ${this.config.user}`, email.subject);
+							logger.error({ msg: `Rejecting email on inbox ${this.config.user}`, subject: email.subject });
 							return;
 						}
 						this.emit('email', email);

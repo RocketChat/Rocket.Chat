@@ -43,14 +43,19 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 		getFederatedRoomByInternalId: sinon.stub(),
 		updateFederatedRoomByInternalRoomId: sinon.stub(),
 		getInternalRoomById: sinon.stub(),
+		getInternalRoomRolesByUserId: sinon.stub(),
 	};
 	const userAdapter = {
+		getFederatedUserByExternalId: sinon.stub(),
 		getFederatedUserByInternalId: sinon.stub(),
 		createFederatedUser: sinon.stub(),
 		getInternalUserById: sinon.stub(),
 		getFederatedUserByInternalUsername: sinon.stub(),
 		createLocalUser: sinon.stub(),
 		getInternalUserByUsername: sinon.stub(),
+		updateFederationAvatar: sinon.stub(),
+		setAvatar: sinon.stub(),
+		updateRealName: sinon.stub(),
 	};
 	const settingsAdapter = {
 		getHomeServerDomain: sinon.stub().returns('localDomain'),
@@ -66,6 +71,11 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 		getRoomName: sinon.stub(),
 		setRoomTopic: sinon.stub(),
 		getRoomTopic: sinon.stub(),
+		joinRoom: sinon.stub(),
+		convertMatrixUrlToHttp: sinon.stub().returns('toHttpUrl'),
+	};
+	const fileAdapter = {
+		getBufferForAvatarFile: sinon.stub().resolves(undefined),
 	};
 	const invitees = [
 		{
@@ -79,6 +89,7 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 		service = new FederationRoomInternalHooksServiceSender(
 			roomAdapter as any,
 			userAdapter as any,
+			fileAdapter as any,
 			settingsAdapter as any,
 			messageAdapter as any,
 			bridge as any,
@@ -89,12 +100,17 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 		roomAdapter.getFederatedRoomByInternalId.reset();
 		roomAdapter.updateFederatedRoomByInternalRoomId.reset();
 		roomAdapter.getInternalRoomById.reset();
+		roomAdapter.getInternalRoomRolesByUserId.reset();
 		userAdapter.getFederatedUserByInternalId.reset();
 		userAdapter.getInternalUserById.reset();
 		userAdapter.createFederatedUser.reset();
 		userAdapter.getFederatedUserByInternalUsername.reset();
 		userAdapter.createLocalUser.reset();
 		userAdapter.getInternalUserByUsername.reset();
+		userAdapter.getFederatedUserByExternalId.reset();
+		userAdapter.updateFederationAvatar.reset();
+		userAdapter.setAvatar.reset();
+		userAdapter.updateRealName.reset();
 		bridge.extractHomeserverOrigin.reset();
 		bridge.createUser.reset();
 		bridge.createRoom.reset();
@@ -103,6 +119,9 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 		bridge.setRoomName.reset();
 		bridge.getRoomName.reset();
 		bridge.getRoomTopic.reset();
+		bridge.joinRoom.reset();
+		bridge.getUserProfileInformation.reset();
+		bridge.joinRoom.reset();
 	});
 
 	describe('#onRoomCreated()', () => {
@@ -176,7 +195,7 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 			userAdapter.getFederatedUserByInternalId.resolves(user);
 			userAdapter.getFederatedUserByInternalUsername.resolves(user);
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
-			await service.onRoomCreated({ invitees } as any);
+			await service.onRoomCreated({ internalInviterId: 'internalInviterId', invitees } as any);
 
 			expect(userAdapter.createFederatedUser.called).to.be.false;
 		});
@@ -188,7 +207,7 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			bridge.extractHomeserverOrigin.returns('localDomain');
 
-			await service.onRoomCreated({ invitees } as any);
+			await service.onRoomCreated({ internalInviterId: 'internalInviterId', invitees } as any);
 
 			const invitee = FederatedUserEE.createInstance(invitees[0].rawInviteeId, {
 				name: invitees[0].inviteeUsernameOnly,
@@ -206,7 +225,7 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			bridge.extractHomeserverOrigin.returns('externalDomain');
 
-			await service.onRoomCreated({ invitees } as any);
+			await service.onRoomCreated({ internalInviterId: 'internalInviterId', invitees } as any);
 
 			const invitee = FederatedUserEE.createInstance(invitees[0].rawInviteeId, {
 				name: invitees[0].normalizedInviteeId,
@@ -234,7 +253,12 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 			bridge.extractHomeserverOrigin.returns('localDomain');
 			bridge.getUserProfileInformation.resolves(undefined);
 
-			await service.onRoomCreated({ invitees, internalRoomId: 'internalRoomId', ...invitees[0] } as any);
+			await service.onRoomCreated({
+				invitees,
+				internalInviterId: 'internalInviterId',
+				internalRoomId: 'internalRoomId',
+				...invitees[0],
+			} as any);
 
 			expect(bridge.createUser.calledWith(invitees[0].inviteeUsernameOnly, user.getName(), 'localDomain')).to.be.true;
 		});
@@ -246,7 +270,12 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 			bridge.extractHomeserverOrigin.returns('localDomain');
 			bridge.getUserProfileInformation.resolves({});
 
-			await service.onRoomCreated({ invitees, internalRoomId: 'internalRoomId', ...invitees[0] } as any);
+			await service.onRoomCreated({
+				invitees,
+				internalInviterId: 'internalInviterId',
+				internalRoomId: 'internalRoomId',
+				...invitees[0],
+			} as any);
 
 			expect(bridge.createUser.called).to.be.false;
 		});
@@ -257,7 +286,12 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			bridge.extractHomeserverOrigin.returns('externalDomain');
 
-			await service.onRoomCreated({ invitees, internalRoomId: 'internalRoomId', ...invitees[0] } as any);
+			await service.onRoomCreated({
+				invitees,
+				internalInviterId: 'internalInviterId',
+				internalRoomId: 'internalRoomId',
+				...invitees[0],
+			} as any);
 
 			expect(bridge.createUser.called).to.be.false;
 		});
@@ -272,34 +306,279 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 			userAdapter.getFederatedUserByInternalUsername.resolves(invitee);
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 
-			await service.onRoomCreated({ invitees, internalRoomId: 'internalRoomId', ...invitees[0] } as any);
+			await service.onRoomCreated({
+				invitees,
+				internalInviterId: 'internalInviterId',
+				internalRoomId: 'internalRoomId',
+				...invitees[0],
+			} as any);
 
 			expect(bridge.inviteToRoom.calledWith(room.getExternalId(), user.getExternalId(), invitee.getExternalId())).to.be.true;
+		});
+
+		it('should automatically join the invitee if he/she is from the proxy homeserver', async () => {
+			const invitee = FederatedUserEE.createInstance('externalInviteeId', {
+				name: 'normalizedInviteeId',
+				username: 'normalizedInviteeId',
+				existsOnlyOnProxyServer: true,
+			});
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			userAdapter.getFederatedUserByInternalUsername.resolves(invitee);
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+
+			await service.onRoomCreated({ invitees, internalRoomId: 'internalRoomId', ...invitees[0] } as any);
+
+			expect(bridge.joinRoom.calledWith(room.getExternalId(), invitee.getExternalId())).to.be.true;
+		});
+
+		it('should NOT automatically join the invitee if he/she is NOT from the proxy homeserver', async () => {
+			const invitee = FederatedUserEE.createInstance('externalInviteeId', {
+				name: 'normalizedInviteeId',
+				username: 'normalizedInviteeId',
+				existsOnlyOnProxyServer: true,
+			});
+			bridge.extractHomeserverOrigin.returns('externalDomain');
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			userAdapter.getFederatedUserByInternalUsername.resolves(invitee);
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+
+			await service.onRoomCreated({ invitees, internalRoomId: 'internalRoomId', ...invitees[0], ahahha: 'ahha' } as any);
+
+			expect(bridge.joinRoom.called).to.be.false;
 		});
 	});
 
 	describe('#beforeAddUserToARoom()', () => {
+		const federatedUser = FederatedUserEE.createInstance('externalInviteeId', {
+			name: 'normalizedInviteeId',
+			username: 'normalizedInviteeId',
+			existsOnlyOnProxyServer: false,
+		});
+		const room = FederatedRoomEE.createInstance('externalRoomId', 'normalizedRoomId', federatedUser, RoomType.CHANNEL, 'externalRoomName');
+		const validParams = {
+			invitees: [
+				...invitees,
+				{
+					inviteeUsernameOnly: 'marcos.defendiNotToBeInvited',
+					normalizedInviteeId: 'marcos.defendi:matrix.comNotToBeInvited',
+					rawInviteeId: '@marcos.defendi:matrix.comNotToBeInvited',
+				},
+			],
+		} as any;
+
+		it('should not create the invitee locally if the inviter was provided but it does not exists', async () => {
+			const createUsersLocallyOnlySpy = sinon.spy(service, 'createUsersLocallyOnly');
+			userAdapter.getFederatedUserByInternalId.resolves(undefined);
+
+			await service.beforeAddUserToARoom({
+				...validParams,
+				internalInviter: 'internalInviterId',
+				internalRoomId: 'internalRoomId',
+			});
+			expect(createUsersLocallyOnlySpy.called).to.be.false;
+		});
+
+		it('should not create the invitee locally if the inviter was provided but the room does not exists', async () => {
+			const createUsersLocallyOnlySpy = sinon.spy(service, 'createUsersLocallyOnly');
+			userAdapter.getFederatedUserByInternalId.resolves(federatedUser);
+			roomAdapter.getFederatedRoomByInternalId.resolves(undefined);
+
+			await service.beforeAddUserToARoom({
+				...validParams,
+				internalInviter: 'internalInviterId',
+				internalRoomId: 'internalRoomId',
+			});
+			expect(createUsersLocallyOnlySpy.called).to.be.false;
+		});
+
+		it('should throw an error if the inviter was provided and he/she is not neither owner, moderator or the room creator', async () => {
+			const createUsersLocallyOnlySpy = sinon.spy(service, 'createUsersLocallyOnly');
+			userAdapter.getFederatedUserByInternalId.resolves({ getInternalId: () => 'differentId' });
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			roomAdapter.getInternalRoomRolesByUserId.resolves([]);
+
+			await expect(
+				service.beforeAddUserToARoom({
+					...validParams,
+					internalInviter: 'internalInviterId',
+					internalRoomId: 'internalRoomId',
+				}),
+			).to.be.rejectedWith('You are not allowed to add users to this room');
+			expect(createUsersLocallyOnlySpy.called).to.be.false;
+		});
+
+		it('should create the user locally if the inviter was provided and he/she is an owner', async () => {
+			const createUsersLocallyOnlySpy = sinon.spy(service, 'createUsersLocallyOnly');
+			userAdapter.getFederatedUserByInternalId.resolves({ getInternalId: () => 'differentId' });
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+
+			await service.beforeAddUserToARoom({
+				...validParams,
+				internalInviter: 'internalInviterId',
+				internalRoomId: 'internalRoomId',
+			});
+
+			expect(createUsersLocallyOnlySpy.calledWith(validParams.invitees)).to.be.true;
+		});
+
+		it('should create the user locally if the inviter was provided and he/she is an moderator', async () => {
+			const createUsersLocallyOnlySpy = sinon.spy(service, 'createUsersLocallyOnly');
+			userAdapter.getFederatedUserByInternalId.resolves({ getInternalId: () => 'differentId' });
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['moderator']);
+
+			await service.beforeAddUserToARoom({
+				...validParams,
+				internalInviter: 'internalInviterId',
+				internalRoomId: 'internalRoomId',
+			});
+
+			expect(createUsersLocallyOnlySpy.calledWith(validParams.invitees)).to.be.true;
+		});
+
+		it('should create the user locally if the inviter was provided and he/she is the room creator', async () => {
+			const createUsersLocallyOnlySpy = sinon.spy(service, 'createUsersLocallyOnly');
+			userAdapter.getFederatedUserByInternalId.resolves(federatedUser);
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			roomAdapter.getInternalRoomRolesByUserId.resolves([]);
+
+			await service.beforeAddUserToARoom({
+				...validParams,
+				internalInviter: 'internalInviterId',
+				internalRoomId: 'internalRoomId',
+			});
+
+			expect(createUsersLocallyOnlySpy.calledWith(validParams.invitees)).to.be.true;
+		});
+
 		it('should create the invitee locally for each external user', async () => {
+			const avatarSpy = sinon.spy(service, 'updateUserAvatarInternally');
+			const displayNameSpy = sinon.spy(service, 'updateUserDisplayNameInternally');
+
 			bridge.extractHomeserverOrigin.onCall(0).returns('externalDomain');
 			bridge.extractHomeserverOrigin.onCall(1).returns('localDomain');
-			await service.beforeAddUserToARoom({
-				invitees: [
-					...invitees,
-					{
-						inviteeUsernameOnly: 'marcos.defendiNotToBeInvited',
-						normalizedInviteeId: 'marcos.defendi:matrix.comNotToBeInvited',
-						rawInviteeId: '@marcos.defendi:matrix.comNotToBeInvited',
-					},
-				],
-			} as any);
+			bridge.getUserProfileInformation.resolves({ avatarUrl: 'avatarUrl', displayName: 'displayName' });
+			userAdapter.getFederatedUserByExternalId.resolves(federatedUser);
+
+			await service.beforeAddUserToARoom(validParams);
 
 			const invitee = FederatedUserEE.createLocalInstanceOnly({
-				name: invitees[0].normalizedInviteeId,
+				name: 'displayName',
 				username: invitees[0].normalizedInviteeId,
 				existsOnlyOnProxyServer: false,
 			});
 
 			expect(userAdapter.createLocalUser.calledOnceWithExactly(invitee)).to.be.true;
+			expect(avatarSpy.calledWith(federatedUser, 'avatarUrl')).to.be.true;
+			expect(displayNameSpy.calledWith(federatedUser, 'displayName')).to.be.true;
+		});
+
+		it('should NOT update the avatar nor the display name if both does not exists', async () => {
+			bridge.extractHomeserverOrigin.onCall(0).returns('externalDomain');
+			bridge.extractHomeserverOrigin.onCall(1).returns('localDomain');
+			bridge.getUserProfileInformation.resolves({ avatarUrl: '', displayName: '' });
+			userAdapter.getFederatedUserByExternalId.resolves(federatedUser);
+
+			await service.beforeAddUserToARoom(validParams);
+
+			expect(userAdapter.setAvatar.called).to.be.false;
+			expect(userAdapter.updateFederationAvatar.called).to.be.false;
+			expect(userAdapter.updateRealName.called).to.be.false;
+		});
+
+		it('should NOT update the avatar url nor the display name if the user is from the local home server', async () => {
+			userAdapter.getFederatedUserByExternalId.resolves(
+				FederatedUserEE.createInstance('externalInviterId', {
+					name: 'normalizedInviterId',
+					username: 'normalizedInviterId',
+					existsOnlyOnProxyServer: true,
+				}),
+			);
+			bridge.extractHomeserverOrigin.onCall(0).returns('externalDomain');
+			bridge.extractHomeserverOrigin.onCall(1).returns('localDomain');
+			bridge.getUserProfileInformation.resolves({ avatarUrl: 'avatarUrl', displayName: 'displayName' });
+
+			await service.beforeAddUserToARoom(validParams);
+
+			expect(userAdapter.setAvatar.called).to.be.false;
+			expect(userAdapter.updateFederationAvatar.called).to.be.false;
+			expect(userAdapter.updateRealName.called).to.be.false;
+		});
+
+		it('should NOT update the avatar url if the url received in the event is equal to the one already used', async () => {
+			const existsOnlyOnProxyServer = false;
+			userAdapter.getFederatedUserByExternalId.resolves(
+				FederatedUserEE.createWithInternalReference('externalInviterId', existsOnlyOnProxyServer, {
+					federation: {
+						avatarUrl: 'avatarUrl',
+					},
+				}),
+			);
+			bridge.extractHomeserverOrigin.onCall(0).returns('externalDomain');
+			bridge.extractHomeserverOrigin.onCall(1).returns('localDomain');
+			bridge.getUserProfileInformation.resolves({ avatarUrl: 'avatarUrl', displayName: 'displayName' });
+
+			await service.beforeAddUserToARoom(validParams);
+
+			expect(userAdapter.setAvatar.called).to.be.false;
+			expect(userAdapter.updateFederationAvatar.called).to.be.false;
+		});
+
+		it('should call the functions to update the avatar internally correctly', async () => {
+			const existsOnlyOnProxyServer = false;
+			const userAvatar = FederatedUserEE.createWithInternalReference('externalInviterId', existsOnlyOnProxyServer, {
+				federation: {
+					avatarUrl: 'currentAvatarUrl',
+				},
+				_id: 'userId',
+			});
+			userAdapter.getFederatedUserByExternalId.resolves(userAvatar);
+			bridge.extractHomeserverOrigin.onCall(0).returns('externalDomain');
+			bridge.extractHomeserverOrigin.onCall(1).returns('localDomain');
+			bridge.getUserProfileInformation.resolves({ avatarUrl: 'avatarUrl', displayName: 'displayName' });
+
+			await service.beforeAddUserToARoom(validParams);
+
+			expect(userAdapter.setAvatar.calledWith(userAvatar, 'toHttpUrl')).to.be.true;
+			expect(userAdapter.updateFederationAvatar.calledWith(userAvatar.getInternalId(), 'avatarUrl')).to.be.true;
+		});
+
+		it('should NOT update the display name if the name received in the event is equal to the one already used', async () => {
+			const existsOnlyOnProxyServer = false;
+			userAdapter.getFederatedUserByExternalId.resolves(
+				FederatedUserEE.createWithInternalReference('externalInviterId', existsOnlyOnProxyServer, {
+					name: 'displayName',
+				}),
+			);
+			bridge.extractHomeserverOrigin.onCall(0).returns('externalDomain');
+			bridge.extractHomeserverOrigin.onCall(1).returns('localDomain');
+			bridge.getUserProfileInformation.resolves({ avatarUrl: '', displayName: 'displayName' });
+
+			await service.beforeAddUserToARoom(validParams);
+
+			expect(userAdapter.setAvatar.called).to.be.false;
+			expect(userAdapter.updateFederationAvatar.called).to.be.false;
+			expect(userAdapter.updateRealName.called).to.be.false;
+		});
+
+		it('should call the functions to update the display name internally correctly', async () => {
+			const existsOnlyOnProxyServer = false;
+			const user = FederatedUserEE.createWithInternalReference('externalInviterId', existsOnlyOnProxyServer, {
+				_id: 'userId',
+				name: 'currentName',
+			});
+			userAdapter.getFederatedUserByExternalId.resolves(user);
+			bridge.extractHomeserverOrigin.onCall(0).returns('externalDomain');
+			bridge.extractHomeserverOrigin.onCall(1).returns('localDomain');
+			bridge.getUserProfileInformation.resolves({ avatarUrl: '', displayName: 'displayName' });
+
+			await service.beforeAddUserToARoom(validParams);
+
+			expect(userAdapter.setAvatar.called).to.be.false;
+			expect(userAdapter.updateFederationAvatar.called).to.be.false;
+			expect(userAdapter.updateRealName.calledWith(user.getInternalReference(), 'displayName')).to.be.true;
 		});
 	});
 
@@ -323,13 +602,13 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 			userAdapter.getFederatedUserByInternalId.onCall(1).resolves(user);
 			userAdapter.getFederatedUserByInternalUsername.resolves(user);
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
-			await service.onUsersAddedToARoom({ invitees } as any);
+			await service.onUsersAddedToARoom({ internalInviterId: 'internalInviterId', invitees } as any);
 
 			expect(bridge.createUser.called).to.be.false;
 			expect(userAdapter.createFederatedUser.called).to.be.false;
 		});
 
-		it('should throw an error if the inviter user was not found', async () => {
+		it('should throw an error if the inviter user was not found and the user is not joining by himself', async () => {
 			userAdapter.getFederatedUserByInternalId.resolves(undefined);
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			userAdapter.getInternalUserById.resolves({ username: 'username', name: 'name' } as any);
@@ -339,11 +618,21 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 			);
 		});
 
+		it('should NOT throw an error if the inviter user was not found but the user is joining by himself (which means there is no inviter)', async () => {
+			userAdapter.getFederatedUserByInternalId.resolves(undefined);
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getInternalUserById.resolves({ username: 'username', name: 'name' } as any);
+
+			expect(service.onUsersAddedToARoom({ invitees, internalInviterId: '' } as any)).not.to.be.rejectedWith(
+				'User with internalId internalInviterId not found',
+			);
+		});
+
 		it('should NOT create the invitee user if the user already exists', async () => {
 			userAdapter.getFederatedUserByInternalId.resolves(user);
 			userAdapter.getFederatedUserByInternalUsername.resolves(user);
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
-			await service.onUsersAddedToARoom({ invitees } as any);
+			await service.onUsersAddedToARoom({ internalInviterId: 'internalInviterId', invitees } as any);
 
 			expect(userAdapter.createFederatedUser.called).to.be.false;
 		});
@@ -355,7 +644,7 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			bridge.extractHomeserverOrigin.returns('localDomain');
 
-			await service.onUsersAddedToARoom({ invitees } as any);
+			await service.onUsersAddedToARoom({ internalInviterId: 'internalInviterId', invitees } as any);
 
 			const invitee = FederatedUserEE.createInstance(invitees[0].rawInviteeId, {
 				name: invitees[0].inviteeUsernameOnly,
@@ -373,7 +662,7 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			bridge.extractHomeserverOrigin.returns('externalDomain');
 
-			await service.onUsersAddedToARoom({ invitees } as any);
+			await service.onUsersAddedToARoom({ internalInviterId: 'internalInviterId', invitees } as any);
 
 			const invitee = FederatedUserEE.createInstance(invitees[0].rawInviteeId, {
 				name: invitees[0].normalizedInviteeId,
@@ -401,7 +690,12 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 			bridge.extractHomeserverOrigin.returns('localDomain');
 			bridge.getUserProfileInformation.resolves(undefined);
 
-			await service.onUsersAddedToARoom({ invitees, internalRoomId: 'internalRoomId', ...invitees[0] } as any);
+			await service.onUsersAddedToARoom({
+				internalInviterId: 'internalInviterId',
+				invitees,
+				internalRoomId: 'internalRoomId',
+				...invitees[0],
+			} as any);
 
 			expect(bridge.createUser.calledWith(invitees[0].inviteeUsernameOnly, user.getName(), 'localDomain')).to.be.true;
 		});
@@ -413,7 +707,12 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 			bridge.extractHomeserverOrigin.returns('localDomain');
 			bridge.getUserProfileInformation.resolves({});
 
-			await service.onUsersAddedToARoom({ invitees, internalRoomId: 'internalRoomId', ...invitees[0] } as any);
+			await service.onUsersAddedToARoom({
+				internalInviterId: 'internalInviterId',
+				invitees,
+				internalRoomId: 'internalRoomId',
+				...invitees[0],
+			} as any);
 
 			expect(bridge.createUser.called).to.be.false;
 		});
@@ -424,12 +723,38 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			bridge.extractHomeserverOrigin.returns('externalDomain');
 
-			await service.onUsersAddedToARoom({ invitees, internalRoomId: 'internalRoomId', ...invitees[0] } as any);
+			await service.onUsersAddedToARoom({
+				internalInviterId: 'internalInviterId',
+				invitees,
+				internalRoomId: 'internalRoomId',
+				...invitees[0],
+			} as any);
 
 			expect(bridge.createUser.called).to.be.false;
 		});
 
-		it('should always invite the invitee user to the room', async () => {
+		it('should auto-join the user to the room if the user is auto-joining the room', async () => {
+			const invitee = FederatedUserEE.createInstance('externalInviteeId', {
+				name: 'normalizedInviteeId',
+				username: 'normalizedInviteeId',
+				existsOnlyOnProxyServer: true,
+			});
+			userAdapter.getFederatedUserByInternalId.resolves(undefined);
+			userAdapter.getFederatedUserByInternalUsername.resolves(invitee);
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+
+			await service.onUsersAddedToARoom({
+				internalInviterId: '',
+				invitees,
+				internalRoomId: 'internalRoomId',
+				...invitees[0],
+			} as any);
+
+			expect(bridge.joinRoom.calledWith(room.getExternalId(), invitee.getExternalId())).to.be.true;
+			expect(bridge.inviteToRoom.called).to.be.false;
+		});
+
+		it('should invite the user to the user only if the user is NOT auto-joining the room', async () => {
 			const invitee = FederatedUserEE.createInstance('externalInviteeId', {
 				name: 'normalizedInviteeId',
 				username: 'normalizedInviteeId',
@@ -439,7 +764,12 @@ describe('FederationEE - Application - FederationRoomInternalHooksServiceSender'
 			userAdapter.getFederatedUserByInternalUsername.resolves(invitee);
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 
-			await service.onUsersAddedToARoom({ invitees, internalRoomId: 'internalRoomId', ...invitees[0] } as any);
+			await service.onUsersAddedToARoom({
+				internalInviterId: 'internalInviterId',
+				invitees,
+				internalRoomId: 'internalRoomId',
+				...invitees[0],
+			} as any);
 
 			expect(bridge.inviteToRoom.calledWith(room.getExternalId(), user.getExternalId(), invitee.getExternalId())).to.be.true;
 		});

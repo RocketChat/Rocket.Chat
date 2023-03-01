@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+import { api } from '@rocket.chat/core-services';
 
 import { Subscriptions, Rooms } from '../../../models/server';
-import { api } from '../../../../server/sdk/api';
 
 Meteor.methods({
 	'e2e.requestSubscriptionKeys'() {

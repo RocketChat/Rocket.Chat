@@ -5,19 +5,20 @@ import { forwardRef } from 'react';
 type MessageComposerProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
 	children: ReactNode;
 	is?: React.ElementType<any>;
-	variant?: 'default' | 'error';
+	variant?: 'default' | 'error' | 'editing';
 };
 
 const MessageComposer = forwardRef<HTMLElement, MessageComposerProps>(
-	(props, ref): ReactElement => (
+	({ variant, ...props }, ref): ReactElement => (
 		<Box
+			rcx-input-box__wrapper
+			bg={variant === 'editing' ? 'status-background-warning-2' : undefined}
 			ref={ref}
 			role='group'
-			borderWidth={2}
-			borderColor='neutral-500'
-			borderRadius='x4'
 			display='flex'
 			flexDirection='column'
+			overflow='hidden'
+			p={0}
 			{...props}
 		/>
 	),

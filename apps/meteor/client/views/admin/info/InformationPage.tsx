@@ -1,10 +1,12 @@
-import type { IInstanceStatus, IServerInfo, IStats } from '@rocket.chat/core-typings';
+import type { IServerInfo, IStats, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Callout, Grid, Icon } from '@rocket.chat/fuselage';
+import type { IInstance } from '@rocket.chat/rest-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
 
 import SeatsCard from '../../../../ee/client/views/admin/info/SeatsCard';
 import Page from '../../../components/Page';
+import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import DeploymentCard from './DeploymentCard';
 import FederationCard from './FederationCard';
 import LicenseCard from './LicenseCard';
@@ -14,7 +16,7 @@ type InformationPageProps = {
 	canViewStatistics: boolean;
 	info: IServerInfo;
 	statistics: IStats;
-	instances: Array<IInstanceStatus>;
+	instances: Serialized<IInstance[]>;
 	onClickRefreshButton: () => void;
 	onClickDownloadInfo: () => void;
 };
@@ -29,15 +31,17 @@ const InformationPage = memo(function InformationPage({
 }: InformationPageProps) {
 	const t = useTranslation();
 
+	const { data } = useIsEnterprise();
+
 	if (!info) {
 		return null;
 	}
 
-	const warningMultipleInstances = !statistics?.msEnabled && statistics?.instanceCount > 1;
+	const warningMultipleInstances = !data?.isEnterprise && !statistics?.msEnabled && statistics?.instanceCount > 1;
 	const alertOplogForMultipleInstances = warningMultipleInstances && !statistics.oplogEnabled;
 
 	return (
-		<Page data-qa='admin-info'>
+		<Page data-qa='admin-info' bg='tint'>
 			<Page.Header title={t('Info')}>
 				{canViewStatistics && (
 					<ButtonGroup>
@@ -52,9 +56,9 @@ const InformationPage = memo(function InformationPage({
 			</Page.Header>
 
 			<Page.ScrollableContentWithShadow>
-				<Box marginBlock='none' marginInline='auto' width='full'>
+				<Box marginBlock='none' marginInline='auto' width='full' color='default'>
 					{warningMultipleInstances && (
-						<Callout type='danger' title={t('Multiple_monolith_instances_alert')} marginBlockEnd='x16'></Callout>
+						<Callout type='warning' title={t('Multiple_monolith_instances_alert')} marginBlockEnd='x16'></Callout>
 					)}
 					{alertOplogForMultipleInstances && (
 						<Callout

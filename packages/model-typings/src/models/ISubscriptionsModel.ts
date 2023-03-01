@@ -12,17 +12,22 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	findByRoomId(roomId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 
+	findUnarchivedByRoomId(roomId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
+
 	findByRoomIdAndNotUserId(roomId: string, userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 
 	findByLivechatRoomIdAndNotUserId(roomId: string, userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 
 	countByRoomIdAndUserId(rid: string, uid: string | undefined): Promise<number>;
 
+	countUnarchivedByRoomId(rid: string): Promise<number>;
+
 	isUserInRole(uid: IUser['_id'], roleId: IRole['_id'], rid?: IRoom['_id']): Promise<ISubscription | null>;
 
 	setAsReadByRoomIdAndUserId(
 		rid: string,
 		uid: string,
+		readThreads?: boolean,
 		alert?: boolean,
 		options?: FindOptions<ISubscription>,
 	): ReturnType<IBaseModel<ISubscription>['update']>;
@@ -76,4 +81,12 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	setAlertForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document>;
 
 	setOpenForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document>;
+
+	updateNameAndFnameByRoomId(roomId: string, name: string, fname: string): Promise<UpdateResult | Document>;
+
+	setGroupE2EKey(_id: string, key: string): Promise<ISubscription | null>;
+
+	setGroupE2ESuggestedKey(_id: string, key: string): Promise<UpdateResult | Document>;
+
+	unsetGroupE2ESuggestedKey(_id: string): Promise<UpdateResult | Document>;
 }

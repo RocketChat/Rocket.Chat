@@ -1,12 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import limax from 'limax';
 import sharp from 'sharp';
+import { api, Media } from '@rocket.chat/core-services';
 
 import { hasPermission } from '../../../authorization';
 import { RocketChatFile } from '../../../file';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
-import { api } from '../../../../server/sdk/api';
-import { Media } from '../../../../server/sdk';
 
 const getFile = async (file, extension) => {
 	if (extension !== 'svg+xml') {

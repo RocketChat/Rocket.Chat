@@ -64,7 +64,7 @@ export default class RocketAdapter {
 				rocketLogger.debug('onRocketMessageDelete', rocketMessageDeleted);
 				slack.postDeleteMessage(rocketMessageDeleted);
 			} catch (err) {
-				rocketLogger.error('Unhandled error onMessageDelete', err);
+				rocketLogger.error({ msg: 'Unhandled error onMessageDelete', err });
 			}
 		});
 	}
@@ -94,7 +94,7 @@ export default class RocketAdapter {
 				}
 			}
 		} catch (err) {
-			rocketLogger.error('Unhandled error onSetReaction', err);
+			rocketLogger.error({ msg: 'Unhandled error onSetReaction', err });
 		}
 	}
 
@@ -124,7 +124,7 @@ export default class RocketAdapter {
 				}
 			}
 		} catch (err) {
-			rocketLogger.error('Unhandled error onUnSetReaction', err);
+			rocketLogger.error({ msg: 'Unhandled error onUnSetReaction', err });
 		}
 	}
 
@@ -154,7 +154,7 @@ export default class RocketAdapter {
 				// A new message from Rocket.Chat
 				this.processSendMessage(rocketMessage, slack);
 			} catch (err) {
-				rocketLogger.error('Unhandled error onMessage', err);
+				rocketLogger.error({ msg: 'Unhandled error onMessage', err });
 			}
 		});
 
@@ -286,7 +286,7 @@ export default class RocketAdapter {
 					const rocketUserCreator = this.getRocketUserCreator(slackChannel);
 
 					if (!rocketUserCreator) {
-						rocketLogger.error('Could not fetch room creator information', slackChannel.creator);
+						rocketLogger.error({ msg: 'Could not fetch room creator information', creator: slackChannel.creator });
 						return;
 					}
 
@@ -301,7 +301,7 @@ export default class RocketAdapter {
 							Meteor._sleepForMs(1000);
 							return this.findChannel(slackChannelID) || this.addChannel(slackChannelID, true);
 						}
-						rocketLogger.error(e.message);
+						rocketLogger.error(e);
 					}
 
 					const roomUpdate = {

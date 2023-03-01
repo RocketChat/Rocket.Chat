@@ -1,29 +1,41 @@
-import { Serialized } from '@rocket.chat/core-typings';
-import type { MatchPathPattern, Method, OperationParams, OperationResult, PathFor } from '@rocket.chat/rest-typings';
+import type { Method, OperationParams, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
+import type { EndpointFunction } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
-export const useEndpointAction = <TMethod extends Method, TPath extends PathFor<TMethod>>(
+type UseEndpointActionOptions<TPathPattern extends PathPattern> = (undefined extends UrlParams<TPathPattern>
+	? {
+			keys?: UrlParams<TPathPattern>;
+	  }
+	: {
+			keys: UrlParams<TPathPattern>;
+	  }) & {
+	successMessage?: string;
+};
+export function useEndpointAction<TMethod extends Method, TPathPattern extends PathPattern>(
 	method: TMethod,
-	path: TPath,
-	params?: OperationParams<TMethod, MatchPathPattern<TPath>>,
-	successMessage?: string,
-): (() => Promise<Serialized<OperationResult<TMethod, MatchPathPattern<TPath>>>>) => {
-	const sendData = useEndpoint(method, path);
+	pathPattern: TPathPattern,
+	options: UseEndpointActionOptions<TPathPattern> = { keys: {} as UrlParams<TPathPattern> },
+): EndpointFunction<TMethod, TPathPattern> {
+	const sendData = useEndpoint(method, pathPattern, options.keys as UrlParams<TPathPattern>);
+
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	return useCallback(async () => {
-		try {
-			const data = await sendData(params as any);
+	return useCallback(
+		async (params: OperationParams<TMethod, TPathPattern> | undefined) => {
+			try {
+				const data = await sendData(params as OperationParams<TMethod, TPathPattern>);
 
-			if (successMessage) {
-				dispatchToastMessage({ type: 'success', message: successMessage });
+				if (options.successMessage) {
+					dispatchToastMessage({ type: 'success', message: options.successMessage });
+				}
+
+				return data;
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+				throw error;
 			}
-
-			return data;
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-			throw error;
-		}
-	}, [dispatchToastMessage, params, sendData, successMessage]);
-};
+		},
+		[dispatchToastMessage, sendData, options.successMessage],
+	);
+}

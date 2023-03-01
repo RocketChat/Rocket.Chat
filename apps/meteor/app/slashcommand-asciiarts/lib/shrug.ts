@@ -10,7 +10,7 @@ slashCommands.add({
 	command: 'shrug',
 	callback: (_command: 'shrug', params, item): void => {
 		const msg = item;
-		msg.msg = `${params} ¯\\_(ツ)_/¯`;
+		msg.msg = `${params} ¯\\\\_(ツ)_/¯`;
 		Meteor.call('sendMessage', msg);
 	},
 	options: {

@@ -31,7 +31,7 @@ export interface IUserEmailCode {
 	expire: Date;
 }
 
-type LoginToken = IMeteorLoginToken & IPersonalAccessToken;
+type LoginToken = IMeteorLoginToken | IPersonalAccessToken;
 export type Username = string;
 
 export type ILoginUsername =
@@ -54,10 +54,17 @@ export interface IUserServices {
 	resume?: {
 		loginTokens?: LoginToken[];
 	};
-	cloud?: unknown;
+	cloud?: {
+		accessToken: string;
+		refreshToken: string;
+		expiresAt: Date;
+	};
 	google?: any;
 	facebook?: any;
 	github?: any;
+	linkedin?: any;
+	twitter?: any;
+	gitlab?: any;
 	totp?: {
 		enabled: boolean;
 		hashedBackup: string[];
@@ -129,7 +136,6 @@ export interface IUser extends IRocketChatRecord {
 		authorizedClients: string[];
 	};
 	_updatedAt: Date;
-	statusLivechat?: string;
 	e2e?: {
 		private_key: string;
 		public_key: string;
@@ -143,10 +149,15 @@ export interface IUser extends IRocketChatRecord {
 	ldap?: boolean;
 	extension?: string;
 	inviteToken?: string;
-	federated?: boolean;
 	canViewAllInfo?: boolean;
 	phone?: string;
 	reason?: string;
+	// TODO: move this to a specific federation user type
+	federated?: boolean;
+	federation?: {
+		avatarUrl?: string;
+		searchedServerNames?: string[];
+	};
 }
 
 export interface IRegisterUser extends IUser {

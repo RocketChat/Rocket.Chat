@@ -1,6 +1,7 @@
 import { Box, Field, Flex, Select } from '@rocket.chat/fuselage';
 import moment from 'moment-timezone';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 

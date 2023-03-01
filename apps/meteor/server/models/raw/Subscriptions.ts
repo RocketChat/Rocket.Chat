@@ -1,7 +1,18 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IRole, IRoom, ISubscription, IUser, RocketChatRecordDeleted, RoomType, SpotlightUser } from '@rocket.chat/core-typings';
 import type { ISubscriptionsModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, DeleteResult, Document, AggregateOptions } from 'mongodb';
+import type {
+	Collection,
+	FindCursor,
+	Db,
+	Filter,
+	FindOptions,
+	UpdateResult,
+	DeleteResult,
+	Document,
+	AggregateOptions,
+	IndexDescription,
+} from 'mongodb';
 import { Rooms, Users } from '@rocket.chat/models';
 import { compact } from 'lodash';
 
@@ -10,6 +21,10 @@ import { BaseRaw } from './BaseRaw';
 export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscriptionsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISubscription>>) {
 		super(db, 'subscription', trash);
+	}
+
+	protected modelIndexes(): IndexDescription[] {
+		return [{ key: { E2EKey: 1 }, unique: true, sparse: true }];
 	}
 
 	async getBadgeCount(uid: string): Promise<number> {
@@ -56,6 +71,16 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.find(query, options);
 	}
 
+	findUnarchivedByRoomId(roomId: string, options: FindOptions<ISubscription> = {}): FindCursor<ISubscription> {
+		const query = {
+			'rid': roomId,
+			'archived': { $ne: true },
+			'u._id': { $exists: true },
+		};
+
+		return this.find(query, options);
+	}
+
 	findByRoomIdAndNotUserId(roomId: string, userId: string, options: FindOptions<ISubscription> = {}): FindCursor<ISubscription> {
 		const query = {
 			'rid': roomId,
@@ -87,6 +112,15 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.col.countDocuments(query);
 	}
 
+	countUnarchivedByRoomId(rid: string): Promise<number> {
+		const query = {
+			rid,
+			'archived': { $ne: true },
+			'u._id': { $exists: true },
+		};
+		return this.col.countDocuments(query);
+	}
+
 	async isUserInRole(uid: IUser['_id'], roleId: IRole['_id'], rid?: IRoom['_id']): Promise<ISubscription | null> {
 		if (rid == null) {
 			return null;
@@ -104,6 +138,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	setAsReadByRoomIdAndUserId(
 		rid: string,
 		uid: string,
+		readThreads = false,
 		alert = false,
 		options: FindOptions<ISubscription> = {},
 	): ReturnType<BaseRaw<ISubscription>['update']> {
@@ -113,6 +148,13 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		};
 
 		const update = {
+			...(readThreads && {
+				$unset: {
+					tunread: 1,
+					tunreadUser: 1,
+					tunreadGroup: 1,
+				} as const,
+			}),
 			$set: {
 				open: true,
 				alert,
@@ -425,5 +467,36 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			},
 		};
 		return this.updateMany(query, update);
+	}
+
+	updateNameAndFnameByRoomId(roomId: string, name: string, fname: string): Promise<UpdateResult | Document> {
+		const query = { rid: roomId };
+
+		const update = {
+			$set: {
+				name,
+				fname,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	async setGroupE2EKey(_id: string, key: string): Promise<ISubscription | null> {
+		const query = { _id };
+		const update = { $set: { E2EKey: key } };
+		await this.updateOne(query, update);
+		return this.findOneById(_id);
+	}
+
+	setGroupE2ESuggestedKey(_id: string, key: string): Promise<UpdateResult | Document> {
+		const query = { _id };
+		const update = { $set: { E2ESuggestedKey: key } };
+		return this.updateOne(query, update);
+	}
+
+	unsetGroupE2ESuggestedKey(_id: string): Promise<UpdateResult | Document> {
+		const query = { _id };
+		return this.updateOne(query, { $unset: { E2ESuggestedKey: 1 } });
 	}
 }

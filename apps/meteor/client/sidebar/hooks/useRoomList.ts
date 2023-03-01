@@ -48,6 +48,10 @@ export const useRoomList = (): Array<ISubscription & IRoom> => {
 			const onHold = new Set();
 
 			rooms.forEach((room) => {
+				if (room.archived) {
+					return;
+				}
+
 				if (incomingCalls.find((call) => call.rid === room.rid)) {
 					return incomingCall.add(room);
 				}

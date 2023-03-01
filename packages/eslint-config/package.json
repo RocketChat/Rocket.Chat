@@ -3,15 +3,15 @@
 	"version": "0.5.0",
 	"description": "Rocket.Chat's JS ESLint config",
 	"devDependencies": {
-		"@babel/eslint-parser": "^7.18.9",
+		"@babel/eslint-parser": "^7.19.1",
 		"@types/prettier": "^2.6.3",
 		"@typescript-eslint/eslint-plugin": "^5.30.7",
 		"@typescript-eslint/parser": "^5.30.7",
-		"eslint": "^8.20.0",
+		"eslint": "^8.29.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-anti-trojan-source": "^1.1.0",
 		"eslint-plugin-import": "^2.26.0",
-		"eslint-plugin-jest": "^26.6.0",
+		"eslint-plugin-jest": "^26.9.0",
 		"eslint-plugin-prettier": "^4.2.1",
 		"prettier": "2.7.1"
 	},

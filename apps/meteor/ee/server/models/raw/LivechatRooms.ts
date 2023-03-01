@@ -1,6 +1,7 @@
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { ILivechatPriority, IOmnichannelRoom, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
+import { LivechatPriorityWeight, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
-import type { FindCursor, UpdateResult } from 'mongodb';
+import type { FindCursor, UpdateResult, Document, FindOptions } from 'mongodb';
 
 import { LivechatRoomsRaw } from '../../../../server/models/raw/LivechatRooms';
 import { queriesLogger } from '../../../app/livechat-enterprise/server/lib/logger';
@@ -10,14 +11,168 @@ declare module '@rocket.chat/model-typings' {
 	export interface ILivechatRoomsModel {
 		associateRoomsWithDepartmentToUnit: (departments: string[], unit: string) => Promise<void>;
 		removeUnitAssociationFromRooms: (unit: string) => Promise<void>;
-		updateDepartmentAncestorsById: (unitId: string, ancestors: string[]) => Promise<void>;
+		updateDepartmentAncestorsById: (rid: string, ancestors: string[]) => Promise<UpdateResult>;
 		unsetPredictedVisitorAbandonmentByRoomId(rid: string): Promise<UpdateResult>;
-		findAbandonedOpenRooms(date: Date): Promise<FindCursor<IOmnichannelRoom>>;
+		findAbandonedOpenRooms(date: Date): FindCursor<IOmnichannelRoom>;
+		setPredictedVisitorAbandonmentByRoomId(roomId: string, date: Date): Promise<UpdateResult>;
+		unsetAllPredictedVisitorAbandonment(): Promise<void>;
+		setOnHoldByRoomId(roomId: string): Promise<UpdateResult>;
+		unsetOnHoldByRoomId(roomId: string): Promise<UpdateResult>;
+		unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(roomId: string): Promise<UpdateResult>;
+		findOpenRoomsByPriorityId(priorityId: string): FindCursor<IOmnichannelRoom>;
+		setSlaForRoomById(
+			roomId: string,
+			sla: Pick<IOmnichannelServiceLevelAgreements, '_id' | 'dueTimeInMinutes'>,
+		): Promise<UpdateResult | Document>;
+		removeSlaFromRoomById(roomId: string): Promise<UpdateResult | Document>;
+		bulkRemoveSlaFromRoomsById(slaId: string): Promise<UpdateResult | Document>;
+		findOpenBySlaId(slaId: string, options: FindOptions<IOmnichannelRoom>): FindCursor<IOmnichannelRoom>;
+		setPriorityByRoomId(roomId: string, priority: Pick<ILivechatPriority, '_id' | 'sortItem'>): Promise<UpdateResult>;
+		unsetPriorityByRoomId(roomId: string): Promise<UpdateResult>;
 	}
 }
 
 export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoomsModel {
-	async findAbandonedOpenRooms(date: Date): Promise<FindCursor<IOmnichannelRoom>> {
+	async unsetAllPredictedVisitorAbandonment(): Promise<void> {
+		return this.updateMany(
+			{
+				'open': true,
+				't': 'l',
+				'omnichannel.predictedVisitorAbandonmentAt': { $exists: true },
+			},
+			{
+				$unset: { 'omnichannel.predictedVisitorAbandonmentAt': 1 },
+			},
+		).then();
+	}
+
+	setOnHoldByRoomId(roomId: string): Promise<UpdateResult> {
+		return this.updateOne({ _id: roomId }, { $set: { onHold: true } });
+	}
+
+	unsetOnHoldByRoomId(roomId: string): Promise<UpdateResult> {
+		return this.updateOne({ _id: roomId }, { $unset: { onHold: 1 } });
+	}
+
+	unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(roomId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{
+				_id: roomId,
+			},
+			{
+				$unset: {
+					'omnichannel.predictedVisitorAbandonmentAt': 1,
+					'onHold': 1,
+				},
+			},
+		);
+	}
+
+	setSlaForRoomById(
+		roomId: string,
+		sla: Pick<IOmnichannelServiceLevelAgreements, '_id' | 'dueTimeInMinutes'>,
+	): Promise<UpdateResult | Document> {
+		const { _id: slaId, dueTimeInMinutes } = sla;
+
+		return this.updateOne(
+			{
+				_id: roomId,
+			},
+			{
+				$set: {
+					slaId,
+					estimatedWaitingTimeQueue: dueTimeInMinutes,
+				},
+			},
+		);
+	}
+
+	removeSlaFromRoomById(roomId: string): Promise<UpdateResult | Document> {
+		return this.updateOne(
+			{
+				_id: roomId,
+			},
+			{
+				$unset: {
+					slaId: 1,
+				},
+				$set: {
+					estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
+				},
+			},
+		);
+	}
+
+	bulkRemoveSlaFromRoomsById(slaId: string): Promise<UpdateResult | Document> {
+		return this.updateMany(
+			{
+				open: true,
+				t: 'l',
+				slaId,
+			},
+			{
+				$unset: { slaId: 1 },
+				$set: {
+					estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
+				},
+			},
+		);
+	}
+
+	findOpenBySlaId(slaId: string, options: FindOptions<IOmnichannelRoom>): FindCursor<IOmnichannelRoom> {
+		const query = {
+			t: 'l',
+			open: true,
+			slaId,
+		};
+
+		return this.find(query, options);
+	}
+
+	async setPriorityByRoomId(roomId: string, priority: Pick<ILivechatPriority, '_id' | 'sortItem'>): Promise<UpdateResult> {
+		const { _id: priorityId, sortItem: priorityWeight } = priority;
+
+		return this.updateOne({ _id: roomId }, { $set: { priorityId, priorityWeight } });
+	}
+
+	async unsetPriorityByRoomId(roomId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id: roomId },
+			{
+				$unset: {
+					priorityId: 1,
+				},
+				$set: {
+					priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
+				},
+			},
+		);
+	}
+
+	findOpenRoomsByPriorityId(priorityId: string): FindCursor<IOmnichannelRoom> {
+		const query = {
+			t: 'l',
+			open: true,
+			priorityId,
+		};
+
+		return this.find(query);
+	}
+
+	setPredictedVisitorAbandonmentByRoomId(rid: string, willBeAbandonedAt: Date): Promise<UpdateResult> {
+		const query = {
+			_id: rid,
+		};
+		const update = {
+			$set: {
+				'omnichannel.predictedVisitorAbandonmentAt': willBeAbandonedAt,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	findAbandonedOpenRooms(date: Date): FindCursor<IOmnichannelRoom> {
 		return this.find({
 			'omnichannel.predictedVisitorAbandonmentAt': { $lte: date },
 			'waitingResponse': { $exists: false },
@@ -94,12 +249,12 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		queriesLogger.debug({ msg: `LivechatRoomsRawEE.removeUnitAssociationFromRooms`, result });
 	}
 
-	async updateDepartmentAncestorsById(unitId: string, departmentAncestors: string[]) {
+	async updateDepartmentAncestorsById(rid: string, departmentAncestors: string[]) {
 		const query = {
-			_id: unitId,
+			_id: rid,
 		};
 		const update = departmentAncestors ? { $set: { departmentAncestors } } : { $unset: { departmentAncestors: 1 } };
-		await this.update(query, update);
+		return this.updateOne(query, update);
 	}
 
 	find(...args: Parameters<LivechatRoomsRaw['find']>) {
@@ -116,6 +271,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		return super.findPaginated(restrictedQuery, ...restArgs);
 	}
 
+	/** @deprecated Use updateOne or updateMany instead */
 	update(...args: Parameters<LivechatRoomsRaw['update']>) {
 		const [query, ...restArgs] = args;
 		const restrictedQuery = addQueryRestrictionsToRoomsModel(query);
@@ -123,11 +279,18 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		return super.update(restrictedQuery, ...restArgs);
 	}
 
-	updateOne(...args: Parameters<LivechatRoomsRaw['updateOne']>) {
-		const [query, ...restArgs] = args;
+	updateOne(...args: Parameters<LivechatRoomsRaw['updateOne']> & { bypassUnits?: boolean }) {
+		const [query, update, opts, extraOpts] = args;
+		if (extraOpts?.bypassUnits) {
+			// When calling updateOne from a service, we cannot call the meteor code inside the query restrictions
+			// So the solution now is to pass a bypassUnits flag to the updateOne method which prevents checking
+			// units restrictions on the query, but just for the query the service is actually using
+			// We need to find a way of remove the meteor dependency when fetching units, and then, we can remove this flag
+			return super.updateOne(query, update, opts);
+		}
 		const restrictedQuery = addQueryRestrictionsToRoomsModel(query);
 		queriesLogger.debug({ msg: 'LivechatRoomsRawEE.updateOne', query: restrictedQuery });
-		return super.updateOne(restrictedQuery, ...restArgs);
+		return super.updateOne(restrictedQuery, update, opts);
 	}
 
 	updateMany(...args: Parameters<LivechatRoomsRaw['updateMany']>) {

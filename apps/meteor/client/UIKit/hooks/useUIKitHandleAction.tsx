@@ -3,7 +3,7 @@ import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/
 // import { Banner, Icon } from '@rocket.chat/fuselage';
 // import { kitContext, UiKitBanner as renderUiKitBannerBlocks } from '@rocket.chat/fuselage-ui-kit';
 // import React, { Context, FC, useMemo } from 'react';
-import { UiKitPayload, UIKitActionEvent } from '@rocket.chat/core-typings';
+import type { UiKitPayload, UIKitActionEvent } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 // import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
 

@@ -31,13 +31,13 @@ describe('Federation - Infrastructure - handlers - Room - MatrixRoomMessageSentH
 
 		Object.keys(handlers).forEach((type) => {
 			it(`should call the correct handler for ${type}`, async () => {
-				await handler.handle({ content: { msgtype: type, url: 'url', info: { mimetype: 'mime', size: 12 } } } as any);
+				await handler.handle({ content: { body: '', msgtype: type, url: 'url', info: { mimetype: 'mime', size: 12 } } } as any);
 				expect(handlers[type].called).to.be.true;
 			});
 		});
 
 		it('should call the default handler if no handler is found', async () => {
-			await handler.handle({ content: { msgtype: 'unknown', url: 'url', info: { mimetype: 'mime', size: 12 } } } as any);
+			await handler.handle({ content: { body: '', msgtype: 'unknown', url: 'url', info: { mimetype: 'mime', size: 12 } } } as any);
 			expect(normalMessageStub.called).to.be.true;
 		});
 
@@ -45,7 +45,7 @@ describe('Federation - Infrastructure - handlers - Room - MatrixRoomMessageSentH
 			await handler.handle({
 				content: {
 					'msgtype': MatrixEnumSendMessageType.TEXT,
-					'm.new_content': {},
+					'm.new_content': { body: '' },
 					'm.relates_to': { rel_type: MatrixEnumRelatesToRelType.REPLACE },
 				},
 			} as any);

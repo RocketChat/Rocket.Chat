@@ -150,7 +150,7 @@ export class PushClass {
 				return;
 			}
 
-			logger.error(`Error sending push to gateway (${tries} try) ->`, error);
+			logger.error({ msg: `Error sending push to gateway (${tries} try) ->`, err: error });
 
 			if (tries <= 4) {
 				// [1, 2, 4, 8, 16] minutes (total 31)

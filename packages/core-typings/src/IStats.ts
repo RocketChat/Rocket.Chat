@@ -1,7 +1,7 @@
 import type { CpuInfo } from 'os';
 
 import type { DeviceSessionAggregationResult, OSSessionAggregationResult, UserSessionAggregationResult } from './ISession';
-import type { ISettingStatisticsObject, SettingValue } from './ISetting';
+import type { ISettingStatisticsObject } from './ISetting';
 import type { ITeamStats } from './ITeam';
 
 export interface IStats {
@@ -114,7 +114,6 @@ export interface IStats {
 	uniqueOSOfLastMonth: OSSessionAggregationResult;
 	apps: {
 		engineVersion: string;
-		enabled: SettingValue;
 		totalInstalled: number | false;
 		totalActive: number | false;
 		totalFailed: number | false;
@@ -137,6 +136,7 @@ export interface IStats {
 		livechatTags?: number;
 		cannedResponses?: number;
 		priorities?: number;
+		slas?: number;
 		businessUnits?: number;
 	};
 	createdAt: Date | string;
@@ -196,6 +196,8 @@ export interface IStats {
 	totalSubscriptionRoles: number;
 	totalUserRoles: number;
 	totalWebRTCCalls: number;
-	matrixBridgeEnabled: boolean;
 	uncaughtExceptionsCount: number;
+	matrixFederation: {
+		enabled: boolean;
+	};
 }

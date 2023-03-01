@@ -1,7 +1,9 @@
-import { isRoomFederated, IRoom, IUser, isDirectMessageRoom, isTeamRoom } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { isRoomFederated, isDirectMessageRoom, isTeamRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback, useDebouncedValue, useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { useUserRoom, useAtLeastOnePermission, useUser } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useMemo, useState, ReactElement } from 'react';
+import { useUserRoom, useAtLeastOnePermission, useUser, usePermission, useUserSubscription } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
@@ -28,9 +30,14 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	const handleClose = useTabBarClose();
 	const [type, setType] = useLocalStorage<'online' | 'all'>('members-list-type', 'online');
 	const [text, setText] = useState('');
+	const subscription = useUserSubscription(rid);
 
 	const isTeam = room && isTeamRoom(room);
 	const isDirect = room && isDirectMessageRoom(room);
+	const hasPermissionToCreateInviteLinks = usePermission('create-invite-links');
+	const isFederated = room && isRoomFederated(room);
+
+	const canCreateInviteLinks = isFederated ? false : hasPermissionToCreateInviteLinks;
 
 	const [state, setState] = useState<{ tab: ROOM_MEMBERS_TABS; userId?: IUser['_id'] }>({
 		tab: ROOM_MEMBERS_TABS.LIST,
@@ -50,8 +57,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 		rid,
 	);
 
-	const canAddUsers =
-		room && user && isRoomFederated(room) ? Federation.isEditableByTheUser(user, room) && hasPermissionToAddUsers : hasPermissionToAddUsers;
+	const canAddUsers = room && user && isFederated ? Federation.isEditableByTheUser(user, room, subscription) : hasPermissionToAddUsers;
 
 	const handleTextChange = useCallback((event) => {
 		setText(event.currentTarget.value);
@@ -94,6 +100,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 			rid={rid}
 			isTeam={isTeam}
 			isDirect={isDirect}
+			isFederated={isFederated}
 			loading={phase === AsyncStatePhase.LOADING}
 			type={type}
 			text={text}
@@ -105,7 +112,8 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 			onClickView={openUserInfo}
 			loadMoreItems={loadMoreItems}
 			reload={reload}
-			{...(canAddUsers && { onClickAdd: openAddUser, onClickInvite: openInvite })}
+			onClickInvite={canCreateInviteLinks && canAddUsers ? openInvite : undefined}
+			onClickAdd={canAddUsers ? openAddUser : undefined}
 		/>
 	);
 };

@@ -11,14 +11,17 @@ import {
 	isUsersUpdateParamsPOST,
 	isUsersUpdateOwnBasicInfoParamsPOST,
 	isUsersSetPreferencesParamsPOST,
+	isUsersCheckUsernameAvailabilityParamsGET,
+	isUsersSendConfirmationEmailParamsPOST,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { IExportOperation, IPersonalAccessToken, IUser } from '@rocket.chat/core-typings';
+import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser } from '@rocket.chat/core-typings';
 import { Users as UsersRaw } from '@rocket.chat/models';
 import type { Filter } from 'mongodb';
+import { Team, api } from '@rocket.chat/core-services';
 
 import { Users, Subscriptions } from '../../../models/server';
 import { hasPermission } from '../../../authorization/server';
@@ -38,11 +41,9 @@ import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonE
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
-import { Team } from '../../../../server/sdk';
 import { isValidQuery } from '../lib/isValidQuery';
 import { getURL } from '../../../utils/server';
 import { getUploadFormData } from '../lib/getUploadFormData';
-import { api } from '../../../../server/sdk/api';
 
 API.v1.addRoute(
 	'users.getAvatar',
@@ -58,6 +59,20 @@ API.v1.addRoute(
 				statusCode: 307,
 				body: url,
 			};
+		},
+	},
+);
+
+API.v1.addRoute(
+	'users.getAvatarSuggestion',
+	{
+		authRequired: true,
+	},
+	{
+		async get() {
+			const suggestions = Meteor.call('getAvatarSuggestion');
+
+			return API.v1.success({ suggestions });
 		},
 	},
 );
@@ -152,7 +167,7 @@ API.v1.addRoute(
 							language: user.language,
 						},
 					},
-				},
+				} as Required<Pick<IUser, '_id' | 'settings'>>,
 			});
 		},
 	},
@@ -189,18 +204,18 @@ API.v1.addRoute(
 				return API.v1.success();
 			}
 
-			const [image, fields] = await getUploadFormData(
+			const image = await getUploadFormData(
 				{
 					request: this.request,
 				},
-				{
-					field: 'image',
-				},
+				{ field: 'image', sizeLimit: settings.get('FileUpload_MaxFileSize') },
 			);
 
 			if (!image) {
 				return API.v1.failure("The 'image' param is required");
 			}
+
+			const { fields, fileBuffer, mimetype } = image;
 
 			const sentTheUserByFormData = fields.userId || fields.username;
 			if (sentTheUserByFormData) {
@@ -220,7 +235,7 @@ API.v1.addRoute(
 				}
 			}
 
-			setUserAvatar(user, image.fileBuffer, image.mimetype, 'rest');
+			setUserAvatar(user, fileBuffer, mimetype, 'rest');
 
 			return API.v1.success();
 		},
@@ -416,6 +431,7 @@ API.v1.addRoute(
 						inclusiveFieldsKeys.includes('username') && 'username.*',
 						inclusiveFieldsKeys.includes('name') && 'name.*',
 						inclusiveFieldsKeys.includes('type') && 'type.*',
+						inclusiveFieldsKeys.includes('customFields') && 'customFields.*',
 					].filter(Boolean) as string[],
 					this.queryOperations,
 				)
@@ -423,7 +439,15 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
 			}
 
-			const actualSort = sort?.name ? { nameInsensitive: sort.name, ...sort } : sort || { username: 1 };
+			const actualSort = sort || { username: 1 };
+
+			if (sort?.status) {
+				actualSort.active = sort.status;
+			}
+
+			if (sort?.name) {
+				actualSort.nameInsensitive = sort.name;
+			}
 
 			const limit =
 				count !== 0
@@ -501,8 +525,12 @@ API.v1.addRoute(
 				return API.v1.failure('Username is already in use');
 			}
 
+			const { secret: secretURL, ...params } = this.bodyParams;
 			// Register the user
-			const userId = Meteor.call('registerUser', this.bodyParams);
+			const userId = Meteor.call('registerUser', {
+				...params,
+				...(secretURL && { secretURL }),
+			});
 
 			// Now set their username
 			Meteor.runAsUser(userId, () => Meteor.call('setUsername', this.bodyParams.username));
@@ -595,6 +623,22 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
+	'users.checkUsernameAvailability',
+	{
+		authRequired: true,
+		validateParams: isUsersCheckUsernameAvailabilityParamsGET,
+	},
+	{
+		get() {
+			const { username } = this.queryParams;
+			const result = Meteor.call('checkUsernameAvailability', username);
+
+			return API.v1.success({ result });
+		},
+	},
+);
+
+API.v1.addRoute(
 	'users.generatePersonalAccessToken',
 	{ authRequired: true, twoFactorRequired: true },
 	{
@@ -637,16 +681,17 @@ API.v1.addRoute(
 
 			const user = Users.getLoginTokensByUserId(this.userId).fetch()[0] as IUser | undefined;
 
+			const isPersonalAccessToken = (loginToken: ILoginToken | IPersonalAccessToken): loginToken is IPersonalAccessToken =>
+				'type' in loginToken && loginToken.type === 'personalAccessToken';
+
 			return API.v1.success({
 				tokens:
-					user?.services?.resume?.loginTokens
-						?.filter((loginToken: any) => loginToken.type === 'personalAccessToken')
-						.map((loginToken: IPersonalAccessToken) => ({
-							name: loginToken.name,
-							createdAt: loginToken.createdAt.toISOString(),
-							lastTokenPart: loginToken.lastTokenPart,
-							bypassTwoFactor: Boolean(loginToken.bypassTwoFactor),
-						})) || [],
+					user?.services?.resume?.loginTokens?.filter(isPersonalAccessToken).map((loginToken) => ({
+						name: loginToken.name,
+						createdAt: loginToken.createdAt.toISOString(),
+						lastTokenPart: loginToken.lastTokenPart,
+						bypassTwoFactor: Boolean(loginToken.bypassTwoFactor),
+					})) || [],
 			});
 		},
 	},
@@ -717,10 +762,36 @@ API.v1.addRoute('users.2fa.sendEmailCode', {
 });
 
 API.v1.addRoute(
+	'users.sendConfirmationEmail',
+	{
+		authRequired: true,
+		validateParams: isUsersSendConfirmationEmailParamsPOST,
+	},
+	{
+		post() {
+			const { email } = this.bodyParams;
+
+			if (Meteor.call('sendConfirmationEmail', email)) {
+				return API.v1.success();
+			}
+			return API.v1.failure();
+		},
+	},
+);
+
+API.v1.addRoute(
 	'users.presence',
 	{ authRequired: true },
 	{
 		get() {
+			// if presence broadcast is disabled, return an empty array (all users are "offline")
+			if (settings.get('Presence_broadcast_disabled')) {
+				return API.v1.success({
+					users: [],
+					full: true,
+				});
+			}
+
 			const { from, ids } = this.queryParams;
 
 			const options = {
@@ -800,12 +871,12 @@ API.v1.addRoute(
 
 			const token = me.services?.resume?.loginTokens?.find((token) => token.hashedToken === hashedToken);
 
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			const tokenExpires = new Date(token!.when.getTime() + settings.get<number>('Accounts_LoginExpiration') * 1000);
+			const tokenExpires =
+				(token && 'when' in token && new Date(token.when.getTime() + settings.get<number>('Accounts_LoginExpiration') * 1000)) || undefined;
 
 			return API.v1.success({
 				token: xAuthToken,
-				tokenExpires: tokenExpires.toISOString() || '',
+				tokenExpires: tokenExpires?.toISOString() || '',
 			});
 		},
 	},

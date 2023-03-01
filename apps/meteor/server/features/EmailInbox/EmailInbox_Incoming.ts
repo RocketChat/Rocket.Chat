@@ -252,8 +252,8 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 
 				try {
 					attachments.push(await uploadAttachment(attachment, rid, guest.token));
-				} catch (e) {
-					Livechat.logger.error('Error uploading attachment from email', e);
+				} catch (err) {
+					Livechat.logger.error({ msg: 'Error uploading attachment from email', err });
 				}
 			}
 

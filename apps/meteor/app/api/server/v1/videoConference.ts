@@ -6,11 +6,11 @@ import {
 	isVideoConfInfoProps,
 	isVideoConfListProps,
 } from '@rocket.chat/rest-typings';
+import { VideoConf } from '@rocket.chat/core-services';
 
 import { API } from '../api';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { VideoConf } from '../../../../server/sdk';
 import { videoConfProviders } from '../../../../server/lib/videoConfProviders';
 import { availabilityErrors } from '../../../../lib/videoConference/constants';
 
@@ -114,7 +114,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'video-conference.info',
-	{ authRequired: true, validateParams: isVideoConfInfoProps, rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 1000 } },
+	{ authRequired: true, validateParams: isVideoConfInfoProps, rateLimiterOptions: { numRequestsAllowed: 15, intervalTimeInMS: 3000 } },
 	{
 		async get() {
 			const { callId } = this.queryParams;

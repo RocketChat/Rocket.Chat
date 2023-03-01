@@ -1,0 +1,13 @@
+{
+	"extends": "./tsconfig.base.json",
+	"compilerOptions": {
+		"target": "es2015",
+		"lib": ["dom", "dom.iterable", "esnext"],
+		"module": "esnext",
+		"declaration": true,
+		"declarationMap": true,
+		"sourceMap": true,
+		"jsx": "react-jsx",
+	},
+	"exclude": ["node_modules", "**/*.spec.ts"]
+}

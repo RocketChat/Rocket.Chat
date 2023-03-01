@@ -1,4 +1,4 @@
-FROM node:14.19.3 as build
+FROM node:14.21.2 as build
 
 WORKDIR /app
 
@@ -11,6 +11,7 @@ COPY ./.yarnrc.yml .
 COPY ./.yarn/plugins .yarn/plugins
 COPY ./.yarn/releases .yarn/releases
 
+COPY ./packages/core-services packages/core-services
 COPY ./packages/core-typings packages/core-typings
 COPY ./packages/eslint-config packages/eslint-config
 COPY ./packages/rest-typings packages/rest-typings
@@ -26,11 +27,14 @@ COPY ./tsconfig.base.json .
 RUN yarn workspace @rocket.chat/core-typings run build \
     && yarn workspace @rocket.chat/rest-typings run build
 
-FROM node:14.19.3-alpine
+FROM node:14.21.2-alpine
 
 ARG SERVICE
 
 WORKDIR /app
+
+COPY --from=build /app/packages/core-services/package.json /app/packages/core-services/package.json
+COPY --from=build /app/packages/core-services/dist /app/packages/core-services/dist
 
 COPY --from=build /app/packages/core-typings/package.json /app/packages/core-typings/package.json
 COPY --from=build /app/packages/core-typings/dist /app/packages/core-typings/dist

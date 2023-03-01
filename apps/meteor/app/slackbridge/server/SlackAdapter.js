@@ -46,7 +46,7 @@ export default class SlackAdapter {
 			.start()
 			.then((res) => slackLogger.debug('Connecting to slack', res))
 			.catch((err) => {
-				slackLogger.error('Error attempting to connect to Slack', err);
+				slackLogger.error({ msg: 'Error attempting to connect to Slack', err });
 				if (err.data.error === 'invalid_auth') {
 					throw new Error('The provided token is invalid');
 				}
@@ -59,7 +59,7 @@ export default class SlackAdapter {
 			try {
 				this.populateMembershipChannelMap(); // If run outside of Meteor.startup, HTTP is not defined
 			} catch (err) {
-				slackLogger.error('Error attempting to connect to Slack', err);
+				slackLogger.error({ msg: 'Error attempting to connect to Slack', err });
 				this.slackBridge.disconnect();
 			}
 		});
@@ -114,7 +114,7 @@ export default class SlackAdapter {
 					try {
 						this.onMessage(slackMessage);
 					} catch (err) {
-						slackLogger.error('Unhandled error onMessage', err);
+						slackLogger.error({ msg: 'Unhandled error onMessage', err });
 					}
 				}
 			}),
@@ -128,7 +128,7 @@ export default class SlackAdapter {
 					try {
 						this.onReactionAdded(reactionMsg);
 					} catch (err) {
-						slackLogger.error('Unhandled error onReactionAdded', err);
+						slackLogger.error({ msg: 'Unhandled error onReactionAdded', err });
 					}
 				}
 			}),
@@ -142,7 +142,7 @@ export default class SlackAdapter {
 					try {
 						this.onReactionRemoved(reactionMsg);
 					} catch (err) {
-						slackLogger.error('Unhandled error onReactionRemoved', err);
+						slackLogger.error({ msg: 'Unhandled error onReactionRemoved', err });
 					}
 				}
 			}),
@@ -220,7 +220,7 @@ export default class SlackAdapter {
 					try {
 						this.onChannelLeft(channelLeftMsg);
 					} catch (err) {
-						slackLogger.error('Unhandled error onChannelLeft', err);
+						slackLogger.error({ msg: 'Unhandled error onChannelLeft', err });
 					}
 				}
 			}),
@@ -1310,10 +1310,10 @@ export default class SlackAdapter {
 				this.addSlackChannel(rid, slack_room.id);
 				return this.importMessages(rid, callback);
 			}
-			slackLogger.error('Could not find Slack room with specified name', rocketchat_room.name);
+			slackLogger.error({ msg: 'Could not find Slack room with specified name', roomName: rocketchat_room.name });
 			return callback(new Meteor.Error('error-slack-room-not-found', 'Could not find Slack room with specified name'));
 		}
-		slackLogger.error('Could not find Rocket.Chat room with specified id', rid);
+		slackLogger.error({ msg: 'Could not find Rocket.Chat room with specified id', rid });
 		return callback(new Meteor.Error('error-invalid-room', 'Invalid room'));
 	}
 }

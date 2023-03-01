@@ -1,8 +1,9 @@
-import { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { PositionAnimated, AnimatedVisibility, Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useRolesDescription } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useRef, ReactElement } from 'react';
+import type { ReactElement, UIEvent } from 'react';
+import React, { useMemo, useRef } from 'react';
 
 import { Backdrop } from '../../../components/Backdrop';
 import LocalTime from '../../../components/LocalTime';
@@ -15,25 +16,26 @@ import { useUserInfoActions } from '../hooks/useUserInfoActions';
 
 type UserCardWithDataProps = {
 	username: string;
-	onClose: () => void;
 	target: Element;
-	open: (e: Event) => void;
 	rid: IRoom['_id'];
+	open: (e: UIEvent) => void;
+	onClose: () => void;
 };
 
-const UserCardWithData = ({ username, onClose, target, open, rid }: UserCardWithDataProps): ReactElement => {
+const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWithDataProps): ReactElement => {
 	const ref = useRef(target);
 	const getRoles = useRolesDescription();
 	const showRealNames = useSetting('UI_Use_Real_Name');
 
 	const query = useMemo(() => ({ username }), [username]);
-	const { value: data, phase: state } = useEndpointData('/v1/users.info', query);
+	const { value: data, phase: state } = useEndpointData('/v1/users.info', { params: query });
 
 	ref.current = target;
 
+	const isLoading = state === AsyncStatePhase.LOADING;
+
 	const user = useMemo(() => {
-		const loading = state === AsyncStatePhase.LOADING;
-		const defaultValue = loading ? undefined : null;
+		const defaultValue = isLoading ? undefined : null;
 
 		const {
 			_id,
@@ -58,9 +60,9 @@ const UserCardWithData = ({ username, onClose, target, open, rid }: UserCardWith
 			customStatus: statusText,
 			nickname,
 		};
-	}, [data, username, showRealNames, state, getRoles]);
+	}, [data, username, showRealNames, isLoading, getRoles]);
 
-	const handleOpen = useMutableCallback((e) => {
+	const handleOpen = useMutableCallback((e: UIEvent) => {
 		open?.(e);
 		onClose?.();
 	});
@@ -97,7 +99,7 @@ const UserCardWithData = ({ username, onClose, target, open, rid }: UserCardWith
 		<>
 			<Backdrop bg='transparent' onClick={onClose} />
 			<PositionAnimated anchor={ref} placement='top-start' margin={8} visible={AnimatedVisibility.UNHIDING}>
-				<UserCard {...user} onClose={onClose} open={handleOpen} actions={actions} />
+				<UserCard {...user} onClose={onClose} open={handleOpen} actions={actions} isLoading={isLoading} />
 			</PositionAnimated>
 		</>
 	);

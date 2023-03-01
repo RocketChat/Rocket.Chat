@@ -2,6 +2,7 @@ import { ReadPreference } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 
 export class RoomsRaw extends BaseRaw {
 	constructor(db, trash) {
@@ -57,7 +58,7 @@ export class RoomsRaw extends BaseRaw {
 			{ $project: { _id: '$_id', avgChatDuration: { $divide: ['$sumChatDuration', '$chats'] } } },
 		];
 
-		const [statistic] = await this.col.aggregate(aggregate).toArray();
+		const [statistic] = await this.col.aggregate(aggregate, { readPreference: readSecondaryPreferred() }).toArray();
 		return statistic;
 	}
 
@@ -80,7 +81,16 @@ export class RoomsRaw extends BaseRaw {
 			},
 			prid: { $exists: discussion },
 			$or: [
-				{ name: nameRegex },
+				{
+					$and: [
+						{
+							$or: [
+								{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name: nameRegex }] },
+								{ federated: true, fname: nameRegex },
+							],
+						},
+					],
+				},
 				{
 					t: 'd',
 					usernames: nameRegex,
@@ -130,7 +140,16 @@ export class RoomsRaw extends BaseRaw {
 		const query = {
 			prid: { $exists: discussion },
 			$or: [
-				{ name: nameRegex },
+				{
+					$and: [
+						{
+							$or: [
+								{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name: nameRegex }] },
+								{ federated: true, fname: nameRegex },
+							],
+						},
+					],
+				},
 				{
 					t: 'd',
 					usernames: nameRegex,
@@ -257,6 +276,7 @@ export class RoomsRaw extends BaseRaw {
 				},
 			],
 			prid: { $exists: false },
+			$and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }],
 		};
 
 		return this.find(query, options);
@@ -289,6 +309,7 @@ export class RoomsRaw extends BaseRaw {
 				},
 			],
 			prid: { $exists: false },
+			$and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }],
 		};
 
 		return this.findPaginated(query, options);
@@ -308,6 +329,7 @@ export class RoomsRaw extends BaseRaw {
 				$in: groupsToAccept,
 			},
 			name: nameRegex,
+			$and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }],
 		};
 		return this.find(query, options);
 	}
@@ -532,8 +554,20 @@ export class RoomsRaw extends BaseRaw {
 		return this.updateOne({ _id: roomId }, { $set: { t: roomType } });
 	}
 
-	setRoomNameById(roomId, name, fname) {
-		return this.updateOne({ _id: roomId }, { $set: { name, fname } });
+	setRoomNameById(roomId, name) {
+		return this.updateOne({ _id: roomId }, { $set: { name } });
+	}
+
+	setFnameById(_id, fname) {
+		const query = { _id };
+
+		const update = {
+			$set: {
+				fname,
+			},
+		};
+
+		return this.updateOne(query, update);
 	}
 
 	setRoomTopicById(roomId, topic) {
@@ -661,5 +695,13 @@ export class RoomsRaw extends BaseRaw {
 		};
 
 		return this.findOne(query, options);
+	}
+
+	findFederatedRooms(options) {
+		const query = {
+			federated: true,
+		};
+
+		return this.find(query, options);
 	}
 }

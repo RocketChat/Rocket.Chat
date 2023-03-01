@@ -7,6 +7,9 @@ import './logQueue';
 // add support to multiple params on the log commands, i.e.:
 // logger.info('user', Meteor.user()); // will print: {"level":30,"time":1629814080968,"msg":"user {\"username\": \"foo\"}"}
 function logMethod(this: Logger, args: unknown[], method: any): void {
+	if (args.length === 2 && args[0] instanceof Error) {
+		return method.apply(this, args);
+	}
 	if (args.length > 1) {
 		args[0] = `${args[0]}${' %j'.repeat(args.length - 1)}`;
 	}

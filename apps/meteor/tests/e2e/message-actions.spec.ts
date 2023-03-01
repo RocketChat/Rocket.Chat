@@ -1,8 +1,11 @@
-import { expect, test } from './utils/test';
+import type { Page } from '@playwright/test';
+
+import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
+import { expect, test } from './utils/test';
 
-test.use({ storageState: 'admin-session.json' });
+test.use({ storageState: Users.admin.state });
 
 test.describe.serial('message-actions', () => {
 	let poHomeChannel: HomeChannel;
@@ -19,11 +22,19 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.sidenav.openChat(targetChannel);
 	});
 
+	test('expect reply the message in direct', async ({ page }) => {
+		await poHomeChannel.content.sendMessage('this is a message for reply in direct');
+		await poHomeChannel.content.openLastMessageMenu();
+		await page.locator('li', { hasText: 'Reply in Direct Message' }).click();
+
+		await expect(page).toHaveURL(/.*reply/);
+	});
+
 	test('expect reply the message', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('this is a message for reply');
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('[data-qa-id="reply-in-thread"]').click();
-		await page.locator('.rcx-vertical-bar .js-input-message').type('this is a reply message');
+		await page.locator('.rcx-vertical-bar').locator('role=textbox[name="Message"]').type('this is a reply message');
 		await page.keyboard.press('Enter');
 
 		await expect(poHomeChannel.tabs.flexTabViewThreadMessage).toHaveText('this is a reply message');
@@ -53,7 +64,7 @@ test.describe.serial('message-actions', () => {
 		await page.locator('[name="msg"]').fill('this is a quote message');
 		await page.keyboard.press('Enter');
 
-		await expect(poHomeChannel.content.waitForLastMessageTextAttachmentEqualsText).toHaveText(message);
+		await expect(poHomeChannel.content.lastMessageTextAttachmentEqualsText).toHaveText(message);
 	});
 
 	test('expect star the message', async ({ page }) => {
@@ -72,5 +83,41 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.sendMessage('Message to permalink');
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('[data-qa-id="permalink"]').click();
+	});
+
+	test.describe('Preference Hide Contextual Bar by clicking outside of it Enabled', () => {
+		let adminPage: Page;
+
+		test.beforeAll(async ({ browser }) => {
+			adminPage = await browser.newPage({ storageState: Users.admin.state });
+
+			await adminPage.goto('/account/preferences');
+			await adminPage.locator('role=heading[name="Messages"]').click();
+			await adminPage.locator('text="Hide Contextual Bar by clicking outside of it"').click();
+		});
+
+		test.afterAll(async ({ browser }) => {
+			adminPage = await browser.newPage({ storageState: Users.admin.state });
+
+			await adminPage.goto('/account/preferences');
+			await adminPage.locator('role=heading[name="Messages"]').click();
+			await adminPage.locator('text="Hide Contextual Bar by clicking outside of it"').click();
+			await adminPage.close();
+		});
+
+		test.beforeEach(async ({ page }) => {
+			poHomeChannel = new HomeChannel(page);
+
+			await page.goto('/home');
+			await poHomeChannel.sidenav.openChat(targetChannel);
+		});
+
+		test('expect reply the message in direct', async ({ page }) => {
+			await poHomeChannel.content.sendMessage('this is a message for reply in direct');
+			await poHomeChannel.content.openLastMessageMenu();
+			await page.locator('li', { hasText: 'Reply in Direct Message' }).click();
+
+			await expect(page).toHaveURL(/.*reply/);
+		});
 	});
 });

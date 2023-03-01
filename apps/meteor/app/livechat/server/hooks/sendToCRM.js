@@ -64,7 +64,8 @@ function sendToCRM(type, room, includeMessages = true) {
 			const msg = {
 				_id: message._id,
 				username: message.u.username,
-				msg: message.msg,
+				msg: message.msg || JSON.stringify(message.blocks),
+				...(message.blocks && message.blocks.length > 0 ? { blocks: message.blocks } : {}),
 				ts: message.ts,
 				editedAt: message.editedAt,
 			};
@@ -105,12 +106,15 @@ function sendToCRM(type, room, includeMessages = true) {
 
 callbacks.add(
 	'livechat.closeRoom',
-	(room) => {
+	(params) => {
+		const { room } = params;
 		if (!settings.get('Livechat_webhook_on_close')) {
-			return room;
+			return params;
 		}
 
-		return sendToCRM('LivechatSession', room);
+		sendToCRM('LivechatSession', room);
+
+		return params;
 	},
 	callbacks.priority.MEDIUM,
 	'livechat-send-crm-close-room',

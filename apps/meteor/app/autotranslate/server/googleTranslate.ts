@@ -146,6 +146,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 					params: {
 						key: this.apiKey,
 						target: language,
+						format: 'text',
 					},
 					query,
 				});
@@ -161,8 +162,8 @@ class GoogleAutoTranslate extends AutoTranslate {
 					const txt = result.data.data.translations.map((translation: IGoogleTranslation) => translation.translatedText).join('\n');
 					translations[language] = this.deTokenize(Object.assign({}, message, { msg: txt }));
 				}
-			} catch (e) {
-				SystemLogger.error('Error translating message', e);
+			} catch (err) {
+				SystemLogger.error({ msg: 'Error translating message', err });
 			}
 		});
 		return translations;
@@ -190,6 +191,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 					params: {
 						key: this.apiKey,
 						target: language,
+						format: 'text',
 					},
 					query,
 				});
@@ -206,8 +208,8 @@ class GoogleAutoTranslate extends AutoTranslate {
 						.map((translation: IGoogleTranslation) => translation.translatedText)
 						.join('\n');
 				}
-			} catch (e) {
-				SystemLogger.error('Error translating message', e);
+			} catch (err) {
+				SystemLogger.error({ msg: 'Error translating message', err });
 			}
 		});
 		return translations;

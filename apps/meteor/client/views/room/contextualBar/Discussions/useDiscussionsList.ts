@@ -4,7 +4,8 @@ import { useCallback, useMemo } from 'react';
 
 import { useScrollableMessageList } from '../../../../hooks/lists/useScrollableMessageList';
 import { useStreamUpdatesForMessageList } from '../../../../hooks/lists/useStreamUpdatesForMessageList';
-import { DiscussionsList, DiscussionsListOptions } from '../../../../lib/lists/DiscussionsList';
+import type { DiscussionsListOptions } from '../../../../lib/lists/DiscussionsList';
+import { DiscussionsList } from '../../../../lib/lists/DiscussionsList';
 import { getConfig } from '../../../../lib/utils/getConfig';
 
 export const useDiscussionsList = (

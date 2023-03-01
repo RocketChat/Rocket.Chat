@@ -1,7 +1,7 @@
 /**
  * Docs: https://github.com/RocketChat/developer-docs/blob/master/reference/api/rest-api/endpoints/team-collaboration-endpoints/im-endpoints
  */
-import type { IMessage, IRoom, ISubscription, IUpload } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import {
 	isDmDeleteProps,
 	isDmFileProps,
@@ -23,9 +23,6 @@ import { createDirectMessage } from '../../../../server/methods/createDirectMess
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { settings } from '../../../settings/server';
 
-interface IImFilesObject extends IUpload {
-	userId: string;
-}
 // TODO: Refact or remove
 
 type findDirectMessageRoomProps =
@@ -218,7 +215,7 @@ API.v1.addRoute(
 
 			const ourQuery = query ? { rid: room._id, ...query } : { rid: room._id };
 
-			const { cursor, totalCount } = Uploads.findPaginated<IImFilesObject>(ourQuery, {
+			const { cursor, totalCount } = Uploads.findPaginatedWithoutThumbs(ourQuery, {
 				sort: sort || { name: 1 },
 				skip: offset,
 				limit: count,

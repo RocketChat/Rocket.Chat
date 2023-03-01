@@ -1,5 +1,6 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import React, { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React from 'react';
 
 const iconMap: Record<string, ComponentProps<typeof Icon>['name']> = {
 	'browser': 'desktop',
@@ -15,12 +16,12 @@ const DeviceIcon = ({ deviceType }: { deviceType: string }): ReactElement => (
 		alignItems='center'
 		justifyContent='center'
 		p='x4'
-		bg='neutral-500-50'
+		bg='selected'
 		size='x24'
 		borderRadius='full'
 		mie='x8'
 	>
-		<Icon name={iconMap[deviceType] || 'globe'} size='x16' color='info' />
+		<Icon name={iconMap[deviceType] || 'globe'} size='x16' color='hint' />
 	</Box>
 );
 

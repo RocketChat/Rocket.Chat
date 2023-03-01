@@ -1,7 +1,9 @@
-import { IUserStatus } from '@rocket.chat/core-typings';
-import { Button, ButtonGroup, TextInput, Field, Select, Icon, SelectOption } from '@rocket.chat/fuselage';
+import type { IUserStatus } from '@rocket.chat/core-typings';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, TextInput, Field, Select, Icon } from '@rocket.chat/fuselage';
 import { useSetModal, useRoute, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import React, { useCallback, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import GenericModal from '../../../components/GenericModal';
@@ -17,7 +19,7 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 	const t = useTranslation();
 	const { _id, name, statusType } = status || {};
 	const setModal = useSetModal();
-	const route = useRoute('custom-user-status');
+	const route = useRoute('user-status');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const {
@@ -85,7 +87,7 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 
 	return (
 		<VerticalBar.ScrollableContent>
-			<Field>
+			<Field is='form' onSubmit={handleSubmit(handleSave)}>
 				<Field.Label>{t('Name')}</Field.Label>
 				<Field.Row>
 					<TextInput {...register('name', { required: true })} placeholder={t('Name')} />
@@ -108,7 +110,7 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 				<Field.Row>
 					<ButtonGroup stretch w='full'>
 						<Button onClick={onClose}>{t('Cancel')}</Button>
-						<Button primary onClick={handleSubmit(handleSave)} disabled={!isDirty}>
+						<Button primary type='submit' disabled={!isDirty}>
 							{t('Save')}
 						</Button>
 					</ButtonGroup>

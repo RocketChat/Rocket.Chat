@@ -23,6 +23,7 @@ type UiKitContext = {
   errors?: Record<string, string>;
   values: Record<string, { value: string } | undefined>;
   viewId?: string;
+  rid?: string;
 };
 
 export const defaultContext = {

@@ -3,6 +3,7 @@ import { HTTP } from 'meteor/http';
 
 import { settings } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 const postCatchError = function (url, options) {
 	try {
@@ -14,6 +15,7 @@ const postCatchError = function (url, options) {
 
 Meteor.methods({
 	'livechat:webhookTest'() {
+		methodDeprecationLogger.info(`Method 'livechat:webhookTest' is deprecated and will be removed in future versions of Rocket.Chat`);
 		this.unblock();
 
 		const sampleData = {
