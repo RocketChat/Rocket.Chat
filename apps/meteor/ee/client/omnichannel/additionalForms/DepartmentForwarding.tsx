@@ -9,9 +9,11 @@ import { useDepartmentsList } from '../../../../client/components/Omnichannel/ho
 import { useRecordList } from '../../../../client/hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
 
+type DepartmentOption = { value: string; label: string };
+
 type DepartmentForwardingProps = {
 	departmentId: string;
-	value?: string;
+	value?: DepartmentOption[];
 	handler: FormEventHandler<HTMLElement>;
 	label: TranslationKey;
 };
@@ -41,8 +43,8 @@ export const DepartmentForwarding = ({ departmentId, value, handler, label }: De
 						filter={debouncedDepartmentsFilter}
 						setFilter={setDepartmentsFilter as (type?: string | number) => void}
 						onChange={handler}
-						options={departmentsItems}
-						value={value}
+						options={departmentsItems as unknown as DepartmentOption[]}
+						value={value as unknown as string}
 						placeholder={t('Select_an_option')}
 						endReached={
 							departmentsPhase === AsyncStatePhase.LOADING

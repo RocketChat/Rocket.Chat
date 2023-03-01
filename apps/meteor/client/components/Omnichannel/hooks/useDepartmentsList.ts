@@ -19,7 +19,7 @@ type DepartmentsListOptions = {
 type DepartmentListItem = {
 	_id: string;
 	label: string;
-	value: string;
+	value: { value: string; label: string };
 	_updatedAt: Date;
 };
 
@@ -65,7 +65,7 @@ export const useDepartmentsList = (
 					return {
 						_id,
 						label: department.archived ? `${name} [${t('Archived')}]` : name,
-						value: _id,
+						value: { value: _id, label: name },
 						_updatedAt: new Date(_updatedAt || ''),
 					};
 				});
@@ -74,7 +74,7 @@ export const useDepartmentsList = (
 				items.unshift({
 					_id: '',
 					label: t('All'),
-					value: 'all',
+					value: { value: 'all', label: t('All') },
 					_updatedAt: new Date(),
 				});
 
@@ -82,7 +82,7 @@ export const useDepartmentsList = (
 				items.unshift({
 					_id: '',
 					label: t('None'),
-					value: '',
+					value: { value: '', label: t('None') },
 					_updatedAt: new Date(),
 				});
 
