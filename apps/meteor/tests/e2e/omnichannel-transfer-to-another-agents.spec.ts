@@ -1,17 +1,10 @@
 import { faker } from '@faker-js/faker';
-import type { Browser, Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
+import { createAuxContext } from './fixtures/createAuxContext';
+import { Users } from './fixtures/userStates';
 import { OmnichannelLiveChat, HomeOmnichannel } from './page-objects';
 import { test, expect } from './utils/test';
-
-const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page; poHomeOmnichannel: HomeOmnichannel }> => {
-	const page = await browser.newPage({ storageState });
-	const poHomeOmnichannel = new HomeOmnichannel(page);
-	await page.goto('/');
-	await page.locator('.main-content').waitFor();
-
-	return { page, poHomeOmnichannel };
-};
 
 test.describe('omnichannel-transfer-to-another-agent', () => {
 	let poLiveChat: OmnichannelLiveChat;
@@ -27,10 +20,24 @@ test.describe('omnichannel-transfer-to-another-agent', () => {
 			api.post('/settings/Livechat_enabled_when_agent_idle', { value: false }).then((res) => expect(res.status()).toBe(200)),
 		]);
 
-		agent1 = await createAuxContext(browser, 'user1-session.json');
-		agent2 = await createAuxContext(browser, 'user2-session.json');
+		const { page } = await createAuxContext(browser, Users.user1);
+		agent1 = { page, poHomeOmnichannel: new HomeOmnichannel(page) };
+
+		const { page: page2 } = await createAuxContext(browser, Users.user2);
+		agent2 = { page: page2, poHomeOmnichannel: new HomeOmnichannel(page2) };
 	});
 
+	test.afterAll(async ({ api }) => {
+		await Promise.all([
+			api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
+			api.delete('/livechat/users/manager/user1').then((res) => expect(res.status()).toBe(200)),
+			api.delete('/livechat/users/agent/user2').then((res) => expect(res.status()).toBe(200)),
+			api.post('/settings/Livechat_enabled_when_agent_idle', { value: true }).then((res) => expect(res.status()).toBe(200)),
+		]);
+
+		await agent1.page.close();
+		await agent2.page.close();
+	});
 	test.beforeEach(async ({ page }) => {
 		// make "user-1" online & "user-2" offline so that chat can be automatically routed to "user-1"
 		await agent1.poHomeOmnichannel.sidenav.switchStatus('online');
@@ -47,18 +54,6 @@ test.describe('omnichannel-transfer-to-another-agent', () => {
 		await poLiveChat.sendMessage(newVisitor, false);
 		await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
 		await poLiveChat.btnSendMessageToOnlineAgent.click();
-	});
-
-	test.afterAll(async ({ api }) => {
-		await Promise.all([
-			api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
-			api.delete('/livechat/users/manager/user1').then((res) => expect(res.status()).toBe(200)),
-			api.delete('/livechat/users/agent/user2').then((res) => expect(res.status()).toBe(200)),
-			api.post('/settings/Livechat_enabled_when_agent_idle', { value: true }).then((res) => expect(res.status()).toBe(200)),
-		]);
-
-		await agent1.page.close();
-		await agent2.page.close();
 	});
 
 	test('transfer omnichannel chat to another agent', async () => {

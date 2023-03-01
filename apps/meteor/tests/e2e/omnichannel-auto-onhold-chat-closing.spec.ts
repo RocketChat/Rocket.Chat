@@ -1,18 +1,11 @@
 import { faker } from '@faker-js/faker';
-import type { Browser, Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 
 import { IS_EE } from './config/constants';
+import { createAuxContext } from './fixtures/createAuxContext';
+import { Users } from './fixtures/userStates';
 import { OmnichannelLiveChat, HomeChannel } from './page-objects';
 import { test, expect } from './utils/test';
-
-const createAuxContext = async (browser: Browser, storageState: string): Promise<{ page: Page; poHomeChannel: HomeChannel }> => {
-	const page = await browser.newPage({ storageState });
-	const poHomeChannel = new HomeChannel(page);
-	await page.goto('/');
-	await page.locator('.main-content').waitFor();
-
-	return { page, poHomeChannel };
-};
 
 test.describe('omnichannel-auto-onhold-chat-closing', () => {
 	test.skip(!IS_EE, 'Enterprise Only');
@@ -30,7 +23,17 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 			api.post('/settings/Livechat_allow_manual_on_hold', { value: true }).then((res) => expect(res.status()).toBe(200)),
 		]);
 
-		agent = await createAuxContext(browser, 'user1-session.json');
+		const { page } = await createAuxContext(browser, Users.user1);
+		agent = { page, poHomeChannel: new HomeChannel(page) };
+	});
+	test.afterAll(async ({ api }) => {
+		await Promise.all([
+			api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
+			api.post('/settings/Livechat_auto_close_on_hold_chats_timeout', { value: 3600 }).then((res) => expect(res.status()).toBe(200)),
+			api.post('/settings/Livechat_allow_manual_on_hold', { value: false }).then((res) => expect(res.status()).toBe(200)),
+		]);
+
+		await agent.page.close();
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -76,15 +79,5 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 		expect(await agent.poHomeChannel.content.lastSystemMessageBody.innerText()).toBe(
 			'Conversation closed: Closed automatically because chat was On Hold for 5 seconds.',
 		);
-	});
-
-	test.afterAll(async ({ api }) => {
-		await Promise.all([
-			api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
-			api.post('/settings/Livechat_auto_close_on_hold_chats_timeout', { value: 3600 }).then((res) => expect(res.status()).toBe(200)),
-			api.post('/settings/Livechat_allow_manual_on_hold', { value: false }).then((res) => expect(res.status()).toBe(200)),
-		]);
-
-		await agent.page.close();
 	});
 });
