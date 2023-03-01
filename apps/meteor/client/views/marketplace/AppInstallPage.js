@@ -87,7 +87,7 @@ function AppInstallPage() {
 			handleAPIError(e);
 		}
 
-		router.push({ context: 'installed', page: 'info', id: appId || app.app.id });
+		router.push({ context: 'private', page: 'info', id: appId || app.app.id });
 
 		reload();
 
