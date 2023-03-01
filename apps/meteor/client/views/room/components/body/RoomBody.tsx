@@ -511,11 +511,20 @@ const RoomBody = (): ReactElement => {
 
 	const handleCloseFlexTab: MouseEventHandler<HTMLElement> = useCallback(
 		(e): void => {
+			const checkIfElementOrParentIsInstanceOfButton = (element: HTMLElement | null): boolean => {
+				if (!element) {
+					return false;
+				}
+				if (element instanceof HTMLButtonElement) {
+					return true;
+				}
+				return checkIfElementOrParentIsInstanceOfButton(element.parentElement);
+			};
 			if (!hideFlexTab) {
 				return;
 			}
 
-			if (e.target instanceof HTMLButtonElement) {
+			if (checkIfElementOrParentIsInstanceOfButton(e.target as HTMLElement)) {
 				return;
 			}
 
