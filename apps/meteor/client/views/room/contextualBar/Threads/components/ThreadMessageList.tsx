@@ -75,7 +75,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 						</li>
 					) : (
 						<MessageListProvider>
-							{messages.map((message, index, { [index - 1]: previous }) => {
+							{[mainMessage, ...messages].map((message, index, { [index - 1]: previous }) => {
 								const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
 								const newDay = isMessageNewDay(message, previous);
 								const firstUnread = isMessageFirstUnread(subscription, message, previous);
