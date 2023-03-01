@@ -36,7 +36,6 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 		if (emojiFile) {
 			return URL.createObjectURL(emojiFile);
 		}
-			return null;
 	}, [emojiFile]);
 
 	useEffect(() => {
@@ -44,21 +43,22 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 		setAliases(previousAliases?.join(', ') || '');
 	}, [previousName, previousAliases, _id]);
 
-	useEffect(()=>{
+	useEffect(() => {
 		if (data) {
-		let imgPreview= absoluteUrl(`/emoji-custom/${encodeURIComponent(data.name)}.${data.extension}`);
+			const imgPreview = absoluteUrl(`/emoji-custom/${encodeURIComponent(data.name)}.${data.extension}`);
 			fetch(imgPreview)
-			.then(res=>res.blob())
-			.then(blob=>{
-				const myFile = new File([blob], 'image.jpeg', {
-					type: blob.type,
+				.then((res) => res.blob())
+				.then((blob) => {
+					const myFile = new File([blob], 'image.jpeg', {
+						type: blob.type,
+					});
+					setEmojiFile(myFile);
 				});
-					setEmojiFile(myFile)
-			})
-	}},[absoluteUrl, data])
+		}
+	}, [absoluteUrl, data]);
 
 	const hasUnsavedChanges = useMemo(
-		() => previousName !== name || aliases !== previousAliases.join(', ') && !!emojiFile,
+		() => previousName !== name || (aliases !== previousAliases.join(', ') && !!emojiFile),
 		[previousName, name, aliases, previousAliases, emojiFile],
 	);
 
@@ -136,7 +136,7 @@ const EditCustomEmoji: FC<EditCustomEmojiProps> = ({ close, onChange, data, ...p
 
 		return setName(e.currentTarget.value);
 	};
-           
+
 	return (
 		<VerticalBar.ScrollableContent {...(props as any)}>
 			<FieldGroup>
