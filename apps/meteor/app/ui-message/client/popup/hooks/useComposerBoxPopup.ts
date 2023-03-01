@@ -168,7 +168,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 	});
 
 	const keydown = useMutableCallback((event: KeyboardEvent) => {
-		if (!popup || popup.preview) {
+		if (!popup) {
 			return;
 		}
 
