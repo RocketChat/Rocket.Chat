@@ -58,6 +58,10 @@ const AppInstallationModal = ({
 
 	const confirmButtonOverlimitLabel = context === 'private' ? t('Upload_anyway') : t('Install_anyway');
 
+	const urls = {
+		goFullyFeaturedRegistered: 'admin/upgrade/go-fully-featured-registered',
+	};
+
 	return (
 		<>
 			<Modal>
@@ -76,6 +80,7 @@ const AppInstallationModal = ({
 					<Modal.FooterControllers>
 						<Button
 							onClick={() => {
+								window.open(urls.goFullyFeaturedRegistered, '_self'); // TODO: use internal route in the future
 								handleEnableUnlimitedApps;
 							}}
 						>
