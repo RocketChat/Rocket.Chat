@@ -2,7 +2,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { isPOSTLivechatTranscriptParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
-import { Livechat } from '../../lib/Livechat';
+import { Livechat } from '../../lib/LivechatTyped';
 
 API.v1.addRoute(
 	'livechat/transcript',
@@ -10,7 +10,6 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { token, rid, email } = this.bodyParams;
-			// @ts-expect-error -- typings on sendtranscript are wrong
 			if (!(await Livechat.sendTranscript({ token, rid, email }))) {
 				return API.v1.failure({ message: TAPi18n.__('Error_sending_livechat_transcript') });
 			}
