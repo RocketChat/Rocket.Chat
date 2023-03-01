@@ -1,8 +1,10 @@
 import { LivechatRooms, Messages, Uploads, Users, LivechatVisitors } from '@rocket.chat/models';
 import { PdfWorker } from '@rocket.chat/pdf-worker';
 import type { Templates } from '@rocket.chat/pdf-worker';
+import { parse } from '@rocket.chat/message-parser';
+import type { Root } from '@rocket.chat/message-parser';
 import type { IMessage, IUser, IRoom, IUpload, ILivechatVisitor, ILivechatAgent } from '@rocket.chat/core-typings';
-import { isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
+import { isQuoteAttachment, isFileAttachment, isFileImageAttachment } from '@rocket.chat/core-typings';
 import {
 	ServiceClass,
 	Upload as uploadService,
@@ -29,8 +31,11 @@ type WorkDetailsWithSource = WorkDetails & {
 	from: string;
 };
 
-type MessageWithFiles = Pick<IMessage, '_id' | 'ts' | 'u' | 'msg' | 'md'> & {
+type Quote = { name: string; ts?: Date; md: Root };
+
+type MessageData = Pick<IMessage, '_id' | 'ts' | 'u' | 'msg' | 'md'> & {
 	files: ({ name?: string; buffer: Buffer | null; extension?: string } | undefined)[];
+	quotes: (Quote | undefined)[];
 };
 
 type WorkerData = {
@@ -38,7 +43,7 @@ type WorkerData = {
 	visitor: ILivechatVisitor | null;
 	agent: ILivechatAgent | undefined;
 	closedAt?: Date;
-	messages: MessageWithFiles[];
+	messages: MessageData[];
 	timezone: string;
 	dateFormat: string;
 	timeAndDateFormat: string;
@@ -118,7 +123,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			throw new Error('room-still-open');
 		}
 
-		if (!room.servedBy || !room.v) {
+		if (!room.v) {
 			throw new Error('improper-room-state');
 		}
 
@@ -140,24 +145,70 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		});
 	}
 
-	private async getFiles(userId: string, messages: IMessage[]): Promise<MessageWithFiles[]> {
-		const messagesWithFiles: MessageWithFiles[] = [];
+	private getQuotesFromMessage(message: IMessage): Quote[] {
+		const quotes: Quote[] = [];
+
+		if (!message.attachments) {
+			return quotes;
+		}
+
+		for (const attachment of message.attachments) {
+			if (isQuoteAttachment(attachment)) {
+				const { text, author_name: name, md, ts } = attachment;
+
+				if (text) {
+					quotes.push({
+						name,
+						md: md ?? parse(text),
+						ts,
+					});
+				}
+
+				quotes.push(...this.getQuotesFromMessage({ attachments: attachment.attachments } as IMessage));
+			}
+		}
+
+		return quotes;
+	}
+
+	private async getMessagesData(userId: string, messages: IMessage[]): Promise<MessageData[]> {
+		const messagesData: MessageData[] = [];
 		for await (const message of messages) {
 			if (!message.attachments || !message.attachments.length) {
 				// If there's no attachment and no message, what was sent? lol
-				messagesWithFiles.push({ _id: message._id, files: [], ts: message.ts, u: message.u, msg: message.msg, md: message.md });
+				messagesData.push({
+					_id: message._id,
+					files: [],
+					quotes: [],
+					ts: message.ts,
+					u: message.u,
+					msg: message.msg,
+					md: message.md,
+				});
 				continue;
 			}
-
 			const files = [];
+			const quotes = [];
 
 			for await (const attachment of message.attachments) {
-				if (isFileAttachment(attachment) && attachment.type !== 'file') {
-					this.log.error(`Invalid attachment type ${attachment.type} for file ${attachment.title} in room ${message.rid}!`);
+				if (isQuoteAttachment(attachment)) {
+					quotes.push(...this.getQuotesFromMessage(message));
+					continue;
+				}
+
+				if (!isFileAttachment(attachment)) {
+					this.log.error(`Invalid attachment type ${(attachment as any).type} for file ${attachment.title} in room ${message.rid}!`);
 					// ignore other types of attachments
 					continue;
 				}
-				if (isFileAttachment(attachment) && isFileImageAttachment(attachment) && !this.worker.isMimeTypeValid(attachment.image_type)) {
+				if (!isFileImageAttachment(attachment)) {
+					this.log.error(`Invalid attachment type ${attachment.type} for file ${attachment.title} in room ${message.rid}!`);
+					// ignore other types of attachments
+					files.push({ name: attachment.title, buffer: null });
+					continue;
+				}
+
+				if (!this.worker.isMimeTypeValid(attachment.image_type)) {
 					this.log.error(`Invalid mime type ${attachment.image_type} for file ${attachment.title} in room ${message.rid}!`);
 					// ignore invalid mime types
 					files.push({ name: attachment.title, buffer: null });
@@ -201,22 +252,22 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			// So, we'll fetch the the msg, if empty, go for the first description on an attachment, if empty, empty string
 			const msg = message.msg || message.attachments.find((attachment) => attachment.description)?.description || '';
 			// Remove nulls from final array
-			messagesWithFiles.push({ _id: message._id, msg, u: message.u, files: files.filter(Boolean), ts: message.ts });
+			messagesData.push({
+				_id: message._id,
+				msg,
+				u: message.u,
+				files: files.filter(Boolean),
+				quotes,
+				ts: message.ts,
+				md: message.md,
+			});
 		}
 
-		return messagesWithFiles;
+		return messagesData;
 	}
 
 	private async getTranslations(): Promise<Array<{ key: string; value: string }>> {
-		const keys: string[] = [
-			'Agent',
-			'Date',
-			'Customer',
-			'Omnichannel_Agent',
-			'Time',
-			'Chat_transcript',
-			'This_attachment_is_not_supported',
-		];
+		const keys: string[] = ['Agent', 'Date', 'Customer', 'Not_assigned', 'Time', 'Chat_transcript', 'This_attachment_is_not_supported'];
 
 		return Promise.all(
 			keys.map(async (key) => {
@@ -251,7 +302,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			const agent =
 				room.servedBy && (await Users.findOneAgentById(room.servedBy._id, { projection: { _id: 1, name: 1, username: 1, utcOffset: 1 } }));
 
-			const messagesFiles = await this.getFiles(details.userId, messages);
+			const messagesData = await this.getMessagesData(details.userId, messages);
 
 			const [siteName, dateFormat, timeAndDateFormat, timezone, translations] = await Promise.all([
 				settingsService.get<string>('Site_Name'),
@@ -265,7 +316,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 				agent,
 				closedAt: room.closedAt,
 				siteName,
-				messages: messagesFiles,
+				messages: messagesData,
 				dateFormat,
 				timeAndDateFormat,
 				timezone,
