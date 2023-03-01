@@ -3,9 +3,10 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import MarkdownText from '../../../../components/MarkdownText';
+import type { MarketplaceRouteContext } from '../../hooks/useAppsCountQuery';
 
 type AppsInstallationModalProps = {
-	context: 'private' | 'explore' | 'installed' | 'enterprise' | 'requested';
+	context: MarketplaceRouteContext;
 	enabled: number;
 	limit: number;
 	appName: string;
@@ -55,6 +56,8 @@ const AppInstallationModal = ({
 		return t('Workspaces_on_Community_edition_install_app', { context: context === 'private' ? context : '', enabled, limit });
 	};
 
+	const confirmButtonOverlimitLabel = context === 'private' ? t('Upload_anyway') : t('Install_anyway');
+
 	return (
 		<>
 			<Modal>
@@ -79,7 +82,7 @@ const AppInstallationModal = ({
 							{t('Enable_unlimited_apps')}
 						</Button>
 						<Button {...(enabled < limit && { primary: true })} onClick={handleConfirm}>
-							{enabled < limit ? t('Next') : t('Upload_anyway')}
+							{enabled < limit ? t('Next') : confirmButtonOverlimitLabel}
 						</Button>
 					</Modal.FooterControllers>
 				</Modal.Footer>

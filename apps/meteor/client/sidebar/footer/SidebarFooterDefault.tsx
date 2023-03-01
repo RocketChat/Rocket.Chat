@@ -14,7 +14,7 @@ const SidebarFooterDefault = (): ReactElement => {
 		}
 
 		& a:any-link {
-			color: ${Palette.text['font-on-info']};
+			color: ${Palette.text['font-info']};
 		}
 	`;
 
