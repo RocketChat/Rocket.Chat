@@ -28,7 +28,7 @@ const AutoCompleteDepartment = ({
 	showArchived = false,
 }: AutoCompleteDepartmentProps): ReactElement | null => {
 	const t = useTranslation();
-	const [departmentsFilter, setDepartmentsFilter] = useState('');
+	const [departmentsFilter, setDepartmentsFilter] = useState<string>('');
 
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
@@ -48,32 +48,19 @@ const AutoCompleteDepartment = ({
 
 	const { phase: departmentsPhase, items: departmentsItems, itemCount: departmentsTotal } = useRecordList(departmentsList);
 
-	const sortedByName = useMemo(
-		() =>
-			departmentsItems.sort((a, b) => {
-				const rankA = 'name' in a ? a.name : '';
-				const rankB = 'name' in b ? b.name : '';
-				return rankA.localeCompare(rankB);
-			}),
-		[departmentsItems],
-	);
-
 	const department = useMemo(() => {
 		const valueFound = typeof value === 'string' ? value : value?.value || '';
-		return sortedByName.find((dep) => dep.value.value === valueFound)?.value;
-	}, [sortedByName, value]);
+		return departmentsItems.find((dep) => dep.value === valueFound)?.value;
+	}, [departmentsItems, value]);
 
 	return (
 		<PaginatedSelectFiltered
 			withTitle
-			value={department as any}
+			value={department}
 			onChange={onChange}
 			filter={departmentsFilter}
-			// Workaround for setFilter weird typing
-			setFilter={setDepartmentsFilter as (value: string | number | undefined) => void}
-			// TODO: Fix typing on fuselage
-			// Workaround for options wrong typing
-			options={sortedByName as any}
+			setFilter={setDepartmentsFilter as (value?: string | number) => void}
+			options={departmentsItems}
 			placeholder={t('Select_an_option')}
 			data-qa='autocomplete-department'
 			endReached={

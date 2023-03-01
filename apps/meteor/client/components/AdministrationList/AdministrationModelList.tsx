@@ -1,5 +1,5 @@
 import { OptionTitle } from '@rocket.chat/fuselage';
-import { useTranslation, useRoute, useMethod, useSetModal } from '@rocket.chat/ui-contexts';
+import { useTranslation, useRoute, useMethod, useSetModal, useRole } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { FC } from 'react';
@@ -27,6 +27,7 @@ const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxI
 	const shouldShowEmoji = isFullyFeature(tabType);
 	const label = getUpgradeTabLabel(tabType);
 	const hasInfoPermission = userHasAllPermission(INFO_PERMISSIONS);
+	const isAdmin = useRole('admin');
 	const setModal = useSetModal();
 
 	const checkCloudRegisterStatus = useMethod('cloud:checkRegisterStatus');
@@ -62,18 +63,20 @@ const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxI
 						}}
 					/>
 				)}
-				<ListItem
-					icon='cloud-plus'
-					text={workspaceRegistered ? t('Registration') : t('Register')}
-					action={(): void => {
-						if (workspaceRegistered) {
-							cloudRoute.push({ context: '/' });
-							onDismiss();
-							return;
-						}
-						handleRegisterWorkspaceClick();
-					}}
-				/>
+				{isAdmin && (
+					<ListItem
+						icon='cloud-plus'
+						text={workspaceRegistered ? t('Registration') : t('Register')}
+						action={(): void => {
+							if (workspaceRegistered) {
+								cloudRoute.push({ context: '/' });
+								onDismiss();
+								return;
+							}
+							handleRegisterWorkspaceClick();
+						}}
+					/>
+				)}
 				{showWorkspace && (
 					<ListItem
 						icon='cog'
