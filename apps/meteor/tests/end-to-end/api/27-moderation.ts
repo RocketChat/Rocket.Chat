@@ -1,4 +1,4 @@
-import type { IMessage, IModerationAudit, IReportedMessageInfo } from '@rocket.chat/core-typings';
+import type { IMessage, IModerationAudit, IReport } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
@@ -268,7 +268,6 @@ describe('[Moderation]', function () {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array');
-					expect(res.body.reports[0]).to.have.property('reporter').and.to.be.an('array');
 				})
 				.end(done);
 		});
@@ -294,7 +293,7 @@ describe('[Moderation]', function () {
 
 	describe('[/moderation.getReportInfo]', () => {
 		let message: IMessage;
-		let reportedMessage: IReportedMessageInfo;
+		let reportedMessage: IReport;
 
 		// post a new message to the channel 'general' by sending a request to chat.postMessage
 		before((done) => {
@@ -436,7 +435,7 @@ describe('[Moderation]', function () {
 
 	describe('[/moderation.user.getMessageHistory]', () => {
 		let message: IMessage;
-		let reportedMessage: IReportedMessageInfo;
+		let reportedMessage: IReport;
 
 		// post a new message to the channel 'general' by sending a request to chat.postMessage
 		before((done) => {
@@ -513,7 +512,7 @@ describe('[Moderation]', function () {
 				.get(api('moderation.user.getMessageHistory'))
 				.set(credentials)
 				.query({
-					userId: reportedMessage.reporter[0]._id,
+					userId: reportedMessage.reportedBy._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -545,7 +544,7 @@ describe('[Moderation]', function () {
 
 	describe('[/moderation.user.deleteMessageHistory]', () => {
 		let message: IMessage;
-		let reportedMessage: IReportedMessageInfo;
+		let reportedMessage: IReport;
 
 		// post a new message to the channel 'general' by sending a request to chat.postMessage
 		before((done) => {
@@ -622,7 +621,7 @@ describe('[Moderation]', function () {
 				.post(api('moderation.user.deleteMessageHistory'))
 				.set(credentials)
 				.send({
-					userId: reportedMessage.reporter[0]._id,
+					userId: reportedMessage.reportedBy._id,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)

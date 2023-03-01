@@ -96,11 +96,11 @@ API.v1.addRoute(
 				return API.v1.failure('The required "userId" body param is missing or empty.');
 			}
 
-			const cursor = Reports.findUserMessages(userId);
+			const { cursor, totalCount } = Reports.findUserMessages(userId);
 
-			const [{ messages = [], count = 0 } = {}] = await cursor.toArray();
+			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
-			if (count < 0) {
+			if (total < 0) {
 				return API.v1.failure('No messages found for this user.');
 			}
 
@@ -135,6 +135,10 @@ API.v1.addRoute(
 			const action = actionTaken || 'None';
 
 			const { userId: modId } = this;
+
+			if (!modId) {
+				return API.v1.failure('The required "modId" body param is missing or empty.');
+			}
 
 			const update = userId
 				? await Reports.hideReportsByUserId(userId, modId, sanitizedReason, action)

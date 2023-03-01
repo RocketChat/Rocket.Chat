@@ -12,8 +12,8 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 	createWithMessageDescriptionAndUserId(
 		message: IMessage,
 		description: string,
-		reportedBy: IReport['reportedBy'],
 		room: IReport['room'],
+		reportedBy: IReport['reportedBy'],
 	): ReturnType<BaseRaw<IReport>['insertOne']> {
 		const record: Pick<IReport, 'message' | 'description' | 'ts' | 'reportedBy' | 'room'> = {
 			message,

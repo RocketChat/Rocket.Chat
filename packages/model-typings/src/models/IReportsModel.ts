@@ -7,8 +7,8 @@ export interface IReportsModel extends IBaseModel<IReport> {
 	createWithMessageDescriptionAndUserId(
 		message: IMessage,
 		description: string,
-		reportedBy: IReport['reportedBy'],
 		room: IReport['room'],
+		reportedBy: IReport['reportedBy'],
 	): ReturnType<IBaseModel<IReport>['insertOne']>;
 
 	findGroupedReports(
