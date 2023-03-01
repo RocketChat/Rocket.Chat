@@ -773,6 +773,7 @@ export const Livechat = {
 		const options = {
 			data: postData,
 			...(secretToken !== '' && secretToken !== undefined && { headers }),
+			timeout: 5000,
 		};
 		try {
 			return HTTP.post(settings.get('Livechat_webhookUrl'), options);
