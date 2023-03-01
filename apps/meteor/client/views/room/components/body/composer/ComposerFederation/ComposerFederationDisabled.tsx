@@ -3,9 +3,10 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-const ComposerBlocked = (): ReactElement => {
+const ComposerFederationDisabled = (): ReactElement => {
 	const t = useTranslation();
-	return <MessageFooterCallout>{t('room_is_blocked')}</MessageFooterCallout>;
+
+	return <MessageFooterCallout>{t('Federation_Matrix_Federated_Description_disabled')}</MessageFooterCallout>;
 };
 
-export default ComposerBlocked;
+export default ComposerFederationDisabled;
