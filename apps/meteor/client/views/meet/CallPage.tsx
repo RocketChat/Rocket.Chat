@@ -199,7 +199,7 @@ const CallPage: FC<CallPageProps> = ({
 					<Button
 						id='mic'
 						square
-						data-title={isMicOn ? t('Mute_microphone') : t('Unmute_microphone')}
+						title={isMicOn ? t('Mute_microphone') : t('Unmute_microphone')}
 						onClick={(): any => toggleButton('mic')}
 						className={isMicOn ? 'On' : 'Off'}
 						size={Number(buttonSize)}
@@ -209,7 +209,7 @@ const CallPage: FC<CallPageProps> = ({
 					<Button
 						id='camera'
 						square
-						data-title={isCameraOn ? t('Turn_off_video') : t('Turn_on_video')}
+						title={isCameraOn ? t('Turn_off_video') : t('Turn_on_video')}
 						onClick={(): void => toggleButton('camera')}
 						className={isCameraOn ? 'On' : 'Off'}
 						size={parseInt(buttonSize)}
@@ -228,7 +228,7 @@ const CallPage: FC<CallPageProps> = ({
 							<Icon name='arrow-expand' size={iconSize} color='white' />
 						</Button>
 					)}
-					<Button square danger data-title={t('End_call')} onClick={closeWindow} size={parseInt(buttonSize)}>
+					<Button square danger title={t('End_call')} onClick={closeWindow} size={parseInt(buttonSize)}>
 						<Icon name='phone-off' size={iconSize} color='white' />
 					</Button>
 				</ButtonGroup>
