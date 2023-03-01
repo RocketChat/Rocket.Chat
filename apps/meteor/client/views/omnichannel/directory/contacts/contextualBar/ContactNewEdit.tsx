@@ -142,12 +142,12 @@ export const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactE
 		setUserId(userId);
 
 		if (userId === 'no-agent-selected') {
-			setValue('username', '');
+			setValue('username', '', { shouldDirty: true });
 			return;
 		}
 
 		const { user } = await getUserData({ userId });
-		setValue('username', user.username || '');
+		setValue('username', user.username || '', { shouldDirty: true });
 	};
 
 	const validate = (fieldName: keyof ContactFormData): (() => void) => withDebouncing({ wait: 500 })(() => trigger(fieldName));
