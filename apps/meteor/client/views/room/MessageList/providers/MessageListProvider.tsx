@@ -16,7 +16,7 @@ import { useLoadSurroundingMessages } from '../hooks/useLoadSurroundingMessages'
 
 type MessageListProviderProps = {
 	children: ReactNode;
-	scrollMessageList: MessageListContextValue['scrollMessageList'];
+	scrollMessageList?: MessageListContextValue['scrollMessageList'];
 };
 
 const MessageListProvider: VFC<MessageListProviderProps> = ({ children, scrollMessageList }) => {

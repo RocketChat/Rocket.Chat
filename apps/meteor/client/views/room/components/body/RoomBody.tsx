@@ -11,7 +11,7 @@ import {
 	useUser,
 	useUserPreference,
 } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, MouseEventHandler, ReactElement, UIEvent } from 'react';
+import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
@@ -34,6 +34,7 @@ import MessageListErrorBoundary from '../../MessageList/MessageListErrorBoundary
 import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../../contexts/RoomContext';
 import { useToolboxContext } from '../../contexts/ToolboxContext';
+import { useScrollMessageList } from '../../hooks/useScrollMessageList';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessagesBar from './JumpToRecentMessagesBar';
 import LeaderBar from './LeaderBar';
@@ -92,23 +93,7 @@ const RoomBody = (): ReactElement => {
 		return false;
 	}, []);
 
-	// Passing a callback instead of the values so that the wrapper is exposed
-	const scrollMessageList: ComponentProps<typeof MessageList>['scrollMessageList'] = useCallback((callback) => {
-		const wrapper = wrapperRef.current;
-
-		if (!wrapper) {
-			return;
-		}
-
-		const options = callback(wrapperRef.current);
-
-		// allow for bailout
-		if (!options) {
-			return;
-		}
-
-		wrapper.scrollTo(options);
-	}, []);
+	const scrollMessageList = useScrollMessageList(wrapperRef);
 
 	const sendToBottom = useCallback(() => {
 		scrollMessageList((wrapper) => {

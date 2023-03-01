@@ -14,7 +14,7 @@ export const useJumpToMessage = (messageId: IMessage['_id'], messageRef: RefObje
 	const scroll = useMessageListScroll();
 
 	useLayoutEffect(() => {
-		if (jumpToMessageParam !== messageId || !messageRef.current) {
+		if (jumpToMessageParam !== messageId || !messageRef.current || !scroll) {
 			return;
 		}
 
