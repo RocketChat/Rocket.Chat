@@ -1,15 +1,20 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import type { IEditedMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
 
+import type * as RoomServiceSenderModule from '../../../../../../../../app/federation-v2/server/application/sender/RoomServiceSender';
+import type * as FederatedUserModule from '../../../../../../../../app/federation-v2/server/domain/FederatedUser';
+import type * as FederatedRoomModule from '../../../../../../../../app/federation-v2/server/domain/FederatedRoom';
 import { MATRIX_POWER_LEVELS } from '../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixPowerLevels';
+import { createFakeMessage } from '../../../../../../../mocks/data';
 
 const sendMessageStub = sinon.stub();
 const sendQuoteMessageStub = sinon.stub();
 const { FederationRoomServiceSender } = proxyquire
 	.noCallThru()
-	.load('../../../../../../../../app/federation-v2/server/application/sender/RoomServiceSender', {
+	.load<typeof RoomServiceSenderModule>('../../../../../../../../app/federation-v2/server/application/sender/RoomServiceSender', {
 		'mongodb': {
 			'ObjectId': class ObjectId {
 				toHexString(): string {
@@ -23,20 +28,22 @@ const { FederationRoomServiceSender } = proxyquire
 		},
 	});
 
-const { FederatedUser } = proxyquire.noCallThru().load('../../../../../../../../app/federation-v2/server/domain/FederatedUser', {
-	mongodb: {
-		'ObjectId': class ObjectId {
-			toHexString(): string {
-				return 'hexString';
-			}
+const { FederatedUser } = proxyquire
+	.noCallThru()
+	.load<typeof FederatedUserModule>('../../../../../../../../app/federation-v2/server/domain/FederatedUser', {
+		mongodb: {
+			'ObjectId': class ObjectId {
+				toHexString(): string {
+					return 'hexString';
+				}
+			},
+			'@global': true,
 		},
-		'@global': true,
-	},
-});
+	});
 
 const { DirectMessageFederatedRoom, FederatedRoom } = proxyquire
 	.noCallThru()
-	.load('../../../../../../../../app/federation-v2/server/domain/FederatedRoom', {
+	.load<typeof FederatedRoomModule>('../../../../../../../../app/federation-v2/server/domain/FederatedRoom', {
 		mongodb: {
 			'ObjectId': class ObjectId {
 				toHexString(): string {
@@ -48,7 +55,7 @@ const { DirectMessageFederatedRoom, FederatedRoom } = proxyquire
 	});
 
 describe('Federation - Application - FederationRoomServiceSender', () => {
-	let service: typeof FederationRoomServiceSender;
+	let service: InstanceType<typeof FederationRoomServiceSender>;
 	const roomAdapter = {
 		getFederatedRoomByInternalId: sinon.stub(),
 		createFederatedRoomForDirectMessage: sinon.stub(),
@@ -663,17 +670,15 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			userAdapter.getFederatedUserByInternalId.resolves(user);
 
-			await service.afterMessageUpdated(
-				{
-					msg: 'msg',
-					editedAt: new Date(),
-					editedBy: 'id',
-					federation: { eventId: 'federationEventId' },
-					u: { _id: 'internalUserId' },
-				} as any,
-				'internalRoomId',
-				'internalUserId',
-			);
+			const internalMessage = createFakeMessage<IEditedMessage>({
+				msg: 'msg',
+				editedAt: new Date(),
+				editedBy: { _id: 'id' },
+				federation: { eventId: 'federationEventId' },
+				u: { _id: 'internalUserId', username: 'internalUser', name: 'internalUser' },
+			});
+
+			await service.afterMessageUpdated(internalMessage, 'internalRoomId', 'internalUserId');
 
 			expect(bridge.updateMessage.calledWith(room.getExternalId(), user.getExternalId(), 'federationEventId', 'msg')).to.be.true;
 		});

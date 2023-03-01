@@ -1,8 +1,20 @@
 import faker from '@faker-js/faker';
-import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 
 import type { MessageWithMdEnforced } from '../../client/lib/parseMessageTextToAstMarkdown';
+
+export const createFakeUser = (overrides?: Partial<IUser>): IUser => ({
+	_id: faker.database.mongodbObjectId(),
+	_updatedAt: faker.date.recent(),
+	username: faker.internet.userName(),
+	name: faker.name.findName(),
+	createdAt: faker.date.recent(),
+	roles: ['user'],
+	active: faker.datatype.boolean(),
+	type: 'user',
+	...overrides,
+});
 
 export const createFakeRoom = (overrides?: Partial<IRoom>): IRoom => ({
 	_id: faker.database.mongodbObjectId(),
