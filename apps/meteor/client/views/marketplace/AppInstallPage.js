@@ -18,7 +18,9 @@ import { useForm } from '../../hooks/useForm';
 import AppPermissionsReviewModal from './AppPermissionsReviewModal';
 import AppUpdateModal from './AppUpdateModal';
 import { useAppsReload } from './AppsContext';
+import AppInstallModal from './components/AppInstallModal/AppInstallModal';
 import { handleAPIError, handleInstallError } from './helpers';
+import { useAppsCountQuery } from './hooks/useAppsCountQuery';
 import { getManifestFromZippedApp } from './lib/getManifestFromZippedApp';
 
 const placeholderUrl = 'https://rocket.chat/apps/package.zip';
@@ -32,7 +34,9 @@ function AppInstallPage() {
 	if (!currentRouteName) {
 		throw new Error('No current route name');
 	}
+
 	const router = useRoute(currentRouteName);
+	const upgradeRoute = useRoute('upgradeRoute');
 
 	const context = useRouteParameter('context');
 
@@ -45,8 +49,10 @@ function AppInstallPage() {
 
 	const endpointAddress = appId ? `/apps/${appId}` : '/apps';
 	const downloadApp = useEndpoint('POST', endpointAddress);
-	const uploadApp = useUpload(endpointAddress);
+	const uploadAppEndpoint = useUpload(endpointAddress);
 	const uploadUpdateApp = useUpload(`${endpointAddress}/update`);
+
+	const appCountQuery = useAppsCountQuery('private');
 
 	const { values, handlers } = useForm({
 		file: {},
@@ -75,7 +81,7 @@ function AppInstallPage() {
 			if (appId) {
 				await uploadUpdateApp(fileData);
 			} else {
-				app = await uploadApp(fileData);
+				app = await uploadAppEndpoint(fileData);
 			}
 		} catch (e) {
 			handleAPIError(e);
@@ -85,6 +91,7 @@ function AppInstallPage() {
 
 		reload();
 
+		setInstalling(false);
 		setModal(null);
 	};
 
@@ -112,9 +119,17 @@ function AppInstallPage() {
 		);
 	};
 
-	const install = async () => {
-		setInstalling(true);
+	const uploadFile = async (appFile, { id, permissions }) => {
+		const isInstalled = await isAppInstalled(id);
 
+		if (isInstalled) {
+			return setModal(<AppUpdateModal cancel={cancelAction} confirm={() => handleAppPermissionsReview(permissions, appFile, id)} />);
+		}
+
+		await handleAppPermissionsReview(permissions, appFile);
+	};
+
+	const getAppFileAndManifest = async () => {
 		try {
 			let manifest;
 			let appFile;
@@ -128,20 +143,44 @@ function AppInstallPage() {
 				manifest = await getManifestFromZippedApp(appFile);
 			}
 
-			const { permissions, id } = manifest;
-
-			const isInstalled = await isAppInstalled(id);
-
-			if (isInstalled) {
-				setModal(<AppUpdateModal cancel={cancelAction} confirm={() => handleAppPermissionsReview(permissions, appFile, id)} />);
-			} else {
-				await handleAppPermissionsReview(permissions, appFile);
-			}
+			return { appFile, manifest };
 		} catch (error) {
 			handleInstallError(error);
-		} finally {
-			setInstalling(false);
+
+			return { appFile: null, manifest: null };
 		}
+	};
+
+	const install = async () => {
+		setInstalling(true);
+
+		if (!appCountQuery.data) {
+			return cancelAction();
+		}
+
+		const { appFile, manifest } = await getAppFileAndManifest();
+
+		if (!appFile || !manifest) {
+			return cancelAction();
+		}
+
+		if (appCountQuery.data.hasUnlimitedApps) {
+			return uploadFile(appFile, manifest);
+		}
+
+		setModal(
+			<AppInstallModal
+				context={context}
+				enabled={appCountQuery.data.enabled}
+				limit={appCountQuery.data.limit}
+				appName={manifest.name}
+				handleClose={cancelAction}
+				handleConfirm={() => uploadFile(appFile, manifest)}
+				handleEnableUnlimitedApps={() => {
+					upgradeRoute.push();
+				}}
+			/>,
+		);
 	};
 
 	const handleCancel = () => {
