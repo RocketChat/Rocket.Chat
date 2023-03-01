@@ -20,7 +20,7 @@ const videoContainerClass = css`
 	transform: scaleX(-1);
 	filter: FlipH;
 
-	@media (width <= 500px) {
+	@media (max-width: 500px) {
 		& > video {
 			width: 100%;
 			height: 100%;
