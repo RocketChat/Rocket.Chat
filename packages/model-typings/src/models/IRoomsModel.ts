@@ -103,4 +103,5 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findPaginatedByTypeAndIds(type: IRoom['t'], ids: string[], options?: FindOptions<IRoom>): FindPaginated<FindCursor<IRoom>>;
 
 	findFederatedRooms(options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findCountOfRoomsWithActiveCalls(): Promise<number>;
 }
