@@ -276,27 +276,8 @@ export const fetchMessages = (roomId: string, visitorToken: string): Promise<IMe
 	});
 };
 
-// Closes room using methodCall
-export const closeRoom = (roomId: string): Promise<boolean> => {
-	return new Promise((resolve, reject) => {
-		request
-			.post(methodCall('livechat:closeRoom'))
-			.set(credentials)
-			.send({
-				message: JSON.stringify({
-					method: 'livechat:closeRoom',
-					params: [roomId, faker.lorem.sentence(), { clientAction: true }],
-					id: 'id',
-					msg: 'method',
-				}),
-			})
-			.end((err: Error, res: DummyResponse<boolean, 'wrapped'>) => {
-				if (err) {
-					return reject(err);
-				}
-				resolve(res.body.result);
-			});
-	});
+export const closeOmnichanelRoom = async (roomId: string): Promise<void> => {
+    await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: roomId }).expect(200)
 };
 
 export const bulkCreateLivechatRooms = async (
@@ -316,4 +297,15 @@ export const bulkCreateLivechatRooms = async (
 	}
 
 	return rooms;
+};
+
+export const startANewLivechatRoomAndTakeIt = async (): Promise<{ room: IOmnichannelRoom; visitor: ILivechatVisitor }> => {
+	const visitor = await createVisitor();
+	const room = await createLivechatRoom(visitor.token);
+	const { _id: roomId } = room;
+	const inq = await fetchInquiry(roomId);
+	await takeInquiry(inq._id);
+	await sendMessage(roomId, 'test message', visitor.token);
+
+	return { room, visitor };
 };
