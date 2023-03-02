@@ -9,7 +9,7 @@ callbacks.add(
 	'afterSaveMessage',
 	(message: IMessage, room: IRoom) => {
 		// skips this callback if the message was edited
-		if (isEditedMessage(message) && message.editedAt) {
+		if (isEditedMessage(message)) {
 			return message;
 		}
 
