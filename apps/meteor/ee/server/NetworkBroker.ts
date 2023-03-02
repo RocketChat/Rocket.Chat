@@ -76,6 +76,7 @@ export class NetworkBroker implements IBroker {
 			return;
 		}
 		this.broker.destroyService(name);
+		instance.removeAllListeners();
 	}
 
 	createService(instance: IServiceClass, serviceDependencies?: string[]): void {
