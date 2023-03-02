@@ -131,8 +131,8 @@ API.v1.addRoute(
 			}
 
 			const reasonProvided = reasonForHiding && reasonForHiding.trim() !== '';
-			const sanitizedReason = reasonProvided ? reasonForHiding : 'No reason provided';
-			const action = actionTaken || 'None';
+			const sanitizedReason: string = reasonProvided ? reasonForHiding : 'No reason provided';
+			const action: string = actionTaken ?? 'None';
 
 			const { userId: modId } = this;
 
