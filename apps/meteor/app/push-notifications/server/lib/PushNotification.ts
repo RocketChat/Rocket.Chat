@@ -130,7 +130,7 @@ export class PushNotification {
 		}
 
 		let notificationMessage = callbacks.run('beforeSendMessageNotifications', message.msg);
-		if (message.mentions && Object.keys(message.mentions).length > 0 && getMessagesLayoutPreference() !== 'username') {
+		if (message.mentions && Object.keys(message.mentions).length > 0 && getMessagesLayoutPreference(message.u._id) !== 'username') {
 			notificationMessage = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
 		}
 		notificationMessage = parseMessageTextPerUser(notificationMessage, message, receiver);

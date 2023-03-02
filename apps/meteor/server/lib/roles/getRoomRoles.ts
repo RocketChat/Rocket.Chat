@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
@@ -17,7 +18,7 @@ export function getRoomRoles(rid: IRoom['_id']): ISubscription[] {
 		},
 	};
 
-	const useRealName = getMessagesLayoutPreference() !== 'username';
+	const useRealName = getMessagesLayoutPreference(Meteor.userId()) !== 'username';
 
 	const roles = Promise.await(Roles.find({ scope: 'Subscriptions', description: { $exists: true, $ne: '' } }).toArray());
 	const subscriptions = Subscriptions.findByRoomIdAndRoles(rid, _.pluck(roles, '_id'), options).fetch() as ISubscription[];

@@ -291,7 +291,7 @@ export class SlackImporter extends Base {
 	parseMentions(newMessage) {
 		const mentionsParser = new MentionsParser({
 			pattern: () => '[0-9a-zA-Z]+',
-			useRealName: () => getMessagesLayoutPreference() !== 'username',
+			useRealName: () => getMessagesLayoutPreference(newMessage.u._id) !== 'username',
 			me: () => 'me',
 		});
 

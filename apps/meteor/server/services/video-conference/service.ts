@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 import type {
 	IDirectVideoConference,
@@ -317,7 +318,9 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		if (call.messages.started) {
 			const name =
-				(getMessagesLayoutPreference() !== 'username' ? call.createdBy.name : call.createdBy.username) || call.createdBy.username || '';
+				(getMessagesLayoutPreference(Meteor.userId()) !== 'username' ? call.createdBy.name : call.createdBy.username) ||
+				call.createdBy.username ||
+				'';
 			const text = TAPi18n.__('video_livechat_missed', { username: name });
 			await Messages.setBlocksById(call.messages.started, [this.buildMessageBlock(text)]);
 		}
@@ -536,7 +539,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async createLivechatMessage(call: ILivechatVideoConference, user: IUser, url: string): Promise<IMessage['_id']> {
-		const username = (getMessagesLayoutPreference() !== 'username' ? user.name : user.username) || user.username || '';
+		const username = (getMessagesLayoutPreference(Meteor.userId()) !== 'username' ? user.name : user.username) || user.username || '';
 		const text = TAPi18n.__('video_livechat_started', {
 			username,
 		});

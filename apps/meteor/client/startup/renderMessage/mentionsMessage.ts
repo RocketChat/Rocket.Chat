@@ -12,7 +12,7 @@ Meteor.startup(() => {
 		const options = {
 			me: uid && Users.findOne(uid, { fields: { username: 1 } })?.username,
 			pattern: settings.get('UTF8_User_Names_Validation'),
-			useRealName: getMessagesLayoutPreference() !== 'username',
+			useRealName: getMessagesLayoutPreference(uid) !== 'username',
 		};
 
 		import('../../../app/mentions/client').then(({ createMentionsMessageRenderer }) => {

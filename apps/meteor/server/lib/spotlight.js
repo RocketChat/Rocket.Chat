@@ -156,7 +156,7 @@ export class Spotlight {
 				avatarETag: 1,
 			},
 			sort: {
-				[getMessagesLayoutPreference() !== 'username' ? 'name' : 'username']: 1,
+				[getMessagesLayoutPreference(userId) !== 'username' ? 'name' : 'username']: 1,
 			},
 			readPreference: readSecondaryPreferred(Users.col.s.db),
 		};

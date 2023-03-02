@@ -32,7 +32,7 @@ const shownName = function (user: IUser | null | undefined): string | undefined 
 	if (!user) {
 		return;
 	}
-	if (getMessagesLayoutPreference() !== 'username') {
+	if (getMessagesLayoutPreference(user._id) !== 'username') {
 		return user.name;
 	}
 	return user.username;

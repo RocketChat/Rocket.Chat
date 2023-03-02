@@ -73,7 +73,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 			return;
 		}
 
-		if (getMessagesLayoutPreference() !== 'username' && subscription.fname) {
+		if (getMessagesLayoutPreference(Meteor.userId()) !== 'username' && subscription.fname) {
 			return subscription.fname;
 		}
 

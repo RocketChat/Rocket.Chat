@@ -19,7 +19,7 @@ function getNameOfUsername(users: Map<string, string>, username: string): string
 
 export const normalizeMessagesForUser = (messages: IMessage[], uid: string): IMessage[] => {
 	// if not using real names, there is nothing else to do
-	if (getMessagesLayoutPreference() === 'username') {
+	if (getMessagesLayoutPreference(uid) === 'username') {
 		return messages.map((message) => filterStarred(message, uid));
 	}
 

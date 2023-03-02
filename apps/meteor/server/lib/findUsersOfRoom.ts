@@ -1,3 +1,4 @@
+import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { FindCursor } from 'mongodb';
 import type { FindPaginated } from '@rocket.chat/model-typings';
@@ -35,7 +36,7 @@ export function findUsersOfRoom({
 		},
 		sort: {
 			statusConnection: -1,
-			...(sort || { [getMessagesLayoutPreference() !== 'username' ? 'name' : 'username']: 1 }),
+			...(sort || { [getMessagesLayoutPreference(Meteor.userId()) !== 'username' ? 'name' : 'username']: 1 }),
 		},
 		...(skip > 0 && { skip }),
 		...(limit > 0 && { limit }),

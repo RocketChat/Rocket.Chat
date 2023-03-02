@@ -1,11 +1,7 @@
-import { Meteor } from 'meteor/meteor';
-
 import { Users } from '../../models';
 import { settings } from '../../settings';
 
-export const getMessagesLayoutPreference = (uid) => {
-	const userId = uid || Meteor.userId();
-
+export const getMessagesLayoutPreference = (userId) => {
 	if (!userId) {
 		return null;
 	}

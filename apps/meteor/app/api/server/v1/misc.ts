@@ -258,7 +258,7 @@ API.v1.addRoute(
 					const user = this.getUserFromParams();
 
 					// Respect the server's choice for using their real names or not
-					if (user.name && getMessagesLayoutPreference() !== 'username') {
+					if (user.name && getMessagesLayoutPreference(user._id) !== 'username') {
 						text = `${user.name}`;
 					} else {
 						text = `@${user.username}`;

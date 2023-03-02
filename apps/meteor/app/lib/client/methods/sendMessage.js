@@ -24,7 +24,7 @@ Meteor.methods({
 			_id: Meteor.userId(),
 			username: user.username,
 		};
-		if (getMessagesLayoutPreference() !== 'username') {
+		if (getMessagesLayoutPreference(message.u._id) !== 'username') {
 			message.u.name = user.name;
 		}
 		message.temp = true;

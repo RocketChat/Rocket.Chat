@@ -34,7 +34,7 @@ export const _setRealName = function (userId: string, name: string, fullUser: IU
 	}
 	user.name = name;
 
-	if (getMessagesLayoutPreference() !== 'username') {
+	if (getMessagesLayoutPreference(user._id) !== 'username') {
 		api.broadcast('user.nameChanged', {
 			_id: user._id,
 			name: user.name,
