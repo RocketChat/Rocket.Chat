@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { escape as escapeHtml } from 'lodash';
 
 import { Users } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
@@ -94,7 +95,7 @@ Meteor.methods({
 			throw new Meteor.Error(e.message);
 		}
 
-		Users.setName(userId, trim(formData.name));
+		Users.setName(userId, escapeHtml(trim(formData.name)));
 
 		const reason = trim(formData.reason);
 		if (manuallyApproveNewUsers && reason) {
