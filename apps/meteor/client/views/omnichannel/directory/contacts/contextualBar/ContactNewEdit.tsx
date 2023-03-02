@@ -3,12 +3,12 @@ import { Field, TextInput, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useState, useEffect } from 'react';
-import { useController, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 import { hasAtLeastOnePermission } from '../../../../../../app/authorization/client';
 import { validateEmail } from '../../../../../../lib/emailValidator';
 import { withDebouncing } from '../../../../../../lib/utils/highOrderFunctions';
-import CustomFieldsForm from '../../../../../components/CustomFieldsForm';
+import { CustomFieldsForm } from '../../../../../components/CustomFieldsFormV2';
 import VerticalBar from '../../../../../components/VerticalBar';
 import { createToken } from '../../../../../lib/utils/createToken';
 import { useFormsSubscription } from '../../../additionalForms';
@@ -72,7 +72,7 @@ export const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactE
 	const getContactBy = useEndpoint('GET', '/v1/omnichannel/contact.search');
 	const getUserData = useEndpoint('GET', '/v1/users.info');
 
-	const { data: customFieldsMetadata = {}, isInitialLoading: isLoadingCustomFields } = useCustomFieldsMetadata({
+	const { data: customFieldsMetadata = [], isInitialLoading: isLoadingCustomFields } = useCustomFieldsMetadata({
 		scope: 'visitor',
 		enabled: canViewCustomFields(),
 	});
@@ -85,7 +85,6 @@ export const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactE
 		formState: { errors, isValid: isFormValid, isDirty },
 		control,
 		setValue,
-		getValues,
 		handleSubmit,
 		trigger,
 	} = useForm<ContactFormData>({
@@ -94,15 +93,7 @@ export const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactE
 		defaultValues: initialValue,
 	});
 
-	const {
-		field: { onChange: handleLivechatData, value: customFields },
-	} = useController({
-		name: 'customFields',
-		control,
-	});
-
-	const [customFieldsErrors, setCustomFieldsErrors] = useState([]);
-	const isValid = isDirty && isFormValid && customFieldsErrors.length === 0;
+	const isValid = isDirty && isFormValid;
 
 	useEffect(() => {
 		if (!initialUsername) {
@@ -142,18 +133,18 @@ export const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactE
 		setUserId(userId);
 
 		if (userId === 'no-agent-selected') {
-			setValue('username', '');
+			setValue('username', '', { shouldDirty: true });
 			return;
 		}
 
 		const { user } = await getUserData({ userId });
-		setValue('username', user.username || '');
+		setValue('username', user.username || '', { shouldDirty: true });
 	};
 
 	const validate = (fieldName: keyof ContactFormData): (() => void) => withDebouncing({ wait: 500 })(() => trigger(fieldName));
 
-	const handleSave = async (): Promise<void> => {
-		const { name, phone, email, customFields, username, token } = getValues();
+	const handleSave = async (data: ContactFormData): Promise<void> => {
+		const { name, phone, email, customFields, username, token } = data;
 
 		const payload = {
 			name,
@@ -180,7 +171,7 @@ export const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactE
 
 	return (
 		<>
-			<VerticalBar.ScrollableContent is='form'>
+			<VerticalBar.ScrollableContent is='form' onSubmit={handleSubmit(handleSave)}>
 				<Field>
 					<Field.Label>{t('Name')}*</Field.Label>
 					<Field.Row>
@@ -210,14 +201,7 @@ export const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactE
 					</Field.Row>
 					<Field.Error>{errors.phone?.message}</Field.Error>
 				</Field>
-				{canViewCustomFields() && customFields && (
-					<CustomFieldsForm
-						jsonCustomFields={customFieldsMetadata}
-						customFieldsData={customFields}
-						setCustomFieldsData={handleLivechatData}
-						setCustomFieldsError={setCustomFieldsErrors}
-					/>
-				)}
+				{canViewCustomFields() && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
 				{ContactManager && <ContactManager value={userId} handler={handleContactManagerChange} />}
 			</VerticalBar.ScrollableContent>
 			<VerticalBar.Footer>

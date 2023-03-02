@@ -1,8 +1,23 @@
 import faker from '@faker-js/faker';
-import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 
 import type { MessageWithMdEnforced } from '../../client/lib/parseMessageTextToAstMarkdown';
+
+export function createFakeUser<TUser extends IUser>(overrides?: Partial<IUser> & Omit<TUser, keyof IUser>): TUser;
+export function createFakeUser(overrides?: Partial<IUser>): IUser {
+	return {
+		_id: faker.database.mongodbObjectId(),
+		_updatedAt: faker.date.recent(),
+		username: faker.internet.userName(),
+		name: faker.name.findName(),
+		createdAt: faker.date.recent(),
+		roles: ['user'],
+		active: faker.datatype.boolean(),
+		type: 'user',
+		...overrides,
+	};
+}
 
 export const createFakeRoom = (overrides?: Partial<IRoom>): IRoom => ({
 	_id: faker.database.mongodbObjectId(),
@@ -42,7 +57,7 @@ export const createFakeSubscription = (overrides?: Partial<ISubscription>): ISub
 	...overrides,
 });
 
-export function createFakeMessage<TMessage extends IMessage>(overrides?: Partial<TMessage>): TMessage;
+export function createFakeMessage<TMessage extends IMessage>(overrides?: Partial<IMessage> & Omit<TMessage, keyof IMessage>): TMessage;
 export function createFakeMessage(overrides?: Partial<IMessage>): IMessage {
 	return {
 		_id: faker.database.mongodbObjectId(),
