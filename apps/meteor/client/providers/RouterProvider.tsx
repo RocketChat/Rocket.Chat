@@ -1,6 +1,7 @@
 import type { RouterContextValue } from '@rocket.chat/ui-contexts';
 import { RouterContext } from '@rocket.chat/ui-contexts';
 import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Tracker } from 'meteor/tracker';
 import type { FC } from 'react';
 import React from 'react';
 
@@ -63,6 +64,9 @@ const setQueryString = (paramsOrFn: Record<string, string | null> | ((prev: Reco
 	FlowRouter.setQueryParams(paramsOrFn);
 };
 
+const getRoutePath = (name: string, parameters?: Record<string, string>, queryStringParameters?: Record<string, string>) =>
+	Tracker.nonreactive(() => FlowRouter.path(name, parameters, queryStringParameters));
+
 const contextValue = {
 	queryRoutePath,
 	queryRouteUrl,
@@ -72,6 +76,7 @@ const contextValue = {
 	queryQueryStringParameter,
 	queryCurrentRoute,
 	setQueryString,
+	getRoutePath,
 };
 
 const RouterProvider: FC = ({ children }) => <RouterContext.Provider children={children} value={contextValue} />;
