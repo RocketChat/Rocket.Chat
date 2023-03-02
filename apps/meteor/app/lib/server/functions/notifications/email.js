@@ -26,7 +26,9 @@ function getEmailContent({ message, user, room }) {
 	const lng = (user && user.language) || settings.get('Language') || 'en';
 
 	const roomName = escapeHTML(`#${roomCoordinator.getRoomName(room.t, room)}`);
-	const userName = escapeHTML(getMessagesLayoutPreference() !== 'username' ? message.u.name || message.u.username : message.u.username);
+	const userName = escapeHTML(
+		getMessagesLayoutPreference(message.u._id) !== 'username' ? message.u.name || message.u.username : message.u.username,
+	);
 
 	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
 
@@ -119,7 +121,8 @@ function generateNameEmail(name, email) {
 }
 
 export function getEmailData({ message, receiver, sender, subscription, room, emailAddress, hasMentionToUser }) {
-	const username = getMessagesLayoutPreference() !== 'username' ? message.u.name || message.u.username : message.u.username;
+	const messagesLayout = getMessagesLayoutPreference(message.u._id);
+	const username = messagesLayout !== 'username' ? message.u.name || message.u.username : message.u.username;
 	let subjectKey = 'Offline_Mention_All_Email';
 
 	if (!roomCoordinator.getRoomDirectives(room.t)?.isGroupChat(room)) {
@@ -140,7 +143,7 @@ export function getEmailData({ message, receiver, sender, subscription, room, em
 
 	const room_path = getButtonUrl(room, subscription, message);
 
-	const receiverName = getMessagesLayoutPreference() !== 'username' ? receiver.name || receiver.username : receiver.username;
+	const receiverName = messagesLayout !== 'username' ? receiver.name || receiver.username : receiver.username;
 
 	const email = {
 		from: generateNameEmail(username, settings.get('From_Email')),
