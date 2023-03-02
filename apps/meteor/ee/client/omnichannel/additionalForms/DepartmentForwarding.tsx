@@ -1,8 +1,8 @@
 import { Field, Box, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
+import type { PaginatedMultiSelectOption } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { FormEventHandler } from 'react';
 import React, { useMemo, useState } from 'react';
 
 import { useDepartmentsList } from '../../../../client/components/Omnichannel/hooks/useDepartmentsList';
@@ -13,12 +13,12 @@ type DepartmentOption = { value: string; label: string };
 
 type DepartmentForwardingProps = {
 	departmentId: string;
-	value?: DepartmentOption[];
-	handler: FormEventHandler<HTMLElement>;
+	value?: PaginatedMultiSelectOption[];
+	handler: (value: PaginatedMultiSelectOption[]) => void;
 	label: TranslationKey;
 };
 
-export const DepartmentForwarding = ({ departmentId, value, handler, label }: DepartmentForwardingProps) => {
+export const DepartmentForwarding = ({ departmentId, value = [], handler, label }: DepartmentForwardingProps) => {
 	const t = useTranslation();
 	const [departmentsFilter, setDepartmentsFilter] = useState('');
 
@@ -41,10 +41,10 @@ export const DepartmentForwarding = ({ departmentId, value, handler, label }: De
 						w='100%'
 						flexGrow={1}
 						filter={debouncedDepartmentsFilter}
-						setFilter={setDepartmentsFilter as (type?: string | number) => void}
+						setFilter={setDepartmentsFilter}
 						onChange={handler}
 						options={departmentsItems as unknown as DepartmentOption[]}
-						value={value as unknown as string}
+						value={value}
 						placeholder={t('Select_an_option')}
 						endReached={
 							departmentsPhase === AsyncStatePhase.LOADING
