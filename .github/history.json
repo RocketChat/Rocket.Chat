@@ -101303,6 +101303,325 @@
           ]
         }
       ]
+    },
+    "6.0.0-rc.4": {
+      "node_version": "14.21.2",
+      "npm_version": "6.14.17",
+      "apps_engine_version": "1.37.0-alpha.157",
+      "mongo_versions": [
+        "4.4",
+        "5.0",
+        "6.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "28234",
+          "title": "[BREAK] Remove support to deprecated typing event",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "28198",
+          "title": "Regression: Fix app status filter not working in private apps page",
+          "userLogin": "rique223",
+          "description": "## Jira task: [MKP-266](https://rocketchat.atlassian.net/browse/MKP-266?atlOrigin=eyJpIjoiMzlhNmRhZDNmOGZkNDBmZGEyY2FkNTQ5ZTVlZjUzNzkiLCJwIjoiaiJ9)\r\nFixed a bug in which the app status filter didn't work because of the new 'enabled*' and 'disabled*' app status.\r\nDemo gif:\r\n![private-apps-status-filter](https://user-images.githubusercontent.com/43561537/221709473-633f6866-e921-438d-9a20-e6b341823cbf.gif)",
+          "milestone": "6.0.0",
+          "contributors": [
+            "rique223",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "28213",
+          "title": "Regression: UiKit message surface styles",
+          "userLogin": "tassoevan",
+          "milestone": "6.0.0",
+          "contributors": [
+            "tassoevan",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28230",
+          "title": "[FIX] Search list missing key parameter",
+          "userLogin": "gabriellsh",
+          "milestone": "6.0.0",
+          "contributors": [
+            "gabriellsh",
+            "casalsgh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28180",
+          "title": "Regression: broken message exhibition when edited",
+          "userLogin": "tassoevan",
+          "description": "Sometimes a message will have the fields `editedBy` and `editedAt` present but set to `null`. This PR handle this situation.",
+          "milestone": "6.0.0",
+          "contributors": [
+            "tassoevan",
+            "ggazzo",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "28221",
+          "title": "Regression: EnableUnlimitedApps button action",
+          "userLogin": "felipe-rod123",
+          "description": "\"Enable unlimited apps\" button on installation modal doesn't do anything. Now it redirects to the `'go-fully-featured-registered'` page.",
+          "milestone": "6.0.0",
+          "contributors": [
+            "felipe-rod123",
+            "rique223",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28228",
+          "title": "Regression: Update Composer Formatters Translation Keys",
+          "userLogin": "dougfabris",
+          "milestone": "6.0.0",
+          "contributors": [
+            "dougfabris",
+            "filipemarins",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "28236",
+          "title": "Regression: EmojiPicker missing shadow on dark mode",
+          "userLogin": "dougfabris",
+          "description": "#### before\r\n![Screen Shot 2023-03-01 at 18 23 18](https://user-images.githubusercontent.com/27704687/222267993-3958de34-5f28-4550-ae93-ef81af034b21.png)\r\n\r\n#### after\r\n![Screen Shot 2023-03-01 at 18 22 14](https://user-images.githubusercontent.com/27704687/222267788-e39d292b-5dc2-4797-b227-1b47008075e7.png)",
+          "milestone": "6.0.0",
+          "contributors": [
+            "dougfabris",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28110",
+          "title": "Chore: More E2E tests for PDF transcript feature of Omnichannel",
+          "userLogin": "murtaza98",
+          "milestone": "6.0.0",
+          "contributors": [
+            "murtaza98",
+            "web-flow",
+            "KevLehman",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "28235",
+          "title": "Regression: Fixed triggers edit form not being properly updated",
+          "userLogin": "aleksandernsilva",
+          "milestone": "6.0.0",
+          "contributors": [
+            "aleksandernsilva",
+            "filipemarins",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28139",
+          "title": "Regression: Add auto translate option back to live chat room",
+          "userLogin": "filipemarins",
+          "description": "Add the `translation` option to the live chat room;\r\nThe behavior of this feature in live chat rooms is quite different from direct and group messages. In these rooms, you need to activate and set up the language, while in the live chat room, the `translate` option should always appear for every room and should use the application language to translate.",
+          "milestone": "6.0.0",
+          "contributors": [
+            "filipemarins",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28143",
+          "title": "[FIX] User registration with EmailConfirmation not working",
+          "userLogin": "ggazzo",
+          "milestone": "6.0.0",
+          "contributors": [
+            "ggazzo",
+            "dougfabris",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28200",
+          "title": "Regression: Show mention instead of the name of the user in app request messages",
+          "userLogin": "rique223",
+          "description": "## Jira task: [MKP-249](https://rocketchat.atlassian.net/browse/MKP-249?atlOrigin=eyJpIjoiYmNmMjBjOGI5OGUwNGVhMTg1NGMyNDZhMGYzMGY4YWMiLCJwIjoiaiJ9)\r\nStopped using the name of users that requested apps and now the app request messages directly mention the users.\r\nDemo image:\r\n![image](https://user-images.githubusercontent.com/43561537/221995968-c6e4dc7e-9052-4121-b5d0-610a1fbe7ea1.png)",
+          "milestone": "6.0.0",
+          "contributors": [
+            "rique223",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "28225",
+          "title": "Regression: SendFileLivechatMessage using deprecated prop affecting PDF transcript",
+          "userLogin": "KevLehman",
+          "milestone": "6.0.0",
+          "contributors": [
+            "KevLehman",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28201",
+          "title": "Regression: Tooltip for More options dont disappear after click.",
+          "userLogin": "ggazzo",
+          "milestone": "6.0.0",
+          "contributors": [
+            "ggazzo",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28214",
+          "title": "Chore: Add dark theme assets",
+          "userLogin": "juliajforesti",
+          "milestone": "6.0.0",
+          "contributors": [
+            "juliajforesti",
+            "ggazzo",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "28212",
+          "title": "[FIX] File upload modal not opening after too long message modal",
+          "userLogin": "guijun13",
+          "description": "- Close the 'too long message to attachment' modal before opening the 'file upload' modal",
+          "milestone": "6.0.0",
+          "contributors": [
+            "guijun13",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "28210",
+          "title": "Regression: Denied Camera permission do not disable VideoMessageAction",
+          "userLogin": "dougfabris",
+          "description": "#### before\r\n![Kapture 2023-02-28 at 16 12 58](https://user-images.githubusercontent.com/27704687/221955658-2c733275-e193-4029-ba9e-777caf3f03ba.gif)\r\n\r\n#### after\r\n![Kapture 2023-02-28 at 16 09 20](https://user-images.githubusercontent.com/27704687/221954849-f4379294-0189-4466-a523-ab71e1a8d0af.gif)",
+          "milestone": "6.0.0",
+          "contributors": [
+            "dougfabris",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28209",
+          "title": "Regression: Visitor abandonment job not working properly",
+          "userLogin": "KevLehman",
+          "milestone": "6.0.0",
+          "contributors": [
+            "KevLehman",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28199",
+          "title": "Regression: Fix private apps already in marketplace not shown properly on app details page",
+          "userLogin": "rique223",
+          "description": "## Jira task: [MKP-267](https://rocketchat.atlassian.net/browse/MKP-267?atlOrigin=eyJpIjoiMDVmNDJjYjFjZDNiNGU4NTk4NGQ4ODZjMjM3NDYwNDciLCJwIjoiaiJ9)\r\nFixed a bug in which apps that already existed in the marketplace would not show properly when installed via the private apps page.\r\nDemo gif:\r\n![private-apps-same-app](https://user-images.githubusercontent.com/43561537/221710893-004adb81-2dd7-4ad4-b0c6-18b644415ac0.gif)",
+          "milestone": "6.0.0",
+          "contributors": [
+            "rique223",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28145",
+          "title": "Regression: New messages not reflected in the chat window for queued chats.",
+          "userLogin": "murtaza98",
+          "milestone": "6.0.0",
+          "contributors": [
+            "murtaza98",
+            "web-flow",
+            "filipemarins"
+          ]
+        },
+        {
+          "pr": "28078",
+          "title": "Regression: Fixed room edit custom field validation",
+          "userLogin": "aleksandernsilva",
+          "description": "This PR fixes custom fields validations not being properly triggered/cleared on the room edit page.",
+          "milestone": "6.0.0",
+          "contributors": [
+            "aleksandernsilva",
+            "KevLehman",
+            "web-flow",
+            "sampaiodiego",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "28157",
+          "title": "Regression: fix a wrong behavior with the Department table row",
+          "userLogin": "MartinSchoeler",
+          "milestone": "6.0.0",
+          "contributors": [
+            "MartinSchoeler",
+            "aleksandernsilva",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28183",
+          "title": "Regression: Save button is not enable while trying to save contact manager",
+          "userLogin": "FabioCavaleti",
+          "milestone": "6.0.0",
+          "contributors": [
+            "FabioCavaleti",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28093",
+          "title": "Regression: Show messages instead of the composer when there is no action available on federated rooms",
+          "userLogin": "MarcosSpessatto",
+          "description": "Rules:\r\nIf the federation module is disabled within the workspace: **do not show the composer and show a message instead**;\r\n\r\nIf the federation module is enabled, the user is not part of the room, and the workspace is a CE environment: **do not show the composer and show a message instead.**\r\n\r\nIf the federation module is enabled, the is not part of the room, but the workspace is an EE environment: **show the composer with the Join button**\r\n\r\nIf everything is enabled, and the user is already part of the room: **show the normal composer**\r\n\r\nJira: [FED-82]",
+          "milestone": "6.0.0",
+          "contributors": [
+            "MarcosSpessatto",
+            "web-flow",
+            "ggazzo",
+            "dougfabris",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "28160",
+          "title": "Regression: Small fixes to installation flow",
+          "userLogin": "d-gubert",
+          "description": "Some UI fixes on app installation flow:\r\n* Some apps were being incorrectly shown as \"Enabled\"\r\n  App status `INITIALIZED` was wrongly considered as meaning an app was \"Enabled\". That's not the case.\r\n\r\n  It was introduced there to mark apps as \"installed\", but this is not the case anymore.  #27330 wanted to solve the situation where an app was initially shown as disabled right after it was installed, and a different solution to this will be provided by changing how Apps-Engine communicates status changes to the UI.\r\n\r\n* Some installed apps in the \"Installed\" screen incorrectly not being displayed as grandfathered\r\n* Installation modal being shown in EE where it shouldn't\r\n* Installation modal showed wrong label when installing apps from Marketplace",
+          "milestone": "6.0.0",
+          "contributors": [
+            "d-gubert",
+            "casalsgh",
+            "web-flow",
+            "rique223",
+            "kodiakhq[bot]"
+          ]
+        }
+      ]
     }
   },
   "5.4.0-rc.0": {

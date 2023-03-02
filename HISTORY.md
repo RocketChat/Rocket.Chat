@@ -1,6 +1,153 @@
 
 # 6.0.0 (Under Release Candidate Process)
 
+## 6.0.0-rc.4
+`2023-03-02  ·  1 ️️️⚠️  ·  3 🐛  ·  22 🔍  ·  18 👩‍💻👨‍💻`
+
+### ⚠️ BREAKING CHANGES
+
+
+- Remove support to deprecated typing event ([#28234](https://github.com/RocketChat/Rocket.Chat/pull/28234))
+
+### 🐛 Bug fixes
+
+
+- File upload modal not opening after too long message modal ([#28212](https://github.com/RocketChat/Rocket.Chat/pull/28212))
+
+  - Close the 'too long message to attachment' modal before opening the 'file upload' modal
+
+- Search list missing key parameter ([#28230](https://github.com/RocketChat/Rocket.Chat/pull/28230))
+
+- User registration with EmailConfirmation not working ([#28143](https://github.com/RocketChat/Rocket.Chat/pull/28143))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Add dark theme assets ([#28214](https://github.com/RocketChat/Rocket.Chat/pull/28214))
+
+- Chore: More E2E tests for PDF transcript feature of Omnichannel ([#28110](https://github.com/RocketChat/Rocket.Chat/pull/28110))
+
+- Regression: Add auto translate option back to live chat room ([#28139](https://github.com/RocketChat/Rocket.Chat/pull/28139))
+
+  Add the `translation` option to the live chat room;
+  The behavior of this feature in live chat rooms is quite different from direct and group messages. In these rooms, you need to activate and set up the language, while in the live chat room, the `translate` option should always appear for every room and should use the application language to translate.
+
+- Regression: broken message exhibition when edited ([#28180](https://github.com/RocketChat/Rocket.Chat/pull/28180))
+
+  Sometimes a message will have the fields `editedBy` and `editedAt` present but set to `null`. This PR handle this situation.
+
+- Regression: Denied Camera permission do not disable VideoMessageAction ([#28210](https://github.com/RocketChat/Rocket.Chat/pull/28210))
+
+  #### before
+  ![Kapture 2023-02-28 at 16 12 58](https://user-images.githubusercontent.com/27704687/221955658-2c733275-e193-4029-ba9e-777caf3f03ba.gif)
+
+  #### after
+  ![Kapture 2023-02-28 at 16 09 20](https://user-images.githubusercontent.com/27704687/221954849-f4379294-0189-4466-a523-ab71e1a8d0af.gif)
+
+- Regression: EmojiPicker missing shadow on dark mode ([#28236](https://github.com/RocketChat/Rocket.Chat/pull/28236))
+
+  #### before
+  ![Screen Shot 2023-03-01 at 18 23 18](https://user-images.githubusercontent.com/27704687/222267993-3958de34-5f28-4550-ae93-ef81af034b21.png)
+
+  #### after
+  ![Screen Shot 2023-03-01 at 18 22 14](https://user-images.githubusercontent.com/27704687/222267788-e39d292b-5dc2-4797-b227-1b47008075e7.png)
+
+- Regression: EnableUnlimitedApps button action ([#28221](https://github.com/RocketChat/Rocket.Chat/pull/28221))
+
+  "Enable unlimited apps" button on installation modal doesn't do anything. Now it redirects to the `'go-fully-featured-registered'` page.
+
+- Regression: fix a wrong behavior with the Department table row ([#28157](https://github.com/RocketChat/Rocket.Chat/pull/28157))
+
+- Regression: Fix app status filter not working in private apps page ([#28198](https://github.com/RocketChat/Rocket.Chat/pull/28198))
+
+  ## Jira task: [MKP-266](https://rocketchat.atlassian.net/browse/MKP-266?atlOrigin=eyJpIjoiMzlhNmRhZDNmOGZkNDBmZGEyY2FkNTQ5ZTVlZjUzNzkiLCJwIjoiaiJ9)
+  Fixed a bug in which the app status filter didn't work because of the new 'enabled*' and 'disabled*' app status.
+  Demo gif:
+  ![private-apps-status-filter](https://user-images.githubusercontent.com/43561537/221709473-633f6866-e921-438d-9a20-e6b341823cbf.gif)
+
+- Regression: Fix private apps already in marketplace not shown properly on app details page ([#28199](https://github.com/RocketChat/Rocket.Chat/pull/28199))
+
+  ## Jira task: [MKP-267](https://rocketchat.atlassian.net/browse/MKP-267?atlOrigin=eyJpIjoiMDVmNDJjYjFjZDNiNGU4NTk4NGQ4ODZjMjM3NDYwNDciLCJwIjoiaiJ9)
+  Fixed a bug in which apps that already existed in the marketplace would not show properly when installed via the private apps page.
+  Demo gif:
+  ![private-apps-same-app](https://user-images.githubusercontent.com/43561537/221710893-004adb81-2dd7-4ad4-b0c6-18b644415ac0.gif)
+
+- Regression: Fixed room edit custom field validation ([#28078](https://github.com/RocketChat/Rocket.Chat/pull/28078))
+
+  This PR fixes custom fields validations not being properly triggered/cleared on the room edit page.
+
+- Regression: Fixed triggers edit form not being properly updated ([#28235](https://github.com/RocketChat/Rocket.Chat/pull/28235))
+
+- Regression: New messages not reflected in the chat window for queued chats. ([#28145](https://github.com/RocketChat/Rocket.Chat/pull/28145))
+
+- Regression: Save button is not enable while trying to save contact manager ([#28183](https://github.com/RocketChat/Rocket.Chat/pull/28183))
+
+- Regression: SendFileLivechatMessage using deprecated prop affecting PDF transcript ([#28225](https://github.com/RocketChat/Rocket.Chat/pull/28225))
+
+- Regression: Show mention instead of the name of the user in app request messages ([#28200](https://github.com/RocketChat/Rocket.Chat/pull/28200))
+
+  ## Jira task: [MKP-249](https://rocketchat.atlassian.net/browse/MKP-249?atlOrigin=eyJpIjoiYmNmMjBjOGI5OGUwNGVhMTg1NGMyNDZhMGYzMGY4YWMiLCJwIjoiaiJ9)
+  Stopped using the name of users that requested apps and now the app request messages directly mention the users.
+  Demo image:
+  ![image](https://user-images.githubusercontent.com/43561537/221995968-c6e4dc7e-9052-4121-b5d0-610a1fbe7ea1.png)
+
+- Regression: Show messages instead of the composer when there is no action available on federated rooms ([#28093](https://github.com/RocketChat/Rocket.Chat/pull/28093))
+
+  Rules:
+  If the federation module is disabled within the workspace: **do not show the composer and show a message instead**;
+
+  If the federation module is enabled, the user is not part of the room, and the workspace is a CE environment: **do not show the composer and show a message instead.**
+
+  If the federation module is enabled, the is not part of the room, but the workspace is an EE environment: **show the composer with the Join button**
+
+  If everything is enabled, and the user is already part of the room: **show the normal composer**
+
+  Jira: [FED-82]
+
+- Regression: Small fixes to installation flow ([#28160](https://github.com/RocketChat/Rocket.Chat/pull/28160))
+
+  Some UI fixes on app installation flow:  
+  * Some apps were being incorrectly shown as "Enabled"
+  App status `INITIALIZED` was wrongly considered as meaning an app was "Enabled". That's not the case.
+
+  It was introduced there to mark apps as "installed", but this is not the case anymore.  #27330 wanted to solve the situation where an app was initially shown as disabled right after it was installed, and a different solution to this will be provided by changing how Apps-Engine communicates status changes to the UI.
+  
+  * Some installed apps in the "Installed" screen incorrectly not being displayed as grandfathered  
+  * Installation modal being shown in EE where it shouldn't  
+  * Installation modal showed wrong label when installing apps from Marketplace
+
+- Regression: Tooltip for More options dont disappear after click. ([#28201](https://github.com/RocketChat/Rocket.Chat/pull/28201))
+
+- Regression: UiKit message surface styles ([#28213](https://github.com/RocketChat/Rocket.Chat/pull/28213))
+
+- Regression: Update Composer Formatters Translation Keys ([#28228](https://github.com/RocketChat/Rocket.Chat/pull/28228))
+
+- Regression: Visitor abandonment job not working properly ([#28209](https://github.com/RocketChat/Rocket.Chat/pull/28209))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@FabioCavaleti](https://github.com/FabioCavaleti)
+- [@KevLehman](https://github.com/KevLehman)
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@aleksandernsilva](https://github.com/aleksandernsilva)
+- [@casalsgh](https://github.com/casalsgh)
+- [@d-gubert](https://github.com/d-gubert)
+- [@dougfabris](https://github.com/dougfabris)
+- [@felipe-rod123](https://github.com/felipe-rod123)
+- [@filipemarins](https://github.com/filipemarins)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@guijun13](https://github.com/guijun13)
+- [@juliajforesti](https://github.com/juliajforesti)
+- [@murtaza98](https://github.com/murtaza98)
+- [@rique223](https://github.com/rique223)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+
 ## 6.0.0-rc.3
 `2023-02-28  ·  21 🔍  ·  18 👩‍💻👨‍💻`
 
