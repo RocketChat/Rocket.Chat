@@ -453,7 +453,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 						{DepartmentForwarding && (
 							<Field>
 								<DepartmentForwarding
-									departmentId={id}
+									departmentId={id || ''}
 									value={departmentsAllowedToForward}
 									handler={handleDepartmentsAllowedToForward}
 									label={'List_of_departments_for_forward'}
