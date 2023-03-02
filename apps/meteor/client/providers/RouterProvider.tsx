@@ -51,6 +51,18 @@ const queryCurrentRoute = (): ReturnType<RouterContextValue['queryCurrentRoute']
 		return [route?.name, params, queryParams, route?.group?.name];
 	});
 
+const setQueryString = (paramsOrFn: Record<string, string | null> | ((prev: Record<string, string>) => Record<string, string>)): void => {
+	if (typeof paramsOrFn === 'function') {
+		const prevParams = FlowRouter.current().queryParams;
+		const emptyParams = Object.fromEntries(Object.entries(prevParams).map(([key]) => [key, null]));
+		const newParams = paramsOrFn(prevParams);
+		FlowRouter.setQueryParams({ ...emptyParams, ...newParams });
+		return;
+	}
+
+	FlowRouter.setQueryParams(paramsOrFn);
+};
+
 const contextValue = {
 	queryRoutePath,
 	queryRouteUrl,
@@ -59,6 +71,7 @@ const contextValue = {
 	queryRouteParameter,
 	queryQueryStringParameter,
 	queryCurrentRoute,
+	setQueryString,
 };
 
 const RouterProvider: FC = ({ children }) => <RouterContext.Provider children={children} value={contextValue} />;

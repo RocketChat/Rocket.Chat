@@ -1,9 +1,9 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { RouterContext } from '@rocket.chat/ui-contexts';
 import type { RefObject } from 'react';
-import { useLayoutEffect } from 'react';
+import { useContext, useLayoutEffect } from 'react';
 
 import { useMessageListJumpToMessageParam, useMessageListScroll } from '../../../../components/message/list/MessageListContext';
-import { setMessageJumpQueryStringParameter } from '../../../../lib/utils/setMessageJumpQueryStringParameter';
 import { setHighlightMessage, clearHighlightMessage } from '../providers/messageHighlightSubscription';
 
 // this is an arbitrary value so that there's a gap between the header and the message;
@@ -12,6 +12,7 @@ const SCROLL_EXTRA_OFFSET = 60;
 export const useJumpToMessage = (messageId: IMessage['_id'], messageRef: RefObject<HTMLDivElement>): void => {
 	const jumpToMessageParam = useMessageListJumpToMessageParam();
 	const scroll = useMessageListScroll();
+	const router = useContext(RouterContext);
 
 	useLayoutEffect(() => {
 		if (jumpToMessageParam !== messageId || !messageRef.current || !scroll) {
@@ -33,9 +34,10 @@ export const useJumpToMessage = (messageId: IMessage['_id'], messageRef: RefObje
 				return { top: newScrollPosition, behavior: 'smooth' };
 			});
 
-			setMessageJumpQueryStringParameter(null);
+			router.setQueryString(({ msg: _, ...params }) => params);
+
 			setHighlightMessage(messageId);
 			setTimeout(clearHighlightMessage, 2000);
 		}, 500);
-	}, [messageId, jumpToMessageParam, messageRef, scroll]);
+	}, [messageId, jumpToMessageParam, messageRef, scroll, router]);
 };
