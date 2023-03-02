@@ -7,7 +7,7 @@ import { EnterpriseSettings } from '@rocket.chat/core-services';
 
 import type { NotificationsModule } from '../notifications/notifications.module';
 import { settings } from '../../../app/settings/server/cached';
-import { AppEvents } from '../../../ee/server/apps/communication/websockets';
+import { AppEvents } from '../../../ee/server/apps/communication/events';
 
 const isMessageParserDisabled = process.env.DISABLE_MESSAGE_PARSER === 'true';
 
