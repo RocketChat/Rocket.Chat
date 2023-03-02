@@ -1,6 +1,6 @@
 import { log } from 'console';
 
-import { CannedResponse, OmnichannelServiceLevelAgreements, LivechatRooms, LivechatTag, LivechatUnit } from '@rocket.chat/models';
+import { CannedResponse, OmnichannelServiceLevelAgreements, LivechatRooms, LivechatTag, LivechatUnit, Users } from '@rocket.chat/models';
 import { Analytics } from '@rocket.chat/core-services';
 
 import { getModules, getTags, hasLicense } from './license';
@@ -21,6 +21,9 @@ type EEOnlyStats = {
 	businessUnits: number;
 	omnichannelPdfTranscriptRequested: number;
 	omnichannelPdfTranscriptSucceeded: number;
+	omnichannelRoomsWithSlas: number;
+	omnichannelRoomsWithPriorities: number;
+	livechatMonitors: number;
 };
 
 export async function getStatistics(): Promise<ENTERPRISE_STATISTICS> {
@@ -74,6 +77,20 @@ async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
 		}),
 	);
 
+	statsPms.push(
+		LivechatRooms.col.countDocuments({ priorityId: { $exists: true } }).then((count) => {
+			statistics.omnichannelRoomsWithPriorities = count;
+			return true;
+		}),
+	);
+
+	statsPms.push(
+		LivechatRooms.col.countDocuments({ slaId: { $exists: true } }).then((count) => {
+			statistics.omnichannelRoomsWithSlas = count;
+			return true;
+		}),
+	);
+
 	// Number of business units
 	statsPms.push(
 		LivechatUnit.find({ type: 'u' })
@@ -82,6 +99,14 @@ async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
 				statistics.businessUnits = count;
 				return true;
 			}),
+	);
+
+	statsPms.push(
+		// Total livechat monitors
+		Users.col.countDocuments({ type: 'livechat-monitor' }).then((count) => {
+			statistics.livechatMonitors = count;
+			return true;
+		}),
 	);
 
 	// Number of PDF transcript requested
