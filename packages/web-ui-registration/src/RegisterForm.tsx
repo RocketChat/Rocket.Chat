@@ -8,6 +8,7 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 import { useRegisterMethod } from './hooks/useRegisterMethod';
+import EmailConfirmationForm from './EmailConfirmationForm';
 
 type LoginRegisterPayload = {
 	name: string;
@@ -37,6 +38,8 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 		handleSubmit,
 		setError,
 		watch,
+		getValues,
+		clearErrors,
 		formState: { errors },
 	} = useForm<LoginRegisterPayload>();
 
@@ -45,7 +48,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 			{ pass: password, ...formData },
 			{
 				onError: (error: any) => {
-					if (error.errorType === 'error-invalid-email') {
+					if ([error.error, error.errorType].includes('error-invalid-email')) {
 						setError('email', { type: 'invalid-email', message: t('registration.component.form.invalidEmail') });
 					}
 					if (error.errorType === 'error-user-already-exists') {
@@ -63,6 +66,10 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 			},
 		);
 	};
+
+	if (errors.email?.type === 'invalid-email') {
+		return <EmailConfirmationForm onBackToLogin={() => clearErrors('email')} email={getValues('email')} />;
+	}
 
 	return (
 		<Form aria-labelledby={formLabelId} onSubmit={handleSubmit(handleRegister)}>
