@@ -1,5 +1,5 @@
 {
-	"extends": ["@rocket.chat/eslint-config"],
+	"extends": ["@rocket.chat/eslint-config", "plugin:you-dont-need-lodash-underscore/compatible"],
 	"globals": {
 		"__meteor_bootstrap__": false,
 		"__meteor_runtime_config__": false,

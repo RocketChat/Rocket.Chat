@@ -1,8 +1,8 @@
-import type { IRoom, IThreadMessage } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 import { MessageDivider } from '@rocket.chat/fuselage';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ReactElement, ComponentProps } from 'react';
 import React, { Fragment, memo } from 'react';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
@@ -20,9 +20,10 @@ import MessageListProvider from './providers/MessageListProvider';
 
 type MessageListProps = {
 	rid: IRoom['_id'];
+	scrollMessageList: ComponentProps<typeof MessageListProvider>['scrollMessageList'];
 };
 
-export const MessageList = ({ rid }: MessageListProps): ReactElement => {
+export const MessageList = ({ rid, scrollMessageList }: MessageListProps): ReactElement => {
 	const t = useTranslation();
 	const messages = useMessages({ rid });
 	const subscription = useRoomSubscription();
@@ -30,7 +31,7 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 	const formatDate = useFormatDate();
 
 	return (
-		<MessageListProvider>
+		<MessageListProvider scrollMessageList={scrollMessageList}>
 			<SelectedMessagesProvider>
 				{messages.map((message, index, { [index - 1]: previous }) => {
 					const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
@@ -47,6 +48,7 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 					const unread = Boolean(subscription?.tunread?.includes(message._id));
 					const mention = Boolean(subscription?.tunreadUser?.includes(message._id));
 					const all = Boolean(subscription?.tunreadGroup?.includes(message._id));
+					const ignoredUser = Boolean(subscription?.ignored?.includes(message.u._id));
 
 					return (
 						<Fragment key={message._id}>
@@ -56,7 +58,16 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 								</MessageDivider>
 							)}
 
-							{visible && <RoomMessage message={message} sequential={shouldShowAsSequential} unread={unread} mention={mention} all={all} />}
+							{visible && (
+								<RoomMessage
+									message={message}
+									sequential={shouldShowAsSequential}
+									unread={unread}
+									mention={mention}
+									all={all}
+									ignoredUser={ignoredUser}
+								/>
+							)}
 
 							{isThreadMessage(message) && (
 								<ThreadMessagePreview
@@ -65,7 +76,7 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 									data-unread={firstUnread}
 									data-sequential={sequential}
 									sequential={shouldShowAsSequential}
-									message={message as IThreadMessage}
+									message={message}
 								/>
 							)}
 
