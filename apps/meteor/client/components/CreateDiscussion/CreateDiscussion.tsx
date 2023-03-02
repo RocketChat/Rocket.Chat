@@ -3,7 +3,7 @@ import { Modal, Field, FieldGroup, ToggleSwitch, TextInput, TextAreaInput, Butto
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, ReactElement, SyntheticEvent } from 'react';
 import React from 'react';
 
 import { useForm } from '../../hooks/useForm';
@@ -64,24 +64,20 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 		handleUsernames(usernames.filter((current) => current !== value));
 	});
 
+	const handleFormSubmit = (e: SyntheticEvent) => {
+		e.preventDefault();
+		createDiscussionMutation.mutate({
+			prid: defaultParentRoom || parentRoom,
+			t_name: name,
+			users: usernames,
+			reply: encrypted ? undefined : firstMessage,
+			...(parentMessageId && { pmid: parentMessageId }),
+		});
+	};
 	return (
 		<Modal
 			data-qa='create-discussion-modal'
-			wrapperFunction={(props: ComponentProps<typeof Box>) => (
-				<Box
-					is='form'
-					onSubmit={() =>
-						createDiscussionMutation.mutate({
-							prid: defaultParentRoom || parentRoom,
-							t_name: name,
-							users: usernames,
-							reply: encrypted ? undefined : firstMessage,
-							...(parentMessageId && { pmid: parentMessageId }),
-						})
-					}
-					{...props}
-				/>
-			)}
+			wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={handleFormSubmit} {...props} />}
 		>
 			<Modal.Header>
 				<Modal.Title>{t('Discussion_title')}</Modal.Title>

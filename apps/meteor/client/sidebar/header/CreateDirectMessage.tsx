@@ -21,7 +21,8 @@ const CreateDirectMessage: FC<CreateDirectMessageProps> = ({ onClose }) => {
 
 	const createDirect = useEndpointAction('POST', '/v1/dm.create');
 
-	const onCreate = useMutableCallback(async () => {
+	const onCreate = useMutableCallback(async (e) => {
+		e.preventDefault();
 		if (!users.length) return;
 		try {
 			const {
