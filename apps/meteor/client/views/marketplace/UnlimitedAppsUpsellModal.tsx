@@ -10,22 +10,19 @@ export type UnlimitedAppsUpsellModalProps = {
 const UnlimitedAppsUpsellModal = ({ onClose }: UnlimitedAppsUpsellModalProps) => {
 	const t = useTranslation();
 	const cloudWorkspaceHadTrial = useSetting('Cloud_Workspace_Had_Trial') as boolean;
-	const urls = {
-		goFullyFeaturedRegistered: '/upgrade/go-fully-featured-registered',
-		talkToSales: 'https://go.rocket.chat/i/contact-sales',
-	};
+	const talkToSales = 'https://go.rocket.chat/i/contact-sales';
 
-	const adminRoute = useRoute('admin-index');
+	const upgradeRoute = useRoute('upgrade');
 
 	const goFullyFeaturedRegistered = useCallback(() => {
-		adminRoute.push({ context: urls.goFullyFeaturedRegistered });
+		upgradeRoute.push({ type: 'go-fully-featured-registered' });
 		onClose();
-	}, [adminRoute, onClose, urls.goFullyFeaturedRegistered]);
+	}, [upgradeRoute, onClose]);
 
 	const goToTalkSales = useCallback(() => {
-		window.open(urls.talkToSales, '_blank');
+		window.open(talkToSales, '_blank');
 		onClose();
-	}, [onClose, urls.talkToSales]);
+	}, [onClose, talkToSales]);
 
 	return (
 		<UpsellModal
