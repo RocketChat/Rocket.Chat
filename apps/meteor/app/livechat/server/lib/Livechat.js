@@ -7,7 +7,6 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from 'meteor/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { HTTP } from 'meteor/http';
 import UAParser from 'ua-parser-js';
 import {
 	Users as UsersRaw,
@@ -61,7 +60,6 @@ export const Livechat = {
 	historyMonitorType: 'url',
 
 	logger,
-	webhookLogger: logger.section('Webhook'),
 
 	findGuest(token) {
 		return LivechatVisitors.getVisitorByToken(token, {
@@ -762,33 +760,6 @@ export const Livechat = {
 		callbacks.runAsync('livechat:afterReturnRoomAsInquiry', { room });
 
 		return true;
-	},
-
-	sendRequest(postData, callback, attempts = 10) {
-		if (!attempts) {
-			return;
-		}
-		const secretToken = settings.get('Livechat_secret_token');
-		const headers = { 'X-RocketChat-Livechat-Token': secretToken };
-		const options = {
-			data: postData,
-			...(secretToken !== '' && secretToken !== undefined && { headers }),
-			timeout: settings.get('Livechat_http_timeout'),
-		};
-		try {
-			return HTTP.post(settings.get('Livechat_webhookUrl'), options);
-		} catch (err) {
-			Livechat.webhookLogger.error({ msg: `Response error on ${11 - attempts} try ->`, err });
-			// try 10 times after 20 seconds each
-			attempts - 1 &&
-				Livechat.webhookLogger.warn(`Will try again in ${(settings.get('Livechat_http_timeout') / 1000).toPrecision(2) * 4} seconds ...`);
-			setTimeout(
-				Meteor.bindEnvironment(function () {
-					Livechat.sendRequest(postData, callback, attempts - 1);
-				}),
-				settings.get('Livechat_http_timeout') * 4,
-			);
-		}
 	},
 
 	async getLivechatRoomGuestInfo(room) {

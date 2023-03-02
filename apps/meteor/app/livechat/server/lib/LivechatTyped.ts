@@ -1,8 +1,18 @@
-import type { IOmnichannelRoom, IOmnichannelRoomClosingInfo, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
+import type {
+	ILivechatAgent,
+	ILivechatCustomField,
+	IMessage,
+	IOmnichannelRoom,
+	IOmnichannelRoomClosingInfo,
+	IUser,
+	IVisitor,
+	MessageTypesValues,
+} from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms, Subscriptions, LivechatVisitors, Messages, Users } from '@rocket.chat/models';
 import moment from 'moment-timezone';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
@@ -13,12 +23,16 @@ import { Messages as LegacyMessage } from '../../../models/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 import { settings } from '../../../settings/server';
 import * as Mailer from '../../../mailer';
+import type { MainLogger } from '../../../../server/lib/logger/getPino';
 
 class LivechatClass {
 	logger: Logger;
 
+	webhookLogger: MainLogger;
+
 	constructor() {
 		this.logger = new Logger('Livechat');
+		this.webhookLogger = this.logger.section('Webhook');
 	}
 
 	async closeRoom(params: CloseRoomParams): Promise<void> {
@@ -296,6 +310,61 @@ class LivechatClass {
 			requestData: { type, visitor, user },
 		});
 		return true;
+	}
+
+	sendRequest(
+		postData:
+			| {
+					label: string;
+					topic: string;
+					createdAt: Date;
+					lastMessageAt: Date;
+					tags: Array<string>;
+					customFields: Array<ILivechatCustomField>;
+					type: string;
+					sentAt: Date;
+					visitor: IVisitor & { email?: string; phone?: string };
+					agentId?: string;
+					navigation?: string;
+					message?: IMessage['msg'];
+					agent?: ILivechatAgent & { email?: string; phone?: string };
+					crmData?: HTTP.HTTPResponse['data'];
+					messages?: Array<{
+						ts: Date;
+						editedAt: Date;
+						blocks?: IBlock;
+						_id: string;
+						username: string;
+						msg: IMessage['msg'];
+					}>;
+			  } & IOmnichannelRoom,
+		callback: () => void,
+		attempts = 10,
+	) {
+		if (!attempts) {
+			return;
+		}
+		const secretToken = settings.get<string>('Livechat_secret_token');
+		const headers = { 'X-RocketChat-Livechat-Token': secretToken };
+		const options: HTTP.HTTPRequest = {
+			data: postData,
+			...(secretToken !== '' && secretToken !== undefined && { headers }),
+			timeout: settings.get<number>('Livechat_http_timeout'),
+		};
+		try {
+			return HTTP.post(settings.get('Livechat_webhookUrl'), options);
+		} catch (err) {
+			Livechat.webhookLogger.error({ msg: `Response error on ${11 - attempts} try ->`, err });
+			// try 10 times after 20 seconds each
+			attempts - 1 &&
+				Livechat.webhookLogger.warn(`Will try again in ${(settings.get<number>('Livechat_http_timeout') / 1000) * 4} seconds ...`);
+			setTimeout(
+				Meteor.bindEnvironment(function () {
+					Livechat.sendRequest(postData, callback, attempts - 1);
+				}),
+				settings.get<number>('Livechat_http_timeout') * 4,
+			);
+		}
 	}
 }
 

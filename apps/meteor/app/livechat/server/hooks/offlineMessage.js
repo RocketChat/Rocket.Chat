@@ -1,6 +1,6 @@
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
-import { Livechat } from '../lib/Livechat';
+import { Livechat } from '../lib/LivechatTyped';
 
 callbacks.add(
 	'livechat.offlineMessage',
