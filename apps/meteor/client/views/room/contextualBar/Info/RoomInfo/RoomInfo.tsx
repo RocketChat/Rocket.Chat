@@ -1,4 +1,4 @@
-import { isRoomFederated } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Callout, Menu, Option } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
@@ -9,83 +9,25 @@ import MarkdownText from '../../../../../components/MarkdownText';
 import VerticalBar from '../../../../../components/VerticalBar';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 import { useActionSpread } from '../../../../hooks/useActionSpread';
+import { useRetentionPolicy } from '../../../components/body/useRetentionPolicy';
+import { useRoomActions } from '../hooks/useRoomActions';
 
-const RoomInfo = ({
-	room,
-	icon,
-	retentionPolicy = {},
-	onClickBack,
-	onClickHide,
-	onClickClose,
-	onClickLeave,
-	onClickEdit,
-	onClickDelete,
-	onClickMoveToTeam,
-	onClickConvertToTeam,
-	onClickEnterRoom,
-}) => {
+type RoomInfoProps = {
+	room: IRoom;
+	icon: string;
+	onClickBack: () => void;
+	onClickClose: () => void;
+	onClickEnterRoom: () => void;
+	onClickEdit?: () => void;
+	resetState: () => void;
+};
+
+const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onClickEdit, resetState }: RoomInfoProps) => {
 	const t = useTranslation();
 	const { name, fname, description, topic, archived, broadcast, announcement } = room;
-	const isFederated = isRoomFederated(room);
 
-	const { retentionPolicyEnabled, filesOnlyDefault, excludePinnedDefault, maxAgeDefault, retentionEnabledDefault } = retentionPolicy;
-
-	const memoizedActions = useMemo(
-		() => ({
-			...(onClickEnterRoom && {
-				enter: {
-					label: t('Enter'),
-					icon: 'login',
-					action: onClickEnterRoom,
-				},
-			}),
-			...(onClickEdit && {
-				edit: {
-					label: t('Edit'),
-					icon: 'edit',
-					action: onClickEdit,
-				},
-			}),
-			...(!isFederated &&
-				onClickDelete && {
-					delete: {
-						label: t('Delete'),
-						icon: 'trash',
-						action: onClickDelete,
-					},
-				}),
-			...(onClickMoveToTeam && {
-				move: {
-					label: t('Teams_move_channel_to_team'),
-					icon: 'team-arrow-right',
-					action: onClickMoveToTeam,
-				},
-			}),
-			...(onClickConvertToTeam && {
-				convert: {
-					label: t('Teams_convert_channel_to_team'),
-					icon: 'team',
-					action: onClickConvertToTeam,
-				},
-			}),
-			...(onClickHide && {
-				hide: {
-					label: t('Hide'),
-					action: onClickHide,
-					icon: 'eye-off',
-				},
-			}),
-			...(onClickLeave && {
-				leave: {
-					label: t('Leave'),
-					action: onClickLeave,
-					icon: 'sign-out',
-				},
-			}),
-		}),
-		[onClickEdit, t, onClickDelete, onClickMoveToTeam, onClickConvertToTeam, onClickHide, onClickLeave, onClickEnterRoom, isFederated],
-	);
-
+	const retentionPolicy = useRetentionPolicy(room);
+	const memoizedActions = useRoomActions(room, { onClickEnterRoom, onClickEdit }, resetState);
 	const { actions: actionsDefinition, menu: menuOptions } = useActionSpread(memoizedActions);
 
 	const menu = useMemo(() => {
@@ -108,7 +50,7 @@ const RoomInfo = ({
 	}, [menuOptions]);
 
 	const actions = useMemo(() => {
-		const mapAction = ([key, { label, icon, action }]) => <InfoPanel.Action key={key} label={label} onClick={action} icon={icon} />;
+		const mapAction = ([key, { label, icon, action }]: any) => <InfoPanel.Action key={key} label={label} onClick={action} icon={icon} />;
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
 	}, [actionsDefinition, menu]);
@@ -122,7 +64,7 @@ const RoomInfo = ({
 			</VerticalBar.Header>
 
 			<VerticalBar.ScrollableContent p='x24'>
-				<InfoPanel flexGrow={1}>
+				<InfoPanel>
 					<InfoPanel.Avatar>
 						<RoomAvatar size={'x332'} room={room} />
 					</InfoPanel.Avatar>
@@ -142,7 +84,7 @@ const RoomInfo = ({
 					</InfoPanel.Section>
 
 					<InfoPanel.Section>
-						{broadcast && broadcast !== '' && (
+						{broadcast && (
 							<InfoPanel.Field>
 								<InfoPanel.Label>
 									<b>{t('Broadcast_channel')}</b> {t('Broadcast_channel_Description')}
@@ -177,11 +119,11 @@ const RoomInfo = ({
 							</InfoPanel.Field>
 						)}
 
-						{retentionPolicyEnabled && retentionEnabledDefault && (
+						{retentionPolicy && (
 							<RetentionPolicyCallout
-								filesOnlyDefault={filesOnlyDefault}
-								excludePinnedDefault={excludePinnedDefault}
-								maxAgeDefault={maxAgeDefault}
+								filesOnlyDefault={retentionPolicy.filesOnly}
+								excludePinnedDefault={retentionPolicy.excludePinned}
+								maxAgeDefault={retentionPolicy.maxAge}
 							/>
 						)}
 					</InfoPanel.Section>
