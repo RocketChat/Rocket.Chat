@@ -1,6 +1,3 @@
-import { Reports, Rooms, Users } from '@rocket.chat/models';
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
-
 import { addMigration } from '../../lib/migrations';
 import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
 
@@ -9,90 +6,92 @@ addMigration({
 	async up() {
 		upsertPermissions();
 
-		const defaultRoom = (_id: string): Pick<IRoom, '_id' | 'name' | 't'> => {
-			return {
-				_id,
-				name: 'ghost-room',
-				t: 'd',
-			};
-		};
+		// TODO: Please comment this out, for next major release
 
-		const getRoomFields = (room: IRoom) => {
-			const { _id, name, t, federated, fname, prid } = room;
-			return {
-				_id,
-				name,
-				t,
-				federated,
-				fname,
-				prid,
-			};
-		};
+		// const defaultRoom = (_id: string): Pick<IRoom, '_id' | 'name' | 't'> => {
+		// 	return {
+		// 		_id,
+		// 		name: 'ghost-room',
+		// 		t: 'd',
+		// 	};
+		// };
 
-		const getUserFields = (user: IUser): Pick<IUser, '_id' | 'username' | 'avatarETag' | 'active' | 'name' | 'createdAt'> => {
-			const { _id, username, name, avatarETag, active, createdAt } = user;
-			return {
-				_id,
-				username,
-				name,
-				avatarETag,
-				active,
-				createdAt,
-			};
-		};
+		// const getRoomFields = (room: IRoom) => {
+		// 	const { _id, name, t, federated, fname, prid } = room;
+		// 	return {
+		// 		_id,
+		// 		name,
+		// 		t,
+		// 		federated,
+		// 		fname,
+		// 		prid,
+		// 	};
+		// };
 
-		const defaultUser = (_id: string): Pick<IUser, '_id' | 'username' | 'avatarETag' | 'active' | 'name' | 'createdAt'> => {
-			return {
-				_id,
-				username: 'rocket.cat',
-				name: 'Ghost User',
-				avatarETag: undefined,
-				active: false,
-				createdAt: new Date(),
-			};
-		};
-		// get all the distinct rooms
+		// const getUserFields = (user: IUser): Pick<IUser, '_id' | 'username' | 'avatarETag' | 'active' | 'name' | 'createdAt'> => {
+		// 	const { _id, username, name, avatarETag, active, createdAt } = user;
+		// 	return {
+		// 		_id,
+		// 		username,
+		// 		name,
+		// 		avatarETag,
+		// 		active,
+		// 		createdAt,
+		// 	};
+		// };
 
-		const rooms = await Reports.getDistinctRooms();
+		// const defaultUser = (_id: string): Pick<IUser, '_id' | 'username' | 'avatarETag' | 'active' | 'name' | 'createdAt'> => {
+		// 	return {
+		// 		_id,
+		// 		username: 'rocket.cat',
+		// 		name: 'Ghost User',
+		// 		avatarETag: undefined,
+		// 		active: false,
+		// 		createdAt: new Date(),
+		// 	};
+		// };
+		// // get all the distinct rooms
 
-		rooms.forEach(async (ridDoc: { _id: string }) => {
-			const { _id: rid } = ridDoc;
-			const roomData = await Rooms.findOneById(rid);
+		// const rooms = await Reports.getDistinctRooms();
 
-			const room = roomData ? getRoomFields(roomData) : defaultRoom(rid);
+		// rooms.forEach(async (ridDoc: { _id: string }) => {
+		// 	const { _id: rid } = ridDoc;
+		// 	const roomData = await Rooms.findOneById(rid);
 
-			try {
-				await Reports.updateMany(
-					{
-						'message.rid': rid,
-					},
-					{ $set: { room } },
-				);
-			} catch (error) {
-				console.error('Error while migrating the room', error);
-			}
-		});
+		// 	const room = roomData ? getRoomFields(roomData) : defaultRoom(rid);
 
-		// get all the distinct users
+		// 	try {
+		// 		await Reports.updateMany(
+		// 			{
+		// 				'message.rid': rid,
+		// 			},
+		// 			{ $set: { room } },
+		// 		);
+		// 	} catch (error) {
+		// 		console.error('Error while migrating the room', error);
+		// 	}
+		// });
 
-		const users = await Reports.getDistinctUsers();
+		// // get all the distinct users
 
-		users.forEach(async (userDoc: { _id: string }) => {
-			const { _id: userId } = userDoc;
-			const userData = await Users.findOne({ _id: userId });
+		// const users = await Reports.getDistinctUsers();
 
-			const user = userData ? getUserFields(userData) : defaultUser(userId);
+		// users.forEach(async (userDoc: { _id: string }) => {
+		// 	const { _id: userId } = userDoc;
+		// 	const userData = await Users.findOne({ _id: userId });
 
-			try {
-				await Reports.updateMany(
-					{
-						userId,
-					},
-					{ $set: { reportedBy: user }, $unset: { userId: 1 } },
-				);
-			} catch (error) {
-				console.error('Error while migrating the user', error);
-			}
-		});
+		// 	const user = userData ? getUserFields(userData) : defaultUser(userId);
+
+		// 	try {
+		// 		await Reports.updateMany(
+		// 			{
+		// 				userId,
+		// 			},
+		// 			{ $set: { reportedBy: user }, $unset: { userId: 1 } },
+		// 		);
+		// 	} catch (error) {
+		// 		console.error('Error while migrating the user', error);
+		// 	}
+		// });
 	},
 });

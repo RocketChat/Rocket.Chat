@@ -142,7 +142,7 @@ API.v1.addRoute(
 
 			const update = userId
 				? await Reports.hideReportsByUserId(userId, modId, sanitizedReason, action)
-				: await Reports.hideReportsByMessageId(msgId, modId, sanitizedReason, action);
+				: await Reports.hideReportsByMessageId(msgId as string, modId, sanitizedReason, action);
 
 			return API.v1.success({ update });
 		},
