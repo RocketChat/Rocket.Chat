@@ -53,6 +53,7 @@ const RouterContextMock = ({ children, initialRoute, pushRoute, replaceRoute }: 
 					queryRouteParameter: () => [() => (): void => undefined, (): undefined => undefined],
 					queryQueryStringParameter: () => [() => (): void => undefined, (): undefined => undefined],
 					queryCurrentRoute: () => [subscribeToCurrentRoute, getCurrentRoute],
+					getRoutePath: () => '/',
 				};
 			}, [currentRoute.get, currentRoute.set, currentRoute.subscribe, pushRoute, replaceRoute])}
 		>
