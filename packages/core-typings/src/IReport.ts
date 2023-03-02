@@ -11,21 +11,23 @@ export interface IModerationInfo {
 	reasonForHiding: string;
 }
 
-export interface IRoomInfo {
-	_id: IRoom['_id'];
-	name: IRoom['name'];
-}
+// NOTE: remove this interface
+// export interface IRoomInfo {
+// 	_id: IRoom['_id'];
+// 	name: IRoom['name'];
+// }
 
-export interface IMessageWithRoom extends IMessage {
-	room: IRoomInfo;
-}
+// NOTE: remove this interface
+// export interface IMessageWithRoom extends IMessage {
+// 	room: IRoomInfo;
+// }
 
 // new one
 export interface IReport extends IRocketChatRecord {
 	message: IMessage;
 	description: string;
 	ts: Date;
-	room: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'federated'>;
+	room: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'federated' | 'prid'>;
 	reportedBy: Pick<IUser, '_id' | 'username' | 'avatarETag' | 'active' | 'name' | 'createdAt'>;
 	moderationInfo?: IModerationInfo;
 	_hidden?: boolean;
@@ -46,17 +48,19 @@ export interface IModerationAudit {
 	msgId: IMessage['_id'];
 	roomIds: IRoom['_id'][];
 	ts: IReport['ts'];
-	rooms: IRoomInfo[];
+	rooms: IReport['room'][];
 }
 
-export interface IUserReportedMessages {
-	count: number;
-	messages: IMessageWithRoom[];
-}
+// NOTE: remove this interface
+// export interface IUserReportedMessages {
+// 	count: number;
+// 	messages: IMessageWithRoom[];
+// }
 
-export interface IReportedMessageInfo {
-	_id: IReport['_id'];
-	description: IReport['description'];
-	ts: IReport['ts'];
-	reportedBy: IReport['reportedBy'];
-}
+// NOTE: remove this interface
+// export interface IReportedMessageInfo {
+// 	_id: IReport['_id'];
+// 	description: IReport['description'];
+// 	ts: IReport['ts'];
+// 	reportedBy: IReport['reportedBy'];
+// }

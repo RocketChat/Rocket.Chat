@@ -372,6 +372,48 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		return this.col.countDocuments(query, { limit: count });
 	}
 
+	getDistinctRooms(): Promise<{ _id: string }[]> {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+		};
+
+		const params = [
+			{
+				$match: query,
+			},
+			{
+				$group: {
+					_id: '$message.rid',
+				},
+			},
+		];
+
+		return this.col.aggregate(params).toArray() as Promise<{ _id: string }[]>;
+	}
+
+	getDistinctUsers(): Promise<{ _id: string }[]> {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+		};
+
+		const params = [
+			{
+				$match: query,
+			},
+			{
+				$group: {
+					_id: '$userId',
+				},
+			},
+		];
+
+		return this.col.aggregate(params).toArray() as Promise<{ _id: string }[]>;
+	}
+
 	// 	async countReports(): Promise<number> & void {
 	// 		const query = {
 	// 			_hidden: {

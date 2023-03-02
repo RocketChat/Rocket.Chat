@@ -54,4 +54,8 @@ export interface IReportsModel extends IBaseModel<IReport> {
 	countReportsByMessageId(messageId: IReport['message']['_id'], count?: number): Promise<number>;
 
 	countGroupedReports(latest?: Date, oldest?: Date, selector?: string): Promise<number>;
+
+	getDistinctRooms(): Promise<Array<{ _id: string }>>;
+
+	getDistinctUsers(): Promise<Array<{ _id: string }>>;
 }
