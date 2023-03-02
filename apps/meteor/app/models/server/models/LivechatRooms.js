@@ -36,7 +36,10 @@ export class LivechatRooms extends Base {
 		);
 		this.tryEnsureIndex({ 'livechatData.$**': 1 });
 		this.tryEnsureIndex({ pdfTranscriptRequested: 1 }, { sparse: true });
-		this.tryEnsureIndex({ pdfTranscriptFileId: 1 }, { sparse: true });
+		this.tryEnsureIndex({ pdfTranscriptFileId: 1 }, { sparse: true }); // used on statistics
+		this.tryEnsureIndex({ callStatus: 1 }, { sparse: true }); // used on statistics
+		this.tryEnsureIndex({ priorityId: 1 }, { sparse: true });
+		this.tryEnsureIndex({ slaId: 1 }, { sparse: true });
 	}
 
 	findOneByIdOrName(_idOrName, options) {
