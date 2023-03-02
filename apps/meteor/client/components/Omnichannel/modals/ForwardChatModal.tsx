@@ -110,7 +110,7 @@ const ForwardChatModal = ({
 								withTitle
 								filter={departmentsFilter as string}
 								setFilter={setDepartmentsFilter}
-								options={departments}
+								options={departments as unknown as { value: string; label: string }[]}
 								maxWidth='100%'
 								placeholder={t('Select_an_option')}
 								onChange={(value: string): void => {

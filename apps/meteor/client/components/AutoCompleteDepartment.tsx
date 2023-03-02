@@ -50,17 +50,17 @@ const AutoCompleteDepartment = ({
 
 	const department = useMemo(() => {
 		const valueFound = typeof value === 'string' ? value : value?.value || '';
-		return departmentsItems.find((dep) => dep.value === valueFound)?.value;
+		return departmentsItems.find((dep) => dep.value.value === valueFound)?.value;
 	}, [departmentsItems, value]);
 
 	return (
 		<PaginatedSelectFiltered
 			withTitle
-			value={department}
+			value={department as unknown as string}
 			onChange={onChange}
 			filter={departmentsFilter}
 			setFilter={setDepartmentsFilter as (value?: string | number) => void}
-			options={departmentsItems}
+			options={departmentsItems as unknown as { value: string; label: string }[]}
 			placeholder={t('Select_an_option')}
 			data-qa='autocomplete-department'
 			endReached={
