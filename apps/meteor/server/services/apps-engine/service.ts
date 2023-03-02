@@ -5,7 +5,7 @@ import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting } from '@rocket.chat/core-typings';
 
 import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
-import { AppEvents as AppLifeCycleEvents } from '../../../ee/server/apps/communication';
+import { AppEvents as AppLifeCycleEvents } from '../../../ee/server/apps/communication/websockets';
 import notifications from '../../../app/notifications/server/lib/Notifications';
 import { SystemLogger } from '../../lib/logger/system';
 
