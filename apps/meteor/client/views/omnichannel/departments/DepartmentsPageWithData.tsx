@@ -13,7 +13,7 @@ import DepartmentsTable from './DepartmentsTable';
 
 const DepartmentsPageWithData = (): ReactElement => {
 	const [text, setText] = useState('');
-	const [debouncedText = ''] = useDebouncedValue(text, 500);
+	const debouncedText = useDebouncedValue(text, 500);
 	const pagination = usePagination();
 	const sort = useSort<'name' | 'email' | 'active'>('name');
 
@@ -38,7 +38,11 @@ const DepartmentsPageWithData = (): ReactElement => {
 
 	return (
 		<>
-			<FilterByText onChange={({ text }): void => setText(text)} />
+			<FilterByText
+				onChange={({ text }): void => {
+					setText(text);
+				}}
+			/>
 			<DepartmentsTable
 				aria-busy={text !== debouncedText}
 				aria-live='assertive'
