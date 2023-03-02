@@ -21,7 +21,14 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		input.dispatchEvent(event);
 	};
 
-	const emitter = new Emitter<{ quotedMessagesUpdate: void; editing: void; recording: void; recordingVideo: void; formatting: void }>();
+	const emitter = new Emitter<{
+		quotedMessagesUpdate: void;
+		editing: void;
+		recording: void;
+		recordingVideo: void;
+		formatting: void;
+		mircophoneDenied: void;
+	}>();
 
 	let _quotedMessages: IMessage[] = [];
 
@@ -163,6 +170,21 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 			(value: boolean) => {
 				recordingVideo = value;
 				emitter.emit('recordingVideo');
+			},
+		];
+	})();
+
+	const [isMicrophoneDenied, setIsMicrophoneDenied] = (() => {
+		let isMicrophoneDenied = false;
+
+		return [
+			{
+				get: () => isMicrophoneDenied,
+				subscribe: (callback: () => void) => emitter.on('mircophoneDenied', callback),
+			},
+			(value: boolean) => {
+				isMicrophoneDenied = value;
+				emitter.emit('mircophoneDenied');
 			},
 		];
 	})();
@@ -317,5 +339,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		dismissAllQuotedMessages,
 		quotedMessages,
 		formatters,
+		isMicrophoneDenied,
+		setIsMicrophoneDenied,
 	};
 };

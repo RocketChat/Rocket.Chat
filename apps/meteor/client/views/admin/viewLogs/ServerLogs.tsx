@@ -198,7 +198,7 @@ const ServerLogs = (): ReactElement => {
 				paddingBlock='x8'
 				fontScale='c1'
 				borderRadius='full'
-				color='on-info'
+				color='info'
 				backgroundColor='surface'
 				onClick={handleClick}
 				textAlign='center'

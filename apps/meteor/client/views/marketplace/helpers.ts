@@ -7,7 +7,7 @@ import { t } from '../../../app/utils/client';
 import { Utilities } from '../../../ee/lib/misc/Utilities';
 import { dispatchToastMessage } from '../../lib/toast';
 
-export const appEnabledStatuses = [AppStatus.AUTO_ENABLED, AppStatus.MANUALLY_ENABLED, AppStatus.INITIALIZED];
+export const appEnabledStatuses = [AppStatus.AUTO_ENABLED, AppStatus.MANUALLY_ENABLED];
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 interface ApiError {

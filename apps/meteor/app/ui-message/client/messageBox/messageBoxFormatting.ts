@@ -23,29 +23,29 @@ export type FormattingButton =
 
 export const formattingButtons: ReadonlyArray<FormattingButton> = [
 	{
-		label: 'bold',
+		label: 'Bold',
 		icon: 'bold',
 		pattern: '*{{text}}*',
 		command: 'b',
 	},
 	{
-		label: 'italic',
+		label: 'Italic',
 		icon: 'italic',
 		pattern: '_{{text}}_',
 		command: 'i',
 	},
 	{
-		label: 'strike',
+		label: 'Strike',
 		icon: 'strike',
 		pattern: '~{{text}}~',
 	},
 	{
-		label: 'inline_code',
+		label: 'Inline_code',
 		icon: 'code',
 		pattern: '`{{text}}`',
 	},
 	{
-		label: 'multi_line',
+		label: 'Multi_line',
 		icon: 'multiline',
 		pattern: '```\n{{text}}\n``` ',
 	},

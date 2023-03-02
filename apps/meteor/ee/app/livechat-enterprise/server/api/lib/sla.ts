@@ -48,7 +48,7 @@ export async function findSLA({
 export const updateRoomSLA = async (
 	roomId: string,
 	user: Required<Pick<IUser, '_id' | 'username' | 'name'>>,
-	sla: IOmnichannelServiceLevelAgreements,
+	sla: Pick<IOmnichannelServiceLevelAgreements, '_id' | 'name' | 'dueTimeInMinutes'>,
 ) => {
 	await Promise.all([updateInquiryQueueSla(roomId, sla), updateRoomSlaWeights(roomId, sla), addSlaChangeHistoryToRoom(roomId, user, sla)]);
 };
