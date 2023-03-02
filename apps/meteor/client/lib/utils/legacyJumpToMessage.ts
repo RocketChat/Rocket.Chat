@@ -6,18 +6,24 @@ import { ChatRoom } from '../../../app/models/client';
 import { RoomHistoryManager } from '../../../app/ui-utils/client';
 import { goToRoomById } from './goToRoomById';
 
-export const jumpToMessage = async (message: IMessage) => {
+/** @deprecated */
+export const legacyJumpToMessage = async (message: IMessage) => {
 	if (matchMedia('(max-width: 500px)').matches) {
 		(Template.instance() as any)?.tabBar?.close();
 	}
 
-	if (isThreadMessage(message)) {
-		const { route, queryParams } = FlowRouter.current();
+	if (isThreadMessage(message) || message.tcount) {
+		const { route, queryParams, params } = FlowRouter.current();
+
+		if (params.tab === 'thread' && (params.context === message.tmid || params.context === message._id)) {
+			return;
+		}
+
 		FlowRouter.go(
 			route?.name ?? '/',
 			{
 				tab: 'thread',
-				context: message.tmid,
+				context: message.tmid || message._id,
 				rid: message.rid,
 				name: ChatRoom.findOne({ _id: message.rid })?.name ?? '',
 			},
