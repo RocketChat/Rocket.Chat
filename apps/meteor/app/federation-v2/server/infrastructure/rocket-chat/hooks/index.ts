@@ -189,7 +189,7 @@ export class FederationHooks {
 		);
 	}
 
-	public static afterRoomRoleChanged(federationRoomService: FederationRoomServiceSender, data: Record<string, any>): void {
+	public static afterRoomRoleChanged(federationRoomService: FederationRoomServiceSender, data?: Record<string, any>): void {
 		if (!data || !settings.get('Federation_Matrix_enabled')) {
 			return;
 		}
