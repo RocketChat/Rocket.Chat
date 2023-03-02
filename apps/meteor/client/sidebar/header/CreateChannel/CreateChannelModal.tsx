@@ -131,7 +131,7 @@ const CreateChannelModal = ({ teamId = '', onClose }: CreateChannelModalProps): 
 				topic,
 				broadcast,
 				encrypted,
-				federated,
+				...(federated && { federated }),
 				...(teamId && { teamId }),
 			},
 		};

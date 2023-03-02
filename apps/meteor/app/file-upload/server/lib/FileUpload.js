@@ -23,7 +23,7 @@ import { canAccessRoom } from '../../../authorization/server/functions/canAccess
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 import { Messages } from '../../../models/server';
-import { AppEvents, Apps } from '../../../apps/server';
+import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { streamToBuffer } from './streamToBuffer';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -704,6 +704,11 @@ export class FileUploadClass {
 	insert(fileData, streamOrBuffer, cb) {
 		if (streamOrBuffer instanceof stream) {
 			streamOrBuffer = Promise.await(streamToBuffer(streamOrBuffer));
+		}
+
+		if (streamOrBuffer instanceof Uint8Array) {
+			// Services compat :)
+			streamOrBuffer = Buffer.from(streamOrBuffer);
 		}
 
 		// Check if the fileData matches store filter

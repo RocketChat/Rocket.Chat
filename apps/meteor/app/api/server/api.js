@@ -41,7 +41,7 @@ const getRequestIP = (req) => {
 		return remoteAddress;
 	}
 
-	if (!_.isString(forwardedFor)) {
+	if (!forwardedFor || typeof forwardedFor.valueOf() !== 'string') {
 		return remoteAddress;
 	}
 
@@ -322,7 +322,7 @@ export class APIClass extends Restivus {
 		const shouldVerifyPermissions = checkPermissions(options);
 
 		// Allow for more than one route using the same option and endpoints
-		if (!_.isArray(routes)) {
+		if (!Array.isArray(routes)) {
 			routes = [routes];
 		}
 		const { version } = this._config;

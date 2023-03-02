@@ -1,18 +1,13 @@
 import type { IThreadMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import { useUserId, useUserSubscription } from '@rocket.chat/ui-contexts';
+import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useMemo, memo } from 'react';
+import React, { memo, useRef } from 'react';
 
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
-import { useMessageListContext } from '../../../views/room/MessageList/contexts/MessageListContext';
-import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
-import {
-	parseMessageTextToAstMarkdown,
-	removePossibleNullMessageValues,
-} from '../../../views/room/MessageList/lib/parseMessageTextToAstMarkdown';
-import { useMessageActions } from '../../../views/room/contexts/MessageContext';
+import { useJumpToMessage } from '../../../views/room/MessageList/hooks/useJumpToMessage';
+import { useChat } from '../../../views/room/contexts/ChatContext';
 import UserAvatar from '../../avatar/UserAvatar';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
@@ -30,34 +25,16 @@ const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): Rea
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
 	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored);
-	const {
-		actions: { openUserCard },
-	} = useMessageActions();
+	const chat = useChat();
 
-	const { katex, showColors } = useMessageListContext();
-	const subscription = useUserSubscription(message.rid);
-	const autoTranslateOptions = useAutoTranslate(subscription);
+	const messageRef = useRef(null);
 
-	const normalizeMessage = useMemo(() => {
-		const parseOptions = {
-			colors: showColors,
-			emoticons: true,
-			...(Boolean(katex) && {
-				katex: {
-					dollarSyntax: katex?.dollarSyntaxEnabled,
-					parenthesisSyntax: katex?.parenthesisSyntaxEnabled,
-				},
-			}),
-		};
-		return <TMessage extends IThreadMessage | IThreadMainMessage>(message: TMessage) =>
-			parseMessageTextToAstMarkdown(removePossibleNullMessageValues(message), parseOptions, autoTranslateOptions);
-	}, [katex, showColors, autoTranslateOptions]);
-
-	const normalizedMessage = useMemo(() => normalizeMessage(message), [message, normalizeMessage]);
+	useJumpToMessage(message._id, messageRef);
 
 	return (
 		<Message
 			id={message._id}
+			ref={messageRef}
 			isEditing={editing}
 			isPending={message.temp}
 			sequential={sequential}
@@ -75,8 +52,10 @@ const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): Rea
 						url={message.avatar}
 						username={message.u.username}
 						size='x36'
-						style={{ cursor: 'pointer' }}
-						onClick={openUserCard(message.u.username)}
+						{...(chat?.userCard && {
+							onClick: chat?.userCard.open(message.u.username),
+							style: { cursor: 'pointer' },
+						})}
 					/>
 				)}
 				{sequential && <StatusIndicators message={message} />}
@@ -85,9 +64,9 @@ const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): Rea
 			<MessageContainer>
 				{!sequential && <MessageHeader message={message} />}
 
-				{ignored ? <IgnoredContent onShowMessageIgnored={toggleIgnoring} /> : <ThreadMessageContent message={normalizedMessage} />}
+				{ignored ? <IgnoredContent onShowMessageIgnored={toggleIgnoring} /> : <ThreadMessageContent message={message} />}
 			</MessageContainer>
-			{!message.private && <ToolboxHolder message={message} />}
+			{!message.private && <ToolboxHolder message={message} context='threads' />}
 		</Message>
 	);
 };

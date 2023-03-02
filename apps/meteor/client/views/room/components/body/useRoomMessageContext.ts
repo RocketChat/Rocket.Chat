@@ -13,10 +13,9 @@ export const useRoomMessageContext = (room: IRoom) => {
 	const user = useUser() ?? undefined;
 	const rid = room._id;
 	const subscription = useRoomSubscription();
-	const { isEmbedded: embeddedLayout, isMobile: mobile } = useLayout();
+	const { isMobile: mobile } = useLayout();
 	const translateLanguage = useReactiveValue(useCallback(() => AutoTranslate.getLanguage(rid), [rid]));
 	const autoImageLoad = useUserPreference('autoImageLoad');
-	const useLegacyMessageTemplate = useUserPreference('useLegacyMessageTemplate');
 	const saveMobileBandwidth = useUserPreference('saveMobileBandwidth');
 	const collapseMediaByDefault = useUserPreference('collapseMediaByDefault');
 	const hasPermissionDeleteMessage = usePermission('delete-message', rid);
@@ -28,9 +27,7 @@ export const useRoomMessageContext = (room: IRoom) => {
 	const autoTranslateEnabled = useSetting('AutoTranslate_Enabled');
 	const allowEditing = useSetting('Message_AllowEditing');
 	const blockEditInMinutes = useSetting('Message_AllowEditing_BlockEditInMinutes');
-	const showEditedStatus = useSetting('Message_ShowEditedStatus');
 	const embed = useSetting('API_Embed');
-	const embedDisabledFor = useSetting('API_EmbedDisabledFor');
 	const groupingPeriod = useSetting('Message_GroupingPeriod') as number;
 
 	return useMemo(
@@ -41,11 +38,8 @@ export const useRoomMessageContext = (room: IRoom) => {
 				rid,
 				room,
 				subscription,
-				instance: () => undefined,
-				embeddedLayout,
 				translateLanguage,
 				autoImageLoad,
-				useLegacyMessageTemplate,
 				saveMobileBandwidth: mobile && saveMobileBandwidth,
 				collapseMediaByDefault,
 				showreply: true,
@@ -58,9 +52,7 @@ export const useRoomMessageContext = (room: IRoom) => {
 				AutoTranslate_Enabled: autoTranslateEnabled,
 				Message_AllowEditing: allowEditing,
 				Message_AllowEditing_BlockEditInMinutes: blockEditInMinutes,
-				Message_ShowEditedStatus: showEditedStatus,
 				API_Embed: embed,
-				API_EmbedDisabledFor: embedDisabledFor,
 				Message_GroupingPeriod: groupingPeriod * 1000,
 			}),
 		[
@@ -72,8 +64,6 @@ export const useRoomMessageContext = (room: IRoom) => {
 			collapseMediaByDefault,
 			displayRoles,
 			embed,
-			embedDisabledFor,
-			embeddedLayout,
 			groupingPeriod,
 			hasPermissionDeleteMessage,
 			hasPermissionDeleteOwnMessage,
@@ -82,11 +72,9 @@ export const useRoomMessageContext = (room: IRoom) => {
 			rid,
 			room,
 			saveMobileBandwidth,
-			showEditedStatus,
 			subscription,
 			translateLanguage,
 			uid,
-			useLegacyMessageTemplate,
 			useRealName,
 			user,
 		],

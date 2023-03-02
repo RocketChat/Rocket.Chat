@@ -1,11 +1,11 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Modal, Field, FieldGroup, ToggleSwitch, TextInput, TextAreaInput, Button, Icon, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useMutation } from '@tanstack/react-query';
 import type { ComponentProps, ReactElement } from 'react';
 import React from 'react';
 
-import { useEndpointAction } from '../../hooks/useEndpointAction';
 import { useForm } from '../../hooks/useForm';
 import { goToRoomById } from '../../lib/utils/goToRoomById';
 import RoomAutoComplete from '../RoomAutoComplete';
@@ -21,7 +21,7 @@ type CreateDiscussionFormValues = {
 };
 
 type CreateDiscussionProps = {
-	parentMessageId: IMessage['_id'];
+	parentMessageId?: IMessage['_id'];
 	onClose: () => void;
 	defaultParentRoom?: IRoom['_id'];
 	nameSuggestion?: string;
@@ -44,24 +44,14 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 
 	const canCreate = (parentRoom || defaultParentRoom) && name;
 
-	const createDiscussion = useEndpointAction('POST', '/v1/rooms.createDiscussion');
+	const createDiscussion = useEndpoint('POST', '/v1/rooms.createDiscussion');
 
-	const create = useMutableCallback(async (e): Promise<void> => {
-		e.preventDefault();
-		try {
-			const result = await createDiscussion({
-				prid: defaultParentRoom || parentRoom,
-				t_name: name,
-				users: usernames,
-				reply: encrypted ? undefined : firstMessage,
-				...(parentMessageId && { pmid: parentMessageId }),
-			});
-
-			goToRoomById(result.discussion._id);
+	const createDiscussionMutation = useMutation({
+		mutationFn: createDiscussion,
+		onSuccess: ({ discussion }) => {
+			goToRoomById(discussion._id);
 			onClose();
-		} catch (error) {
-			console.warn(error);
-		}
+		},
 	});
 
 	const onChangeUsers = useMutableCallback((value, action) => {
@@ -77,7 +67,21 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 	return (
 		<Modal
 			data-qa='create-discussion-modal'
-			wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={create} {...props} />}
+			wrapperFunction={(props: ComponentProps<typeof Box>) => (
+				<Box
+					is='form'
+					onSubmit={() =>
+						createDiscussionMutation.mutate({
+							prid: defaultParentRoom || parentRoom,
+							t_name: name,
+							users: usernames,
+							reply: encrypted ? undefined : firstMessage,
+							...(parentMessageId && { pmid: parentMessageId }),
+						})
+					}
+					{...props}
+				/>
+			)}
 		>
 			<Modal.Header>
 				<Modal.Title>{t('Discussion_title')}</Modal.Title>
@@ -144,7 +148,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button primary disabled={!canCreate} type='submit'>
+					<Button type='submit' primary disabled={!canCreate || createDiscussionMutation.isLoading}>
 						{t('Create')}
 					</Button>
 				</Modal.FooterControllers>

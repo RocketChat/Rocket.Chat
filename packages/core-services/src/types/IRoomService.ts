@@ -28,4 +28,5 @@ export interface ICreateRoomParams {
 export interface IRoomService {
 	addMember(uid: string, rid: string): Promise<boolean>;
 	create(uid: string, params: ICreateRoomParams): Promise<IRoom>;
+	createDirectMessage(data: { to: string; from: string }): Promise<{ rid: string }>;
 }
