@@ -33,6 +33,7 @@ export type RouterContextValue = {
 		subscribe: (onStoreChange: () => void) => () => void,
 		getSnapshot: () => [RouteName?, RouteParameters?, QueryStringParameters?, RouteGroupName?],
 	];
+	getRoutePath(nameOrPathDef: string, parameters?: Record<string, string>, queryStringParameters?: Record<string, string>): string;
 };
 
 export const RouterContext = createContext<RouterContextValue>({
@@ -46,4 +47,7 @@ export const RouterContext = createContext<RouterContextValue>({
 		() => (): void => undefined,
 		(): [undefined, RouteParameters, QueryStringParameters, undefined] => [undefined, {}, {}, undefined],
 	],
+	getRoutePath: () => {
+		throw new Error('not implemented');
+	},
 });

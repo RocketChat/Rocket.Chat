@@ -95,7 +95,7 @@ async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
 
 	// Number of PDF transcript that succeeded
 	statsPms.push(
-		LivechatRooms.find({ pdfFileId: { $exists: true } })
+		LivechatRooms.find({ pdfTranscriptFileId: { $exists: true } })
 			.count()
 			.then((count) => {
 				statistics.omnichannelPdfTranscriptSucceeded = count;
