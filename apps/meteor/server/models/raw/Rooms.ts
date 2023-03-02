@@ -1,4 +1,4 @@
-import type { IRoom, ITeam, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IDirectMessageRoom, IRoom, IRoomFederated, ITeam, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, IRoomsModel } from '@rocket.chat/model-typings';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -43,7 +43,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(query, options);
 	}
 
-	findPaginatedByIds(roomIds: Array<IRoom['_id']>, options: FindOptions<IRoom> = {}) {
+	findPaginatedByIds(roomIds: Array<IRoom['_id']>, options: FindOptions<IRoom> = {}): FindPaginated<FindCursor<IRoom>> {
 		return this.findPaginated(
 			{
 				_id: { $in: roomIds },
@@ -52,7 +52,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
-	async getMostRecentAverageChatDurationTime(numberMostRecentChats: number, department: string | object) {
+	async getMostRecentAverageChatDurationTime(numberMostRecentChats: number, department: string | object): Promise<Document> {
 		const aggregate = [
 			{
 				$match: {
@@ -564,27 +564,27 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		});
 	}
 
-	incUsersCountByIds(ids, inc = 1) {
-		const query = {
+	incUsersCountByIds(ids: Array<IRoom['_id']>, inc: number = 1): Promise<Document | UpdateResult> {
+		const query: Filter<IRoom> = {
 			_id: {
 				$in: ids,
 			},
 		};
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$inc: {
 				usersCount: inc,
 			},
 		};
 
-		return this.update(query, update, { multi: true });
+		return this.updateMany(query, update);
 	}
 
-	findOneByNameOrFname(name, options = {}) {
+	findOneByNameOrFname(name: NonNullable<IRoom['name'] | IRoom['fname']>, options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
 		return this.col.findOne({ $or: [{ name }, { fname: name }] }, options);
 	}
 
-	allRoomSourcesCount() {
+	allRoomSourcesCount(): AggregationCursor<IRoom> {
 		return this.col.aggregate([
 			{
 				$match: {
@@ -603,7 +603,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		]);
 	}
 
-	findByBroadcast(options) {
+	findByBroadcast(options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		return this.find(
 			{
 				broadcast: true,
@@ -612,7 +612,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
-	findByActiveLivestream(options) {
+	findByActiveLivestream(options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		return this.find(
 			{
 				'streamingOptions.type': 'livestream',
@@ -621,22 +621,22 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
-	setAsFederated(roomId) {
+	setAsFederated(roomId: IRoom['_id']): Promise<UpdateResult> {
 		return this.updateOne({ _id: roomId }, { $set: { federated: true } });
 	}
 
-	setRoomTypeById(roomId, roomType) {
+	setRoomTypeById(roomId: IRoom['_id'], roomType: IRoom['t']): Promise<UpdateResult> {
 		return this.updateOne({ _id: roomId }, { $set: { t: roomType } });
 	}
 
-	setRoomNameById(roomId, name) {
+	setRoomNameById(roomId: IRoom['_id'], name: IRoom['name']): Promise<UpdateResult> {
 		return this.updateOne({ _id: roomId }, { $set: { name } });
 	}
 
-	setFnameById(_id, fname) {
-		const query = { _id };
+	setFnameById(_id: IRoom['_id'], fname: IRoom['fname']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				fname,
 			},
@@ -645,11 +645,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	setRoomTopicById(roomId, topic) {
+	setRoomTopicById(roomId: IRoom['_id'], topic: IRoom['description']): Promise<UpdateResult> {
 		return this.updateOne({ _id: roomId }, { $set: { description: topic } });
 	}
 
-	findByE2E(options) {
+	findByE2E(options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		return this.find(
 			{
 				encrypted: true,
@@ -658,7 +658,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
-	findRoomsInsideTeams(autoJoin = false) {
+	findRoomsInsideTeams(autoJoin: boolean = false): FindCursor<IRoom> {
 		return this.find({
 			teamId: { $exists: true },
 			teamMain: { $exists: false },
@@ -666,12 +666,17 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		});
 	}
 
-	countByType(t) {
+	countByType(t: IRoom['t']): Promise<number> {
 		return this.col.countDocuments({ t });
 	}
 
-	findPaginatedByNameOrFNameAndRoomIdsIncludingTeamRooms(searchTerm, teamIds, roomIds, options) {
-		const query = {
+	findPaginatedByNameOrFNameAndRoomIdsIncludingTeamRooms(
+		searchTerm: object | NonNullable<IRoom['name'] | IRoom['fname']>,
+		teamIds: Array<ITeam['_id']>,
+		roomIds: Array<IRoom['_id']>,
+		options: FindOptions<IRoom> = {},
+	): FindPaginated<FindCursor<IRoom>> {
+		const query: Filter<IRoom> = {
 			$and: [
 				{ teamMain: { $exists: false } },
 				{ prid: { $exists: false } },
@@ -716,7 +721,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findPaginated(query, options);
 	}
 
-	findPaginatedContainingNameOrFNameInIdsAsTeamMain(searchTerm, rids, options) {
+	findPaginatedContainingNameOrFNameInIdsAsTeamMain(
+		searchTerm: IRoom['name'] | IRoom['fname'],
+		rids: Array<IRoom['_id']>,
+		options: FindOptions<IRoom> = {},
+	): FindPaginated<FindCursor<IRoom>> {
 		const query = {
 			teamMain: true,
 			$and: [
@@ -752,8 +761,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findPaginated(query, options);
 	}
 
-	findPaginatedByTypeAndIds(type, ids, options) {
-		const query = {
+	findPaginatedByTypeAndIds(
+		type: IRoom['t'],
+		ids: Array<IRoom['_id']>,
+		options: FindOptions<IRoom> = {},
+	): FindPaginated<FindCursor<IRoom>> {
+		const query: Filter<IRoom> = {
 			t: type,
 			_id: {
 				$in: ids,
@@ -763,17 +776,20 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findPaginated(query, options);
 	}
 
-	findOneDirectRoomContainingAllUserIDs(uid, options) {
-		const query = {
+	findOneDirectRoomContainingAllUserIDs(
+		uid: IDirectMessageRoom['uids'],
+		options: FindOptions<IRoom> = {},
+	): Promise<IDirectMessageRoom | null> {
+		const query: Filter<IDirectMessageRoom> = {
 			t: 'd',
 			uids: { $size: uid.length, $all: uid },
 		};
 
-		return this.findOne(query, options);
+		return this.findOne<IDirectMessageRoom>(query, options);
 	}
 
-	findFederatedRooms(options) {
-		const query = {
+	findFederatedRooms(options: FindOptions<IRoom> = {}): Promise<IRoomFederated | null> {
+		const query: Filter<IRoomFederated> = {
 			federated: true,
 		};
 
