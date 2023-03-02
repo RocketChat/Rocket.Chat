@@ -6,10 +6,10 @@ import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import type { ISubscription, IUser as ICoreUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
+import { Rooms, Subscriptions, Users } from '../../../models/server';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
-import { Rooms, Subscriptions, Users } from '../../../models/server';
-import type { AppServerOrchestrator } from '../orchestrator';
 
 export class AppRoomBridge extends RoomBridge {
 	// eslint-disable-next-line no-empty-function

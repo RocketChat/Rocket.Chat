@@ -4,7 +4,6 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MouseEventHandler, ReactElement, ReactNode } from 'react';
 import React, { memo } from 'react';
 
-import RawText from '../../../../../components/RawText';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { followStyle, anchor } from '../../../../../components/message/helpers/followSyle';
 import AllMentionNotification from '../../../../../components/message/notification/AllMentionNotification';
@@ -14,7 +13,7 @@ import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 
 type ThreadListMessageProps = {
 	_id: IMessage['_id'];
-	msg: IMessage['msg'];
+	msg: ReactNode;
 	following: boolean;
 	username: IMessage['u']['username'];
 	name?: IMessage['u']['name'];
@@ -61,9 +60,7 @@ const ThreadListMessage = ({
 						<Message.Name title={username}>{name}</Message.Name>
 						<Message.Timestamp>{formatDate(ts)}</Message.Timestamp>
 					</Message.Header>
-					<Message.Body clamp={2}>
-						<RawText>{msg}</RawText>
-					</Message.Body>
+					<Message.Body clamp={2}>{msg}</Message.Body>
 					<Message.Block>
 						<Message.Metrics>
 							<Message.Metrics.Item>

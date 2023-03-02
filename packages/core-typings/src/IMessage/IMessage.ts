@@ -10,6 +10,8 @@ import type { IRoom, RoomID } from '../IRoom';
 import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
 import type { FileProp } from './MessageAttachment/Files/FileProp';
 import type { ILivechatVisitor } from '../ILivechatVisitor';
+import type { IOmnichannelServiceLevelAgreements } from '../IOmnichannelServiceLevelAgreements';
+import type { ILivechatPriority } from '../ILivechatPriority';
 
 type MentionType = 'user' | 'team';
 
@@ -46,6 +48,8 @@ type TeamMessageTypes =
 type LivechatMessageTypes =
 	| 'livechat_navigation_history'
 	| 'livechat_transfer_history'
+	| 'omnichannel_priority_change_history'
+	| 'omnichannel_sla_change_history'
 	| 'livechat_transcript_history'
 	| 'livechat_video_call'
 	| 'livechat_transfer_history_fallback'
@@ -89,6 +93,7 @@ export type MessageTypesValues =
 	| 'room-disallowed-reacting'
 	| 'command'
 	| 'videoconf'
+	| 'message_pinned'
 	| LivechatMessageTypes
 	| TeamMessageTypes
 	| VoipMessageTypesValues
@@ -184,9 +189,19 @@ export interface IMessage extends IRocketChatRecord {
 	federation?: {
 		eventId: string;
 	};
-}
 
-export type ToolboxMessageType = 'message' | 'thread' | 'federated';
+	/* used when message type is "omnichannel_sla_change_history" */
+	slaData?: {
+		definedBy: Pick<IUser, '_id' | 'username'>;
+		sla?: Pick<IOmnichannelServiceLevelAgreements, 'name'>;
+	};
+
+	/* used when message type is "omnichannel_priority_change_history" */
+	priorityData?: {
+		definedBy: Pick<IUser, '_id' | 'username'>;
+		priority?: Pick<ILivechatPriority, 'name' | 'i18n'>;
+	};
+}
 
 export type MessageSystem = {
 	t: 'system';
@@ -197,9 +212,16 @@ export interface IEditedMessage extends IMessage {
 	editedBy: Pick<IUser, '_id' | 'username'>;
 }
 
-export const isEditedMessage = (message: IMessage): message is IEditedMessage => 'editedAt' in message && 'editedBy' in message;
-export const isDeletedMessage = (message: IMessage): message is IEditedMessage =>
-	'editedAt' in message && 'editedBy' in message && message.t === 'rm';
+export const isEditedMessage = (message: IMessage): message is IEditedMessage =>
+	'editedAt' in message &&
+	(message as { editedAt?: unknown }).editedAt instanceof Date &&
+	'editedBy' in message &&
+	typeof (message as { editedBy?: unknown }).editedBy === 'object' &&
+	(message as { editedBy?: unknown }).editedBy !== null &&
+	'_id' in (message as IEditedMessage).editedBy &&
+	typeof (message as IEditedMessage).editedBy._id === 'string';
+
+export const isDeletedMessage = (message: IMessage): message is IEditedMessage => isEditedMessage(message) && message.t === 'rm';
 export const isMessageFromMatrixFederation = (message: IMessage): boolean =>
 	'federation' in message && Boolean(message.federation?.eventId);
 
@@ -299,15 +321,6 @@ export interface IMessageDiscussion extends IMessage {
 
 export const isMessageDiscussion = (message: IMessage): message is IMessageDiscussion => {
 	return 'drid' in message;
-};
-
-export type IMessageEdited = IMessage & {
-	editedAt: Date;
-	editedBy: Pick<IUser, '_id' | 'username'>;
-};
-
-export const isMessageEdited = (message: IMessage): message is IMessageEdited => {
-	return 'editedAt' in message && 'editedBy' in message;
 };
 
 export type IMessageInbox = IMessage & {

@@ -1,12 +1,16 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, SidebarDivider, Palette, SidebarFooter as Footer } from '@rocket.chat/fuselage';
+import { useSetting } from '@rocket.chat/ui-contexts';
+import { useThemeMode } from '@rocket.chat/ui-theming/src/hooks/useThemeMode';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { settings } from '../../../app/settings/client';
 import { SidebarFooterWatermark } from '../../../ee/client/sidebar/footer/SidebarFooterWatermark';
 
 const SidebarFooterDefault = (): ReactElement => {
+	const [, , theme] = useThemeMode();
+	const logo = String(useSetting(theme === 'dark' ? 'Layout_Sidenav_Footer_Dark' : 'Layout_Sidenav_Footer')).trim();
+
 	const sidebarFooterStyle = css`
 		& img {
 			max-width: 100%;
@@ -14,7 +18,7 @@ const SidebarFooterDefault = (): ReactElement => {
 		}
 
 		& a:any-link {
-			color: ${Palette.text['font-on-info']};
+			color: ${Palette.text['font-info']};
 		}
 	`;
 
@@ -28,7 +32,9 @@ const SidebarFooterDefault = (): ReactElement => {
 				height='x48'
 				width='auto'
 				className={sidebarFooterStyle}
-				dangerouslySetInnerHTML={{ __html: String(settings.get('Layout_Sidenav_Footer')).trim() }}
+				dangerouslySetInnerHTML={{
+					__html: logo,
+				}}
 			/>
 			<SidebarFooterWatermark />
 		</Footer>

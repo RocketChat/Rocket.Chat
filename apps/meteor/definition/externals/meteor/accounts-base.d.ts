@@ -23,6 +23,10 @@ declare module 'meteor/accounts-base' {
 
 		function _runLoginHandlers<T>(methodInvocation: T, loginRequest: Record<string, any>): Record<string, any> | undefined;
 
+		function _storedLoginToken(): unknown;
+
+		function _unstoreLoginToken(): void;
+
 		function updateOrCreateUserFromExternalService(
 			serviceName: string,
 			serviceData: Record<string, unknown>,
