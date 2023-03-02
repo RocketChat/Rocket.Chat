@@ -24,25 +24,33 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		});
 
 		this.onEvent('apps.added', async (appId: string): Promise<void> => {
-			await (Apps.getManager()! as any).loadOne(appId); // TO-DO: fix type
+			await (Apps.getManager() as any)?.loadOne(appId);
 			notifications.streamApps.emitWithoutBroadcast(AppLifeCycleEvents.APP_ADDED, appId);
 		});
 
 		this.onEvent('apps.removed', async (appId: string): Promise<void> => {
-			const app = Apps.getManager()!.getOneById(appId);
+			const app = Apps.getManager()?.getOneById(appId);
 
 			if (!app) {
 				return;
 			}
 
-			await Apps.getManager()!.removeLocal(appId);
+			await Apps.getManager()?.removeLocal(appId);
 			notifications.streamApps.emitWithoutBroadcast(AppLifeCycleEvents.APP_REMOVED, appId);
 		});
 
 		this.onEvent('apps.updated', async (appId: string): Promise<void> => {
 			const storageItem = await Apps.getStorage()?.retrieveOne(appId);
 
+			if (!storageItem) {
+				return;
+			}
+
 			const appPackage = await Apps.getAppSourceStorage()?.fetch(storageItem);
+
+			if (!appPackage) {
+				return;
+			}
 
 			await Apps.getManager()?.updateLocal(storageItem, appPackage);
 
@@ -66,9 +74,13 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		});
 
 		this.onEvent('apps.settingUpdated', async (appId: string, setting: ISetting): Promise<void> => {
-			await Apps.getManager()!
-				.getSettingsManager()
-				.updateAppSetting(appId, setting as any); // TO-DO: fix type of `setting`
+			const appManager = Apps.getManager();
+
+			if (!appManager) {
+				return;
+			}
+
+			await appManager.getSettingsManager().updateAppSetting(appId, setting as any);
 			notifications.streamApps.emitWithoutBroadcast(AppLifeCycleEvents.APP_SETTING_UPDATED, { appId });
 		});
 
