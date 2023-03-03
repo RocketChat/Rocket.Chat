@@ -1,3 +1,4 @@
+import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
 import type {
 	IEmailInbox,
@@ -158,4 +159,14 @@ export type EventSignatures = {
 		id: string;
 		diff?: Record<string, string>;
 	}): void;
+	'apps.added'(appId: string): void;
+	'apps.removed'(appId: string): void;
+	'apps.updated'(appId: string): void;
+	'apps.statusUpdate'(appId: string, status: AppStatus): void;
+	'apps.settingUpdated'(appId: string, setting: ISetting): void;
+	'command.added'(command: string): void;
+	'command.disabled'(command: string): void;
+	'command.updated'(command: string): void;
+	'command.removed'(command: string): void;
+	'actions.changed'(): void;
 };
