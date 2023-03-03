@@ -3,24 +3,14 @@ import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting } from '@rocket.chat/core-typings';
 import type { IStreamer } from 'meteor/rocketchat:streamer';
+import { api } from '@rocket.chat/core-services';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import notifications from '../../../../app/notifications/server/lib/Notifications';
 import type { AppServerOrchestrator } from '../orchestrator';
+import { AppEvents } from './events';
 
-export enum AppEvents {
-	APP_ADDED = 'app/added',
-	APP_REMOVED = 'app/removed',
-	APP_UPDATED = 'app/updated',
-	APP_STATUS_CHANGE = 'app/statusUpdate',
-	APP_SETTING_UPDATED = 'app/settingUpdated',
-	COMMAND_ADDED = 'command/added',
-	COMMAND_DISABLED = 'command/disabled',
-	COMMAND_UPDATED = 'command/updated',
-	COMMAND_REMOVED = 'command/removed',
-	ACTIONS_CHANGED = 'actions/changed',
-}
-
+export { AppEvents };
 export class AppServerListener {
 	private orch: AppServerOrchestrator;
 
@@ -153,13 +143,11 @@ export class AppServerNotifier {
 	}
 
 	async appAdded(appId: string): Promise<void> {
-		this.engineStreamer.emit(AppEvents.APP_ADDED, appId);
-		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_ADDED, appId);
+		api.broadcast('apps.added', appId);
 	}
 
 	async appRemoved(appId: string): Promise<void> {
-		this.engineStreamer.emit(AppEvents.APP_REMOVED, appId);
-		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_REMOVED, appId);
+		api.broadcast('apps.removed', appId);
 	}
 
 	async appUpdated(appId: string): Promise<void> {
@@ -168,8 +156,7 @@ export class AppServerNotifier {
 			return;
 		}
 
-		this.engineStreamer.emit(AppEvents.APP_UPDATED, appId);
-		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_UPDATED, appId);
+		api.broadcast('apps.updated', appId);
 	}
 
 	async appStatusUpdated(appId: string, status: AppStatus): Promise<void> {
@@ -181,8 +168,7 @@ export class AppServerNotifier {
 			}
 		}
 
-		this.engineStreamer.emit(AppEvents.APP_STATUS_CHANGE, { appId, status });
-		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_STATUS_CHANGE, { appId, status });
+		api.broadcast('apps.statusUpdate', appId, status);
 	}
 
 	async appSettingsChange(appId: string, setting: ISetting): Promise<void> {
@@ -191,31 +177,26 @@ export class AppServerNotifier {
 			return;
 		}
 
-		this.engineStreamer.emit(AppEvents.APP_SETTING_UPDATED, { appId, setting });
-		this.clientStreamer.emitWithoutBroadcast(AppEvents.APP_SETTING_UPDATED, { appId });
+		api.broadcast('apps.settingUpdated', appId, setting);
 	}
 
 	async commandAdded(command: string): Promise<void> {
-		this.engineStreamer.emit(AppEvents.COMMAND_ADDED, command);
-		this.clientStreamer.emitWithoutBroadcast(AppEvents.COMMAND_ADDED, command);
+		api.broadcast('command.added', command);
 	}
 
 	async commandDisabled(command: string): Promise<void> {
-		this.engineStreamer.emit(AppEvents.COMMAND_DISABLED, command);
-		this.clientStreamer.emitWithoutBroadcast(AppEvents.COMMAND_DISABLED, command);
+		api.broadcast('command.disabled', command);
 	}
 
 	async commandUpdated(command: string): Promise<void> {
-		this.engineStreamer.emit(AppEvents.COMMAND_UPDATED, command);
-		this.clientStreamer.emitWithoutBroadcast(AppEvents.COMMAND_UPDATED, command);
+		api.broadcast('command.updated', command);
 	}
 
 	async commandRemoved(command: string): Promise<void> {
-		this.engineStreamer.emit(AppEvents.COMMAND_REMOVED, command);
-		this.clientStreamer.emitWithoutBroadcast(AppEvents.COMMAND_REMOVED, command);
+		api.broadcast('command.removed', command);
 	}
 
 	async actionsChanged(): Promise<void> {
-		this.clientStreamer.emitWithoutBroadcast(AppEvents.ACTIONS_CHANGED);
+		api.broadcast('actions.changed');
 	}
 }

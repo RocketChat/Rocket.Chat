@@ -33,11 +33,15 @@ export interface IStats {
 	teams: ITeamStats;
 	totalLivechatVisitors: number;
 	totalLivechatAgents: number;
+	totalLivechatManagers: number;
+	totalCustomFields: number;
 	livechatEnabled: boolean;
+	isDepartmentRemovalEnabled: boolean;
 	totalChannelMessages: number;
 	totalPrivateGroupMessages: number;
 	totalDirectMessages: number;
 	totalLivechatMessages: number;
+	totalTriggers: number;
 	totalMessages: number;
 	federatedServers: number;
 	federatedUsers: number;
@@ -82,6 +86,7 @@ export interface IStats {
 	pushQueue: number;
 	omnichannelSources: { [key: string]: number | string }[];
 	departments: number;
+	archivedDepartments: number;
 	routingAlgorithm: string;
 	onHoldEnabled: boolean;
 	emailInboxes: number;
@@ -200,4 +205,7 @@ export interface IStats {
 	matrixFederation: {
 		enabled: boolean;
 	};
+	webRTCEnabled: boolean;
+	webRTCEnabledForOmnichannel: boolean;
+	omnichannelWebRTCCalls: number;
 }
