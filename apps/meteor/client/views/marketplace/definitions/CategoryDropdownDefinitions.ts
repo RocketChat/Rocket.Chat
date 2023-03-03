@@ -10,7 +10,7 @@ export type CategoryDropDownGroups = {
 }[];
 
 export type CategoryDropDownListProps = {
-	groups: CategoryDropDownGroups;
+	categories: CategoryDropDownGroups;
 	width?: number;
 	onSelected: CategoryOnSelected;
 };

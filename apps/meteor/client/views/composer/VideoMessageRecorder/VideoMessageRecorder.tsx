@@ -20,7 +20,7 @@ const videoContainerClass = css`
 	transform: scaleX(-1);
 	filter: FlipH;
 
-	@media (width <= 500px) {
+	@media (max-width: 500px) {
 		& > video {
 			width: 100%;
 			height: 100%;
@@ -46,13 +46,13 @@ const VideoMessageRecorder = ({ rid, tmid, chatContext, reference }: VideoMessag
 			clearInterval(recordingInterval);
 		}
 		setRecordingInterval(null);
+		VideoRecorder.stopRecording();
 		UserAction.stop(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
 		setRecordingState('idle');
 	};
 
 	const handleRecord = async () => {
 		if (recordingState === 'recording') {
-			VideoRecorder.stopRecording();
 			stopVideoRecording(rid, tmid);
 		} else {
 			VideoRecorder.record();
