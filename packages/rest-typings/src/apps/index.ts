@@ -39,7 +39,7 @@ export type AppsEndpoints = {
 			app: App;
 			success: boolean;
 		};
-		POST: (params: { marketplace: boolean; version: string; permissionsGranted: IPermission[]; appId: string }) => {
+		POST: (params: { marketplace: boolean; version: string; permissionsGranted?: IPermission[]; appId: string }) => {
 			app: App;
 		};
 	};
@@ -213,7 +213,7 @@ export type AppsEndpoints = {
 			  }[])
 			| (() => { apps: App[] });
 
-		POST: (params: { appId: string; marketplace: boolean; version: string; permissionsGranted: IPermission[] }) => {
+		POST: (params: { appId: string; marketplace: boolean; version: string; permissionsGranted?: IPermission[] }) => {
 			app: App;
 		};
 	};
