@@ -1,7 +1,6 @@
 import { EventEmitter } from 'events';
 
-import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
-import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import { Apps } from '@rocket.chat/core-services';
 
 import { Users } from '../../../../app/models/server';
 import type { BundleFeature } from './bundles';
@@ -38,22 +37,6 @@ class LicenseClass {
 		maxPrivateApps: 3,
 		maxMarketplaceApps: 5,
 	};
-
-	private Apps: AppServerOrchestrator;
-
-	constructor() {
-		/**
-		 * Importing the Apps variable statically at the top of the file causes a change
-		 * in the import order and ends up causing an error during the server initialization
-		 *
-		 * We added a dynamic import here to avoid this issue
-		 * @TODO as soon as the Apps-Engine service is available, use it instead of this dynamic import
-		 */
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		import('../../../server/apps').then(({ Apps }) => {
-			this.Apps = Apps;
-		});
-	}
 
 	private _validateExpiration(expiration: string): boolean {
 		return new Date() > new Date(expiration);
@@ -237,11 +220,11 @@ class LicenseClass {
 	}
 
 	async canEnableApp(source: LicenseAppSources): Promise<boolean> {
-		if (!this.Apps?.isInitialized()) {
+		if (!Apps.isInitialized()) {
 			return false;
 		}
 
-		return isUnderAppLimits({ appManager: this.Apps.getManager() as AppManager }, this.appsConfig, source);
+		return isUnderAppLimits(this.appsConfig, source);
 	}
 
 	showLicenses(): void {

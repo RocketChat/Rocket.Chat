@@ -3,6 +3,9 @@ import type { IAppsEngineService } from '@rocket.chat/core-services';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting } from '@rocket.chat/core-typings';
+import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
+import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
 import { AppEvents as AppLifeCycleEvents } from '../../../ee/server/apps/communication/websockets';
@@ -103,5 +106,25 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		this.onEvent('actions.changed', () => {
 			notifications.streamApps.emitWithoutBroadcast(AppLifeCycleEvents.ACTIONS_CHANGED);
 		});
+	}
+
+	isInitialized(): boolean {
+		return Apps.isInitialized();
+	}
+
+	getApp(query: any): IAppInfo[] | undefined {
+		return Apps.getManager()
+			?.get(query)
+			.map((app: ProxiedApp) => app.getApp().getInfo());
+	}
+
+	getAppStorageItemById(appId: string): IAppStorageItem | undefined {
+		const app = Apps.getManager()?.getOneById(appId);
+
+		if (!app) {
+			return;
+		}
+
+		return app.getStorageItem();
 	}
 }
