@@ -14,7 +14,7 @@ export async function addOAuthApp(applicationParams: OauthAppsAddParams, uid: IU
 
 	const user = await Users.findOne(uid, { projection: { username: 1 } });
 
-	if (!user?.username) {
+	if (!user || !user.username) {
 		// TODO: username is required, but not always present
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'addOAuthApp' });
 	}
@@ -54,7 +54,6 @@ export async function addOAuthApp(applicationParams: OauthAppsAddParams, uid: IU
 			_id: user._id,
 			username: user.username,
 		},
-		_id: '',
 	};
 
 	if (application.redirectUri.length === 0) {
@@ -63,6 +62,8 @@ export async function addOAuthApp(applicationParams: OauthAppsAddParams, uid: IU
 		});
 	}
 
-	application._id = (await OAuthApps.insertOne(application)).insertedId;
-	return application;
+	return {
+		...application,
+		_id: (await OAuthApps.insertOne(application)).insertedId,
+	};
 }
