@@ -1,19 +1,19 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IFederationService } from '@rocket.chat/core-services';
 
-import type { InMemoryQueue } from '../../../app/federation-v2/server/infrastructure/queue/InMemoryQueue';
-import type { IFederationBridge } from '../../../app/federation-v2/server/domain/IFederationBridge';
-import type { RocketChatSettingsAdapter } from '../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
-import type { FederationRoomServiceSender } from '../../../app/federation-v2/server/application/sender/RoomServiceSender';
-import type { FederationUserServiceSender } from '../../../app/federation-v2/server/application/sender/UserServiceSender';
-import type { RocketChatRoomAdapter } from '../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Room';
-import type { RocketChatUserAdapter } from '../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/User';
-import type { RocketChatFileAdapter } from '../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/File';
-import type { RocketChatMessageAdapter } from '../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Message';
-import type { RocketChatNotificationAdapter } from '../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Notification';
-import { FederationRoomSenderConverter } from '../../../app/federation-v2/server/infrastructure/rocket-chat/converters/RoomSender';
-import { FederationHooks } from '../../../app/federation-v2/server/infrastructure/rocket-chat/hooks';
-import { FederationFactory } from '../../../app/federation-v2/server/infrastructure/Factory';
+import type { InMemoryQueue } from './infrastructure/queue/InMemoryQueue';
+import type { IFederationBridge } from './domain/IFederationBridge';
+import type { RocketChatSettingsAdapter } from './infrastructure/rocket-chat/adapters/Settings';
+import type { FederationRoomServiceSender } from './application/sender/RoomServiceSender';
+import type { FederationUserServiceSender } from './application/sender/UserServiceSender';
+import type { RocketChatRoomAdapter } from './infrastructure/rocket-chat/adapters/Room';
+import type { RocketChatUserAdapter } from './infrastructure/rocket-chat/adapters/User';
+import type { RocketChatFileAdapter } from './infrastructure/rocket-chat/adapters/File';
+import type { RocketChatMessageAdapter } from './infrastructure/rocket-chat/adapters/Message';
+import type { RocketChatNotificationAdapter } from './infrastructure/rocket-chat/adapters/Notification';
+import { FederationRoomSenderConverter } from './infrastructure/rocket-chat/converters/RoomSender';
+import { FederationHooks } from './infrastructure/rocket-chat/hooks';
+import { FederationFactory } from './infrastructure/Factory';
 
 export abstract class AbstractFederationService extends ServiceClassInternal {
 	private cancelSettingsObserver: () => void;
@@ -285,7 +285,7 @@ abstract class AbstractBaseFederationService extends AbstractFederationService {
 		}
 		await this.bridge.start();
 		this.bridge.logFederationStartupInfo('Running Federation V2');
-		await import('../../../app/federation-v2/server/infrastructure/rocket-chat/slash-commands');
+		await import('./infrastructure/rocket-chat/slash-commands');
 	}
 
 	private async stopFederation(): Promise<void> {

@@ -8,7 +8,7 @@ import { Rooms, Subscriptions, Users } from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 import { addUserToRoom } from '../functions';
 import { callbacks } from '../../../../lib/callbacks';
-import { Federation } from '../../../federation-v2/server/Federation';
+import { Federation } from '../../../../server/services/federation/Federation';
 
 Meteor.methods({
 	addUsersToRoom(data = {}) {

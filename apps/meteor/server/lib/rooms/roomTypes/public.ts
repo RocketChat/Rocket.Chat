@@ -7,7 +7,7 @@ import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomType
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { getPublicRoomType } from '../../../../lib/rooms/roomTypes/public';
 import { roomCoordinator } from '../roomCoordinator';
-import { Federation } from '../../../../app/federation-v2/server/Federation';
+import { Federation } from '../../../services/federation/Federation';
 
 export const PublicRoomType = getPublicRoomType(roomCoordinator);
 
