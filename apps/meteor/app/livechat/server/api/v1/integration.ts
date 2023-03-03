@@ -8,15 +8,22 @@ import { trim } from '../../../../../lib/utils/stringUtils';
 const ajv = new Ajv({ coerceTypes: true });
 
 type POSTomnichannelIntegrations = {
-	roomName: string;
+	Livechat_webhookUrl: string;
+	Livechat_secret_token: string;
+	Livechat_http_timeout: number;
+	Livechat_webhook_on_start: boolean;
+	Livechat_webhook_on_close: boolean;
+	Livechat_webhook_on_chat_taken: boolean;
+	Livechat_webhook_on_chat_queued: boolean;
+	Livechat_webhook_on_forward: boolean;
+	Livechat_webhook_on_offline_msg: boolean;
+	Livechat_webhook_on_visitor_message: boolean;
+	Livechat_webhook_on_agent_message: boolean;
 };
 
 const POSTomnichannelIntegrationsSchema = {
 	type: 'object',
 	properties: {
-		roomName: {
-			type: 'string',
-		},
 		Livechat_webhookUrl: {
 			type: 'string',
 		},
