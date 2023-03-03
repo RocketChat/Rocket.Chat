@@ -344,25 +344,25 @@ class LivechatClass {
 		if (!attempts) {
 			return;
 		}
+		const timeout = settings.get<number>('Livechat_http_timeout');
 		const secretToken = settings.get<string>('Livechat_secret_token');
 		const headers = { 'X-RocketChat-Livechat-Token': secretToken };
 		const options: HTTP.HTTPRequest = {
 			data: postData,
 			...(secretToken !== '' && secretToken !== undefined && { headers }),
-			timeout: settings.get<number>('Livechat_http_timeout'),
+			timeout,
 		};
 		try {
 			return HTTP.post(settings.get('Livechat_webhookUrl'), options);
 		} catch (err) {
 			Livechat.webhookLogger.error({ msg: `Response error on ${11 - attempts} try ->`, err });
 			// try 10 times after 20 seconds each
-			attempts - 1 &&
-				Livechat.webhookLogger.warn(`Will try again in ${(settings.get<number>('Livechat_http_timeout') / 1000) * 4} seconds ...`);
+			attempts - 1 && Livechat.webhookLogger.warn(`Will try again in ${(timeout / 1000) * 4} seconds ...`);
 			setTimeout(
 				Meteor.bindEnvironment(function () {
 					Livechat.sendRequest(postData, callback, attempts - 1);
 				}),
-				settings.get<number>('Livechat_http_timeout') * 4,
+				timeout * 4,
 			);
 		}
 	}
