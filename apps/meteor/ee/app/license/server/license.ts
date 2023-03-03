@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 
 import { Apps } from '@rocket.chat/core-services';
+import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 
 import { Users } from '../../../../app/models/server';
 import type { BundleFeature } from './bundles';
@@ -10,7 +11,6 @@ import { getTagColor } from './getTagColor';
 import type { ILicense, LicenseAppSources } from '../definition/ILicense';
 import type { ILicenseTag } from '../definition/ILicenseTag';
 import { isUnderAppLimits } from './lib/isUnderAppLimits';
-import type { AppServerOrchestrator } from '../../../server/apps/orchestrator';
 
 const EnterpriseLicenses = new EventEmitter();
 
