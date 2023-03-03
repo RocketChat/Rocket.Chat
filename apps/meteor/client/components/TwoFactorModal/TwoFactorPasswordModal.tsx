@@ -29,6 +29,11 @@ const TwoFactorPasswordModal = ({ onConfirm, onClose }: TwoFactorPasswordModalPr
 	return (
 		<GenericModal
 			onConfirm={onConfirmTotpCode}
+			onKeyPress={(e) => {
+				if (e.key === "Enter") {
+					onConfirmTotpCode();
+				}
+			}}
 			onCancel={onClose}
 			confirmText={t('Verify')}
 			title={t('Please_enter_your_password')}
