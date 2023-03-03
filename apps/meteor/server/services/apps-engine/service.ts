@@ -3,9 +3,9 @@ import type { IAppsEngineService } from '@rocket.chat/core-services';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting } from '@rocket.chat/core-typings';
-import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import type { IGetAppsFilter } from '@rocket.chat/apps-engine/server/IGetAppsFilter';
 
 import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
 import { AppEvents as AppLifeCycleEvents } from '../../../ee/server/apps/communication/websockets';
@@ -112,10 +112,10 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		return Apps.isInitialized();
 	}
 
-	async getApp(query: any): Promise<IAppInfo[] | undefined> {
+	async getApps(query: IGetAppsFilter): Promise<IAppInfo[] | undefined> {
 		return Apps.getManager()
 			?.get(query)
-			.map((app: ProxiedApp) => app.getApp().getInfo());
+			.map((app) => app.getApp().getInfo());
 	}
 
 	async getAppStorageItemById(appId: string): Promise<IAppStorageItem | undefined> {
