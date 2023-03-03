@@ -37,6 +37,9 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			_hidden: {
 				$ne: true,
 			},
+			room: {
+				$exists: true,
+			},
 			ts: {
 				$lt: latest || new Date(),
 				$gt: oldest || new Date(0),
@@ -74,7 +77,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 				$group: {
 					_id: { user: '$message.u._id' },
 					reports: { $first: '$$ROOT' },
-					roomIds: { $addToSet: '$message.rid' }, // to be replaced with room
+					rooms: { $addToSet: '$room' }, // to be replaced with room
 					count: { $sum: 1 },
 				},
 			},
@@ -99,7 +102,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 					name: '$reports.message.u.name',
 					userId: '$reports.message.u._id',
 					count: 1,
-					roomIds: 1,
+					rooms: 1,
 				},
 			},
 		];
@@ -117,6 +120,9 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		const query = {
 			'_hidden': {
 				$ne: true,
+			},
+			'room': {
+				$exists: true,
 			},
 			'message.u._id': userId,
 		};
@@ -140,7 +146,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			},
 			skip: offset,
 			limit: count,
-			project: {
+			projection: {
 				_id: 1,
 				message: 1,
 				ts: 1,
@@ -155,6 +161,9 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		const query = {
 			'_hidden': {
 				$ne: true,
+			},
+			'reportedBy': {
+				$exists: true,
 			},
 			'message.rid': roomId,
 		};
@@ -200,6 +209,9 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 		const query = {
 			_hidden: {
 				$ne: true,
+			},
+			reportedBy: {
+				$exists: true,
 			},
 			userId,
 		};
@@ -252,6 +264,9 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			'_hidden': {
 				$ne: true,
 			},
+			'reportedBy': {
+				$exists: true,
+			},
 			'message._id': messageId,
 		};
 
@@ -288,7 +303,7 @@ export class ReportsRaw extends BaseRaw<IReport> implements IReportsModel {
 			},
 			skip: offset,
 			limit: count,
-			project: {
+			projection: {
 				_id: 1,
 				description: 1,
 				ts: 1,
