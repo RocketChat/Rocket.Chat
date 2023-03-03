@@ -1,5 +1,5 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
-import { Menu, Option } from '@rocket.chat/fuselage';
+import { Box, Icon, Menu } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useEndpoint, useRoute, useSetModal, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -46,26 +46,35 @@ const DepartmentItemMenu = ({ dep }: { dep: Omit<ILivechatDepartment, '_updatedA
 
 	const menuOptions = {
 		edit: {
-			label: { label: t('Edit'), icon: 'edit' },
+			label: (
+				<>
+					<Icon name='edit' size='x16' marginInlineEnd='x4' />
+					{t('Edit')}
+				</>
+			),
 			action: (): void => handleEdit(),
 		},
 		archive: {
-			label: { label: t('Archive'), icon: 'arrow-down-box' },
+			label: (
+				<>
+					<Icon name='arrow-down-box' size='x16' marginInlineEnd='x4' />
+					{t('Archive')}
+				</>
+			),
 			action: (): Promise<void> => handleArchiveDepartment(),
 		},
-		...(departmentRemovalEnabled === true && {
-			delete: {
-				label: { label: t('Delete'), icon: 'trash' },
-				action: (): void => handlePermanentDepartmentRemoval(),
-			},
-		}),
+		delete: {
+			label: (
+				<Box data-tooltip={!departmentRemovalEnabled ? t('Department_Removal_Disabled') : undefined}>
+					<Icon name='trash' size='x16' marginInlineEnd='x4' />
+					{t('Delete')}
+				</Box>
+			),
+			action: (): void => handlePermanentDepartmentRemoval(),
+			disabled: !departmentRemovalEnabled,
+		},
 	};
-	return (
-		<Menu
-			options={menuOptions}
-			renderItem={({ label: { label, icon }, ...props }): ReactElement => <Option label={label} icon={icon} {...props} />}
-		/>
-	);
+	return <Menu options={menuOptions} />;
 };
 
 export default DepartmentItemMenu;
