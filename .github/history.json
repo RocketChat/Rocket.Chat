@@ -101740,6 +101740,29 @@
           ]
         }
       ]
+    },
+    "6.0.0-rc.6": {
+      "node_version": "14.21.2",
+      "npm_version": "6.14.17",
+      "apps_engine_version": "1.37.0-alpha.157",
+      "mongo_versions": [
+        "4.4",
+        "5.0",
+        "6.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "28248",
+          "title": "Regression: Client is not loading new settings from server",
+          "userLogin": "pierre-lehnen-rc",
+          "milestone": "6.0.0",
+          "contributors": [
+            "pierre-lehnen-rc",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        }
+      ]
     }
   },
   "5.4.0-rc.0": {

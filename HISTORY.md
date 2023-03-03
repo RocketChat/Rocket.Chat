@@ -1,6 +1,21 @@
 
 # 6.0.0 (Under Release Candidate Process)
 
+## 6.0.0-rc.6
+`2023-03-02  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Client is not loading new settings from server ([#28248](https://github.com/RocketChat/Rocket.Chat/pull/28248))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+
 ## 6.0.0-rc.5
 `2023-03-02  ·  1 🐛  ·  8 🔍  ·  13 👩‍💻👨‍💻`
 
