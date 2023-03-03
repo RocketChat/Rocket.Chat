@@ -49,6 +49,7 @@ export interface IModerationAudit {
 	roomIds: IRoom['_id'][];
 	ts: IReport['ts'];
 	rooms: IReport['room'][];
+	count: number;
 }
 
 // NOTE: remove this interface
