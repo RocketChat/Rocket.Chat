@@ -201,7 +201,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }) {
 			abandonedRoomsCloseCustomMessage,
 			waitingQueueMessage,
 			departmentsAllowedToForward: departmentsAllowedToForward?.map((dep) => dep.value).join(),
-			fallbackForwardDepartment: fallbackForwardDepartment.value,
+			fallbackForwardDepartment,
 		};
 
 		const agentListPayload = {
