@@ -1,30 +1,19 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 
-import type { IFederationBridgeRegistrationFile } from '../../../../../../app/federation-v2/server/domain/IFederationBridge';
 import { MatrixBridge } from '../../../../../../app/federation-v2/server/infrastructure/matrix/Bridge';
 import { formatExternalUserIdToInternalUsernameFormat } from '../../../../../../app/federation-v2/server/infrastructure/matrix/converters/RoomReceiver';
 import type { AbstractMatrixEvent } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/AbstractMatrixEvent';
-import type { MatrixEventRoomNameChanged } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/events/RoomNameChanged';
-import type { MatrixEventRoomTopicChanged } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/events/RoomTopicChanged';
-import { MatrixEventType } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixEventType';
 import { MatrixRoomType } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixRoomVisibility';
 import { MATRIX_POWER_LEVELS } from '../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixPowerLevels';
 import type { IFederationBridgeEE, IFederationPublicRoomsResult, IFederationSearchPublicRoomsParams } from '../../domain/IFederationBridge';
+import type { RocketChatSettingsAdapter } from '../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
 
 const DEFAULT_TIMEOUT_IN_MS = 10000;
 
 export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE {
-	constructor(
-		protected appServiceId: string,
-		protected homeServerUrl: string,
-		protected homeServerDomain: string,
-		protected bridgeUrl: string,
-		protected bridgePort: number,
-		protected homeServerRegistrationFile: IFederationBridgeRegistrationFile,
-		protected eventHandler: (event: AbstractMatrixEvent) => void,
-	) {
-		super(appServiceId, homeServerUrl, homeServerDomain, bridgeUrl, bridgePort, homeServerRegistrationFile, eventHandler);
+	constructor(protected internalSettings: RocketChatSettingsAdapter, protected eventHandler: (event: AbstractMatrixEvent) => void) {
+		super(internalSettings, eventHandler);
 	}
 
 	private mountPowerLevelRulesWithMinimumPowerLevelForEachAction(): Record<string, any> {
@@ -75,36 +64,6 @@ export class MatrixBridgeEE extends MatrixBridge implements IFederationBridgeEE 
 		intent.setRoomDirectoryVisibility(matrixRoom.room_id, visibility);
 
 		return matrixRoom.room_id;
-	}
-
-	public async getRoomName(externalRoomId: string, externalUserId: string): Promise<string | undefined> {
-		try {
-			const roomState = (await this.bridgeInstance.getIntent(externalUserId).roomState(externalRoomId)) as AbstractMatrixEvent[];
-
-			return ((roomState || []).find((event) => event?.type === MatrixEventType.ROOM_NAME_CHANGED) as MatrixEventRoomNameChanged)?.content
-				?.name;
-		} catch (error) {
-			// no-op
-		}
-	}
-
-	public async getRoomTopic(externalRoomId: string, externalUserId: string): Promise<string | undefined> {
-		try {
-			const roomState = (await this.bridgeInstance.getIntent(externalUserId).roomState(externalRoomId)) as AbstractMatrixEvent[];
-
-			return ((roomState || []).find((event) => event?.type === MatrixEventType.ROOM_TOPIC_CHANGED) as MatrixEventRoomTopicChanged)?.content
-				?.topic;
-		} catch (error) {
-			// no-op
-		}
-	}
-
-	public async setRoomName(externalRoomId: string, externalUserId: string, roomName: string): Promise<void> {
-		await this.bridgeInstance.getIntent(externalUserId).setRoomName(externalRoomId, roomName);
-	}
-
-	public async setRoomTopic(externalRoomId: string, externalUserId: string, roomTopic: string): Promise<void> {
-		await this.bridgeInstance.getIntent(externalUserId).setRoomTopic(externalRoomId, roomTopic);
 	}
 
 	public async searchPublicRooms(params: IFederationSearchPublicRoomsParams): Promise<IFederationPublicRoomsResult> {

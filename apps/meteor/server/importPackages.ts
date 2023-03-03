@@ -22,7 +22,6 @@ import '../app/emoji-custom/server';
 import '../app/emoji-emojione/server';
 import '../app/error-handler';
 import '../app/federation/server';
-import '../app/federation-v2/server';
 import '../app/file';
 import '../app/file-upload';
 import '../app/github-enterprise/server';

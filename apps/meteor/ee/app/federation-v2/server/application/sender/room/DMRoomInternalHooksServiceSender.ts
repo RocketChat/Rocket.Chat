@@ -9,9 +9,9 @@ import type {
 	FederationOnDirectMessageRoomCreationDto,
 	FederationRoomInviteUserDto,
 } from '../input/RoomSenderDto';
-import { FederationServiceEE } from '../AbstractFederationService';
+import { FederationApplicationServiceEE } from '../AbstractFederationService';
 
-export class FederationDMRoomInternalHooksServiceSender extends FederationServiceEE {
+export class FederationDMRoomInternalHooksServiceSender extends FederationApplicationServiceEE {
 	constructor(
 		protected internalRoomAdapter: RocketChatRoomAdapterEE,
 		protected internalUserAdapter: RocketChatUserAdapterEE,

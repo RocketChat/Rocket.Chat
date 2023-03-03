@@ -100,34 +100,6 @@ export class FederationHooksEE {
 		);
 	}
 
-	public static afterRoomNameChanged(callback: (roomId: string, changedRoomName: string) => Promise<void>): void {
-		callbacks.add(
-			'afterRoomNameChange',
-			(params: Record<string, any>): void => {
-				if (!params || !params.rid || !params.name || !settings.get('Federation_Matrix_enabled')) {
-					return;
-				}
-				Promise.await(callback(params.rid, params.name));
-			},
-			callbacks.priority.HIGH,
-			'federation-v2-after-room-name-changed',
-		);
-	}
-
-	public static afterRoomTopicChanged(callback: (roomId: string, changedRoomTopic: string) => Promise<void>): void {
-		callbacks.add(
-			'afterRoomTopicChange',
-			(params: Record<string, any>): void => {
-				if (!params || !params.rid || !params.topic || !settings.get('Federation_Matrix_enabled')) {
-					return;
-				}
-				Promise.await(callback(params.rid, params.topic));
-			},
-			callbacks.priority.HIGH,
-			'federation-v2-after-room-topic-changed',
-		);
-	}
-
 	public static removeAll(): void {
 		callbacks.remove('beforeCreateDirectRoom', 'federation-v2-before-create-direct-message-room');
 		callbacks.remove('afterCreateDirectRoom', 'federation-v2-after-create-direct-message-room');

@@ -2,7 +2,6 @@ import type { RocketChatFileAdapter } from '../../../../../../../app/federation-
 import type { RocketChatMessageAdapter } from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Message';
 import type { RocketChatSettingsAdapter } from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Settings';
 import { ROCKET_CHAT_FEDERATION_ROLES } from '../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/definitions/InternalFederatedRoomRoles';
-import { FederatedRoomEE } from '../../../domain/FederatedRoom';
 import { FederatedUserEE } from '../../../domain/FederatedUser';
 import type { IFederationBridgeEE } from '../../../domain/IFederationBridge';
 import type { RocketChatRoomAdapterEE } from '../../../infrastructure/rocket-chat/adapters/Room';
@@ -15,9 +14,9 @@ import type {
 	FederationSetupRoomDto,
 	IFederationInviteeDto,
 } from '../input/RoomSenderDto';
-import { FederationServiceEE } from '../AbstractFederationService';
+import { FederationApplicationServiceEE } from '../AbstractFederationService';
 
-export class FederationRoomInternalHooksServiceSender extends FederationServiceEE {
+export class FederationRoomInternalHooksServiceSender extends FederationApplicationServiceEE {
 	constructor(
 		protected internalRoomAdapter: RocketChatRoomAdapterEE,
 		protected internalUserAdapter: RocketChatUserAdapterEE,
@@ -107,63 +106,6 @@ export class FederationRoomInternalHooksServiceSender extends FederationServiceE
 		}
 
 		await this.inviteLocalThenExternalUsers(invitees, internalInviterId, internalRoomId);
-	}
-
-	public async afterRoomNameChanged(internalRoomId: string, internalRoomName: string): Promise<void> {
-		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
-		if (!federatedRoom) {
-			return;
-		}
-
-		const federatedUser =
-			federatedRoom.getCreatorId() && (await this.internalUserAdapter.getFederatedUserByInternalId(federatedRoom.getCreatorId() as string));
-		if (!federatedUser) {
-			return;
-		}
-
-		const isRoomFromTheSameHomeServer = FederatedRoomEE.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(federatedRoom.getExternalId()),
-			this.internalSettingsAdapter.getHomeServerDomain(),
-		);
-		if (!isRoomFromTheSameHomeServer) {
-			return;
-		}
-
-		const externalRoomName = await this.bridge.getRoomName(federatedRoom.getExternalId(), federatedUser.getExternalId());
-
-		if (!federatedRoom.shouldUpdateDisplayRoomName(externalRoomName || '')) {
-			return;
-		}
-
-		await this.bridge.setRoomName(federatedRoom.getExternalId(), federatedUser.getExternalId(), internalRoomName);
-	}
-
-	public async afterRoomTopicChanged(internalRoomId: string, internalRoomTopic: string): Promise<void> {
-		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
-		if (!federatedRoom) {
-			return;
-		}
-
-		const federatedUser =
-			federatedRoom.getCreatorId() && (await this.internalUserAdapter.getFederatedUserByInternalId(federatedRoom.getCreatorId() as string));
-		if (!federatedUser) {
-			return;
-		}
-
-		const isRoomFromTheSameHomeServer = FederatedRoomEE.isOriginalFromTheProxyServer(
-			this.bridge.extractHomeserverOrigin(federatedRoom.getExternalId()),
-			this.internalSettingsAdapter.getHomeServerDomain(),
-		);
-		if (!isRoomFromTheSameHomeServer) {
-			return;
-		}
-
-		const externalRoomTopic = await this.bridge.getRoomTopic(federatedRoom.getExternalId(), federatedUser.getExternalId());
-		if (!federatedRoom.shouldUpdateRoomTopic(externalRoomTopic || '')) {
-			return;
-		}
-
-		await this.bridge.setRoomTopic(federatedRoom.getExternalId(), federatedUser.getExternalId(), internalRoomTopic);
 	}
 
 	private async setupFederatedRoom(roomInviteUserInput: FederationSetupRoomDto): Promise<void> {

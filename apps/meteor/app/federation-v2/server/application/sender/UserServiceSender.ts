@@ -3,9 +3,9 @@ import type { RocketChatFileAdapter } from '../../infrastructure/rocket-chat/ada
 import type { RocketChatRoomAdapter } from '../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from '../../infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from '../../infrastructure/rocket-chat/adapters/User';
-import { FederationService } from '../AbstractFederationService';
+import { FederationApplicationService } from '../AbstractFederationService';
 
-export class FederationUserServiceSender extends FederationService {
+export class FederationUserServiceSender extends FederationApplicationService {
 	constructor(
 		protected internalRoomAdapter: RocketChatRoomAdapter,
 		protected internalUserAdapter: RocketChatUserAdapter,

@@ -10,7 +10,7 @@ import type { IFederationBridgeEE, IFederationPublicRoomsResult } from '../domai
 import type { RocketChatRoomAdapterEE } from '../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatUserAdapterEE } from '../infrastructure/rocket-chat/adapters/User';
 import type { FederationJoinExternalPublicRoomInputDto, FederationSearchPublicRoomsInputDto } from './input/RoomInputDto';
-import { FederationServiceEE } from './sender/AbstractFederationService';
+import { FederationApplicationServiceEE } from './sender/AbstractFederationService';
 import { FederatedUserEE } from '../domain/FederatedUser';
 
 const DEFAULT_SERVERS = [
@@ -31,7 +31,7 @@ const DEFAULT_SERVERS = [
 	},
 ];
 
-export class FederationRoomApplicationServiceEE extends FederationServiceEE {
+export class FederationRoomApplicationServiceEE extends FederationApplicationServiceEE {
 	private readonly availableServers: { name: string; default: boolean; local: boolean }[];
 
 	constructor(

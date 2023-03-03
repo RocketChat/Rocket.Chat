@@ -4,10 +4,10 @@ import type { RocketChatNotificationAdapter } from '../../infrastructure/rocket-
 import type { RocketChatRoomAdapter } from '../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from '../../infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from '../../infrastructure/rocket-chat/adapters/User';
-import { FederationService } from '../AbstractFederationService';
+import { FederationApplicationService } from '../AbstractFederationService';
 import type { FederationUserTypingStatusEventDto } from './input/UserReceiverDto';
 
-export class FederationUserServiceListener extends FederationService {
+export class FederationUserServiceListener extends FederationApplicationService {
 	private usersTypingByRoomIdCache: Map<string, Record<string, string>[]> = new Map();
 
 	constructor(

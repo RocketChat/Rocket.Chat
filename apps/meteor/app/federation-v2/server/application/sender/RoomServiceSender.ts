@@ -1,8 +1,7 @@
 import type { IMessage, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { isDeletedMessage, isEditedMessage, isMessageFromMatrixFederation, isQuoteAttachment } from '@rocket.chat/core-typings';
 
-import type { FederatedRoom } from '../../domain/FederatedRoom';
-import { DirectMessageFederatedRoom } from '../../domain/FederatedRoom';
+import { FederatedRoom, DirectMessageFederatedRoom } from '../../domain/FederatedRoom';
 import { FederatedUser } from '../../domain/FederatedUser';
 import type { IFederationBridge } from '../../domain/IFederationBridge';
 import type { RocketChatFileAdapter } from '../../infrastructure/rocket-chat/adapters/File';
@@ -11,7 +10,7 @@ import type { RocketChatNotificationAdapter } from '../../infrastructure/rocket-
 import type { RocketChatRoomAdapter } from '../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from '../../infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from '../../infrastructure/rocket-chat/adapters/User';
-import { FederationService } from '../AbstractFederationService';
+import { FederationApplicationService } from '../AbstractFederationService';
 import type {
 	FederationAfterLeaveRoomDto,
 	FederationAfterRemoveUserFromRoomDto,
@@ -22,7 +21,7 @@ import { getExternalMessageSender } from './MessageSenders';
 import { MATRIX_POWER_LEVELS } from '../../infrastructure/matrix/definitions/MatrixPowerLevels';
 import { ROCKET_CHAT_FEDERATION_ROLES } from '../../infrastructure/rocket-chat/definitions/InternalFederatedRoomRoles';
 
-export class FederationRoomServiceSender extends FederationService {
+export class FederationRoomServiceSender extends FederationApplicationService {
 	constructor(
 		protected internalRoomAdapter: RocketChatRoomAdapter,
 		protected internalUserAdapter: RocketChatUserAdapter,
@@ -438,6 +437,63 @@ export class FederationRoomServiceSender extends FederationService {
 		} catch (e) {
 			await this.rollbackRoomRoles(federatedRoom, federatedTargetUser, federatedUser, [ROCKET_CHAT_FEDERATION_ROLES.MODERATOR], []);
 		}
+	}
+
+	public async afterRoomNameChanged(internalRoomId: string, internalRoomName: string): Promise<void> {
+		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		const federatedUser =
+			federatedRoom.getCreatorId() && (await this.internalUserAdapter.getFederatedUserByInternalId(federatedRoom.getCreatorId() as string));
+		if (!federatedUser) {
+			return;
+		}
+
+		const isRoomFromTheSameHomeServer = FederatedRoom.isOriginalFromTheProxyServer(
+			this.bridge.extractHomeserverOrigin(federatedRoom.getExternalId()),
+			this.internalSettingsAdapter.getHomeServerDomain(),
+		);
+		if (!isRoomFromTheSameHomeServer) {
+			return;
+		}
+
+		const externalRoomName = await this.bridge.getRoomName(federatedRoom.getExternalId(), federatedUser.getExternalId());
+
+		if (!federatedRoom.shouldUpdateDisplayRoomName(externalRoomName || '')) {
+			return;
+		}
+
+		await this.bridge.setRoomName(federatedRoom.getExternalId(), federatedUser.getExternalId(), internalRoomName);
+	}
+
+	public async afterRoomTopicChanged(internalRoomId: string, internalRoomTopic: string): Promise<void> {
+		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
+		if (!federatedRoom) {
+			return;
+		}
+
+		const federatedUser =
+			federatedRoom.getCreatorId() && (await this.internalUserAdapter.getFederatedUserByInternalId(federatedRoom.getCreatorId() as string));
+		if (!federatedUser) {
+			return;
+		}
+
+		const isRoomFromTheSameHomeServer = FederatedRoom.isOriginalFromTheProxyServer(
+			this.bridge.extractHomeserverOrigin(federatedRoom.getExternalId()),
+			this.internalSettingsAdapter.getHomeServerDomain(),
+		);
+		if (!isRoomFromTheSameHomeServer) {
+			return;
+		}
+
+		const externalRoomTopic = await this.bridge.getRoomTopic(federatedRoom.getExternalId(), federatedUser.getExternalId());
+		if (!federatedRoom.shouldUpdateRoomTopic(externalRoomTopic || '')) {
+			return;
+		}
+
+		await this.bridge.setRoomTopic(federatedRoom.getExternalId(), federatedUser.getExternalId(), internalRoomTopic);
 	}
 
 	private async rollbackRoomRoles(

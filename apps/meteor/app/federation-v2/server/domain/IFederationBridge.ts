@@ -34,15 +34,6 @@ export interface IFederationBridgeRegistrationFile {
 export interface IFederationBridge {
 	start(): Promise<void>;
 	stop(): Promise<void>;
-	onFederationAvailabilityChanged(
-		enabled: boolean,
-		appServiceId: string,
-		homeServerUrl: string,
-		homeServerDomain: string,
-		bridgeUrl: string,
-		bridgePort: number,
-		homeServerRegistrationFile: IFederationBridgeRegistrationFile,
-	): Promise<void>;
 	getUserProfileInformation(externalUserId: string): Promise<IExternalUserProfileInformation | undefined>;
 	joinRoom(externalRoomId: string, externalUserId: string, viaServers?: string[]): Promise<void>;
 	createDirectMessageRoom(externalCreatorId: string, inviteesExternalIds: string[], extraData?: Record<string, any>): Promise<string>;
@@ -86,4 +77,8 @@ export interface IFederationBridge {
 	setUserDisplayName(externalUserId: string, displayName: string): Promise<void>;
 	setRoomPowerLevels(externalRoomId: string, externalOwnerId: string, externalUserId: string, powerLevels: number): Promise<void>;
 	getRoomHistoricalJoinEvents(externalRoomId: string, externalUserId: string, excludingUserIds?: string[]): Promise<any[]>;
+	getRoomName(externalRoomId: string, externalUserId: string): Promise<string | undefined>;
+	getRoomTopic(externalRoomId: string, externalUserId: string): Promise<string | undefined>;
+	setRoomName(externalRoomId: string, externalUserId: string, roomName: string): Promise<void>;
+	setRoomTopic(externalRoomId: string, externalUserId: string, roomTopic: string): Promise<void>;
 }

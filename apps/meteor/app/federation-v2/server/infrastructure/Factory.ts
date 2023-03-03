@@ -171,15 +171,7 @@ export class FederationFactory {
 	}
 
 	public static buildFederationBridge(rocketSettingsAdapter: RocketChatSettingsAdapter, queue: InMemoryQueue): IFederationBridge {
-		return new MatrixBridge(
-			rocketSettingsAdapter.getApplicationServiceId(),
-			rocketSettingsAdapter.getHomeServerUrl(),
-			rocketSettingsAdapter.getHomeServerDomain(),
-			rocketSettingsAdapter.getBridgeUrl(),
-			rocketSettingsAdapter.getBridgePort(),
-			rocketSettingsAdapter.generateRegistrationFileObject(),
-			queue.addToQueue.bind(queue),
-		);
+		return new MatrixBridge(rocketSettingsAdapter, queue.addToQueue.bind(queue));
 	}
 
 	public static buildFederationEventHandler(
@@ -218,11 +210,14 @@ export class FederationFactory {
 		roomInternalHooksValidator: FederationRoomInternalHooksValidator,
 		messageServiceSender: FederationMessageServiceSender,
 	): void {
-		FederationFactory.setupActions(roomServiceSender, messageServiceSender);
+		FederationFactory.setupListenersForLocalActions(roomServiceSender, messageServiceSender);
 		FederationFactory.setupValidators(roomInternalHooksValidator);
 	}
 
-	public static setupActions(roomServiceSender: FederationRoomServiceSender, messageServiceSender: FederationMessageServiceSender): void {
+	public static setupListenersForLocalActions(
+		roomServiceSender: FederationRoomServiceSender,
+		messageServiceSender: FederationMessageServiceSender,
+	): void {
 		FederationHooks.afterUserLeaveRoom((user: IUser, room: IRoom) =>
 			roomServiceSender.afterUserLeaveRoom(FederationRoomSenderConverter.toAfterUserLeaveRoom(user._id, room._id)),
 		);
@@ -244,6 +239,12 @@ export class FederationFactory {
 		FederationHooks.afterMessageSent((message: IMessage, roomId: string, userId: string) =>
 			roomServiceSender.sendExternalMessage(FederationRoomSenderConverter.toSendExternalMessageDto(userId, roomId, message)),
 		);
+		FederationHooks.afterRoomNameChanged(async (roomId: string, roomName: string) =>
+			roomServiceSender.afterRoomNameChanged(roomId, roomName),
+		);
+		FederationHooks.afterRoomTopicChanged(async (roomId: string, roomTopic: string) =>
+			roomServiceSender.afterRoomTopicChanged(roomId, roomTopic),
+		);
 	}
 
 	public static setupValidators(roomInternalHooksValidator: FederationRoomInternalHooksValidator): void {
@@ -258,7 +259,11 @@ export class FederationFactory {
 		);
 	}
 
-	public static removeCEListeners(): void {
+	public static removeCEValidators(): void {
 		FederationHooks.removeCEValidation();
+	}
+
+	public static removeAllListeners(): void {
+		FederationHooks.removeAllListeners();
 	}
 }

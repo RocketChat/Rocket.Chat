@@ -221,8 +221,50 @@ export class FederationHooks {
 		Promise.await(handlers[`${role}-${action}`](internalUserId, internalTargetUserId, internalRoomId));
 	}
 
+	public static afterRoomNameChanged(callback: (roomId: string, changedRoomName: string) => Promise<void>): void {
+		callbacks.add(
+			'afterRoomNameChange',
+			(params: Record<string, any>): void => {
+				if (!params || !params.rid || !params.name || !settings.get('Federation_Matrix_enabled')) {
+					return;
+				}
+				Promise.await(callback(params.rid, params.name));
+			},
+			callbacks.priority.HIGH,
+			'federation-v2-after-room-name-changed',
+		);
+	}
+
+	public static afterRoomTopicChanged(callback: (roomId: string, changedRoomTopic: string) => Promise<void>): void {
+		callbacks.add(
+			'afterRoomTopicChange',
+			(params: Record<string, any>): void => {
+				if (!params || !params.rid || !params.topic || !settings.get('Federation_Matrix_enabled')) {
+					return;
+				}
+				Promise.await(callback(params.rid, params.topic));
+			},
+			callbacks.priority.HIGH,
+			'federation-v2-after-room-topic-changed',
+		);
+	}
+
 	public static removeCEValidation(): void {
 		callbacks.remove('federation.beforeAddUserToARoom', 'federation-v2-can-add-federated-user-to-federated-room');
 		callbacks.remove('federation.beforeCreateDirectMessage', 'federation-v2-can-create-direct-message-from-ui-ce');
+	}
+
+	public static removeAllListeners(): void {
+		callbacks.remove('afterLeaveRoom', 'federation-v2-after-leave-room');
+		callbacks.remove('afterRemoveFromRoom', 'federation-v2-after-remove-from-room');
+		callbacks.remove('federation.beforeAddUserToARoom', 'federation-v2-can-add-federated-user-to-non-federated-room');
+		callbacks.remove('federation.beforeAddUserToARoom', 'federation-v2-can-add-federated-user-to-federated-room');
+		callbacks.remove('federation.beforeCreateDirectMessage', 'federation-v2-can-create-direct-message-from-ui-ce');
+		callbacks.remove('afterSetReaction', 'federation-v2-after-message-reacted');
+		callbacks.remove('afterUnsetReaction', 'federation-v2-after-message-unreacted');
+		callbacks.remove('afterDeleteMessage', 'federation-v2-after-room-message-deleted');
+		callbacks.remove('afterSaveMessage', 'federation-v2-after-room-message-updated');
+		callbacks.remove('afterSaveMessage', 'federation-v2-after-room-message-sent');
+		callbacks.remove('afterSaveMessage', 'federation-v2-after-room-message-sent');
 	}
 }
