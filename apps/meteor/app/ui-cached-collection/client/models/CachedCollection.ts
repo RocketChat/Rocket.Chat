@@ -269,11 +269,11 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 				const action = 'changed';
 				const newRecord = this.handleSync(record, action);
 
-				if (!hasId(newRecord) || !hasUpdatedAt(newRecord)) {
+				if (!hasId(newRecord)) {
 					continue;
 				}
 
-				const actionTime = newRecord._updatedAt;
+				const actionTime = hasUpdatedAt(newRecord) ? newRecord._updatedAt : startTime;
 				changes.push({
 					action: () => {
 						const { _id } = newRecord;
