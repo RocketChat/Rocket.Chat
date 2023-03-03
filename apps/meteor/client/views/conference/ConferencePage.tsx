@@ -20,23 +20,22 @@ const ConferencePage = (): ReactElement => {
 
 	useEffect(() => {
 		if (!callUrl) {
-			return;
+			return defaultRoute.push();
 		}
 
 		const windowMaybeDesktop = window as WindowMaybeDesktop;
 		if (windowMaybeDesktop.RocketChatDesktop?.openInternalVideoChatWindow) {
 			windowMaybeDesktop.RocketChatDesktop.openInternalVideoChatWindow(callUrl, undefined);
 		} else {
-			const open = (): void => {
-				const popup = window.open(callUrl, '_blank', 'rel=noreferrer noopener width=720 height=500');
+			const open = () => window.open(callUrl, '_blank', 'rel=noreferrer noopener width=720 height=500');
 
-				if (popup !== null) {
-					return;
-				}
+			const popup = open();
 
-				setModal(<VideoConfBlockModal onClose={(): void => setModal(null)} onConfirm={open} />);
-			};
-			open();
+			if (popup !== null) {
+				return;
+			}
+
+			setModal(<VideoConfBlockModal onClose={(): void => setModal(null)} onConfirm={open} />);
 		}
 
 		defaultRoute.push();

@@ -15,7 +15,7 @@ import MainLayout from '../views/root/MainLayout';
 const PageLoading = lazy(() => import('../views/root/PageLoading'));
 const HomePage = lazy(() => import('../views/home/HomePage'));
 const InvitePage = lazy(() => import('../views/invite/InvitePage'));
-const ConferencePage = lazy(() => import('../views/conference/ConferencePage'));
+const ConferenceRoute = lazy(() => import('../views/conference/ConferenceRoute'));
 
 const SecretURLPage = lazy(() => import('../views/invite/SecretURLPage'));
 const CMSPage = lazy(() => import('@rocket.chat/web-ui-registration').then(({ CMSPage }) => ({ default: CMSPage })));
@@ -100,7 +100,7 @@ FlowRouter.route('/meet/:rid', {
 	},
 });
 
-FlowRouter.route('/home/:context?', {
+FlowRouter.route('/home', {
 	name: 'home',
 
 	action(_params, queryParams) {
@@ -201,18 +201,10 @@ FlowRouter.route('/invite/:hash', {
 	},
 });
 
-FlowRouter.route('/conference/:id?', {
+FlowRouter.route('/conference/:id', {
 	name: 'conference',
-	action: (params) => {
-		if (!Meteor.userId()) {
-			return FlowRouter.go(
-				'home',
-				{ ...FlowRouter.current().params, context: 'conference' },
-				{ ...FlowRouter.current().queryParams, ...(params && { conferenceId: params?.id }) },
-			);
-		}
-
-		appLayout.render(<ConferencePage />);
+	action: () => {
+		appLayout.render(<ConferenceRoute />);
 	},
 });
 
