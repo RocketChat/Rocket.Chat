@@ -1,6 +1,83 @@
 
 # 6.0.0 (Under Release Candidate Process)
 
+## 6.0.0-rc.5
+`2023-03-02  ·  1 🐛  ·  8 🔍  ·  13 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- Notify apps engine event through ms api ([#28169](https://github.com/RocketChat/Rocket.Chat/pull/28169))
+
+  The Apps-Engine must drop the current Streamer utilization and start using the Service APIs to correctly communicate between instances and client-server.
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Add extra stats for omnichannel video calling ([#28211](https://github.com/RocketChat/Rocket.Chat/pull/28211))
+
+- Regression: Adjusted components using PaginatedMultiSelected to be compatible with new Fuselage version ([#28233](https://github.com/RocketChat/Rocket.Chat/pull/28233))
+
+- Regression: Adjusted departments upsell modal to check for licence and modules ([#28246](https://github.com/RocketChat/Rocket.Chat/pull/28246))
+
+  This PR fixes a regression on the departments upsell modal, for the rare cases where the workspace has an enterprise licence but has no active modules. This changes improves the check to also consider modules.
+
+- Regression: Change text of buttons tooltips on custom content homepage block ([#28094](https://github.com/RocketChat/Rocket.Chat/pull/28094))
+
+  ### Show to workspace Button:
+  
+  * No custom content added:
+
+  “This action will become available after the custom content has been added”
+  
+  * W/ custom content:
+
+  "Not it's visible for everyone"
+  "Not it's visible only for admins"
+
+  ---
+
+  ### Show only this content Button:
+  
+  * if CE → “Enterprise only”  
+  * if EE and disabled → "This action will become available after the custom content has been added and made visible to everyone”  
+  * if EE and enabled → “It will hide…" or “It will show…"
+
+- Regression: Hide price and category filters when inside of private apps page ([#28188](https://github.com/RocketChat/Rocket.Chat/pull/28188))
+
+  ## Jira task: [MKP-265](https://rocketchat.atlassian.net/browse/MKP-265?atlOrigin=eyJpIjoiMGUyMjI0ZTJjNjg1NDc5ZWE0Y2U4NDVkMzk4MmRmYmEiLCJwIjoiaiJ9)
+  The price and category filters dont make sense for private apps so when inside of the private apps page these filters will now be hidden.
+  Demo image:
+  ![image](https://user-images.githubusercontent.com/43561537/221595718-c812861a-672e-44ac-bb03-6046064e420a.png)
+
+- Regression: Jump to message not working ([#28163](https://github.com/RocketChat/Rocket.Chat/pull/28163))
+
+- Regression: message-parse version update ([#28245](https://github.com/RocketChat/Rocket.Chat/pull/28245))
+
+  Regression to fix URL parsing issues
+  ![image](https://user-images.githubusercontent.com/20212776/222496497-17ee54be-0c45-403f-97b9-95d7428328d8.png)
+
+- Regression: run clientMessageRecieved hooks on thread main message ([#27962](https://github.com/RocketChat/Rocket.Chat/pull/27962))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@aleksandernsilva](https://github.com/aleksandernsilva)
+- [@casalsgh](https://github.com/casalsgh)
+- [@d-gubert](https://github.com/d-gubert)
+- [@debdutdeb](https://github.com/debdutdeb)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@guijun13](https://github.com/guijun13)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@rique223](https://github.com/rique223)
+- [@tassoevan](https://github.com/tassoevan)
+- [@thassiov](https://github.com/thassiov)
+- [@yash-rajpal](https://github.com/yash-rajpal)
+
 ## 6.0.0-rc.4
 `2023-03-02  ·  1 ️️️⚠️  ·  3 🐛  ·  22 🔍  ·  18 👩‍💻👨‍💻`
 

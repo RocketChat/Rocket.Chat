@@ -101622,6 +101622,124 @@
           ]
         }
       ]
+    },
+    "6.0.0-rc.5": {
+      "node_version": "14.21.2",
+      "npm_version": "6.14.17",
+      "apps_engine_version": "1.37.0-alpha.157",
+      "mongo_versions": [
+        "4.4",
+        "5.0",
+        "6.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "28246",
+          "title": "Regression: Adjusted departments upsell modal to check for licence and modules",
+          "userLogin": "aleksandernsilva",
+          "description": "This PR fixes a regression on the departments upsell modal, for the rare cases where the workspace has an enterprise licence but has no active modules. This changes improves the check to also consider modules.",
+          "milestone": "6.0.0",
+          "contributors": [
+            "aleksandernsilva",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28245",
+          "title": "Regression: message-parse version update",
+          "userLogin": "hugocostadev",
+          "description": "Regression to fix URL parsing issues\r\n![image](https://user-images.githubusercontent.com/20212776/222496497-17ee54be-0c45-403f-97b9-95d7428328d8.png)",
+          "milestone": "6.0.0",
+          "contributors": [
+            "hugocostadev",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28169",
+          "title": "[FIX] Notify apps engine event through ms api",
+          "userLogin": "thassiov",
+          "description": "The Apps-Engine must drop the current Streamer utilization and start using the Service APIs to correctly communicate between instances and client-server.",
+          "milestone": "6.0.0",
+          "contributors": [
+            "thassiov",
+            "debdutdeb",
+            "web-flow",
+            "d-gubert",
+            "casalsgh",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "28211",
+          "title": "Chore: Add extra stats for omnichannel video calling",
+          "userLogin": "KevLehman",
+          "milestone": "6.0.0",
+          "contributors": [
+            "KevLehman",
+            "web-flow",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "28233",
+          "title": "Regression: Adjusted components using PaginatedMultiSelected to be compatible with new Fuselage version",
+          "userLogin": "aleksandernsilva",
+          "milestone": "6.0.0",
+          "contributors": [
+            "aleksandernsilva",
+            "tassoevan"
+          ]
+        },
+        {
+          "pr": "28094",
+          "title": "Regression: Change text of buttons tooltips on custom content homepage block",
+          "userLogin": "guijun13",
+          "description": "### Show to workspace Button:\r\n\r\n* No custom content added:\r\n\r\n“This action will become available after the custom content has been added”\r\n\r\n* W/ custom content:\r\n\r\n\"Not it's visible for everyone\"\r\n\"Not it's visible only for admins\"\r\n\r\n---\r\n\r\n### Show only this content Button:\r\n\r\n* if CE → “Enterprise only”\r\n* if EE and disabled → \"This action will become available after the custom content has been added and made visible to everyone”\r\n* if EE and enabled → “It will hide…\" or “It will show…\"",
+          "milestone": "6.0.0",
+          "contributors": [
+            "guijun13",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27962",
+          "title": "Regression: run clientMessageRecieved hooks on thread main message",
+          "userLogin": "yash-rajpal",
+          "milestone": "6.0.0",
+          "contributors": [
+            "yash-rajpal",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28163",
+          "title": "Regression: Jump to message not working",
+          "userLogin": "gabriellsh",
+          "milestone": "6.0.0",
+          "contributors": [
+            "gabriellsh",
+            "web-flow",
+            "casalsgh",
+            "tassoevan",
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "28188",
+          "title": "Regression: Hide price and category filters when inside of private apps page",
+          "userLogin": "rique223",
+          "description": "## Jira task: [MKP-265](https://rocketchat.atlassian.net/browse/MKP-265?atlOrigin=eyJpIjoiMGUyMjI0ZTJjNjg1NDc5ZWE0Y2U4NDVkMzk4MmRmYmEiLCJwIjoiaiJ9)\r\nThe price and category filters dont make sense for private apps so when inside of the private apps page these filters will now be hidden.\r\nDemo image:\r\n![image](https://user-images.githubusercontent.com/43561537/221595718-c812861a-672e-44ac-bb03-6046064e420a.png)",
+          "milestone": "6.0.0",
+          "contributors": [
+            "rique223",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        }
+      ]
     }
   },
   "5.4.0-rc.0": {
