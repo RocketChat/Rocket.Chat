@@ -19,7 +19,8 @@ import {
 	AppVisitorsConverter,
 } from '../../../app/apps/server/converters';
 import { AppRealLogsStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
-import { canEnableApp } from '../../app/license/server/license';
+import { isUnderAppLimits } from '../../app/license/server/lib/isUnderAppLimits';
+import { getAppsConfig } from '../../app/license/server/license';
 
 function isTesting() {
 	return process.env.TEST_MODE === 'true';
@@ -166,7 +167,8 @@ export class AppServerOrchestrator {
 			.get()
 			// We reduce everything to a promise chain so it runs sequentially
 			.reduce(
-				(control, app) => control.then(async () => (await canEnableApp(app.getStorageItem())) && this.getManager().enable(app.getID())),
+				(control, app) =>
+					control.then(async () => (await this.canEnableApp(app.getStorageItem())) && this.getManager().enable(app.getID())),
 				Promise.resolve(),
 			);
 
@@ -219,6 +221,19 @@ export class AppServerOrchestrator {
 
 				throw error;
 			});
+	}
+
+	async canEnableApp(source) {
+		if (!this.isInitialized()) {
+			return false;
+		}
+		// Migrated apps were installed before the validation was implemented
+		// so they're always allowed to be enabled
+		if (source.migrated) {
+			return true;
+		}
+
+		return isUnderAppLimits({ appManager: this.getManager() }, await getAppsConfig(), source.installationSource);
 	}
 }
 

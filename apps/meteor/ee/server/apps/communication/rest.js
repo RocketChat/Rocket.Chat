@@ -16,7 +16,6 @@ import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { fetch } from '../../../../server/lib/http/fetch';
 import { apiDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
 import { notifyAppInstall } from '../marketplace/appInstall';
-import { canEnableApp } from '../../../app/license/server/license';
 import { appsCountHandler } from './endpoints/appsCountHandler';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
 
@@ -402,7 +401,7 @@ export class AppsRestApi {
 
 					notifyAppInstall(orchestrator.getMarketplaceUrl(), 'install', info);
 
-					if (await canEnableApp(aff.getApp().getStorageItem())) {
+					if (await Apps.canEnableApp(aff.getApp().getStorageItem())) {
 						const success = await manager.enable(info.id);
 						info.status = success ? AppStatus.AUTO_ENABLED : info.status;
 					}
@@ -1101,7 +1100,7 @@ export class AppsRestApi {
 					}
 
 					if (AppStatusUtils.isEnabled(this.bodyParams.status)) {
-						if (!(await canEnableApp(prl.getStorageItem()))) {
+						if (!(await Apps.canEnableApp(prl.getStorageItem()))) {
 							return API.v1.failure('Enabled apps have been maxed out');
 						}
 					}

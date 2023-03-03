@@ -1,17 +1,12 @@
 import { EventEmitter } from 'events';
 
-import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
-import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
-
 import { Users } from '../../../../app/models/server';
 import type { BundleFeature } from './bundles';
 import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
 import decrypt from './decrypt';
 import { getTagColor } from './getTagColor';
-import type { ILicense, LicenseAppSources } from '../definition/ILicense';
+import type { ILicense } from '../definition/ILicense';
 import type { ILicenseTag } from '../definition/ILicenseTag';
-import { isUnderAppLimits } from './lib/isUnderAppLimits';
-import type { AppServerOrchestrator } from '../../../server/apps/orchestrator';
 
 const EnterpriseLicenses = new EventEmitter();
 
@@ -39,8 +34,6 @@ class LicenseClass {
 		maxMarketplaceApps: 5,
 	};
 
-	private Apps: AppServerOrchestrator;
-
 	constructor() {
 		/**
 		 * Importing the Apps variable statically at the top of the file causes a change
@@ -49,10 +42,6 @@ class LicenseClass {
 		 * We added a dynamic import here to avoid this issue
 		 * @TODO as soon as the Apps-Engine service is available, use it instead of this dynamic import
 		 */
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		import('../../../server/apps').then(({ Apps }) => {
-			this.Apps = Apps;
-		});
 	}
 
 	private _validateExpiration(expiration: string): boolean {
@@ -236,14 +225,6 @@ class LicenseClass {
 		return maxActiveUsers > Users.getActiveLocalUserCount();
 	}
 
-	async canEnableApp(source: LicenseAppSources): Promise<boolean> {
-		if (!this.Apps?.isInitialized()) {
-			return false;
-		}
-
-		return isUnderAppLimits({ appManager: this.Apps.getManager() as AppManager }, this.appsConfig, source);
-	}
-
 	showLicenses(): void {
 		if (!process.env.LICENSE_DEBUG || process.env.LICENSE_DEBUG === 'false') {
 			return;
@@ -349,16 +330,6 @@ export function getAppsConfig(): NonNullable<ILicense['apps']> {
 
 export function canAddNewUser(): boolean {
 	return License.canAddNewUser();
-}
-
-export async function canEnableApp(app: IAppStorageItem): Promise<boolean> {
-	// Migrated apps were installed before the validation was implemented
-	// so they're always allowed to be enabled
-	if (app.migrated) {
-		return true;
-	}
-
-	return License.canEnableApp(app.installationSource);
 }
 
 export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void): void {
