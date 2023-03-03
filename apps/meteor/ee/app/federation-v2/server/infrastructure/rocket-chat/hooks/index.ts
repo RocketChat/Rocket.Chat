@@ -100,14 +100,12 @@ export class FederationHooksEE {
 		);
 	}
 
-	public static removeAll(): void {
+	public static removeAllListeners(): void {
 		callbacks.remove('beforeCreateDirectRoom', 'federation-v2-before-create-direct-message-room');
 		callbacks.remove('afterCreateDirectRoom', 'federation-v2-after-create-direct-message-room');
 		callbacks.remove('federation.onAddUsersToARoom', 'federation-v2-on-add-users-to-a-room');
 		callbacks.remove('afterAddedToRoom', 'federation-v2-after-add-user-to-a-room');
 		callbacks.remove('federation.afterCreateFederatedRoom', 'federation-v2-after-create-room');
 		callbacks.remove('federation.beforeAddUserToARoom', 'federation-v2-before-add-user-to-the-room');
-		callbacks.remove('afterRoomNameChange', 'federation-v2-after-room-name-changed');
-		callbacks.remove('afterRoomTopicChange', 'federation-v2-after-room-topic-changed');
 	}
 }

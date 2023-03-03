@@ -153,6 +153,6 @@ export class FederationFactoryEE extends FederationFactory {
 
 	public static removeAllListeners(): void {
 		super.removeAllListeners();
-		FederationHooksEE.removeAll();
+		FederationHooksEE.removeAllListeners();
 	}
 }

@@ -94,6 +94,10 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		redactEvent: sinon.stub(),
 		updateMessage: sinon.stub(),
 		setRoomPowerLevels: sinon.stub(),
+		setRoomName: sinon.stub(),
+		getRoomName: sinon.stub(),
+		setRoomTopic: sinon.stub(),
+		getRoomTopic: sinon.stub(),
 	};
 
 	beforeEach(() => {
@@ -133,6 +137,10 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		bridge.redactEvent.reset();
 		bridge.updateMessage.reset();
 		bridge.setRoomPowerLevels.reset();
+		bridge.setRoomTopic.reset();
+		bridge.setRoomName.reset();
+		bridge.getRoomName.reset();
+		bridge.getRoomTopic.reset();
 		messageAdapter.getMessageById.reset();
 		messageAdapter.setExternalFederationEventOnMessage.reset();
 		notificationsAdapter.subscribeToUserTypingEventsOnFederatedRoomId.reset();
@@ -1152,6 +1160,119 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 					room.getInternalId(),
 				),
 			).to.be.true;
+		});
+	});
+
+	describe('#afterRoomNameChanged()', () => {
+		const user = FederatedUser.createInstance('externalInviterId', {
+			name: 'normalizedInviterId',
+			username: 'normalizedInviterId',
+			existsOnlyOnProxyServer: true,
+		});
+		const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
+
+		it('should not change the room remotely if the room does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(undefined);
+			await service.afterRoomNameChanged('internalRoomId', 'internalRoomName');
+
+			expect(bridge.setRoomName.called).to.be.false;
+			expect(bridge.getRoomName.called).to.be.false;
+		});
+
+		it('should not change the room remotely if the user does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(undefined);
+			await service.afterRoomNameChanged('internalRoomId', 'internalRoomName');
+
+			expect(bridge.setRoomName.called).to.be.false;
+			expect(bridge.getRoomName.called).to.be.false;
+		});
+
+		it('should not change the room remotely if the room is not from the same home server', async () => {
+			bridge.extractHomeserverOrigin.returns('externalDomain');
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			await service.afterRoomNameChanged('internalRoomId', 'internalRoomName');
+
+			expect(bridge.setRoomName.called).to.be.false;
+			expect(bridge.getRoomName.called).to.be.false;
+		});
+
+		it('should not change the room remotely if the name is equal to the current name', async () => {
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			bridge.getRoomName.resolves('externalRoomName');
+			await service.afterRoomNameChanged('internalRoomId', 'internalRoomName');
+
+			expect(bridge.setRoomName.called).to.be.false;
+		});
+
+		it('should change the room name remotely if its different the current one', async () => {
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			bridge.getRoomName.resolves('currentRoomName');
+			await service.afterRoomNameChanged('internalRoomId', 'internalRoomName');
+
+			expect(bridge.setRoomName.calledWith(room.getExternalId(), user.getExternalId(), 'internalRoomName')).to.be.true;
+		});
+	});
+
+	describe('#afterRoomTopicChanged()', () => {
+		const user = FederatedUser.createInstance('externalInviterId', {
+			name: 'normalizedInviterId',
+			username: 'normalizedInviterId',
+			existsOnlyOnProxyServer: true,
+		});
+		const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
+
+		it('should not change the room remotely if the room does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(undefined);
+			await service.afterRoomTopicChanged('internalRoomId', 'internalRoomTopic');
+
+			expect(bridge.setRoomTopic.called).to.be.false;
+			expect(bridge.getRoomTopic.called).to.be.false;
+		});
+
+		it('should not change the room remotely if the user does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(undefined);
+			await service.afterRoomTopicChanged('internalRoomId', 'internalRoomTopic');
+
+			expect(bridge.setRoomTopic.called).to.be.false;
+			expect(bridge.getRoomTopic.called).to.be.false;
+		});
+
+		it('should not change the room remotely if the room is not from the same home server', async () => {
+			bridge.extractHomeserverOrigin.returns('externalDomain');
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			await service.afterRoomTopicChanged('internalRoomId', 'internalRoomTopic');
+
+			expect(bridge.setRoomTopic.called).to.be.false;
+			expect(bridge.getRoomTopic.called).to.be.false;
+		});
+
+		it('should not change the room remotely if the topic is equal to the current topic', async () => {
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			bridge.getRoomTopic.resolves('internalRoomTopic');
+			room.changeRoomTopic('internalRoomTopic');
+			await service.afterRoomTopicChanged('internalRoomId', 'internalRoomTopic');
+
+			expect(bridge.setRoomTopic.called).to.be.false;
+		});
+
+		it('should change the room topic remotely if its different the current one', async () => {
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			bridge.getRoomTopic.resolves('currentRoomTopic');
+			await service.afterRoomTopicChanged('internalRoomId', 'internalRoomTopic');
+
+			expect(bridge.setRoomTopic.calledWith(room.getExternalId(), user.getExternalId(), 'internalRoomTopic')).to.be.true;
 		});
 	});
 });
