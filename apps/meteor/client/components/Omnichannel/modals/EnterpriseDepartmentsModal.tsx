@@ -23,7 +23,7 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 		closeModal();
 	};
 
-	const isTypeUpgradeYourPlan = tabType === 'go-fully-featured' || tabType === 'go-fully-featured-registered';
+	const isTypeUpgradeYourPlan = ['go-fully-featured', 'go-fully-featured-registered'].includes(tabType || '');
 
 	const talkToExpertLink =
 		'https://www.rocket.chat/sales-contact?utm_source=rocketchat_app&utm_medium=multiple_queues&utm_campaign=in_product_ctas';
