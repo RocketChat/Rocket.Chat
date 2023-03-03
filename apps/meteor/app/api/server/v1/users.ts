@@ -319,7 +319,7 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isUserSetActiveStatusParamsPOST },
 	{
 		post() {
-			if (!hasPermission(this.userId, 'edit-other-user-active-status') || !hasPermission(this.userId, 'manage-moderation-actions')) {
+			if (!hasPermission(this.userId, 'edit-other-user-active-status') && !hasPermission(this.userId, 'manage-moderation-actions')) {
 				return API.v1.unauthorized();
 			}
 
