@@ -499,4 +499,12 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		const query = { _id };
 		return this.updateOne(query, { $unset: { E2ESuggestedKey: 1 } });
 	}
+
+	setOnHoldByRoomId(rid: string): Promise<UpdateResult> {
+		return this.updateOne({ rid }, { $set: { onHold: true } });
+	}
+
+	unsetOnHoldByRoomId(rid: string): Promise<UpdateResult> {
+		return this.updateOne({ rid }, { $unset: { onHold: 1 } });
+	}
 }

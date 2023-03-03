@@ -66,6 +66,7 @@ const validateMaxChats = async ({
 	}
 
 	const { queueInfo: { chats = 0 } = {} } = user;
+	console.log('chats', chats, maxNumberSimultaneousChat);
 	if (parseInt(maxNumberSimultaneousChat, 10) <= chats) {
 		cbLogger.debug('Callback with error. Agent reached max amount of simultaneous chats');
 		callbacks.run('livechat.onMaxNumberSimultaneousChatsReached', inquiry);

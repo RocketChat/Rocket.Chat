@@ -89,4 +89,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	setGroupE2ESuggestedKey(_id: string, key: string): Promise<UpdateResult | Document>;
 
 	unsetGroupE2ESuggestedKey(_id: string): Promise<UpdateResult | Document>;
+
+	setOnHoldByRoomId(roomId: string): Promise<UpdateResult>;
+	unsetOnHoldByRoomId(roomId: string): Promise<UpdateResult>;
 }
