@@ -104,8 +104,6 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	const api = useMemo(() => ({}), []);
 
 	if (!pseudoRoom) {
-		console.log('roomQuery => ', roomQuery);
-
 		return roomQuery.isSuccess && roomQuery.data === undefined ? <RoomNotFound /> : <RoomSkeleton />;
 	}
 
