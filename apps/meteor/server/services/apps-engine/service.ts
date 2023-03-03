@@ -112,13 +112,13 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		return Apps.isInitialized();
 	}
 
-	getApp(query: any): IAppInfo[] | undefined {
+	async getApp(query: any): Promise<IAppInfo[] | undefined> {
 		return Apps.getManager()
 			?.get(query)
 			.map((app: ProxiedApp) => app.getApp().getInfo());
 	}
 
-	getAppStorageItemById(appId: string): IAppStorageItem | undefined {
+	async getAppStorageItemById(appId: string): Promise<IAppStorageItem | undefined> {
 		const app = Apps.getManager()?.getOneById(appId);
 
 		if (!app) {
