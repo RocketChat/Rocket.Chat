@@ -1,4 +1,4 @@
-import type { IDirectMessageRoom, IRoom, IRoomFederated, ITeam, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IDirectMessageRoom, IOmnichannelGenericRoom, IRoom, IRoomFederated, ITeam, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, IRoomsModel } from '@rocket.chat/model-typings';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
@@ -584,7 +584,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.col.findOne({ $or: [{ name }, { fname: name }] }, options);
 	}
 
-	allRoomSourcesCount(): AggregationCursor<IRoom> {
+	allRoomSourcesCount(): AggregationCursor<{ _id: Required<IOmnichannelGenericRoom['source']>; count: number }> {
 		return this.col.aggregate([
 			{
 				$match: {
@@ -671,7 +671,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	findPaginatedByNameOrFNameAndRoomIdsIncludingTeamRooms(
-		searchTerm: object | NonNullable<IRoom['name'] | IRoom['fname']>,
+		searchTerm: RegExp | null,
 		teamIds: Array<ITeam['_id']>,
 		roomIds: Array<IRoom['_id']>,
 		options: FindOptions<IRoom> = {},
@@ -722,11 +722,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	findPaginatedContainingNameOrFNameInIdsAsTeamMain(
-		searchTerm: IRoom['name'] | IRoom['fname'],
+		searchTerm: RegExp | null,
 		rids: Array<IRoom['_id']>,
 		options: FindOptions<IRoom> = {},
 	): FindPaginated<FindCursor<IRoom>> {
-		const query = {
+		const query: Filter<IRoom> = {
 			teamMain: true,
 			$and: [
 				{
@@ -745,7 +745,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			],
 		};
 
-		if (searchTerm) {
+		if (searchTerm && query.$and) {
 			query.$and.push({
 				$or: [
 					{
@@ -780,19 +780,19 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		uid: IDirectMessageRoom['uids'],
 		options: FindOptions<IRoom> = {},
 	): Promise<IDirectMessageRoom | null> {
-		const query: Filter<IDirectMessageRoom> = {
+		const query: Filter<IRoom> = {
 			t: 'd',
 			uids: { $size: uid.length, $all: uid },
 		};
 
-		return this.findOne<IDirectMessageRoom>(query, options);
+		return this.findOne(query, options) as Promise<IDirectMessageRoom | null>;
 	}
 
-	findFederatedRooms(options: FindOptions<IRoom> = {}): Promise<IRoomFederated | null> {
+	findFederatedRooms(options: FindOptions<IRoom> = {}): FindCursor<IRoomFederated> {
 		const query: Filter<IRoomFederated> = {
 			federated: true,
 		};
 
-		return this.find(query, options);
+		return this.find(query, options) as FindCursor<IRoomFederated>;
 	}
 }
