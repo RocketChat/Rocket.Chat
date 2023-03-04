@@ -12,7 +12,7 @@ import {
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 
@@ -36,15 +36,15 @@ import { useMessageListShowRealName, useMessageListShowUsername } from '../list/
 
 type SystemMessageProps = {
 	message: IMessage;
+	showUserAvatar: boolean;
 };
 
-const SystemMessage = ({ message }: SystemMessageProps): ReactElement => {
+const SystemMessage = ({ message, showUserAvatar }: SystemMessageProps): ReactElement => {
 	const t = useTranslation();
 	const formatTime = useFormatTime();
 	const formatDateAndTime = useFormatDateAndTime();
 	const chat = useChat();
 
-	const showUserAvatar = useUserPreference<boolean>('displayAvatars');
 	const showRealName = useMessageListShowRealName();
 	const user: UserPresence = { ...message.u, roles: [], ...useUserData(message.u._id) };
 	const usernameAndRealNameAreSame = !user.name || user.username === user.name;
