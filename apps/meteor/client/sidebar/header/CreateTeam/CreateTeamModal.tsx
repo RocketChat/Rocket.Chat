@@ -49,7 +49,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 
 		const { exists } = await checkTeamNameExists({ roomName: name });
 		if (exists) {
-			return t('Teams_Errors_team_name', { name });
+			return t('Teams_Errors_Already_exists', { name });
 		}
 	};
 
