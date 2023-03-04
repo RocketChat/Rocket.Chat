@@ -880,7 +880,7 @@
   "Changing_email": "Changing email",
   "channel": "channel",
   "Channel": "Channel",
-  "Channel_already_exist": "The channel `#%s` already exists.",
+  "Channel_already_exist": "The channel `%s` already exists.",
   "Channel_already_exist_static": "The channel already exists.",
   "Channel_already_Unarchived": "Channel with name `#%s` is already in Unarchived state",
   "Channel_Archived": "Channel with name `#%s` has been archived successfully",
