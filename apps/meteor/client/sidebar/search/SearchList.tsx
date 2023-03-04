@@ -333,6 +333,7 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 					totalCount={items.length}
 					data={items}
 					components={{ Scroller: ScrollerWithCustomProps }}
+					computeItemKey={(_, room) => room._id}
 					itemContent={(_, data): ReactElement => <Row data={itemData} item={data} />}
 					ref={listRef}
 				/>

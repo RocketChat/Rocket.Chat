@@ -1,6 +1,6 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { VerticalWizardLayout, VerticalWizardLayoutFooter, VerticalWizardLayoutForm, VerticalWizardLayoutTitle } from '@rocket.chat/layout';
-import { useRoute, useSetting, useTranslation, useAssetPath } from '@rocket.chat/ui-contexts';
+import { useRoute, useSetting, useTranslation, useAssetWithDarkModePath } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 
 import { LoginPoweredBy } from './components/LoginPoweredBy';
@@ -18,8 +18,8 @@ const CMSPage = ({ page }: CMSPageProps): ReactElement => {
 		homeRoute.push();
 	};
 
-	const customLogo = useAssetPath('Assets_logo');
-	const customBackground = useAssetPath('Assets_background');
+	const customLogo = useAssetWithDarkModePath('logo');
+	const customBackground = useAssetWithDarkModePath('background');
 
 	return (
 		<VerticalWizardLayout

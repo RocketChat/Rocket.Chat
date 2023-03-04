@@ -36,7 +36,7 @@ function AppInstallPage() {
 	}
 
 	const router = useRoute(currentRouteName);
-	const upgradeRoute = useRoute('upgradeRoute');
+	const upgradeRoute = useRoute('upgrade');
 
 	const context = useRouteParameter('context');
 
@@ -177,7 +177,8 @@ function AppInstallPage() {
 				handleClose={cancelAction}
 				handleConfirm={() => uploadFile(appFile, manifest)}
 				handleEnableUnlimitedApps={() => {
-					upgradeRoute.push();
+					upgradeRoute.push({ type: 'go-fully-featured-registered' });
+					setModal(null);
 				}}
 			/>,
 		);
