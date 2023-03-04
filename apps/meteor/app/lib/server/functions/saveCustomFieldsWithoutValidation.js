@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import s from 'underscore.string';
 
 import { settings } from '../../../settings/server';
 import { Users, Subscriptions } from '../../../models/server';
+import { trim } from '../../../../lib/utils/stringUtils';
 
 export const saveCustomFieldsWithoutValidation = function (userId, formData) {
-	if (s.trim(settings.get('Accounts_CustomFields')) !== '') {
+	if (trim(settings.get('Accounts_CustomFields')) !== '') {
 		let customFieldsMeta;
 		try {
 			customFieldsMeta = JSON.parse(settings.get('Accounts_CustomFields'));

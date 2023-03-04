@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import _ from 'underscore';
 import { ObjectId } from 'mongodb';
 import type {
 	IImportUser,
@@ -912,7 +911,7 @@ export class ImportDataConverter {
 				}
 
 				data.importIds = data.importIds.filter((item) => item);
-				data.users = _.uniq(data.users);
+				data.users = [...new Set(data.users)];
 
 				if (!data.importIds.length) {
 					throw new Error('importer-channel-missing-import-id');

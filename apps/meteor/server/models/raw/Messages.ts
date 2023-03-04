@@ -1,4 +1,13 @@
-import type { ILivechatDepartment, IMessage, IRoom, IUser, MessageTypesValues, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type {
+	ILivechatDepartment,
+	ILivechatPriority,
+	IMessage,
+	IOmnichannelServiceLevelAgreements,
+	IRoom,
+	IUser,
+	MessageTypesValues,
+	RocketChatRecordDeleted,
+} from '@rocket.chat/core-typings';
 import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import type {
@@ -11,6 +20,8 @@ import type {
 	Filter,
 	FindOptions,
 	IndexDescription,
+	InsertOneResult,
+	DeleteResult,
 } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
@@ -222,6 +233,100 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
+	findLivechatClosingMessage(rid: IRoom['_id'], options?: FindOptions<IMessage>): Promise<IMessage | null> {
+		return this.findOne<IMessage>(
+			{
+				rid,
+				t: 'livechat-close',
+			},
+			options,
+		);
+	}
+
+	findLivechatMessages(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
+		return this.find(
+			{
+				rid,
+				$or: [{ t: { $exists: false } }, { t: 'livechat-close' }],
+			},
+			options,
+		);
+	}
+
+	findVisibleByRoomIdNotContainingTypesBeforeTs(
+		roomId: IRoom['_id'],
+		types: IMessage['t'][],
+		ts: Date,
+		options?: FindOptions<IMessage>,
+		showThreadMessages = true,
+	): FindCursor<IMessage> {
+		const query: Filter<IMessage> = {
+			_hidden: {
+				$ne: true,
+			},
+			rid: roomId,
+			ts: { $lt: ts },
+			...(!showThreadMessages && {
+				$or: [
+					{
+						tmid: { $exists: false },
+					},
+					{
+						tshow: true,
+					},
+				],
+			}),
+		};
+
+		if (types.length > 0) {
+			query.t = { $nin: types };
+		}
+
+		return this.find(query, options);
+	}
+
+	findVisibleByRoomIdNotContainingTypesAndUsers(
+		roomId: IRoom['_id'],
+		types: IMessage['t'][],
+		users?: string[],
+		options?: FindOptions<IMessage>,
+		showThreadMessages = true,
+	): FindCursor<IMessage> {
+		const query: Filter<IMessage> = {
+			_hidden: {
+				$ne: true,
+			},
+			...(Array.isArray(users) && users.length > 0 && { 'u._id': { $nin: users } }),
+			rid: roomId,
+			...(!showThreadMessages && {
+				$or: [
+					{
+						tmid: { $exists: false },
+					},
+					{
+						tshow: true,
+					},
+				],
+			}),
+		};
+
+		if (types.length > 0) {
+			query.t = { $nin: types };
+		}
+
+		return this.find(query, options);
+	}
+
+	findLivechatMessagesWithoutClosing(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
+		return this.find(
+			{
+				rid,
+				t: { $exists: false },
+			},
+			options,
+		);
+	}
+
 	async setBlocksById(_id: string, blocks: Required<IMessage>['blocks']): Promise<void> {
 		await this.updateOne(
 			{ _id },
@@ -403,5 +508,61 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				)
 				.toArray()
 		)[0] as IMessage;
+	}
+
+	createSLAHistoryWithRoomIdMessageAndUser(
+		roomId: string,
+		user: IMessage['u'],
+		sla?: Pick<IOmnichannelServiceLevelAgreements, 'name'>,
+	): Promise<InsertOneResult<IMessage>> {
+		return this.insertOne({
+			t: 'omnichannel_sla_change_history',
+			rid: roomId,
+			msg: '',
+			ts: new Date(),
+			groupable: false,
+			u: {
+				_id: user._id,
+				username: user.username,
+				name: user.name,
+			},
+			slaData: {
+				definedBy: {
+					_id: user._id,
+					username: user.username,
+				},
+				...(sla && { sla }),
+			},
+		});
+	}
+
+	createPriorityHistoryWithRoomIdMessageAndUser(
+		roomId: string,
+		user: IMessage['u'],
+		priority?: Pick<ILivechatPriority, 'name' | 'i18n'>,
+	): Promise<InsertOneResult<IMessage>> {
+		return this.insertOne({
+			t: 'omnichannel_priority_change_history',
+			rid: roomId,
+			msg: '',
+			ts: new Date(),
+			groupable: false,
+			u: {
+				_id: user._id,
+				username: user.username,
+				name: user.name,
+			},
+			priorityData: {
+				definedBy: {
+					_id: user._id,
+					username: user.username,
+				},
+				...(priority && { priority }),
+			},
+		});
+	}
+
+	removeByRoomId(roomId: string): Promise<DeleteResult> {
+		return this.deleteMany({ rid: roomId });
 	}
 }

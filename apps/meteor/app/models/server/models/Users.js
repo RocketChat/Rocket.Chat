@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
-import s from 'underscore.string';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Base } from './_Base';
 import Subscriptions from './Subscriptions';
 import { settings } from '../../../settings/server';
+import { trim } from '../../../../lib/utils/stringUtils';
 
 const queryStatusAgentOnline = (extraFilters = {}) => ({
 	statusLivechat: 'available',
@@ -864,7 +864,7 @@ export class Users extends Base {
 		};
 
 		if (idExceptions) {
-			if (!_.isArray(idExceptions)) {
+			if (!Array.isArray(idExceptions)) {
 				idExceptions = [idExceptions];
 			}
 
@@ -1399,24 +1399,24 @@ export class Users extends Base {
 		const unsetData = {};
 
 		if (data.name != null) {
-			if (!_.isEmpty(s.trim(data.name))) {
-				setData.name = s.trim(data.name);
+			if (!_.isEmpty(trim(data.name))) {
+				setData.name = trim(data.name);
 			} else {
 				unsetData.name = 1;
 			}
 		}
 
 		if (data.email != null) {
-			if (!_.isEmpty(s.trim(data.email))) {
-				setData.emails = [{ address: s.trim(data.email) }];
+			if (!_.isEmpty(trim(data.email))) {
+				setData.emails = [{ address: trim(data.email) }];
 			} else {
 				unsetData.emails = 1;
 			}
 		}
 
 		if (data.phone != null) {
-			if (!_.isEmpty(s.trim(data.phone))) {
-				setData.phone = [{ phoneNumber: s.trim(data.phone) }];
+			if (!_.isEmpty(trim(data.phone))) {
+				setData.phone = [{ phoneNumber: trim(data.phone) }];
 			} else {
 				unsetData.phone = 1;
 			}

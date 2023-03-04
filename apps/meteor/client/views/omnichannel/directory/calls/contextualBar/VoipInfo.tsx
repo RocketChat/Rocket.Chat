@@ -12,7 +12,7 @@ import VerticalBar from '../../../../../components/VerticalBar';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useIsCallReady } from '../../../../../contexts/CallContext';
 import AgentInfoDetails from '../../../components/AgentInfoDetails';
-import AgentField from '../../chats/contextualBar/AgentField';
+import AgentField from '../../components/AgentField';
 import { InfoField } from './InfoField';
 import { VoipInfoCallButton } from './VoipInfoCallButton';
 

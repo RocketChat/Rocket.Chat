@@ -375,6 +375,25 @@ settingsRegistry.addGroup('Accounts', function () {
 			public: true,
 			i18nLabel: 'Group_by_Type',
 		});
+		this.add('Accounts_Default_User_Preferences_themeAppearence', 'auto', {
+			type: 'select',
+			values: [
+				{
+					key: 'auto',
+					i18nLabel: 'Theme_match_system',
+				},
+				{
+					key: 'light',
+					i18nLabel: 'Theme_light',
+				},
+				{
+					key: 'dark',
+					i18nLabel: 'Theme_dark',
+				},
+			],
+			public: true,
+			i18nLabel: 'Theme_Appearence',
+		});
 		this.add('Accounts_Default_User_Preferences_sidebarViewMode', 'medium', {
 			type: 'select',
 			values: [
@@ -523,6 +542,12 @@ settingsRegistry.addGroup('Accounts', function () {
 			type: 'int',
 			public: true,
 			i18nLabel: 'Notifications_Sound_Volume',
+		});
+
+		this.add('Accounts_Default_User_Preferences_omnichannelTranscriptEmail', false, {
+			type: 'boolean',
+			public: true,
+			i18nLabel: 'Omnichannel_transcript_email',
 		});
 	});
 
@@ -1173,6 +1198,23 @@ settingsRegistry.addGroup('Message', function () {
 			public: true,
 		});
 	});
+	this.section('Read_Receipts', function () {
+		this.add('Message_Read_Receipt_Enabled', false, {
+			type: 'boolean',
+			enterprise: true,
+			invalidValue: false,
+			modules: ['message-read-receipt'],
+			public: true,
+		});
+		this.add('Message_Read_Receipt_Store_Users', false, {
+			type: 'boolean',
+			enterprise: true,
+			invalidValue: false,
+			modules: ['message-read-receipt'],
+			public: true,
+			enableQuery: { _id: 'Message_Read_Receipt_Enabled', value: true },
+		});
+	});
 	this.add('Message_AllowEditing', true, {
 		type: 'boolean',
 		public: true,
@@ -1555,7 +1597,7 @@ settingsRegistry.addGroup('Layout', function () {
 			public: true,
 		});
 	});
-	this.section('Content', function () {
+	this.section('Layout_Home_Page_Content_Title', function () {
 		this.add('Layout_Home_Title', 'Home', {
 			type: 'string',
 			public: true,
@@ -1564,18 +1606,56 @@ settingsRegistry.addGroup('Layout', function () {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('Layout_Custom_Body_Only', false, {
-			i18nDescription: 'Layout_Custom_Body_Only_description',
-			type: 'boolean',
-			invalidValue: false,
-			enterprise: true,
-			public: true,
-		});
 		this.add('Layout_Home_Body', '', {
+			i18nDescription: 'Layout_Custom_Content_Description',
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
 			public: true,
+		});
+		this.add('Layout_Home_Custom_Block_Visible', false, {
+			type: 'boolean',
+			invalidValue: false,
+			public: true,
+			enableQuery: [
+				{
+					_id: 'Layout_Home_Body',
+					value: {
+						$exists: true,
+						$ne: '',
+					},
+				},
+				{
+					_id: 'Layout_Custom_Body_Only',
+					value: {
+						$exists: true,
+						$ne: true,
+					},
+				},
+			],
+		});
+		this.add('Layout_Custom_Body_Only', false, {
+			i18nDescription: 'Layout_Custom_Body_Only_Description',
+			type: 'boolean',
+			invalidValue: false,
+			enterprise: true,
+			public: true,
+			enableQuery: [
+				{
+					_id: 'Layout_Home_Body',
+					value: {
+						$exists: true,
+						$ne: '',
+					},
+				},
+				{
+					_id: 'Layout_Home_Custom_Block_Visible',
+					value: {
+						$exists: true,
+						$ne: false,
+					},
+				},
+			],
 		});
 		this.add('Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS &rarr; Layout to customize this page.', {
 			type: 'code',
@@ -1603,6 +1683,12 @@ settingsRegistry.addGroup('Layout', function () {
 			code: 'text/html',
 			multiline: true,
 			public: true,
+		});
+		this.add('Layout_Sidenav_Footer_Dark', '<a href="/home"><img src="assets/logo_dark.png" alt="Home" /></a>', {
+			type: 'code',
+			code: 'text/html',
+			public: true,
+			i18nDescription: 'Layout_Sidenav_Footer_description',
 		});
 		return this.add('Layout_Sidenav_Footer', '<a href="/home"><img src="assets/logo.png" alt="Home" /></a>', {
 			type: 'code',
@@ -3191,7 +3277,7 @@ settingsRegistry.addGroup('Troubleshoot', function () {
 	this.add('Presence_broadcast_disabled', false, {
 		type: 'boolean',
 		public: true,
-		blocked: true,
+		readonly: true,
 	});
 
 	this.add('Troubleshoot_Disable_Presence_Broadcast', false, {

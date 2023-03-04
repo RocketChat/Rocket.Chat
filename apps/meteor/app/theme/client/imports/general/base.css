@@ -179,22 +179,6 @@ button {
 	}
 }
 
-.message.new-day.first-unread {
-	&::after {
-		border-color: var(--rc-color-error);
-	}
-
-	& .body {
-		&::before {
-			display: none;
-		}
-
-		&::after {
-			top: -26px;
-		}
-	}
-}
-
 .hidden {
 	display: none;
 }
