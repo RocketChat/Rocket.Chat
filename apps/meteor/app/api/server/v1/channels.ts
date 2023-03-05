@@ -460,7 +460,7 @@ API.v1.addRoute(
 
 			const { channelId, channelName } = this.bodyParams;
 
-			if (!channelId && !channelName) {
+			if (!channelId || !channelName) {
 				return API.v1.failure('The parameter "channelId" or "channelName" is required');
 			}
 
