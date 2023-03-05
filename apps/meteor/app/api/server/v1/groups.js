@@ -1151,14 +1151,13 @@ API.v1.addRoute(
 		post() {
 			const { roomId, roomName } = this.requestParams();
 
-			if (!roomId && !roomName) {
+			if (!roomId || !roomName) {
 				return API.v1.failure('The parameter "roomId" or "roomName" is required');
 			}
 
 			const room = findPrivateGroupByIdOrName({
 				params: {
-					roomId,
-					roomName,
+					...(roomId || roomName),
 				},
 				userId: this.userId,
 			});
