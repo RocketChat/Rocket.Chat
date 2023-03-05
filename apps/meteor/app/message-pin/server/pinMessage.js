@@ -7,7 +7,7 @@ import { isTheLastMessage } from '../../lib/server';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { canAccessRoom, hasPermission, roomAccessAttributes } from '../../authorization/server';
 import { Subscriptions, Messages, Users, Rooms } from '../../models/server';
-import { Apps, AppEvents } from '../../apps/server/orchestrator';
+import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
 
 const recursiveRemove = (msg, deep = 1) => {
 	if (!msg) {

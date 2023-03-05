@@ -128,13 +128,12 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 				<Modal.Title>{t('Teams_New_Title')}</Modal.Title>
 				<Modal.Close title={t('Close')} onClick={onClose} />
 			</Modal.Header>
-			<Modal.Content>
+			<Modal.Content mbe='x2'>
 				<FieldGroup>
 					<Field>
 						<Field.Label>{t('Teams_New_Name_Label')}</Field.Label>
 						<Field.Row>
 							<TextInput
-								autoFocus
 								aria-invalid={errors.name ? 'true' : 'false'}
 								{...register('name', {
 									required: t('error-the-field-is-required', { field: t('Name') }),

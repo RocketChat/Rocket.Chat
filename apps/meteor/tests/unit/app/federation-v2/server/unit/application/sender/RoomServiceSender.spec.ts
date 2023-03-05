@@ -1,13 +1,21 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import type { IEditedMessage, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import proxyquire from 'proxyquire';
+import faker from '@faker-js/faker';
+
+import type * as RoomServiceSenderModule from '../../../../../../../../app/federation-v2/server/application/sender/RoomServiceSender';
+import type * as FederatedUserModule from '../../../../../../../../app/federation-v2/server/domain/FederatedUser';
+import type * as FederatedRoomModule from '../../../../../../../../app/federation-v2/server/domain/FederatedRoom';
+import { MATRIX_POWER_LEVELS } from '../../../../../../../../app/federation-v2/server/infrastructure/matrix/definitions/MatrixPowerLevels';
+import { createFakeMessage, createFakeUser } from '../../../../../../../mocks/data';
 
 const sendMessageStub = sinon.stub();
 const sendQuoteMessageStub = sinon.stub();
 const { FederationRoomServiceSender } = proxyquire
 	.noCallThru()
-	.load('../../../../../../../../app/federation-v2/server/application/sender/RoomServiceSender', {
+	.load<typeof RoomServiceSenderModule>('../../../../../../../../app/federation-v2/server/application/sender/RoomServiceSender', {
 		'mongodb': {
 			'ObjectId': class ObjectId {
 				toHexString(): string {
@@ -21,20 +29,22 @@ const { FederationRoomServiceSender } = proxyquire
 		},
 	});
 
-const { FederatedUser } = proxyquire.noCallThru().load('../../../../../../../../app/federation-v2/server/domain/FederatedUser', {
-	mongodb: {
-		'ObjectId': class ObjectId {
-			toHexString(): string {
-				return 'hexString';
-			}
+const { FederatedUser } = proxyquire
+	.noCallThru()
+	.load<typeof FederatedUserModule>('../../../../../../../../app/federation-v2/server/domain/FederatedUser', {
+		mongodb: {
+			'ObjectId': class ObjectId {
+				toHexString(): string {
+					return 'hexString';
+				}
+			},
+			'@global': true,
 		},
-		'@global': true,
-	},
-});
+	});
 
 const { DirectMessageFederatedRoom, FederatedRoom } = proxyquire
 	.noCallThru()
-	.load('../../../../../../../../app/federation-v2/server/domain/FederatedRoom', {
+	.load<typeof FederatedRoomModule>('../../../../../../../../app/federation-v2/server/domain/FederatedRoom', {
 		mongodb: {
 			'ObjectId': class ObjectId {
 				toHexString(): string {
@@ -46,13 +56,15 @@ const { DirectMessageFederatedRoom, FederatedRoom } = proxyquire
 	});
 
 describe('Federation - Application - FederationRoomServiceSender', () => {
-	let service: typeof FederationRoomServiceSender;
+	let service: InstanceType<typeof FederationRoomServiceSender>;
 	const roomAdapter = {
 		getFederatedRoomByInternalId: sinon.stub(),
 		createFederatedRoomForDirectMessage: sinon.stub(),
 		getDirectMessageFederatedRoomByUserIds: sinon.stub(),
 		addUserToRoom: sinon.stub(),
 		createFederatedRoom: sinon.stub(),
+		getInternalRoomRolesByUserId: sinon.stub(),
+		applyRoomRolesToUser: sinon.stub(),
 	};
 	const userAdapter = {
 		getFederatedUserByExternalId: sinon.stub(),
@@ -75,6 +87,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 	const notificationsAdapter = {
 		subscribeToUserTypingEventsOnFederatedRoomId: sinon.stub(),
 		broadcastUserTypingOnRoom: sinon.stub(),
+		notifyWithEphemeralMessage: sinon.stub(),
 	};
 	const bridge = {
 		getUserProfileInformation: sinon.stub().resolves({}),
@@ -88,6 +101,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		kickUserFromRoom: sinon.stub(),
 		redactEvent: sinon.stub(),
 		updateMessage: sinon.stub(),
+		setRoomPowerLevels: sinon.stub(),
 	};
 
 	beforeEach(() => {
@@ -108,6 +122,8 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		roomAdapter.getDirectMessageFederatedRoomByUserIds.reset();
 		roomAdapter.addUserToRoom.reset();
 		roomAdapter.createFederatedRoom.reset();
+		roomAdapter.getInternalRoomRolesByUserId.reset();
+		roomAdapter.applyRoomRolesToUser.reset();
 		userAdapter.getFederatedUserByInternalId.reset();
 		userAdapter.getFederatedUserByExternalId.reset();
 		userAdapter.getInternalUserById.reset();
@@ -124,8 +140,12 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 		bridge.kickUserFromRoom.reset();
 		bridge.redactEvent.reset();
 		bridge.updateMessage.reset();
+		bridge.setRoomPowerLevels.reset();
 		messageAdapter.getMessageById.reset();
 		messageAdapter.setExternalFederationEventOnMessage.reset();
+		notificationsAdapter.subscribeToUserTypingEventsOnFederatedRoomId.reset();
+		notificationsAdapter.notifyWithEphemeralMessage.reset();
+		notificationsAdapter.broadcastUserTypingOnRoom.reset();
 		sendMessageStub.reset();
 		sendQuoteMessageStub.reset();
 	});
@@ -144,7 +164,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			roomAdapter.getDirectMessageFederatedRoomByUserIds.resolves(room);
 			await service.createDirectMessageRoomAndInviteUser({} as any);
 
-			expect(userAdapter.createFederatedUser.called).to.be.false;
+			sinon.assert.notCalled(userAdapter.createFederatedUser);
 		});
 
 		it('should create the inviter user both externally and internally if it does not exists', async () => {
@@ -161,8 +181,8 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				existsOnlyOnProxyServer: true,
 			});
 
-			expect(bridge.createUser.calledWith('username', 'name', 'localDomain')).to.be.true;
-			expect(userAdapter.createFederatedUser.calledWith(inviter)).to.be.true;
+			sinon.assert.calledWith(bridge.createUser, 'username', 'name', 'localDomain');
+			sinon.assert.calledWith(userAdapter.createFederatedUser, inviter);
 		});
 
 		it('should NOT create the invitee user if the user already exists', async () => {
@@ -175,7 +195,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				rawInviteeId: 'rawInviteeId',
 			} as any);
 
-			expect(userAdapter.createFederatedUser.called).to.be.false;
+			sinon.assert.notCalled(userAdapter.createFederatedUser);
 		});
 
 		it('should create the invitee user internally if it does not exists', async () => {
@@ -195,7 +215,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				existsOnlyOnProxyServer: false,
 			});
 
-			expect(userAdapter.createFederatedUser.calledWith(invitee)).to.be.true;
+			sinon.assert.calledWith(userAdapter.createFederatedUser, invitee);
 		});
 
 		it('should throw an error when the inviter does not exists', async () => {
@@ -206,7 +226,10 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				service.createDirectMessageRoomAndInviteUser({
 					normalizedInviteeId: 'normalizedInviteeId',
 					rawInviteeId: 'rawInviteeId',
-				} as any),
+					internalInviterId: 'internalInviterId',
+					internalRoomId: 'internalRoomId',
+					inviteeUsernameOnly: 'true',
+				}),
 			).to.be.rejectedWith('Could not find inviter or invitee user');
 		});
 
@@ -218,7 +241,10 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				service.createDirectMessageRoomAndInviteUser({
 					normalizedInviteeId: 'normalizedInviteeId',
 					rawInviteeId: 'rawInviteeId',
-				} as any),
+					internalInviterId: 'internalInviterId',
+					internalRoomId: 'internalRoomId',
+					inviteeUsernameOnly: 'true',
+				}),
 			).to.be.rejectedWith('Could not find inviter or invitee user');
 		});
 
@@ -228,9 +254,12 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			await service.createDirectMessageRoomAndInviteUser({
 				normalizedInviteeId: 'normalizedInviteeId',
 				rawInviteeId: 'rawInviteeId',
-			} as any);
+				internalInviterId: 'internalInviterId',
+				internalRoomId: 'internalRoomId',
+				inviteeUsernameOnly: 'true',
+			});
 
-			expect(roomAdapter.createFederatedRoomForDirectMessage.called).to.be.false;
+			sinon.assert.notCalled(roomAdapter.createFederatedRoomForDirectMessage);
 		});
 
 		it('should create the room both externally and internally if it does not exists', async () => {
@@ -247,11 +276,14 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			await service.createDirectMessageRoomAndInviteUser({
 				normalizedInviteeId: 'normalizedInviteeId',
 				rawInviteeId: 'rawInviteeId',
-			} as any);
+				internalInviterId: 'internalInviterId',
+				internalRoomId: 'internalRoomId',
+				inviteeUsernameOnly: 'true',
+			});
 			const roomResult = DirectMessageFederatedRoom.createInstance('externalRoomId', user, [user, invitee]);
 
-			expect(bridge.createDirectMessageRoom.calledWith('externalInviterId', ['externalInviteeId'])).to.be.true;
-			expect(roomAdapter.createFederatedRoomForDirectMessage.calledWith(roomResult)).to.be.true;
+			sinon.assert.calledWith(bridge.createDirectMessageRoom, 'externalInviterId', ['externalInviteeId']);
+			sinon.assert.calledWith(roomAdapter.createFederatedRoomForDirectMessage, roomResult);
 		});
 
 		it('should throw an error if the federated room does not exists', async () => {
@@ -263,7 +295,10 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				service.createDirectMessageRoomAndInviteUser({
 					normalizedInviteeId: 'normalizedInviteeId',
 					rawInviteeId: 'rawInviteeId',
-				} as any),
+					internalInviterId: 'internalInviterId',
+					internalRoomId: 'internalRoomId',
+					inviteeUsernameOnly: 'true',
+				}),
 			).to.be.rejectedWith('Could not find room id for users: hexString hexString');
 		});
 
@@ -283,9 +318,11 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				normalizedInviteeId: 'normalizedInviteeId',
 				rawInviteeId: 'rawInviteeId',
 				inviteeUsernameOnly: 'inviteeUsernameOnly',
-			} as any);
+				internalInviterId: 'internalInviterId',
+				internalRoomId: 'internalRoomId',
+			});
 
-			expect(bridge.createUser.calledWith('inviteeUsernameOnly', 'normalizedInviteeId', 'localDomain')).to.be.true;
+			sinon.assert.calledWith(bridge.createUser, 'inviteeUsernameOnly', 'normalizedInviteeId', 'localDomain');
 		});
 
 		it('should invite and join the user to the room in the proxy home server if the invitee is from the same homeserver', async () => {
@@ -304,10 +341,12 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				normalizedInviteeId: 'normalizedInviteeId',
 				rawInviteeId: 'rawInviteeId',
 				inviteeUsernameOnly: 'inviteeUsernameOnly',
-			} as any);
+				internalInviterId: 'internalInviterId',
+				internalRoomId: 'internalRoomId',
+			});
 
-			expect(bridge.inviteToRoom.calledWith('externalRoomId', 'externalInviterId', 'externalInviteeId')).to.be.true;
-			expect(bridge.joinRoom.calledWith('externalRoomId', 'externalInviteeId')).to.be.true;
+			sinon.assert.calledWith(bridge.inviteToRoom, 'externalRoomId', 'externalInviterId', 'externalInviteeId');
+			sinon.assert.calledWith(bridge.joinRoom, 'externalRoomId', 'externalInviteeId');
 		});
 
 		it('should NOT invite any user externally if the user is not from the same home server', async () => {
@@ -319,11 +358,13 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				normalizedInviteeId: 'normalizedInviteeId',
 				rawInviteeId: 'rawInviteeId',
 				inviteeUsernameOnly: 'inviteeUsernameOnly',
-			} as any);
+				internalInviterId: 'internalInviterId',
+				internalRoomId: 'internalRoomId',
+			});
 
-			expect(bridge.inviteToRoom.called).to.be.false;
-			expect(bridge.createUser.called).to.be.false;
-			expect(bridge.joinRoom.called).to.be.false;
+			sinon.assert.notCalled(bridge.inviteToRoom);
+			sinon.assert.notCalled(bridge.createUser);
+			sinon.assert.notCalled(bridge.joinRoom);
 		});
 
 		it('should always add the user to the internal room', async () => {
@@ -335,9 +376,11 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				normalizedInviteeId: 'normalizedInviteeId',
 				rawInviteeId: 'rawInviteeId',
 				inviteeUsernameOnly: 'inviteeUsernameOnly',
-			} as any);
+				internalInviterId: 'internalInviterId',
+				internalRoomId: 'internalRoomId',
+			});
 
-			expect(roomAdapter.addUserToRoom.calledWith(room, user, user)).to.be.true;
+			sinon.assert.calledWith(roomAdapter.addUserToRoom, room, user, user);
 		});
 	});
 
@@ -346,7 +389,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			roomAdapter.getFederatedRoomByInternalId.resolves(undefined);
 			await service.afterUserLeaveRoom({} as any);
 
-			expect(bridge.leaveRoom.called).to.be.false;
+			sinon.assert.notCalled(bridge.leaveRoom);
 		});
 
 		it('should not remove the user from the room if the user does not exists', async () => {
@@ -354,7 +397,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			userAdapter.getFederatedUserByInternalId.resolves(undefined);
 			await service.afterUserLeaveRoom({} as any);
 
-			expect(bridge.leaveRoom.called).to.be.false;
+			sinon.assert.notCalled(bridge.leaveRoom);
 		});
 
 		it('should remove the user from the room if the room and the user exists', async () => {
@@ -368,7 +411,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			userAdapter.getFederatedUserByInternalId.resolves(user);
 			await service.afterUserLeaveRoom({} as any);
 
-			expect(bridge.leaveRoom.calledWith(room.getExternalId(), user.getExternalId())).to.be.true;
+			sinon.assert.calledWith(bridge.leaveRoom, room.getExternalId(), user.getExternalId());
 		});
 	});
 
@@ -377,7 +420,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			roomAdapter.getFederatedRoomByInternalId.resolves(undefined);
 			await service.onUserRemovedFromRoom({} as any);
 
-			expect(bridge.kickUserFromRoom.called).to.be.false;
+			sinon.assert.notCalled(bridge.kickUserFromRoom);
 		});
 
 		it('should not kick the user from the room if the user does not exists', async () => {
@@ -385,7 +428,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			userAdapter.getFederatedUserByInternalId.resolves(undefined);
 			await service.onUserRemovedFromRoom({} as any);
 
-			expect(bridge.kickUserFromRoom.called).to.be.false;
+			sinon.assert.notCalled(bridge.kickUserFromRoom);
 		});
 
 		it('should not kick the user from the room if the user who executed the action does not exists', async () => {
@@ -394,7 +437,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			userAdapter.getFederatedUserByInternalId.onCall(1).resolves(undefined);
 			await service.onUserRemovedFromRoom({} as any);
 
-			expect(bridge.kickUserFromRoom.called).to.be.false;
+			sinon.assert.notCalled(bridge.kickUserFromRoom);
 		});
 
 		it('should remove the user from the room if the room, user and the user who executed the action exists', async () => {
@@ -408,7 +451,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			userAdapter.getFederatedUserByInternalId.resolves(user);
 			await service.onUserRemovedFromRoom({} as any);
 
-			expect(bridge.kickUserFromRoom.calledWith(room.getExternalId(), user.getExternalId(), user.getExternalId())).to.be.true;
+			sinon.assert.calledWith(bridge.kickUserFromRoom, room.getExternalId(), user.getExternalId(), user.getExternalId());
 		});
 	});
 
@@ -436,8 +479,8 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 
 			await service.sendExternalMessage({ internalRoomId: 'internalRoomId', message: { federation: { eventId: 'eventId' } } } as any);
 
-			expect(sendMessageStub.called).to.be.false;
-			expect(sendQuoteMessageStub.called).to.be.false;
+			sinon.assert.notCalled(sendMessageStub);
+			sinon.assert.notCalled(sendQuoteMessageStub);
 		});
 
 		it('should send the message through the bridge', async () => {
@@ -451,7 +494,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			await service.sendExternalMessage({ message: { msg: 'text' } } as any);
 
-			expect(sendMessageStub.calledWith(room.getExternalId(), user.getExternalId(), { msg: 'text' })).to.be.true;
+			sinon.assert.calledWith(sendMessageStub, room.getExternalId(), user.getExternalId(), { msg: 'text' });
 		});
 
 		describe('Quoting messages', () => {
@@ -464,8 +507,8 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 					message: { attachments: [{ message_link: 'http://localhost:3000/group/1' }] },
 				} as any);
 
-				expect(sendMessageStub.called).to.be.false;
-				expect(sendQuoteMessageStub.called).to.be.false;
+				sinon.assert.notCalled(sendMessageStub);
+				sinon.assert.notCalled(sendQuoteMessageStub);
 			});
 
 			it('should send a quote message if the current attachment is valid', async () => {
@@ -496,7 +539,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 
 				expect(sendQuoteMessageStub.calledWith(room.getExternalId(), user.getExternalId(), message, { federation: { eventId: 'eventId' } }))
 					.to.be.true;
-				expect(sendMessageStub.called).to.be.false;
+				sinon.assert.notCalled(sendMessageStub);
 			});
 		});
 	});
@@ -513,7 +556,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			roomAdapter.getFederatedRoomByInternalId.resolves(undefined);
 			await service.afterMessageDeleted({ msg: 'msg', u: { _id: 'id' } } as any, 'internalRoomId');
 
-			expect(bridge.redactEvent.called).to.be.false;
+			sinon.assert.notCalled(bridge.redactEvent);
 		});
 
 		it('should not delete the message remotely if the user does not exists', async () => {
@@ -521,7 +564,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			userAdapter.getFederatedUserByInternalId.resolves(undefined);
 			await service.afterMessageDeleted({ msg: 'msg', u: { _id: 'id' } } as any, 'internalRoomId');
 
-			expect(bridge.redactEvent.called).to.be.false;
+			sinon.assert.notCalled(bridge.redactEvent);
 		});
 
 		it('should not delete the message remotely if the message is not an external one', async () => {
@@ -529,25 +572,28 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			userAdapter.getFederatedUserByInternalId.resolves(user);
 			await service.afterMessageDeleted({ msg: 'msg', u: { _id: 'id' } } as any, 'internalRoomId');
 
-			expect(bridge.redactEvent.called).to.be.false;
+			sinon.assert.notCalled(bridge.redactEvent);
 		});
 
 		it('should not delete the message remotely if the message was already deleted (it was just updated to keep the chat history)', async () => {
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			userAdapter.getFederatedUserByInternalId.resolves(user);
-			await service.afterMessageDeleted(
-				{
-					msg: 'msg',
-					federation: { eventId: 'id' },
-					editedAt: new Date(),
-					editedBy: 'id',
-					t: 'rm',
-					u: { _id: 'id' },
-				} as any,
-				'internalRoomId',
-			);
 
-			expect(bridge.redactEvent.called).to.be.false;
+			const internalMessage = createFakeMessage<IEditedMessage>({
+				msg: 'msg',
+				federation: { eventId: 'id' },
+				editedAt: faker.date.recent(),
+				editedBy: createFakeUser(),
+				t: 'rm',
+				u: createFakeUser<Required<IUser>>({
+					username: faker.internet.userName(),
+					name: faker.name.findName(),
+				}),
+			});
+
+			await service.afterMessageDeleted(internalMessage, 'internalRoomId');
+
+			sinon.assert.notCalled(bridge.redactEvent);
 		});
 
 		it('should not delete the message remotely if the user is not from the same home server', async () => {
@@ -563,7 +609,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				'internalRoomId',
 			);
 
-			expect(bridge.redactEvent.called).to.be.false;
+			sinon.assert.notCalled(bridge.redactEvent);
 		});
 
 		it('should delete the message remotely', async () => {
@@ -579,7 +625,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				'internalRoomId',
 			);
 
-			expect(bridge.redactEvent.calledWith(room.getExternalId(), user.getExternalId(), 'federationEventId')).to.be.true;
+			sinon.assert.calledWith(bridge.redactEvent, room.getExternalId(), user.getExternalId(), 'federationEventId');
 		});
 	});
 
@@ -595,7 +641,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			roomAdapter.getFederatedRoomByInternalId.resolves(undefined);
 			await service.afterMessageUpdated({ msg: 'msg' } as any, 'internalRoomId', 'internalUserId');
 
-			expect(bridge.updateMessage.called).to.be.false;
+			sinon.assert.notCalled(bridge.updateMessage);
 		});
 
 		it('should not update the message remotely if the user does not exists', async () => {
@@ -603,7 +649,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			userAdapter.getFederatedUserByInternalId.resolves(undefined);
 			await service.afterMessageUpdated({ msg: 'msg' } as any, 'internalRoomId', 'internalUserId');
 
-			expect(bridge.updateMessage.called).to.be.false;
+			sinon.assert.notCalled(bridge.updateMessage);
 		});
 
 		it('should not update the message remotely if the message is not an external one', async () => {
@@ -611,7 +657,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			userAdapter.getFederatedUserByInternalId.resolves(user);
 			await service.afterMessageUpdated({ msg: 'msg' } as any, 'internalRoomId', 'internalUserId');
 
-			expect(bridge.updateMessage.called).to.be.false;
+			sinon.assert.notCalled(bridge.updateMessage);
 		});
 
 		it('should not update the message remotely if it was updated not by the sender', async () => {
@@ -623,7 +669,7 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 				'internalUserId',
 			);
 
-			expect(bridge.updateMessage.called).to.be.false;
+			sinon.assert.notCalled(bridge.updateMessage);
 		});
 
 		it('should not update the message remotely if the user is not from the same home server', async () => {
@@ -631,19 +677,20 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			userAdapter.getFederatedUserByInternalId.resolves(user);
 
-			await service.afterMessageUpdated(
-				{
-					msg: 'msg',
-					editedAt: new Date(),
-					editedBy: 'id',
-					federation: { eventId: 'federationEventId' },
-					u: { _id: 'internalUserId' },
-				} as any,
-				'internalRoomId',
-				'internalUserId',
-			);
+			const internalMessage = createFakeMessage<IEditedMessage>({
+				msg: 'msg',
+				federation: { eventId: 'federationEventId' },
+				editedAt: faker.date.recent(),
+				editedBy: createFakeUser(),
+				u: createFakeUser<Required<IUser>>({
+					username: faker.internet.userName(),
+					name: faker.name.findName(),
+				}),
+			});
 
-			expect(bridge.updateMessage.called).to.be.false;
+			await service.afterMessageUpdated(internalMessage, 'internalRoomId', 'internalUserId');
+
+			sinon.assert.notCalled(bridge.updateMessage);
 		});
 
 		it('should update the message remotely', async () => {
@@ -651,19 +698,498 @@ describe('Federation - Application - FederationRoomServiceSender', () => {
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			userAdapter.getFederatedUserByInternalId.resolves(user);
 
-			await service.afterMessageUpdated(
-				{
-					msg: 'msg',
-					editedAt: new Date(),
-					editedBy: 'id',
-					federation: { eventId: 'federationEventId' },
-					u: { _id: 'internalUserId' },
-				} as any,
-				'internalRoomId',
-				'internalUserId',
+			const internalMessage = createFakeMessage<IEditedMessage>({
+				msg: 'msg',
+				federation: { eventId: 'federationEventId' },
+				editedAt: faker.date.recent(),
+				editedBy: createFakeUser(),
+				u: createFakeUser<Required<IUser>>({
+					_id: 'internalUserId',
+					username: faker.internet.userName(),
+					name: faker.name.findName(),
+				}),
+			});
+
+			await service.afterMessageUpdated(internalMessage, 'internalRoomId', 'internalUserId');
+
+			sinon.assert.calledWith(bridge.updateMessage, room.getExternalId(), user.getExternalId(), 'federationEventId', 'msg');
+		});
+	});
+
+	describe('#onRoomOwnerAdded()', () => {
+		const user = FederatedUser.createInstance('externalInviterId', {
+			name: 'normalizedInviterId',
+			username: 'normalizedInviterId',
+			existsOnlyOnProxyServer: true,
+		});
+		const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
+
+		it('should NOT set the user power level in the room if the room does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(undefined);
+
+			await service.onRoomOwnerAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.notCalled(bridge.setRoomPowerLevels);
+		});
+
+		it('should NOT set the user power level in the room if the user does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(undefined);
+
+			await service.onRoomOwnerAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.notCalled(bridge.setRoomPowerLevels);
+		});
+
+		it('should NOT set the user power level in the room if the target user does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves(undefined);
+
+			await service.onRoomOwnerAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.notCalled(bridge.setRoomPowerLevels);
+		});
+
+		it('should throw an error if the user is trying to make the target user (not himself) an owner, but he is not an owner', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			roomAdapter.getInternalRoomRolesByUserId.resolves([]);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves({ getInternalId: () => 'internalTargetUserId' });
+
+			await expect(service.onRoomOwnerAdded('internalUserId', 'internalTargetUserId', 'internalRoomId')).to.be.rejectedWith(
+				'Federation_Matrix_not_allowed_to_change_owner',
 			);
 
-			expect(bridge.updateMessage.calledWith(room.getExternalId(), user.getExternalId(), 'federationEventId', 'msg')).to.be.true;
+			sinon.assert.notCalled(bridge.setRoomPowerLevels);
+		});
+
+		it('should NOT set the user power level in the room if the user is not from the same homeserver', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves({ getInternalId: () => 'internalTargetUserId' });
+			bridge.extractHomeserverOrigin.returns('externalDomain');
+
+			await service.onRoomOwnerAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.notCalled(bridge.setRoomPowerLevels);
+		});
+
+		it('should set the user power level in the room when the user is an owner giving an ownership to someone else', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+			userAdapter.getFederatedUserByInternalId
+				.onSecondCall()
+				.resolves({ getInternalId: () => 'internalTargetUserId', getExternalId: () => 'externalTargetUserId' });
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			bridge.setRoomPowerLevels.resolves();
+
+			await service.onRoomOwnerAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.calledWith(
+				bridge.setRoomPowerLevels,
+				room.getExternalId(),
+				user.getExternalId(),
+				'externalTargetUserId',
+				MATRIX_POWER_LEVELS.ADMIN,
+			);
+		});
+
+		it('should set the user power level in the room when the user is an owner giving an ownership to himself', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			bridge.setRoomPowerLevels.resolves();
+
+			await service.onRoomOwnerAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.calledWith(
+				bridge.setRoomPowerLevels,
+				room.getExternalId(),
+				user.getExternalId(),
+				user.getExternalId(),
+				MATRIX_POWER_LEVELS.ADMIN,
+			);
+		});
+
+		it('should roll back the role change if some error happens in the set power level remotely', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			bridge.setRoomPowerLevels.rejects();
+
+			await service.onRoomOwnerAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.calledWith(roomAdapter.applyRoomRolesToUser, {
+				federatedRoom: room,
+				targetFederatedUser: user,
+				fromUser: user,
+				rolesToAdd: [],
+				rolesToRemove: ['owner'],
+				notifyChannel: false,
+			});
+			sinon.assert.calledWith(
+				notificationsAdapter.notifyWithEphemeralMessage,
+				'Federation_Matrix_error_applying_room_roles',
+				user.getInternalId(),
+				room.getInternalId(),
+			);
+		});
+	});
+
+	describe('#onRoomOwnerRemoved()', () => {
+		const user = FederatedUser.createInstance('externalInviterId', {
+			name: 'normalizedInviterId',
+			username: 'normalizedInviterId',
+			existsOnlyOnProxyServer: true,
+		});
+		const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
+
+		it('should NOT set the user power level in the room if the room does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(undefined);
+
+			await service.onRoomOwnerRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.notCalled(bridge.setRoomPowerLevels);
+		});
+
+		it('should NOT set the user power level in the room if the user does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(undefined);
+
+			await service.onRoomOwnerRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.notCalled(bridge.setRoomPowerLevels);
+		});
+
+		it('should NOT set the user power level in the room if the target user does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves(undefined);
+
+			await service.onRoomOwnerRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.notCalled(bridge.setRoomPowerLevels);
+		});
+
+		it('should throw an error if the user is trying to make the target user (not himself) an owner, but he is not an owner', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			roomAdapter.getInternalRoomRolesByUserId.resolves([]);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves({ getInternalId: () => 'internalTargetUserId' });
+
+			await expect(service.onRoomOwnerRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId')).to.be.rejectedWith(
+				'Federation_Matrix_not_allowed_to_change_owner',
+			);
+
+			sinon.assert.notCalled(bridge.setRoomPowerLevels);
+		});
+
+		it('should NOT set the user power level in the room if the user is not from the same homeserver', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves({ getInternalId: () => 'internalTargetUserId' });
+			bridge.extractHomeserverOrigin.returns('externalDomain');
+
+			await service.onRoomOwnerRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.notCalled(bridge.setRoomPowerLevels);
+		});
+
+		it('should set the user power level in the room when everything is correct', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			bridge.setRoomPowerLevels.resolves();
+
+			await service.onRoomOwnerRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.calledWith(
+				bridge.setRoomPowerLevels,
+				room.getExternalId(),
+				user.getExternalId(),
+				user.getExternalId(),
+				MATRIX_POWER_LEVELS.USER,
+			);
+		});
+
+		it('should roll back the role change if some error happens in the set power level remotely', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			bridge.setRoomPowerLevels.rejects();
+
+			await service.onRoomOwnerRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.calledWith(roomAdapter.applyRoomRolesToUser, {
+				federatedRoom: room,
+				targetFederatedUser: user,
+				fromUser: user,
+				rolesToAdd: ['owner'],
+				rolesToRemove: [],
+				notifyChannel: false,
+			});
+			sinon.assert.calledWith(
+				notificationsAdapter.notifyWithEphemeralMessage,
+				'Federation_Matrix_error_applying_room_roles',
+				user.getInternalId(),
+				room.getInternalId(),
+			);
+		});
+	});
+
+	describe('#onRoomModeratorAdded()', () => {
+		const user = FederatedUser.createInstance('externalInviterId', {
+			name: 'normalizedInviterId',
+			username: 'normalizedInviterId',
+			existsOnlyOnProxyServer: true,
+		});
+		const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
+
+		it('should NOT set the user power level in the room if the room does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(undefined);
+
+			await service.onRoomModeratorAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.notCalled(bridge.setRoomPowerLevels);
+		});
+
+		it('should NOT set the user power level in the room if the user does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(undefined);
+
+			await service.onRoomModeratorAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.notCalled(bridge.setRoomPowerLevels);
+		});
+
+		it('should NOT set the user power level in the room if the target user does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves(undefined);
+
+			await service.onRoomModeratorAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.notCalled(bridge.setRoomPowerLevels);
+		});
+
+		it('should throw an error if the user is trying to make the target user (not himself) an owner, but he is not an owner nor a moderator', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			roomAdapter.getInternalRoomRolesByUserId.resolves([]);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves({ getInternalId: () => 'internalTargetUserId' });
+
+			await expect(service.onRoomModeratorAdded('internalUserId', 'internalTargetUserId', 'internalRoomId')).to.be.rejectedWith(
+				'Federation_Matrix_not_allowed_to_change_moderator',
+			);
+
+			sinon.assert.notCalled(bridge.setRoomPowerLevels);
+		});
+
+		it('should NOT set the user power level in the room if the user is not from the same homeserver', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves({ getInternalId: () => 'internalTargetUserId' });
+			bridge.extractHomeserverOrigin.returns('externalDomain');
+
+			await service.onRoomModeratorAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.notCalled(bridge.setRoomPowerLevels);
+		});
+
+		it('should set the user power level in the room when the user is an owner giving an ownership to someone else', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+			userAdapter.getFederatedUserByInternalId
+				.onSecondCall()
+				.resolves({ getInternalId: () => 'internalTargetUserId', getExternalId: () => 'externalTargetUserId' });
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			bridge.setRoomPowerLevels.resolves();
+
+			await service.onRoomModeratorAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.calledWith(
+				bridge.setRoomPowerLevels,
+				room.getExternalId(),
+				user.getExternalId(),
+				'externalTargetUserId',
+				MATRIX_POWER_LEVELS.MODERATOR,
+			);
+		});
+
+		it('should set the user power level in the room when the user is a moderator giving an ownership to someone else', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['moderator']);
+			userAdapter.getFederatedUserByInternalId
+				.onSecondCall()
+				.resolves({ getInternalId: () => 'internalTargetUserId', getExternalId: () => 'externalTargetUserId' });
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			bridge.setRoomPowerLevels.resolves();
+
+			await service.onRoomModeratorAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.calledWith(
+				bridge.setRoomPowerLevels,
+				room.getExternalId(),
+				user.getExternalId(),
+				'externalTargetUserId',
+				MATRIX_POWER_LEVELS.MODERATOR,
+			);
+		});
+
+		it('should set the user power level in the room when the user is an owner giving an ownership to himself', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			bridge.setRoomPowerLevels.resolves();
+
+			await service.onRoomModeratorAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.calledWith(
+				bridge.setRoomPowerLevels,
+				room.getExternalId(),
+				user.getExternalId(),
+				user.getExternalId(),
+				MATRIX_POWER_LEVELS.MODERATOR,
+			);
+		});
+
+		it('should roll back the role change if some error happens in the set power level remotely', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			bridge.setRoomPowerLevels.rejects();
+
+			await service.onRoomModeratorAdded('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.calledWith(roomAdapter.applyRoomRolesToUser, {
+				federatedRoom: room,
+				targetFederatedUser: user,
+				fromUser: user,
+				rolesToAdd: [],
+				rolesToRemove: ['moderator'],
+				notifyChannel: false,
+			});
+			sinon.assert.calledWith(
+				notificationsAdapter.notifyWithEphemeralMessage,
+				'Federation_Matrix_error_applying_room_roles',
+				user.getInternalId(),
+				room.getInternalId(),
+			);
+		});
+	});
+
+	describe('#onRoomModeratorRemoved()', () => {
+		const user = FederatedUser.createInstance('externalInviterId', {
+			name: 'normalizedInviterId',
+			username: 'normalizedInviterId',
+			existsOnlyOnProxyServer: true,
+		});
+		const room = FederatedRoom.createInstance('externalRoomId', 'normalizedRoomId', user, RoomType.CHANNEL, 'externalRoomName');
+
+		it('should NOT set the user power level in the room if the room does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(undefined);
+
+			await service.onRoomModeratorRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.notCalled(bridge.setRoomPowerLevels);
+		});
+
+		it('should NOT set the user power level in the room if the user does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(undefined);
+
+			await service.onRoomModeratorRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.notCalled(bridge.setRoomPowerLevels);
+		});
+
+		it('should NOT set the user power level in the room if the target user does not exists', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves(undefined);
+
+			await service.onRoomModeratorRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.notCalled(bridge.setRoomPowerLevels);
+		});
+
+		it('should throw an error if the user is trying to make the target user (not himself) an owner, but he is not an owner nor a moderator', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			roomAdapter.getInternalRoomRolesByUserId.resolves([]);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves({ getInternalId: () => 'internalTargetUserId' });
+
+			await expect(service.onRoomModeratorRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId')).to.be.rejectedWith(
+				'Federation_Matrix_not_allowed_to_change_moderator',
+			);
+
+			sinon.assert.notCalled(bridge.setRoomPowerLevels);
+		});
+
+		it('should NOT set the user power level in the room if the user is not from the same homeserver', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.onFirstCall().resolves(user);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+			userAdapter.getFederatedUserByInternalId.onSecondCall().resolves({ getInternalId: () => 'internalTargetUserId' });
+			bridge.extractHomeserverOrigin.returns('externalDomain');
+
+			await service.onRoomModeratorRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.notCalled(bridge.setRoomPowerLevels);
+		});
+
+		it('should set the user power level in the room when everything is correct', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			bridge.setRoomPowerLevels.resolves();
+
+			await service.onRoomModeratorRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.calledWith(
+				bridge.setRoomPowerLevels,
+				room.getExternalId(),
+				user.getExternalId(),
+				user.getExternalId(),
+				MATRIX_POWER_LEVELS.USER,
+			);
+		});
+
+		it('should roll back the role change if some error happens in the set power level remotely', async () => {
+			roomAdapter.getFederatedRoomByInternalId.resolves(room);
+			userAdapter.getFederatedUserByInternalId.resolves(user);
+			roomAdapter.getInternalRoomRolesByUserId.resolves(['owner']);
+			bridge.extractHomeserverOrigin.returns('localDomain');
+			bridge.setRoomPowerLevels.rejects();
+
+			await service.onRoomModeratorRemoved('internalUserId', 'internalTargetUserId', 'internalRoomId');
+
+			sinon.assert.calledWith(roomAdapter.applyRoomRolesToUser, {
+				federatedRoom: room,
+				targetFederatedUser: user,
+				fromUser: user,
+				rolesToAdd: ['moderator'],
+				rolesToRemove: [],
+				notifyChannel: false,
+			});
+			sinon.assert.calledWith(
+				notificationsAdapter.notifyWithEphemeralMessage,
+				'Federation_Matrix_error_applying_room_roles',
+				user.getInternalId(),
+				room.getInternalId(),
+			);
 		});
 	});
 });

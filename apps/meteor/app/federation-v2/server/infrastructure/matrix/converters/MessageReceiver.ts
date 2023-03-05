@@ -1,11 +1,11 @@
 import emojione from 'emojione';
 
 import type { MatrixEventMessageReact } from '../definitions/events/MessageReacted';
-import { FederationMessageReactionEventDto } from '../../../application/input/MessageReceiverDto';
+import { FederationMessageReactionEventDto } from '../../../application/listener/input/MessageReceiverDto';
 import { convertExternalRoomIdToInternalRoomIdFormat } from './RoomReceiver';
 
 const convertEmojisMatrixFormatToRCFormat = (emoji: string): string => emojione.toShort(emoji);
-export const convertEmojisRCFormatToMatrixFormat = (emoji: string): string => emojione.shortnameToUnicode(emoji);
+export const convertEmojisFromRCFormatToMatrixFormat = (emoji: string): string => emojione.shortnameToUnicode(emoji);
 
 export class MatrixMessageReceiverConverter {
 	public static toMessageReactionDto(externalEvent: MatrixEventMessageReact): FederationMessageReactionEventDto {

@@ -21,7 +21,6 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ 'file._id': 1 }, { sparse: true });
 		this.tryEnsureIndex({ 'mentions.username': 1 }, { sparse: true });
 		this.tryEnsureIndex({ pinned: 1 }, { sparse: true });
-		this.tryEnsureIndex({ snippeted: 1 }, { sparse: true });
 		this.tryEnsureIndex({ location: '2dsphere' });
 		this.tryEnsureIndex({ slackTs: 1, slackBotId: 1 }, { sparse: true });
 		this.tryEnsureIndex({ unread: 1 }, { sparse: true });
@@ -618,30 +617,6 @@ export class Messages extends Base {
 		return this.update(query, update);
 	}
 
-	setSnippetedByIdAndUserId(message, snippetName, snippetedBy, snippeted, snippetedAt) {
-		if (snippeted == null) {
-			snippeted = true;
-		}
-		if (snippetedAt == null) {
-			snippetedAt = 0;
-		}
-		const query = { _id: message._id };
-
-		const msg = `\`\`\`${message.msg}\`\`\``;
-
-		const update = {
-			$set: {
-				msg,
-				snippeted,
-				snippetedAt: snippetedAt || new Date(),
-				snippetedBy,
-				snippetName,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	setUrlsById(_id, urls) {
 		const query = { _id };
 
@@ -1084,10 +1059,36 @@ export class Messages extends Base {
 		return this.findOne(query, options);
 	}
 
-	setAsRead(rid, until) {
+	setVisibleMessagesAsRead(rid, until) {
 		return this.update(
 			{
 				rid,
+				unread: true,
+				ts: { $lt: until },
+				$or: [
+					{
+						tmid: { $exists: false },
+					},
+					{
+						tshow: true,
+					},
+				],
+			},
+			{
+				$unset: {
+					unread: 1,
+				},
+			},
+			{
+				multi: true,
+			},
+		);
+	}
+
+	setThreadMessagesAsRead(tmid, until) {
+		return this.update(
+			{
+				tmid,
 				unread: true,
 				ts: { $lt: until },
 			},
@@ -1115,10 +1116,37 @@ export class Messages extends Base {
 		);
 	}
 
-	findUnreadMessagesByRoomAndDate(rid, after) {
+	findVisibleUnreadMessagesByRoomAndDate(rid, after) {
 		const query = {
 			unread: true,
 			rid,
+			$or: [
+				{
+					tmid: { $exists: false },
+				},
+				{
+					tshow: true,
+				},
+			],
+		};
+
+		if (after) {
+			query.ts = { $gt: after };
+		}
+
+		return this.find(query, {
+			fields: {
+				_id: 1,
+			},
+		});
+	}
+
+	findUnreadThreadMessagesByDate(tmid, userId, after) {
+		const query = {
+			'u._id': { $ne: userId },
+			'unread': true,
+			tmid,
+			'tshow': { $exists: false },
 		};
 
 		if (after) {

@@ -2,8 +2,7 @@ import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import { Box, CheckBox, Field } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import { useCurrentRoute, useMethod, useQueryStringParameter, useRoute, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { VFC } from 'react';
+import { useMethod, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import React, { useState, useEffect, useCallback } from 'react';
 
 import { callbacks } from '../../../../../../lib/callbacks';
@@ -15,14 +14,13 @@ import { useFileUploadDropTarget } from '../../../components/body/useFileUploadD
 import { useChat } from '../../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../../contexts/RoomContext';
 import { useTabBarClose } from '../../../contexts/ToolboxContext';
-import LegacyThreadMessageList from './LegacyThreadMessageList';
 import ThreadMessageList from './ThreadMessageList';
 
 type ThreadChatProps = {
 	mainMessage: IThreadMainMessage;
 };
 
-const ThreadChat: VFC<ThreadChatProps> = ({ mainMessage }) => {
+const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
 
 	const sendToChannelPreference = useUserPreference<'always' | 'never' | 'default'>('alsoSendThreadToChannel');
@@ -72,7 +70,7 @@ const ThreadChat: VFC<ThreadChatProps> = ({ mainMessage }) => {
 		callbacks.add(
 			'streamNewMessage',
 			(msg: IMessage) => {
-				if (room._id !== msg.rid || (isEditedMessage(msg) && msg.editedAt) || msg.tmid !== mainMessage._id) {
+				if (room._id !== msg.rid || isEditedMessage(msg) || msg.tmid !== mainMessage._id) {
 					return;
 				}
 
@@ -87,36 +85,16 @@ const ThreadChat: VFC<ThreadChatProps> = ({ mainMessage }) => {
 		};
 	}, [mainMessage._id, readThreads, room._id]);
 
-	const jump = useQueryStringParameter('jump');
-
-	const [currentRouteName, currentRouteParams, currentRouteQueryStringParams] = useCurrentRoute();
-	if (!currentRouteName) {
-		throw new Error('No route name');
-	}
-	const currentRoute = useRoute(currentRouteName);
-
-	const handleJumpTo = useCallback(() => {
-		const newQueryStringParams = { ...currentRouteQueryStringParams };
-		delete newQueryStringParams.jump;
-		currentRoute.replace(currentRouteParams, newQueryStringParams);
-	}, [currentRoute, currentRouteParams, currentRouteQueryStringParams]);
-
 	const subscription = useRoomSubscription();
 	const sendToChannelID = useUniqueId();
 	const t = useTranslation();
-
-	const useLegacyMessageTemplate = useUserPreference<boolean>('useLegacyMessageTemplate') ?? false;
 
 	return (
 		<VerticalBarContent flexShrink={1} flexGrow={1} paddingInline={0} {...fileUploadTriggerProps}>
 			<DropTargetOverlay {...fileUploadOverlayProps} />
 			<Box is='section' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis='auto' height='full'>
 				<MessageListErrorBoundary>
-					{useLegacyMessageTemplate ? (
-						<LegacyThreadMessageList mainMessage={mainMessage} jumpTo={jump} onJumpTo={handleJumpTo} />
-					) : (
-						<ThreadMessageList mainMessage={mainMessage} jumpTo={jump} onJumpTo={handleJumpTo} />
-					)}
+					<ThreadMessageList mainMessage={mainMessage} />
 				</MessageListErrorBoundary>
 
 				<ComposerContainer

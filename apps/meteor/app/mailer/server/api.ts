@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { Email } from 'meteor/email';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
-import s from 'underscore.string';
 import juice from 'juice';
 import stripHtml from 'string-strip-html';
 import { escapeHTML } from '@rocket.chat/string-helpers';
@@ -11,8 +10,9 @@ import { Settings } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
 import { replaceVariables } from './replaceVariables';
-import { Apps } from '../../apps/server';
+import { Apps } from '../../../ee/server/apps';
 import { validateEmail } from '../../../lib/emailValidator';
+import { strLeft, strRightBack } from '../../../lib/utils/stringUtils';
 
 let contentHeader: string | undefined;
 let contentFooter: string | undefined;
@@ -41,8 +41,8 @@ export const replace = (str: string, data: { [key: string]: unknown } = {}): str
 		Site_URL_Slash: settings.get<string>('Site_Url')?.replace(/\/?$/, '/'),
 		...(data.name
 			? {
-					fname: s.strLeft(String(data.name), ' '),
-					lname: s.strRightBack(String(data.name), ' '),
+					fname: strLeft(String(data.name), ' '),
+					lname: strRightBack(String(data.name), ' '),
 			  }
 			: {}),
 		...data,
