@@ -1,11 +1,12 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetModal, useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { UiTextContext } from '../../../../../../../definition/IRoomTypeConfig';
-import WarningModal from '../../../../../../components/WarningModal';
-import { roomCoordinator } from '../../../../../../lib/rooms/roomCoordinator';
+import { UiTextContext } from '../../../../../../../../definition/IRoomTypeConfig';
+import WarningModal from '../../../../../../../components/WarningModal';
+import { roomCoordinator } from '../../../../../../../lib/rooms/roomCoordinator';
 
 export const useRoomHide = (room: IRoom) => {
 	const t = useTranslation();
@@ -29,7 +30,7 @@ export const useRoomHide = (room: IRoom) => {
 
 		setModal(
 			<WarningModal
-				text={t(warnText, room.fname || room.name)}
+				text={t(warnText as TranslationKey, room.fname || room.name)}
 				confirmText={t('Yes_hide_it')}
 				close={() => setModal(null)}
 				cancel={() => setModal(null)}

@@ -10,14 +10,14 @@ import VerticalBar from '../../../../../components/VerticalBar';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 import { useActionSpread } from '../../../../hooks/useActionSpread';
 import { useRetentionPolicy } from '../../../components/body/useRetentionPolicy';
-import { useRoomActions } from '../hooks/useRoomActions';
+import { useRoomActions } from './hooks/useRoomActions';
 
 type RoomInfoProps = {
 	room: IRoom;
 	icon: string;
 	onClickBack: () => void;
 	onClickClose: () => void;
-	onClickEnterRoom: () => void;
+	onClickEnterRoom?: () => void;
 	onClickEdit?: () => void;
 	resetState: () => void;
 };
@@ -25,6 +25,7 @@ type RoomInfoProps = {
 const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onClickEdit, resetState }: RoomInfoProps) => {
 	const t = useTranslation();
 	const { name, fname, description, topic, archived, broadcast, announcement } = room;
+	const roomTitle = fname || name;
 
 	const retentionPolicy = useRetentionPolicy(room);
 	const memoizedActions = useRoomActions(room, { onClickEnterRoom, onClickEdit }, resetState);
@@ -71,17 +72,19 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 
 					<InfoPanel.ActionGroup>{actions}</InfoPanel.ActionGroup>
 
-					<InfoPanel.Section>
-						{archived && (
+					{archived && (
+						<InfoPanel.Section>
 							<Box mb='x16'>
 								<Callout type='warning'>{t('Room_archived')}</Callout>
 							</Box>
-						)}
-					</InfoPanel.Section>
+						</InfoPanel.Section>
+					)}
 
-					<InfoPanel.Section>
-						<InfoPanel.Title title={fname || name} icon={icon} />
-					</InfoPanel.Section>
+					{roomTitle && (
+						<InfoPanel.Section>
+							<InfoPanel.Title title={roomTitle} icon={icon} />
+						</InfoPanel.Section>
+					)}
 
 					<InfoPanel.Section>
 						{broadcast && (

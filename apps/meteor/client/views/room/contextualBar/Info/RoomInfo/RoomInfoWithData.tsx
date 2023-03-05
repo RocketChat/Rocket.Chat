@@ -4,7 +4,7 @@ import { useUserRoom } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { useTabBarClose } from '../../../contexts/ToolboxContext';
-import { useCanEditRoom } from '../hooks/useCanEditRoom';
+import { useCanEditRoom } from './hooks/useCanEditRoom';
 import RoomInfo from './RoomInfo';
 
 type RoomInfoWithDataProps = {
@@ -20,11 +20,8 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 	const room = useUserRoom(rid);
 
 	if (!room) {
-		throw new Error();
+		throw new Error('Room not found');
 	}
-
-	// TODO implement joined
-	// const { type, fname, name, prid, joined = true } = room;
 
 	const canEdit = useCanEditRoom(room);
 	const onClickEnterRoom = useMutableCallback(() => onEnterRoom(room));
@@ -34,11 +31,11 @@ const RoomInfoWithData = ({ rid, openEditing, onClickBack, onEnterRoom, resetSta
 			room={room}
 			icon={room.t === 'p' ? 'lock' : 'hashtag'}
 			onClickBack={onClickBack}
-			{...(canEdit && {
-				onClickEdit: openEditing,
-			})}
+			onClickEdit={canEdit ? openEditing : undefined}
 			onClickClose={onClickClose}
-			onClickEnterRoom={onClickEnterRoom}
+			{...(Boolean(onEnterRoom) && {
+				onClickEnterRoom,
+			})}
 			resetState={resetState}
 		/>
 	);

@@ -4,7 +4,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRoute, useTranslation, useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import GenericModal from '../../../../../../components/GenericModal';
+import GenericModal from '../../../../../../../components/GenericModal';
 
 // TODO: resetState
 export const useRoomDelete = (room: IRoom, resetState?: any) => {
@@ -12,10 +12,11 @@ export const useRoomDelete = (room: IRoom, resetState?: any) => {
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const router = useRoute('home');
-	const deleteRoom = useEndpoint('POST', room.t === 'c' ? '/v1/channels.delete' : '/v1/groups.delete');
 
 	const hasPermissionToDelete = usePermission(room.t === 'c' ? 'delete-c' : 'delete-p', room._id);
 	const canDelete = isRoomFederated(room) ? false : hasPermissionToDelete;
+
+	const deleteRoom = useEndpoint('POST', room.t === 'c' ? '/v1/channels.delete' : '/v1/groups.delete');
 
 	const handleDelete = useMutableCallback(() => {
 		const onConfirm = async () => {

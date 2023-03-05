@@ -9,12 +9,12 @@ import { useRoomHide } from './actions/useRoomHide';
 import { useRoomLeave } from './actions/useRoomLeave';
 import { useRoomMoveToTeam } from './actions/useRoomMoveToTeam';
 
-type Actions = {
+type RoomActions = {
 	onClickEnterRoom?: () => void;
-	onClickEdit?: (value: boolean) => void;
+	onClickEdit?: () => void;
 };
 
-export const useRoomActions = (room: IRoom, { onClickEnterRoom, onClickEdit }: Actions, resetState?: () => void) => {
+export const useRoomActions = (room: IRoom, { onClickEnterRoom, onClickEdit }: RoomActions, resetState?: () => void) => {
 	const t = useTranslation();
 	const isFederated = isRoomFederated(room);
 

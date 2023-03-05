@@ -2,8 +2,8 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { usePermission, useUser } from '@rocket.chat/ui-contexts';
 
-import * as Federation from '../../../../../lib/federation/Federation';
-import { useRoomSubscription } from '../../../contexts/RoomContext';
+import * as Federation from '../../../../../../lib/federation/Federation';
+import { useRoomSubscription } from '../../../../contexts/RoomContext';
 
 export const useCanEditRoom = (room: IRoom) => {
 	const user = useUser();

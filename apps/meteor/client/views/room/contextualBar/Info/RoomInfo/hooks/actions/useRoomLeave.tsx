@@ -1,13 +1,15 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetModal, useToastMessageDispatch, useRoute, useMethod, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { RoomManager } from '../../../../../../../app/ui-utils/client';
-import { UiTextContext } from '../../../../../../../definition/IRoomTypeConfig';
-import WarningModal from '../../../../../../components/WarningModal';
-import { roomCoordinator } from '../../../../../../lib/rooms/roomCoordinator';
+import { RoomManager } from '../../../../../../../../app/ui-utils/client';
+import { UiTextContext } from '../../../../../../../../definition/IRoomTypeConfig';
+import WarningModal from '../../../../../../../components/WarningModal';
+import { roomCoordinator } from '../../../../../../../lib/rooms/roomCoordinator';
 
+// TODO implement joined
 export const useRoomLeave = (room: IRoom, joined = true) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
@@ -33,7 +35,7 @@ export const useRoomLeave = (room: IRoom, joined = true) => {
 
 		setModal(
 			<WarningModal
-				text={t(warnText, room.fname || room.name)}
+				text={t(warnText as TranslationKey, room.fname || room.name)}
 				confirmText={t('Leave_room')}
 				close={() => setModal(null)}
 				cancel={() => setModal(null)}
