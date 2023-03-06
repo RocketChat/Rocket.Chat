@@ -68,9 +68,8 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 		<div
 			className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}
 			style={{ scrollBehavior: 'smooth' }}
-			onScroll={handleScroll}
 		>
-			<ScrollableContentWrapper ref={listWrapperScrollRef}>
+			<ScrollableContentWrapper ref={listWrapperScrollRef} onScroll={handleScroll}>
 				<ul className='thread' ref={listRef}>
 					{loading ? (
 						<li className='load-more'>
