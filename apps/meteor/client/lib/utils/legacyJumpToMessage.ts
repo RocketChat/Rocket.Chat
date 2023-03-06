@@ -1,30 +1,38 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { isThreadMessage } from '@rocket.chat/core-typings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { ChatRoom } from '../../../app/models/client';
 import { RoomHistoryManager } from '../../../app/ui-utils/client';
 import { goToRoomById } from './goToRoomById';
 
-export const jumpToMessage = async (message: IMessage) => {
+/** @deprecated */
+export const legacyJumpToMessage = async (message: IMessage) => {
 	if (matchMedia('(max-width: 500px)').matches) {
 		(Template.instance() as any)?.tabBar?.close();
 	}
 
-	if (message.tmid) {
-		return FlowRouter.go(
-			FlowRouter.getRouteName(),
+	if (isThreadMessage(message) || message.tcount) {
+		const { route, queryParams, params } = FlowRouter.current();
+
+		if (params.tab === 'thread' && (params.context === message.tmid || params.context === message._id)) {
+			return;
+		}
+
+		FlowRouter.go(
+			route?.name ?? '/',
 			{
 				tab: 'thread',
-				context: message.tmid,
+				context: message.tmid || message._id,
 				rid: message.rid,
-				jump: message._id,
 				name: ChatRoom.findOne({ _id: message.rid })?.name ?? '',
 			},
 			{
-				...FlowRouter.current().queryParams,
-				jump: message._id,
+				...queryParams,
+				msg: message._id,
 			},
 		);
+		return;
 	}
 
 	if (Session.get('openedRoom') === message.rid) {

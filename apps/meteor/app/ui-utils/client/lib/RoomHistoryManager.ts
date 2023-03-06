@@ -12,10 +12,10 @@ import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { ChatMessage, ChatSubscription } from '../../../models/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
-import {
-	setHighlightMessage,
-	clearHighlightMessage,
-} from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
+// import {
+// 	setHighlightMessage,
+// 	clearHighlightMessage,
+// } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
 import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
 
 export async function upsertMessage(
@@ -271,41 +271,14 @@ class RoomHistoryManagerClass extends Emitter {
 		room.loaded = undefined;
 	}
 
-	public async getSurroundingMessages(message?: Pick<IMessage, '_id' | 'rid'> & { ts?: Date }, atBottomRef?: MutableRefObject<boolean>) {
-		if (!message || !message.rid) {
+	public async getSurroundingMessages(message?: Pick<IMessage, '_id' | 'rid'> & { ts?: Date }) {
+		if (!message?.rid) {
 			return;
 		}
 
 		const surroundingMessage = ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } });
 
 		if (surroundingMessage) {
-			await waitForElement(`[data-id='${message._id}']`);
-			const wrapper = $('.messages-box .wrapper');
-			const msgElement = $(`[data-id='${message._id}']`, wrapper);
-
-			if (msgElement.length === 0) {
-				return;
-			}
-
-			const pos = (wrapper.scrollTop() ?? NaN) + (msgElement.offset()?.top ?? NaN) - (wrapper.height() ?? NaN) / 2;
-			wrapper.animate(
-				{
-					scrollTop: pos,
-				},
-				500,
-			);
-
-			msgElement.addClass('highlight');
-			setHighlightMessage(message._id);
-
-			setTimeout(() => {
-				msgElement.removeClass('highlight');
-			}, 500);
-
-			setTimeout(() => {
-				clearHighlightMessage();
-			}, 1000);
-
 			return;
 		}
 
@@ -326,36 +299,7 @@ class RoomHistoryManagerClass extends Emitter {
 		readMessage.refreshUnreadMark(message.rid);
 
 		Tracker.afterFlush(async () => {
-			await waitForElement(`[data-id='${message._id}']`);
-			const wrapper = $('.messages-box .wrapper');
-			const msgElement = $(`[data-id=${message._id}]`, wrapper);
-
-			if (msgElement.length === 0) {
-				return;
-			}
-
-			const pos = (wrapper.scrollTop() ?? NaN) + (msgElement.offset()?.top ?? NaN) - (wrapper.height() ?? NaN) / 2;
-			wrapper.animate(
-				{
-					scrollTop: pos,
-				},
-				500,
-			);
-
-			msgElement.addClass('highlight');
-			setHighlightMessage(message._id);
-
 			room.isLoading.set(false);
-			const messages = wrapper[0];
-			if (atBottomRef) atBottomRef.current = !result.moreAfter && messages.scrollTop >= messages.scrollHeight - messages.clientHeight;
-
-			setTimeout(() => {
-				msgElement.removeClass('highlight');
-			}, 500);
-
-			setTimeout(() => {
-				clearHighlightMessage();
-			}, 1000);
 		});
 
 		if (!room.loaded) {

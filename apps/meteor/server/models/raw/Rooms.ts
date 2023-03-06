@@ -795,4 +795,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 		return this.find<IRoomFederated>(query, options);
 	}
+
+	findCountOfRoomsWithActiveCalls() {
+		const query = {
+			// No matter the actual "status" of the call, if the room has a callStatus, it means there is/was a call
+			callStatus: { $exists: true },
+		};
+
+		return this.col.countDocuments(query);
+	}
 }
