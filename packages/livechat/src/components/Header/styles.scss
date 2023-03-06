@@ -7,6 +7,7 @@
 $header-background-color: $color-dark-blue;
 $header-color: $color-text-lighter;
 $header-padding: $default-padding;
+$header-margin: 40px;
 $header-height: 56px;
 $header-height-large: 77px;
 
@@ -33,7 +34,7 @@ $header-action-active-displacement: 2px;
 	&__item {
 		flex: 0 0 auto;
 
-		margin: 0 math.div($header-padding, 2);
+		margin: 0 $header-margin;
 	}
 
 	&__picture {
