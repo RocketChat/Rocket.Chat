@@ -1,4 +1,3 @@
-import type { IReport } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch, useRoute } from '@rocket.chat/ui-contexts';
@@ -18,35 +17,13 @@ import { usePagination } from '../../../components/GenericTable/hooks/usePaginat
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import ModerationConsoleTableRow from './ModerationConsoleTableRow';
 
-// function which takes an array of IReport and return an array of object such that all the reports are grouped by the message id
-
-export type GroupedReports = {
-	messageId: string;
-	reports: IReport[];
-};
-
-const groupReportsByMessageId = (reports: IReport[] | any[]): GroupedReports[] => {
-	const groupedReports: Record<string, IReport[]> = {};
-
-	reports.forEach((report) => {
-		if (groupedReports[report.message._id]) {
-			groupedReports[report.message._id].push(report);
-		} else {
-			groupedReports[report.message._id] = [report];
-		}
-	});
-	// convert the groupedReports object to an array of objects and return it
-	const groupedReportsArray = Object.keys(groupedReports).map((key) => {
-		return { messageId: key, reports: groupedReports[key] };
-	});
-	return groupedReportsArray;
-};
-
 const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void> }> = ({ reload }) => {
 	const [text, setText] = useState('');
 	const moderationRoute = useRoute('moderation-console');
 
-	const { sortBy, sortDirection, setSort } = useSort<'ts' | 'u.username' | 'description'>('ts');
+	const { sortBy, sortDirection, setSort } = useSort<'reports.ts' | 'reports.message.u.username' | 'reports.description' | 'count'>(
+		'reports.ts',
+	);
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	// write a custom query to get the reports data from the database
 
@@ -76,6 +53,7 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void> }> = ({ 
 		['reports', query],
 		async () => {
 			const reports = await getReports(query);
+			console.log('return', reports);
 			return reports;
 		},
 		{
@@ -84,14 +62,6 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void> }> = ({ 
 			},
 		},
 	);
-
-	const groupedReports = useMemo(() => {
-		if (!data?.reports) {
-			return;
-		}
-
-		return groupReportsByMessageId(data.reports);
-	}, [data]);
 
 	useEffect(() => {
 		reload.current = reloadReports;
@@ -107,25 +77,37 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void> }> = ({ 
 	// header sequence would be: name, reportedMessage, room, postdate, reports, actions
 	const headers = useMemo(
 		() => [
-			<GenericTableHeaderCell key={'name'} direction={sortDirection} active={sortBy === 'u.username'} onClick={setSort} sort='u.username'>
+			<GenericTableHeaderCell
+				key={'name'}
+				direction={sortDirection}
+				active={sortBy === 'reports.message.u.username'}
+				onClick={setSort}
+				sort='reports.message.u.username'
+			>
 				Name
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell
 				key={'reportedMessage'}
 				direction={sortDirection}
-				active={sortBy === 'description'}
+				active={sortBy === 'reports.description'}
 				onClick={setSort}
-				sort='description'
+				sort='reports.description'
 			>
 				Reported Message
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell key={'room'} direction={sortDirection}>
 				Room
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key={'postdate'} direction={sortDirection} active={sortBy === 'ts'} onClick={setSort} sort='ts'>
+			<GenericTableHeaderCell
+				key={'postdate'}
+				direction={sortDirection}
+				active={sortBy === 'reports.ts'}
+				onClick={setSort}
+				sort='reports.ts'
+			>
 				Post Date
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key={'reports'} direction={sortDirection}>
+			<GenericTableHeaderCell key={'reports'} direction={sortDirection} active={sortBy === 'count'} onClick={setSort} sort='count'>
 				Reports
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell key={'actions'} width={'5%'} />,
@@ -143,13 +125,13 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void> }> = ({ 
 					<GenericTableBody>{isLoading && <GenericTableLoadingTable headerCells={6} />}</GenericTableBody>
 				</GenericTable>
 			)}
-			{isSuccess && data.reports.length > 0 && groupedReports && (
+			{isSuccess && data.reports.length > 0 && (
 				<>
 					<GenericTable>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
-							{groupedReports.map((report) => (
-								<ModerationConsoleTableRow key={report.messageId} report={report} onClick={handleClick} reload={reload} />
+							{data.reports.map((report) => (
+								<ModerationConsoleTableRow key={report.userId} report={report} onClick={handleClick} />
 							))}
 						</GenericTableBody>
 					</GenericTable>

@@ -1,81 +1,83 @@
-import type { IReport } from '@rocket.chat/core-typings';
-import { TableRow, TableCell, Box, Menu } from '@rocket.chat/fuselage';
-import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import type { MutableRefObject } from 'react';
-import React, { useEffect, useMemo } from 'react';
+import type { IModerationAudit, IUser } from '@rocket.chat/core-typings';
+import { TableRow, TableCell, Box } from '@rocket.chat/fuselage';
+import React from 'react';
 
 import UserAvatar from '../../../components/avatar/UserAvatar';
 import { formatDateAndTime } from '../../../lib/utils/formatDateAndTime';
-import type { GroupedReports } from './ModerationConsoleTable';
+import ModerationConsoleActions from './ModerationConsoleActions';
 
-type MonderationConsoleRowProps = {
-	report: GroupedReports;
-	onClick: (id: IReport['_id']) => void;
-	reload: MutableRefObject<() => void>;
+export type MonderationConsoleRowProps = {
+	report: IModerationAudit;
+	onClick: (id: IUser['_id']) => void;
 };
 
-const ModerationConsoleTableRow = ({ report, onClick, reload }: MonderationConsoleRowProps): JSX.Element => {
-	const { messageId, reports } = report;
-	const { _id, message, ts } = reports[0];
-	const { username } = message.u;
+const ModerationConsoleTableRow = ({ report, onClick }: MonderationConsoleRowProps): JSX.Element => {
+	const { userId: _id, rooms, count, message, username, ts } = report;
+
+	const roomNames = rooms.map((room) => {
+		if (room.t === 'd') {
+			return room.name || 'Private';
+		}
+		return room.fname || room.name;
+	});
+
+	const concatenatedRoomNames = roomNames.join(', ');
 
 	// write a custom query to get the reports data from the database
 
-	const query = useDebouncedValue(
-		useMemo(
-			() => ({
-				count: 50,
-				msgId: message._id,
-			}),
-			[message._id],
-		),
-		500,
-	);
+	// const query = useDebouncedValue(
+	// 	useMemo(
+	// 		() => ({
+	// 			count: 50,
+	// 			msgId: message._id,
+	// 		}),
+	// 		[message._id],
+	// 	),
+	// 	500,
+	// );
 
-	const dispatchToastMessage = useToastMessageDispatch();
+	// const dispatchToastMessage = useToastMessageDispatch();
 
-	const countReportsByMsgId = useEndpoint('GET', '/v1/moderation.countReportsByMsgId');
+	// const countReportsByMsgId = useEndpoint('GET', '/v1/moderation.countReportsByMsgId');
 
-	const {
-		data: reportsByMessage,
-		refetch: reloadReportsByMessage,
-		isLoading: isLoadingReportsByMessage,
-		isSuccess: isSuccessReportsByMessage,
-	} = useQuery(
-		['reportsByMessage', query],
-		async () => {
-			const reports = await countReportsByMsgId(query);
-			return reports;
-		},
-		{
-			onError: (error) => {
-				dispatchToastMessage({ type: 'error', message: error });
-			},
-		},
-	);
+	// const {
+	// 	data: reportsByMessage,
+	// 	refetch: reloadReportsByMessage,
+	// 	isLoading: isLoadingReportsByMessage,
+	// 	isSuccess: isSuccessReportsByMessage,
+	// } = useQuery(
+	// 	['reportsByMessage', query],
+	// 	async () => {
+	// 		const reports = await countReportsByMsgId(query);
+	// 		return reports;
+	// 	},
+	// 	{
+	// 		onError: (error) => {
+	// 			dispatchToastMessage({ type: 'error', message: error });
+	// 		},
+	// 	},
+	// );
 
-	useEffect(() => {
-		reload.current = reloadReportsByMessage;
-	}, [reload, reloadReportsByMessage]);
+	// useEffect(() => {
+	// 	reload.current = reloadReportsByMessage;
+	// }, [reload, reloadReportsByMessage]);
 
-	// a return function based on the status of the query which shows the query total or a loading spinner or a "-" incase of error
+	// // a return function based on the status of the query which shows the query total or a loading spinner or a "-" incase of error
 
-	const renderReportsByMessage = (): string | number => {
-		if (isLoadingReportsByMessage) {
-			return '...';
-		}
+	// const renderReportsByMessage = (): string | number => {
+	// 	if (isLoadingReportsByMessage) {
+	// 		return '...';
+	// 	}
 
-		if (isSuccessReportsByMessage) {
-			return reportsByMessage.reportCounts;
-		}
+	// 	if (isSuccessReportsByMessage) {
+	// 		return reportsByMessage.reportCounts;
+	// 	}
 
-		return '-';
-	};
+	// 	return '-';
+	// };
 
 	return (
-		<TableRow key={_id} onKeyDown={(): void => onClick(messageId)} onClick={(): void => onClick(messageId)} tabIndex={0} role='link' action>
+		<TableRow key={_id} onKeyDown={(): void => onClick(_id)} onClick={(): void => onClick(_id)} tabIndex={0} role='link' action>
 			<TableCell withTruncatedText>
 				<Box display='flex' alignItems='center'>
 					{username && <UserAvatar size={'x40'} username={username} />}
@@ -88,19 +90,12 @@ const ModerationConsoleTableRow = ({ report, onClick, reload }: MonderationConso
 					</Box>
 				</Box>
 			</TableCell>
-			<TableCell withTruncatedText>{message.msg}</TableCell>
-			<TableCell withTruncatedText>{message.rid}</TableCell>
+			<TableCell withTruncatedText>{message}</TableCell>
+			<TableCell withTruncatedText>{concatenatedRoomNames}</TableCell>
 			<TableCell withTruncatedText>{formatDateAndTime(ts)}</TableCell>
-			<TableCell withTruncatedText>{renderReportsByMessage()}</TableCell>
+			<TableCell withTruncatedText>{count}</TableCell>
 			<TableCell onClick={(e): void => e.stopPropagation()}>
-				<Menu
-					options={{
-						seeReports: {
-							label: 'See Reports',
-							action: () => console.log('See Reports'),
-						},
-					}}
-				/>
+				<ModerationConsoleActions report={report} onClick={onClick} />
 			</TableCell>
 		</TableRow>
 	);

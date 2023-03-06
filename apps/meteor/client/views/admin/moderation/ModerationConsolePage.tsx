@@ -5,6 +5,7 @@ import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
 import MessageReportInfo from './MessageReportInfo';
 import ModerationConsoleTable from './ModerationConsoleTable';
+import UserMessages from './UserMessages';
 
 const ModerationConsolePage = () => {
 	const t = useTranslation();
@@ -29,11 +30,14 @@ const ModerationConsolePage = () => {
 				<VerticalBar>
 					<VerticalBar.Header>
 						<VerticalBar.Icon name='info-circled' />
-						<VerticalBar.Text>{t('Report')}</VerticalBar.Text>
-						<VerticalBar.Action name={'new-window'} onClick={() => moderationRoute.push({})} title={t('View_full_conversation')} />
+						{context === 'info' && <VerticalBar.Text>{t('Messages')}</VerticalBar.Text>}
+						{context === 'reports' && <VerticalBar.Text>{t('Report')}</VerticalBar.Text>}
+						{/* <VerticalBar.Action name={'new-window'} onClick={() => moderationRoute.push({})} title={t('View_full_conversation')} /> */}
 						<VerticalBar.Close onClick={() => moderationRoute.push({})} />
 					</VerticalBar.Header>
-					<VerticalBar.Content>{context === 'info' && id && <MessageReportInfo msgId={id} reload={reloadRef} />}</VerticalBar.Content>
+					{context === 'info' && id && <UserMessages userId={id} reload={reloadRef} />}
+
+					{context === 'reports' && <VerticalBar.Content>{id && <MessageReportInfo msgId={id} reload={reloadRef} />}</VerticalBar.Content>}
 				</VerticalBar>
 			)}
 		</Page>
