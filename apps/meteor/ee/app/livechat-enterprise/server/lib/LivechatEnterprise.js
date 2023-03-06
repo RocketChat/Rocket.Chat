@@ -240,6 +240,7 @@ export const LivechatEnterprise = {
 			requestTagBeforeClosingChat: Match.Optional(Boolean),
 			chatClosingTags: Match.Optional([String]),
 			fallbackForwardDepartment: Match.Optional(String),
+			departmentsAllowedToForward: Match.Optional([String]),
 		};
 
 		// The Livechat Form department support addition/custom fields, so those fields need to be added before validating
