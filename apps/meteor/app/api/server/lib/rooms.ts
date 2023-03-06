@@ -38,11 +38,11 @@ export async function findAdminRooms({
 
 	let result;
 	if (name && showTypes.length) {
-		result = Rooms.findByNameContainingAndTypes(name, showTypes, discussion, includeTeams, showOnlyTeams, options);
+		result = Rooms.findByNameOrFnameContainingAndTypes(name, showTypes, discussion, includeTeams, showOnlyTeams, options);
 	} else if (showTypes.length) {
 		result = Rooms.findByTypes(showTypes, discussion, includeTeams, showOnlyTeams, options);
 	} else {
-		result = Rooms.findByNameContaining(name, discussion, includeTeams, showOnlyTeams, options);
+		result = Rooms.findByNameOrFnameContaining(name, discussion, includeTeams, showOnlyTeams, options);
 	}
 
 	const { cursor, totalCount } = result;
