@@ -145,7 +145,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 					const { rooms = [] } = await userSpotlight(filter, [], { rooms: true, mentions: true }, rid);
 					return rooms as unknown as ComposerBoxPopupRoomProps[];
 				},
-				getValue: (item) => `${item.fname || item.name}`,
+				getValue: (item) => `${item.name || item.fname}`,
 				renderItem: ({ item }) => <ComposerBoxPopupRoom {...item} />,
 			}) as any,
 			createMessageBoxPopupConfig<ComposerBoxPopupEmojiProps>({

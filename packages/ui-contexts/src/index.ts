@@ -18,6 +18,7 @@ export { DeviceContext, Device, IExperimentalHTMLAudioElement, DeviceContextValu
 export { useAbsoluteUrl } from './hooks/useAbsoluteUrl';
 export { useAllPermissions } from './hooks/useAllPermissions';
 export { useAssetPath } from './hooks/useAssetPath';
+export { useAssetWithDarkModePath } from './hooks/useAssetWithDarkModePath';
 export { useAtLeastOnePermission } from './hooks/useAtLeastOnePermission';
 export { useAttachmentAutoLoadEmbedMedia } from './hooks/useAttachmentAutoLoadEmbedMedia';
 export { useAttachmentDimensions } from './hooks/useAttachmentDimensions';

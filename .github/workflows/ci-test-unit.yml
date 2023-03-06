@@ -20,6 +20,7 @@ jobs:
     runs-on: ubuntu-20.04
 
     strategy:
+      fail-fast: false
       matrix:
         mongodb-version: ${{ fromJSON(inputs.mongodb-version) }}
 
@@ -38,9 +39,8 @@ jobs:
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ inputs.node-version }}
-
-      - name: yarn install
-        run: yarn
+          cache-modules: true
+          install: true
 
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
