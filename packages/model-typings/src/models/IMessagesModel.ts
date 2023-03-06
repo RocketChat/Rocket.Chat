@@ -108,4 +108,11 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	): FindCursor<IMessage>;
 
 	findLivechatClosingMessage(rid: IRoom['_id'], options?: FindOptions<IMessage>): Promise<IMessage | null>;
+
+	createOnHoldHistoryWithRoomIdMessageAndUser(
+		roomId: string,
+		user: IMessage['u'],
+		comment: string,
+		action: 'on-hold' | 'resume-onHold',
+	): Promise<InsertOneResult<IMessage>>;
 }

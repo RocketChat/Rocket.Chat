@@ -1,5 +1,6 @@
 import { Messages } from '../../../../../app/models/server/models/Messages';
 
+// TODO: rm this
 Messages.prototype.createOnHoldHistoryWithRoomIdMessageAndUser = function (roomId, comment, user) {
 	const type = 'omnichannel_placed_chat_on_hold';
 	const record = {
@@ -18,6 +19,7 @@ Messages.prototype.createOnHoldHistoryWithRoomIdMessageAndUser = function (roomI
 	return record;
 };
 
+// TODO: rm this
 Messages.prototype.createOnHoldResumedHistoryWithRoomIdMessageAndUser = function (roomId, comment, user) {
 	const type = 'omnichannel_on_hold_chat_resumed';
 	const record = {

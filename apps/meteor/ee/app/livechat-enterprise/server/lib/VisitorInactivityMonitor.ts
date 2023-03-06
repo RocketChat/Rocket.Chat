@@ -5,8 +5,8 @@ import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@roc
 
 import { settings } from '../../../../../app/settings/server';
 import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
-import { LivechatEnterprise } from './LivechatEnterprise';
 import { logger } from './logger';
+import { OnHoldHelper } from './OnHoldHelper';
 
 const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result && result.status === 'rejected';
 
@@ -109,7 +109,7 @@ export class VisitorInactivityMonitor {
 		const comment = TAPi18n.__('Omnichannel_On_Hold_due_to_inactivity', { guest, timeout });
 
 		const result = await Promise.allSettled([
-			LivechatEnterprise.placeRoomOnHold(room, comment, this.user),
+			OnHoldHelper.placeRoomOnHold(room, comment, this.user),
 			LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id),
 		]);
 		const rejected = result.filter(isPromiseRejectedResult).map((r) => r.reason);

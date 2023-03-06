@@ -1,17 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { isPOSTLivechatRoomPriorityParams } from '@rocket.chat/rest-typings';
+import { isLivechatRoomOnHoldProps, isLivechatRoomResumeOnHoldProps, isPOSTLivechatRoomPriorityParams } from '@rocket.chat/rest-typings';
 import { LivechatRooms } from '@rocket.chat/models';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { API } from '../../../../../app/api/server';
 import { hasPermission } from '../../../../../app/authorization/server';
 import { Subscriptions } from '../../../../../app/models/server';
-import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 import { removePriorityFromRoom, updateRoomPriority } from './lib/priorities';
+import { OnHoldHelper } from '../lib/OnHoldHelper';
 
 API.v1.addRoute(
 	'livechat/room.onHold',
-	{ authRequired: true, permissionsRequired: ['on-hold-livechat-room'] },
+	{ authRequired: true, permissionsRequired: ['on-hold-livechat-room'], validateParams: isLivechatRoomOnHoldProps },
 	{
 		async post() {
 			const { roomId } = this.bodyParams;
@@ -51,7 +52,52 @@ API.v1.addRoute(
 				user: onHoldBy.name || `@${onHoldBy.username}`,
 			});
 
-			await LivechatEnterprise.placeRoomOnHold(room, comment, onHoldBy);
+			await OnHoldHelper.placeRoomOnHold(room, comment, this.user);
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/room.resumeOnHold',
+	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isLivechatRoomResumeOnHoldProps },
+	{
+		async post() {
+			const { roomId } = this.bodyParams;
+			if (!roomId || roomId.trim() === '') {
+				throw new Error('invalid-param');
+			}
+
+			const room = await LivechatRooms.findOneById(roomId);
+			if (!room || !isOmnichannelRoom(room)) {
+				throw new Error('error-invalid-room');
+			}
+
+			if (!room.onHold) {
+				throw new Error('error-room-not-on-hold');
+			}
+
+			if (!room.open) {
+				throw new Error('This_conversation_is_already_closed');
+			}
+
+			const user = Meteor.user();
+			if (!user) {
+				return API.v1.failure('Invalid user');
+			}
+
+			const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, user._id, { _id: 1 });
+			if (!subscription && !hasPermission(this.userId, 'on-hold-others-livechat-room')) {
+				return API.v1.failure('Not authorized');
+			}
+
+			const onHoldBy = { _id: user._id, username: user.username, name: (user as any).name };
+			const comment = TAPi18n.__('Omnichannel_On_Hold_manually', {
+				user: onHoldBy.name || `@${onHoldBy.username}`,
+			});
+
+			await OnHoldHelper.resumeRoomOnHold(room, comment, this.user);
 
 			return API.v1.success();
 		},
