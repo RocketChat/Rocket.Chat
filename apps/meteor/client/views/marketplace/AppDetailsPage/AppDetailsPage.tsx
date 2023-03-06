@@ -36,7 +36,6 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 	const [isSaving, setIsSaving] = useState(false);
 
 	const settingsRef = useRef<Record<string, ISetting['value']>>({});
-	const appData = useAppInfo(id);
 	const isAdminUser = usePermission('manage-apps');
 
 	const [currentRouteName] = useCurrentRoute();
@@ -47,6 +46,8 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 
 	const tab = useRouteParameter('tab');
 	const context = useRouteParameter('context');
+
+	const appData = useAppInfo(id, context || '');
 
 	const handleReturn = useMutableCallback((): void => {
 		context && router.push({ context, page: 'list' });

@@ -1,5 +1,6 @@
+import type { Button } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
-import type { FC } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import React, { useRef, useCallback } from 'react';
 
 import type { CategoryDropdownItem, CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
@@ -9,11 +10,13 @@ import DropDownListWrapper from '../DropDownListWrapper';
 import CategoryDropDownAnchor from './CategoryDropDownAnchor';
 import CategoryDropDownList from './CategoryDropDownList';
 
-const CategoryDropDown: FC<{
-	data: CategoryDropDownListProps['groups'];
+type CategoryDropDownProps = {
+	categories: CategoryDropDownListProps['categories'];
 	onSelected: CategoryDropDownListProps['onSelected'];
 	selectedCategories: (CategoryDropdownItem & { checked: true })[];
-}> = ({ data, onSelected, selectedCategories, ...props }) => {
+} & ComponentProps<typeof Button>;
+
+const CategoryDropDown = ({ categories, onSelected, selectedCategories, ...props }: CategoryDropDownProps): ReactElement => {
 	const reference = useRef<HTMLInputElement>(null);
 	const [collapsed, toggleCollapsed] = useToggle(false);
 
@@ -39,7 +42,7 @@ const CategoryDropDown: FC<{
 			/>
 			{collapsed && (
 				<DropDownListWrapper ref={reference} onClose={onClose}>
-					<CategoryDropDownList groups={data} onSelected={onSelected} />
+					<CategoryDropDownList categories={categories} onSelected={onSelected} />
 				</DropDownListWrapper>
 			)}
 		</>

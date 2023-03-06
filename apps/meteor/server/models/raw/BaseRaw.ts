@@ -149,7 +149,7 @@ export abstract class BaseRaw<
 
 	async findOne(query?: Filter<T> | T['_id'], options?: undefined): Promise<T | null>;
 
-	async findOne<P = T>(query: Filter<T> | T['_id'], options: FindOptions<P extends T ? T : P>): Promise<P | null>;
+	async findOne<P = T>(query: Filter<T> | T['_id'], options?: FindOptions<P extends T ? T : P>): Promise<P | null>;
 
 	async findOne<P>(query: Filter<T> | T['_id'] = {}, options?: any): Promise<WithId<T> | WithId<P> | null> {
 		const q: Filter<T> = typeof query === 'string' ? ({ _id: query } as Filter<T>) : query;

@@ -14,6 +14,8 @@ const allowedActionsInFederatedRooms: ValueOf<typeof RoomMemberActions>[] = [
 	RoomMemberActions.LEAVE,
 ];
 
+const allowedActionsForModerators = allowedActionsInFederatedRooms.filter((action) => action !== RoomMemberActions.SET_AS_OWNER);
+
 const allowedRoomSettingsChangesInFederatedRooms: ValueOf<typeof RoomSettingsEnum>[] = [RoomSettingsEnum.NAME, RoomSettingsEnum.TOPIC];
 
 export class Federation {
@@ -33,10 +35,19 @@ export class Federation {
 			return true;
 		}
 
-		return Boolean(
-			(userSubscription.roles?.includes('owner') || userSubscription.roles?.includes('moderator')) &&
-				allowedActionsInFederatedRooms.includes(action),
-		);
+		if (action === RoomMemberActions.LEAVE) {
+			return true;
+		}
+
+		if (userSubscription.roles?.includes('owner')) {
+			return allowedActionsInFederatedRooms.includes(action);
+		}
+
+		if (userSubscription.roles?.includes('moderator')) {
+			return allowedActionsForModerators.includes(action);
+		}
+
+		return false;
 	}
 
 	public static isAFederatedUsername(username: string): boolean {
