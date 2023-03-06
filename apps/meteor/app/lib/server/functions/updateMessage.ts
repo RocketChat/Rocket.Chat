@@ -1,4 +1,4 @@
-import type { IMessage, IMessageEdited, IUser } from '@rocket.chat/core-typings';
+import type { IEditedMessage, IMessage, IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { Messages, Rooms } from '../../../models/server';
@@ -35,11 +35,13 @@ export const updateMessage = function (message: IMessage, user: IUser, originalM
 		Messages.cloneAndSaveAsHistoryById(message._id, user);
 	}
 
-	(message as IMessageEdited).editedAt = new Date();
-	(message as IMessageEdited).editedBy = {
-		_id: user._id,
-		username: user.username,
-	};
+	Object.assign<IMessage, Omit<IEditedMessage, keyof IMessage>>(message, {
+		editedAt: new Date(),
+		editedBy: {
+			_id: user._id,
+			username: user.username,
+		},
+	});
 
 	parseUrlsInMessage(message);
 

@@ -25,7 +25,6 @@ test.describe('anonymous-user', () => {
 	});
 
 	test('expect to go to the login page as anonymous user', async ({ page }) => {
-		await expect(poHomeChannel.content.btnAnonymousSignIn).toBeVisible({ timeout: 10000 });
 		await poHomeChannel.content.btnAnonymousSignIn.click();
 
 		await expect(page.locator('role=form')).toBeVisible();
@@ -35,7 +34,6 @@ test.describe('anonymous-user', () => {
 		poHomeChannel = new HomeChannel(page);
 		const poRegistration = new Registration(page);
 
-		await expect(poHomeChannel.content.btnAnonymousTalk).toBeVisible({ timeout: 10000 });
 		await poHomeChannel.content.btnAnonymousTalk.click();
 
 		await expect(poRegistration.username).toBeVisible();
