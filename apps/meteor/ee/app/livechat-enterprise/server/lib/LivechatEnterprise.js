@@ -3,10 +3,8 @@ import { Match, check } from 'meteor/check';
 import {
 	LivechatInquiry,
 	Users,
-	LivechatRooms,
 	LivechatDepartment as LivechatDepartmentRaw,
 	OmnichannelServiceLevelAgreements,
-	Subscriptions,
 } from '@rocket.chat/models';
 
 import { hasLicense } from '../../../license/server/license';
@@ -177,16 +175,12 @@ export const LivechatEnterprise = {
 	},
 
 	async releaseOnHoldChat(room) {
-		const { _id: roomId, onHold } = room;
-		if (!roomId || !onHold) {
+		const { _id: roomId } = room;
+		if (!roomId) {
 			return;
 		}
 
-		await Promise.all([
-			AutoCloseOnHoldScheduler.unscheduleRoom(roomId),
-			LivechatRooms.unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(roomId),
-			Subscriptions.unsetOnHoldByRoomId(roomId),
-		]);
+		await AutoCloseOnHoldScheduler.unscheduleRoom(roomId);
 	},
 
 	/**

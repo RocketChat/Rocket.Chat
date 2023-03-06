@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import type { IMessage, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { LivechatRooms, Subscriptions, Messages } from '@rocket.chat/models';
+import { LivechatRooms, Subscriptions, Messages, LivechatInquiry } from '@rocket.chat/models';
 
+import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { callbacks } from '../../../../../lib/callbacks';
 import { ohLogger as logger } from './logger';
 
@@ -41,8 +42,61 @@ class OnHoldHelperClass {
 		logger.debug(`Room ${room._id} set on hold successfully`);
 	}
 
-	async resumeRoomOnHold(_room: IOmnichannelRoom, _comment: string, _resumeBy: IUser) {
-		throw new Error('Method not implemented.');
+	async resumeRoomOnHold(room: IOmnichannelRoom, comment: string, resumeBy: IUser, clientAction = false) {
+		logger.debug(`Attempting to resume room ${room._id} on hold by user ${resumeBy?._id}`);
+
+		if (!room || !isOmnichannelRoom(room)) {
+			throw new Error('error-invalid-room');
+		}
+
+		if (!room.onHold) {
+			throw new Error('error-room-not-on-hold');
+		}
+
+		const { _id: roomId, servedBy } = room;
+
+		if (!servedBy) {
+			logger.error(`No serving agent found for room ${roomId}`);
+			throw new Error('error-room-not-served');
+		}
+
+		const inquiry = await LivechatInquiry.findOneByRoomId(roomId, {});
+		if (!inquiry) {
+			logger.error(`No inquiry found for room ${roomId}`);
+			throw new Error('error-invalid-inquiry');
+		}
+
+		const { _id: agentId, username } = servedBy;
+
+		await RoutingManager.takeInquiry(
+			inquiry,
+			{
+				agentId,
+				username,
+			},
+			{
+				clientAction,
+			},
+		);
+
+		const resumeByUser: IMessage['u'] = {
+			_id: resumeBy._id,
+			username: resumeBy.username || '',
+			name: resumeBy.name || '',
+		};
+
+		await Promise.all([
+			LivechatRooms.unsetOnHoldByRoomId(roomId),
+			Subscriptions.unsetOnHoldByRoomId(roomId),
+			Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, resumeByUser, comment, 'resume-onHold'),
+		]);
+
+		const updatedRoom = await LivechatRooms.findOneById(roomId, {});
+		if (updatedRoom) {
+			Meteor.defer(() => {
+				callbacks.run('livechat:afterOnHoldChatResumed', updatedRoom);
+			});
+		}
 	}
 }
 

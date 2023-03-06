@@ -3,8 +3,8 @@ import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 import { cbLogger } from '../lib/logger';
 
 const handleAfterOnHoldChatResumed = async (room: any): Promise<void> => {
-	if (!room || !room._id || !room.onHold) {
-		cbLogger.debug('Skipping callback. No room provided or room is not on hold');
+	if (!room?._id) {
+		cbLogger.debug('Skipping callback. No room provided');
 		return;
 	}
 
