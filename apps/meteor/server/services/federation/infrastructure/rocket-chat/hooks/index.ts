@@ -45,7 +45,7 @@ export class FederationHooks {
 		callbacks.add(
 			'federation.beforeAddUserToARoom',
 			(params: { user: IUser | string; inviter?: IUser }, room: IRoom): void => {
-				if (!params || !params.user || !room) {
+				if (!params?.user || !room) {
 					return;
 				}
 				Promise.await(callback(params.user, room));
@@ -59,7 +59,7 @@ export class FederationHooks {
 		callbacks.add(
 			'federation.beforeAddUserToARoom',
 			(params: { user: IUser | string; inviter: IUser }, room: IRoom): void => {
-				if (!params || !params.user || !params.inviter || !room || !settings.get('Federation_Matrix_enabled')) {
+				if (!params?.user || !params.inviter || !room || !settings.get('Federation_Matrix_enabled')) {
 					return;
 				}
 
@@ -189,7 +189,7 @@ export class FederationHooks {
 		);
 	}
 
-	public static afterRoomRoleChanged(federationRoomService: FederationRoomServiceSender, data: Record<string, any>): void {
+	public static afterRoomRoleChanged(federationRoomService: FederationRoomServiceSender, data?: Record<string, any>): void {
 		if (!data || !settings.get('Federation_Matrix_enabled')) {
 			return;
 		}

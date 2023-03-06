@@ -1,20 +1,20 @@
 import { Box, CheckBox, Option, Tile } from '@rocket.chat/fuselage';
-import type { FC } from 'react';
+import type { ReactElement } from 'react';
 import React, { Fragment } from 'react';
 
 import type { CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
 
-const CategoryDropDownList: FC<CategoryDropDownListProps> = function CategoryDropDownList({ groups, onSelected }) {
+const CategoryDropDownList = ({ categories, onSelected }: CategoryDropDownListProps): ReactElement => {
 	return (
 		<Tile overflow='auto' pb='x12' pi={0} elevation='2' w='full' bg='light' borderRadius='x2'>
-			{groups.map((group, index) => (
+			{categories.map((category, index) => (
 				<Fragment key={index}>
-					{group.label && (
+					{category.label && (
 						<Box pi='x16' pbs='x8' pbe='x4' fontScale='micro' textTransform='uppercase' color='default'>
-							{group.label}
+							{category.label}
 						</Box>
 					)}
-					{group.items.map((item) => (
+					{category.items.map((item) => (
 						<Option key={item.id} {...({ label: item.label } as any)} onClick={(): void => onSelected(item)}>
 							<CheckBox checked={item.checked} onChange={(): void => onSelected(item)} />
 						</Option>

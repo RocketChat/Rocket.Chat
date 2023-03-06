@@ -7,12 +7,12 @@ import type { RoomType } from '@rocket.chat/core-typings';
 
 import { appLayout } from '../../../../client/lib/appLayout';
 import { waitUntilFind } from '../../../../client/lib/utils/waitUntilFind';
-import { Messages, ChatSubscription, Rooms, Subscriptions } from '../../../models/client';
+import { ChatSubscription, Rooms, Subscriptions } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { callbacks } from '../../../../lib/callbacks';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { call } from '../../../../client/lib/utils/call';
-import { RoomManager, RoomHistoryManager } from '..';
+import { RoomManager } from '..';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import MainLayout from '../../../../client/views/root/MainLayout';
@@ -44,9 +44,7 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 
 				c.stop();
 
-				const messageId = FlowRouter.getQueryParam('msg');
-
-				if (room._id === Session.get('openedRoom') && !messageId) {
+				if (room._id === Session.get('openedRoom')) {
 					return;
 				}
 
@@ -74,22 +72,6 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 				const sub = ChatSubscription.findOne({ rid: room._id });
 				if (sub && sub.open === false) {
 					await callWithErrorHandling('openRoom', room._id);
-				}
-
-				if (messageId) {
-					const msg = { _id: messageId, rid: room._id };
-
-					const message = Messages.findOne({ _id: msg._id }) || (await callWithErrorHandling('getMessages', [msg._id]))[0];
-
-					if (message && (message.tmid || message.tcount)) {
-						FlowRouter.withReplaceState(() => {
-							FlowRouter.setParams({ tab: 'thread', context: message.tmid || message._id });
-						});
-						return;
-					}
-
-					RoomHistoryManager.getSurroundingMessages(msg);
-					FlowRouter.setQueryParams({ msg: null });
 				}
 
 				return callbacks.run('enter-room', sub);
