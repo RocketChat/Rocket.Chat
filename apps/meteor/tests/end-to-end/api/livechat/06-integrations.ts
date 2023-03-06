@@ -178,17 +178,17 @@ describe('LIVECHAT - Integrations', function () {
 					.post(api('omnichannel/integrations'))
 					.set(credentials)
 					.send({
-						Livechat_webhookUrl: 'http://localhost:8080',
-						Livechat_secret_token: 'asdfasdf',
-						Livechat_http_timeout: 3000,
-						Livechat_webhook_on_start: false,
-						Livechat_webhook_on_close: false,
-						Livechat_webhook_on_chat_taken: false,
-						Livechat_webhook_on_chat_queued: false,
-						Livechat_webhook_on_forward: false,
-						Livechat_webhook_on_offline_msg: false,
-						Livechat_webhook_on_visitor_message: false,
-						Livechat_webhook_on_agent_message: false,
+						LivechatWebhookUrl: 'http://localhost:8080',
+						LivechatSecretToken: 'asdfasdf',
+						LivechatHttpTimeout: 3000,
+						LivechatWebhookOnStart: false,
+						LivechatWebhookOnClose: false,
+						LivechatWebhookOnChatTaken: false,
+						LivechatWebhookOnChatQueued: false,
+						LivechatWebhookOnForward: false,
+						LivechatWebhookOnOfflineMsg: false,
+						LivechatWebhookOnVisitorMessage: false,
+						LivechatWebhookOnAgentMessage: false,
 					})
 					.expect(200);
 				expect(response.body).to.have.property('success', true);
@@ -198,7 +198,7 @@ describe('LIVECHAT - Integrations', function () {
 					.post(api('omnichannel/integrations'))
 					.set(credentials)
 					.send({
-						Livechat_webhookUrl: 8000,
+						LivechatWebhookUrl: 8000,
 					})
 					.expect(200);
 				expect(response.body).to.have.property('success', true);
@@ -208,7 +208,7 @@ describe('LIVECHAT - Integrations', function () {
 					.post(api('omnichannel/integrations'))
 					.set(credentials)
 					.send({
-						Livechat_webhookurl: 'http://localhost:8000',
+						LivechatWebhook_url: 'http://localhost:8000',
 					})
 					.expect(400);
 				expect(response.body).to.have.property('success', false);
