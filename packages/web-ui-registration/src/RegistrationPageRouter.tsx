@@ -32,6 +32,7 @@ export const RegistrationPageRouter = ({
 	if (route === 'secret-register' || route === 'register') {
 		return <RegisterSecretPageRouter origin={route} setLoginRoute={setLoginRoute} />;
 	}
+
 	return null;
 };
 

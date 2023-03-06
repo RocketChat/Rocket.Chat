@@ -36,7 +36,7 @@ function AppInstallPage() {
 	}
 
 	const router = useRoute(currentRouteName);
-	const upgradeRoute = useRoute('upgradeRoute');
+	const upgradeRoute = useRoute('upgrade');
 
 	const context = useRouteParameter('context');
 
@@ -87,7 +87,7 @@ function AppInstallPage() {
 			handleAPIError(e);
 		}
 
-		router.push({ context: 'installed', page: 'info', id: appId || app.app.id });
+		router.push({ context: 'private', page: 'info', id: appId || app.app.id });
 
 		reload();
 
@@ -177,7 +177,8 @@ function AppInstallPage() {
 				handleClose={cancelAction}
 				handleConfirm={() => uploadFile(appFile, manifest)}
 				handleEnableUnlimitedApps={() => {
-					upgradeRoute.push();
+					upgradeRoute.push({ type: 'go-fully-featured-registered' });
+					setModal(null);
 				}}
 			/>,
 		);
