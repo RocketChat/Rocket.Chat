@@ -2,6 +2,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Header } from '@rocket.chat/ui-client';
 import { useSetting, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo } from 'react';
+import colors from '@rocket.chat/fuselage-tokens/colors';
 
 import { useUserIsSubscribed } from '../../contexts/RoomContext';
 
@@ -29,7 +30,7 @@ const Favorite = ({ room: { _id, f: favorite = false, t: type } }) => {
 				title={favoriteLabel}
 				icon={favorite ? 'star-filled' : 'star'}
 				onClick={handleFavoriteClick}
-				color={favorite ? 'status-font-on-warning' : null}
+				color={favorite ? colors.y600: null}
 				tiny
 			/>
 		)
