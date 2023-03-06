@@ -6,8 +6,8 @@ import React from 'react';
 
 import GenericModal from '../../../../../../../components/GenericModal';
 
-// TODO: resetState
-export const useRoomDelete = (room: IRoom, resetState?: any) => {
+// TODO: resetState for TeamsChannels
+export const useRoomDelete = (room: IRoom, resetState?: () => void) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -21,10 +21,13 @@ export const useRoomDelete = (room: IRoom, resetState?: any) => {
 	const handleDelete = useMutableCallback(() => {
 		const onConfirm = async () => {
 			try {
-				resetState?.({});
 				await deleteRoom({ roomId: room._id });
 				dispatchToastMessage({ type: 'success', message: t('Room_has_been_deleted') });
-				!resetState && router.push({});
+				if (resetState) {
+					return resetState();
+				}
+
+				return router.push({});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
