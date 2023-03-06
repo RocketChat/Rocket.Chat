@@ -344,7 +344,7 @@ function AppMenu({ app, isAppDetailsPage, ...props }) {
 								{t('Enable')}
 							</>
 						),
-						disabled: !appCountQuery?.data?.hasUnlimitedApps && appCountQuery?.data?.enabled >= appCountQuery?.data?.limit,
+						disabled: !app.migrated && !appCountQuery?.data?.hasUnlimitedApps && appCountQuery?.data?.enabled >= appCountQuery?.data?.limit,
 						action: handleEnable,
 					},
 				}),
