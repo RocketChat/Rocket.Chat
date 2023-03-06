@@ -2,19 +2,22 @@ import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.
 import type { IFederationServiceEE } from '@rocket.chat/core-services';
 
 import { AbstractFederationService } from '../../../../server/services/federation/service';
-import type { FederationRoomServiceSenderEE } from './application/sender/room/RoomServiceSender';
-import type { FederationRoomApplicationServiceEE } from './application/RoomService';
-import { FederationSearchPublicRoomsInputDto } from './application/input/RoomInputDto';
+import type { FederationUserServiceEE } from './application/UserService';
+import { FederationSearchPublicRoomsInputDto } from './application/room/sender/input/RoomInputDto';
 import type { RocketChatRoomAdapterEE } from './infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatUserAdapterEE } from './infrastructure/rocket-chat/adapters/User';
 import { FederationFactoryEE } from './infrastructure/Factory';
 import type { IFederationBridgeEE } from './domain/IFederationBridge';
 import { FederationRoomSenderConverterEE } from './infrastructure/rocket-chat/converters/RoomSender';
+import type { FederationDirectMessageRoomServiceSender } from './application/room/sender/DirectMessageRoomServiceSender';
+import type { FederationRoomServiceSender } from './application/room/sender/RoomServiceSender';
 
 abstract class AbstractBaseFederationServiceEE extends AbstractFederationService {
-	protected internalRoomServiceSenderEE: FederationRoomServiceSenderEE;
+	protected internalRoomApplicationServiceEE: FederationUserServiceEE;
 
-	protected internalRoomApplicationServiceEE: FederationRoomApplicationServiceEE;
+	protected directMessageRoomServiceSenderEE: FederationDirectMessageRoomServiceSender;
+
+	protected internalRoomServiceSenderEE: FederationRoomServiceSender;
 
 	protected internalRoomAdapterEE: RocketChatRoomAdapterEE;
 
@@ -22,26 +25,31 @@ abstract class AbstractBaseFederationServiceEE extends AbstractFederationService
 
 	constructor() {
 		const internalQueueInstance = FederationFactoryEE.buildFederationQueue();
-		const internalSettingsAdapter = FederationFactoryEE.buildRocketSettingsAdapter();
+		const internalSettingsAdapter = FederationFactoryEE.buildInternalSettingsAdapter();
 		const bridgeEE = FederationFactoryEE.buildFederationBridge(internalSettingsAdapter, internalQueueInstance);
 		super(bridgeEE, internalQueueInstance, internalSettingsAdapter);
 
-		this.internalRoomAdapterEE = FederationFactoryEE.buildRocketRoomAdapter();
-		this.internalUserAdapterEE = FederationFactoryEE.buildRocketUserAdapter();
-		this.internalRoomServiceSenderEE = FederationFactoryEE.buildRoomServiceSender(
-			this.internalRoomAdapterEE,
-			this.internalUserAdapterEE,
-			this.getInternalFileAdapter(),
-			this.getInternalMessageAdapter(),
-			this.getInternalSettingsAdapter(),
-			this.getInternalNotificationAdapter(),
-			this.getBridge(),
-		);
+		this.internalRoomAdapterEE = FederationFactoryEE.buildInternalRoomAdapter();
+		this.internalUserAdapterEE = FederationFactoryEE.buildInternalUserAdapter();
 		this.internalRoomApplicationServiceEE = FederationFactoryEE.buildRoomApplicationService(
 			this.getInternalSettingsAdapter(),
 			this.internalUserAdapterEE,
 			this.getInternalFileAdapter(),
+			this.getBridge(),
+		);
+		this.directMessageRoomServiceSenderEE = FederationFactoryEE.buildDirectMessageRoomServiceSender(
 			this.internalRoomAdapterEE,
+			this.internalUserAdapterEE,
+			this.getInternalFileAdapter(),
+			this.getInternalSettingsAdapter(),
+			this.getBridge(),
+		);
+		this.internalRoomServiceSenderEE = FederationFactoryEE.buildRoomServiceSenderEE(
+			this.internalRoomAdapterEE,
+			this.internalUserAdapterEE,
+			this.getInternalFileAdapter(),
+			this.getInternalSettingsAdapter(),
+			this.getInternalMessageAdapter(),
 			this.getInternalNotificationAdapter(),
 			this.getBridge(),
 		);
@@ -54,7 +62,7 @@ abstract class AbstractBaseFederationServiceEE extends AbstractFederationService
 	}
 
 	protected async setupInternalValidators(): Promise<void> {
-		const internalRoomHooksValidator = FederationFactoryEE.buildRoomInternalHooksValidator(
+		const internalRoomHooksValidator = FederationFactoryEE.buildRoomInternalValidator(
 			this.internalRoomAdapterEE,
 			this.internalUserAdapterEE,
 			this.getInternalFileAdapter(),
@@ -81,25 +89,10 @@ abstract class AbstractBaseFederationServiceEE extends AbstractFederationService
 			this.getInternalMessageAdapter(),
 			this.getBridge(),
 		);
-		const internalRoomHooksServiceSenderEE = FederationFactoryEE.buildRoomInternalHooksServiceSender(
-			this.internalRoomAdapterEE,
-			this.internalUserAdapterEE,
-			this.getInternalFileAdapter(),
-			this.getInternalSettingsAdapter(),
-			this.getInternalMessageAdapter(),
-			this.getBridge(),
-		);
-		const internalDMRoomHooksServiceSender = FederationFactoryEE.buildDMRoomInternalHooksServiceSender(
-			this.internalRoomAdapterEE,
-			this.internalUserAdapterEE,
-			this.getInternalFileAdapter(),
-			this.getInternalSettingsAdapter(),
-			this.getBridge(),
-		);
 		FederationFactoryEE.setupListenersForLocalActions(internalRoomServiceSender, internalMessageServiceSender);
 		FederationFactoryEE.setupListenersForLocalActionsEE(
-			internalRoomHooksServiceSenderEE,
-			internalDMRoomHooksServiceSender,
+			this.internalRoomServiceSenderEE,
+			this.directMessageRoomServiceSenderEE,
 			this.getInternalSettingsAdapter(),
 		);
 	}
@@ -149,7 +142,7 @@ export class FederationServiceEE extends AbstractBaseFederationServiceEE impleme
 	protected name = 'federation-enterprise';
 
 	public async createDirectMessageRoom(internalUserId: string, invitees: string[]): Promise<void> {
-		await this.internalRoomServiceSenderEE.createLocalDirectMessageRoom(
+		await this.directMessageRoomServiceSenderEE.createInternalLocalDirectMessageRoom(
 			FederationRoomSenderConverterEE.toCreateDirectMessageDto(internalUserId, invitees),
 		);
 	}
@@ -164,7 +157,7 @@ export class FederationServiceEE extends AbstractBaseFederationServiceEE impleme
 			rooms: IFederationPublicRooms[];
 		}>
 	> {
-		return this.internalRoomApplicationServiceEE.searchPublicRooms(
+		return this.internalRoomServiceSenderEE.searchPublicRooms(
 			new FederationSearchPublicRoomsInputDto({
 				serverName,
 				roomName,
@@ -189,7 +182,7 @@ export class FederationServiceEE extends AbstractBaseFederationServiceEE impleme
 	}
 
 	public async joinExternalPublicRoom(internalUserId: string, externalRoomId: string): Promise<void> {
-		await this.internalRoomApplicationServiceEE.joinExternalPublicRoom(
+		await this.internalRoomServiceSenderEE.joinExternalPublicRoom(
 			FederationRoomSenderConverterEE.toJoinExternalPublicRoomDto(internalUserId, externalRoomId),
 		);
 	}

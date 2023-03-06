@@ -3,7 +3,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 
-import { toInternalMessageFormat, toInternalQuoteMessageFormat } from '../converters/MessageTextParser';
+import { toInternalMessageFormat, toInternalQuoteMessageFormat } from '../converters/to-external-parser-formatter';
 import type { FederatedUser } from '../../../domain/FederatedUser';
 import type { FederatedRoom } from '../../../domain/FederatedRoom';
 import { deleteMessage, sendMessage, updateMessage } from '../../../../../../app/lib/server';

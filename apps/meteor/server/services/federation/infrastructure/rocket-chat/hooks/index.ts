@@ -1,7 +1,7 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isMessageFromMatrixFederation, isRoomFederated, isEditedMessage } from '@rocket.chat/core-typings';
 
-import type { FederationRoomServiceSender } from '../../../application/sender/RoomServiceSender';
+import type { FederationRoomServiceSender } from '../../../application/room/sender/RoomServiceSender';
 import { settings } from '../../../../../../app/settings/server';
 import { callbacks } from '../../../../../../lib/callbacks';
 

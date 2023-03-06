@@ -4,8 +4,8 @@ import type { IFederationService } from '@rocket.chat/core-services';
 import type { InMemoryQueue } from './infrastructure/queue/InMemoryQueue';
 import type { IFederationBridge } from './domain/IFederationBridge';
 import type { RocketChatSettingsAdapter } from './infrastructure/rocket-chat/adapters/Settings';
-import type { FederationRoomServiceSender } from './application/sender/RoomServiceSender';
-import type { FederationUserServiceSender } from './application/sender/UserServiceSender';
+import type { FederationRoomServiceSender } from './application/room/sender/RoomServiceSender';
+import type { FederationUserServiceSender } from './application/user/sender/UserServiceSender';
 import type { RocketChatRoomAdapter } from './infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatUserAdapter } from './infrastructure/rocket-chat/adapters/User';
 import type { RocketChatFileAdapter } from './infrastructure/rocket-chat/adapters/File';
@@ -58,15 +58,15 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 		internalSettingsAdapter: RocketChatSettingsAdapter,
 	) {
 		super();
-		this.initialize();
 		this.internalQueueInstance = internalQueueInstance;
 		this.internalSettingsAdapter = internalSettingsAdapter;
 		this.bridge = federationBridge;
-		this.internalFileAdapter = FederationFactory.buildRocketFileAdapter();
-		this.internalRoomAdapter = FederationFactory.buildRocketRoomAdapter();
-		this.internalUserAdapter = FederationFactory.buildRocketUserAdapter();
-		this.internalMessageAdapter = FederationFactory.buildRocketMessageAdapter();
-		this.internalNotificationAdapter = FederationFactory.buildRocketNotificationAdapter();
+		this.initialize();
+		this.internalFileAdapter = FederationFactory.buildInternalFileAdapter();
+		this.internalRoomAdapter = FederationFactory.buildInternalRoomAdapter();
+		this.internalUserAdapter = FederationFactory.buildInternalUserAdapter();
+		this.internalMessageAdapter = FederationFactory.buildInternalMessageAdapter();
+		this.internalNotificationAdapter = FederationFactory.buildInternalNotificationAdapter();
 		this.internalRoomServiceSender = FederationFactory.buildRoomServiceSender(
 			this.internalRoomAdapter,
 			this.internalUserAdapter,
@@ -130,7 +130,6 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 	}
 
 	private initialize(): void {
-		this.internalSettingsAdapter = FederationFactory.buildRocketSettingsAdapter();
 		this.internalSettingsAdapter.initialize();
 		this.cancelSettingsObserver = this.internalSettingsAdapter.onFederationEnabledStatusChanged(
 			this.onFederationEnabledSettingChange.bind(this),
@@ -142,7 +141,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 	}
 
 	private async setupEventHandlersForExternalEvents(): Promise<void> {
-		const federationRoomServiceListener = FederationFactory.buildRoomServiceListener(
+		const federationRoomServiceListener = FederationFactory.buildRoomServiceReceiver(
 			this.internalRoomAdapter,
 			this.internalUserAdapter,
 			this.internalMessageAdapter,
@@ -236,7 +235,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 abstract class AbstractBaseFederationService extends AbstractFederationService {
 	constructor() {
 		const internalQueueInstance = FederationFactory.buildFederationQueue();
-		const internalSettingsAdapter = FederationFactory.buildRocketSettingsAdapter();
+		const internalSettingsAdapter = FederationFactory.buildInternalSettingsAdapter();
 		const bridge = FederationFactory.buildFederationBridge(internalSettingsAdapter, internalQueueInstance);
 
 		super(bridge, internalQueueInstance, internalSettingsAdapter);
@@ -249,7 +248,7 @@ abstract class AbstractBaseFederationService extends AbstractFederationService {
 	}
 
 	protected async setupInternalValidators(): Promise<void> {
-		const federationRoomInternalHooksValidator = FederationFactory.buildRoomInternalHooksValidator(
+		const federationRoomInternalHooksValidator = FederationFactory.buildRoomInternalValidator(
 			this.getInternalRoomAdapter(),
 			this.getInternalUserAdapter(),
 			this.getInternalFileAdapter(),

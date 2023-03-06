@@ -2,7 +2,10 @@ import type { IRoom, IUser, ValueOf } from '@rocket.chat/core-typings';
 import { isRoomFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
 
-import { escapeExternalFederationEventId, unescapeExternalFederationEventId } from './infrastructure/rocket-chat/adapters/MessageConverter';
+import {
+	escapeExternalFederationEventId,
+	unescapeExternalFederationEventId,
+} from './infrastructure/rocket-chat/adapters/federation-id-escape-helper';
 import { RoomMemberActions, RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
 
 const allowedActionsInFederatedRooms: ValueOf<typeof RoomMemberActions>[] = [

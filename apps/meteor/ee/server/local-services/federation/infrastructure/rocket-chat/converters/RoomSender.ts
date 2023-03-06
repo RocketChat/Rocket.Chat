@@ -10,12 +10,12 @@ import {
 	FederationOnUsersAddedToARoomDto,
 	FederationRoomInviteUserDto,
 	FederationSetupRoomDto,
-} from '../../../application/sender/input/RoomSenderDto';
-import type { IFederationInviteeDto } from '../../../application/sender/input/RoomSenderDto';
+} from '../../../application/room/sender/input/RoomSenderDto';
+import type { IFederationInviteeDto } from '../../../application/room/sender/input/RoomSenderDto';
 import {
 	FederationJoinExternalPublicRoomInputDto,
 	FederationJoinInternalPublicRoomInputDto,
-} from '../../../application/input/RoomInputDto';
+} from '../../../application/room/sender/input/RoomInputDto';
 import {
 	convertExternalRoomIdToInternalRoomIdFormat,
 	extractServerNameFromExternalIdentifier,
@@ -23,7 +23,7 @@ import {
 	isAnExternalIdentifierFormat,
 	isAnExternalUserIdFormat,
 	removeExternalSpecificCharsFromExternalIdentifier,
-} from '../../../../../../../server/services/federation/infrastructure/matrix/converters/RoomReceiver';
+} from '../../../../../../../server/services/federation/infrastructure/matrix/converters/room/RoomReceiver';
 
 const ensureUserHasAHomeServer = (username: string, localHomeServer: string): string => {
 	return username?.includes(':') ? username : `${username}:${localHomeServer}`;
