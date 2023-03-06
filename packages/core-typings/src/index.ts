@@ -119,5 +119,6 @@ export * from './VideoConferenceCapabilities';
 export * from './VideoConferenceOptions';
 
 export * from './SpotlightUser';
+export * from './ICalendarEvent';
 
 export * from './search';

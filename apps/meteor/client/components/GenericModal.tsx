@@ -20,7 +20,7 @@ type GenericModalProps = RequiredModalProps & {
 	tagline?: ReactNode;
 	onCancel?: () => void;
 	onClose?: () => void;
-	onConfirm: () => void;
+	onConfirm?: () => void;
 } & Omit<ComponentProps<typeof Modal>, 'title'>;
 
 const iconMap: Record<string, ComponentProps<typeof Icon>['name']> = {
@@ -63,13 +63,13 @@ const GenericModal: FC<GenericModalProps> = ({
 	cancelText,
 	confirmText,
 	title,
+	tagline,
 	icon,
 	onCancel,
 	onClose = onCancel,
 	onConfirm,
 	dontAskAgain,
 	confirmDisabled,
-	tagline,
 	...props
 }) => {
 	const t = useTranslation();
@@ -93,9 +93,11 @@ const GenericModal: FC<GenericModalProps> = ({
 							{cancelText ?? t('Cancel')}
 						</Button>
 					)}
-					<Button {...getButtonProps(variant)} onClick={onConfirm} disabled={confirmDisabled}>
-						{confirmText ?? t('Ok')}
-					</Button>
+					{onConfirm && (
+						<Button {...getButtonProps(variant)} onClick={onConfirm} disabled={confirmDisabled}>
+							{confirmText ?? t('Ok')}
+						</Button>
+					)}
 				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>

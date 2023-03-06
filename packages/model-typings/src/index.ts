@@ -63,4 +63,5 @@ export * from './models/IVoipRoomModel';
 export * from './models/IWebdavAccountsModel';
 export * from './models/IMatrixBridgeRoomModel';
 export * from './models/IMatrixBridgeUserModel';
+export * from './models/ICalendarEventModel';
 export * from './models/IOmnichannelServiceLevelAgreementsModel';

@@ -297,6 +297,7 @@
 		"emojione": "^4.5.0",
 		"eslint-plugin-anti-trojan-source": "^1.1.0",
 		"eventemitter3": "^4.0.7",
+		"ews-js-api-browser": "^0.1.0",
 		"exif-be-gone": "^1.2.2",
 		"express": "^4.17.3",
 		"express-rate-limit": "^5.5.1",
