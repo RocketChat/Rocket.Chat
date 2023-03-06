@@ -29,7 +29,7 @@ const Favorite = ({ room: { _id, f: favorite = false, t: type } }) => {
 				title={favoriteLabel}
 				icon={favorite ? 'star-filled' : 'star'}
 				onClick={handleFavoriteClick}
-				color={favorite ? 'status-font-on-warning' : null}
+				color={favorite ? 'status-font-on' : null}
 				tiny
 			/>
 		)
