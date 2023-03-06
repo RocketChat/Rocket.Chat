@@ -3,7 +3,7 @@ import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rock
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import React, { useRef, memo } from 'react';
 
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
@@ -13,6 +13,7 @@ import {
 	useIsSelectedMessage,
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
+import { useJumpToMessage } from '../../../views/room/MessageList/hooks/useJumpToMessage';
 import { useChat } from '../../../views/room/contexts/ChatContext';
 import UserAvatar from '../../avatar/UserAvatar';
 import IgnoredContent from '../IgnoredContent';
@@ -38,14 +39,18 @@ const RoomMessage = ({ message, sequential, all, mention, unread, context, ignor
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
 	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
 	const chat = useChat();
+	const messageRef = useRef(null);
 
 	const selecting = useIsSelecting();
 	const toggleSelected = useToggleSelect(message._id);
 	const selected = useIsSelectedMessage(message._id);
+
 	useCountSelected();
 
+	useJumpToMessage(message._id, messageRef);
 	return (
 		<Message
+			ref={messageRef}
 			id={message._id}
 			onClick={selecting ? toggleSelected : undefined}
 			isSelected={selected}
