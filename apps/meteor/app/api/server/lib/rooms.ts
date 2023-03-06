@@ -1,9 +1,10 @@
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, RoomType } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Subscriptions } from '../../../models/server';
 import { adminFields } from '../../../../lib/rooms/adminFields';
+import type { FindOptions } from 'mongodb';
 
 export async function findAdminRooms({
 	uid,
@@ -13,7 +14,7 @@ export async function findAdminRooms({
 }: {
 	uid: string;
 	filter: string;
-	types: string[];
+	types: Array<RoomType | 'discussions' | 'teams'>;
 	pagination: { offset: number; count: number; sort: [string, number][] };
 }): Promise<{
 	rooms: IRoom[];
@@ -29,8 +30,8 @@ export async function findAdminRooms({
 	const includeTeams = types?.includes('teams');
 	const showOnlyTeams = types.length === 1 && types.includes('teams');
 	const typesToRemove = ['discussions', 'teams'];
-	const showTypes = Array.isArray(types) ? types.filter((type) => !typesToRemove.includes(type)) : [];
-	const options = {
+	const showTypes: RoomType[] = Array.isArray(types) ? types.filter((type) => !typesToRemove.includes(type)) : [];
+	const options: FindOptions<IRoom> = {
 		projection: adminFields,
 		sort: sort || { default: -1, name: 1 },
 		skip: offset,
@@ -69,7 +70,7 @@ export async function findAdminRoom({ uid, rid }: { uid: string; rid: string }):
 export async function findChannelAndPrivateAutocomplete({ uid, selector }: { uid: string; selector: { name: string } }): Promise<{
 	items: IRoom[];
 }> {
-	const options = {
+	const options: FindOptions<IRoom> = {
 		projection: {
 			_id: 1,
 			fname: 1,
@@ -100,7 +101,7 @@ export async function findAdminRoomsAutocomplete({ uid, selector }: { uid: strin
 	if (!(await hasAtLeastOnePermissionAsync(uid, ['view-room-administration', 'can-audit']))) {
 		throw new Error('error-not-authorized');
 	}
-	const options = {
+	const options: FindOptions<IRoom> = {
 		projection: {
 			_id: 1,
 			fname: 1,
@@ -137,7 +138,7 @@ export async function findChannelAndPrivateAutocompleteWithPagination({
 		.fetch()
 		.map((item: Pick<ISubscription, 'rid'>) => item.rid);
 
-	const options = {
+	const options: FindOptions<IRoom> = {
 		projection: {
 			_id: 1,
 			fname: 1,
@@ -163,7 +164,7 @@ export async function findChannelAndPrivateAutocompleteWithPagination({
 export async function findRoomsAvailableForTeams({ uid, name }: { uid: string; name: string }): Promise<{
 	items: IRoom[];
 }> {
-	const options = {
+	const options: FindOptions<IRoom> = {
 		projection: {
 			_id: 1,
 			fname: 1,

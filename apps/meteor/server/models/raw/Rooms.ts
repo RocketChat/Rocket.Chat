@@ -785,14 +785,14 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			uids: { $size: uid.length, $all: uid },
 		};
 
-		return this.findOne(query, options) as Promise<IDirectMessageRoom | null>;
+		return this.findOne<IDirectMessageRoom>(query, options);
 	}
 
 	findFederatedRooms(options: FindOptions<IRoom> = {}): FindCursor<IRoomFederated> {
-		const query: Filter<IRoomFederated> = {
+		const query: Filter<IRoom> = {
 			federated: true,
 		};
 
-		return this.find(query, options) as FindCursor<IRoomFederated>;
+		return this.find<IRoomFederated>(query, options);
 	}
 }
