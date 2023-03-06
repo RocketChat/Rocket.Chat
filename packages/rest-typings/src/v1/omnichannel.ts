@@ -3503,6 +3503,6 @@ export type OmnichannelEndpoints = {
 		POST: () => void;
 	};
 	'/v1/omnichannel/integrations': {
-		POST: (params: POSTomnichannelIntegrations) => { success: boolean };
+		POST: (params: POSTomnichannelIntegrations) => void;
 	};
 };
