@@ -24,7 +24,7 @@ import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour
 import { getRandomId } from './random';
 import type { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
 import { compareByRanking } from './utils/comparisons';
-import type { CloseRoomParams } from '../app/livechat/server/lib/LivechatTyped.d';
+import type { CloseRoomParams } from '../app/livechat/server/lib/LivechatTyped';
 
 enum CallbackPriority {
 	HIGH = -1000,
