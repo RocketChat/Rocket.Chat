@@ -5,9 +5,7 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type GroupsConvertToTeamProps =
-	| { roomId: IRoom['_id']; roomName?: IRoom['name'] }
-	| { roomName: IRoom['name']; roomId?: IRoom['_id'] };
+export type GroupsConvertToTeamProps = { roomId: IRoom['_id']; roomName?: never } | { roomName: IRoom['name']; roomId?: never };
 
 const GroupsConvertToTeamPropsSchema = {
 	type: 'object',

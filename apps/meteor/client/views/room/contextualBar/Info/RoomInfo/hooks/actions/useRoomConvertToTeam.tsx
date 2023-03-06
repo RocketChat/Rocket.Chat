@@ -23,7 +23,7 @@ export const useRoomConvertToTeam = (room: IRoom) => {
 		const onConfirm = async () => {
 			try {
 				await convertRoomToTeam(room.t === 'c' ? { channelId: room._id } : { roomId: room._id });
-				dispatchToastMessage({ type: 'success', message: t('Success') });
+				dispatchToastMessage({ type: 'success', message: t('Room_has_been_converted') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {

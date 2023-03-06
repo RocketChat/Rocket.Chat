@@ -17,6 +17,7 @@ const RoomInfoRouter = ({ rid, onClickBack, onEnterRoom, resetState }: RoomInfoR
 	if (isEditing) {
 		return <EditRoomInfoWithData rid={rid} onClickBack={() => setIsEditing(false)} />;
 	}
+
 	return (
 		<RoomInfoWithData
 			rid={rid}

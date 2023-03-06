@@ -4,8 +4,8 @@ import { useUserRoom } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import { useTabBarClose } from '../../../contexts/ToolboxContext';
-import { useCanEditRoom } from './hooks/useCanEditRoom';
 import RoomInfo from './RoomInfo';
+import { useCanEditRoom } from './hooks/useCanEditRoom';
 
 type RoomInfoWithDataProps = {
 	rid: IRoom['_id'];

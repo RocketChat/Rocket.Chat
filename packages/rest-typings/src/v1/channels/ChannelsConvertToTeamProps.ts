@@ -4,8 +4,8 @@ import type { IRoom } from '@rocket.chat/core-typings';
 const ajv = new Ajv();
 
 export type ChannelsConvertToTeamProps =
-	| { channelId: IRoom['_id']; channelName?: IRoom['name'] }
-	| { channelName: IRoom['name']; channelId?: IRoom['_id'] };
+	| { channelId: IRoom['_id']; channelName?: never }
+	| { channelName: IRoom['name']; channelId?: never };
 
 const channelsConvertToTeamPropsSchema = {
 	oneOf: [
