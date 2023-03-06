@@ -1,7 +1,8 @@
-import type { IRoom } from '@rocket.chat/core-typings';
-import { useRoute } from '@rocket.chat/ui-contexts';
+import type { IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { useRoute, useStream } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ContextType, ReactElement } from 'react';
-import React, { useMemo, memo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, memo, useEffect, useCallback } from 'react';
 
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
 import { UserAction } from '../../../../app/ui/client';
@@ -27,6 +28,34 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 
 	const roomQuery = useReactiveQuery(['rooms', rid], ({ rooms }) => rooms.findOne({ _id: rid }));
 
+	const subscribeToRoom = useStream('room-data');
+
+	const [subscribedData, setSubscribedData] = useState({});
+
+	useEffect(() => {
+		const unsubscribe = subscribeToRoom(rid, (room: IRoom | IOmnichannelRoom) => {
+			if (!isOmnichannelRoom(room)) {
+				return;
+			}
+			const { open, servedBy, queuedAt } = room;
+
+			setSubscribedData({ open, servedBy, queuedAt });
+		});
+
+		return () => {
+			unsubscribe();
+		};
+	}, [subscribeToRoom, rid]);
+
+	useEffect(() => {
+		if (!roomQuery.data || (roomQuery.data && !isOmnichannelRoom(roomQuery.data))) {
+			return;
+		}
+		const { open, servedBy, queuedAt } = roomQuery.data;
+
+		setSubscribedData({ open, servedBy, queuedAt });
+	}, [roomQuery.data]);
+
 	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
 	const homeRoute = useRoute('home');
 	useEffect(() => {
@@ -45,10 +74,11 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		return {
 			...subscriptionQuery.data,
 			...roomQuery.data,
+			...subscribedData,
 			name: roomCoordinator.getRoomName(roomQuery.data.t, roomQuery.data),
 			federationOriginalName: roomQuery.data.name,
 		};
-	}, [roomQuery.data, subscriptionQuery.data]);
+	}, [roomQuery.data, subscriptionQuery.data, subscribedData]);
 
 	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useReactiveValue(
 		useCallback(() => {
