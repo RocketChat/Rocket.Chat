@@ -200,7 +200,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }) {
 			visitorInactivityTimeoutInSeconds,
 			abandonedRoomsCloseCustomMessage,
 			waitingQueueMessage,
-			departmentsAllowedToForward: departmentsAllowedToForward?.map((dep) => dep.value).join(),
+			departmentsAllowedToForward: departmentsAllowedToForward?.map((dep) => dep.value),
 			fallbackForwardDepartment,
 		};
 
