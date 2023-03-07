@@ -101763,6 +101763,144 @@
           ]
         }
       ]
+    },
+    "6.0.0-rc.7": {
+      "node_version": "14.21.2",
+      "npm_version": "6.14.17",
+      "apps_engine_version": "1.37.0-alpha.157",
+      "mongo_versions": [
+        "4.4",
+        "5.0",
+        "6.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "28298",
+          "title": "Regression: Scrolling on threads",
+          "userLogin": "yash-rajpal",
+          "milestone": "6.0.0",
+          "contributors": [
+            "yash-rajpal",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28257",
+          "title": "Regression: OAuthApps are added with empty string `_id` field",
+          "userLogin": "matheusbsilva137",
+          "description": "- Fix OAuthApps added to the database with a empty string `_id` field.",
+          "milestone": "6.0.0",
+          "contributors": [
+            "matheusbsilva137",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "28247",
+          "title": "Regression: Fix remove user from room shows skeleton",
+          "userLogin": "hugocostadev",
+          "description": "When the user is removed from a public channel and has it open it will show a grey placeholder screen\r\n\r\nNow, it appears the Join button as usual",
+          "milestone": "6.0.0",
+          "contributors": [
+            "hugocostadev",
+            "guijun13",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28262",
+          "title": "Regression: Decrypt thread main message for room",
+          "userLogin": "yash-rajpal",
+          "milestone": "6.0.0",
+          "contributors": [
+            "yash-rajpal",
+            "web-flow",
+            "gabriellsh"
+          ]
+        },
+        {
+          "pr": "28292",
+          "title": "Regression: Creating Custom status ",
+          "userLogin": "hugocostadev",
+          "description": "User is not able to create a custom status from the admin section. Workspace > User Status > New\r\n\r\nThe SAVE button is not performing any action\r\n![image](https://user-images.githubusercontent.com/20212776/223121583-769a571a-365d-4f72-8d0b-f43016d31546.png)",
+          "milestone": "6.0.0",
+          "contributors": [
+            "hugocostadev",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28294",
+          "title": "Chore: Fix Email Inbox flaky test",
+          "userLogin": "sampaiodiego",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "28266",
+          "title": "Regression: Disabled grandfathered apps must have the option to be enabled",
+          "userLogin": "d-gubert",
+          "description": "Grandfathered apps will not follow the new enabling flow and it should always be possible to enable them",
+          "milestone": "6.0.0",
+          "contributors": [
+            "d-gubert",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28258",
+          "title": "Regression: Adjusted departments upsell modal message",
+          "userLogin": "aleksandernsilva",
+          "description": "This PR adjusts the logic to display the correct message on the departments upsell modal. This affects users with a trial license, expired expired licence, as well as no licence.",
+          "milestone": "6.0.0",
+          "contributors": [
+            "aleksandernsilva",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28265",
+          "title": "Regression: Installation of some apps fail",
+          "userLogin": "d-gubert",
+          "description": "Installation was failing for apps that did not include a set o permissions required because the process was short circuiting in those cases. However, they are valid as they signify apps that function with the default permission set",
+          "milestone": "6.0.0",
+          "contributors": [
+            "d-gubert",
+            "casalsgh",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28264",
+          "title": "Regression: Apps provider not handling apps lists correctly",
+          "userLogin": "rique223",
+          "description": "## Jira tasks: [MKP-272](https://rocketchat.atlassian.net/browse/MKP-272?atlOrigin=eyJpIjoiNDQzMmY4NmYyYTEyNDJjMmJmZmY3ZGUyYmQ3Y2Y2Y2EiLCJwIjoiaiJ9) [MKP-270](https://rocketchat.atlassian.net/browse/MKP-270?atlOrigin=eyJpIjoiOWRhYWM5N2VmY2UwNDAyMjlhY2ZiM2IwYjMwYWQxOWUiLCJwIjoiaiJ9)\r\nFixed a bug in which the AppsProvider would not handle the marketplace, installed, and private apps lists correctly when running the install, update, and delete listeners. This also solved related bugs of app duplication during installation and loss of reactivity during uninstalls and status changes(private apps only).\r\nDemo gif: ![apps-provider-behavior](https://user-images.githubusercontent.com/43561537/222833328-1d9836c0-738c-41d5-ac17-a5d86452ea83.gif)",
+          "milestone": "6.0.0",
+          "contributors": [
+            "rique223",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28254",
+          "title": "Regression: Fix intermitent apps engine startup",
+          "userLogin": "thassiov",
+          "description": "Makes the apps limitation functionality depend on methods from the Apps Engine's service instead of a dynamic import of the apps orchestrator, making the engine's load process deterministic.",
+          "milestone": "6.0.0",
+          "contributors": [
+            "thassiov",
+            "web-flow"
+          ]
+        }
+      ]
     }
   },
   "5.4.0-rc.0": {
