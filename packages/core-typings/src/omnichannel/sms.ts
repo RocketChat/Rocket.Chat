@@ -55,9 +55,6 @@ export const isServiceData = (data: unknown): data is ServiceData => {
 };
 
 export type SMSWorker = {
-	enabled: boolean;
-	department: string | null;
-	service: string | null;
 	services: Record<string, ISMSProviderConstructor>;
 	accountSid: string | null;
 	authToken: string | null;

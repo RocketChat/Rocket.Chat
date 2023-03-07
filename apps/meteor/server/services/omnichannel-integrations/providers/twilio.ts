@@ -5,10 +5,9 @@ import filesize from 'filesize';
 import { api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 
-import { settings } from '../../../settings/server';
-import { SMS } from '../SMS';
-import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
-import { SystemLogger } from '../../../../server/lib/logger/system';
+import { settings } from '../../../../app/settings/server';
+import { fileUploadIsValidContentType } from '../../../../app/utils/lib/fileUploadRestrictions';
+import { SystemLogger } from '../../../lib/logger/system';
 
 type TwilioData = {
 	From: string;
@@ -45,7 +44,7 @@ const notifyAgent = (userId: string, rid: string, msg: string) =>
 		msg,
 	});
 
-class Twilio implements ISMSProvider {
+export class Twilio implements ISMSProvider {
 	accountSid: string;
 
 	authToken: string;
@@ -208,5 +207,3 @@ class Twilio implements ISMSProvider {
 		};
 	}
 }
-
-SMS.registerService('twilio', Twilio);

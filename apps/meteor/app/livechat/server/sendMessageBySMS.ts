@@ -1,9 +1,9 @@
 import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
+import { OmnichannelIntegration } from '@rocket.chat/core-services';
 
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
-import { SMS } from '../../sms';
 import { normalizeMessageFileUpload } from '../../utils/server/functions/normalizeMessageFileUpload';
 import { callbackLogger } from './lib/callbackLogger';
 
@@ -17,7 +17,7 @@ callbacks.add(
 			return message;
 		}
 
-		if (!SMS.enabled) {
+		if (!settings.get('SMS_Enabled')) {
 			callbackLogger.debug('SMS is not enabled, skipping SMS send');
 			return message;
 		}
@@ -53,7 +53,7 @@ callbacks.add(
 			extraData = Object.assign({}, extraData, { location });
 		}
 
-		const SMSService = SMS.getService(settings.get('SMS_Service'));
+		const SMSService = Promise.await(OmnichannelIntegration.getSmsService(settings.get('SMS_Service')));
 
 		if (!SMSService) {
 			callbackLogger.debug('SMS Service is not configured, skipping SMS send');

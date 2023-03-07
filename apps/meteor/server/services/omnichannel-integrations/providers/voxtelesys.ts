@@ -5,11 +5,10 @@ import { api } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import type { ISMSProvider, ServiceData, SMSProviderResponse } from '@rocket.chat/core-typings';
 
-import { settings } from '../../../settings/server';
-import { SMS } from '../SMS';
-import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
-import { mime } from '../../../utils/lib/mimeTypes';
-import { SystemLogger } from '../../../../server/lib/logger/system';
+import { settings } from '../../../../app/settings/server';
+import { fileUploadIsValidContentType } from '../../../../app/utils/lib/fileUploadRestrictions';
+import { mime } from '../../../../app/utils/lib/mimeTypes';
+import { SystemLogger } from '../../../lib/logger/system';
 
 type VoxtelesysData = {
 	from: string;
@@ -36,7 +35,7 @@ const notifyAgent = (userId: string, rid: string, msg: string) =>
 		msg,
 	});
 
-class Voxtelesys implements ISMSProvider {
+export class Voxtelesys implements ISMSProvider {
 	authToken: string;
 
 	URL: string;
@@ -182,5 +181,3 @@ class Voxtelesys implements ISMSProvider {
 		};
 	}
 }
-
-SMS.registerService('voxtelesys', Voxtelesys);

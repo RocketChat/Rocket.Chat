@@ -2,9 +2,8 @@ import { HTTP } from 'meteor/http';
 import { Base64 } from 'meteor/base64';
 import type { ISMSProvider, ServiceData, SMSProviderResult, SMSProviderResponse } from '@rocket.chat/core-typings';
 
-import { settings } from '../../../settings/server';
-import { SMS } from '../SMS';
-import { SystemLogger } from '../../../../server/lib/logger/system';
+import { settings } from '../../../../app/settings/server';
+import { SystemLogger } from '../../../lib/logger/system';
 
 type MobexData = {
 	from: string;
@@ -24,7 +23,7 @@ const isMobexData = (data: unknown): data is MobexData => {
 	return typeof from === 'string' && typeof to === 'string' && typeof content === 'string';
 };
 
-class Mobex implements ISMSProvider {
+export class Mobex implements ISMSProvider {
 	address: string;
 
 	restAddress: string;
@@ -203,6 +202,3 @@ class Mobex implements ISMSProvider {
 		};
 	}
 }
-
-// @ts-expect-error -- typings :) for this class are wrong
-SMS.registerService('mobex', Mobex);
