@@ -166,7 +166,16 @@ export class AppServerOrchestrator {
 			.get()
 			// We reduce everything to a promise chain so it runs sequentially
 			.reduce(
-				(control, app) => control.then(async () => (await canEnableApp(app.getStorageItem())) && this.getManager().enable(app.getID())),
+				(control, app) =>
+					control.then(async () => {
+						const canEnable = await canEnableApp(app.getStorageItem());
+
+						if (canEnable) {
+							return this.getManager().loadOne(app.getID());
+						}
+
+						this.debugLog(`App ${app.getID()} can't be enabled because of license restrictions`);
+					}),
 				Promise.resolve(),
 			);
 
