@@ -65,7 +65,6 @@ Meteor.methods({
 		const comment = await resolveOnHoldCommentInfo(options, room, onHoldChatResumedBy);
 		(Messages as any).createOnHoldResumedHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldChatResumedBy);
 
-		const updatedRoom = LivechatRooms.findOneById(roomId);
-		updatedRoom && Meteor.defer(() => callbacks.run('livechat:afterOnHoldChatResumed', updatedRoom));
+		Meteor.defer(() => callbacks.run('livechat:afterOnHoldChatResumed', room));
 	},
 });

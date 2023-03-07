@@ -16,7 +16,6 @@ import { removeSLAFromRooms } from './SlaHelper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
 import { queueLogger } from './logger';
-import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
 import { LivechatTag, LivechatUnit, LivechatUnitMonitors } from '../../../models/server';
 
@@ -172,15 +171,6 @@ export const LivechatEnterprise = {
 		}
 
 		await removeSLAFromRooms(_id);
-	},
-
-	async releaseOnHoldChat(room) {
-		const { _id: roomId } = room;
-		if (!roomId) {
-			return;
-		}
-
-		await AutoCloseOnHoldScheduler.unscheduleRoom(roomId);
 	},
 
 	/**

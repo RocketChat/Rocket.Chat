@@ -90,7 +90,7 @@ type ChainedCallbackSignatures = {
 	'afterCreateUser': (user: IUser) => IUser;
 	'afterDeleteRoom': (rid: IRoom['_id']) => IRoom['_id'];
 	'livechat:afterOnHold': (room: IRoom) => IRoom;
-	'livechat:afterOnHoldChatResumed': (room: IRoom) => IRoom;
+	'livechat:afterOnHoldChatResumed': (room: IOmnichannelRoom) => IRoom;
 	'livechat:onTransferFailure': (params: { room: IRoom; guest: ILivechatVisitor; transferData: { [k: string]: string | any } }) => {
 		room: IRoom;
 		guest: ILivechatVisitor;
