@@ -11,10 +11,10 @@ import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { canAccessRoom } from '../../authorization/server/functions/canAccessRoom';
 
-const recursiveRemove = (attachments: MessageAttachment, deep = 1): MessageAttachment => {
+const recursiveRemoveAttachments = (attachments: MessageAttachment, deep = 1, quoteChainLimit: number): MessageAttachment => {
 	if (attachments && isQuoteAttachment(attachments)) {
-		if (deep < settings.get<number>('Message_QuoteChainLimit') - 1) {
-			attachments.attachments?.map((msg) => recursiveRemove(msg, deep + 1));
+		if (deep < quoteChainLimit - 1) {
+			attachments.attachments?.map((msg) => recursiveRemoveAttachments(msg, deep + 1, quoteChainLimit));
 		} else {
 			delete attachments.attachments;
 		}
@@ -24,11 +24,16 @@ const recursiveRemove = (attachments: MessageAttachment, deep = 1): MessageAttac
 };
 
 const validateAttachmentDeepness = (message: ITranslatedMessage): ITranslatedMessage => {
-	if (!message || !message.attachments) {
+	if (!message?.attachments) {
 		return message;
 	}
 
-	message.attachments = message.attachments?.map((attachment) => recursiveRemove(attachment));
+	const quoteChainLimit = settings.get<number>('Message_QuoteChainLimit');
+	if (quoteChainLimit < 2 && message.attachments) {
+		delete message.attachments;
+	}
+
+	message.attachments = message.attachments?.map((attachment) => recursiveRemoveAttachments(attachment, 1, quoteChainLimit));
 
 	return message;
 };
@@ -37,7 +42,7 @@ callbacks.add(
 	'beforeSaveMessage',
 	(msg) => {
 		// if no message is present, or the message doesn't have any URL, skip
-		if (!msg || !msg.urls || !msg.urls.length) {
+		if (!msg?.urls?.length) {
 			return msg;
 		}
 
