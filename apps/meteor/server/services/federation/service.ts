@@ -285,7 +285,11 @@ abstract class AbstractBaseFederationService extends AbstractFederationService {
 		}
 		await this.bridge.start();
 		this.bridge.logFederationStartupInfo('Running Federation V2');
+<<<<<<< HEAD
 		await import('./infrastructure/rocket-chat/slash-commands');
+=======
+		await import('../../../app/federation-v2/server/infrastructure/rocket-chat/slash-commands');
+>>>>>>> feat/federation-6.1
 	}
 
 	private async stopFederation(): Promise<void> {
