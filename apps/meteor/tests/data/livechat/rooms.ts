@@ -195,9 +195,11 @@ export const makeAgentUnavailable = async (overrideCredentials?: { 'X-Auth-Token
 		.send({ message: '', status: 'offline' })
 		.expect(200);
 	await request
-		.post(methodCall('livechat/changeLivechatStatus'))
+		.post(api('livechat/agent.status'))
 		.set(overrideCredentials || credentials)
-		.send({ message: JSON.stringify({ method: 'livechat/changeLivechatStatus', params: ['not-available'], id: 'id', msg: 'method' }) })
+		.send({
+			status: 'not-available',
+		})
 		.expect(200);
 };
 
