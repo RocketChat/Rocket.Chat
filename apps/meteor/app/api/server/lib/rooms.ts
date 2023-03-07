@@ -32,23 +32,22 @@ export async function findAdminRooms({
 	const showTypes = Array.isArray(types) ? types.filter((type) => !typesToRemove.includes(type)) : [];
 	const options = {
 		projection: adminFields,
-		sort: sort || { default: -1, name: 1 },
 		skip: offset,
 		limit: count,
 	};
 
 	let result;
 	if (name && showTypes.length) {
-		result = Rooms.findByNameContainingAndTypes(name, showTypes, discussion, includeTeams, showOnlyTeams, options);
+		result = Rooms.findByNameOrFnameContainingAndTypes(name, showTypes, discussion, includeTeams, showOnlyTeams, options);
 	} else if (showTypes.length) {
 		result = Rooms.findByTypes(showTypes, discussion, includeTeams, showOnlyTeams, options);
 	} else {
-		result = Rooms.findByNameContaining(name, discussion, includeTeams, showOnlyTeams, options);
+		result = Rooms.findByNameOrFnameContaining(name, discussion, includeTeams, showOnlyTeams, options);
 	}
 
 	const { cursor, totalCount } = result;
 
-	const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
+	const [rooms, total] = await Promise.all([cursor.sort(sort || { default: -1, name: 1 }).toArray(), totalCount]);
 
 	return {
 		rooms,
