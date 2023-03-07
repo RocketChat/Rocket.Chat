@@ -3,14 +3,15 @@ import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarning
 
 export function deprecationWarning<T>({
 	endpoint,
-	versionWillBeRemoved = '5.0',
+	versionWillBeRemoved = '6.0',
 	response,
+	warningMessage=`The endpoint "${endpoint}" is deprecated and will be removed after version ${versionWillBeRemoved}`;
 }: {
 	endpoint: string;
 	versionWillBeRemoved?: string;
 	response: T;
+	warningMessage: string;
 }): T {
-	const warningMessage = `The endpoint "${endpoint}" is deprecated and will be removed after version ${versionWillBeRemoved}`;
 	apiDeprecationLogger.warn(warningMessage);
 	if (process.env.NODE_ENV === 'development') {
 		return {

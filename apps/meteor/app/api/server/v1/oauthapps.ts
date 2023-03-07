@@ -4,6 +4,7 @@ import { OAuthApps } from '@rocket.chat/models';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
 import { addOAuthApp } from '../../../oauth2-server-config/server/admin/functions/addOAuthApp';
+import { deprecationWarning } from '../helpers/deprecationWarning';
 
 API.v1.addRoute(
 	'oauth-apps.list',
@@ -31,7 +32,16 @@ API.v1.addRoute(
 			if (!oauthApp) {
 				return API.v1.failure('OAuth app not found.');
 			}
-
+			if ('appId' in this.queryParams) {
+				return API.v1.success(
+					deprecationWarning({
+						endpoint: 'oauth-apps.get',
+						versionWillBeRemoved: '6.0',
+						warningMessage: 'appId get parameter is deprecated and will be removed after version 6.0',
+						response: { oauthApp },
+					}),
+				);
+			}
 			return API.v1.success({
 				oauthApp,
 			});
