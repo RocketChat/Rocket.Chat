@@ -6,7 +6,7 @@ import { Subscriptions, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 import { roomCoordinator } from './rooms/roomCoordinator';
-import { getMessagesLayoutPreference } from '../../app/utils/lib/getMessagesLayoutPreference';
+import { shouldUseRealName } from '../../app/utils/server';
 import { trim } from '../../lib/utils/stringUtils';
 
 export class Spotlight {
@@ -156,7 +156,7 @@ export class Spotlight {
 				avatarETag: 1,
 			},
 			sort: {
-				[getMessagesLayoutPreference(userId) !== 'username' ? 'name' : 'username']: 1,
+				[shouldUseRealName(userId) ? 'name' : 'username']: 1,
 			},
 			readPreference: readSecondaryPreferred(Users.col.s.db),
 		};

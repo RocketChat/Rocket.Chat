@@ -10,4 +10,5 @@ export { getAvatarColor } from '../lib/getAvatarColor';
 export { getURL } from '../lib/getURL';
 export { placeholders } from '../lib/placeholders';
 export { APIClient } from './lib/RestApiClient';
+export { shouldUseRealName } from './lib/shouldUseRealName';
 export { secondsToHHMMSS } from '../../../lib/utils/secondsToHHMMSS';

@@ -3,10 +3,9 @@ import { Meteor } from 'meteor/meteor';
 import { ChatMessage, Rooms } from '../../../models/client';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../../lib/callbacks';
-import { t } from '../../../utils/client';
+import { t, shouldUseRealName } from '../../../utils/client';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
-import { getMessagesLayoutPreference } from '../../../utils/lib/getMessagesLayoutPreference';
 import { trim } from '../../../../lib/utils/stringUtils';
 
 Meteor.methods({
@@ -24,7 +23,7 @@ Meteor.methods({
 			_id: Meteor.userId(),
 			username: user.username,
 		};
-		if (getMessagesLayoutPreference(message.u._id) !== 'username') {
+		if (shouldUseRealName(message.u._id)) {
 			message.u.name = user.name;
 		}
 		message.temp = true;

@@ -6,9 +6,8 @@ import * as Mailer from '../../../../mailer';
 import { settings } from '../../../../settings/server';
 import { metrics } from '../../../../metrics';
 import { callbacks } from '../../../../../lib/callbacks';
-import { getURL } from '../../../../utils/server';
+import { getURL, shouldUseRealName } from '../../../../utils/server';
 import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
-import { getMessagesLayoutPreference } from '../../../../utils/lib/getMessagesLayoutPreference';
 import { ltrim } from '../../../../../lib/utils/stringUtils';
 
 let advice = '';
@@ -26,9 +25,7 @@ function getEmailContent({ message, user, room }) {
 	const lng = (user && user.language) || settings.get('Language') || 'en';
 
 	const roomName = escapeHTML(`#${roomCoordinator.getRoomName(room.t, room)}`);
-	const userName = escapeHTML(
-		getMessagesLayoutPreference(message.u._id) !== 'username' ? message.u.name || message.u.username : message.u.username,
-	);
+	const userName = escapeHTML(shouldUseRealName(message.u._id) ? message.u.name || message.u.username : message.u.username);
 
 	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
 
@@ -121,8 +118,8 @@ function generateNameEmail(name, email) {
 }
 
 export function getEmailData({ message, receiver, sender, subscription, room, emailAddress, hasMentionToUser }) {
-	const messagesLayout = getMessagesLayoutPreference(message.u._id);
-	const username = messagesLayout !== 'username' ? message.u.name || message.u.username : message.u.username;
+	const useRealName = shouldUseRealName(message.u._id);
+	const username = useRealName ? message.u.name || message.u.username : message.u.username;
 	let subjectKey = 'Offline_Mention_All_Email';
 
 	if (!roomCoordinator.getRoomDirectives(room.t)?.isGroupChat(room)) {
@@ -143,7 +140,7 @@ export function getEmailData({ message, receiver, sender, subscription, room, em
 
 	const room_path = getButtonUrl(room, subscription, message);
 
-	const receiverName = messagesLayout !== 'username' ? receiver.name || receiver.username : receiver.username;
+	const receiverName = useRealName ? receiver.name || receiver.username : receiver.username;
 
 	const email = {
 		from: generateNameEmail(username, settings.get('From_Email')),

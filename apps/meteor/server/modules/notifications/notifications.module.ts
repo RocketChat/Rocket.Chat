@@ -6,7 +6,7 @@ import { Authorization, VideoConf } from '@rocket.chat/core-services';
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { SystemLogger } from '../../lib/logger/system';
 import { streamDeprecationLogger } from '../../../app/lib/server/lib/deprecationWarningLogger';
-import { getMessagesLayoutPreference } from '../../../app/utils/lib/getMessagesLayoutPreference';
+import { shouldUseRealName } from '../../../app/utils/server';
 
 export class NotificationsModule {
 	public readonly streamLogged: IStreamer;
@@ -214,7 +214,7 @@ export class NotificationsModule {
 				}
 
 				// TODO consider using something to cache settings
-				const key = getMessagesLayoutPreference(userId) !== 'username' ? 'name' : 'username';
+				const key = shouldUseRealName(userId) ? 'name' : 'username';
 
 				const user = await Users.findOneById<Pick<IUser, 'name' | 'username'>>(userId, {
 					projection: {

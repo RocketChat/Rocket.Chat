@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 import type {
 	IDirectVideoConference,
@@ -45,7 +44,7 @@ import { availabilityErrors } from '../../../lib/videoConference/constants';
 import { callbacks } from '../../../lib/callbacks';
 import { Notifications } from '../../../app/notifications/server';
 import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
-import { getMessagesLayoutPreference } from '../../../app/utils/lib/getMessagesLayoutPreference';
+import { shouldUseRealName } from '../../../app/utils/server';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -318,9 +317,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		if (call.messages.started) {
 			const name =
-				(getMessagesLayoutPreference(Meteor.userId()) !== 'username' ? call.createdBy.name : call.createdBy.username) ||
-				call.createdBy.username ||
-				'';
+				(shouldUseRealName(call.createdBy.username) ? call.createdBy.name : call.createdBy.username) || call.createdBy.username || '';
 			const text = TAPi18n.__('video_livechat_missed', { username: name });
 			await Messages.setBlocksById(call.messages.started, [this.buildMessageBlock(text)]);
 		}
@@ -539,7 +536,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private async createLivechatMessage(call: ILivechatVideoConference, user: IUser, url: string): Promise<IMessage['_id']> {
-		const username = (getMessagesLayoutPreference(Meteor.userId()) !== 'username' ? user.name : user.username) || user.username || '';
+		const username = (shouldUseRealName(call.createdBy.username) ? user.name : user.username) || user.username || '';
 		const text = TAPi18n.__('video_livechat_started', {
 			username,
 		});

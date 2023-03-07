@@ -9,7 +9,7 @@ import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct
 import { roomCoordinator } from '../roomCoordinator';
 import { Subscriptions } from '../../../../app/models/server';
 import { Federation } from '../../../../app/federation-v2/server/Federation';
-import { getMessagesLayoutPreference } from '../../../../app/utils/lib/getMessagesLayoutPreference';
+import { shouldUseRealName } from '../../../../app/utils/server';
 
 export const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
 
@@ -83,7 +83,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 			return;
 		}
 
-		const useRealName = getMessagesLayoutPreference(uid) !== 'username';
+		const useRealName = shouldUseRealName(uid);
 		if (useRealName && room.fname) {
 			return subscription.fname;
 		}
@@ -96,7 +96,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 	},
 
 	getNotificationDetails(room, sender, notificationMessage, userId) {
-		const useRealName = getMessagesLayoutPreference(userId) !== 'username';
+		const useRealName = shouldUseRealName(userId);
 
 		if (this.isGroupChat(room)) {
 			return {

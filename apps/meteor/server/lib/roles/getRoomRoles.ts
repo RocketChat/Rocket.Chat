@@ -4,7 +4,7 @@ import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
 
 import { Subscriptions, Users } from '../../../app/models/server';
-import { getMessagesLayoutPreference } from '../../../app/utils/lib/getMessagesLayoutPreference';
+import { shouldUseRealName } from '../../../app/utils/server';
 
 export function getRoomRoles(rid: IRoom['_id']): ISubscription[] {
 	const options = {
@@ -18,7 +18,7 @@ export function getRoomRoles(rid: IRoom['_id']): ISubscription[] {
 		},
 	};
 
-	const useRealName = getMessagesLayoutPreference(Meteor.userId()) !== 'username';
+	const useRealName = shouldUseRealName(Meteor.userId());
 
 	const roles = Promise.await(Roles.find({ scope: 'Subscriptions', description: { $exists: true, $ne: '' } }).toArray());
 	const subscriptions = Subscriptions.findByRoomIdAndRoles(rid, _.pluck(roles, '_id'), options).fetch() as ISubscription[];

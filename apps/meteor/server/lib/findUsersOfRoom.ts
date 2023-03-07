@@ -5,7 +5,7 @@ import type { FindPaginated } from '@rocket.chat/model-typings';
 import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../app/settings/server';
-import { getMessagesLayoutPreference } from '../../app/utils/lib/getMessagesLayoutPreference';
+import { shouldUseRealName } from '../../app/utils/server';
 
 type FindUsersParam = {
 	rid: string;
@@ -36,7 +36,7 @@ export function findUsersOfRoom({
 		},
 		sort: {
 			statusConnection: -1,
-			...(sort || { [getMessagesLayoutPreference(Meteor.userId()) !== 'username' ? 'name' : 'username']: 1 }),
+			...(sort || { [shouldUseRealName(Meteor.userId()) ? 'name' : 'username']: 1 }),
 		},
 		...(skip > 0 && { skip }),
 		...(limit > 0 && { limit }),

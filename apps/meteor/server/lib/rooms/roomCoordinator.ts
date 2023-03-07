@@ -3,7 +3,7 @@ import type { IRoom, RoomType, IUser, IMessage, ReadReceipt, IRocketChatRecord, 
 import type { IRoomTypeConfig, IRoomTypeServerDirectives, RoomSettingsEnum, RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { Users } from '../../../app/models/server';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
-import { getMessagesLayoutPreference } from '../../../app/utils/lib/getMessagesLayoutPreference';
+import { shouldUseRealName } from '../../../app/utils/server';
 
 class RoomCoordinatorServer extends RoomCoordinator {
 	add(roomConfig: IRoomTypeConfig, directives: Partial<IRoomTypeServerDirectives>): void {
@@ -42,7 +42,7 @@ class RoomCoordinatorServer extends RoomCoordinator {
 				userId: string,
 			): { title: string | undefined; text: string } {
 				const title = `#${this.roomName(room, userId)}`;
-				const name = getMessagesLayoutPreference(userId) !== 'username' ? sender.name : sender.username;
+				const name = shouldUseRealName(userId) ? sender.name : sender.username;
 
 				const text = `${name}: ${notificationMessage}`;
 

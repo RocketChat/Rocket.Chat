@@ -40,7 +40,7 @@ import type { EventSignatures } from '@rocket.chat/core-services';
 
 import { subscriptionFields, roomFields } from './publishFields';
 import type { DatabaseWatcher } from '../../database/DatabaseWatcher';
-import { getMessagesLayoutPreference } from '../../../app/utils/lib/getMessagesLayoutPreference';
+import { shouldUseRealName } from '../../../app/utils/server';
 
 type BroadcastCallback = <T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>) => Promise<void>;
 
@@ -76,9 +76,9 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 		{ maxAge: 10000 },
 	);
 
-	const getMessagesLayoutPreferenceCached = mem(
-		async (userId: string): Promise<string | undefined> => {
-			return getMessagesLayoutPreference(userId);
+	const getUseRealNamePreferenceCached = mem(
+		async (userId: string): Promise<boolean | undefined> => {
+			return shouldUseRealName(userId);
 		},
 		{ maxAge: 10000 },
 	);
@@ -94,7 +94,7 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 
 				if (message._hidden !== true && message.imported == null) {
 					const UseRealName = message.u?._id
-						? (await getMessagesLayoutPreferenceCached(message.u?._id)) !== 'username'
+						? await getUseRealNamePreferenceCached(message.u._id)
 						: (await getSettingCached('Accounts_Default_User_Preferences_messagesLayout')) !== 'username';
 
 					if (UseRealName) {

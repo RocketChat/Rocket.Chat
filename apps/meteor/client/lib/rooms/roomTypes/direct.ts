@@ -9,8 +9,8 @@ import { Subscriptions, Users, ChatRoom } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getUserPreference } from '../../../../app/utils/client';
 import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
-import { getMessagesLayoutPreference } from '../../../../app/utils/lib/getMessagesLayoutPreference';
 import { getUserAvatarURL } from '../../../../app/utils/lib/getUserAvatarURL';
+import { shouldUseRealName } from '../../../../app/utils/server';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
@@ -73,7 +73,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 			return;
 		}
 
-		if (getMessagesLayoutPreference(Meteor.userId()) !== 'username' && subscription.fname) {
+		if (shouldUseRealName(Meteor.userId()) && subscription.fname) {
 			return subscription.fname;
 		}
 
