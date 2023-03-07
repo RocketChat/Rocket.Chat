@@ -1,6 +1,74 @@
 
 # 6.0.0 (Under Release Candidate Process)
 
+## 6.0.0-rc.7
+`2023-03-06  ·  11 🔍  ·  11 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Fix Email Inbox flaky test ([#28294](https://github.com/RocketChat/Rocket.Chat/pull/28294))
+
+- Regression: Adjusted departments upsell modal message ([#28258](https://github.com/RocketChat/Rocket.Chat/pull/28258))
+
+  This PR adjusts the logic to display the correct message on the departments upsell modal. This affects users with a trial license, expired expired licence, as well as no licence.
+
+- Regression: Apps provider not handling apps lists correctly ([#28264](https://github.com/RocketChat/Rocket.Chat/pull/28264))
+
+  ## Jira tasks: [MKP-272](https://rocketchat.atlassian.net/browse/MKP-272?atlOrigin=eyJpIjoiNDQzMmY4NmYyYTEyNDJjMmJmZmY3ZGUyYmQ3Y2Y2Y2EiLCJwIjoiaiJ9) [MKP-270](https://rocketchat.atlassian.net/browse/MKP-270?atlOrigin=eyJpIjoiOWRhYWM5N2VmY2UwNDAyMjlhY2ZiM2IwYjMwYWQxOWUiLCJwIjoiaiJ9)
+  Fixed a bug in which the AppsProvider would not handle the marketplace, installed, and private apps lists correctly when running the install, update, and delete listeners. This also solved related bugs of app duplication during installation and loss of reactivity during uninstalls and status changes(private apps only).
+  Demo gif: ![apps-provider-behavior](https://user-images.githubusercontent.com/43561537/222833328-1d9836c0-738c-41d5-ac17-a5d86452ea83.gif)
+
+- Regression: Creating Custom status  ([#28292](https://github.com/RocketChat/Rocket.Chat/pull/28292))
+
+  User is not able to create a custom status from the admin section. Workspace > User Status > New
+
+  The SAVE button is not performing any action
+  ![image](https://user-images.githubusercontent.com/20212776/223121583-769a571a-365d-4f72-8d0b-f43016d31546.png)
+
+- Regression: Decrypt thread main message for room ([#28262](https://github.com/RocketChat/Rocket.Chat/pull/28262))
+
+- Regression: Disabled grandfathered apps must have the option to be enabled ([#28266](https://github.com/RocketChat/Rocket.Chat/pull/28266))
+
+  Grandfathered apps will not follow the new enabling flow and it should always be possible to enable them
+
+- Regression: Fix intermitent apps engine startup ([#28254](https://github.com/RocketChat/Rocket.Chat/pull/28254))
+
+  Makes the apps limitation functionality depend on methods from the Apps Engine's service instead of a dynamic import of the apps orchestrator, making the engine's load process deterministic.
+
+- Regression: Fix remove user from room shows skeleton ([#28247](https://github.com/RocketChat/Rocket.Chat/pull/28247))
+
+  When the user is removed from a public channel and has it open it will show a grey placeholder screen
+
+  Now, it appears the Join button as usual
+
+- Regression: Installation of some apps fail ([#28265](https://github.com/RocketChat/Rocket.Chat/pull/28265))
+
+  Installation was failing for apps that did not include a set o permissions required because the process was short circuiting in those cases. However, they are valid as they signify apps that function with the default permission set
+
+- Regression: OAuthApps are added with empty string `_id` field ([#28257](https://github.com/RocketChat/Rocket.Chat/pull/28257))
+
+  - Fix OAuthApps added to the database with a empty string `_id` field.
+
+- Regression: Scrolling on threads ([#28298](https://github.com/RocketChat/Rocket.Chat/pull/28298))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@aleksandernsilva](https://github.com/aleksandernsilva)
+- [@casalsgh](https://github.com/casalsgh)
+- [@d-gubert](https://github.com/d-gubert)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@guijun13](https://github.com/guijun13)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@rique223](https://github.com/rique223)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@thassiov](https://github.com/thassiov)
+- [@yash-rajpal](https://github.com/yash-rajpal)
+
 ## 6.0.0-rc.6
 `2023-03-02  ·  1 🔍  ·  1 👩‍💻👨‍💻`
 
