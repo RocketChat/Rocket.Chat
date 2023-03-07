@@ -616,7 +616,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			hooks['federation-v2-after-room-name-changed']({});
 			expect(stub.called).to.be.false;
 		});
-<<<<<<< HEAD:apps/meteor/tests/unit/server/federation/infrastructure/rocket-chat/hooks/hooks.spec.ts
 
 		it('should NOT execute the callback if no roomName was provided', () => {
 			get.returns(true);
@@ -634,25 +633,6 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			expect(stub.called).to.be.false;
 		});
 
-=======
-
-		it('should NOT execute the callback if no roomName was provided', () => {
-			get.returns(true);
-			const stub = sinon.stub();
-			FederationHooks.afterRoomNameChanged(stub);
-			hooks['federation-v2-after-room-name-changed']({ rid: 'roomId' });
-			expect(stub.called).to.be.false;
-		});
-
-		it('should NOT execute the callback if federation module was disabled', () => {
-			get.returns(false);
-			const stub = sinon.stub();
-			FederationHooks.afterRoomNameChanged(stub);
-			hooks['federation-v2-after-room-name-changed']({ rid: 'roomId', name: 'roomName' });
-			expect(stub.called).to.be.false;
-		});
-
->>>>>>> feat/federation-6.1:apps/meteor/tests/unit/app/federation-v2/server/unit/infrastructure/rocket-chat/hooks/hooks.spec.ts
 		it('should execute the callback when everything is correct', () => {
 			get.returns(true);
 			const stub = sinon.stub();

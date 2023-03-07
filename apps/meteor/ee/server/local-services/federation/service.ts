@@ -2,7 +2,6 @@ import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.
 import type { IFederationServiceEE } from '@rocket.chat/core-services';
 
 import { AbstractFederationService } from '../../../../server/services/federation/service';
-<<<<<<< HEAD
 import type { FederationRoomServiceSenderEE } from './application/sender/room/RoomServiceSender';
 import type { FederationRoomApplicationServiceEE } from './application/RoomService';
 import { FederationSearchPublicRoomsInputDto } from './application/input/RoomInputDto';
@@ -11,16 +10,6 @@ import type { RocketChatUserAdapterEE } from './infrastructure/rocket-chat/adapt
 import { FederationFactoryEE } from './infrastructure/Factory';
 import type { IFederationBridgeEE } from './domain/IFederationBridge';
 import { FederationRoomSenderConverterEE } from './infrastructure/rocket-chat/converters/RoomSender';
-=======
-import type { FederationRoomServiceSenderEE } from '../../../app/federation-v2/server/application/sender/room/RoomServiceSender';
-import type { FederationRoomApplicationServiceEE } from '../../../app/federation-v2/server/application/RoomService';
-import type { RocketChatRoomAdapterEE } from '../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/Room';
-import type { RocketChatUserAdapterEE } from '../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/User';
-import { FederationFactoryEE } from '../../../app/federation-v2/server/infrastructure/Factory';
-import type { IFederationBridgeEE } from '../../../app/federation-v2/server/domain/IFederationBridge';
-import { FederationRoomSenderConverterEE } from '../../../app/federation-v2/server/infrastructure/rocket-chat/converters/RoomSender';
-import { FederationSearchPublicRoomsInputDto } from '../../../app/federation-v2/server/application/input/RoomInputDto';
->>>>>>> feat/federation-6.1
 
 abstract class AbstractBaseFederationServiceEE extends AbstractFederationService {
 	protected internalRoomServiceSenderEE: FederationRoomServiceSenderEE;
@@ -135,11 +124,7 @@ abstract class AbstractBaseFederationServiceEE extends AbstractFederationService
 		await this.bridge.start();
 		this.bridge.logFederationStartupInfo('Running Federation Enterprise V2');
 		FederationFactoryEE.removeCEValidators();
-<<<<<<< HEAD
 		await import('./infrastructure/rocket-chat/slash-commands');
-=======
-		await import('../../../app/federation-v2/server/infrastructure/rocket-chat/slash-commands');
->>>>>>> feat/federation-6.1
 		await import('../../api/federation');
 	}
 
