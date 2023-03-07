@@ -4,7 +4,7 @@ import { Rooms } from '@rocket.chat/models';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Subscriptions } from '../../../models/server';
 import { adminFields } from '../../../../lib/rooms/adminFields';
-import type { FindOptions } from 'mongodb';
+import type { FindOptions, Sort } from 'mongodb';
 
 export async function findAdminRooms({
 	uid,
@@ -15,7 +15,7 @@ export async function findAdminRooms({
 	uid: string;
 	filter: string;
 	types: Array<RoomType | 'discussions' | 'teams'>;
-	pagination: { offset: number; count: number; sort: [string, number][] };
+	pagination: { offset: number; count: number; sort: Sort };
 }): Promise<{
 	rooms: IRoom[];
 	count: number;
@@ -29,8 +29,8 @@ export async function findAdminRooms({
 	const discussion = types?.includes('discussions');
 	const includeTeams = types?.includes('teams');
 	const showOnlyTeams = types.length === 1 && types.includes('teams');
-	const typesToRemove = ['discussions', 'teams'];
-	const showTypes: RoomType[] = Array.isArray(types) ? types.filter((type) => !typesToRemove.includes(type)) : [];
+	const typesToRemove = ['discussions', 'teams'] as const;
+	const showTypes = Array.isArray(types) ? types.filter((type) => !typesToRemove.includes(type)) : [];
 	const options: FindOptions<IRoom> = {
 		projection: adminFields,
 		sort: sort || { default: -1, name: 1 },
@@ -129,7 +129,7 @@ export async function findChannelAndPrivateAutocompleteWithPagination({
 }: {
 	uid: string;
 	selector: { name: string };
-	pagination: { offset: number; count: number; sort: [string, number][] };
+	pagination: { offset: number; count: number; sort: Sort };
 }): Promise<{
 	items: IRoom[];
 	total: number;
