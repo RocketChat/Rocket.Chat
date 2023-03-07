@@ -2998,7 +2998,7 @@
   "Livechat_OfflineMessageToChannel_enabled": "Send Livechat offline messages to a channel",
   "Omnichannel_on_hold_chat_resumed": "On Hold Chat Resumed: __comment__",
   "Omnichannel_on_hold_chat_automatically": "The chat was automatically resumed from On Hold upon receiving a new message from __guest__",
-  "Omnichannel_on_hold_chat_manually": "The chat was manually resumed from On Hold by __user__",
+  "Omnichannel_on_hold_chat_resumed_manually": "The chat was manually resumed from On Hold by __user__",
   "Omnichannel_On_Hold_due_to_inactivity": "The chat was automatically placed On Hold because we haven't received any reply from __guest__ in __timeout__ seconds",
   "Omnichannel_On_Hold_manually": "The chat was manually placed On Hold by __user__",
   "Omnichannel_onHold_Chat": "Place chat On-Hold",

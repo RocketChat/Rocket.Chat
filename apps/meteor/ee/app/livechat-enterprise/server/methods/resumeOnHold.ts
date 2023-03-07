@@ -6,10 +6,11 @@ import { LivechatVisitors } from '@rocket.chat/models';
 import { LivechatRooms, LivechatInquiry, Messages, Users } from '../../../../../app/models/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { callbacks } from '../../../../../lib/callbacks';
+import { methodDeprecationLogger } from '../../../../../app/lib/server/lib/deprecationWarningLogger';
 
 async function resolveOnHoldCommentInfo(options: { clientAction: boolean }, room: any, onHoldChatResumedBy: any): Promise<string> {
 	if (options.clientAction) {
-		return TAPi18n.__('Omnichannel_on_hold_chat_manually', {
+		return TAPi18n.__('Omnichannel_on_hold_chat_resumed_manually', {
 			user: onHoldChatResumedBy.name || onHoldChatResumedBy.username,
 		});
 	}
@@ -30,6 +31,10 @@ async function resolveOnHoldCommentInfo(options: { clientAction: boolean }, room
 
 Meteor.methods({
 	async 'livechat:resumeOnHold'(roomId, options = { clientAction: false }) {
+		methodDeprecationLogger.warn(
+			'Method "livechat:resumeOnHold" is deprecated and will be removed in next major version. Please use "livechat/room.resumeOnHold" API instead.',
+		);
+
 		const room = await LivechatRooms.findOneById(roomId);
 		if (!room || room.t !== 'l') {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {

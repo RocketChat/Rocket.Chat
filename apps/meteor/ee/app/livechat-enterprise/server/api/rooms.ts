@@ -93,11 +93,11 @@ API.v1.addRoute(
 			}
 
 			const onHoldBy = { _id: user._id, username: user.username, name: (user as any).name };
-			const comment = TAPi18n.__('Omnichannel_On_Hold_manually', {
+			const comment = TAPi18n.__('Omnichannel_on_hold_chat_resumed_manually', {
 				user: onHoldBy.name || `@${onHoldBy.username}`,
 			});
 
-			await OnHoldHelper.resumeRoomOnHold(room, comment, this.user);
+			await OnHoldHelper.resumeRoomOnHold(room, comment, this.user, true);
 
 			return API.v1.success();
 		},
