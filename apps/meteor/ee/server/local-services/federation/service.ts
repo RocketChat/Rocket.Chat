@@ -13,7 +13,7 @@ import type { FederationDirectMessageRoomServiceSender } from './application/roo
 import type { FederationRoomServiceSender } from './application/room/sender/RoomServiceSender';
 
 abstract class AbstractBaseFederationServiceEE extends AbstractFederationService {
-	protected internalRoomApplicationServiceEE: FederationUserServiceEE;
+	protected internalUserServiceEE: FederationUserServiceEE;
 
 	protected directMessageRoomServiceSenderEE: FederationDirectMessageRoomServiceSender;
 
@@ -31,7 +31,7 @@ abstract class AbstractBaseFederationServiceEE extends AbstractFederationService
 
 		this.internalRoomAdapterEE = FederationFactoryEE.buildInternalRoomAdapter();
 		this.internalUserAdapterEE = FederationFactoryEE.buildInternalUserAdapter();
-		this.internalRoomApplicationServiceEE = FederationFactoryEE.buildRoomApplicationService(
+		this.internalUserServiceEE = FederationFactoryEE.buildRoomApplicationService(
 			this.getInternalSettingsAdapter(),
 			this.internalUserAdapterEE,
 			this.getInternalFileAdapter(),
@@ -170,15 +170,15 @@ export class FederationServiceEE extends AbstractBaseFederationServiceEE impleme
 	public async getSearchedServerNamesByInternalUserId(
 		internalUserId: string,
 	): Promise<{ name: string; default: boolean; local: boolean }[]> {
-		return this.internalRoomApplicationServiceEE.getSearchedServerNamesByInternalUserId(internalUserId);
+		return this.internalUserServiceEE.getSearchedServerNamesByInternalUserId(internalUserId);
 	}
 
 	public async addSearchedServerNameByInternalUserId(internalUserId: string, serverName: string): Promise<void> {
-		return this.internalRoomApplicationServiceEE.addSearchedServerNameByInternalUserId(internalUserId, serverName);
+		return this.internalUserServiceEE.addSearchedServerNameByInternalUserId(internalUserId, serverName);
 	}
 
 	public async removeSearchedServerNameByInternalUserId(internalUserId: string, serverName: string): Promise<void> {
-		return this.internalRoomApplicationServiceEE.removeSearchedServerNameByInternalUserId(internalUserId, serverName);
+		return this.internalUserServiceEE.removeSearchedServerNameByInternalUserId(internalUserId, serverName);
 	}
 
 	public async joinExternalPublicRoom(internalUserId: string, externalRoomId: string): Promise<void> {
