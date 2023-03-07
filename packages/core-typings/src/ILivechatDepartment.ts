@@ -14,6 +14,7 @@ export interface ILivechatDepartment {
 	businessHourId?: string;
 	fallbackForwardDepartment?: string;
 	archived?: boolean;
+	departmentsAllowedToForward?: string[];
 	// extra optional fields
 	[k: string]: any;
 }
