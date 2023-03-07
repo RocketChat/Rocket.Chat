@@ -138,6 +138,7 @@ const AppsPageContent = (): ReactElement => {
 				categoryTagList={categoryTagList}
 				statusFilterStructure={statusFilterStructure}
 				statusFilterOnSelected={statusFilterOnSelected}
+				context={context || 'explore'}
 			/>
 
 			{appsResult.phase === AsyncStatePhase.LOADING && <AppsPageContentSkeleton />}

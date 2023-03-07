@@ -1697,6 +1697,12 @@ settingsRegistry.addGroup('Layout', function () {
 			multiline: true,
 			public: true,
 		});
+		this.add('Layout_Sidenav_Footer_Dark', '<a href="/home"><img src="assets/logo_dark.png" alt="Home" /></a>', {
+			type: 'code',
+			code: 'text/html',
+			public: true,
+			i18nDescription: 'Layout_Sidenav_Footer_description',
+		});
 		return this.add('Layout_Sidenav_Footer', '<a href="/home"><img src="assets/logo.png" alt="Home" /></a>', {
 			type: 'code',
 			code: 'text/html',

@@ -17,6 +17,7 @@ import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
 import LoadingMessagesIndicator from '../../../components/body/LoadingMessagesIndicator';
 import { useRoomSubscription } from '../../../contexts/RoomContext';
+import { useScrollMessageList } from '../../../hooks/useScrollMessageList';
 import { useLegacyThreadMessageJump } from '../hooks/useLegacyThreadMessageJump';
 import { useLegacyThreadMessageListScrolling } from '../hooks/useLegacyThreadMessageListScrolling';
 import { useLegacyThreadMessages } from '../hooks/useLegacyThreadMessages';
@@ -64,20 +65,21 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 	const t = useTranslation();
 	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
 
+	const scrollMessageList = useScrollMessageList(listWrapperScrollRef);
+
 	return (
 		<div
 			className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}
 			style={{ scrollBehavior: 'smooth' }}
-			onScroll={handleScroll}
 		>
-			<ScrollableContentWrapper ref={listWrapperScrollRef}>
+			<ScrollableContentWrapper ref={listWrapperScrollRef} onScroll={handleScroll}>
 				<ul className='thread' ref={listRef}>
 					{loading ? (
 						<li className='load-more'>
 							<LoadingMessagesIndicator />
 						</li>
 					) : (
-						<MessageListProvider>
+						<MessageListProvider scrollMessageList={scrollMessageList}>
 							{[mainMessage, ...messages].map((message, index, { [index - 1]: previous }) => {
 								const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
 								const newDay = isMessageNewDay(message, previous);
