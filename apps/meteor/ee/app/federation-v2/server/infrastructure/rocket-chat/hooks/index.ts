@@ -100,42 +100,12 @@ export class FederationHooksEE {
 		);
 	}
 
-	public static afterRoomNameChanged(callback: (roomId: string, changedRoomName: string) => Promise<void>): void {
-		callbacks.add(
-			'afterRoomNameChange',
-			(params: Record<string, any>): void => {
-				if (!params || !params.rid || !params.name || !settings.get('Federation_Matrix_enabled')) {
-					return;
-				}
-				Promise.await(callback(params.rid, params.name));
-			},
-			callbacks.priority.HIGH,
-			'federation-v2-after-room-name-changed',
-		);
-	}
-
-	public static afterRoomTopicChanged(callback: (roomId: string, changedRoomTopic: string) => Promise<void>): void {
-		callbacks.add(
-			'afterRoomTopicChange',
-			(params: Record<string, any>): void => {
-				if (!params || !params.rid || !params.topic || !settings.get('Federation_Matrix_enabled')) {
-					return;
-				}
-				Promise.await(callback(params.rid, params.topic));
-			},
-			callbacks.priority.HIGH,
-			'federation-v2-after-room-topic-changed',
-		);
-	}
-
-	public static removeAll(): void {
+	public static removeAllListeners(): void {
 		callbacks.remove('beforeCreateDirectRoom', 'federation-v2-before-create-direct-message-room');
 		callbacks.remove('afterCreateDirectRoom', 'federation-v2-after-create-direct-message-room');
 		callbacks.remove('federation.onAddUsersToARoom', 'federation-v2-on-add-users-to-a-room');
 		callbacks.remove('afterAddedToRoom', 'federation-v2-after-add-user-to-a-room');
 		callbacks.remove('federation.afterCreateFederatedRoom', 'federation-v2-after-create-room');
 		callbacks.remove('federation.beforeAddUserToARoom', 'federation-v2-before-add-user-to-the-room');
-		callbacks.remove('afterRoomNameChange', 'federation-v2-after-room-name-changed');
-		callbacks.remove('afterRoomTopicChange', 'federation-v2-after-room-topic-changed');
 	}
 }

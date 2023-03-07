@@ -12,6 +12,9 @@ import { MatrixEventType } from './definitions/MatrixEventType';
 import { MatrixRoomType } from './definitions/MatrixRoomType';
 import { MatrixRoomVisibility } from './definitions/MatrixRoomVisibility';
 import { RoomMembershipChangedEventType } from './definitions/events/RoomMembershipChanged';
+import type { MatrixEventRoomNameChanged } from './definitions/events/RoomNameChanged';
+import type { MatrixEventRoomTopicChanged } from './definitions/events/RoomTopicChanged';
+import type { RocketChatSettingsAdapter } from '../rocket-chat/adapters/Settings';
 
 let MatrixUserInstance: any;
 
@@ -22,37 +25,7 @@ export class MatrixBridge implements IFederationBridge {
 
 	protected isUpdatingBridgeStatus = false;
 
-	constructor(
-		protected appServiceId: string,
-		protected homeServerUrl: string,
-		protected homeServerDomain: string,
-		protected bridgeUrl: string,
-		protected bridgePort: number,
-		protected homeServerRegistrationFile: IFederationBridgeRegistrationFile,
-		protected eventHandler: (event: AbstractMatrixEvent) => void,
-	) {} // eslint-disable-line no-empty-function
-
-	public async onFederationAvailabilityChanged(
-		enabled: boolean,
-		appServiceId: string,
-		homeServerUrl: string,
-		homeServerDomain: string,
-		bridgeUrl: string,
-		bridgePort: number,
-		homeServerRegistrationFile: IFederationBridgeRegistrationFile,
-	): Promise<void> {
-		this.appServiceId = appServiceId;
-		this.homeServerUrl = homeServerUrl;
-		this.homeServerDomain = homeServerDomain;
-		this.bridgeUrl = bridgeUrl;
-		this.bridgePort = bridgePort;
-		this.homeServerRegistrationFile = homeServerRegistrationFile;
-		if (!enabled) {
-			await this.stop();
-			return;
-		}
-		await this.start();
-	}
+	constructor(protected internalSettings: RocketChatSettingsAdapter, protected eventHandler: (event: AbstractMatrixEvent) => void) {} // eslint-disable-line no-empty-function
 
 	public async start(): Promise<void> {
 		if (this.isUpdatingBridgeStatus) {
@@ -64,7 +37,7 @@ export class MatrixBridge implements IFederationBridge {
 			await this.createInstance();
 
 			if (!this.isRunning) {
-				await this.bridgeInstance.run(this.bridgePort);
+				await this.bridgeInstance.run(this.internalSettings.getBridgePort());
 				this.isRunning = true;
 			}
 		} catch (err) {
@@ -203,7 +176,7 @@ export class MatrixBridge implements IFederationBridge {
 						await toExternalMessageFormat({
 							message: message.msg,
 							externalRoomId,
-							homeServerDomain: this.homeServerDomain,
+							homeServerDomain: this.internalSettings.getHomeServerDomain(),
 						}),
 					),
 					format: 'org.matrix.custom.html',
@@ -227,7 +200,7 @@ export class MatrixBridge implements IFederationBridge {
 			eventToReplyTo,
 			originalEventSender,
 			message: this.escapeEmojis(replyMessage),
-			homeServerDomain: this.homeServerDomain,
+			homeServerDomain: this.internalSettings.getHomeServerDomain(),
 		});
 		const messageId = await this.bridgeInstance
 			.getIntent(externalUserId)
@@ -264,7 +237,7 @@ export class MatrixBridge implements IFederationBridge {
 	}
 
 	public extractHomeserverOrigin(externalUserId: string): string {
-		return externalUserId.includes(':') ? externalUserId.split(':').pop() || '' : this.homeServerDomain;
+		return externalUserId.includes(':') ? externalUserId.split(':').pop() || '' : this.internalSettings.getHomeServerDomain();
 	}
 
 	public isRoomFromTheSameHomeserver(externalRoomId: string, domain: string): boolean {
@@ -273,10 +246,10 @@ export class MatrixBridge implements IFederationBridge {
 
 	public logFederationStartupInfo(info?: string): void {
 		federationBridgeLogger.info(`${info}:
-			id: ${this.appServiceId}
-			bridgeUrl: ${this.bridgeUrl}
-			homeserverURL: ${this.homeServerUrl}
-			homeserverDomain: ${this.homeServerDomain}
+			id: ${this.internalSettings.getApplicationServiceId()}
+			bridgeUrl: ${this.internalSettings.getBridgeUrl()}
+			homeserverURL: ${this.internalSettings.getHomeServerUrl()}
+			homeserverDomain: ${this.internalSettings.getHomeServerDomain()}
 		`);
 	}
 
@@ -335,7 +308,11 @@ export class MatrixBridge implements IFederationBridge {
 		newMessageText: string,
 	): Promise<void> {
 		const messageInExternalFormat = this.escapeEmojis(
-			await toExternalMessageFormat({ message: newMessageText, externalRoomId, homeServerDomain: this.homeServerDomain }),
+			await toExternalMessageFormat({
+				message: newMessageText,
+				externalRoomId,
+				homeServerDomain: this.internalSettings.getHomeServerDomain(),
+			}),
 		);
 
 		await this.bridgeInstance.getIntent(externalUserId).matrixClient.sendEvent(externalRoomId, MatrixEventType.ROOM_MESSAGE_SENT, {
@@ -455,6 +432,36 @@ export class MatrixBridge implements IFederationBridge {
 		}
 	}
 
+	public async getRoomName(externalRoomId: string, externalUserId: string): Promise<string | undefined> {
+		try {
+			const roomState = (await this.bridgeInstance.getIntent(externalUserId).roomState(externalRoomId)) as AbstractMatrixEvent[];
+
+			return ((roomState || []).find((event) => event?.type === MatrixEventType.ROOM_NAME_CHANGED) as MatrixEventRoomNameChanged)?.content
+				?.name;
+		} catch (error) {
+			// no-op
+		}
+	}
+
+	public async getRoomTopic(externalRoomId: string, externalUserId: string): Promise<string | undefined> {
+		try {
+			const roomState = (await this.bridgeInstance.getIntent(externalUserId).roomState(externalRoomId)) as AbstractMatrixEvent[];
+
+			return ((roomState || []).find((event) => event?.type === MatrixEventType.ROOM_TOPIC_CHANGED) as MatrixEventRoomTopicChanged)?.content
+				?.topic;
+		} catch (error) {
+			// no-op
+		}
+	}
+
+	public async setRoomName(externalRoomId: string, externalUserId: string, roomName: string): Promise<void> {
+		await this.bridgeInstance.getIntent(externalUserId).setRoomName(externalRoomId, roomName);
+	}
+
+	public async setRoomTopic(externalRoomId: string, externalUserId: string, roomTopic: string): Promise<void> {
+		await this.bridgeInstance.getIntent(externalUserId).setRoomTopic(externalRoomId, roomTopic);
+	}
+
 	public convertMatrixUrlToHttp(externalUserId: string, matrixUrl: string): string {
 		return this.bridgeInstance.getIntent(externalUserId).matrixClient.mxcToHttp(matrixUrl);
 	}
@@ -465,11 +472,12 @@ export class MatrixBridge implements IFederationBridge {
 		// Dynamic import to prevent Rocket.Chat from loading the module until needed and then handle if that fails
 		const { Bridge, AppServiceRegistration, MatrixUser } = await import('@rocket.chat/forked-matrix-appservice-bridge');
 		MatrixUserInstance = MatrixUser;
+		const registrationFile = this.internalSettings.generateRegistrationFileObject();
 
 		this.bridgeInstance = new Bridge({
-			homeserverUrl: this.homeServerUrl,
-			domain: this.homeServerDomain,
-			registration: AppServiceRegistration.fromObject(this.convertRegistrationFileToMatrixFormat()),
+			homeserverUrl: this.internalSettings.getHomeServerUrl(),
+			domain: this.internalSettings.getHomeServerDomain(),
+			registration: AppServiceRegistration.fromObject(this.convertRegistrationFileToMatrixFormat(registrationFile)),
 			disableStores: true,
 			controller: {
 				onEvent: async (request): Promise<void> => {
@@ -479,7 +487,7 @@ export class MatrixBridge implements IFederationBridge {
 				onLog: async (line, isError): Promise<void> => {
 					console.log(line, isError);
 				},
-				...(this.homeServerRegistrationFile.enableEphemeralEvents
+				...(this.internalSettings.generateRegistrationFileObject().enableEphemeralEvents
 					? {
 							onEphemeralEvent: async (request): Promise<void> => {
 								const event = request.getData() as unknown as AbstractMatrixEvent;
@@ -491,15 +499,15 @@ export class MatrixBridge implements IFederationBridge {
 		});
 	}
 
-	private convertRegistrationFileToMatrixFormat(): AppServiceOutput {
+	private convertRegistrationFileToMatrixFormat(registrationFile: IFederationBridgeRegistrationFile): AppServiceOutput {
 		return {
-			'id': this.homeServerRegistrationFile.id,
-			'hs_token': this.homeServerRegistrationFile.homeserverToken,
-			'as_token': this.homeServerRegistrationFile.applicationServiceToken,
-			'url': this.homeServerRegistrationFile.bridgeUrl,
-			'sender_localpart': this.homeServerRegistrationFile.botName,
-			'namespaces': this.homeServerRegistrationFile.listenTo,
-			'de.sorunome.msc2409.push_ephemeral': this.homeServerRegistrationFile.enableEphemeralEvents,
+			'id': registrationFile.id,
+			'hs_token': registrationFile.homeserverToken,
+			'as_token': registrationFile.applicationServiceToken,
+			'url': registrationFile.bridgeUrl,
+			'sender_localpart': registrationFile.botName,
+			'namespaces': registrationFile.listenTo,
+			'de.sorunome.msc2409.push_ephemeral': registrationFile.enableEphemeralEvents,
 		};
 	}
 }

@@ -20,13 +20,13 @@ import type {
 	FederationRoomEditExternalMessageDto,
 	FederationRoomRoomChangePowerLevelsEventDto,
 } from './input/RoomReceiverDto';
-import { FederationService } from '../AbstractFederationService';
+import { FederationApplicationService } from '../AbstractFederationService';
 import type { RocketChatFileAdapter } from '../../infrastructure/rocket-chat/adapters/File';
 import { getRedactMessageHandler } from './RoomRedactionHandlers';
 import type { RocketChatNotificationAdapter } from '../../infrastructure/rocket-chat/adapters/Notification';
 import type { InMemoryQueue } from '../../infrastructure/queue/InMemoryQueue';
 
-export class FederationRoomServiceListener extends FederationService {
+export class FederationRoomServiceListener extends FederationApplicationService {
 	constructor(
 		protected internalRoomAdapter: RocketChatRoomAdapter,
 		protected internalUserAdapter: RocketChatUserAdapter,

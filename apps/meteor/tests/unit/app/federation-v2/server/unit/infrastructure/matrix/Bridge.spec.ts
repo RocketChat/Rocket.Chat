@@ -10,7 +10,12 @@ const { MatrixBridge } = proxyquire.noCallThru().load('../../../../../../../../a
 
 describe('Federation - Infrastructure - Matrix - Bridge', () => {
 	const defaultProxyDomain = 'server.com';
-	const bridge = new MatrixBridge('', '', defaultProxyDomain, '', 3030, {} as any, () => { }); // eslint-disable-line
+	const bridge = new MatrixBridge(
+		{
+			getHomeServerDomain: () => defaultProxyDomain,
+		} as any,
+		() => {}, // eslint-disable-line
+	);
 
 	describe('#isUserIdFromTheSameHomeserver()', () => {
 		it('should return true if the userId is from the same homeserver', () => {
@@ -19,6 +24,10 @@ describe('Federation - Infrastructure - Matrix - Bridge', () => {
 
 		it('should return false if the userId is from a different homeserver', () => {
 			expect(bridge.isUserIdFromTheSameHomeserver('@user:server2.com', 'server.com')).to.be.false;
+		});
+
+		it('should return true if the userId is from the default homeserver', () => {
+			expect(bridge.isUserIdFromTheSameHomeserver('@user', 'server.com')).to.be.true;
 		});
 	});
 

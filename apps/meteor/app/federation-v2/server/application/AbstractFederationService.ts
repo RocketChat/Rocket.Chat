@@ -6,7 +6,7 @@ import type { RocketChatFileAdapter } from '../infrastructure/rocket-chat/adapte
 import type { RocketChatSettingsAdapter } from '../infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from '../infrastructure/rocket-chat/adapters/User';
 
-export abstract class FederationService {
+export abstract class FederationApplicationService {
 	protected internalHomeServerDomain: string;
 
 	constructor(

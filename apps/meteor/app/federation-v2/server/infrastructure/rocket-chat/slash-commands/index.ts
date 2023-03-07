@@ -1,15 +1,12 @@
 import { Meteor } from 'meteor/meteor';
+import { Federation } from '@rocket.chat/core-services';
 
-import { federationRoomServiceSender } from '../../..';
-import { FederationRoomSenderConverter } from '../converters/RoomSender';
 import { slashCommands } from '../../../../../utils/lib/slashCommand';
 import { executeSlashCommand } from './action';
 
 const FEDERATION_COMMANDS: Record<string, (currentUserId: string, roomId: string, invitee: string) => Promise<void>> = {
 	dm: async (currentUserId: string, roomId: string, invitee: string) =>
-		federationRoomServiceSender.createDirectMessageRoomAndInviteUser(
-			FederationRoomSenderConverter.toCreateDirectMessageRoomDto(currentUserId, roomId, invitee),
-		),
+		Federation.createDirectMessageRoomAndInviteUser(currentUserId, roomId, invitee),
 };
 
 function federation(providedCommand: string, stringParams: string | undefined, item: Record<string, any>): void {
