@@ -23,13 +23,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'oauth-apps.get',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isOauthAppsGetParams },
 	{
 		async get() {
-			if (!isOauthAppsGetParams(this.queryParams)) {
-				return API.v1.failure('At least one of the query parameters "clientId" or "appId" is required.');
-			}
-
 			const oauthApp = await OAuthApps.findOneAuthAppByIdOrClientId(this.queryParams);
 
 			if (!oauthApp) {
