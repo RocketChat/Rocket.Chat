@@ -130,6 +130,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 	}
 
 	private initialize(): void {
+		this.internalSettingsAdapter = FederationFactory.buildInternalSettingsAdapter();
 		this.internalSettingsAdapter.initialize();
 		this.cancelSettingsObserver = this.internalSettingsAdapter.onFederationEnabledStatusChanged(
 			this.onFederationEnabledSettingChange.bind(this),
@@ -141,7 +142,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 	}
 
 	private async setupEventHandlersForExternalEvents(): Promise<void> {
-		const federationRoomServiceListener = FederationFactory.buildRoomServiceReceiver(
+		const federationRoomServiceReceiver = FederationFactory.buildRoomServiceReceiver(
 			this.internalRoomAdapter,
 			this.internalUserAdapter,
 			this.internalMessageAdapter,
@@ -168,7 +169,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 			this.bridge,
 		);
 		const federationEventsHandler = FederationFactory.buildFederationEventHandler(
-			federationRoomServiceListener,
+			federationRoomServiceReceiver,
 			federationMessageServiceReceiver,
 			federationUserServiceReceiver,
 			this.internalSettingsAdapter,
@@ -248,14 +249,14 @@ abstract class AbstractBaseFederationService extends AbstractFederationService {
 	}
 
 	protected async setupInternalValidators(): Promise<void> {
-		const federationRoomInternalHooksValidator = FederationFactory.buildRoomInternalValidator(
+		const federationRoomInternalValidator = FederationFactory.buildRoomInternalValidator(
 			this.getInternalRoomAdapter(),
 			this.getInternalUserAdapter(),
 			this.getInternalFileAdapter(),
 			this.getInternalSettingsAdapter(),
 			this.bridge,
 		);
-		FederationFactory.setupValidators(federationRoomInternalHooksValidator);
+		FederationFactory.setupValidators(federationRoomInternalValidator);
 	}
 
 	protected async setupInternalActionListeners(): Promise<void> {
