@@ -17,6 +17,7 @@ import { Avatars, UserDataFiles, Uploads, Settings } from '@rocket.chat/models';
 import { settings } from '../../../settings/server';
 import Users from '../../../models/server/models/Users';
 import Rooms from '../../../models/server/models/Rooms';
+import Subscriptions from '../../../models/server/models/Subscriptions';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { hasPermission } from '../../../authorization/server/functions/hasPermission';
 import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
@@ -431,7 +432,7 @@ export const FileUpload = {
 		// console.log('upload finished ->', file);
 	},
 
-	requestCanAccessFiles({ headers = {}, query = {} }) {
+	requestCanAccessFiles({ headers = {}, query = {} }, file) {
 		if (!settings.get('FileUpload_ProtectFiles')) {
 			return true;
 		}
@@ -446,16 +447,37 @@ export const FileUpload = {
 			rc_room_type = cookie.get('rc_room_type', headers.cookie);
 		}
 
-		const isAuthorizedByCookies = rc_uid && rc_token && Users.findOneByIdAndLoginToken(rc_uid, rc_token);
-		const isAuthorizedByHeaders =
-			headers['x-user-id'] && headers['x-auth-token'] && Users.findOneByIdAndLoginToken(headers['x-user-id'], headers['x-auth-token']);
-		const isAuthorizedByRoom =
+		const isAuthorizedByRoom = () =>
 			rc_room_type && roomCoordinator.getRoomDirectives(rc_room_type)?.canAccessUploadedFile({ rc_uid, rc_rid, rc_token });
-		const isAuthorizedByJWT =
+		const isAuthorizedByJWT = () =>
 			settings.get('FileUpload_Enable_json_web_token_for_files') &&
 			token &&
 			isValidJWT(token, settings.get('FileUpload_json_web_token_secret_for_files'));
-		return isAuthorizedByCookies || isAuthorizedByHeaders || isAuthorizedByRoom || isAuthorizedByJWT;
+
+		if (isAuthorizedByRoom() || isAuthorizedByJWT()) {
+			return true;
+		}
+
+		const uid = rc_uid || headers['x-user-id'];
+		const authToken = rc_token || headers['x-auth-token'];
+
+		const user = uid && authToken && Users.findOneByIdAndLoginToken(uid, authToken, { fields: { _id: 1 } });
+
+		if (!user) {
+			return false;
+		}
+
+		if (!settings.get('FileUpload_Restrict_to_room_members') || !file?.rid) {
+			return true;
+		}
+
+		const subscription = Subscriptions.findOneByRoomIdAndUserId(file.rid, user._id, { fields: { _id: 1 } });
+
+		if (subscription) {
+			return true;
+		}
+
+		return false;
 	},
 	addExtensionTo(file) {
 		if (mime.lookup(file.name) === file.type) {
