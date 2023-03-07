@@ -1,21 +1,21 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { UseMutationOptions, UseMutationResult } from '@tanstack/react-query';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export const useResumeChatOnHoldMutation = (
 	options?: Omit<UseMutationOptions<void, Error, IRoom['_id']>, 'mutationFn'>,
 ): UseMutationResult<void, Error, IRoom['_id']> => {
-	const resumeChatOnHold = useMethod('livechat:resumeOnHold');
+	const resumeChatOnHold = useEndpoint('POST', '/v1/livechat/room.resumeOnHold');
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const queryClient = useQueryClient();
 
 	return useMutation(
-		async (rid) => {
+		async (roomId) => {
 			try {
-				await resumeChatOnHold(rid, { clientAction: true });
+				await resumeChatOnHold({ roomId });
 			} catch (error) {
 				console.error(error);
 				dispatchToastMessage({ type: 'error', message: error });

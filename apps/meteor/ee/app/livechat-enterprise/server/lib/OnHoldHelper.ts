@@ -97,6 +97,8 @@ class OnHoldHelperClass {
 				callbacks.run('livechat:afterOnHoldChatResumed', updatedRoom);
 			});
 		}
+
+		logger.debug(`Room ${room._id} resumed successfully`);
 	}
 }
 
