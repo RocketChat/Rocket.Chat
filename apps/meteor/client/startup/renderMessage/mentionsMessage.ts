@@ -3,7 +3,7 @@ import { Tracker } from 'meteor/tracker';
 
 import { Users } from '../../../app/models/client';
 import { settings } from '../../../app/settings/client';
-import { shouldUseRealName } from '../../../app/utils/server';
+import { shouldUseRealName } from '../../../app/utils/client';
 import { callbacks } from '../../../lib/callbacks';
 
 Meteor.startup(() => {
