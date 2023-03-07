@@ -2175,6 +2175,8 @@
   "FileUpload_Disabled": "File uploads are disabled.",
   "FileUpload_Enable_json_web_token_for_files": "Enable Json Web Tokens protection to file uploads",
   "FileUpload_Enable_json_web_token_for_files_description": "Appends a JWT to uploaded files urls",
+  "FileUpload_Restrict_to_room_members": "Restrict files to rooms' members",
+  "FileUpload_Restrict_to_room_members_Description": "Restrict the access of files uploaded on rooms to the rooms' members only",
   "FileUpload_Enabled": "File Uploads Enabled",
   "FileUpload_Enabled_Direct": "File Uploads Enabled in Direct Messages ",
   "FileUpload_Error": "File Upload Error",
