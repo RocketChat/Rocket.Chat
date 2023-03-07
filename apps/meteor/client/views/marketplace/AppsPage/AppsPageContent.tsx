@@ -124,34 +124,26 @@ const AppsPageContent = (): ReactElement => {
 		router.push({ context: 'explore', page: 'list' });
 	};
 
-	const toggleInitialSortOption = useCallback(
-		(isRequested: boolean) =>
-			isRequested
-				? setSortFilterStructure((prevState) => {
-						prevState.items.forEach((currentItem) => {
-							if (currentItem.id === 'urf') {
-								currentItem.checked = true;
-								return;
-							}
+	const toggleInitialSortOption = useCallback((isRequested: boolean) => {
+		setSortFilterStructure((prevState) => {
+			prevState.items.forEach((currentItem) => {
+				if (isRequested && currentItem.id === 'urf') {
+					currentItem.checked = true;
+					return;
+				}
 
-							currentItem.checked = false;
-						});
+				if (!isRequested && currentItem.id === 'mru') {
+					currentItem.checked = true;
+					return;
+				}
 
-						return { ...prevState };
-				  })
-				: setSortFilterStructure({
-						label: t('Sort_By'),
-						items: [
-							{ id: 'urf', label: t('Unread_Requested_First'), checked: false },
-							{ id: 'url', label: t('Unread_Requested_Last'), checked: false },
-							{ id: 'az', label: 'A-Z', checked: false },
-							{ id: 'za', label: 'Z-A', checked: false },
-							{ id: 'mru', label: t('Most_recent_updated'), checked: true },
-							{ id: 'lru', label: t('Least_recent_updated'), checked: false },
-						],
-				  }),
-		[t],
-	);
+				currentItem.checked = false;
+			});
+
+			return { ...prevState };
+		});
+	}, []);
+
 	useEffect(() => {
 		toggleInitialSortOption(isRequested);
 	}, [isMarketplace, isRequested, sortFilterOnSelected, t, toggleInitialSortOption]);
