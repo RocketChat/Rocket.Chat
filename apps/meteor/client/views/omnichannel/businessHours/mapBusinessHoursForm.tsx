@@ -1,8 +1,6 @@
-import type { ILivechatBusinessHour, Serialized } from '@rocket.chat/core-typings';
+import type { dataType, DaysTime } from './BusinessHoursFormContainer';
 
-import type { DaysTime } from './BusinessHoursFormContainer';
-
-export const mapBusinessHoursForm = (formData: { daysOpen: string[]; daysTime: DaysTime }, data: Serialized<ILivechatBusinessHour>) => {
+export const mapBusinessHoursForm = (formData: { daysOpen: string[]; daysTime: DaysTime }, data: dataType) => {
 	const { daysOpen, daysTime } = formData;
 
 	return data.workHours?.map((day) => {

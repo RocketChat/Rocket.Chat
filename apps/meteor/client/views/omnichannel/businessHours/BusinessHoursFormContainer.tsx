@@ -22,8 +22,12 @@ export type DaysTime = {
 	Wednesday: DayTime;
 };
 
+export type dataType = {
+	workHours: { day: string; start: { time: string }; finish: { time: string }; open: boolean; code: unknown };
+} & Serialized<ILivechatBusinessHour> & { timezoneName?: string };
+
 type FormContainerProps = {
-	data: Serialized<ILivechatBusinessHour> & { timezoneName?: string };
+	data: dataType;
 	saveRef: any;
 	onChange: Dispatch<SetStateAction<boolean>>;
 };

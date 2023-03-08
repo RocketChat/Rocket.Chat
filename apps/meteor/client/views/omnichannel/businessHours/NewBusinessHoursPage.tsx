@@ -1,4 +1,3 @@
-import type { ILivechatBusinessHour, Serialized } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
@@ -12,7 +11,7 @@ import BusinessHoursFormContainer from './BusinessHoursFormContainer';
 import { mapBusinessHoursForm } from './mapBusinessHoursForm';
 
 const closedDays = ['Saturday', 'Sunday'];
-const createDefaultBusinessHours = (): Serialized<ILivechatBusinessHour> => ({
+const createDefaultBusinessHours = () => ({
 	name: '',
 	workHours: DAYS_OF_WEEK.map((day) => ({
 		day,
