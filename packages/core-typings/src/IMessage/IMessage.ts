@@ -212,9 +212,16 @@ export interface IEditedMessage extends IMessage {
 	editedBy: Pick<IUser, '_id' | 'username'>;
 }
 
-export const isEditedMessage = (message: IMessage): message is IEditedMessage => 'editedAt' in message && 'editedBy' in message;
-export const isDeletedMessage = (message: IMessage): message is IEditedMessage =>
-	'editedAt' in message && 'editedBy' in message && message.t === 'rm';
+export const isEditedMessage = (message: IMessage): message is IEditedMessage =>
+	'editedAt' in message &&
+	(message as { editedAt?: unknown }).editedAt instanceof Date &&
+	'editedBy' in message &&
+	typeof (message as { editedBy?: unknown }).editedBy === 'object' &&
+	(message as { editedBy?: unknown }).editedBy !== null &&
+	'_id' in (message as IEditedMessage).editedBy &&
+	typeof (message as IEditedMessage).editedBy._id === 'string';
+
+export const isDeletedMessage = (message: IMessage): message is IEditedMessage => isEditedMessage(message) && message.t === 'rm';
 export const isMessageFromMatrixFederation = (message: IMessage): boolean =>
 	'federation' in message && Boolean(message.federation?.eventId);
 
@@ -314,15 +321,6 @@ export interface IMessageDiscussion extends IMessage {
 
 export const isMessageDiscussion = (message: IMessage): message is IMessageDiscussion => {
 	return 'drid' in message;
-};
-
-export type IMessageEdited = IMessage & {
-	editedAt: Date;
-	editedBy: Pick<IUser, '_id' | 'username'>;
-};
-
-export const isMessageEdited = (message: IMessage): message is IMessageEdited => {
-	return 'editedAt' in message && 'editedBy' in message;
 };
 
 export type IMessageInbox = IMessage & {

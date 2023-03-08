@@ -1,7 +1,10 @@
-/* eslint-disable */
+// /* eslint-disable */
 import proxyquire from 'proxyquire';
 import { expect } from 'chai';
 import sinon from 'sinon';
+import faker from '@faker-js/faker';
+
+import type * as hooksModule from '../../../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/hooks';
 
 const remove = sinon.stub();
 const get = sinon.stub();
@@ -9,7 +12,7 @@ const hooks: Record<string, any> = {};
 
 const { FederationHooks } = proxyquire
 	.noCallThru()
-	.load('../../../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/hooks', {
+	.load<typeof hooksModule>('../../../../../../../../../app/federation-v2/server/infrastructure/rocket-chat/hooks', {
 		'meteor/meteor': {
 			'@global': true,
 		},
@@ -20,7 +23,9 @@ const { FederationHooks } = proxyquire
 			callbacks: {
 				priority: { HIGH: 'high' },
 				remove,
-				add: (_name: string, callback: (...args: any[]) => void, _priority: string, _id: string) => (hooks[_id] = callback),
+				add: (_name: string, callback: (...args: any[]) => void, _priority: string, _id: string) => {
+					hooks[_id] = callback;
+				},
 			},
 		},
 		'../../../../../settings/server': {
@@ -465,11 +470,13 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageUpdated(stub);
+			const editedAt = faker.date.recent();
+			const editedBy = { _id: 'userId' };
 			hooks['federation-v2-after-room-message-updated'](
-				{ federation: { eventId: 'eventId' }, editedAt: 'editedAt', editedBy: { _id: 'userId' } },
+				{ federation: { eventId: 'eventId' }, editedAt, editedBy },
 				{ federated: true, _id: 'roomId' },
 			);
-			expect(stub.calledWith({ federation: { eventId: 'eventId' }, editedAt: 'editedAt', editedBy: { _id: 'userId' } }, 'roomId', 'userId')).to.be.true;
+			expect(stub.calledWith({ federation: { eventId: 'eventId' }, editedAt, editedBy }, 'roomId', 'userId')).to.be.true;
 		});
 	});
 
@@ -494,7 +501,7 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			get.returns(false);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageSent(stub);
-			hooks['federation-v2-after-room-message-sent']({  }, { federated: true });
+			hooks['federation-v2-after-room-message-sent']({}, { federated: true });
 			expect(stub.called).to.be.false;
 		});
 
@@ -502,7 +509,9 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageSent(stub);
-			hooks['federation-v2-after-room-message-sent']({ editedAt: 'editedAt', editedBy: 'editedBy' }, { federated: true });
+			const editedAt = faker.date.recent();
+			const editedBy = { _id: 'userId' };
+			hooks['federation-v2-after-room-message-sent']({ editedAt, editedBy }, { federated: true });
 			expect(stub.called).to.be.false;
 		});
 
@@ -510,10 +519,7 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			get.returns(true);
 			const stub = sinon.stub();
 			FederationHooks.afterMessageSent(stub);
-			hooks['federation-v2-after-room-message-sent'](
-				{ u: { _id: 'userId' } },
-				{ federated: true, _id: 'roomId' },
-			);
+			hooks['federation-v2-after-room-message-sent']({ u: { _id: 'userId' } }, { federated: true, _id: 'roomId' });
 			expect(stub.calledWith({ u: { _id: 'userId' } }, 'roomId', 'userId')).to.be.true;
 		});
 	});
@@ -595,19 +601,19 @@ describe('Federation - Infrastructure - RocketChat - Hooks', () => {
 			});
 		});
 
-		it('should call the correct handler with the correct parameters', () => {});
+		it.skip('should call the correct handler with the correct parameters');
 	});
 
-    describe('#removeCEValidation()', () => {
-        it('should remove the specific validation for CE environments', () => {
-            FederationHooks.removeCEValidation();
-            expect(remove.calledTwice).to.be.equal(true);
-            expect(
-                remove.firstCall.calledWith('federation.beforeAddUserToARoom', 'federation-v2-can-add-federated-user-to-federated-room'),
-            ).to.be.equal(true);
-            expect(
-                remove.secondCall.calledWith('federation.beforeCreateDirectMessage', 'federation-v2-can-create-direct-message-from-ui-ce'),
-            ).to.be.equal(true);
-        });
-    });
+	describe('#removeCEValidation()', () => {
+		it('should remove the specific validation for CE environments', () => {
+			FederationHooks.removeCEValidation();
+			expect(remove.calledTwice).to.be.equal(true);
+			expect(
+				remove.firstCall.calledWith('federation.beforeAddUserToARoom', 'federation-v2-can-add-federated-user-to-federated-room'),
+			).to.be.equal(true);
+			expect(
+				remove.secondCall.calledWith('federation.beforeCreateDirectMessage', 'federation-v2-can-create-direct-message-from-ui-ce'),
+			).to.be.equal(true);
+		});
+	});
 });
