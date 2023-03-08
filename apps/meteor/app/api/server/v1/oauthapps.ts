@@ -36,8 +36,8 @@ API.v1.addRoute(
 				return API.v1.success(
 					deprecationWarning({
 						endpoint: 'oauth-apps.get',
-						versionWillBeRemoved: '6.0',
-						warningMessage: 'appId get parameter is deprecated and will be removed after version 6.0',
+						warningMessage: ({ versionWillBeRemoved, endpoint }) =>
+							`appId get parameter from "${endpoint}" is deprecated and will be removed after version ${versionWillBeRemoved}. Use _id instead.`,
 						response: { oauthApp },
 					}),
 				);
