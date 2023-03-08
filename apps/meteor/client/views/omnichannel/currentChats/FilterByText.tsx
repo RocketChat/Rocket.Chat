@@ -35,7 +35,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 	const [guest, setGuest] = useLocalStorage('guest', '');
 	const [servedBy, setServedBy] = useLocalStorage('servedBy', 'all');
 	const [status, setStatus] = useLocalStorage('status', 'all');
-	const [department, setDepartment] = useLocalStorage<{ label: string; value: string }>('department', { value: 'all', label: t('All') });
+	const [department, setDepartment] = useLocalStorage<string>('department', 'all');
 	const [from, setFrom] = useLocalStorage('from', '');
 	const [to, setTo] = useLocalStorage('to', '');
 	const [tags, setTags] = useLocalStorage<never | { label: string; value: string }[]>('tags', []);
@@ -52,7 +52,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 		setGuest('');
 		setServedBy('all');
 		setStatus('all');
-		setDepartment({ value: 'all', label: t('All') });
+		setDepartment('all');
 		setFrom('');
 		setTo('');
 		setTags([]);
@@ -75,7 +75,7 @@ const FilterByText: FilterByTextType = ({ setFilter, reload, customFields, setCu
 			guest,
 			servedBy,
 			status,
-			department: department?.value && department.value !== 'all' ? department.value : '',
+			department: department && department !== 'all' ? department : '',
 			from: from && moment(new Date(from)).utc().format('YYYY-MM-DDTHH:mm:ss'),
 			to: to && moment(new Date(to)).utc().format('YYYY-MM-DDTHH:mm:ss'),
 			tags: tags.map((tag) => tag.label),
