@@ -526,7 +526,7 @@ API.v1.addRoute(
 			);
 			const { status, filter } = this.queryParams;
 
-			const { cursor, totalCount } = findUsersOfRoom({
+			const { cursor, totalCount } = await findUsersOfRoom({
 				rid: findResult._id,
 				...(status && { status: { $in: status } }),
 				skip,

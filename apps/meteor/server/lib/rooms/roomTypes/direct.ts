@@ -7,9 +7,9 @@ import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomType
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
 import { roomCoordinator } from '../roomCoordinator';
-import { Subscriptions } from '../../../../app/models/server';
+import { Subscriptions, Users } from '../../../../app/models/server';
 import { Federation } from '../../../../app/federation-v2/server/Federation';
-import { shouldUseRealName } from '../../../../app/utils/server';
+import { shouldUseRealName } from '../../../../app/utils/lib/shouldUseRealName';
 
 export const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
 
@@ -83,7 +83,9 @@ roomCoordinator.add(DirectMessageRoomType, {
 			return;
 		}
 
-		const useRealName = shouldUseRealName(uid);
+		const user = Users.findOneById(uid, { projection: { settings: 1 } });
+		const defaultMessagesLayout = settings.get<string>('Accounts_Default_User_Preferences_messagesLayout');
+		const useRealName = shouldUseRealName(defaultMessagesLayout, user);
 		if (useRealName && room.fname) {
 			return subscription.fname;
 		}
@@ -96,7 +98,9 @@ roomCoordinator.add(DirectMessageRoomType, {
 	},
 
 	getNotificationDetails(room, sender, notificationMessage, userId) {
-		const useRealName = shouldUseRealName(userId);
+		const user = Users.findOneById(userId, { projection: { settings: 1 } });
+		const defaultMessagesLayout = settings.get<string>('Accounts_Default_User_Preferences_messagesLayout');
+		const useRealName = shouldUseRealName(defaultMessagesLayout, user);
 
 		if (this.isGroupChat(room)) {
 			return {

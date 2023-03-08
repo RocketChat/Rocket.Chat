@@ -5,7 +5,7 @@ import { Authorization, VideoConf } from '@rocket.chat/core-services';
 
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { SystemLogger } from '../../lib/logger/system';
-import { shouldUseRealName } from '../../../app/utils/server';
+import { shouldUseRealName } from '../../../app/utils/lib/shouldUseRealName';
 
 export class NotificationsModule {
 	public readonly streamLogged: IStreamer;
@@ -212,18 +212,21 @@ export class NotificationsModule {
 					return false;
 				}
 
-				// TODO consider using something to cache settings
-				const key = shouldUseRealName(userId) ? 'name' : 'username';
-
-				const user = await Users.findOneById<Pick<IUser, 'name' | 'username'>>(userId, {
+				const user = await Users.findOneById<Pick<IUser, 'name' | 'username' | 'settings'>>(userId, {
 					projection: {
-						[key]: 1,
+						settings: 1,
+						name: 1,
+						username: 1,
 					},
 				});
 
 				if (!user) {
 					return false;
 				}
+
+				// TODO consider using something to cache settings
+				const defaultMessagesLayout = (await Settings.getValueById('UI_Use_Real_Name')) as string;
+				const key = shouldUseRealName(defaultMessagesLayout, user) ? 'name' : 'username';
 
 				return user[key] === username;
 			} catch (e) {

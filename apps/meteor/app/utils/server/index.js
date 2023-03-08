@@ -11,7 +11,6 @@ export { getUserNotificationPreference } from '../lib/getUserNotificationPrefere
 export { getAvatarColor } from '../lib/getAvatarColor';
 export { getURL } from '../lib/getURL';
 export { getValidRoomName } from './lib/getValidRoomName';
-export { shouldUseRealName } from './lib/shouldUseRealName';
 export { placeholders } from '../lib/placeholders';
 export { templateVarHandler } from '../lib/templateVarHandler';
 export { secondsToHHMMSS } from '../../../lib/utils/secondsToHHMMSS';

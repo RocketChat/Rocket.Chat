@@ -24,7 +24,7 @@ import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 import { getURL } from '../../../utils/lib/getURL';
-import { shouldUseRealName } from '../../../utils/server';
+import { shouldUseRealName } from '../../../utils/lib/shouldUseRealName';
 import { getLogs } from '../../../../server/stream/stdout';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { passwordPolicy } from '../../../lib/server';
@@ -255,10 +255,11 @@ API.v1.addRoute(
 					if (settings.get('API_Shield_user_require_auth') && !this.getLoggedInUser()) {
 						return API.v1.failure('You must be logged in to do this.');
 					}
-					const user = this.getUserFromParams();
+					const user: IUser = this.getUserFromParams();
+					const defaultMessagesLayout = settings.get<string>('Accounts_Default_User_Preferences_messagesLayout');
 
-					// Respect the server's choice for using their real names or not
-					if (user.name && shouldUseRealName(user._id)) {
+					// Respect users' preferences for using their real names or not
+					if (user.name && shouldUseRealName(defaultMessagesLayout, user)) {
 						text = `${user.name}`;
 					} else {
 						text = `@${user.username}`;

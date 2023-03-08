@@ -34,7 +34,7 @@ Meteor.methods({
 		// TODO this is currently counting deactivated users
 		const total = Subscriptions.findByRoomIdWhenUsernameExists(rid).count();
 
-		const { cursor } = findUsersOfRoom({
+		const { cursor } = await findUsersOfRoom({
 			rid,
 			status: !showAll ? { $ne: 'offline' } : undefined,
 			limit,

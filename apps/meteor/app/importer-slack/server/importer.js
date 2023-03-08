@@ -6,7 +6,7 @@ import { Messages, ImportData } from '../../models/server';
 import { settings } from '../../settings/server';
 import { MentionsParser } from '../../mentions/lib/MentionsParser';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
-import { shouldUseRealName } from '../../utils/server';
+import { shouldUseRealName } from '../../utils/lib/shouldUseRealName';
 
 export class SlackImporter extends Base {
 	parseData(data) {
@@ -289,9 +289,10 @@ export class SlackImporter extends Base {
 	}
 
 	parseMentions(newMessage) {
+		const defaultMessagesLayout = settings.get('Accounts_Default_User_Preferences_messagesLayout');
 		const mentionsParser = new MentionsParser({
 			pattern: () => '[0-9a-zA-Z]+',
-			useRealName: () => shouldUseRealName(newMessage.u._id),
+			useRealName: () => shouldUseRealName(defaultMessagesLayout),
 			me: () => 'me',
 		});
 

@@ -6,7 +6,8 @@ import * as Mailer from '../../../../mailer';
 import { settings } from '../../../../settings/server';
 import { metrics } from '../../../../metrics';
 import { callbacks } from '../../../../../lib/callbacks';
-import { getURL, shouldUseRealName } from '../../../../utils/server';
+import { getURL } from '../../../../utils/server';
+import { shouldUseRealName } from '../../../../utils/lib/shouldUseRealName';
 import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
 import { ltrim } from '../../../../../lib/utils/stringUtils';
 
@@ -25,7 +26,9 @@ function getEmailContent({ message, user, room }) {
 	const lng = (user && user.language) || settings.get('Language') || 'en';
 
 	const roomName = escapeHTML(`#${roomCoordinator.getRoomName(room.t, room)}`);
-	const userName = escapeHTML(shouldUseRealName(message.u._id) ? message.u.name || message.u.username : message.u.username);
+
+	const defaultMessagesLayout = settings.get('Accounts_Default_User_Preferences_messagesLayout');
+	const userName = escapeHTML(shouldUseRealName(defaultMessagesLayout, user) ? message.u.name || message.u.username : message.u.username);
 
 	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
 
@@ -118,7 +121,8 @@ function generateNameEmail(name, email) {
 }
 
 export function getEmailData({ message, receiver, sender, subscription, room, emailAddress, hasMentionToUser }) {
-	const useRealName = shouldUseRealName(message.u._id);
+	const defaultMessagesLayout = settings.get('Accounts_Default_User_Preferences_messagesLayout');
+	const useRealName = shouldUseRealName(defaultMessagesLayout, receiver);
 	const username = useRealName ? message.u.name || message.u.username : message.u.username;
 	let subjectKey = 'Offline_Mention_All_Email';
 

@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 
-import { ChatMessage, Rooms } from '../../../models/client';
+import { ChatMessage, Rooms, Users } from '../../../models/client';
 import { settings } from '../../../settings';
 import { callbacks } from '../../../../lib/callbacks';
-import { t, shouldUseRealName } from '../../../utils/client';
+import { t } from '../../../utils/client';
+import { shouldUseRealName } from '../../../utils/lib/shouldUseRealName';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import { trim } from '../../../../lib/utils/stringUtils';
@@ -23,7 +24,9 @@ Meteor.methods({
 			_id: Meteor.userId(),
 			username: user.username,
 		};
-		if (shouldUseRealName(message.u._id)) {
+		const defaultMessagesLayout = settings.get('Accounts_Default_User_Preferences_messagesLayout');
+		const userSettings = Users.findOneById(message.u._id, { fields: { settings: 1 } });
+		if (shouldUseRealName(defaultMessagesLayout, userSettings)) {
 			message.u.name = user.name;
 		}
 		message.temp = true;

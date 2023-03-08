@@ -6,7 +6,7 @@ import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { hasPermission } from '../../../authorization/server';
 import { RateLimiter } from '../lib';
-import { shouldUseRealName } from '../../../utils/server';
+import { shouldUseRealName } from '../../../utils/lib/shouldUseRealName';
 
 export const _setRealName = function (userId: string, name: string, fullUser: IUser): IUser | undefined {
 	name = name.trim();
@@ -34,7 +34,8 @@ export const _setRealName = function (userId: string, name: string, fullUser: IU
 	}
 	user.name = name;
 
-	if (shouldUseRealName(user._id)) {
+	const defaultMessagesLayout = settings.get<string>('Accounts_Default_User_Preferences_messagesLayout');
+	if (shouldUseRealName(defaultMessagesLayout, user)) {
 		api.broadcast('user.nameChanged', {
 			_id: user._id,
 			name: user.name,
