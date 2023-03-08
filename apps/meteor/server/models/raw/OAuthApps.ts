@@ -9,10 +9,11 @@ export class OAuthAppsRaw extends BaseRaw<IOAuthApps> implements IOAuthAppsModel
 		super(db, 'oauth_apps', trash);
 	}
 
-	findOneAuthAppByIdOrClientId(props: { clientId: string } | { appId: string }): Promise<IOAuthApps | null> {
+	findOneAuthAppByIdOrClientId(props: { clientId: string } | { appId: string } | { _id: string }): Promise<IOAuthApps | null> {
 		return this.findOne({
+			...('_id' in props && { _id: props._id }),
 			...('appId' in props && { _id: props.appId }),
-			...('clientId' in props && { _id: props.clientId }),
+			...('clientId' in props && { clientId: props.clientId }),
 		});
 	}
 }
