@@ -174,7 +174,7 @@ export class AppServerOrchestrator {
 							return this.getManager().loadOne(app.getID());
 						}
 
-						this.debugLog(`App ${app.getID()} can't be enabled because of license restrictions`);
+						this._rocketchatLogger.warn(`App "${app.getInfo().name}" can't be enabled due to CE limits.`);
 					}),
 				Promise.resolve(),
 			);
@@ -328,10 +328,4 @@ settings.watch('Apps_Logs_TTL', (value) => {
 	const model = Apps._logModel;
 
 	model.resetTTLIndex(expireAfterSeconds);
-});
-
-Meteor.startup(function _appServerOrchestrator() {
-	Apps.initialize();
-
-	Apps.load();
 });
