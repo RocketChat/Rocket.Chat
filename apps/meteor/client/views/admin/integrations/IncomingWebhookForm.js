@@ -22,7 +22,7 @@ export default function IncomingWebhookForm({ formValues, formHandlers, extraDat
 		handleAvatar,
 		handleEmoji,
 		handleScriptEnabled,
-		handleOverrideDestinationEnabled,
+		handleOverrideDestinationChannelEnabled,
 		handleScript,
 	} = formHandlers;
 
@@ -161,11 +161,11 @@ export default function IncomingWebhookForm({ formValues, formHandlers, extraDat
 							<Field>
 								<Field.Label display='flex' justifyContent='space-between' w='full'>
 									{t('Override_Destination_Channel')}
-									<ToggleSwitch checked={overrideDestinationChannelEnabled} onChange={handleOverrideDestinationEnabled} />
+									<ToggleSwitch checked={overrideDestinationChannelEnabled} onChange={handleOverrideDestinationChannelEnabled} />
 								</Field.Label>
 							</Field>
 						),
-						[t, overrideDestinationChannelEnabled, handleOverrideDestinationEnabled],
+						[t, overrideDestinationChannelEnabled, handleOverrideDestinationChannelEnabled],
 					)}
 					{useMemo(
 						() => (
