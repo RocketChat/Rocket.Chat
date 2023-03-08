@@ -29,7 +29,7 @@ const validateAttachmentDeepness = (message: ITranslatedMessage): ITranslatedMes
 	}
 
 	const quoteChainLimit = settings.get<number>('Message_QuoteChainLimit');
-	if (quoteChainLimit < 2 && message.attachments) {
+	if ((message.attachments && quoteChainLimit < 2) || isNaN(quoteChainLimit)) {
 		delete message.attachments;
 	}
 
