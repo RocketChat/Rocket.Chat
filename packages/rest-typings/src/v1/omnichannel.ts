@@ -2,7 +2,6 @@ import type {
 	IOmnichannelCannedResponse,
 	ILivechatAgent,
 	ILivechatDepartment,
-	ILivechatDepartmentRecord,
 	ILivechatDepartmentAgents,
 	ILivechatMonitor,
 	ILivechatTag,
@@ -3006,7 +3005,7 @@ export type OmnichannelEndpoints = {
 	};
 	'/v1/livechat/department/:_id': {
 		GET: (params: LivechatDepartmentId) => {
-			department: ILivechatDepartmentRecord | null;
+			department: ILivechatDepartment | null;
 			agents?: ILivechatDepartmentAgents[];
 		};
 		PUT: (params: { department: Partial<ILivechatDepartment>[]; agents: any[] }) => {
