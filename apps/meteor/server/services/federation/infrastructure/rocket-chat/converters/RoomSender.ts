@@ -1,15 +1,15 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
 import {
+	formatExternalUserIdToInternalUsernameFormat,
+	removeExternalSpecificCharsFromExternalIdentifier,
+} from '../../matrix/converters/room/RoomReceiver';
+import {
 	FederationAfterLeaveRoomDto,
 	FederationAfterRemoveUserFromRoomDto,
 	FederationCreateDMAndInviteUserDto,
 	FederationRoomSendExternalMessageDto,
-} from '../../../application/sender/input/RoomSenderDto';
-import {
-	formatExternalUserIdToInternalUsernameFormat,
-	removeExternalSpecificCharsFromExternalIdentifier,
-} from '../../matrix/converters/RoomReceiver';
+} from '../../../application/room/input/RoomSenderDto';
 
 export class FederationRoomSenderConverter {
 	public static toCreateDirectMessageRoomDto(

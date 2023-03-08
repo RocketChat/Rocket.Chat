@@ -7,7 +7,7 @@ import type { AbstractMatrixEvent } from '../../../../../../server/services/fede
 import { MATRIX_POWER_LEVELS } from '../../../../../../server/services/federation/infrastructure/matrix/definitions/MatrixPowerLevels';
 import { MatrixRoomVisibility } from '../../../../../../server/services/federation/infrastructure/matrix/definitions/MatrixRoomVisibility';
 import { MatrixRoomType } from '../../../../../../server/services/federation/infrastructure/matrix/definitions/MatrixRoomType';
-import { formatExternalUserIdToInternalUsernameFormat } from '../../../../../../server/services/federation/infrastructure/matrix/converters/RoomReceiver';
+import { formatExternalUserIdToInternalUsernameFormat } from '../../../../../../server/services/federation/infrastructure/matrix/converters/room/RoomReceiver';
 
 const DEFAULT_TIMEOUT_IN_MS = 10000;
 

@@ -1,15 +1,14 @@
 import type { IRoom, IUser, Username } from '@rocket.chat/core-typings';
 
-import { FederationDMRoomInternalHooksServiceSender } from '../application/sender/room/DMRoomInternalHooksServiceSender';
-import { FederationRoomInternalHooksServiceSender } from '../application/sender/room/RoomInternalHooksServiceSender';
-import { FederationRoomServiceSenderEE } from '../application/sender/room/RoomServiceSender';
+import { FederationDirectMessageRoomServiceSender } from '../application/room/sender/DirectMessageRoomServiceSender';
+import { FederationRoomServiceSender } from '../application/room/sender/RoomServiceSender';
 import type { IFederationBridgeEE } from '../domain/IFederationBridge';
 import { MatrixBridgeEE } from './matrix/Bridge';
 import { RocketChatRoomAdapterEE } from './rocket-chat/adapters/Room';
 import { RocketChatUserAdapterEE } from './rocket-chat/adapters/User';
 import { FederationRoomSenderConverterEE } from './rocket-chat/converters/RoomSender';
 import { FederationHooksEE } from './rocket-chat/hooks';
-import { FederationRoomApplicationServiceEE } from '../application/RoomService';
+import { FederationUserServiceEE } from '../application/UserService';
 import { FederationFactory } from '../../../../../server/services/federation/infrastructure/Factory';
 import type { RocketChatFileAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/File';
 import type { RocketChatMessageAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Message';
@@ -18,97 +17,70 @@ import { RocketChatNotificationAdapter } from '../../../../../server/services/fe
 import type { InMemoryQueue } from '../../../../../server/services/federation/infrastructure/queue/InMemoryQueue';
 
 export class FederationFactoryEE extends FederationFactory {
-	public static buildRoomServiceSender(
-		rocketRoomAdapter: RocketChatRoomAdapterEE,
-		rocketUserAdapter: RocketChatUserAdapterEE,
-		rocketFileAdapter: RocketChatFileAdapter,
-		rocketMessageAdapter: RocketChatMessageAdapter,
-		rocketSettingsAdapter: RocketChatSettingsAdapter,
-		rocketNotificationAdapter: RocketChatNotificationAdapter,
-		bridge: IFederationBridgeEE,
-	): FederationRoomServiceSenderEE {
-		return new FederationRoomServiceSenderEE(
-			rocketRoomAdapter,
-			rocketUserAdapter,
-			rocketFileAdapter,
-			rocketMessageAdapter,
-			rocketSettingsAdapter,
-			rocketNotificationAdapter,
-			bridge,
-		);
+	public static buildFederationBridge(internalSettingsAdapter: RocketChatSettingsAdapter, queue: InMemoryQueue): IFederationBridgeEE {
+		return new MatrixBridgeEE(internalSettingsAdapter, queue.addToQueue.bind(queue));
 	}
 
-	public static buildRoomInternalHooksServiceSender(
-		rocketRoomAdapter: RocketChatRoomAdapterEE,
-		rocketUserAdapter: RocketChatUserAdapterEE,
-		rocketFileAdapter: RocketChatFileAdapter,
-		rocketSettingsAdapter: RocketChatSettingsAdapter,
-		rocketMessageAdapter: RocketChatMessageAdapter,
-		bridge: IFederationBridgeEE,
-	): FederationRoomInternalHooksServiceSender {
-		return new FederationRoomInternalHooksServiceSender(
-			rocketRoomAdapter,
-			rocketUserAdapter,
-			rocketFileAdapter,
-			rocketSettingsAdapter,
-			rocketMessageAdapter,
-			bridge,
-		);
-	}
-
-	public static buildDMRoomInternalHooksServiceSender(
-		rocketRoomAdapter: RocketChatRoomAdapterEE,
-		rocketUserAdapter: RocketChatUserAdapterEE,
-		rocketFileAdapter: RocketChatFileAdapter,
-		rocketSettingsAdapter: RocketChatSettingsAdapter,
-		bridge: IFederationBridgeEE,
-	): FederationDMRoomInternalHooksServiceSender {
-		return new FederationDMRoomInternalHooksServiceSender(
-			rocketRoomAdapter,
-			rocketUserAdapter,
-			rocketFileAdapter,
-			rocketSettingsAdapter,
-			bridge,
-		);
-	}
-
-	public static buildFederationBridge(rocketSettingsAdapter: RocketChatSettingsAdapter, queue: InMemoryQueue): IFederationBridgeEE {
-		return new MatrixBridgeEE(rocketSettingsAdapter, queue.addToQueue.bind(queue));
-	}
-
-	public static buildRocketRoomAdapter(): RocketChatRoomAdapterEE {
+	public static buildInternalRoomAdapter(): RocketChatRoomAdapterEE {
 		return new RocketChatRoomAdapterEE();
 	}
 
-	public static buildRocketNotificationAdapter(): RocketChatNotificationAdapter {
+	public static buildInternalNotificationAdapter(): RocketChatNotificationAdapter {
 		return new RocketChatNotificationAdapter();
 	}
 
-	public static buildRocketUserAdapter(): RocketChatUserAdapterEE {
+	public static buildInternalUserAdapter(): RocketChatUserAdapterEE {
 		return new RocketChatUserAdapterEE();
 	}
 
-	public static buildRoomApplicationService(
-		rocketSettingsAdapter: RocketChatSettingsAdapter,
-		rocketUserAdapter: RocketChatUserAdapterEE,
-		rocketFileAdapter: RocketChatFileAdapter,
-		rocketRoomAdapter: RocketChatRoomAdapterEE,
-		rocketNotificationAdapter: RocketChatNotificationAdapter,
+	public static buildRoomServiceSenderEE(
+		internalRoomAdapter: RocketChatRoomAdapterEE,
+		internalUserAdapter: RocketChatUserAdapterEE,
+		internalFileAdapter: RocketChatFileAdapter,
+		internalSettingsAdapter: RocketChatSettingsAdapter,
+		internalMessageAdapter: RocketChatMessageAdapter,
+		internalNotificationAdapter: RocketChatNotificationAdapter,
 		bridge: IFederationBridgeEE,
-	): FederationRoomApplicationServiceEE {
-		return new FederationRoomApplicationServiceEE(
-			rocketSettingsAdapter,
-			rocketFileAdapter,
-			rocketUserAdapter,
-			rocketRoomAdapter,
-			rocketNotificationAdapter,
+	): FederationRoomServiceSender {
+		return new FederationRoomServiceSender(
+			internalRoomAdapter,
+			internalUserAdapter,
+			internalFileAdapter,
+			internalSettingsAdapter,
+			internalMessageAdapter,
+			internalNotificationAdapter,
 			bridge,
 		);
 	}
 
+	public static buildDirectMessageRoomServiceSender(
+		internalRoomAdapter: RocketChatRoomAdapterEE,
+		internalUserAdapter: RocketChatUserAdapterEE,
+		internalFileAdapter: RocketChatFileAdapter,
+		internalSettingsAdapter: RocketChatSettingsAdapter,
+		bridge: IFederationBridgeEE,
+	): FederationDirectMessageRoomServiceSender {
+		return new FederationDirectMessageRoomServiceSender(
+			internalRoomAdapter,
+			internalUserAdapter,
+			internalFileAdapter,
+			internalSettingsAdapter,
+			bridge,
+		);
+	}
+
+	public static buildRoomApplicationService(
+		internalSettingsAdapter: RocketChatSettingsAdapter,
+		internalUserAdapter: RocketChatUserAdapterEE,
+		internalFileAdapter: RocketChatFileAdapter,
+		bridge: IFederationBridgeEE,
+	): FederationUserServiceEE {
+		return new FederationUserServiceEE(internalSettingsAdapter, internalFileAdapter, internalUserAdapter, bridge);
+	}
+
 	public static setupListenersForLocalActionsEE(
-		roomInternalHooksServiceSender: FederationRoomInternalHooksServiceSender,
-		dmRoomInternalHooksServiceSender: FederationDMRoomInternalHooksServiceSender,
+		roomInternalHooksServiceSender: FederationRoomServiceSender,
+		dmRoomInternalHooksServiceSender: FederationDirectMessageRoomServiceSender,
 		settingsAdapter: RocketChatSettingsAdapter,
 	): void {
 		const homeServerDomain = settingsAdapter.getHomeServerDomain();

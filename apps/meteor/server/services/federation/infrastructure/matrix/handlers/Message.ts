@@ -1,5 +1,5 @@
-import type { FederationMessageServiceListener } from '../../../application/listener/MessageServiceListener';
-import { MatrixMessageReceiverConverter } from '../converters/MessageReceiver';
+import type { FederationMessageServiceReceiver } from '../../../application/room/message/receiver/MessageServiceReceiver';
+import { MatrixMessageReceiverConverter } from '../converters/room/MessageReceiver';
 import type { MatrixEventMessageReact } from '../definitions/events/MessageReacted';
 import { MatrixEventType } from '../definitions/MatrixEventType';
 import { MatrixBaseEventHandler } from './BaseEvent';
@@ -7,7 +7,7 @@ import { MatrixBaseEventHandler } from './BaseEvent';
 export class MatrixMessageReactedHandler extends MatrixBaseEventHandler {
 	public eventType: string = MatrixEventType.MESSAGE_REACTED;
 
-	constructor(private messageService: FederationMessageServiceListener) {
+	constructor(private messageService: FederationMessageServiceReceiver) {
 		super();
 	}
 

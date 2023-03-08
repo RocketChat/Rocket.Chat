@@ -6,7 +6,7 @@ import { api } from '@rocket.chat/core-services';
 import { DirectMessageFederatedRoom, FederatedRoom } from '../../../domain/FederatedRoom';
 import type { FederatedUser } from '../../../domain/FederatedUser';
 import { getFederatedUserByInternalUsername } from './User';
-import type { ROCKET_CHAT_FEDERATION_ROLES } from '../definitions/InternalFederatedRoomRoles';
+import type { ROCKET_CHAT_FEDERATION_ROLES } from '../definitions/FederatedRoomInternalRoles';
 import { addUserToRoom, createRoom, removeUserFromRoom } from '../../../../../../app/lib/server';
 import { Messages } from '../../../../../../app/models/server';
 import { saveRoomTopic } from '../../../../../../app/channel-settings/server';

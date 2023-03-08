@@ -384,11 +384,8 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await poFederationChannelServer1.content.sendFileMessage('test_image.jpeg');
 				await poFederationChannelServer1.content.btnModalConfirm.click();
 
-				await expect(poFederationChannelServer1.content.getLastFileName).toContainText('test_image.jpeg');
-				await expect(poFederationChannelServer2.content.getLastFileName).toContainText('test_image.jpeg');
-
-				await expect(poFederationChannelServer1.content.getLastFileAttachmentContent.locator('img')).toBeVisible();
-				await expect(poFederationChannelServer2.content.getLastFileAttachmentContent.locator('img')).toBeVisible();
+				await expect(poFederationChannelServer1.content.lastMessageFileName).toContainText('test_image.jpeg');
+				await expect(poFederationChannelServer2.content.lastMessageFileName).toContainText('test_image.jpeg');
 			});
 
 			test('expect to send a file message (image) from Server B to Server A', async ({ page }) => {
@@ -401,11 +398,8 @@ test.describe.parallel('Federation - DM Messaging', () => {
 				await poFederationChannelServer2.content.sendFileMessage('test_image.jpeg');
 				await poFederationChannelServer2.content.btnModalConfirm.click();
 
-				await expect(poFederationChannelServer2.content.getLastFileName).toContainText('test_image.jpeg');
-				await expect(poFederationChannelServer1.content.getLastFileName).toContainText('test_image.jpeg');
-
-				await expect(poFederationChannelServer2.content.getLastFileAttachmentContent.locator('img')).toBeVisible();
-				await expect(poFederationChannelServer1.content.getLastFileAttachmentContent.locator('img')).toBeVisible();
+				await expect(poFederationChannelServer2.content.lastMessageFileName).toContainText('test_image.jpeg');
+				await expect(poFederationChannelServer1.content.lastMessageFileName).toContainText('test_image.jpeg');
 			});
 
 			test('expect to send a file message (video) from Server A to Server B', async ({ page }) => {

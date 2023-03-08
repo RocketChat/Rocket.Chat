@@ -3,8 +3,8 @@ import type { AppServiceOutput, Bridge } from '@rocket.chat/forked-matrix-appser
 
 import type { IExternalUserProfileInformation, IFederationBridge, IFederationBridgeRegistrationFile } from '../../domain/IFederationBridge';
 import { federationBridgeLogger } from '../rocket-chat/adapters/logger';
-import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './converters/MessageTextParser';
-import { convertEmojisFromRCFormatToMatrixFormat } from './converters/MessageReceiver';
+import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './converters/room/to-internal-parser-formatter';
+import { convertEmojisFromRCFormatToMatrixFormat } from './converters/room/MessageReceiver';
 import type { AbstractMatrixEvent } from './definitions/AbstractMatrixEvent';
 import { MatrixEnumRelatesToRelType, MatrixEnumSendMessageType } from './definitions/events/RoomMessageSent';
 import { MatrixEventType } from './definitions/MatrixEventType';

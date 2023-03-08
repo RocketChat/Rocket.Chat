@@ -1,6 +1,6 @@
-import type { FederationRoomServiceListener } from '../../../application/listener/RoomServiceListener';
+import type { FederationRoomServiceReceiver } from '../../../application/room/receiver/RoomServiceReceiver';
 import type { RocketChatSettingsAdapter } from '../../rocket-chat/adapters/Settings';
-import { MatrixRoomReceiverConverter } from '../converters/RoomReceiver';
+import { MatrixRoomReceiverConverter } from '../converters/room/RoomReceiver';
 import { MatrixBaseEventHandler } from './BaseEvent';
 import type { MatrixEventRoomCreated } from '../definitions/events/RoomCreated';
 import type { MatrixEventRoomMembershipChanged } from '../definitions/events/RoomMembershipChanged';
@@ -16,7 +16,7 @@ import type { MatrixEventRoomRoomPowerLevelsChanged } from '../definitions/event
 export class MatrixRoomCreatedHandler extends MatrixBaseEventHandler {
 	public eventType: string = MatrixEventType.ROOM_CREATED;
 
-	constructor(private roomService: FederationRoomServiceListener) {
+	constructor(private roomService: FederationRoomServiceReceiver) {
 		super();
 	}
 
@@ -28,7 +28,7 @@ export class MatrixRoomCreatedHandler extends MatrixBaseEventHandler {
 export class MatrixRoomMembershipChangedHandler extends MatrixBaseEventHandler {
 	public eventType: string = MatrixEventType.ROOM_MEMBERSHIP_CHANGED;
 
-	constructor(private roomService: FederationRoomServiceListener, private rocketSettingsAdapter: RocketChatSettingsAdapter) {
+	constructor(private roomService: FederationRoomServiceReceiver, private rocketSettingsAdapter: RocketChatSettingsAdapter) {
 		super();
 	}
 
@@ -42,7 +42,7 @@ export class MatrixRoomMembershipChangedHandler extends MatrixBaseEventHandler {
 export class MatrixRoomMessageSentHandler extends MatrixBaseEventHandler {
 	public eventType: string = MatrixEventType.ROOM_MESSAGE_SENT;
 
-	constructor(private roomService: FederationRoomServiceListener) {
+	constructor(private roomService: FederationRoomServiceReceiver) {
 		super();
 	}
 
@@ -85,7 +85,7 @@ export class MatrixRoomMessageSentHandler extends MatrixBaseEventHandler {
 export class MatrixRoomJoinRulesChangedHandler extends MatrixBaseEventHandler {
 	public eventType: string = MatrixEventType.ROOM_JOIN_RULES_CHANGED;
 
-	constructor(private roomService: FederationRoomServiceListener) {
+	constructor(private roomService: FederationRoomServiceReceiver) {
 		super();
 	}
 
@@ -97,7 +97,7 @@ export class MatrixRoomJoinRulesChangedHandler extends MatrixBaseEventHandler {
 export class MatrixRoomNameChangedHandler extends MatrixBaseEventHandler {
 	public eventType: string = MatrixEventType.ROOM_NAME_CHANGED;
 
-	constructor(private roomService: FederationRoomServiceListener) {
+	constructor(private roomService: FederationRoomServiceReceiver) {
 		super();
 	}
 
@@ -109,7 +109,7 @@ export class MatrixRoomNameChangedHandler extends MatrixBaseEventHandler {
 export class MatrixRoomTopicChangedHandler extends MatrixBaseEventHandler {
 	public eventType: string = MatrixEventType.ROOM_TOPIC_CHANGED;
 
-	constructor(private roomService: FederationRoomServiceListener) {
+	constructor(private roomService: FederationRoomServiceReceiver) {
 		super();
 	}
 
@@ -121,7 +121,7 @@ export class MatrixRoomTopicChangedHandler extends MatrixBaseEventHandler {
 export class MatrixRoomEventRedactedHandler extends MatrixBaseEventHandler {
 	public eventType: string = MatrixEventType.ROOM_EVENT_REDACTED;
 
-	constructor(private roomService: FederationRoomServiceListener) {
+	constructor(private roomService: FederationRoomServiceReceiver) {
 		super();
 	}
 
@@ -133,7 +133,7 @@ export class MatrixRoomEventRedactedHandler extends MatrixBaseEventHandler {
 export class MatrixRoomPowerLevelsChangedHandler extends MatrixBaseEventHandler {
 	public eventType: string = MatrixEventType.ROOM_POWER_LEVELS_CHANGED;
 
-	constructor(private roomService: FederationRoomServiceListener) {
+	constructor(private roomService: FederationRoomServiceReceiver) {
 		super();
 	}
 

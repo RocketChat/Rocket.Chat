@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import {
 	toInternalMessageFormat,
 	toInternalQuoteMessageFormat,
-} from '../../../../../../../server/services/federation/infrastructure/rocket-chat/converters/MessageTextParser';
+} from '../../../../../../../server/services/federation/infrastructure/rocket-chat/converters/to-external-parser-formatter';
 
 describe('Federation - Infrastructure - Matrix - RocketTextParser', () => {
 	describe('#toInternalMessageFormat ()', () => {
