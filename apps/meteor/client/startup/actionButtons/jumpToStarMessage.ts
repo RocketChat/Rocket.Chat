@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../app/settings/client';
 import { MessageAction } from '../../../app/ui-utils/client';
-import { jumpToMessage } from '../../lib/utils/jumpToMessage';
 import { messageArgs } from '../../lib/utils/messageArgs';
+import { setMessageJumpQueryStringParameter } from '../../lib/utils/setMessageJumpQueryStringParameter';
 
 Meteor.startup(() => {
 	MessageAction.addButton({
@@ -13,7 +13,7 @@ Meteor.startup(() => {
 		context: ['starred', 'threads', 'message-mobile'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			jumpToMessage(message);
+			setMessageJumpQueryStringParameter(message._id);
 		},
 		condition({ message, subscription, user }) {
 			if (subscription == null || !settings.get('Message_AllowStarring')) {
