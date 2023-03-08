@@ -3,7 +3,11 @@ import Ajv from 'ajv';
 
 const ajv = new Ajv();
 
-export type CalendarEventCreateProps = { startTime: string };
+export type CalendarEventCreateProps = {
+	startTime: string;
+	externalId?: string;
+	subject: string;
+};
 
 const calendarEventCreatePropsSchema: JSONSchemaType<CalendarEventCreateProps> = {
 	type: 'object',
@@ -12,8 +16,16 @@ const calendarEventCreatePropsSchema: JSONSchemaType<CalendarEventCreateProps> =
 			type: 'string',
 			nullable: false,
 		},
+		externalId: {
+			type: 'string',
+			nullable: true,
+		},
+		subject: {
+			type: 'string',
+			nullable: false,
+		},
 	},
-	required: ['startTime'],
+	required: ['startTime', 'subject'],
 	additionalProperties: false,
 };
 

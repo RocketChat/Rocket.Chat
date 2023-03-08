@@ -7,6 +7,7 @@ const ajv = new Ajv();
 export type CalendarEventUpdateProps = {
 	eventId: ICalendarEvent['_id'];
 	startTime: string;
+	subject: string;
 };
 
 const calendarEventUpdatePropsSchema: JSONSchemaType<CalendarEventUpdateProps> = {
@@ -20,8 +21,12 @@ const calendarEventUpdatePropsSchema: JSONSchemaType<CalendarEventUpdateProps> =
 			type: 'string',
 			nullable: false,
 		},
+		subject: {
+			type: 'string',
+			nullable: false,
+		}
 	},
-	required: ['eventId', 'startTime'],
+	required: ['eventId', 'startTime', 'subject'],
 	additionalProperties: false,
 };
 

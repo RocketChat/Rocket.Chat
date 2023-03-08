@@ -17,11 +17,13 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const { startTime } = this.bodyParams;
+			const { startTime, subject, externalId } = this.bodyParams;
 
 			await Calendar.create({
 				startTime: new Date(startTime),
 				uid: this.userId,
+				subject,
+				externalId,
 			});
 
 			return API.v1.success();

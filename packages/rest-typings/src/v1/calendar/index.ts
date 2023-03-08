@@ -5,6 +5,7 @@ import type { CalendarEventUpdateProps } from './CalendarEventUpdateProps';
 // import type { PaginatedResult } from '../../helpers/PaginatedResult';
 
 export * from './CalendarEventCreateProps';
+export * from './CalendarEventUpdateProps';
 export * from './CalendarEventListProps';
 
 export type CalendarEndpoints = {
@@ -13,7 +14,7 @@ export type CalendarEndpoints = {
 	};
 
 	'/v1/calendar-events.list': {
-		GET: (params: CalendarEventListProps ) => { events: ICalendarEvent[] };
+		GET: (params: CalendarEventListProps ) => { data: ICalendarEvent[] };
 	};
 
 	'/v1/calendar-events.update': {

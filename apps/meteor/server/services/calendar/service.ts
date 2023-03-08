@@ -7,8 +7,8 @@ import { ServiceClassInternal } from '@rocket.chat/core-services';
 export class CalendarService extends ServiceClassInternal implements ICalendarService {
 	protected name = 'calendar';
 
-	public async create(_data: InsertionModel<ICalendarEvent>): Promise<void> {
-		// #ToDo
+	public async create(data: InsertionModel<ICalendarEvent>): Promise<void> {
+		CalendarEvent.insertOne(data);
 	}
 
 	public async list(uid: IUser['_id'], _date: Date): Promise<{ data: ICalendarEvent[] }> {
