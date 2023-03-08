@@ -1,5 +1,6 @@
 import { UserStatus, isSettingColor } from '@rocket.chat/core-typings';
-import type { IUser, IRoom, VideoConference } from '@rocket.chat/core-typings';
+import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import type { IUser, IRoom, VideoConference, ISetting } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 import type { IServiceClass } from '@rocket.chat/core-services';
 import { EnterpriseSettings } from '@rocket.chat/core-services';
@@ -379,6 +380,46 @@ export class ListenersModule {
 		});
 		service.onEvent('watch.priorities', async ({ clientAction, diff, id }): Promise<void> => {
 			notifications.notifyLoggedInThisInstance('omnichannel.priority-changed', { id, clientAction, name: diff?.name });
+		});
+
+		service.onEvent('apps.added', (appId: string) => {
+			notifications.streamApps.emitWithoutBroadcast('app/added', appId);
+		});
+
+		service.onEvent('apps.removed', (appId: string) => {
+			notifications.streamApps.emitWithoutBroadcast('app/removed', appId);
+		});
+
+		service.onEvent('apps.updated', (appId: string) => {
+			notifications.streamApps.emitWithoutBroadcast('app/updated', appId);
+		});
+
+		service.onEvent('apps.statusUpdate', (appId: string, status: AppStatus) => {
+			notifications.streamApps.emitWithoutBroadcast('app/statusUpdate', { appId, status });
+		});
+
+		service.onEvent('apps.settingUpdated', (appId: string, setting: ISetting) => {
+			notifications.streamApps.emitWithoutBroadcast('app/settingUpdated', { appId, setting });
+		});
+
+		service.onEvent('command.added', (command: string) => {
+			notifications.streamApps.emitWithoutBroadcast('command/added', command);
+		});
+
+		service.onEvent('command.disabled', (command: string) => {
+			notifications.streamApps.emitWithoutBroadcast('command/disabled', command);
+		});
+
+		service.onEvent('command.updated', (command: string) => {
+			notifications.streamApps.emitWithoutBroadcast('command/updated', command);
+		});
+
+		service.onEvent('command.removed', (command: string) => {
+			notifications.streamApps.emitWithoutBroadcast('command/removed', command);
+		});
+
+		service.onEvent('actions.changed', () => {
+			notifications.streamApps.emitWithoutBroadcast('actions/changed');
 		});
 	}
 }
