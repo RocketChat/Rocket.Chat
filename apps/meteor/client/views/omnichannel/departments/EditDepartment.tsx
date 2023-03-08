@@ -465,7 +465,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								<AutoCompleteDepartment
 									haveNone
 									excludeDepartmentId={department?._id}
-									value={fallbackForwardDepartment}
+									value={typeof fallbackForwardDepartment === 'string' ? fallbackForwardDepartment : ''}
 									onChange={handleFallbackForwardDepartment}
 									onlyMyDepartments
 									showArchived

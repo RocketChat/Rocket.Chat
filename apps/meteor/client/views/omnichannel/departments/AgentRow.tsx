@@ -9,8 +9,8 @@ import Order from './Order';
 import RemoveAgentButton from './RemoveAgentButton';
 
 type AgentRowProps = {
-	agentId: Key;
-	username: string;
+	agentId: ILivechatDepartmentAgents['agentId'];
+	username: ILivechatDepartmentAgents['username'];
 	name?: string;
 	avatarETag?: string;
 	mediaQuery: boolean;

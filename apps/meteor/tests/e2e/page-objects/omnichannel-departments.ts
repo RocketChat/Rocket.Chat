@@ -68,10 +68,6 @@ export class OmnichannelDepartments {
 		return this.page.locator('table tr:first-child td:first-child');
 	}
 
-	get btnDeleteFirstRowInTable() {
-		return this.page.locator('table tr:first-child td:nth-child(6) button');
-	}
-
 	get firstRowInTableMenu() {
 		return this.page.locator('table tr:first-child [data-testid="menu"]');
 	}

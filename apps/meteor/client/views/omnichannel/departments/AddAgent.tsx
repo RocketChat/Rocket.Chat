@@ -38,7 +38,7 @@ function AddAgent({ agentList, setAgentsAdded, setAgentList, ...props }: AddAgen
 			const newAgent = { ...user, agentId: user?._id } as unknown as ILivechatDepartmentAgents;
 			setAgentList([newAgent, ...agentList]);
 			setUserId('');
-			setAgentsAdded((agents) => [...agents, { agentId: user?._id }]); // Search the real type of setAgentsAdded and type the function on the root props
+			setAgentsAdded((agents) => [...agents, { agentId: user?._id }]);
 		} else {
 			dispatchToastMessage({ type: 'error', message: t('This_agent_was_already_selected') });
 		}
