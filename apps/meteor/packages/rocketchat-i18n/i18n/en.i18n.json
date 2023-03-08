@@ -5571,6 +5571,7 @@
   "registration.component.form.userAlreadyExist": "Username already exists. Please try another username.",
   "registration.component.form.emailAlreadyExists": "Email already exists",
   "registration.component.form.usernameAlreadyExists": "Username already exists. Please try another username.",
+  "registration.component.form.invalidUsername":"Username can only consist of letters, numbers, dots, hyphens and underscores",
   "registration.component.form.invalidEmail": "The email entered is invalid",
   "registration.component.form.email": "Email",
   "registration.component.form.emailPlaceholder": "example@example.com",

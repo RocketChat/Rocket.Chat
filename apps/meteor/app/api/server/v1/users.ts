@@ -44,6 +44,7 @@ import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { isValidQuery } from '../lib/isValidQuery';
 import { getURL } from '../../../utils/server';
 import { getUploadFormData } from '../lib/getUploadFormData';
+import { usernameValidation } from '../../../lib/server/functions/usernameValidation';
 
 API.v1.addRoute(
 	'users.getAvatar',
@@ -523,6 +524,10 @@ API.v1.addRoute(
 
 			if (!checkUsernameAvailability(this.bodyParams.username)) {
 				return API.v1.failure('Username is already in use');
+			}
+
+			if (!usernameValidation(this.bodyParams.username)) {
+				return API.v1.failure('Invalid username');
 			}
 
 			const { secret: secretURL, ...params } = this.bodyParams;
