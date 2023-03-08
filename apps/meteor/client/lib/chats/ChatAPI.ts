@@ -22,6 +22,19 @@ export type ComposerAPI = {
 	insertNewLine(): void;
 	clear(): void;
 	focus(): void;
+	blur(): void;
+
+	getCursorPosition(): number | undefined;
+
+	substring(start: number, end?: number): string;
+
+	replaceText(
+		text: string,
+		selection: {
+			start: number;
+			end: number;
+		},
+	): void;
 
 	setCursorToEnd(): void;
 	setCursorToStart(): void;
@@ -39,6 +52,9 @@ export type ComposerAPI = {
 
 	setRecordingVideo(recording: boolean): void;
 	readonly recordingVideo: Subscribable<boolean>;
+
+	setIsMicrophoneDenied(isMicrophoneDenied: boolean): void;
+	readonly isMicrophoneDenied: Subscribable<boolean>;
 
 	readonly formatters: Subscribable<FormattingButton[]>;
 };

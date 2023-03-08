@@ -1,3 +1,4 @@
+import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
 import type {
 	IEmailInbox,
@@ -24,6 +25,7 @@ import type {
 	VoipEventDataSignature,
 	AtLeast,
 	UserStatus,
+	ILivechatPriority,
 	VideoConference,
 } from '@rocket.chat/core-typings';
 
@@ -150,4 +152,21 @@ export type EventSignatures = {
 	'watch.pbxevents'(data: { clientAction: ClientAction; data: Partial<IPbxEvent>; id: string }): void;
 	'connector.statuschanged'(enabled: boolean): void;
 	'message.update'(data: { message: AtLeast<IMessage, 'rid'> }): void;
+	'federation.userRoleChanged'(update: Record<string, any>): void;
+	'watch.priorities'(data: {
+		clientAction: ClientAction;
+		data: Partial<ILivechatPriority>;
+		id: string;
+		diff?: Record<string, string>;
+	}): void;
+	'apps.added'(appId: string): void;
+	'apps.removed'(appId: string): void;
+	'apps.updated'(appId: string): void;
+	'apps.statusUpdate'(appId: string, status: AppStatus): void;
+	'apps.settingUpdated'(appId: string, setting: ISetting): void;
+	'command.added'(command: string): void;
+	'command.disabled'(command: string): void;
+	'command.updated'(command: string): void;
+	'command.removed'(command: string): void;
+	'actions.changed'(): void;
 };

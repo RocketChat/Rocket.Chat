@@ -67,12 +67,12 @@ const useSearchItems = (filterText: string): UseQueryResult<(ISubscription & IRo
 
 	const type = useMemo(() => {
 		if (searchForChannels) {
-			return { users: false, rooms: true };
+			return { users: false, rooms: true, includeFederatedRooms: true };
 		}
 		if (searchForDMs) {
 			return { users: true, rooms: false };
 		}
-		return { users: true, rooms: true };
+		return { users: true, rooms: true, includeFederatedRooms: true };
 	}, [searchForChannels, searchForDMs]);
 
 	const getSpotlight = useMethod('spotlight');
@@ -333,6 +333,7 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 					totalCount={items.length}
 					data={items}
 					components={{ Scroller: ScrollerWithCustomProps }}
+					computeItemKey={(_, room) => room._id}
 					itemContent={(_, data): ReactElement => <Row data={itemData} item={data} />}
 					ref={listRef}
 				/>

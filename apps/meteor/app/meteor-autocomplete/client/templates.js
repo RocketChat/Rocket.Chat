@@ -22,8 +22,6 @@ const acEvents = {
 
 Template.inputAutocomplete.events(acEvents);
 
-Template.textareaAutocomplete.events(acEvents);
-
 const attributes = function () {
 	return omit(this, 'settings'); // Render all but the settings parameter
 };
@@ -40,15 +38,15 @@ const autocompleteHelpers = {
 			ac.element = this.parentView.firstNode();
 			ac.$element = $(ac.element);
 		});
-		return Blaze.With(ac, function() { //eslint-disable-line
+		// eslint-disable-next-line new-cap
+		return Blaze.With(ac, function () {
+			//eslint-disable-line
 			return Template._autocompleteContainer;
 		});
 	}),
 };
 
 Template.inputAutocomplete.helpers(autocompleteHelpers);
-
-Template.textareaAutocomplete.helpers(autocompleteHelpers);
 
 Template._autocompleteContainer.rendered = function () {
 	this.data.tmplInst = this;

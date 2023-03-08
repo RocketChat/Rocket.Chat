@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import { Blaze } from 'meteor/blaze';
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
@@ -7,6 +6,7 @@ import { Tracker } from 'meteor/tracker';
 
 import { emoji } from '../../lib/rocketchat';
 import { updateRecentEmoji } from '../emojiPicker';
+import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
 let updatePositions = true;
 
@@ -46,12 +46,12 @@ export const EmojiPicker = {
 		});
 
 		$(window).resize(
-			_.debounce(() => {
+			withDebouncing({ wait: 300 })(() => {
 				if (!this.opened) {
 					return;
 				}
 				this.setPosition();
-			}, 300),
+			}),
 		);
 	},
 	isOpened() {

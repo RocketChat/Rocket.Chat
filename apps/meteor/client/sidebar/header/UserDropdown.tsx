@@ -13,7 +13,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useLayout, useRoute, useLogout, useSetting, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
+import { useLayout, useRoute, useLogout, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import { useThemeMode } from '@rocket.chat/ui-theming/src/hooks/useThemeMode';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -21,12 +21,12 @@ import React from 'react';
 import { AccountBox } from '../../../app/ui-utils/client';
 import { userStatus } from '../../../app/user-status/client';
 import { callbacks } from '../../../lib/callbacks';
-import GenericModal from '../../components/GenericModal';
 import MarkdownText from '../../components/MarkdownText';
 import { UserStatus } from '../../components/UserStatus';
 import UserAvatar from '../../components/avatar/UserAvatar';
 import { useUserDisplayName } from '../../hooks/useUserDisplayName';
 import { imperativeModal } from '../../lib/imperativeModal';
+import { useStatusDisabledModal } from '../../views/admin/customUserStatus/hooks/useStatusDisabledModal';
 import EditStatusModal from './EditStatusModal';
 
 const isDefaultStatus = (id: string): boolean => (Object.values(UserStatusEnum) as string[]).includes(id);
@@ -54,18 +54,11 @@ type UserDropdownProps = {
 const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	const t = useTranslation();
 	const accountRoute = useRoute('account-index');
-	const userStatusRoute = useRoute('user-status');
 	const logout = useLogout();
 	const { isMobile } = useLayout();
 	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
+	const handleStatusDisabledModal = useStatusDisabledModal();
 
-	const setModal = useSetModal();
-	const closeModal = useMutableCallback(() => setModal());
-	const handleGoToSettings = useMutableCallback(() => {
-		userStatusRoute.push({});
-		closeModal();
-		onClose();
-	});
 	const [selectedTheme, setTheme] = useThemeMode();
 
 	const { username, avatarETag, status, statusText } = user;
@@ -104,7 +97,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 				<Box mis='x4' display='flex' overflow='hidden' flexDirection='column' fontScale='p2' mb='neg-x4' flexGrow={1} flexShrink={1}>
 					<Box withTruncatedText w='full' display='flex' alignItems='center' flexDirection='row'>
 						<Margins inline='x4'>
-							<UserStatus status={status} />
+							<UserStatus status={presenceDisabled ? 'disabled' : status} />
 							<Box is='span' withTruncatedText display='inline-block' fontWeight='700'>
 								{displayName}
 							</Box>
@@ -125,25 +118,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 			{presenceDisabled && (
 				<Box fontScale='p2' mi='x12' mb='x4'>
 					<Box mbe='x4'>{t('User_status_disabled')}</Box>
-					<Box
-						is='a'
-						color='status-font-on-info'
-						onClick={() =>
-							setModal(
-								<GenericModal
-									title={t('User_status_disabled_learn_more')}
-									cancelText={t('Close')}
-									confirmText={t('Go_to_workspace_settings')}
-									children={t('User_status_disabled_learn_more_description')}
-									onConfirm={handleGoToSettings}
-									onClose={closeModal}
-									onCancel={closeModal}
-									icon={null}
-									variant='warning'
-								/>,
-							)
-						}
-					>
+					<Box is='a' color='info' onClick={handleStatusDisabledModal}>
 						{t('Learn_more')}
 					</Box>
 				</Box>
@@ -180,21 +155,21 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 				<OptionIcon name='sun' />
 				<OptionContent>{t('Theme_light')}</OptionContent>
 				<OptionColumn>
-					<RadioButton checked={selectedTheme === 'light'} onChange={(): void => setTheme('light')} m='x4' />
+					<RadioButton checked={selectedTheme === 'light'} onChange={setTheme('light')} m='x4' />
 				</OptionColumn>
 			</Option>
 			<Option>
 				<OptionIcon name='moon' />
 				<OptionContent>{t('Theme_dark')}</OptionContent>
 				<OptionColumn>
-					<RadioButton checked={selectedTheme === 'dark'} onChange={(): void => setTheme('dark')} m='x4' />
+					<RadioButton checked={selectedTheme === 'dark'} onChange={setTheme('dark')} m='x4' />
 				</OptionColumn>
 			</Option>
 			<Option>
 				<OptionIcon name='desktop' />
 				<OptionContent>{t('Theme_match_system')}</OptionContent>
 				<OptionColumn>
-					<RadioButton checked={selectedTheme === 'auto'} onChange={(): void => setTheme('auto')} m='x4' />
+					<RadioButton checked={selectedTheme === 'auto'} onChange={setTheme('auto')} m='x4' />
 				</OptionColumn>
 			</Option>
 			<OptionDivider />

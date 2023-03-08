@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
 import { Team } from '@rocket.chat/core-services';
 
-import { AppEvents, Apps } from '../../../apps/server';
+import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -19,24 +19,24 @@ export const addUserToRoom = function (
 	const room: IRoom = Rooms.findOneById(rid);
 
 	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
-	if (
-		!roomDirectives?.allowMemberAction(room, RoomMemberActions.JOIN) &&
-		!roomDirectives?.allowMemberAction(room, RoomMemberActions.INVITE)
-	) {
-		return;
-	}
-
-	try {
-		callbacks.run('federation.beforeAddUserAToRoom', { user, inviter }, room);
-	} catch (error) {
-		throw new Meteor.Error((error as any)?.message);
-	}
-
 	const idOrUsername = typeof user === 'string' ? user : user._id || user.username;
 	const userToBeAdded = Users.findOneByIdOrUsername(idOrUsername?.replace('@', ''));
 
 	if (!userToBeAdded) {
 		throw new Meteor.Error('user-not-found');
+	}
+	
+	if (
+		!roomDirectives?.allowMemberAction(room, RoomMemberActions.JOIN, userToBeAdded._id) &&
+		!roomDirectives?.allowMemberAction(room, RoomMemberActions.INVITE, userToBeAdded._id)
+	) {
+		return;
+	}
+
+	try {
+		callbacks.run('federation.beforeAddUserToARoom', { user, inviter }, room);
+	} catch (error) {
+		throw new Meteor.Error((error as any)?.message);
 	}
 
 	callbacks.run('beforeAddedToRoom', { user: userToBeAdded, inviter: userToBeAdded });

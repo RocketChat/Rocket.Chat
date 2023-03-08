@@ -1,7 +1,7 @@
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { AppDetailChangesBridge as DetailChangesBridge } from '@rocket.chat/apps-engine/server/bridges/AppDetailChangesBridge';
 
-import type { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 export class AppDetailChangesBridge extends DetailChangesBridge {
 	// eslint-disable-next-line no-empty-function
