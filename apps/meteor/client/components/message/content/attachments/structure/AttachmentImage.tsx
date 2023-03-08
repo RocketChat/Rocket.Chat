@@ -55,11 +55,11 @@ const AttachmentImage: FC<AttachmentImageProps> = ({ previewUrl, dataSrc, loadIm
 	const background = previewUrl && `url(${previewUrl}) center center / cover no-repeat fixed`;
 
 	if (!loadImage) {
-		return <Load {...dimensions} {...limits} load={setLoadImage} />;
+		return <Load width={dimensions.width || limits.width} height={dimensions.height || limits.height} load={setLoadImage} />;
 	}
 
 	if (error) {
-		return <Retry {...dimensions} retry={setHasNoError} />;
+		return <Retry width={dimensions.width} height={dimensions.height} retry={setHasNoError} />;
 	}
 
 	return (
@@ -68,6 +68,7 @@ const AttachmentImage: FC<AttachmentImageProps> = ({ previewUrl, dataSrc, loadIm
 				<ImageBox
 					is='picture'
 					position='absolute'
+					onError={() => setError(true)}
 					style={{
 						...(previewUrl && { background, boxSizing: 'content-box' }),
 						top: 0,
@@ -76,7 +77,7 @@ const AttachmentImage: FC<AttachmentImageProps> = ({ previewUrl, dataSrc, loadIm
 						right: 0,
 					}}
 				>
-					<img className='gallery-item' data-src={dataSrc || src} src={src} {...dimensions} />
+					<img className='gallery-item' data-src={dataSrc || src} src={src} width={dimensions.width} height={dimensions.height} />
 				</ImageBox>
 			</Box>
 		</Box>
