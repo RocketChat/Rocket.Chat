@@ -20,6 +20,7 @@ import { getTimezone } from '../../../utils/server/lib/getTimezone';
 import { settings } from '../../../settings/server';
 import * as Mailer from '../../../mailer';
 import type { MainLogger } from '../../../../server/lib/logger/getPino';
+import { metrics } from '../../../metrics';
 
 class LivechatClass {
 	logger: Logger;
@@ -321,7 +322,13 @@ class LivechatClass {
 			timeout,
 		};
 		try {
-			return HTTP.post(settings.get('Livechat_webhookUrl'), options);
+			const result = HTTP.post(settings.get('Livechat_webhookUrl'), options);
+			if (result.statusCode === 200) {
+				metrics.totalLivechatWebhooksSuccess.inc();
+			} else {
+				metrics.totalLivechatWebhooksFailures.inc();
+			}
+			return result;
 		} catch (err) {
 			Livechat.webhookLogger.error({ msg: `Response error on ${11 - attempts} try ->`, err });
 			// try 10 times after 20 seconds each

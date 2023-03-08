@@ -1,7 +1,7 @@
 import { Box, FieldGroup, Field, TextInput, MultiSelect, Button, ButtonGroup, NumberInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { ExternalLink } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useMethod, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
 import Page from '../../../components/Page';
@@ -39,7 +39,6 @@ const getInitialValues = ({
 		Livechat_webhook_on_offline_msg,
 		Livechat_webhook_on_visitor_message,
 		Livechat_webhook_on_agent_message,
-		Livechat_http_timeout,
 	};
 
 	const mappedSendOptions = reduceSendOptions(sendOptions);
@@ -58,7 +57,7 @@ const WebhooksPage = ({ settings }) => {
 
 	const { values, handlers, hasUnsavedChanges, reset, commit } = useForm(getInitialValues(settings));
 
-	const save = useMethod('livechat:saveIntegration');
+	const save = useEndpoint('POST', '/v1/omnichannel/integrations');
 	const test = useEndpoint('POST', '/v1/livechat/webhook.test');
 
 	const { Livechat_webhookUrl, Livechat_secret_token, Livechat_http_timeout, sendOn } = values;
@@ -80,13 +79,20 @@ const WebhooksPage = ({ settings }) => {
 	);
 
 	const handleSave = useMutableCallback(async () => {
-		const sendOnObj = sendOptions.reduce((acc, [key]) => {
-			acc = { ...acc, [key]: sendOn.includes(key) ? 1 : 0 };
-			return acc;
-		}, {});
-
 		try {
-			await save({ Livechat_webhookUrl, Livechat_secret_token, Livechat_http_timeout, ...sendOnObj });
+			await save({
+				LivechatWebhookUrl: Livechat_webhookUrl,
+				LivechatSecretToken: Livechat_secret_token,
+				LivechatHttpTimeout: Livechat_http_timeout,
+				LivechatWebhookOnStart: sendOn.includes('Livechat_webhook_on_start'),
+				LivechatWebhookOnClose: sendOn.includes('Livechat_webhook_on_close'),
+				LivechatWebhookOnChatTaken: sendOn.includes('Livechat_webhook_on_chat_taken'),
+				LivechatWebhookOnChatQueued: sendOn.includes('Livechat_webhook_on_chat_queued'),
+				LivechatWebhookOnForward: sendOn.includes('Livechat_webhook_on_forward'),
+				LivechatWebhookOnOfflineMsg: sendOn.includes('Livechat_webhook_on_offline_msg'),
+				LivechatWebhookOnVisitorMessage: sendOn.includes('Livechat_webhook_on_visitor_message'),
+				LivechatWebhookOnAgentMessage: sendOn.includes('Livechat_webhook_on_agent_message'),
+			});
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			commit();
 		} catch (error) {
