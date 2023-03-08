@@ -1245,6 +1245,16 @@ describe('[Rooms]', function () {
 		});
 	});
 	describe('/rooms.adminRooms', () => {
+		const suffix = `test-${Date.now()}`;
+		const fnameRoom = `Ελληνικά-${suffix}`;
+		const nameRoom = `Ellinika-${suffix}`;
+
+		before((done) => {
+			updateSetting('UI_Allow_room_names_with_special_chars', true).then(() => {
+				createRoom({ type: 'p', name: fnameRoom }).end(done);
+			});
+		});
+
 		it('should throw an error when the user tries to gets a list of discussion and he cannot access the room', (done) => {
 			updatePermission('view-room-administration', []).then(() => {
 				request
@@ -1289,6 +1299,48 @@ describe('[Rooms]', function () {
 					expect(res.body).to.have.property('count');
 				})
 				.end(done);
+		});
+		it('should search the list of admin rooms using non-latin characters when UI_Allow_room_names_with_special_chars setting is toggled', (done) => {
+			updateSetting('UI_Allow_room_names_with_special_chars', true).then(() => {
+				request
+					.get(api('rooms.adminRooms'))
+					.set(credentials)
+					.query({
+						filter: fnameRoom,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('rooms').and.to.be.an('array');
+						expect(res.body.rooms).to.have.lengthOf(1);
+						expect(res.body.rooms[0].fname).to.be.equal(fnameRoom);
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('total');
+						expect(res.body).to.have.property('count');
+					})
+					.end(done);
+			});
+		});
+		it('should search the list of admin rooms using latin characters only when UI_Allow_room_names_with_special_chars setting is disabled', (done) => {
+			updateSetting('UI_Allow_room_names_with_special_chars', false).then(() => {
+				request
+					.get(api('rooms.adminRooms'))
+					.set(credentials)
+					.query({
+						filter: nameRoom,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('rooms').and.to.be.an('array');
+						expect(res.body.rooms).to.have.lengthOf(1);
+						expect(res.body.rooms[0].name).to.be.equal(nameRoom);
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('total');
+						expect(res.body).to.have.property('count');
+					})
+					.end(done);
+			});
 		});
 	});
 
