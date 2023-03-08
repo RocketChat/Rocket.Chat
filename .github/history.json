@@ -98652,17 +98652,9 @@
           "milestone": "6.0.0",
           "contributors": [
             "KevLehman",
-            "web-flow",
             "MartinSchoeler",
-            "cauefcr",
-            "aleksandernsilva",
-            "pierre-lehnen-rc",
-            "juliajforesti",
-            "matheusbsilva137",
-            "dougfabris",
-            "yash-rajpal",
-            "henit-chobisa",
-            "lingohub[bot]"
+            "sampaiodiego",
+            "murtaza98"
           ]
         },
         {
@@ -101898,6 +101890,85 @@
           "contributors": [
             "thassiov",
             "web-flow"
+          ]
+        }
+      ]
+    },
+    "6.0.0-rc.8": {
+      "node_version": "14.21.2",
+      "npm_version": "6.14.17",
+      "apps_engine_version": "1.37.0-alpha.157",
+      "mongo_versions": [
+        "4.4",
+        "5.0",
+        "6.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "28315",
+          "title": "Chore: Manually define shared secrets to reusable workflows",
+          "userLogin": "sampaiodiego",
+          "milestone": "6.0.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        },
+        {
+          "pr": "28261",
+          "title": "[BREAK] Update livechat:saveDepartment to accept a string array in departmentsAllowedToForward",
+          "userLogin": "aleksandernsilva",
+          "description": "**Breaking change:** There have been some changes to `livechat:saveDepartment` meteor method's `departmentsAllowedToForward` parameter. Previously it used to accept a string which was a comma-separated list of departmentIds. The new type is an array of strings.\r\n\r\nDue to recent changes to the `useDepartmentList` hook the component `AutoCompleteDepartment` became incompatible with many of our existing pages, causing them to break. This PR makes them work again.",
+          "milestone": "6.0.0",
+          "contributors": [
+            "aleksandernsilva",
+            "murtaza98",
+            "ggazzo",
+            "web-flow",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "28310",
+          "title": "Regression: Remove duplicated broadcast App events",
+          "userLogin": "sampaiodiego",
+          "milestone": "6.0.0",
+          "contributors": [
+            "sampaiodiego",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28311",
+          "title": "Regression: Zapier Callout using wrong props",
+          "userLogin": "ggazzo",
+          "milestone": "6.0.0",
+          "contributors": [
+            "ggazzo"
+          ]
+        },
+        {
+          "pr": "27970",
+          "title": "Regression: `Admin UI -> Rooms` Search filter not working",
+          "userLogin": "totoi690",
+          "milestone": "6.0.0",
+          "contributors": [
+            "totoi690",
+            "guijun13",
+            "web-flow",
+            "gabriellsh",
+            "LucianoPierdona",
+            "hugocostadev",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "28304",
+          "title": "Regression: Fix hasLicense failing due call stack limit reasons",
+          "userLogin": "ggazzo",
+          "milestone": "6.0.0",
+          "contributors": [
+            "ggazzo"
           ]
         }
       ]
