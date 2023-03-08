@@ -1,4 +1,4 @@
-import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IOmnichannelRoomClosingInfo } from '@rocket.chat/core-typings';
 import type { FindCursor, UpdateResult, AggregationCursor, Document } from 'mongodb';
 
 import type { FindPaginated } from '..';
@@ -109,4 +109,18 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	setAutoTransferredAtById(roomId: string): Promise<UpdateResult>;
 
 	findAvailableSources(): AggregationCursor<Document>;
+
+	setTranscriptRequestedPdfById(rid: string): Promise<UpdateResult>;
+	unsetTranscriptRequestedPdfById(rid: string): Promise<UpdateResult>;
+	setPdfTranscriptFileIdById(rid: string, fileId: string): Promise<UpdateResult>;
+
+	setEmailTranscriptRequestedByRoomId(
+		rid: string,
+		transcriptInfo: NonNullable<IOmnichannelRoom['transcriptRequest']>,
+	): Promise<UpdateResult>;
+	unsetEmailTranscriptRequestedByRoomId(rid: string): Promise<UpdateResult>;
+
+	closeRoomById(roomId: string, closeInfo: IOmnichannelRoomClosingInfo): Promise<UpdateResult>;
+
+	bulkRemoveDepartmentAndUnitsFromRooms(departmentId: string): Promise<Document | UpdateResult>;
 }

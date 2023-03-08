@@ -15,6 +15,7 @@ type AutoCompleteDepartmentProps = {
 	onlyMyDepartments?: boolean;
 	haveAll?: boolean;
 	haveNone?: boolean;
+	showArchived?: boolean;
 };
 
 const AutoCompleteDepartment = ({
@@ -24,9 +25,10 @@ const AutoCompleteDepartment = ({
 	onChange,
 	haveAll,
 	haveNone,
+	showArchived = false,
 }: AutoCompleteDepartmentProps): ReactElement | null => {
 	const t = useTranslation();
-	const [departmentsFilter, setDepartmentsFilter] = useState('');
+	const [departmentsFilter, setDepartmentsFilter] = useState<string>('');
 
 	const debouncedDepartmentsFilter = useDebouncedValue(departmentsFilter, 500);
 
@@ -38,36 +40,18 @@ const AutoCompleteDepartment = ({
 				haveAll,
 				haveNone,
 				excludeDepartmentId,
+				showArchived,
 			}),
-			[debouncedDepartmentsFilter, onlyMyDepartments, haveAll, haveNone, excludeDepartmentId],
+			[debouncedDepartmentsFilter, onlyMyDepartments, haveAll, haveNone, excludeDepartmentId, showArchived],
 		),
 	);
 
 	const { phase: departmentsPhase, items: departmentsItems, itemCount: departmentsTotal } = useRecordList(departmentsList);
 
-	const sortedByName = useMemo(
-		() =>
-			departmentsItems.sort((a, b) => {
-				if (a.value.value === 'all') {
-					return -1;
-				}
-
-				if (a.name > b.name) {
-					return 1;
-				}
-				if (a.name < b.name) {
-					return -1;
-				}
-
-				return 0;
-			}),
-		[departmentsItems],
-	);
-
 	const department = useMemo(() => {
 		const valueFound = typeof value === 'string' ? value : value?.value || '';
-		return sortedByName.find((dep) => dep.value.value === valueFound)?.value;
-	}, [sortedByName, value]);
+		return departmentsItems.find((dep) => dep.value === valueFound)?.value;
+	}, [departmentsItems, value]);
 
 	return (
 		<PaginatedSelectFiltered
@@ -75,11 +59,8 @@ const AutoCompleteDepartment = ({
 			value={department}
 			onChange={onChange}
 			filter={departmentsFilter}
-			// Workaround for setFilter weird typing
-			setFilter={setDepartmentsFilter as (value: string | number | undefined) => void}
-			// TODO: Fix typing on fuselage
-			// Workaround for options wrong typing
-			options={sortedByName as any}
+			setFilter={setDepartmentsFilter as (value?: string | number) => void}
+			options={departmentsItems}
 			placeholder={t('Select_an_option')}
 			data-qa='autocomplete-department'
 			endReached={

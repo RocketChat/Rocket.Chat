@@ -2,7 +2,7 @@ import { MessageBlock } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-import { useMessageOembedMaxWidth } from '../../../views/room/contexts/MessageContext';
+import { useOembedLayout } from '../hooks/useOembedLayout';
 import type { OEmbedPreviewMetadata } from './urlPreviews/OEmbedPreviewMetadata';
 import OEmbedResolver from './urlPreviews/OEmbedResolver';
 import UrlPreview from './urlPreviews/UrlPreview';
@@ -110,7 +110,7 @@ const isMetaPreview = (_data: PreviewData['data'], type: PreviewTypes): _data is
 type UrlPreviewsProps = { urls: OembedUrlLegacy[] };
 
 const UrlPreviews = ({ urls }: UrlPreviewsProps): ReactElement | null => {
-	const oembedWidth = useMessageOembedMaxWidth();
+	const { maxWidth: oembedMaxWidth } = useOembedLayout();
 	const metaAndHeaders = urls.map(processMetaAndHeaders).filter(isPreviewData);
 
 	return (
@@ -118,13 +118,13 @@ const UrlPreviews = ({ urls }: UrlPreviewsProps): ReactElement | null => {
 			{metaAndHeaders.map(({ type, data }, index) => {
 				if (isMetaPreview(data, type)) {
 					return (
-						<MessageBlock width='100%' maxWidth={oembedWidth} key={index}>
+						<MessageBlock width='100%' maxWidth={oembedMaxWidth} key={index}>
 							<OEmbedResolver meta={data} />
 						</MessageBlock>
 					);
 				}
 				return (
-					<MessageBlock width='100%' maxWidth={oembedWidth} key={index}>
+					<MessageBlock width='100%' maxWidth={oembedMaxWidth} key={index}>
 						<UrlPreview {...data} />
 					</MessageBlock>
 				);

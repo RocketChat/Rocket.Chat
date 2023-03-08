@@ -392,31 +392,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'chat.getMessageReadReceipts',
-	{ authRequired: true },
-	{
-		async get() {
-			const { messageId } = this.queryParams;
-			if (!messageId) {
-				return API.v1.failure({
-					error: "The required 'messageId' param is missing.",
-				});
-			}
-
-			try {
-				return API.v1.success({
-					receipts: await Meteor.call('getReadReceipts', { messageId }),
-				});
-			} catch (error) {
-				return API.v1.failure({
-					error: error.message,
-				});
-			}
-		},
-	},
-);
-
-API.v1.addRoute(
 	'chat.reportMessage',
 	{ authRequired: true },
 	{
@@ -800,55 +775,6 @@ API.v1.addRoute(
 
 			messages.messages = normalizeMessagesForUser(messages.messages, this.userId);
 
-			return API.v1.success(messages);
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.getSnippetedMessageById',
-	{ authRequired: true },
-	{
-		get() {
-			const { messageId } = this.queryParams;
-
-			if (!messageId) {
-				throw new Meteor.Error('error-invalid-params', 'The required "messageId" query param is missing.');
-			}
-			const message = Promise.await(
-				findSnippetedMessageById({
-					uid: this.userId,
-					messageId,
-				}),
-			);
-			return API.v1.success(message);
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.getSnippetedMessages',
-	{ authRequired: true },
-	{
-		get() {
-			const { roomId } = this.queryParams;
-			const { sort } = this.parseJsonQuery();
-			const { offset, count } = this.getPaginationItems();
-
-			if (!roomId) {
-				throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
-			}
-			const messages = Promise.await(
-				findSnippetedMessages({
-					uid: this.userId,
-					roomId,
-					pagination: {
-						offset,
-						count,
-						sort,
-					},
-				}),
-			);
 			return API.v1.success(messages);
 		},
 	},

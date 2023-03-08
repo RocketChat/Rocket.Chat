@@ -1,15 +1,23 @@
-import { test, expect } from './utils/test';
+import faker from '@faker-js/faker';
+import type { Page } from '@playwright/test';
+
+import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
+import { test, expect } from './utils/test';
 
-test.use({ storageState: 'admin-session.json' });
+test.use({ storageState: Users.admin.state });
 
 test.describe.serial('channel-management', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
+	let regularUserPage: Page;
 
-	test.beforeAll(async ({ api }) => {
+	test.beforeAll(async ({ api, browser }) => {
 		targetChannel = await createTargetChannel(api);
+		regularUserPage = await browser.newPage({ storageState: Users.user2.state });
+		await regularUserPage.goto('/home');
+		await regularUserPage.waitForSelector('[data-qa-id="home-header"]');
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -99,6 +107,19 @@ test.describe.serial('channel-management', () => {
 		await poHomeChannel.tabs.notificationPreferences.btnSave.click();
 
 		await expect(poHomeChannel.toastSuccess).toBeVisible();
+	});
+
+	test('expect "readOnlyChannel" to show join button', async () => {
+		const channelName = faker.datatype.uuid();
+
+		await poHomeChannel.sidenav.openNewByLabel('Channel');
+		await poHomeChannel.sidenav.inputChannelName.type(channelName);
+		await poHomeChannel.sidenav.checkboxPrivateChannel.click();
+		await poHomeChannel.sidenav.checkboxReadOnly.click();
+		await poHomeChannel.sidenav.btnCreate.click();
+
+		await regularUserPage.goto(`/channel/${channelName}`);
+		await expect(regularUserPage.locator('button', { hasText: 'Join' })).toBeVisible();
 	});
 
 	test.skip('expect all notification preferences of "targetChannel" to be "Mentions"', async () => {

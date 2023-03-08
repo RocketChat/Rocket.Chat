@@ -1,8 +1,4 @@
 import proxyquire from 'proxyquire';
-import _ from 'underscore';
-import s from 'underscore.string';
-
-_.mixin(s.exports());
 
 const mocks = {
 	'meteor/meteor': {
@@ -26,5 +22,3 @@ const mocks = {
 export const { Markdown } = proxyquire.noCallThru().load('../../../../app/markdown/lib/markdown', mocks);
 export const { original } = proxyquire.noCallThru().load('../../../../app/markdown/lib/parser/original/original', mocks);
 export const { filtered } = proxyquire.noCallThru().load('../../../../app/markdown/lib/parser/filtered/filtered', mocks);
-
-global.s = s;

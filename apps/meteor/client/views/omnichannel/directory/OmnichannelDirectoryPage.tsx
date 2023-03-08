@@ -1,18 +1,19 @@
 import { Tabs } from '@rocket.chat/fuselage';
 import { useCurrentRoute, useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback } from 'react';
 
 import Page from '../../../components/Page';
+import { queryClient } from '../../../lib/queryClient';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import ContextualBar from './ContextualBar';
 import CallTab from './calls/CallTab';
 import ChatTab from './chats/ChatTab';
 import ContactTab from './contacts/ContactTab';
 
-const OmnichannelDirectoryPage = (): ReactElement => {
-	const defaultTab = 'contacts';
+const DEFAULT_TAB = 'contacts';
 
+const OmnichannelDirectoryPage = (): ReactElement => {
 	const [routeName] = useCurrentRoute();
 	const tab = useRouteParameter('page');
 	const directoryRoute = useRoute('omnichannel-directory');
@@ -24,14 +25,13 @@ const OmnichannelDirectoryPage = (): ReactElement => {
 		}
 
 		if (!tab) {
-			return directoryRoute.replace({ page: defaultTab });
+			return directoryRoute.replace({ page: DEFAULT_TAB });
 		}
-	}, [routeName, directoryRoute, tab, defaultTab]);
+	}, [routeName, directoryRoute, tab]);
 
 	const handleTabClick = useCallback((tab) => (): void => directoryRoute.push({ tab }), [directoryRoute]);
 
-	const [contactReload, setContactReload] = useState();
-	const [chatReload, setChatReload] = useState();
+	const chatReload = () => queryClient.invalidateQueries({ queryKey: ['current-chats'] });
 
 	const t = useTranslation();
 
@@ -55,12 +55,10 @@ const OmnichannelDirectoryPage = (): ReactElement => {
 					</Tabs.Item>
 				</Tabs>
 				<Page.Content>
-					{(tab === 'contacts' && <ContactTab setContactReload={setContactReload} />) ||
-						(tab === 'chats' && <ChatTab setChatReload={setChatReload} />) ||
-						(tab === 'calls' && <CallTab />)}
+					{(tab === 'contacts' && <ContactTab />) || (tab === 'chats' && <ChatTab />) || (tab === 'calls' && <CallTab />)}
 				</Page.Content>
 			</Page>
-			<ContextualBar chatReload={chatReload} contactReload={contactReload} />
+			<ContextualBar chatReload={chatReload} />
 		</Page>
 	);
 };

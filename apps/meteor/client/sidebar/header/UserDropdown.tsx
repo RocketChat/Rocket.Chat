@@ -11,8 +11,10 @@ import {
 	OptionTitle,
 	RadioButton,
 } from '@rocket.chat/fuselage';
-import { useMutableCallback, useSessionStorage } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useLayout, useRoute, useLogout, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useThemeMode } from '@rocket.chat/ui-theming/src/hooks/useThemeMode';
 import type { ReactElement } from 'react';
 import React from 'react';
 
@@ -24,7 +26,7 @@ import { UserStatus } from '../../components/UserStatus';
 import UserAvatar from '../../components/avatar/UserAvatar';
 import { useUserDisplayName } from '../../hooks/useUserDisplayName';
 import { imperativeModal } from '../../lib/imperativeModal';
-import { useIsExperimentalThemeEnabled } from '../../views/hooks/useExperimentalTheme';
+import { useStatusDisabledModal } from '../../views/admin/customUserStatus/hooks/useStatusDisabledModal';
 import EditStatusModal from './EditStatusModal';
 
 const isDefaultStatus = (id: string): boolean => (Object.values(UserStatusEnum) as string[]).includes(id);
@@ -38,7 +40,7 @@ const setStatus = (status: typeof userStatus.list['']): void => {
 
 const translateStatusName = (t: ReturnType<typeof useTranslation>, status: typeof userStatus.list['']): string => {
 	if (isDefaultStatusName(status.name, status.id)) {
-		return t(status.name);
+		return t(status.name as TranslationKey);
 	}
 
 	return status.name;
@@ -54,10 +56,10 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	const accountRoute = useRoute('account-index');
 	const logout = useLogout();
 	const { isMobile } = useLayout();
+	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
+	const handleStatusDisabledModal = useStatusDisabledModal();
 
-	const [selectedTheme, setTheme] = useSessionStorage<'dark' | 'light'>(`rcx-theme`, 'light');
-
-	const isExperimentalThemeEnabled = useIsExperimentalThemeEnabled();
+	const [selectedTheme, setTheme] = useThemeMode();
 
 	const { username, avatarETag, status, statusText } = user;
 
@@ -95,7 +97,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 				<Box mis='x4' display='flex' overflow='hidden' flexDirection='column' fontScale='p2' mb='neg-x4' flexGrow={1} flexShrink={1}>
 					<Box withTruncatedText w='full' display='flex' alignItems='center' flexDirection='row'>
 						<Margins inline='x4'>
-							<UserStatus status={status} />
+							<UserStatus status={presenceDisabled ? 'disabled' : status} />
 							<Box is='span' withTruncatedText display='inline-block' fontWeight='700'>
 								{displayName}
 							</Box>
@@ -105,7 +107,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 						<MarkdownText
 							withTruncatedText
 							parseEmoji={true}
-							content={statusText || t(status || 'offline')}
+							content={statusText || t(status ?? 'offline')}
 							variant='inlineWithoutBreaks'
 						/>
 					</Box>
@@ -113,6 +115,14 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 			</Box>
 			<OptionDivider />
 			<OptionTitle>{t('Status')}</OptionTitle>
+			{presenceDisabled && (
+				<Box fontScale='p2' mi='x12' mb='x4'>
+					<Box mbe='x4'>{t('User_status_disabled')}</Box>
+					<Box is='a' color='info' onClick={handleStatusDisabledModal}>
+						{t('Learn_more')}
+					</Box>
+				</Box>
+			)}
 			{Object.values(userStatus.list)
 				.filter(filterInvisibleStatus)
 				.map((status, i) => {
@@ -122,6 +132,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 					return (
 						<Option
 							key={i}
+							disabled={presenceDisabled}
 							onClick={(): void => {
 								setStatus(status);
 								onClose();
@@ -136,29 +147,32 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 						</Option>
 					);
 				})}
-			<Option icon='emoji' label={`${t('Custom_Status')}...`} onClick={handleCustomStatus}></Option>
+			<Option icon='emoji' label={`${t('Custom_Status')}...`} onClick={handleCustomStatus} disabled={presenceDisabled}></Option>
 			<OptionDivider />
 
-			{isExperimentalThemeEnabled && (
-				<>
-					<OptionTitle>{t('Theme')}</OptionTitle>
-					<Option>
-						<OptionIcon name='sun' />
-						<OptionContent>{t('Theme_light')}</OptionContent>
-						<OptionColumn>
-							<RadioButton checked={selectedTheme === 'light'} onChange={(): void => setTheme('light')} m='x4' />
-						</OptionColumn>
-					</Option>
-					<Option>
-						<OptionIcon name='moon' />
-						<OptionContent>{t('Theme_dark')}</OptionContent>
-						<OptionColumn>
-							<RadioButton checked={selectedTheme === 'dark'} onChange={(): void => setTheme('dark')} m='x4' />
-						</OptionColumn>
-					</Option>
-					<OptionDivider />
-				</>
-			)}
+			<OptionTitle>{t('Theme')}</OptionTitle>
+			<Option>
+				<OptionIcon name='sun' />
+				<OptionContent>{t('Theme_light')}</OptionContent>
+				<OptionColumn>
+					<RadioButton checked={selectedTheme === 'light'} onChange={setTheme('light')} m='x4' />
+				</OptionColumn>
+			</Option>
+			<Option>
+				<OptionIcon name='moon' />
+				<OptionContent>{t('Theme_dark')}</OptionContent>
+				<OptionColumn>
+					<RadioButton checked={selectedTheme === 'dark'} onChange={setTheme('dark')} m='x4' />
+				</OptionColumn>
+			</Option>
+			<Option>
+				<OptionIcon name='desktop' />
+				<OptionContent>{t('Theme_match_system')}</OptionContent>
+				<OptionColumn>
+					<RadioButton checked={selectedTheme === 'auto'} onChange={setTheme('auto')} m='x4' />
+				</OptionColumn>
+			</Option>
+			<OptionDivider />
 			<Option icon='user' label={t('My_Account')} onClick={handleMyAccount}></Option>
 			<Option icon='sign-out' label={t('Logout')} onClick={handleLogout}></Option>
 		</Box>

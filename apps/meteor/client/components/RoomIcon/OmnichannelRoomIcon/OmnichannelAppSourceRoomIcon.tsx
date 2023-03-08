@@ -7,10 +7,10 @@ import { AsyncStatePhase } from '../../../lib/asyncState/AsyncStatePhase';
 import { useOmnichannelRoomIcon } from './context/OmnichannelRoomIconContext';
 
 export const colors = {
-	busy: 'danger-500',
-	away: 'warning-600',
-	online: 'success-500',
-	offline: 'neutral-600',
+	busy: 'status-font-on-danger',
+	away: 'status-font-on-warning',
+	online: 'status-font-on-success',
+	offline: 'annotation',
 };
 
 const convertBoxSizeToNumber = (boxSize: ComponentProps<typeof Icon>['size']): number => {
