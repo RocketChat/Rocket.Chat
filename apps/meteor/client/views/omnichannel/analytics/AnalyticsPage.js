@@ -72,7 +72,7 @@ const AnalyticsPage = () => {
 						<DateRangePicker mi='x4' flexGrow={1} onChange={setDateRange} />
 					</Box>
 					<Box>
-						<Overview type={type} dateRange={dateRange} departmentId={department?.value} />
+						<Overview type={type} dateRange={dateRange} departmentId={department} />
 					</Box>
 					<Box display='flex' flexDirection='row'>
 						<Margins inline='x2'>
@@ -90,12 +90,12 @@ const AnalyticsPage = () => {
 							w='66%'
 							h='100%'
 							chartName={chartName}
-							departmentId={department?.value}
+							departmentId={department}
 							dateRange={dateRange}
 							alignSelf='stretch'
 						/>
 						<Box display='flex' w='33%' flexDirection='row' justifyContent='stretch' p='x10' mis='x4'>
-							<AgentOverview type={chartName} dateRange={dateRange} departmentId={department?.value} />
+							<AgentOverview type={chartName} dateRange={dateRange} departmentId={department} />
 						</Box>
 					</Box>
 				</Margins>
