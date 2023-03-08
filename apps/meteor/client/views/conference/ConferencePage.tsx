@@ -1,45 +1,28 @@
-import { useRoute, useCurrentRoute, useSetModal } from '@rocket.chat/ui-contexts';
+import { useRoute, useCurrentRoute, useSetModal, useUser } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 
-import VideoConfBlockModal from '../room/contextualBar/VideoConference/VideoConfBlockModal';
+import { useVideoOpenCall } from '../room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
 import PageLoading from '../root/PageLoading';
 
-type WindowMaybeDesktop = typeof window & {
-	RocketChatDesktop?: {
-		openInternalVideoChatWindow?: (url: string, options: undefined) => void;
-	};
-};
-
 const ConferencePage = (): ReactElement => {
+	const user = useUser();
 	const defaultRoute = useRoute('/');
 	const setModal = useSetModal();
 	const [, , queryParams] = useCurrentRoute();
+	const handleOpenCall = useVideoOpenCall();
 
-	const callUrl = queryParams?.callUrl;
+	const callUrl = queryParams?.callProvider === 'pexip' ? `${queryParams?.callUrl}&name=${user?.username}` : queryParams?.callUrl;
 
 	useEffect(() => {
 		if (!callUrl) {
 			return defaultRoute.push();
 		}
 
-		const windowMaybeDesktop = window as WindowMaybeDesktop;
-		if (windowMaybeDesktop.RocketChatDesktop?.openInternalVideoChatWindow) {
-			windowMaybeDesktop.RocketChatDesktop.openInternalVideoChatWindow(callUrl, undefined);
-		} else {
-			const open = () => window.open(callUrl, '_blank', 'rel=noreferrer noopener width=720 height=500');
-
-			const popup = open();
-
-			if (popup !== null) {
-				return;
-			}
-
-			setModal(<VideoConfBlockModal onClose={(): void => setModal(null)} onConfirm={open} />);
-		}
+		handleOpenCall(callUrl);
 
 		defaultRoute.push();
-	}, [setModal, defaultRoute, callUrl]);
+	}, [setModal, defaultRoute, callUrl, handleOpenCall]);
 
 	return <PageLoading />;
 };
