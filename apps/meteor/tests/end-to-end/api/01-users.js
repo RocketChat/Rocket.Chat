@@ -636,6 +636,8 @@ describe('[Users]', function () {
 	describe('[/users.list]', () => {
 		let user;
 		let deactivatedUser;
+		let user2;
+		let user2Credentials;
 
 		before((done) => {
 			const createDeactivatedUser = async () => {
@@ -699,6 +701,19 @@ describe('[Users]', function () {
 		);
 
 		after((done) => clearCustomFields(done));
+
+		before(async () => {
+			user2 = await createTestUser();
+			user2Credentials = await loginTestUser(user2);
+		});
+
+		after(async () => {
+			await deleteTestUser(user2);
+			user2 = undefined;
+
+			await updatePermission('view-outside-room', ['admin', 'owner', 'moderator', 'user']);
+			await updateSetting('API_Apply_permission_view-outside-room_on_users-list', false);
+		});
 
 		it('should query all users in the system', (done) => {
 			request
@@ -795,6 +810,27 @@ describe('[Users]', function () {
 					expect(res.body).to.have.property('total');
 				})
 				.end(done);
+		});
+
+		it('should query all users in the system when logged as normal user and `view-outside-room` not granted', async () => {
+			await updatePermission('view-outside-room', ['admin']);
+			await request
+				.get(api('users.list'))
+				.set(user2Credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+				});
+		});
+
+		it('should not query users when logged as normal user, `view-outside-room` not granted and temp setting enabled', async () => {
+			await updatePermission('view-outside-room', ['admin']);
+			await updateSetting('API_Apply_permission_view-outside-room_on_users-list', true);
+
+			await request.get(api('users.list')).set(user2Credentials).expect('Content-Type', 'application/json').expect(403);
 		});
 	});
 

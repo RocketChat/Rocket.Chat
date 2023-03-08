@@ -40,6 +40,15 @@ const CustomContentCard = (): ReactElement | null => {
 	const isEnterprise = data?.isEnterprise;
 	const willNotShowCustomContent = isCustomContentBodyEmpty || !isCustomContentVisible;
 
+	const userVisibilityTooltipText = isCustomContentVisible ? t('Now_Its_Visible_For_Everyone') : t('Now_Its_Visible_Only_For_Admins');
+
+	let customContentOnlyTooltipText = t('It_Will_Hide_All_Other_Content_Blocks_In_The_Homepage');
+	if (willNotShowCustomContent) {
+		customContentOnlyTooltipText = t('Action_Available_After_Custom_Content_Added_And_Visible');
+	} else if (isCustomContentOnly) {
+		customContentOnlyTooltipText = t('It_Will_Show_All_Other_Content_Blocks_In_The_Homepage');
+	}
+
 	if (isAdmin) {
 		return (
 			<Card data-qa-id='homepage-custom-card'>
@@ -64,7 +73,7 @@ const CustomContentCard = (): ReactElement | null => {
 						</Button>
 						<Button
 							disabled={isCustomContentBodyEmpty || (isCustomContentVisible && isCustomContentOnly)}
-							title={!isCustomContentVisible ? t('Now_Its_Available_Only_For_Admins') : t('Now_Its_Available_For_Everyone')}
+							title={isCustomContentBodyEmpty ? t('Action_Available_After_Custom_Content_Added') : userVisibilityTooltipText}
 							onClick={handleChangeCustomContentVisibility}
 							role='button'
 						>
@@ -73,7 +82,7 @@ const CustomContentCard = (): ReactElement | null => {
 						</Button>
 						<Button
 							disabled={willNotShowCustomContent || !isEnterprise}
-							title={t('It_Will_Hide_All_Other_White_Blocks_In_The_Homepage')}
+							title={!isEnterprise ? t('Enterprise_Only') : customContentOnlyTooltipText}
 							onClick={handleOnlyShowCustomContent}
 							role='button'
 						>

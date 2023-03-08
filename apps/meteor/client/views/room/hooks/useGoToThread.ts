@@ -5,7 +5,7 @@ import { useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
 export const useGoToThread = ({ replace = false }: { replace?: boolean } = {}): ((params: {
 	rid: IRoom['_id'];
 	tmid: IMessage['_id'];
-	jump?: IMessage['_id'];
+	msg?: IMessage['_id'];
 }) => void) => {
 	const [routeName, params, queryParams] = useCurrentRoute();
 
@@ -17,7 +17,7 @@ export const useGoToThread = ({ replace = false }: { replace?: boolean } = {}): 
 	const go = replace ? roomRoute.replace : roomRoute.push;
 
 	// TODO: remove params recycling
-	return useMutableCallback(({ rid, tmid, jump }) => {
-		go({ rid, ...params, tab: 'thread', context: tmid }, { ...queryParams, ...(jump && { jump }) });
+	return useMutableCallback(({ rid, tmid, msg }) => {
+		go({ rid, ...params, tab: 'thread', context: tmid }, { ...queryParams, ...(msg && { msg }) });
 	});
 };

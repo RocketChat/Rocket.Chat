@@ -48,6 +48,7 @@ export const RegistrationPageRouter = ({
 	if (route === 'anonymous') {
 		return <>{children}</>;
 	}
+
 	return null;
 };
 
