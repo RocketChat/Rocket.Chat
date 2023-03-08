@@ -77,7 +77,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return statistic;
 	}
 
-	findByNameContainingAndTypes(
+	findByNameOrFnameContainingAndTypes(
 		name: NonNullable<IRoom['name']>,
 		types: Array<IRoom['t']>,
 		discussion: boolean = false,
@@ -103,16 +103,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 			prid: { $exists: discussion },
 			$or: [
-				{
-					$and: [
-						{
-							$or: [
-								{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name: nameRegex }] },
-								{ federated: true, fname: nameRegex },
-							],
-						},
-					],
-				},
+				{ name: nameRegex, federated: { $ne: true } },
+				{ fname: nameRegex },
 				{
 					t: 'd',
 					usernames: nameRegex,
@@ -152,7 +144,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findPaginated(query, options);
 	}
 
-	findByNameContaining(
+	findByNameOrFnameContaining(
 		name: NonNullable<IRoom['name']>,
 		discussion: boolean = false,
 		teams: boolean = false,
@@ -174,16 +166,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		const query: Filter<IRoom> = {
 			prid: { $exists: discussion },
 			$or: [
-				{
-					$and: [
-						{
-							$or: [
-								{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name: nameRegex }] },
-								{ federated: true, fname: nameRegex },
-							],
-						},
-					],
-				},
+				{ name: nameRegex, federated: { $ne: true } },
+				{ fname: nameRegex },
 				{
 					t: 'd',
 					usernames: nameRegex,

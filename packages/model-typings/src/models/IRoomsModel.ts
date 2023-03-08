@@ -13,7 +13,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	getMostRecentAverageChatDurationTime(numberMostRecentChats: number, department: string | object): Promise<Document>;
 
-	findByNameContainingAndTypes(
+	findByNameOrFnameContainingAndTypes(
 		name: NonNullable<IRoom['name']>,
 		types: Array<IRoom['t']>,
 		discussion: boolean,
@@ -30,7 +30,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		options: FindOptions<IRoom>,
 	): FindPaginated<FindCursor<IRoom>>;
 
-	findByNameContaining(
+	findByNameOrFnameContaining(
 		name: NonNullable<IRoom['name']>,
 		discussion: boolean,
 		teams: boolean,
