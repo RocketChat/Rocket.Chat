@@ -1,6 +1,46 @@
 
 # 6.0.0 (Under Release Candidate Process)
 
+## 6.0.0-rc.8
+`2023-03-07  ·  1 ️️️⚠️  ·  5 🔍  ·  9 👩‍💻👨‍💻`
+
+### ⚠️ BREAKING CHANGES
+
+
+- Update livechat:saveDepartment to accept a string array in departmentsAllowedToForward ([#28261](https://github.com/RocketChat/Rocket.Chat/pull/28261))
+
+  **Breaking change:** There have been some changes to `livechat:saveDepartment` meteor method's `departmentsAllowedToForward` parameter. Previously it used to accept a string which was a comma-separated list of departmentIds. The new type is an array of strings.
+
+  Due to recent changes to the `useDepartmentList` hook the component `AutoCompleteDepartment` became incompatible with many of our existing pages, causing them to break. This PR makes them work again.
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Manually define shared secrets to reusable workflows ([#28315](https://github.com/RocketChat/Rocket.Chat/pull/28315))
+
+- Regression: `Admin UI -> Rooms` Search filter not working ([#27970](https://github.com/RocketChat/Rocket.Chat/pull/27970))
+
+- Regression: Fix hasLicense failing due call stack limit reasons ([#28304](https://github.com/RocketChat/Rocket.Chat/pull/28304))
+
+- Regression: Remove duplicated broadcast App events ([#28310](https://github.com/RocketChat/Rocket.Chat/pull/28310))
+
+- Regression: Zapier Callout using wrong props ([#28311](https://github.com/RocketChat/Rocket.Chat/pull/28311))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@LucianoPierdona](https://github.com/LucianoPierdona)
+- [@aleksandernsilva](https://github.com/aleksandernsilva)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@guijun13](https://github.com/guijun13)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@murtaza98](https://github.com/murtaza98)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@totoi690](https://github.com/totoi690)
+
 ## 6.0.0-rc.7
 `2023-03-06  ·  11 🔍  ·  11 👩‍💻👨‍💻`
 
@@ -698,7 +738,7 @@
 ### 🎉 New features
 
 
-- **EE:** Omnichannel Priorities & SLAs ([#27083](https://github.com/RocketChat/Rocket.Chat/pull/27083) by [@henit-chobisa](https://github.com/henit-chobisa) & [@lingohub[bot]](https://github.com/lingohub[bot]))
+- **EE:** Omnichannel Priorities & SLAs ([#27083](https://github.com/RocketChat/Rocket.Chat/pull/27083))
 
 - **EE:** PDF Chat transcript for Omnichannel conversations ([#27572](https://github.com/RocketChat/Rocket.Chat/pull/27572))
 
