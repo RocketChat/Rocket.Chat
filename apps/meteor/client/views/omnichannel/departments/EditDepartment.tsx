@@ -248,9 +248,14 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 			visitorInactivityTimeoutInSeconds,
 			abandonedRoomsCloseCustomMessage,
 			waitingQueueMessage,
+<<<<<<< HEAD:apps/meteor/client/views/omnichannel/departments/EditDepartment.tsx
 			departmentsAllowedToForward: departmentsAllowedToForward?.map((dep) => dep.value).join(),
 			fallbackForwardDepartment:
 				typeof fallbackForwardDepartment === 'string' ? fallbackForwardDepartment : fallbackForwardDepartment.value,
+=======
+			departmentsAllowedToForward: departmentsAllowedToForward?.map((dep) => dep.value),
+			fallbackForwardDepartment,
+>>>>>>> 1c7f20a7c05bcce70b28ff44fce667a967099351:apps/meteor/client/views/omnichannel/departments/EditDepartment.js
 		};
 
 		const agentListPayload = {

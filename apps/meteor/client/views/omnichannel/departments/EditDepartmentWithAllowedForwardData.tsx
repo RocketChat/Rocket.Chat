@@ -18,7 +18,11 @@ function EditDepartmentWithAllowedForwardData({ data, ...props }: Omit<EditDepar
 	} = useEndpointData('/v1/livechat/department.listByIds', {
 		params: useMemo(
 			() => ({
+<<<<<<< HEAD:apps/meteor/client/views/omnichannel/departments/EditDepartmentWithAllowedForwardData.tsx
 				ids: data?.department?.departmentsAllowedToForward ? data.department.departmentsAllowedToForward.split(',') : [],
+=======
+				ids: data?.department?.departmentsAllowedToForward ?? [],
+>>>>>>> 1c7f20a7c05bcce70b28ff44fce667a967099351:apps/meteor/client/views/omnichannel/departments/EditDepartmentWithAllowedForwardData.js
 			}),
 			[data],
 		),

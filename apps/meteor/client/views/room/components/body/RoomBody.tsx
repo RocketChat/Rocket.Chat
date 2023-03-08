@@ -27,12 +27,14 @@ import { useReactiveQuery } from '../../../../hooks/useReactiveQuery';
 import { RoomManager as NewRoomManager } from '../../../../lib/RoomManager';
 import type { Upload } from '../../../../lib/chats/Upload';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
+import { setMessageJumpQueryStringParameter } from '../../../../lib/utils/setMessageJumpQueryStringParameter';
 import Announcement from '../../Announcement';
 import { MessageList } from '../../MessageList/MessageList';
 import MessageListErrorBoundary from '../../MessageList/MessageListErrorBoundary';
 import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../../contexts/RoomContext';
 import { useToolboxContext } from '../../contexts/ToolboxContext';
+import { useScrollMessageList } from '../../hooks/useScrollMessageList';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessagesBar from './JumpToRecentMessagesBar';
 import LeaderBar from './LeaderBar';
@@ -66,7 +68,7 @@ const RoomBody = (): ReactElement => {
 
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
 	const messagesBoxRef = useRef<HTMLDivElement | null>(null);
-	const atBottomRef = useRef(!useQueryStringParameter('msg'));
+	const atBottomRef = useRef(true);
 	const lastScrollTopRef = useRef(0);
 
 	const chat = useChat();
@@ -91,12 +93,15 @@ const RoomBody = (): ReactElement => {
 		return false;
 	}, []);
 
-	const sendToBottom = useCallback(() => {
-		const wrapper = wrapperRef.current;
+	const scrollMessageList = useScrollMessageList(wrapperRef);
 
-		wrapper?.scrollTo(30, wrapper.scrollHeight);
+	const sendToBottom = useCallback(() => {
+		scrollMessageList((wrapper) => {
+			return { left: 30, top: wrapper?.scrollHeight };
+		});
+
 		setHasNewMessages(false);
-	}, []);
+	}, [scrollMessageList]);
 
 	const sendToBottomIfNecessary = useCallback(() => {
 		if (atBottomRef.current === true) {
@@ -185,7 +190,10 @@ const RoomBody = (): ReactElement => {
 		if (!message) {
 			message = ChatMessage.findOne({ rid, ts: { $gt: unread?.since } }, { sort: { ts: 1 }, limit: 1 });
 		}
-		RoomHistoryManager.getSurroundingMessages(message, atBottomRef);
+		if (!message) {
+			return;
+		}
+		setMessageJumpQueryStringParameter(message?._id);
 		setUnreadCount(0);
 	}, [room._id, unread?.since, setUnreadCount]);
 
@@ -207,7 +215,7 @@ const RoomBody = (): ReactElement => {
 		callbacks.add(
 			'streamNewMessage',
 			(msg: IMessage) => {
-				if (room._id !== msg.rid || (isEditedMessage(msg) && msg.editedAt) || msg.tmid) {
+				if (room._id !== msg.rid || isEditedMessage(msg) || msg.tmid) {
 					return;
 				}
 
@@ -503,11 +511,20 @@ const RoomBody = (): ReactElement => {
 
 	const handleCloseFlexTab: MouseEventHandler<HTMLElement> = useCallback(
 		(e): void => {
+			const checkIfElementOrParentIsInstanceOfButton = (element: HTMLElement | null): boolean => {
+				if (!element) {
+					return false;
+				}
+				if (element instanceof HTMLButtonElement) {
+					return true;
+				}
+				return checkIfElementOrParentIsInstanceOfButton(element.parentElement);
+			};
 			if (!hideFlexTab) {
 				return;
 			}
 
-			if (e.target instanceof HTMLButtonElement) {
+			if (checkIfElementOrParentIsInstanceOfButton(e.target as HTMLElement)) {
 				return;
 			}
 
@@ -592,7 +609,7 @@ const RoomBody = (): ReactElement => {
 														)}
 													</>
 												) : null}
-												<MessageList rid={room._id} />
+												<MessageList rid={room._id} scrollMessageList={scrollMessageList} />
 												{hasMoreNextMessages ? (
 													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 												) : null}
