@@ -44,7 +44,7 @@ const MessageSearch = ({ searchText, globalSearch }: MessageSearchProps): ReactE
 					)}
 					{messageSearchQuery.data.length > 0 && (
 						<MessageListErrorBoundary>
-							<MessageListProvider>
+							<MessageListProvider attachmentDimension={{ width: 280 }}>
 								<Box is='section' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis='auto' height='full'>
 									<Virtuoso
 										totalCount={messageSearchQuery.data.length}
