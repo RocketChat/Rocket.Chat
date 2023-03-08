@@ -30,6 +30,14 @@ settingsRegistry.addGroup('FileUpload', function () {
 		i18nDescription: 'FileUpload_ProtectFilesDescription',
 	});
 
+	this.add('FileUpload_Restrict_to_room_members', false, {
+		type: 'boolean',
+		enableQuery: {
+			_id: 'FileUpload_ProtectFiles',
+			value: true,
+		},
+	});
+
 	this.add('FileUpload_RotateImages', true, {
 		type: 'boolean',
 		public: true,
