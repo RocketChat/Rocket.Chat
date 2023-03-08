@@ -29,8 +29,8 @@ export async function findAdminRooms({
 	const discussion = types?.includes('discussions');
 	const includeTeams = types?.includes('teams');
 	const showOnlyTeams = types.length === 1 && types.includes('teams');
-	const typesToRemove = ['discussions', 'teams'] as const;
-	const showTypes = Array.isArray(types) ? types.filter((type) => !typesToRemove.includes(type)) : [];
+	const typesToRemove = ['discussions', 'teams'];
+	const showTypes = (Array.isArray(types) ? types.filter((type) => !typesToRemove.includes(type)) : []) as RoomType[];
 	const options: FindOptions<IRoom> = {
 		projection: adminFields,
 		skip: offset,

@@ -5,11 +5,11 @@ import type { AggregationCursor, Document, FindCursor, FindOptions, UpdateOption
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
 export interface IRoomsModel extends IBaseModel<IRoom> {
-	findOneByRoomIdAndUserId(rid: IRoom['_id'], uid: IUser['_id'], options: FindOptions<IRoom>): Promise<IRoom | null>;
+	findOneByRoomIdAndUserId(rid: IRoom['_id'], uid: IUser['_id'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
-	findManyByRoomIds(roomIds: Array<IRoom['_id']>, options: FindOptions<IRoom>): FindCursor<IRoom>;
+	findManyByRoomIds(roomIds: Array<IRoom['_id']>, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
-	findPaginatedByIds(roomIds: Array<IRoom['_id']>, options: FindOptions<IRoom>): FindPaginated<FindCursor<IRoom>>;
+	findPaginatedByIds(roomIds: Array<IRoom['_id']>, options?: FindOptions<IRoom>): FindPaginated<FindCursor<IRoom>>;
 
 	getMostRecentAverageChatDurationTime(numberMostRecentChats: number, department: string | object): Promise<Document>;
 
@@ -19,7 +19,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		discussion: boolean,
 		teams: boolean,
 		showOnlyTeams: boolean,
-		options: FindOptions<IRoom>,
+		options?: FindOptions<IRoom>,
 	): FindPaginated<FindCursor<IRoom>>;
 
 	findByTypes(
@@ -27,7 +27,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		discussion: boolean,
 		teams: boolean,
 		onlyTeams: boolean,
-		options: FindOptions<IRoom>,
+		options?: FindOptions<IRoom>,
 	): FindPaginated<FindCursor<IRoom>>;
 
 	findByNameOrFnameContaining(
@@ -35,45 +35,45 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		discussion: boolean,
 		teams: boolean,
 		onlyTeams: boolean,
-		options: FindOptions<IRoom>,
+		options?: FindOptions<IRoom>,
 	): FindPaginated<FindCursor<IRoom>>;
 
-	findByTeamId(teamId: ITeam['_id'], options: FindOptions<IRoom>): FindCursor<IRoom>;
+	findByTeamId(teamId: ITeam['_id'], options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
 	findPaginatedByTeamIdContainingNameAndDefault(
 		teamId: ITeam['_id'],
 		name: IRoom['name'],
 		teamDefault: boolean,
 		ids: Array<IRoom['_id']>,
-		options: FindOptions<IRoom>,
+		options?: FindOptions<IRoom>,
 	): FindPaginated<FindCursor<IRoom>>;
 
-	findByTeamIdAndRoomsId(teamId: ITeam['_id'], rids: Array<IRoom['_id']>, options: FindOptions<IRoom>): FindCursor<IRoom>;
+	findByTeamIdAndRoomsId(teamId: ITeam['_id'], rids: Array<IRoom['_id']>, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
 	findChannelAndPrivateByNameStarting(
 		name: NonNullable<IRoom['name']>,
 		sIds: Array<IRoom['_id']>,
-		options: FindOptions<IRoom>,
+		options?: FindOptions<IRoom>,
 	): FindCursor<IRoom>;
 
-	findRoomsByNameOrFnameStarting(name: NonNullable<IRoom['name'] | IRoom['fname']>, options: FindOptions<IRoom>): FindCursor<IRoom>;
+	findRoomsByNameOrFnameStarting(name: NonNullable<IRoom['name'] | IRoom['fname']>, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
 	findRoomsWithoutDiscussionsByRoomIds(
 		name: NonNullable<IRoom['name']>,
 		roomIds: Array<IRoom['_id']>,
-		options: FindOptions<IRoom>,
+		options?: FindOptions<IRoom>,
 	): FindCursor<IRoom>;
 
 	findPaginatedRoomsWithoutDiscussionsByRoomIds(
 		name: NonNullable<IRoom['name']>,
 		roomIds: Array<IRoom['_id']>,
-		options: FindOptions<IRoom>,
+		options?: FindOptions<IRoom>,
 	): FindPaginated<FindCursor<IRoom>>;
 
 	findChannelAndGroupListWithoutTeamsByNameStartingByOwner(
 		name: NonNullable<IRoom['name']>,
 		groupsToAccept: Array<IRoom['_id']>,
-		options: FindOptions<IRoom>,
+		options?: FindOptions<IRoom>,
 	): FindCursor<IRoom>;
 
 	unsetTeamId(teamId: ITeam['_id'], options: UpdateOptions): Promise<Document | UpdateResult>;
@@ -97,19 +97,19 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		options: PaginatedRequest;
 	}): AggregationCursor<IRoom>;
 
-	findOneByName(name: IRoom['name'], options: FindOptions<IRoom>): Promise<IRoom | null>;
+	findOneByName(name: IRoom['name'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
 	findDefaultRoomsForTeam(teamId: any): FindCursor<IRoom>;
 
 	incUsersCountByIds(ids: Array<IRoom['_id']>, inc: number): Promise<Document | UpdateResult>;
 
-	findOneByNameOrFname(name: NonNullable<IRoom['name'] | IRoom['fname']>, options: FindOptions<IRoom>): Promise<IRoom | null>;
+	findOneByNameOrFname(name: NonNullable<IRoom['name'] | IRoom['fname']>, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
 	allRoomSourcesCount(): AggregationCursor<{ _id: Required<IOmnichannelGenericRoom['source']>; count: number }>;
 
-	findByBroadcast(options: FindOptions<IRoom>): FindCursor<IRoom>;
+	findByBroadcast(options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
-	findByActiveLivestream(options: FindOptions<IRoom>): FindCursor<IRoom>;
+	findByActiveLivestream(options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
 	setAsFederated(roomId: IRoom['_id']): Promise<UpdateResult>;
 
@@ -121,11 +121,11 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	setRoomTopicById(roomId: IRoom['_id'], topic: IRoom['description']): Promise<UpdateResult>;
 
-	findByE2E(options: FindOptions<IRoom>): FindCursor<IRoom>;
+	findByE2E(options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
 	findRoomsInsideTeams(autoJoin: boolean): FindCursor<IRoom>;
 
-	findOneDirectRoomContainingAllUserIDs(uid: IDirectMessageRoom['uids'], options: FindOptions<IRoom>): Promise<IDirectMessageRoom | null>;
+	findOneDirectRoomContainingAllUserIDs(uid: IDirectMessageRoom['uids'], options?: FindOptions<IRoom>): Promise<IDirectMessageRoom | null>;
 
 	countByType(t: IRoom['t']): Promise<number>;
 
@@ -133,18 +133,18 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		searchTerm: RegExp | null,
 		teamIds: Array<ITeam['_id']>,
 		roomIds: Array<IRoom['_id']>,
-		options: FindOptions<IRoom>,
+		options?: FindOptions<IRoom>,
 	): FindPaginated<FindCursor<IRoom>>;
 
 	findPaginatedContainingNameOrFNameInIdsAsTeamMain(
 		searchTerm: RegExp | null,
 		rids: Array<IRoom['_id']>,
-		options: FindOptions<IRoom>,
+		options?: FindOptions<IRoom>,
 	): FindPaginated<FindCursor<IRoom>>;
 
-	findPaginatedByTypeAndIds(type: IRoom['t'], ids: Array<IRoom['_id']>, options: FindOptions<IRoom>): FindPaginated<FindCursor<IRoom>>;
+	findPaginatedByTypeAndIds(type: IRoom['t'], ids: Array<IRoom['_id']>, options?: FindOptions<IRoom>): FindPaginated<FindCursor<IRoom>>;
 
-    findFederatedRooms(options?: FindOptions<IRoom>): FindCursor<IRoomFederated>;
+	findFederatedRooms(options?: FindOptions<IRoom>): FindCursor<IRoomFederated>;
 
 	findCountOfRoomsWithActiveCalls(): Promise<number>;
 }

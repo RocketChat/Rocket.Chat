@@ -151,7 +151,7 @@ export class RocketChatRoomAdapter {
 		await saveRoomTopic(federatedRoom.getInternalId(), federatedRoom.getTopic(), federatedUser.getInternalReference());
 	}
 
-	private async createFederatedRoomInstance(externalRoomId: string, room: IRoom): Promise<FederatedRoom> {
+	private async createFederatedRoomInstance<T extends IRoom>(externalRoomId: string, room: T): Promise<FederatedRoom> {
 		if (isDirectMessageRoom(room)) {
 			const members = (await Promise.all(
 				(room.usernames || []).map((username) => getFederatedUserByInternalUsername(username)).filter(Boolean),
