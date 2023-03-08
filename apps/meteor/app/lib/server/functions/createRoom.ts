@@ -133,7 +133,7 @@ export const createRoom = function <T extends RoomType>(
 			}
 
 			try {
-				callbacks.run('federation.beforeAddUserAToRoom', { user: member, inviter: owner }, room);
+				callbacks.run('federation.beforeAddUserToARoom', { user: member, inviter: owner }, room);
 				callbacks.run('beforeAddedToRoom', { user: member, inviter: owner });
 			} catch (error) {
 				continue;
