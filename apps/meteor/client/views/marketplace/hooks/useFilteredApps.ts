@@ -51,11 +51,11 @@ export const useFilteredApps = ({
 		let shouldShowSearchText = true;
 
 		const sortingMethods: Record<string, () => App[]> = {
-			mrr: () =>
+			urf: () =>
 				filtered.sort(
 					(firstApp, secondApp) => (secondApp?.appRequestStats?.totalUnseen || 0) - (firstApp?.appRequestStats?.totalUnseen || 0),
 				),
-			lrr: () =>
+			url: () =>
 				filtered.sort(
 					(firstApp, secondApp) => (firstApp?.appRequestStats?.totalUnseen || 0) - (secondApp?.appRequestStats?.totalUnseen || 0),
 				),
