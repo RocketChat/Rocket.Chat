@@ -9,6 +9,7 @@ import type { ISubscription, IUser as ICoreUser } from '@rocket.chat/core-typing
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { Rooms, Subscriptions, Users } from '../../../models/server';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
+import { archiveRoom, unarchiveRoom } from '../../../lib/server';
 
 export class AppRoomBridge extends RoomBridge {
 	// eslint-disable-next-line no-empty-function
@@ -109,7 +110,8 @@ export class AppRoomBridge extends RoomBridge {
 	protected async update(room: IRoom, members: Array<string> = [], appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is updating a room.`);
 
-		if (!room.id || !Rooms.findOneById(room.id)) {
+		const roomBeforeUpdate = Rooms.findOneById(room.id);
+		if (!room.id || !roomBeforeUpdate) {
 			throw new Error('A room must exist to update.');
 		}
 
@@ -169,6 +171,27 @@ export class AppRoomBridge extends RoomBridge {
 
 		return rid;
 	}
+
+	protected async archiveRoom(room: IRoom, appId: string): Promise<boolean> {
+		this.orch.debugLog(`The App ${appId} is archiving a room`);
+		try {
+			archiveRoom(room.id);
+		} catch (error) {
+			this.orch.getRocketChatLogger().error(error);
+			return false;
+		}
+		return true;
+	}
+
+	protected async unarchiveRoom(room: IRoom, appId: string): Promise<boolean> {
+		this.orch.debugLog(`The App ${appId} is unarchiving a room`);
+		try {
+			unarchiveRoom(room.id);
+		} catch (error) {
+			this.orch.getRocketChatLogger().error(error);
+			return false;
+		}
+		return true;
 
 	protected getModerators(roomId: string, appId: string): Promise<IUser[]> {
 		this.orch.debugLog(`The App ${appId} is getting room moderators for room id: ${roomId}`);
