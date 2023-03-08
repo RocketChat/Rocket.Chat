@@ -14,7 +14,8 @@ const BusinessHoursPage = () => {
 
 	const handleNew = useMutableCallback(() => {
 		router.push({
-			context: 'new',
+			context: 'edit',
+			type: 'default',
 		});
 	});
 

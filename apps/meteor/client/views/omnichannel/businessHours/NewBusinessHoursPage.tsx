@@ -1,15 +1,18 @@
+import type { ILivechatBusinessHour, Serialized } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import type { MutableRefObject } from 'react';
 import React, { useRef, useState } from 'react';
 
 import Page from '../../../components/Page';
 import { DAYS_OF_WEEK } from './BusinessHoursForm';
+import type { DaysTime } from './BusinessHoursFormContainer';
 import BusinessHoursFormContainer from './BusinessHoursFormContainer';
 import { mapBusinessHoursForm } from './mapBusinessHoursForm';
 
 const closedDays = ['Saturday', 'Sunday'];
-const createDefaultBusinessHours = () => ({
+const createDefaultBusinessHours = (): Serialized<ILivechatBusinessHour> => ({
 	name: '',
 	workHours: DAYS_OF_WEEK.map((day) => ({
 		day,
@@ -20,6 +23,7 @@ const createDefaultBusinessHours = () => ({
 			time: '00:00',
 		},
 		open: !closedDays.includes(day),
+		code: null,
 	})),
 	departments: [],
 	timezoneName: 'America/Sao_Paulo',
@@ -34,7 +38,11 @@ const NewBusinessHoursPage = () => {
 
 	const [hasChanges, setHasChanges] = useState(false);
 
-	const saveData = useRef({ form: {} });
+	const saveData: MutableRefObject<{
+		form: Record<string, unknown>;
+		multiple?: { name?: string; active?: boolean; departments?: { value: string; _id: string }[] };
+		timezone?: { name: string };
+	}> = useRef({ form: {} });
 
 	const save = useMethod('livechat:saveBusinessHour');
 	const router = useRoute('omnichannel-businessHours');
@@ -51,7 +59,7 @@ const NewBusinessHoursPage = () => {
 			});
 		}
 
-		const mappedForm = mapBusinessHoursForm(form, defaultBusinessHour);
+		const mappedForm = mapBusinessHoursForm(form as { daysOpen: string[]; daysTime: DaysTime }, defaultBusinessHour);
 
 		const departmentsToApplyBusinessHour = departments?.map((dep) => dep.value).join(',') || '';
 
