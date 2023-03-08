@@ -5,7 +5,7 @@ type DeprecationWarningParams<T> = {
 	endpoint: string;
 	versionWillBeRemoved?: string;
 	response: T;
-	warningMessage: string | ((props: Omit<DeprecationWarningParams<T>, 'warningMessage'>) => string);
+	warningMessage?: string | ((props: Omit<DeprecationWarningParams<T>, 'warningMessage'>) => string);
 };
 export function deprecationWarning<T>({
 	endpoint,
