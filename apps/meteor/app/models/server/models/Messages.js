@@ -1171,12 +1171,9 @@ export class Messages extends Base {
 		if (!rid) {
 			return false;
 		}
-		const { lm: dlm, msgs: dcount } = Rooms.findOneById(rid, {
-			fields: {
-				msgs: 1,
-				lm: 1,
-			},
-		});
+		const { lm: dlm, msgs: dcount } = Rooms.findOneById(rid);
+
+		!dcount && Rooms.incMsgCountById(rid);
 
 		const query = {
 			drid: rid,
