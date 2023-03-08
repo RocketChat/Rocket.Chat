@@ -128,12 +128,19 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 			return;
 		}
 
+		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
+			this.bridge.extractHomeserverOrigin(federatedUser.getExternalId()),
+			this.internalHomeServerDomain,
+		);
+		if (!isUserFromTheSameHomeServer) {
+			return;
+		}
+
 		await this.bridge.leaveRoom(federatedRoom.getExternalId(), federatedUser.getExternalId());
 	}
 
 	public async onUserRemovedFromRoom(afterLeaveRoomInput: FederationAfterRemoveUserFromRoomDto): Promise<void> {
 		const { internalRoomId, internalUserId, actionDoneByInternalId } = afterLeaveRoomInput;
-
 		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
 		if (!federatedRoom) {
 			return;
@@ -146,6 +153,14 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 
 		const byWhom = await this.internalUserAdapter.getFederatedUserByInternalId(actionDoneByInternalId);
 		if (!byWhom) {
+			return;
+		}
+
+		const isUserFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
+			this.bridge.extractHomeserverOrigin(byWhom.getExternalId()),
+			this.internalHomeServerDomain,
+		);
+		if (!isUserFromTheSameHomeServer) {
 			return;
 		}
 

@@ -1,5 +1,5 @@
 import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.chat/rest-typings';
-import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import { QueueWorker as queueService } from '@rocket.chat/core-services';
 
 import { FederatedUserEE } from '../../../domain/FederatedUser';
 import type { IFederationBridgeEE, IFederationPublicRoomsResult } from '../../../domain/IFederationBridge';
@@ -19,7 +19,6 @@ import type { RocketChatSettingsAdapter } from '../../../../../../../server/serv
 import type { RocketChatMessageAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Message';
 import { ROCKET_CHAT_FEDERATION_ROLES } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/definitions/FederatedRoomInternalRoles';
 import type { FederationJoinExternalPublicRoomInputDto, FederationSearchPublicRoomsInputDto } from './input/RoomInputDto';
-import { FederatedRoomEE } from '../../../domain/FederatedRoom';
 import type { RocketChatNotificationAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Notification';
 import { MatrixRoomJoinRules } from '../../../../../../../server/services/federation/infrastructure/matrix/definitions/MatrixRoomJoinRules';
 
@@ -136,12 +135,22 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 		return RoomMapper.toSearchPublicRoomsDto(rooms);
 	}
 
+	public async scheduleJoinExternalPublicRoom(internalUserId: string, externalRoomId: string): Promise<void> {
+		if (!this.internalSettingsAdapter.isFederationEnabled()) {
+			throw new Error('Federation is disabled');
+		}
+		await queueService.queueWork<Record<string, any>>('work', 'federation-enterprise.joinExternalPublicRoom', {
+			internalUserId,
+			externalRoomId,
+		});
+	}
+
 	public async joinExternalPublicRoom(joinExternalPublicRoomInputDto: FederationJoinExternalPublicRoomInputDto): Promise<void> {
 		if (!this.internalSettingsAdapter.isFederationEnabled()) {
 			throw new Error('Federation is disabled');
 		}
 
-		const { externalRoomId, internalUserId, normalizedRoomId, externalRoomHomeServerName } = joinExternalPublicRoomInputDto;
+		const { externalRoomId, internalUserId, externalRoomHomeServerName } = joinExternalPublicRoomInputDto;
 		const room = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 		if (room) {
 			const alreadyJoined = await this.internalRoomAdapter.isUserAlreadyJoined(room.getInternalId(), internalUserId);
@@ -159,47 +168,14 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 		if (!federatedUser) {
 			throw new Error(`User with internalId ${internalUserId} not found`);
 		}
+		// const externalRoomData = await this.bridge.getRoomData(federatedUser.getExternalId(), externalRoomId);
+		// if (
+		// 	externalRoomData &&
+		// 	externalRoomData.membersCount > parseInt(this.internalSettingsAdapter.getMaximumSizeOfUsersWhenJoiningPublicRooms() || '0')
+		// ) {
+		// 	throw new Error("Can't join a room with more than the admin of your workspace has set as maximum size");
+		// }
 		await this.bridge.joinRoom(externalRoomId, federatedUser.getExternalId(), [externalRoomHomeServerName]);
-
-		const externalRoomData = await this.bridge.getRoomData(federatedUser.getExternalId(), externalRoomId);
-		if (!externalRoomData) {
-			return;
-		}
-		const creatorUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalRoomData.creator.id);
-		if (!creatorUser) {
-			const isCreatorFromTheSameHomeServer = FederatedUserEE.isOriginalFromTheProxyServer(
-				this.bridge.extractHomeserverOrigin(externalRoomData.creator.id),
-				this.internalHomeServerDomain,
-			);
-			const existsOnlyOnProxyServer = isCreatorFromTheSameHomeServer;
-			const username = isCreatorFromTheSameHomeServer ? externalRoomData.creator.username : externalRoomData.creator.id.replace('@', '');
-			await this.createFederatedUserInternallyOnly(externalRoomData.creator.id, username, existsOnlyOnProxyServer);
-		}
-		const federatedCreatorUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalRoomData.creator.id);
-		if (!federatedCreatorUser) {
-			return;
-		}
-		let internalRoomId;
-		if (!room) {
-			const newFederatedRoom = FederatedRoomEE.createInstance(
-				externalRoomId,
-				normalizedRoomId,
-				federatedCreatorUser,
-				RoomType.CHANNEL,
-				externalRoomData.name,
-			);
-			internalRoomId = await this.internalRoomAdapter.createFederatedRoom(newFederatedRoom);
-		}
-
-		const federatedRoom = room || (await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId));
-		if (!federatedRoom) {
-			return;
-		}
-		await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
-			internalRoomId || federatedRoom.getInternalId(),
-			this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),
-		);
-		await this.internalRoomAdapter.addUserToRoom(federatedRoom, federatedUser);
 	}
 
 	private async setupFederatedRoom(roomInviteUserInput: FederationSetupRoomDto): Promise<void> {
@@ -236,6 +212,10 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 			this.bridge.extractHomeserverOrigin(rawInviteeId),
 			this.internalHomeServerDomain,
 		);
+
+		if (isUserAutoJoining && !isInviteeFromTheSameHomeServer) {
+			return;
+		}
 
 		const federatedRoom = await this.internalRoomAdapter.getFederatedRoomByInternalId(internalRoomId);
 		if (!federatedRoom) {
@@ -296,15 +276,15 @@ class RoomMapper {
 	}> {
 		return {
 			rooms: (rooms?.chunk || [])
+				.filter((room) => room.join_rule && room.join_rule !== MatrixRoomJoinRules.KNOCK)
 				.map((room) => ({
 					id: room.room_id,
 					name: room.name,
-					canJoin: !(room.join_rule && room.join_rule === MatrixRoomJoinRules.KNOCK),
+					canJoin: true,
 					canonicalAlias: room.canonical_alias,
 					joinedMembers: room.num_joined_members,
 					topic: room.topic,
-				}))
-				.filter((room) => room.canJoin),
+				})),
 			count: rooms?.chunk?.length || 0,
 			total: rooms?.total_room_count_estimate || 0,
 			...(rooms?.next_batch ? { nextPageToken: rooms.next_batch } : {}),

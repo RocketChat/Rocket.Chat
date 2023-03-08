@@ -1223,4 +1223,10 @@ export class UsersRaw extends BaseRaw {
 			},
 		);
 	}
+
+	countFederatedExternalUsers() {
+		return this.col.countDocuments({
+			federated: true,
+		});
+	}
 }

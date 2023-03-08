@@ -52,6 +52,8 @@ export { IBroker, IBrokerNode, BaseMetricOptions, IServiceMetrics } from './type
 
 export { IServiceContext, ServiceClass, IServiceClass, ServiceClassInternal } from './types/ServiceClass';
 
+export { IFederationService, IFederationServiceEE, IFederationJoinExternalPublicRoomInput } from './types/IFederationService';
+
 export {
 	AutoUpdateRecord,
 	FindVoipRoomsParams,
@@ -65,8 +67,6 @@ export {
 	ICreateRoomParams,
 	IDeviceManagementService,
 	IEnterpriseSettings,
-	IFederationService,
-	IFederationServiceEE,
 	ILDAPService,
 	ILicense,
 	IListRoomsFilter,

@@ -3,6 +3,12 @@ import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.
 export interface IFederationService {
 	createDirectMessageRoomAndInviteUser(internalInviterId: string, internalRoomId: string, externalInviteeId: string): Promise<void>;
 }
+
+export interface IFederationJoinExternalPublicRoomInput {
+	internalUserId: string;
+	externalRoomId: string;
+}
+
 export interface IFederationServiceEE {
 	createDirectMessageRoom(internalUserId: string, invitees: string[]): Promise<void>;
 
@@ -23,5 +29,7 @@ export interface IFederationServiceEE {
 
 	removeSearchedServerNameByInternalUserId(internalUserId: string, serverName: string): Promise<void>;
 
-	joinExternalPublicRoom(internalUserId: string, externalRoomId: string): Promise<void>;
+	scheduleJoinExternalPublicRoom(internalUserId: string, externalRoomId: string): Promise<void>;
+
+	joinExternalPublicRoom(input: IFederationJoinExternalPublicRoomInput): Promise<void>;
 }
