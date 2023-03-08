@@ -25,7 +25,7 @@ export const addUserToRoom = function (
 	if (!userToBeAdded) {
 		throw new Meteor.Error('user-not-found');
 	}
-	
+
 	if (
 		!roomDirectives?.allowMemberAction(room, RoomMemberActions.JOIN, userToBeAdded._id) &&
 		!roomDirectives?.allowMemberAction(room, RoomMemberActions.INVITE, userToBeAdded._id)
