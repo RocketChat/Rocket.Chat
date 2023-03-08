@@ -207,4 +207,7 @@ export const EmojiPicker = {
 			container.scrollTop(scrollTop);
 		});
 	},
+	loadMore(category) {
+		this.currentCategory.set(category);
+	},
 };

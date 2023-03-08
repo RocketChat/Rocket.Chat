@@ -244,7 +244,8 @@ Template.emojiPicker.events({
 		}
 
 		customItems += 90;
-		emojiListByCategory.set('rocket', createEmojiList('rocket', 0, customItems));
+		emojiListByCategory.set('rocket', createEmojiList('rocket', null, customItems));
+		EmojiPicker.loadMore('rocket');
 	},
 	'click .tone-selector .tone'(event, instance) {
 		event.stopPropagation();
