@@ -158,7 +158,7 @@ class AppClientOrchestrator {
 		return languages;
 	}
 
-	public async installApp(appId: string, version: string, permissionsGranted: IPermission[]): Promise<App> {
+	public async installApp(appId: string, version: string, permissionsGranted?: IPermission[]): Promise<App> {
 		const { app } = await APIClient.post('/apps', {
 			appId,
 			marketplace: true,
@@ -168,16 +168,16 @@ class AppClientOrchestrator {
 		return app;
 	}
 
-	public async updateApp(appId: string, version: string, permissionsGranted: IPermission[]): Promise<App> {
-		const result = (await (APIClient.post as any)(`/apps/${appId}` as any, {
+	public async updateApp(appId: string, version: string, permissionsGranted?: IPermission[]): Promise<App> {
+		const result = await APIClient.post<'/apps/:id'>(`/apps/${appId}`, {
 			appId,
 			marketplace: true,
 			version,
 			permissionsGranted,
-		})) as any;
+		});
 
 		if ('app' in result) {
-			return result;
+			return result.app;
 		}
 		throw new Error('App not found');
 	}
