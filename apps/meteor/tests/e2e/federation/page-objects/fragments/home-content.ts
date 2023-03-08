@@ -119,7 +119,7 @@ export class FederationHomeContent {
 	}
 
 	get lastMessageFileName(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child [data-qa-type="attachment-title-link"]');
+		return this.page.locator('[data-qa-type="message"]:last-child');
 	}
 
 	async getLastFileMessageByFileName(filename: string): Promise<Locator> {
