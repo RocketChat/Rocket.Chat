@@ -1,6 +1,6 @@
 import type { Dimensions } from '@rocket.chat/core-typings';
 import { useAttachmentDimensions } from '@rocket.chat/ui-contexts';
-import type { FC, SyntheticEvent } from 'react';
+import type { FC } from 'react';
 import React, { memo, useState, useMemo } from 'react';
 
 import ImageBox from './image/ImageBox';
@@ -33,24 +33,13 @@ const getDimensions = (
 	return { width: (height / originalHeight) * originalWidth, height };
 };
 
-interface IPictureLoadEvent extends SyntheticEvent {
-	target: HTMLImageElement;
-}
-
 const AttachmentImage: FC<AttachmentImageProps> = ({ previewUrl, dataSrc, loadImage = true, setLoadImage, src, ...size }) => {
 	const limits = useAttachmentDimensions();
 
+	const [loaded, setLoaded] = useState(false);
 	const [error, setError] = useState(false);
 
-	const [sizes, setSizes] = useState({ width: size?.width || limits.width, height: size?.height || limits.height });
-
-	const hasSizes = useMemo(
-		() =>
-			size?.width || size?.height
-				? undefined
-				: (e: IPictureLoadEvent) => setSizes({ width: e.target.naturalWidth, height: e.target.naturalHeight }),
-		[size],
-	);
+	const sizes = { width: size?.width || limits.width, height: size?.height || limits.height };
 
 	const { setHasError, setHasNoError } = useMemo(
 		() => ({
@@ -62,8 +51,6 @@ const AttachmentImage: FC<AttachmentImageProps> = ({ previewUrl, dataSrc, loadIm
 
 	const dimensions = getDimensions(sizes.width, sizes.height, limits);
 
-	const background = previewUrl && `url(${previewUrl}) center center / cover no-repeat fixed`;
-
 	if (!loadImage) {
 		return <Load {...dimensions} {...limits} load={setLoadImage} />;
 	}
@@ -73,14 +60,33 @@ const AttachmentImage: FC<AttachmentImageProps> = ({ previewUrl, dataSrc, loadIm
 	}
 
 	return (
-		<ImageBox
-			is='picture'
-			onLoad={hasSizes}
-			onError={setHasError}
-			{...(previewUrl && ({ style: { background, boxSizing: 'content-box' } } as any))}
-			{...dimensions}
-		>
-			<img className='gallery-item' data-src={dataSrc || src} src={src} {...dimensions} />
+		<ImageBox width={dimensions.width} height={loaded ? 'auto' : dimensions.height}>
+			<img
+				onError={setHasError}
+				src={previewUrl}
+				style={{
+					opacity: loaded ? 0 : 1,
+					maxWidth: '100%',
+					width: loaded ? 'inherit' : dimensions.width,
+					height: loaded ? 'inherit' : dimensions.height,
+					transition: 'opacity .1s linear',
+					position: 'absolute',
+				}}
+			/>
+			<img
+				className='gallery-item'
+				onLoad={(): void => setLoaded(true)}
+				onError={setHasError}
+				data-src={dataSrc || src}
+				src={src}
+				style={{
+					maxWidth: '100%',
+					opacity: loaded ? 1 : 0,
+					width: loaded ? 'inherit' : 0,
+					height: loaded ? 'inherit' : 0,
+					zIndex: 1,
+				}}
+			/>
 		</ImageBox>
 	);
 };
