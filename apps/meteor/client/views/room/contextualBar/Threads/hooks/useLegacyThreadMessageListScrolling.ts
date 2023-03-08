@@ -1,4 +1,4 @@
-import type { UIEvent } from 'react';
+import type { ScrollValues } from 'rc-scrollbars';
 import { useCallback, useEffect, useRef } from 'react';
 
 export const useLegacyThreadMessageListScrolling = () => {
@@ -7,8 +7,8 @@ export const useLegacyThreadMessageListScrolling = () => {
 
 	const atBottomRef = useRef(true);
 
-	const onScroll = useCallback(({ currentTarget: e }: UIEvent) => {
-		atBottomRef.current = e.scrollTop >= e.scrollHeight - e.clientHeight;
+	const onScroll = useCallback(({ scrollHeight, scrollTop, clientHeight }: ScrollValues) => {
+		atBottomRef.current = scrollTop >= scrollHeight - clientHeight;
 	}, []);
 
 	const sendToBottomIfNecessary = useCallback(() => {

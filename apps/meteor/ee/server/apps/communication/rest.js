@@ -805,12 +805,12 @@ export class AppsRestApi {
 			{ authRequired: true },
 			{
 				async post() {
-					const { appId, appName, message } = this.bodyParams;
+					const { appId, appName, appVersion, message } = this.bodyParams;
 					const workspaceUrl = settings.get('Site_Url');
 
 					const regex = new RegExp('\\/$', 'gm');
 					const safeWorkspaceUrl = workspaceUrl.replace(regex, '');
-					const learnMore = `${safeWorkspaceUrl}/marketplace/explore/info/${appId}`;
+					const learnMore = `${safeWorkspaceUrl}/marketplace/explore/info/${appId}/${appVersion}/requests`;
 
 					try {
 						const msgs = ({ adminUser }) => {
@@ -818,7 +818,7 @@ export class AppsRestApi {
 								msg: TAPi18n.__('App_Request_Admin_Message', {
 									admin_name: adminUser.name,
 									app_name: appName,
-									user_name: this.user.name || this.user.username,
+									user_name: `@${this.user.username}`,
 									message,
 									learn_more: learnMore,
 								}),
