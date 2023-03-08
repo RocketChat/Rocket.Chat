@@ -1,7 +1,7 @@
 import { useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import { useCurrentRoute, useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useMemo, useState, useCallback } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { AsyncStatePhase } from '../../../lib/asyncState';
@@ -64,11 +64,11 @@ const AppsPageContent = (): ReactElement => {
 	const [sortFilterStructure, setSortFilterStructure] = useState<RadioDropDownGroup>({
 		label: t('Sort_By'),
 		items: [
-			{ id: 'mrr', label: t('Most_recent_requested'), checked: isRequested },
-			{ id: 'lrr', label: t('Least_recent_requested'), checked: false },
+			{ id: 'urf', label: t('Unread_Requested_First'), checked: false },
+			{ id: 'url', label: t('Unread_Requested_Last'), checked: false },
 			{ id: 'az', label: 'A-Z', checked: false },
 			{ id: 'za', label: 'Z-A', checked: false },
-			{ id: 'mru', label: t('Most_recent_updated'), checked: !isRequested },
+			{ id: 'mru', label: t('Most_recent_updated'), checked: true },
 			{ id: 'lru', label: t('Least_recent_updated'), checked: false },
 		],
 	});
@@ -123,6 +123,30 @@ const AppsPageContent = (): ReactElement => {
 	const handleReturn = (): void => {
 		router.push({ context: 'explore', page: 'list' });
 	};
+
+	const toggleInitialSortOption = useCallback((isRequested: boolean) => {
+		setSortFilterStructure((prevState) => {
+			prevState.items.forEach((currentItem) => {
+				if (isRequested && currentItem.id === 'urf') {
+					currentItem.checked = true;
+					return;
+				}
+
+				if (!isRequested && currentItem.id === 'mru') {
+					currentItem.checked = true;
+					return;
+				}
+
+				currentItem.checked = false;
+			});
+
+			return { ...prevState };
+		});
+	}, []);
+
+	useEffect(() => {
+		toggleInitialSortOption(isRequested);
+	}, [isMarketplace, isRequested, sortFilterOnSelected, t, toggleInitialSortOption]);
 
 	return (
 		<>

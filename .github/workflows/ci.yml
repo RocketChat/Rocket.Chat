@@ -223,7 +223,9 @@ jobs:
       rc-dockerfile-alpine: ${{ needs.release-versions.outputs.rc-dockerfile-alpine }}
       rc-docker-tag-alpine: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-    secrets: inherit
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
 
   test-ui:
     name: 🔨 Test UI (CE)
@@ -244,7 +246,9 @@ jobs:
       rc-dockerfile-alpine: ${{ needs.release-versions.outputs.rc-dockerfile-alpine }}
       rc-docker-tag-alpine: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-    secrets: inherit
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
 
   test-api-ee:
     name: 🔨 Test API (EE)
@@ -265,7 +269,9 @@ jobs:
       rc-dockerfile-alpine: ${{ needs.release-versions.outputs.rc-dockerfile-alpine }}
       rc-docker-tag-alpine: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-    secrets: inherit
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
 
   test-ui-ee:
     name: 🔨 Test UI (EE)
@@ -287,7 +293,9 @@ jobs:
       rc-dockerfile-alpine: ${{ needs.release-versions.outputs.rc-dockerfile-alpine }}
       rc-docker-tag-alpine: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-    secrets: inherit
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
 
   tests-done:
     name: ✅ Tests Done
