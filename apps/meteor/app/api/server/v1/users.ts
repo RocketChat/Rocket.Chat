@@ -412,6 +412,10 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
+			if (settings.get('API_Apply_permission_view-outside-room_on_users-list') && !hasPermission(this.userId, 'view-outside-room')) {
+				return API.v1.unauthorized();
+			}
+
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
