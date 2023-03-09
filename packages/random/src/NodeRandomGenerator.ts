@@ -1,8 +1,10 @@
 import crypto from 'crypto';
 
-import RandomGenerator from './AbstractRandomGenerator';
+import { RandomGenerator } from './RandomGenerator';
+import { AleaRandomGenerator } from './AleaRandomGenerator';
+import { createAleaGeneratorWithGeneratedSeed } from './createAleaGenerator';
 
-export default class NodeRandomGenerator extends RandomGenerator {
+export class NodeRandomGenerator extends RandomGenerator {
 	/**
 	 * @name Random.fraction
 	 * @summary Return a number between 0 and 1, like `Math.random`.
@@ -17,9 +19,9 @@ export default class NodeRandomGenerator extends RandomGenerator {
 	 * @name Random.hexString
 	 * @summary Return a random string of `n` hexadecimal digits.
 	 * @locus Anywhere
-	 * @param {Number} n Length of the string
+	 * @param digits Length of the string
 	 */
-	hexString(digits) {
+	hexString(digits: number) {
 		const numBytes = Math.ceil(digits / 2);
 		let bytes;
 		// Try to get cryptographically strong randomness. Fall back to
@@ -35,4 +37,10 @@ export default class NodeRandomGenerator extends RandomGenerator {
 		// of randomness, so we need to trim the last digit.
 		return result.substring(0, digits);
 	}
+
+	protected safelyCreateWithSeeds(...seeds: readonly unknown[]) {
+		return new AleaRandomGenerator({ seeds });
+	}
+
+	insecure: RandomGenerator = createAleaGeneratorWithGeneratedSeed();
 }

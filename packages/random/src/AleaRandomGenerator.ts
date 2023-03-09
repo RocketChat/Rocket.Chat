@@ -1,14 +1,18 @@
-import RandomGenerator from './AbstractRandomGenerator';
+import { RandomGenerator } from './RandomGenerator';
 
 // Alea PRNG, which is not cryptographically strong
 // see http://baagoe.org/en/wiki/Better_random_numbers_for_javascript
 // for a full discussion and Alea implementation.
-function createAlea(seeds) {
+function createAlea(seeds: readonly unknown[]) {
 	function createMash() {
 		let n = 0xefc8249d;
 
-		const mash = (data) => {
-			data = data.toString();
+		const mash = (data: unknown) => {
+			data = String(data);
+			if (typeof data !== 'string') {
+				throw new Error('Expected a string');
+			}
+
 			for (let i = 0; i < data.length; i++) {
 				n += data.charCodeAt(i);
 				let h = 0.02519603282416938 * n;
@@ -33,7 +37,7 @@ function createAlea(seeds) {
 	if (seeds.length === 0) {
 		seeds = [+new Date()];
 	}
-	let mash = createMash();
+	const mash = createMash();
 	s0 = mash(' ');
 	s1 = mash(' ');
 	s2 = mash(' ');
@@ -52,7 +56,6 @@ function createAlea(seeds) {
 			s2 += 1;
 		}
 	}
-	mash = null;
 
 	const random = () => {
 		const t = 2091639 * s0 + c * 2.3283064365386963e-10; // 2^-32
@@ -74,8 +77,10 @@ function createAlea(seeds) {
 // - seeds: an array
 //   whose items will be `toString`ed and used as the seed to the Alea
 //   algorithm
-export default class AleaRandomGenerator extends RandomGenerator {
-	constructor({ seeds = [] } = {}) {
+export class AleaRandomGenerator extends RandomGenerator {
+	private readonly alea: () => number;
+
+	constructor({ seeds = [] }: { seeds?: readonly unknown[] } = {}) {
 		super();
 		if (!seeds) {
 			throw new Error('No seeds were provided for Alea PRNG');
@@ -91,4 +96,10 @@ export default class AleaRandomGenerator extends RandomGenerator {
 	fraction() {
 		return this.alea();
 	}
+
+	protected safelyCreateWithSeeds(...seeds: readonly unknown[]): RandomGenerator {
+		return new AleaRandomGenerator({ seeds });
+	}
+
+	insecure: RandomGenerator = this;
 }

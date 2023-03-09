@@ -1,4 +1,4 @@
-import AleaRandomGenerator from './AleaRandomGenerator';
+import { AleaRandomGenerator } from './AleaRandomGenerator';
 
 // instantiate RNG.  Heuristically collect entropy from various sources when a
 // cryptographic PRNG isn't available.
@@ -18,7 +18,7 @@ const width =
 
 const agent = (typeof navigator !== 'undefined' && navigator.userAgent) || '';
 
-export default function createAleaGenerator() {
+export function createAleaGeneratorWithGeneratedSeed() {
 	return new AleaRandomGenerator({
 		seeds: [new Date(), height, width, agent, Math.random()],
 	});

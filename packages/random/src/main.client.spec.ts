@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { Random } from './main.client.js';
+import { Random } from './main.client';
 
 it('which should generate the same sequence in all environments', () => {
 	const random = Random.createWithSeeds(0);
@@ -42,9 +42,9 @@ describe('Alea', () => {
 		const useGetRandomValues = !!(typeof window !== 'undefined' && window.crypto?.getRandomValues);
 
 		if (useGetRandomValues) {
-			expect(Random.alea).toBeUndefined();
+			expect(Random).not.toHaveProperty('alea');
 		} else {
-			expect(Random.alea).toBeDefined();
+			expect(Random).toHaveProperty('alea');
 		}
 	});
 });

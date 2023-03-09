@@ -1,6 +1,4 @@
 # random
-[Source code of released version](https://github.com/meteor/meteor/tree/master/packages/random) | [Source code of development version](https://github.com/meteor/meteor/tree/devel/packages/random)
-***
 
 The `random` package provides several functions for generating random
 numbers. It uses a cryptographically strong pseudorandom number generator when

@@ -4,8 +4,5 @@
 	"env": {
 		"jest/globals": true
 	},
-	"ignorePatterns": ["**/dist"],
-	"globals": {
-		"Package": false
-	}
+	"ignorePatterns": ["**/dist"]
 }

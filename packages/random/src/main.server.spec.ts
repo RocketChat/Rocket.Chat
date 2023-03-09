@@ -1,4 +1,4 @@
-import { Random } from './main.server.js';
+import { Random } from './main.server';
 
 it('which should generate the same sequence in all environments', () => {
 	const random = Random.createWithSeeds(0);
@@ -35,7 +35,7 @@ describe('format', () => {
 
 describe('Alea', () => {
 	it('should be undefined', () => {
-		expect(Random.alea).toBeUndefined(undefined);
+		expect(Random).not.toHaveProperty('alea');
 	});
 });
 
