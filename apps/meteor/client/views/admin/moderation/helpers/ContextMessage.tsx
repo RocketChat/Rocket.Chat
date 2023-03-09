@@ -16,10 +16,12 @@ const ContextMessage = ({
 	message,
 	room,
 	handleClick,
+	onRedirect,
 }: {
 	message: IReport['message'];
 	room: IReport['room'];
 	handleClick: (id: IMessage['_id']) => void;
+	onRedirect: (id: IMessage['_id']) => void;
 }): JSX.Element => {
 	const t = useTranslation();
 
@@ -59,6 +61,7 @@ const ContextMessage = ({
 				<MessageToolboxWrapper>
 					<Message.Toolbox>
 						<MessageToolboxItem icon='document-eye' title='View Reports' onClick={() => handleClick(message._id)} />
+						<MessageToolboxItem icon='arrow-forward' title='Go to Message' onClick={() => onRedirect(message._id)} />
 					</Message.Toolbox>
 				</MessageToolboxWrapper>
 			</Message>

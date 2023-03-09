@@ -7,7 +7,15 @@ import type { MutableRefObject } from 'react';
 
 import ContextMessage from './helpers/ContextMessage';
 
-const UserMessages = ({ userId, reload }: { userId: string; reload: MutableRefObject<() => void> }): JSX.Element => {
+const UserMessages = ({
+	userId,
+	reload,
+	onRedirect,
+}: {
+	userId: string;
+	reload: MutableRefObject<() => void>;
+	onRedirect: (mid: string) => void;
+}): JSX.Element => {
 	const t = useTranslation();
 
 	const moderationRoute = useRoute('moderation-console');
@@ -56,7 +64,7 @@ const UserMessages = ({ userId, reload }: { userId: string; reload: MutableRefOb
 			{isSuccessUserMessages &&
 				userMessages.messages.map((message) => (
 					<Box key={message._id}>
-						<ContextMessage message={message.message} room={message.room} handleClick={handleClick} />
+						<ContextMessage message={message.message} room={message.room} handleClick={handleClick} onRedirect={onRedirect} />
 					</Box>
 				))}
 		</Box>

@@ -1,24 +1,34 @@
-import { useTranslation, useRouteParameter, useRoute } from '@rocket.chat/ui-contexts';
+import { useTranslation, useRouteParameter, useRoute, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useRef } from 'react';
 
+import { MessageAction } from '../../../../app/ui-utils/client';
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
 import MessageReportInfo from './MessageReportInfo';
 import ModerationConsoleTable from './ModerationConsoleTable';
 import UserMessages from './UserMessages';
+// import { MessageAction } from '../../../client/../app/ui-utils/client';
 
 const ModerationConsolePage = () => {
 	const t = useTranslation();
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 	const moderationRoute = useRoute('moderation-console');
-
-	console.log('context', context);
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const reloadRef = useRef(() => null);
 
 	const handleReload = (): void => {
 		reloadRef.current();
+	};
+
+	const handleRedirect = async (mid: string) => {
+		try {
+			const permalink = await MessageAction.getPermaLink(mid);
+			window.open(permalink, '_blank', 'noreferrer,noopener');
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		}
 	};
 
 	return (
@@ -39,7 +49,7 @@ const ModerationConsolePage = () => {
 						{/* <VerticalBar.Action name={'new-window'} onClick={() => moderationRoute.push({})} title={t('View_full_conversation')} /> */}
 						<VerticalBar.Close onClick={() => moderationRoute.push({})} />
 					</VerticalBar.Header>
-					{context === 'info' && id && <UserMessages userId={id} reload={reloadRef} />}
+					{context === 'info' && id && <UserMessages userId={id} reload={reloadRef} onRedirect={handleRedirect} />}
 
 					{context === 'reports' && id && <MessageReportInfo msgId={id} reload={reloadRef} />}
 				</VerticalBar>
