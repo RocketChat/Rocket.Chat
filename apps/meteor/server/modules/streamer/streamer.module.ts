@@ -258,7 +258,7 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		}
 
 		const subscriptions = this.subscriptionsByEventName.get(eventName);
-		if (!subscriptions || !subscriptions.size) {
+		if (!subscriptions?.size) {
 			return false;
 		}
 

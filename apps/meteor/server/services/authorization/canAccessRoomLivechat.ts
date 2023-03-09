@@ -3,7 +3,7 @@ import { Rooms } from '@rocket.chat/models';
 import type { IAuthorizationLivechat, RoomAccessValidator } from '@rocket.chat/core-services';
 import { proxifyWithWait } from '@rocket.chat/core-services';
 
-export const AuthorizationLivechat = proxifyWithWait<IAuthorizationLivechat>('authorization-livechat');
+const AuthorizationLivechat = proxifyWithWait<IAuthorizationLivechat>('authorization-livechat');
 
 export const canAccessRoomLivechat: RoomAccessValidator = async (room, user, extraData): Promise<boolean> => {
 	// If we received a partial room and its type is not `l` or `v`, skip all checks.

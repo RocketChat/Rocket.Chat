@@ -25,7 +25,7 @@ export class DirectReplyIMAPInterceptor extends IMAPInterceptor {
 	}
 }
 
-export class POP3Intercepter {
+class POP3Intercepter {
 	constructor() {
 		this.pop3 = new POP3Lib(settings.get('Direct_Reply_Port'), settings.get('Direct_Reply_Host'), {
 			enabletls: !settings.get('Direct_Reply_IgnoreTLS'),
