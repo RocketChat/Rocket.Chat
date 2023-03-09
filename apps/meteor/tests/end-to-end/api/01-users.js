@@ -635,21 +635,33 @@ describe('[Users]', function () {
 
 	describe('[/users.list]', () => {
 		let user;
+		let deactivatedUser;
+		let user2;
+		let user2Credentials;
 
-		it('should query all users in the system', (done) => {
-			request
-				.get(api('users.list'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('total');
-					const myself = res.body.users.find((user) => user.username === adminUsername);
-					expect(myself).to.not.have.property('e2e');
-				})
-				.end(done);
+		before((done) => {
+			const createDeactivatedUser = async () => {
+				const username = `deactivated_${Date.now()}${apiUsername}`;
+				const email = `deactivated_+${Date.now()}${apiEmail}`;
+
+				const userData = {
+					email,
+					name: username,
+					username,
+					password,
+					active: false,
+				};
+
+				deactivatedUser = await createUser(userData);
+
+				expect(deactivatedUser).to.not.be.null;
+				expect(deactivatedUser).to.have.nested.property('username', username);
+				expect(deactivatedUser).to.have.nested.property('emails[0].address', email);
+				expect(deactivatedUser).to.have.nested.property('active', false);
+				expect(deactivatedUser).to.have.nested.property('name', username);
+				expect(deactivatedUser).to.not.have.nested.property('e2e');
+			};
+			createDeactivatedUser().then(done);
 		});
 
 		before((done) =>
@@ -690,6 +702,35 @@ describe('[Users]', function () {
 
 		after((done) => clearCustomFields(done));
 
+		before(async () => {
+			user2 = await createTestUser();
+			user2Credentials = await loginTestUser(user2);
+		});
+
+		after(async () => {
+			await deleteTestUser(user2);
+			user2 = undefined;
+
+			await updatePermission('view-outside-room', ['admin', 'owner', 'moderator', 'user']);
+			await updateSetting('API_Apply_permission_view-outside-room_on_users-list', false);
+		});
+
+		it('should query all users in the system', (done) => {
+			request
+				.get(api('users.list'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					const myself = res.body.users.find((user) => user.username === adminUsername);
+					expect(myself).to.not.have.property('e2e');
+				})
+				.end(done);
+		});
+
 		it('should query all users in the system by custom fields', (done) => {
 			const query = {
 				fields: JSON.stringify({
@@ -720,6 +761,36 @@ describe('[Users]', function () {
 				.end(done);
 		});
 
+		it('should sort for user statuses and check if deactivated user is correctly sorted', (done) => {
+			const query = {
+				fields: JSON.stringify({
+					username: 1,
+					_id: 1,
+					active: 1,
+					status: 1,
+				}),
+				sort: JSON.stringify({
+					status: -1,
+				}),
+			};
+
+			request
+				.get(api('users.list'))
+				.query(query)
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('users');
+					const lastUser = res.body.users[res.body.users.length - 1];
+					expect(lastUser).to.have.property('active', false);
+				})
+				.end(done);
+		});
+
 		it.skip('should query all users in the system by name', (done) => {
 			// filtering user list
 			request
@@ -739,6 +810,27 @@ describe('[Users]', function () {
 					expect(res.body).to.have.property('total');
 				})
 				.end(done);
+		});
+
+		it('should query all users in the system when logged as normal user and `view-outside-room` not granted', async () => {
+			await updatePermission('view-outside-room', ['admin']);
+			await request
+				.get(api('users.list'))
+				.set(user2Credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+				});
+		});
+
+		it('should not query users when logged as normal user, `view-outside-room` not granted and temp setting enabled', async () => {
+			await updatePermission('view-outside-room', ['admin']);
+			await updateSetting('API_Apply_permission_view-outside-room_on_users-list', true);
+
+			await request.get(api('users.list')).set(user2Credentials).expect('Content-Type', 'application/json').expect(403);
 		});
 	});
 

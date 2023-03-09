@@ -1,6 +1,6 @@
 {
   "root": true,
-  "extends": ["@rocket.chat/eslint-config/original", "prettier"],
+  "extends": ["@rocket.chat/eslint-config/original", "prettier", "plugin:you-dont-need-lodash-underscore/compatible"],
   "parser": "@babel/eslint-parser",
   "plugins": ["react", "react-hooks", "prettier", "testing-library", "anti-trojan-source"],
   "rules": {

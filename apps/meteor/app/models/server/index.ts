@@ -10,10 +10,12 @@ import LivechatDepartmentAgents from './models/LivechatDepartmentAgents';
 import LivechatRooms from './models/LivechatRooms';
 import LivechatInquiry from './models/LivechatInquiry';
 import ImportData from './models/ImportData';
+import AppsModel from './models/apps-model';
 
 export { FederationRoomEvents } from './models/FederationRoomEvents';
 
 export {
+	AppsModel,
 	Base,
 	BaseDb,
 	Messages,

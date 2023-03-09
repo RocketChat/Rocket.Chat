@@ -1,5 +1,20 @@
-import type { IMessage, IRoom, IUser, ILivechatDepartment } from '@rocket.chat/core-typings';
-import type { AggregationCursor, CountDocumentsOptions, FindCursor, FindOptions, AggregateOptions, DeleteResult } from 'mongodb';
+import type {
+	IMessage,
+	IRoom,
+	IUser,
+	ILivechatDepartment,
+	ILivechatPriority,
+	IOmnichannelServiceLevelAgreements,
+} from '@rocket.chat/core-typings';
+import type {
+	AggregationCursor,
+	CountDocumentsOptions,
+	FindCursor,
+	FindOptions,
+	AggregateOptions,
+	InsertOneResult,
+	DeleteResult,
+} from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -63,5 +78,34 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	setFederationEventIdById(_id: string, federationEventId: string): Promise<void>;
 
+	createPriorityHistoryWithRoomIdMessageAndUser(
+		roomId: string,
+		user: IMessage['u'],
+		priority?: Pick<ILivechatPriority, 'name' | 'i18n'>,
+	): Promise<InsertOneResult<IMessage>>;
+
+	createSLAHistoryWithRoomIdMessageAndUser(
+		roomId: string,
+		user: IMessage['u'],
+		sla?: Pick<IOmnichannelServiceLevelAgreements, 'name'>,
+	): Promise<InsertOneResult<IMessage>>;
+
 	removeByRoomId(roomId: IRoom['_id']): Promise<DeleteResult>;
+
+	findVisibleByRoomIdNotContainingTypesAndUsers(
+		roomId: IRoom['_id'],
+		types: IMessage['t'][],
+		users?: string[],
+		options?: FindOptions<IMessage>,
+		showThreadMessages?: boolean,
+	): FindCursor<IMessage>;
+	findVisibleByRoomIdNotContainingTypesBeforeTs(
+		roomId: IRoom['_id'],
+		types: IMessage['t'][],
+		ts: Date,
+		options?: FindOptions<IMessage>,
+		showThreadMessages?: boolean,
+	): FindCursor<IMessage>;
+
+	findLivechatClosingMessage(rid: IRoom['_id'], options?: FindOptions<IMessage>): Promise<IMessage | null>;
 }

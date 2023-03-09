@@ -2,13 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { SHA256 } from 'meteor/sha';
-import s from 'underscore.string';
 import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/metadata';
 import { Apps } from '@rocket.chat/core-services';
 
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
 import { deleteUser } from '../functions';
+import { trim } from '../../../../lib/utils/stringUtils';
 
 Meteor.methods({
 	async deleteUserOwnAccount(password, confirmRelinquish) {
@@ -35,7 +35,7 @@ Meteor.methods({
 			});
 		}
 
-		if (user.services?.password && s.trim(user.services.password.bcrypt)) {
+		if (user.services?.password && trim(user.services.password.bcrypt)) {
 			const result = Accounts._checkPassword(user, {
 				digest: password.toLowerCase(),
 				algorithm: 'sha-256',
@@ -45,7 +45,7 @@ Meteor.methods({
 					method: 'deleteUserOwnAccount',
 				});
 			}
-		} else if (SHA256(user.username) !== s.trim(password)) {
+		} else if (SHA256(user.username) !== password.trim()) {
 			throw new Meteor.Error('error-invalid-username', 'Invalid username', {
 				method: 'deleteUserOwnAccount',
 			});

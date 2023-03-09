@@ -25,7 +25,7 @@ type RoomProviderProps = {
 const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	useRoomRolesManagement(rid);
 
-	const roomQuery = useReactiveQuery(['rooms', rid], ({ rooms }) => rooms.findOne({ _id: rid }) ?? null);
+	const roomQuery = useReactiveQuery(['rooms', rid], ({ rooms }) => rooms.findOne({ _id: rid }));
 
 	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
 	const homeRoute = useRoute('home');
@@ -46,6 +46,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 			...subscriptionQuery.data,
 			...roomQuery.data,
 			name: roomCoordinator.getRoomName(roomQuery.data.t, roomQuery.data),
+			federationOriginalName: roomQuery.data.name,
 		};
 	}, [roomQuery.data, subscriptionQuery.data]);
 

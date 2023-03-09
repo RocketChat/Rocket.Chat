@@ -7,6 +7,8 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 
 import GenericModal from '../../../../components/GenericModal';
+import MarkdownText from '../../../../components/MarkdownText';
+import MessageContentBody from '../../../../components/message/MessageContentBody';
 
 type ReportMessageModalsFields = {
 	description: string;
@@ -14,15 +16,14 @@ type ReportMessageModalsFields = {
 
 type ReportMessageModalProps = {
 	onClose: () => void;
-	messageText?: string;
-	messageId: IMessage['_id'];
+	message: IMessage;
 };
 
 const wordBreak = css`
 	word-break: break-word;
 `;
 
-const ReportMessageModal = ({ messageText, messageId, onClose }: ReportMessageModalProps): ReactElement => {
+const ReportMessageModal = ({ message, onClose }: ReportMessageModalProps): ReactElement => {
 	const t = useTranslation();
 	const {
 		register,
@@ -32,9 +33,11 @@ const ReportMessageModal = ({ messageText, messageId, onClose }: ReportMessageMo
 	const dispatchToastMessage = useToastMessageDispatch();
 	const reportMessage = useMethod('reportMessage');
 
+	const { _id } = message;
+
 	const handleReportMessage = async ({ description }: ReportMessageModalsFields): Promise<void> => {
 		try {
-			await reportMessage(messageId, description);
+			await reportMessage(_id, description);
 			dispatchToastMessage({ type: 'success', message: t('Report_has_been_sent') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -53,7 +56,7 @@ const ReportMessageModal = ({ messageText, messageId, onClose }: ReportMessageMo
 			confirmText={t('Report_exclamation_mark')}
 		>
 			<Box mbe='x24' className={wordBreak}>
-				{messageText}
+				{message.md ? <MessageContentBody md={message.md} /> : <MarkdownText variant='inline' parseEmoji content={message.msg} />}
 			</Box>
 			<FieldGroup>
 				<Field>

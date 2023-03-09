@@ -102,4 +102,3 @@ SyncedCron.add({
 	job() {
 		appsUpdateMarketplaceInfo();
 	},
-});

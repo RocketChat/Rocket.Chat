@@ -1,7 +1,7 @@
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import { AppDetailChangesBridge as DetailChangesBridge } from '@rocket.chat/apps-engine/server/bridges/AppDetailChangesBridge';
 
-import type { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 import { AppEvents } from '../../../../app/apps/server/communication';
 

@@ -30,6 +30,7 @@ import { PbxEventsRaw } from '../../../server/models/raw/PbxEvents';
 import { AppsRaw } from '../../../server/models/raw/Apps';
 import { AppsLogsRaw } from '../../../server/models/raw/AppsLogs';
 import { AppsPersistenceRaw } from '../../../server/models/raw/AppsPersistence';
+import { LivechatPriorityRaw } from '../models/raw/LivechatPriority';
 import { LivechatRoomsRaw } from '../../../server/models/raw/LivechatRooms';
 import { UploadsRaw } from '../../../server/models/raw/Uploads';
 import { LivechatVisitorsRaw } from '../../../server/models/raw/LivechatVisitors';
@@ -66,6 +67,7 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('IAppsModel', new AppsRaw(db, trash as unknown as Collection<RocketChatRecordDeleted<IAppStorageItem>>));
 	registerModel('IAppsLogsModel', new AppsLogsRaw(db));
 	registerModel('IAppsPersistenceModel', new AppsPersistenceRaw(db));
+	registerModel('ILivechatPriorityModel', new LivechatPriorityRaw(db));
 	registerModel('ILivechatRoomsModel', () => new LivechatRoomsRaw(db));
 	registerModel('IUploadsModel', () => new UploadsRaw(db));
 	registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsRaw(db));

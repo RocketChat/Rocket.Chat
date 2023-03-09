@@ -13,16 +13,6 @@ registerAdminRoute('/custom-sounds/:context?/:id?', {
 	component: lazy(() => import('./customSounds/CustomSoundsRoute')),
 });
 
-registerAdminRoute('/apps/what-is-it', {
-	name: 'admin-apps-disabled',
-	component: lazy(() => import('./apps/AppsWhatIsIt')),
-});
-
-registerAdminRoute('/marketplace/:context?/:page?/:id?/:version?/:tab?', {
-	name: 'admin-marketplace',
-	component: lazy(() => import('./apps/AppsRoute')),
-});
-
 registerAdminRoute('/info', {
 	name: 'admin-info',
 	component: lazy(() => import('./info/InformationRoute')),

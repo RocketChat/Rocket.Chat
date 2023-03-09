@@ -7,18 +7,26 @@ import { Apps as AppsModel, AppsLogs as AppsLogsModel, AppsPersistence as AppsPe
 import { MeteorError } from '@rocket.chat/core-services';
 
 import { Logger } from '../../../server/lib/logger/Logger';
+<<<<<<<< HEAD:apps/meteor/ee/app/apps/orchestrator.js
 import { RealAppBridges } from './bridges';
+========
+import { AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../../app/models/server';
+import { settings, settingsRegistry } from '../../../app/settings/server';
+import { RealAppBridges } from '../../../app/apps/server/bridges';
+import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
+>>>>>>>> develop:apps/meteor/ee/server/apps/orchestrator.js
 import {
 	AppMessagesConverter,
 	AppRoomsConverter,
 	AppSettingsConverter,
 	AppUsersConverter,
 	AppVideoConferencesConverter,
-} from './converters';
-import { AppDepartmentsConverter } from './converters/departments';
-import { AppUploadsConverter } from './converters/uploads';
-import { AppVisitorsConverter } from './converters/visitors';
+	AppDepartmentsConverter,
+	AppUploadsConverter,
+	AppVisitorsConverter,
+} from '../../../app/apps/server/converters';
 import { AppRealLogsStorage, AppRealStorage, ConfigurableAppSourceStorage } from './storage';
+import { canEnableApp } from '../../app/license/server/license';
 
 function isTesting() {
 	return process.env.TEST_MODE === 'true';
@@ -41,11 +49,17 @@ export class AppServerOrchestrator {
 		this.developmentMode = false;
 		this.frameworkEnabled = true;
 
+<<<<<<<< HEAD:apps/meteor/ee/app/apps/orchestrator.js
 		this._marketplaceUrl = marketplaceUrl;
 
 		this._model = AppsModel;
 		this._logModel = AppsLogsModel;
 		this._persistModel = AppsPersistenceModel;
+========
+		this._model = AppsModel;
+		this._logModel = new AppsLogsModel();
+		this._persistModel = new AppsPersistenceModel();
+>>>>>>>> develop:apps/meteor/ee/server/apps/orchestrator.js
 		this._storage = new AppRealStorage(this._model);
 		this._logStorage = new AppRealLogsStorage(this._logModel);
 		this._appSourceStorage = new ConfigurableAppSourceStorage(appsSourceStorageType, appsSourceStorageFilesystemPath, this.db);
@@ -69,6 +83,14 @@ export class AppServerOrchestrator {
 			sourceStorage: this._appSourceStorage,
 		});
 
+<<<<<<<< HEAD:apps/meteor/ee/app/apps/orchestrator.js
+========
+		this._communicators = new Map();
+		this._communicators.set('notifier', new AppServerNotifier(this));
+		this._communicators.set('restapi', new AppsRestApi(this, this._manager));
+		this._communicators.set('uikit', new AppUIKitInteractionApi(this));
+
+>>>>>>>> develop:apps/meteor/ee/server/apps/orchestrator.js
 		this._isInitialized = true;
 	}
 
@@ -119,16 +141,23 @@ export class AppServerOrchestrator {
 		return this._isInitialized;
 	}
 
+<<<<<<<< HEAD:apps/meteor/ee/app/apps/orchestrator.js
 	isEnabled() {
 		return this.frameworkEnabled;
 	}
 
+========
+>>>>>>>> develop:apps/meteor/ee/server/apps/orchestrator.js
 	isLoaded() {
 		return this.getManager().areAppsLoaded();
 	}
 
 	isDebugging() {
+<<<<<<<< HEAD:apps/meteor/ee/app/apps/orchestrator.js
 		return this.developmentMode && !isTesting();
+========
+		return !isTesting();
+>>>>>>>> develop:apps/meteor/ee/server/apps/orchestrator.js
 	}
 
 	/**
@@ -155,11 +184,29 @@ export class AppServerOrchestrator {
 			return;
 		}
 
-		return this._manager
-			.load()
-			.then((affs) => console.log(`Loaded the Apps Framework and loaded a total of ${affs.length} Apps!`))
-			.catch((err) => console.warn('Failed to load the Apps Framework and Apps!', err))
-			.then(() => this.getBridges().getSchedulerBridge().startScheduler());
+		await this.getManager().load();
+
+		// Before enabling each app we verify if there is still room for it
+		await this.getManager()
+			.get()
+			// We reduce everything to a promise chain so it runs sequentially
+			.reduce(
+				(control, app) =>
+					control.then(async () => {
+						const canEnable = await canEnableApp(app.getStorageItem());
+
+						if (canEnable) {
+							return this.getManager().loadOne(app.getID());
+						}
+
+						this._rocketchatLogger.warn(`App "${app.getInfo().name}" can't be enabled due to CE limits.`);
+					}),
+				Promise.resolve(),
+			);
+
+		await this.getBridges().getSchedulerBridge().startScheduler();
+
+		this._rocketchatLogger.info(`Loaded the Apps Framework and loaded a total of ${this.getManager().get({ enabled: true }).length} Apps!`);
 	}
 
 	async unload() {
@@ -171,8 +218,8 @@ export class AppServerOrchestrator {
 
 		return this._manager
 			.unload()
-			.then(() => console.log('Unloaded the Apps Framework.'))
-			.catch((err) => console.warn('Failed to unload the Apps Framework!', err));
+			.then(() => this._rocketchatLogger.info('Unloaded the Apps Framework.'))
+			.catch((err) => this._rocketchatLogger.error({ msg: 'Failed to unload the Apps Framework!', err }));
 	}
 
 	async updateAppsMarketplaceInfo(apps = []) {
@@ -218,3 +265,103 @@ export class AppServerOrchestrator {
 }
 
 export const AppEvents = AppInterface;
+<<<<<<<< HEAD:apps/meteor/ee/app/apps/orchestrator.js
+========
+export const Apps = new AppServerOrchestrator();
+
+settingsRegistry.addGroup('General', function () {
+	this.section('Apps', function () {
+		this.add('Apps_Logs_TTL', '30_days', {
+			type: 'select',
+			values: [
+				{
+					key: '7_days',
+					i18nLabel: 'Apps_Logs_TTL_7days',
+				},
+				{
+					key: '14_days',
+					i18nLabel: 'Apps_Logs_TTL_14days',
+				},
+				{
+					key: '30_days',
+					i18nLabel: 'Apps_Logs_TTL_30days',
+				},
+			],
+			public: true,
+			hidden: false,
+			alert: 'Apps_Logs_TTL_Alert',
+		});
+
+		this.add('Apps_Framework_Source_Package_Storage_Type', 'gridfs', {
+			type: 'select',
+			values: [
+				{
+					key: 'gridfs',
+					i18nLabel: 'GridFS',
+				},
+				{
+					key: 'filesystem',
+					i18nLabel: 'FileSystem',
+				},
+			],
+			public: true,
+			hidden: false,
+			alert: 'Apps_Framework_Source_Package_Storage_Type_Alert',
+		});
+
+		this.add('Apps_Framework_Source_Package_Storage_FileSystem_Path', '', {
+			type: 'string',
+			public: true,
+			enableQuery: {
+				_id: 'Apps_Framework_Source_Package_Storage_Type',
+				value: 'filesystem',
+			},
+			alert: 'Apps_Framework_Source_Package_Storage_FileSystem_Alert',
+		});
+	});
+});
+
+settings.watch('Apps_Framework_Source_Package_Storage_Type', (value) => {
+	if (!Apps.isInitialized()) {
+		appsSourceStorageType = value;
+	} else {
+		Apps.getAppSourceStorage().setStorage(value);
+	}
+});
+
+settings.watch('Apps_Framework_Source_Package_Storage_FileSystem_Path', (value) => {
+	if (!Apps.isInitialized()) {
+		appsSourceStorageFilesystemPath = value;
+	} else {
+		Apps.getAppSourceStorage().setFileSystemStoragePath(value);
+	}
+});
+
+settings.watch('Apps_Logs_TTL', (value) => {
+	if (!Apps.isInitialized()) {
+		return;
+	}
+
+	let expireAfterSeconds = 0;
+
+	switch (value) {
+		case '7_days':
+			expireAfterSeconds = 604800;
+			break;
+		case '14_days':
+			expireAfterSeconds = 1209600;
+			break;
+		case '30_days':
+			expireAfterSeconds = 2592000;
+			break;
+	}
+
+	if (!expireAfterSeconds) {
+		return;
+	}
+
+	const model = Apps._logModel;
+
+	model.resetTTLIndex(expireAfterSeconds);
+});
+>>>>>>>> develop:apps/meteor/ee/server/apps/orchestrator.js

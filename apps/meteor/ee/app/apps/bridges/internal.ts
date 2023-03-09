@@ -5,6 +5,7 @@ import { Settings, Subscriptions } from '@rocket.chat/models';
 import Future from 'fibers/future';
 
 import type { AppServerOrchestrator } from '../orchestrator';
+import { Subscriptions } from '../../../models/server';
 
 export class AppInternalBridge extends InternalBridge {
 	// eslint-disable-next-line no-empty-function
