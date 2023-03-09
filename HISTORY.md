@@ -1,6 +1,21 @@
 
 # 6.0.0 (Under Release Candidate Process)
 
+## 6.0.0-rc.11
+`2023-03-09  ·  1 🔍  ·  1 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Remove duplicated functions in tests ([#28336](https://github.com/RocketChat/Rocket.Chat/pull/28336))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 6.0.0-rc.10
 `2023-03-08  ·  1 🐛  ·  1 🔍  ·  3 👩‍💻👨‍💻`
 
