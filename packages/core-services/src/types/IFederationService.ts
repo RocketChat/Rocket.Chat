@@ -7,6 +7,8 @@ export interface IFederationService {
 export interface IFederationJoinExternalPublicRoomInput {
 	internalUserId: string;
 	externalRoomId: string;
+	roomName?: string;
+	pageToken?: string;
 }
 
 export interface IFederationServiceEE {
@@ -29,7 +31,7 @@ export interface IFederationServiceEE {
 
 	removeSearchedServerNameByInternalUserId(internalUserId: string, serverName: string): Promise<void>;
 
-	scheduleJoinExternalPublicRoom(internalUserId: string, externalRoomId: string): Promise<void>;
+	scheduleJoinExternalPublicRoom(internalUserId: string, externalRoomId: string, roomName?: string, pageToken?: string): Promise<void>;
 
 	joinExternalPublicRoom(input: IFederationJoinExternalPublicRoomInput): Promise<void>;
 }

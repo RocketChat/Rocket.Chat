@@ -28,6 +28,7 @@ import type { RocketChatFileAdapter } from '../../../infrastructure/rocket-chat/
 import type { RocketChatNotificationAdapter } from '../../../infrastructure/rocket-chat/adapters/Notification';
 import type { InMemoryQueue } from '../../../infrastructure/queue/InMemoryQueue';
 import { getMessageRedactionHandler } from '../message/receiver/message-redaction-helper';
+import { removeExternalSpecificCharsFromExternalIdentifier } from '../../../infrastructure/matrix/converters/room/RoomReceiver';
 
 export class FederationRoomServiceReceiver extends AbstractFederationApplicationService {
 	constructor(
@@ -231,24 +232,21 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 			await this.internalRoomAdapter.addUserToRoom(room, federatedInviteeUser);
 			return;
 		}
+
 		const externalRoomData = await this.bridge.getRoomData(federatedInviterUser.getExternalId(), externalRoomId);
 		if (!externalRoomData) {
 			return;
 		}
+
 		const creatorUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalRoomData.creator.id);
 		const creationProcessIsRunningLocallyAlready =
 			!room && creatorUser && federatedInviterUser.getInternalId() === creatorUser.getInternalId();
 		if (creationProcessIsRunningLocallyAlready) {
 			return;
 		}
+
 		if (!creatorUser) {
-			const isCreatorFromTheSameHomeServer = FederatedUser.isOriginalFromTheProxyServer(
-				this.bridge.extractHomeserverOrigin(externalRoomData.creator.id),
-				this.internalHomeServerDomain,
-			);
-			const existsOnlyOnProxyServer = isCreatorFromTheSameHomeServer;
-			const username = isCreatorFromTheSameHomeServer ? externalRoomData.creator.username : externalRoomData.creator.id.replace('@', '');
-			await this.createFederatedUserInternallyOnly(externalRoomData.creator.id, username, existsOnlyOnProxyServer);
+			await this.createFederatedUserAndReturnIt(externalRoomData.creator.id, externalRoomData.creator.username);
 		}
 		const federatedCreatorUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalRoomData.creator.id);
 		if (!federatedCreatorUser) {
@@ -279,7 +277,8 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 		if (!federatedRoom) {
 			return;
 		}
-		await this.createFederateUsersForRoomMembers(
+		// Do not need to await this, this can be done in parallel
+		this.createFederatedUsersForRoomMembers(
 			federatedRoom,
 			externalRoomData.joinedMembers,
 			externalRoomData.creator.id,
@@ -292,7 +291,24 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 		await this.internalRoomAdapter.addUserToRoom(federatedRoom, federatedInviteeUser);
 	}
 
-	private async createFederateUsersForRoomMembers(
+	private async createFederatedUserAndReturnIt(externalUserId: string, externalUsername?: string): Promise<FederatedUser> {
+		const user = await this.internalUserAdapter.getFederatedUserByExternalId(externalUserId);
+		if (user) {
+			return user;
+		}
+		const isUserFromTheSameHomeserver = FederatedUser.isOriginalFromTheProxyServer(
+			this.bridge.extractHomeserverOrigin(externalUserId),
+			this.internalHomeServerDomain,
+		);
+		const existsOnlyOnProxyServer = isUserFromTheSameHomeserver;
+		const localUsername = externalUsername || removeExternalSpecificCharsFromExternalIdentifier(externalUserId);
+		const username = isUserFromTheSameHomeserver ? localUsername : removeExternalSpecificCharsFromExternalIdentifier(externalUserId); // TODO: move these common functions to a proper layer
+		await this.createFederatedUserInternallyOnly(externalUserId, username, existsOnlyOnProxyServer);
+
+		return (await this.internalUserAdapter.getFederatedUserByExternalId(externalUserId)) as FederatedUser;
+	}
+
+	private async createFederatedUsersForRoomMembers(
 		federatedRoom: FederatedRoom,
 		externalMembersExternalIds: string[],
 		creatorExternalId: string,
@@ -303,23 +319,12 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 		);
 
 		const federatedUsers = await Promise.all(
-			membersExcludingOnesInvolvedInTheCreationProcess.map(async (externalMemberId) => {
-				// TODO extract this to a method so we can use it in the above method
-				const user = await this.internalUserAdapter.getFederatedUserByExternalId(externalMemberId);
-				if (user) {
-					return user;
-				}
-				const isUserFromTheSameHomeserver = FederatedUser.isOriginalFromTheProxyServer(
-					this.bridge.extractHomeserverOrigin(externalMemberId),
-					this.internalHomeServerDomain,
-				);
-				const existsOnlyOnProxyServer = isUserFromTheSameHomeserver;
-				const username = externalMemberId.replace('@', '');
-				await this.createFederatedUserInternallyOnly(externalMemberId, username, existsOnlyOnProxyServer);
-				return this.internalUserAdapter.getFederatedUserByExternalId(externalMemberId);
-			}),
+			membersExcludingOnesInvolvedInTheCreationProcess.map((externalMemberId) => this.createFederatedUserAndReturnIt(externalMemberId)),
 		);
-		this.internalRoomAdapter.addUsersToRoomWhenJoinExternalPublicRoom(federatedUsers.filter(Boolean) as FederatedUser[], federatedRoom);
+		await this.internalRoomAdapter.addUsersToRoomWhenJoinExternalPublicRoom(
+			federatedUsers.filter(Boolean) as FederatedUser[],
+			federatedRoom,
+		);
 	}
 
 	private async handleDMRoomInviteWhenAllUsersWereBeingProvidedInTheCreationalEvent(

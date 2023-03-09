@@ -132,16 +132,26 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 			pageToken,
 		});
 
-		return RoomMapper.toSearchPublicRoomsDto(rooms);
+		return RoomMapper.toSearchPublicRoomsDto(
+			rooms,
+			parseInt(this.internalSettingsAdapter.getMaximumSizeOfUsersWhenJoiningPublicRooms() || '0'),
+		);
 	}
 
-	public async scheduleJoinExternalPublicRoom(internalUserId: string, externalRoomId: string): Promise<void> {
+	public async scheduleJoinExternalPublicRoom(
+		internalUserId: string,
+		externalRoomId: string,
+		roomName?: string,
+		pageToken?: string,
+	): Promise<void> {
 		if (!this.internalSettingsAdapter.isFederationEnabled()) {
 			throw new Error('Federation is disabled');
 		}
 		await queueService.queueWork<Record<string, any>>('work', 'federation-enterprise.joinExternalPublicRoom', {
 			internalUserId,
 			externalRoomId,
+			roomName,
+			pageToken,
 		});
 	}
 
@@ -150,7 +160,7 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 			throw new Error('Federation is disabled');
 		}
 
-		const { externalRoomId, internalUserId, externalRoomHomeServerName } = joinExternalPublicRoomInputDto;
+		const { externalRoomId, internalUserId, externalRoomHomeServerName, roomName, pageToken } = joinExternalPublicRoomInputDto;
 		const room = await this.internalRoomAdapter.getFederatedRoomByExternalId(externalRoomId);
 		if (room) {
 			const alreadyJoined = await this.internalRoomAdapter.isUserAlreadyJoined(room.getInternalId(), internalUserId);
@@ -164,18 +174,34 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 			await this.createFederatedUserIncludingHomeserverUsingLocalInformation(internalUserId);
 		}
 
-		const federatedUser = user || (await this.internalUserAdapter.getFederatedUserByInternalId(internalUserId));
+		const federatedUser = await this.internalUserAdapter.getFederatedUserByInternalId(internalUserId);
 		if (!federatedUser) {
 			throw new Error(`User with internalId ${internalUserId} not found`);
 		}
-		// const externalRoomData = await this.bridge.getRoomData(federatedUser.getExternalId(), externalRoomId);
-		// if (
-		// 	externalRoomData &&
-		// 	externalRoomData.membersCount > parseInt(this.internalSettingsAdapter.getMaximumSizeOfUsersWhenJoiningPublicRooms() || '0')
-		// ) {
-		// 	throw new Error("Can't join a room with more than the admin of your workspace has set as maximum size");
-		// }
+		if (!(await this.isRoomSizeAllowed(externalRoomId, externalRoomHomeServerName, roomName, pageToken))) {
+			throw new Error("Can't join a room bigger than the admin of your workspace has set as the maximum size");
+		}
+
 		await this.bridge.joinRoom(externalRoomId, federatedUser.getExternalId(), [externalRoomHomeServerName]);
+	}
+
+	private async isRoomSizeAllowed(externalRoomId: string, serverName: string, roomName?: string, pageToken?: string): Promise<boolean> {
+		try {
+			const rooms = await this.bridge.searchPublicRooms({
+				serverName,
+				limit: 50,
+				roomName,
+				pageToken,
+			});
+
+			const room = rooms.chunk.find((room) => room.room_id === externalRoomId);
+			if (!room) {
+				throw new Error("Cannot find the room you're trying to join");
+			}
+			return room.num_joined_members <= parseInt(this.internalSettingsAdapter.getMaximumSizeOfUsersWhenJoiningPublicRooms() || '0');
+		} catch (error) {
+			throw new Error("Cannot find the room you're trying to join");
+		}
 	}
 
 	private async setupFederatedRoom(roomInviteUserInput: FederationSetupRoomDto): Promise<void> {
@@ -271,7 +297,10 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 }
 
 class RoomMapper {
-	public static toSearchPublicRoomsDto(rooms: IFederationPublicRoomsResult): FederationPaginatedResult<{
+	public static toSearchPublicRoomsDto(
+		rooms: IFederationPublicRoomsResult,
+		maxSizeOfUsersAllowed: number,
+	): FederationPaginatedResult<{
 		rooms: IFederationPublicRooms[];
 	}> {
 		return {
@@ -280,7 +309,7 @@ class RoomMapper {
 				.map((room) => ({
 					id: room.room_id,
 					name: room.name,
-					canJoin: true,
+					canJoin: room.num_joined_members <= maxSizeOfUsersAllowed,
 					canonicalAlias: room.canonical_alias,
 					joinedMembers: room.num_joined_members,
 					topic: room.topic,

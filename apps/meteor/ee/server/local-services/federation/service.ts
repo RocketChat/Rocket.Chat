@@ -181,14 +181,19 @@ export class FederationServiceEE extends AbstractBaseFederationServiceEE impleme
 		return this.internalUserServiceEE.removeSearchedServerNameByInternalUserId(internalUserId, serverName);
 	}
 
-	public async scheduleJoinExternalPublicRoom(internalUserId: string, externalRoomId: string): Promise<void> {
-		await this.internalRoomServiceSenderEE.scheduleJoinExternalPublicRoom(internalUserId, externalRoomId);
+	public async scheduleJoinExternalPublicRoom(
+		internalUserId: string,
+		externalRoomId: string,
+		roomName?: string,
+		pageToken?: string,
+	): Promise<void> {
+		await this.internalRoomServiceSenderEE.scheduleJoinExternalPublicRoom(internalUserId, externalRoomId, roomName, pageToken);
 	}
 
 	public async joinExternalPublicRoom(input: IFederationJoinExternalPublicRoomInput): Promise<void> {
-		const { internalUserId, externalRoomId } = input;
+		const { internalUserId, externalRoomId, roomName, pageToken } = input;
 		await this.internalRoomServiceSenderEE.joinExternalPublicRoom(
-			FederationRoomSenderConverterEE.toJoinExternalPublicRoomDto(internalUserId, externalRoomId),
+			FederationRoomSenderConverterEE.toJoinExternalPublicRoomDto(internalUserId, externalRoomId, roomName, pageToken),
 		);
 	}
 }
