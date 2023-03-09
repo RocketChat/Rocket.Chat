@@ -1,9 +1,18 @@
 {
 	"name": "@rocket.chat/random",
-	"description": "Fork of Meteor's Random package",
-	"packageManager": "yarn@3.2.2",
-	"main": "random.js",
-	"types": "random.d.ts",
+	"description": "Random number generator and utilities; Fork of Meteor's Random package",
+	"version": "1.2.1",
+	"main": "./lib/main.server.js",
+	"browser": "./lib/main.client.js",
+	"types": "./lib/main.d.ts",
+	"scripts": {
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix"
+	},
+	"devDependencies": {
+		"@rocket.chat/eslint-config": "workspace:^",
+		"eslint": "^8.29.0"
+	},
 	"volta": {
 		"extends": "../../package.json"
 	}

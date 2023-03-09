@@ -7859,6 +7859,11 @@ __metadata:
 "@rocket.chat/random@workspace:^, @rocket.chat/random@workspace:packages/random":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/random@workspace:packages/random"
+  dependencies:
+    "@rocket.chat/eslint-config": "workspace:^"
+    "@types/eslint": ^8
+    eslint: ^8.29.0
+    typescript: ~4.6.4
   languageName: unknown
   linkType: soft
 
@@ -11621,6 +11626,16 @@ __metadata:
     "@types/estree": "*"
     "@types/json-schema": "*"
   checksum: 428b0c971a50adb0d08621e76f21b284580a0052a31341a0e6d553f72b54cd0142d549aa1497c7e3bc56e9f6bcc27286e66e0216e1ba76d1a5ecd2279c40bc8c
+  languageName: node
+  linkType: hard
+
+"@types/eslint@npm:^8":
+  version: 8.21.1
+  resolution: "@types/eslint@npm:8.21.1"
+  dependencies:
+    "@types/estree": "*"
+    "@types/json-schema": "*"
+  checksum: 584068441e4000c7b41c8928274fdcc737bc62f564928c30eb64ec41bbdbac31612f9fedaf490bceab31ec8305e99615166428188ea345d58878394683086fae
   languageName: node
   linkType: hard
 
