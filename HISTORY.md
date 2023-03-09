@@ -1,6 +1,24 @@
 
 # 6.0.0 (Under Release Candidate Process)
 
+## 6.0.0-rc.12
+`2023-03-09  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Added anchors elements to the allowed list to be clicked ([#28341](https://github.com/RocketChat/Rocket.Chat/pull/28341))
+
+- Regression: Fix not showing global search option ([#28342](https://github.com/RocketChat/Rocket.Chat/pull/28342))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 ## 6.0.0-rc.11
 `2023-03-09  ·  1 🔍  ·  1 👩‍💻👨‍💻`
 
