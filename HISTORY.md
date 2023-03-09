@@ -1,6 +1,50 @@
 
 # 6.0.0 (Under Release Candidate Process)
 
+## 6.0.0-rc.9
+`2023-03-08  ·  6 🔍  ·  10 👩‍💻👨‍💻`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Apps-Engine startup process was faulty ([#28322](https://github.com/RocketChat/Rocket.Chat/pull/28322))
+
+  * App loading routine was forcing apps to be enabled, even if they were previously disabled  
+  * Isolated Apps startup routine for more granular control
+
+- Regression: Change names of requested apps sorting options ([#28312](https://github.com/RocketChat/Rocket.Chat/pull/28312))
+
+  ## Jira task: [MKP-253](https://rocketchat.atlassian.net/browse/MKP-253)
+  Changed the name of the requested app-related sorting options to cause less confusion regarding their expected behavior and solved some UX problems with the initial state of the sorting filter when on different marketplace pages. Also fixed some typos.
+  Demo image:
+  ![image](https://user-images.githubusercontent.com/43561537/223466309-60f02a71-c21e-4607-a2b4-5de81c3b3cd5.png)
+
+- Regression: Fix emojiPicker reactivity on load-more ([#28331](https://github.com/RocketChat/Rocket.Chat/pull/28331))
+
+- Regression: fix Thread horizontal scrolling ([#28327](https://github.com/RocketChat/Rocket.Chat/pull/28327))
+
+- Regression: OAuth Login ([#28303](https://github.com/RocketChat/Rocket.Chat/pull/28303))
+
+  Login flow with Rocket.Chat as an OAuth provider was broken
+
+- Release 5.4.4 ([#28333](https://github.com/RocketChat/Rocket.Chat/pull/28333))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@albuquerquefabio](https://github.com/albuquerquefabio)
+- [@d-gubert](https://github.com/d-gubert)
+- [@dougfabris](https://github.com/dougfabris)
+- [@ggazzo](https://github.com/ggazzo)
+- [@juliajforesti](https://github.com/juliajforesti)
+- [@rique223](https://github.com/rique223)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tapiarafael](https://github.com/tapiarafael)
+- [@thassiov](https://github.com/thassiov)
+
 ## 6.0.0-rc.8
 `2023-03-07  ·  1 ️️️⚠️  ·  5 🔍  ·  9 👩‍💻👨‍💻`
 
@@ -1689,6 +1733,28 @@
 - [@totoi690](https://github.com/totoi690)
 - [@weslley543](https://github.com/weslley543)
 - [@yash-rajpal](https://github.com/yash-rajpal)
+
+# 5.4.4
+`2023-03-08  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: New temporary settings to limit access to files and outside room members ([#28319](https://github.com/RocketChat/Rocket.Chat/pull/28319))
+
+- Release 5.4.4 ([#28333](https://github.com/RocketChat/Rocket.Chat/pull/28333))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 5.4.3
 `2023-02-14  ·  1 🐛  ·  2 🔍  ·  2 👩‍💻👨‍💻`
