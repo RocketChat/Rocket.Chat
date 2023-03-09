@@ -245,6 +245,7 @@
 		"@rocket.chat/presence": "workspace:^",
 		"@rocket.chat/random": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
+		"@rocket.chat/sha256": "workspace:^",
 		"@rocket.chat/string-helpers": "next",
 		"@rocket.chat/tools": "workspace:^",
 		"@rocket.chat/ui-client": "workspace:^",

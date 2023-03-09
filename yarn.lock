@@ -7317,6 +7317,7 @@ __metadata:
     "@rocket.chat/presence": "workspace:^"
     "@rocket.chat/random": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
+    "@rocket.chat/sha256": "workspace:^"
     "@rocket.chat/string-helpers": next
     "@rocket.chat/tools": "workspace:^"
     "@rocket.chat/ui-client": "workspace:^"
@@ -7920,6 +7921,22 @@ __metadata:
   checksum: e54e0a6c7049c3fb14b9d3a7f32a082d6b282d1b77543fc09c22b252daf1c7663da348532de90c96013c8a571471012fea8193e063faf2dc0148c175bd15b3f8
   languageName: node
   linkType: hard
+
+"@rocket.chat/sha256@workspace:^, @rocket.chat/sha256@workspace:packages/sha256":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/sha256@workspace:packages/sha256"
+  dependencies:
+    "@babel/core": ~7.20.5
+    "@babel/preset-env": ~7.20.2
+    "@rocket.chat/eslint-config": "workspace:^"
+    "@typescript-eslint/eslint-plugin": ^5.30.7
+    "@typescript-eslint/parser": ^5.30.7
+    eslint: ^8.29.0
+    jest: ^27.5.1
+    ts-jest: ^27.1.5
+    typescript: ~4.6.4
+  languageName: unknown
+  linkType: soft
 
 "@rocket.chat/stream-hub-service@workspace:ee/apps/stream-hub-service":
   version: 0.0.0-use.local
