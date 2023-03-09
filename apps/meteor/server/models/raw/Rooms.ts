@@ -420,7 +420,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne({ _id: rid }, { $set: { teamDefault } }, options);
 	}
 
-	findChannelsWithNumberOfMessagesBetweenDate({
+	findChannelsWithNumberOfMessagesBetweenDate<T extends boolean>({
 		start,
 		end,
 		startOfLastWeek,
@@ -432,7 +432,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		end: number;
 		startOfLastWeek: number;
 		endOfLastWeek: number;
-		onlyCount: boolean;
+		onlyCount: T;
 		options: PaginatedRequest;
 	}): T extends true ? { total: number } : AggregationCursor<IRoom> {
 		const readPreference = ReadPreference.SECONDARY_PREFERRED;
