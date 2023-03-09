@@ -1,4 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IDirectMessageRoom, IRoom } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, MatrixBridgedRoom } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
@@ -99,7 +99,7 @@ export class RocketChatRoomAdapter {
 		}
 
 		if (room) {
-			return this.createFederatedRoomInstance(externalRoomId, room);
+			return this.createFederatedRoomInstance<IDirectMessageRoom>(externalRoomId, room);
 		}
 	}
 
@@ -151,7 +151,7 @@ export class RocketChatRoomAdapter {
 		await saveRoomTopic(federatedRoom.getInternalId(), federatedRoom.getTopic(), federatedUser.getInternalReference());
 	}
 
-	private async createFederatedRoomInstance<T extends IRoom>(externalRoomId: string, room: T): Promise<FederatedRoom> {
+	private async createFederatedRoomInstance<T extends IRoom | IDirectMessageRoom>(externalRoomId: string, room: T): Promise<FederatedRoom> {
 		if (isDirectMessageRoom(room)) {
 			const members = (await Promise.all(
 				(room.usernames || []).map((username) => getFederatedUserByInternalUsername(username)).filter(Boolean),

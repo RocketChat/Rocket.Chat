@@ -1,18 +1,26 @@
-import type { IDirectMessageRoom, IOmnichannelGenericRoom, IRoom, IRoomFederated, ITeam, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type {
+	IDirectMessageRoom,
+	IOmnichannelGenericRoom,
+	IRoom,
+	IRoomFederated,
+	ITeam,
+	IUser,
+	RocketChatRecordDeleted,
+} from '@rocket.chat/core-typings';
 import type { FindPaginated, IRoomsModel } from '@rocket.chat/model-typings';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
-    AggregationCursor,
-    Collection,
-    Db,
-    Document,
-    Filter,
-    FindCursor,
-    FindOptions,
-    UpdateFilter,
-    UpdateOptions,
-    UpdateResult
+	AggregationCursor,
+	Collection,
+	Db,
+	Document,
+	Filter,
+	FindCursor,
+	FindOptions,
+	UpdateFilter,
+	UpdateOptions,
+	UpdateResult,
 } from 'mongodb';
 import { ReadPreference } from 'mongodb';
 
@@ -426,7 +434,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		endOfLastWeek: number;
 		onlyCount: boolean;
 		options: PaginatedRequest;
-	}): AggregationCursor<IRoom> {
+	}) {
 		const readPreference = ReadPreference.SECONDARY_PREFERRED;
 		const lookup = {
 			$lookup: {
