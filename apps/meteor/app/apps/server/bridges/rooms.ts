@@ -9,6 +9,7 @@ import type { ISubscription, IUser as ICoreUser } from '@rocket.chat/core-typing
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { Rooms, Subscriptions, Users } from '../../../models/server';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
+import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 
 export class AppRoomBridge extends RoomBridge {
 	// eslint-disable-next-line no-empty-function
@@ -130,7 +131,7 @@ export class AppRoomBridge extends RoomBridge {
 
 	protected async delete(roomId: string, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is deleting a room.`);
-		Rooms.removeById(roomId);
+		deleteRoom(roomId);
 	}
 
 	protected async createDiscussion(
