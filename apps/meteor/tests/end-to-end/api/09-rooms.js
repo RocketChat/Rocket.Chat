@@ -53,6 +53,50 @@ function deleteTestUser(user) {
 	});
 }
 
+function createTestUser() {
+	return new Promise((resolve) => {
+		const username = `user.test.${Date.now()}`;
+		const email = `${username}@rocket.chat`;
+		request
+			.post(api('users.create'))
+			.set(credentials)
+			.send({ email, name: username, username, password, joinDefaultChannels: false })
+			.end((err, res) => resolve(res.body.user));
+	});
+}
+
+function loginTestUser(user) {
+	return new Promise((resolve, reject) => {
+		request
+			.post(api('login'))
+			.send({
+				user: user.username,
+				password,
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				const userCredentials = {};
+				userCredentials['X-Auth-Token'] = res.body.data.authToken;
+				userCredentials['X-User-Id'] = res.body.data.userId;
+				resolve(userCredentials);
+			})
+			.end((err) => (err ? reject(err) : resolve()));
+	});
+}
+
+function deleteTestUser(user) {
+	return new Promise((resolve) => {
+		request
+			.post(api('users.delete'))
+			.set(credentials)
+			.send({
+				userId: user._id,
+			})
+			.end(resolve);
+	});
+}
+
 describe('[Rooms]', function () {
 	this.retries(0);
 
