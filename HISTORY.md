@@ -1,6 +1,37 @@
 
 # 6.0.0 (Under Release Candidate Process)
 
+## 6.0.0-rc.10
+`2023-03-08  ·  1 🐛  ·  1 🔍  ·  3 👩‍💻👨‍💻`
+
+### 🐛 Bug fixes
+
+
+- room data is not erased after deleting rooms by app ([#27886](https://github.com/RocketChat/Rocket.Chat/pull/27886))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Regression: Attachment auto size ([#28332](https://github.com/RocketChat/Rocket.Chat/pull/28332))
+
+  Attachment Image or Image Preview size in small screens are not respecting container boundaries
+ 
+ **Before:**
+  ![image](https://user-images.githubusercontent.com/20212776/223826977-507e0b57-aba1-471d-a901-30198a51d82f.png)
+
+
+  **NOW:**
+  ![image](https://user-images.githubusercontent.com/20212776/223826829-7c6006bd-0738-4cd4-acc6-ba8b8c274e3b.png)
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@dougfabris](https://github.com/dougfabris)
+- [@ggazzo](https://github.com/ggazzo)
+- [@hugocostadev](https://github.com/hugocostadev)
+
 ## 6.0.0-rc.9
 `2023-03-08  ·  6 🔍  ·  10 👩‍💻👨‍💻`
 
