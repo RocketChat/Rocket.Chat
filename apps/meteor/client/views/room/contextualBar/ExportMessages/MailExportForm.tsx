@@ -11,7 +11,6 @@ import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMul
 import { useForm } from '../../../../hooks/useForm';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { SelectedMessageContext, useCountSelected } from '../../MessageList/contexts/SelectedMessagesContext';
-import { useMessages } from '../../MessageList/hooks/useMessages';
 
 type MailExportFormValues = {
 	dateFrom: string;
