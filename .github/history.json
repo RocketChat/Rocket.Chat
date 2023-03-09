@@ -102093,6 +102093,39 @@
           ]
         }
       ]
+    },
+    "6.0.0-rc.10": {
+      "node_version": "14.21.2",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.4",
+        "5.0",
+        "6.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "27886",
+          "title": "[FIX] room data is not erased after deleting rooms by app",
+          "userLogin": "cuonghuunguyen",
+          "milestone": "6.0.0",
+          "contributors": [
+            null
+          ]
+        },
+        {
+          "pr": "28332",
+          "title": "Regression: Attachment auto size",
+          "userLogin": "hugocostadev",
+          "description": "Attachment Image or Image Preview size in small screens are not respecting container boundaries\r\n \r\n **Before:**\r\n![image](https://user-images.githubusercontent.com/20212776/223826977-507e0b57-aba1-471d-a901-30198a51d82f.png)\r\n\r\n\r\n**NOW:**\r\n![image](https://user-images.githubusercontent.com/20212776/223826829-7c6006bd-0738-4cd4-acc6-ba8b8c274e3b.png)",
+          "milestone": "6.0.0",
+          "contributors": [
+            "hugocostadev",
+            "ggazzo",
+            "web-flow",
+            "dougfabris"
+          ]
+        }
+      ]
     }
   },
   "5.4.0-rc.0": {
