@@ -1,5 +1,6 @@
-import { AvatarObject, IUser } from '@rocket.chat/core-typings';
+import type { AvatarObject, IUser } from '@rocket.chat/core-typings';
 import { ButtonGroup, Button, Box, Icon } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
 	useSetModal,
 	useToastMessageDispatch,
@@ -9,10 +10,10 @@ import {
 	useEndpoint,
 	useMethod,
 	useTranslation,
-	TranslationKey,
 } from '@rocket.chat/ui-contexts';
 import { SHA256 } from 'meteor/sha';
-import React, { ReactElement, useMemo, useState, useCallback } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import ConfirmOwnerChangeModal from '../../../components/ConfirmOwnerChangeModal';

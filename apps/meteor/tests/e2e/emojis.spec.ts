@@ -1,8 +1,9 @@
-import { test, expect } from './utils/test';
+import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
+import { test, expect } from './utils/test';
 
-test.use({ storageState: 'admin-session.json' });
+test.use({ storageState: Users.admin.state });
 
 test.describe.serial('emoji', () => {
 	let poHomeChannel: HomeChannel;

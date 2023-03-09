@@ -2,7 +2,8 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { DragEvent, memo, ReactElement, ReactNode } from 'react';
+import type { DragEvent, ReactElement, ReactNode } from 'react';
+import React, { memo } from 'react';
 
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 

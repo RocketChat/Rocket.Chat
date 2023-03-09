@@ -1,9 +1,10 @@
-import { IGroupVideoConference } from '@rocket.chat/core-typings';
+import type { IGroupVideoConference } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Button, Message, Box, Avatar, Palette } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useVideoConfJoinCall } from '../../../../../contexts/VideoConfContext';

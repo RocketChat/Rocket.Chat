@@ -4,7 +4,7 @@ import React, { useMemo } from 'react';
 
 import { AsyncStatePhase } from '../../../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../../../hooks/useEndpointData';
-import { FormSkeleton } from '../../Skeleton';
+import { FormSkeleton } from '../../components/FormSkeleton';
 import ContactNewEdit from './ContactNewEdit';
 
 function ContactEditWithData({ id, close }) {
@@ -13,10 +13,7 @@ function ContactEditWithData({ id, close }) {
 		value: data,
 		phase: state,
 		error,
-	} = useEndpointData(
-		'/v1/omnichannel/contact',
-		useMemo(() => ({ contactId: id }), [id]),
-	);
+	} = useEndpointData('/v1/omnichannel/contact', { params: useMemo(() => ({ contactId: id }), [id]) });
 
 	if ([state].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;

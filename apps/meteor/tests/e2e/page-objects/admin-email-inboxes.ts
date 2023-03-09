@@ -61,7 +61,7 @@ export class AdminEmailInboxes {
 		return this.page.locator('button >> text=Delete');
 	}
 
-	findEmailInbox(email: string): Locator {
-		return this.page.locator(`td >> text=${email}`);
+	itemRow(name: string): Locator {
+		return this.page.locator(`td >> text="${name}"`);
 	}
 }

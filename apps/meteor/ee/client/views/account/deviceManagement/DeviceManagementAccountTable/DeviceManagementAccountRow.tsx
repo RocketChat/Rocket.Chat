@@ -1,7 +1,8 @@
 import { Box, Button, TableRow, TableCell } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { useFormatDateAndTime } from '../../../../../../client/hooks/useFormatDateAndTime';
 import DeviceIcon from '../../../../deviceManagement/components/DeviceIcon';
@@ -12,7 +13,6 @@ type DevicesRowProps = {
 	deviceName?: string;
 	deviceType?: string;
 	deviceOSName?: string;
-	deviceOSVersion?: string;
 	loginAt: string;
 	onReload: () => void;
 };
@@ -22,7 +22,6 @@ const DeviceManagementAccountRow = ({
 	deviceName,
 	deviceType = 'browser',
 	deviceOSName,
-	deviceOSVersion,
 	loginAt,
 	onReload,
 }: DevicesRowProps): ReactElement => {
@@ -40,7 +39,7 @@ const DeviceManagementAccountRow = ({
 					{deviceName && <Box withTruncatedText>{deviceName}</Box>}
 				</Box>
 			</TableCell>
-			<TableCell>{`${deviceOSName || ''} ${deviceOSVersion || ''}`}</TableCell>
+			<TableCell>{deviceOSName || ''}</TableCell>
 			<TableCell>{formatDateAndTime(loginAt)}</TableCell>
 			{mediaQuery && <TableCell>{_id}</TableCell>}
 			<TableCell align='end'>

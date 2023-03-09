@@ -1,7 +1,8 @@
 import { Banner, Icon } from '@rocket.chat/fuselage';
-import React, { FC, useCallback, useEffect } from 'react';
+import type { FC } from 'react';
+import React, { useCallback, useEffect } from 'react';
 
-import { LegacyBannerPayload } from '../../lib/banners';
+import type { LegacyBannerPayload } from '../../lib/banners';
 import * as banners from '../../lib/banners';
 
 type LegacyBannerProps = {

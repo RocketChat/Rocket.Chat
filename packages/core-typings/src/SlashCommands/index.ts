@@ -43,7 +43,7 @@ export type SlashCommand<T extends string = string> = {
 	description: SlashCommandOptions['description'];
 	permission: SlashCommandOptions['permission'];
 	clientOnly?: SlashCommandOptions['clientOnly'];
-	result?: (err: unknown, result: never, data: { cmd: string; params: string; msg: IMessage }) => void;
+	result?: (err: unknown, result: unknown, data: { cmd: string; params: string; msg: IMessage }) => void;
 	providesPreview: boolean;
 	previewer?: SlashCommandPreviewer;
 	previewCallback?: SlashCommandPreviewCallback;

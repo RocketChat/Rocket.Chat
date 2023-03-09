@@ -1,35 +1,32 @@
-import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { v4 as uuidv4 } from 'uuid';
 import differenceInMilliseconds from 'date-fns/differenceInMilliseconds';
 import { Emitter } from '@rocket.chat/emitter';
-import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import type { MutableRefObject } from 'react';
 
-import { waitUntilWrapperExists } from './waitUntilWrapperExists';
+import { waitForElement } from '../../../../client/lib/utils/waitForElement';
 import { readMessage } from './readMessages';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { ChatMessage, ChatSubscription } from '../../../models/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
-import {
-	setHighlightMessage,
-	clearHighlightMessage,
-} from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
-import { normalizeThreadMessage } from '../../../../client/lib/normalizeThreadMessage';
+// import {
+// 	setHighlightMessage,
+// 	clearHighlightMessage,
+// } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
+import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
 
 export async function upsertMessage(
 	{
 		msg,
 		subscription,
-		uid = Tracker.nonreactive(() => Meteor.userId()) ?? undefined,
 	}: {
 		msg: IMessage & { ignored?: boolean };
 		subscription?: ISubscription;
-		uid?: IUser['_id'];
 	},
-	{ direct } = ChatMessage,
+	{ direct }: MinimongoCollection<IMessage> = ChatMessage,
 ) {
 	const userId = msg.u?._id;
 
@@ -42,34 +39,22 @@ export async function upsertMessage(
 	}
 	msg = (await onClientMessageReceived(msg)) || msg;
 
-	const { _id, ...messageToUpsert } = msg;
+	const { _id } = msg;
 
-	if (msg.tcount) {
-		direct.update(
-			{ tmid: _id },
-			{
-				$set: {
-					following: uid && (msg.replies?.includes(uid) ?? false),
-					threadMsg: normalizeThreadMessage(messageToUpsert),
-					repliesCount: msg.tcount,
-				},
-			},
-			{ multi: true },
-		);
-	}
-
-	return direct.upsert({ _id }, messageToUpsert);
+	return direct.upsert({ _id }, msg);
 }
 
-export function upsertMessageBulk({ msgs, subscription }: { msgs: IMessage[]; subscription?: ISubscription }, collection = ChatMessage) {
-	const uid = Tracker.nonreactive(() => Meteor.userId()) ?? undefined;
+export function upsertMessageBulk(
+	{ msgs, subscription }: { msgs: IMessage[]; subscription?: ISubscription },
+	collection: MinimongoCollection<IMessage> = ChatMessage,
+) {
 	const { queries } = collection;
 	collection.queries = [];
 	msgs.forEach((msg, index) => {
 		if (index === msgs.length - 1) {
 			collection.queries = queries;
 		}
-		upsertMessage({ msg, subscription, uid }, collection);
+		upsertMessage({ msg, subscription }, collection);
 	});
 }
 
@@ -169,7 +154,7 @@ class RoomHistoryManagerClass extends Emitter {
 			({ ls } = subscription);
 		}
 
-		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls, false);
+		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls ? String(ls) : undefined, false);
 
 		this.unqueue();
 
@@ -179,7 +164,7 @@ class RoomHistoryManagerClass extends Emitter {
 		room.unreadNotLoaded.set(result.unreadNotLoaded);
 		room.firstUnread.set(result.firstUnread);
 
-		const wrapper = await waitUntilWrapperExists();
+		const wrapper = await waitForElement('.messages-box .wrapper');
 
 		if (wrapper) {
 			previousHeight = wrapper.scrollHeight;
@@ -286,41 +271,14 @@ class RoomHistoryManagerClass extends Emitter {
 		room.loaded = undefined;
 	}
 
-	public async getSurroundingMessages(message?: Pick<IMessage, '_id' | 'rid'> & { ts?: Date }, atBottomRef?: MutableRefObject<boolean>) {
-		if (!message || !message.rid) {
+	public async getSurroundingMessages(message?: Pick<IMessage, '_id' | 'rid'> & { ts?: Date }) {
+		if (!message?.rid) {
 			return;
 		}
 
 		const surroundingMessage = ChatMessage.findOne({ _id: message._id, _hidden: { $ne: true } });
 
 		if (surroundingMessage) {
-			await waitUntilWrapperExists(`[data-id='${message._id}']`);
-			const wrapper = $('.messages-box .wrapper');
-			const msgElement = $(`[data-id='${message._id}']`, wrapper);
-
-			if (msgElement.length === 0) {
-				return;
-			}
-
-			const pos = (wrapper.scrollTop() ?? NaN) + (msgElement.offset()?.top ?? NaN) - (wrapper.height() ?? NaN) / 2;
-			wrapper.animate(
-				{
-					scrollTop: pos,
-				},
-				500,
-			);
-
-			msgElement.addClass('highlight');
-			setHighlightMessage(message._id);
-
-			setTimeout(() => {
-				msgElement.removeClass('highlight');
-			}, 500);
-
-			setTimeout(() => {
-				clearHighlightMessage();
-			}, 1000);
-
 			return;
 		}
 
@@ -332,7 +290,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit);
 
-		if (!result || !result.messages) {
+		if (!result) {
 			return;
 		}
 
@@ -341,36 +299,7 @@ class RoomHistoryManagerClass extends Emitter {
 		readMessage.refreshUnreadMark(message.rid);
 
 		Tracker.afterFlush(async () => {
-			await waitUntilWrapperExists(`[data-id='${message._id}']`);
-			const wrapper = $('.messages-box .wrapper');
-			const msgElement = $(`[data-id=${message._id}]`, wrapper);
-
-			if (msgElement.length === 0) {
-				return;
-			}
-
-			const pos = (wrapper.scrollTop() ?? NaN) + (msgElement.offset()?.top ?? NaN) - (wrapper.height() ?? NaN) / 2;
-			wrapper.animate(
-				{
-					scrollTop: pos,
-				},
-				500,
-			);
-
-			msgElement.addClass('highlight');
-			setHighlightMessage(message._id);
-
 			room.isLoading.set(false);
-			const messages = wrapper[0];
-			if (atBottomRef) atBottomRef.current = !result.moreAfter && messages.scrollTop >= messages.scrollHeight - messages.clientHeight;
-
-			setTimeout(() => {
-				msgElement.removeClass('highlight');
-			}, 500);
-
-			setTimeout(() => {
-				clearHighlightMessage();
-			}, 1000);
 		});
 
 		if (!room.loaded) {

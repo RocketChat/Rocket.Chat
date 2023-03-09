@@ -1,4 +1,4 @@
-import { IRoom, ISubscription, RoomType } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, RoomType } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Sidebar, TextInput, Box, Icon } from '@rocket.chat/fuselage';
 import {
@@ -11,23 +11,13 @@ import {
 } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useUserPreference, useUserSubscriptions, useSetting, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import type { UseQueryResult } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Meteor } from 'meteor/meteor';
-import React, {
-	forwardRef,
-	useState,
-	useMemo,
-	useEffect,
-	useRef,
-	ReactElement,
-	MutableRefObject,
-	SetStateAction,
-	Dispatch,
-	FormEventHandler,
-	Ref,
-	MouseEventHandler,
-} from 'react';
-import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
+import type { ReactElement, MutableRefObject, SetStateAction, Dispatch, FormEventHandler, Ref, MouseEventHandler } from 'react';
+import React, { forwardRef, useState, useMemo, useEffect, useRef } from 'react';
+import type { VirtuosoHandle } from 'react-virtuoso';
+import { Virtuoso } from 'react-virtuoso';
 import tinykeys from 'tinykeys';
 
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
@@ -51,7 +41,7 @@ const options = {
 		lm: -1,
 		name: 1,
 	},
-};
+} as const;
 
 const useSearchItems = (filterText: string): UseQueryResult<(ISubscription & IRoom)[] | undefined, Error> => {
 	const expression = /(@|#)?(.*)/i;
@@ -77,12 +67,12 @@ const useSearchItems = (filterText: string): UseQueryResult<(ISubscription & IRo
 
 	const type = useMemo(() => {
 		if (searchForChannels) {
-			return { users: false, rooms: true };
+			return { users: false, rooms: true, includeFederatedRooms: true };
 		}
 		if (searchForDMs) {
 			return { users: true, rooms: false };
 		}
-		return { users: true, rooms: true };
+		return { users: true, rooms: true, includeFederatedRooms: true };
 	}, [searchForChannels, searchForDMs]);
 
 	const getSpotlight = useMethod('spotlight');
@@ -311,20 +301,21 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 				top: 0;
 			`}
 			ref={ref}
+			role='search'
 		>
-			<Sidebar.TopBar.Section {...({ role: 'search' } as any)} is='form'>
+			<Sidebar.TopBar.Section {...({ flexShrink: 0 } as any)} is='form'>
 				<TextInput
 					aria-owns={listId}
 					data-qa='sidebar-search-input'
 					ref={autofocus}
 					{...filter}
 					placeholder={placeholder}
+					role='searchbox'
 					addon={<Icon name='cross' size='x20' onClick={onClose} />}
 				/>
 			</Sidebar.TopBar.Section>
 			<Box
 				ref={boxRef}
-				aria-expanded='true'
 				role='listbox'
 				id={listId}
 				tabIndex={-1}
@@ -332,6 +323,8 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 				h='full'
 				w='full'
 				data-qa='sidebar-search-result'
+				aria-live='polite'
+				aria-atomic='true'
 				aria-busy={isLoading}
 				onClick={handleClick}
 			>
@@ -340,6 +333,7 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 					totalCount={items.length}
 					data={items}
 					components={{ Scroller: ScrollerWithCustomProps }}
+					computeItemKey={(_, room) => room._id}
 					itemContent={(_, data): ReactElement => <Row data={itemData} item={data} />}
 					ref={listRef}
 				/>

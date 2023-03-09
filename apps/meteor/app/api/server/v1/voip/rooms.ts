@@ -2,9 +2,9 @@ import { Random } from 'meteor/random';
 import type { ILivechatAgent, IVoipRoom } from '@rocket.chat/core-typings';
 import { isVoipRoomProps, isVoipRoomsProps, isVoipRoomCloseProps } from '@rocket.chat/rest-typings';
 import { VoipRoom, LivechatVisitors, Users } from '@rocket.chat/models';
+import { LivechatVoip } from '@rocket.chat/core-services';
 
 import { API } from '../../api';
-import { LivechatVoip } from '../../../../../server/sdk';
 import { hasPermission } from '../../../../authorization/server';
 import { typedJsonParse } from '../../../../../lib/typedJSONParse';
 

@@ -1,6 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { useIsEnterprise } from '../../../../client/hooks/useIsEnterprise';
 
@@ -19,7 +20,7 @@ export const SidebarFooterWatermark = (): ReactElement | null => {
 				<Box fontScale='micro' color='hint' pbe='x4'>
 					{t('Powered_by_RocketChat')}
 				</Box>
-				<Box fontScale='micro' color='neutral-100' pbe='x4'>
+				<Box fontScale='micro' color='pure-white' pbe='x4'>
 					{t('Free_Edition')}
 				</Box>
 			</Box>

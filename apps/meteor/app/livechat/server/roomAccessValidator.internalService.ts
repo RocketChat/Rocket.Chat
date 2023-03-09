@@ -1,7 +1,7 @@
 import type { IUser, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { IAuthorizationLivechat } from '@rocket.chat/core-services';
+import { ServiceClassInternal } from '@rocket.chat/core-services';
 
-import type { IAuthorizationLivechat } from '../../../server/sdk/types/IAuthorizationLivechat';
-import { ServiceClassInternal } from '../../../server/sdk/types/ServiceClass';
 import { validators } from './roomAccessValidator.compatibility';
 
 export class AuthorizationLivechat extends ServiceClassInternal implements IAuthorizationLivechat {

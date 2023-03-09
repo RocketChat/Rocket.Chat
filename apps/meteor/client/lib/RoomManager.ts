@@ -6,7 +6,7 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
 import { RoomHistoryManager } from '../../app/ui-utils/client/lib/RoomHistoryManager';
 import { useAsyncState } from '../hooks/useAsyncState';
-import { AsyncState } from './asyncState';
+import type { AsyncState } from './asyncState';
 import { getConfig } from './utils/getConfig';
 
 const debug = !!(getConfig('debug') || getConfig('debug-RoomStore'));

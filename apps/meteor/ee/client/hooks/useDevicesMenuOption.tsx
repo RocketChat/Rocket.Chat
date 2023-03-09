@@ -1,6 +1,7 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactNode } from 'react';
+import type { ReactNode } from 'react';
+import React from 'react';
 
 import DeviceSettingsModal from '../voip/modals/DeviceSettingsModal';
 import { useHasLicenseModule } from './useHasLicenseModule';

@@ -1,7 +1,6 @@
 import { UserStatus } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
-
-import { Presence } from '../sdk';
+import { Presence } from '@rocket.chat/core-services';
 
 Meteor.methods({
 	'UserPresence:setDefaultStatus'(status): Promise<boolean> | undefined {

@@ -1,4 +1,4 @@
-import { UserStatus } from '@rocket.chat/core-typings';
+import type { UserStatus } from '@rocket.chat/core-typings';
 import { Accounts } from 'meteor/accounts-base';
 import { UserPresence } from 'meteor/konecty:user-presence';
 import { Meteor } from 'meteor/meteor';

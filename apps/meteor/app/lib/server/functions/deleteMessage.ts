@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { Uploads } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
 import { Messages, Rooms } from '../../../models/server';
-import { api } from '../../../../server/sdk/api';
 import { callbacks } from '../../../../lib/callbacks';
-import { Apps } from '../../../apps/server';
+import { Apps } from '../../../../ee/server/apps';
 
 export const deleteMessage = async function (message: IMessage, user: IUser): Promise<void> {
 	const deletedMsg = Messages.findOneById(message._id);

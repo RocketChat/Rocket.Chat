@@ -2,7 +2,8 @@ import { MultiSelectFiltered, Icon, Box, Chip } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { memo, ReactElement, useState, useCallback, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo, useState, useCallback, useMemo } from 'react';
 
 import UserAvatar from '../avatar/UserAvatar';
 import AutocompleteOptions, { OptionsContext } from './UserAutoCompleteMultipleOptions';
@@ -23,7 +24,7 @@ type UserAutoCompleteOptions = {
 	[k: string]: UserAutoCompleteOptionType;
 };
 
-const matrixRegex = new RegExp('(.*:.*)');
+const matrixRegex = new RegExp('@(.*:.*)');
 
 const UserAutoCompleteMultipleFederated = ({
 	onChange,
@@ -112,6 +113,7 @@ const UserAutoCompleteMultipleFederated = ({
 				}}
 				renderOptions={AutocompleteOptions}
 				options={options.concat(Object.entries(selectedCache)).map(([, item]) => [item.username, item.name || item.username])}
+				data-qa='create-channel-users-autocomplete'
 			/>
 		</OptionsContext.Provider>
 	);

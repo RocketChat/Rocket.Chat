@@ -1,6 +1,7 @@
 import Bugsnag from '@bugsnag/js';
 import BugsnagPluginReact from '@bugsnag/plugin-react';
-import React, { Fragment, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { Fragment } from 'react';
 
 import pkg from '../../../package.json';
 

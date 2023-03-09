@@ -211,7 +211,8 @@ export class VideoConferenceRaw extends BaseRaw<VideoConference> implements IVid
 			$set: {
 				[`messages.${messageType}`]: messageId,
 			},
-		});
+		} as UpdateFilter<VideoConference>); // TODO: Remove this cast when TypeScript is updated
+		// TypeScript is not smart enough to infer that `messages.${'start' | 'end'}` matches two keys of `VideoConference`
 	}
 
 	public async updateUserReferences(userId: IUser['_id'], username: IUser['username'], name: IUser['name']): Promise<void> {

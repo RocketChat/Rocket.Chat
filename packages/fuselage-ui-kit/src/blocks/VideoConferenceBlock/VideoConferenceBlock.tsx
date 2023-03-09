@@ -1,5 +1,5 @@
 import type * as UiKit from '@rocket.chat/ui-kit';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import {
   VideoConfMessageSkeleton,
   VideoConfMessage,
@@ -15,7 +15,7 @@ import {
   VideoConfMessageAction,
 } from '@rocket.chat/ui-video-conf';
 import type { MouseEventHandler, ReactElement } from 'react';
-import React, { useContext, memo } from 'react';
+import { useContext, memo } from 'react';
 
 import { useSurfaceType } from '../../contexts/SurfaceContext';
 import type { BlockProps } from '../../utils/BlockProps';
@@ -32,6 +32,7 @@ const VideoConferenceBlock = ({
   const t = useTranslation();
   const { callId, appId = 'videoconf-core' } = block;
   const surfaceType = useSurfaceType();
+  const userId = useUserId();
 
   const { action, viewId, rid } = useContext(kitContext);
 
@@ -86,6 +87,7 @@ const VideoConferenceBlock = ({
 
   if (result.isSuccess) {
     const { data } = result;
+    const isUserCaller = data.createdBy._id === userId;
 
     if ('endedAt' in data) {
       return (
@@ -103,7 +105,7 @@ const VideoConferenceBlock = ({
             {data.type === 'direct' && (
               <>
                 <VideoConfMessageButton onClick={callAgainHandler}>
-                  {t('Call_back')}
+                  {isUserCaller ? t('Call_again') : t('Call_back')}
                 </VideoConfMessageButton>
                 <VideoConfMessageFooterText>
                   {t('Call_was_not_answered')}

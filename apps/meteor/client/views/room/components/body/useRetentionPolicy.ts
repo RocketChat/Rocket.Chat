@@ -1,4 +1,4 @@
-import { IRoom, IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
+import type { IRoom, IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 
 const hasRetentionPolicy = (room: IRoom & { retention?: any }): room is IRoomWithRetentionPolicy =>

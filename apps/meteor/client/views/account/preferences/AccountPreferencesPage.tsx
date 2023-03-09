@@ -1,6 +1,7 @@
 import { ButtonGroup, Button, Box, Accordion } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useSetting, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import React, { MutableRefObject, ReactElement, useState, useCallback, useRef } from 'react';
+import type { MutableRefObject, ReactElement } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 
 import Page from '../../../components/Page';
 import PreferencesGlobalSection from './PreferencesGlobalSection';
@@ -30,7 +31,6 @@ type CurrentData = {
 	pushNotifications: string;
 	enableAutoAway: boolean;
 	highlights: string;
-	messageViewMode: number;
 	hideUsernames: boolean;
 	hideRoles: boolean;
 	displayAvatars: boolean;

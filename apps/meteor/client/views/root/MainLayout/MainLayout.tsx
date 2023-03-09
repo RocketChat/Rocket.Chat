@@ -1,4 +1,5 @@
-import React, { ReactElement, ReactNode, Suspense } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React, { Suspense } from 'react';
 
 import AuthenticationCheck from './AuthenticationCheck';
 import Preload from './Preload';

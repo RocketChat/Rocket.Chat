@@ -1,6 +1,7 @@
 import { Box, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useUserId, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, RefObject, useMemo, useCallback } from 'react';
+import type { ReactElement, RefObject } from 'react';
+import React, { useMemo, useCallback } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 import {

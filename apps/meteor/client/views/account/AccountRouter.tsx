@@ -1,8 +1,10 @@
 import { useCurrentRoute, useRoute } from '@rocket.chat/ui-contexts';
-import React, { Suspense, ReactElement, useEffect, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React, { Suspense, useEffect } from 'react';
 
-import { SideNav } from '../../../app/ui-utils/client';
 import PageSkeleton from '../../components/PageSkeleton';
+import SidebarPortal from '../../sidebar/SidebarPortal';
+import AccountSidebar from './AccountSidebar';
 
 type AccountRouterProps = {
 	children?: ReactNode;
@@ -20,12 +22,16 @@ const AccountRouter = ({ children }: AccountRouterProps): ReactElement => {
 		defaultRoute.replace();
 	}, [routeName, defaultRoute]);
 
-	useEffect(() => {
-		SideNav.setFlex('accountFlex');
-		SideNav.openFlex(() => undefined);
-	}, []);
-
-	return children ? <Suspense fallback={<PageSkeleton />}>{children}</Suspense> : <PageSkeleton />;
+	return children ? (
+		<>
+			<Suspense fallback={<PageSkeleton />}>{children}</Suspense>
+			<SidebarPortal>
+				<AccountSidebar />
+			</SidebarPortal>
+		</>
+	) : (
+		<PageSkeleton />
+	);
 };
 
 export default AccountRouter;

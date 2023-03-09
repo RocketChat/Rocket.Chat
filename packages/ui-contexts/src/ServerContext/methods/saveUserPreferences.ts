@@ -15,7 +15,6 @@ type UserPreferences = {
 	pushNotifications: string;
 	enableAutoAway: boolean;
 	highlights: string[];
-	messageViewMode: number;
 	hideUsernames: boolean;
 	hideRoles: boolean;
 	displayAvatars: boolean;
@@ -30,6 +29,7 @@ type UserPreferences = {
 	sidebarGroupByType: boolean;
 	muteFocusedConversations: boolean;
 	dontAskAgainList: { action: string; label: string }[];
+	themeAppearence: 'auto' | 'light' | 'dark';
 	receiveLoginDetectionEmail: boolean;
 };
 

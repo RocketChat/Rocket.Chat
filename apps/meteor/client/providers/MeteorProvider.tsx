@@ -1,7 +1,8 @@
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 import { OmnichannelRoomIconProvider } from '../components/RoomIcon/OmnichannelRoomIcon/provider/OmnichannelRoomIconProvider';
-import AttachmentProvider from '../components/message/Attachments/providers/AttachmentProvider';
+import ActionManagerProvider from './ActionManagerProvider';
 import AuthorizationProvider from './AuthorizationProvider';
 import AvatarUrlProvider from './AvatarUrlProvider';
 import { CallProvider } from './CallProvider';
@@ -18,6 +19,7 @@ import SettingsProvider from './SettingsProvider';
 import ToastMessagesProvider from './ToastMessagesProvider';
 import TooltipProvider from './TooltipProvider';
 import TranslationProvider from './TranslationProvider';
+import UserPresenceProvider from './UserPresenceProvider';
 import UserProvider from './UserProvider';
 import VideoConfProvider from './VideoConfProvider';
 
@@ -38,13 +40,15 @@ const MeteorProvider: FC = ({ children }) => (
 														<ModalProvider>
 															<AuthorizationProvider>
 																<OmnichannelRoomIconProvider>
-																	<VideoConfProvider>
-																		<CallProvider>
-																			<OmnichannelProvider>
-																				<AttachmentProvider>{children}</AttachmentProvider>
-																			</OmnichannelProvider>
-																		</CallProvider>
-																	</VideoConfProvider>
+																	<UserPresenceProvider>
+																		<ActionManagerProvider>
+																			<VideoConfProvider>
+																				<CallProvider>
+																					<OmnichannelProvider>{children}</OmnichannelProvider>
+																				</CallProvider>
+																			</VideoConfProvider>
+																		</ActionManagerProvider>
+																	</UserPresenceProvider>
 																</OmnichannelRoomIconProvider>
 															</AuthorizationProvider>
 														</ModalProvider>

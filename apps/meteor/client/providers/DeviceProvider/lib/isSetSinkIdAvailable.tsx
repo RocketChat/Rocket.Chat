@@ -1,4 +1,4 @@
-import { IExperimentalHTMLAudioElement } from '@rocket.chat/ui-contexts';
+import type { IExperimentalHTMLAudioElement } from '@rocket.chat/ui-contexts';
 
 export const isSetSinkIdAvailable = (): boolean => {
 	const audio = new Audio() as IExperimentalHTMLAudioElement;

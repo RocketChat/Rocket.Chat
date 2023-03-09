@@ -5,7 +5,8 @@ import i18next from 'i18next';
 import I18NextHttpBackend from 'i18next-http-backend';
 import { TAPi18n, TAPi18next } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
-import React, { ReactElement, ReactNode, useEffect, useMemo, useState } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { I18nextProvider, initReactI18next } from 'react-i18next';
 
 import { useReactiveValue } from '../hooks/useReactiveValue';
@@ -16,7 +17,7 @@ type TranslationNamespace = Extract<TranslationKey, `${string}.${string}`> exten
 		: never
 	: never;
 
-const namespacesDefault = ['onboarding', 'registration'] as TranslationNamespace[];
+const namespacesDefault = ['core', 'onboarding', 'registration', 'cloud'] as TranslationNamespace[];
 
 const parseToJSON = (customTranslations: string) => {
 	try {
@@ -38,10 +39,15 @@ const useI18next = (lng: string): typeof i18next => {
 		const result: { [key: string]: any } = {};
 
 		for (const [key, value] of Object.entries(source)) {
-			const prefix = (Array.isArray(namespaces) ? namespaces : [namespaces]).find((namespace) => key.startsWith(`${namespace}.`));
+			const [prefix] = key.split('.');
 
-			if (prefix) {
+			if (prefix && Array.isArray(namespaces) ? namespaces.includes(prefix) : prefix === namespaces) {
 				result[key.slice(prefix.length + 1)] = value;
+				continue;
+			}
+
+			if (Array.isArray(namespaces) ? namespaces.includes('core') : namespaces === 'core') {
+				result[key] = value;
 			}
 		}
 
@@ -127,10 +133,10 @@ const createTranslateFunction = (
 	Tracker.nonreactive(() => {
 		const translate = (key: TranslationKey, ...replaces: unknown[]): string => {
 			if (typeof replaces[0] === 'object') {
-				const [options, lang_tag = language] = replaces;
+				const [options, lng = language] = replaces;
 				return TAPi18next.t(key, {
 					ns: 'project',
-					lng: String(lang_tag),
+					lng: String(lng),
 					...options,
 				});
 			}

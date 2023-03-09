@@ -1,11 +1,11 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
+import { Team } from '@rocket.chat/core-services';
 
-import { AppEvents, Apps } from '../../../apps/server';
+import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
-import { Team } from '../../../../server/sdk';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
@@ -18,21 +18,20 @@ export const addUserToRoom = function (
 	const now = new Date();
 	const room: IRoom = Rooms.findOneById(rid);
 
+	const userToBeAdded = typeof user !== 'string' ? user : Users.findOneByUsername(user.replace('@', ''));
 	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
 	if (
-		!roomDirectives?.allowMemberAction(room, RoomMemberActions.JOIN) &&
-		!roomDirectives?.allowMemberAction(room, RoomMemberActions.INVITE)
+		!roomDirectives?.allowMemberAction(room, RoomMemberActions.JOIN, userToBeAdded._id) &&
+		!roomDirectives?.allowMemberAction(room, RoomMemberActions.INVITE, userToBeAdded._id)
 	) {
 		return;
 	}
 
 	try {
-		callbacks.run('federation.beforeAddUserAToRoom', { user, inviter }, room);
+		callbacks.run('federation.beforeAddUserToARoom', { user, inviter }, room);
 	} catch (error) {
 		throw new Meteor.Error((error as any)?.message);
 	}
-
-	const userToBeAdded = typeof user !== 'string' ? user : Users.findOneByUsername(user.replace('@', ''));
 
 	// Check if user is already in room
 	const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);

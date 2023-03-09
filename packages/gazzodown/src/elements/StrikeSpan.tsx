@@ -15,7 +15,13 @@ const StrikeSpan = ({ children }: StrikeSpanProps): ReactElement => (
 		{children.map((block, index) => {
 			switch (block.type) {
 				case 'LINK':
-					return <LinkSpan key={index} href={block.value.src.value} label={block.value.label} />;
+					return (
+						<LinkSpan
+							key={index}
+							href={block.value.src.value}
+							label={Array.isArray(block.value.label) ? block.value.label : [block.value.label]}
+						/>
+					);
 
 				case 'PLAIN_TEXT':
 					return <PlainSpan key={index} text={block.value} />;

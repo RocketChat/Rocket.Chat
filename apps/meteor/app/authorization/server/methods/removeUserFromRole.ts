@@ -1,12 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 import type { IRole, IUser } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-services';
 
 import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { hasPermission } from '../functions/hasPermission';
-import { api } from '../../../../server/sdk/api';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
@@ -20,7 +19,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!roleId || !_.isString(roleId) || !username || !_.isString(username)) {
+		if (!roleId || typeof roleId.valueOf() !== 'string' || !username || typeof username.valueOf() !== 'string') {
 			throw new Meteor.Error('error-invalid-arguments', 'Invalid arguments', {
 				method: 'authorization:removeUserFromRole',
 			});
@@ -73,17 +72,19 @@ Meteor.methods({
 		}
 
 		const remove = await Roles.removeUserRoles(user._id, [role._id], scope);
+		const event = {
+			type: 'removed',
+			_id: role._id,
+			u: {
+				_id: user._id,
+				username,
+			},
+			scope,
+		};
 		if (settings.get('UI_DisplayRoles')) {
-			api.broadcast('user.roleUpdate', {
-				type: 'removed',
-				_id: role._id,
-				u: {
-					_id: user._id,
-					username,
-				},
-				scope,
-			});
+			api.broadcast('user.roleUpdate', event);
 		}
+		api.broadcast('federation.userRoleChanged', { ...event, givenByUserId: userId });
 
 		return remove;
 	},

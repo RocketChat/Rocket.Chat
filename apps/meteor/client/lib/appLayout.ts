@@ -1,5 +1,5 @@
 import { Emitter } from '@rocket.chat/emitter';
-import { ReactElement } from 'react';
+import type { ReactElement } from 'react';
 
 type AppLayoutDescriptor = ReactElement | null;
 

@@ -4,7 +4,8 @@ import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import CounterSet from '../../../../../../client/components/dataView/CounterSet';
 import { useFormatDate } from '../../../../../../client/hooks/useFormatDate';

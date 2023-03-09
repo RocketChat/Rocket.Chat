@@ -1,16 +1,17 @@
 import { OptionTitle } from '@rocket.chat/fuselage';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 import ListItem from '../Sidebar/ListItem';
 
 type AuditModelListProps = {
-	closeList: () => void;
+	onDismiss: () => void;
 	showAudit: boolean;
 	showAuditLog: boolean;
 };
 
-const AuditModelList: FC<AuditModelListProps> = ({ showAudit, showAuditLog, closeList }) => {
+const AuditModelList: FC<AuditModelListProps> = ({ showAudit, showAuditLog, onDismiss }) => {
 	const t = useTranslation();
 
 	const auditHomeRoute = useRoute('audit-home');
@@ -26,7 +27,7 @@ const AuditModelList: FC<AuditModelListProps> = ({ showAudit, showAuditLog, clos
 						text={t('Messages')}
 						action={(): void => {
 							auditHomeRoute.push();
-							closeList();
+							onDismiss();
 						}}
 					/>
 				)}
@@ -36,7 +37,7 @@ const AuditModelList: FC<AuditModelListProps> = ({ showAudit, showAuditLog, clos
 						text={t('Logs')}
 						action={(): void => {
 							auditSettingsRoute.push();
-							closeList();
+							onDismiss();
 						}}
 					/>
 				)}

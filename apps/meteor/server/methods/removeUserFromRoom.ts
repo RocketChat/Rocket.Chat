@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { Team } from '@rocket.chat/core-services';
 
 import { hasPermission, hasRole, getUsersInRole } from '../../app/authorization/server';
 import { removeUserFromRolesAsync } from '../lib/roles/removeUserFromRoles';
 import { Users, Subscriptions, Rooms, Messages } from '../../app/models/server';
 import { callbacks } from '../../lib/callbacks';
-import { Team } from '../sdk';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 
@@ -35,7 +35,7 @@ Meteor.methods({
 
 		const room = Rooms.findOneById(data.rid);
 
-		if (!room || !roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.REMOVE_USER)) {
+		if (!room || !roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.REMOVE_USER, fromId)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'removeUserFromRoom',
 			});

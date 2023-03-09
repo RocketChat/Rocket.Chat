@@ -3,7 +3,8 @@ import { Box, Flex, Skeleton, Tile } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import CounterSet from '../../../../../../client/components/dataView/CounterSet';
 import { useFormatDate } from '../../../../../../client/hooks/useFormatDate';
@@ -65,11 +66,11 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 		const distributeValueOverPoints = (
 			usersListsMap: { [x: number]: string[] },
 			dateOffset: number,
-			T: number,
+			count: number,
 			array: { x: Date; y: number }[],
 		): void => {
 			const usersSet = new Set();
-			for (let k = dateOffset; T > 0; k--, T--) {
+			for (let k = dateOffset; count > 0; k--, count--) {
 				if (usersListsMap[k]) {
 					usersListsMap[k].forEach((userId) => usersSet.add(userId));
 				}

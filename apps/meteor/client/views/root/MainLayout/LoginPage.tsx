@@ -1,6 +1,7 @@
 import { useSession } from '@rocket.chat/ui-contexts';
 import RegistrationRoute from '@rocket.chat/web-ui-registration';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import LoggedOutBanner from '../../../../ee/client/components/deviceManagement/LoggedOutBanner';
 import { useIframeLogin } from './useIframeLogin';

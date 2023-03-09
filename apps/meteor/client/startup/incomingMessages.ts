@@ -1,9 +1,9 @@
-import { IMessage, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { ChatMessage } from '../../app/models/client';
 import { Notifications } from '../../app/notifications/client';
-import { CachedCollectionManager } from '../../app/ui-cached-collection';
+import { CachedCollectionManager } from '../../app/ui-cached-collection/client';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {

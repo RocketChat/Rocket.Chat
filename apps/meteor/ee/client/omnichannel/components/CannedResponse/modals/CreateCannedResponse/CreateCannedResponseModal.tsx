@@ -1,6 +1,7 @@
 import { Button, Modal } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, memo, ReactNode } from 'react';
+import type { FC, ReactNode } from 'react';
+import React, { memo } from 'react';
 
 import CannedResponseForm from '../../../../cannedResponses/components/cannedResponseForm';
 

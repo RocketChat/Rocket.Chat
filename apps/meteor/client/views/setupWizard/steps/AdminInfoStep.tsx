@@ -1,6 +1,7 @@
 import { AdminInfoPage } from '@rocket.chat/onboarding-ui';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, ComponentProps } from 'react';
+import type { ReactElement, ComponentProps } from 'react';
+import React from 'react';
 
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
@@ -9,14 +10,7 @@ const AdminInfoStep = (): ReactElement => {
 	const regexpForUsernameValidation = useSetting('UTF8_User_Names_Validation');
 	const usernameRegExp = new RegExp(`^${regexpForUsernameValidation}$`);
 
-	const {
-		setupWizardData: { adminData },
-		setSetupWizardData,
-		goToNextStep,
-		currentStep,
-		validateEmail,
-		maxSteps,
-	} = useSetupWizardContext();
+	const { currentStep, validateEmail, registerAdminUser, maxSteps } = useSetupWizardContext();
 
 	// TODO: check if username exists
 	const validateUsername = (username: string): boolean | string => {
@@ -28,8 +22,7 @@ const AdminInfoStep = (): ReactElement => {
 	};
 
 	const handleSubmit: ComponentProps<typeof AdminInfoPage>['onSubmit'] = async (data) => {
-		setSetupWizardData((prevState) => ({ ...prevState, adminData: data }));
-		goToNextStep();
+		registerAdminUser(data);
 	};
 
 	return (
@@ -39,7 +32,6 @@ const AdminInfoStep = (): ReactElement => {
 			validateUsername={validateUsername}
 			validateEmail={validateEmail}
 			currentStep={currentStep}
-			initialValues={adminData}
 			stepCount={maxSteps}
 			onSubmit={handleSubmit}
 		/>

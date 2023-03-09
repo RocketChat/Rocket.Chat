@@ -1,5 +1,6 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import TwoFactorEmail from './TwoFactorEmailModal';
 import TwoFactorPassword from './TwoFactorPasswordModal';

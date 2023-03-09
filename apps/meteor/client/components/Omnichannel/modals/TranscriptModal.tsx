@@ -2,7 +2,8 @@ import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { Field, Button, TextInput, Modal } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, useCallback, useEffect, useState, useMemo } from 'react';
+import type { FC } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { useForm } from '../../../hooks/useForm';
@@ -109,11 +110,12 @@ const TranscriptModal: FC<TranscriptModalProps> = ({
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
-					{roomOpen && transcriptRequest ? (
+					{roomOpen && transcriptRequest && (
 						<Button danger onClick={handleDiscard}>
-							{t('Discard')}
+							{t('Undo_request')}
 						</Button>
-					) : (
+					)}
+					{roomOpen && !transcriptRequest && (
 						<Button disabled={!canSave} primary onClick={handleRequest}>
 							{t('Request')}
 						</Button>

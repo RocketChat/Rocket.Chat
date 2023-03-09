@@ -1,7 +1,8 @@
 import { Button, ButtonGroup, Icon, Margins } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useSetModal, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import CloseToSeatsCapModal from './CloseToSeatsCapModal';
 import ReachedSeatsCapModal from './ReachedSeatsCapModal';

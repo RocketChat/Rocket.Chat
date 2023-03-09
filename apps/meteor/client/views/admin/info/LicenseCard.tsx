@@ -2,7 +2,8 @@ import { ButtonGroup, Button, Skeleton, Margins } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Card } from '@rocket.chat/ui-client';
 import { useSetModal, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import PlanTag from '../../../components/PlanTag';
 import { useLicense } from '../../../hooks/useLicense';
@@ -26,6 +27,7 @@ const LicenseCard = (): ReactElement => {
 	const hasOmnichannel = modules.includes('livechat-enterprise');
 	const hasAuditing = modules.includes('auditing');
 	const hasCannedResponses = modules.includes('canned-responses');
+	const hasReadReceipts = modules.includes('message-read-receipt');
 
 	const handleApplyLicense = useMutableCallback(() =>
 		setModal(
@@ -63,6 +65,7 @@ const LicenseCard = (): ReactElement => {
 									<Feature label={t('Auditing')} enabled={hasAuditing} />
 									<Feature label={t('Canned_Responses')} enabled={hasCannedResponses} />
 									<Feature label={t('Engagement_Dashboard')} enabled={hasEngagement} />
+									<Feature label={t('Read_Receipts')} enabled={hasReadReceipts} />
 								</>
 							)}
 						</Margins>

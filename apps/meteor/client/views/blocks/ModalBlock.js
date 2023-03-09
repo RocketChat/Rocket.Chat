@@ -2,8 +2,10 @@ import { Modal, AnimatedVisibility, Button, Box } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-ui-kit';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { FocusScope } from 'react-aria';
 
 import { getURL } from '../../../app/utils/lib/getURL';
+import { getButtonStyle } from './getButtonStyle';
 import './textParsers';
 
 const focusableElementsString = `
@@ -102,7 +104,7 @@ function ModalBlock({ view, errors, appId, onSubmit, onClose, onCancel }) {
 	);
 	// Clean the events
 	useEffect(() => {
-		const element = document.querySelector('.rc-modal-wrapper');
+		const element = document.querySelector('#modal-root');
 		const container = element.querySelector('.rcx-modal__content');
 		const close = (e) => {
 			if (e.target !== element) {
@@ -131,28 +133,34 @@ function ModalBlock({ view, errors, appId, onSubmit, onClose, onCancel }) {
 
 	return (
 		<AnimatedVisibility visibility={AnimatedVisibility.UNHIDING}>
-			<Modal open id={id} ref={ref}>
-				<Modal.Header>
-					{view.showIcon ? <Modal.Thumb url={getURL(`/api/apps/${appId}/icon`)} /> : null}
-					<Modal.Title>{modalParser.text(view.title)}</Modal.Title>
-					<Modal.Close tabIndex={-1} onClick={onClose} />
-				</Modal.Header>
-				<Modal.Content>
-					<Box is='form' method='post' action='#' onSubmit={onSubmit}>
-						<UiKitComponent render={UiKitModal} blocks={view.blocks} />
-					</Box>
-				</Modal.Content>
-				<Modal.Footer>
-					<Modal.FooterControllers>
-						{view.close && <Button onClick={onCancel}>{modalParser.text(view.close.text)}</Button>}
-						{view.submit && (
-							<Button primary onClick={onSubmit}>
-								{modalParser.text(view.submit.text)}
-							</Button>
-						)}
-					</Modal.FooterControllers>
-				</Modal.Footer>
-			</Modal>
+			<FocusScope contain restoreFocus autoFocus>
+				<Modal open id={id} ref={ref}>
+					<Modal.Header>
+						{view.showIcon ? <Modal.Thumb url={getURL(`/api/apps/${appId}/icon`)} /> : null}
+						<Modal.Title>{modalParser.text(view.title)}</Modal.Title>
+						<Modal.Close tabIndex={-1} onClick={onClose} />
+					</Modal.Header>
+					<Modal.Content>
+						<Box is='form' method='post' action='#' onSubmit={onSubmit}>
+							<UiKitComponent render={UiKitModal} blocks={view.blocks} />
+						</Box>
+					</Modal.Content>
+					<Modal.Footer>
+						<Modal.FooterControllers>
+							{view.close && (
+								<Button danger={view.close.style === 'danger'} onClick={onCancel}>
+									{modalParser.text(view.close.text)}
+								</Button>
+							)}
+							{view.submit && (
+								<Button {...getButtonStyle(view)} onClick={onSubmit}>
+									{modalParser.text(view.submit.text)}
+								</Button>
+							)}
+						</Modal.FooterControllers>
+					</Modal.Footer>
+				</Modal>
+			</FocusScope>
 		</AnimatedVisibility>
 	);
 }

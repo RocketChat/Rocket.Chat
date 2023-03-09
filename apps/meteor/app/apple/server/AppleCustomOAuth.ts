@@ -1,7 +1,7 @@
 import { Accounts } from 'meteor/accounts-base';
+import { MeteorError } from '@rocket.chat/core-services';
 
 import { CustomOAuth } from '../../custom-oauth/server/custom_oauth_server';
-import { MeteorError } from '../../../server/sdk/errors';
 import { handleIdentityToken } from '../lib/handleIdentityToken';
 
 export class AppleCustomOAuth extends CustomOAuth {

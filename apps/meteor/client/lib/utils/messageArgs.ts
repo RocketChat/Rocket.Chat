@@ -1,10 +1,10 @@
-import { IMessage, IRoom, ISubscription, IUser, SettingValue } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, ITranslatedMessage, IUser, SettingValue } from '@rocket.chat/core-typings';
 
 export const messageArgs = (
 	context: any,
 ): {
 	context?: 'threads' | 'mentions';
-	msg: IMessage;
+	msg: ITranslatedMessage;
 	u: IUser;
 	room: IRoom;
 	settings: Record<string, SettingValue>;

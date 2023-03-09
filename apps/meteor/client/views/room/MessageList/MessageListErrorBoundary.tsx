@@ -1,6 +1,7 @@
 import { States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import { useRoom } from '../contexts/RoomContext';

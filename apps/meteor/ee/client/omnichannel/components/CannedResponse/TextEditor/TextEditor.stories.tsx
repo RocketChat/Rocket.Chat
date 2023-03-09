@@ -1,5 +1,5 @@
 import { Divider } from '@rocket.chat/fuselage';
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React, { useRef } from 'react';
 
 import TextEditor from '.';
