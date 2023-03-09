@@ -123,7 +123,7 @@ const ModerationConsoleActions = ({ report, onClick, onChange, onReload }: Monde
 			<Menu
 				options={{
 					seeReports: {
-						label: { label: 'See Reports', icon: 'eye' },
+						label: { label: 'View Messages', icon: 'document-eye' },
 						action: () => onClick(uid),
 					},
 					divider: {

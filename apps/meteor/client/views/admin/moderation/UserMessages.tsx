@@ -35,7 +35,6 @@ const UserMessages = ({
 		['userMessages', query],
 		async () => {
 			const messages = await getUserMessages(query);
-			console.log('messages', messages);
 			return messages;
 		},
 		{
