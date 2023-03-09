@@ -434,7 +434,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		endOfLastWeek: number;
 		onlyCount: boolean;
 		options: PaginatedRequest;
-	}) {
+	}): T extends true ? { total: number } : AggregationCursor<IRoom> {
 		const readPreference = ReadPreference.SECONDARY_PREFERRED;
 		const lookup = {
 			$lookup: {
