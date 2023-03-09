@@ -1,5 +1,5 @@
 import { HTTP } from 'meteor/http';
-import { Base64 } from 'meteor/base64';
+import { Base64 } from '@rocket.chat/base64';
 
 import { settings } from '../../../settings/server';
 import { SMS } from '../SMS';

@@ -1,4 +1,4 @@
-import { Base64 } from 'meteor/base64';
+import { Base64 } from '@rocket.chat/base64';
 import { EJSON } from 'meteor/ejson';
 import { Random } from '@rocket.chat/random';
 import { Session } from 'meteor/session';
