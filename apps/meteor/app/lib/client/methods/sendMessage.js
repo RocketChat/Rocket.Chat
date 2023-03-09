@@ -25,7 +25,7 @@ Meteor.methods({
 			username: user.username,
 		};
 		const defaultMessagesLayout = settings.get('Accounts_Default_User_Preferences_messagesLayout');
-		const userSettings = Users.findOneById(message.u._id, { fields: { settings: 1 } });
+		const userSettings = message.u._id ? Users.findOneById(message.u._id, { fields: { settings: 1 } }) : undefined;
 		if (shouldUseRealName(defaultMessagesLayout, userSettings)) {
 			message.u.name = user.name;
 		}

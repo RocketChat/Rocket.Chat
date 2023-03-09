@@ -316,7 +316,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		if (call.messages.started) {
-			const user = await Users.findOneByUsername(call.createdBy.username, { projection: { settings: 1 } });
+			const user = await Users.findOneById<Pick<IUser, 'settings'>>(call.createdBy._id, { projection: { settings: 1 } });
 			const defaultMessagesLayout = settings.get<string>('Accounts_Default_User_Preferences_messagesLayout');
 			const name =
 				(shouldUseRealName(defaultMessagesLayout, user) ? call.createdBy.name : call.createdBy.username) || call.createdBy.username || '';
