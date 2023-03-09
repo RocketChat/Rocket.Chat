@@ -7,11 +7,17 @@
 	"types": "./lib/main.d.ts",
 	"scripts": {
 		"lint": "eslint .",
-		"lint:fix": "eslint . --fix"
+		"lint:fix": "eslint . --fix",
+		"test": "jest"
 	},
 	"devDependencies": {
+		"@babel/core": "~7.20.5",
+		"@babel/preset-env": "~7.20.2",
 		"@rocket.chat/eslint-config": "workspace:^",
-		"eslint": "^8.29.0"
+		"@types/babel__core": "^7.1.20",
+		"@types/babel__preset-env": "^7",
+		"eslint": "^8.29.0",
+		"jest": "^27.5.1"
 	},
 	"volta": {
 		"extends": "../../package.json"
