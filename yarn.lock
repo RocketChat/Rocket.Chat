@@ -6530,9 +6530,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/apps-engine@npm:1.37.0-alpha.157":
-  version: 1.37.0-alpha.157
-  resolution: "@rocket.chat/apps-engine@npm:1.37.0-alpha.157"
+"@rocket.chat/apps-engine@npm:1.37.0-alpha.164":
+  version: 1.37.0-alpha.164
+  resolution: "@rocket.chat/apps-engine@npm:1.37.0-alpha.164"
   dependencies:
     adm-zip: ^0.5.9
     cryptiles: ^4.1.3
@@ -6542,7 +6542,9 @@ __metadata:
     stack-trace: 0.0.10
     uuid: ^3.4.0
     vm2: ^3.9.11
-  checksum: fcbb32ea871f99f338a749e27e39993121e3858a3f4455745d8f593e8cd85ea9384e77d0750d9be0569752f5d188cccd56fb0321c38e3ba4a4fe93332e54df76
+  peerDependencies:
+    "@rocket.chat/ui-kit": "*"
+  checksum: 8fb1318b411844f319ec9307917e471ceaafa49ba4479633c69417ce5351168c6743631bcba88939c0d63c79f19a71045313ff656e2afe4d8abb40edad3d8a1c
   languageName: node
   linkType: hard
 
@@ -7264,7 +7266,7 @@ __metadata:
     "@react-pdf/renderer": ^3.1.3
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
-    "@rocket.chat/apps-engine": 1.37.0-alpha.157
+    "@rocket.chat/apps-engine": 1.37.0-alpha.164
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
@@ -26407,7 +26409,7 @@ __metadata:
   resolution: "lamejs@https://github.com/zhuker/lamejs.git#commit=582bbba6a12f981b984d8fb9e1874499fed85675"
   dependencies:
     use-strict: 1.0.1
-  checksum: fa829e0c170a65573e653b4d908a44aaf06a50e1bbade3b1217a300a03ccd59a537e294e2d924a584f9d70c7726a12d4c3af9c675436d48d08be5fb94b5eb400
+  checksum: ed7f6f1c9629b53c17023eb04b4fc5a222e9c34fcb4a2f61214488fc64e5cfea825e4588d959c5fb20f3a91f0120103fa60307dd43df995d498ff5ddb6200cd9
   languageName: node
   linkType: hard
 

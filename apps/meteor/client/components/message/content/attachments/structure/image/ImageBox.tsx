@@ -14,6 +14,7 @@ const ImageBox: FC<ComponentProps<typeof Box>> = (props) => (
 		borderWidth='default'
 		borderStyle='solid'
 		borderColor='extra-light'
+		position='relative'
 		{...props}
 	/>
 );
