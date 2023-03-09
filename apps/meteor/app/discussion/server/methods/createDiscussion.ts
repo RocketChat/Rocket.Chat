@@ -169,7 +169,7 @@ const create = ({ prid, pmid, t_name: discussionName, reply, users, user, encryp
 		discussionMsg = createDiscussionMessage(prid, user, discussion._id, discussionName);
 	}
 
-	callbacks.runAsync('afterSaveMessage', discussionMsg, parentRoom);
+	callbacks.run('afterSaveMessage', discussionMsg, parentRoom);
 
 	if (reply) {
 		sendMessage(user, { msg: reply }, discussion);

@@ -1173,18 +1173,18 @@ export class Messages extends Base {
 		}
 		const { lm: dlm, msgs: dcount } = Rooms.findOneById(rid);
 
-		!dcount && Rooms.incMsgCountById(rid);
-
 		const query = {
 			drid: rid,
 		};
+
+		const lastMessage = dlm || new Date().toISOString();
 
 		return this.update(
 			query,
 			{
 				$set: {
 					dcount,
-					dlm,
+					lastMessage,
 				},
 			},
 			{ multi: 1 },

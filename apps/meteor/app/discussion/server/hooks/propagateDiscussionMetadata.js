@@ -10,7 +10,7 @@ callbacks.add(
 	'afterSaveMessage',
 	function (message, { _id, prid } = {}) {
 		if (prid) {
-			Messages.refreshDiscussionMetadata({ rid: _id }, message);
+			Messages.refreshDiscussionMetadata({ rid: _id });
 		}
 		return message;
 	},
@@ -22,7 +22,7 @@ callbacks.add(
 	'afterDeleteMessage',
 	function (message, { _id, prid } = {}) {
 		if (prid) {
-			Messages.refreshDiscussionMetadata({ rid: _id }, message);
+			Messages.refreshDiscussionMetadata({ rid: _id });
 		}
 		if (message.drid) {
 			deleteRoom(message.drid);

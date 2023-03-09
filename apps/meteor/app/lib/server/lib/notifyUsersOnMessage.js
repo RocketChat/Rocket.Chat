@@ -196,6 +196,6 @@ export async function notifyUsersOnMessage(message, room) {
 callbacks.add(
 	'afterSaveMessage',
 	(message, room) => Promise.await(notifyUsersOnMessage(message, room)),
-	callbacks.priority.LOW,
+	callbacks.priority.HIGH,
 	'notifyUsersOnMessage',
 );
