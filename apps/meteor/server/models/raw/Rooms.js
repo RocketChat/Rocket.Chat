@@ -62,7 +62,7 @@ export class RoomsRaw extends BaseRaw {
 		return statistic;
 	}
 
-	findByNameContainingAndTypes(name, types, discussion = false, teams = false, showOnlyTeams = false, options = {}) {
+	findByNameOrFnameContainingAndTypes(name, types, discussion = false, teams = false, showOnlyTeams = false, options = {}) {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
 		const onlyTeamsQuery = showOnlyTeams ? { teamMain: { $exists: true } } : {};
@@ -81,16 +81,8 @@ export class RoomsRaw extends BaseRaw {
 			},
 			prid: { $exists: discussion },
 			$or: [
-				{
-					$and: [
-						{
-							$or: [
-								{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name: nameRegex }] },
-								{ federated: true, fname: nameRegex },
-							],
-						},
-					],
-				},
+				{ name: nameRegex, federated: { $ne: true } },
+				{ fname: nameRegex },
 				{
 					t: 'd',
 					usernames: nameRegex,
@@ -124,7 +116,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.findPaginated(query, options);
 	}
 
-	findByNameContaining(name, discussion = false, teams = false, onlyTeams = false, options = {}) {
+	findByNameOrFnameContaining(name, discussion = false, teams = false, onlyTeams = false, options = {}) {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
 		const teamCondition = teams
@@ -140,16 +132,8 @@ export class RoomsRaw extends BaseRaw {
 		const query = {
 			prid: { $exists: discussion },
 			$or: [
-				{
-					$and: [
-						{
-							$or: [
-								{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name: nameRegex }] },
-								{ federated: true, fname: nameRegex },
-							],
-						},
-					],
-				},
+				{ name: nameRegex, federated: { $ne: true } },
+				{ fname: nameRegex },
 				{
 					t: 'd',
 					usernames: nameRegex,
@@ -703,5 +687,14 @@ export class RoomsRaw extends BaseRaw {
 		};
 
 		return this.find(query, options);
+	}
+
+	findCountOfRoomsWithActiveCalls() {
+		const query = {
+			// No matter the actual "status" of the call, if the room has a callStatus, it means there is/was a call
+			callStatus: { $exists: true },
+		};
+
+		return this.col.countDocuments(query);
 	}
 }

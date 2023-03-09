@@ -13,7 +13,7 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
  * @param options
  * @constructor
  */
-export class AmazonS3Store extends UploadFS.Store {
+class AmazonS3Store extends UploadFS.Store {
 	constructor(options) {
 		// Default options
 		// options.secretAccessKey,

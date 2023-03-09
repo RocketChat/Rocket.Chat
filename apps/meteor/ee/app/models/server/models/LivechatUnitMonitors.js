@@ -2,7 +2,7 @@ import { Base } from '../../../../../app/models/server';
 /**
  * Livechat Unit Monitors model
  */
-export class LivechatUnitMonitors extends Base {
+class LivechatUnitMonitors extends Base {
 	constructor() {
 		super('livechat_unit_monitors');
 

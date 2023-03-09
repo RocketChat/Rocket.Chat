@@ -25,7 +25,7 @@ export const federationRoomServiceSenderEE = FederationFactoryEE.buildRoomServic
 	federationBridgeEE,
 );
 
-export const federationRoomInternalHooksServiceSenderEE = FederationFactoryEE.buildRoomInternalHooksServiceSender(
+const federationRoomInternalHooksServiceSenderEE = FederationFactoryEE.buildRoomInternalHooksServiceSender(
 	rocketRoomAdapterEE,
 	rocketUserAdapterEE,
 	rocketFileAdapter,
@@ -34,7 +34,7 @@ export const federationRoomInternalHooksServiceSenderEE = FederationFactoryEE.bu
 	federationBridgeEE,
 );
 
-export const federationDMRoomInternalHooksServiceSenderEE = FederationFactoryEE.buildDMRoomInternalHooksServiceSender(
+const federationDMRoomInternalHooksServiceSenderEE = FederationFactoryEE.buildDMRoomInternalHooksServiceSender(
 	rocketRoomAdapterEE,
 	rocketUserAdapterEE,
 	rocketFileAdapter,

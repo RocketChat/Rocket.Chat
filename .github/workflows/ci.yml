@@ -106,6 +106,8 @@ jobs:
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
+          cache-modules: true
+          install: true
 
       # - name: Free disk space
       #   run: |
@@ -158,9 +160,6 @@ jobs:
           meteor node -v
           git version
 
-      - name: yarn install
-        run: yarn
-
       - uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: Translation check
@@ -175,15 +174,15 @@ jobs:
         if: startsWith(github.ref, 'refs/pull/') == true
         env:
           METEOR_PROFILE: 1000
-        run: yarn build:ci -- --debug --directory dist
+        run: yarn build:ci -- --directory /tmp/dist
 
       - name: Build Rocket.Chat
         if: startsWith(github.ref, 'refs/pull/') != true
-        run: yarn build:ci -- --directory dist
+        run: yarn build:ci -- --directory /tmp/dist
 
       - name: Prepare build
         run: |
-          cd apps/meteor/dist
+          cd /tmp/dist
           tar czf /tmp/Rocket.Chat.tar.gz bundle
 
       - name: Store build
@@ -224,7 +223,9 @@ jobs:
       rc-dockerfile-alpine: ${{ needs.release-versions.outputs.rc-dockerfile-alpine }}
       rc-docker-tag-alpine: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-    secrets: inherit
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
 
   test-ui:
     name: 🔨 Test UI (CE)
@@ -245,7 +246,9 @@ jobs:
       rc-dockerfile-alpine: ${{ needs.release-versions.outputs.rc-dockerfile-alpine }}
       rc-docker-tag-alpine: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-    secrets: inherit
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
 
   test-api-ee:
     name: 🔨 Test API (EE)
@@ -266,7 +269,9 @@ jobs:
       rc-dockerfile-alpine: ${{ needs.release-versions.outputs.rc-dockerfile-alpine }}
       rc-docker-tag-alpine: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-    secrets: inherit
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
 
   test-ui-ee:
     name: 🔨 Test UI (EE)
@@ -288,7 +293,9 @@ jobs:
       rc-dockerfile-alpine: ${{ needs.release-versions.outputs.rc-dockerfile-alpine }}
       rc-docker-tag-alpine: ${{ needs.release-versions.outputs.rc-docker-tag-alpine }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-    secrets: inherit
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
 
   tests-done:
     name: ✅ Tests Done
@@ -310,7 +317,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Restore build
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: build
           path: /tmp/build
@@ -389,7 +396,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Restore build
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: build
           path: /tmp/build

@@ -4,7 +4,7 @@ import type { FindOptions, FindCursor, UpdateResult, DeleteResult } from 'mongod
 
 import { Base } from './_Base';
 
-export class LivechatInquiry extends Base {
+class LivechatInquiry extends Base {
 	constructor() {
 		super('livechat_inquiry');
 

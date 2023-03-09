@@ -4,7 +4,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 
 import { Users, Subscriptions } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
-import * as Mailer from '../../app/mailer';
+import * as Mailer from '../../app/mailer/server/api';
 import { isUserIdFederated } from './isUserIdFederated';
 
 const sendResetNotitification = function (uid: string): void {
