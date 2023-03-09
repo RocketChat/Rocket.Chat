@@ -1,21 +1,17 @@
-import { Box, Message, Tabs } from '@rocket.chat/fuselage';
+import { Box, Message } from '@rocket.chat/fuselage';
 import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 import UserAvatar from '../../../components/avatar/UserAvatar';
-// import { useUserData } from '../../../../client/hooks/useUserData';
 import { formatDate } from '../../../lib/utils/formatDate';
+import { formatDateAndTime } from '../../../lib/utils/formatDateAndTime';
 import { formatTime } from '../../../lib/utils/formatTime';
-// import { useRoomInfoEndpoint } from '/client/hooks/useRoomInfoEndpoint';
-// import { formatDateAndTime } from '../../../../client/lib/utils/formatDateAndTime';
-import useConversationRedirectLink from './helpers/conversationRedirectLink';
 
 const MessageReportInfo = ({ msgId, reload }: { msgId: string; reload: MutableRefObject<() => void> }): JSX.Element => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const [tab, setTab] = useState('info');
 	const getReportsByMessage = useEndpoint('GET', `/v1/moderation.reportsByMessage`);
 
 	const {
@@ -36,19 +32,6 @@ const MessageReportInfo = ({ msgId, reload }: { msgId: string; reload: MutableRe
 			},
 		},
 	);
-
-	const roomLink = useConversationRedirectLink(reportsByMessage?.reports[0].message.rid || '');
-
-	console.log('roomLink', roomLink);
-
-	// const {
-	// 	data: roomInfo,
-	// 	isLoading: isLoadingRoomInfo,
-	// 	isSuccess: isSuccessRoomInfo,
-	// 	isError: isErrorRoomInfo,
-	// } = useRoomInfoEndpoint(reportsByMessage?.reports[0].message.rid || '');
-
-	// console.log('rromInfo', roomInfo);
 
 	useEffect(() => {
 		reload.current = reloadReportsByMessage;
@@ -72,43 +55,15 @@ const MessageReportInfo = ({ msgId, reload }: { msgId: string; reload: MutableRe
 
 	const { reports } = reportsByMessage;
 
-	const { message } = reports[0];
-
 	console.log('data', reportsByMessage);
 
 	return (
-		<Box display='flex' flexDirection='column' width='full' height='full' overflow='hidden'>
-			<Tabs>
-				<Tabs.Item selected={tab === 'info'} onClick={() => setTab('info')}>
-					{t('Message')}
-				</Tabs.Item>
-				<Tabs.Item selected={tab === 'reports'} onClick={() => setTab('reports')}>
-					{`${t('Report')} (${reports.length})`}
-				</Tabs.Item>
-			</Tabs>
-			{tab === 'info' && isSuccessReportsByMessage && reportsByMessage?.reports && (
-				<Box display='flex' flexDirection='column' width='full' height='full' overflow='hidden'>
-					<Message.Divider>{formatDate(message._updatedAt)}</Message.Divider>
-					<Message>
-						<Message.LeftContainer>
-							<UserAvatar username={message.u.username} />
-						</Message.LeftContainer>
-						<Message.Container>
-							<Message.Header>
-								<Message.Name>{message.u.name}</Message.Name>
-								<Message.Username>@{message.u.username}</Message.Username>
-								<Message.Timestamp>{formatTime(message._updatedAt)}</Message.Timestamp>
-							</Message.Header>
-							<Message.Body>{message.msg}</Message.Body>
-						</Message.Container>
-					</Message>
-				</Box>
-			)}
-			{tab === 'reports' && isSuccessReportsByMessage && reportsByMessage?.reports && (
-				<Box display='flex' flexDirection='column' width='full' height='full' overflow='hidden'>
+		<>
+			{isSuccessReportsByMessage && reportsByMessage?.reports && (
+				<Box display='flex' flexDirection='column' width='full' height='full' overflowX='hidden' overflowY='auto'>
 					{reports.map((report) => (
-						<Box display='flex' flexDirection='column' width='full' overflow='hidden' key={report._id}>
-							<Message.Divider>{formatDate(report._updatedAt)}</Message.Divider>
+						<Box key={report._id}>
+							<Message.Divider>{formatDate(report.ts)}</Message.Divider>
 							<Message>
 								{}
 								<Message.LeftContainer>
@@ -118,7 +73,7 @@ const MessageReportInfo = ({ msgId, reload }: { msgId: string; reload: MutableRe
 									<Message.Header>
 										<Message.Name>{report.reportedBy ? report.reportedBy.name : 'Rocket.Cat'}</Message.Name>
 										<Message.Username>@{report.reportedBy ? report.reportedBy.username : 'rocket.cat'}</Message.Username>
-										<Message.Timestamp>{formatTime(report._updatedAt)}</Message.Timestamp>
+										<Message.Timestamp title={formatDateAndTime(report.ts)}>{formatTime(report.ts)}</Message.Timestamp>
 									</Message.Header>
 									<Message.Body>{report.description}</Message.Body>
 								</Message.Container>
@@ -127,7 +82,7 @@ const MessageReportInfo = ({ msgId, reload }: { msgId: string; reload: MutableRe
 					))}
 				</Box>
 			)}
-		</Box>
+		</>
 	);
 };
 

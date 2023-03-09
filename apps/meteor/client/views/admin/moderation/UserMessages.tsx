@@ -1,5 +1,6 @@
 import { Box, Message } from '@rocket.chat/fuselage';
-import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo, useEffect } from 'react';
 import type { MutableRefObject } from 'react';
@@ -8,6 +9,8 @@ import ContextMessage from './helpers/ContextMessage';
 
 const UserMessages = ({ userId, reload }: { userId: string; reload: MutableRefObject<() => void> }): JSX.Element => {
 	const t = useTranslation();
+
+	const moderationRoute = useRoute('moderation-console');
 
 	const getUserMessages = useEndpoint('GET', '/v1/moderation.user.getMessageHistory');
 
@@ -34,6 +37,15 @@ const UserMessages = ({ userId, reload }: { userId: string; reload: MutableRefOb
 		},
 	);
 
+	// opens up the 'reports' tab when the user clicks on a user in the 'users' tab
+
+	const handleClick = useMutableCallback((id): void => {
+		moderationRoute.push({
+			context: 'reports',
+			id,
+		});
+	});
+
 	useEffect(() => {
 		reload.current = reloadUserMessages;
 	}, [reload, reloadUserMessages]);
@@ -44,7 +56,7 @@ const UserMessages = ({ userId, reload }: { userId: string; reload: MutableRefOb
 			{isSuccessUserMessages &&
 				userMessages.messages.map((message) => (
 					<Box key={message._id}>
-						<ContextMessage message={message.message} room={message.room} />
+						<ContextMessage message={message.message} room={message.room} handleClick={handleClick} />
 					</Box>
 				))}
 		</Box>

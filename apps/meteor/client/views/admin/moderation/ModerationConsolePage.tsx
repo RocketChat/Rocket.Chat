@@ -37,7 +37,7 @@ const ModerationConsolePage = () => {
 					</VerticalBar.Header>
 					{context === 'info' && id && <UserMessages userId={id} reload={reloadRef} />}
 
-					{context === 'reports' && <VerticalBar.Content>{id && <MessageReportInfo msgId={id} reload={reloadRef} />}</VerticalBar.Content>}
+					{context === 'reports' && id && <MessageReportInfo msgId={id} reload={reloadRef} />}
 				</VerticalBar>
 			)}
 		</Page>

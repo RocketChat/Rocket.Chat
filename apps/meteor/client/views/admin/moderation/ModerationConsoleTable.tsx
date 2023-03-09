@@ -53,7 +53,6 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void> }> = ({ 
 		['reports', query],
 		async () => {
 			const reports = await getReports(query);
-			console.log('return', reports);
 			return reports;
 		},
 		{

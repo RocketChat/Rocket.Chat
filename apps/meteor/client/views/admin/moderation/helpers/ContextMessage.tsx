@@ -1,6 +1,6 @@
-import type { IReport } from '@rocket.chat/core-typings';
+import type { IMessage, IReport } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
-import { Message } from '@rocket.chat/fuselage';
+import { Message, MessageToolboxItem, MessageToolboxWrapper } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
@@ -9,17 +9,21 @@ import MessageContentBody from '../../../../components/message/MessageContentBod
 import Attachments from '../../../../components/message/content/Attachments';
 import UiKitSurface from '../../../../components/message/content/UiKitSurface';
 import { formatDate } from '../../../../lib/utils/formatDate';
+import { formatDateAndTime } from '../../../../lib/utils/formatDateAndTime';
 import { formatTime } from '../../../../lib/utils/formatTime';
-import { useTranslateAttachments } from '../../../room/MessageList/contexts/MessageListContext';
 
-const ContextMessage = ({ message, room }: { message: IReport['message']; room: IReport['room'] }): JSX.Element => {
+const ContextMessage = ({
+	message,
+	room,
+	handleClick,
+}: {
+	message: IReport['message'];
+	room: IReport['room'];
+	handleClick: (id: IMessage['_id']) => void;
+}): JSX.Element => {
 	const t = useTranslation();
 
 	const isEncryptedMessage = isE2EEMessage(message);
-
-	const messageAttachments = useTranslateAttachments({ message });
-
-	console.log('attachments', messageAttachments);
 
 	return (
 		<>
@@ -31,9 +35,9 @@ const ContextMessage = ({ message, room }: { message: IReport['message']; room: 
 				<Message.Container>
 					<Message.Header>
 						<Message.Username>{message.u.username}</Message.Username>
-						<Message.Timestamp>
-							{formatTime(message.ts)}
-							{message._updatedAt && ` (${t('edited')})`}
+						<Message.Timestamp title={formatDateAndTime(message._updatedAt)}>
+							{formatTime(message._updatedAt !== message.ts ? message._updatedAt : message.ts)}
+							{message._updatedAt !== message.ts && ` (${t('edited')})`}
 						</Message.Timestamp>
 						<Message.Role>{room.name || room.fname}</Message.Role>
 					</Message.Header>
@@ -52,6 +56,11 @@ const ContextMessage = ({ message, room }: { message: IReport['message']; room: 
 						{message.attachments && <Attachments attachments={message.attachments} file={message.file} />}
 					</Message.Body>
 				</Message.Container>
+				<MessageToolboxWrapper>
+					<Message.Toolbox>
+						<MessageToolboxItem icon='document-eye' title='View Reports' onClick={() => handleClick(message._id)} />
+					</Message.Toolbox>
+				</MessageToolboxWrapper>
 			</Message>
 		</>
 	);
