@@ -25,8 +25,8 @@ const VideoConfListItem = ({
 	const formatDate = useTimeAgo();
 	const joinCall = useVideoConfJoinCall();
 
-	const messagesLayoutPreference = useUserPreference('messagesLayout');
-	const defaultMessagesLayout = useSetting('Accounts_Default_User_Preferences_messagesLayout');
+	const messagesLayoutPreference = useUserPreference<string>('messagesLayout');
+	const defaultMessagesLayout = useSetting<string>('Accounts_Default_User_Preferences_messagesLayout');
 	const showRealName =
 		messagesLayoutPreference !== 'default' ? messagesLayoutPreference !== 'username' : defaultMessagesLayout !== 'username';
 
