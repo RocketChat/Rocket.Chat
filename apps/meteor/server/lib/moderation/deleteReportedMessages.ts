@@ -3,9 +3,9 @@ import { Messages } from '@rocket.chat/models';
 
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
 
-export async function deleteReportedMessages(messages: Pick<IReport, '_id' | 'message' | 'ts' | 'room'>[], user: IUser): Promise<void> {
-	const promises = messages.map(async (message) => {
-		const deletedMsg = await Messages.findOneById(message._id);
+export async function deleteReportedMessages(msgData: Pick<IReport, '_id' | 'message' | 'ts' | 'room'>[], user: IUser): Promise<void> {
+	const promises = msgData.map(async (msg) => {
+		const deletedMsg = await Messages.findOneById(msg.message._id);
 		if (!deletedMsg) {
 			return Promise.resolve();
 		}
