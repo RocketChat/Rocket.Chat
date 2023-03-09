@@ -102126,6 +102126,26 @@
           ]
         }
       ]
+    },
+    "6.0.0-rc.11": {
+      "node_version": "14.21.2",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.4",
+        "5.0",
+        "6.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "28336",
+          "title": "Chore: Remove duplicated functions in tests",
+          "userLogin": "sampaiodiego",
+          "milestone": "6.0.0",
+          "contributors": [
+            "sampaiodiego"
+          ]
+        }
+      ]
     }
   },
   "5.4.0-rc.0": {
