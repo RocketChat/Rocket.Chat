@@ -17,13 +17,17 @@ const ModerationConsolePage = () => {
 
 	const reloadRef = useRef(() => null);
 
+	const handleReload = (): void => {
+		reloadRef.current();
+	};
+
 	return (
 		<Page flexDirection='row'>
 			<Page>
 				<Page.Header title={t('Moderation_Console')} />
 				<Page.Content>
 					<h1>Moderation Console</h1>
-					<ModerationConsoleTable reload={reloadRef} />
+					<ModerationConsoleTable reload={reloadRef} onReload={handleReload} />
 				</Page.Content>
 			</Page>
 			{context && (

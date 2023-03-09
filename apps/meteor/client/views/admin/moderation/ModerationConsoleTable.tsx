@@ -17,7 +17,7 @@ import { usePagination } from '../../../components/GenericTable/hooks/usePaginat
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import ModerationConsoleTableRow from './ModerationConsoleTableRow';
 
-const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void> }> = ({ reload }) => {
+const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReload: () => void }> = ({ reload, onReload }) => {
 	const [text, setText] = useState('');
 	const moderationRoute = useRoute('moderation-console');
 
@@ -65,6 +65,10 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void> }> = ({ 
 	useEffect(() => {
 		reload.current = reloadReports;
 	}, [reload, reloadReports]);
+
+	const onChange = useMutableCallback(() => {
+		reloadReports();
+	});
 
 	const handleClick = useMutableCallback((id): void => {
 		moderationRoute.push({
@@ -130,7 +134,13 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void> }> = ({ 
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.reports.map((report) => (
-								<ModerationConsoleTableRow key={report.userId} report={report} onClick={handleClick} />
+								<ModerationConsoleTableRow
+									key={report.userId}
+									report={report}
+									onClick={handleClick}
+									onChange={onChange}
+									onReload={onReload}
+								/>
 							))}
 						</GenericTableBody>
 					</GenericTable>

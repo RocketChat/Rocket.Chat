@@ -9,9 +9,11 @@ import ModerationConsoleActions from './ModerationConsoleActions';
 export type MonderationConsoleRowProps = {
 	report: IModerationAudit;
 	onClick: (id: IUser['_id']) => void;
+	onChange: () => void;
+	onReload: () => void;
 };
 
-const ModerationConsoleTableRow = ({ report, onClick }: MonderationConsoleRowProps): JSX.Element => {
+const ModerationConsoleTableRow = ({ report, onClick, onChange, onReload }: MonderationConsoleRowProps): JSX.Element => {
 	const { userId: _id, rooms, count, message, username, ts } = report;
 
 	const roomNames = rooms.map((room) => {
@@ -22,59 +24,6 @@ const ModerationConsoleTableRow = ({ report, onClick }: MonderationConsoleRowPro
 	});
 
 	const concatenatedRoomNames = roomNames.join(', ');
-
-	// write a custom query to get the reports data from the database
-
-	// const query = useDebouncedValue(
-	// 	useMemo(
-	// 		() => ({
-	// 			count: 50,
-	// 			msgId: message._id,
-	// 		}),
-	// 		[message._id],
-	// 	),
-	// 	500,
-	// );
-
-	// const dispatchToastMessage = useToastMessageDispatch();
-
-	// const countReportsByMsgId = useEndpoint('GET', '/v1/moderation.countReportsByMsgId');
-
-	// const {
-	// 	data: reportsByMessage,
-	// 	refetch: reloadReportsByMessage,
-	// 	isLoading: isLoadingReportsByMessage,
-	// 	isSuccess: isSuccessReportsByMessage,
-	// } = useQuery(
-	// 	['reportsByMessage', query],
-	// 	async () => {
-	// 		const reports = await countReportsByMsgId(query);
-	// 		return reports;
-	// 	},
-	// 	{
-	// 		onError: (error) => {
-	// 			dispatchToastMessage({ type: 'error', message: error });
-	// 		},
-	// 	},
-	// );
-
-	// useEffect(() => {
-	// 	reload.current = reloadReportsByMessage;
-	// }, [reload, reloadReportsByMessage]);
-
-	// // a return function based on the status of the query which shows the query total or a loading spinner or a "-" incase of error
-
-	// const renderReportsByMessage = (): string | number => {
-	// 	if (isLoadingReportsByMessage) {
-	// 		return '...';
-	// 	}
-
-	// 	if (isSuccessReportsByMessage) {
-	// 		return reportsByMessage.reportCounts;
-	// 	}
-
-	// 	return '-';
-	// };
 
 	return (
 		<TableRow key={_id} onKeyDown={(): void => onClick(_id)} onClick={(): void => onClick(_id)} tabIndex={0} role='link' action>
@@ -95,7 +44,7 @@ const ModerationConsoleTableRow = ({ report, onClick }: MonderationConsoleRowPro
 			<TableCell withTruncatedText>{formatDateAndTime(ts)}</TableCell>
 			<TableCell withTruncatedText>{count}</TableCell>
 			<TableCell onClick={(e): void => e.stopPropagation()}>
-				<ModerationConsoleActions report={report} onClick={onClick} />
+				<ModerationConsoleActions report={report} onClick={onClick} onChange={onChange} onReload={onReload} />
 			</TableCell>
 		</TableRow>
 	);
