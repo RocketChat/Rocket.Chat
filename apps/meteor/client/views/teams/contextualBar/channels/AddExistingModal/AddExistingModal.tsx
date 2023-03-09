@@ -1,7 +1,7 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import { Button, Field, Modal } from '@rocket.chat/fuselage';
+import { Box, Button, Field, Modal } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import type { ComponentProps, FC } from 'react';
 import React, { memo, useCallback } from 'react';
 
 import { useForm } from '../../../../../hooks/useForm';
@@ -47,20 +47,24 @@ const useAddExistingModalState = (onClose: () => void, teamId: string, reload: (
 		[handleRooms, rooms],
 	);
 
-	const onAdd = useCallback(async () => {
-		try {
-			await addRoomEndpoint({
-				rooms: rooms.map((room) => room._id),
-				teamId,
-			});
+	const onAdd = useCallback(
+		async (e) => {
+			e.preventDefault();
+			try {
+				await addRoomEndpoint({
+					rooms: rooms.map((room) => room._id),
+					teamId,
+				});
 
-			dispatchToastMessage({ type: 'success', message: t('Channels_added') });
-			onClose();
-			reload();
-		} catch (error: unknown) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	}, [addRoomEndpoint, rooms, teamId, onClose, dispatchToastMessage, t, reload]);
+				dispatchToastMessage({ type: 'success', message: t('Channels_added') });
+				onClose();
+				reload();
+			} catch (error: unknown) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+		},
+		[addRoomEndpoint, rooms, teamId, onClose, dispatchToastMessage, t, reload],
+	);
 
 	return { onAdd, rooms, onChange, hasUnsavedChanges };
 };
@@ -72,7 +76,7 @@ const AddExistingModal: FC<AddExistingModalProps> = ({ onClose, teamId, reload }
 	const isAddButtonEnabled = hasUnsavedChanges;
 
 	return (
-		<Modal>
+		<Modal wrapperFunction={(props: ComponentProps<typeof Box>) => <Box is='form' onSubmit={onAdd} {...props} />}>
 			<Modal.Header>
 				<Modal.Title>{t('Team_Add_existing_channels')}</Modal.Title>
 				<Modal.Close onClick={onClose} />
@@ -86,7 +90,7 @@ const AddExistingModal: FC<AddExistingModalProps> = ({ onClose, teamId, reload }
 			<Modal.Footer>
 				<Modal.FooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={!isAddButtonEnabled} onClick={onAdd} primary>
+					<Button disabled={!isAddButtonEnabled} type='submit' primary>
 						{t('Add')}
 					</Button>
 				</Modal.FooterControllers>
