@@ -5,7 +5,7 @@ import type { IMessage, IUpload, IUser } from '@rocket.chat/core-typings';
 import { FileUpload } from '../../../../../file-upload/server';
 import { parseFileIntoMessageAttachments } from '../../../../../file-upload/server/methods/sendFileMessage';
 
-export interface IAvatarMetadataFile {
+interface IAvatarMetadataFile {
 	type: string;
 	name: string;
 }
