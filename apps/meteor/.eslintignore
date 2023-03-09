@@ -14,6 +14,7 @@ public/livechat/
 public/pdf.worker.min.js
 public/workers/**/*
 imports/client/**/*
+imports/random/**/*
 ee/server/services/dist/**
 !/.mocharc.js
 !/.mocharc.*.js

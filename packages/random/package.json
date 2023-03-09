@@ -1,0 +1,10 @@
+{
+	"name": "@rocket.chat/random",
+	"description": "Fork of Meteor's Random package",
+	"packageManager": "yarn@3.2.2",
+	"main": "random.js",
+	"types": "random.d.ts",
+	"volta": {
+		"extends": "../../package.json"
+	}
+}

@@ -7298,6 +7298,7 @@ __metadata:
     "@rocket.chat/pdf-worker": "workspace:^"
     "@rocket.chat/poplib": "workspace:^"
     "@rocket.chat/presence": "workspace:^"
+    "@rocket.chat/random": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": next
     "@rocket.chat/tools": "workspace:^"
@@ -7852,6 +7853,12 @@ __metadata:
     polka: ^0.5.2
     ts-node: ^10.9.1
     typescript: ~4.5.5
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/random@workspace:^, @rocket.chat/random@workspace:packages/random":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/random@workspace:packages/random"
   languageName: unknown
   linkType: soft
 

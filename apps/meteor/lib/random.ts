@@ -1,4 +1,4 @@
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 
 /**
  * Facade for Meteor's `Random.id` function

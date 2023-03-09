@@ -242,6 +242,7 @@
 		"@rocket.chat/pdf-worker": "workspace:^",
 		"@rocket.chat/poplib": "workspace:^",
 		"@rocket.chat/presence": "workspace:^",
+		"@rocket.chat/random": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/string-helpers": "next",
 		"@rocket.chat/tools": "workspace:^",
