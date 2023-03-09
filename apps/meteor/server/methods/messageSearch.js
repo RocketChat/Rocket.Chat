@@ -245,12 +245,6 @@ Meteor.methods({
 				};
 			}
 
-			if (!settings.get('Message_ShowEditedStatus')) {
-				options.projection = {
-					editedAt: 0,
-				};
-			}
-
 			result.message.docs = Promise.await(
 				Messages.find(query, {
 					readPreference: readSecondaryPreferred(Messages.col.s.db),

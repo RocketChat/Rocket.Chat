@@ -1,10 +1,11 @@
-import { Serialized } from '@rocket.chat/core-typings';
-import type { MatchPathPattern, OperationParams, OperationResult, PathFor } from '@rocket.chat/rest-typings';
+import type { Serialized } from '@rocket.chat/core-typings';
+import type { OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect } from 'react';
 
 import { getConfig } from '../lib/utils/getConfig';
-import { AsyncState, useAsyncState } from './useAsyncState';
+import type { AsyncState } from './useAsyncState';
+import { useAsyncState } from './useAsyncState';
 
 const log = (name: string): Console['log'] =>
 	process.env.NODE_ENV !== 'production' || getConfig('debug') === 'true'
@@ -17,24 +18,24 @@ const deprecationWarning = log('useEndpointData is deprecated, use @tanstack/rea
  * use @tanstack/react-query with useEndpoint instead
  * @deprecated
  */
-
-export const useEndpointData = <TPath extends PathFor<'GET'>>(
-	endpoint: TPath,
-	params?: OperationParams<'GET', MatchPathPattern<TPath>>,
-	initialValue?:
-		| Serialized<OperationResult<'GET', MatchPathPattern<TPath>>>
-		| (() => Serialized<OperationResult<'GET', MatchPathPattern<TPath>>>),
-): AsyncState<Serialized<OperationResult<'GET', MatchPathPattern<TPath>>>> & {
+export const useEndpointData = <TPathPattern extends PathPattern>(
+	endpoint: TPathPattern,
+	options: {
+		keys?: UrlParams<TPathPattern>;
+		params?: OperationParams<'GET', TPathPattern>;
+		initialValue?: Serialized<OperationResult<'GET', TPathPattern>> | (() => Serialized<OperationResult<'GET', TPathPattern>>);
+	} = {},
+): AsyncState<Serialized<OperationResult<'GET', TPathPattern>>> & {
 	reload: () => void;
 } => {
-	deprecationWarning({ endpoint, params, initialValue });
-	const { resolve, reject, reset, ...state } = useAsyncState(initialValue);
+	deprecationWarning({ endpoint, ...options });
+	const { resolve, reject, reset, ...state } = useAsyncState(options.initialValue);
 	const dispatchToastMessage = useToastMessageDispatch();
-	const getData = useEndpoint('GET', endpoint);
+	const getData = useEndpoint('GET', endpoint, options.keys as UrlParams<TPathPattern>);
 
 	const fetchData = useCallback(() => {
 		reset();
-		getData(params as any)
+		getData(options.params as OperationParams<'GET', TPathPattern>)
 			.then(resolve)
 			.catch((error) => {
 				console.error(error);
@@ -44,7 +45,7 @@ export const useEndpointData = <TPath extends PathFor<'GET'>>(
 				});
 				reject(error);
 			});
-	}, [reset, getData, params, resolve, dispatchToastMessage, reject]);
+	}, [reset, getData, options.params, resolve, dispatchToastMessage, reject]);
 
 	useEffect(() => {
 		fetchData();

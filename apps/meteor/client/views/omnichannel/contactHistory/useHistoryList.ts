@@ -1,10 +1,11 @@
-import { VisitorSearchChatsResult } from '@rocket.chat/rest-typings';
+import type { VisitorSearchChatsResult } from '@rocket.chat/rest-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
 import { useScrollableRecordList } from '../../../hooks/lists/useScrollableRecordList';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { RecordList } from '../../../lib/lists/RecordList';
+import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
 
 type HistoryListOptions = {
 	filter: string;
@@ -22,7 +23,10 @@ export const useHistoryList = (
 	const [itemsList, setItemsList] = useState(() => new RecordList<VisitorSearchChatsResult & { _updatedAt: Date }>());
 	const reload = useCallback(() => setItemsList(new RecordList<VisitorSearchChatsResult & { _updatedAt: Date }>()), []);
 
-	const getHistory = useEndpoint('GET', `/v1/livechat/visitors.searchChats/room/${options.roomId}/visitor/${options.visitorId}`);
+	const getHistory = useEndpoint('GET', '/v1/livechat/visitors.searchChats/room/:roomId/visitor/:visitorId', {
+		roomId: options.roomId,
+		visitorId: options.visitorId,
+	});
 
 	useComponentDidUpdate(() => {
 		options && reload();
@@ -38,10 +42,13 @@ export const useHistoryList = (
 				count: end + start,
 			});
 			return {
-				items: history.map((history: any) => ({
+				items: history.map((history) => ({
 					...history,
 					ts: new Date(history.ts),
 					_updatedAt: new Date(history.ts),
+					closedAt: history.closedAt ? new Date(history.closedAt) : undefined,
+					servedBy: history.servedBy ? { ...history.servedBy, ts: new Date(history.servedBy.ts) } : undefined,
+					closingMessage: history.closingMessage ? mapMessageFromApi(history.closingMessage) : undefined,
 				})),
 				itemCount: total,
 			};

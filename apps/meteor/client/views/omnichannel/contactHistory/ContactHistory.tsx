@@ -1,4 +1,5 @@
-import React, { ReactElement, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { useState } from 'react';
 
 import ContactHistoryVerticalBar from './ContactHistoryVerticalBar';
 import ContactHistoryMessagesVerticalBar from './MessageList/ContactHistoryMessagesVerticalBar';

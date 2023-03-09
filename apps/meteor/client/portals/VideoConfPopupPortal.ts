@@ -1,4 +1,5 @@
-import { memo, useEffect, ReactElement, ReactNode, useState } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { createAnchor } from '../lib/utils/createAnchor';

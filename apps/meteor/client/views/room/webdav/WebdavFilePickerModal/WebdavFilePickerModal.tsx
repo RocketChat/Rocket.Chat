@@ -1,10 +1,11 @@
-import { IWebdavNode, IWebdavAccountIntegration, IRoom } from '@rocket.chat/core-typings';
-import { Modal, Box, IconButton, Select, SelectOption } from '@rocket.chat/fuselage';
+import type { IWebdavNode, IWebdavAccountIntegration } from '@rocket.chat/core-typings';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Modal, Box, IconButton, Select } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useToastMessageDispatch, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
-import React, { useState, ReactElement, useEffect, useCallback, MouseEvent } from 'react';
+import type { ReactElement, MouseEvent } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
-import { uploadFileWithMessage } from '../../../../../app/ui/client/lib/fileUpload';
 import { fileUploadIsValidContentType } from '../../../../../app/utils/client';
 import FilterByText from '../../../../components/FilterByText';
 import { useSort } from '../../../../components/GenericTable/hooks/useSort';
@@ -17,12 +18,12 @@ import { sortWebdavNodes } from './lib/sortWebdavNodes';
 export type WebdavSortOptions = 'name' | 'size' | 'dataModified';
 
 type WebdavFilePickerModalProps = {
-	rid: IRoom['_id'];
+	onUpload: (file: File, description?: string) => Promise<void>;
 	onClose: () => void;
 	account: IWebdavAccountIntegration;
 };
 
-const WebdavFilePickerModal = ({ rid, onClose, account }: WebdavFilePickerModalProps): ReactElement => {
+const WebdavFilePickerModal = ({ onUpload, onClose, account }: WebdavFilePickerModalProps): ReactElement => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const getWebdavFilePreview = useMethod('getWebdavFilePreview');
@@ -128,10 +129,7 @@ const WebdavFilePickerModal = ({ rid, onClose, account }: WebdavFilePickerModalP
 
 		const uploadFile = async (file: File, description?: string): Promise<void> => {
 			try {
-				await uploadFileWithMessage(rid, {
-					description,
-					file,
-				});
+				await onUpload?.(file, description);
 			} catch (error) {
 				return dispatchToastMessage({ type: 'error', message: error });
 			} finally {

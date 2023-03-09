@@ -1,16 +1,22 @@
 import { Box, Margins } from '@rocket.chat/fuselage';
-import React, { FC, memo, ReactNode, ComponentProps } from 'react';
+import type { FC, ReactNode, ComponentProps } from 'react';
+import React, { memo } from 'react';
 
-const VerticalBarHeader: FC<{ children: ReactNode; props?: ComponentProps<typeof Box> }> = ({ children, ...props }) => (
+type VerticalBarHeaderProps = {
+	expanded?: boolean;
+	children: ReactNode;
+} & ComponentProps<typeof Box>;
+
+const VerticalBarHeader: FC<VerticalBarHeaderProps> = ({ children, expanded, ...props }) => (
 	<Box
 		display='flex'
 		alignItems='center'
-		minHeight='56px'
-		maxHeight='56px'
+		height={expanded ? '64px' : '56px'}
 		is='h3'
 		pi='x24'
-		borderBlockEndWidth='x2'
+		borderBlockEndWidth='default'
 		borderBlockColor='extra-light'
+		flexShrink={0}
 		{...props}
 	>
 		<Box

@@ -1,7 +1,8 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import { GenericTableCell } from '../../../components/GenericTable';
@@ -13,7 +14,7 @@ type RemoveAgentButtonProps = {
 };
 
 const RemoveAgentButton = ({ _id, reload }: RemoveAgentButtonProps): ReactElement => {
-	const deleteAction = useEndpointAction('DELETE', `/v1/livechat/users/agent/${_id}`);
+	const deleteAction = useEndpointAction('DELETE', '/v1/livechat/users/agent/:_id', { keys: { _id } });
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();

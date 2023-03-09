@@ -1,5 +1,5 @@
 import { Field } from '@rocket.chat/fuselage';
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import CodeSettingInput from './CodeSettingInput';
@@ -44,6 +44,15 @@ export const WithValue = Template.bind({});
 WithValue.args = {
 	_id: 'setting_id',
 	label: 'Label',
+	value: 'console.log("Hello World!");',
+	placeholder: 'Placeholder',
+};
+
+export const WithDescription = Template.bind({});
+WithDescription.args = {
+	_id: 'setting_id',
+	label: 'Label',
+	hint: 'Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
 	value: 'console.log("Hello World!");',
 	placeholder: 'Placeholder',
 };

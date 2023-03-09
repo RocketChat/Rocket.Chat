@@ -1,1 +1,1 @@
-export * from './ComposerOmnichannel';
+export { default } from './ComposerOmnichannel';

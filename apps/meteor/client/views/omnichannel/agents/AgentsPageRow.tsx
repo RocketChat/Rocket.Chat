@@ -1,6 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useCallback } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback } from 'react';
 
 import { GenericTableRow, GenericTableCell } from '../../../components/GenericTable';
 import UserAvatar from '../../../components/avatar/UserAvatar';

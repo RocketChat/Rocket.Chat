@@ -1,5 +1,7 @@
-import { Button, Icon, IconProps } from '@rocket.chat/fuselage';
-import React, { FC, HtmlHTMLAttributes } from 'react';
+import type { IconProps } from '@rocket.chat/fuselage';
+import { Button, Icon } from '@rocket.chat/fuselage';
+import type { FC, HtmlHTMLAttributes } from 'react';
+import React from 'react';
 
 type AgentInfoActionProps = {
 	icon: IconProps['name'];

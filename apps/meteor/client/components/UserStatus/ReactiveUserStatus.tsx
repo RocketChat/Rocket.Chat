@@ -1,6 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/ui-client';
-import React, { ComponentProps, memo, ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React, { memo } from 'react';
 
 import { usePresence } from '../../hooks/usePresence';
 

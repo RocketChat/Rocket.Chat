@@ -1,7 +1,8 @@
 import type { ILivechatTag } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React, { useMemo } from 'react';
 
 import { FormSkeleton } from '../../../../client/components/Skeleton';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
@@ -22,10 +23,9 @@ function TagEditWithDepartmentData({ data, title, ...props }: TagEditWithDepartm
 		value: currentDepartments,
 		phase: currentDepartmentsState,
 		error: currentDepartmentsError,
-	} = useEndpointData(
-		'/v1/livechat/department.listByIds',
-		useMemo(() => ({ ids: data?.departments ? data.departments : [] }), [data]),
-	);
+	} = useEndpointData('/v1/livechat/department.listByIds', {
+		params: useMemo(() => ({ ids: data?.departments ? data.departments : [] }), [data]),
+	});
 
 	if ([currentDepartmentsState].includes(AsyncStatePhase.LOADING)) {
 		return <FormSkeleton />;

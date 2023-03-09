@@ -1,9 +1,10 @@
 import { ResponsiveBar } from '@nivo/bar';
-import { Box, Flex, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Flex, Skeleton, Palette } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import CounterSet from '../../../../../../client/components/dataView/CounterSet';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
@@ -91,7 +92,7 @@ const MessagesSentSection = (): ReactElement => {
 										}}
 										colors={[
 											// TODO: Get it from theme
-											colors.p500,
+											Palette.statusColor['status-font-on-info'].toString(),
 										]}
 										enableLabel={false}
 										enableGridY={false}
@@ -137,7 +138,7 @@ const MessagesSentSection = (): ReactElement => {
 											},
 										}}
 										tooltip={({ value }): ReactElement => (
-											<Box fontScale='p1m' color='alternative'>
+											<Box fontScale='p1m' color='white'>
 												{t('Value_messages', { value })}
 											</Box>
 										)}

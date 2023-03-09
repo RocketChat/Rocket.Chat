@@ -1,7 +1,6 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-
-import type { IUiKitCoreApp } from '../../sdk/types/IUiKitCoreApp';
-import { VideoConf } from '../../sdk';
+import type { IUiKitCoreApp } from '@rocket.chat/core-services';
+import { VideoConf } from '@rocket.chat/core-services';
 
 export class VideoConfModule implements IUiKitCoreApp {
 	appId = 'videoconf-core';

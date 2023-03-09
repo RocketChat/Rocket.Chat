@@ -31,7 +31,7 @@ export interface IUserEmailCode {
 	expire: Date;
 }
 
-type LoginToken = IMeteorLoginToken & IPersonalAccessToken;
+type LoginToken = IMeteorLoginToken | IPersonalAccessToken;
 export type Username = string;
 
 export type ILoginUsername =
@@ -149,12 +149,14 @@ export interface IUser extends IRocketChatRecord {
 	ldap?: boolean;
 	extension?: string;
 	inviteToken?: string;
-	federated?: boolean;
 	canViewAllInfo?: boolean;
 	phone?: string;
 	reason?: string;
+	// TODO: move this to a specific federation user type
+	federated?: boolean;
 	federation?: {
 		avatarUrl?: string;
+		searchedServerNames?: string[];
 	};
 }
 

@@ -1,7 +1,8 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import {
 	GenericTable,
@@ -42,7 +43,7 @@ const ManagersRoute = (): ReactElement => {
 		500,
 	);
 
-	const { reload, ...result } = useEndpointData('/v1/livechat/users/manager', query);
+	const { reload, ...result } = useEndpointData('/v1/livechat/users/manager', { params: query });
 	const canViewManagers = usePermission('manage-livechat-managers');
 
 	if (!canViewManagers) {

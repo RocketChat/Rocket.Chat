@@ -1,5 +1,6 @@
 import { useToastMessageDispatch, usePermission, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import { Mailer } from './Mailer';

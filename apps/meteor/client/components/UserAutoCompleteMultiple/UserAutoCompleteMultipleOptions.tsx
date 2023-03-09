@@ -1,10 +1,8 @@
 import { Options } from '@rocket.chat/fuselage';
-import React, { forwardRef, ComponentProps, ReactElement, Ref, createContext, useContext } from 'react';
+import type { ComponentProps, ReactElement, Ref } from 'react';
+import React, { forwardRef, createContext, useContext } from 'react';
 
-import { UserAutoCompleteOptionType } from './UserAutoCompleteMultipleFederated';
 import UserAutoCompleteMultipleOption from './UserAutoCompleteMultipleOption';
-
-type Options = Array<[UserAutoCompleteOptionType['username'], UserAutoCompleteOptionType]>;
 
 // This is a hack in order to bypass the MultiSelect filter.
 // The select requires a forwarded ref component in the renderOptions property

@@ -1,6 +1,7 @@
-import { RoomType } from '@rocket.chat/core-typings';
+import type { RoomType } from '@rocket.chat/core-typings';
 import { Option, Menu } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import type { TranslationKey, Fields } from '@rocket.chat/ui-contexts';
 import {
 	useSetModal,
 	useToastMessageDispatch,
@@ -10,14 +11,14 @@ import {
 	usePermission,
 	useMethod,
 	useTranslation,
-	TranslationKey,
-	Fields,
 	useEndpoint,
 } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo, useMemo } from 'react';
 
 import { RoomManager } from '../../app/ui-utils/client';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
+import { useOmnichannelPrioritiesMenu } from '../../ee/client/omnichannel/hooks/useOmnichannelPrioritiesMenu';
 import { GenericModalDoNotAskAgain } from '../components/GenericModal';
 import WarningModal from '../components/WarningModal';
 import { useDontAskAgain } from '../hooks/useDontAskAgain';
@@ -38,6 +39,7 @@ type RoomMenuProps = {
 	type: RoomType;
 	cl?: boolean;
 	name?: string;
+	hideDefaultOptions: boolean;
 };
 
 const closeEndpoints = {
@@ -58,7 +60,17 @@ const leaveEndpoints = {
 	l: '/v1/groups.leave',
 } as const;
 
-const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name = '' }: RoomMenuProps): ReactElement => {
+const RoomMenu = ({
+	rid,
+	unread,
+	threadUnread,
+	alert,
+	roomOpen,
+	type,
+	cl,
+	name = '',
+	hideDefaultOptions = false,
+}: RoomMenuProps): ReactElement | null => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -84,6 +96,9 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 
 	const canLeaveChannel = usePermission('leave-c');
 	const canLeavePrivate = usePermission('leave-p');
+
+	const isOmnichannelRoom = type === 'l';
+	const prioritiesMenu = useOmnichannelPrioritiesMenu(rid);
 
 	const canLeave = ((): boolean => {
 		if (type === 'c' && !canLeaveChannel) {
@@ -185,33 +200,49 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 
 	const menuOptions = useMemo(
 		() => ({
-			hideRoom: {
-				label: { label: t('Hide'), icon: 'eye-off' },
-				action: handleHide,
-			},
-			toggleRead: {
-				label: { label: isUnread ? t('Mark_read') : t('Mark_unread'), icon: 'flag' },
-				action: handleToggleRead,
-			},
-			...(canFavorite
-				? {
-						toggleFavorite: {
-							label: {
-								label: isFavorite ? t('Unfavorite') : t('Favorite'),
-								icon: isFavorite ? 'star-filled' : 'star',
-							},
-							action: handleToggleFavorite,
-						},
-				  }
-				: {}),
-			...(canLeave && {
-				leaveRoom: {
-					label: { label: t('Leave_room'), icon: 'sign-out' },
-					action: handleLeave,
+			...(!hideDefaultOptions && {
+				hideRoom: {
+					label: { label: t('Hide'), icon: 'eye-off' },
+					action: handleHide,
 				},
+				toggleRead: {
+					label: { label: isUnread ? t('Mark_read') : t('Mark_unread'), icon: 'flag' },
+					action: handleToggleRead,
+				},
+				...(canFavorite
+					? {
+							toggleFavorite: {
+								label: {
+									label: isFavorite ? t('Unfavorite') : t('Favorite'),
+									icon: isFavorite ? 'star-filled' : 'star',
+								},
+								action: handleToggleFavorite,
+							},
+					  }
+					: {}),
+				...(canLeave && {
+					leaveRoom: {
+						label: { label: t('Leave_room'), icon: 'sign-out' },
+						action: handleLeave,
+					},
+				}),
 			}),
+			...(isOmnichannelRoom && prioritiesMenu),
 		}),
-		[t, handleHide, isUnread, handleToggleRead, canFavorite, isFavorite, handleToggleFavorite, canLeave, handleLeave],
+		[
+			hideDefaultOptions,
+			t,
+			handleHide,
+			isUnread,
+			handleToggleRead,
+			canFavorite,
+			isFavorite,
+			handleToggleFavorite,
+			canLeave,
+			handleLeave,
+			isOmnichannelRoom,
+			prioritiesMenu,
+		],
 	);
 
 	return (
@@ -222,6 +253,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 			aria-keyshortcuts='alt'
 			tabIndex={-1}
 			options={menuOptions}
+			maxHeight={300}
 			renderItem={({ label: { label, icon }, ...props }): JSX.Element => <Option label={label} icon={icon} {...props} />}
 		/>
 	);

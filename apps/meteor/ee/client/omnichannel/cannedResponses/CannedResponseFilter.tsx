@@ -1,6 +1,8 @@
-import { Box, Icon, TextInput, Select, SelectOption } from '@rocket.chat/fuselage';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Select } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, FormEvent, memo, useCallback } from 'react';
+import type { FC, FormEvent } from 'react';
+import React, { memo, useCallback } from 'react';
 
 import AutoCompleteAgent from '../../../../client/components/AutoCompleteAgent';
 
@@ -35,7 +37,7 @@ const CannedResponsesFilter: FC<CannedResponsesFilterProps> = ({
 	}, []);
 
 	return (
-		<Box mb='x16' is='form' onSubmit={handleFormSubmit} display='flex' flexDirection='row' {...props}>
+		<Box mb='x16' is='form' onSubmit={handleFormSubmit} display='flex' flexDirection='row' color='default' {...props}>
 			<Box display='flex' mie='x8' flexGrow={1} flexDirection='column'>
 				<Box mb='x4'>{t('Search')}</Box>
 				<TextInput addon={<Icon name='magnifier' size='x20' />} onChange={setShortcut} value={shortcutValue} />

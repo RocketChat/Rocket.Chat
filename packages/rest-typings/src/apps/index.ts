@@ -4,9 +4,21 @@ import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/ext
 import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { IUIActionButton } from '@rocket.chat/apps-engine/definition/ui';
-import type { AppScreenshot, App, FeaturedAppsSection, ILogItem } from '@rocket.chat/core-typings';
+import type {
+	AppScreenshot,
+	App,
+	FeaturedAppsSection,
+	ILogItem,
+	AppRequestFilter,
+	AppRequestsStats,
+	PaginatedAppRequests,
+} from '@rocket.chat/core-typings';
 
 export type AppsEndpoints = {
+	'/apps/count': {
+		GET: () => { totalMarketplaceEnabled: number; totalPrivateEnabled: number; maxMarketplaceApps: number; maxPrivateApps: number };
+	};
+
 	'/apps/externalComponents': {
 		GET: () => { externalComponents: IExternalComponent[] };
 	};
@@ -27,7 +39,7 @@ export type AppsEndpoints = {
 			app: App;
 			success: boolean;
 		};
-		POST: (params: { marketplace: boolean; version: string; permissionsGranted: IPermission[]; appId: string }) => {
+		POST: (params: { marketplace: boolean; version: string; permissionsGranted?: IPermission[]; appId: string }) => {
 			app: App;
 		};
 	};
@@ -119,6 +131,58 @@ export type AppsEndpoints = {
 		};
 	};
 
+	'/apps/marketplace': {
+		GET: (params: {
+			purchaseType?: 'buy' | 'subscription';
+			version?: string;
+			appId?: string;
+			details?: 'true' | 'false';
+			isAdminUser?: string;
+		}) => App[];
+	};
+
+	'/apps/categories': {
+		GET: () => {
+			createdDate: Date;
+			description: string;
+			id: string;
+			modifiedDate: Date;
+			title: string;
+		}[];
+	};
+
+	'/apps/buildExternalUrl': {
+		GET: (params: { purchaseType?: 'buy' | 'subscription'; appId?: string; details?: 'true' | 'false' }) => {
+			url: string;
+		};
+	};
+
+	'/apps/installed': {
+		GET: () => { apps: App[] };
+	};
+
+	'/apps/buildExternalAppRequest': {
+		GET: (params: { appId?: string }) => {
+			url: string;
+		};
+	};
+
+	'/apps/app-request': {
+		GET: (params: { appId: string; q?: AppRequestFilter; sort?: string; limit?: number; offset?: number }) => PaginatedAppRequests;
+	};
+
+	'/apps/app-request/stats': {
+		GET: () => AppRequestsStats;
+	};
+
+	'/apps/app-request/markAsSeen': {
+		POST: (params: { unseenRequests: Array<string> }) => { succes: boolean };
+	};
+
+	'/apps/notify-admins': {
+		POST: (params: { appId: string; appName: string; appVersion: string; message: string }) => void;
+	};
+
 	'/apps': {
 		GET:
 			| ((params: { buildExternalUrl: 'true'; purchaseType?: 'buy' | 'subscription'; appId?: string; details?: 'true' | 'false' }) => {
@@ -140,7 +204,7 @@ export type AppsEndpoints = {
 					appId?: string;
 					details?: 'true' | 'false';
 			  }) => App[])
-			| ((params: { categories: 'true' | 'false' }) => {
+			| ((params: { categories: 'true' }) => {
 					createdDate: Date;
 					description: string;
 					id: string;
@@ -149,7 +213,7 @@ export type AppsEndpoints = {
 			  }[])
 			| (() => { apps: App[] });
 
-		POST: (params: { appId: string; marketplace: boolean; version: string; permissionsGranted: IPermission[] }) => {
+		POST: (params: { appId: string; marketplace: boolean; version: string; permissionsGranted?: IPermission[] }) => {
 			app: App;
 		};
 	};

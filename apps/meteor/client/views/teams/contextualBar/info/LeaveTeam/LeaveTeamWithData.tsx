@@ -1,8 +1,9 @@
-import { ITeam } from '@rocket.chat/core-typings';
+import type { ITeam } from '@rocket.chat/core-typings';
 import { Skeleton } from '@rocket.chat/fuselage';
 import { useUserId, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
 import LeaveTeamModal from './LeaveTeamModal/LeaveTeamModal';

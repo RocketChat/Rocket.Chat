@@ -1,6 +1,7 @@
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon, IconButton } from '@rocket.chat/fuselage';
 import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState, useMemo, useEffect, ReactElement, SyntheticEvent } from 'react';
+import type { ReactElement, SyntheticEvent } from 'react';
+import React, { useCallback, useState, useMemo, useEffect } from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
@@ -90,29 +91,20 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	}, [saveAction, sound, onChange]);
 
 	const handleDeleteButtonClick = useCallback(() => {
-		const handleClose = (): void => {
-			setModal(null);
-			close?.();
-			onChange();
-		};
-
 		const handleDelete = async (): Promise<void> => {
 			try {
 				await deleteCustomSound(_id);
-				setModal(() => (
-					<GenericModal variant='success' onCancel={handleClose} onClose={handleClose} onConfirm={handleClose}>
-						{t('Custom_Sound_Has_Been_Deleted')}
-					</GenericModal>
-				));
+				dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Has_Been_Deleted') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				setModal(null);
+				close?.();
 				onChange();
 			}
 		};
 
-		const handleCancel = (): void => {
-			setModal(null);
-		};
+		const handleCancel = (): void => setModal(null);
 
 		setModal(() => (
 			<GenericModal variant='danger' onConfirm={handleDelete} onCancel={handleCancel} onClose={handleCancel} confirmText={t('Delete')}>

@@ -1,4 +1,4 @@
-import type Url from 'url';
+import type { UrlWithStringQuery } from 'url';
 
 import type Icons from '@rocket.chat/icons';
 import type { MessageSurfaceLayout } from '@rocket.chat/ui-kit';
@@ -10,6 +10,8 @@ import type { IRoom, RoomID } from '../IRoom';
 import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
 import type { FileProp } from './MessageAttachment/Files/FileProp';
 import type { ILivechatVisitor } from '../ILivechatVisitor';
+import type { IOmnichannelServiceLevelAgreements } from '../IOmnichannelServiceLevelAgreements';
+import type { ILivechatPriority } from '../ILivechatPriority';
 
 type MentionType = 'user' | 'team';
 
@@ -19,7 +21,7 @@ type MessageUrl = {
 	meta: Record<string, string>;
 	headers?: { contentLength: string } | { contentType: string } | { contentLength: string; contentType: string };
 	ignoreParse?: boolean;
-	parsedUrl?: Pick<Url.UrlWithStringQuery, 'host' | 'hash' | 'pathname' | 'protocol' | 'port' | 'query' | 'search' | 'hostname'>;
+	parsedUrl?: Pick<UrlWithStringQuery, 'host' | 'hash' | 'pathname' | 'protocol' | 'port' | 'query' | 'search' | 'hostname'>;
 };
 
 type VoipMessageTypesValues =
@@ -46,15 +48,16 @@ type TeamMessageTypes =
 type LivechatMessageTypes =
 	| 'livechat_navigation_history'
 	| 'livechat_transfer_history'
+	| 'omnichannel_priority_change_history'
+	| 'omnichannel_sla_change_history'
 	| 'livechat_transcript_history'
 	| 'livechat_video_call'
-	| 'livechat_webrtc_video_call';
-
-type OmnichannelTypesValues =
 	| 'livechat_transfer_history_fallback'
 	| 'livechat-close'
-	| 'omnichannel_placed_chat_on_hold'
-	| 'omnichannel_on_hold_chat_resumed';
+	| 'livechat_webrtc_video_call'
+	| 'livechat-started';
+
+type OmnichannelTypesValues = 'omnichannel_placed_chat_on_hold' | 'omnichannel_on_hold_chat_resumed';
 
 type OtrMessageTypeValues = 'otr' | 'otr-ack';
 
@@ -90,6 +93,7 @@ export type MessageTypesValues =
 	| 'room-disallowed-reacting'
 	| 'command'
 	| 'videoconf'
+	| 'message_pinned'
 	| LivechatMessageTypes
 	| TeamMessageTypes
 	| VoipMessageTypesValues
@@ -185,6 +189,18 @@ export interface IMessage extends IRocketChatRecord {
 	federation?: {
 		eventId: string;
 	};
+
+	/* used when message type is "omnichannel_sla_change_history" */
+	slaData?: {
+		definedBy: Pick<IUser, '_id' | 'username'>;
+		sla?: Pick<IOmnichannelServiceLevelAgreements, 'name'>;
+	};
+
+	/* used when message type is "omnichannel_priority_change_history" */
+	priorityData?: {
+		definedBy: Pick<IUser, '_id' | 'username'>;
+		priority?: Pick<ILivechatPriority, 'name' | 'i18n'>;
+	};
 }
 
 export type MessageSystem = {
@@ -196,9 +212,16 @@ export interface IEditedMessage extends IMessage {
 	editedBy: Pick<IUser, '_id' | 'username'>;
 }
 
-export const isEditedMessage = (message: IMessage): message is IEditedMessage => 'editedAt' in message && 'editedBy' in message;
-export const isDeletedMessage = (message: IMessage): message is IEditedMessage =>
-	'editedAt' in message && 'editedBy' in message && message.t === 'rm';
+export const isEditedMessage = (message: IMessage): message is IEditedMessage =>
+	'editedAt' in message &&
+	(message as { editedAt?: unknown }).editedAt instanceof Date &&
+	'editedBy' in message &&
+	typeof (message as { editedBy?: unknown }).editedBy === 'object' &&
+	(message as { editedBy?: unknown }).editedBy !== null &&
+	'_id' in (message as IEditedMessage).editedBy &&
+	typeof (message as IEditedMessage).editedBy._id === 'string';
+
+export const isDeletedMessage = (message: IMessage): message is IEditedMessage => isEditedMessage(message) && message.t === 'rm';
 export const isMessageFromMatrixFederation = (message: IMessage): boolean =>
 	'federation' in message && Boolean(message.federation?.eventId);
 
@@ -300,15 +323,6 @@ export const isMessageDiscussion = (message: IMessage): message is IMessageDiscu
 	return 'drid' in message;
 };
 
-export type IMessageEdited = IMessage & {
-	editedAt: Date;
-	editedBy: Pick<IUser, '_id' | 'username'>;
-};
-
-export const isMessageEdited = (message: IMessage): message is IMessageEdited => {
-	return 'editedAt' in message && 'editedBy' in message;
-};
-
 export type IMessageInbox = IMessage & {
 	// email inbox fields
 	email?: {
@@ -329,5 +343,10 @@ export type IOTRMessage = IMessage & {
 	t: 'otr' | 'otr-ack';
 };
 
+export type IVideoConfMessage = IMessage & {
+	t: 'videoconf';
+};
+
 export const isE2EEMessage = (message: IMessage): message is IE2EEMessage => message.t === 'e2e';
 export const isOTRMessage = (message: IMessage): message is IOTRMessage => message.t === 'otr' || message.t === 'otr-ack';
+export const isVideoConfMessage = (message: IMessage): message is IVideoConfMessage => message.t === 'videoconf';

@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import s from 'underscore.string';
 import mem from 'mem';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Rooms, Users } from '@rocket.chat/models';
+import { Team } from '@rocket.chat/core-services';
 
 import { hasPermission } from '../../app/authorization/server';
 import { Subscriptions } from '../../app/models/server';
@@ -11,7 +11,7 @@ import { settings } from '../../app/settings/server';
 import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
 import { isFederationEnabled } from '../../app/federation/server/lib/isFederationEnabled';
 import { federationSearchUsers } from '../../app/federation/server/handler';
-import { Team } from '../sdk';
+import { trim } from '../../lib/utils/stringUtils';
 
 const sortChannels = function (field, direction) {
 	switch (field) {
@@ -79,6 +79,7 @@ async function getChannelsAndGroups(user, canViewAnon, searchTerm, sort, paginat
 				usersCount: 1,
 				prid: 1,
 				teamId: 1,
+				federated: 1,
 			},
 		},
 	);
@@ -241,7 +242,7 @@ const getUsers = async (user, text, workspace, sort, pagination) => {
 
 Meteor.methods({
 	async browseChannels({ text = '', workspace = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
-		const searchTerm = s.trim(escapeRegExp(text));
+		const searchTerm = trim(escapeRegExp(text));
 
 		if (
 			!['channels', 'users', 'teams'].includes(type) ||

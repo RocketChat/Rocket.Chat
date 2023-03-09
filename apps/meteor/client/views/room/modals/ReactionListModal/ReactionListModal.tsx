@@ -1,22 +1,22 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
-import { openUserCard } from '../../../../../app/ui/client/lib/UserCard';
 import GenericModal from '../../../../components/GenericModal';
-import { ToolboxContextValue } from '../../contexts/ToolboxContext';
+import { useChat } from '../../contexts/ChatContext';
 import Reactions from './Reactions';
 
 type ReactionListProps = {
-	rid: string;
 	reactions: Required<IMessage>['reactions'];
-	tabBar: ToolboxContextValue;
 	onClose: () => void;
 };
 
-const ReactionList = ({ rid, reactions, tabBar, onClose }: ReactionListProps): ReactElement => {
+const ReactionList = ({ reactions, onClose }: ReactionListProps): ReactElement => {
 	const t = useTranslation();
+
+	const chat = useChat();
 
 	const onClick = useMutableCallback((e) => {
 		const { username } = e.currentTarget.dataset;
@@ -25,16 +25,7 @@ const ReactionList = ({ rid, reactions, tabBar, onClose }: ReactionListProps): R
 			return;
 		}
 
-		openUserCard({
-			username,
-			rid,
-			target: e.currentTarget,
-			open: (e: React.MouseEvent<HTMLElement>) => {
-				e.preventDefault();
-				onClose();
-				tabBar.openRoomInfo(username);
-			},
-		});
+		chat?.userCard.open(username)(e);
 	});
 
 	return (

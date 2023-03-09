@@ -10,8 +10,16 @@ export class HomeSidenav {
 	}
 
 	get checkboxPrivateChannel(): Locator {
+		return this.page.locator('#modal-root [data-qa="create-channel-modal"] [data-qa-type="channel-private-toggle"]');
+	}
+
+	get checkboxEncryption(): Locator {
+		return this.page.locator('role=dialog[name="Create Channel"] >> role=checkbox[name="Encrypted"]');
+	}
+
+	get checkboxReadOnly(): Locator {
 		return this.page.locator(
-			'//*[@id="modal-root"]//*[contains(@class, "rcx-field") and contains(text(), "Private")]/../following-sibling::label/i',
+			'//*[@id="modal-root"]//*[contains(@class, "rcx-field") and contains(text(), "Read Only")]/../following-sibling::label/i',
 		);
 	}
 
@@ -32,6 +40,11 @@ export class HomeSidenav {
 		await this.page.locator(`li.rcx-option >> text="${text}"`).click();
 	}
 
+	async openInstalledApps(): Promise<void> {
+		await this.page.locator('//button[@title="Administration"]').click();
+		await this.page.locator('//div[contains(text(),"Installed")]').click();
+	}
+
 	async openNewByLabel(text: string): Promise<void> {
 		await this.page.locator('[data-qa="sidebar-create"]').click();
 		await this.page.locator(`li.rcx-option >> text="${text}"`).click();
@@ -48,22 +61,22 @@ export class HomeSidenav {
 	}
 
 	async openChat(name: string): Promise<void> {
-		await this.page.locator('[data-qa="sidebar-search"]').click();
-		await this.page.locator('[data-qa="sidebar-search-input"]').type(name);
-		await this.page.locator(`[data-qa="sidebar-item-title"] >> text="${name}"`).first().click();
+		await this.page.locator('role=navigation >> role=button[name=Search]').click();
+		await this.page.locator('role=search >> role=searchbox').type(name);
+		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).click();
 	}
 
 	async switchOmnichannelStatus(status: 'offline' | 'online') {
 		// button has a id of "omnichannel-status-toggle"
 		const toggleButton = this.page.locator('#omnichannel-status-toggle');
-		expect(toggleButton).toBeVisible();
+		await expect(toggleButton).toBeVisible();
 
 		enum StatusTitleMap {
 			offline = 'Turn on answer chats',
 			online = 'Turn off answer chats',
 		}
 
-		const currentStatus: StatusTitleMap = (await toggleButton.getAttribute('data-tooltip')) as any;
+		const currentStatus = await toggleButton.getAttribute('data-tooltip');
 		if (status === 'offline') {
 			if (currentStatus === StatusTitleMap.online) {
 				await toggleButton.click();
@@ -74,7 +87,7 @@ export class HomeSidenav {
 
 		await this.page.waitForTimeout(500);
 
-		const newStatus: StatusTitleMap = (await this.page.locator('#omnichannel-status-toggle').getAttribute('data-tooltip')) as any;
+		const newStatus = await this.page.locator('#omnichannel-status-toggle').getAttribute('data-tooltip');
 		expect(newStatus).toBe(status === 'offline' ? StatusTitleMap.offline : StatusTitleMap.online);
 	}
 

@@ -1,6 +1,7 @@
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, useState, ReactElement, ChangeEvent } from 'react';
+import type { ReactElement, ChangeEvent } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 import { useEndpointUpload } from '../../../hooks/useEndpointUpload';

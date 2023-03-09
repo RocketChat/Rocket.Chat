@@ -1,12 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 import type { IRole, IUser, IRoom } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-services';
 
 import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { hasPermission } from '../functions/hasPermission';
-import { api } from '../../../../server/sdk/api';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
@@ -20,7 +19,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!roleId || !_.isString(roleId) || !username || !_.isString(username)) {
+		if (!roleId || typeof roleId.valueOf() !== 'string' || !username || typeof username.valueOf() !== 'string') {
 			throw new Meteor.Error('error-invalid-arguments', 'Invalid arguments', {
 				method: 'authorization:addUserToRole',
 			});

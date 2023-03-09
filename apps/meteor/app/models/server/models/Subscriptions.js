@@ -118,7 +118,7 @@ export class Subscriptions extends Base {
 		}
 
 		const query = { 'u._id': userId };
-		if (!_.isUndefined(scope)) {
+		if (scope !== undefined) {
 			query.rid = scope;
 		}
 		return query;
@@ -345,13 +345,6 @@ export class Subscriptions extends Base {
 		};
 
 		return this.find(query, options);
-	}
-
-	updateGroupE2EKey(_id, key) {
-		const query = { _id };
-		const update = { $set: { E2EKey: key } };
-		this.update(query, update);
-		return this.findOne({ _id });
 	}
 
 	/**
