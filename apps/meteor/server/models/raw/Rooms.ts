@@ -425,16 +425,16 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		end,
 		startOfLastWeek,
 		endOfLastWeek,
-		onlyCount = false,
-		options = {},
+		onlyCount,
+		options,
 	}: {
 		start: number;
 		end: number;
 		startOfLastWeek: number;
 		endOfLastWeek: number;
-		onlyCount: T;
-		options: PaginatedRequest;
-	}): T extends true ? { total: number } : AggregationCursor<IRoom> {
+		onlyCount?: T;
+		options?: PaginatedRequest;
+	}): T extends true ? {total: number} : AggregationCursor<IRoom> {
 		const readPreference = ReadPreference.SECONDARY_PREFERRED;
 		const lookup = {
 			$lookup: {
@@ -527,17 +527,18 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		const sort = { $sort: options.sort || { messages: -1 } };
 		const params: Exclude<Parameters<Collection<IRoom>['aggregate']>[0], undefined> = [...firstParams, sort];
 
-		if (onlyCount) {
-			params.push({ $count: 'total' });
-		}
-
-		if (options.offset) {
+		if (options?.offset) {
 			params.push({ $skip: options.offset });
 		}
 
-		if (options.count) {
+		if (options?.count) {
 			params.push({ $limit: options.count });
-		}
+        }
+
+        if (onlyCount) {
+            params.push({ $count: 'total' });
+            return this.col.aggregate<IRoom>(params, { allowDiskUse: true, readPreference }) as {total: number};
+        }
 
 		return this.col.aggregate<IRoom>(params, { allowDiskUse: true, readPreference });
 	}
