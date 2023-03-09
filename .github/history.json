@@ -102146,6 +102146,39 @@
           ]
         }
       ]
+    },
+    "6.0.0-rc.12": {
+      "node_version": "14.21.2",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.4",
+        "5.0",
+        "6.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "28342",
+          "title": "Regression: Fix not showing global search option",
+          "userLogin": "sampaiodiego",
+          "milestone": "6.0.0",
+          "contributors": [
+            "sampaiodiego",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28341",
+          "title": "Regression: Added anchors elements to the allowed list to be clicked",
+          "userLogin": "ggazzo",
+          "milestone": "6.0.0",
+          "contributors": [
+            "ggazzo",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        }
+      ]
     }
   },
   "5.4.0-rc.0": {
