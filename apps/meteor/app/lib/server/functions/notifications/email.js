@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import * as Mailer from '../../../../mailer';
+import * as Mailer from '../../../../mailer/server/api';
 import { settings } from '../../../../settings/server';
-import { metrics } from '../../../../metrics';
+import { metrics } from '../../../../metrics/server';
 import { callbacks } from '../../../../../lib/callbacks';
 import { getURL } from '../../../../utils/server';
 import { roomCoordinator } from '../../../../../server/lib/rooms/roomCoordinator';
@@ -174,10 +174,6 @@ export function getEmailData({ message, receiver, sender, subscription, room, em
 export function sendEmailFromData(data) {
 	metrics.notificationsSent.inc({ notification_type: 'email' });
 	return Mailer.send(data);
-}
-
-export function sendEmail({ message, user, subscription, room, emailAddress, hasMentionToUser }) {
-	return sendEmailFromData(getEmailData({ message, user, subscription, room, emailAddress, hasMentionToUser }));
 }
 
 export function shouldNotifyEmail({

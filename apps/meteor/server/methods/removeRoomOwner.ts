@@ -28,7 +28,7 @@ Meteor.methods({
 		}
 
 		const user = Users.findOneById(userId);
-		if (!user || !user.username) {
+		if (!user?.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'removeRoomOwner',
 			});

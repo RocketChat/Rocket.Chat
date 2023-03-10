@@ -8,10 +8,7 @@ import type { HttpsProxyAgent } from 'https-proxy-agent';
 import { default as createHttpsProxyAgent } from 'https-proxy-agent';
 import { getProxyForUrl } from 'proxy-from-env';
 
-export function getFetchAgent(
-	url: string,
-	allowSelfSignedCerts?: boolean,
-): http.Agent | https.Agent | null | HttpsProxyAgent | HttpProxyAgent {
+function getFetchAgent(url: string, allowSelfSignedCerts?: boolean): http.Agent | https.Agent | null | HttpsProxyAgent | HttpProxyAgent {
 	const isHttps = /^https/.test(url);
 
 	const proxy = getProxyForUrl(url);

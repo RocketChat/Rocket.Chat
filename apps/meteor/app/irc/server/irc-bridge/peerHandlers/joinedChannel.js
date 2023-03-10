@@ -1,5 +1,5 @@
 import { Users, Rooms } from '../../../../models/server';
-import { createRoom, addUserToRoom } from '../../../../lib';
+import { createRoom, addUserToRoom } from '../../../../lib/server';
 
 export default function handleJoinedChannel(args) {
 	const user = Users.findOne({
