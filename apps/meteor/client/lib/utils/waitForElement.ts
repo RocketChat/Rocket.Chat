@@ -1,14 +1,14 @@
-export const waitForElement = async (
+export const waitForElement = async <TElement extends Element>(
 	selector: string,
-	{ parent = document.documentElement }: { parent?: HTMLElement } = {},
-): Promise<Element> => {
-	const element = parent.querySelector(selector);
-	return new Promise((resolve) => {
+	{ parent = document.documentElement, signal }: { parent?: Element; signal?: AbortSignal } = {},
+): Promise<TElement> => {
+	const element = parent.querySelector<TElement>(selector);
+	return new Promise((resolve, reject) => {
 		if (element) {
 			return resolve(element);
 		}
 		const observer = new MutationObserver((_, obs) => {
-			const element = parent.querySelector(selector);
+			const element = parent.querySelector<TElement>(selector);
 			if (element) {
 				obs.disconnect(); // stop observing
 				return resolve(element);
@@ -17,6 +17,11 @@ export const waitForElement = async (
 		observer.observe(parent, {
 			childList: true,
 			subtree: true,
+		});
+
+		signal?.addEventListener('abort', () => {
+			observer.disconnect();
+			reject(new DOMException('Aborted', 'AbortError'));
 		});
 	});
 };

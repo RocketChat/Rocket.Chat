@@ -82,10 +82,6 @@ settingsRegistry.addGroup('Accounts', function () {
 		type: 'int',
 		public: true,
 	});
-	this.add('Accounts_ShowFormLogin', true, {
-		type: 'boolean',
-		public: true,
-	});
 	this.add('Accounts_EmailOrUsernamePlaceholder', '', {
 		type: 'string',
 		public: true,
@@ -379,6 +375,25 @@ settingsRegistry.addGroup('Accounts', function () {
 			public: true,
 			i18nLabel: 'Group_by_Type',
 		});
+		this.add('Accounts_Default_User_Preferences_themeAppearence', 'auto', {
+			type: 'select',
+			values: [
+				{
+					key: 'auto',
+					i18nLabel: 'Theme_match_system',
+				},
+				{
+					key: 'light',
+					i18nLabel: 'Theme_light',
+				},
+				{
+					key: 'dark',
+					i18nLabel: 'Theme_dark',
+				},
+			],
+			public: true,
+			i18nLabel: 'Theme_Appearence',
+		});
 		this.add('Accounts_Default_User_Preferences_sidebarViewMode', 'medium', {
 			type: 'select',
 			values: [
@@ -471,26 +486,6 @@ settingsRegistry.addGroup('Accounts', function () {
 			public: true,
 			i18nLabel: 'Enter_Behaviour',
 		});
-
-		this.add('Accounts_Default_User_Preferences_messageViewMode', 0, {
-			type: 'select',
-			values: [
-				{
-					key: 0,
-					i18nLabel: 'Normal',
-				},
-				{
-					key: 1,
-					i18nLabel: 'Cozy',
-				},
-				{
-					key: 2,
-					i18nLabel: 'Compact',
-				},
-			],
-			public: true,
-			i18nLabel: 'MessageBox_view_mode',
-		});
 		this.add('Accounts_Default_User_Preferences_emailNotificationMode', 'mentions', {
 			type: 'select',
 			values: [
@@ -549,11 +544,10 @@ settingsRegistry.addGroup('Accounts', function () {
 			i18nLabel: 'Notifications_Sound_Volume',
 		});
 
-		this.add('Accounts_Default_User_Preferences_useLegacyMessageTemplate', false, {
+		this.add('Accounts_Default_User_Preferences_omnichannelTranscriptEmail', false, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'Use_Legacy_Message_Template',
-			alert: 'This_is_a_deprecated_feature_alert',
+			i18nLabel: 'Omnichannel_transcript_email',
 		});
 	});
 
@@ -1159,13 +1153,6 @@ settingsRegistry.addGroup('General', function () {
 
 settingsRegistry.addGroup('Message', function () {
 	this.section('Message_Attachments', function () {
-		this.add('Message_Attachments_GroupAttach', false, {
-			type: 'boolean',
-			public: true,
-			i18nDescription: 'Message_Attachments_GroupAttachDescription',
-			alert: 'This_is_a_deprecated_feature_alert',
-		});
-
 		this.add('Message_Attachments_Thumbnails_Enabled', true, {
 			type: 'boolean',
 			public: true,
@@ -1211,6 +1198,23 @@ settingsRegistry.addGroup('Message', function () {
 			public: true,
 		});
 	});
+	this.section('Read_Receipts', function () {
+		this.add('Message_Read_Receipt_Enabled', false, {
+			type: 'boolean',
+			enterprise: true,
+			invalidValue: false,
+			modules: ['message-read-receipt'],
+			public: true,
+		});
+		this.add('Message_Read_Receipt_Store_Users', false, {
+			type: 'boolean',
+			enterprise: true,
+			invalidValue: false,
+			modules: ['message-read-receipt'],
+			public: true,
+			enableQuery: { _id: 'Message_Read_Receipt_Enabled', value: true },
+		});
+	});
 	this.add('Message_AllowEditing', true, {
 		type: 'boolean',
 		public: true,
@@ -1239,11 +1243,6 @@ settingsRegistry.addGroup('Message', function () {
 	});
 	this.add('Message_AlwaysSearchRegExp', false, {
 		type: 'boolean',
-	});
-	this.add('Message_ShowEditedStatus', true, {
-		type: 'boolean',
-		public: true,
-		alert: 'This_is_a_deprecated_feature_alert',
 	});
 	this.add('Message_ShowDeletedStatus', false, {
 		type: 'boolean',
@@ -1277,14 +1276,6 @@ settingsRegistry.addGroup('Message', function () {
 		type: 'boolean',
 		public: true,
 	});
-	/**
-	 * @deprecated
-	 */
-	this.add('Message_ShowFormattingTips', true, {
-		type: 'boolean',
-		public: true,
-		alert: 'This_is_a_deprecated_feature_alert',
-	});
 	this.add('Message_GroupingPeriod', 300, {
 		type: 'int',
 		public: true,
@@ -1310,13 +1301,6 @@ settingsRegistry.addGroup('Message', function () {
 		type: 'action',
 		actionText: 'clear',
 		i18nLabel: 'clear_cache_now',
-	});
-	// TODO: deprecate this setting in favor of App
-	this.add('API_EmbedDisabledFor', '', {
-		type: 'string',
-		public: true,
-		i18nDescription: 'API_EmbedDisabledFor_Description',
-		alert: 'This_is_a_deprecated_feature_alert',
 	});
 	// TODO: deprecate this setting in favor of App
 	this.add('API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16', {
@@ -1573,7 +1557,47 @@ settingsRegistry.addGroup('Push', function () {
 });
 
 settingsRegistry.addGroup('Layout', function () {
-	this.section('Content', function () {
+	this.section('Login', function () {
+		this.add('Layout_Login_Hide_Logo', false, {
+			type: 'boolean',
+			public: true,
+			enterprise: true,
+			invalidValue: false,
+		});
+		this.add('Layout_Login_Hide_Title', false, {
+			type: 'boolean',
+			public: true,
+			enterprise: true,
+			invalidValue: false,
+		});
+		this.add('Layout_Login_Hide_Powered_By', false, {
+			type: 'boolean',
+			public: true,
+			enterprise: true,
+			invalidValue: false,
+		});
+		this.add('Layout_Login_Template', 'horizontal-template', {
+			type: 'select',
+			values: [
+				{
+					key: 'vertical-template',
+					i18nLabel: 'Layout_Login_Template_Vertical',
+				},
+				{
+					key: 'horizontal-template',
+					i18nLabel: 'Layout_Login_Template_Horizontal',
+				},
+			],
+			public: true,
+			enterprise: true,
+			invalidValue: 'horizontal-template',
+		});
+		this.add('Accounts_ShowFormLogin', true, {
+			type: 'boolean',
+			public: true,
+		});
+	});
+	this.section('Layout_Home_Page_Content_Title', function () {
 		this.add('Layout_Home_Title', 'Home', {
 			type: 'string',
 			public: true,
@@ -1582,18 +1606,56 @@ settingsRegistry.addGroup('Layout', function () {
 			type: 'boolean',
 			public: true,
 		});
-		this.add('Layout_Custom_Body_Only', false, {
-			i18nDescription: 'Layout_Custom_Body_Only_description',
-			type: 'boolean',
-			invalidValue: false,
-			enterprise: true,
-			public: true,
-		});
 		this.add('Layout_Home_Body', '', {
+			i18nDescription: 'Layout_Custom_Content_Description',
 			type: 'code',
 			code: 'text/html',
 			multiline: true,
 			public: true,
+		});
+		this.add('Layout_Home_Custom_Block_Visible', false, {
+			type: 'boolean',
+			invalidValue: false,
+			public: true,
+			enableQuery: [
+				{
+					_id: 'Layout_Home_Body',
+					value: {
+						$exists: true,
+						$ne: '',
+					},
+				},
+				{
+					_id: 'Layout_Custom_Body_Only',
+					value: {
+						$exists: true,
+						$ne: true,
+					},
+				},
+			],
+		});
+		this.add('Layout_Custom_Body_Only', false, {
+			i18nDescription: 'Layout_Custom_Body_Only_Description',
+			type: 'boolean',
+			invalidValue: false,
+			enterprise: true,
+			public: true,
+			enableQuery: [
+				{
+					_id: 'Layout_Home_Body',
+					value: {
+						$exists: true,
+						$ne: '',
+					},
+				},
+				{
+					_id: 'Layout_Home_Custom_Block_Visible',
+					value: {
+						$exists: true,
+						$ne: false,
+					},
+				},
+			],
 		});
 		this.add('Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS &rarr; Layout to customize this page.', {
 			type: 'code',
@@ -1621,6 +1683,12 @@ settingsRegistry.addGroup('Layout', function () {
 			code: 'text/html',
 			multiline: true,
 			public: true,
+		});
+		this.add('Layout_Sidenav_Footer_Dark', '<a href="/home"><img src="assets/logo_dark.png" alt="Home" /></a>', {
+			type: 'code',
+			code: 'text/html',
+			public: true,
+			i18nDescription: 'Layout_Sidenav_Footer_description',
 		});
 		return this.add('Layout_Sidenav_Footer', '<a href="/home"><img src="assets/logo.png" alt="Home" /></a>', {
 			type: 'code',
@@ -3204,10 +3272,20 @@ settingsRegistry.addGroup('Troubleshoot', function () {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Notifications_Alert',
 	});
+
+	// this settings will let clients know in case presence has been disabled
+	this.add('Presence_broadcast_disabled', false, {
+		type: 'boolean',
+		public: true,
+		readonly: true,
+	});
+
 	this.add('Troubleshoot_Disable_Presence_Broadcast', false, {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Presence_Broadcast_Alert',
+		enableQuery: { _id: 'Presence_broadcast_disabled', value: false },
 	});
+
 	this.add('Troubleshoot_Disable_Instance_Broadcast', false, {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Instance_Broadcast_Alert',

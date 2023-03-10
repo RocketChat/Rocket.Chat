@@ -27,8 +27,8 @@ import StatusIndicators from '../../../../components/message/StatusIndicators';
 import UiKitSurface from '../../../../components/message/content/UiKitSurface';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
-import { useUserCard } from '../../../../hooks/useUserCard';
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
+import { useChat } from '../../../room/contexts/ChatContext';
 
 const ContactHistoryMessage: FC<{
 	message: IMessage;
@@ -39,7 +39,7 @@ const ContactHistoryMessage: FC<{
 	const formatTime = useFormatTime();
 
 	const t = useTranslation();
-	const { open: openUserCard } = useUserCard();
+	const chat = useChat();
 
 	if (message.t === 'livechat-close') {
 		return (
@@ -49,7 +49,7 @@ const ContactHistoryMessage: FC<{
 						url={message.avatar}
 						username={message.u.username}
 						size={'x18'}
-						onClick={openUserCard(message.u.username)}
+						onClick={chat?.userCard.open(message.u.username)}
 						style={{ cursor: 'pointer' }}
 					/>
 				</MessageSystemLeftContainer>
@@ -76,7 +76,7 @@ const ContactHistoryMessage: FC<{
 							url={message.avatar}
 							username={message.u.username}
 							size={'x36'}
-							onClick={openUserCard(message.u.username)}
+							onClick={chat?.userCard.open(message.u.username)}
 							style={{ cursor: 'pointer' }}
 						/>
 					)}

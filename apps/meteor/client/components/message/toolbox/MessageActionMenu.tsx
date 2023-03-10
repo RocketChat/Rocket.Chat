@@ -4,6 +4,7 @@ import type { ComponentProps, UIEvent, ReactElement } from 'react';
 import React, { useState, Fragment, useRef } from 'react';
 
 import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
+import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 import ToolboxDropdown from './ToolboxDropdown';
 
 type MessageActionConfigOption = Omit<MessageActionConfig, 'condition' | 'context' | 'order' | 'action'> & {
@@ -19,6 +20,7 @@ export const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps)
 
 	const t = useTranslation();
 	const [visible, setVisible] = useState(false);
+	const isLayoutEmbedded = useEmbeddedLayout();
 
 	const groupOptions = options
 		.map(({ color, ...option }) => ({
@@ -28,7 +30,8 @@ export const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps)
 		.reduce((acc, option) => {
 			const group = option.variant ? option.variant : '';
 			acc[group] = acc[group] || [];
-			acc[group].push(option);
+			if (!(isLayoutEmbedded && option.id === 'reply-directly')) acc[group].push(option);
+
 			return acc;
 		}, {} as { [key: string]: MessageActionConfigOption[] }) as {
 		[key: string]: MessageActionConfigOption[];
@@ -38,8 +41,7 @@ export const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps)
 		<MessageToolboxItem
 			ref={ref}
 			icon='kebab'
-			onClick={(e): void => {
-				e.stopPropagation();
+			onClick={(): void => {
 				setVisible(!visible);
 			}}
 			data-qa-id='menu'
