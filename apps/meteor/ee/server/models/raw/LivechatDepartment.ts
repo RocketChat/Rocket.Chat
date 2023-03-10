@@ -3,7 +3,7 @@ import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
 import { LivechatDepartmentRaw } from '../../../../server/models/raw/LivechatDepartment';
 
 declare module '@rocket.chat/model-typings' {
-	export interface ILivechatDepartmentModel {
+	interface ILivechatDepartmentModel {
 		removeDepartmentFromForwardListById(departmentId: string): Promise<void>;
 	}
 }

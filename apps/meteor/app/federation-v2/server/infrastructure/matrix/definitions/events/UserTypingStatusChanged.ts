@@ -2,7 +2,7 @@ import type { IBaseEventContent } from '../AbstractMatrixEvent';
 import { AbstractMatrixEvent } from '../AbstractMatrixEvent';
 import { MatrixEventType } from '../MatrixEventType';
 
-export interface IMatrixEventContentUserTypingStatusChanged extends IBaseEventContent {
+interface IMatrixEventContentUserTypingStatusChanged extends IBaseEventContent {
 	user_ids: string[];
 }
 
