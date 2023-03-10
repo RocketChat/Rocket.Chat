@@ -164,7 +164,7 @@ export const FileUpload = {
 			},
 			onValidate: FileUpload.uploadsOnValidate,
 			onRead(fileId, file, req, res) {
-				if (!FileUpload.requestCanAccessFiles(req)) {
+				if (!FileUpload.requestCanAccessFiles(req, file)) {
 					res.writeHead(403);
 					return false;
 				}
