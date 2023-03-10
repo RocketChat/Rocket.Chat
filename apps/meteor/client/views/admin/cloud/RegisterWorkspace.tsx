@@ -32,7 +32,7 @@ const RegisterWorkspace = (): ReactNode => {
 		};
 		if (isWorkspaceRegistered) {
 			setModal(<ConnectWorkspaceModal onClose={handleModalClose} onStatusChange={reload} />);
-		} else setModal(<RegisterWorkspaceModal onClose={handleModalClose} onStatusChange={reload} isConnectedToCloud={isConnectedToCloud} />);
+		} else setModal(<RegisterWorkspaceModal onClose={handleModalClose} onStatusChange={reload} />);
 	};
 
 	const handleRegistrationTag = () => {
