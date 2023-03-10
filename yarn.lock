@@ -33988,6 +33988,7 @@ __metadata:
     "@types/chart.js": ^2.9.37
     "@types/js-yaml": ^4.0.5
     husky: ^7.0.4
+    textarea-caret: ^3.1.0
     turbo: ~1.2.16
   languageName: unknown
   linkType: soft
