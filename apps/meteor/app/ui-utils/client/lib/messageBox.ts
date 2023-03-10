@@ -18,7 +18,7 @@ type MessageBoxAction = {
 	condition?: () => boolean;
 };
 
-export class MessageBoxActions {
+class MessageBoxActions {
 	actions: Map<TranslationKey, MessageBoxAction[]> = new Map();
 
 	add(group: TranslationKey, label: TranslationKey, config: Omit<MessageBoxAction, 'label'>) {

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { LivechatVisitors } from '@rocket.chat/models';
 
-import { loadMessageHistory } from '../../../lib';
+import { loadMessageHistory } from '../../../lib/server';
 import { LivechatRooms } from '../../../models/server';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 

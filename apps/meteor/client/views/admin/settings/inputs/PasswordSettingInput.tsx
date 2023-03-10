@@ -51,7 +51,7 @@ function PasswordSettingInput({
 					placeholder={placeholder}
 					disabled={disabled}
 					readOnly={readonly}
-					autoComplete={autocomplete === false ? 'off' : undefined}
+					autoComplete={autocomplete === false ? 'new-password' : undefined}
 					onChange={handleChange}
 				/>
 			</Field.Row>
