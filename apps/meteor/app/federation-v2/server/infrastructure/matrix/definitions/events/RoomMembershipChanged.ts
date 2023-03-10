@@ -8,7 +8,7 @@ export enum RoomMembershipChangedEventType {
 	LEAVE = 'leave',
 }
 
-export interface IMatrixEventContentRoomMembershipChanged extends IBaseEventContent {
+interface IMatrixEventContentRoomMembershipChanged extends IBaseEventContent {
 	displayname: string;
 	membership: RoomMembershipChangedEventType;
 	is_direct?: boolean;

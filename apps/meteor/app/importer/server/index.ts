@@ -1,15 +1,13 @@
 import { Base } from './classes/ImporterBase';
 import { ImporterWebsocket } from './classes/ImporterWebsocket';
-import { Progress } from './classes/ImporterProgress';
-import { RawImports } from './models/RawImports';
 import { Selection } from './classes/ImporterSelection';
 import { SelectionChannel } from './classes/ImporterSelectionChannel';
 import { SelectionUser } from './classes/ImporterSelectionUser';
 import { ProgressStep } from '../lib/ImporterProgressStep';
-import { ImporterInfo } from '../lib/ImporterInfo';
 import { Importers } from '../lib/Importers';
+import './models/RawImports';
 import './methods';
 import './startup/setImportsToInvalid';
 import './startup/store';
 
-export { Base, Importers, ImporterInfo, ImporterWebsocket, Progress, ProgressStep, RawImports, Selection, SelectionChannel, SelectionUser };
+export { Base, Importers, ImporterWebsocket, ProgressStep, Selection, SelectionChannel, SelectionUser };

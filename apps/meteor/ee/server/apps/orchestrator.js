@@ -166,7 +166,16 @@ export class AppServerOrchestrator {
 			.get()
 			// We reduce everything to a promise chain so it runs sequentially
 			.reduce(
-				(control, app) => control.then(async () => (await canEnableApp(app.getStorageItem())) && this.getManager().enable(app.getID())),
+				(control, app) =>
+					control.then(async () => {
+						const canEnable = await canEnableApp(app.getStorageItem());
+
+						if (canEnable) {
+							return this.getManager().loadOne(app.getID());
+						}
+
+						this._rocketchatLogger.warn(`App "${app.getInfo().name}" can't be enabled due to CE limits.`);
+					}),
 				Promise.resolve(),
 			);
 
@@ -319,10 +328,4 @@ settings.watch('Apps_Logs_TTL', (value) => {
 	const model = Apps._logModel;
 
 	model.resetTTLIndex(expireAfterSeconds);
-});
-
-Meteor.startup(function _appServerOrchestrator() {
-	Apps.initialize();
-
-	Apps.load();
 });

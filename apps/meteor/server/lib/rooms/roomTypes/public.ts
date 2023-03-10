@@ -9,7 +9,7 @@ import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoo
 import { getPublicRoomType } from '../../../../lib/rooms/roomTypes/public';
 import { roomCoordinator } from '../roomCoordinator';
 
-export const PublicRoomType = getPublicRoomType(roomCoordinator);
+const PublicRoomType = getPublicRoomType(roomCoordinator);
 
 roomCoordinator.add(PublicRoomType, {
 	allowRoomSettingChange(room, setting) {

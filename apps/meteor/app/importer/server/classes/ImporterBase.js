@@ -13,7 +13,7 @@ import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { ImporterInfo } from '../../lib/ImporterInfo';
 import { RawImports } from '../models/RawImports';
 import { Imports, ImportData } from '../../../models/server';
-import { Logger } from '../../../logger';
+import { Logger } from '../../../logger/server';
 import { ImportDataConverter } from './ImportDataConverter';
 import { t } from '../../../utils/server';
 import { Selection, SelectionChannel, SelectionUser } from '..';
