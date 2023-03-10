@@ -106,20 +106,22 @@ settingsRegistry.addGroup('FileUpload', function () {
 			},
 		});
 		this.add('FileUpload_S3_AWSAccessKeyId', '', {
-			type: 'string',
+			type: 'password',
+			autocomplete: false,
+			secret: true,
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
 				value: 'AmazonS3',
 			},
-			secret: true,
 		});
 		this.add('FileUpload_S3_AWSSecretAccessKey', '', {
-			type: 'string',
+			type: 'password',
+			autocomplete: false,
+			secret: true,
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
 				value: 'AmazonS3',
 			},
-			secret: true,
 		});
 		this.add('FileUpload_S3_CDN', '', {
 			type: 'string',
