@@ -3,11 +3,11 @@ import type { Request, Response, NextFunction } from 'express';
 import { Users } from '../../../models/server';
 import { oAuth2ServerAuth } from '../../../oauth2-server-config/server/oauth/oauth2-server';
 
-export type AuthenticationMiddlewareConfig = {
+type AuthenticationMiddlewareConfig = {
 	rejectUnauthorized: boolean;
 };
 
-export const defaultAuthenticationMiddlewareConfig = {
+const defaultAuthenticationMiddlewareConfig = {
 	rejectUnauthorized: true,
 };
 

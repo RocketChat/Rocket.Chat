@@ -2,7 +2,7 @@ import type { FederationRoomServiceSender } from './application/sender/RoomServi
 import type { IFederationBridgeRegistrationFile } from './domain/IFederationBridge';
 import { FederationFactory } from './infrastructure/Factory';
 
-export const FEDERATION_PROCESSING_CONCURRENCY = 1;
+const FEDERATION_PROCESSING_CONCURRENCY = 1;
 
 export const rocketSettingsAdapter = FederationFactory.buildRocketSettingsAdapter();
 rocketSettingsAdapter.initialize();

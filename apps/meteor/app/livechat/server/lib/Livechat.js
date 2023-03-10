@@ -39,7 +39,7 @@ import {
 } from '../../../models/server';
 import { Logger } from '../../../logger/server';
 import { hasPermission, hasRole, canAccessRoom, roomAccessAttributes } from '../../../authorization/server';
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../mailer/server/api';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';

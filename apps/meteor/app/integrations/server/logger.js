@@ -1,4 +1,4 @@
-import { Logger } from '../../logger';
+import { Logger } from '../../logger/server';
 
 const logger = new Logger('Integrations');
 

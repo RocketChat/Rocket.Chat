@@ -1,7 +1,7 @@
 import moment from 'moment';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 
-import * as Mailer from '../../../app/mailer';
+import * as Mailer from '../../../app/mailer/server/api';
 import { Messages, Users } from '../../../app/models/server';
 import { settings } from '../../../app/settings/server';
 import { Message } from '../../../app/ui-utils/server';

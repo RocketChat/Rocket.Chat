@@ -57,5 +57,3 @@ Messages.prototype.createTransferFailedHistoryMessage = function (rid, comment, 
 	record._id = this.insertOrUpsert(record);
 	return record;
 };
-
-export default Messages;

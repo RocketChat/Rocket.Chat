@@ -6,7 +6,7 @@ import { closeRoom, createRoom } from '../../data/rooms.helper';
 import { imgURL } from '../../data/interactions.js';
 import { updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
 import { sendSimpleMessage } from '../../data/chat.helper';
-import { createUser } from '../../data/users.helper';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
 describe('[Rooms]', function () {
@@ -76,7 +76,24 @@ describe('[Rooms]', function () {
 
 	describe('/rooms.upload', () => {
 		let testChannel;
+		let user;
+		let userCredentials;
+
+		before(async () => {
+			user = await createUser({ joinDefaultChannels: false });
+			userCredentials = await login(user.username, password);
+		});
+
+		after(async () => {
+			await deleteUser(user);
+			user = undefined;
+
+			await updateSetting('FileUpload_Restrict_to_room_members', false);
+			await updateSetting('FileUpload_ProtectFiles', true);
+		});
+
 		const testChannelName = `channel.test.upload.${Date.now()}-${Math.random()}`;
+
 		it('create an channel', (done) => {
 			createRoom({ type: 'c', name: testChannelName }).end((err, res) => {
 				testChannel = res.body.channel;
@@ -124,6 +141,8 @@ describe('[Rooms]', function () {
 				})
 				.end(done);
 		});
+
+		let fileUrl;
 		it('upload a file to room', (done) => {
 			request
 				.post(api(`rooms.upload/${testChannel._id}`))
@@ -138,8 +157,36 @@ describe('[Rooms]', function () {
 					expect(res.body).to.have.nested.property('message.rid', testChannel._id);
 					expect(res.body).to.have.nested.property('message.file._id', message.file._id);
 					expect(res.body).to.have.nested.property('message.file.type', message.file.type);
+					fileUrl = `/file-upload/${message.file._id}/${message.file.name}`;
 				})
 				.end(done);
+		});
+
+		it('should be able to get the file', async () => {
+			await request.get(fileUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
+		});
+
+		it('should be able to get the file when no access to the room', async () => {
+			await request.get(fileUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
+		});
+
+		it('should not be able to get the file when no access to the room if setting blocks', async () => {
+			await updateSetting('FileUpload_Restrict_to_room_members', true);
+			await request.get(fileUrl).set(userCredentials).expect(403);
+		});
+
+		it('should be able to get the file if member and setting blocks outside access', async () => {
+			await updateSetting('FileUpload_Restrict_to_room_members', true);
+			await request.get(fileUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
+		});
+
+		it('should not be able to get the file without credentials', async () => {
+			await request.get(fileUrl).attach('file', imgURL).expect(403);
+		});
+
+		it('should be able to get the file without credentials if setting allows', async () => {
+			await updateSetting('FileUpload_ProtectFiles', false);
+			await request.get(fileUrl).expect('Content-Type', 'image/png').expect(200);
 		});
 	});
 
@@ -1245,6 +1292,16 @@ describe('[Rooms]', function () {
 		});
 	});
 	describe('/rooms.adminRooms', () => {
+		const suffix = `test-${Date.now()}`;
+		const fnameRoom = `Ελληνικά-${suffix}`;
+		const nameRoom = `Ellinika-${suffix}`;
+
+		before((done) => {
+			updateSetting('UI_Allow_room_names_with_special_chars', true).then(() => {
+				createRoom({ type: 'p', name: fnameRoom }).end(done);
+			});
+		});
+
 		it('should throw an error when the user tries to gets a list of discussion and he cannot access the room', (done) => {
 			updatePermission('view-room-administration', []).then(() => {
 				request
@@ -1289,6 +1346,48 @@ describe('[Rooms]', function () {
 					expect(res.body).to.have.property('count');
 				})
 				.end(done);
+		});
+		it('should search the list of admin rooms using non-latin characters when UI_Allow_room_names_with_special_chars setting is toggled', (done) => {
+			updateSetting('UI_Allow_room_names_with_special_chars', true).then(() => {
+				request
+					.get(api('rooms.adminRooms'))
+					.set(credentials)
+					.query({
+						filter: fnameRoom,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('rooms').and.to.be.an('array');
+						expect(res.body.rooms).to.have.lengthOf(1);
+						expect(res.body.rooms[0].fname).to.be.equal(fnameRoom);
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('total');
+						expect(res.body).to.have.property('count');
+					})
+					.end(done);
+			});
+		});
+		it('should search the list of admin rooms using latin characters only when UI_Allow_room_names_with_special_chars setting is disabled', (done) => {
+			updateSetting('UI_Allow_room_names_with_special_chars', false).then(() => {
+				request
+					.get(api('rooms.adminRooms'))
+					.set(credentials)
+					.query({
+						filter: nameRoom,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('rooms').and.to.be.an('array');
+						expect(res.body.rooms).to.have.lengthOf(1);
+						expect(res.body.rooms[0].name).to.be.equal(nameRoom);
+						expect(res.body).to.have.property('offset');
+						expect(res.body).to.have.property('total');
+						expect(res.body).to.have.property('count');
+					})
+					.end(done);
+			});
 		});
 	});
 

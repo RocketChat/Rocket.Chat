@@ -8,7 +8,7 @@ type InsertRoleOptions = {
 	broadcastUpdate?: boolean;
 };
 
-export const insertRoleAsync = async (roleData: Omit<IRole, '_id'>, options: InsertRoleOptions = {}): Promise<IRole> => {
+const insertRoleAsync = async (roleData: Omit<IRole, '_id'>, options: InsertRoleOptions = {}): Promise<IRole> => {
 	const { name, scope, description, mandatory2fa } = roleData;
 
 	if (await Roles.findOneByName(name)) {

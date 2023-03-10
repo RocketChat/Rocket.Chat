@@ -17,7 +17,7 @@ const STATUS_MAP: { [k: string]: number } = {
 	[UserStatus.BUSY]: 3,
 };
 
-export const minimongoChangeMap: Record<string, string> = {
+const minimongoChangeMap: Record<string, string> = {
 	inserted: 'added',
 	updated: 'changed',
 	removed: 'removed',
