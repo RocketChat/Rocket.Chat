@@ -35,7 +35,7 @@ export const findAllChannelsWithNumberOfMessages = async ({
 	const endOfLastWeek = moment(start).subtract(1, 'days').toDate();
 	const startOfLastWeek = moment(endOfLastWeek).subtract(daysBetweenDates, 'days').toDate();
 
-	const channels = await Rooms.findChannelsWithNumberOfMessagesBetweenDate({
+	const channels: IRoom[] = await Rooms.findChannelsWithNumberOfMessagesBetweenDate({
 		start: convertDateToInt(start),
 		end: convertDateToInt(end),
 		startOfLastWeek: convertDateToInt(startOfLastWeek),
@@ -43,7 +43,7 @@ export const findAllChannelsWithNumberOfMessages = async ({
 		options,
 	}).toArray();
 
-	const total =
+	const total: number =
 		(
 			await Rooms.findChannelsWithNumberOfMessagesBetweenDate({
 				start: convertDateToInt(start),
