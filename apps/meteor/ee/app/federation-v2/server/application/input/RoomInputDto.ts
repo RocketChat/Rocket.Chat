@@ -1,26 +1,26 @@
-export interface IFederationPagination {
+interface IFederationPagination {
 	count?: number;
 	pageToken?: string;
 }
 
-export interface IFederationRoomSearchPublicRoomsInputDto extends IFederationPagination {
+interface IFederationRoomSearchPublicRoomsInputDto extends IFederationPagination {
 	serverName?: string;
 	roomName?: string;
 }
 
-export interface IFederationRoomJoinExternalPublicRoomInputDto {
+interface IFederationRoomJoinExternalPublicRoomInputDto {
 	externalRoomId: string;
 	internalUserId: string;
 	normalizedRoomId: string;
 	externalRoomHomeServerName: string;
 }
 
-export interface IFederationRoomJoinInternalPublicRoomInputDto {
+interface IFederationRoomJoinInternalPublicRoomInputDto {
 	internalRoomId: string;
 	internalUserId: string;
 }
 
-export class FederationPagination {
+class FederationPagination {
 	constructor({ count, pageToken }: IFederationPagination) {
 		this.count = count;
 		this.pageToken = pageToken;
@@ -30,6 +30,7 @@ export class FederationPagination {
 
 	pageToken?: string;
 }
+
 export const isAValidExternalRoomIdFormat = (externalRoomId: string): boolean =>
 	Boolean(externalRoomId && externalRoomId.charAt(0) === '!' && externalRoomId.includes(':'));
 
