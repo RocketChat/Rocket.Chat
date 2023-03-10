@@ -87,7 +87,7 @@ class CachedCollectionManager extends Emitter<{ reconnect: void; login: string |
 	}
 }
 
-export const instance = new CachedCollectionManager();
+const instance = new CachedCollectionManager();
 
 export {
 	/** @deprecated */

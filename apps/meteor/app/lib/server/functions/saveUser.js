@@ -4,8 +4,8 @@ import _ from 'underscore';
 import { Gravatar } from 'meteor/jparker:gravatar';
 import { isUserFederated } from '@rocket.chat/core-typings';
 
-import * as Mailer from '../../../mailer';
-import { getRoles, hasPermission } from '../../../authorization';
+import * as Mailer from '../../../mailer/server/api';
+import { getRoles, hasPermission } from '../../../authorization/server';
 import { settings } from '../../../settings/server';
 import { passwordPolicy } from '../lib/passwordPolicy';
 import { validateEmailDomain } from '../lib';
