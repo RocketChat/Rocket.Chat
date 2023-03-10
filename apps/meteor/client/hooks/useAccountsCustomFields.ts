@@ -6,8 +6,8 @@ type AccountsCustomField = {
 	type: 'text' | 'select';
 	required: boolean;
 	defaultValue: string;
-	minLength: string;
-	maxLength: string;
+	minLength: number;
+	maxLength: number;
 	options: SelectOption[];
 };
 

@@ -10,13 +10,13 @@ import {
 	useUserId,
 	useToastMessageDispatch,
 	useAssetWithDarkModePath,
+	useMethod,
 } from '@rocket.chat/ui-contexts';
-import type { UseMutationResult } from '@tanstack/react-query';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
-import CustomFieldsAssembler from './CustomFields/CustomFieldsAssembler';
+import AccountsCustomFields from '../../../components/AccountsCustomFields';
 
 type RegisterUsernamePayload = {
 	username: IUser['username'];
@@ -37,7 +37,8 @@ const RegisterUsername = () => {
 		throw new Error('Invalid user');
 	}
 
-	const saveUserData = useEndpoint('POST', '/v1/users.update');
+	const setUsername = useMethod('setUsername');
+	const saveCustomFields = useMethod('saveCustomFields');
 	const usernameSuggestion = useEndpoint('GET', '/v1/users.getUsernameSuggestion');
 	const { data, isLoading } = useQuery(['suggestion'], async () => usernameSuggestion());
 
@@ -49,7 +50,7 @@ const RegisterUsername = () => {
 		setError,
 		control,
 		formState: { errors },
-	} = useForm();
+	} = useForm<RegisterUsernamePayload>();
 
 	useEffect(() => {
 		if (data?.result && getValues('username') === '') {
@@ -57,24 +58,25 @@ const RegisterUsername = () => {
 		}
 	});
 
-	const registerUsernameMutation: UseMutationResult<
-		void,
-		Error,
-		{
-			username: string;
-			customFields: Record<string, unknown>;
-		}
-	> = useMutation({
-		mutationFn: (data) => {
+	const registerUsernameMutation = useMutation({
+		mutationFn: (data: RegisterUsernamePayload) => {
 			const { username, ...customFields } = data;
-			return saveUserData({ userId: uid, data: { username, customFields: { ...customFields } } });
+			return Promise.all([setUsername(username), saveCustomFields({ ...customFields })]);
 		},
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Username_has_been_updated') });
 		},
 		onError: (error: any, { username }) => {
 			if ([error.error, error.errorType].includes('error-blocked-username')) {
-				setError('username', { type: 'error-blocked-username', message: t('error-blocked-username', { field: username }) });
+				return setError('username', { type: 'error-blocked-username', message: t('error-blocked-username', { field: username }) });
+			}
+
+			if ([error.errorType].includes('error-field-unavailable')) {
+				return setError('username', { type: 'error-field-unavailable', message: t('error-field-unavailable', { field: username }) });
+			}
+
+			if ([error.errorType].includes('')) {
+				return setError('username', { type: 'username-invalid', message: t('Username_invalid') });
 			}
 
 			dispatchToastMessage({ type: 'error', message: error });
@@ -104,7 +106,7 @@ const RegisterUsername = () => {
 						</FieldGroup>
 					)}
 					{isLoading && t('Loading_suggestion')}
-					<CustomFieldsAssembler formControl={control} />
+					<AccountsCustomFields formControl={control} />
 				</Form.Container>
 				<Form.Footer>
 					<ButtonGroup stretch vertical flexGrow={1}>
