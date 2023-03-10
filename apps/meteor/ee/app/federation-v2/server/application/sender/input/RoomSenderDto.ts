@@ -1,10 +1,10 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
-export interface IFederationInviterDto {
+interface IFederationInviterDto {
 	internalInviterId: string;
 }
 
-export interface IFederationRoomInviteUserDto extends IFederationInviterDto {
+interface IFederationRoomInviteUserDto extends IFederationInviterDto {
 	rawInviteeId: string;
 	normalizedInviteeId: string;
 	inviteeUsernameOnly: string;
@@ -17,30 +17,30 @@ export interface IFederationInviteeDto {
 	inviteeUsernameOnly: string;
 }
 
-export interface IFederationOnRoomCreationDto extends IFederationInviterDto {
+interface IFederationOnRoomCreationDto extends IFederationInviterDto {
 	internalRoomId: string;
 	invitees: IFederationInviteeDto[];
 }
 
-export interface IFederationOnDirectMessageCreationDto extends IFederationInviterDto {
+interface IFederationOnDirectMessageCreationDto extends IFederationInviterDto {
 	internalRoomId: string;
 	invitees: IFederationInviteeDto[];
 	inviteComesFromAnExternalHomeServer: boolean;
 }
 
-export interface IFederationCreateDirectMessageDto extends IFederationInviterDto {
+interface IFederationCreateDirectMessageDto extends IFederationInviterDto {
 	invitees: string[];
 }
 
-export type IFederationBeforeAddUserToARoomDto = IFederationOnRoomCreationDto & {
+type IFederationBeforeAddUserToARoomDto = IFederationOnRoomCreationDto & {
 	internalInviter?: IUser;
 };
 
-export interface IFederationOnUserAddedToARoomDto extends IFederationOnRoomCreationDto {
+interface IFederationOnUserAddedToARoomDto extends IFederationOnRoomCreationDto {
 	inviteComesFromAnExternalHomeServer: boolean;
 }
 
-export class FederationInviterDto {
+class FederationInviterDto {
 	constructor({ internalInviterId }: IFederationInviterDto) {
 		this.internalInviterId = internalInviterId;
 	}

@@ -3,7 +3,7 @@ import { AbstractMatrixEvent } from '../AbstractMatrixEvent';
 import { MatrixEventType } from '../MatrixEventType';
 import type { MatrixRoomJoinRules } from '../MatrixRoomJoinRules';
 
-export interface IMatrixEventContentSetRoomJoinRules extends IBaseEventContent {
+interface IMatrixEventContentSetRoomJoinRules extends IBaseEventContent {
 	join_rule: MatrixRoomJoinRules;
 }
 

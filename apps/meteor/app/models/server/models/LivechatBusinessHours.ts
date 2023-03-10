@@ -3,8 +3,6 @@ import { ObjectId } from 'mongodb';
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 
-import { Base } from './_Base';
-
 export const createDefaultBusinessHourRow = (): ILivechatBusinessHour => {
 	const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 	const closedDays = ['Saturday', 'Sunday'];
@@ -47,13 +45,3 @@ export const createDefaultBusinessHourRow = (): ILivechatBusinessHour => {
 		},
 	};
 };
-
-export class LivechatBusinessHours extends Base {
-	constructor() {
-		super('livechat_business_hours');
-
-		this.tryEnsureIndex({ name: 1 }, { unique: true });
-	}
-}
-
-export default new LivechatBusinessHours();

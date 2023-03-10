@@ -1,4 +1,4 @@
-import '../apps';
+import '../apps/startup';
 import './audit';
 import './deviceManagement';
 import './engagementDashboard';
