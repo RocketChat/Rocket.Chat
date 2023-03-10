@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
-import * as Mailer from '../../../app/mailer';
+import * as Mailer from '../../../app/mailer/server/api';
 import { settings } from '../../../app/settings/server';
 import { getUserEmailAddress } from '../../../lib/getUserEmailAddress';
 
