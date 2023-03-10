@@ -3,7 +3,7 @@ import type { Mongo } from 'meteor/mongo';
 
 import { Base } from './Base';
 
-export class EmojiCustom extends Base<ICustomEmojiDescriptor> {
+class EmojiCustom extends Base<ICustomEmojiDescriptor> {
 	constructor() {
 		super();
 		this._initModel('custom_emoji');
