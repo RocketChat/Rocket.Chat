@@ -1,5 +1,5 @@
 import { Users, Rooms } from '../../../../models/server';
-import { removeUserFromRoom } from '../../../../lib';
+import { removeUserFromRoom } from '../../../../lib/server';
 
 export default function handleLeftChannel(args) {
 	const user = Users.findOne({

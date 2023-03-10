@@ -15,7 +15,7 @@ import { settings, settingsRegistry } from '../../settings/server';
 import { getURL } from '../../utils/lib/getURL';
 import { getExtension } from '../../utils/lib/mimeTypes';
 import { hasPermission } from '../../authorization/server';
-import { RocketChatFile } from '../../file';
+import { RocketChatFile } from '../../file/server';
 import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 
 const RocketChatAssetsInstance = new RocketChatFile.GridFS({
@@ -34,8 +34,23 @@ const assets: IRocketChatAssets = {
 			order: 2,
 		},
 	},
+	logo_dark: {
+		label: 'logo - dark theme (svg, png, jpg)',
+		defaultUrl: 'images/logo/logo_dark.svg',
+		constraints: {
+			type: 'image',
+			extensions: ['svg', 'png', 'jpg', 'jpeg'],
+		},
+	},
 	background: {
 		label: 'login background (svg, png, jpg)',
+		constraints: {
+			type: 'image',
+			extensions: ['svg', 'png', 'jpg', 'jpeg'],
+		},
+	},
+	background_dark: {
+		label: 'login background - dark theme (svg, png, jpg)',
 		constraints: {
 			type: 'image',
 			extensions: ['svg', 'png', 'jpg', 'jpeg'],

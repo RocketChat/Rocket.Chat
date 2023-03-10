@@ -1,6 +1,7 @@
 import type { Dimensions } from '@rocket.chat/core-typings';
+import { Box } from '@rocket.chat/fuselage';
 import { useAttachmentDimensions } from '@rocket.chat/ui-contexts';
-import type { FC, SyntheticEvent } from 'react';
+import type { FC } from 'react';
 import React, { memo, useState, useMemo } from 'react';
 
 import ImageBox from './image/ImageBox';
@@ -20,68 +21,66 @@ const getDimensions = (
 	originalWidth: Dimensions['width'],
 	originalHeight: Dimensions['height'],
 	limits: { width: number; height: number },
-): { width: number; height: number } => {
+): { width: number; height: number; ratio: number } => {
 	const widthRatio = originalWidth / limits.width;
 	const heightRatio = originalHeight / limits.height;
 
 	if (widthRatio > heightRatio) {
 		const width = Math.min(originalWidth, limits.width);
-		return { width, height: (width / originalWidth) * originalHeight };
+		const height = (width / originalWidth) * originalHeight;
+		return { width, height, ratio: (height / width) * 100 };
 	}
 
 	const height = Math.min(originalHeight, limits.height);
-	return { width: (height / originalHeight) * originalWidth, height };
+	const width = (height / originalHeight) * originalWidth;
+	return { width, height, ratio: (height / width) * 100 };
 };
-
-interface IPictureLoadEvent extends SyntheticEvent {
-	target: HTMLImageElement;
-}
 
 const AttachmentImage: FC<AttachmentImageProps> = ({ previewUrl, dataSrc, loadImage = true, setLoadImage, src, ...size }) => {
 	const limits = useAttachmentDimensions();
 
 	const [error, setError] = useState(false);
 
-	const [sizes, setSizes] = useState({ width: size?.width || limits.width, height: size?.height || limits.height });
+	const { width = limits.width, height = limits.height } = size;
 
-	const hasSizes = useMemo(
-		() =>
-			size?.width || size?.height
-				? undefined
-				: (e: IPictureLoadEvent) => setSizes({ width: e.target.naturalWidth, height: e.target.naturalHeight }),
-		[size],
-	);
-
-	const { setHasError, setHasNoError } = useMemo(
+	const { setHasNoError } = useMemo(
 		() => ({
-			setHasError: (): void => setError(true),
 			setHasNoError: (): void => setError(false),
 		}),
 		[],
 	);
 
-	const dimensions = getDimensions(sizes.width, sizes.height, limits);
+	const dimensions = getDimensions(width, height, limits);
 
 	const background = previewUrl && `url(${previewUrl}) center center / cover no-repeat fixed`;
 
 	if (!loadImage) {
-		return <Load {...dimensions} {...limits} load={setLoadImage} />;
+		return <Load width={dimensions.width || limits.width} height={dimensions.height || limits.height} load={setLoadImage} />;
 	}
 
 	if (error) {
-		return <Retry {...dimensions} retry={setHasNoError} />;
+		return <Retry width={dimensions.width} height={dimensions.height} retry={setHasNoError} />;
 	}
 
 	return (
-		<ImageBox
-			is='picture'
-			onLoad={hasSizes}
-			onError={setHasError}
-			{...(previewUrl && ({ style: { background, boxSizing: 'content-box' } } as any))}
-			{...dimensions}
-		>
-			<img className='gallery-item' data-src={dataSrc || src} src={src} {...dimensions} />
-		</ImageBox>
+		<Box width={dimensions.width} maxWidth='full' position='relative'>
+			<Box pbs={`${dimensions.ratio}%`} position='relative'>
+				<ImageBox
+					is='picture'
+					position='absolute'
+					onError={() => setError(true)}
+					style={{
+						...(previewUrl && { background, boxSizing: 'content-box' }),
+						top: 0,
+						left: 0,
+						bottom: 0,
+						right: 0,
+					}}
+				>
+					<img className='gallery-item' data-src={dataSrc || src} src={src} width={dimensions.width} height={dimensions.height} />
+				</ImageBox>
+			</Box>
+		</Box>
 	);
 };
 

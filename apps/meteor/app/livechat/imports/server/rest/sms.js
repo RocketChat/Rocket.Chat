@@ -7,7 +7,7 @@ import { FileUpload } from '../../../../file-upload/server';
 import { LivechatRooms, LivechatDepartment } from '../../../../models/server';
 import { API } from '../../../../api/server';
 import { fetch } from '../../../../../server/lib/http/fetch';
-import { SMS } from '../../../../sms';
+import { SMS } from '../../../../sms/server';
 import { Livechat } from '../../../server/lib/Livechat';
 
 const getUploadFile = async (details, fileUrl) => {

@@ -19,8 +19,8 @@ const getBundledInApp = async (app: App): Promise<App['bundledIn']> => {
 	);
 };
 
-export const useAppInfo = (appId: string): AppInfo | undefined => {
-	const { installedApps, marketplaceApps } = useContext(AppsContext);
+export const useAppInfo = (appId: string, context: string): AppInfo | undefined => {
+	const { installedApps, marketplaceApps, privateApps } = useContext(AppsContext);
 
 	const [appData, setAppData] = useState<AppInfo>();
 
@@ -30,26 +30,21 @@ export const useAppInfo = (appId: string): AppInfo | undefined => {
 	const getBundledIn = useEndpoint('GET', '/apps/:id', { id: appId });
 
 	useEffect(() => {
-		const apps: App[] = [];
-
-		if (marketplaceApps.value) {
-			apps.push(...marketplaceApps.value.apps);
-		}
-
-		if (installedApps.value) {
-			apps.push(...installedApps.value.apps);
-		}
-
 		const fetchAppInfo = async (): Promise<void> => {
-			if (!apps?.length || !appId) {
+			if ((!marketplaceApps.value?.apps?.length && !installedApps.value?.apps.length && !privateApps.value?.apps.length) || !appId) {
 				return;
 			}
 
-			const appResult = apps.find((app) => app.id === appId) ?? {
-				...(await Apps.getApp(appId)),
-				installed: true,
-				marketplace: false,
-			};
+			let appResult: App | undefined;
+			const marketplaceAppsContexts = ['explore', 'enterprise', 'requested'];
+
+			if (marketplaceAppsContexts.includes(context)) appResult = marketplaceApps.value?.apps.find((app) => app.id === appId);
+
+			if (context === 'private') appResult = privateApps.value?.apps.find((app) => app.id === appId);
+
+			if (context === 'installed') appResult = installedApps.value?.apps.find((app) => app.id === appId);
+
+			if (!appResult) return;
 
 			const [settings, apis, screenshots, bundledIn] = await Promise.all([
 				getSettings().catch(() => ({
@@ -69,8 +64,8 @@ export const useAppInfo = (appId: string): AppInfo | undefined => {
 							appVersion: appId,
 					  })
 							.then(({ app }: any) => {
-								appResult.tosLink = app.tosLink;
-								appResult.privacyLink = app.privacyLink;
+								(appResult as App).tosLink = app.tosLink;
+								(appResult as App).privacyLink = app.privacyLink;
 								return getBundledInApp(app);
 							})
 							.catch(() => ({
@@ -88,7 +83,7 @@ export const useAppInfo = (appId: string): AppInfo | undefined => {
 		};
 
 		fetchAppInfo();
-	}, [appId, getApis, getBundledIn, getScreenshots, getSettings, installedApps, marketplaceApps]);
+	}, [appId, context, getApis, getBundledIn, getScreenshots, getSettings, installedApps, marketplaceApps, privateApps.value]);
 
 	return appData;
 };

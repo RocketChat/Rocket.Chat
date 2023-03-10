@@ -5,7 +5,7 @@ import type { RocketChatFileAdapter } from '../../infrastructure/rocket-chat/ada
 import type { RocketChatMessageAdapter } from '../../infrastructure/rocket-chat/adapters/Message';
 import type { RocketChatUserAdapter } from '../../infrastructure/rocket-chat/adapters/User';
 
-export interface IExternalMessageSender {
+interface IExternalMessageSender {
 	sendMessage(externalRoomId: string, externalSenderId: string, message: IMessage): Promise<void>;
 	sendQuoteMessage(externalRoomId: string, externalSenderId: string, message: IMessage, messageToReplyTo: IMessage): Promise<void>;
 }

@@ -50,8 +50,6 @@ on:
         required: true
         type: string
     secrets:
-      TURBO_TEAM:
-        required: true
       CR_USER:
         required: true
       CR_PAT:

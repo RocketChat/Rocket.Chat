@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef } from 'react';
 
 import type { FieldExpression, Query } from '../../../../../lib/minimongo';
 import { createFilterFromQuery } from '../../../../../lib/minimongo';
+import { onClientMessageReceived } from '../../../../../lib/onClientMessageReceived';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useGetMessageByID } from './useGetMessageByID';
 
@@ -93,7 +94,9 @@ export const useThreadMainMessageQuery = (
 	}, []);
 
 	return useQuery(['rooms', room._id, 'threads', tmid, 'main-message'] as const, async ({ queryKey }) => {
-		const mainMessage = await getMessage(tmid);
+		const message = await getMessage(tmid);
+
+		const mainMessage = (await onClientMessageReceived(message)) || message;
 
 		if (!mainMessage && !isThreadMainMessage(mainMessage)) {
 			throw new Error('Invalid main message');
