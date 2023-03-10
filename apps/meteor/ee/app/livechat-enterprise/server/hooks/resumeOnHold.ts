@@ -2,10 +2,10 @@ import type { ILivechatVisitor, IMessage, IOmnichannelRoom, IRoom, IUser } from 
 import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, LivechatVisitors, Users } from '@rocket.chat/models';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { OmnichannelEEService } from '@rocket.chat/core-services';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { callbackLogger } from '../../../../../app/livechat/server/lib/callbackLogger';
-import { OnHoldHelper } from '../lib/OnHoldHelper';
 
 const resumeOnHoldCommentAndUser = async (room: IOmnichannelRoom): Promise<{ comment: string; resumedBy: IUser }> => {
 	const {
@@ -53,7 +53,7 @@ const handleAfterSaveMessage = async (message: IMessage, room: IRoom) => {
 
 		try {
 			const { comment: resumeChatComment, resumedBy } = await resumeOnHoldCommentAndUser(updatedRoom);
-			await OnHoldHelper.resumeRoomOnHold(updatedRoom, resumeChatComment, resumedBy);
+			await OmnichannelEEService.resumeRoomOnHold(updatedRoom, resumeChatComment, resumedBy);
 		} catch (error) {
 			callbackLogger.error(`[afterSaveMessage] Error while resuming room ${rid} on hold: Error: `, error);
 			return message;

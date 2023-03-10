@@ -3,12 +3,12 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { isLivechatRoomOnHoldProps, isLivechatRoomResumeOnHoldProps, isPOSTLivechatRoomPriorityParams } from '@rocket.chat/rest-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { OmnichannelEEService } from '@rocket.chat/core-services';
 
 import { API } from '../../../../../app/api/server';
 import { hasPermission } from '../../../../../app/authorization/server';
 import { Subscriptions } from '../../../../../app/models/server';
 import { removePriorityFromRoom, updateRoomPriority } from './lib/priorities';
-import { OnHoldHelper } from '../lib/OnHoldHelper';
 
 API.v1.addRoute(
 	'livechat/room.onHold',
@@ -52,7 +52,7 @@ API.v1.addRoute(
 				user: onHoldBy.name || `@${onHoldBy.username}`,
 			});
 
-			await OnHoldHelper.placeRoomOnHold(room, comment, this.user);
+			await OmnichannelEEService.placeRoomOnHold(room, comment, this.user);
 
 			return API.v1.success();
 		},
@@ -97,7 +97,7 @@ API.v1.addRoute(
 				user: onHoldBy.name || `@${onHoldBy.username}`,
 			});
 
-			await OnHoldHelper.resumeRoomOnHold(room, comment, this.user, true);
+			await OmnichannelEEService.resumeRoomOnHold(room, comment, this.user, true);
 
 			return API.v1.success();
 		},
