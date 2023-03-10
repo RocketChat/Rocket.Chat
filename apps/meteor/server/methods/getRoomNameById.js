@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { Rooms, Subscriptions } from '../../app/models/server';
-import { hasPermission } from '../../app/authorization';
+import { hasPermission } from '../../app/authorization/server';
 
 Meteor.methods({
 	getRoomNameById(rid) {

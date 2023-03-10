@@ -2,7 +2,7 @@ import type { IBaseEventContent } from '../AbstractMatrixEvent';
 import { AbstractMatrixEvent } from '../AbstractMatrixEvent';
 import { MatrixEventType } from '../MatrixEventType';
 
-export interface IMatrixEventContentSetRoomName extends IBaseEventContent {
+interface IMatrixEventContentSetRoomName extends IBaseEventContent {
 	name: string;
 }
 

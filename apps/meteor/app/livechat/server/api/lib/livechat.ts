@@ -30,7 +30,7 @@ async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' 
 	}));
 }
 
-export function findDepartments(businessUnit?: string): Promise<ILivechatDepartment[]> {
+function findDepartments(businessUnit?: string): Promise<ILivechatDepartment[]> {
 	// TODO: check this function usage
 	return LivechatDepartment.findEnabledWithAgentsAndBusinessUnit(businessUnit, {
 		_id: 1,

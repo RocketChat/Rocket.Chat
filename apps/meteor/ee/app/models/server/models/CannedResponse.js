@@ -4,7 +4,7 @@ import { Base } from '../../../../../app/models/server';
 /**
  * Livechat Department model
  */
-export class CannedResponse extends Base {
+class CannedResponse extends Base {
 	constructor() {
 		super('canned_response');
 

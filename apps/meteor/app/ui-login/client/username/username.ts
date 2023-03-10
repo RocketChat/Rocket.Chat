@@ -3,11 +3,11 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { settings } from '../../settings/client';
-import { Button } from '../../ui/client';
-import { t } from '../../utils/client';
-import { callbacks } from '../../../lib/callbacks';
-import { dispatchToastMessage } from '../../../client/lib/toast';
+import { settings } from '../../../settings/client';
+import { Button } from '../../../ui/client';
+import { t } from '../../../utils/client';
+import { callbacks } from '../../../../lib/callbacks';
+import { dispatchToastMessage } from '../../../../client/lib/toast';
 import './username.html';
 
 Template.username.onCreated(function () {
