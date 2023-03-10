@@ -6,7 +6,7 @@ import Rooms from './Rooms';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { trim } from '../../../../lib/utils/stringUtils';
 
-export class LivechatRooms extends Base {
+class LivechatRooms extends Base {
 	constructor(...args) {
 		super(...args);
 

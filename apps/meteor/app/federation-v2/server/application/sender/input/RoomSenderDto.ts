@@ -1,31 +1,31 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
-export interface IFederationSenderBaseRoomInputDto {
+interface IFederationSenderBaseRoomInputDto {
 	internalRoomId: string;
 }
 
-export interface IFederationCreateDMAndInviteUserDto extends IFederationSenderBaseRoomInputDto {
+interface IFederationCreateDMAndInviteUserDto extends IFederationSenderBaseRoomInputDto {
 	internalInviterId: string;
 	rawInviteeId: string;
 	normalizedInviteeId: string;
 	inviteeUsernameOnly: string;
 }
 
-export interface IFederationRoomSendExternalMessageDto extends IFederationSenderBaseRoomInputDto {
+interface IFederationRoomSendExternalMessageDto extends IFederationSenderBaseRoomInputDto {
 	message: IMessage;
 	internalSenderId: string;
 }
 
-export interface IFederationAfterLeaveRoomDto extends IFederationSenderBaseRoomInputDto {
+interface IFederationAfterLeaveRoomDto extends IFederationSenderBaseRoomInputDto {
 	internalUserId: string;
 }
 
-export interface IFederationAfterRemoveUserFromRoomDto extends IFederationSenderBaseRoomInputDto {
+interface IFederationAfterRemoveUserFromRoomDto extends IFederationSenderBaseRoomInputDto {
 	internalUserId: string;
 	actionDoneByInternalId: string;
 }
 
-export class FederationSenderBaseRoomInputDto {
+class FederationSenderBaseRoomInputDto {
 	constructor({ internalRoomId }: IFederationSenderBaseRoomInputDto) {
 		this.internalRoomId = internalRoomId;
 	}

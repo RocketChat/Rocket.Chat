@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 import type { IUser } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../mailer/server/api';
 import { Users } from '../../../models/server';
 import type { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 
