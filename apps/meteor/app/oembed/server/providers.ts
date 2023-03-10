@@ -87,6 +87,11 @@ providers.registerProvider({
 	endPoint: 'https://open.spotify.com/oembed',
 });
 
+providers.registerProvider({
+	urls: [new RegExp('https?://www\\.loom\\.com/\\S+')],
+	endPoint: 'https://www.loom.com/v1/oembed?format=json',
+});
+
 callbacks.add(
 	'oembed:beforeGetUrlContent',
 	function (data) {
