@@ -8,6 +8,6 @@
 		"ignoreLabels": ["[ignore-title]"]
 	},
 	"MESSAGES": {
-		"failure": "Invalid PR title. Please use one of the following formats: 'feat: add new feature', 'fix: fix a bug', 'ci: update CI configuration', 'chore: update dependencies', 'docs: update documentation', 'test: add tests', 'refactor: refactor code', 'i18n: update translations', 'regression: fix a regression'. \n More info check [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/)."
+		"failure": "Invalid PR title. Please use one of the following formats: 'feat: add new feature', 'fix: fix a bug', 'ci: update CI configuration', 'chore: update dependencies', 'docs: update documentation', 'test: add tests', 'refactor: refactor code', 'i18n: update translations', 'regression: fix a regression'.\nFor more info please check [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/)."
 	}
 }
