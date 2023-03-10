@@ -420,7 +420,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne({ _id: rid }, { $set: { teamDefault } }, options);
 	}
 
-	findChannelsWithNumberOfMessagesBetweenDate({
+	findChannelsWithNumberOfMessagesBetweenDate<T extends boolean>({
 		start,
 		end,
 		startOfLastWeek,
@@ -432,9 +432,9 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		end: number;
 		startOfLastWeek: number;
 		endOfLastWeek: number;
-		onlyCount?: boolean;
+		onlyCount?: T;
 		options?: PaginatedRequest;
-	}): { total: number } | AggregationCursor<IRoom> {
+	}): AggregationCursor<T extends true ? { total: number } : IRoom> {
 		const readPreference = ReadPreference.SECONDARY_PREFERRED;
 		const lookup = {
 			$lookup: {
@@ -535,12 +535,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			params.push({ $limit: options.count });
 		}
 
-		if (onlyCount === true) {
+		if (onlyCount) {
 			params.push({ $count: 'total' });
-			return this.col.aggregate(params, { allowDiskUse: true, readPreference }) as { total: number };
 		}
 
-		return this.col.aggregate<IRoom>(params, { allowDiskUse: true, readPreference }) as AggregationCursor<IRoom>;
+		return this.col.aggregate<T extends true ? { total: number } : IRoom>(params, { allowDiskUse: true, readPreference });
 	}
 
 	findOneByName(name: IRoom['name'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
