@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { hasPermission } from '../../app/authorization';
+import { hasPermission } from '../../app/authorization/server';
 import { setUserActiveStatus } from '../../app/lib/server/functions/setUserActiveStatus';
 
 Meteor.methods({

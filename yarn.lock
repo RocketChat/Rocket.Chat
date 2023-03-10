@@ -7385,6 +7385,7 @@ __metadata:
     "@types/strict-uri-encode": ^2.0.0
     "@types/string-strip-html": ^5.0.1
     "@types/supertest": ^2.0.12
+    "@types/textarea-caret": ^3
     "@types/ua-parser-js": ^0.7.36
     "@types/use-subscription": ^1.0.0
     "@types/use-sync-external-store": ^0.0.3
@@ -7421,6 +7422,7 @@ __metadata:
     clipboard: ^2.0.11
     codemirror: ^5.65.6
     colorette: ^2.0.19
+    colors: ^1.4.0
     connect: ^3.7.0
     cookie: ^0.5.0
     cookie-parser: ^1.4.6
@@ -7561,6 +7563,7 @@ __metadata:
     supertest: ^6.2.3
     tar-stream: ^1.6.2
     template-file: ^6.0.1
+    textarea-caret: ^3.1.0
     tinykeys: ^1.4.0
     ts-node: ^10.9.1
     turndown: ^7.1.1
@@ -12483,6 +12486,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/textarea-caret@npm:^3":
+  version: 3.0.1
+  resolution: "@types/textarea-caret@npm:3.0.1"
+  checksum: 18ff4275f0411187aebf4f475e318f5c62a87c056d3ff280b86e18fca6bf2c9bfab9ea885135f210131df230fc761b9f560b66dd8d3d2ebb161610f4ffbf3541
+  languageName: node
+  linkType: hard
+
 "@types/tmp@npm:^0.2.2":
   version: 0.2.3
   resolution: "@types/tmp@npm:0.2.3"
@@ -16769,7 +16779,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"colors@npm:1.4.0":
+"colors@npm:1.4.0, colors@npm:^1.4.0":
   version: 1.4.0
   resolution: "colors@npm:1.4.0"
   checksum: 98aa2c2418ad87dedf25d781be69dc5fc5908e279d9d30c34d8b702e586a0474605b3a189511482b9d5ed0d20c867515d22749537f7bc546256c6014f3ebdcec
@@ -26409,7 +26419,7 @@ __metadata:
   resolution: "lamejs@https://github.com/zhuker/lamejs.git#commit=582bbba6a12f981b984d8fb9e1874499fed85675"
   dependencies:
     use-strict: 1.0.1
-  checksum: ed7f6f1c9629b53c17023eb04b4fc5a222e9c34fcb4a2f61214488fc64e5cfea825e4588d959c5fb20f3a91f0120103fa60307dd43df995d498ff5ddb6200cd9
+  checksum: fa829e0c170a65573e653b4d908a44aaf06a50e1bbade3b1217a300a03ccd59a537e294e2d924a584f9d70c7726a12d4c3af9c675436d48d08be5fb94b5eb400
   languageName: node
   linkType: hard
 
@@ -36606,6 +36616,13 @@ __metadata:
   version: 0.2.0
   resolution: "text-table@npm:0.2.0"
   checksum: b6937a38c80c7f84d9c11dd75e49d5c44f71d95e810a3250bd1f1797fc7117c57698204adf676b71497acc205d769d65c16ae8fa10afad832ae1322630aef10a
+  languageName: node
+  linkType: hard
+
+"textarea-caret@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "textarea-caret@npm:3.1.0"
+  checksum: ddefbd3078f7181d0433e69c9595ed16f64cef01c110856b4c24fe03bc2560f373a39db1c85bd3a0e65017e27b7f4034864cd6a355b8e5057c5f1a2100c0f583
   languageName: node
   linkType: hard
 
