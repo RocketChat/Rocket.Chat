@@ -1,10 +1,10 @@
 import type { IRoom, ISubscription, RoomType } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
+import type { FindOptions, Sort } from 'mongodb';
 
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Subscriptions } from '../../../models/server';
 import { adminFields } from '../../../../lib/rooms/adminFields';
-import type { FindOptions, Sort } from 'mongodb';
 
 export async function findAdminRooms({
 	uid,
