@@ -2,7 +2,7 @@ import type { RoomType } from '@rocket.chat/core-typings';
 
 import type { IFederationBridge } from '../../../../../app/federation-v2/server/domain/IFederationBridge';
 
-export interface IFederationPaginationParams {
+interface IFederationPaginationParams {
 	limit?: number;
 	pageToken?: string;
 }
@@ -12,12 +12,12 @@ export interface IFederationSearchPublicRoomsParams extends IFederationPaginatio
 	roomName?: string;
 }
 
-export interface IFederationPaginationResult {
+interface IFederationPaginationResult {
 	next_batch?: string;
 	prev_batch?: string;
 }
 
-export interface IFederationPublicRooms {
+interface IFederationPublicRooms {
 	canonical_alias: string;
 	name: string;
 	num_joined_members: number;
