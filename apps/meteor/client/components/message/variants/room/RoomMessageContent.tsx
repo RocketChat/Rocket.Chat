@@ -21,6 +21,7 @@ import UiKitSurface from '../../content/UiKitSurface';
 import UrlPreviews from '../../content/UrlPreviews';
 import { useNormalizedMessage } from '../../hooks/useNormalizedMessage';
 import { useOembedLayout } from '../../hooks/useOembedLayout';
+import { useRoom } from '../../hooks/useRoom';
 import { useSubscriptionFromMessageQuery } from '../../hooks/useSubscriptionFromMessageQuery';
 
 type RoomMessageContentProps = {
@@ -43,6 +44,8 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 	const t = useTranslation();
 
 	const normalizedMessage = useNormalizedMessage(message);
+	const currentRoom = useRoom(normalizedMessage.rid);
+	console.log(currentRoom);
 
 	return (
 		<>
@@ -98,12 +101,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 			)}
 
 			{isDiscussionMessage(normalizedMessage) && (
-				<DiscussionMetrics
-					count={normalizedMessage.dcount}
-					drid={normalizedMessage.drid}
-					lm={normalizedMessage.dlm}
-					rid={normalizedMessage.rid}
-				/>
+				<DiscussionMetrics count={currentRoom.dcount} drid={normalizedMessage.drid} lm={currentRoom.dlm} rid={normalizedMessage.rid} />
 			)}
 
 			{normalizedMessage.location && <Location location={normalizedMessage.location} />}
