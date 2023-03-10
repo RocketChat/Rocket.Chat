@@ -5,10 +5,10 @@
 	"devDependencies": {
 		"@types/jest": "^27.4.1",
 		"@types/strict-uri-encode": "^2.0.0",
-		"eslint": "^8.29.0",
+		"eslint": "^8.35.0",
 		"jest": "^27.5.1",
 		"ts-jest": "^27.1.5",
-		"typescript": "~4.6.4"
+		"typescript": "~4.9.5"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -26,7 +26,7 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"filter-obj": "^3.0.0",
-		"query-string": "^7.1.1",
+		"query-string": "^7.1.3",
 		"split-on-first": "^3.0.0",
 		"strict-uri-encode": "^2.0.0"
 	}

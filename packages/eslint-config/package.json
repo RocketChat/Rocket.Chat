@@ -7,13 +7,13 @@
 		"@types/prettier": "^2.6.3",
 		"@typescript-eslint/eslint-plugin": "^5.30.7",
 		"@typescript-eslint/parser": "^5.30.7",
-		"eslint": "^8.29.0",
-		"eslint-config-prettier": "^8.5.0",
-		"eslint-plugin-anti-trojan-source": "^1.1.0",
-		"eslint-plugin-import": "^2.26.0",
-		"eslint-plugin-jest": "^26.9.0",
+		"eslint": "^8.35.0",
+		"eslint-config-prettier": "^8.7.0",
+		"eslint-plugin-anti-trojan-source": "^1.1.1",
+		"eslint-plugin-import": "^2.27.5",
+		"eslint-plugin-jest": "^27.2.1",
 		"eslint-plugin-prettier": "^4.2.1",
-		"prettier": "2.7.1"
+		"prettier": "2.8.4"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js .",

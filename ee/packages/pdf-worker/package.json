@@ -3,26 +3,26 @@
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
-		"@storybook/addon-actions": "~6.5.14",
-		"@storybook/addon-docs": "~6.5.14",
-		"@storybook/addon-essentials": "~6.5.14",
-		"@storybook/addon-interactions": "~6.5.14",
-		"@storybook/addon-links": "~6.5.14",
-		"@storybook/builder-webpack4": "~6.5.14",
-		"@storybook/manager-webpack4": "~6.5.14",
-		"@storybook/react": "~6.5.14",
+		"@storybook/addon-actions": "~6.5.16",
+		"@storybook/addon-docs": "~6.5.16",
+		"@storybook/addon-essentials": "~6.5.16",
+		"@storybook/addon-interactions": "~6.5.16",
+		"@storybook/addon-links": "~6.5.16",
+		"@storybook/builder-webpack4": "~6.5.16",
+		"@storybook/manager-webpack4": "~6.5.16",
+		"@storybook/react": "~6.5.16",
 		"@storybook/testing-library": "~0.0.13",
 		"@testing-library/jest-dom": "^5.16.5",
-		"@testing-library/react": "~13.4.0",
+		"@testing-library/react": "~14.0.0",
 		"@types/emojione": "^2.2.6",
 		"@types/jest": "^27.4.1",
 		"@types/react-dom": "^18",
 		"@types/testing-library__jest-dom": "^5",
-		"eslint": "^8.12.0",
+		"eslint": "^8.35.0",
 		"jest": "^27.5.1",
 		"react-dom": "^18.2.0",
-		"ts-jest": "^27.1.4",
-		"typescript": "~4.5.5"
+		"ts-jest": "^27.1.5",
+		"typescript": "~4.9.5"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
@@ -38,14 +38,14 @@
 		"/dist"
 	],
 	"dependencies": {
-		"@react-pdf/renderer": "^3.1.3",
+		"@react-pdf/renderer": "^3.1.7",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/fuselage-tokens": "next",
 		"@types/react": "^18.0.26",
 		"emoji-assets": "^7.0.1",
-		"emoji-toolkit": "^7.0.0",
+		"emoji-toolkit": "^7.0.1",
 		"moment": "^2.29.4",
-		"moment-timezone": "^0.5.34",
+		"moment-timezone": "^0.5.41",
 		"react": "^18.2.0"
 	}
 }
