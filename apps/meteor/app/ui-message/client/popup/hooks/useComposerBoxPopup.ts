@@ -7,7 +7,7 @@ import { useChat } from '../../../../../client/views/room/contexts/ChatContext';
 import type { ComposerPopupOption } from '../../../../../client/views/room/contexts/ComposerPopupContext';
 import { useComposerBoxPopupQueries } from './useComposerBoxPopupQueries';
 
-export type ComposerBoxPopupImperativeCommands<T> = MutableRefObject<
+type ComposerBoxPopupImperativeCommands<T> = MutableRefObject<
 	| {
 			getFilter?: () => unknown;
 			select?: (s: T) => void;

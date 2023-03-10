@@ -33,14 +33,14 @@ declare module 'meteor/accounts-base' {
 			options: Record<string, unknown>,
 		): Record<string, unknown>;
 
-		export class ConfigError extends Error {}
+		class ConfigError extends Error {}
 
-		export class LoginCancelledError extends Error {
+		class LoginCancelledError extends Error {
 			public static readonly numericError: number;
 		}
 
-		export const USER_ID_KEY: string;
+		const USER_ID_KEY: string;
 
-		export const LOGIN_TOKEN_KEY: string;
+		const LOGIN_TOKEN_KEY: string;
 	}
 }
