@@ -7,7 +7,7 @@ import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoo
 import { getPrivateRoomType } from '../../../../lib/rooms/roomTypes/private';
 import { roomCoordinator } from '../roomCoordinator';
 
-export const PrivateRoomType = getPrivateRoomType(roomCoordinator);
+const PrivateRoomType = getPrivateRoomType(roomCoordinator);
 
 roomCoordinator.add(PrivateRoomType, {
 	allowRoomSettingChange(room, setting) {

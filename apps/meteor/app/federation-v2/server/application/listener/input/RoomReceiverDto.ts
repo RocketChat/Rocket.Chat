@@ -12,7 +12,7 @@ export interface IFederationReceiverBaseRoomInputDto extends IFederationBaseInpu
 	normalizedRoomId: string;
 }
 
-export interface IFederationCreateInputDto extends IFederationReceiverBaseRoomInputDto {
+interface IFederationCreateInputDto extends IFederationReceiverBaseRoomInputDto {
 	externalInviterId: string;
 	normalizedInviterId: string;
 	externalRoomName?: string;
@@ -21,7 +21,7 @@ export interface IFederationCreateInputDto extends IFederationReceiverBaseRoomIn
 	internalRoomId?: string;
 }
 
-export interface IFederationChangeMembershipInputDto extends IFederationReceiverBaseRoomInputDto {
+interface IFederationChangeMembershipInputDto extends IFederationReceiverBaseRoomInputDto {
 	externalInviterId: string;
 	normalizedInviterId: string;
 	externalInviteeId: string;
@@ -43,7 +43,7 @@ export interface IFederationChangeMembershipInputDto extends IFederationReceiver
 	}[];
 }
 
-export interface IFederationSendInternalMessageInputDto extends IFederationReceiverBaseRoomInputDto {
+interface IFederationSendInternalMessageInputDto extends IFederationReceiverBaseRoomInputDto {
 	externalSenderId: string;
 	normalizedSenderId: string;
 	rawMessage: string;
@@ -51,30 +51,31 @@ export interface IFederationSendInternalMessageInputDto extends IFederationRecei
 	replyToEventId?: string;
 }
 
-export interface IFederationRoomChangeJoinRulesDtoInputDto extends IFederationReceiverBaseRoomInputDto {
+interface IFederationRoomChangeJoinRulesDtoInputDto extends IFederationReceiverBaseRoomInputDto {
 	roomType: RoomType;
 }
 
-export interface IFederationRoomNameChangeInputDto extends IFederationReceiverBaseRoomInputDto {
+interface IFederationRoomNameChangeInputDto extends IFederationReceiverBaseRoomInputDto {
 	normalizedRoomName: string;
 	externalSenderId: string;
 }
 
-export interface IFederationRoomTopicChangeInputDto extends IFederationReceiverBaseRoomInputDto {
+interface IFederationRoomTopicChangeInputDto extends IFederationReceiverBaseRoomInputDto {
 	roomTopic: string;
 	externalSenderId: string;
 }
 
-export interface IFederationRoomRedactEventInputDto extends IFederationReceiverBaseRoomInputDto {
+interface IFederationRoomRedactEventInputDto extends IFederationReceiverBaseRoomInputDto {
 	redactsEvent: string;
 	externalSenderId: string;
 }
-export interface IFederationRoomChangePowerLevelsInputDto extends IFederationReceiverBaseRoomInputDto {
+
+interface IFederationRoomChangePowerLevelsInputDto extends IFederationReceiverBaseRoomInputDto {
 	roleChangesToApply: IExternalRolesChangesToApplyInputDto;
 	externalSenderId: string;
 }
 
-export interface IFederationSendInternalMessageBaseInputDto extends IFederationReceiverBaseRoomInputDto {
+interface IFederationSendInternalMessageBaseInputDto extends IFederationReceiverBaseRoomInputDto {
 	externalSenderId: string;
 	normalizedSenderId: string;
 }
@@ -272,7 +273,7 @@ export class FederationRoomEditExternalMessageDto extends ExternalMessageBaseDto
 	editsEvent: string;
 }
 
-export interface IFederationFileMessageInputDto {
+interface IFederationFileMessageInputDto {
 	filename: string;
 	mimetype: string;
 	size: number;
