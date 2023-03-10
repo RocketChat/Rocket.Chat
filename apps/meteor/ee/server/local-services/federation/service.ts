@@ -51,6 +51,7 @@ abstract class AbstractBaseFederationServiceEE extends AbstractFederationService
 			this.getInternalSettingsAdapter(),
 			this.getInternalMessageAdapter(),
 			this.getInternalNotificationAdapter(),
+			FederationFactoryEE.buildInternalQueueAdapter(),
 			this.getBridge(),
 		);
 	}

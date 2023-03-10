@@ -1,5 +1,4 @@
 import type { FederationPaginatedResult, IFederationPublicRooms } from '@rocket.chat/rest-typings';
-import { QueueWorker as queueService } from '@rocket.chat/core-services';
 
 import { FederatedUserEE } from '../../../domain/FederatedUser';
 import type { IFederationBridgeEE, IFederationPublicRoomsResult } from '../../../domain/IFederationBridge';
@@ -21,6 +20,7 @@ import { ROCKET_CHAT_FEDERATION_ROLES } from '../../../../../../../server/servic
 import type { FederationJoinExternalPublicRoomInputDto, FederationSearchPublicRoomsInputDto } from './input/RoomInputDto';
 import type { RocketChatNotificationAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Notification';
 import { MatrixRoomJoinRules } from '../../../../../../../server/services/federation/infrastructure/matrix/definitions/MatrixRoomJoinRules';
+import type { RocketChatQueueAdapterEE } from '../../../infrastructure/rocket-chat/adapters/Queue';
 
 export class FederationRoomServiceSender extends AbstractFederationApplicationServiceEE {
 	constructor(
@@ -30,6 +30,7 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 		protected internalSettingsAdapter: RocketChatSettingsAdapter,
 		protected internalMessageAdapter: RocketChatMessageAdapter,
 		protected internalNotificationAdapter: RocketChatNotificationAdapter,
+		protected internalQueueAdapter: RocketChatQueueAdapterEE,
 		protected bridge: IFederationBridgeEE,
 	) {
 		super(bridge, internalUserAdapter, internalFileAdapter, internalSettingsAdapter);
@@ -147,7 +148,7 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 		if (!this.internalSettingsAdapter.isFederationEnabled()) {
 			throw new Error('Federation is disabled');
 		}
-		await queueService.queueWork<Record<string, any>>('work', 'federation-enterprise.joinExternalPublicRoom', {
+		await this.internalQueueAdapter.enqueueJob('federation-enterprise.joinExternalPublicRoom', {
 			internalUserId,
 			externalRoomId,
 			roomName,

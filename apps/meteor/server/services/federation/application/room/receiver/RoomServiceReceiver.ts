@@ -239,9 +239,9 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 		}
 
 		const creatorUser = await this.internalUserAdapter.getFederatedUserByExternalId(externalRoomData.creator.id);
-		const creationProcessIsRunningLocallyAlready =
+		const roomCreationProcessIsRunningLocallyAlready =
 			!room && creatorUser && federatedInviterUser.getInternalId() === creatorUser.getInternalId();
-		if (creationProcessIsRunningLocallyAlready) {
+		if (roomCreationProcessIsRunningLocallyAlready) {
 			return;
 		}
 
