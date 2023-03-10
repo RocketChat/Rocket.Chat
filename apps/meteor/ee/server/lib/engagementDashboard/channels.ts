@@ -41,7 +41,7 @@ export const findAllChannelsWithNumberOfMessages = async ({
 		startOfLastWeek: convertDateToInt(startOfLastWeek),
 		endOfLastWeek: convertDateToInt(endOfLastWeek),
 		options,
-	}).toArray() as IRoom[];
+	}).toArray();
 
 	const total =
 		(
