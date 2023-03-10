@@ -55,9 +55,14 @@ const AddUser = ({ onReload, ...props }) => {
 		validationKeys[key] && validationKeys[key](value, values);
 	};
 
+	const defaultUserRoles = String(useSetting('Accounts_Registration_Users_Default_Roles'))
+		.split(',')
+		.map((role) => role.trim())
+		.filter(Boolean);
+
 	const { values, handlers, reset, hasUnsavedChanges } = useForm(
 		{
-			roles: [],
+			roles: defaultUserRoles,
 			name: '',
 			username: '',
 			statusText: '',
