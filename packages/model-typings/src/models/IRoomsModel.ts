@@ -98,7 +98,23 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		endOfLastWeek: number;
 		onlyCount?: T;
 		options?: PaginatedRequest;
-	}): AggregationCursor<T extends true ? { total: number } : IRoom>;
+	}): AggregationCursor<
+		T extends true
+			? { total: number }
+			: {
+					room: {
+						_id: IRoom['_id'];
+						name: IRoom['name'] | IRoom['fname'];
+						ts: IRoom['ts'];
+						t: IRoom['t'];
+						_updatedAt: IRoom['_updatedAt'];
+						usernames?: IDirectMessageRoom['usernames'];
+					};
+					messages: number;
+					lastWeekMessages: number;
+					diffFromLastWeek: number;
+			  }
+	>;
 
 	findOneByName(name: IRoom['name'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 

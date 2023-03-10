@@ -437,7 +437,23 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		endOfLastWeek: number;
 		onlyCount?: T;
 		options?: PaginatedRequest;
-	}): AggregationCursor<T extends true ? { total: number } : IRoom> {
+	}): AggregationCursor<
+		T extends true
+			? { total: number }
+			: {
+					room: {
+						_id: IRoom['_id'];
+						name: IRoom['name'] | IRoom['fname'];
+						ts: IRoom['ts'];
+						t: IRoom['t'];
+						_updatedAt: IRoom['_updatedAt'];
+						usernames?: IDirectMessageRoom['usernames'];
+					};
+					messages: number;
+					lastWeekMessages: number;
+					diffFromLastWeek: number;
+			  }
+	> {
 		const readPreference = ReadPreference.SECONDARY_PREFERRED;
 		const lookup = {
 			$lookup: {
@@ -542,7 +558,23 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			params.push({ $count: 'total' });
 		}
 
-		return this.col.aggregate<T extends true ? { total: number } : IRoom>(params, { allowDiskUse: true, readPreference });
+		return this.col.aggregate<
+			T extends true
+				? { total: number }
+				: {
+						room: {
+							_id: IRoom['_id'];
+							name: IRoom['name'] | IRoom['fname'];
+							ts: IRoom['ts'];
+							t: IRoom['t'];
+							_updatedAt: IRoom['_updatedAt'];
+							usernames?: IDirectMessageRoom['usernames'];
+						};
+						messages: number;
+						lastWeekMessages: number;
+						diffFromLastWeek: number;
+				  }
+		>(params, { allowDiskUse: true, readPreference });
 	}
 
 	findOneByName(name: IRoom['name'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
