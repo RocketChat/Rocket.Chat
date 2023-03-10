@@ -11,9 +11,9 @@ import { getSettingDefaults } from './functions/getSettingDefaults';
 import { validateSetting } from './functions/validateSetting';
 import type { ICachedSettings } from './CachedSettings';
 
-export const blockedSettings = new Set<string>();
-export const hiddenSettings = new Set<string>();
-export const wizardRequiredSettings = new Set<string>();
+const blockedSettings = new Set<string>();
+const hiddenSettings = new Set<string>();
+const wizardRequiredSettings = new Set<string>();
 
 if (process.env.SETTINGS_BLOCKED) {
 	process.env.SETTINGS_BLOCKED.split(',').forEach((settingId) => blockedSettings.add(settingId.trim()));
@@ -51,7 +51,7 @@ const getGroupDefaults = (_id: string, options: ISettingAddGroupOptions = {}): I
 	...(options.displayQuery && { displayQuery: JSON.stringify(options.displayQuery) }),
 });
 
-export type ISettingAddGroupOptions = Partial<ISettingGroup>;
+type ISettingAddGroupOptions = Partial<ISettingGroup>;
 
 type addSectionCallback = (this: {
 	add(id: string, value: SettingValue, options: ISettingAddOptions): void;

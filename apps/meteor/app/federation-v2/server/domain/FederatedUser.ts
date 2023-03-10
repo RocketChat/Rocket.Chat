@@ -4,7 +4,7 @@ import { ObjectId } from 'mongodb'; // This should not be in the domain layer, b
 
 import { isAnInternalIdentifier } from './FederatedRoom';
 
-export interface IFederatedUserCreationParams {
+interface IFederatedUserCreationParams {
 	name: string;
 	username: string;
 	existsOnlyOnProxyServer: boolean;

@@ -21,7 +21,7 @@ export const QueueListFilter: QueueListFilterPropsType = ({ setFilter, ...props 
 
 	const [servedBy, setServedBy] = useLocalStorage('servedBy', 'all');
 	const [status, setStatus] = useLocalStorage('status', 'online');
-	const [department, setDepartment] = useLocalStorage<{ label: string; value: string }>('department', { value: 'all', label: t('All') });
+	const [department, setDepartment] = useLocalStorage<string>('department', 'all');
 
 	const handleServedBy = useMutableCallback((e) => setServedBy(e));
 	const handleStatus = useMutableCallback((e) => setStatus(e));
@@ -39,8 +39,8 @@ export const QueueListFilter: QueueListFilterPropsType = ({ setFilter, ...props 
 		if (servedBy !== 'all') {
 			filters.servedBy = servedBy;
 		}
-		if (department?.value && department.value !== 'all') {
-			filters.departmentId = department.value;
+		if (department && department !== 'all') {
+			filters.departmentId = department;
 		}
 
 		setFilter(filters);

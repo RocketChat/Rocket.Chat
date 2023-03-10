@@ -29,7 +29,7 @@ export type AccountBoxItem = {
 
 export const isAppAccountBoxItem = (item: IAppAccountBoxItem | AccountBoxItem): item is IAppAccountBoxItem => 'isAppButtonItem' in item;
 
-export class AccountBoxBase {
+class AccountBoxBase {
 	private items = new ReactiveVar<IAppAccountBoxItem[]>([]);
 
 	public setStatus(status: UserStatus, statusText: string): any {

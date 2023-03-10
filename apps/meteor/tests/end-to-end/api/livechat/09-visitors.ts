@@ -571,7 +571,6 @@ describe('LIVECHAT - visitors', function () {
 						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((res: Response) => {
-							console.log(res.body);
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('history');
 							expect(res.body.history).to.be.an('array');
