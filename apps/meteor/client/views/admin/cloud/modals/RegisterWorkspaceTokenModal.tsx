@@ -9,10 +9,9 @@ import WorkspaceRegistrationModal from './RegisterWorkspaceModal';
 type RegisterWorkspaceTokenModalProps = {
 	onClose: () => void;
 	onStatusChange?: () => void;
-	isConnectedToCloud: boolean | string;
 };
 
-const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, isConnectedToCloud, ...props }: RegisterWorkspaceTokenModalProps) => {
+const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, ...props }: RegisterWorkspaceTokenModalProps) => {
 	const setModal = useSetModal();
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -24,7 +23,7 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, isConnectedToClo
 
 	const handleBackAction = (): void => {
 		const handleModalClose = (): void => setModal(null);
-		setModal(<WorkspaceRegistrationModal onClose={handleModalClose} isConnectedToCloud={isConnectedToCloud} />);
+		setModal(<WorkspaceRegistrationModal onClose={handleModalClose} />);
 	};
 
 	const handleTokenChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -33,7 +32,7 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, isConnectedToClo
 
 	const isToken = token.length > 0;
 
-	const handleConnectButtonClick = async () => {
+	const handleConnectButtonClick = async (): Promise<void> => {
 		setProcessing(true);
 		setError(false);
 
