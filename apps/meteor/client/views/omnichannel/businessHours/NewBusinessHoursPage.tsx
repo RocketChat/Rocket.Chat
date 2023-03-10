@@ -1,3 +1,4 @@
+import type { ILivechatBusinessHour, Serialized } from '@rocket.chat/core-typings';
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
@@ -10,24 +11,28 @@ import type { DaysTime } from './BusinessHoursFormContainer';
 import BusinessHoursFormContainer from './BusinessHoursFormContainer';
 import { mapBusinessHoursForm } from './mapBusinessHoursForm';
 
+export type BusinessHoursData = Serialized<ILivechatBusinessHour> & {
+	timezoneName?: string;
+};
+
 const closedDays = ['Saturday', 'Sunday'];
-const createDefaultBusinessHours = () => ({
-	name: '',
-	workHours: DAYS_OF_WEEK.map((day) => ({
-		day,
-		start: {
-			time: '00:00',
-		},
-		finish: {
-			time: '00:00',
-		},
-		open: !closedDays.includes(day),
-		code: null,
-	})),
-	departments: [],
-	timezoneName: 'America/Sao_Paulo',
-	departmentsToApplyBusinessHour: '',
-});
+const createDefaultBusinessHours = (): BusinessHoursData =>
+	({
+		name: '',
+		_id: '',
+		workHours: DAYS_OF_WEEK.map((day) => ({
+			day,
+			start: {
+				time: '00:00',
+			},
+			finish: {
+				time: '00:00',
+			},
+			open: !closedDays.includes(day),
+		})),
+		departments: [],
+		timezoneName: 'America/Sao_Paulo',
+	} as unknown as BusinessHoursData);
 
 const defaultBusinessHour = createDefaultBusinessHours();
 

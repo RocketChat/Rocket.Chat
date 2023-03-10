@@ -1,4 +1,4 @@
-import type { IBusinessHourWorkHour, ILivechatBusinessHour, Serialized } from '@rocket.chat/core-typings';
+import type { ILivechatBusinessHour, Serialized } from '@rocket.chat/core-typings';
 import { FieldGroup, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import type { Dispatch, SetStateAction } from 'react';
@@ -9,6 +9,7 @@ import { useForm } from '../../../hooks/useForm';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { useFormsSubscription } from '../additionalForms';
 import BusinessHourForm from './BusinessHoursForm';
+import type { BusinessHoursData } from './NewBusinessHoursPage';
 
 type DayTime = { start: string; finish: string };
 
@@ -22,12 +23,12 @@ export type DaysTime = {
 	Wednesday: DayTime;
 };
 
-export type dataType = {
-	workHours: { day: string; start: { time: string }; finish: { time: string }; open: boolean; code: unknown };
-} & Serialized<ILivechatBusinessHour> & { timezoneName?: string };
+export type dataType = Serialized<ILivechatBusinessHour> & {
+	timezoneName?: string;
+};
 
 type FormContainerProps = {
-	data: dataType;
+	data: BusinessHoursData;
 	saveRef: any;
 	onChange: Dispatch<SetStateAction<boolean>>;
 };
@@ -44,7 +45,7 @@ const useChangeHandler = (
 		ref.current[name as keyof typeof ref.current] = { ...ref.current[name as keyof typeof ref.current], ...val };
 	});
 
-const getInitalData = ({ workHours }: { workHours: IBusinessHourWorkHour[] }) => ({
+const getInitalData = ({ workHours }: BusinessHoursData) => ({
 	daysOpen: workHours.filter(({ open }) => !!open).map(({ day }) => day),
 	daysTime: workHours.reduce((acc, { day, start: { time: start }, finish: { time: finish } }) => {
 		acc = { ...acc, [day]: { start, finish } };

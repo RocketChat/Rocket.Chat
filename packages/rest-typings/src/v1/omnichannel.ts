@@ -3243,7 +3243,7 @@ export type OmnichannelEndpoints = {
 		GET: (params?: GETLivechatAgentsAgentIdDepartmentsParams) => { departments: ILivechatDepartmentAgents[] };
 	};
 	'/v1/livechat/business-hour': {
-		GET: (params: GETBusinessHourParams) => { businessHour: ILivechatBusinessHour };
+		GET: (params: GETBusinessHourParams) => { businessHour: ILivechatBusinessHour; success: boolean };
 	};
 	'/v1/livechat/triggers': {
 		GET: (params: GETLivechatTriggersParams) => { triggers: WithId<ILivechatTrigger>[] };

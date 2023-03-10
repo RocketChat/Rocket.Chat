@@ -1,6 +1,7 @@
-import type { dataType, DaysTime } from './BusinessHoursFormContainer';
+import type { DaysTime } from './BusinessHoursFormContainer';
+import type { BusinessHoursData } from './NewBusinessHoursPage';
 
-export const mapBusinessHoursForm = (formData: { daysOpen: string[]; daysTime: DaysTime }, data: dataType) => {
+export const mapBusinessHoursForm = (formData: { daysOpen: string[]; daysTime: DaysTime }, data: BusinessHoursData) => {
 	const { daysOpen, daysTime } = formData;
 
 	return data.workHours?.map((day) => {
