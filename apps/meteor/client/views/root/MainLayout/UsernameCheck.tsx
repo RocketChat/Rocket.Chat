@@ -5,8 +5,8 @@ import React, { useCallback } from 'react';
 
 import { Users } from '../../../../app/models/client';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
-import BlazeTemplate from '../BlazeTemplate';
 import PasswordChangeCheck from './PasswordChangeCheck';
+import RegisterUsername from './RegisterUsername';
 import { useViewportScrolling } from './useViewportScrolling';
 
 const UsernameCheck = ({ children }: { children: ReactNode }): ReactElement => {
@@ -27,7 +27,7 @@ const UsernameCheck = ({ children }: { children: ReactNode }): ReactElement => {
 	);
 
 	if (!hasUsername) {
-		return <BlazeTemplate template='username' />;
+		return <RegisterUsername />;
 	}
 
 	return <PasswordChangeCheck>{children}</PasswordChangeCheck>;
