@@ -51,7 +51,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(query, options);
 	}
 
-	findPaginatedByIds(roomIds: Array<IRoom['_id']>, options: FindOptions<IRoom> = {}): FindPaginated<FindCursor<IRoom>> {
+	findPaginatedByIds(
+		roomIds: Array<IRoom['_id']>,
+		options: FindOptions<IRoom> = {},
+	): FindPaginated<FindCursor<IRoom & { isLastOwner?: boolean }>> {
 		return this.findPaginated(
 			{
 				_id: { $in: roomIds },

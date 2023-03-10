@@ -9,7 +9,10 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findManyByRoomIds(roomIds: Array<IRoom['_id']>, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
-	findPaginatedByIds(roomIds: Array<IRoom['_id']>, options?: FindOptions<IRoom>): FindPaginated<FindCursor<IRoom>>;
+	findPaginatedByIds(
+		roomIds: Array<IRoom['_id']>,
+		options?: FindOptions<IRoom>,
+	): FindPaginated<FindCursor<IRoom & { isLastOwner?: boolean }>>;
 
 	getMostRecentAverageChatDurationTime(numberMostRecentChats: number, department: string | object): Promise<Document>;
 
@@ -76,17 +79,17 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		options?: FindOptions<IRoom>,
 	): FindCursor<IRoom>;
 
-	unsetTeamId(teamId: ITeam['_id'], options: UpdateOptions): Promise<Document | UpdateResult>;
+	unsetTeamId(teamId: ITeam['_id'], options?: UpdateOptions): Promise<Document | UpdateResult>;
 
-	unsetTeamById(rid: IRoom['_id'], options: UpdateOptions): Promise<UpdateResult>;
+	unsetTeamById(rid: IRoom['_id'], options?: UpdateOptions): Promise<UpdateResult>;
 
-	setTeamById(rid: IRoom['_id'], teamId: ITeam['_id'], teamDefault: IRoom['teamDefault'], options: UpdateOptions): Promise<UpdateResult>;
+	setTeamById(rid: IRoom['_id'], teamId: ITeam['_id'], teamDefault: IRoom['teamDefault'], options?: UpdateOptions): Promise<UpdateResult>;
 
-	setTeamMainById(rid: IRoom['_id'], teamId: ITeam['_id'], options: UpdateOptions): Promise<UpdateResult>;
+	setTeamMainById(rid: IRoom['_id'], teamId: ITeam['_id'], options?: UpdateOptions): Promise<UpdateResult>;
 
-	setTeamByIds(rids: Array<IRoom['_id']>, teamId: ITeam['_id'], options: UpdateOptions): Promise<Document | UpdateResult>;
+	setTeamByIds(rids: Array<IRoom['_id']>, teamId: ITeam['_id'], options?: UpdateOptions): Promise<Document | UpdateResult>;
 
-	setTeamDefaultById(rid: IRoom['_id'], teamDefault: IRoom['teamDefault'], options: UpdateOptions): Promise<UpdateResult>;
+	setTeamDefaultById(rid: IRoom['_id'], teamDefault: IRoom['teamDefault'], options?: UpdateOptions): Promise<UpdateResult>;
 
 	findChannelsWithNumberOfMessagesBetweenDate<T extends boolean>(params: {
 		start: number;
@@ -123,7 +126,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findByE2E(options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
-	findRoomsInsideTeams(autoJoin: boolean): FindCursor<IRoom>;
+	findRoomsInsideTeams(autoJoin?: boolean): FindCursor<IRoom>;
 
 	findOneDirectRoomContainingAllUserIDs(uid: IDirectMessageRoom['uids'], options?: FindOptions<IRoom>): Promise<IDirectMessageRoom | null>;
 
