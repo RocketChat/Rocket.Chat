@@ -4,7 +4,7 @@ import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
 import { settings } from '../../../../app/settings/server';
 import { Info } from '../../../../app/utils/server';
 
-export type installAction = 'install' | 'update' | 'uninstall';
+type installAction = 'install' | 'update' | 'uninstall';
 
 export async function notifyAppInstall(marketplaceBaseUrl: string, action: installAction, appInfo: IAppInfo): Promise<void> {
 	const headers: { Authorization?: string } = {};

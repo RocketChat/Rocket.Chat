@@ -4,7 +4,7 @@ import { Accounts } from 'meteor/accounts-base';
 import type { IUser, IUserEmail, IDirectMessageRoom } from '@rocket.chat/core-typings';
 import { isUserFederated } from '@rocket.chat/core-typings';
 
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../mailer/server/api';
 import { Users, Subscriptions, Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
