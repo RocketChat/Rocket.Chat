@@ -9,10 +9,9 @@ import RegisterWorkspaceSetupStepTwoModal from './RegisterWorkspaceSetupStepTwoM
 type RegisterWorkspaceSetupModalProps = {
 	onClose: () => void;
 	onStatusChange?: () => void;
-	isConnectedToCloud: boolean | string;
 };
 
-const RegisterWorkspaceSetupModal = ({ onClose, isConnectedToCloud }: RegisterWorkspaceSetupModalProps) => {
+const RegisterWorkspaceSetupModal = ({ onClose }: RegisterWorkspaceSetupModalProps) => {
 	const setModal = useSetModal();
 
 	const [step, setStep] = useState(1);
@@ -54,7 +53,6 @@ const RegisterWorkspaceSetupModal = ({ onClose, isConnectedToCloud }: RegisterWo
 					onClose={onClose}
 					validInfo={validInfo}
 					setIntentData={setIntentData}
-					isConnectedToCloud={isConnectedToCloud}
 				/>
 			) : (
 				<RegisterWorkspaceSetupStepTwoModal

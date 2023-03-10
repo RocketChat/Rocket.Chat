@@ -13,7 +13,7 @@ type IControl = {
 	lockedAt?: string;
 };
 
-export type IMigration = {
+type IMigration = {
 	name?: string;
 	version: number;
 	up: (migration: IMigration) => void;

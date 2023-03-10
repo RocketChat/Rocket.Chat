@@ -18,9 +18,9 @@ import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { Messages as LegacyMessage } from '../../../models/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 import { settings } from '../../../settings/server';
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../mailer/server/api';
 import type { MainLogger } from '../../../../server/lib/logger/getPino';
-import { metrics } from '../../../metrics';
+import { metrics } from '../../../metrics/server';
 
 class LivechatClass {
 	logger: Logger;
