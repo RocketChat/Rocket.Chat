@@ -4,7 +4,7 @@
 		"color": "B60205"
 	},
 	"CHECKS": {
-		"regexp": "(feat|fix|ci|chore|docs|test|refactor|i18n|regression|revert)(\\([^\\)]+\\))?\\!?: .{1,}$|(?:Regression|Revert):|(?:Bump)) .+$|^Release [0-9]+\\.[0-9]+\\.[0-9]+$|^Merge master into develop",
+		"regexp": "(feat|fix|ci|chore|docs|test|refactor|i18n|regression|revert)(\\([^\\)]+\\))?\\!?: .{1,}$|(?:Bump .+)$|^Release [0-9]+\\.[0-9]+\\.[0-9]+$|^Merge master into develop",
 		"ignoreLabels": ["[ignore-title]"]
 	},
 	"MESSAGES": {
