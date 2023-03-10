@@ -9,7 +9,7 @@ import { rocketLogger } from './logger';
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
 import { Messages, Rooms, Users } from '../../models/server';
-import { createRoom, sendMessage, setUserAvatar } from '../../lib';
+import { createRoom, sendMessage, setUserAvatar } from '../../lib/server';
 
 export default class RocketAdapter {
 	constructor(slackBridge) {

@@ -86,7 +86,7 @@ export class RocketChatUserAdapter {
 
 	public async getInternalUserById(userId: string): Promise<IUser> {
 		const user = await Users.findOneById(userId);
-		if (!user || !user.username) {
+		if (!user?.username) {
 			throw new Error(`User with internalId ${userId} not found`);
 		}
 		return user;
