@@ -40,6 +40,7 @@ export const findAllChannelsWithNumberOfMessages = async ({
 		end: convertDateToInt(end),
 		startOfLastWeek: convertDateToInt(startOfLastWeek),
 		endOfLastWeek: convertDateToInt(endOfLastWeek),
+		onlyCount: false,
 		options,
 	}).toArray();
 
