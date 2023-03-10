@@ -16,7 +16,8 @@ const resumeOnHoldCommentAndUser = async (room: IOmnichannelRoom): Promise<{ com
 		projection: { name: 1, username: 1 },
 	});
 	if (!visitor) {
-		throw new Error(`[afterSaveMessage] Visitor Not found for room ${rid} while trying to resume on hold`);
+		callbackLogger.error(`[afterSaveMessage] Visitor Not found for room ${rid} while trying to resume on hold`);
+		throw new Error('Visitor not found while trying to resume on hold');
 	}
 
 	const guest = visitor.name || visitor.username;
@@ -25,7 +26,8 @@ const resumeOnHoldCommentAndUser = async (room: IOmnichannelRoom): Promise<{ com
 
 	const resumedBy = await Users.findOneById('rocket.cat');
 	if (!resumedBy) {
-		throw new Error(`[afterSaveMessage] User Not found for room ${rid} while trying to resume on hold`);
+		callbackLogger.error(`[afterSaveMessage] User Not found for room ${rid} while trying to resume on hold`);
+		throw new Error(`User not found while trying to resume on hold`);
 	}
 
 	return { comment: resumeChatComment, resumedBy };
