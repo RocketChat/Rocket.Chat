@@ -29,14 +29,14 @@ export const useRoomActions = (room: IRoom, { onClickEnterRoom, onClickEdit }: R
 			...(onClickEnterRoom && {
 				enter: {
 					label: t('Enter'),
-					icon: 'login',
+					icon: 'login' as const,
 					action: onClickEnterRoom,
 				},
 			}),
 			...(onClickEdit && {
 				edit: {
 					label: t('Edit'),
-					icon: 'edit',
+					icon: 'edit' as const,
 					action: onClickEdit,
 				},
 			}),
@@ -44,21 +44,21 @@ export const useRoomActions = (room: IRoom, { onClickEnterRoom, onClickEdit }: R
 				handleDelete && {
 					delete: {
 						label: t('Delete'),
-						icon: 'trash',
+						icon: 'trash' as const,
 						action: handleDelete,
 					},
 				}),
 			...(handleMoveToTeam && {
 				move: {
 					label: t('Teams_move_channel_to_team'),
-					icon: 'team-arrow-right',
+					icon: 'team-arrow-right' as const,
 					action: handleMoveToTeam,
 				},
 			}),
 			...(handleConvertToTeam && {
 				convert: {
 					label: t('Teams_convert_channel_to_team'),
-					icon: 'team',
+					icon: 'team' as const,
 					action: handleConvertToTeam,
 				},
 			}),
@@ -66,14 +66,14 @@ export const useRoomActions = (room: IRoom, { onClickEnterRoom, onClickEdit }: R
 				hide: {
 					label: t('Hide'),
 					action: handleHide,
-					icon: 'eye-off',
+					icon: 'eye-off' as const,
 				},
 			}),
 			...(handleLeave && {
 				leave: {
 					label: t('Leave'),
 					action: handleLeave,
-					icon: 'sign-out',
+					icon: 'sign-out' as const,
 				},
 			}),
 		}),

@@ -8,6 +8,7 @@ import RetentionPolicyCallout from '../../../../../components/InfoPanel/Retentio
 import MarkdownText from '../../../../../components/MarkdownText';
 import VerticalBar from '../../../../../components/VerticalBar';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
+import type { Action } from '../../../../hooks/useActionSpread';
 import { useActionSpread } from '../../../../hooks/useActionSpread';
 import { useRetentionPolicy } from '../../../components/body/useRetentionPolicy';
 import { useRoomActions } from './hooks/useRoomActions';
@@ -51,7 +52,9 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 	}, [menuOptions]);
 
 	const actions = useMemo(() => {
-		const mapAction = ([key, { label, icon, action }]: any) => <InfoPanel.Action key={key} label={label} onClick={action} icon={icon} />;
+		const mapAction = ([key, { label, icon, action }]: [string, Action]) => (
+			<InfoPanel.Action key={key} label={label} onClick={action} icon={icon} />
+		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
 	}, [actionsDefinition, menu]);
