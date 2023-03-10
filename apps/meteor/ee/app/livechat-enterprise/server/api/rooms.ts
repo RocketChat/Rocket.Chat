@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { isLivechatRoomOnHoldProps, isLivechatRoomResumeOnHoldProps, isPOSTLivechatRoomPriorityParams } from '@rocket.chat/rest-typings';
 import { LivechatRooms } from '@rocket.chat/models';
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { OmnichannelEEService } from '@rocket.chat/core-services';
 
@@ -20,9 +21,11 @@ API.v1.addRoute(
 				return API.v1.failure('Invalid room Id');
 			}
 
-			const room = await LivechatRooms.findOneById(roomId);
-			if (!room || room.t !== 'l') {
-				return API.v1.failure('Invalid room Id');
+			const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 't' | 'open' | 'onHold' | 'lastMessage'>>(roomId, {
+				projection: { _id: 1, t: 1, open: 1, onHold: 1, lastMessage: 1 },
+			});
+			if (!room || !isOmnichannelRoom(room)) {
+				return API.v1.failure('error-invalid-room');
 			}
 
 			if (room.lastMessage?.token) {
@@ -69,7 +72,12 @@ API.v1.addRoute(
 				throw new Error('invalid-param');
 			}
 
-			const room = await LivechatRooms.findOneById(roomId);
+			const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 't' | 'open' | 'onHold' | 'lastMessage' | 'servedBy'>>(
+				roomId,
+				{
+					projection: { _id: 1, t: 1, open: 1, onHold: 1, servedBy: 1 },
+				},
+			);
 			if (!room || !isOmnichannelRoom(room)) {
 				throw new Error('error-invalid-room');
 			}
@@ -82,17 +90,13 @@ API.v1.addRoute(
 				throw new Error('This_conversation_is_already_closed');
 			}
 
-			const user = Meteor.user();
-			if (!user) {
-				return API.v1.failure('Invalid user');
-			}
-
-			const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, user._id, { _id: 1 });
+			const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, { _id: 1 });
 			if (!subscription && !hasPermission(this.userId, 'on-hold-others-livechat-room')) {
 				return API.v1.failure('Not authorized');
 			}
 
-			const onHoldBy = { _id: user._id, username: user.username, name: (user as any).name };
+			const { name, username, _id: userId } = this.user;
+			const onHoldBy = { _id: userId, username, name };
 			const comment = TAPi18n.__('Omnichannel_on_hold_chat_resumed_manually', {
 				user: onHoldBy.name || `@${onHoldBy.username}`,
 			});

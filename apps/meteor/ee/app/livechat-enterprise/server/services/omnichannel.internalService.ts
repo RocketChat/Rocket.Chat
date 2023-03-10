@@ -20,7 +20,11 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 		this.logger = new Logger('OmnichannelEE');
 	}
 
-	async placeRoomOnHold(room: IOmnichannelRoom, comment: string, onHoldBy: IUser) {
+	async placeRoomOnHold(
+		room: Pick<IOmnichannelRoom, '_id' | 't' | 'open' | 'onHold'>,
+		comment: string,
+		onHoldBy: Pick<IUser, '_id' | 'username' | 'name'>,
+	) {
 		this.logger.debug(`Attempting to place room ${room._id} on hold by user ${onHoldBy?._id}`);
 
 		const { _id: roomId } = room;
@@ -52,7 +56,12 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 		this.logger.debug(`Room ${room._id} set on hold successfully`);
 	}
 
-	async resumeRoomOnHold(room: IOmnichannelRoom, comment: string, resumeBy: IUser, clientAction = false) {
+	async resumeRoomOnHold(
+		room: Pick<IOmnichannelRoom, '_id' | 't' | 'open' | 'onHold' | 'servedBy'>,
+		comment: string,
+		resumeBy: Pick<IUser, '_id' | 'username' | 'name'>,
+		clientAction = false,
+	) {
 		this.logger.debug(`Attempting to resume room ${room._id} on hold by user ${resumeBy?._id}`);
 
 		if (!room || !isOmnichannelRoom(room)) {
