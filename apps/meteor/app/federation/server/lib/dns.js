@@ -32,7 +32,7 @@ export async function registerWithHub(peerDomain, url, publicKey) {
 	}
 }
 
-export async function searchHub(peerDomain) {
+async function searchHub(peerDomain) {
 	try {
 		dnsLogger.debug(`searchHub: peerDomain=${peerDomain}`);
 

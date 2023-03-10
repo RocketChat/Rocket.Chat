@@ -14,7 +14,7 @@ import { isUnderAppLimits } from './lib/isUnderAppLimits';
 
 const EnterpriseLicenses = new EventEmitter();
 
-export interface IValidLicense {
+interface IValidLicense {
 	valid?: boolean;
 	license: ILicense;
 }
@@ -352,7 +352,7 @@ export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void):
 	EnterpriseLicenses.once(`valid:${feature}`, cb);
 }
 
-export function onValidFeature(feature: BundleFeature, cb: () => void): () => void {
+function onValidFeature(feature: BundleFeature, cb: () => void): () => void {
 	EnterpriseLicenses.on(`valid:${feature}`, cb);
 
 	if (hasLicense(feature)) {
@@ -364,7 +364,7 @@ export function onValidFeature(feature: BundleFeature, cb: () => void): () => vo
 	};
 }
 
-export function onInvalidFeature(feature: BundleFeature, cb: () => void): () => void {
+function onInvalidFeature(feature: BundleFeature, cb: () => void): () => void {
 	EnterpriseLicenses.on(`invalid:${feature}`, cb);
 
 	if (!hasLicense(feature)) {
@@ -429,7 +429,7 @@ export function flatModules(modulesAndBundles: string[]): string[] {
 	return modules.concat(modulesFromBundles);
 }
 
-export interface IOverrideClassProperties {
+interface IOverrideClassProperties {
 	[key: string]: (...args: any[]) => any;
 }
 

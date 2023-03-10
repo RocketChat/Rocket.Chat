@@ -290,7 +290,7 @@ API.v1.addRoute(
 			}
 
 			const config = await settings();
-			if (!config.survey || !config.survey.items || !config.survey.values) {
+			if (!config.survey?.items || !config.survey.values) {
 				throw new Error('invalid-livechat-config');
 			}
 

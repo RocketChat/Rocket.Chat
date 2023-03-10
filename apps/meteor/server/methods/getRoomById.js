@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
 import { Rooms } from '../../app/models/server';
-import { canAccessRoom } from '../../app/authorization';
+import { canAccessRoom } from '../../app/authorization/server';
 
 Meteor.methods({
 	getRoomById(rid) {
