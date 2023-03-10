@@ -40,10 +40,6 @@ export const formatExternalUserIdToInternalUsernameFormat = (matrixUserId = ''):
 	return matrixUserId.split(':')[0]?.replace('@', '');
 };
 
-export const formatExternalAliasIdToInternalFormat = (alias = ''): string => {
-	return alias.split(':')[0]?.replace('#', '');
-};
-
 export const isAnExternalIdentifierFormat = (identifier: string): boolean => identifier.includes(':');
 
 export const isAnExternalUserIdFormat = (userId: string): boolean => isAnExternalIdentifierFormat(userId) && userId.includes('@');

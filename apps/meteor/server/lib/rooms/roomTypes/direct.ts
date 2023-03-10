@@ -10,7 +10,7 @@ import { roomCoordinator } from '../roomCoordinator';
 import { Subscriptions } from '../../../../app/models/server';
 import { Federation } from '../../../services/federation/Federation';
 
-export const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
+const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
 
 const getCurrentUserId = (): string | undefined => {
 	try {

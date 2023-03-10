@@ -1,6 +1,6 @@
 import { settings } from '../../../../../../app/settings/server';
 
-export interface IFederationStatistics {
+interface IFederationStatistics {
 	enabled: boolean;
 }
 
