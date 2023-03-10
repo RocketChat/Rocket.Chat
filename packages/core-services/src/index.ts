@@ -11,7 +11,7 @@ import type { IMeteor, AutoUpdateRecord } from './types/IMeteor';
 import type { IUiKitCoreApp, IUiKitCoreAppService } from './types/IUiKitCoreApp';
 import type { IEnterpriseSettings } from './types/IEnterpriseSettings';
 import type { IBannerService } from './types/IBannerService';
-import type { IFederationService } from './types/IFederationService';
+import type { IFederationService, IFederationServiceEE } from './types/IFederationService';
 import type { INPSService, NPSCreatePayload, NPSVotePayload } from './types/INPSService';
 import type {
 	ITeamService,
@@ -66,6 +66,7 @@ export {
 	IDeviceManagementService,
 	IEnterpriseSettings,
 	IFederationService,
+	IFederationServiceEE,
 	ILDAPService,
 	ILicense,
 	IListRoomsFilter,
@@ -140,6 +141,8 @@ export const OmnichannelTranscript = proxifyWithWait<IOmnichannelTranscriptServi
 export const Message = proxifyWithWait<IMessageService>('message');
 export const Translation = proxifyWithWait<ITranslationService>('translation');
 export const Settings = proxifyWithWait<ISettingsService>('settings');
+export const Federation = proxifyWithWait<IFederationService>('federation');
+export const FederationEE = proxifyWithWait<IFederationServiceEE>('federation-enterprise');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available
