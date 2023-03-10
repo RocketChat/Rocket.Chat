@@ -88,14 +88,14 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	setTeamDefaultById(rid: IRoom['_id'], teamDefault: IRoom['teamDefault'], options: UpdateOptions): Promise<UpdateResult>;
 
-	findChannelsWithNumberOfMessagesBetweenDate<T extends boolean>(params: {
+	findChannelsWithNumberOfMessagesBetweenDate(params: {
 		start: number;
 		end: number;
 		startOfLastWeek: number;
 		endOfLastWeek: number;
-		onlyCount?: T;
+		onlyCount?: boolean;
 		options?: PaginatedRequest;
-	}): T extends true ? { total: number } : AggregationCursor<IRoom>;
+	}): { total: number } | AggregationCursor<IRoom>;
 
 	findOneByName(name: IRoom['name'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
