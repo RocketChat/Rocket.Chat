@@ -91,9 +91,9 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	findByNameOrFnameContainingAndTypes(
 		name: NonNullable<IRoom['name']>,
 		types: Array<IRoom['t']>,
-		discussion: boolean = false,
-		teams: boolean = false,
-		showOnlyTeams: boolean = false,
+		discussion = false,
+		teams = false,
+		showOnlyTeams = false,
 		options: FindOptions<IRoom> = {},
 	): FindPaginated<FindCursor<IRoom>> {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
@@ -129,9 +129,9 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	findByTypes(
 		types: Array<IRoom['t']>,
-		discussion: boolean = false,
-		teams: boolean = false,
-		onlyTeams: boolean = false,
+		discussion = false,
+		teams = false,
+		onlyTeams = false,
 		options: FindOptions<IRoom> = {},
 	): FindPaginated<FindCursor<IRoom>> {
 		const teamCondition = teams
@@ -157,9 +157,9 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	findByNameOrFnameContaining(
 		name: NonNullable<IRoom['name']>,
-		discussion: boolean = false,
-		teams: boolean = false,
-		onlyTeams: boolean = false,
+		discussion = false,
+		teams = false,
+		onlyTeams = false,
 		options: FindOptions<IRoom> = {},
 	): FindPaginated<FindCursor<IRoom>> {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
@@ -205,7 +205,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	findPaginatedByTeamIdContainingNameAndDefault(
 		teamId: ITeam['_id'],
 		name: IRoom['name'],
-		teamDefault: boolean = false,
+		teamDefault = false,
 		ids: Array<IRoom['_id']> = [],
 		options: FindOptions<IRoom> = {},
 	): FindPaginated<FindCursor<IRoom>> {
@@ -559,7 +559,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		});
 	}
 
-	incUsersCountByIds(ids: Array<IRoom['_id']>, inc: number = 1): Promise<Document | UpdateResult> {
+	incUsersCountByIds(ids: Array<IRoom['_id']>, inc = 1): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = {
 			_id: {
 				$in: ids,
@@ -653,7 +653,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
-	findRoomsInsideTeams(autoJoin: boolean = false): FindCursor<IRoom> {
+	findRoomsInsideTeams(autoJoin = false): FindCursor<IRoom> {
 		return this.find({
 			teamId: { $exists: true },
 			teamMain: { $exists: false },
