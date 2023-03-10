@@ -1,15 +1,27 @@
-import { Meteor } from 'meteor/meteor';
-import type { IMessage, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
+import { ServiceClassInternal } from '@rocket.chat/core-services';
+import type { IOmnichannelEEService } from '@rocket.chat/core-services';
+import type { IOmnichannelRoom, IUser, IMessage } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, Subscriptions, Messages, LivechatInquiry } from '@rocket.chat/models';
 
-import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
+import { Logger } from '../../../../../app/logger/server';
 import { callbacks } from '../../../../../lib/callbacks';
-import { ohLogger as logger } from './logger';
+import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 
-class OnHoldHelperClass {
+export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelEEService {
+	protected name = 'omnichannel-ee';
+
+	protected internal = true;
+
+	logger: Logger;
+
+	constructor() {
+		super();
+		this.logger = new Logger('OmnichannelEE');
+	}
+
 	async placeRoomOnHold(room: IOmnichannelRoom, comment: string, onHoldBy: IUser) {
-		logger.debug(`Attempting to place room ${room._id} on hold by user ${onHoldBy?._id}`);
+		this.logger.debug(`Attempting to place room ${room._id} on hold by user ${onHoldBy?._id}`);
 
 		const { _id: roomId } = room;
 
@@ -35,15 +47,13 @@ class OnHoldHelperClass {
 			Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, onHoldByUser, comment, 'on-hold'),
 		]);
 
-		Meteor.defer(() => {
-			callbacks.run('livechat:afterOnHold', room);
-		});
+		callbacks.run('livechat:afterOnHold', room);
 
-		logger.debug(`Room ${room._id} set on hold successfully`);
+		this.logger.debug(`Room ${room._id} set on hold successfully`);
 	}
 
 	async resumeRoomOnHold(room: IOmnichannelRoom, comment: string, resumeBy: IUser, clientAction = false) {
-		logger.debug(`Attempting to resume room ${room._id} on hold by user ${resumeBy?._id}`);
+		this.logger.debug(`Attempting to resume room ${room._id} on hold by user ${resumeBy?._id}`);
 
 		if (!room || !isOmnichannelRoom(room)) {
 			throw new Error('error-invalid-room');
@@ -56,13 +66,13 @@ class OnHoldHelperClass {
 		const { _id: roomId, servedBy } = room;
 
 		if (!servedBy) {
-			logger.error(`No serving agent found for room ${roomId}`);
+			this.logger.error(`No serving agent found for room ${roomId}`);
 			throw new Error('error-room-not-served');
 		}
 
 		const inquiry = await LivechatInquiry.findOneByRoomId(roomId, {});
 		if (!inquiry) {
-			logger.error(`No inquiry found for room ${roomId}`);
+			this.logger.error(`No inquiry found for room ${roomId}`);
 			throw new Error('error-invalid-inquiry');
 		}
 
@@ -93,8 +103,6 @@ class OnHoldHelperClass {
 
 		callbacks.run('livechat:afterOnHoldChatResumed', room);
 
-		logger.debug(`Room ${room._id} resumed successfully`);
+		this.logger.debug(`Room ${room._id} resumed successfully`);
 	}
 }
-
-export const OnHoldHelper = new OnHoldHelperClass();
