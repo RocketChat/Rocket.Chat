@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 import { LivechatRooms } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';

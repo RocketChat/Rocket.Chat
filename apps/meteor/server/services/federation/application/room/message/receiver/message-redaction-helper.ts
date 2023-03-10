@@ -4,7 +4,7 @@ import type { FederatedUser } from '../../../../domain/FederatedUser';
 import { Federation } from '../../../../Federation';
 import type { RocketChatMessageAdapter } from '../../../../infrastructure/rocket-chat/adapters/Message';
 
-export interface IRoomRedactionHandler {
+interface IRoomRedactionHandler {
 	handle(): Promise<void>;
 }
 
