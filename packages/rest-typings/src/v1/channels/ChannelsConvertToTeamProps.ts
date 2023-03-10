@@ -5,7 +5,7 @@ const ajv = new Ajv();
 
 export type ChannelsConvertToTeamProps =
 	| { channelId: IRoom['_id']; channelName?: never }
-	| { channelName: IRoom['name']; channelId?: never };
+	| { channelName: Exclude<IRoom['name'], undefined>; channelId?: never };
 
 const channelsConvertToTeamPropsSchema = {
 	oneOf: [
