@@ -333,12 +333,9 @@ class LivechatClass {
 			Livechat.webhookLogger.error({ msg: `Response error on ${11 - attempts} try ->`, err });
 			// try 10 times after 20 seconds each
 			attempts - 1 && Livechat.webhookLogger.warn(`Will try again in ${(timeout / 1000) * 4} seconds ...`);
-			setTimeout(
-				Meteor.bindEnvironment(function () {
-					Livechat.sendRequest(postData, attempts - 1);
-				}),
-				timeout * 4,
-			);
+			setTimeout(function () {
+				Livechat.sendRequest(postData, attempts - 1);
+			}, timeout * 4);
 		}
 	}
 }
