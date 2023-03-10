@@ -38,7 +38,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 	const isFederated = room && isRoomFederated(room);
 
 	const canCreateInviteLinks =
-		room && user && isFederated ? Federation.isEditableByTheUser(user, room, subscription) : hasPermissionToCreateInviteLinks;
+		room && user && isFederated ? Federation.canCreateInviteLinks(user, room, subscription) : hasPermissionToCreateInviteLinks;
 
 	const [state, setState] = useState<{ tab: ROOM_MEMBERS_TABS; userId?: IUser['_id'] }>({
 		tab: ROOM_MEMBERS_TABS.LIST,
