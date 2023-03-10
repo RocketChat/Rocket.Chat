@@ -10,7 +10,7 @@ import * as DropdownAction from './actionButtons/dropdownAction';
 
 let registeredButtons: Array<IUIActionButton> = [];
 
-export const addButton = (button: IUIActionButton): void => {
+const addButton = (button: IUIActionButton): void => {
 	switch (button.context) {
 		case UIActionButtonContext.MESSAGE_ACTION:
 			MessageAction.onAdded(button);
@@ -29,7 +29,7 @@ export const addButton = (button: IUIActionButton): void => {
 	registeredButtons.push(Object.freeze(button));
 };
 
-export const removeButton = (button: IUIActionButton): void => {
+const removeButton = (button: IUIActionButton): void => {
 	switch (button.context) {
 		case UIActionButtonContext.MESSAGE_ACTION:
 			MessageAction.onRemoved(button);
