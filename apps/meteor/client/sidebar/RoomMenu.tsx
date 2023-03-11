@@ -142,6 +142,7 @@ const RoomMenu = ({
 		const hide = async (): Promise<void> => {
 			try {
 				await hideRoom({ roomId: rid });
+				router.push({});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
