@@ -4,7 +4,7 @@ import { Base } from '../../../../../app/models/server';
 /**
  * Livechat Tag model
  */
-export class LivechatTag extends Base {
+class LivechatTag extends Base {
 	constructor(modelOrName) {
 		super(modelOrName || 'livechat_tag');
 

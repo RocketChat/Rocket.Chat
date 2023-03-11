@@ -2,7 +2,7 @@ import { LivechatVisitors } from '@rocket.chat/models';
 
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
-import { SMS } from '../../sms';
+import { SMS } from '../../sms/server';
 import { normalizeMessageFileUpload } from '../../utils/server/functions/normalizeMessageFileUpload';
 import { callbackLogger } from './lib/callbackLogger';
 

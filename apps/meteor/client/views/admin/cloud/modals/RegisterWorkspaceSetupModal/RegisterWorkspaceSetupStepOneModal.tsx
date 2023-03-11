@@ -16,7 +16,6 @@ type Props = {
 	onClose: () => void;
 	validInfo: boolean;
 	setIntentData: (intentData: any) => void;
-	isConnectedToCloud: boolean | string;
 };
 
 const RegisterWorkspaceSetupStepOneModal = ({
@@ -29,7 +28,6 @@ const RegisterWorkspaceSetupStepOneModal = ({
 	onClose,
 	validInfo,
 	setIntentData,
-	isConnectedToCloud,
 	...props
 }: Props) => {
 	const setModal = useSetModal();
@@ -40,7 +38,7 @@ const RegisterWorkspaceSetupStepOneModal = ({
 
 	const handleBack = (): void => {
 		const handleModalClose = (): void => setModal(null);
-		setModal(<WorkspaceRegistrationModal onClose={handleModalClose} isConnectedToCloud={isConnectedToCloud} />);
+		setModal(<WorkspaceRegistrationModal onClose={handleModalClose} />);
 	};
 
 	const handleRegisterWorkspace = async () => {

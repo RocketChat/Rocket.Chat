@@ -8,7 +8,7 @@ import { Session } from 'meteor/session';
 
 import { e2e } from '../../../e2e/client';
 import { Users, ChatSubscription } from '../../../models/client';
-import { getUserPreference } from '../../../utils';
+import { getUserPreference } from '../../../utils/client';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 import { CustomSounds } from '../../../custom-sounds/client/lib/CustomSounds';
 import { getAvatarAsPng } from '../../../../client/lib/utils/getAvatarAsPng';
