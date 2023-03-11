@@ -4,6 +4,7 @@ import { useEndpoint, useRoute, useSetting, useTranslation } from '@rocket.chat/
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo, useCallback, useState } from 'react';
 
+import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useForm } from '../../../hooks/useForm';
 import UserForm from './UserForm';
@@ -55,10 +56,7 @@ const AddUser = ({ onReload, ...props }) => {
 		validationKeys[key] && validationKeys[key](value, values);
 	};
 
-	const defaultUserRoles = String(useSetting('Accounts_Registration_Users_Default_Roles'))
-		.split(',')
-		.map((role) => role.trim())
-		.filter(Boolean);
+	const defaultUserRoles = parseCSV(String(useSetting('Accounts_Registration_Users_Default_Roles')));
 
 	const { values, handlers, reset, hasUnsavedChanges } = useForm(
 		{
