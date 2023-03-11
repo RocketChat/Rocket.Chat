@@ -14,14 +14,13 @@ import {
 } from '@rocket.chat/ui-contexts';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 
 import AccountsCustomFields from '../../../components/AccountsCustomFields';
 
 type RegisterUsernamePayload = {
 	username: IUser['username'];
-	customFields?: IUser['customFields'];
-};
+} & IUser['customFields'];
 
 const RegisterUsername = () => {
 	const t = useTranslation();
@@ -42,15 +41,15 @@ const RegisterUsername = () => {
 	const usernameSuggestion = useEndpoint('GET', '/v1/users.getUsernameSuggestion');
 	const { data, isLoading } = useQuery(['suggestion'], async () => usernameSuggestion());
 
+	const methods = useForm<RegisterUsernamePayload>();
 	const {
 		register,
 		handleSubmit,
 		setValue,
 		getValues,
 		setError,
-		control,
 		formState: { errors },
-	} = useForm<RegisterUsernamePayload>();
+	} = methods;
 
 	useEffect(() => {
 		if (data?.result && getValues('username') === '') {
@@ -88,35 +87,37 @@ const RegisterUsername = () => {
 			background={customBackground}
 			logo={!hideLogo && customLogo ? <Box is='img' maxHeight='x40' mi='neg-x8' src={customLogo} alt='Logo' /> : <></>}
 		>
-			<Form aria-labelledby={formLabelId} onSubmit={handleSubmit((data) => registerUsernameMutation.mutate(data))}>
-				<Form.Header>
-					<Form.Title id={formLabelId}>{t('Username_title')}</Form.Title>
-					<Form.Subtitle>{t('Username_description')}</Form.Subtitle>
-				</Form.Header>
-				<Form.Container>
-					{!isLoading && (
-						<FieldGroup>
-							<Field>
-								<Field.Label>{t('Username')}</Field.Label>
-								<Field.Row>
-									<TextInput {...register('username', { required: t('Username_cant_be_empty') })} />
-								</Field.Row>
-								{errors.username && <Field.Error>{errors.username.message}</Field.Error>}
-							</Field>
-						</FieldGroup>
-					)}
-					{isLoading && t('Loading_suggestion')}
-					<AccountsCustomFields formControl={control} />
-				</Form.Container>
-				<Form.Footer>
-					<ButtonGroup stretch vertical flexGrow={1}>
-						<Button disabled={isLoading} type='submit' primary>
-							{t('Use_this_username')}
-						</Button>
-						<Button onClick={logout}>{t('Logout')}</Button>
-					</ButtonGroup>
-				</Form.Footer>
-			</Form>
+			<FormProvider {...methods}>
+				<Form aria-labelledby={formLabelId} onSubmit={handleSubmit((data) => registerUsernameMutation.mutate(data))}>
+					<Form.Header>
+						<Form.Title id={formLabelId}>{t('Username_title')}</Form.Title>
+						<Form.Subtitle>{t('Username_description')}</Form.Subtitle>
+					</Form.Header>
+					<Form.Container>
+						{!isLoading && (
+							<FieldGroup>
+								<Field>
+									<Field.Label>{t('Username')}</Field.Label>
+									<Field.Row>
+										<TextInput {...register('username', { required: t('Username_cant_be_empty') })} />
+									</Field.Row>
+									{errors.username && <Field.Error>{errors.username.message}</Field.Error>}
+								</Field>
+							</FieldGroup>
+						)}
+						{isLoading && t('Loading_suggestion')}
+						<AccountsCustomFields />
+					</Form.Container>
+					<Form.Footer>
+						<ButtonGroup stretch vertical flexGrow={1}>
+							<Button disabled={isLoading} type='submit' primary>
+								{t('Use_this_username')}
+							</Button>
+							<Button onClick={logout}>{t('Logout')}</Button>
+						</ButtonGroup>
+					</Form.Footer>
+				</Form>
+			</FormProvider>
 		</VerticalWizardLayout>
 	);
 };

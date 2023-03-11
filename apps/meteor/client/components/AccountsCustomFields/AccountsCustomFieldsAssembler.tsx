@@ -1,31 +1,21 @@
 import { TextInput, Field, Select } from '@rocket.chat/fuselage';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
-import type { Control, FieldError } from 'react-hook-form';
-import { Controller, get } from 'react-hook-form';
+import type { FieldError } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 
 import { useAccountsCustomFields } from '../../hooks/useAccountsCustomFields';
 
-const CUSTOM_FIELD_TYPE = {
-	select: Select,
-	text: TextInput,
-} as const;
-
-const CustomFieldsAssembler = ({ formControl }: { formControl: Control }) => {
+const CustomFieldsAssembler = () => {
 	const t = useTranslation();
-	const parsedCustomFields = useAccountsCustomFields();
+	const customFields = useAccountsCustomFields();
 
-	const customFields = parsedCustomFields
-		? Object.entries(parsedCustomFields).map(([fieldName, fieldData]) => {
-				return { ...fieldData, name: fieldName };
-		  })
-		: undefined;
+	const { register, getFieldState, setValue } = useFormContext();
 
 	return (
 		<>
-			{customFields?.map((customField, index) => {
-				const getErrorMessage = (error: FieldError) => {
+			{customFields?.map((customField) => {
+				const getErrorMessage = (error: FieldError | undefined) => {
 					switch (error?.type) {
 						case 'required':
 							return t('The_field_is_required', customField.name);
@@ -36,35 +26,42 @@ const CustomFieldsAssembler = ({ formControl }: { formControl: Control }) => {
 					}
 				};
 
-				return (
-					<Controller
-						key={index}
-						name={customField.name}
-						control={formControl}
-						defaultValue={customField.defaultValue ?? ''}
-						rules={{
-							required: customField?.required,
-							minLength: customField.type === 'text' ? customField.minLength : undefined,
-							maxLength: customField.type === 'text' ? customField.maxLength : undefined,
-						}}
-						render={({ field, formState: { errors } }) => {
-							const Component = CUSTOM_FIELD_TYPE[customField.type] ?? null;
-							const error = getErrorMessage(get(errors, customField.name));
+				const { onChange, ...handlers } = register(customField.name, {
+					required: customField.required,
+					minLength: customField.minLength,
+					maxLength: customField.maxLength,
+				});
 
-							return (
-								<Field>
-									<Field.Label>
-										{t(customField.name as TranslationKey)}
-										{customField.required && '*'}
-									</Field.Label>
-									<Field.Row>
-										<Component {...field} options={customField.options} error={error} />
-									</Field.Row>
-									<Field.Error>{error}</Field.Error>
-								</Field>
-							);
-						}}
-					/>
+				const error = getErrorMessage(getFieldState(customField.name).error);
+				return (
+					<Field>
+						<Field.Label>
+							{t.has(customField.name) ? t(customField.name) : customField.name}
+							{customField.required && '*'}
+						</Field.Label>
+						<Field.Row>
+							{customField.type === 'select' && (
+								/*
+									the Select component is a controlled component,
+									the onchange handler are not compatible among them,
+								 	so we need to setValue on the onChange handler
+
+									Select also doesn't follow the ideal implementation, but is what we have for now
+								 */
+								<Select
+									onChange={(value) => {
+										setValue(customField.name, value);
+									}}
+									{...handlers}
+									options={customField.options.map((option) => [option, option, customField.defaultValue === option])}
+									error={error}
+									value={customField.defaultValue}
+								/>
+							)}
+							{customField.type === 'text' && <TextInput onChange={onChange} {...handlers} error={error} />}
+						</Field.Row>
+						<Field.Error>{error}</Field.Error>
+					</Field>
 				);
 			})}
 		</>

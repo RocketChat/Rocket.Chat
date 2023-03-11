@@ -1,36 +1,30 @@
-import type { SelectOption } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
 
-type AccountsCustomField = {
+export type AccountsCustomField = {
 	type: 'text' | 'select';
 	required: boolean;
 	defaultValue: string;
 	minLength: number;
 	maxLength: number;
-	options: SelectOption[];
+	options: string[];
+	name: string;
 };
 
-type AccountsCustomFields = {
-	[key: string]: AccountsCustomField;
-};
+export const useAccountsCustomFields = (): AccountsCustomField[] => {
+	const accountsCustomFieldsJSON = useSetting('Accounts_CustomFields');
 
-export const useAccountsCustomFields = () => {
-	const [customFields, setCustomFields] = useState<AccountsCustomFields>();
-	const accountsCustomFieldsJSON = useSetting('Accounts_CustomFields') as string;
-
-	useEffect(() => {
-		if (typeof accountsCustomFieldsJSON === 'string' && accountsCustomFieldsJSON.trim() !== '') {
-			try {
-				const parsedCustomFields = JSON.parse(accountsCustomFieldsJSON);
-				return setCustomFields(parsedCustomFields);
-			} catch {
-				return console.error('Invalid JSON for Accounts_CustomFields');
-			}
-		} else {
-			return setCustomFields(undefined);
+	return useMemo(() => {
+		if (typeof accountsCustomFieldsJSON !== 'string' || accountsCustomFieldsJSON.trim() === '') {
+			return [];
 		}
+		try {
+			return Object.entries(JSON.parse(accountsCustomFieldsJSON)).map(([fieldName, fieldData]) => {
+				return { ...(fieldData as any), name: fieldName };
+			});
+		} catch {
+			console.error('Invalid JSON for Accounts_CustomFields');
+		}
+		return [];
 	}, [accountsCustomFieldsJSON]);
-
-	return customFields;
 };
