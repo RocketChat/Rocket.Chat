@@ -8,8 +8,8 @@
             "type": "node",
             "request": "attach",
             "skipFiles": [
-				"<node_internals>/**"
-			],
+                    "<node_internals>/**"
+            ],
             "name": "Attach to Process",
             "port": 9229
         }
