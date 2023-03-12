@@ -411,6 +411,31 @@ describe('[Incoming Integrations]', function () {
 				})
 				.end(done);
 		});
+
+		it('should not update integration by returning error-invalid-post-as-user for non existing user for post-as', (done) => {
+			request
+				.put(api('integrations.update'))
+				.set(credentials)
+				.send({
+					type: 'webhook-incoming',
+					name: 'Incoming test updated',
+					enabled: true,
+					alias: 'test updated',
+					username: 'invalid_username',
+					scriptEnabled: true,
+					channel: '#general',
+					integrationId: integration._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('error');
+					expect(res.body.error.error).to.be.equal('error-invalid-post-as-user');
+					expect(res.body.error.isClientSafe).to.be.equal(true);
+				})
+				.end(done);
+		});
 	});
 
 	describe('[/integrations.remove]', () => {
