@@ -6,7 +6,7 @@ import { useFormContext } from 'react-hook-form';
 
 import { useAccountsCustomFields } from '../../hooks/useAccountsCustomFields';
 
-const CustomFieldsAssembler = () => {
+const AccountsCustomFieldsAssembler = () => {
 	const t = useTranslation();
 	const customFields = useAccountsCustomFields();
 
@@ -14,7 +14,7 @@ const CustomFieldsAssembler = () => {
 
 	return (
 		<>
-			{customFields?.map((customField) => {
+			{customFields?.map((customField, index) => {
 				const getErrorMessage = (error: FieldError | undefined) => {
 					switch (error?.type) {
 						case 'required':
@@ -34,7 +34,7 @@ const CustomFieldsAssembler = () => {
 
 				const error = getErrorMessage(getFieldState(customField.name).error);
 				return (
-					<Field>
+					<Field key={index}>
 						<Field.Label>
 							{t.has(customField.name) ? t(customField.name) : customField.name}
 							{customField.required && '*'}
@@ -68,4 +68,4 @@ const CustomFieldsAssembler = () => {
 	);
 };
 
-export default CustomFieldsAssembler;
+export default AccountsCustomFieldsAssembler;
