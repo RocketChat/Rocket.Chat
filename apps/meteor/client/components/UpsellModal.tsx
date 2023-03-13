@@ -38,7 +38,7 @@ const UpsellModal = ({
 		<Modal>
 			<Modal.Header>
 				{icon && <Modal.Icon name={icon} />}
-				<Modal.HeaderText mbe='x24'>
+				<Modal.HeaderText>
 					<Modal.Tagline color='font-annotation'>{tagline ?? t('Enterprise_capability')}</Modal.Tagline>
 					<Modal.Title>{title}</Modal.Title>
 				</Modal.HeaderText>
