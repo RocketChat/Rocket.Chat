@@ -10,7 +10,7 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
  * @param options
  * @constructor
  */
-export class GoogleStorageStore extends UploadFS.Store {
+class GoogleStorageStore extends UploadFS.Store {
 	constructor(options) {
 		super(options);
 

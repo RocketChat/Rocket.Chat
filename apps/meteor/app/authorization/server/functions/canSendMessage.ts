@@ -45,7 +45,7 @@ async function validateRoomMessagePermissionsAsync(
 	}
 }
 
-export async function canSendMessageAsync(
+async function canSendMessageAsync(
 	rid: IRoom['_id'],
 	{ uid, username, type }: { uid: IUser['_id']; username: IUser['username']; type: IUser['type'] },
 	extraData?: Record<string, any>,
