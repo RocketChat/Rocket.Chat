@@ -23,8 +23,7 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 		closeModal();
 	};
 
-	const tabTypeIsUpgradeYourPlan =
-		tabType === 'go-fully-featured' || tabType === 'go-fully-featured-registered' || tabType === 'upgrade-your-plan';
+	const isTypeUpgradeYourPlan = ['go-fully-featured', 'go-fully-featured-registered'].includes(tabType || '');
 
 	const talkToExpertLink =
 		'https://www.rocket.chat/sales-contact?utm_source=rocketchat_app&utm_medium=multiple_queues&utm_campaign=in_product_ctas';
@@ -48,9 +47,7 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 				<Box fontSize={20} fontWeight={700} lineHeight={28} mbe={28}>
 					{t('Enterprise_Departments_title')}
 				</Box>
-				{tabType === 'go-fully-featured' || tabType === 'go-fully-featured-registered' || tabType === 'upgrade-your-plan'
-					? t('Enterprise_Departments_description_upgrade')
-					: t('Enterprise_Departments_description_free_trial')}
+				{isTypeUpgradeYourPlan ? t('Enterprise_Departments_description_free_trial') : t('Enterprise_Departments_description_upgrade')}
 			</Modal.Content>
 			<Modal.Footer>
 				{hasPermission('view-statistics') ? (
@@ -58,7 +55,7 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 						<Button is='a' href={talkToExpertLink} external onClick={onClose} data-qa-id='btn-talk-to-sales'>
 							{t('Talk_to_an_expert')}
 						</Button>
-						{tabTypeIsUpgradeYourPlan ? (
+						{isTypeUpgradeYourPlan ? (
 							<Button is='a' href={freeTrialLink} external primary data-qa-id='upgrade-now'>
 								{t('Start_free_trial')}
 							</Button>
