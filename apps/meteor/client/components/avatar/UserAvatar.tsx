@@ -18,8 +18,9 @@ const UserAvatar: FC<UserAvatarProps> = ({ username, etag, emoji, ...rest }) => 
 	const getUserAvatarPath = useUserAvatarPath();
 	const { url = getUserAvatarPath(username, etag), ...props } = rest;
 	const emojiProps = emoji ? getEmojiClassNameAndDataTitle(emoji) : undefined;
+	const avatarEmojiProps = emojiProps ? { ...emojiProps, emojiClassname: emojiProps?.className } : undefined;
 
-	return <BaseAvatar url={url} data-username={username} title={username} {...emojiProps} {...props} />;
+	return <BaseAvatar url={url} data-username={username} title={username} {...{ ...avatarEmojiProps, className: undefined }} {...props} />;
 };
 
 export default memo(UserAvatar);
