@@ -44,7 +44,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 		}
 
 		if (teamNameRegex && !teamNameRegex?.test(name)) {
-			return t('error-invalid-name');
+			return t('Teams_Errors_team_name', { name });
 		}
 
 		const { exists } = await checkTeamNameExists({ roomName: name });
