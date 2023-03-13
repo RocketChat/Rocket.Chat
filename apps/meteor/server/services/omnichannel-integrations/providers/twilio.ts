@@ -1,22 +1,58 @@
-import { Meteor } from 'meteor/meteor';
 import twilio from 'twilio';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import type { ISMSProvider, ServiceData, SMSProviderResponse, SMSProviderResult } from '@rocket.chat/core-typings';
 import filesize from 'filesize';
 import { api } from '@rocket.chat/core-services';
+import { Users } from '@rocket.chat/models';
 
-import { settings } from '../../../settings/server';
-import { SMS } from '../SMS';
-import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
-import { SystemLogger } from '../../../../server/lib/logger/system';
+import { settings } from '../../../../app/settings/server';
+import { fileUploadIsValidContentType } from '../../../../app/utils/lib/fileUploadRestrictions';
+import { SystemLogger } from '../../../lib/logger/system';
+
+type TwilioData = {
+	From: string;
+	To: string;
+	Body: string;
+	NumMedia?: string;
+	ToCountry?: string;
+	ToState?: string;
+	ToCity?: string;
+	ToZip?: string;
+	FromCountry?: string;
+	FromState?: string;
+	FromCity?: string;
+	FromZip?: string;
+	Latitude?: string;
+	Longitude?: string;
+} & Record<`MediaUrl${number}`, string> &
+	Record<`MediaContentType${number}`, string>;
+
+const isTwilioData = (data: unknown): data is TwilioData => {
+	if (typeof data !== 'object' || data === null) {
+		return false;
+	}
+
+	const { From, To, Body } = data as Record<string, unknown>;
+
+	return typeof From === 'string' && typeof To === 'string' && typeof Body === 'string';
+};
 
 const MAX_FILE_SIZE = 5242880;
 
-const notifyAgent = (userId, rid, msg) =>
+const notifyAgent = (userId: string, rid: string, msg: string) =>
 	api.broadcast('notify.ephemeralMessage', userId, rid, {
 		msg,
 	});
 
-class Twilio {
+export class Twilio implements ISMSProvider {
+	accountSid: string;
+
+	authToken: string;
+
+	fileUploadEnabled: string;
+
+	mediaTypeWhiteList: string;
+
 	constructor() {
 		this.accountSid = settings.get('SMS_Twilio_Account_SID');
 		this.authToken = settings.get('SMS_Twilio_authToken');
@@ -24,10 +60,14 @@ class Twilio {
 		this.mediaTypeWhiteList = settings.get('SMS_Twilio_FileUpload_MediaTypeWhiteList');
 	}
 
-	parse(data) {
+	parse(data: unknown): ServiceData {
 		let numMedia = 0;
 
-		const returnData = {
+		if (!isTwilioData(data)) {
+			throw new Error('Invalid data');
+		}
+
+		const returnData: ServiceData = {
 			from: data.From,
 			to: data.To,
 			body: data.Body,
@@ -75,20 +115,30 @@ class Twilio {
 		return returnData;
 	}
 
-	send(fromNumber, toNumber, message, extraData) {
+	async send(
+		fromNumber: string,
+		toNumber: string,
+		message: string,
+		extraData?: {
+			fileUpload?: { size: number; type: string; publicFilePath: string };
+			location?: { coordinates: [number, number] };
+			rid?: string;
+			userId?: string;
+		},
+	): Promise<SMSProviderResult> {
 		const client = twilio(this.accountSid, this.authToken);
 		let body = message;
 
 		let mediaUrl;
-		const defaultLanguage = settings.get('Language') || 'en';
-		if (extraData && extraData.fileUpload) {
+		const defaultLanguage = settings.get<string>('Language') || 'en';
+		if (extraData?.fileUpload) {
 			const {
 				rid,
 				userId,
 				fileUpload: { size, type, publicFilePath },
 			} = extraData;
-			const user = userId ? Meteor.users.findOne(userId) : null;
-			const lng = (user && user.language) || defaultLanguage;
+			const user = userId ? await Users.findOne(userId, { projection: { language: 1 } }) : null;
+			const lng = user?.language || defaultLanguage;
 
 			let reason;
 			if (!this.fileUploadEnabled) {
@@ -104,29 +154,38 @@ class Twilio {
 
 			if (reason) {
 				rid && userId && notifyAgent(userId, rid, reason);
-				return SystemLogger.error(`(Twilio) -> ${reason}`);
+				SystemLogger.error(`(Twilio) -> ${reason}`);
 			}
 
 			mediaUrl = [publicFilePath];
 		}
 
 		let persistentAction;
-		if (extraData && extraData.location) {
+		if (extraData?.location) {
 			const [longitude, latitude] = extraData.location.coordinates;
 			persistentAction = `geo:${latitude},${longitude}`;
 			body = TAPi18n.__('Location', { lng: defaultLanguage });
 		}
 
-		client.messages.create({
+		const result = await client.messages.create({
 			to: toNumber,
 			from: fromNumber,
 			body,
 			...(mediaUrl && { mediaUrl }),
 			...(persistentAction && { persistentAction }),
 		});
+
+		return {
+			isSuccess: result.status !== 'failed',
+			resultMsg: result.status,
+		};
 	}
 
-	response(/* message */) {
+	fileUploadMediaTypeWhiteList() {
+		throw new Error('Method not implemented.');
+	}
+
+	response(): SMSProviderResponse {
 		return {
 			headers: {
 				'Content-Type': 'text/xml',
@@ -135,7 +194,7 @@ class Twilio {
 		};
 	}
 
-	error(error) {
+	error(error: Error & { reason?: string }): SMSProviderResponse {
 		let message = '';
 		if (error.reason) {
 			message = `<Message>${error.reason}</Message>`;
@@ -148,5 +207,3 @@ class Twilio {
 		};
 	}
 }
-
-SMS.registerService('twilio', Twilio);

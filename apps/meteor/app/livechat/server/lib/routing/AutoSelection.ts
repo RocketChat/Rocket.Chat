@@ -1,3 +1,5 @@
+import type { IRoutingMethod, RoutingMethodConfig, SelectedAgent } from '@rocket.chat/core-typings';
+
 import { RoutingManager } from '../RoutingManager';
 import { LivechatDepartmentAgents, Users } from '../../../../models/server';
 import { callbacks } from '../../../../../lib/callbacks';
@@ -7,7 +9,9 @@ import { callbacks } from '../../../../../lib/callbacks';
  * default method where the agent with the least number
  * of open chats is paired with the incoming livechat
  */
-class AutoSelection {
+class AutoSelection implements IRoutingMethod {
+	config: RoutingMethodConfig;
+
 	constructor() {
 		this.config = {
 			previewRoom: false,
@@ -20,12 +24,12 @@ class AutoSelection {
 		};
 	}
 
-	getNextAgent(department, ignoreAgentId) {
+	getNextAgent(department?: string, ignoreAgentId?: string): Promise<SelectedAgent | null | undefined> {
 		const extraQuery = callbacks.run('livechat.applySimultaneousChatRestrictions', undefined, {
 			...(department ? { departmentId: department } : {}),
 		});
 		if (department) {
-			return LivechatDepartmentAgents.getNextAgentForDepartment(department, ignoreAgentId, extraQuery);
+			return Promise.resolve(LivechatDepartmentAgents.getNextAgentForDepartment(department, ignoreAgentId, extraQuery));
 		}
 
 		return Users.getNextAgent(ignoreAgentId, extraQuery);
