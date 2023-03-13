@@ -15,6 +15,7 @@ import { hasPermission } from '../../authorization/server';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import { checkCodeForUser } from '../../2fa/server/code';
 import { checkPermissionsForInvocation, checkPermissions } from './api.helpers';
+import { isObject } from '../../../lib/utils/isObject';
 
 const logger = new Logger('API');
 
@@ -125,7 +126,7 @@ export class APIClass extends Restivus {
 	}
 
 	success(result = {}) {
-		if (_.isObject(result)) {
+		if (isObject(result)) {
 			result.success = true;
 		}
 
@@ -138,7 +139,7 @@ export class APIClass extends Restivus {
 	}
 
 	failure(result, errorType, stack, error) {
-		if (_.isObject(result)) {
+		if (isObject(result)) {
 			result.success = false;
 		} else {
 			result = {
