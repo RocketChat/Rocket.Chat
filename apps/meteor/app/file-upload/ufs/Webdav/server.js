@@ -11,7 +11,7 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
  * @param options
  * @constructor
  */
-export class WebdavStore extends UploadFS.Store {
+class WebdavStore extends UploadFS.Store {
 	constructor(options) {
 		super(options);
 		const { server, username, password } = options.connection.credentials;
