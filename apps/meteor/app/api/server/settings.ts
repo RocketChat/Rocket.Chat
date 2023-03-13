@@ -31,5 +31,12 @@ settingsRegistry.addGroup('General', function () {
 			type: 'boolean',
 			public: true,
 		});
+
+		// Should enforce the permission on next Major and remove this setting
+		this.add('API_Apply_permission_view-outside-room_on_users-list', false, {
+			type: 'boolean',
+			public: true,
+			alert: 'This_is_a_deprecated_feature_alert',
+		});
 	});
 });

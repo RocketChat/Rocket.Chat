@@ -5,7 +5,7 @@ import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { HTTP } from 'meteor/http';
 
-import { settings } from '../../../settings';
+import { settings } from '../../../settings/client';
 
 export class IframeLogin {
 	constructor() {
