@@ -1,23 +1,49 @@
 import { HTTP } from 'meteor/http';
-import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
 import { api } from '@rocket.chat/core-services';
+import { Users } from '@rocket.chat/models';
+import type { ISMSProvider, ServiceData, SMSProviderResponse } from '@rocket.chat/core-typings';
 
-import { settings } from '../../../settings/server';
-import { SMS } from '../SMS';
-import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
-import { mime } from '../../../utils/lib/mimeTypes';
-import { SystemLogger } from '../../../../server/lib/logger/system';
+import { settings } from '../../../../app/settings/server';
+import { fileUploadIsValidContentType } from '../../../../app/utils/lib/fileUploadRestrictions';
+import { mime } from '../../../../app/utils/lib/mimeTypes';
+import { SystemLogger } from '../../../lib/logger/system';
+
+type VoxtelesysData = {
+	from: string;
+	to: string;
+	body: string;
+	received_at: string;
+	media: string[];
+};
+
+const isVoxtelesysData = (data: unknown): data is VoxtelesysData => {
+	if (typeof data !== 'object' || data === null) {
+		return false;
+	}
+
+	const { from, to, body } = data as Record<string, unknown>;
+
+	return typeof from === 'string' && typeof to === 'string' && typeof body === 'string';
+};
 
 const MAX_FILE_SIZE = 5242880;
 
-const notifyAgent = (userId, rid, msg) =>
+const notifyAgent = (userId: string, rid: string, msg: string) =>
 	api.broadcast('notify.ephemeralMessage', userId, rid, {
 		msg,
 	});
 
-class Voxtelesys {
+export class Voxtelesys implements ISMSProvider {
+	authToken: string;
+
+	URL: string;
+
+	fileUploadEnabled: string;
+
+	mediaTypeWhiteList: string;
+
 	constructor() {
 		this.authToken = settings.get('SMS_Voxtelesys_authToken');
 		this.URL = settings.get('SMS_Voxtelesys_URL');
@@ -25,8 +51,12 @@ class Voxtelesys {
 		this.mediaTypeWhiteList = settings.get('SMS_Voxtelesys_FileUpload_MediaTypeWhiteList');
 	}
 
-	parse(data) {
-		const returnData = {
+	parse(data: unknown): ServiceData {
+		if (!isVoxtelesysData(data)) {
+			throw new Error('Invalid data');
+		}
+
+		const returnData: ServiceData = {
 			from: data.from,
 			to: data.to,
 			body: data.body,
@@ -51,25 +81,35 @@ class Voxtelesys {
 			const contentType = mime.lookup(new URL(data.media[mediaIndex]).pathname);
 
 			media.url = mediaUrl;
-			media.contentType = contentType;
+			media.contentType = contentType as string;
 
-			returnData.media.push(media);
+			returnData?.media?.push(media);
 		}
 
 		return returnData;
 	}
 
-	send(fromNumber, toNumber, message, extraData) {
+	async send(
+		fromNumber: string,
+		toNumber: string,
+		message: string,
+		extraData?: {
+			fileUpload?: { size: number; type: string; publicFilePath: string };
+			location?: { coordinates: [number, number] };
+			rid?: string;
+			userId?: string;
+		},
+	): Promise<void> {
 		let media;
-		const defaultLanguage = settings.get('Language') || 'en';
-		if (extraData && extraData.fileUpload) {
+		const defaultLanguage = settings.get<string>('Language') || 'en';
+		if (extraData?.fileUpload) {
 			const {
 				rid,
 				userId,
 				fileUpload: { size, type, publicFilePath },
 			} = extraData;
-			const user = userId ? Meteor.users.findOne(userId) : null;
-			const lng = (user && user.language) || defaultLanguage;
+			const user = userId ? await Users.findOne(userId, { projection: { language: 1 } }) : null;
+			const lng = user?.language || defaultLanguage;
 
 			let reason;
 			if (!this.fileUploadEnabled) {
@@ -110,7 +150,11 @@ class Voxtelesys {
 		}
 	}
 
-	response(/* message */) {
+	fileUploadMediaTypeWhiteList() {
+		throw new Error('Method not implemented.');
+	}
+
+	response(): SMSProviderResponse {
 		return {
 			headers: {
 				'Content-Type': 'application/json',
@@ -121,7 +165,7 @@ class Voxtelesys {
 		};
 	}
 
-	error(error) {
+	error(error: Error & { reason?: string }): SMSProviderResponse {
 		let message = '';
 		if (error.reason) {
 			message = error.reason;
@@ -137,5 +181,3 @@ class Voxtelesys {
 		};
 	}
 }
-
-SMS.registerService('voxtelesys', Voxtelesys);

@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import type { IUser } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
 import { LivechatRooms } from '../../models/server';
@@ -21,7 +23,7 @@ Meteor.startup(async () => {
 	callbacks.add(
 		'beforeLeaveRoom',
 		function (user, room) {
-			if (room.t !== 'l') {
+			if (!isOmnichannelRoom(room)) {
 				return user;
 			}
 			throw new Meteor.Error(
@@ -31,13 +33,13 @@ Meteor.startup(async () => {
 			);
 		},
 		callbacks.priority.LOW,
-		'cant-leave-room',
+		'cant-leave-omnichannel-room',
 	);
 
 	callbacks.add(
 		'beforeJoinRoom',
 		function (user, room) {
-			if (room.t === 'l' && !hasPermission(user._id, 'view-l-room')) {
+			if (isOmnichannelRoom(room) && !hasPermission(user._id, 'view-l-room')) {
 				throw new Meteor.Error('error-user-is-not-agent', 'User is not an Omnichannel Agent', {
 					method: 'beforeJoinRoom',
 				});
@@ -46,18 +48,12 @@ Meteor.startup(async () => {
 			return user;
 		},
 		callbacks.priority.LOW,
-		'cant-join-room',
+		'cant-join-omnichannel-room',
 	);
 
 	const monitor = new LivechatAgentActivityMonitor();
 
-	let TroubleshootDisableLivechatActivityMonitor;
-	settings.watch('Troubleshoot_Disable_Livechat_Activity_Monitor', (value) => {
-		if (TroubleshootDisableLivechatActivityMonitor === value) {
-			return;
-		}
-		TroubleshootDisableLivechatActivityMonitor = value;
-
+	settings.watch<boolean>('Troubleshoot_Disable_Livechat_Activity_Monitor', (value) => {
 		if (value) {
 			return monitor.stop();
 		}
@@ -66,19 +62,19 @@ Meteor.startup(async () => {
 	});
 	await createDefaultBusinessHourIfNotExists();
 
-	settings.watch('Livechat_enable_business_hours', async (value) => {
+	settings.watch<boolean>('Livechat_enable_business_hours', async (value) => {
 		if (value) {
 			return businessHourManager.startManager();
 		}
 		return businessHourManager.stopManager();
 	});
 
-	settings.watch('Livechat_Routing_Method', function (value) {
+	settings.watch<string>('Livechat_Routing_Method', function (value) {
 		RoutingManager.setMethodNameAndStartQueue(value);
 	});
 
 	Accounts.onLogout(
-		({ user }) =>
+		({ user }: { user: IUser }) =>
 			user?.roles?.includes('livechat-agent') &&
 			!user?.roles?.includes('bot') &&
 			Livechat.setUserStatusLivechatIf(user._id, 'not-available', {}, { livechatStatusSystemModified: true }),
