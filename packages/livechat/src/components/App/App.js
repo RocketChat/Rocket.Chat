@@ -105,8 +105,11 @@ export class App extends Component {
 
 	handleRestore = () => {
 		parentCall('restoreWindow');
+		this.setState((prevState) => ({
+			poppedOut: !prevState,
+		}));
 		const { dispatch, undocked } = this.props;
-		const dispatchRestore = () => dispatch({ minimized: false, undocked: false });
+		const dispatchRestore = () => dispatch({ minimized: false, undocked: false, expanded: false });
 		const dispatchEvent = () => {
 			dispatchRestore();
 			store.off('storageSynced', dispatchEvent);
@@ -122,7 +125,10 @@ export class App extends Component {
 	handleOpenWindow = () => {
 		parentCall('openPopout');
 		const { dispatch } = this.props;
-		dispatch({ undocked: true, minimized: false });
+		this.setState((prevState) => ({
+			poppedOut: !prevState,
+		}));
+		dispatch({ expanded: true });
 	};
 
 	handleDismissAlert = (id) => {
