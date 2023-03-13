@@ -151,21 +151,21 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 			<OptionDivider />
 
 			<OptionTitle>{t('Theme')}</OptionTitle>
-			<Option>
+			<Option onClick={setTheme('light')}>
 				<OptionIcon name='sun' />
 				<OptionContent>{t('Theme_light')}</OptionContent>
 				<OptionColumn>
 					<RadioButton checked={selectedTheme === 'light'} onChange={setTheme('light')} m='x4' />
 				</OptionColumn>
 			</Option>
-			<Option>
+			<Option onClick={setTheme('dark')}>
 				<OptionIcon name='moon' />
 				<OptionContent>{t('Theme_dark')}</OptionContent>
 				<OptionColumn>
 					<RadioButton checked={selectedTheme === 'dark'} onChange={setTheme('dark')} m='x4' />
 				</OptionColumn>
 			</Option>
-			<Option>
+			<Option onClick={setTheme('auto')}>
 				<OptionIcon name='desktop' />
 				<OptionContent>{t('Theme_match_system')}</OptionContent>
 				<OptionColumn>
