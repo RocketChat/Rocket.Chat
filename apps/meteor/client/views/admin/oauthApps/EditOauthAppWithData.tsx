@@ -2,23 +2,21 @@ import { Box, Button, ButtonGroup, Skeleton, Throbber, InputBox } from '@rocket.
 import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 
 import EditOauthApp from './EditOauthApp';
 
 const EditOauthAppWithData = ({ _id, ...props }: { _id: string }): ReactElement => {
 	const t = useTranslation();
 
-	const params = useMemo(() => ({ appId: _id }), [_id]);
-
 	const getOauthApps = useEndpoint('GET', '/v1/oauth-apps.get');
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const { data, isLoading, error, refetch } = useQuery(
-		['oauth-apps', params],
+		['oauth-apps', _id],
 		async () => {
-			const oauthApps = await getOauthApps(params);
+			const oauthApps = await getOauthApps({ _id });
 			return oauthApps;
 		},
 		{

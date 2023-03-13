@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { Users } from '../../app/models/server';
-import { passwordPolicy } from '../../app/lib';
+import { passwordPolicy } from '../../app/lib/server';
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
