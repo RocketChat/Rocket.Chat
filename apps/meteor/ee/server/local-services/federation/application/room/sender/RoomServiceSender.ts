@@ -136,6 +136,7 @@ export class FederationRoomServiceSender extends AbstractFederationApplicationSe
 		return RoomMapper.toSearchPublicRoomsDto(
 			rooms,
 			parseInt(this.internalSettingsAdapter.getMaximumSizeOfUsersWhenJoiningPublicRooms() || '0'),
+			pageToken,
 		);
 	}
 
@@ -301,6 +302,7 @@ class RoomMapper {
 	public static toSearchPublicRoomsDto(
 		rooms: IFederationPublicRoomsResult,
 		maxSizeOfUsersAllowed: number,
+		pageToken?: string,
 	): FederationPaginatedResult<{
 		rooms: IFederationPublicRooms[];
 	}> {
@@ -314,6 +316,7 @@ class RoomMapper {
 					canonicalAlias: room.canonical_alias,
 					joinedMembers: room.num_joined_members,
 					topic: room.topic,
+					pageToken,
 				})),
 			count: rooms?.chunk?.length || 0,
 			total: rooms?.total_room_count_estimate || 0,

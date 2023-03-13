@@ -887,6 +887,7 @@ describe('FederationEE - Application - FederationRoomServiceSender', () => {
 						topic: 'externalRoomTopic',
 						canonicalAlias: 'externalRoomAlias',
 						canJoin: true,
+						pageToken: undefined,
 					},
 					{
 						id: 'externalRoomId2',
@@ -895,6 +896,7 @@ describe('FederationEE - Application - FederationRoomServiceSender', () => {
 						topic: 'externalRoomTopic2',
 						canonicalAlias: 'externalRoomAlias2',
 						canJoin: true,
+						pageToken: undefined,
 					},
 				],
 				count: 2,
@@ -941,6 +943,7 @@ describe('FederationEE - Application - FederationRoomServiceSender', () => {
 						topic: 'externalRoomTopic',
 						canonicalAlias: 'externalRoomAlias',
 						canJoin: true,
+						pageToken: undefined,
 					},
 				],
 				count: 2,
@@ -987,6 +990,54 @@ describe('FederationEE - Application - FederationRoomServiceSender', () => {
 						topic: 'externalRoomTopic',
 						canonicalAlias: 'externalRoomAlias',
 						canJoin: false,
+						pageToken: undefined,
+					},
+				],
+				count: 2,
+				total: 10000,
+				nextPageToken: 'next_batch',
+				prevPageToken: 'prev_batch',
+			});
+		});
+
+		it('should return the Matrix public rooms for the server including a valid pageToken for each room', async () => {
+			settingsAdapter.isFederationEnabled.returns(true);
+			settingsAdapter.getMaximumSizeOfUsersWhenJoiningPublicRooms.returns('100');
+			bridge.searchPublicRooms.resolves({
+				chunk: [
+					{
+						room_id: 'externalRoomId',
+						name: 'externalRoomName',
+						num_joined_members: 101,
+						topic: 'externalRoomTopic',
+						canonical_alias: 'externalRoomAlias',
+						join_rule: 'public',
+					},
+					{
+						room_id: 'externalRoomId2',
+						name: 'externalRoomName2',
+						num_joined_members: 4000,
+						topic: 'externalRoomTopic2',
+						canonical_alias: 'externalRoomAlias2',
+						join_rule: 'knock',
+					},
+				],
+				next_batch: 'next_batch',
+				prev_batch: 'prev_batch',
+				total_room_count_estimate: 10000,
+			});
+			const result = await service.searchPublicRooms({ pageToken: 'pageToken' } as any);
+
+			expect(result).to.be.eql({
+				rooms: [
+					{
+						id: 'externalRoomId',
+						name: 'externalRoomName',
+						joinedMembers: 101,
+						topic: 'externalRoomTopic',
+						canonicalAlias: 'externalRoomAlias',
+						canJoin: false,
+						pageToken: 'pageToken',
 					},
 				],
 				count: 2,
