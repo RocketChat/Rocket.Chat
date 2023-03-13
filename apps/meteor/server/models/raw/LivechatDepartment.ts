@@ -222,7 +222,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 				order: 0,
 			});
 
-			if (saveResult.insertedId) {
+			if (saveResult.upsertedId) {
 				incNumAgents(departmentId, 1);
 			}
 		});

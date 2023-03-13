@@ -74,11 +74,15 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 	removeByDepartmentIdAndAgentId(departmentId: string, agentId: string): Promise<void>;
 	getNextAgentForDepartment(
 		departmentId: string,
+		isLivechatEnabledWhenAgentIdle?: boolean,
 		ignoreAgentId?: string,
 		extraQuery?: Filter<IUser>,
 	): Promise<{ agentId: string; username: string } | null | undefined>;
 	checkOnlineForDepartment(departmentId: string): Promise<boolean>;
-	getOnlineForDepartment(departmentId: string): Promise<FindCursor<ILivechatDepartmentAgents> | undefined>;
+	getOnlineForDepartment(
+		departmentId: string,
+		isLivechatEnabledWhenAgentIdle?: boolean,
+	): Promise<FindCursor<ILivechatDepartmentAgents> | undefined>;
 	getBotsForDepartment(departmentId: string): Promise<undefined | FindCursor<ILivechatDepartmentAgents>>;
 	getNextBotForDepartment(departmentId: string, ignoreAgentId?: string): Promise<{ agentId: string; username: string } | undefined>;
 	replaceUsernameOfAgentByUserId(userId: string, username: string): Promise<UpdateResult | Document>;

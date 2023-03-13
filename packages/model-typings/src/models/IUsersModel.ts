@@ -194,4 +194,25 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	addServerNameToSearchedServerNamesList(userId: string, serverName: string): Promise<UpdateResult>;
 
 	removeServerNameFromSearchedServerNamesList(userId: string, serverName: string): Promise<UpdateResult>;
+	findOnlineUserFromList(userList: string[], isLivechatEnabledWhenAgentIdle?: boolean): FindCursor<IUser>;
+	getUnavailableAgents(
+		departmentId?: string,
+		extraQuery?: Document,
+	): Promise<
+		{
+			agentId: string;
+			username: string;
+			lastAssignTime: string;
+			lastRoutingTime: string;
+			livechat: { maxNumberSimultaneousChat: number };
+			queueInfo: { chats: number };
+		}[]
+	>;
+	findOneOnlineAgentByUserList(
+		userList: string[],
+		options?: FindOptions<IUser>,
+		isLivechatEnabledWhenAgentIdle?: boolean,
+	): Promise<IUser | null>;
+
+	findBotAgents(usernameList: string[]): FindCursor<IUser>;
 }

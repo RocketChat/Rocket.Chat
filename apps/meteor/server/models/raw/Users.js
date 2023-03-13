@@ -2,6 +2,31 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
 
+const queryStatusAgentOnline = (extraFilters = {}, isLivechatEnabledWhenAgentIdle) => ({
+	statusLivechat: 'available',
+	roles: 'livechat-agent',
+	...(!isLivechatEnabledWhenAgentIdle && {
+		$or: [
+			{
+				status: {
+					$exists: true,
+					$ne: 'offline',
+				},
+				roles: {
+					$ne: 'bot',
+				},
+			},
+			{
+				roles: 'bot',
+			},
+		],
+	}),
+	...extraFilters,
+	...(isLivechatEnabledWhenAgentIdle === false && {
+		statusConnection: { $ne: 'away' },
+	}),
+});
+
 export class UsersRaw extends BaseRaw {
 	constructor(db, trash) {
 		super(db, 'users', trash, {
@@ -1222,5 +1247,31 @@ export class UsersRaw extends BaseRaw {
 				},
 			},
 		);
+	}
+
+	findOnlineUserFromList(userList, isLivechatEnabledWhenAgentIdle) {
+		// TODO: Create class Agent
+		const username = {
+			$in: [].concat(userList),
+		};
+
+		const query = queryStatusAgentOnline({ username }, isLivechatEnabledWhenAgentIdle);
+
+		return this.find(query);
+	}
+
+	findOneOnlineAgentByUserList(userList, options, isLivechatEnabledWhenAgentIdle) {
+		// TODO:: Create class Agent
+		const username = {
+			$in: [].concat(userList),
+		};
+
+		const query = queryStatusAgentOnline({ username }, isLivechatEnabledWhenAgentIdle);
+
+		return this.findOne(query, options);
+	}
+
+	getUnavailableAgents() {
+		return [];
 	}
 }
