@@ -55,14 +55,23 @@ const GenericTable = forwardRef(function GenericTable<
 	const t = useTranslation();
 
 	const [filter, setFilter] = useState(paramsDefault);
+	const [prevSearchTerm, setPrevSearchTerm] = useState<string>('');
 
 	const { itemsPerPage, setItemsPerPage, current, setCurrent, itemsPerPageLabel, showingResultsLabel } = usePagination();
 
 	const params = useDebouncedValue(filter, 500);
 
 	useEffect(() => {
-		setParams({ ...params, text: params.text || '', current, itemsPerPage });
-	}, [params, current, itemsPerPage, setParams]);
+		setParams({
+			...params,
+			text: params.text || '',
+			current: prevSearchTerm === params.text ? current : 0,
+			itemsPerPage,
+		});
+
+		setCurrent(prevSearchTerm === params.text ? current : 0);
+		setPrevSearchTerm(params.text || '');
+	}, [params, current, itemsPerPage, setParams, setCurrent, prevSearchTerm, setItemsPerPage]);
 
 	const headerCells = useMemo(() => flattenChildren(header).length, [header]);
 
