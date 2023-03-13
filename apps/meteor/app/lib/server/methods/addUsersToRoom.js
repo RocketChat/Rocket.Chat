@@ -7,8 +7,8 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '../../../models/server';
 import { hasPermission } from '../../../authorization/server';
 import { addUserToRoom } from '../functions';
-import { Federation } from '../../../federation-v2/server/Federation';
 import { callbacks } from '../../../../lib/callbacks';
+import { Federation } from '../../../../server/services/federation/Federation';
 
 Meteor.methods({
 	addUsersToRoom(data = {}) {

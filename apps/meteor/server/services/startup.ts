@@ -60,7 +60,6 @@ api.registerService(new VideoConfService());
 api.registerService(new FederationService());
 api.registerService(new FetchService());
 api.registerService(new LivechatService());
-api.registerService(new MessageService());
 api.registerService(new NotificationService());
 api.registerService(new SlashCommandService());
 api.registerService(new UploadService());
