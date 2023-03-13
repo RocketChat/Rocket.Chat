@@ -10,11 +10,11 @@ export type PermissionsPayload = {
 	};
 };
 
-export type PermissionsPayloadLight = {
+type PermissionsPayloadLight = {
 	[key in RequestMethod]?: string[];
 };
 
-export type PermissionsRequiredKey = string[] | PermissionsPayload | PermissionsPayloadLight;
+type PermissionsRequiredKey = string[] | PermissionsPayload | PermissionsPayloadLight;
 
 const isLegacyPermissionsPayload = (permissionsPayload: PermissionsRequiredKey): permissionsPayload is string[] => {
 	return Array.isArray(permissionsPayload);

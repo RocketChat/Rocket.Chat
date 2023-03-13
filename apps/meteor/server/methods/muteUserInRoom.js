@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { Rooms, Subscriptions, Users, Messages } from '../../app/models/server';
-import { hasPermission } from '../../app/authorization';
+import { hasPermission } from '../../app/authorization/server';
 import { callbacks } from '../../lib/callbacks';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';

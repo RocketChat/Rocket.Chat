@@ -20,7 +20,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		const user = await Users.findOneById<Pick<IUser, 'username'>>(uid, {
 			projection: { username: 1 },
 		});
-		if (!user || !user.username) {
+		if (!user?.username) {
 			throw new Error('User not found');
 		}
 
