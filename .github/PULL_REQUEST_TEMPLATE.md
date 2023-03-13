@@ -9,7 +9,7 @@
   ci: For updating CI configuration
   test: For adding tests
   i18n: For updating any translations
-  regression: For fixing any regression
+  regression: Issues created/reported/fixed during the development phase. kind of problem that never existed in production and that we don't need to list in a changelog for the end user
 -->
 
 <!-- Checklist!!! If you're unsure about any of them, don't hesitate to ask. We're here to help! This is simply a reminder of what we are going to look for before merging your code. 
