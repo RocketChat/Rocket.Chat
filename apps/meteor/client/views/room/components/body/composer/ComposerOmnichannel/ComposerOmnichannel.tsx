@@ -1,9 +1,8 @@
 import { MessageFooterCallout } from '@rocket.chat/ui-composer';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
-import { waitUntilFind } from '../../../../../../lib/utils/waitUntilFind';
 import { useOmnichannelRoom, useUserIsSubscribed } from '../../../../contexts/RoomContext';
 import type { ComposerMessageProps } from '../ComposerMessage';
 import ComposerMessage from '../ComposerMessage';
@@ -12,23 +11,16 @@ import { ComposerOmnichannelJoin } from './ComposerOmnichannelJoin';
 import { ComposerOmnichannelOnHold } from './ComposerOmnichannelOnHold';
 
 const ComposerOmnichannel = (props: ComposerMessageProps): ReactElement => {
-	const { servedBy, queuedAt, _id, open, onHold } = useOmnichannelRoom();
+	const { servedBy, queuedAt, open, onHold } = useOmnichannelRoom();
+	const userId = useUserId();
 
 	const isSubscribed = useUserIsSubscribed();
-	const [isInquired, setIsInquired] = useState(() => !servedBy && queuedAt);
 
 	const t = useTranslation();
 
-	useEffect(() => {
-		const inquire = async () => {
-			if (isInquired) {
-				await waitUntilFind(() => isSubscribed || undefined);
-			}
-			setIsInquired(!servedBy && queuedAt);
-		};
+	const isInquired = !servedBy && queuedAt;
 
-		inquire();
-	}, [queuedAt, servedBy, _id, isInquired, open, isSubscribed]);
+	const isSameAgent = servedBy?._id === userId;
 
 	if (!open) {
 		return (
@@ -46,7 +38,7 @@ const ComposerOmnichannel = (props: ComposerMessageProps): ReactElement => {
 		return <ComposerOmnichannelInquiry />;
 	}
 
-	if (!isSubscribed) {
+	if (!isSubscribed && !isSameAgent) {
 		return <ComposerOmnichannelJoin />;
 	}
 

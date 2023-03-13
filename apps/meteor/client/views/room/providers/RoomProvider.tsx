@@ -30,9 +30,10 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 
 	const subscribeToRoom = useStream('room-data');
 
-	const [subscribedData, setSubscribedData] = useState({});
+	const [subscribedData, setSubscribedData] = useState<Pick<IOmnichannelRoom, 'open' | 'servedBy' | 'queuedAt'> | null>(null);
 
 	useEffect(() => {
+		setSubscribedData(null);
 		return subscribeToRoom(rid, (room: IRoom | IOmnichannelRoom) => {
 			if (!isOmnichannelRoom(room)) {
 				return;
