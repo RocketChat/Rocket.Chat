@@ -28,9 +28,8 @@ const UserAndRoomAutoCompleteMultiple = ({ onChange, ...props }: UserAndRoomAuto
 	const user = useUser();
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
-	const rooms = useUserSubscriptions(query).filter((item) => item.name.toLocaleLowerCase().includes(debouncedFilter.toLocaleLowerCase()));
 
-	const filteredRooms = rooms.filter((room) => {
+	const filteredRooms = useUserSubscriptions(query).filter((room) => {
 		if (!user) {
 			return;
 		}
@@ -42,9 +41,11 @@ const UserAndRoomAutoCompleteMultiple = ({ onChange, ...props }: UserAndRoomAuto
 		return !roomCoordinator.readOnly(room.rid, user);
 	});
 
+	const rooms = filteredRooms.filter((item) => item.name.toLocaleLowerCase().includes(debouncedFilter.toLocaleLowerCase()));
+
 	const parseItems = useMemo(
 		() =>
-			filteredRooms.map((subscription) => {
+			rooms.map((subscription) => {
 				return {
 					_id: subscription.rid,
 					value: subscription.name,
@@ -52,7 +53,7 @@ const UserAndRoomAutoCompleteMultiple = ({ onChange, ...props }: UserAndRoomAuto
 					t: subscription.t,
 				};
 			}),
-		[filteredRooms],
+		[rooms],
 	);
 
 	const options = [...parseItems];
