@@ -1,6 +1,6 @@
 import { VM, VMScript } from 'vm2';
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import moment from 'moment';

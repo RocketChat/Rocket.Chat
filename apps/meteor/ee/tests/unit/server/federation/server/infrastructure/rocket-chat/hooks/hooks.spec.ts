@@ -13,7 +13,7 @@ const { FederationHooksEE } = proxyquire
 		'meteor/meteor': {
 			'@global': true,
 		},
-		'meteor/random': {
+		'@rocket.chat/random': {
 			'Random': {
 				id: () => 1,
 			},
