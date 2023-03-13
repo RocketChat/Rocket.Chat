@@ -7,11 +7,8 @@ import { Users } from '../../../../app/models/client';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import PasswordChangeCheck from './PasswordChangeCheck';
 import RegisterUsername from './RegisterUsername';
-import { useViewportScrolling } from './useViewportScrolling';
 
 const UsernameCheck = ({ children }: { children: ReactNode }): ReactElement => {
-	useViewportScrolling();
-
 	const uid = useUserId();
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 
