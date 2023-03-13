@@ -1488,7 +1488,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 		return this.updateMany(query, update);
 	}
 
-	saveRoomById({ _id, topic, tags, livechatData, ...extra }) {
+	async saveRoomById({ _id, topic, tags, livechatData, ...extra }) {
 		const setData = { ...extra };
 		const unsetData = {};
 

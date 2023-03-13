@@ -125,10 +125,10 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	bulkRemoveDepartmentAndUnitsFromRooms(departmentId: string): Promise<Document | UpdateResult>;
 	findOneByIdOrName(_idOrName: string, options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
 	updateSurveyFeedbackById(_id: string, surveyFeedback: unknown): Promise<UpdateResult>;
-	updateDataByToken(token: string, key: string, value: string, overwrite?: boolean): Promise<UpdateResult>;
+	updateDataByToken(token: string, key: string, value: string, overwrite?: boolean): Promise<UpdateResult | Document | true>;
 	saveRoomById(
 		data: { _id: string; topic: string; tags: string[]; livechatData: unknown } & Record<string, unknown>,
-	): Promise<UpdateResult>;
+	): Promise<UpdateResult | undefined>;
 	findById(_id: string, fields?: FindOptions<IOmnichannelRoom>['projection']): FindCursor<IOmnichannelRoom>;
 	findByIds(ids: string[], fields?: FindOptions<IOmnichannelRoom>['projection']): FindCursor<IOmnichannelRoom>;
 	findOneByIdAndVisitorToken(
@@ -155,7 +155,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	updateEmailThreadByRoomId(roomId: string, threadIds: string[]): Promise<UpdateResult>;
 	findOneLastServedAndClosedByVisitorToken(visitorToken: string, options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
 	findOneByVisitorToken(visitorToken: string, fields?: FindOptions<IOmnichannelRoom>['projection']): Promise<IOmnichannelRoom | null>;
-	updateRoomCount(): Promise<ISetting>;
+	updateRoomCount(): Promise<ISetting | null>;
 	findOpenByVisitorToken(visitorToken: string, options?: FindOptions<IOmnichannelRoom>): FindCursor<IOmnichannelRoom>;
 	findOneOpenByVisitorToken(visitorToken: string, options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
 	findOneOpenByVisitorTokenAndDepartmentIdAndSource(

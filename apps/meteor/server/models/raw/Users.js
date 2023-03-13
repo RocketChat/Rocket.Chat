@@ -1274,4 +1274,20 @@ export class UsersRaw extends BaseRaw {
 	getUnavailableAgents() {
 		return [];
 	}
+
+	findBotAgents(usernameList) {
+		// TODO:: Create class Agent
+		const query = {
+			roles: {
+				$all: ['bot', 'livechat-agent'],
+			},
+			...(usernameList && {
+				username: {
+					$in: [].concat(usernameList),
+				},
+			}),
+		};
+
+		return this.find(query);
+	}
 }
