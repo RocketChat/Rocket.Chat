@@ -97,9 +97,9 @@ const RegisterUsername = () => {
 						{!isLoading && (
 							<FieldGroup>
 								<Field>
-									<Field.Label>{t('Username')}</Field.Label>
+									<Field.Label id='username-label'>{t('Username')}</Field.Label>
 									<Field.Row>
-										<TextInput {...register('username', { required: t('Username_cant_be_empty') })} />
+										<TextInput aria-labelledby='username-label' {...register('username', { required: t('Username_cant_be_empty') })} />
 									</Field.Row>
 									{errors.username && <Field.Error>{errors.username.message}</Field.Error>}
 								</Field>
