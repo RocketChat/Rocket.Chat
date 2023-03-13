@@ -1,5 +1,5 @@
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { OAuth } from 'meteor/oauth';
 
 export const Linkedin = {};

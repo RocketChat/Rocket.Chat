@@ -1,6 +1,6 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import type { ICreatedRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
 import type { MatchKeysAndValues } from 'mongodb';
