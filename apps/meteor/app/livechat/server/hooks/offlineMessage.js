@@ -19,7 +19,7 @@ callbacks.add(
 			message: data.message,
 		};
 
-		Livechat.sendRequest(postData);
+		Promise.await(Livechat.sendRequest(postData));
 	},
 	callbacks.priority.MEDIUM,
 	'livechat-send-email-offline-message',

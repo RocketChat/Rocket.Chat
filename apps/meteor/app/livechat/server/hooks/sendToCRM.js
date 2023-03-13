@@ -96,7 +96,7 @@ function sendToCRM(type, room, includeMessages = true) {
 	const additionalData = getAdditionalFieldsByType(type, room);
 	const responseData = Object.assign(postData, additionalData);
 
-	const response = LivechatTyped.sendRequest(responseData);
+	const response = Promise.await(LivechatTyped.sendRequest(responseData));
 
 	if (response && response.data && response.data.data) {
 		LivechatRooms.saveCRMDataByRoomId(room._id, response.data.data);

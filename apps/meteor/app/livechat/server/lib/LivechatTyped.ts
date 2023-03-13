@@ -9,6 +9,7 @@ import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms, Subscriptions, LivechatVisitors, Messages, Users } from '@rocket.chat/models';
 import moment from 'moment-timezone';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { default as axios } from 'axios';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
@@ -309,21 +310,22 @@ class LivechatClass {
 		return true;
 	}
 
-	sendRequest(postData: LivechatSendRequestData, attempts = 10) {
+	async sendRequest(postData: LivechatSendRequestData, attempts = 10) {
 		if (!attempts) {
 			return;
 		}
 		const timeout = settings.get<number>('Livechat_http_timeout');
 		const secretToken = settings.get<string>('Livechat_secret_token');
 		const headers = { 'X-RocketChat-Livechat-Token': secretToken };
-		const options: HTTP.HTTPRequest = {
-			data: postData,
+		const options = {
+			// data: postData,
 			...(secretToken !== '' && secretToken !== undefined && { headers }),
 			timeout,
 		};
 		try {
-			const result = HTTP.post(settings.get('Livechat_webhookUrl'), options);
-			if (result.statusCode === 200) {
+			// const result = HTTP.post(settings.get('Livechat_webhookUrl'), options);
+			const result = await axios.post(settings.get('Livechat_webhookUrl'), postData, options);
+			if (result.status === 200) {
 				metrics.totalLivechatWebhooksSuccess.inc();
 			} else {
 				metrics.totalLivechatWebhooksFailures.inc();
