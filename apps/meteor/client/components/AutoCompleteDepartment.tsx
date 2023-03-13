@@ -9,7 +9,7 @@ import { AsyncStatePhase } from '../hooks/useAsyncState';
 import { useDepartmentsList } from './Omnichannel/hooks/useDepartmentsList';
 
 type AutoCompleteDepartmentProps = {
-	value?: { value: string; label: string } | string;
+	value?: string;
 	onChange: (value: string) => void;
 	excludeDepartmentId?: string;
 	onlyMyDepartments?: boolean;
@@ -48,15 +48,10 @@ const AutoCompleteDepartment = ({
 
 	const { phase: departmentsPhase, items: departmentsItems, itemCount: departmentsTotal } = useRecordList(departmentsList);
 
-	const department = useMemo(() => {
-		const valueFound = typeof value === 'string' ? value : value?.value || '';
-		return departmentsItems.find((dep) => dep.value === valueFound)?.value;
-	}, [departmentsItems, value]);
-
 	return (
 		<PaginatedSelectFiltered
 			withTitle
-			value={department}
+			value={value}
 			onChange={onChange}
 			filter={departmentsFilter}
 			setFilter={setDepartmentsFilter as (value?: string | number) => void}

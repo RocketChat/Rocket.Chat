@@ -30,7 +30,7 @@ import { addUserToRoom } from '../../../../lib/server/functions';
 import { apiDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 import { deprecationWarning } from '../../../../api/server/helpers/deprecationWarning';
 import { callbacks } from '../../../../../lib/callbacks';
-import type { CloseRoomParams } from '../../lib/LivechatTyped.d';
+import type { CloseRoomParams } from '../../lib/LivechatTyped';
 
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: true }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
 
@@ -290,7 +290,7 @@ API.v1.addRoute(
 			}
 
 			const config = await settings();
-			if (!config.survey || !config.survey.items || !config.survey.values) {
+			if (!config.survey?.items || !config.survey.values) {
 				throw new Error('invalid-livechat-config');
 			}
 

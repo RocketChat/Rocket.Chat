@@ -71,28 +71,6 @@ const getRoomType = (room: IRoom): typeof roomTypeI18nMap[keyof typeof roomTypeI
 const getRoomDisplayName = (room: IRoom): string | undefined =>
 	room.t === 'd' ? room.usernames?.join(' x ') : roomCoordinator.getRoomName(room.t, room);
 
-const useDisplayData = (asyncState: any, sort: [string, 'asc' | 'desc']): IRoom[] =>
-	useMemo(() => {
-		const { data = {}, isLoading } = asyncState;
-
-		if (isLoading) {
-			return null;
-		}
-
-		if (sort[0] === 'name' && data.rooms) {
-			return data.rooms.sort((a: IRoom, b: IRoom) => {
-				const aName = getRoomDisplayName(a) || '';
-				const bName = getRoomDisplayName(b) || '';
-				if (aName === bName) {
-					return 0;
-				}
-				const result = aName < bName ? -1 : 1;
-				return sort[1] === 'asc' ? result : result * -1;
-			});
-		}
-		return data;
-	}, [asyncState, sort]);
-
 const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): ReactElement => {
 	const t = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
@@ -119,12 +97,9 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	const endpointData = useQuery(
 		['rooms', query, 'admin'],
 		async () => {
-			const { rooms } = await getAdminRooms({ filter: params.text, ...params });
+			const adminRooms = await getAdminRooms(query);
 
-			if (rooms.length === 0) {
-				throw new Error(t('No_results_found'));
-			}
-			return rooms;
+			return { ...adminRooms, rooms: adminRooms.rooms as IRoom[] };
 		},
 		{
 			onError: (error) => {
@@ -133,7 +108,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 		},
 	);
 
-	const { data, refetch } = endpointData;
+	const { data, refetch, isLoading } = endpointData;
 
 	useEffect(() => {
 		reload.current = refetch;
@@ -163,7 +138,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 		[sort, setSort],
 	);
 
-	const displayData = useDisplayData(endpointData, sort);
+	const displayData = !isLoading && data ? data.rooms : undefined;
 
 	const header = useMemo(
 		() =>
@@ -266,7 +241,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 			header={header}
 			renderRow={renderRow}
 			results={displayData}
-			total={data?.length}
+			total={data?.total}
 			params={params}
 			setParams={setParams}
 			renderFilter={({ onChange, ...props }): ReactElement => <FilterByTypeAndText setFilter={onChange} {...props} />}
