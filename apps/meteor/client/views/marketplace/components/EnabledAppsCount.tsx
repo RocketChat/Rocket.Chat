@@ -37,7 +37,9 @@ const EnabledAppsCount = ({
 					{`${enabled} / ${limit}`}
 				</Box>
 			</Box>
-			<ProgressBar variant={variant} percentage={percentage} />
+			<Box mbs='x8'>
+				<ProgressBar variant={variant} percentage={percentage} />
+			</Box>
 		</Box>
 	);
 };
