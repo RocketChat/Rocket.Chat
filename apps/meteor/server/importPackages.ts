@@ -1,5 +1,4 @@
 import '../app/cors/server';
-import '../app/sms/server';
 import '../app/2fa/server';
 import '../app/analytics/server';
 import '../app/api/server';
