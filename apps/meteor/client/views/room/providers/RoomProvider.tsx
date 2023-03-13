@@ -33,7 +33,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	const [subscribedData, setSubscribedData] = useState({});
 
 	useEffect(() => {
-		const unsubscribe = subscribeToRoom(rid, (room: IRoom | IOmnichannelRoom) => {
+		return subscribeToRoom(rid, (room: IRoom | IOmnichannelRoom) => {
 			if (!isOmnichannelRoom(room)) {
 				return;
 			}
@@ -41,20 +41,7 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 
 			setSubscribedData({ open, servedBy, queuedAt });
 		});
-
-		return () => {
-			unsubscribe();
-		};
 	}, [subscribeToRoom, rid]);
-
-	useEffect(() => {
-		if (!roomQuery.data || (roomQuery.data && !isOmnichannelRoom(roomQuery.data))) {
-			return;
-		}
-		const { open, servedBy, queuedAt } = roomQuery.data;
-
-		setSubscribedData({ open, servedBy, queuedAt });
-	}, [roomQuery.data]);
 
 	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
 	const homeRoute = useRoute('home');
