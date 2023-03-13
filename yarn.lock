@@ -2315,7 +2315,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/preset-env@npm:^7.12.11, @babel/preset-env@npm:^7.20.2":
+"@babel/preset-env@npm:^7.12.11, @babel/preset-env@npm:^7.20.2, @babel/preset-env@npm:~7.20.2":
   version: 7.20.2
   resolution: "@babel/preset-env@npm:7.20.2"
   dependencies:
@@ -6607,6 +6607,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/base64@workspace:^, @rocket.chat/base64@workspace:packages/base64":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/base64@workspace:packages/base64"
+  dependencies:
+    "@babel/core": ~7.20.5
+    "@babel/preset-env": ~7.20.2
+    "@rocket.chat/eslint-config": "workspace:^"
+    "@typescript-eslint/eslint-plugin": ^5.30.7
+    "@typescript-eslint/parser": ^5.30.7
+    eslint: ^8.29.0
+    jest: ^27.5.1
+    ts-jest: ^27.1.5
+    typescript: ~4.6.4
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/cas-validate@workspace:^, @rocket.chat/cas-validate@workspace:packages/cas-validate":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/cas-validate@workspace:packages/cas-validate"
@@ -7267,6 +7283,7 @@ __metadata:
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
     "@rocket.chat/apps-engine": 1.37.0-alpha.164
+    "@rocket.chat/base64": "workspace:^"
     "@rocket.chat/cas-validate": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
@@ -7298,7 +7315,9 @@ __metadata:
     "@rocket.chat/pdf-worker": "workspace:^"
     "@rocket.chat/poplib": "workspace:^"
     "@rocket.chat/presence": "workspace:^"
+    "@rocket.chat/random": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
+    "@rocket.chat/sha256": "workspace:^"
     "@rocket.chat/string-helpers": next
     "@rocket.chat/tools": "workspace:^"
     "@rocket.chat/ui-client": "workspace:^"
@@ -7855,6 +7874,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/random@workspace:^, @rocket.chat/random@workspace:packages/random":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/random@workspace:packages/random"
+  dependencies:
+    "@babel/core": ~7.20.5
+    "@babel/preset-env": ~7.20.2
+    "@rocket.chat/eslint-config": "workspace:^"
+    "@typescript-eslint/eslint-plugin": ^5.30.7
+    "@typescript-eslint/parser": ^5.30.7
+    eslint: ^8.29.0
+    jest: ^27.5.1
+    ts-jest: ^27.1.5
+    typescript: ~4.6.4
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/rest-typings@workspace:^, @rocket.chat/rest-typings@workspace:packages/rest-typings":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/rest-typings@workspace:packages/rest-typings"
@@ -7886,6 +7921,22 @@ __metadata:
   checksum: e54e0a6c7049c3fb14b9d3a7f32a082d6b282d1b77543fc09c22b252daf1c7663da348532de90c96013c8a571471012fea8193e063faf2dc0148c175bd15b3f8
   languageName: node
   linkType: hard
+
+"@rocket.chat/sha256@workspace:^, @rocket.chat/sha256@workspace:packages/sha256":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/sha256@workspace:packages/sha256"
+  dependencies:
+    "@babel/core": ~7.20.5
+    "@babel/preset-env": ~7.20.2
+    "@rocket.chat/eslint-config": "workspace:^"
+    "@typescript-eslint/eslint-plugin": ^5.30.7
+    "@typescript-eslint/parser": ^5.30.7
+    eslint: ^8.29.0
+    jest: ^27.5.1
+    ts-jest: ^27.1.5
+    typescript: ~4.6.4
+  languageName: unknown
+  linkType: soft
 
 "@rocket.chat/stream-hub-service@workspace:ee/apps/stream-hub-service":
   version: 0.0.0-use.local
@@ -15979,9 +16030,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.0, caniuse-lite@npm:^1.0.30001109, caniuse-lite@npm:^1.0.30001370":
-  version: 1.0.30001399
-  resolution: "caniuse-lite@npm:1.0.30001399"
-  checksum: dd105b06fbbdc89867780a2f4debc3ecb184cff82f35b34aaac486628fcc9cf6bacf37573a9cc22dedc661178d460fa8401374a933cb9d2f8ee67316d98b2a8f
+  version: 1.0.30001464
+  resolution: "caniuse-lite@npm:1.0.30001464"
+  checksum: 67cdee102c1660d62d7b9dbd4740bb7af096236618f2509fd2e0039d50db5f02fb87c21d90b6d573fdcf50deaf3c84503d009e871502b5c221d0ba1dec18ba11
   languageName: node
   linkType: hard
 
