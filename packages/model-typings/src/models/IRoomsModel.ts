@@ -47,7 +47,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		teamId: ITeam['_id'],
 		name: IRoom['name'],
 		teamDefault: boolean,
-		ids: Array<IRoom['_id']>,
+		ids: Array<IRoom['_id']> | undefined,
 		options?: FindOptions<IRoom>,
 	): FindPaginated<FindCursor<IRoom>>;
 

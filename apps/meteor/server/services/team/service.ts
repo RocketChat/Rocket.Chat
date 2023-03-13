@@ -521,7 +521,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		if (getAllRooms) {
-			const { cursor, totalCount } = Rooms.findPaginatedByTeamIdContainingNameAndDefault(teamId, name, isDefault, [], {
+			const { cursor, totalCount } = Rooms.findPaginatedByTeamIdContainingNameAndDefault(teamId, name, isDefault, undefined, {
 				skip,
 				limit,
 			});
@@ -535,7 +535,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		const user = await Users.findOneById<{ __rooms: string[] }>(uid, {
 			projection: { __rooms: 1 },
 		});
-		const userRooms = user?.__rooms ?? [];
+		const userRooms = user?.__rooms;
 
 		const { cursor, totalCount } = Rooms.findPaginatedByTeamIdContainingNameAndDefault(teamId, name, isDefault, userRooms, { skip, limit });
 

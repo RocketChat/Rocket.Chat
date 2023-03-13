@@ -206,7 +206,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		teamId: ITeam['_id'],
 		name: IRoom['name'],
 		teamDefault = false,
-		ids: Array<IRoom['_id']> = [],
+		ids: Array<IRoom['_id']> | undefined,
 		options: FindOptions<IRoom> = {},
 	): FindPaginated<FindCursor<IRoom>> {
 		const query: Filter<IRoom> = {
