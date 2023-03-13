@@ -24,7 +24,7 @@ import type { Logger } from '../app/logger/server';
 import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
 import type { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
 import { compareByRanking } from './utils/comparisons';
-import type { CloseRoomParams } from '../app/livechat/server/lib/LivechatTyped.d';
+import type { CloseRoomParams } from '../app/livechat/server/lib/LivechatTyped';
 
 enum CallbackPriority {
 	HIGH = -1000,
@@ -78,6 +78,8 @@ type EventLikeCallbackSignatures = {
 	'federation.onAddUsersToARoom': (params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom) => void;
 	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;
 	'usernameSet': () => void;
+	'beforeLeaveRoom': (user: IUser, room: IRoom) => void;
+	'beforeJoinRoom': (user: IUser, room: IRoom) => void;
 };
 
 /**
@@ -168,8 +170,6 @@ type Hook =
 	| 'beforeCreateRoom'
 	| 'beforeCreateUser'
 	| 'beforeGetMentions'
-	| 'beforeJoinRoom'
-	| 'beforeLeaveRoom'
 	| 'beforeReadMessages'
 	| 'beforeRemoveFromRoom'
 	| 'beforeSaveMessage'

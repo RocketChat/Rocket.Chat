@@ -1,11 +1,39 @@
 import { HTTP } from 'meteor/http';
 import { Base64 } from '@rocket.chat/base64';
+import type { ISMSProvider, ServiceData, SMSProviderResult, SMSProviderResponse } from '@rocket.chat/core-typings';
 
-import { settings } from '../../../settings/server';
-import { SMS } from '../SMS';
-import { SystemLogger } from '../../../../server/lib/logger/system';
+import { settings } from '../../../../app/settings/server';
+import { SystemLogger } from '../../../lib/logger/system';
 
-class Mobex {
+type MobexData = {
+	from: string;
+	to: string;
+	content: string;
+	NumMedia?: string;
+} & Record<`MediaUrl${number}`, string> &
+	Record<`MediaContentType${number}`, string>;
+
+const isMobexData = (data: unknown): data is MobexData => {
+	if (typeof data !== 'object' || data === null) {
+		return false;
+	}
+
+	const { from, to, content } = data as Record<string, unknown>;
+
+	return typeof from === 'string' && typeof to === 'string' && typeof content === 'string';
+};
+
+export class Mobex implements ISMSProvider {
+	address: string;
+
+	restAddress: string;
+
+	username: string;
+
+	password: string;
+
+	from: string;
+
 	constructor() {
 		this.address = settings.get('SMS_Mobex_gateway_address');
 		this.restAddress = settings.get('SMS_Mobex_restful_address');
@@ -14,10 +42,14 @@ class Mobex {
 		this.from = settings.get('SMS_Mobex_from_number');
 	}
 
-	parse(data) {
+	parse(data: unknown) {
 		let numMedia = 0;
 
-		const returnData = {
+		if (!isMobexData(data)) {
+			throw new Error('Invalid data');
+		}
+
+		const returnData: ServiceData = {
 			from: data.from,
 			to: data.to,
 			body: data.content,
@@ -52,12 +84,23 @@ class Mobex {
 		return returnData;
 	}
 
-	send(fromNumber, toNumber, message, username = null, password = null, address = null) {
+	// @ts-expect-error -- typings :) for this method are wrong
+	async send(
+		fromNumber: string,
+		toNumber: string,
+		message: string,
+		extraData: {
+			username?: string;
+			password?: string;
+			address?: string;
+		},
+	): Promise<SMSProviderResult> {
 		let currentFrom = this.from;
 		let currentUsername = this.username;
 		let currentAddress = this.address;
 		let currentPassword = this.password;
 
+		const { username, password, address } = extraData;
 		if (fromNumber) {
 			currentFrom = fromNumber;
 		}
@@ -70,7 +113,7 @@ class Mobex {
 		}
 
 		const strippedTo = toNumber.replace(/\D/g, '');
-		const result = {
+		const result: SMSProviderResult = {
 			isSuccess: false,
 			resultMsg: 'An unknown error happened',
 		};
@@ -94,16 +137,16 @@ class Mobex {
 		return result;
 	}
 
-	async sendBatch(fromNumber, toNumbersArr, message) {
+	async sendBatch(fromNumber: string, toNumbersArr: string[], message: string): Promise<SMSProviderResult> {
 		let currentFrom = this.from;
 		if (fromNumber) {
 			currentFrom = fromNumber;
 		}
 
-		const result = {
+		const result: SMSProviderResult = {
 			isSuccess: false,
 			resultMsg: 'An unknown error happened',
-			response: false,
+			response: null,
 		};
 
 		const userPass = `${this.username}:${this.password}`;
@@ -137,7 +180,7 @@ class Mobex {
 		return result;
 	}
 
-	response(/* message */) {
+	response(): SMSProviderResponse {
 		return {
 			headers: {
 				'Content-Type': 'text/xml',
@@ -146,7 +189,7 @@ class Mobex {
 		};
 	}
 
-	error(error) {
+	error(error: Error & { reason?: string }): SMSProviderResponse {
 		let message = '';
 		if (error.reason) {
 			message = `<Message>${error.reason}</Message>`;
@@ -159,5 +202,3 @@ class Mobex {
 		};
 	}
 }
-
-SMS.registerService('mobex', Mobex);
