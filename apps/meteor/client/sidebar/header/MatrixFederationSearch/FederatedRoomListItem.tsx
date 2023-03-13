@@ -14,7 +14,15 @@ const clampLine = css`
 	line-clamp: 6;
 `;
 
-const FederatedRoomListItem: VFC<FederatedRoomListItemProps> = ({ name, topic, canonicalAlias, joinedMembers, onClickJoin, disabled }) => {
+const FederatedRoomListItem: VFC<FederatedRoomListItemProps> = ({
+	name,
+	topic,
+	canonicalAlias,
+	joinedMembers,
+	onClickJoin,
+	canJoin,
+	disabled,
+}) => {
 	const t = useTranslation();
 
 	return (
@@ -23,7 +31,7 @@ const FederatedRoomListItem: VFC<FederatedRoomListItemProps> = ({ name, topic, c
 				<Box flexGrow={1} flexShrink={1} fontScale='p1' fontWeight='bold' title={name} withTruncatedText>
 					{name}
 				</Box>
-				<Button primary flexShrink={0} onClick={onClickJoin} disabled={disabled} small>
+				<Button primary flexShrink={0} onClick={onClickJoin} disabled={!canJoin || disabled} small>
 					{t('Join')}
 				</Button>
 			</Box>

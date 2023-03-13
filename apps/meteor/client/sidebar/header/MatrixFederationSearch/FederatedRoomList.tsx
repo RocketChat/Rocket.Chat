@@ -29,8 +29,8 @@ const FederatedRoomList: VFC<FederatedRoomListProps> = ({ serverName, roomName, 
 
 	const { mutate: onClickJoin, isLoading: isLoadingMutation } = useMutation(
 		['federation/joinExternalPublicRoom'],
-		async ({ id }: IFederationPublicRooms) => {
-			return joinExternalPublicRoom({ externalRoomId: id as `!${string}:${string}` });
+		async ({ id, pageToken }: IFederationPublicRooms) => {
+			return joinExternalPublicRoom({ externalRoomId: id as `!${string}:${string}`, roomName, pageToken });
 		},
 		{
 			onSuccess: (_, data) => {
