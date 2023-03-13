@@ -51,7 +51,11 @@ type ThreadMessageListProps = {
 
 const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElement => {
 	const { messages, loading } = useLegacyThreadMessages(mainMessage._id);
-	const { listWrapperRef: listWrapperScrollRef, listRef: listScrollRef, onScroll: handleScroll } = useLegacyThreadMessageListScrolling();
+	const {
+		listWrapperRef: listWrapperScrollRef,
+		listRef: listScrollRef,
+		onScroll: handleScroll,
+	} = useLegacyThreadMessageListScrolling(mainMessage);
 	const { parentRef: listJumpRef } = useLegacyThreadMessageJump({ enabled: !loading });
 
 	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, listJumpRef);
