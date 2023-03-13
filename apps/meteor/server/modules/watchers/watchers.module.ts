@@ -310,7 +310,7 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 				const history = await IntegrationHistory.findOneById<Pick<IIntegrationHistory, 'integration'>>(id, {
 					projection: { 'integration._id': 1 },
 				});
-				if (!history || !history.integration) {
+				if (!history?.integration) {
 					return;
 				}
 				broadcast('watch.integrationHistory', { clientAction, data: history, diff, id });

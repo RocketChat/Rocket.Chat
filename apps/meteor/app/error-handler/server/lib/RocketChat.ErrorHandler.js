@@ -3,7 +3,7 @@ import { Settings } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { Users, Rooms } from '../../../models/server';
-import { sendMessage } from '../../../lib';
+import { sendMessage } from '../../../lib/server';
 
 class ErrorHandler {
 	constructor() {

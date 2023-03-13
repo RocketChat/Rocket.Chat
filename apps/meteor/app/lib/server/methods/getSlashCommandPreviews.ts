@@ -5,7 +5,7 @@ import { slashCommands } from '../../../utils/server';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
-	export interface ServerMethods {
+	interface ServerMethods {
 		getSlashCommandPreviews(command: { cmd: string; params: string; msg: Pick<IMessage, 'rid' | 'tmid'> }): Promise<SlashCommandPreviews>;
 	}
 }

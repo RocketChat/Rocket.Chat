@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Settings, Users as UsersRaw } from '@rocket.chat/models';
-import { Apps, AppsConverter, AppsManager } from '@rocket.chat/core-services';
+import { Apps, AppsConverter, AppsManager, Users } from '@rocket.chat/core-services';
 
 import { API } from '../../../api/server';
 import { getUploadFormData } from '../../../api/server/lib/getUploadFormData';

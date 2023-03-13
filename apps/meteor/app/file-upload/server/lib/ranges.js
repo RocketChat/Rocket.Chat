@@ -1,4 +1,4 @@
-export function getByteRange(header) {
+function getByteRange(header) {
 	if (!header) {
 		return;
 	}

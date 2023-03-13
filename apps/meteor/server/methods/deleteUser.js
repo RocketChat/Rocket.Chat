@@ -4,7 +4,7 @@ import { AppInterface as AppEvents } from '@rocket.chat/apps-engine/definition/m
 import { Apps } from '@rocket.chat/core-services';
 
 import { Users } from '../../app/models/server';
-import { hasPermission } from '../../app/authorization';
+import { hasPermission } from '../../app/authorization/server';
 import { callbacks } from '../../lib/callbacks';
 import { deleteUser } from '../../app/lib/server';
 

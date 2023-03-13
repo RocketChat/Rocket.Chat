@@ -8,6 +8,7 @@ import { Users, Subscriptions, Rooms } from '@rocket.chat/models';
 import { Room } from '@rocket.chat/core-services';
 
 import type { AppServerOrchestrator } from '../orchestrator';
+import { Rooms, Subscriptions, Users } from '../../../models/server';
 
 export class AppRoomBridge extends RoomBridge {
 	// eslint-disable-next-line no-empty-function
