@@ -2,10 +2,10 @@
 
 <!-- Your Pull Request name should start with one of the following tags
   feat: Adding a new feature
-  refactor: For an improvement (performance or little improvements) in existing features
+  refactor: A code change that doesn't change behavior (it doesn't add anything and doesn't fix anything)
   fix: For bug fixes that affect the end-user
   chore: For small tasks
-  doc: For documentation
+  docs: For documentation
   ci: For updating CI configuration
   test: For adding tests
   i18n: For updating any translations
