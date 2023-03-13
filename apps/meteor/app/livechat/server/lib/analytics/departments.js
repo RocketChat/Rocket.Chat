@@ -1,6 +1,6 @@
 import { LivechatRooms, Messages } from '@rocket.chat/models';
 
-export const findAllRoomsAsync = async ({ start, end, answered, departmentId, options = {} }) => {
+const findAllRoomsAsync = async ({ start, end, answered, departmentId, options = {} }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -65,7 +65,7 @@ export const findAllAverageServiceTimeAsync = async ({ start, end, departmentId,
 	};
 };
 
-export const findAllServiceTimeAsync = async ({ start, end, departmentId, options = {} }) => {
+const findAllServiceTimeAsync = async ({ start, end, departmentId, options = {} }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -107,7 +107,7 @@ export const findAllAverageWaitingTimeAsync = async ({ start, end, departmentId,
 	};
 };
 
-export const findAllNumberOfTransferredRoomsAsync = async ({ start, end, departmentId, options = {} }) => {
+const findAllNumberOfTransferredRoomsAsync = async ({ start, end, departmentId, options = {} }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}

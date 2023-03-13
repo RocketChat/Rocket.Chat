@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { CustomUserStatus } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 import { trim } from '../../../../lib/utils/stringUtils';
 
 Meteor.methods({

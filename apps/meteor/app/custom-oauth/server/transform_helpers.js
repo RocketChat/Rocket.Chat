@@ -1,4 +1,4 @@
-import _ from 'underscore';
+import { isObject } from '../../../lib/utils/isObject';
 
 export const normalizers = {
 	// Set 'id' to '_id' for any sources that provide it
@@ -106,7 +106,7 @@ export const renameInvalidProperties = (input) => {
 	if (Array.isArray(input)) {
 		return input.map(renameInvalidProperties);
 	}
-	if (!_.isObject(input)) {
+	if (!isObject(input)) {
 		return input;
 	}
 
