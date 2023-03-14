@@ -247,3 +247,4 @@ export * from './v1/import';
 export * from './v1/voip';
 export * from './v1/email-inbox';
 export * from './v1/federation';
+export * from './v1/chat';

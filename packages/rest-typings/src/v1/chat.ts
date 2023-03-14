@@ -1,5 +1,7 @@
-import type { IMessage, IRoom, ReadReceipt } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, MessageAttachment, ReadReceipt } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
+
+import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 
 const ajv = new Ajv({
 	coerceTypes: true,
@@ -14,13 +16,60 @@ const chatSendMessageSchema = {
 	properties: {
 		message: {
 			type: 'object',
+			properties: {
+				_id: {
+					type: 'string',
+					nullable: true,
+				},
+				rid: {
+					type: 'string',
+				},
+				tmid: {
+					type: 'string',
+					nullable: true,
+				},
+				msg: {
+					type: 'string',
+					nullable: true,
+				},
+				alias: {
+					type: 'string',
+					nullable: true,
+				},
+				emoji: {
+					type: 'string',
+					nullable: true,
+				},
+				tshow: {
+					type: 'boolean',
+					nullable: true,
+				},
+				avatar: {
+					type: 'string',
+					nullable: true,
+				},
+				attachments: {
+					type: 'array',
+					items: {
+						type: 'object',
+					},
+					nullable: true,
+				},
+				blocks: {
+					type: 'array',
+					items: {
+						type: 'object',
+					},
+					nullable: true,
+				},
+			},
 		},
 	},
 	required: ['message'],
 	additionalProperties: false,
 };
 
-export const isChatSendMessageProps = ajv.compile<ChatFollowMessage>(chatSendMessageSchema);
+export const isChatSendMessageProps = ajv.compile<ChatSendMessage>(chatSendMessageSchema);
 
 type ChatFollowMessage = {
 	mid: IMessage['_id'];
@@ -74,51 +123,51 @@ const ChatGetMessageSchema = {
 export const isChatGetMessageProps = ajv.compile<ChatGetMessage>(ChatGetMessageSchema);
 
 type ChatStarMessage = {
-	msgId: IMessage['_id'];
+	messageId: IMessage['_id'];
 };
 
 const ChatStarMessageSchema = {
 	type: 'object',
 	properties: {
-		msgId: {
+		messageId: {
 			type: 'string',
 		},
 	},
-	required: ['msgId'],
+	required: ['messageId'],
 	additionalProperties: false,
 };
 
 export const isChatStarMessageProps = ajv.compile<ChatStarMessage>(ChatStarMessageSchema);
 
 type ChatUnstarMessage = {
-	msgId: IMessage['_id'];
+	messageId: IMessage['_id'];
 };
 
 const ChatUnstarMessageSchema = {
 	type: 'object',
 	properties: {
-		msgId: {
+		messageId: {
 			type: 'string',
 		},
 	},
-	required: ['msgId'],
+	required: ['messageId'],
 	additionalProperties: false,
 };
 
 export const isChatUnstarMessageProps = ajv.compile<ChatUnstarMessage>(ChatUnstarMessageSchema);
 
 type ChatPinMessage = {
-	msgId: IMessage['_id'];
+	messageId: IMessage['_id'];
 };
 
 const ChatPinMessageSchema = {
 	type: 'object',
 	properties: {
-		msgId: {
+		messageId: {
 			type: 'string',
 		},
 	},
-	required: ['msgId'],
+	required: ['messageId'],
 	additionalProperties: false,
 };
 
@@ -270,7 +319,9 @@ const ChatDeleteSchema = {
 
 export const isChatDeleteProps = ajv.compile<ChatDelete>(ChatDeleteSchema);
 
-type ChatReact = { emoji: string; messageId: IMessage['_id'] } | { reaction: string; messageId: IMessage['_id'] };
+type ChatReact =
+	| { emoji: string; messageId: IMessage['_id']; shouldReact?: boolean }
+	| { reaction: string; messageId: IMessage['_id']; shouldReact?: boolean };
 
 const ChatReactSchema = {
 	oneOf: [
@@ -282,6 +333,10 @@ const ChatReactSchema = {
 				},
 				messageId: {
 					type: 'string',
+				},
+				shouldReact: {
+					type: 'boolean',
+					nullable: true,
 				},
 			},
 			required: ['emoji', 'messageId'],
@@ -295,6 +350,10 @@ const ChatReactSchema = {
 				},
 				messageId: {
 					type: 'string',
+				},
+				shouldReact: {
+					type: 'boolean',
+					nullable: true,
 				},
 			},
 			required: ['reaction', 'messageId'],
@@ -435,7 +494,7 @@ const GetStarredMessagesSchema = {
 	additionalProperties: false,
 };
 
-export const isChatGetStarredMessagesPayload = ajv.compile<GetStarredMessages>(GetStarredMessagesSchema);
+export const isChatGetStarredMessagesProps = ajv.compile<GetStarredMessages>(GetStarredMessagesSchema);
 
 type GetPinnedMessages = {
 	roomId: IRoom['_id'];
@@ -467,7 +526,7 @@ const GetPinnedMessagesSchema = {
 	additionalProperties: false,
 };
 
-export const isChatGetPinnedMessagesPayload = ajv.compile<GetPinnedMessages>(GetPinnedMessagesSchema);
+export const isChatGetPinnedMessagesProps = ajv.compile<GetPinnedMessages>(GetPinnedMessagesSchema);
 
 type GetMentionedMessages = {
 	roomId: IRoom['_id'];
@@ -499,11 +558,206 @@ const GetMentionedMessagesSchema = {
 	additionalProperties: false,
 };
 
-export const isChatGetMentionedMessagesPayload = ajv.compile<GetMentionedMessages>(GetMentionedMessagesSchema);
+export const isChatGetMentionedMessagesProps = ajv.compile<GetMentionedMessages>(GetMentionedMessagesSchema);
+
+type ChatSyncMessages = {
+	roomId: IRoom['_id'];
+	lastUpdate: string;
+};
+
+const ChatSyncMessagesSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		lastUpdate: {
+			type: 'string',
+		},
+	},
+	required: ['roomId', 'lastUpdate'],
+	additionalProperties: false,
+};
+
+export const isChatSyncMessagesProps = ajv.compile<ChatSyncMessages>(ChatSyncMessagesSchema);
+
+type ChatSyncThreadMessages = PaginatedRequest<{
+	tmid: string;
+	updatedSince: string;
+}>;
+
+const ChatSyncThreadMessagesSchema = {
+	type: 'object',
+	properties: {
+		tmid: {
+			type: 'string',
+		},
+		updatedSince: {
+			type: 'string',
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['tmid', 'updatedSince'],
+	additionalProperties: false,
+};
+
+export const isChatSyncThreadMessagesProps = ajv.compile<ChatSyncThreadMessages>(ChatSyncThreadMessagesSchema);
+
+type ChatGetThreadMessages = PaginatedRequest<{
+	tmid: string;
+}>;
+
+const ChatGetThreadMessagesSchema = {
+	type: 'object',
+	properties: {
+		tmid: {
+			type: 'string',
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['tmid'],
+	additionalProperties: false,
+};
+
+export const isChatGetThreadMessagesProps = ajv.compile<ChatGetThreadMessages>(ChatGetThreadMessagesSchema);
+
+type ChatGetDeletedMessages = PaginatedRequest<{
+	roomId: IRoom['_id'];
+	since: string;
+}>;
+
+const ChatGetDeletedMessagesSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		since: {
+			type: 'string',
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['roomId', 'since'],
+	additionalProperties: false,
+};
+
+export const isChatGetDeletedMessagesProps = ajv.compile<ChatGetDeletedMessages>(ChatGetDeletedMessagesSchema);
+
+type ChatPostMessage =
+	| { roomId: string; text?: string; alias?: string; emoji?: string; avatar?: string; attachments?: MessageAttachment[] }
+	| { channel: string; text?: string; alias?: string; emoji?: string; avatar?: string; attachments?: MessageAttachment[] };
+
+const ChatPostMessageSchema = {
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: {
+					type: 'string',
+				},
+				text: {
+					type: 'string',
+					nullable: true,
+				},
+				alias: {
+					type: 'string',
+					nullable: true,
+				},
+				emoji: {
+					type: 'string',
+					nullable: true,
+				},
+				avatar: {
+					type: 'string',
+					nullable: true,
+				},
+				attachments: {
+					type: 'array',
+					items: {
+						type: 'object',
+					},
+					nullable: true,
+				},
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				channel: {
+					type: 'string',
+				},
+				text: {
+					type: 'string',
+					nullable: true,
+				},
+				alias: {
+					type: 'string',
+					nullable: true,
+				},
+				emoji: {
+					type: 'string',
+					nullable: true,
+				},
+				avatar: {
+					type: 'string',
+					nullable: true,
+				},
+				attachments: {
+					type: 'array',
+					items: {
+						type: 'object',
+					},
+					nullable: true,
+				},
+			},
+			required: ['channel'],
+			additionalProperties: false,
+		},
+	],
+};
+
+export const isChatPostMessageProps = ajv.compile<ChatPostMessage>(ChatPostMessageSchema);
 
 export type ChatEndpoints = {
 	'/v1/chat.sendMessage': {
-		POST: (params: ChatSendMessage) => IMessage;
+		POST: (params: ChatSendMessage) => {
+			message: IMessage;
+		};
 	};
 	'/v1/chat.getMessage': {
 		GET: (params: ChatGetMessage) => {
@@ -523,7 +777,9 @@ export type ChatEndpoints = {
 		POST: (params: ChatUnstarMessage) => void;
 	};
 	'/v1/chat.pinMessage': {
-		POST: (params: ChatPinMessage) => void;
+		POST: (params: ChatPinMessage) => {
+			message: IMessage;
+		};
 	};
 	'/v1/chat.unPinMessage': {
 		POST: (params: ChatUnpinMessage) => void;
@@ -571,7 +827,7 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.update': {
 		POST: (params: ChatUpdate) => {
-			messages: IMessage;
+			message: IMessage;
 		};
 	};
 	'/v1/chat.getMessageReadReceipts': {
@@ -595,6 +851,45 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.getMentionedMessages': {
 		GET: (params: GetMentionedMessages) => {
+			messages: IMessage[];
+			count: number;
+			offset: number;
+			total: number;
+		};
+	};
+	'/v1/chat.syncMessages': {
+		GET: (params: ChatSyncMessages) => {
+			result: {
+				updated: IMessage[];
+				deleted: IMessage[];
+			};
+		};
+	};
+	'/v1/chat.postMessage': {
+		POST: (params: ChatPostMessage) => {
+			ts: number;
+			channel: IRoom;
+			message: IMessage;
+		};
+	};
+	'/v1/chat.syncThreadMessages': {
+		GET: (params: ChatSyncThreadMessages) => {
+			messages: {
+				update: IMessage[];
+				remove: IMessage[];
+			};
+		};
+	};
+	'/v1/chat.getThreadMessages': {
+		GET: (params: ChatGetThreadMessages) => {
+			messages: IMessage[];
+			count: number;
+			offset: number;
+			total: number;
+		};
+	};
+	'/v1/chat.getDeletedMessages': {
+		GET: (params: ChatGetDeletedMessages) => {
 			messages: IMessage[];
 			count: number;
 			offset: number;
