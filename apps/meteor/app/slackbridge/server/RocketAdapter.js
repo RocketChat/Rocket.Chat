@@ -3,7 +3,7 @@ import util from 'util';
 import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 
 import { rocketLogger } from './logger';
 import { callbacks } from '../../../lib/callbacks';
