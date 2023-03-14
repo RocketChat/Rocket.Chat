@@ -263,7 +263,7 @@ export class LDAPEEManager extends LDAPManager {
 		return room;
 	}
 
-	private static syncUserChannels(ldap: LDAPConnection, user: IUser, dn: string): Promise<void> {
+	private static async syncUserChannels(ldap: LDAPConnection, user: IUser, dn: string): Promise<void> {
 		const syncUserChannels = settings.get<boolean>('LDAP_Sync_User_Data_Channels') ?? false;
 		const syncUserChannelsRemove = settings.get<boolean>('LDAP_Sync_User_Data_Channels_Enforce_AutoChannels') ?? false;
 		const syncUserChannelsFieldMap = (settings.get<string>('LDAP_Sync_User_Data_ChannelsMap') ?? '').trim();
