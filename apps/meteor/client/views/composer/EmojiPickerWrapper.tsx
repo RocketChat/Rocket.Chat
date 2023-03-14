@@ -10,7 +10,7 @@ type EmojiPickerWrapperProps = {
 	currentTone: string;
 	emojiList: (category: string) => string;
 	emojiCategories: {
-		key: string;
+		key: 'recent' | 'rocket' | 'people' | 'nature' | 'food' | 'activity' | 'travel' | 'objects' | 'symbols' | 'flags';
 		i18n: TranslationKey;
 	}[];
 };
@@ -86,9 +86,9 @@ const EmojiPickerWrapper = ({
 							className={`filter-item border-secondary-background-color ${activeCategory} ${category.key}`}
 							title={t(category.i18n)}
 						>
-							<a href={`#${category.key}`} className='category-link color-info-font-color'>
+							<Box is='a' href={`#${category.key}`} className='category-link' color='secondary-info'>
 								<i className={`category-icon icon-${category.key}`}></i>
-							</a>
+							</Box>
 						</li>
 					))}
 				</ul>

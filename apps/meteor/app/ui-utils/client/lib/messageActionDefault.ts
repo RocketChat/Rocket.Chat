@@ -16,15 +16,6 @@ import ReportMessageModal from '../../../../client/views/room/modals/ReportMessa
 import CreateDiscussion from '../../../../client/components/CreateDiscussion/CreateDiscussion';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 
-export const addMessageToList = (messagesList: IMessage[], message: IMessage): IMessage[] => {
-	// checks if the message is not already on the list
-	if (!messagesList.find(({ _id }) => _id === message._id)) {
-		messagesList.push(message);
-	}
-
-	return messagesList;
-};
-
 const getMainMessageText = (message: IMessage): IMessage => {
 	const newMessage = { ...message };
 	newMessage.msg = newMessage.msg || newMessage.attachments?.[0]?.description || newMessage.attachments?.[0]?.title || '';

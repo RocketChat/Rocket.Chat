@@ -5,7 +5,7 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
 import { Rooms, Messages, Users, Subscriptions } from '../../../models/server';
-import { metrics } from '../../../metrics';
+import { metrics } from '../../../metrics/server';
 import { canAccessRoom, hasPermission } from '../../../authorization/server';
 import { sendMessage } from '../functions/sendMessage';
 

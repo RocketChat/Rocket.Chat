@@ -12,7 +12,7 @@ import { validate } from '@rocket.chat/cas-validate';
 import { logger } from './cas_rocketchat';
 import { settings } from '../../settings/server';
 import { Rooms } from '../../models/server';
-import { _setRealName } from '../../lib';
+import { _setRealName } from '../../lib/server';
 import { createRoom } from '../../lib/server/functions/createRoom';
 
 RoutePolicy.declare('/_cas/', 'network');

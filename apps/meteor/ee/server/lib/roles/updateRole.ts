@@ -8,11 +8,7 @@ type UpdateRoleOptions = {
 	broadcastUpdate?: boolean;
 };
 
-export const updateRoleAsync = async (
-	roleId: IRole['_id'],
-	roleData: Omit<IRole, '_id'>,
-	options: UpdateRoleOptions = {},
-): Promise<IRole> => {
+const updateRoleAsync = async (roleId: IRole['_id'], roleData: Omit<IRole, '_id'>, options: UpdateRoleOptions = {}): Promise<IRole> => {
 	const role = await Roles.findOneById(roleId);
 
 	if (!role) {

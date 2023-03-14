@@ -1,7 +1,7 @@
 import { Settings } from '@rocket.chat/models';
 
 import { Base, ProgressStep } from '../../importer/server';
-import { RocketChatFile } from '../../file';
+import { RocketChatFile } from '../../file/server';
 
 export class SlackUsersImporter extends Base {
 	constructor(info, importRecord) {
@@ -12,9 +12,14 @@ export class SlackUsersImporter extends Base {
 		this.csvParser = parse;
 	}
 
+	async prepareUsingLocalFile(fullFilePath) {
+		await this.converter.clearImportData();
+
+		return super.prepareUsingLocalFile(fullFilePath);
+	}
+
 	prepare(dataURI, sentContentType, fileName) {
 		this.logger.debug('start preparing import operation');
-		this.converter.clearImportData();
 		super.prepare(dataURI, sentContentType, fileName, true);
 
 		super.updateProgress(ProgressStep.PREPARING_USERS);

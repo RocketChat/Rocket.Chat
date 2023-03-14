@@ -7,7 +7,7 @@ import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomType
 import { getLivechatRoomType } from '../../../../lib/rooms/roomTypes/livechat';
 import { roomCoordinator } from '../roomCoordinator';
 
-export const LivechatRoomType = getLivechatRoomType(roomCoordinator);
+const LivechatRoomType = getLivechatRoomType(roomCoordinator);
 
 roomCoordinator.add(LivechatRoomType, {
 	allowRoomSettingChange(_room, setting) {

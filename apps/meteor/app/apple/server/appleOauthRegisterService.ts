@@ -5,7 +5,7 @@ import { settings, settingsRegistry } from '../../settings/server';
 import { config } from '../lib/config';
 import { AppleCustomOAuth } from './AppleCustomOAuth';
 
-export const AppleOAuth = new AppleCustomOAuth('apple', config);
+new AppleCustomOAuth('apple', config);
 
 settingsRegistry.addGroup('OAuth', function () {
 	this.section('Apple', function () {
