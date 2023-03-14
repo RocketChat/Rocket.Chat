@@ -12,7 +12,7 @@ import { validate } from '@rocket.chat/cas-validate';
 import { logger } from './cas_rocketchat';
 import { settings } from '../../settings/server';
 import { Rooms } from '../../models/server';
-import { _setRealName } from '../../lib';
+import { _setRealName } from '../../lib/server';
 import { createRoom } from '../../lib/server/functions/createRoom';
 
 RoutePolicy.declare('/_cas/', 'network');
@@ -162,7 +162,7 @@ Accounts.registerLoginHandler('cas', function (options) {
 
 		_.each(attr_map, function (source, int_name) {
 			// Source is our String to interpolate
-			if (_.isString(source)) {
+			if (source && typeof source.valueOf() === 'string') {
 				let replacedValue = source;
 				_.each(ext_attrs, function (value, ext_name) {
 					replacedValue = replacedValue.replace(`%${ext_name}%`, ext_attrs[ext_name]);

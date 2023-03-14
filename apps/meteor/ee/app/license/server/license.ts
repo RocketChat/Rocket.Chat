@@ -1,16 +1,20 @@
 import { EventEmitter } from 'events';
 
+import { Apps } from '@rocket.chat/core-services';
+import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+
 import { Users } from '../../../../app/models/server';
 import type { BundleFeature } from './bundles';
 import { getBundleModules, isBundle, getBundleFromModule } from './bundles';
 import decrypt from './decrypt';
 import { getTagColor } from './getTagColor';
-import type { ILicense } from '../definitions/ILicense';
-import type { ILicenseTag } from '../definitions/ILicenseTag';
+import type { ILicense, LicenseAppSources } from '../definition/ILicense';
+import type { ILicenseTag } from '../definition/ILicenseTag';
+import { isUnderAppLimits } from './lib/isUnderAppLimits';
 
 const EnterpriseLicenses = new EventEmitter();
 
-export interface IValidLicense {
+interface IValidLicense {
 	valid?: boolean;
 	license: ILicense;
 }
@@ -29,6 +33,11 @@ class LicenseClass {
 
 	private modules = new Set<string>();
 
+	private appsConfig: NonNullable<ILicense['apps']> = {
+		maxPrivateApps: 3,
+		maxMarketplaceApps: 5,
+	};
+
 	private _validateExpiration(expiration: string): boolean {
 		return new Date() > new Date(expiration);
 	}
@@ -40,6 +49,21 @@ class LicenseClass {
 		const regex = new RegExp(`^${licenseURL}$`, 'i');
 
 		return !!regex.exec(url);
+	}
+
+	private _setAppsConfig(license: ILicense): void {
+		// If the license is valid, no limit is going to be applied to apps installation for now
+		// This guarantees that upgraded workspaces won't be affected by the new limit right away
+		// and gives us time to propagate the new limit schema to all licenses
+		const { maxPrivateApps = -1, maxMarketplaceApps = -1 } = license.apps || {};
+
+		if (maxPrivateApps === -1 || maxPrivateApps > this.appsConfig.maxPrivateApps) {
+			this.appsConfig.maxPrivateApps = maxPrivateApps;
+		}
+
+		if (maxMarketplaceApps === -1 || maxMarketplaceApps > this.appsConfig.maxMarketplaceApps) {
+			this.appsConfig.maxMarketplaceApps = maxMarketplaceApps;
+		}
 	}
 
 	private _validModules(licenseModules: string[]): void {
@@ -130,6 +154,10 @@ class LicenseClass {
 		return [...this.tags];
 	}
 
+	getAppsConfig(): NonNullable<ILicense['apps']> {
+		return this.appsConfig;
+	}
+
 	setURL(url: string): void {
 		this.url = url.replace(/\/$/, '').replace(/^https?:\/\/(.*)$/, '$1');
 
@@ -167,6 +195,8 @@ class LicenseClass {
 				maxActiveUsers = license.maxActiveUsers;
 			}
 
+			this._setAppsConfig(license);
+
 			this._validModules(license.modules);
 
 			this._addTags(license);
@@ -187,6 +217,14 @@ class LicenseClass {
 		}
 
 		return maxActiveUsers > Users.getActiveLocalUserCount();
+	}
+
+	async canEnableApp(source: LicenseAppSources): Promise<boolean> {
+		if (!Apps.isInitialized()) {
+			return false;
+		}
+
+		return isUnderAppLimits(this.appsConfig, source);
 	}
 
 	showLicenses(): void {
@@ -288,8 +326,22 @@ export function getTags(): ILicenseTag[] {
 	return License.getTags();
 }
 
+export function getAppsConfig(): NonNullable<ILicense['apps']> {
+	return License.getAppsConfig();
+}
+
 export function canAddNewUser(): boolean {
 	return License.canAddNewUser();
+}
+
+export async function canEnableApp(app: IAppStorageItem): Promise<boolean> {
+	// Migrated apps were installed before the validation was implemented
+	// so they're always allowed to be enabled
+	if (app.migrated) {
+		return true;
+	}
+
+	return License.canEnableApp(app.installationSource);
 }
 
 export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void): void {
@@ -300,7 +352,7 @@ export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void):
 	EnterpriseLicenses.once(`valid:${feature}`, cb);
 }
 
-export function onValidFeature(feature: BundleFeature, cb: () => void): () => void {
+function onValidFeature(feature: BundleFeature, cb: () => void): () => void {
 	EnterpriseLicenses.on(`valid:${feature}`, cb);
 
 	if (hasLicense(feature)) {
@@ -312,7 +364,7 @@ export function onValidFeature(feature: BundleFeature, cb: () => void): () => vo
 	};
 }
 
-export function onInvalidFeature(feature: BundleFeature, cb: () => void): () => void {
+function onInvalidFeature(feature: BundleFeature, cb: () => void): () => void {
 	EnterpriseLicenses.on(`invalid:${feature}`, cb);
 
 	if (!hasLicense(feature)) {
@@ -377,7 +429,7 @@ export function flatModules(modulesAndBundles: string[]): string[] {
 	return modules.concat(modulesFromBundles);
 }
 
-export interface IOverrideClassProperties {
+interface IOverrideClassProperties {
 	[key: string]: (...args: any[]) => any;
 }
 

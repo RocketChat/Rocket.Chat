@@ -20,7 +20,7 @@ const addQueryRestrictions = (originalQuery = {}) => {
 	return query;
 };
 
-export class LivechatUnit extends LivechatDepartment {
+class LivechatUnit extends LivechatDepartment {
 	find(originalQuery, ...args) {
 		const query = addQueryRestrictions(originalQuery);
 		queriesLogger.debug({ msg: 'LivechatUnit.find', query });

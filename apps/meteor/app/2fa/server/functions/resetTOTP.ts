@@ -4,7 +4,8 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../mailer/server/api';
+import { isUserIdFederated } from '../../../../server/lib/isUserIdFederated';
 
 const sendResetNotification = async function (uid: string): Promise<void> {
 	const user = await Users.findOneById<Pick<IUser, 'language' | 'emails'>>(uid, {
@@ -58,6 +59,11 @@ const sendResetNotification = async function (uid: string): Promise<void> {
 export async function resetTOTP(userId: string, notifyUser = false): Promise<boolean> {
 	if (notifyUser) {
 		await sendResetNotification(userId);
+	}
+
+	const isUserFederated = await isUserIdFederated(userId);
+	if (isUserFederated) {
+		throw new Meteor.Error('error-not-allowed', 'Federated Users cant have TOTP', { function: 'resetTOTP' });
 	}
 
 	const result = await Users.resetTOTPById(userId);

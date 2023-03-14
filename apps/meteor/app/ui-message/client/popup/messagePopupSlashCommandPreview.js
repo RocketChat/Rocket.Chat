@@ -1,10 +1,10 @@
-import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
-import { slashCommands } from '../../../utils';
-import { hasAtLeastOnePermission } from '../../../authorization';
+import { slashCommands } from '../../../utils/client';
+import { hasAtLeastOnePermission } from '../../../authorization/client';
+import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 import './messagePopupSlashCommandPreview.html';
 
 const keys = {
@@ -51,7 +51,7 @@ Template.messagePopupSlashCommandPreview.onCreated(function () {
 	this.dragging = false;
 
 	const template = this;
-	template.fetchPreviews = _.debounce(function _previewFetcher(cmd, args) {
+	template.fetchPreviews = withDebouncing({ wait: 500 })(function _previewFetcher(cmd, args) {
 		const command = cmd;
 		const params = args;
 		const { rid, tmid } = template.data;
@@ -77,7 +77,7 @@ Template.messagePopupSlashCommandPreview.onCreated(function () {
 				template.verifySelection();
 			});
 		});
-	}, 500);
+	});
 
 	template.enterKeyAction = () => {
 		const current = template.find('.popup-item.selected');
@@ -264,10 +264,10 @@ Template.messagePopupSlashCommandPreview.onRendered(function _messagePopupSlashC
 	}
 
 	this.inputBox = this.data.getInput();
-	$(this.inputBox).on('keyup', this.onInputKeyup.bind(this));
-	$(this.inputBox).on('keydown', this.onInputKeydown.bind(this));
-	$(this.inputBox).on('focus', this.onFocus.bind(this));
-	$(this.inputBox).on('blur', this.onBlur.bind(this));
+	$(this.inputBox).on('keyup', this.onInputKeyup);
+	$(this.inputBox).on('keydown', this.onInputKeydown);
+	$(this.inputBox).on('focus', this.onFocus);
+	$(this.inputBox).on('blur', this.onBlur);
 
 	const self = this;
 	self.autorun(() => {

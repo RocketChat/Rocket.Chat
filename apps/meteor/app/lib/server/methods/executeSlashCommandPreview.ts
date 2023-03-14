@@ -1,6 +1,17 @@
+import type { IMessage, SlashCommandPreviewItem } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { slashCommands } from '../../../utils/server';
+
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		executeSlashCommandPreview(
+			command: { cmd: string; params: string; msg: Pick<IMessage, 'rid' | 'tmid'> },
+			preview: SlashCommandPreviewItem,
+		): Promise<void>;
+	}
+}
 
 Meteor.methods({
 	executeSlashCommandPreview(command, preview) {

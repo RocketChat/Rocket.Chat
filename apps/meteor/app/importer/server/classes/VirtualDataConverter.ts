@@ -1,4 +1,4 @@
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import type {
 	IImportUserRecord,
 	IImportChannelRecord,
@@ -7,6 +7,7 @@ import type {
 	IImportRecordType,
 	IImportData,
 	IImportChannel,
+	IImportUser,
 } from '@rocket.chat/core-typings';
 
 import { ImportDataConverter } from './ImportDataConverter';
@@ -30,7 +31,7 @@ export class VirtualDataConverter extends ImportDataConverter {
 		}
 	}
 
-	public clearImportData(): void {
+	public async clearImportData(): Promise<void> {
 		if (!this.useVirtual) {
 			return super.clearImportData();
 		}
@@ -152,5 +153,11 @@ export class VirtualDataConverter extends ImportDataConverter {
 				}
 			}
 		}
+	}
+
+	static convertSingleUser(userData: IImportUser, options?: IConverterOptions): void {
+		const converter = new VirtualDataConverter(true, options);
+		converter.addUser(userData);
+		converter.convertUsers();
 	}
 }

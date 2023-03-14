@@ -15,13 +15,13 @@ type GenericModalProps = RequiredModalProps & {
 	cancelText?: ReactNode;
 	confirmText?: ReactNode;
 	title?: string | ReactElement;
-	tagline?: string;
 	icon?: ComponentProps<typeof Icon>['name'] | ReactElement | null;
 	confirmDisabled?: boolean;
+	tagline?: ReactNode;
 	onCancel?: () => void;
 	onClose?: () => void;
 	onConfirm?: () => void;
-};
+} & Omit<ComponentProps<typeof Modal>, 'title'>;
 
 const iconMap: Record<string, ComponentProps<typeof Icon>['name']> = {
 	danger: 'modal-warning',

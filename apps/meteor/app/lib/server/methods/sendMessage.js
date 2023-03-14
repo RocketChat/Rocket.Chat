@@ -4,14 +4,12 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 import { api } from '@rocket.chat/core-services';
 
-import { hasPermission } from '../../../authorization';
-import { metrics } from '../../../metrics';
+import { hasPermission, canSendMessage } from '../../../authorization/server';
+import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
-import { messageProperties } from '../../../ui-utils';
-import { Users, Messages } from '../../../models';
+import { Users, Messages } from '../../../models/server';
 import { sendMessage } from '../functions';
 import { RateLimiter } from '../lib';
-import { canSendMessage } from '../../../authorization/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export function executeSendMessage(uid, message) {
@@ -43,9 +41,7 @@ export function executeSendMessage(uid, message) {
 	}
 
 	if (message.msg) {
-		const adjustedMessage = messageProperties.messageWithoutEmojiShortnames(message.msg);
-
-		if (messageProperties.length(adjustedMessage) > settings.get('Message_MaxAllowedSize')) {
+		if (message.msg.length > settings.get('Message_MaxAllowedSize')) {
 			throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
 				method: 'sendMessage',
 			});

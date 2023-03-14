@@ -1,6 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { Box, Option, Icon } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { BlazeTemplates } from 'meteor/templating';
 import type { ReactNode, MouseEvent, ComponentProps, ComponentType } from 'react';
 
 import type { ToolboxContextValue } from '../../contexts/ToolboxContext';
@@ -37,7 +38,7 @@ export type ToolboxActionConfig = {
 	'hotkey'?: string;
 	'action'?: (e?: MouseEvent<HTMLElement>) => void;
 	'template'?:
-		| string
+		| keyof BlazeTemplates
 		| ComponentType<{
 				tabBar: ToolboxContextValue;
 				_id: IRoom['_id'];

@@ -5,7 +5,7 @@ import Users from './Users';
 /**
  * Livechat Department model
  */
-export class LivechatDepartmentAgents extends Base {
+class LivechatDepartmentAgents extends Base {
 	constructor() {
 		super('livechat_department_agents');
 
@@ -50,10 +50,6 @@ export class LivechatDepartmentAgents extends Base {
 
 	removeByDepartmentIdAndAgentId(departmentId, agentId) {
 		this.remove({ departmentId, agentId });
-	}
-
-	removeByDepartmentId(departmentId) {
-		this.remove({ departmentId });
 	}
 
 	getNextAgentForDepartment(departmentId, ignoreAgentId, extraQuery) {
@@ -231,4 +227,5 @@ export class LivechatDepartmentAgents extends Base {
 		return this.update({ departmentId }, { $set: { departmentEnabled } }, { multi: true });
 	}
 }
+
 export default new LivechatDepartmentAgents();

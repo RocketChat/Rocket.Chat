@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Integrations, Messages as MessagesRaw, Uploads, Rooms as RoomsRaw, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
@@ -19,7 +18,7 @@ import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 
 // Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
-export function findPrivateGroupByIdOrName({ params, userId, checkedArchived = true }) {
+function findPrivateGroupByIdOrName({ params, userId, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
 		throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
@@ -277,7 +276,7 @@ API.v1.addRoute(
 				return API.v1.failure('Body param "name" is required');
 			}
 
-			if (this.bodyParams.members && !_.isArray(this.bodyParams.members)) {
+			if (this.bodyParams.members && !Array.isArray(this.bodyParams.members)) {
 				return API.v1.failure('Body param "members" must be an array if provided');
 			}
 

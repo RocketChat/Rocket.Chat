@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 import { Users } from '../../../models/server';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
@@ -15,7 +14,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!username || !_.isString(username)) {
+		if (!username || typeof username.valueOf() !== 'string') {
 			throw new Meteor.Error('error-invalid-arguments', 'Invalid arguments', {
 				method: 'livechat:searchAgent',
 			});

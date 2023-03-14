@@ -11,7 +11,7 @@ import type { IMeteor, AutoUpdateRecord } from './types/IMeteor';
 import type { IUiKitCoreApp, IUiKitCoreAppService } from './types/IUiKitCoreApp';
 import type { IEnterpriseSettings } from './types/IEnterpriseSettings';
 import type { IBannerService } from './types/IBannerService';
-import type { IFederationService } from './types/IFederationService';
+import type { IFederationService, IFederationServiceEE } from './types/IFederationService';
 import type { INPSService, NPSCreatePayload, NPSVotePayload } from './types/INPSService';
 import type {
 	ITeamService,
@@ -23,6 +23,7 @@ import type {
 	ITeamAutocompleteResult,
 	IListRoomsFilter,
 } from './types/ITeamService';
+import type { IMessageReadsService } from './types/IMessageReadsService';
 import type { IRoomService, ICreateRoomParams, ISubscriptionExtraData } from './types/IRoomService';
 import type { IMediaService, ResizeResult } from './types/IMediaService';
 import type { IVoipService } from './types/IVoipService';
@@ -35,6 +36,13 @@ import type { IDeviceManagementService } from './types/IDeviceManagementService'
 import type { IPushService } from './types/IPushService';
 import type { IOmnichannelService } from './types/IOmnichannelService';
 import type { ITelemetryEvent, TelemetryMap, TelemetryEvents } from './types/ITelemetryEvent';
+import type { ICalendarService } from './types/ICalendarService';
+import type { IOmnichannelTranscriptService } from './types/IOmnichannelTranscriptService';
+import type { IQueueWorkerService, HealthAggResult } from './types/IQueueWorkerService';
+import type { ITranslationService } from './types/ITranslationService';
+import type { IMessageService } from './types/IMessageService';
+import type { ISettingsService } from './types/ISettingsService';
+import type { IOmnichannelIntegrationService } from './types/IOmnichannelIntegrationService';
 
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
@@ -60,6 +68,7 @@ export {
 	IDeviceManagementService,
 	IEnterpriseSettings,
 	IFederationService,
+	IFederationServiceEE,
 	ILDAPService,
 	ILicense,
 	IListRoomsFilter,
@@ -71,6 +80,7 @@ export {
 	IOmnichannelVoipService,
 	IPresence,
 	IPushService,
+	IMessageReadsService,
 	IRoomService,
 	ISAUMonitorService,
 	ISubscriptionExtraData,
@@ -98,10 +108,19 @@ export {
 	ISendFileMessageParams,
 	IUploadFileParams,
 	IUploadService,
+	ICalendarService,
+	IOmnichannelTranscriptService,
+	IQueueWorkerService,
+	HealthAggResult,
+	ITranslationService,
+	IMessageService,
+	ISettingsService,
+	IOmnichannelIntegrationService,
 };
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxifyWithWait<IAuthorization>('authorization');
+export const Apps = proxifyWithWait<IAppsEngineService>('apps-engine');
 export const Presence = proxifyWithWait<IPresence>('presence');
 export const Account = proxifyWithWait<IAccount>('accounts');
 export const License = proxifyWithWait<ILicense>('license');
@@ -110,6 +129,7 @@ export const Banner = proxifyWithWait<IBannerService>('banner');
 export const UiKitCoreApp = proxifyWithWait<IUiKitCoreAppService>('uikit-core-app');
 export const NPS = proxifyWithWait<INPSService>('nps');
 export const Team = proxifyWithWait<ITeamService>('team');
+export const MessageReads = proxifyWithWait<IMessageReadsService>('message-reads');
 export const Room = proxifyWithWait<IRoomService>('room');
 export const Media = proxifyWithWait<IMediaService>('media');
 export const Voip = proxifyWithWait<IVoipService>('voip');
@@ -120,6 +140,15 @@ export const SAUMonitor = proxifyWithWait<ISAUMonitorService>('sau-monitor');
 export const DeviceManagement = proxifyWithWait<IDeviceManagementService>('device-management');
 export const VideoConf = proxifyWithWait<IVideoConfService>('video-conference');
 export const Upload = proxifyWithWait<IUploadService>('upload');
+export const Calendar = proxifyWithWait<ICalendarService>('calendar');
+export const QueueWorker = proxifyWithWait<IQueueWorkerService>('queue-worker');
+export const OmnichannelTranscript = proxifyWithWait<IOmnichannelTranscriptService>('omnichannel-transcript');
+export const Message = proxifyWithWait<IMessageService>('message');
+export const Translation = proxifyWithWait<ITranslationService>('translation');
+export const Settings = proxifyWithWait<ISettingsService>('settings');
+export const OmnichannelIntegration = proxifyWithWait<IOmnichannelIntegrationService>('omnichannel-integration');
+export const Federation = proxifyWithWait<IFederationService>('federation');
+export const FederationEE = proxifyWithWait<IFederationServiceEE>('federation-enterprise');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available

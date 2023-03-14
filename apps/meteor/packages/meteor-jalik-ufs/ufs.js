@@ -23,7 +23,7 @@
  *
  */
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 
 import { Config } from './ufs-config';
 import { Filter } from './ufs-filter';

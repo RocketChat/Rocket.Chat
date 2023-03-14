@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { hasPermission } from '../../../../../app/authorization';
+import { hasPermission } from '../../../../../app/authorization/server';
 import CannedResponse from '../../../models/server/models/CannedResponse';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
 

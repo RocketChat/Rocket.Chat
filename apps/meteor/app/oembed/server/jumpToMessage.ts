@@ -2,7 +2,6 @@ import URL from 'url';
 import QueryString from 'querystring';
 
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 import type { ITranslatedMessage, MessageAttachment } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
 
@@ -25,7 +24,7 @@ const recursiveRemove = (attachments: MessageAttachment, deep = 1): MessageAttac
 };
 
 const validateAttachmentDeepness = (message: ITranslatedMessage): ITranslatedMessage => {
-	if (!message || !message.attachments) {
+	if (!message?.attachments) {
 		return message;
 	}
 
@@ -38,7 +37,7 @@ callbacks.add(
 	'beforeSaveMessage',
 	(msg) => {
 		// if no message is present, or the message doesn't have any URL, skip
-		if (!msg || !msg.urls || !msg.urls.length) {
+		if (!msg?.urls?.length) {
 			return msg;
 		}
 
@@ -59,7 +58,7 @@ callbacks.add(
 
 			const { msg: msgId } = QueryString.parse(urlObj.query);
 
-			if (!_.isString(msgId)) {
+			if (typeof msgId !== 'string') {
 				return;
 			}
 

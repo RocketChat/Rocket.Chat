@@ -22,6 +22,8 @@ import {
 	Roles as RolesRaw,
 	InstanceStatus,
 	Settings,
+	LivechatTrigger,
+	LivechatCustomField,
 } from '@rocket.chat/models';
 import { Analytics, Team, VideoConf } from '@rocket.chat/core-services';
 
@@ -36,8 +38,8 @@ import { getImporterStatistics } from './getImporterStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
 import { getStatistics as getEnterpriseStatistics } from '../../../../ee/app/license/server';
 import { getSettingsStatistics } from '../../../../server/lib/statistics/getSettingsStatistics';
-import { getMatrixFederationStatistics } from '../../../federation-v2/server/infrastructure/rocket-chat/statistics';
 import { isRunningMs } from '../../../../server/lib/isRunningMs';
+import { getMatrixFederationStatistics } from '../../../../server/services/federation/infrastructure/rocket-chat/adapters/statistics';
 
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
@@ -120,10 +122,11 @@ export const statistics = {
 		statistics.totalThreads = Messages.countThreads();
 
 		// livechat visitors
-		statistics.totalLivechatVisitors = await LivechatVisitors.find().count();
+		statistics.totalLivechatVisitors = await LivechatVisitors.col.estimatedDocumentCount();
 
 		// livechat agents
 		statistics.totalLivechatAgents = Users.findAgents().count();
+		statistics.totalLivechatManagers = await UsersRaw.col.countDocuments({ roles: 'livechat-manager' });
 
 		// livechat enabled
 		statistics.livechatEnabled = settings.get('Livechat_enabled');
@@ -146,6 +149,30 @@ export const statistics = {
 		statsPms.push(
 			LivechatDepartment.col.count().then((count) => {
 				statistics.departments = count;
+			}),
+		);
+
+		// Number of archived departments
+		statsPms.push(
+			LivechatDepartment.col.countDocuments({ archived: true }).then((count) => {
+				statistics.archivedDepartments = count;
+			}),
+		);
+
+		// Workspace allows dpeartment removal
+		statistics.isDepartmentRemovalEnabled = settings.get('Omnichannel_enable_department_removal');
+
+		// Number of triggers
+		statsPms.push(
+			LivechatTrigger.col.count().then((count) => {
+				statistics.totalTriggers = count;
+			}),
+		);
+
+		// Number of custom fields
+		statsPms.push(
+			LivechatCustomField.col.count().then((count) => {
+				statistics.totalCustomFields = count;
 			}),
 		);
 
@@ -207,12 +234,9 @@ export const statistics = {
 
 		// Amount of VoIP Extensions connected
 		statsPms.push(
-			UsersRaw.col
-				.find({ extension: { $exists: true } })
-				.count()
-				.then((count) => {
-					statistics.voipExtensions = count;
-				}),
+			UsersRaw.col.countDocuments({ extension: { $exists: true } }).then((count) => {
+				statistics.voipExtensions = count;
+			}),
 		);
 
 		// Amount of Calls that ended properly
@@ -310,11 +334,9 @@ export const statistics = {
 
 		statistics.enterpriseReady = true;
 		statsPms.push(
-			Uploads.find()
-				.count()
-				.then((count) => {
-					statistics.uploadsTotal = count;
-				}),
+			Uploads.col.estimatedDocumentCount().then((count) => {
+				statistics.uploadsTotal = count;
+			}),
 		);
 		statsPms.push(
 			Uploads.col
@@ -335,12 +357,9 @@ export const statistics = {
 
 		statistics.migration = getControl();
 		statsPms.push(
-			InstanceStatus.col
-				.find({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } })
-				.count()
-				.then((count) => {
-					statistics.instanceCount = count;
-				}),
+			InstanceStatus.col.countDocuments({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).then((count) => {
+				statistics.instanceCount = count;
+			}),
 		);
 
 		const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
@@ -510,6 +529,11 @@ export const statistics = {
 		statistics.loggedInCustomScriptChanged = settings.get('Custom_Script_Logged_In') !== defaultLoggedInCustomScript;
 
 		statistics.matrixFederation = await getMatrixFederationStatistics();
+
+		// Omnichannel call stats
+		statistics.webRTCEnabled = settings.get('WebRTC_Enabled');
+		statistics.webRTCEnabledForOmnichannel = settings.get('Omnichannel_call_provider') === 'WebRTC';
+		statistics.omnichannelWebRTCCalls = await RoomsRaw.findCountOfRoomsWithActiveCalls();
 
 		await Promise.all(statsPms).catch(log);
 

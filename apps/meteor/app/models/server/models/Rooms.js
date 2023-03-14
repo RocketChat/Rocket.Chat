@@ -1,12 +1,12 @@
 import _ from 'underscore';
-import s from 'underscore.string';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Base } from './_Base';
 import Messages from './Messages';
 import Subscriptions from './Subscriptions';
+import { trim } from '../../../../lib/utils/stringUtils';
 
-export class Rooms extends Base {
+class Rooms extends Base {
 	constructor(...args) {
 		super(...args);
 
@@ -121,24 +121,6 @@ export class Rooms extends Base {
 				},
 			};
 		}
-
-		return this.update(query, update);
-	}
-
-	setLastMessageSnippeted(roomId, message, snippetName, snippetedBy, snippeted, snippetedAt) {
-		const query = { _id: roomId };
-
-		const msg = `\`\`\`${message.msg}\`\`\``;
-
-		const update = {
-			$set: {
-				'lastMessage.msg': msg,
-				'lastMessage.snippeted': snippeted,
-				'lastMessage.snippetedAt': snippetedAt || new Date(),
-				'lastMessage.snippetedBy': snippetedBy,
-				'lastMessage.snippetName': snippetName,
-			},
-		};
 
 		return this.update(query, update);
 	}
@@ -314,7 +296,7 @@ export class Rooms extends Base {
 			return room;
 		}
 
-		let channelName = s.trim(name);
+		let channelName = trim(name);
 		try {
 			// TODO evaluate if this function call should be here
 			const { getValidRoomName } = Promise.await(import('../../../utils/server/lib/getValidRoomName'));
@@ -362,13 +344,15 @@ export class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
-	findOneByNameAndType(name, type, options) {
+	findOneByNameAndType(name, type, options, includeFederatedRooms = false) {
 		const query = {
-			name,
 			t: type,
 			teamId: {
 				$exists: false,
 			},
+			...(includeFederatedRooms
+				? { $or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }] }
+				: { $or: [{ federated: { $exists: false } }, { federated: false }], name }),
 		};
 
 		return this.findOne(query, options);
@@ -498,10 +482,9 @@ export class Rooms extends Base {
 		return this._db.find(query, options);
 	}
 
-	findByNameAndTypeNotDefault(name, type, options) {
+	findByNameAndTypeNotDefault(name, type, options, includeFederatedRooms = false) {
 		const query = {
 			t: type,
-			name,
 			default: {
 				$ne: true,
 			},
@@ -515,13 +498,16 @@ export class Rooms extends Base {
 					teamMain: true,
 				},
 			],
+			...(includeFederatedRooms
+				? { $or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }] }
+				: { $or: [{ federated: { $exists: false } }, { federated: false }], name }),
 		};
 
 		// do not use cache
 		return this._db.find(query, options);
 	}
 
-	findByNameAndTypesNotInIds(name, types, ids, options) {
+	findByNameAndTypesNotInIds(name, types, ids, options, includeFederatedRooms = false) {
 		const query = {
 			_id: {
 				$nin: ids,
@@ -550,7 +536,11 @@ export class Rooms extends Base {
 					t: 'c',
 				},
 			],
-			name,
+			...(includeFederatedRooms
+				? {
+						$or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }],
+				  }
+				: { $or: [{ federated: { $exists: false } }, { federated: false }], name }),
 		};
 
 		// do not use cache
@@ -558,7 +548,7 @@ export class Rooms extends Base {
 	}
 
 	findChannelAndPrivateByNameStarting(name, sIds, options) {
-		const nameRegex = new RegExp(`^${s.trim(escapeRegExp(name))}`, 'i');
+		const nameRegex = new RegExp(`^${trim(escapeRegExp(name))}`, 'i');
 
 		const query = {
 			t: {
@@ -637,7 +627,7 @@ export class Rooms extends Base {
 	}
 
 	findByTypeAndNameContaining(type, name, options) {
-		const nameRegex = new RegExp(s.trim(escapeRegExp(name)), 'i');
+		const nameRegex = new RegExp(trim(escapeRegExp(name)), 'i');
 
 		const query = {
 			name: nameRegex,
@@ -648,7 +638,7 @@ export class Rooms extends Base {
 	}
 
 	findByTypeInIdsAndNameContaining(type, ids, name, options) {
-		const nameRegex = new RegExp(s.trim(escapeRegExp(name)), 'i');
+		const nameRegex = new RegExp(trim(escapeRegExp(name)), 'i');
 
 		const query = {
 			_id: {
@@ -1251,7 +1241,7 @@ export class Rooms extends Base {
 	// ############################
 	// Discussion
 	findDiscussionParentByNameStarting(name, options) {
-		const nameRegex = new RegExp(`^${s.trim(escapeRegExp(name))}`, 'i');
+		const nameRegex = new RegExp(`^${trim(escapeRegExp(name))}`, 'i');
 
 		const query = {
 			t: {
