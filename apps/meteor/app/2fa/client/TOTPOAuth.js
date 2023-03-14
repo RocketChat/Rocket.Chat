@@ -9,7 +9,7 @@ import { Linkedin } from 'meteor/pauli:linkedin-oauth';
 import { OAuth } from 'meteor/oauth';
 
 import { process2faReturn } from '../../../client/lib/2fa/process2faReturn';
-import { CustomOAuth } from '../../custom-oauth';
+import { CustomOAuth } from '../../custom-oauth/client/custom_oauth_client';
 import { convertError } from '../../../client/lib/2fa/utils';
 import { overrideLoginMethod } from '../../../client/lib/2fa/overrideLoginMethod';
 

@@ -1,5 +1,3 @@
-import type { ISetting } from '../ISetting';
-
 export interface IMessageSearchProvider {
 	key: string;
 	description: string;
@@ -7,5 +5,5 @@ export interface IMessageSearchProvider {
 	resultTemplate: string;
 	supportsSuggestions: boolean;
 	suggestionItemTemplate?: string;
-	settings: Record<ISetting['_id'], ISetting['value']>;
+	settings: { GlobalSearchEnabled: boolean } & { PageSize: number };
 }

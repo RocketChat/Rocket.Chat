@@ -1,5 +1,5 @@
 import { Settings } from '@rocket.chat/models';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 
 import { Base, ProgressStep, ImporterWebsocket } from '../../importer/server';
 import { Users } from '../../models/server';

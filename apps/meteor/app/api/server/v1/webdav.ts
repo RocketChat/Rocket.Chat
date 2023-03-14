@@ -21,7 +21,7 @@ const POSTRemoveWebdavAccountSchema = {
 	additionalProperties: false,
 };
 
-export const isPOSTRemoveWebdavAccount = ajv.compile<POSTRemoveWebdavAccount>(POSTRemoveWebdavAccountSchema);
+const isPOSTRemoveWebdavAccount = ajv.compile<POSTRemoveWebdavAccount>(POSTRemoveWebdavAccountSchema);
 
 API.v1.addRoute(
 	'webdav.getMyAccounts',

@@ -1,17 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
-import './methods';
 import { getWorkspaceAccessToken } from './functions/getWorkspaceAccessToken';
 import { getWorkspaceAccessTokenWithScope } from './functions/getWorkspaceAccessTokenWithScope';
-import { getWorkspaceLicense } from './functions/getWorkspaceLicense';
-import { getUserCloudAccessToken } from './functions/getUserCloudAccessToken';
 import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStatus';
-import { getWorkspaceKey } from './functions/getWorkspaceKey';
 import { syncWorkspace } from './functions/syncWorkspace';
 import { connectWorkspace } from './functions/connectWorkspace';
 import { settings } from '../../settings/server';
 import { SystemLogger } from '../../../server/lib/logger/system';
+import './methods';
 
 const licenseCronName = 'Cloud Workspace Sync';
 
@@ -57,4 +54,4 @@ Meteor.startup(function () {
 	}
 });
 
-export { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope, getWorkspaceLicense, getWorkspaceKey, getUserCloudAccessToken };
+export { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope };

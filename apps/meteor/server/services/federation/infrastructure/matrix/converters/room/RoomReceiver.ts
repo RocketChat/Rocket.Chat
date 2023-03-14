@@ -42,12 +42,6 @@ export const formatExternalUserIdToInternalUsernameFormat = (matrixUserId = ''):
 	return matrixUserId.split(':')[0]?.replace('@', '');
 };
 
-/** @deprecated export from {@link ../../helpers/MatrixIdStringTools.ts} instead */
-export const formatExternalAliasIdToInternalFormat = (alias = ''): string => {
-	return alias.split(':')[0]?.replace('#', '');
-};
-
-/** @deprecated export from {@link ../../helpers/MatrixIdStringTools.ts} instead */
 export const isAnExternalIdentifierFormat = (identifier: string): boolean => identifier.includes(':');
 
 /** @deprecated export from {@link ../../helpers/MatrixIdStringTools.ts} instead */

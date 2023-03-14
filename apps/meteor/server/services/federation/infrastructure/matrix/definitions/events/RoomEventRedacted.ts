@@ -2,7 +2,7 @@ import type { IBaseEventContent } from '../AbstractMatrixEvent';
 import { AbstractMatrixEvent } from '../AbstractMatrixEvent';
 import { MatrixEventType } from '../MatrixEventType';
 
-export type IMatrixEventContentRoomRedacted = IBaseEventContent;
+type IMatrixEventContentRoomRedacted = IBaseEventContent;
 
 export class MatrixEventRoomRedacted extends AbstractMatrixEvent {
 	public content: IMatrixEventContentRoomRedacted;
