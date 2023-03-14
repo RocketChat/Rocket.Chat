@@ -34,19 +34,6 @@ export const reply = ({ tmid }, message, parentMessage, followers) => {
 	mentionIds.forEach((mentionId) => Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, [mentionId], tmid, { userMention: true }));
 };
 
-export const undoReply = ({ tmid }) => {
-	if (!tmid) {
-		return false;
-	}
-
-	const { ts } = Messages.getFirstReplyTsByThreadId(tmid) || {};
-	if (!ts) {
-		return Messages.unsetThreadByThreadId(tmid);
-	}
-
-	return Messages.updateThreadLastMessageAndCountByThreadId(tmid, ts, -1);
-};
-
 export const follow = ({ tmid, uid }) => {
 	if (!tmid || !uid) {
 		return false;

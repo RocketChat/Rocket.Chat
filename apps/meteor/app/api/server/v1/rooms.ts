@@ -22,7 +22,7 @@ const GETRoomsNameExistsSchema = {
 	additionalProperties: false,
 };
 
-export const isGETRoomsNameExists = ajv.compile<GETRoomsNameExists>(GETRoomsNameExistsSchema);
+const isGETRoomsNameExists = ajv.compile<GETRoomsNameExists>(GETRoomsNameExistsSchema);
 
 API.v1.addRoute(
 	'rooms.nameExists',
