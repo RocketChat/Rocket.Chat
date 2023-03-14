@@ -38,24 +38,6 @@ export interface ServerMethods {
 	'checkUsernameAvailability': (...args: any[]) => any;
 	'cleanRoomHistory': (...args: any[]) => any;
 	'clearIntegrationHistory': (...args: any[]) => any;
-	'cloud:checkRegisterStatus': () => {
-		connectToCloud: string;
-		workspaceRegistered: string;
-		workspaceId: string;
-		uniqueId: string;
-		token: string;
-		email: string;
-	};
-	'cloud:checkUserLoggedIn': (...args: any[]) => any;
-	'cloud:connectWorkspace': (...args: any[]) => any;
-	'cloud:reconnectWorkspace': (...args: any[]) => any;
-	'cloud:disconnectWorkspace': (...args: any[]) => any;
-	'cloud:finishOAuthAuthorization': (...args: any[]) => any;
-	'cloud:getOAuthAuthorizationUrl': (...args: any[]) => any;
-	'cloud:getWorkspaceRegisterData': (...args: any[]) => any;
-	'cloud:logout': (...args: any[]) => any;
-	'cloud:registerWorkspace': (...args: any[]) => any;
-	'cloud:syncWorkspace': (...args: any[]) => any;
 	'createDirectMessage': (...usernames: Exclude<IUser['username'], undefined>[]) => ICreatedRoom;
 	'deleteCustomSound': (...args: any[]) => any;
 	'deleteCustomUserStatus': (...args: any[]) => any;
