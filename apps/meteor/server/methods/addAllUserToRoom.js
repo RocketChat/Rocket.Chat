@@ -56,7 +56,7 @@ Meteor.methods({
 			Messages.createUserJoinWithRoomIdAndUser(rid, user, {
 				ts: now,
 			});
-			Meteor.defer(function () {});
+
 			return callbacks.run('afterJoinRoom', user, room);
 		});
 		return true;

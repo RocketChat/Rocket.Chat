@@ -110,7 +110,7 @@ const MessagesSentSection = (): ReactElement => {
 										}
 										axisLeft={null}
 										animate={true}
-										// @ts-ignore
+										// @ts-expect-error ???
 										motionStiffness={90}
 										motionDamping={15}
 										theme={{

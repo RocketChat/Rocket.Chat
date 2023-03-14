@@ -29,12 +29,11 @@ Template.CodeMirror.onRendered(async function () {
 		this.data.editorOnBlur(this.data.name);
 	}
 
-	const self = this;
-	editor.on('change', function (doc) {
+	editor.on('change', (doc) => {
 		const val = doc.getValue();
 		textarea.value = val;
-		if (self.data.reactiveVar) {
-			Session.set(self.data.reactiveVar, val);
+		if (this.data.reactiveVar) {
+			Session.set(this.data.reactiveVar, val);
 		}
 	});
 

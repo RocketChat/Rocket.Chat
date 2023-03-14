@@ -1,9 +1,8 @@
 import { expect } from 'chai';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { MongoClient } from 'mongodb';
 
-const { MongoClient } = require('mongodb');
-
-const { aggregates } = require('../../../../../../server/models/raw/Sessions');
+import { aggregates } from '../../../../../../server/models/raw/Sessions';
 
 const sessions_dates = [];
 const baseDate = new Date(2018, 6, 1);

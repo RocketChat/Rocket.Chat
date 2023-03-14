@@ -205,7 +205,6 @@ const exportRoomMessages = async (
 ) => {
 	const readPreference = readSecondaryPreferred(Messages.model.rawDatabase());
 
-	// @ts-ignore Circular reference on field 'attachments'
 	const { cursor, totalCount } = MessagesRaw.findPaginated(
 		{ ...filter, rid },
 		{

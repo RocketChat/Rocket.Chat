@@ -117,10 +117,8 @@ describe('SAML', () => {
 					expect(data).to.be.an('object');
 					expect(data).to.have.property('idpSession');
 					expect(data).to.have.property('nameID');
-					// @ts-ignore -- chai already ensured the object exists
-					expect(data.idpSession).to.be.equal('_d6ad0e25459aaddd0433a81e159aa79e55dc52c280');
-					// @ts-ignore -- chai already ensured the object exists
-					expect(data.nameID).to.be.equal('_ab7e1d9a603473e92148d569d50176bafa60bcb2e9');
+					expect(data?.idpSession).to.be.equal('_d6ad0e25459aaddd0433a81e159aa79e55dc52c280');
+					expect(data?.nameID).to.be.equal('_ab7e1d9a603473e92148d569d50176bafa60bcb2e9');
 				});
 			});
 

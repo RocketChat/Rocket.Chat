@@ -169,7 +169,7 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 												},
 											},
 											tooltip: {
-												// @ts-ignore
+												// @ts-expect-error ???
 												backgroundColor: colors.n900,
 												boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
 												borderRadius: 2,

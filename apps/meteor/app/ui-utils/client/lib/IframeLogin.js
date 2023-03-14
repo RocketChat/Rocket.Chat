@@ -31,7 +31,9 @@ export class IframeLogin {
 			if (this.enabled === true && this.iframeUrl && this.apiUrl && this.apiMethod) {
 				c.stop();
 				if (!Accounts._storedLoginToken()) {
-					this.tryLogin(() => {});
+					this.tryLogin(() => {
+						// noop
+					});
 				}
 			}
 		});

@@ -102,7 +102,7 @@ const MessagesPerChannelSection = (): ReactElement => {
 																	]}
 																	innerRadius={0.6}
 																	colors={[colors.warning, colors.success, colors.info]}
-																	// @ts-ignore
+																	// @ts-expect-error ???
 																	enableRadialLabels={false}
 																	enableSlicesLabels={false}
 																	animate={true}
