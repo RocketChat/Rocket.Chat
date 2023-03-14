@@ -1,4 +1,4 @@
-import type { FindCursor, AggregationCursor, Document, FindOptions } from 'mongodb';
+import type { FindCursor, AggregationCursor, Document, FindOptions, UpdateResult } from 'mongodb';
 import type { IRoom } from '@rocket.chat/core-typings';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -111,4 +111,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findFederatedRooms(options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findCountOfRoomsWithActiveCalls(): Promise<number>;
+	incMsgCountById(rid: string, inc: number): Promise<UpdateResult>;
+	decreaseMessageCountById(rid: string, dec: number): Promise<UpdateResult>;
 }

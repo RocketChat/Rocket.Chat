@@ -697,4 +697,20 @@ export class RoomsRaw extends BaseRaw {
 
 		return this.col.countDocuments(query);
 	}
+
+	incMsgCountById(_id, inc = 1) {
+		const query = { _id };
+
+		const update = {
+			$inc: {
+				msgs: inc,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	decreaseMessageCountById(_id, count = 1) {
+		return this.incMsgCountById(_id, -count);
+	}
 }
