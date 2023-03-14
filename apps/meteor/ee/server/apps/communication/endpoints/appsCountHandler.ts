@@ -5,7 +5,7 @@ import type { AppsRestApi } from '../rest';
 import { getAppsConfig } from '../../../../app/license/server/license';
 import type { SuccessResult } from '../../../../../app/api/server/api';
 
-export type AppsCountResult = {
+type AppsCountResult = {
 	totalMarketplaceEnabled: number;
 	totalPrivateEnabled: number;
 	maxMarketplaceApps: number;

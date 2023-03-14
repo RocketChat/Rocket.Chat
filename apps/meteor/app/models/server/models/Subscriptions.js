@@ -1,14 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import _ from 'underscore';
 import mem from 'mem';
 
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import Users from './Users';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
+import { isTruthy } from '../../../../lib/isTruthy';
 
-export class Subscriptions extends Base {
+class Subscriptions extends Base {
 	constructor(...args) {
 		super(...args);
 
@@ -365,13 +365,15 @@ export class Subscriptions extends Base {
 
 		const subscriptions = this.find(query).fetch();
 
-		const users = _.compact(
-			_.map(subscriptions, function (subscription) {
+		const users = subscriptions
+			.map((subscription) => {
 				if (typeof subscription.u !== 'undefined' && typeof subscription.u._id !== 'undefined') {
 					return subscription.u._id;
 				}
-			}),
-		);
+
+				return undefined;
+			})
+			.filter(isTruthy);
 
 		return Users.find({ _id: { $in: users } }, options);
 	}

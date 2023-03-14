@@ -1,11 +1,11 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import moment from 'moment';
 
 import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
 import { Messages, ChatRoom, ChatSubscription } from '../../../app/models/client';
 import { settings } from '../../../app/settings/client';
 import { readMessage, MessageTypes } from '../../../app/ui-utils/client';
-import { getRandomId } from '../../../lib/random';
 import { onClientBeforeSendMessage } from '../onClientBeforeSendMessage';
 import { call } from '../utils/call';
 import { prependReplies } from '../utils/prependReplies';
@@ -22,7 +22,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		const effectiveTMID = originalMessage ? originalMessage.tmid : tmid;
 
 		return (await onClientBeforeSendMessage({
-			_id: originalMessage?._id ?? getRandomId(),
+			_id: originalMessage?._id ?? Random.id(),
 			rid: effectiveRID,
 			...(effectiveTMID && {
 				tmid: effectiveTMID,

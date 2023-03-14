@@ -14,8 +14,7 @@ import { callbacks } from '../../../../lib/callbacks';
  *
  * @returns {boolean}
  */
-
-export function messageContainsHighlight(message, highlights) {
+function messageContainsHighlight(message, highlights) {
 	if (!highlights || highlights.length === 0) {
 		return false;
 	}
@@ -106,7 +105,7 @@ const getUnreadSettingCount = (roomType) => {
 	return settings.get(unreadSetting);
 };
 
-export async function updateUsersSubscriptions(message, room) {
+async function updateUsersSubscriptions(message, room) {
 	// Don't increase unread counter on thread messages
 	if (room != null && !message.tmid) {
 		const { toAll, toHere, mentionIds } = getMentions(message);

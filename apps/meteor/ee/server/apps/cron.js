@@ -74,7 +74,7 @@ const notifyAdminsAboutRenewedApps = Meteor.bindEnvironment(function _notifyAdmi
 	);
 });
 
-export const appsUpdateMarketplaceInfo = Meteor.bindEnvironment(function _appsUpdateMarketplaceInfo() {
+const appsUpdateMarketplaceInfo = Meteor.bindEnvironment(function _appsUpdateMarketplaceInfo() {
 	const token = Promise.await(getWorkspaceAccessToken());
 	const baseUrl = Apps.getMarketplaceUrl();
 	const workspaceIdSetting = Promise.await(Settings.getValueById('Cloud_Workspace_Id'));
