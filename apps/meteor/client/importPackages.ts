@@ -45,7 +45,6 @@ import '../app/slashcommands-unarchiveroom/client';
 import '../app/tokenpass/client';
 import '../app/ui/client';
 import '../app/ui-clean-history/client';
-import '../app/ui-login/client';
 import '../app/ui-master/client';
 import '../app/ui-message/client';
 import '../app/videobridge/client';

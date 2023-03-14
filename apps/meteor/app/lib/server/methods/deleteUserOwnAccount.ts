@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
-import { SHA256 } from 'meteor/sha';
+import { SHA256 } from '@rocket.chat/sha256';
 
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';

@@ -96,7 +96,7 @@ API.v1.addRoute(
 			const pollData = await getConfirmationPoll(deviceCode);
 			if (pollData) {
 				if ('successful' in pollData && pollData.successful) {
-					Promise.await(saveRegistrationData(pollData.payload));
+					await saveRegistrationData(pollData.payload);
 				}
 				return API.v1.success({ pollData });
 			}
