@@ -3,8 +3,8 @@ import limax from 'limax';
 import sharp from 'sharp';
 import { api, Media } from '@rocket.chat/core-services';
 
-import { hasPermission } from '../../../authorization';
-import { RocketChatFile } from '../../../file';
+import { hasPermission } from '../../../authorization/server';
+import { RocketChatFile } from '../../../file/server';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
 
 const getFile = async (file, extension) => {

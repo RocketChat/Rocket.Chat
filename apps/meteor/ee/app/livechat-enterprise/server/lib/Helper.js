@@ -69,7 +69,7 @@ const getSpotEstimatedWaitTime = (spot, maxNumberSimultaneousChat, avgChatDurati
 	return ((spot - 1) / maxNumberSimultaneousChat + 1) * avgChatDuration;
 };
 
-export const normalizeQueueInfo = async ({ position, queueInfo, department }) => {
+const normalizeQueueInfo = async ({ position, queueInfo, department }) => {
 	if (!queueInfo) {
 		queueInfo = await getQueueInfo(department);
 	}
@@ -95,7 +95,7 @@ export const dispatchInquiryPosition = async (inquiry, queueInfo) => {
 	}, 1000);
 };
 
-export const dispatchWaitingQueueStatus = async (department) => {
+const dispatchWaitingQueueStatus = async (department) => {
 	if (!settings.get('Livechat_waiting_queue') && !settings.get('Omnichannel_calculate_dispatch_service_queue_statistics')) {
 		return;
 	}
