@@ -1,14 +1,15 @@
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
+import { OmnichannelIntegration } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../../file-upload/server';
 import { LivechatRooms, LivechatDepartment } from '../../../../models/server';
 import { API } from '../../../../api/server';
 import { fetch } from '../../../../../server/lib/http/fetch';
-import { SMS } from '../../../../sms/server';
 import { Livechat } from '../../../server/lib/Livechat';
+import { settings } from '../../../../settings/server';
 
 const getUploadFile = async (details, fileUrl) => {
 	const response = await fetch(fileUrl);
@@ -72,16 +73,17 @@ const normalizeLocationSharing = (payload) => {
 
 API.v1.addRoute('livechat/sms-incoming/:service', {
 	async post() {
-		if (!SMS.isConfiguredService(this.urlParams.service)) {
+		if (!(await OmnichannelIntegration.isConfiguredSmsService(this.urlParams.service))) {
 			return API.v1.failure('Invalid service');
 		}
 
-		const SMSService = SMS.getService(this.urlParams.service);
+		const smsDepartment = settings.get('SMS_Default_Omnichannel_Department');
+		const SMSService = await OmnichannelIntegration.getSmsService(this.urlParams.service);
 		const sms = SMSService.parse(this.bodyParams);
 		const { department } = this.queryParams;
-		let targetDepartment = defineDepartment(department || SMS.department);
+		let targetDepartment = defineDepartment(department || smsDepartment);
 		if (!targetDepartment) {
-			targetDepartment = defineDepartment(SMS.department);
+			targetDepartment = defineDepartment(smsDepartment);
 		}
 
 		const visitor = await defineVisitor(sms.from, targetDepartment);

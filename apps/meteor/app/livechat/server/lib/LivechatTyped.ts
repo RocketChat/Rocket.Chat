@@ -4,6 +4,7 @@ import type {
 	IOmnichannelRoomClosingInfo,
 	IUser,
 	MessageTypesValues,
+	ILivechatVisitor,
 } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms, Subscriptions, LivechatVisitors, Messages, Users } from '@rocket.chat/models';
@@ -13,7 +14,6 @@ import { default as axios } from 'axios';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
-import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './LivechatTyped.d';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { Messages as LegacyMessage } from '../../../models/server';
@@ -22,6 +22,36 @@ import { settings } from '../../../settings/server';
 import * as Mailer from '../../../mailer/server/api';
 import type { MainLogger } from '../../../../server/lib/logger/getPino';
 import { metrics } from '../../../metrics/server';
+
+type GenericCloseRoomParams = {
+	room: IOmnichannelRoom;
+	comment?: string;
+	options?: {
+		clientAction?: boolean;
+		tags?: string[];
+		emailTranscript?:
+			| {
+					sendToVisitor: false;
+			  }
+			| {
+					sendToVisitor: true;
+					requestData: NonNullable<IOmnichannelRoom['transcriptRequest']>;
+			  };
+		pdfTranscript?: {
+			requestedBy: string;
+		};
+	};
+};
+
+export type CloseRoomParamsByUser = {
+	user: IUser;
+} & GenericCloseRoomParams;
+
+export type CloseRoomParamsByVisitor = {
+	visitor: ILivechatVisitor;
+} & GenericCloseRoomParams;
+
+export type CloseRoomParams = CloseRoomParamsByUser | CloseRoomParamsByVisitor;
 
 class LivechatClass {
 	logger: Logger;
@@ -318,12 +348,10 @@ class LivechatClass {
 		const secretToken = settings.get<string>('Livechat_secret_token');
 		const headers = { 'X-RocketChat-Livechat-Token': secretToken };
 		const options = {
-			// data: postData,
 			...(secretToken !== '' && secretToken !== undefined && { headers }),
 			timeout,
 		};
 		try {
-			// const result = HTTP.post(settings.get('Livechat_webhookUrl'), options);
 			const result = await axios.post(settings.get('Livechat_webhookUrl'), postData, options);
 			if (result.status === 200) {
 				metrics.totalLivechatWebhooksSuccess.inc();
