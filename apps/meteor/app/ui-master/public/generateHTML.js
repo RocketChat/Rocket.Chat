@@ -1,4 +1,4 @@
-const fs = require('fs');
+import fs from 'fs';
 
 const sort = function (a, b) {
 	if (a.toLocaleLowerCase() < b.toLocaleLowerCase()) {

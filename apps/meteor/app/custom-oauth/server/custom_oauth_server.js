@@ -188,14 +188,13 @@ export class CustomOAuth {
 	}
 
 	registerService() {
-		const self = this;
 		OAuth.registerService(this.name, 2, null, (query) => {
-			const response = self.getAccessToken(query);
-			const identity = self.getIdentity(response.access_token, query);
+			const response = this.getAccessToken(query);
+			const identity = this.getIdentity(response.access_token, query);
 
 			const serviceData = {
 				_OAuthCustom: true,
-				serverURL: self.serverURL,
+				serverURL: this.serverURL,
 				accessToken: response.access_token,
 				idToken: response.id_token,
 				expiresAt: +new Date() + 1000 * parseInt(response.expires_in, 10),
@@ -394,10 +393,9 @@ export class CustomOAuth {
 	}
 
 	registerAccessTokenService(name) {
-		const self = this;
 		const whitelisted = ['id', 'email', 'username', 'name', this.rolesClaim];
 
-		registerAccessTokenService(name, async function (options) {
+		registerAccessTokenService(name, async (options) => {
 			check(
 				options,
 				Match.ObjectIncluding({
@@ -406,7 +404,7 @@ export class CustomOAuth {
 				}),
 			);
 
-			const identity = self.getIdentity(options.accessToken);
+			const identity = this.getIdentity(options.accessToken);
 
 			const serviceData = {
 				accessToken: options.accessToken,

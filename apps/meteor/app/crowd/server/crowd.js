@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { SHA256 } from '@rocket.chat/sha256';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { Accounts } from 'meteor/accounts-base';
+import AtlassianCrowd from 'atlassian-crowd-patched';
 
 import { Logger } from '../../logger/server';
 import { _setRealName } from '../../lib/server';
@@ -37,7 +38,6 @@ function fallbackDefaultAccountSystem(bind, username, password) {
 
 export class CROWD {
 	constructor() {
-		const AtlassianCrowd = require('atlassian-crowd-patched');
 		let url = settings.get('CROWD_URL');
 
 		this.options = {
@@ -146,9 +146,8 @@ export class CROWD {
 	}
 
 	syncDataToUser(crowdUser, id) {
-		const self = this;
 		const user = {
-			username: self.cleanUsername(crowdUser.username),
+			username: this.cleanUsername(crowdUser.username),
 			crowd_username: crowdUser.crowd_username,
 			emails: [
 				{
@@ -184,19 +183,18 @@ export class CROWD {
 			return;
 		}
 
-		const self = this;
 		const users = Users.findCrowdUsers() || [];
 
 		logger.info('Sync started...');
 
-		users.forEach(function (user) {
+		users.forEach((user) => {
 			let crowd_username = user.hasOwnProperty('crowd_username') ? user.crowd_username : user.username;
 			logger.info('Syncing user', crowd_username);
 
 			let crowdUser = null;
 
 			try {
-				crowdUser = self.fetchCrowdUser(crowd_username);
+				crowdUser = this.fetchCrowdUser(crowd_username);
 			} catch (err) {
 				logger.debug({ err });
 				logger.error({ msg: 'Could not sync user with username', crowd_username });
@@ -204,7 +202,7 @@ export class CROWD {
 				const email = user.emails[0].address;
 				logger.info('Attempting to find for user by email', email);
 
-				const response = self.crowdClient.searchSync('user', `email=" ${email} "`);
+				const response = this.crowdClient.searchSync('user', `email=" ${email} "`);
 				if (!response || response.users.length === 0) {
 					logger.warn('Could not find user in CROWD with username or email:', crowd_username, email);
 					if (settings.get('CROWD_Remove_Orphaned_Users') === true) {
@@ -219,14 +217,14 @@ export class CROWD {
 				crowd_username = response.users[0].name;
 				logger.info('User found by email. Syncing user', crowd_username);
 
-				crowdUser = self.fetchCrowdUser(crowd_username);
+				crowdUser = this.fetchCrowdUser(crowd_username);
 			}
 
 			if (settings.get('CROWD_Allow_Custom_Username') === true) {
 				crowdUser.username = user.username;
 			}
 
-			self.syncDataToUser(crowdUser, user._id);
+			this.syncDataToUser(crowdUser, user._id);
 		});
 	}
 

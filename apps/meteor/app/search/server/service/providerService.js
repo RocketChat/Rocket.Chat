@@ -76,9 +76,7 @@ class SearchProviderService {
 
 		// add settings for admininistration
 		settingsRegistry.addGroup('Search', function () {
-			const self = this;
-
-			self.add('Search.Provider', 'defaultProvider', {
+			this.add('Search.Provider', 'defaultProvider', {
 				type: 'select',
 				values: Object.keys(providers).map((key) => ({ key, i18nLabel: providers[key].i18nLabel })),
 				public: true,
@@ -87,8 +85,8 @@ class SearchProviderService {
 
 			Object.keys(providers)
 				.filter((key) => providers[key].settings && providers[key].settings.length > 0)
-				.forEach(function (key) {
-					self.section(providers[key].i18nLabel, function () {
+				.forEach((key) => {
+					this.section(providers[key].i18nLabel, function () {
 						providers[key].settings.forEach((setting) => {
 							const _options = {
 								type: setting.type,

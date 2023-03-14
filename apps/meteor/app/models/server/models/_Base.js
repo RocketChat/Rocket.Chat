@@ -17,7 +17,9 @@ export class Base {
 		return '_db';
 	}
 
-	roleBaseQuery() {}
+	roleBaseQuery() {
+		// noop
+	}
 
 	findRolesByUserId(userId) {
 		const query = this.roleBaseQuery(userId);

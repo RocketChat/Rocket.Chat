@@ -33,7 +33,9 @@ Meteor.startup(function () {
 				// Every 12 hours
 				return parser.cron('0 */12 * * *');
 			},
-			job: syncWorkspace,
+			job() {
+				Promise.await(syncWorkspace());
+			},
 		});
 	});
 

@@ -50,6 +50,7 @@ Template.messagePopupSlashCommandPreview.onCreated(function () {
 
 	this.dragging = false;
 
+	// eslint-disable-next-line @typescript-eslint/no-this-alias
 	const template = this;
 	template.fetchPreviews = withDebouncing({ wait: 500 })(function _previewFetcher(cmd, args) {
 		const command = cmd;
@@ -269,9 +270,8 @@ Template.messagePopupSlashCommandPreview.onRendered(function _messagePopupSlashC
 	$(this.inputBox).on('focus', this.onFocus);
 	$(this.inputBox).on('blur', this.onBlur);
 
-	const self = this;
-	self.autorun(() => {
-		setTimeout(self.selectionLogic, 500);
+	this.autorun(() => {
+		setTimeout(this.selectionLogic, 500);
 	});
 });
 

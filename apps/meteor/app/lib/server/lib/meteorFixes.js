@@ -59,8 +59,8 @@ Meteor.setInterval(() => {
  * we will start respecting this and exit the process to prevent these kind of problems.
  */
 
-process.on('unhandledRejection', async (error) => {
-	await Settings.incrementValueById('Uncaught_Exceptions_Count');
+process.on('unhandledRejection', (error) => {
+	Settings.incrementValueById('Uncaught_Exceptions_Count');
 
 	console.error('=== UnHandledPromiseRejection ===');
 	console.error(error);

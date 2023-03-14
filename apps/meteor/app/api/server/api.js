@@ -349,6 +349,7 @@ export class APIClass extends Restivus {
 				}
 				// Add a try/catch for each endpoint
 				const originalAction = endpoints[method].action;
+				// eslint-disable-next-line @typescript-eslint/no-this-alias
 				const api = this;
 				endpoints[method].action = function _internalRouteActionHandler() {
 					const rocketchatRestApiEnd = metrics.rocketchatRestApi.startTimer({
@@ -411,7 +412,9 @@ export class APIClass extends Restivus {
 
 					const connection = {
 						id: Random.id(),
-						close() {},
+						close() {
+							// noop
+						},
 						token: this.token,
 						httpHeaders: this.request.headers,
 						clientAddress: this.requestIp,
@@ -577,6 +580,7 @@ export class APIClass extends Restivus {
 			return auth;
 		};
 
+		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		const self = this;
 
 		this.addRoute(
@@ -589,7 +593,9 @@ export class APIClass extends Restivus {
 
 					const invocation = new DDPCommon.MethodInvocation({
 						connection: {
-							close() {},
+							close() {
+								// noop
+							},
 							httpHeaders: this.request.headers,
 							clientAddress: getRequestIP(this.request),
 						},

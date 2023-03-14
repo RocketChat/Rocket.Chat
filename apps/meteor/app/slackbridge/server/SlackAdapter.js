@@ -166,7 +166,9 @@ export default class SlackAdapter {
 		 **/
 		this.rtm.on(
 			'channel_created',
-			Meteor.bindEnvironment(() => {}),
+			Meteor.bindEnvironment(() => {
+				// noop
+			}),
 		);
 
 		/**
@@ -202,7 +204,9 @@ export default class SlackAdapter {
 		 **/
 		this.rtm.on(
 			'channel_joined',
-			Meteor.bindEnvironment(() => {}),
+			Meteor.bindEnvironment(() => {
+				// noop
+			}),
 		);
 
 		/**
@@ -236,7 +240,9 @@ export default class SlackAdapter {
 		 **/
 		this.rtm.on(
 			'channel_deleted',
-			Meteor.bindEnvironment(() => {}),
+			Meteor.bindEnvironment(() => {
+				// noop
+			}),
 		);
 
 		/**
@@ -254,7 +260,9 @@ export default class SlackAdapter {
 		 **/
 		this.rtm.on(
 			'channel_rename',
-			Meteor.bindEnvironment(() => {}),
+			Meteor.bindEnvironment(() => {
+				// noop
+			}),
 		);
 
 		/**
@@ -290,7 +298,9 @@ export default class SlackAdapter {
 		 **/
 		this.rtm.on(
 			'group_joined',
-			Meteor.bindEnvironment(() => {}),
+			Meteor.bindEnvironment(() => {
+				// noop
+			}),
 		);
 
 		/**
@@ -302,7 +312,9 @@ export default class SlackAdapter {
 		 **/
 		this.rtm.on(
 			'group_left',
-			Meteor.bindEnvironment(() => {}),
+			Meteor.bindEnvironment(() => {
+				// noop
+			}),
 		);
 
 		/**
@@ -320,7 +332,9 @@ export default class SlackAdapter {
 		 **/
 		this.rtm.on(
 			'group_rename',
-			Meteor.bindEnvironment(() => {}),
+			Meteor.bindEnvironment(() => {
+				// noop
+			}),
 		);
 
 		/**
@@ -366,7 +380,9 @@ export default class SlackAdapter {
 		 **/
 		this.rtm.on(
 			'team_join',
-			Meteor.bindEnvironment(() => {}),
+			Meteor.bindEnvironment(() => {
+				// noop
+			}),
 		);
 	}
 

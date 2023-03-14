@@ -329,13 +329,15 @@ export const upsertPermissions = async (): Promise<void> => {
 	createPermissionsForExistingSettings();
 
 	// register a callback for settings for be create in higher-level-packages
-	settings.on('*', async function ([settingId]) {
-		const previousSettingPermissions = await getPreviousPermissions(settingId);
-		const setting = await Settings.findOneById(settingId);
-		if (setting) {
-			if (!setting.hidden) {
-				createSettingPermission(setting, previousSettingPermissions);
+	settings.on('*', function ([settingId]) {
+		(async () => {
+			const previousSettingPermissions = await getPreviousPermissions(settingId);
+			const setting = await Settings.findOneById(settingId);
+			if (setting) {
+				if (!setting.hidden) {
+					createSettingPermission(setting, previousSettingPermissions);
+				}
 			}
-		}
+		})();
 	});
 };

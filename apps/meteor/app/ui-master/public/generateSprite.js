@@ -1,6 +1,6 @@
-const fs = require('fs');
+import fs from 'fs';
 
-const { parseString, Builder } = require('xml2js');
+import { parseString, Builder } from 'xml2js';
 // const jp = require('@f5io/jsonpath').default;
 
 // const path = '$..path';

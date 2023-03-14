@@ -59,18 +59,17 @@ export class BaseDb {
 			update: this.model.update.bind(this.model),
 			remove: this.model.remove.bind(this.model),
 		};
-		const self = this;
 
-		this.model.insert = function (...args) {
+		this.model.insert = (...args) => {
 			return self.insert(...args);
 		};
 
-		this.model.update = function (...args) {
-			return self.update(...args);
+		this.model.update = (...args) => {
+			return this.update(...args);
 		};
 
-		this.model.remove = function (...args) {
-			return self.remove(...args);
+		this.model.remove = (...args) => {
+			return this.remove(...args);
 		};
 	}
 

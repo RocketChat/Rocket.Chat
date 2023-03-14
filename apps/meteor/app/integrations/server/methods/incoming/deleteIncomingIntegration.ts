@@ -9,9 +9,9 @@ Meteor.methods({
 		const { userId } = this;
 
 		if (userId && hasPermission(userId, 'manage-incoming-integrations')) {
-			integration = Integrations.findOneById(integrationId);
+			integration = await Integrations.findOneById(integrationId);
 		} else if (userId && hasPermission(userId, 'manage-own-incoming-integrations')) {
-			integration = Integrations.findOne({
+			integration = await Integrations.findOne({
 				'_id': integrationId,
 				'_createdBy._id': userId,
 			});

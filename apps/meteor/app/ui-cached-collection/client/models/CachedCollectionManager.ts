@@ -79,7 +79,7 @@ class CachedCollectionManager extends Emitter<{ reconnect: void; login: string |
 		this.on('reconnect', cb);
 	}
 
-	onLogin(cb: () => void) {
+	onLogin(cb: () => unknown | Promise<unknown>) {
 		this.on('login', cb);
 		if (this.logged) {
 			cb();

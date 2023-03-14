@@ -100,7 +100,7 @@ export const AutoTranslate = {
 			return;
 		}
 
-		Tracker.autorun(async (c) => {
+		Tracker.autorun((c) => {
 			const uid = Meteor.userId();
 			if (!uid || !hasPermission('auto-translate')) {
 				return;
@@ -108,15 +108,17 @@ export const AutoTranslate = {
 
 			c.stop();
 
-			try {
-				[this.providersMetadata, this.supportedLanguages] = await Promise.all([
-					call('autoTranslate.getProviderUiMetadata'),
-					call('autoTranslate.getSupportedLanguages', 'en'),
-				]);
-			} catch (e: unknown) {
-				// Avoid unwanted error message on UI when autotranslate is disabled while fetching data
-				console.error((e as Error).message);
-			}
+			(async (): Promise<void> => {
+				try {
+					[this.providersMetadata, this.supportedLanguages] = await Promise.all([
+						call('autoTranslate.getProviderUiMetadata'),
+						call('autoTranslate.getSupportedLanguages', 'en'),
+					]);
+				} catch (e: unknown) {
+					// Avoid unwanted error message on UI when autotranslate is disabled while fetching data
+					console.error((e as Error).message);
+				}
+			})();
 		});
 
 		Subscriptions.find().observeChanges({

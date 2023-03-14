@@ -301,9 +301,10 @@ export class OTRRoom implements IOTRRoom {
 								cancelText: TAPi18n.__('No'),
 								onClose: (): void => closeOrCancelModal(),
 								onCancel: (): void => closeOrCancelModal(),
-								onConfirm: async (): Promise<void> => {
-									await establishConnection();
-									imperativeModal.close();
+								onConfirm: () => {
+									establishConnection().then(() => {
+										imperativeModal.close();
+									});
 								},
 							},
 						});

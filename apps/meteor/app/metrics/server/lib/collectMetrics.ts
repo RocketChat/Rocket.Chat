@@ -197,5 +197,7 @@ const updatePrometheusConfig = async (): Promise<void> => {
 };
 
 Meteor.startup(async () => {
-	settings.watchByRegex(/^Prometheus_.+/, updatePrometheusConfig);
+	settings.watchByRegex(/^Prometheus_.+/, () => {
+		updatePrometheusConfig();
+	});
 });

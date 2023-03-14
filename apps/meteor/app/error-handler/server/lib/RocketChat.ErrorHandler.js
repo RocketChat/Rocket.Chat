@@ -42,6 +42,7 @@ class ErrorHandler {
 			}),
 		);
 
+		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		const self = this;
 		const originalMeteorDebug = Meteor._debug;
 		Meteor._debug = function (message, stack, ...args) {

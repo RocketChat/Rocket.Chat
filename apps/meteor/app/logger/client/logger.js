@@ -22,6 +22,7 @@ if (Template.log) {
 
 	const wrapHelpersAndEvents = function (original, prefix, color) {
 		return function (dict) {
+			// eslint-disable-next-line @typescript-eslint/no-this-alias
 			const template = this;
 			const fn1 = function (name, fn) {
 				if (fn instanceof Function) {
@@ -52,6 +53,7 @@ if (Template.log) {
 
 	const wrapLifeCycle = function (original, prefix, color) {
 		return function (fn) {
+			// eslint-disable-next-line @typescript-eslint/no-this-alias
 			const template = this;
 			if (fn instanceof Function) {
 				const wrap = function (...args) {

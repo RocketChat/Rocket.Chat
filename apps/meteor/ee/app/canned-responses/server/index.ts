@@ -1,7 +1,8 @@
 import { onLicense } from '../../license/server';
 
-onLicense('canned-responses', () => {
-	const { createSettings } = require('./settings');
+onLicense('canned-responses', async () => {
+	const { createSettings } = await import('./settings');
+
 	require('./permissions');
 	require('./hooks/onRemoveAgentDepartment');
 	require('./hooks/onSaveAgentDepartment');

@@ -13,7 +13,11 @@ export default class MentionsServer extends MentionsParser {
 		this.getUsers = args.getUsers;
 		this.getUser = args.getUser;
 		this.getTotalChannelMembers = args.getTotalChannelMembers;
-		this.onMaxRoomMembersExceeded = args.onMaxRoomMembersExceeded || (() => {});
+		this.onMaxRoomMembersExceeded =
+			args.onMaxRoomMembersExceeded ||
+			(() => {
+				// noop
+			});
 	}
 
 	set getUsers(m) {

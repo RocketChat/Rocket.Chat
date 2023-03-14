@@ -38,6 +38,8 @@ const startEmailInterceptor = _.debounce(async function () {
 	}
 }, 1000);
 
-settings.watchByRegex(/^Direct_Reply_.+/, startEmailInterceptor);
+settings.watchByRegex(/^Direct_Reply_.+/, () => {
+	startEmailInterceptor();
+});
 
 startEmailInterceptor();

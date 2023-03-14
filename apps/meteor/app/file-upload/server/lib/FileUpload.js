@@ -32,12 +32,14 @@ import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 const cookie = new Cookies();
 let maxFileSize = 0;
 
-settings.watch('FileUpload_MaxFileSize', async function (value) {
-	try {
-		maxFileSize = parseInt(value);
-	} catch (e) {
-		maxFileSize = await Settings.findOneById('FileUpload_MaxFileSize').packageValue;
-	}
+settings.watch('FileUpload_MaxFileSize', function (value) {
+	(async () => {
+		try {
+			maxFileSize = parseInt(value);
+		} catch (e) {
+			maxFileSize = await Settings.findOneById('FileUpload_MaxFileSize').packageValue;
+		}
+	})();
 });
 
 const AvatarModel = new Mongo.Collection(Avatars.col.collectionName);

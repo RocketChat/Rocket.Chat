@@ -14,9 +14,9 @@ Meteor.methods({
 		}
 
 		if (hasPermission(this.userId, 'manage-outgoing-integrations')) {
-			integration = Integrations.findOneById(integrationId);
+			integration = await Integrations.findOneById(integrationId);
 		} else if (hasPermission(this.userId, 'manage-own-outgoing-integrations')) {
-			integration = Integrations.findOne({
+			integration = await Integrations.findOne({
 				'_id': integrationId,
 				'_createdBy._id': this.userId,
 			});

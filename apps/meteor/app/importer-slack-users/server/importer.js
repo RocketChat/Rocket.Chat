@@ -1,4 +1,5 @@
 import { Settings } from '@rocket.chat/models';
+import { parse } from 'csv-parse/lib/sync';
 
 import { Base, ProgressStep } from '../../importer/server';
 import { RocketChatFile } from '../../file/server';
@@ -6,8 +7,6 @@ import { RocketChatFile } from '../../file/server';
 export class SlackUsersImporter extends Base {
 	constructor(info, importRecord) {
 		super(info, importRecord);
-
-		const { parse } = require('csv-parse/lib/sync');
 
 		this.csvParser = parse;
 	}

@@ -405,7 +405,7 @@ export class SAML {
 	): void {
 		const serviceProvider = new SAMLServiceProvider(service);
 		SAMLUtils.relayState = req.body.RelayState;
-		serviceProvider.validateResponse(req.body.SAMLResponse, async (err, profile /* , loggedOut*/) => {
+		serviceProvider.validateResponse(req.body.SAMLResponse, (err, profile /* , loggedOut*/) => {
 			try {
 				if (err) {
 					SAMLUtils.error(err);
@@ -425,12 +425,15 @@ export class SAML {
 					profile,
 				};
 
-				await this.storeCredential(credentialToken, loginResult);
-				const url = `${Meteor.absoluteUrl('home')}?saml_idp_credentialToken=${credentialToken}`;
-				res.writeHead(302, {
-					Location: url,
-				});
-				res.end();
+				(async () => {
+					await this.storeCredential(credentialToken, loginResult);
+
+					const url = `${Meteor.absoluteUrl('home')}?saml_idp_credentialToken=${credentialToken}`;
+					res.writeHead(302, {
+						Location: url,
+					});
+					res.end();
+				})();
 			} catch (error) {
 				SAMLUtils.error(error);
 				res.writeHead(302, {

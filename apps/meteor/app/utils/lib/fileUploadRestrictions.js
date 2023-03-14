@@ -3,8 +3,10 @@ import _ from 'underscore';
 
 let settings;
 if (Meteor.isClient) {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	settings = require('../../settings/client').settings;
 } else {
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	settings = require('../../settings/server').settings;
 }
 

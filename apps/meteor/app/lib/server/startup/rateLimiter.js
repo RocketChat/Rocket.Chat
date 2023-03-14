@@ -53,14 +53,13 @@ RateLimiter.prototype.check = function (input) {
 	input.broadcastAuth = (session && session.connectionHandle && session.connectionHandle.broadcastAuth) === true;
 	// ==== END OVERRIDE ====
 
-	const self = this;
 	const reply = {
 		allowed: true,
 		timeToReset: 0,
 		numInvocationsLeft: Infinity,
 	};
 
-	const matchedRules = self._findAllMatchingRules(input);
+	const matchedRules = this._findAllMatchingRules(input);
 	_.each(matchedRules, function (rule) {
 		// ==== BEGIN OVERRIDE ====
 		const callbackReply = {

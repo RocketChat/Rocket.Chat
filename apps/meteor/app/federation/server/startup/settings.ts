@@ -10,7 +10,7 @@ import { setupLogger } from '../lib/logger';
 import { STATUS_ENABLED, STATUS_REGISTERING, STATUS_ERROR_REGISTERING, STATUS_DISABLED } from '../constants';
 
 settingsRegistry.addGroup('Federation', function () {
-	this.section('Rocket.Chat Federation', async function () {
+	this.section('Rocket.Chat Federation', function () {
 		this.add('FEDERATION_Enabled', false, {
 			type: 'boolean',
 			i18nLabel: 'Enabled',
@@ -33,14 +33,14 @@ settingsRegistry.addGroup('Federation', function () {
 			// disableReset: true,
 		});
 
-		const federationPublicKey = await FederationKeys.getPublicKeyString();
-
-		this.add('FEDERATION_Public_Key', federationPublicKey || '', {
-			readonly: true,
-			type: 'string',
-			multiline: true,
-			i18nLabel: 'FEDERATION_Public_Key',
-			i18nDescription: 'FEDERATION_Public_Key_Description',
+		FederationKeys.getPublicKeyString().then((federationPublicKey) => {
+			this.add('FEDERATION_Public_Key', federationPublicKey || '', {
+				readonly: true,
+				type: 'string',
+				multiline: true,
+				i18nLabel: 'FEDERATION_Public_Key',
+				i18nDescription: 'FEDERATION_Public_Key_Description',
+			});
 		});
 
 		this.add('FEDERATION_Discovery_Method', 'dns', {
@@ -90,18 +90,22 @@ const updateSettings = async function (): Promise<void> {
 };
 
 // Add settings listeners
-settings.watch('FEDERATION_Enabled', async function enableOrDisable(value) {
+settings.watch('FEDERATION_Enabled', function enableOrDisable(value) {
 	setupLogger.info(`Federation is ${value ? 'enabled' : 'disabled'}`);
 
-	if (value) {
-		await updateSettings();
+	(async () => {
+		if (value) {
+			await updateSettings();
 
-		enableCallbacks();
-	} else {
-		await updateStatus(STATUS_DISABLED);
+			enableCallbacks();
+		} else {
+			await updateStatus(STATUS_DISABLED);
 
-		disableCallbacks();
-	}
+			disableCallbacks();
+		}
+	})();
 });
 
-settings.watchMultiple(['FEDERATION_Discovery_Method', 'FEDERATION_Domain'], updateSettings);
+settings.watchMultiple(['FEDERATION_Discovery_Method', 'FEDERATION_Domain'], () => {
+	updateSettings();
+});

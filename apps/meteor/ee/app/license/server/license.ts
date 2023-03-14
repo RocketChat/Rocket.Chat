@@ -220,7 +220,7 @@ class LicenseClass {
 	}
 
 	async canEnableApp(source: LicenseAppSources): Promise<boolean> {
-		if (!Apps.isInitialized()) {
+		if (!(await Apps.isInitialized())) {
 			return false;
 		}
 
@@ -344,9 +344,10 @@ export async function canEnableApp(app: IAppStorageItem): Promise<boolean> {
 	return License.canEnableApp(app.installationSource);
 }
 
-export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void): void {
+export function onLicense(feature: BundleFeature, cb: (...args: any[]) => unknown): void {
 	if (hasLicense(feature)) {
-		return cb();
+		cb();
+		return;
 	}
 
 	EnterpriseLicenses.once(`valid:${feature}`, cb);

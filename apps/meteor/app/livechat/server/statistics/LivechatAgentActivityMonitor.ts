@@ -48,7 +48,9 @@ export class LivechatAgentActivityMonitor {
 		this._startMonitoring();
 
 		// TODO use service event socket.connected instead
-		Meteor.onConnection((connection: unknown) => this._handleMeteorConnection(connection as ISocketConnection));
+		Meteor.onConnection((connection: unknown) => () => {
+			this._handleMeteorConnection(connection as ISocketConnection);
+		});
 		callbacks.add('livechat.agentStatusChanged', this._handleAgentStatusChanged);
 		callbacks.add('livechat.setUserStatusLivechat', this._handleUserStatusLivechatChanged);
 		this._started = true;

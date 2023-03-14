@@ -1,5 +1,6 @@
 import { Settings } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+import { parse } from 'csv-parse/lib/sync';
 
 import { Base, ProgressStep, ImporterWebsocket } from '../../importer/server';
 import { Users } from '../../models/server';
@@ -7,8 +8,6 @@ import { Users } from '../../models/server';
 export class CsvImporter extends Base {
 	constructor(info, importRecord) {
 		super(info, importRecord);
-
-		const { parse } = require('csv-parse/lib/sync');
 
 		this.csvParser = parse;
 	}

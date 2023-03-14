@@ -3,6 +3,8 @@ import { Uploads } from '@rocket.chat/models';
 
 import { FileUpload } from './FileUpload';
 
+// TODO migrate to WebApp.connectHandlers
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
 WebApp.connectHandlers.use(FileUpload.getPath(), async function (req, res, next) {
 	const match = /^\/([^\/]+)\/(.*)/.exec(req.url);
 

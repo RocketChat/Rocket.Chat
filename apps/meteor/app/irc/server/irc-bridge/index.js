@@ -116,7 +116,7 @@ class Bridge {
 			return;
 		}
 
-		const lastResetTime = Settings.findOneById('IRC_Bridge_Reset_Time');
+		const lastResetTime = await Settings.findOneById('IRC_Bridge_Reset_Time');
 		if (lastResetTime && lastResetTime.value > this.initTime) {
 			this.stop();
 			this.remove();

@@ -3,7 +3,7 @@
  * by https://github.com/martynsmith
  */
 
-const replyFor = require('./codes');
+import replyFor from './codes';
 
 /**
  * parseMessage(line, stripColors)

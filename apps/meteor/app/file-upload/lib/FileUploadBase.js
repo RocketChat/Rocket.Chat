@@ -51,7 +51,9 @@ export class FileUploadBase {
 		this.store = store;
 	}
 
-	getProgress() {}
+	getProgress() {
+		// noop
+	}
 
 	getFileName() {
 		return this.meta.name;
@@ -78,7 +80,9 @@ export class FileUploadBase {
 		return this.handler.start();
 	}
 
-	onProgress() {}
+	onProgress() {
+		// noop
+	}
 
 	stop() {
 		return this.handler.stop();

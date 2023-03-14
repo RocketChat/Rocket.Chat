@@ -56,19 +56,18 @@ RocketChatFile.GridFS = class {
 	}
 
 	createWriteStream(fileName, contentType) {
-		const self = this;
 		let ws = this.bucket.openUploadStream(fileName, {
 			contentType,
 		});
 
-		if (self.transformWrite != null) {
-			ws = RocketChatFile.addPassThrough(ws, function (rs, ws) {
+		if (this.transformWrite != null) {
+			ws = RocketChatFile.addPassThrough(ws, (rs, ws) => {
 				const file = {
-					name: self.name,
+					name: this.name,
 					fileName,
 					contentType,
 				};
-				return self.transformWrite(file, rs, ws);
+				return this.transformWrite(file, rs, ws);
 			});
 		}
 		ws.on('close', function () {
@@ -151,15 +150,14 @@ RocketChatFile.FileSystem = class {
 	}
 
 	createWriteStream(fileName, contentType) {
-		const self = this;
 		let ws = fs.createWriteStream(path.join(this.absolutePath, fileName));
-		if (self.transformWrite != null) {
-			ws = RocketChatFile.addPassThrough(ws, function (rs, ws) {
+		if (this.transformWrite != null) {
+			ws = RocketChatFile.addPassThrough(ws, (rs, ws) => {
 				const file = {
 					fileName,
 					contentType,
 				};
-				return self.transformWrite(file, rs, ws);
+				return this.transformWrite(file, rs, ws);
 			});
 		}
 		ws.on('close', function () {

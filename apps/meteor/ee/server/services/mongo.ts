@@ -28,7 +28,7 @@ function connectDb(options?: MongoClientOptions): Promise<MongoClient> {
 let db: Db;
 
 export const getConnection = ((): ((options?: MongoClientOptions) => Promise<Db>) => {
-	let client: Promise<MongoClient>;
+	let client: Promise<MongoClient> | null;
 
 	return async (options): Promise<Db> => {
 		if (db) {
