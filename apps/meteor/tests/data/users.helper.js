@@ -61,7 +61,6 @@ export const getUserStatus = (userId) =>
 			});
 	});
 
-
 export const getMe = (overrideCredential = credentials) =>
 	new Promise((resolve) => {
 		request

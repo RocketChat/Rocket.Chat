@@ -18,6 +18,7 @@ import {
 	UserState,
 } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { Random } from '@rocket.chat/random';
 import type { Device, IExperimentalHTMLAudioElement } from '@rocket.chat/ui-contexts';
 import {
 	useRoute,
@@ -31,7 +32,6 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 // import { useRoute, useUser, useSetting, useEndpoint, useStream, useSetModal } from '@rocket.chat/ui-contexts';
-import { Random } from 'meteor/random';
 import type { FC } from 'react';
 import React, { useMemo, useRef, useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';

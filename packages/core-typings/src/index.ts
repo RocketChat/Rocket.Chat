@@ -122,3 +122,4 @@ export * from './SpotlightUser';
 export * from './ICalendarEvent';
 
 export * from './search';
+export * from './omnichannel';
