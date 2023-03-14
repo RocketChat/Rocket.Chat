@@ -8,7 +8,7 @@ import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoo
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
 import { roomCoordinator } from '../roomCoordinator';
 import { Subscriptions } from '../../../../app/models/server';
-import { Federation } from '../../../../app/federation-v2/server/Federation';
+import { Federation } from '../../../services/federation/Federation';
 
 const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
 
