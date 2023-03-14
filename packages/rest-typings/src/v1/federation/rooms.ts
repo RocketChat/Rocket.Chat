@@ -1,6 +1,7 @@
 import type { FederationAddServerProps, FederationPaginatedResult, FederationRemoveServerProps } from '.';
 import type { FederationSearchPublicRoomsProps } from './FederationPublicRoomsProps';
 import type { FederationJoinExternalPublicRoomProps } from './FederationJoinExternalPublicRoomProps';
+import type { FederationVerifyMatrixIdProps } from './FederationVerifyMatrixIdProps';
 
 export interface IFederationPublicRooms {
 	id: string;
@@ -28,5 +29,8 @@ export type FederationEndpoints = {
 	};
 	'/v1/federation/removeServerByUser': {
 		POST: (params: FederationRemoveServerProps) => void;
+	};
+	'/v1/federation/verifyeMatrixId': {
+		GET: (params: FederationVerifyMatrixIdProps) => { result: string };
 	};
 };
