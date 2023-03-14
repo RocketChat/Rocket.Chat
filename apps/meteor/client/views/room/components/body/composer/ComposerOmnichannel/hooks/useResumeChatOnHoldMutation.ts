@@ -17,7 +17,6 @@ export const useResumeChatOnHoldMutation = (
 			try {
 				await resumeChatOnHold(rid, { clientAction: true });
 			} catch (error) {
-				console.error(error);
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 		},
