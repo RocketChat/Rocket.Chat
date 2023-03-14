@@ -1,4 +1,4 @@
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import type { ILivechatAgent, IVoipRoom } from '@rocket.chat/core-typings';
 import { isVoipRoomProps, isVoipRoomsProps, isVoipRoomCloseProps } from '@rocket.chat/rest-typings';
 import { VoipRoom, LivechatVisitors, Users } from '@rocket.chat/models';

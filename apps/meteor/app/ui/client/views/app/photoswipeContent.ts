@@ -79,7 +79,7 @@ const initGallery = async (items: Slide[], options: PhotoSwipe.Options): Promise
 		import('./photoswipeContent.html'),
 	]);
 
-	Blaze.render(Template.photoswipeContent, document.body);
+	const view = Blaze.render(Template.photoswipeContent, document.body);
 
 	if (!currentGallery) {
 		const container = document.getElementById('pswp');
@@ -91,6 +91,7 @@ const initGallery = async (items: Slide[], options: PhotoSwipe.Options): Promise
 		currentGallery = new PhotoSwipe(container, PhotoSwipeUIDefault, items, options);
 
 		currentGallery.listen('destroy', () => {
+			Blaze.remove(view);
 			currentGallery = null;
 		});
 
@@ -121,38 +122,49 @@ const createEventListenerFor =
 
 		const { currentTarget } = event;
 
-		Array.from(document.querySelectorAll(className))
-			.sort((a, b) => {
-				if (a === currentTarget) {
-					return -1;
-				}
+		const galleryItems = Array.from(document.querySelectorAll(className));
 
-				if (b === currentTarget) {
-					return 1;
-				}
+		const sortedElements = galleryItems.sort((a, b) => {
+			if (a === currentTarget) {
+				return -1;
+			}
 
-				return 0;
-			})
-			.map((element) => fromElementToSlide(element))
-			.reduce(
-				(p, curr) =>
-					p
-						.then(() => curr)
-						.then(async (slide) => {
-							if (!slide) {
+			if (b === currentTarget) {
+				return 1;
+			}
+
+			return 0;
+		});
+
+		const slidePromises = sortedElements.map((element) => fromElementToSlide(element));
+
+		let hasOpenedGallery = false;
+
+		slidePromises.reduce(
+			(p, curr) =>
+				p
+					.then(() => curr)
+					.then(async (slide) => {
+						if (!slide) {
+							return;
+						}
+
+						if (!currentGallery) {
+							// If the gallery doesn't exist and has been opened this run the user closed it before all promises ran.
+							// This means it shouldn't be opened again.
+							if (hasOpenedGallery) {
 								return;
 							}
+							hasOpenedGallery = true;
+							return initGallery([slide], defaultGalleryOptions);
+						}
 
-							if (!currentGallery) {
-								return initGallery([slide], defaultGalleryOptions);
-							}
-
-							currentGallery.items.push(slide);
-							currentGallery.invalidateCurrItems();
-							currentGallery.updateSize(true);
-						}),
-				Promise.resolve(),
-			);
+						currentGallery.items.push(slide);
+						currentGallery.invalidateCurrItems();
+						currentGallery.updateSize(true);
+					}),
+			Promise.resolve(),
+		);
 	};
 
 Meteor.startup(() => {
