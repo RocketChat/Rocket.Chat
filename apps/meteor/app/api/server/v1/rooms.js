@@ -3,7 +3,7 @@ import { Rooms as RoomsRaw } from '@rocket.chat/models';
 import { isRoomsInfoProps } from '@rocket.chat/rest-typings/dist/v1/rooms';
 import { Media } from '@rocket.chat/core-services';
 
-import { FileUpload } from '../../../file-upload';
+import { FileUpload } from '../../../file-upload/server';
 import { Rooms, Messages } from '../../../models/server';
 import { API } from '../api';
 import {

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Tracker } from 'meteor/tracker';
 
-import { settings } from '../../settings';
+import { settings } from '../../settings/client';
 import { callbacks } from '../../../lib/callbacks';
 import { ChatRoom } from '../../models/client';
 

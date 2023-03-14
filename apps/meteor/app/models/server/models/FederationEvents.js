@@ -1,4 +1,4 @@
-import { SHA256 } from 'meteor/sha';
+import { SHA256 } from '@rocket.chat/sha256';
 
 import { Base } from './_Base';
 

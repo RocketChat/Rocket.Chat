@@ -8,7 +8,7 @@ import type {
 	SlashCommandPreviews,
 } from '@rocket.chat/core-typings';
 
-export interface ISlashCommandAddParams<T extends string> {
+interface ISlashCommandAddParams<T extends string> {
 	command: string;
 	callback?: SlashCommand<T>['callback'];
 	options?: SlashCommandOptions;
@@ -53,7 +53,7 @@ export const slashCommands = {
 			return;
 		}
 
-		if (!message || !message.rid) {
+		if (!message?.rid) {
 			throw new Meteor.Error('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
 
@@ -65,7 +65,7 @@ export const slashCommands = {
 			return;
 		}
 
-		if (!message || !message.rid) {
+		if (!message?.rid) {
 			throw new Meteor.Error('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
 
@@ -88,7 +88,7 @@ export const slashCommands = {
 			return;
 		}
 
-		if (!message || !message.rid) {
+		if (!message?.rid) {
 			throw new Meteor.Error('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
 
@@ -109,7 +109,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!command || !command.cmd || !slashCommands.commands[command.cmd]) {
+		if (!command?.cmd || !slashCommands.commands[command.cmd]) {
 			throw new Meteor.Error('error-invalid-command', 'Invalid Command Provided', {
 				method: 'executeSlashCommandPreview',
 			});

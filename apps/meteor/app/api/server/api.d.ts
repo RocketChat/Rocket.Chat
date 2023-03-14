@@ -48,8 +48,8 @@ type NotFoundResult = {
 	};
 };
 
-export type TOperation = 'hasAll' | 'hasAny';
-export type NonEnterpriseTwoFactorOptions = {
+type TOperation = 'hasAll' | 'hasAny';
+type NonEnterpriseTwoFactorOptions = {
 	authRequired: true;
 	forceTwoFactorAuthenticationForNonEnterprise: true;
 	twoFactorRequired: true;
@@ -158,7 +158,7 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 			readonly token?: string;
 	  });
 
-export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> =
+type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> =
 	| SuccessResult<OperationResult<TMethod, TPathPattern>>
 	| FailureResult<unknown, unknown, unknown, unknown>
 	| UnauthorizedResult<unknown>
@@ -255,14 +255,14 @@ declare class APIClass<TBasePath extends string = '/'> {
 	};
 }
 
-export declare const API: {
+declare const API: {
 	v1: APIClass<'/v1'>;
 	default: APIClass;
 	helperMethods: Map<string, (...args: any[]) => unknown>;
 	ApiClass: APIClass;
 };
 
-export declare const defaultRateLimiterOptions: {
+declare const defaultRateLimiterOptions: {
 	numRequestsAllowed: number;
 	intervalTimeInMS: number;
 };

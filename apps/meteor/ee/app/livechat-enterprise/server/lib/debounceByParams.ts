@@ -1,7 +1,7 @@
 import debounce from 'lodash.debounce';
 import mem from 'mem';
 
-export interface IMemoizeDebouncedFunction<F extends (...args: any[]) => any> {
+interface IMemoizeDebouncedFunction<F extends (...args: any[]) => any> {
 	(...args: Parameters<F>): void;
 	flush: (...args: Parameters<F>) => void;
 }

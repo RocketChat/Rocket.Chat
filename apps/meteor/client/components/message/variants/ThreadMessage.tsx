@@ -3,9 +3,10 @@ import { Message, MessageLeftContainer, MessageContainer } from '@rocket.chat/fu
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { memo } from 'react';
+import React, { memo, useRef } from 'react';
 
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
+import { useJumpToMessage } from '../../../views/room/MessageList/hooks/useJumpToMessage';
 import { useChat } from '../../../views/room/contexts/ChatContext';
 import UserAvatar from '../../avatar/UserAvatar';
 import IgnoredContent from '../IgnoredContent';
@@ -26,9 +27,14 @@ const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): Rea
 	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored);
 	const chat = useChat();
 
+	const messageRef = useRef(null);
+
+	useJumpToMessage(message._id, messageRef);
+
 	return (
 		<Message
 			id={message._id}
+			ref={messageRef}
 			isEditing={editing}
 			isPending={message.temp}
 			sequential={sequential}
