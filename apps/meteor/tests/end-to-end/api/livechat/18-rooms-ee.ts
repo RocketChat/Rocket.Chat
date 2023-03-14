@@ -1,5 +1,6 @@
 /* eslint-env mocha */
 
+import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
@@ -17,6 +18,8 @@ import {
 } from '../../../data/livechat/rooms';
 import { sleep } from '../../../data/livechat/utils';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { password } from '../../../data/user';
+import { createUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('[EE] LIVECHAT - rooms', function () {
@@ -24,11 +27,24 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 	before((done) => getCredentials(done));
 
+	let agent2: { user: IUser; credentials: { 'X-Auth-Token': string; 'X-User-Id': string } };
+
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
 		await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 		await createAgent();
 		await makeAgentAvailable();
+	});
+
+	before(async () => {
+		const user: IUser = await createUser();
+		const userCredentials = await login(user.username, password);
+		await createAgent(user.username);
+
+		agent2 = {
+			user,
+			credentials: userCredentials,
+		};
 	});
 
 	describe('livechat/room.onHold', () => {
@@ -43,9 +59,10 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(403);
 
 			expect(response.body.success).to.be.false;
+
+			await updatePermission('on-hold-livechat-room', ['livechat-manager', 'livechat-monitor', 'livechat-agent', 'admin']);
 		});
 		it('should fail if roomId is invalid', async () => {
-			await updatePermission('on-hold-livechat-room', ['admin']);
 			const response = await request
 				.post(api('livechat/room.onHold'))
 				.set(credentials)
@@ -55,6 +72,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(400);
 
 			expect(response.body.success).to.be.false;
+			expect(response.body.error).to.be.equal('error-invalid-room');
 		});
 		it('should fail if room is an empty string', async () => {
 			const response = await request
@@ -66,6 +84,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(400);
 
 			expect(response.body.success).to.be.false;
+			expect(response.body.error).to.be.equal('error-invalid-room');
 		});
 		it('should fail if room is not a livechat room', async () => {
 			const response = await request
@@ -77,6 +96,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(400);
 
 			expect(response.body.success).to.be.false;
+			expect(response.body.error).to.be.equal('error-invalid-room');
 		});
 		it('should fail if visitor is awaiting response (visitor sent last message)', async () => {
 			const visitor = await createVisitor();
@@ -92,6 +112,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(400);
 
 			expect(response.body.success).to.be.false;
+			expect(response.body.error).to.be.equal('error-contact-sent-last-message-so-cannot-place-on-hold');
 		});
 		it('should fail if room is closed', async () => {
 			const visitor = await createVisitor();
@@ -107,26 +128,26 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(400);
 
 			expect(response.body.success).to.be.false;
+			expect(response.body.error).to.be.equal('This_conversation_is_already_closed');
 		});
 		it('should fail if user is not serving the chat and doesnt have on-hold-others-livechat-room permission', async () => {
-			await updatePermission('on-hold-others-livechat-room', []);
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
+			const { room } = await startANewLivechatRoomAndTakeIt();
+			await sendAgentMessage(room._id);
 
 			const response = await request
 				.post(api('livechat/room.onHold'))
-				.set(credentials)
+				.set(agent2.credentials)
 				.send({
 					roomId: room._id,
 				})
 				.expect(400);
 
 			expect(response.body.success).to.be.false;
+			expect(response.body.error).to.be.equal('Not_authorized');
 		});
 		it('should put room on hold', async () => {
-			await updatePermission('on-hold-others-livechat-room', ['admin', 'livechat-manager']);
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
+			const { room } = await startANewLivechatRoomAndTakeIt();
+			await sendAgentMessage(room._id);
 
 			const response = await request
 				.post(api('livechat/room.onHold'))
