@@ -10,9 +10,8 @@ const getQueryParams = () => {
 	const queryString = window.location.search;
 	const urlParams = new URLSearchParams(queryString);
 	const callUrlParam = urlParams.get('callUrl');
-	const callProviderParam = urlParams.get('callProvider');
 
-	return { callUrlParam, callProviderParam };
+	return { callUrlParam };
 };
 
 const ConferencePage = (): ReactElement => {
@@ -22,8 +21,8 @@ const ConferencePage = (): ReactElement => {
 	const handleOpenCall = useVideoOpenCall();
 	const userDisplayName = useUserDisplayName({ name: user?.name, username: user?.username });
 
-	const { callUrlParam, callProviderParam } = getQueryParams();
-	const callUrl = callProviderParam === 'pexip' ? `${callUrlParam}&name=${userDisplayName}` : callUrlParam;
+	const { callUrlParam } = getQueryParams();
+	const callUrl = `${callUrlParam}&name=${userDisplayName}`;
 
 	useEffect(() => {
 		if (!callUrl) {
