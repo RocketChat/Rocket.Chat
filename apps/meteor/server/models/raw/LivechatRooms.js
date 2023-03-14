@@ -4,7 +4,6 @@ import { Settings } from '@rocket.chat/models';
 import { BaseRaw } from './BaseRaw';
 import { getValue } from '../../../app/settings/server/raw';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
-import { trim } from '../../../lib/utils/stringUtils';
 
 /**
  * @extends BaseRaw<ILivechatRoom>
@@ -1493,8 +1492,9 @@ export class LivechatRoomsRaw extends BaseRaw {
 		const unsetData = {};
 
 		if (topic != null) {
-			if (trim(topic).length) {
-				setData.topic = trim(topic);
+			const trimmedTopic = topic.trim();
+			if (trimmedTopic.length) {
+				setData.topic = trimmedTopic;
 			} else {
 				unsetData.topic = 1;
 			}
@@ -1517,7 +1517,7 @@ export class LivechatRoomsRaw extends BaseRaw {
 
 		if (livechatData) {
 			Object.keys(livechatData).forEach((key) => {
-				const value = trim(livechatData[key]);
+				const value = livechatData[key].trim();
 				if (value) {
 					setData[`livechatData.${key}`] = value;
 				} else {
