@@ -27,7 +27,7 @@ import { useMessageBody } from '../../../views/room/MessageList/hooks/useMessage
 import { useParentMessage } from '../../../views/room/MessageList/hooks/useParentMessage';
 import { isParsedMessage } from '../../../views/room/MessageList/lib/isParsedMessage';
 import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
-import UserAvatar from '../../avatar/UserAvatar';
+import MessageAvatar from '../header/MessageAvatar';
 import { useShowTranslated } from '../list/MessageListContext';
 import ThreadMessagePreviewBody from './threadPreview/ThreadMessagePreviewBody';
 
@@ -94,7 +94,7 @@ const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePr
 			)}
 			<ThreadMessageRow onClick={!isSelecting ? () => goToThread({ rid: message.rid, tmid: message.tmid, msg: message._id }) : undefined}>
 				<ThreadMessageLeftContainer>
-					{!isSelecting && <UserAvatar username={message.u.username} size='x18' />}
+					{!isSelecting && <MessageAvatar username={message.u.username} emoji={message.emoji} size='x18' />}
 					{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 				</ThreadMessageLeftContainer>
 				<ThreadMessageContainer>
