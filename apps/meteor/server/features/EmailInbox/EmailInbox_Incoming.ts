@@ -1,10 +1,10 @@
-import stripHtml from 'string-strip-html';
 import { Random } from '@rocket.chat/random';
 import type { ParsedMail, Attachment } from 'mailparser';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
+import { NodeHtmlMarkdown } from 'node-html-markdown';
 
 import { Livechat } from '../../../app/livechat/server/lib/Livechat';
 import { LivechatRooms, Messages } from '../../../app/models/server';
@@ -126,6 +126,8 @@ async function uploadAttachment(attachment: Attachment, rid: string, visitorToke
 	});
 }
 
+const html2md = new NodeHtmlMarkdown({});
+
 export async function onEmailReceived(email: ParsedMail, inbox: string, department = ''): Promise<void> {
 	logger.debug(`New email conversation received on inbox ${inbox}. Will be assigned to department ${department}`);
 	if (!email.from?.value?.[0]?.address) {
@@ -160,19 +162,9 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 		logger.debug(`Room ${room?._id} is closed. Reopening`);
 		room = await QueueManager.unarchiveRoom(room);
 	}
+	const msg = html2md.translate(email.html ? email.html : email.text || '');
 
-	// TODO: html => md with turndown
-	const msg = email.html
-		? stripHtml(email.html, {
-				dumpLinkHrefsNearby: {
-					enabled: true,
-					putOnNewLine: false,
-					wrapHeads: '(',
-					wrapTails: ')',
-				},
-				skipHtmlDecoding: false,
-		  }).result
-		: email.text || '';
+	logger.error(msg, JSON.stringify(html2md));
 
 	const rid = room?._id ?? Random.id();
 	const msgId = Random.id();
@@ -184,7 +176,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 		message: {
 			_id: msgId,
 			groupable: false,
-			msg,
+			msg: '',
 			token: guest.token,
 			attachments: [
 				{
