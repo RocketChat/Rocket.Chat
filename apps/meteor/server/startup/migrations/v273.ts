@@ -5,7 +5,7 @@ addMigration({
 	version: 273,
 	async up() {
 		try {
-			return appTokensCollection.rawCollection().dropIndex('userId_1');
+			await appTokensCollection.rawCollection().dropIndex('userId_1');
 		} catch (error: unknown) {
 			console.warn('Error dropping index for _raix_push_app_tokens, continuing...');
 			console.warn(error);
