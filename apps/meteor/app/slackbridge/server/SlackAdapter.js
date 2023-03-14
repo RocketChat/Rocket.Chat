@@ -1294,6 +1294,7 @@ export default class SlackAdapter {
 					oldest: 1,
 				});
 				while (results && results.has_more) {
+					// eslint-disable-next-line no-await-in-loop
 					results = await this.importFromHistory(this.getSlackChannel(rid).family, {
 						channel: this.getSlackChannel(rid).id,
 						oldest: results.ts,
