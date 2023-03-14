@@ -24,7 +24,7 @@ type GenericTableProps<FilterProps extends { onChange?: (params: GenericTablePar
 	fixed?: boolean;
 	header?: ReactNode;
 	params?: GenericTableParams;
-	setParams?: (params: GenericTableParams) => void;
+	setParams?: React.Dispatch<React.SetStateAction<GenericTableParams>>;
 	children?: (props: ResultProps, key: number) => ReactElement;
 	renderFilter?: (props: FilterProps) => ReactElement;
 	renderRow?: (props: ResultProps) => ReactElement;
@@ -55,23 +55,23 @@ const GenericTable = forwardRef(function GenericTable<
 	const t = useTranslation();
 
 	const [filter, setFilter] = useState(paramsDefault);
-	const [prevSearchTerm, setPrevSearchTerm] = useState<string>('');
 
 	const { itemsPerPage, setItemsPerPage, current, setCurrent, itemsPerPageLabel, showingResultsLabel } = usePagination();
 
 	const params = useDebouncedValue(filter, 500);
 
 	useEffect(() => {
-		setParams({
-			...params,
-			text: params.text || '',
-			current: prevSearchTerm === params.text ? current : 0,
-			itemsPerPage,
-		});
+		setParams((prevParams) => {
+			setCurrent(prevParams.text === params.text ? current : 0);
 
-		setCurrent(prevSearchTerm === params.text ? current : 0);
-		setPrevSearchTerm(params.text || '');
-	}, [params, current, itemsPerPage, setParams, setCurrent, prevSearchTerm, setItemsPerPage]);
+			return {
+				...params,
+				text: params.text || '',
+				current: prevParams.text === params.text ? current : 0,
+				itemsPerPage,
+			};
+		});
+	}, [params, current, itemsPerPage, setParams, setCurrent, setItemsPerPage]);
 
 	const headerCells = useMemo(() => flattenChildren(header).length, [header]);
 
