@@ -1,5 +1,9 @@
 {
-	"extends": ["@rocket.chat/eslint-config", "plugin:you-dont-need-lodash-underscore/compatible"],
+	"extends": [
+		"@rocket.chat/eslint-config",
+		"plugin:you-dont-need-lodash-underscore/compatible",
+		"plugin:@typescript-eslint/recommended"
+	],
 	"globals": {
 		"__meteor_bootstrap__": false,
 		"__meteor_runtime_config__": false,
@@ -19,7 +23,12 @@
 			{
 				"additionalHooks": "(useComponentDidUpdate)"
 			}
-		]
+		],
+		"@typescript-eslint/no-misused-promises": [
+			"error",
+			{ "checksVoidReturn": false }
+		],
+		"@typescript-eslint/no-explicit-any": "off"
 	},
 	"settings": {
 		"react": {
@@ -52,5 +61,8 @@
 				"mocha": true
 			}
 		}
-	]
+	],
+	"parserOptions": {
+		"project": ["./tsconfig.json"]
+	}
 }
