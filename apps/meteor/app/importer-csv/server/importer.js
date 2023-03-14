@@ -1,5 +1,5 @@
 import { Settings } from '@rocket.chat/models';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 
 import { Base, ProgressStep, ImporterWebsocket } from '../../importer/server';
 import { Users } from '../../models/server';
@@ -13,9 +13,9 @@ export class CsvImporter extends Base {
 		this.csvParser = parse;
 	}
 
-	prepareUsingLocalFile(fullFilePath) {
+	async prepareUsingLocalFile(fullFilePath) {
 		this.logger.debug('start preparing import operation');
-		this.converter.clearImportData();
+		await this.converter.clearImportData();
 
 		const zip = new this.AdmZip(fullFilePath);
 		const totalEntries = zip.getEntryCount();
@@ -122,7 +122,6 @@ export class CsvImporter extends Base {
 					});
 				}
 
-				Promise.await(Settings.incrementValueById('CSV_Importer_Count', usersCount));
 				super.updateRecord({ 'count.users': usersCount });
 				return increaseProgressCount();
 			}
@@ -218,6 +217,10 @@ export class CsvImporter extends Base {
 
 			increaseProgressCount();
 		});
+
+		if (usersCount) {
+			await Settings.incrementValueById('CSV_Importer_Count', usersCount);
+		}
 
 		// Check if any of the message usernames was not in the imported list of users
 		for (const username of usedUsernames) {
