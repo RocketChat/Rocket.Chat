@@ -516,7 +516,7 @@ export class ImportDataConverter {
 		}
 	}
 
-	convertMessageChannels(message: IImportMessage): Array<IMentionedChannel> | undefined {
+	async convertMessageChannels(message: IImportMessage): Promise<Array<IMentionedChannel> | undefined> {
 		const { channels } = message;
 		if (!channels) {
 			return;
@@ -549,7 +549,7 @@ export class ImportDataConverter {
 	convertMessages({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
 		const rids: Array<string> = [];
 		const messages = Promise.await(this.getMessagesToImport());
-		messages.forEach(({ data, _id }: IImportMessageRecord) => {
+		messages.forEach(async ({ data, _id }: IImportMessageRecord) => {
 			try {
 				if (beforeImportFn && !beforeImportFn(data, 'message')) {
 					this.skipRecord(_id);
@@ -576,7 +576,7 @@ export class ImportDataConverter {
 
 				// Convert the mentions and channels first because these conversions can also modify the msg in the message object
 				const mentions = data.mentions && this.convertMessageMentions(data);
-				const channels = data.channels && this.convertMessageChannels(data);
+				const channels = data.channels && await this.convertMessageChannels(data);
 
 				const msgObj: IMessage = {
 					rid,
