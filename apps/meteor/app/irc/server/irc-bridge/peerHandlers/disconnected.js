@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Users } from '../../../../models/server';
 
-export default function handleQUIT(args) {
+export default async function handleQUIT(args) {
 	const user = Users.findOne({
 		'profile.irc.nick': args.nick,
 	});
