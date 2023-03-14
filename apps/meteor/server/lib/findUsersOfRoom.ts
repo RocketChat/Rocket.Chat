@@ -33,8 +33,8 @@ export function findUsersOfRoom({
 			federated: 1,
 		},
 		sort: {
-			...(sort || { [settings.get('UI_Use_Real_Name') ? 'name' : 'username']: 1 }),
 			statusConnection: -1,
+			...(sort || { [settings.get('UI_Use_Real_Name') ? 'name' : 'username']: 1 }),
 		},
 		...(skip > 0 && { skip }),
 		...(limit > 0 && { limit }),
