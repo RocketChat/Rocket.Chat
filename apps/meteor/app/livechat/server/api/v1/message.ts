@@ -1,4 +1,4 @@
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import {
 	isPOSTLivechatMessageParams,
