@@ -17,7 +17,7 @@ import {
 	defaultMetadataCertificateTemplate,
 } from './constants';
 
-export const getSamlConfigs = function (service: string): Record<string, any> {
+const getSamlConfigs = function (service: string): Record<string, any> {
 	const configs = {
 		buttonLabelText: settings.get(`${service}_button_label_text`),
 		buttonLabelColor: settings.get(`${service}_button_label_color`),
@@ -63,7 +63,7 @@ export const getSamlConfigs = function (service: string): Record<string, any> {
 	return configs;
 };
 
-export const configureSamlService = function (samlConfigs: Record<string, any>): IServiceProviderOptions {
+const configureSamlService = function (samlConfigs: Record<string, any>): IServiceProviderOptions {
 	let privateCert = null;
 	let privateKey = null;
 

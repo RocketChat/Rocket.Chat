@@ -1,7 +1,7 @@
 import { VM, VMScript } from 'vm2';
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { Livechat } from 'meteor/rocketchat:livechat';
 import Fiber from 'fibers';
 import Future from 'fibers/future';

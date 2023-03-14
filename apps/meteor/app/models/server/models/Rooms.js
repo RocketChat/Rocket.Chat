@@ -6,7 +6,7 @@ import Messages from './Messages';
 import Subscriptions from './Subscriptions';
 import { trim } from '../../../../lib/utils/stringUtils';
 
-export class Rooms extends Base {
+class Rooms extends Base {
 	constructor(...args) {
 		super(...args);
 

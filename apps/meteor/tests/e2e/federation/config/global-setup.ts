@@ -1,8 +1,4 @@
-import { chromium } from '@playwright/test';
-
 export default async function (): Promise<void> {
-	const browser = await chromium.launch();
-
 	const requiredEnvVars = [
 		'RC_SERVER_1',
 		'RC_SERVER_2',
@@ -22,5 +18,4 @@ export default async function (): Promise<void> {
 		throw new Error(`Missing required environment variables: ${requiredEnvVars.filter((envVar) => !process.env[envVar]).join(', ')}`);
 	}
 
-	await browser.close();
 }

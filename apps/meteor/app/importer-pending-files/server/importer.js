@@ -2,11 +2,11 @@ import https from 'https';
 import http from 'http';
 
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 
 import { Base, ProgressStep, Selection } from '../../importer/server';
 import { Messages } from '../../models/server';
-import { FileUpload } from '../../file-upload';
+import { FileUpload } from '../../file-upload/server';
 
 export class PendingFileImporter extends Base {
 	constructor(info, importRecord) {

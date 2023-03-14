@@ -4,7 +4,7 @@ import _ from 'underscore';
 import moment from 'moment';
 import { api } from '@rocket.chat/core-services';
 
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Users } from '../../../models/server';
 
