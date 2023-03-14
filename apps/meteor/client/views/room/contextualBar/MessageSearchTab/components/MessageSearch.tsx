@@ -1,5 +1,5 @@
 import { Box, MessageDivider } from '@rocket.chat/fuselage';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { Fragment, memo, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
@@ -23,15 +23,14 @@ type MessageSearchProps = {
 };
 
 const MessageSearch = ({ searchText, globalSearch }: MessageSearchProps): ReactElement => {
+	const t = useTranslation();
+	const formatDate = useFormatDate();
 	const pageSize = useSetting<number>('PageSize') ?? 10;
-
 	const [limit, setLimit] = useState(pageSize);
-	const messageSearchQuery = useMessageSearchQuery({ searchText, limit, globalSearch });
+	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
 	const subscription = useRoomSubscription();
-
-	const formatDate = useFormatDate();
-	const t = useTranslation();
+	const messageSearchQuery = useMessageSearchQuery({ searchText, limit, globalSearch });
 
 	return (
 		<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis={0}>
@@ -73,7 +72,7 @@ const MessageSearch = ({ searchText, globalSearch }: MessageSearchProps): ReactE
 													)}
 
 													{system ? (
-														<SystemMessage message={message} />
+														<SystemMessage message={message} showUserAvatar={showUserAvatar} />
 													) : (
 														<RoomMessage
 															message={message}
@@ -83,6 +82,7 @@ const MessageSearch = ({ searchText, globalSearch }: MessageSearchProps): ReactE
 															all={all}
 															context='search'
 															searchText={searchText}
+															showUserAvatar={showUserAvatar}
 														/>
 													)}
 												</Fragment>
