@@ -28,7 +28,7 @@ export const getPoolMaxIncomingAndQueuedChatsCount = (userId: IOmnichannelAgent[
 	return { poolMaxIncoming, queuedChatsCount };
 };
 
-const newInquirySound = () => {
+export const newInquirySound = () => {
 	const user = Meteor.user() as IOmnichannelAgent;
 	const audioVolume = getUserPreference(user?._id, 'notificationsSoundVolume') as number;
 	const newRoomNotification = getUserPreference(user?._id, 'newRoomNotification');
