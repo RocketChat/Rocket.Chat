@@ -9,20 +9,12 @@ import type {
 	IMessageSearchSuggestion,
 	ISetting,
 	ISubscription,
-	ISupportedLanguage,
 	IUser,
 	RoomType,
 } from '@rocket.chat/core-typings';
 
 import type { TranslationKey } from '../TranslationContext';
-import type {
-	AddWebdavAccount,
-	GetWebdavFileList,
-	UploadFileToWebdav,
-	RemoveWebdavAccount,
-	GetWebdavFilePreview,
-	GetFileFromWebdav,
-} from './methods/webdav';
+import type { GetWebdavFileList, GetWebdavFilePreview, GetFileFromWebdav } from './methods/webdav';
 import type { FollowMessageMethod } from './methods/followMessage';
 import type { GetReadReceiptsMethod } from './methods/getReadReceipts';
 import type { JoinRoomMethod } from './methods/joinRoom';
@@ -38,19 +30,8 @@ import type { ReportMessageMethod } from './methods/message/reportMessage';
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface ServerMethods {
-	'2fa:checkCodesRemaining': (...args: any[]) => any;
-	'2fa:disable': (...args: any[]) => any;
-	'2fa:enable': (...args: any[]) => any;
-	'2fa:regenerateCodes': (...args: any[]) => any;
-	'2fa:validateTempToken': (...args: any[]) => any;
 	'addOAuthService': (...args: any[]) => any;
 	'addUsersToRoom': (...args: any[]) => any;
-	'addWebdavAccount': AddWebdavAccount;
-	'authorization:addPermissionToRole': (...args: any[]) => any;
-	'authorization:addUserToRole': (...args: any[]) => any;
-	'authorization:deleteRole': (...args: any[]) => any;
-	'authorization:removeRoleFromPermission': (...args: any[]) => any;
-	'authorization:removeUserFromRole': (...args: any[]) => any;
 	'bbbEnd': (...args: any[]) => any;
 	'bbbJoin': (...args: any[]) => any;
 	'blockUser': (...args: any[]) => any;
@@ -186,11 +167,9 @@ export interface ServerMethods {
 	'e2e.requestSubscriptionKeys': (...args: any[]) => any;
 	'readMessages': (...args: any[]) => any;
 	'readThreads': (tmid: IMessage['_id']) => void;
-	'refreshClients': (...args: any[]) => any;
 	'refreshOAuthService': (...args: any[]) => any;
 	'registerUser': (...args: any[]) => any;
 	'removeOAuthService': (...args: any[]) => any;
-	'removeWebdavAccount': RemoveWebdavAccount;
 	'removeCannedResponse': (...args: any[]) => any;
 	'replayOutgoingIntegration': (...args: any[]) => any;
 	'reportMessage': ReportMessageMethod;
@@ -205,7 +184,6 @@ export interface ServerMethods {
 	'sendConfirmationEmail': (...args: any[]) => any;
 	'sendMessage': (message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>) => any;
 	'setAdminStatus': (...args: any[]) => any;
-	'setAsset': (...args: any[]) => any;
 	'setAvatarFromService': (...args: any[]) => any;
 	'setReaction': (reaction: string, mid: IMessage['_id']) => void;
 	'setUsername': (...args: any[]) => any;
@@ -217,12 +195,9 @@ export interface ServerMethods {
 	'unfollowMessage': UnfollowMessageMethod;
 	'unmuteUserInRoom': (...args: any[]) => any;
 	'unreadMessages': (...args: any[]) => any;
-	'unsetAsset': (...args: any[]) => any;
 	'updateIncomingIntegration': (...args: any[]) => any;
-	'updateMessage': (message: Pick<IMessage, '_id'> & Partial<Omit<IMessage, '_id'>>) => void;
 	'updateOutgoingIntegration': (...args: any[]) => any;
 	'uploadCustomSound': (...args: any[]) => any;
-	'uploadFileToWebdav': UploadFileToWebdav;
 	'Mailer:unsubscribe': MailerUnsubscribeMethod;
 	'getRoomById': (rid: IRoom['_id']) => IRoom;
 	'getReadReceipts': GetReadReceiptsMethod;
@@ -231,8 +206,6 @@ export interface ServerMethods {
 	'livechat:saveAgentInfo': (_id: string, agentData: unknown, agentDepartments: unknown) => unknown;
 	'livechat:takeInquiry': (inquiryId: string, options?: { clientAction: boolean; forwardingToDepartment?: boolean }) => unknown;
 	'livechat:resumeOnHold': (roomId: string, options?: { clientAction: boolean }) => unknown;
-	'autoTranslate.getProviderUiMetadata': () => Record<string, { name: string; displayName: string }>;
-	'autoTranslate.getSupportedLanguages': (language: string) => ISupportedLanguage[];
 	'spotlight': (
 		...args: (
 			| string
@@ -287,7 +260,7 @@ export type ServerMethodName = keyof ServerMethods;
 
 export type ServerMethodParameters<MethodName extends ServerMethodName> = Parameters<ServerMethods[MethodName]>;
 
-export type ServerMethodReturn<MethodName extends ServerMethodName> = ReturnType<ServerMethods[MethodName]>;
+export type ServerMethodReturn<MethodName extends ServerMethodName> = Awaited<ReturnType<ServerMethods[MethodName]>>;
 
 export type ServerMethodFunction<MethodName extends ServerMethodName> = (
 	...args: ServerMethodParameters<MethodName>
