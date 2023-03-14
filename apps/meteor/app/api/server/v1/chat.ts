@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Match, check } from 'meteor/check';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import {
@@ -44,15 +43,6 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isChatDeleteProps },
 	{
 		async post() {
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					msgId: String,
-					roomId: String,
-					asUser: Match.Maybe(Boolean),
-				}),
-			);
-
 			const msg = await Messages.findOneById(this.bodyParams.msgId, { projection: { u: 1, rid: 1 } });
 
 			if (!msg) {
@@ -314,15 +304,6 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isChatUpdateProps },
 	{
 		async post() {
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					roomId: String,
-					msgId: String,
-					text: String, // Using text to be consistant with chat.postMessage
-				}),
-			);
-
 			const msg = await Messages.findOneById(this.bodyParams.msgId);
 
 			// Ensure the message exists
@@ -500,9 +481,6 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { rid, type, text } = this.queryParams;
-			check(rid, String);
-			check(type, Match.Maybe(String));
-			check(text, Match.Maybe(String));
 
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();

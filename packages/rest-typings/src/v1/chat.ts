@@ -190,12 +190,10 @@ const ChatUnpinMessageSchema = {
 
 export const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
 
-type ChatGetDiscussions = {
+type ChatGetDiscussions = PaginatedRequest<{
 	roomId: IRoom['_id'];
 	text?: string;
-	offset: number;
-	count: number;
-};
+}>;
 
 const ChatGetDiscussionsSchema = {
 	type: 'object',
@@ -209,12 +207,14 @@ const ChatGetDiscussionsSchema = {
 		},
 		offset: {
 			type: 'number',
+			nullable: true,
 		},
 		count: {
 			type: 'number',
+			nullable: true,
 		},
 	},
-	required: ['roomId', 'offset', 'count'],
+	required: ['roomId'],
 	additionalProperties: false,
 };
 
@@ -241,13 +241,11 @@ const ChatReportMessageSchema = {
 
 export const isChatReportMessageProps = ajv.compile<ChatReportMessage>(ChatReportMessageSchema);
 
-type ChatGetThreadsList = {
+type ChatGetThreadsList = PaginatedRequest<{
 	rid: IRoom['_id'];
 	type: 'unread' | 'following' | 'all';
 	text?: string;
-	offset: number;
-	count: number;
-};
+}>;
 
 const ChatGetThreadsListSchema = {
 	type: 'object',
@@ -301,6 +299,7 @@ export const isChatSyncThreadsListProps = ajv.compile<ChatSyncThreadsList>(ChatS
 type ChatDelete = {
 	msgId: IMessage['_id'];
 	roomId: IRoom['_id'];
+	asUser?: boolean;
 };
 
 const ChatDeleteSchema = {
@@ -311,6 +310,10 @@ const ChatDeleteSchema = {
 		},
 		roomId: {
 			type: 'string',
+		},
+		asUser: {
+			type: 'boolean',
+			nullable: true,
 		},
 	},
 	required: ['msgId', 'roomId'],
@@ -393,12 +396,10 @@ const ChatIgnoreUserSchema = {
 
 export const isChatIgnoreUserProps = ajv.compile<ChatIgnoreUser>(ChatIgnoreUserSchema);
 
-type ChatSearch = {
+type ChatSearch = PaginatedRequest<{
 	roomId: IRoom['_id'];
 	searchText: string;
-	count: number;
-	offset: number;
-};
+}>;
 
 const ChatSearchSchema = {
 	type: 'object',
@@ -411,12 +412,14 @@ const ChatSearchSchema = {
 		},
 		count: {
 			type: 'number',
+			nullable: true,
 		},
 		offset: {
 			type: 'number',
+			nullable: true,
 		},
 	},
-	required: ['roomId', 'searchText', 'count', 'offset'],
+	required: ['roomId', 'searchText'],
 	additionalProperties: false,
 };
 

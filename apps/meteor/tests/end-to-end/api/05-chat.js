@@ -27,7 +27,7 @@ describe('[Chat]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', '[invalid-channel]');
+					expect(res.body).to.have.property('errorType', 'invalid-params');
 				})
 				.end(done);
 		});
@@ -1537,7 +1537,7 @@ describe('[Chat]', function () {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.errorType).to.be.equal('The required "roomId" query param is missing.');
+						expect(res.body.errorType).to.be.equal('invalid-params');
 					})
 					.end(done);
 			});
@@ -1554,7 +1554,7 @@ describe('[Chat]', function () {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.errorType).to.be.equal('The required "since" query param is missing.');
+						expect(res.body.errorType).to.be.equal('invalid-params');
 					})
 					.end(done);
 			});
@@ -1927,7 +1927,7 @@ describe('[Chat]', function () {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.errorType).to.be.equal('error-roomId-param-not-provided');
+						expect(res.body.errorType).to.be.equal('invalid-params');
 					})
 					.end(done);
 			});
@@ -1943,7 +1943,7 @@ describe('[Chat]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-invalid-params');
+					expect(res.body.errorType).to.be.equal('invalid-params');
 				})
 				.end(done);
 		});
@@ -1987,7 +1987,7 @@ describe('[Chat]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-invalid-params');
+					expect(res.body.errorType).to.be.equal('invalid-params');
 				})
 				.end(done);
 		});
@@ -2061,7 +2061,7 @@ describe('[Chat]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-invalid-params');
+					expect(res.body.errorType).to.be.equal('invalid-params');
 				})
 				.end(done);
 		});
