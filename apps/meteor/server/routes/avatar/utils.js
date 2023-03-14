@@ -3,7 +3,7 @@ import { throttle } from 'underscore';
 import { Cookies } from 'meteor/ostrio:cookies';
 
 import { Users } from '../../../app/models/server';
-import { getAvatarColor } from '../../../app/utils';
+import { getAvatarColor } from '../../../app/utils/server';
 import { settings } from '../../../app/settings/server';
 
 const FALLBACK_LAST_MODIFIED = 'Thu, 01 Jan 2015 00:00:00 GMT';

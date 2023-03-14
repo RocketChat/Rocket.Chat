@@ -3,7 +3,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Avatars } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
-import { RocketChatFile } from '../../../file';
+import { RocketChatFile } from '../../../file/server';
 import { FileUpload } from '../../../file-upload/server';
 import { Rooms, Messages } from '../../../models/server';
 

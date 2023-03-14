@@ -1,5 +1,5 @@
+import { SHA256 } from '@rocket.chat/sha256';
 import { Meteor } from 'meteor/meteor';
-import { SHA256 } from 'meteor/sha';
 
 import TwoFactorModal from '../../components/TwoFactorModal';
 import { imperativeModal } from '../imperativeModal';
