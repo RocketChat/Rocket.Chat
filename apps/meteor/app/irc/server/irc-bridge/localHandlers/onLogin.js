@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Users, Rooms } from '../../../../models/server';
 
-export default function handleOnLogin(login) {
+export default async function handleOnLogin(login) {
 	if (login.user === null) {
 		return this.log('Invalid handleOnLogin call');
 	}
