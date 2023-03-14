@@ -127,8 +127,8 @@ export class HipChatEnterpriseImporter extends Base {
 		return count;
 	}
 
-	get turndownService() {
-		const TurndownService = Promise.await(import('turndown')).default;
+	async loadTurndownService() {
+		const TurndownService = (await import('turndown')).default;
 
 		const turndownService = new TurndownService({
 			strongDelimiter: '*',
@@ -196,6 +196,8 @@ export class HipChatEnterpriseImporter extends Base {
 	async prepareRoomMessagesFile(file, rid) {
 		this.logger.debug(`preparing room with ${file.length} messages `);
 		let count = 0;
+
+		await this.loadTurndownService();
 
 		for (const m of file) {
 			if (m.UserMessage) {
@@ -273,9 +275,9 @@ export class HipChatEnterpriseImporter extends Base {
 		return 0;
 	}
 
-	prepareUsingLocalFile(fullFilePath) {
+	async prepareUsingLocalFile(fullFilePath) {
 		this.logger.debug('start preparing import operation');
-		this.converter.clearImportData();
+		await this.converter.clearImportData();
 
 		// HipChat duplicates direct messages (one for each user)
 		// This object will keep track of messages that have already been prepared so it doesn't try to do it twice

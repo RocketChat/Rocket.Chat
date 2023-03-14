@@ -1,14 +1,14 @@
 // @TODO implementar 'clicar na notificacao' abre a janela do chat
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Session } from 'meteor/session';
 
 import { e2e } from '../../../e2e/client';
 import { Users, ChatSubscription } from '../../../models/client';
-import { getUserPreference } from '../../../utils';
+import { getUserPreference } from '../../../utils/client';
 import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 import { CustomSounds } from '../../../custom-sounds/client/lib/CustomSounds';
 import { getAvatarAsPng } from '../../../../client/lib/utils/getAvatarAsPng';

@@ -6,7 +6,7 @@ import type { ILivechatAgent } from '@rocket.chat/core-typings';
 import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 import type { AutoUpdateRecord, IMeteor } from '@rocket.chat/core-services';
 
-import { metrics } from '../../../app/metrics';
+import { metrics } from '../../../app/metrics/server';
 import { Livechat } from '../../../app/livechat/server';
 import { settings } from '../../../app/settings/server';
 import { setValue, updateValue } from '../../../app/settings/server/raw';

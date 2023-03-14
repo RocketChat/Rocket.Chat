@@ -21,11 +21,11 @@ import { VideoConfService } from './video-conference/service';
 import { isRunningMs } from '../lib/isRunningMs';
 import { PushService } from './push/service';
 import { DeviceManagementService } from './device-management/service';
-import { FederationService } from './federation/service';
 import { UploadService } from './upload/service';
 import { MessageService } from './messages/service';
 import { TranslationService } from './translation/service';
 import { SettingsService } from './settings/service';
+import { OmnichannelIntegrationService } from './omnichannel-integrations/service';
 import { Logger } from '../lib/logger/Logger';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
@@ -48,11 +48,11 @@ api.registerService(new UiKitCoreApp());
 api.registerService(new PushService());
 api.registerService(new DeviceManagementService());
 api.registerService(new VideoConfService());
-api.registerService(new FederationService());
 api.registerService(new UploadService());
 api.registerService(new MessageService());
 api.registerService(new TranslationService());
 api.registerService(new SettingsService());
+api.registerService(new OmnichannelIntegrationService());
 
 // if the process is running in micro services mode we don't need to register services that will run separately
 if (!isRunningMs()) {

@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { SHA256 } from 'meteor/sha';
+import { SHA256 } from '@rocket.chat/sha256';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { Accounts } from 'meteor/accounts-base';
 

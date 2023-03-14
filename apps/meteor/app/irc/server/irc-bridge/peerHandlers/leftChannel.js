@@ -1,7 +1,7 @@
 import { Users, Rooms } from '../../../../models/server';
-import { removeUserFromRoom } from '../../../../lib';
+import { removeUserFromRoom } from '../../../../lib/server';
 
-export default function handleLeftChannel(args) {
+export default async function handleLeftChannel(args) {
 	const user = Users.findOne({
 		'profile.irc.nick': args.nick,
 	});
@@ -17,5 +17,5 @@ export default function handleLeftChannel(args) {
 	}
 
 	this.log(`${user.username} left room ${room.name}`);
-	Promise.await(removeUserFromRoom(room._id, user));
+	await removeUserFromRoom(room._id, user);
 }
