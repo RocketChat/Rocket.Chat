@@ -1,10 +1,10 @@
-import './settings';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { Users, Rooms } from '../../models/server';
 import { settings } from '../../settings/server';
 import { hasRole } from '../../authorization/server';
+import { isObject } from '../../../lib/utils/isObject';
+import './settings';
 
 /**
  * BotHelpers helps bots
@@ -54,7 +54,7 @@ class BotHelpers {
 	addUserToRoom(userName, room) {
 		const foundRoom = Rooms.findOneByIdOrName(room);
 
-		if (!_.isObject(foundRoom)) {
+		if (!isObject(foundRoom)) {
 			throw new Meteor.Error('invalid-channel');
 		}
 
@@ -67,7 +67,7 @@ class BotHelpers {
 	removeUserFromRoom(userName, room) {
 		const foundRoom = Rooms.findOneByIdOrName(room);
 
-		if (!_.isObject(foundRoom)) {
+		if (!isObject(foundRoom)) {
 			throw new Meteor.Error('invalid-channel');
 		}
 		const data = {};

@@ -9,7 +9,7 @@ import { RoomManager } from './RoomManager';
 import { ChatSubscription, ChatMessage } from '../../../models/client';
 import { APIClient } from '../../../utils/client';
 
-export class ReadMessage extends Emitter {
+class ReadMessage extends Emitter {
 	protected enabled: boolean;
 
 	protected debug = false;

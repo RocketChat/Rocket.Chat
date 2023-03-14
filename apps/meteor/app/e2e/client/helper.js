@@ -1,8 +1,7 @@
 /* eslint-disable new-cap, no-proto */
 
 import ByteBuffer from 'bytebuffer';
-
-import { getRandomFraction } from '../../../lib/random';
+import { Random } from '@rocket.chat/random';
 
 const StaticArrayBufferProto = new ArrayBuffer().__proto__;
 
@@ -131,23 +130,9 @@ export async function generateMnemonicPhrase(n, sep = ' ') {
 	const taken = new Array(len);
 
 	while (n--) {
-		const x = Math.floor(getRandomFraction() * len);
+		const x = Math.floor(Random.fraction() * len);
 		result[n] = wordList[x in taken ? taken[x] : x];
 		taken[x] = --len in taken ? taken[len] : len;
 	}
 	return result.join(sep);
-}
-
-export class Deferred {
-	constructor() {
-		const p = new Promise((resolve, reject) => {
-			this.resolve = resolve;
-			this.reject = reject;
-		});
-
-		p.resolve = this.resolve;
-		p.reject = this.reject;
-
-		return p;
-	}
 }

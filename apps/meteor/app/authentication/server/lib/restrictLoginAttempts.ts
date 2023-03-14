@@ -12,7 +12,7 @@ import type { ILoginAttempt } from '../ILoginAttempt';
 
 const logger = new Logger('LoginProtection');
 
-export const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date, failedAttempts: number): Promise<void> => {
+const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date, failedAttempts: number): Promise<void> => {
 	const channelToNotify = settings.get('Block_Multiple_Failed_Logins_Notify_Failed_Channel');
 	if (!channelToNotify) {
 		logger.error('Cannot notify failed logins: channel provided is invalid');
@@ -60,7 +60,7 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 	const lastLogin = await Sessions.findLastLoginByIp(ip);
 	let failedAttemptsSinceLastLogin;
 
-	if (!lastLogin || !lastLogin.loginAt) {
+	if (!lastLogin?.loginAt) {
 		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByIp(ip);
 	} else {
 		failedAttemptsSinceLastLogin = await ServerEvents.countFailedAttemptsByIpSince(ip, new Date(lastLogin.loginAt));

@@ -96,7 +96,7 @@ export const removePriorityFromRoom = async (rid: string, user: Required<Pick<IU
 	]);
 };
 
-export const addPriorityChangeHistoryToRoom = async (
+const addPriorityChangeHistoryToRoom = async (
 	roomId: string,
 	user: Required<Pick<IUser, '_id' | 'username' | 'name'>>,
 	priority?: Pick<ILivechatPriority, 'name' | 'i18n'>,
