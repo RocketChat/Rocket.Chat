@@ -156,17 +156,19 @@ export class SlackImporter extends Base {
 			}
 
 			this.converter.addUser(newUser);
-			Promise.await(Settings.incrementValueById('Slack_Importer_Count'));
 		}
+
+		return data.length;
 	}
 
-	prepareUsingLocalFile(fullFilePath) {
+	async prepareUsingLocalFile(fullFilePath) {
 		this.logger.debug('start preparing import operation');
-		this.converter.clearImportData();
+		await this.converter.clearImportData();
 
 		const zip = new this.AdmZip(fullFilePath);
 		const totalEntries = zip.getEntryCount();
 
+		let userCount = 0;
 		let messagesCount = 0;
 		let channelCount = 0;
 		let count = 0;
@@ -217,13 +219,17 @@ export class SlackImporter extends Base {
 					}
 
 					if (entry.entryName === 'users.json') {
-						this.prepareUsersFile(entry);
+						userCount = this.prepareUsersFile(entry);
 						return increaseProgress();
 					}
 				} catch (e) {
 					this.logger.error(e);
 				}
 			});
+
+			if (userCount) {
+				await Settings.incrementValueById('Slack_Importer_Count', userCount);
+			}
 
 			const missedTypes = {};
 			// If we have no slack message yet, then we can insert them instead of upserting
