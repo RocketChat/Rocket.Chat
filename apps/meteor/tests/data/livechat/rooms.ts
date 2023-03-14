@@ -309,3 +309,11 @@ export const startANewLivechatRoomAndTakeIt = async (): Promise<{ room: IOmnicha
 
 	return { room, visitor };
 };
+
+export const placeRoomOnHold = async (roomId: string): Promise<void> => {
+    await request
+        .post(api('livechat/room.onHold'))
+        .set(credentials)
+        .send({ roomId })
+        .expect(200);
+}

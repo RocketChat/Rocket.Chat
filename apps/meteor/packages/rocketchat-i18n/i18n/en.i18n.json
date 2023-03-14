@@ -2026,6 +2026,8 @@
   "error-you-are-last-owner": "You are the last owner. Please set new owner before leaving the room.",
   "error-saving-sla": "An error ocurred while saving the SLA",
   "error-duplicated-sla": "An SLA with the same name or due time already exists",
+  "error-contact-sent-last-message-so-cannot-place-on-hold": "You cannot place chat on-hold, when the Contact has sent the last message",
+  "error-unserved-rooms-cannot-be-placed-onhold": "Room cannot be placed on hold before being served",
   "You_do_not_have_permission_to_do_this": "You do not have permission to do this",
   "Errors_and_Warnings": "Errors and Warnings",
   "Esc_to": "Esc to",

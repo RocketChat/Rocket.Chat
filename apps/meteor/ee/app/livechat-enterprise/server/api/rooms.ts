@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { isLivechatRoomOnHoldProps, isLivechatRoomResumeOnHoldProps, isPOSTLivechatRoomPriorityParams } from '@rocket.chat/rest-typings';
 import { LivechatRooms } from '@rocket.chat/models';
@@ -18,39 +17,41 @@ API.v1.addRoute(
 		async post() {
 			const { roomId } = this.bodyParams;
 			if (!roomId || roomId.trim() === '') {
-				return API.v1.failure('Invalid room Id');
+				throw new Error('error-invalid-room');
 			}
 
-			const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 't' | 'open' | 'onHold' | 'lastMessage'>>(roomId, {
-				projection: { _id: 1, t: 1, open: 1, onHold: 1, lastMessage: 1 },
-			});
+			const room = await LivechatRooms.findOneById<Pick<IOmnichannelRoom, '_id' | 't' | 'open' | 'onHold' | 'lastMessage' | 'servedBy'>>(
+				roomId,
+				{
+					projection: { _id: 1, t: 1, open: 1, onHold: 1, lastMessage: 1, servedBy: 1 },
+				},
+			);
 			if (!room || !isOmnichannelRoom(room)) {
-				return API.v1.failure('error-invalid-room');
+				throw new Error('error-invalid-room');
 			}
 
 			if (room.lastMessage?.token) {
-				return API.v1.failure('You cannot place chat on-hold, when the Contact has sent the last message');
+				throw new Error('error-contact-sent-last-message-so-cannot-place-on-hold');
 			}
 
 			if (room.onHold) {
-				return API.v1.failure('Room is already On-Hold');
+				throw new Error('error-room-is-already-onHold');
 			}
 
 			if (!room.open) {
-				return API.v1.failure('Room cannot be placed on hold after being closed');
+				throw new Error('This_conversation_is_already_closed');
 			}
 
-			const user = Meteor.user();
-			if (!user) {
-				return API.v1.failure('Invalid user');
+			if (!room.servedBy) {
+				throw new Error('error-unserved-rooms-cannot-be-placed-onhold');
 			}
 
-			const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, user._id, { _id: 1 });
+			const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, { _id: 1 });
 			if (!subscription && !hasPermission(this.userId, 'on-hold-others-livechat-room')) {
-				return API.v1.failure('Not authorized');
+				throw new Error('Not_authorized');
 			}
 
-			const onHoldBy = { _id: user._id, username: user.username, name: (user as any).name };
+			const onHoldBy = { _id: this.userId, username: this.user.username, name: this.user.name };
 			const comment = TAPi18n.__('Omnichannel_On_Hold_manually', {
 				user: onHoldBy.name || `@${onHoldBy.username}`,
 			});
@@ -92,7 +93,7 @@ API.v1.addRoute(
 
 			const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, { _id: 1 });
 			if (!subscription && !hasPermission(this.userId, 'on-hold-others-livechat-room')) {
-				return API.v1.failure('Not authorized');
+				throw new Error('Not_authorized');
 			}
 
 			const { name, username, _id: userId } = this.user;
