@@ -2441,8 +2441,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-room-id-param-not-provided');
-						expect(res.body).to.have.property('error', 'The required "rid" query param is missing. [error-room-id-param-not-provided]');
+						expect(res.body.errorType).to.be.equal('invalid-params');
 					})
 					.end(done);
 			});
@@ -2460,8 +2459,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-updatedSince-param-invalid');
-						expect(res.body).to.have.property('error', 'The required param "updatedSince" is missing. [error-updatedSince-param-invalid]');
+						expect(res.body.errorType).to.be.equal('invalid-params');
 					})
 					.end(done);
 			});
@@ -2662,6 +2660,7 @@ describe('Threads', () => {
 					.set(credentials)
 					.query({
 						tmid: threadMessage.tmid,
+						updatedSince: 'updatedSince',
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -2684,8 +2683,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-invalid-params');
-						expect(res.body).to.have.property('error', 'The required "tmid" query param is missing. [error-invalid-params]');
+						expect(res.body.errorType).to.be.equal('invalid-params');
 					})
 					.end(done);
 			});
@@ -2703,8 +2701,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-updatedSince-param-invalid');
-						expect(res.body).to.have.property('error', 'The required param "updatedSince" is missing. [error-updatedSince-param-invalid]');
+						expect(res.body.errorType).to.be.equal('invalid-params');
 					})
 					.end(done);
 			});

@@ -255,6 +255,7 @@ const ChatGetThreadsListSchema = {
 		},
 		type: {
 			type: 'string',
+			nullable: true,
 		},
 		text: {
 			type: 'string',
@@ -269,7 +270,7 @@ const ChatGetThreadsListSchema = {
 			nullable: true,
 		},
 	},
-	required: ['rid', 'type'],
+	required: ['rid'],
 	additionalProperties: false,
 };
 
