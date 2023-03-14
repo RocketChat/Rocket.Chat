@@ -1,5 +1,11 @@
 import { Emitter } from '@rocket.chat/emitter';
 import type { ReactElement } from 'react';
+import React, { lazy } from 'react';
+
+const ConnectionStatusBar = lazy(() => import('../components/connectionStatus/ConnectionStatusBar'));
+const BannerRegion = lazy(() => import('../views/banners/BannerRegion'));
+const PortalsWrapper = lazy(() => import('../views/root/PortalsWrapper'));
+const ModalRegion = lazy(() => import('../views/modal/ModalRegion'));
 
 type AppLayoutDescriptor = ReactElement | null;
 
@@ -16,6 +22,18 @@ class AppLayoutSubscription extends Emitter<{ update: void }> {
 	}
 
 	render(element: ReactElement): void {
+		this.setCurrentValue(
+			<>
+				<ConnectionStatusBar />
+				<BannerRegion />
+				{element}
+				<PortalsWrapper />
+				<ModalRegion />
+			</>,
+		);
+	}
+
+	renderStandalone(element: ReactElement): void {
 		this.setCurrentValue(element);
 	}
 }
