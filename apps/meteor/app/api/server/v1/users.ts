@@ -447,10 +447,12 @@ API.v1.addRoute(
 
 			if (sort?.status) {
 				actualSort.active = sort.status;
+				delete actualSort.status;
 			}
 
 			if (sort?.name) {
 				actualSort.nameInsensitive = sort.name;
+				delete actualSort.name;
 			}
 
 			const limit =
