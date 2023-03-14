@@ -2,7 +2,7 @@ import https from 'https';
 import http from 'http';
 
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 
 import { Base, ProgressStep, Selection } from '../../importer/server';
 import { Messages } from '../../models/server';

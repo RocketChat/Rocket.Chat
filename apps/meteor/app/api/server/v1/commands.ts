@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import objectPath from 'object-path';
 
 import { slashCommands } from '../../../utils/server';
