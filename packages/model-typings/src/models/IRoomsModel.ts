@@ -1,5 +1,5 @@
-import type { FindCursor, AggregationCursor, Document, FindOptions, UpdateResult } from 'mongodb';
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { FindCursor, AggregationCursor, Document, FindOptions, UpdateResult, DeleteResult } from 'mongodb';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -113,4 +113,123 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findCountOfRoomsWithActiveCalls(): Promise<number>;
 	incMsgCountById(rid: string, inc: number): Promise<UpdateResult>;
 	decreaseMessageCountById(rid: string, dec: number): Promise<UpdateResult>;
+	findOneByIdOrName(_idOrName: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
+	setCallStatus(_id: string, callStatus: string): Promise<UpdateResult>;
+	setCallStatusAndCallStartTime(_id: string, callStatus: string): Promise<UpdateResult>;
+	setReactionsInLastMessage(
+		roomId: string,
+		lastMessage: { reactions: NonNullable<IRoom['lastMessage']>['reactions'] },
+	): Promise<UpdateResult>;
+	unsetReactionsInLastMessage(roomId: string): Promise<UpdateResult>;
+	unsetAllImportIds(): Promise<UpdateResult>;
+	updateLastMessageStar(roomId: string, userId: string, starred?: boolean): Promise<UpdateResult>;
+	// TODO check types
+	setLastMessagePinned(roomId: string, pinnedBy: unknown, pinned?: boolean, pinnedAt?: Date): Promise<UpdateResult>;
+	setLastMessageAsRead(roomId: string): Promise<UpdateResult>;
+	// TODO check types
+	setSentiment(roomId: string, sentiment: string): Promise<UpdateResult>;
+	setDescriptionById(roomId: string, description: string): Promise<UpdateResult>;
+	setStreamingOptionsById(roomId: string, streamingOptions: IRoom['streamingOptions']): Promise<UpdateResult>;
+	setReadOnlyById(roomId: string, readOnly: boolean): Promise<UpdateResult>;
+	setDmReadOnlyByUserId(roomId: string, ids: string[], readOnly: boolean, reactWhenReadOnly: boolean): Promise<UpdateResult | Document>;
+	getDirectConversationsByUserId(userId: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	setAllowReactingWhenReadOnlyById(roomId: string, allowReactingWhenReadOnly: boolean): Promise<UpdateResult>;
+	setAvatarData(roomId: string, origin: string, etag: string): Promise<UpdateResult>;
+	unsetAvatarData(roomId: string): Promise<UpdateResult>;
+	setSystemMessagesById(roomId: string, systemMessages: IRoom['sysMes']): Promise<UpdateResult>;
+	setE2eKeyId(roomId: string, e2eKeyId: string, options?: FindOptions<IRoom>): Promise<UpdateResult>;
+	findOneByImportId(importId: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
+	findOneByNonValidatedName(name: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
+	findOneByNameAndNotId(name: string, rid: string): Promise<IRoom | null>;
+	findOneByDisplayName(displayName: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
+	findOneByNameAndType(
+		name: string,
+		type: IRoom['t'],
+		options?: FindOptions<IRoom>,
+		includeFederatedRooms?: boolean,
+	): Promise<IRoom | null>;
+	findById(rid: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findByIds(rids: string[], options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findByType(type: IRoom['t'], options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findByTypeInIds(type: IRoom['t'], ids: string[], options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findByUserId(userId: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findBySubscriptionUserId(userId: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findBySubscriptionUserIdUpdatedAfter(userId: string, updatedAfter: Date, options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findByNameAndType(name: string, type: IRoom['t'], options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findByNameOrFNameAndType(name: string, type: IRoom['t'], options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findByNameAndTypeNotDefault(
+		name: string,
+		type: IRoom['t'],
+		options?: FindOptions<IRoom>,
+		includeFederatedRooms?: boolean,
+	): FindCursor<IRoom>;
+	findByNameAndTypesNotInIds(
+		name: string,
+		types: IRoom['t'][],
+		ids: string[],
+		options?: FindOptions<IRoom>,
+		includeFederatedRooms?: boolean,
+	): FindCursor<IRoom>;
+	findByDefaultAndTypes(defaultValue: boolean, types: IRoom['t'][], options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findDirectRoomContainingAllUsernames(usernames: string[], options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findByTypeAndName(type: IRoom['t'], name: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
+	findByTypeAndNameOrId(type: IRoom['t'], name: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
+	findByTypeAndNameContaining(type: IRoom['t'], name: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findByTypeInIdsAndNameContaining(type: IRoom['t'], ids: string[], name: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findByTypeAndArchivationState(type: IRoom['t'], archived: boolean, options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findGroupDMsByUids(uids: string[], options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	find1On1ByUserId(userId: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findByCreatedOTR(): FindCursor<IRoom>;
+	addImportIds(rid: string, importIds: string[]): Promise<UpdateResult>;
+	archiveById(rid: string): Promise<UpdateResult>;
+	unarchiveById(rid: string): Promise<UpdateResult>;
+	setNameById(rid: string, name: string, fname: string): Promise<UpdateResult>;
+	incMsgCountAndSetLastMessageById(rid: string, inc: number, lastMessageTs: Date, lastMessage: IRoom['lastMessage']): Promise<UpdateResult>;
+	incUsersCountById(rid: string, inc: number): Promise<UpdateResult>;
+	incUsersCountNotDMsByIds(rids: string[], inc: number): Promise<UpdateResult>;
+	setLastMessageById(rid: string, lastMessage: IRoom['lastMessage']): Promise<UpdateResult>;
+	resetLastMessageById(rid: string, messageId?: string): Promise<UpdateResult>;
+	replaceUsername(username: string, newUsername: string): Promise<UpdateResult | Document>;
+	replaceMutedUsername(username: string, newUsername: string): Promise<UpdateResult | Document>;
+	replaceUsernameOfUserByUserId(userId: string, newUsername: string): Promise<UpdateResult | Document>;
+	setJoinCodeById(rid: string, joinCode: string): Promise<UpdateResult>;
+	setUserById(rid: string, userId: string): Promise<UpdateResult>;
+	setTypeById(rid: string, type: IRoom['t']): Promise<UpdateResult>;
+	setTopicById(rid: string, topic: string): Promise<UpdateResult>;
+	setAnnouncementById(
+		rid: string,
+		announcement: IRoom['announcement'],
+		announcementDetails: IRoom['announcementDetails'],
+	): Promise<UpdateResult>;
+	setCustomFieldsById(rid: string, customFields: Record<string, any>): Promise<UpdateResult>;
+	muteUsernameByRoomId(rid: string, username: string): Promise<UpdateResult>;
+	unmuteUsernameByRoomId(rid: string, username: string): Promise<UpdateResult>;
+	saveFeaturedById(rid: string, featured: boolean): Promise<UpdateResult>;
+	saveDefaultById(rid: string, defaultValue: boolean): Promise<UpdateResult>;
+	saveFavoriteById(rid: string, favorite: boolean, defaultValue: boolean): Promise<UpdateResult>;
+	saveRetentionEnabledById(rid: string, retentionEnabled: boolean): Promise<UpdateResult>;
+	saveRetentionMaxAgeById(rid: string, retentionMaxAge: number): Promise<UpdateResult>;
+	saveRetentionExcludePinnedById(rid: string, retentionExcludePinned: boolean): Promise<UpdateResult>;
+	saveRetentionIgnoreThreadsById(rid: string, retentionIgnoreThreads: boolean): Promise<UpdateResult>;
+	saveRetentionFilesOnlyById(rid: string, retentionFilesOnly: boolean): Promise<UpdateResult>;
+	saveRetentionOverrideGlobalById(rid: string, retentionOverrideGlobal: boolean): Promise<UpdateResult>;
+	saveEncryptedById(rid: string, encrypted: boolean): Promise<UpdateResult>;
+	updateGroupDMsRemovingUsernamesByUsername(username: string, userId: string): Promise<UpdateResult | Document>;
+	createWithTypeNameUserAndUsernames(
+		type: IRoom['t'],
+		name: string,
+		fname: string,
+		user: IUser,
+		usernames: string[],
+		extraData?: Record<string, string>,
+	): Promise<IRoom>;
+	createWithIdTypeAndName(id: string, type: IRoom['t'], name: string, extraData?: Record<string, string>): Promise<IRoom>;
+	createWithFullRoomData(room: IRoom): Promise<IRoom>;
+	removeById(rid: string): Promise<DeleteResult>;
+	removeByIds(rids: string[]): Promise<DeleteResult>;
+	removeDirectRoomContainingUsername(username: string): Promise<DeleteResult>;
+	findDiscussionParentByNameStarting(name: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	setLinkMessageById(rid: string, linkMessage: string): Promise<UpdateResult>;
+	countDiscussions(rid: string): Promise<number>;
+	setOTRForDMByRoomID(rid: string): Promise<UpdateResult>;
 }
