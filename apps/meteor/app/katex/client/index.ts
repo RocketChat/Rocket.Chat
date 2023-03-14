@@ -1,4 +1,4 @@
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import KatexPackage from 'katex';
 import { unescapeHTML, escapeHTML } from '@rocket.chat/string-helpers';
 import 'katex/dist/katex.min.css';
