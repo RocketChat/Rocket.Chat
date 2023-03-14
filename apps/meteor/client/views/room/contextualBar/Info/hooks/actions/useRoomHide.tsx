@@ -4,9 +4,9 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetModal, useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { UiTextContext } from '../../../../../../../../definition/IRoomTypeConfig';
-import WarningModal from '../../../../../../../components/WarningModal';
-import { roomCoordinator } from '../../../../../../../lib/rooms/roomCoordinator';
+import { UiTextContext } from '../../../../../../../definition/IRoomTypeConfig';
+import WarningModal from '../../../../../../components/WarningModal';
+import { roomCoordinator } from '../../../../../../lib/rooms/roomCoordinator';
 
 export const useRoomHide = (room: IRoom) => {
 	const t = useTranslation();

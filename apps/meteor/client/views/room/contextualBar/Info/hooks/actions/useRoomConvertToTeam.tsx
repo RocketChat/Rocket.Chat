@@ -4,7 +4,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useTranslation, useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import GenericModal from '../../../../../../../components/GenericModal';
+import GenericModal from '../../../../../../components/GenericModal';
 import { useCanEditRoom } from '../useCanEditRoom';
 
 export const useRoomConvertToTeam = (room: IRoom) => {

@@ -4,7 +4,7 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRoute, useTranslation, useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import GenericModal from '../../../../../../../components/GenericModal';
+import GenericModal from '../../../../../../components/GenericModal';
 
 // TODO: resetState for TeamsChannels
 export const useRoomDelete = (room: IRoom, resetState?: () => void) => {

@@ -11,7 +11,7 @@ import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 import type { Action } from '../../../../hooks/useActionSpread';
 import { useActionSpread } from '../../../../hooks/useActionSpread';
 import { useRetentionPolicy } from '../../../components/body/useRetentionPolicy';
-import { useRoomActions } from './hooks/useRoomActions';
+import { useRoomActions } from '../hooks/useRoomActions';
 
 type RoomInfoProps = {
 	room: IRoom;
