@@ -7,6 +7,9 @@ import { InstanceService } from '../local-services/instance/service';
 import { LicenseService } from '../../app/license/server/license.internalService';
 import { isRunningMs } from '../../../server/lib/isRunningMs';
 import { OmnichannelEE } from '../../app/livechat-enterprise/server/services/omnichannel.internalService';
+import { FederationService } from '../../../server/services/federation/service';
+import { FederationServiceEE } from '../local-services/federation/service';
+import { isEnterprise, onLicense } from '../../app/license/server';
 
 // TODO consider registering these services only after a valid license is added
 api.registerService(new EnterpriseSettings());
@@ -19,3 +22,17 @@ api.registerService(new OmnichannelEE());
 if (!isRunningMs()) {
 	api.registerService(new InstanceService());
 }
+
+let federationService: FederationService;
+if (!isEnterprise()) {
+	federationService = new FederationService();
+	api.registerService(federationService);
+}
+
+onLicense('federation', () => {
+	const federationServiceEE = new FederationServiceEE();
+	if (federationService) {
+		api.destroyService(federationService);
+	}
+	api.registerService(federationServiceEE);
+});

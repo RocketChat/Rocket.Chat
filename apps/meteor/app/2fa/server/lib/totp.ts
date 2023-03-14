@@ -1,5 +1,5 @@
-import { SHA256 } from 'meteor/sha';
-import { Random } from 'meteor/random';
+import { SHA256 } from '@rocket.chat/sha256';
+import { Random } from '@rocket.chat/random';
 import speakeasy from 'speakeasy';
 
 import { Users } from '../../../models/server';
