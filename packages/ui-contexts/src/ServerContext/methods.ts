@@ -1,6 +1,5 @@
 import type {
 	AtLeast,
-	ICreatedRoom,
 	IInstanceStatus,
 	IMessage,
 	IPermission,
@@ -10,12 +9,10 @@ import type {
 	ISetting,
 	ISubscription,
 	IUser,
-	RoomType,
 } from '@rocket.chat/core-typings';
 
 import type { TranslationKey } from '../TranslationContext';
-import type { GetWebdavFileList, GetWebdavFilePreview, GetFileFromWebdav } from './methods/webdav';
-import type { FollowMessageMethod } from './methods/followMessage';
+import type { GetWebdavFileList, GetWebdavFilePreview } from './methods/webdav';
 import type { GetReadReceiptsMethod } from './methods/getReadReceipts';
 import type { JoinRoomMethod } from './methods/joinRoom';
 import type { UnsubscribeMethod as MailerUnsubscribeMethod } from './methods/mailer/unsubscribe';
@@ -23,7 +20,6 @@ import type { RoomNameExistsMethod } from './methods/roomNameExists';
 import type { SaveRoomSettingsMethod } from './methods/saveRoomSettings';
 import type { SaveSettingsMethod } from './methods/saveSettings';
 import type { SaveUserPreferencesMethod } from './methods/saveUserPreferences';
-import type { UnfollowMessageMethod } from './methods/message/unfollowMessage';
 import type { ReportMessageMethod } from './methods/message/reportMessage';
 
 // TODO: frontend chapter day - define methods
@@ -38,60 +34,13 @@ export interface ServerMethods {
 	'checkUsernameAvailability': (...args: any[]) => any;
 	'cleanRoomHistory': (...args: any[]) => any;
 	'clearIntegrationHistory': (...args: any[]) => any;
-	'createDirectMessage': (...usernames: Exclude<IUser['username'], undefined>[]) => ICreatedRoom;
 	'deleteCustomSound': (...args: any[]) => any;
 	'deleteCustomUserStatus': (...args: any[]) => any;
 	'deleteFileMessage': (...args: any[]) => any;
-	'deleteMessage': ({ _id }: Pick<IMessage, '_id'>) => void;
 	'deleteUserOwnAccount': (...args: any[]) => any;
 	'e2e.resetOwnE2EKey': (...args: any[]) => any;
 	'eraseRoom': (...args: any[]) => any;
-	'followMessage': FollowMessageMethod;
 	'getAvatarSuggestion': (...args: any[]) => any;
-	'getFileFromWebdav': GetFileFromWebdav;
-	'getMessages': (messages: IMessage['_id'][]) => IMessage[];
-	'getRoomByTypeAndName': (
-		type: RoomType,
-		name: string,
-	) => Pick<
-		IRoom,
-		| '_id'
-		| 'name'
-		| 'fname'
-		| 't'
-		| 'cl'
-		| 'u'
-		| 'lm'
-		| 'teamId'
-		| 'teamMain'
-		| 'topic'
-		| 'announcement'
-		| 'announcementDetails'
-		| 'muted'
-		| 'unmuted'
-		| '_updatedAt'
-		| 'archived'
-		| 'description'
-		| 'default'
-		| 'lastMessage'
-		| 'prid'
-		| 'avatarETag'
-		| 'usersCount'
-		| 'msgs'
-		| 'open'
-		| 'ro'
-		| 'reactWhenReadOnly'
-		| 'sysMes'
-		| 'streamingOptions'
-		| 'broadcast'
-		| 'encrypted'
-		| 'e2eKeyId'
-		| 'servedBy'
-		| 'ts'
-		| 'federated'
-		| 'usernames'
-		| 'uids'
-	>;
 	'getRoomRoles': (rid: IRoom['_id']) => ISubscription[];
 	'getSetupWizardParameters': () => {
 		settings: ISetting[];
@@ -174,7 +123,6 @@ export interface ServerMethods {
 	'slashCommand': (params: { cmd: string; params: string; msg: IMessage; triggerId: string }) => unknown;
 	'toggleFavorite': (...args: any[]) => any;
 	'unblockUser': (...args: any[]) => any;
-	'unfollowMessage': UnfollowMessageMethod;
 	'unmuteUserInRoom': (...args: any[]) => any;
 	'unreadMessages': (...args: any[]) => any;
 	'updateIncomingIntegration': (...args: any[]) => any;
@@ -214,7 +162,6 @@ export interface ServerMethods {
 		enabled: boolean;
 		policy: [name: TranslationKey, options?: Record<string, unknown>][];
 	};
-	'rooms/get': (updatedSince?: Date) => IRoom[] | { update: IRoom[]; remove: IRoom[] };
 	'subscriptions/get': (updatedSince?: Date) => ISubscription[] | { update: ISubscription[]; remove: ISubscription[] };
 	'permissions/get': (updatedSince?: Date) => IPermission[] | { update: IPermission[]; remove: IPermission[] };
 	'public-settings/get': (updatedSince?: Date) => ISetting[] | { update: ISetting[]; remove: ISetting[] };
