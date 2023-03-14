@@ -30,7 +30,7 @@ export class VirtualDataConverter extends ImportDataConverter {
 		}
 	}
 
-	public clearImportData(): void {
+	public async clearImportData(): Promise<void> {
 		if (!this.useVirtual) {
 			return super.clearImportData();
 		}
