@@ -1,11 +1,10 @@
 import type ldapjs from 'ldapjs';
 import type { ILDAPEntry, IUser, IRoom, ICreatedRoom, IRole, IImportUser } from '@rocket.chat/core-typings';
-import { Users as UsersRaw, Roles, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
+import { Users as UsersRaw, Roles, Subscriptions as SubscriptionsRaw, Rooms as RoomsRaw } from '@rocket.chat/models';
 import { Team } from '@rocket.chat/core-services';
 
 import type { ImporterAfterImportCallback } from '../../../../app/importer/server/definitions/IConversionCallbacks';
 import { settings } from '../../../../app/settings/server';
-import { Rooms } from '../../../../app/models/server';
 import { LDAPDataConverter } from '../../../../server/lib/ldap/DataConverter';
 import { LDAPConnection } from '../../../../server/lib/ldap/Connection';
 import { LDAPManager } from '../../../../server/lib/ldap/Manager';
@@ -247,14 +246,14 @@ export class LDAPEEManager extends LDAPManager {
 		});
 	}
 
-	private static createRoomForSync(channel: string): IRoom | undefined {
+	private static async createRoomForSync(channel: string): Promise<IRoom | undefined> {
 		logger.debug(`Channel '${channel}' doesn't exist, creating it.`);
 
 		const roomOwner = settings.get<string>('LDAP_Sync_User_Data_Channels_Admin') || '';
 		// #ToDo: Remove typecastings when createRoom is converted to ts.
-		const room = createRoom('c', channel, roomOwner, [], false, {
+		const room = (await createRoom('c', channel, roomOwner, [], false, {
 			customFields: { ldap: true },
-		} as any) as unknown as ICreatedRoom | undefined;
+		} as any)) as unknown as ICreatedRoom | undefined;
 		if (!room?.rid) {
 			logger.error(`Unable to auto-create channel '${channel}' during ldap sync.`);
 			return;
@@ -264,7 +263,7 @@ export class LDAPEEManager extends LDAPManager {
 		return room;
 	}
 
-	private static async syncUserChannels(ldap: LDAPConnection, user: IUser, dn: string): Promise<void> {
+	private static syncUserChannels(ldap: LDAPConnection, user: IUser, dn: string): Promise<void> {
 		const syncUserChannels = settings.get<boolean>('LDAP_Sync_User_Data_Channels') ?? false;
 		const syncUserChannelsRemove = settings.get<boolean>('LDAP_Sync_User_Data_Channels_Enforce_AutoChannels') ?? false;
 		const syncUserChannelsFieldMap = (settings.get<string>('LDAP_Sync_User_Data_ChannelsMap') ?? '').trim();
@@ -302,7 +301,7 @@ export class LDAPEEManager extends LDAPManager {
 			const channels: Array<string> = [].concat(fieldMap[ldapField]);
 			for await (const channel of channels) {
 				try {
-					const room: IRoom | undefined = Rooms.findOneByNonValidatedName(channel) || this.createRoomForSync(channel);
+					const room: IRoom | undefined = (await RoomsRaw.findOneByNonValidatedName(channel)) || (await this.createRoomForSync(channel));
 					if (!room) {
 						return;
 					}

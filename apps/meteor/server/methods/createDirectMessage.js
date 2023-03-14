@@ -9,7 +9,7 @@ import { createRoom } from '../../app/lib/server/functions/createRoom';
 import { addUser } from '../../app/federation/server/functions/addUser';
 import { callbacks } from '../../lib/callbacks';
 
-export function createDirectMessage(usernames, userId, excludeSelf = false) {
+export async function createDirectMessage(usernames, userId, excludeSelf = false) {
 	check(usernames, [String]);
 	check(userId, String);
 	check(excludeSelf, Match.Optional(Boolean));
@@ -95,7 +95,7 @@ export function createDirectMessage(usernames, userId, excludeSelf = false) {
 	} catch (error) {
 		throw new Meteor.Error(error?.message);
 	}
-	const { _id: rid, inserted, ...room } = createRoom('d', null, null, roomUsers, null, {}, options);
+	const { _id: rid, inserted, ...room } = await createRoom('d', null, null, roomUsers, null, {}, options);
 
 	return {
 		t: 'd',

@@ -16,7 +16,7 @@ const isValidName = (name: unknown): name is string => {
 	return typeof name === 'string' && name.trim().length > 0;
 };
 
-export const createRoom = function <T extends RoomType>(
+export const createRoom = async function <T extends RoomType>(
 	type: T,
 	name: T extends 'd' ? undefined : string,
 	ownerUsername: string,
@@ -24,7 +24,7 @@ export const createRoom = function <T extends RoomType>(
 	readOnly?: boolean,
 	roomExtraData?: Partial<IRoom>,
 	options?: ICreateRoomParams['options'],
-): ICreatedRoom {
+): Promise<ICreatedRoom> {
 	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
 	callbacks.run('beforeCreateRoom', { type, name, owner: ownerUsername, members, readOnly, extraData, options });
 
@@ -60,7 +60,7 @@ export const createRoom = function <T extends RoomType>(
 	const roomProps: Omit<IRoom, '_id' | '_updatedAt' | 'uids' | 'autoTranslateLanguage'> = {
 		fname: name,
 		...extraData,
-		name: getValidRoomName(name.trim(), undefined, {
+		name: await getValidRoomName(name.trim(), undefined, {
 			...(options?.nameValidationRegex && { nameValidationRegex: options.nameValidationRegex }),
 		}),
 		t: type,

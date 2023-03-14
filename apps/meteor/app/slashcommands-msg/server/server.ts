@@ -13,7 +13,7 @@ import { Users } from '../../models/server';
 
 slashCommands.add({
 	command: 'msg',
-	callback: function Msg(_command: 'msg', params, item): void {
+	callback: async function Msg(_command: 'msg', params, item): void {
 		const trimmedParams = params.trim();
 		const separator = trimmedParams.indexOf(' ');
 		const userId = Meteor.userId() as string;
@@ -38,7 +38,7 @@ slashCommands.add({
 			});
 			return;
 		}
-		const { rid } = Meteor.call('createDirectMessage', targetUsername);
+		const { rid } = await Meteor.callAsync('createDirectMessage', targetUsername);
 		const msgObject = {
 			_id: Random.id(),
 			rid,

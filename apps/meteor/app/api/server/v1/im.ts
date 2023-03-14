@@ -66,13 +66,13 @@ API.v1.addRoute(
 		validateParams: isDmCreateProps,
 	},
 	{
-		post() {
+		async post() {
 			const users =
 				'username' in this.bodyParams
 					? [this.bodyParams.username]
 					: this.bodyParams.usernames.split(',').map((username: string) => username.trim());
 
-			const room = createDirectMessage(users, this.userId, this.bodyParams.excludeSelf);
+			const room = await createDirectMessage(users, this.userId, this.bodyParams.excludeSelf);
 
 			return API.v1.success({
 				room: { ...room, _id: room.rid },

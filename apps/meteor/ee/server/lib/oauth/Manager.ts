@@ -9,13 +9,13 @@ import { syncUserRoles } from '../syncUserRoles';
 const logger = new Logger('OAuth');
 
 export class OAuthEEManager {
-	static mapSSOGroupsToChannels(
+	static async mapSSOGroupsToChannels(
 		user: IUser,
 		identity: Record<string, any>,
 		groupClaimName: string,
 		channelsMap: Record<string, any> | undefined,
 		channelsAdmin: string,
-	): void {
+	): Promise<void> {
 		if (user && identity && groupClaimName) {
 			const groupsFromSSO = identity[groupClaimName] || [];
 
@@ -26,9 +26,11 @@ export class OAuthEEManager {
 						channels = [channels];
 					}
 					for (const channel of channels) {
-						let room = Rooms.findOneByNonValidatedName(channel);
+						// eslint-disable-next-line no-await-in-loop
+						let room = await Rooms.findOneByNonValidatedName(channel);
 						if (!room) {
-							room = createRoom('c', channel, channelsAdmin, [], false);
+							// eslint-disable-next-line no-await-in-loop
+							room = await createRoom('c', channel, channelsAdmin, [], false);
 							if (!room?.rid) {
 								logger.error(`could not create channel ${channel}`);
 								return;

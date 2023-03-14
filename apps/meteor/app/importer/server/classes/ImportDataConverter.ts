@@ -491,7 +491,7 @@ export class ImportDataConverter {
 		return result;
 	}
 
-	getMentionedChannelData(importId: string): IMentionedChannel | undefined {
+	async getMentionedChannelData(importId: string): Promise<IMentionedChannel | undefined> {
 		// loading the name will also store the id on the cache if it's missing, so this won't run two queries
 		const name = this.findImportedRoomName(importId);
 		const _id = this.findImportedRoomId(importId);
@@ -504,7 +504,7 @@ export class ImportDataConverter {
 		}
 
 		// If the importId was not found, check if we have a room with that name
-		const room = Rooms.findOneByNonValidatedName(importId, { fields: { name: 1 } });
+		const room = await Rooms.findOneByNonValidatedName(importId, { fields: { name: 1 } });
 		if (room) {
 			this.addRoomToCache(importId, room._id);
 			this.addRoomNameToCache(importId, room.name);
@@ -523,8 +523,8 @@ export class ImportDataConverter {
 		}
 
 		const result: Array<IMentionedChannel> = [];
-		for (const importId of channels) {
-			const { name, _id } = this.getMentionedChannelData(importId) || {};
+		for await (const importId of channels) {
+			const { name, _id } = (await this.getMentionedChannelData(importId)) || {};
 
 			if (!_id || !name) {
 				this._logger.warn(`Mentioned room not found: ${importId}`);
@@ -823,11 +823,11 @@ export class ImportDataConverter {
 
 		// Create the channel
 		try {
-			Meteor.runAsUser(creatorId, () => {
+			Meteor.runAsUser(creatorId, async () => {
 				const roomInfo =
 					roomData.t === 'd'
-						? Meteor.call('createDirectMessage', ...members)
-						: Meteor.call(roomData.t === 'p' ? 'createPrivateGroup' : 'createChannel', roomData.name, members);
+						? await Meteor.callAsync('createDirectMessage', ...members)
+						: await Meteor.callAsync(roomData.t === 'p' ? 'createPrivateGroup' : 'createChannel', roomData.name, members);
 
 				roomData._id = roomInfo.rid;
 			});
@@ -870,7 +870,7 @@ export class ImportDataConverter {
 			.filter((user) => user);
 	}
 
-	findExistingRoom(data: IImportChannel): IRoom {
+	findExistingRoom(data: IImportChannel): Promise<IRoom> {
 		if (data._id && data._id.toUpperCase() === 'GENERAL') {
 			const room = Rooms.findOneById('GENERAL', {});
 			// Prevent the importer from trying to create a new general

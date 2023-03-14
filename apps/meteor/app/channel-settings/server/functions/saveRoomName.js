@@ -12,8 +12,8 @@ const updateFName = (rid, displayName) => {
 	return Rooms.setFnameById(rid, displayName) && Subscriptions.updateFnameByRoomId(rid, displayName);
 };
 
-const updateRoomName = (rid, displayName) => {
-	const slugifiedRoomName = getValidRoomName(displayName, rid);
+const updateRoomName = async (rid, displayName) => {
+	const slugifiedRoomName = await getValidRoomName(displayName, rid);
 
 	// Check if the username is available
 	if (!checkUsernameAvailability(slugifiedRoomName)) {
@@ -44,7 +44,7 @@ export async function saveRoomName(rid, displayName, user, sendMessage = true) {
 	if (isDiscussion || isRoomFederated(room)) {
 		update = updateFName(rid, displayName);
 	} else {
-		update = updateRoomName(rid, displayName);
+		update = await updateRoomName(rid, displayName);
 	}
 
 	if (!update) {
