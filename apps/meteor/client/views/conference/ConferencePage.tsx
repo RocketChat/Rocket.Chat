@@ -2,6 +2,7 @@ import { useRoute, useCurrentRoute, useSetModal, useUser } from '@rocket.chat/ui
 import type { ReactElement } from 'react';
 import React, { useEffect } from 'react';
 
+import { useUserDisplayName } from '../../hooks/useUserDisplayName';
 import { useVideoOpenCall } from '../room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
 import PageLoading from '../root/PageLoading';
 
@@ -11,8 +12,10 @@ const ConferencePage = (): ReactElement => {
 	const setModal = useSetModal();
 	const [, , queryParams] = useCurrentRoute();
 	const handleOpenCall = useVideoOpenCall();
+	const userDisplayName = useUserDisplayName({ name: user?.name, username: user?.username });
 
-	const callUrl = queryParams?.callProvider === 'pexip' ? `${queryParams?.callUrl}&name=${user?.username}` : queryParams?.callUrl;
+	const callUrl =
+		queryParams?.callProvider === 'pexip' ? `${queryParams?.callUrl}&pin=${queryParams.pin}&name=${userDisplayName}` : queryParams?.callUrl;
 
 	useEffect(() => {
 		if (!callUrl) {
