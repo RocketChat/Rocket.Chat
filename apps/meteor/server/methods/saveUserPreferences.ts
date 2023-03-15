@@ -1,9 +1,53 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { Users, Subscriptions } from '../../app/models/server';
 
-Meteor.methods({
+type UserPreferences = {
+	language: string;
+	newRoomNotification: string;
+	newMessageNotification: string;
+	clockMode: number;
+	useEmojis: boolean;
+	convertAsciiEmoji: boolean;
+	saveMobileBandwidth: boolean;
+	collapseMediaByDefault: boolean;
+	autoImageLoad: boolean;
+	emailNotificationMode: string;
+	unreadAlert: boolean;
+	notificationsSoundVolume: number;
+	desktopNotifications: string;
+	pushNotifications: string;
+	enableAutoAway: boolean;
+	highlights: string[];
+	hideUsernames: boolean;
+	hideRoles: boolean;
+	displayAvatars: boolean;
+	hideFlexTab: boolean;
+	sendOnEnter: string;
+	idleTimeLimit: number;
+	sidebarShowFavorites: boolean;
+	sidebarShowUnread: boolean;
+	sidebarSortby: string;
+	sidebarViewMode: string;
+	sidebarDisplayAvatar: boolean;
+	sidebarGroupByType: boolean;
+	muteFocusedConversations: boolean;
+	dontAskAgainList: { action: string; label: string }[];
+	themeAppearence: 'auto' | 'light' | 'dark';
+	receiveLoginDetectionEmail: boolean;
+};
+
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		saveUserPreferences(preferences: Partial<UserPreferences>): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	saveUserPreferences(settings) {
 		const keys = {
 			language: Match.Optional(String),
@@ -39,7 +83,7 @@ Meteor.methods({
 			omnichannelTranscriptPDF: Match.Optional(Boolean),
 		};
 		check(settings, Match.ObjectIncluding(keys));
-		const user = Meteor.user();
+		const user = Meteor.user() as IUser | null;
 
 		if (!user) {
 			return false;
@@ -49,7 +93,7 @@ Meteor.methods({
 			desktopNotifications: oldDesktopNotifications,
 			pushNotifications: oldMobileNotifications,
 			emailNotificationMode: oldEmailNotifications,
-		} = (user.settings && user.settings.preferences) || {};
+		} = user.settings?.preferences || {};
 
 		if (user.settings == null) {
 			Users.clearSettings(user._id);

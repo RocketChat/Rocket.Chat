@@ -1,17 +1,28 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Reports, Rooms } from '@rocket.chat/models';
+import type { IMessage } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Messages } from '../../app/models/server';
 import { canAccessRoomAsync } from '../../app/authorization/server/functions/canAccessRoom';
 import { AppEvents, Apps } from '../../ee/server/apps';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		reportMessage(messageId: IMessage['_id'], description: string): Promise<boolean>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async reportMessage(messageId, description) {
 		check(messageId, String);
 		check(description, String);
 
-		if (!Meteor.userId()) {
+		const uid = Meteor.userId();
+
+		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'reportMessage',
 			});
@@ -30,7 +41,6 @@ Meteor.methods({
 			});
 		}
 
-		const uid = Meteor.userId();
 		const { rid } = message;
 		// If the user can't access the room where the message is, report that the message id is invalid
 		const room = await Rooms.findOneById(rid);
@@ -42,7 +52,7 @@ Meteor.methods({
 
 		await Reports.createWithMessageDescriptionAndUserId(message, description, uid);
 
-		Promise.await(Apps.triggerEvent(AppEvents.IPostMessageReported, message, Meteor.user(), description));
+		await Apps.triggerEvent(AppEvents.IPostMessageReported, message, Meteor.user(), description);
 
 		return true;
 	},
