@@ -1,8 +1,7 @@
 {
 	"extends": [
 		"@rocket.chat/eslint-config",
-		"plugin:you-dont-need-lodash-underscore/compatible",
-		"plugin:@typescript-eslint/recommended"
+		"plugin:you-dont-need-lodash-underscore/compatible"
 	],
 	"globals": {
 		"__meteor_bootstrap__": false,
@@ -23,12 +22,7 @@
 			{
 				"additionalHooks": "(useComponentDidUpdate)"
 			}
-		],
-		"@typescript-eslint/no-misused-promises": [
-			"error",
-			{ "checksVoidReturn": false }
-		],
-		"@typescript-eslint/no-explicit-any": "off"
+		]
 	},
 	"settings": {
 		"react": {
@@ -47,13 +41,21 @@
 				"react/jsx-uses-react": "error",
 				"react/jsx-uses-vars": "error",
 				"react/jsx-no-undef": "error",
-				"react/jsx-fragments": ["error", "syntax"]
+				"react/jsx-fragments": ["error", "syntax"],
+				"@typescript-eslint/no-misused-promises": [
+					"error",
+					{ "checksVoidReturn": false }
+				]
 			},
 			"settings": {
 				"react": {
 					"version": "detect"
 				}
-			}
+			},
+			"parserOptions": {
+				"project": ["./tsconfig.json"]
+			},
+			"excludedFiles": [".scripts/*.ts"]
 		},
 		{
 			"files": ["**/*.tests.js", "**/*.tests.ts", "**/*.spec.ts"],
@@ -61,8 +63,5 @@
 				"mocha": true
 			}
 		}
-	],
-	"parserOptions": {
-		"project": ["./tsconfig.json"]
-	}
+	]
 }

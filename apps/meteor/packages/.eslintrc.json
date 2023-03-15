@@ -1,8 +1,5 @@
 {
 	"globals": {
 		"Package": false
-	},
-	"parserOptions": {
-		"project": ["tsconfig.json"]
 	}
 }
