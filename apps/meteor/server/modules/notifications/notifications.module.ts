@@ -1,6 +1,6 @@
 import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocketchat:streamer';
-import type { ISubscription, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
-import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
+import type { ISubscription, IOmnichannelRoom, IUser, ILivechatInquiryRecord } from '@rocket.chat/core-typings';
+import { Rooms, Subscriptions, Users, Settings, LivechatInquiry } from '@rocket.chat/models';
 import { Authorization, VideoConf } from '@rocket.chat/core-services';
 
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
@@ -437,6 +437,14 @@ export class NotificationsModule {
 				).toArray();
 
 				subscriptions.forEach(({ rid }) => {
+					streamer.on(rid, roomEvent);
+				});
+
+				const inquiries = await LivechatInquiry.find<Pick<ILivechatInquiryRecord, 'rid'>>({
+					$or: [{ defaultAgent: { $exists: false } }, { 'defaultAgent.agentId': userId }],
+				}).toArray();
+
+				inquiries.forEach(({ rid }) => {
 					streamer.on(rid, roomEvent);
 				});
 
