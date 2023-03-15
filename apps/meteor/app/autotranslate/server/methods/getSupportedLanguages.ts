@@ -1,11 +1,20 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { ISupportedLanguage } from '@rocket.chat/core-typings';
 
 import { hasPermission } from '../../../authorization/server';
 import { TranslationProviderRegistry } from '..';
 import { settings } from '../../../settings/server';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'autoTranslate.getSupportedLanguages'(targetLanguage: string): ISupportedLanguage[] | undefined;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	'autoTranslate.getSupportedLanguages'(targetLanguage) {
 		if (!settings.get('AutoTranslate_Enabled')) {
 			throw new Meteor.Error('error-autotranslate-disabled', 'Auto-Translate is disabled');
