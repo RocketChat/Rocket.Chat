@@ -902,7 +902,7 @@ export class ImportDataConverter {
 
 	async convertChannels(startedByUserId: string, { beforeImportFn, afterImportFn }: IConversionCallbacks = {}): Promise<void> {
 		const channels = await this.getChannelsToImport();
-		channels.forEach(({ data, _id }: IImportChannelRecord) => {
+		const promises = channels.map(async ({ data, _id }: IImportChannelRecord) => {
 			try {
 				if (beforeImportFn && !beforeImportFn(data, 'channel')) {
 					this.skipRecord(_id);
@@ -920,7 +920,7 @@ export class ImportDataConverter {
 					throw new Error('importer-channel-missing-import-id');
 				}
 
-				const existingRoom = this.findExistingRoom(data);
+				const existingRoom = await this.findExistingRoom(data);
 
 				if (existingRoom) {
 					this.updateRoom(existingRoom, data, startedByUserId);
@@ -939,6 +939,8 @@ export class ImportDataConverter {
 				this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
 			}
 		});
+
+		await Promise.all(promises);
 	}
 
 	archiveRoomById(rid: string): void {

@@ -42,7 +42,7 @@ Meteor.methods({
 			);
 		}
 
-		if (!checkUsernameAvailability(username)) {
+		if (!(await checkUsernameAvailability(username))) {
 			throw new Meteor.Error('error-field-unavailable', `<strong>${_.escape(username)}</strong> is already in use :(`, {
 				method: 'setUsername',
 				field: username,

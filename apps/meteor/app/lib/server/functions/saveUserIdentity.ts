@@ -42,7 +42,7 @@ export async function saveUserIdentity({
 			return false;
 		}
 
-		if (!_setUsername(_id, username, user)) {
+		if (!(await _setUsername(_id, username, user))) {
 			return false;
 		}
 		user.username = username;
