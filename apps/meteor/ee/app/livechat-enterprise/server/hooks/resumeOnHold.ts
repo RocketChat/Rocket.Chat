@@ -40,7 +40,7 @@ const handleAfterSaveMessage = async (message: IMessage, room: IRoom) => {
 
 	const { _id: rid, v: roomVisitor } = room;
 
-	if (!roomVisitor?.token) {
+	if (!roomVisitor?._id) {
 		return message;
 	}
 
