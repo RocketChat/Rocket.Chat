@@ -55,7 +55,7 @@ const ThreadListMessage = ({
 		<Box className={[className, !following && followStyle].flat()}>
 			<Box pbs={16} is={Message} {...props}>
 				<Message.LeftContainer>
-					<MessageAvatar emoji={emoji} username={username} className='rcx-message__avatar' size='x36' />
+					<MessageAvatar emoji={emoji} username={username} size='x36' />
 				</Message.LeftContainer>
 				<Message.Container>
 					<Message.Header>

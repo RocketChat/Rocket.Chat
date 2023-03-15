@@ -1,17 +1,40 @@
+import type { IDiscussionMessage, IUser } from '@rocket.chat/core-typings';
 import { Box, Icon, TextInput, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import type { RefObject } from 'react';
 import React, { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../components/VerticalBar';
 import { goToRoomById } from '../../../../lib/utils/goToRoomById';
-import Row from './Row';
-import { withData } from './withData';
+import DiscussionsListRow from './DiscussionsListRow';
 
-function DiscussionList({ total = 10, discussions = [], loadMoreItems, loading, onClose, error, userId, text, setText }) {
-	const showRealNames = useSetting('UI_Use_Real_Name');
+type DiscussionsListProps = {
+	total: number;
+	discussions: Array<IDiscussionMessage>;
+	loadMoreItems: (start: number, end: number) => void;
+	loading: boolean;
+	onClose: () => void;
+	error: unknown;
+	userId: IUser['_id'];
+	text: string;
+	onChangeFilter: (e: unknown) => void;
+};
+
+function DiscussionsList({
+	total = 10,
+	discussions = [],
+	loadMoreItems,
+	loading,
+	onClose,
+	error,
+	userId,
+	text,
+	onChangeFilter,
+}: DiscussionsListProps) {
+	const showRealNames = Boolean(useSetting('UI_Use_Real_Name'));
 
 	const t = useTranslation();
 	const inputRef = useAutoFocus(true);
@@ -19,7 +42,7 @@ function DiscussionList({ total = 10, discussions = [], loadMoreItems, loading, 
 		const { drid } = e.currentTarget.dataset;
 		goToRoomById(drid);
 	}, []);
-	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver({
+	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
 		debounceDelay: 200,
 	});
 	return (
@@ -45,8 +68,8 @@ function DiscussionList({ total = 10, discussions = [], loadMoreItems, loading, 
 					<TextInput
 						placeholder={t('Search_Messages')}
 						value={text}
-						onChange={setText}
-						ref={inputRef}
+						onChange={onChangeFilter}
+						ref={inputRef as RefObject<HTMLInputElement>}
 						addon={<Icon name='magnifier' size='x20' />}
 					/>
 				</Box>
@@ -57,7 +80,7 @@ function DiscussionList({ total = 10, discussions = [], loadMoreItems, loading, 
 					</Box>
 				)}
 
-				{error && (
+				{error instanceof Error && (
 					<Callout mi='x24' type='danger'>
 						{error.toString()}
 					</Callout>
@@ -78,11 +101,13 @@ function DiscussionList({ total = 10, discussions = [], loadMoreItems, loading, 
 								overflow: 'hidden',
 							}}
 							totalCount={total}
-							endReached={loading ? () => {} : (start) => loadMoreItems(start, Math.min(50, total - start))}
+							endReached={loading ? () => undefined : (start) => loadMoreItems(start, Math.min(50, total - start))}
 							overscan={25}
 							data={discussions}
 							components={{ Scroller: ScrollableContentWrapper }}
-							itemContent={(index, data) => <Row discussion={data} showRealNames={showRealNames} userId={userId} onClick={onClick} />}
+							itemContent={(_, data) => (
+								<DiscussionsListRow discussion={data} showRealNames={showRealNames} userId={userId} onClick={onClick} />
+							)}
 						/>
 					)}
 				</Box>
@@ -91,4 +116,4 @@ function DiscussionList({ total = 10, discussions = [], loadMoreItems, loading, 
 	);
 }
 
-export default withData(DiscussionList);
+export default DiscussionsList;
