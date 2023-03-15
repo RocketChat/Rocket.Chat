@@ -42,25 +42,6 @@ export interface ServerMethods {
 	'ignoreUser': (...args: any[]) => any;
 	'insertOrUpdateUserStatus': (...args: any[]) => any;
 	'leaveRoom': (...args: any[]) => any;
-	'loadHistory': (
-		rid: IRoom['_id'],
-		ts?: Date,
-		limit?: number,
-		ls?: string,
-		showThreadMessages?: boolean,
-	) => {
-		messages: IMessage[];
-		firstUnread: IMessage;
-		unreadNotLoaded: number;
-	};
-	'loadMissedMessages': (rid: IRoom['_id'], ts: Date) => IMessage[];
-	'loadNextMessages': (
-		rid: IRoom['_id'],
-		end?: Date,
-		limit?: number,
-	) => {
-		messages: IMessage[];
-	};
 	'loadSurroundingMessages': (
 		message: Pick<IMessage, '_id' | 'rid'> & { ts?: Date },
 		limit?: number,
