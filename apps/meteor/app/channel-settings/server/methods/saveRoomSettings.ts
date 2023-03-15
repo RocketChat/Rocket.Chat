@@ -207,7 +207,7 @@ type RoomSettingsSavers = {
 		value: RoomSettings[TRoomSetting];
 		room: IRoom;
 		rid: IRoom['_id'];
-	}) => void;
+	}) => void | Promise<void>;
 };
 
 const settingSavers: RoomSettingsSavers = {
@@ -373,7 +373,7 @@ const validate = <TRoomSetting extends keyof RoomSettings>(
 	validator?.(params);
 };
 
-const save = <TRoomSetting extends keyof RoomSettings>(
+async function save<TRoomSetting extends keyof RoomSettings>(
 	setting: TRoomSetting,
 	params: {
 		userId: IUser['_id'];
@@ -382,10 +382,10 @@ const save = <TRoomSetting extends keyof RoomSettings>(
 		room: IRoom;
 		rid: IRoom['_id'];
 	},
-) => {
+) {
 	const saver = settingSavers[setting];
-	saver?.(params);
-};
+	await saver?.(params);
+}
 
 async function saveRoomSettings(rid: IRoom['_id'], settings: Partial<RoomSettings>): Promise<{ result: true; rid: IRoom['_id'] }>;
 async function saveRoomSettings<RoomSettingName extends keyof RoomSettings>(
@@ -473,8 +473,8 @@ async function saveRoomSettings(
 	}
 
 	// saving data
-	for (const setting of Object.keys(settings) as (keyof RoomSettings)[]) {
-		save(setting, {
+	for await (const setting of Object.keys(settings) as (keyof RoomSettings)[]) {
+		await save(setting, {
 			userId: uid,
 			user,
 			value: settings[setting],
