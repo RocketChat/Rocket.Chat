@@ -316,7 +316,7 @@ export class ImportDataConverter {
 
 	public async convertUsers({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): Promise<void> {
 		const users = (await this.getUsersToImport()) as IImportUserRecord[];
-		users.forEach(({ data, _id }) => {
+		const promises = users.map(async ({ data, _id }) => {
 			try {
 				if (beforeImportFn && !beforeImportFn(data, 'user')) {
 					this.skipRecord(_id);
@@ -371,6 +371,8 @@ export class ImportDataConverter {
 				this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
 			}
 		});
+
+		await Promise.all(promises);
 	}
 
 	protected saveError(importId: string, error: Error): void {
