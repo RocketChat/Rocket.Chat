@@ -427,12 +427,10 @@ describe('[Incoming Integrations]', function () {
 					integrationId: integration._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('error');
-					expect(res.body.error.error).to.be.equal('error-invalid-post-as-user');
-					expect(res.body.error.isClientSafe).to.be.equal(true);
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Invalid Post As User [error-invalid-post-as-user]');
 				})
 				.end(done);
 		});
