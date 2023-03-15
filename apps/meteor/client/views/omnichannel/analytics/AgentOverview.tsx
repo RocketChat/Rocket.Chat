@@ -4,7 +4,15 @@ import React, { useMemo, useEffect, useState } from 'react';
 
 const style = { width: '100%' };
 
-const AgentOverview = ({ type, dateRange, departmentId }) => {
+const AgentOverview = ({
+	type,
+	dateRange,
+	departmentId,
+}: {
+	type: string;
+	dateRange: { start: string; end: string };
+	departmentId: string;
+}) => {
 	const t = useTranslation();
 	const { start, end } = dateRange;
 

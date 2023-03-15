@@ -1,24 +1,30 @@
 import { Box, InputBox, Menu, Field } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { Moment } from 'moment';
 import moment from 'moment';
+import type { ComponentProps } from 'react';
 import React, { useState, useMemo, useEffect } from 'react';
 
-const formatToDateInput = (date) => date.format('YYYY-MM-DD');
+type DateRangePickerProps = Omit<ComponentProps<typeof Box>, 'onChange'> & {
+	onChange(range: { start: string; end: string }): void;
+};
+
+const formatToDateInput = (date: Moment) => date.format('YYYY-MM-DD');
 
 const todayDate = formatToDateInput(moment());
 
-const getMonthRange = (monthsToSubtractFromToday) => ({
+const getMonthRange = (monthsToSubtractFromToday: number) => ({
 	start: formatToDateInput(moment().subtract(monthsToSubtractFromToday, 'month').date(1)),
 	end: formatToDateInput(monthsToSubtractFromToday === 0 ? moment() : moment().subtract(monthsToSubtractFromToday).date(0)),
 });
 
-const getWeekRange = (daysToSubtractFromStart, daysToSubtractFromEnd) => ({
+const getWeekRange = (daysToSubtractFromStart: number, daysToSubtractFromEnd: number) => ({
 	start: formatToDateInput(moment().subtract(daysToSubtractFromStart, 'day')),
 	end: formatToDateInput(moment().subtract(daysToSubtractFromEnd, 'day')),
 });
 
-const DateRangePicker = ({ onChange = () => {}, ...props }) => {
+const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePickerProps) => {
 	const t = useTranslation();
 	const [range, setRange] = useState({ start: '', end: '' });
 
