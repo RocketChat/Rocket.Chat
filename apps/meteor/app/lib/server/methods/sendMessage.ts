@@ -3,6 +3,8 @@ import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 import { api } from '@rocket.chat/core-services';
+import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermission, canSendMessage } from '../../../authorization/server';
 import { metrics } from '../../../metrics/server';
@@ -12,7 +14,7 @@ import { sendMessage } from '../functions';
 import { RateLimiter } from '../lib';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export function executeSendMessage(uid, message) {
+export function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage, 'rid'>) {
 	if (message.tshow && !message.tmid) {
 		throw new Meteor.Error('invalid-params', 'tshow provided but missing tmid', {
 			method: 'sendMessage',
@@ -26,7 +28,7 @@ export function executeSendMessage(uid, message) {
 	}
 
 	if (message.ts) {
-		const tsDiff = Math.abs(moment(message.ts).diff());
+		const tsDiff = Math.abs(moment(message.ts).diff(Date.now()));
 		if (tsDiff > 60000) {
 			throw new Meteor.Error('error-message-ts-out-of-sync', 'Message timestamp is out of sync', {
 				method: 'sendMessage',
@@ -41,7 +43,7 @@ export function executeSendMessage(uid, message) {
 	}
 
 	if (message.msg) {
-		if (message.msg.length > settings.get('Message_MaxAllowedSize')) {
+		if (message.msg.length > (settings.get('Message_MaxAllowedSize') ?? 0)) {
 			throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
 				method: 'sendMessage',
 			});
@@ -73,7 +75,7 @@ export function executeSendMessage(uid, message) {
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 		return sendMessage(user, message, room, false);
-	} catch (err) {
+	} catch (err: any) {
 		SystemLogger.error({ msg: 'Error sending message:', err });
 
 		const errorMessage = typeof err === 'string' ? err : err.error || err.message;
@@ -89,7 +91,14 @@ export function executeSendMessage(uid, message) {
 	}
 }
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		sendMessage(message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>): any;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	sendMessage(message) {
 		check(message, Object);
 
@@ -102,7 +111,7 @@ Meteor.methods({
 
 		try {
 			return executeSendMessage(uid, message);
-		} catch (error) {
+		} catch (error: any) {
 			if ((error.error || error.message) === 'error-not-allowed') {
 				throw new Meteor.Error(error.error || error.message, error.reason, {
 					method: 'sendMessage',
@@ -113,7 +122,7 @@ Meteor.methods({
 });
 // Limit a user, who does not have the "bot" role, to sending 5 msgs/second
 RateLimiter.limitMethod('sendMessage', 5, 1000, {
-	userId(userId) {
+	userId(userId: IUser['_id']) {
 		return !hasPermission(userId, 'send-many-messages');
 	},
 });

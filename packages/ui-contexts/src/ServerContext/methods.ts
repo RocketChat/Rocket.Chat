@@ -1,5 +1,4 @@
 import type {
-	AtLeast,
 	IMessage,
 	IPermission,
 	IRoom,
@@ -13,8 +12,6 @@ import type {
 import type { TranslationKey } from '../TranslationContext';
 import type { GetReadReceiptsMethod } from './methods/getReadReceipts';
 import type { UnsubscribeMethod as MailerUnsubscribeMethod } from './methods/mailer/unsubscribe';
-import type { SaveSettingsMethod } from './methods/saveSettings';
-import type { SaveUserPreferencesMethod } from './methods/saveUserPreferences';
 
 // TODO: frontend chapter day - define methods
 
@@ -53,11 +50,8 @@ export interface ServerMethods {
 	'requestDataDownload': (...args: any[]) => any;
 	'resetPassword': (...args: any[]) => any;
 	'saveCannedResponse': (...args: any[]) => any;
-	'saveSettings': SaveSettingsMethod;
-	'saveUserPreferences': SaveUserPreferencesMethod;
 	'saveUserProfile': (...args: any[]) => any;
 	'sendConfirmationEmail': (...args: any[]) => any;
-	'sendMessage': (message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>) => any;
 	'setAdminStatus': (...args: any[]) => any;
 	'setAvatarFromService': (...args: any[]) => any;
 	'setReaction': (reaction: string, mid: IMessage['_id']) => void;
