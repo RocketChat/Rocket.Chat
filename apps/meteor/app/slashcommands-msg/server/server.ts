@@ -13,6 +13,8 @@ import { Users } from '../../models/server';
 
 slashCommands.add({
 	command: 'msg',
+	// This is while we convert slashcommands to support async callbacks
+	// eslint-disable-next-line @typescript-eslint/no-misused-promises
 	callback: async function Msg(_command: 'msg', params, item): Promise<void> {
 		const trimmedParams = params.trim();
 		const separator = trimmedParams.indexOf(' ');

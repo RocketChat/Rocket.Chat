@@ -82,3 +82,7 @@ import './stream/stdout';
 import './settings/index';
 
 import './features/EmailInbox/index';
+
+if (process.env.NODE_ENV !== 'development') {
+	Error.stackTraceLimit = 0;
+}
