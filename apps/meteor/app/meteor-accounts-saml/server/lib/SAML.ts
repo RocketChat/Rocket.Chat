@@ -218,7 +218,7 @@ export class SAML {
 		);
 
 		if (username && username !== user.username) {
-			saveUserIdentity({ _id: user._id, username } as Parameters<typeof saveUserIdentity>[0]);
+			await saveUserIdentity({ _id: user._id, username } as Parameters<typeof saveUserIdentity>[0]);
 		}
 
 		// sending token along with the userId

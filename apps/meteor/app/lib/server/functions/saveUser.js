@@ -59,7 +59,7 @@ function _sendUserEmail(subject, html, userData) {
 	}
 }
 
-function validateUserData(userId, userData) {
+async function validateUserData(userId, userData) {
 	const existingRoles = _.pluck(getRoles(), '_id');
 
 	if (userData._id && userId !== userData._id && !hasPermission(userId, 'edit-other-user-info')) {
@@ -132,7 +132,7 @@ function validateUserData(userId, userData) {
 	}
 
 	if (!userData._id) {
-		if (!checkUsernameAvailability(userData.username)) {
+		if (!(await checkUsernameAvailability(userData.username))) {
 			throw new Meteor.Error('error-field-unavailable', `${_.escape(userData.username)} is already in use :(`, {
 				method: 'insertOrUpdateUser',
 				field: userData.username,
@@ -329,12 +329,12 @@ const saveNewUser = function (userData, sendPassword) {
 	return _id;
 };
 
-export const saveUser = function (userId, userData) {
+export const saveUser = async function (userId, userData) {
 	const oldUserData = Users.findOneById(userData._id);
 	if (oldUserData && isUserFederated(oldUserData)) {
 		throw new Meteor.Error('Edit_Federated_User_Not_Allowed', 'Not possible to edit a federated user');
 	}
-	validateUserData(userId, userData);
+	await validateUserData(userId, userData);
 	let sendPassword = false;
 
 	if (userData.hasOwnProperty('setRandomPassword')) {
@@ -356,11 +356,11 @@ export const saveUser = function (userId, userData) {
 	// update user
 	if (userData.hasOwnProperty('username') || userData.hasOwnProperty('name')) {
 		if (
-			!saveUserIdentity({
+			!(await saveUserIdentity({
 				_id: userData._id,
 				username: userData.username,
 				name: userData.name,
-			})
+			}))
 		) {
 			throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', {
 				method: 'saveUser',

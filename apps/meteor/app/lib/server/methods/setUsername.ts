@@ -10,7 +10,7 @@ import { RateLimiter } from '../lib';
 import { saveUserIdentity } from '../functions/saveUserIdentity';
 
 Meteor.methods({
-	setUsername(username, param = {}) {
+	async setUsername(username, param = {}) {
 		const { joinDefaultChannelsSilenced } = param;
 		check(username, String);
 
@@ -49,7 +49,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!saveUserIdentity({ _id: user._id, username })) {
+		if (!(await saveUserIdentity({ _id: user._id, username }))) {
 			throw new Meteor.Error('error-could-not-change-username', 'Could not change username', {
 				method: 'setUsername',
 			});

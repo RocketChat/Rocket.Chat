@@ -102,7 +102,7 @@ Meteor.startup(async function () {
 				}
 
 				if (nameValidation.test(process.env.ADMIN_USERNAME)) {
-					if (checkUsernameAvailability(process.env.ADMIN_USERNAME)) {
+					if (await checkUsernameAvailability(process.env.ADMIN_USERNAME)) {
 						adminUser.username = process.env.ADMIN_USERNAME;
 					} else {
 						console.log(colors.red('Username provided already exists; Ignoring environment variables ADMIN_USERNAME'));
@@ -191,7 +191,7 @@ Meteor.startup(async function () {
 			throw new Meteor.Error(`Email ${adminUser.emails[0].address} already exists`, "Rocket.Chat can't run in test mode");
 		}
 
-		if (!checkUsernameAvailability(adminUser.username)) {
+		if (!(await checkUsernameAvailability(adminUser.username))) {
 			throw new Meteor.Error(`Username ${adminUser.username} already exists`, "Rocket.Chat can't run in test mode");
 		}
 

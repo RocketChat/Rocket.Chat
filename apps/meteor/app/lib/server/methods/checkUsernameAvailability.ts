@@ -7,7 +7,7 @@ import { RateLimiter } from '../lib';
 import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 Meteor.methods({
-	checkUsernameAvailability(username) {
+	async checkUsernameAvailability(username) {
 		methodDeprecationLogger.warn('checkUsernameAvailability will be deprecated in future versions of Rocket.Chat');
 
 		check(username, String);

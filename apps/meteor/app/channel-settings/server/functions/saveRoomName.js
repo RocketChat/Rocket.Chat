@@ -16,7 +16,7 @@ const updateRoomName = async (rid, displayName) => {
 	const slugifiedRoomName = await getValidRoomName(displayName, rid);
 
 	// Check if the username is available
-	if (!checkUsernameAvailability(slugifiedRoomName)) {
+	if (!(await checkUsernameAvailability(slugifiedRoomName))) {
 		throw new Meteor.Error('error-duplicate-handle', `A room, team or user with name '${slugifiedRoomName}' already exists`, {
 			function: 'RocketChat.updateRoomName',
 			handle: slugifiedRoomName,

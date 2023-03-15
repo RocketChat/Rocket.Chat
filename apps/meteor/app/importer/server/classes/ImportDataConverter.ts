@@ -226,7 +226,7 @@ export class ImportDataConverter {
 		subset(userData.customFields, 'customFields');
 	}
 
-	updateUser(existingUser: IUser, userData: IImportUser): void {
+	async updateUser(existingUser: IUser, userData: IImportUser): Promise<void> {
 		const { _id } = existingUser;
 
 		userData._id = _id;
@@ -267,7 +267,7 @@ export class ImportDataConverter {
 		}
 
 		if (userData.name || userData.username) {
-			saveUserIdentity({ _id, name: userData.name, username: userData.username } as Parameters<typeof saveUserIdentity>[0]);
+			await saveUserIdentity({ _id, name: userData.name, username: userData.username } as Parameters<typeof saveUserIdentity>[0]);
 		}
 
 		if (userData.importIds.length) {
@@ -275,7 +275,7 @@ export class ImportDataConverter {
 		}
 	}
 
-	insertUser(userData: IImportUser): IUser {
+	async insertUser(userData: IImportUser): Promise<IUser> {
 		const password = `${Date.now()}${userData.name || ''}${userData.emails.length ? userData.emails[0].toUpperCase() : ''}`;
 		const userId = userData.emails.length
 			? Accounts.createUser({
@@ -289,7 +289,7 @@ export class ImportDataConverter {
 			  });
 
 		const user = Users.findOneById(userId, {});
-		this.updateUser(user, userData);
+		await this.updateUser(user, userData);
 
 		addUserToDefaultChannels(user, true);
 		return user;
@@ -346,13 +346,13 @@ export class ImportDataConverter {
 				const isNewUser = !existingUser;
 
 				if (existingUser) {
-					this.updateUser(existingUser, data);
+					await this.updateUser(existingUser, data);
 				} else {
 					if (!data.name && data.username) {
 						data.name = guessNameFromUsername(data.username);
 					}
 
-					existingUser = this.insertUser(data);
+					existingUser = await this.insertUser(data);
 				}
 
 				// Deleted users are 'inactive' users in Rocket.Chat
