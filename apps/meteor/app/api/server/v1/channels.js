@@ -11,6 +11,7 @@ import { API } from '../api';
 import { settings } from '../../../settings/server';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
+import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 function findChannelByIdOrName({ params, checkedArchived = true, userId }) {
@@ -344,7 +345,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields: projection, query } = this.parseJsonQuery();
 
-			ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query, ourQuery);
+			ourQuery = Object.assign(await mountIntegrationQueryBasedOnPermissions(this.userId), query, ourQuery);
 
 			const { cursor, totalCount } = Integrations.findPaginated(ourQuery, {
 				sort: sort || { _createdAt: 1 },
@@ -457,7 +458,7 @@ API.v1.addRoute(
 			const [channels, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				channels: channels.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
+				channels: await Promise.all(channels.map((room) => composeRoomWithLastMessage(room, this.userId))),
 				count: channels.length,
 				offset,
 				total,
@@ -491,7 +492,7 @@ API.v1.addRoute(
 			const [channels, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				channels: channels.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
+				channels: await Promise.all(channels.map((room) => composeRoomWithLastMessage(room, this.userId))),
 				offset,
 				count: channels.length,
 				total,
@@ -848,7 +849,7 @@ API.v1.addRoute(
 	'channels.setType',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			if (!this.bodyParams.type || !this.bodyParams.type.trim()) {
 				return API.v1.failure('The bodyParam "type" is required');
 			}
@@ -864,7 +865,10 @@ API.v1.addRoute(
 			});
 
 			return API.v1.success({
-				channel: this.composeRoomWithLastMessage(Rooms.findOneById(findResult._id, { fields: API.v1.defaultFieldsToExclude }), this.userId),
+				channel: await composeRoomWithLastMessage(
+					Rooms.findOneById(findResult._id, { fields: API.v1.defaultFieldsToExclude }),
+					this.userId,
+				),
 			});
 		},
 	},
