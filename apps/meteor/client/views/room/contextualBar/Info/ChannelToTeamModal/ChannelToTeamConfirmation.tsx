@@ -4,7 +4,12 @@ import React from 'react';
 
 import GenericModal from '../../../../../components/GenericModal';
 
-const StepTwo = ({ onClose, onCancel, onConfirm }) => {
+type ChannelToTeamConfirmationProps = {
+	onCancel: () => void;
+	onConfirm: () => void;
+};
+
+const ChannelToTeamConfirmation = ({ onCancel, onConfirm }: ChannelToTeamConfirmationProps) => {
 	const t = useTranslation();
 
 	return (
@@ -12,8 +17,8 @@ const StepTwo = ({ onClose, onCancel, onConfirm }) => {
 			variant='warning'
 			icon='warning'
 			title={t('Confirmation')}
-			confirmText='Yes'
-			onClose={onClose}
+			confirmText={t('Yes')}
+			onClose={onCancel}
 			onCancel={onCancel}
 			onConfirm={onConfirm}
 		>
@@ -22,4 +27,4 @@ const StepTwo = ({ onClose, onCancel, onConfirm }) => {
 	);
 };
 
-export default StepTwo;
+export default ChannelToTeamConfirmation;

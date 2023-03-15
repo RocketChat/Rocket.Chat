@@ -1,3 +1,4 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Margins } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
@@ -5,7 +6,14 @@ import React from 'react';
 import GenericModal from '../../../../../components/GenericModal';
 import TeamAutocomplete from '../../../../teams/contextualBar/TeamAutocomplete';
 
-const StepOne = ({ teamId = '', onChange, onClose, onCancel, onConfirm }) => {
+type ChannelToTeamSelectionProps = {
+	teamId: IRoom['teamId'];
+	onChange: (teamId: IRoom['_id']) => void;
+	onCancel: () => void;
+	onConfirm: () => void;
+};
+
+const ChannelToTeamSelection = ({ teamId, onCancel, onChange, onConfirm }: ChannelToTeamSelectionProps) => {
 	const t = useTranslation();
 
 	return (
@@ -14,7 +22,7 @@ const StepOne = ({ teamId = '', onChange, onClose, onCancel, onConfirm }) => {
 			cancelText={t('Cancel')}
 			confirmText={t('Continue')}
 			title={t('Teams_Select_a_team')}
-			onClose={onClose}
+			onClose={onCancel}
 			onCancel={onCancel}
 			onConfirm={onConfirm}
 			confirmDisabled={!teamId}
@@ -33,4 +41,4 @@ const StepOne = ({ teamId = '', onChange, onClose, onCancel, onConfirm }) => {
 	);
 };
 
-export default StepOne;
+export default ChannelToTeamSelection;
