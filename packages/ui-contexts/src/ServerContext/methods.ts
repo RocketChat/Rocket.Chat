@@ -13,11 +13,8 @@ import type {
 import type { TranslationKey } from '../TranslationContext';
 import type { GetReadReceiptsMethod } from './methods/getReadReceipts';
 import type { UnsubscribeMethod as MailerUnsubscribeMethod } from './methods/mailer/unsubscribe';
-import type { RoomNameExistsMethod } from './methods/roomNameExists';
-import type { SaveRoomSettingsMethod } from './methods/saveRoomSettings';
 import type { SaveSettingsMethod } from './methods/saveSettings';
 import type { SaveUserPreferencesMethod } from './methods/saveUserPreferences';
-import type { ReportMessageMethod } from './methods/message/reportMessage';
 
 // TODO: frontend chapter day - define methods
 
@@ -42,37 +39,20 @@ export interface ServerMethods {
 	'ignoreUser': (...args: any[]) => any;
 	'insertOrUpdateUserStatus': (...args: any[]) => any;
 	'leaveRoom': (...args: any[]) => any;
-	'loadSurroundingMessages': (
-		message: Pick<IMessage, '_id' | 'rid'> & { ts?: Date },
-		limit?: number,
-	) =>
-		| {
-				messages: IMessage[];
-				moreBefore: boolean;
-				moreAfter: boolean;
-		  }
-		| false;
-	'logoutCleanUp': (user: IUser) => void;
-	'Mailer.sendMail': (from: string, subject: string, body: string, dryrun: boolean, query: string) => any;
 	'muteUserInRoom': (...args: any[]) => any;
-	'openRoom': (rid: IRoom['_id']) => ISubscription;
 	'personalAccessTokens:generateToken': (...args: any[]) => any;
 	'personalAccessTokens:regenerateToken': (...args: any[]) => any;
 	'personalAccessTokens:removeToken': (...args: any[]) => any;
 	'e2e.requestSubscriptionKeys': (...args: any[]) => any;
 	'readMessages': (...args: any[]) => any;
-	'readThreads': (tmid: IMessage['_id']) => void;
 	'refreshOAuthService': (...args: any[]) => any;
 	'registerUser': (...args: any[]) => any;
 	'removeOAuthService': (...args: any[]) => any;
 	'removeCannedResponse': (...args: any[]) => any;
 	'replayOutgoingIntegration': (...args: any[]) => any;
-	'reportMessage': ReportMessageMethod;
 	'requestDataDownload': (...args: any[]) => any;
 	'resetPassword': (...args: any[]) => any;
-	'roomNameExists': RoomNameExistsMethod;
 	'saveCannedResponse': (...args: any[]) => any;
-	'saveRoomSettings': SaveRoomSettingsMethod;
 	'saveSettings': SaveSettingsMethod;
 	'saveUserPreferences': SaveUserPreferencesMethod;
 	'saveUserProfile': (...args: any[]) => any;
