@@ -467,7 +467,7 @@ export class SAML {
 			.replace(/^\w/, (u) => u.toUpperCase());
 	}
 
-	private static async subscribeToSAMLChannels(channels: Array<string>, user: IUser): void {
+	private static async subscribeToSAMLChannels(channels: Array<string>, user: IUser): Promise<void> {
 		const { includePrivateChannelsInUpdate } = SAMLUtils.globalSettings;
 		try {
 			for (let roomName of channels) {

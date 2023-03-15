@@ -13,7 +13,7 @@ import { Users } from '../../models/server';
 
 slashCommands.add({
 	command: 'msg',
-	callback: async function Msg(_command: 'msg', params, item): void {
+	callback: async function Msg(_command: 'msg', params, item): Promise<void> {
 		const trimmedParams = params.trim();
 		const separator = trimmedParams.indexOf(' ');
 		const userId = Meteor.userId() as string;
