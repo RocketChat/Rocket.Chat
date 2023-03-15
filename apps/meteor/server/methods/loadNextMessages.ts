@@ -1,9 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
 import { canAccessRoomId } from '../../app/authorization/server';
 import { Messages } from '../../app/models/server';
 import { normalizeMessagesForUser } from '../../app/utils/server/lib/normalizeMessagesForUser';
+
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		loadNextMessages(rid: IRoom['_id'], end?: Date, limit?: number): { messages: IMessage[] };
+	}
+}
 
 Meteor.methods({
 	loadNextMessages(rid, end, limit = 20) {
@@ -22,7 +30,7 @@ Meteor.methods({
 
 		const fromId = Meteor.userId();
 
-		if (!canAccessRoomId(rid, fromId)) {
+		if (!fromId || !canAccessRoomId(rid, fromId)) {
 			return false;
 		}
 
