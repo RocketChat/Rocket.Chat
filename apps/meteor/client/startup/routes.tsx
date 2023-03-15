@@ -202,7 +202,7 @@ FlowRouter.route('/invite/:hash', {
 FlowRouter.route('/setup-wizard/:step?', {
 	name: 'setup-wizard',
 	action: () => {
-		appLayout.render(<SetupWizardRoute />);
+		appLayout.renderStandalone(<SetupWizardRoute />);
 	},
 });
 

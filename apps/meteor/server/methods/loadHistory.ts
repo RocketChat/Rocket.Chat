@@ -1,12 +1,33 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Subscriptions, Rooms } from '../../app/models/server';
 import { canAccessRoom, hasPermission, roomAccessAttributes } from '../../app/authorization/server';
 import { settings } from '../../app/settings/server';
 import { loadMessageHistory } from '../../app/lib/server';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		loadHistory(
+			rid: IRoom['_id'],
+			ts?: Date,
+			limit?: number,
+			ls?: string | Date,
+			showThreadMessages?: boolean,
+		):
+			| {
+					messages: IMessage[];
+					firstUnread: IMessage;
+					unreadNotLoaded: number;
+			  }
+			| false;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	loadHistory(rid, end, limit = 20, ls, showThreadMessages = true) {
 		check(rid, String);
 
@@ -23,7 +44,7 @@ Meteor.methods({
 			return false;
 		}
 
-		if (!canAccessRoom(room, { _id: fromId })) {
+		if (!fromId || !canAccessRoom(room, { _id: fromId })) {
 			return false;
 		}
 
