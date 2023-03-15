@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { MessageDivider } from '@rocket.chat/fuselage';
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { Fragment, memo } from 'react';
 
@@ -15,6 +16,7 @@ type AuditMessageListProps = {
 
 export const AuditMessageList = ({ messages }: AuditMessageListProps): ReactElement => {
 	const formatDate = useFormatDate();
+	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
 	return (
 		<>
@@ -26,9 +28,19 @@ export const AuditMessageList = ({ messages }: AuditMessageListProps): ReactElem
 					<Fragment key={message._id}>
 						{newDay && <MessageDivider>{formatDate(message.ts)}</MessageDivider>}
 
-						{!system && <RoomMessage message={message} sequential={false} unread={false} mention={false} all={false} ignoredUser={false} />}
+						{!system && (
+							<RoomMessage
+								message={message}
+								sequential={false}
+								unread={false}
+								mention={false}
+								all={false}
+								ignoredUser={false}
+								showUserAvatar={showUserAvatar}
+							/>
+						)}
 
-						{system && <SystemMessage message={message} />}
+						{system && <SystemMessage message={message} showUserAvatar={showUserAvatar} />}
 					</Fragment>
 				);
 			})}
