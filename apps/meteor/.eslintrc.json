@@ -47,7 +47,8 @@
 							"attributes": false
 						}
 					}
-				]
+				],
+				"@typescript-eslint/no-floating-promises": "error"
 			},
 			"parserOptions": {
 				"project": ["./tsconfig.json"]
