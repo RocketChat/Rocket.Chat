@@ -2,8 +2,8 @@ import type { IRoom } from '@rocket.chat/core-typings';
 
 export interface ISubscriptionExtraData {
 	open: boolean;
-	ls: Date;
-	prid: string;
+	ls?: Date;
+	prid?: string;
 }
 
 interface ICreateRoomOptions extends Partial<Record<string, string | ISubscriptionExtraData>> {

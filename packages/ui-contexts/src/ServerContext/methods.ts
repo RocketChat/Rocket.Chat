@@ -1,6 +1,5 @@
 import type {
 	AtLeast,
-	ICreatedRoom,
 	IInstanceStatus,
 	IMessage,
 	IPermission,
@@ -9,21 +8,11 @@ import type {
 	IMessageSearchSuggestion,
 	ISetting,
 	ISubscription,
-	ISupportedLanguage,
 	IUser,
-	RoomType,
 } from '@rocket.chat/core-typings';
 
 import type { TranslationKey } from '../TranslationContext';
-import type {
-	AddWebdavAccount,
-	GetWebdavFileList,
-	UploadFileToWebdav,
-	RemoveWebdavAccount,
-	GetWebdavFilePreview,
-	GetFileFromWebdav,
-} from './methods/webdav';
-import type { FollowMessageMethod } from './methods/followMessage';
+import type { GetWebdavFileList, GetWebdavFilePreview } from './methods/webdav';
 import type { GetReadReceiptsMethod } from './methods/getReadReceipts';
 import type { JoinRoomMethod } from './methods/joinRoom';
 import type { UnsubscribeMethod as MailerUnsubscribeMethod } from './methods/mailer/unsubscribe';
@@ -31,104 +20,27 @@ import type { RoomNameExistsMethod } from './methods/roomNameExists';
 import type { SaveRoomSettingsMethod } from './methods/saveRoomSettings';
 import type { SaveSettingsMethod } from './methods/saveSettings';
 import type { SaveUserPreferencesMethod } from './methods/saveUserPreferences';
-import type { UnfollowMessageMethod } from './methods/message/unfollowMessage';
 import type { ReportMessageMethod } from './methods/message/reportMessage';
 
 // TODO: frontend chapter day - define methods
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface ServerMethods {
-	'2fa:checkCodesRemaining': (...args: any[]) => any;
-	'2fa:disable': (...args: any[]) => any;
-	'2fa:enable': (...args: any[]) => any;
-	'2fa:regenerateCodes': (...args: any[]) => any;
-	'2fa:validateTempToken': (...args: any[]) => any;
 	'addOAuthService': (...args: any[]) => any;
 	'addUsersToRoom': (...args: any[]) => any;
-	'addWebdavAccount': AddWebdavAccount;
-	'authorization:addPermissionToRole': (...args: any[]) => any;
-	'authorization:addUserToRole': (...args: any[]) => any;
-	'authorization:deleteRole': (...args: any[]) => any;
-	'authorization:removeRoleFromPermission': (...args: any[]) => any;
-	'authorization:removeUserFromRole': (...args: any[]) => any;
 	'bbbEnd': (...args: any[]) => any;
 	'bbbJoin': (...args: any[]) => any;
 	'blockUser': (...args: any[]) => any;
 	'checkUsernameAvailability': (...args: any[]) => any;
 	'cleanRoomHistory': (...args: any[]) => any;
 	'clearIntegrationHistory': (...args: any[]) => any;
-	'cloud:checkRegisterStatus': () => {
-		connectToCloud: string;
-		workspaceRegistered: string;
-		workspaceId: string;
-		uniqueId: string;
-		token: string;
-		email: string;
-	};
-	'cloud:checkUserLoggedIn': (...args: any[]) => any;
-	'cloud:connectWorkspace': (...args: any[]) => any;
-	'cloud:reconnectWorkspace': (...args: any[]) => any;
-	'cloud:disconnectWorkspace': (...args: any[]) => any;
-	'cloud:finishOAuthAuthorization': (...args: any[]) => any;
-	'cloud:getOAuthAuthorizationUrl': (...args: any[]) => any;
-	'cloud:getWorkspaceRegisterData': (...args: any[]) => any;
-	'cloud:logout': (...args: any[]) => any;
-	'cloud:registerWorkspace': (...args: any[]) => any;
-	'cloud:syncWorkspace': (...args: any[]) => any;
-	'createDirectMessage': (...usernames: Exclude<IUser['username'], undefined>[]) => ICreatedRoom;
 	'deleteCustomSound': (...args: any[]) => any;
 	'deleteCustomUserStatus': (...args: any[]) => any;
 	'deleteFileMessage': (...args: any[]) => any;
-	'deleteMessage': ({ _id }: Pick<IMessage, '_id'>) => void;
 	'deleteUserOwnAccount': (...args: any[]) => any;
 	'e2e.resetOwnE2EKey': (...args: any[]) => any;
 	'eraseRoom': (...args: any[]) => any;
-	'followMessage': FollowMessageMethod;
 	'getAvatarSuggestion': (...args: any[]) => any;
-	'getFileFromWebdav': GetFileFromWebdav;
-	'getMessages': (messages: IMessage['_id'][]) => IMessage[];
-	'getRoomByTypeAndName': (
-		type: RoomType,
-		name: string,
-	) => Pick<
-		IRoom,
-		| '_id'
-		| 'name'
-		| 'fname'
-		| 't'
-		| 'cl'
-		| 'u'
-		| 'lm'
-		| 'teamId'
-		| 'teamMain'
-		| 'topic'
-		| 'announcement'
-		| 'announcementDetails'
-		| 'muted'
-		| 'unmuted'
-		| '_updatedAt'
-		| 'archived'
-		| 'description'
-		| 'default'
-		| 'lastMessage'
-		| 'prid'
-		| 'avatarETag'
-		| 'usersCount'
-		| 'msgs'
-		| 'open'
-		| 'ro'
-		| 'reactWhenReadOnly'
-		| 'sysMes'
-		| 'streamingOptions'
-		| 'broadcast'
-		| 'encrypted'
-		| 'e2eKeyId'
-		| 'servedBy'
-		| 'ts'
-		| 'federated'
-		| 'usernames'
-		| 'uids'
-	>;
 	'getRoomRoles': (rid: IRoom['_id']) => ISubscription[];
 	'getSetupWizardParameters': () => {
 		settings: ISetting[];
@@ -186,11 +98,9 @@ export interface ServerMethods {
 	'e2e.requestSubscriptionKeys': (...args: any[]) => any;
 	'readMessages': (...args: any[]) => any;
 	'readThreads': (tmid: IMessage['_id']) => void;
-	'refreshClients': (...args: any[]) => any;
 	'refreshOAuthService': (...args: any[]) => any;
 	'registerUser': (...args: any[]) => any;
 	'removeOAuthService': (...args: any[]) => any;
-	'removeWebdavAccount': RemoveWebdavAccount;
 	'removeCannedResponse': (...args: any[]) => any;
 	'replayOutgoingIntegration': (...args: any[]) => any;
 	'reportMessage': ReportMessageMethod;
@@ -205,7 +115,6 @@ export interface ServerMethods {
 	'sendConfirmationEmail': (...args: any[]) => any;
 	'sendMessage': (message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>) => any;
 	'setAdminStatus': (...args: any[]) => any;
-	'setAsset': (...args: any[]) => any;
 	'setAvatarFromService': (...args: any[]) => any;
 	'setReaction': (reaction: string, mid: IMessage['_id']) => void;
 	'setUsername': (...args: any[]) => any;
@@ -214,15 +123,11 @@ export interface ServerMethods {
 	'slashCommand': (params: { cmd: string; params: string; msg: IMessage; triggerId: string }) => unknown;
 	'toggleFavorite': (...args: any[]) => any;
 	'unblockUser': (...args: any[]) => any;
-	'unfollowMessage': UnfollowMessageMethod;
 	'unmuteUserInRoom': (...args: any[]) => any;
 	'unreadMessages': (...args: any[]) => any;
-	'unsetAsset': (...args: any[]) => any;
 	'updateIncomingIntegration': (...args: any[]) => any;
-	'updateMessage': (message: Pick<IMessage, '_id'> & Partial<Omit<IMessage, '_id'>>) => void;
 	'updateOutgoingIntegration': (...args: any[]) => any;
 	'uploadCustomSound': (...args: any[]) => any;
-	'uploadFileToWebdav': UploadFileToWebdav;
 	'Mailer:unsubscribe': MailerUnsubscribeMethod;
 	'getRoomById': (rid: IRoom['_id']) => IRoom;
 	'getReadReceipts': GetReadReceiptsMethod;
@@ -231,8 +136,6 @@ export interface ServerMethods {
 	'livechat:saveAgentInfo': (_id: string, agentData: unknown, agentDepartments: unknown) => unknown;
 	'livechat:takeInquiry': (inquiryId: string, options?: { clientAction: boolean; forwardingToDepartment?: boolean }) => unknown;
 	'livechat:resumeOnHold': (roomId: string, options?: { clientAction: boolean }) => unknown;
-	'autoTranslate.getProviderUiMetadata': () => Record<string, { name: string; displayName: string }>;
-	'autoTranslate.getSupportedLanguages': (language: string) => ISupportedLanguage[];
 	'spotlight': (
 		...args: (
 			| string
@@ -259,7 +162,6 @@ export interface ServerMethods {
 		enabled: boolean;
 		policy: [name: TranslationKey, options?: Record<string, unknown>][];
 	};
-	'rooms/get': (updatedSince?: Date) => IRoom[] | { update: IRoom[]; remove: IRoom[] };
 	'subscriptions/get': (updatedSince?: Date) => ISubscription[] | { update: ISubscription[]; remove: ISubscription[] };
 	'permissions/get': (updatedSince?: Date) => IPermission[] | { update: IPermission[]; remove: IPermission[] };
 	'public-settings/get': (updatedSince?: Date) => ISetting[] | { update: ISetting[]; remove: ISetting[] };
@@ -287,7 +189,7 @@ export type ServerMethodName = keyof ServerMethods;
 
 export type ServerMethodParameters<MethodName extends ServerMethodName> = Parameters<ServerMethods[MethodName]>;
 
-export type ServerMethodReturn<MethodName extends ServerMethodName> = ReturnType<ServerMethods[MethodName]>;
+export type ServerMethodReturn<MethodName extends ServerMethodName> = Awaited<ReturnType<ServerMethods[MethodName]>>;
 
 export type ServerMethodFunction<MethodName extends ServerMethodName> = (
 	...args: ServerMethodParameters<MethodName>
