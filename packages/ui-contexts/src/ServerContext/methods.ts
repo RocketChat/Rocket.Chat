@@ -1,6 +1,5 @@
 import type {
 	AtLeast,
-	IInstanceStatus,
 	IMessage,
 	IPermission,
 	IRoom,
@@ -13,7 +12,6 @@ import type {
 
 import type { TranslationKey } from '../TranslationContext';
 import type { GetReadReceiptsMethod } from './methods/getReadReceipts';
-import type { JoinRoomMethod } from './methods/joinRoom';
 import type { UnsubscribeMethod as MailerUnsubscribeMethod } from './methods/mailer/unsubscribe';
 import type { RoomNameExistsMethod } from './methods/roomNameExists';
 import type { SaveRoomSettingsMethod } from './methods/saveRoomSettings';
@@ -43,8 +41,6 @@ export interface ServerMethods {
 	'hideRoom': (...args: any[]) => any;
 	'ignoreUser': (...args: any[]) => any;
 	'insertOrUpdateUserStatus': (...args: any[]) => any;
-	'instances/get': () => IInstanceStatus[];
-	'joinRoom': JoinRoomMethod;
 	'leaveRoom': (...args: any[]) => any;
 	'loadHistory': (
 		rid: IRoom['_id'],
