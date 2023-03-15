@@ -24,7 +24,7 @@ export const createRoom = async <T extends RoomType>(
 	readOnly?: boolean,
 	roomExtraData?: Partial<IRoom>,
 	options?: ICreateRoomParams['options'],
-): Promise<ICreatedRoom> {
+): Promise<ICreatedRoom> => {
 	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
 	callbacks.run('beforeCreateRoom', { type, name, owner: ownerUsername, members, readOnly, extraData, options });
 
