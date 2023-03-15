@@ -24,15 +24,17 @@ const MessageBoxActionsToolbar = ({
 	rid,
 	tmid,
 	isMicrophoneDenied,
+	...props
 }: MessageBoxActionsToolbarProps) => {
 	const actions = [
-		<VideoMessageAction key='video' collapsed={variant === 'small'} disabled={!canSend || typing || isRecording} />,
+		<VideoMessageAction key='video' collapsed={variant === 'small'} disabled={!canSend || typing || isRecording} {...props} />,
 		<AudioMessageAction
 			key='audio'
 			disabled={!canSend || typing || isRecording || isMicrophoneDenied}
 			isMicrophoneDenied={isMicrophoneDenied}
+			{...props}
 		/>,
-		<FileUploadAction key='file' collapsed={variant === 'small'} disabled={!canSend || isRecording} />,
+		<FileUploadAction key='file' collapsed={variant === 'small'} disabled={!canSend || isRecording} {...props} />,
 	];
 
 	let featuredAction;
@@ -44,7 +46,7 @@ const MessageBoxActionsToolbar = ({
 		<>
 			{variant !== 'small' && actions}
 			{variant === 'small' && featuredAction}
-			<ActionsToolbarDropdown {...(variant === 'small' && { actions })} isRecording={isRecording} rid={rid} tmid={tmid} />
+			<ActionsToolbarDropdown {...(variant === 'small' && { actions })} isRecording={isRecording} rid={rid} tmid={tmid} {...props} />
 		</>
 	);
 };
