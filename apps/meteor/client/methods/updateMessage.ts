@@ -1,4 +1,4 @@
-import type { IEditedMessage } from '@rocket.chat/core-typings';
+import type { IEditedMessage, IMessage } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
@@ -9,6 +9,13 @@ import { settings } from '../../app/settings/client';
 import { t } from '../../app/utils/client';
 import { callbacks } from '../../lib/callbacks';
 import { dispatchToastMessage } from '../lib/toast';
+
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		updateMessage(message: Pick<IMessage, '_id'> & Partial<Omit<IEditedMessage, '_id'>>): void;
+	}
+}
 
 Meteor.methods({
 	updateMessage(message) {

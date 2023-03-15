@@ -1,3 +1,4 @@
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import 'meteor/meteor';
 import type { IStreamerConstructor, IStreamer } from 'meteor/rocketchat:streamer';
 
@@ -93,5 +94,12 @@ declare module 'meteor/meteor' {
 			password: string,
 			cb: (error?: Error | Meteor.Error | Meteor.TypedError) => void,
 		): void;
+
+		function methods<TServerMethods extends ServerMethods>(methods: {
+			[TMethodName in keyof TServerMethods]?: (
+				this: MethodThisType,
+				...args: Parameters<TServerMethods[TMethodName]>
+			) => ReturnType<TServerMethods[TMethodName]> | Promise<ReturnType<TServerMethods[TMethodName]>>;
+		}): void;
 	}
 }
