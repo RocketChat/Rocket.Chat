@@ -21,50 +21,6 @@ import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createUser, login, deleteUser, getUserStatus } from '../../data/users.helper.js';
 import { createRoom } from '../../data/rooms.helper';
 
-function createTestUser() {
-	return new Promise((resolve) => {
-		const username = `user.test.${Date.now()}`;
-		const email = `${username}@rocket.chat`;
-		request
-			.post(api('users.create'))
-			.set(credentials)
-			.send({ email, name: username, username, password, joinDefaultChannels: false })
-			.end((err, res) => resolve(res.body.user));
-	});
-}
-
-function loginTestUser(user) {
-	return new Promise((resolve, reject) => {
-		request
-			.post(api('login'))
-			.send({
-				user: user.username,
-				password,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				const userCredentials = {};
-				userCredentials['X-Auth-Token'] = res.body.data.authToken;
-				userCredentials['X-User-Id'] = res.body.data.userId;
-				resolve(userCredentials);
-			})
-			.end((err) => (err ? reject(err) : resolve()));
-	});
-}
-
-function deleteTestUser(user) {
-	return new Promise((resolve) => {
-		request
-			.post(api('users.delete'))
-			.set(credentials)
-			.send({
-				userId: user._id,
-			})
-			.end(resolve);
-	});
-}
-
 async function createChannel(userCredentials, name) {
 	const res = await request.post(api('channels.create')).set(userCredentials).send({
 		name,
@@ -703,12 +659,12 @@ describe('[Users]', function () {
 		after((done) => clearCustomFields(done));
 
 		before(async () => {
-			user2 = await createTestUser();
-			user2Credentials = await loginTestUser(user2);
+			user2 = await createUser({ joinDefaultChannels: false });
+			user2Credentials = await login(user2.username, password);
 		});
 
 		after(async () => {
-			await deleteTestUser(user2);
+			await deleteUser(user2);
 			user2 = undefined;
 
 			await updatePermission('view-outside-room', ['admin', 'owner', 'moderator', 'user']);
@@ -3369,12 +3325,12 @@ describe('[Users]', function () {
 		this.timeout(20000);
 
 		before(async () => {
-			user = await createTestUser();
-			userCredentials = await loginTestUser(user);
-			newCredentials = await loginTestUser(user);
+			user = await createUser({ joinDefaultChannels: false });
+			userCredentials = await login(user.username, password);
+			newCredentials = await login(user.username, password);
 		});
 		after(async () => {
-			await deleteTestUser(user);
+			await deleteUser(user);
 			user = undefined;
 		});
 
@@ -3428,11 +3384,11 @@ describe('[Users]', function () {
 			this.timeout(20000);
 
 			before(async () => {
-				user = await createTestUser();
-				user2 = await createTestUser();
+				user = await createUser({ joinDefaultChannels: false });
+				user2 = await createUser({ joinDefaultChannels: false });
 
-				userCredentials = await loginTestUser(user);
-				user2Credentials = await loginTestUser(user2);
+				userCredentials = await login(user.username, password);
+				user2Credentials = await login(user2.username, password);
 
 				await updatePermission('view-outside-room', []);
 
@@ -3805,7 +3761,7 @@ describe('[Users]', function () {
 		});
 
 		before('create new user', (done) => {
-			createTestUser()
+			createUser({ joinDefaultChannels: false })
 				.then((user) => {
 					testUser = user;
 				})

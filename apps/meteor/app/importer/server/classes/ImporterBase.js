@@ -13,7 +13,7 @@ import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { ImporterInfo } from '../../lib/ImporterInfo';
 import { RawImports } from '../models/RawImports';
 import { Imports, ImportData } from '../../../models/server';
-import { Logger } from '../../../logger';
+import { Logger } from '../../../logger/server';
 import { ImportDataConverter } from './ImportDataConverter';
 import { t } from '../../../utils/server';
 import { Selection, SelectionChannel, SelectionUser } from '..';
@@ -101,7 +101,7 @@ export class Base {
 	 * @param {string} fullFilePath the full path of the uploaded file
 	 * @returns {Progress} The progress record of the import.
 	 */
-	prepareUsingLocalFile(fullFilePath) {
+	async prepareUsingLocalFile(fullFilePath) {
 		const file = fs.readFileSync(fullFilePath);
 		const buffer = Buffer.isBuffer(file) ? file : Buffer.from(file);
 
@@ -199,20 +199,24 @@ export class Base {
 			this.addCountCompleted(1);
 		};
 
-		Meteor.defer(() => {
+		process.nextTick(async () => {
+			await this.backupSettingValues();
+
 			try {
+				await this.applySettingValues({});
+
 				this.updateProgress(ProgressStep.IMPORTING_USERS);
-				this.converter.convertUsers({ beforeImportFn, afterImportFn });
+				await this.converter.convertUsers({ beforeImportFn, afterImportFn });
 
 				this.updateProgress(ProgressStep.IMPORTING_CHANNELS);
-				this.converter.convertChannels(startedByUserId, { beforeImportFn, afterImportFn });
+				await this.converter.convertChannels(startedByUserId, { beforeImportFn, afterImportFn });
 
 				this.updateProgress(ProgressStep.IMPORTING_MESSAGES);
-				this.converter.convertMessages({ afterImportFn });
+				await this.converter.convertMessages({ afterImportFn });
 
 				this.updateProgress(ProgressStep.FINISHING);
 
-				Meteor.defer(() => {
+				process.nextTick(() => {
 					this.converter.clearSuccessfullyImportedData();
 				});
 
@@ -220,6 +224,8 @@ export class Base {
 			} catch (e) {
 				this.logger.error(e);
 				this.updateProgress(ProgressStep.ERROR);
+			} finally {
+				await this.applySettingValues(this.oldSettings);
 			}
 
 			const timeTook = Date.now() - started;
@@ -227,6 +233,30 @@ export class Base {
 		});
 
 		return this.getProgress();
+	}
+
+	async backupSettingValues() {
+		const allowedDomainList = await Settings.findOneById('Accounts_AllowedDomainsList').value;
+		const allowUsernameChange = await Settings.findOneById('Accounts_AllowUsernameChange').value;
+		const maxFileSize = await Settings.findOneById('FileUpload_MaxFileSize').value;
+		const mediaTypeWhiteList = await Settings.findOneById('FileUpload_MediaTypeWhiteList').value;
+		const mediaTypeBlackList = await Settings.findOneById('FileUpload_MediaTypeBlackList').value;
+
+		this.oldSettings = {
+			allowedDomainList,
+			allowUsernameChange,
+			maxFileSize,
+			mediaTypeWhiteList,
+			mediaTypeBlackList,
+		};
+	}
+
+	async applySettingValues(settingValues) {
+		await Settings.updateValueById('Accounts_AllowedDomainsList', settingValues.allowedDomainList ?? '');
+		await Settings.updateValueById('Accounts_AllowUsernameChange', setTimeout.allowUsernameChange ?? true);
+		await Settings.updateValueById('FileUpload_MaxFileSize', settingValues.maxFileSize ?? -1);
+		await Settings.updateValueById('FileUpload_MediaTypeWhiteList', settingValues.mediaTypeWhiteList ?? '*');
+		await Settings.updateValueById('FileUpload_MediaTypeBlackList', settingValues.mediaTypeBlackList ?? '');
 	}
 
 	/**
@@ -248,34 +278,6 @@ export class Base {
 	 */
 	updateProgress(step) {
 		this.progress.step = step;
-
-		switch (step) {
-			case ProgressStep.IMPORTING_STARTED:
-				this.oldSettings.Accounts_AllowedDomainsList = Promise.await(Settings.findOneById('Accounts_AllowedDomainsList')).value;
-				Promise.await(Settings.updateValueById('Accounts_AllowedDomainsList', ''));
-
-				this.oldSettings.Accounts_AllowUsernameChange = Promise.await(Settings.findOneById('Accounts_AllowUsernameChange')).value;
-				Promise.await(Settings.updateValueById('Accounts_AllowUsernameChange', true));
-
-				this.oldSettings.FileUpload_MaxFileSize = Promise.await(Settings.findOneById('FileUpload_MaxFileSize')).value;
-				Promise.await(Settings.updateValueById('FileUpload_MaxFileSize', -1));
-
-				this.oldSettings.FileUpload_MediaTypeWhiteList = Promise.await(Settings.findOneById('FileUpload_MediaTypeWhiteList')).value;
-				Promise.await(Settings.updateValueById('FileUpload_MediaTypeWhiteList', '*'));
-
-				this.oldSettings.FileUpload_MediaTypeBlackList = Promise.await(Settings.findOneById('FileUpload_MediaTypeBlackList')).value;
-				Promise.await(Settings.updateValueById('FileUpload_MediaTypeBlackList', ''));
-				break;
-			case ProgressStep.DONE:
-			case ProgressStep.ERROR:
-			case ProgressStep.CANCELLED:
-				Promise.await(Settings.updateValueById('Accounts_AllowedDomainsList', this.oldSettings.Accounts_AllowedDomainsList));
-				Promise.await(Settings.updateValueById('Accounts_AllowUsernameChange', this.oldSettings.Accounts_AllowUsernameChange));
-				Promise.await(Settings.updateValueById('FileUpload_MaxFileSize', this.oldSettings.FileUpload_MaxFileSize));
-				Promise.await(Settings.updateValueById('FileUpload_MediaTypeWhiteList', this.oldSettings.FileUpload_MediaTypeWhiteList));
-				Promise.await(Settings.updateValueById('FileUpload_MediaTypeBlackList', this.oldSettings.FileUpload_MediaTypeBlackList));
-				break;
-		}
 
 		this.logger.debug(`${this.info.name} is now at ${step}.`);
 		this.updateRecord({ status: this.progress.step });

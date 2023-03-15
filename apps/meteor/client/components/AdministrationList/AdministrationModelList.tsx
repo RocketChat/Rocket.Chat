@@ -32,11 +32,11 @@ const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxI
 
 	const checkCloudRegisterStatus = useMethod('cloud:checkRegisterStatus');
 	const result = useQuery(['admin/cloud/register-status'], async () => checkCloudRegisterStatus());
-	const { workspaceRegistered, connectToCloud } = result.data || {};
+	const { workspaceRegistered } = result.data || {};
 
 	const handleRegisterWorkspaceClick = (): void => {
 		const handleModalClose = (): void => setModal(null);
-		setModal(<RegisterWorkspaceModal onClose={handleModalClose} isConnectedToCloud={connectToCloud} />);
+		setModal(<RegisterWorkspaceModal onClose={handleModalClose} />);
 	};
 
 	const infoRoute = useRoute('admin-info');
