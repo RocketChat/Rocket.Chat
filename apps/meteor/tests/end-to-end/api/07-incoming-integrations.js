@@ -391,6 +391,7 @@ describe('[Incoming Integrations]', function () {
 					expect(res.body).to.have.property('integration');
 					expect(res.body.integration._id).to.be.equal(integration._id);
 					expect(res.body.integration.name).to.be.equal('Incoming test updated');
+					expect(res.body.integration.username).to.be.equal('rocket.cat');
 					expect(res.body.integration.alias).to.be.equal('test updated');
 				})
 				.end(done);
@@ -407,6 +408,7 @@ describe('[Incoming Integrations]', function () {
 					expect(res.body).to.have.property('integration');
 					expect(res.body.integration._id).to.be.equal(integration._id);
 					expect(res.body.integration.name).to.be.equal('Incoming test updated');
+					expect(res.body.integration.username).to.be.equal('rocket.cat');
 					expect(res.body.integration.alias).to.be.equal('test updated');
 				})
 				.end(done);
