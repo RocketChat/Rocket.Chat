@@ -14,11 +14,11 @@ export function loadMessageHistory({
 }: {
 	userId: string;
 	rid: string;
-	end: string;
-	limit: number;
-	ls: string;
-	showThreadMessages: boolean;
-	offset: number;
+	end: Date | undefined;
+	limit?: number;
+	ls?: string | Date;
+	showThreadMessages?: boolean;
+	offset?: number;
 }) {
 	const room = Rooms.findOneById(rid, { fields: { sysMes: 1 } });
 
@@ -33,15 +33,14 @@ export function loadMessageHistory({
 		fields: {},
 	};
 
-	const records =
-		end != null
-			? Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(rid, end, hiddenMessageTypes, options, showThreadMessages).fetch()
-			: Messages.findVisibleByRoomIdNotContainingTypes(rid, hiddenMessageTypes, options, showThreadMessages).fetch();
+	const records = end
+		? Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(rid, end, hiddenMessageTypes, options, showThreadMessages).fetch()
+		: Messages.findVisibleByRoomIdNotContainingTypes(rid, hiddenMessageTypes, options, showThreadMessages).fetch();
 	const messages = normalizeMessagesForUser(records, userId);
 	let unreadNotLoaded = 0;
 	let firstUnread;
 
-	if (ls != null) {
+	if (ls) {
 		const firstMessage = messages[messages.length - 1];
 
 		if (firstMessage && new Date(firstMessage.ts) > new Date(ls)) {

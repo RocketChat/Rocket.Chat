@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import type { IMessage } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Messages } from '../../../models/server';
 import { RateLimiter } from '../../../lib/server';
@@ -8,7 +10,14 @@ import { canAccessRoomId } from '../../../authorization/server';
 import { follow } from '../functions';
 import { Apps, AppEvents } from '../../../../ee/server/apps/orchestrator';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		followMessage(message: { mid: IMessage['_id'] }): false | undefined;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	followMessage({ mid }) {
 		check(mid, String);
 
