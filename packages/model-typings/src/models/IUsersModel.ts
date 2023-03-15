@@ -215,4 +215,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	): Promise<IUser | null>;
 
 	findBotAgents(usernameList: string[]): FindCursor<IUser>;
+	removeAllRoomsByUserId(userId: string): Promise<UpdateResult>;
+	removeRoomByUserId(userId: string, rid: string): Promise<UpdateResult>;
+	addRoomByUserId(userId: string, rid: string): Promise<UpdateResult>;
+	removeRoomByRoomIds(rids: string[]): Promise<UpdateResult | Document>;
 }

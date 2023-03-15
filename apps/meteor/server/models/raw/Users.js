@@ -1019,7 +1019,7 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	removeRoomsByRoomIdsAndUserId(rids, userId) {
-		return this.update(
+		return this.updateMany(
 			{
 				_id: userId,
 				__rooms: { $in: rids },
@@ -1027,7 +1027,6 @@ export class UsersRaw extends BaseRaw {
 			{
 				$pullAll: { __rooms: rids },
 			},
-			{ multi: true },
 		);
 	}
 
@@ -1289,5 +1288,51 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.find(query);
+	}
+
+	removeAllRoomsByUserId(_id) {
+		return this.updateOne(
+			{
+				_id,
+			},
+			{
+				$set: { __rooms: [] },
+			},
+		);
+	}
+
+	removeRoomByUserId(_id, rid) {
+		return this.updateOne(
+			{
+				_id,
+				__rooms: rid,
+			},
+			{
+				$pull: { __rooms: rid },
+			},
+		);
+	}
+
+	addRoomByUserId(_id, rid) {
+		return this.updateOne(
+			{
+				_id,
+				__rooms: { $ne: rid },
+			},
+			{
+				$addToSet: { __rooms: rid },
+			},
+		);
+	}
+
+	removeRoomByRoomIds(rids) {
+		return this.updateMany(
+			{
+				__rooms: { $in: rids },
+			},
+			{
+				$pullAll: { __rooms: rids },
+			},
+		);
 	}
 }
