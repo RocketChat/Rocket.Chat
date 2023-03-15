@@ -1,5 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { ICreatedRoom, IUser } from '@rocket.chat/core-typings';
+import type { ICreateRoomParams } from '@rocket.chat/core-services';
 
 import { settings } from '../../app/settings/server';
 import { hasPermission } from '../../app/authorization/server';
@@ -9,7 +12,11 @@ import { createRoom } from '../../app/lib/server/functions/createRoom';
 import { addUser } from '../../app/federation/server/functions/addUser';
 import { callbacks } from '../../lib/callbacks';
 
-export function createDirectMessage(usernames, userId, excludeSelf = false) {
+export function createDirectMessage(
+	usernames: IUser['username'][],
+	userId: IUser['_id'] | null,
+	excludeSelf = false,
+): Omit<ICreatedRoom, '_id' | 'inserted'> {
 	check(usernames, [String]);
 	check(userId, String);
 	check(excludeSelf, Match.Optional(Boolean));
@@ -86,32 +93,41 @@ export function createDirectMessage(usernames, userId, excludeSelf = false) {
 		});
 	}
 
-	const options = { creator: me._id };
-	if (excludeSelf && hasPermission(this.userId, 'view-room-administration')) {
+	const options: Exclude<ICreateRoomParams['options'], undefined> = { creator: me._id };
+	if (excludeSelf && hasPermission(userId, 'view-room-administration')) {
 		options.subscriptionExtra = { open: true };
 	}
 	try {
 		callbacks.run('federation.beforeCreateDirectMessage', roomUsers);
 	} catch (error) {
-		throw new Meteor.Error(error?.message);
+		throw new Meteor.Error((error as any)?.message);
 	}
-	const { _id: rid, inserted, ...room } = createRoom('d', null, null, roomUsers, null, {}, options);
+	const { _id: rid, inserted, ...room } = createRoom('d', undefined, undefined, roomUsers, undefined, {}, options);
 
 	return {
+		// @ts-expect-error - room type is already defined in the `createRoom` return type
 		t: 'd',
+		// @ts-expect-error - room id is not defined in the `createRoom` return type
 		rid,
 		...room,
 	};
 }
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		createDirectMessage(...usernames: Exclude<IUser['username'], undefined>[]): Omit<ICreatedRoom, '_id' | 'inserted'>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	createDirectMessage(...usernames) {
 		return createDirectMessage(usernames, Meteor.userId());
 	},
 });
 
 RateLimiter.limitMethod('createDirectMessage', 10, 60000, {
-	userId(userId) {
+	userId(userId: IUser['_id']) {
 		return !hasPermission(userId, 'send-many-messages');
 	},
 });
