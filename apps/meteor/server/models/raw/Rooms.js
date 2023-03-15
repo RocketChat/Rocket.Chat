@@ -62,85 +62,45 @@ export class RoomsRaw extends BaseRaw {
 		return statistic;
 	}
 
-	findByNameOrFnameContainingAndTypes(name, types, discussion = false, teams = false, showOnlyTeams = false, options = {}) {
+	findByNameOrFnameContainingAndTypes(name, types, discussion = false, teams = false, options = {}) {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
-		const onlyTeamsQuery = showOnlyTeams ? { teamMain: { $exists: true } } : {};
-
-		const teamCondition = teams
-			? {}
-			: {
-					teamMain: {
-						$exists: false,
-					},
-			  };
-
 		const query = {
-			t: {
-				$in: types,
-			},
-			prid: { $exists: discussion },
-			$or: [
-				{ name: nameRegex, federated: { $ne: true } },
-				{ fname: nameRegex },
+			$and: [
+				name
+					? {
+							$or: [
+								{ name: nameRegex, federated: { $ne: true } },
+								{ fname: nameRegex },
+								{
+									t: 'd',
+									usernames: nameRegex,
+								},
+							],
+					  }
+					: {},
 				{
-					t: 'd',
-					usernames: nameRegex,
+					$or: [
+						{
+							t: {
+								$in: types,
+							},
+						},
+						...(discussion ? [{ prid: { $exists: true } }] : []),
+						...(teams
+							? [
+									{
+										teamMain: {
+											$exists: true,
+										},
+									},
+							  ]
+							: []),
+					],
 				},
 			],
-			...teamCondition,
-			...onlyTeamsQuery,
-		};
-		return this.findPaginated(query, options);
-	}
-
-	findByTypes(types, discussion = false, teams = false, onlyTeams = false, options = {}) {
-		const teamCondition = teams
-			? {}
-			: {
-					teamMain: {
-						$exists: false,
-					},
-			  };
-
-		const onlyTeamsCondition = onlyTeams ? { teamMain: { $exists: true } } : {};
-
-		const query = {
-			t: {
-				$in: types,
-			},
-			prid: { $exists: discussion },
-			...teamCondition,
-			...onlyTeamsCondition,
-		};
-		return this.findPaginated(query, options);
-	}
-
-	findByNameOrFnameContaining(name, discussion = false, teams = false, onlyTeams = false, options = {}) {
-		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
-
-		const teamCondition = teams
-			? {}
-			: {
-					teamMain: {
-						$exists: false,
-					},
-			  };
-
-		const onlyTeamsCondition = onlyTeams ? { $and: [{ teamMain: { $exists: true } }, { teamMain: true }] } : {};
-
-		const query = {
-			prid: { $exists: discussion },
-			$or: [
-				{ name: nameRegex, federated: { $ne: true } },
-				{ fname: nameRegex },
-				{
-					t: 'd',
-					usernames: nameRegex,
-				},
-			],
-			...teamCondition,
-			...onlyTeamsCondition,
+			...(!discussion ? { prid: { $exists: false } } : {}),
+			...(!teams ? { teamMain: { $exists: false } } : {}),
 		};
 
 		return this.findPaginated(query, options);

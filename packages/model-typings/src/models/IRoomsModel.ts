@@ -17,13 +17,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		types: any,
 		discussion?: boolean,
 		teams?: boolean,
-		showOnlyTeams?: boolean,
 		options?: any,
 	): any;
-
-	findByTypes(types: any, discussion?: boolean, teams?: boolean, onlyTeams?: boolean, options?: any): any;
-
-	findByNameOrFnameContaining(name: any, discussion?: boolean, teams?: boolean, onlyTeams?: boolean, options?: any): any;
 
 	findByTeamId(teamId: any, options?: any): any;
 
