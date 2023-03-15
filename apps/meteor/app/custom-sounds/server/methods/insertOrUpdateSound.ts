@@ -2,18 +2,38 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { CustomSounds } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermission } from '../../../authorization/server';
 import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
-import { trim } from '../../../../lib/utils/stringUtils';
 
-Meteor.methods({
+export type ICustomSoundData = {
+	_id?: string;
+	name: string;
+	extension: string;
+	previousName?: string;
+	previousSound?: {
+		extension?: string;
+	};
+	previousExtension?: string;
+	newFile?: boolean;
+	random?: number;
+};
+
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		insertOrUpdateSound(soundData: ICustomSoundData): Promise<string>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async insertOrUpdateSound(soundData) {
-		if (!hasPermission(this.userId, 'manage-sounds')) {
+		if (!this.userId || !hasPermission(this.userId, 'manage-sounds')) {
 			throw new Meteor.Error('not_authorized');
 		}
 
-		if (!trim(soundData.name)) {
+		if (!soundData.name?.trim()) {
 			throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', {
 				method: 'insertOrUpdateSound',
 				field: 'Name',
@@ -53,17 +73,14 @@ Meteor.methods({
 		}
 
 		if (!soundData._id) {
-			// insert sound
-			const createSound = {
-				name: soundData.name,
-				extension: soundData.extension,
-			};
-
-			const _id = await (await CustomSounds.create(createSound)).insertedId;
-			createSound._id = _id;
-
-			return _id;
+			return (
+				await CustomSounds.create({
+					name: soundData.name,
+					extension: soundData.extension,
+				})
+			).insertedId;
 		}
+
 		// update sound
 		if (soundData.newFile) {
 			RocketChatFileCustomSoundsInstance.deleteFile(`${soundData._id}.${soundData.previousExtension}`);
@@ -71,7 +88,13 @@ Meteor.methods({
 
 		if (soundData.name !== soundData.previousName) {
 			await CustomSounds.setName(soundData._id, soundData.name);
-			api.broadcast('notify.updateCustomSound', { soundData });
+			api.broadcast('notify.updateCustomSound', {
+				soundData: {
+					_id: soundData._id,
+					name: soundData.name,
+					extension: soundData.extension,
+				},
+			});
 		}
 
 		return soundData._id;

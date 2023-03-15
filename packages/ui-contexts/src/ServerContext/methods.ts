@@ -12,7 +12,6 @@ import type {
 } from '@rocket.chat/core-typings';
 
 import type { TranslationKey } from '../TranslationContext';
-import type { GetWebdavFileList, GetWebdavFilePreview } from './methods/webdav';
 import type { GetReadReceiptsMethod } from './methods/getReadReceipts';
 import type { JoinRoomMethod } from './methods/joinRoom';
 import type { UnsubscribeMethod as MailerUnsubscribeMethod } from './methods/mailer/unsubscribe';
@@ -34,27 +33,15 @@ export interface ServerMethods {
 	'checkUsernameAvailability': (...args: any[]) => any;
 	'cleanRoomHistory': (...args: any[]) => any;
 	'clearIntegrationHistory': (...args: any[]) => any;
-	'deleteCustomSound': (...args: any[]) => any;
 	'deleteCustomUserStatus': (...args: any[]) => any;
 	'deleteFileMessage': (...args: any[]) => any;
 	'deleteUserOwnAccount': (...args: any[]) => any;
 	'e2e.resetOwnE2EKey': (...args: any[]) => any;
 	'eraseRoom': (...args: any[]) => any;
 	'getAvatarSuggestion': (...args: any[]) => any;
-	'getRoomRoles': (rid: IRoom['_id']) => ISubscription[];
-	'getSetupWizardParameters': () => {
-		settings: ISetting[];
-		serverAlreadyRegistered: boolean;
-		hasAdmin: boolean;
-	};
-	'getSingleMessage': (mid: IMessage['_id']) => IMessage;
-	'getThreadMessages': (params: { tmid: IMessage['_id'] }) => IMessage[];
 	'getUsersOfRoom': (...args: any[]) => any;
-	'getWebdavFileList': GetWebdavFileList;
-	'getWebdavFilePreview': GetWebdavFilePreview;
 	'hideRoom': (...args: any[]) => any;
 	'ignoreUser': (...args: any[]) => any;
-	'insertOrUpdateSound': (args: { previousName?: string; name?: string; _id?: string; extension: string }) => string;
 	'insertOrUpdateUserStatus': (...args: any[]) => any;
 	'instances/get': () => IInstanceStatus[];
 	'joinRoom': JoinRoomMethod;
@@ -127,7 +114,6 @@ export interface ServerMethods {
 	'unreadMessages': (...args: any[]) => any;
 	'updateIncomingIntegration': (...args: any[]) => any;
 	'updateOutgoingIntegration': (...args: any[]) => any;
-	'uploadCustomSound': (...args: any[]) => any;
 	'Mailer:unsubscribe': MailerUnsubscribeMethod;
 	'getRoomById': (rid: IRoom['_id']) => IRoom;
 	'getReadReceipts': GetReadReceiptsMethod;
