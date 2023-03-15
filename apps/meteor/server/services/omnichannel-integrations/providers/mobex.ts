@@ -1,5 +1,5 @@
 import { HTTP } from 'meteor/http';
-import { Base64 } from 'meteor/base64';
+import { Base64 } from '@rocket.chat/base64';
 import type { ISMSProvider, ServiceData, SMSProviderResult, SMSProviderResponse } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../../app/settings/server';
