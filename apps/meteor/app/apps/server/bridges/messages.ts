@@ -60,7 +60,7 @@ export class AppMessageBridge extends MessageBridge {
 			return;
 		}
 
-		api.broadcast('notify.ephemeralMessage', user.id, msg.rid, {
+		void api.broadcast('notify.ephemeralMessage', user.id, msg.rid, {
 			...msg,
 		});
 	}
