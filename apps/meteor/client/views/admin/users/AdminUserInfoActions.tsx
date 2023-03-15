@@ -65,7 +65,7 @@ const AdminUserInfoActions = ({
 		() => ({
 			...(canDirectMessage && {
 				directMessage: {
-					icon: 'balloon',
+					icon: 'balloon' as const,
 					label: t('Direct_Message'),
 					title: t('Direct_Message'),
 					action: directMessageClick,
@@ -73,7 +73,7 @@ const AdminUserInfoActions = ({
 			}),
 			...(canEditOtherUserInfo && {
 				editUser: {
-					icon: 'edit',
+					icon: 'edit' as const,
 					label: t('Edit'),
 					title: isFederatedUser ? t('Edit_Federated_User_Not_Allowed') : t('Edit'),
 					action: editUserClick,

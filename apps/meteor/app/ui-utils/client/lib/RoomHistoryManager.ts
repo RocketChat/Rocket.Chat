@@ -12,10 +12,6 @@ import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { ChatMessage, ChatSubscription } from '../../../models/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
-// import {
-// 	setHighlightMessage,
-// 	clearHighlightMessage,
-// } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
 import type { MinimongoCollection } from '../../../../client/definitions/MinimongoCollection';
 
 export async function upsertMessage(
@@ -155,6 +151,10 @@ class RoomHistoryManagerClass extends Emitter {
 		}
 
 		const result = await callWithErrorHandling('loadHistory', rid, ts, limit, ls ? String(ls) : undefined, false);
+
+		if (!result) {
+			throw new Error('loadHistory returned nothing');
+		}
 
 		this.unqueue();
 
