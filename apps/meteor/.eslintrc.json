@@ -43,8 +43,7 @@
 					"error",
 					{
 						"checksVoidReturn": {
-							"arguments": false,
-							"attributes": false
+							"arguments": false
 						}
 					}
 				],
