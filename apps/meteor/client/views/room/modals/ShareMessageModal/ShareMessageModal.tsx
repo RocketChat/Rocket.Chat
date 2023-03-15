@@ -2,7 +2,8 @@ import type { IMessage, MessageQuoteAttachment } from '@rocket.chat/core-typings
 import { Modal, Field, FieldGroup, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback, useClipboard } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useEndpoint, useToastMessageDispatch, useUserAvatarPath } from '@rocket.chat/ui-contexts';
-import type { ReactElement, MouseEventHandler } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import type { ReactElement } from 'react';
 import React, { memo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -46,27 +47,32 @@ const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): 
 		handleRoomsAndUsers(rooms.filter((cur: roomType) => cur._id !== room._id));
 	});
 
-	const handleShareMessage: MouseEventHandler<HTMLFormElement> = async (e) => {
-		e.preventDefault();
-		const optionalMessage = '';
-		const curMsg = await prependReplies(optionalMessage, [message]);
+	const sendMessageMutation = useMutation({
+		mutationFn: async () => {
+			const optionalMessage = '';
+			const curMsg = await prependReplies(optionalMessage, [message]);
 
-		try {
-			rooms.map(async (room: roomType) => {
-				const sendPayload = {
-					roomId: room._id,
-					text: curMsg,
-				};
+			return Promise.all(
+				rooms.map(async (room: roomType) => {
+					const sendPayload = {
+						roomId: room._id,
+						text: curMsg,
+					};
 
-				await sendMessage(sendPayload);
-			});
+					await sendMessage(sendPayload);
+				}),
+			);
+		},
+		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Message_has_been_shared') });
-		} catch (error) {
+		},
+		onError: (error: any) => {
 			dispatchToastMessage({ type: 'error', message: error });
-		} finally {
+		},
+		onSettled: () => {
 			onClose();
-		}
-	};
+		},
+	});
 
 	const avatarUrl = getUserAvatarPath(message.u.username);
 
@@ -120,7 +126,7 @@ const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): 
 					<Button onClick={handleCopy} disabled={hasCopied}>
 						{hasCopied ? t('Copied') : t('Copy_Link')}
 					</Button>
-					<Button disabled={!rooms.length} onClick={handleShareMessage} primary>
+					<Button disabled={!rooms.length || sendMessageMutation.isLoading} onClick={() => sendMessageMutation.mutate()} primary>
 						{t('Share')}
 					</Button>
 				</ButtonGroup>
