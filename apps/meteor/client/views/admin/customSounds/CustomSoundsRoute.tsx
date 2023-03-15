@@ -120,7 +120,6 @@ const CustomSoundsRoute = (): ReactElement => {
 						)}
 						{isSuccess && data && data.length > 0 && (
 							<>
-								{/* <FilterByText onChange={({ text }): void => setParams(text)} /> */}
 								<GenericTable>
 									<GenericTableHeader>{headers}</GenericTableHeader>
 									<GenericTableBody>
