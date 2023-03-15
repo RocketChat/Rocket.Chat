@@ -95,6 +95,10 @@ export const ReadReceipt = {
 				userId,
 				messageId: message._id,
 				ts,
+				...(message.t && { t: message.t }),
+				...(message.pinned && { pinned: true }),
+				...(message.drid && { drid: message.drid }),
+				...(message.tmid && { tmid: message.tmid }),
 				...extraData,
 			}));
 

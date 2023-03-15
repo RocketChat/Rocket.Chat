@@ -51,7 +51,7 @@ export const cleanRoomHistory = function ({
 					fields: { drid: 1 },
 					...(limit && { limit }),
 				}) as FindCursor<IMessageDiscussion>
-			).forEach(({ drid }) => deleteRoom(drid)),
+			).forEach(({ drid }) => Promise.await(deleteRoom(drid))),
 		);
 	}
 
@@ -67,7 +67,9 @@ export const cleanRoomHistory = function ({
 		}
 	}
 
-	const count = Messages.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, limit, fromUsers, ignoreThreads);
+	const count = Promise.await(
+		Messages.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, limit, fromUsers, ignoreThreads),
+	);
 	if (count) {
 		Rooms.resetLastMessageById(rid);
 		api.broadcast('notify.deleteMessageBulk', rid, {

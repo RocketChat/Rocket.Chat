@@ -260,6 +260,12 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
+	findByUsernames(usernames, options) {
+		const query = { username: { $in: usernames } };
+
+		return this.findOne(query, options);
+	}
+
 	async findOneByLDAPId(id, attribute = undefined) {
 		const query = {
 			'services.ldap.id': id,

@@ -1,5 +1,6 @@
 import { Match } from 'meteor/check';
 import _ from 'underscore';
+import { ReadReceipts } from '@rocket.chat/models';
 
 import { Base } from './_Base';
 import Rooms from './Rooms';
@@ -104,19 +105,21 @@ export class Messages extends Base {
 		return this.update({ _id: messageId }, { $unset: { reactions: 1 } });
 	}
 
-	deleteOldOTRMessages(roomId, ts) {
+	async deleteOldOTRMessages(roomId, ts) {
+		const OTRMessageTypes = [
+			'otr',
+			otrSystemMessages.USER_JOINED_OTR,
+			otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,
+			otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
+		];
 		const query = {
 			rid: roomId,
 			t: {
-				$in: [
-					'otr',
-					otrSystemMessages.USER_JOINED_OTR,
-					otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,
-					otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
-				],
+				$in: OTRMessageTypes,
 			},
 			ts: { $lte: ts },
 		};
+		await ReadReceipts.removeByRoomIdAndTypesUntilDate(roomId, OTRMessageTypes, ts);
 		return this.remove(query);
 	}
 
@@ -614,6 +617,7 @@ export class Messages extends Base {
 			},
 		};
 
+		ReadReceipts.setPinnedByMessageId(_id, pinned);
 		return this.update(query, update);
 	}
 
@@ -944,16 +948,19 @@ export class Messages extends Base {
 	removeById(_id) {
 		const query = { _id };
 
+		ReadReceipts.removeByMessageId(_id);
 		return this.remove(query);
 	}
 
-	removeByRoomId(roomId) {
+	async removeByRoomId(roomId) {
 		const query = { rid: roomId };
 
+		await ReadReceipts.removeByRoomId(roomId);
 		return this.remove(query);
 	}
 
-	removeByRoomIds(rids) {
+	async removeByRoomIds(rids) {
+		await ReadReceipts.removeByRoomIds(rids);
 		return this.remove({ rid: { $in: rids } });
 	}
 
@@ -980,7 +987,7 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ignoreDiscussion = true, ts, limit, users = [], ignoreThreads = true) {
+	async removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ignoreDiscussion = true, ts, limit, users = [], ignoreThreads = true) {
 		const query = {
 			rid,
 			ts,
@@ -1005,6 +1012,7 @@ export class Messages extends Base {
 
 		if (!limit) {
 			const count = this.remove(query);
+			await ReadReceipts.removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ignoreDiscussion, ts, users, ignoreThreads);
 
 			// decrease message count
 			Rooms.decreaseMessageCountById(rid, count);
@@ -1025,15 +1033,18 @@ export class Messages extends Base {
 			},
 		});
 
+		await ReadReceipts.removeByMessageIds(messagesToDelete);
+
 		// decrease message count
 		Rooms.decreaseMessageCountById(rid, count);
 
 		return count;
 	}
 
-	removeByUserId(userId) {
+	async removeByUserId(userId) {
 		const query = { 'u._id': userId };
 
+		await ReadReceipts.removeByUserId(userId);
 		return this.remove(query);
 	}
 

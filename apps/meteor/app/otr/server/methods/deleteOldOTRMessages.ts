@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { Subscriptions, Messages } from '../../../models/server';
 
 Meteor.methods({
-	deleteOldOTRMessages(roomId: IRoom['_id']): void {
+	async deleteOldOTRMessages(roomId: IRoom['_id']): Promise<void> {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'deleteOldOTRMessages',
@@ -19,6 +19,6 @@ Meteor.methods({
 			});
 		}
 
-		Messages.deleteOldOTRMessages(roomId, now);
+		await Messages.deleteOldOTRMessages(roomId, now);
 	},
 });
