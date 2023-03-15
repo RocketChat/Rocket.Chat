@@ -1,14 +1,13 @@
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { AutoComplete, Box, Option, OptionAvatar, OptionContent, OptionDescription, Chip } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useUser, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useMemo, useState } from 'react';
 
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import UserAvatar from '../avatar/UserAvatar';
-
-const query = { open: { $ne: false } };
 
 type roomType = {
 	label: string;
@@ -29,7 +28,9 @@ const UserAndRoomAutoCompleteMultiple = ({ onChange, ...props }: UserAndRoomAuto
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
 
-	const filteredRooms = useUserSubscriptions(query).filter((room) => {
+	const rooms = useUserSubscriptions(
+		useMemo(() => ({ open: { $ne: false }, lowerCaseName: new RegExp(escapeRegExp(debouncedFilter), 'i') }), [debouncedFilter]),
+	).filter((room) => {
 		if (!user) {
 			return;
 		}
@@ -41,22 +42,16 @@ const UserAndRoomAutoCompleteMultiple = ({ onChange, ...props }: UserAndRoomAuto
 		return !roomCoordinator.readOnly(room.rid, user);
 	});
 
-	const rooms = filteredRooms.filter((item) => item.name.toLocaleLowerCase().includes(debouncedFilter.toLocaleLowerCase()));
-
-	const parseItems = useMemo(
+	const options = useMemo(
 		() =>
-			rooms.map((subscription) => {
-				return {
-					_id: subscription.rid,
-					value: subscription.name,
-					label: subscription.name,
-					t: subscription.t,
-				};
-			}),
+			rooms.map((subscription) => ({
+				_id: subscription.rid,
+				value: subscription.name,
+				label: subscription.name,
+				t: subscription.t,
+			})),
 		[rooms],
 	);
-
-	const options = [...parseItems];
 
 	const onClickRemove = useMutableCallback((e) => {
 		e.stopPropagation();
