@@ -1159,10 +1159,7 @@ API.v1.addRoute(
 			}
 
 			const room = findPrivateGroupByIdOrName({
-				params: {
-					roomId,
-					roomName,
-				},
+				params: roomId ? { roomId } : { roomName },
 				userId: this.userId,
 			});
 

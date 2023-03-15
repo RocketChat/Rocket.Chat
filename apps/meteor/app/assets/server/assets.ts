@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import type { ServerResponse, IncomingMessage } from 'http';
 
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
 import { WebAppHashing } from 'meteor/webapp-hashing';
@@ -289,7 +290,7 @@ class RocketChatAssetsClass {
 			return;
 		}
 
-		if (!settingValue || !settingValue.url) {
+		if (!settingValue?.url) {
 			assetValue.cache = undefined;
 			return;
 		}
@@ -430,7 +431,16 @@ WebAppHashing.calculateClientHash = function (manifest, includeFilter, runtimeCo
 	return calculateClientHash.call(this, manifest, includeFilter, runtimeConfigOverride);
 };
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		refreshClients: () => void;
+		unsetAsset: (asset: string) => void;
+		setAsset: (binaryContent: BufferEncoding, contentType: string, asset: string) => void;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	refreshClients() {
 		methodDeprecationLogger.warn('refreshClients will be deprecated in future versions of Rocket.Chat');
 
@@ -486,7 +496,7 @@ Meteor.methods({
 
 		RocketChatAssets.setAsset(binaryContent, contentType, asset);
 	},
-});
+} as Pick<ServerMethods, 'refreshClients' | 'unsetAsset' | 'setAsset'>);
 
 const listener = Meteor.bindEnvironment((req: IncomingMessage, res: ServerResponse, next: NextHandleFunction) => {
 	if (!req.url) {

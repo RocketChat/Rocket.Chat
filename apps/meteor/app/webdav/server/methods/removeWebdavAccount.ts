@@ -2,8 +2,17 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { WebdavAccounts } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
+import type { IWebdavAccount } from '@rocket.chat/core-typings';
+import type { DeleteResult } from 'mongodb';
 
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
+
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		removeWebdavAccount(accountId: IWebdavAccount['_id']): DeleteResult;
+	}
+}
 
 Meteor.methods({
 	async removeWebdavAccount(accountId) {
