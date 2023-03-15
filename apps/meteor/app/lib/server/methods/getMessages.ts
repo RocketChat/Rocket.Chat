@@ -5,6 +5,13 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { canAccessRoomId } from '../../../authorization/server';
 import { Messages } from '../../../models/server';
 
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		getMessages(messages: IMessage['_id'][]): IMessage[];
+	}
+}
+
 Meteor.methods({
 	getMessages(messages) {
 		check(messages, [String]);

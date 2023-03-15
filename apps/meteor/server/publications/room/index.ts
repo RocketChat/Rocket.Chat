@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
+import type { IRoom, RoomType } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { canAccessRoom, hasPermission } from '../../../app/authorization/server';
@@ -7,14 +9,22 @@ import { Rooms } from '../../../app/models/server';
 import { settings } from '../../../app/settings/server';
 import { roomFields } from '../../modules/watchers/publishFields';
 
-const roomMap = (record) => {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'rooms/get'(updatedAt?: Date): IRoom[] | { update: IRoom[]; remove: IRoom[] };
+		'getRoomByTypeAndName': (type: RoomType, name: string) => Partial<IRoom>;
+	}
+}
+
+const roomMap = (record: IRoom) => {
 	if (record) {
 		return _.pick(record, ...Object.keys(roomFields));
 	}
 	return {};
 };
 
-Meteor.methods({
+Meteor.methods<ServerMethods>({
 	'rooms/get'(updatedAt) {
 		const options = { fields: roomFields };
 		const user = Meteor.userId();
@@ -55,13 +65,13 @@ Meteor.methods({
 			});
 		}
 
-		if (!canAccessRoom(room, { _id: userId })) {
+		if (userId && !canAccessRoom(room, { _id: userId })) {
 			throw new Meteor.Error('error-no-permission', 'No permission', {
 				method: 'getRoomByTypeAndName',
 			});
 		}
 
-		if (settings.get('Store_Last_Message') && !hasPermission(userId, 'preview-c-room')) {
+		if (settings.get('Store_Last_Message') && userId && !hasPermission(userId, 'preview-c-room')) {
 			delete room.lastMessage;
 		}
 
