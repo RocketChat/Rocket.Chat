@@ -117,7 +117,7 @@ export const upsertPermissions = async (): Promise<void> => {
 			_id: 'on-hold-others-livechat-room',
 			roles: ['livechat-manager', 'livechat-monitor', 'admin'],
 		},
-		{ _id: 'save-others-livechat-room-info', roles: ['livechat-manager', 'livechat-monitor'] },
+		{ _id: 'save-others-livechat-room-info', roles: ['livechat-manager', 'livechat-monitor', 'admin'] },
 		{
 			_id: 'remove-closed-livechat-rooms',
 			roles: ['livechat-manager', 'livechat-monitor', 'admin'],
@@ -152,7 +152,6 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ _id: 'view-livechat-installation', roles: ['livechat-manager', 'admin'] },
 		{ _id: 'view-livechat-appearance', roles: ['livechat-manager', 'admin'] },
 		{ _id: 'view-livechat-webhooks', roles: ['livechat-manager', 'admin'] },
-		{ _id: 'view-livechat-facebook', roles: ['livechat-manager', 'admin'] },
 		{
 			_id: 'view-livechat-business-hours',
 			roles: ['livechat-manager', 'livechat-monitor', 'admin'],
@@ -210,7 +209,6 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ _id: 'manage-sounds', roles: ['admin'] },
 		{ _id: 'access-mailer', roles: ['admin'] },
 		{ _id: 'pin-message', roles: ['owner', 'moderator', 'admin'] },
-		{ _id: 'snippet-message', roles: ['owner', 'moderator', 'admin'] },
 		{ _id: 'mobile-upload-file', roles: ['user', 'admin'] },
 		{ _id: 'send-mail', roles: ['admin'] },
 		{ _id: 'view-federation-data', roles: ['admin'] },
@@ -219,12 +217,12 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ _id: 'register-on-cloud', roles: ['admin'] },
 		{ _id: 'test-admin-options', roles: ['admin'] },
 		{ _id: 'sync-auth-services-users', roles: ['admin'] },
-		{ _id: 'manage-chatpal', roles: ['admin'] },
 		{ _id: 'restart-server', roles: ['admin'] },
 		{ _id: 'remove-slackbridge-links', roles: ['admin'] },
 		{ _id: 'view-import-operations', roles: ['admin'] },
 		{ _id: 'clear-oembed-cache', roles: ['admin'] },
 		{ _id: 'videoconf-ring-users', roles: ['admin', 'owner', 'moderator', 'user'] },
+		{ _id: 'bypass-time-limit-edit-and-delete', roles: ['bot', 'app'] },
 	];
 
 	for await (const permission of permissions) {
@@ -269,12 +267,12 @@ export const upsertPermissions = async (): Promise<void> => {
 		},
 	): Promise<void> {
 		const permissionId = getSettingPermissionId(setting._id);
-		const permission: Omit<IPermission, '_id'> = {
+		const permission: Omit<IPermission, '_id' | '_updatedAt'> = {
 			level: CONSTANTS.SETTINGS_LEVEL as 'settings' | undefined,
 			// copy those setting-properties which are needed to properly publish the setting-based permissions
 			settingId: setting._id,
 			group: setting.group,
-			section: setting.section,
+			section: setting.section ?? undefined,
 			sorter: setting.sorter,
 			roles: [],
 		};

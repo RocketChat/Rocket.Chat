@@ -8,6 +8,7 @@ export type ChannelMention = Pick<IRoom, '_id' | 'name'>;
 type MarkupInteractionContextValue = {
 	detectEmoji?: (text: string) => { name: string; className: string; image?: string; content: string }[];
 	highlightRegex?: () => RegExp;
+	markRegex?: () => RegExp;
 	onTaskChecked?: (task: MessageParser.Task) => ((e: FormEvent) => void) | undefined;
 	resolveUserMention?: (mention: string) => UserMention | undefined;
 	onUserMentionClick?: (mentionedUser: UserMention) => ((e: UIEvent) => void) | undefined;

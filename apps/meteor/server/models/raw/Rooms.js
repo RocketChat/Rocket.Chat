@@ -62,7 +62,7 @@ export class RoomsRaw extends BaseRaw {
 		return statistic;
 	}
 
-	findByNameContainingAndTypes(name, types, discussion = false, teams = false, showOnlyTeams = false, options = {}) {
+	findByNameOrFnameContainingAndTypes(name, types, discussion = false, teams = false, showOnlyTeams = false, options = {}) {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
 		const onlyTeamsQuery = showOnlyTeams ? { teamMain: { $exists: true } } : {};
@@ -81,7 +81,8 @@ export class RoomsRaw extends BaseRaw {
 			},
 			prid: { $exists: discussion },
 			$or: [
-				{ name: nameRegex },
+				{ name: nameRegex, federated: { $ne: true } },
+				{ fname: nameRegex },
 				{
 					t: 'd',
 					usernames: nameRegex,
@@ -115,7 +116,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.findPaginated(query, options);
 	}
 
-	findByNameContaining(name, discussion = false, teams = false, onlyTeams = false, options = {}) {
+	findByNameOrFnameContaining(name, discussion = false, teams = false, onlyTeams = false, options = {}) {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
 		const teamCondition = teams
@@ -131,7 +132,8 @@ export class RoomsRaw extends BaseRaw {
 		const query = {
 			prid: { $exists: discussion },
 			$or: [
-				{ name: nameRegex },
+				{ name: nameRegex, federated: { $ne: true } },
+				{ fname: nameRegex },
 				{
 					t: 'd',
 					usernames: nameRegex,
@@ -258,6 +260,7 @@ export class RoomsRaw extends BaseRaw {
 				},
 			],
 			prid: { $exists: false },
+			$and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }],
 		};
 
 		return this.find(query, options);
@@ -290,6 +293,7 @@ export class RoomsRaw extends BaseRaw {
 				},
 			],
 			prid: { $exists: false },
+			$and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }],
 		};
 
 		return this.findPaginated(query, options);
@@ -309,6 +313,7 @@ export class RoomsRaw extends BaseRaw {
 				$in: groupsToAccept,
 			},
 			name: nameRegex,
+			$and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }],
 		};
 		return this.find(query, options);
 	}
@@ -533,8 +538,20 @@ export class RoomsRaw extends BaseRaw {
 		return this.updateOne({ _id: roomId }, { $set: { t: roomType } });
 	}
 
-	setRoomNameById(roomId, name, fname) {
-		return this.updateOne({ _id: roomId }, { $set: { name, fname } });
+	setRoomNameById(roomId, name) {
+		return this.updateOne({ _id: roomId }, { $set: { name } });
+	}
+
+	setFnameById(_id, fname) {
+		const query = { _id };
+
+		const update = {
+			$set: {
+				fname,
+			},
+		};
+
+		return this.updateOne(query, update);
 	}
 
 	setRoomTopicById(roomId, topic) {
@@ -670,5 +687,14 @@ export class RoomsRaw extends BaseRaw {
 		};
 
 		return this.find(query, options);
+	}
+
+	findCountOfRoomsWithActiveCalls() {
+		const query = {
+			// No matter the actual "status" of the call, if the room has a callStatus, it means there is/was a call
+			callStatus: { $exists: true },
+		};
+
+		return this.col.countDocuments(query);
 	}
 }

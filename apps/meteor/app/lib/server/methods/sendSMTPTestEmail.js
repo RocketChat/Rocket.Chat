@@ -31,7 +31,7 @@ Meteor.methods({
 			});
 		}
 		return {
-			message: 'Your_mail_was_sent_to_s',
+			message: 'Sending_your_mail_to_s',
 			params: [user.emails[0].address],
 		};
 	},
