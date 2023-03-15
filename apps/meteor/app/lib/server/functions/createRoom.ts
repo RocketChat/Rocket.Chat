@@ -1,6 +1,5 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
@@ -16,15 +15,16 @@ const isValidName = (name: unknown): name is string => {
 	return typeof name === 'string' && name.trim().length > 0;
 };
 
-export const createRoom = function <T extends RoomType>(
+// eslint-disable-next-line complexity
+export const createRoom = <T extends RoomType>(
 	type: T,
 	name: T extends 'd' ? undefined : string,
-	ownerUsername: string,
+	ownerUsername: string | undefined,
 	members: T extends 'd' ? IUser[] : string[] = [],
 	readOnly?: boolean,
 	roomExtraData?: Partial<IRoom>,
 	options?: ICreateRoomParams['options'],
-): ICreatedRoom {
+): ICreatedRoom => {
 	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
 	callbacks.run('beforeCreateRoom', { type, name, owner: ownerUsername, members, readOnly, extraData, options });
 
@@ -38,15 +38,21 @@ export const createRoom = function <T extends RoomType>(
 		});
 	}
 
-	const owner = Users.findOneByUsernameIgnoringCase(ownerUsername, { fields: { username: 1 } });
-
-	if (!owner) {
+	if (!ownerUsername) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			function: 'RocketChat.createRoom',
 		});
 	}
 
-	if (!_.contains(members, owner)) {
+	const owner = Users.findOneByUsernameIgnoringCase(ownerUsername, { fields: { username: 1 } });
+
+	if (!ownerUsername || !owner) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			function: 'RocketChat.createRoom',
+		});
+	}
+
+	if (!members.includes(owner)) {
 		members.push(owner.username);
 	}
 
