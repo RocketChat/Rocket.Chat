@@ -151,7 +151,15 @@ const GroupsCreatePropsSchema = {
 				encrypted: {
 					type: 'boolean',
 				},
+				federated: {
+					type: 'boolean',
+					nullable: true,
+				},
 				teamId: {
+					type: 'string',
+					nullable: true,
+				},
+				topic: {
 					type: 'string',
 					nullable: true,
 				},
