@@ -164,8 +164,6 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 	}
 	const msg = html2md.translate(email.html ? email.html : email.text || '');
 
-	logger.error(msg, JSON.stringify(html2md));
-
 	const rid = room?._id ?? Random.id();
 	const msgId = Random.id();
 
