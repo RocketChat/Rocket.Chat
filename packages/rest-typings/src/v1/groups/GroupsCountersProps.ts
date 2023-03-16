@@ -7,8 +7,13 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type GroupsCountersProps = GroupsBaseProps;
+export type GroupsCountersProps = GroupsBaseProps & { userId?: string };
 
-const GroupsCountersPropsSchema = withGroupBaseProperties();
+const GroupsCountersPropsSchema = withGroupBaseProperties({
+	userId: {
+		type: 'string',
+		nullable: true,
+	},
+});
 
 export const isGroupsCountersProps = ajv.compile<GroupsCountersProps>(GroupsCountersPropsSchema);
