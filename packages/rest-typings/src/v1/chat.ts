@@ -468,7 +468,6 @@ const ChatGetMessageReadReceiptsSchema = {
 
 export const isChatGetMessageReadReceiptsProps = ajv.compile<ChatGetMessageReadReceipts>(ChatGetMessageReadReceiptsSchema);
 
-
 type GetStarredMessages = {
 	roomId: IRoom['_id'];
 	count?: number;
