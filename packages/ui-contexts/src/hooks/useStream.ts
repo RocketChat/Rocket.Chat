@@ -1,4 +1,4 @@
-import type { ServerStreamerNames, StreamerEvents } from '@rocket.chat/ui-contexts/src/ServerContext/methods';
+import type { ServerStreamerNames, StreamerEvents } from '@rocket.chat/ui-contexts/src/ServerContext/streams';
 import { useContext, useMemo } from 'react';
 
 import { ServerContext } from '../ServerContext';
