@@ -12,7 +12,7 @@ function updateSetting(id: string, value: SettingValue | null): void {
 		const setting = settings.get(id);
 
 		if (setting === undefined) {
-			settingsRegistry.add(id, value);
+			void settingsRegistry.add(id, value);
 		} else {
 			Settings.updateValueById(id, value);
 		}
