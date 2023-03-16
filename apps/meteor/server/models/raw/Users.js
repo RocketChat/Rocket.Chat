@@ -1,7 +1,5 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Subscriptions } from '@rocket.chat/models';
-// TODO: check if this works
-import { Accounts } from 'meteor/accounts-base';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -1847,7 +1845,7 @@ export class UsersRaw extends BaseRaw {
 	findOneByIdAndLoginToken(_id, token, options) {
 		const query = {
 			_id,
-			'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(token),
+			'services.resume.loginTokens.hashedToken': token,
 		};
 
 		return this.findOne(query, options);

@@ -13,6 +13,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Avatars, UserDataFiles, Uploads, Settings } from '@rocket.chat/models';
+import { hashLoginToken } from '@rocket.chat/account-utils';
 
 import { settings } from '../../../settings/server';
 import Users from '../../../models/server/models/Users';
@@ -461,7 +462,7 @@ export const FileUpload = {
 		const uid = rc_uid || headers['x-user-id'];
 		const authToken = rc_token || headers['x-auth-token'];
 
-		const user = uid && authToken && Users.findOneByIdAndLoginToken(uid, authToken, { fields: { _id: 1 } });
+		const user = uid && authToken && Users.findOneByIdAndLoginToken(uid, hashLoginToken(authToken), { fields: { _id: 1 } });
 
 		if (!user) {
 			return false;

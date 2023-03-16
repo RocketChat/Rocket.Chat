@@ -6492,6 +6492,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/account-utils@workspace:^, @rocket.chat/account-utils@workspace:packages/account-utils":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/account-utils@workspace:packages/account-utils"
+  dependencies:
+    "@types/jest": ^27.4.1
+    eslint: ^8.12.0
+    jest: ^27.5.1
+    ts-jest: ^27.1.4
+    typescript: ~4.6.4
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/agenda@workspace:^, @rocket.chat/agenda@workspace:packages/agenda":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/agenda@workspace:packages/agenda"
@@ -6780,6 +6792,7 @@ __metadata:
     eventemitter3: ^4.0.7
     fibers: ^5.0.3
     jaeger-client: ^3.19.0
+    mem: ^8.1.1
     moleculer: ^0.14.21
     mongodb: ^4.12.1
     nats: ^2.4.0
@@ -7280,6 +7293,7 @@ __metadata:
     "@playwright/test": ^1.22.2
     "@react-aria/color": ^3.0.0-beta.15
     "@react-pdf/renderer": ^3.1.3
+    "@rocket.chat/account-utils": "workspace:^"
     "@rocket.chat/agenda": "workspace:^"
     "@rocket.chat/api-client": "workspace:^"
     "@rocket.chat/apps-engine": 1.37.0-alpha.164
@@ -7800,6 +7814,7 @@ __metadata:
     eslint: ^8.29.0
     eventemitter3: ^4.0.7
     fibers: ^5.0.3
+    mem: ^8.1.1
     moleculer: ^0.14.21
     mongodb: ^4.12.1
     nats: ^2.4.0
