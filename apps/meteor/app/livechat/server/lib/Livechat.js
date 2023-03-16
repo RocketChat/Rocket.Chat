@@ -960,9 +960,9 @@ export const Livechat = {
 		const { token } = guest;
 		check(token, String);
 
-		LivechatRooms.findByVisitorToken(token).forEach(async (room) => {
+		LivechatRooms.findByVisitorToken(token).forEach((room) => {
 			FileUpload.removeFilesByRoomId(room._id);
-			await Messages.removeByRoomId(room._id);
+			Messages.removeByRoomId(room._id);
 		});
 
 		Subscriptions.removeByVisitorToken(token);

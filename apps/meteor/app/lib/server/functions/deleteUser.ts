@@ -40,7 +40,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 				Messages.findFilesByUserId(userId).forEach(function ({ file }: { file: FileProp }) {
 					store.deleteById(file._id);
 				});
-				await Messages.removeByUserId(userId);
+				Messages.removeByUserId(userId);
 				break;
 			case 'Unlink':
 				const rocketCat = Users.findOneById('rocket.cat');

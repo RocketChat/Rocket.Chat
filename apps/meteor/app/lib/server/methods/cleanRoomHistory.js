@@ -5,7 +5,7 @@ import { hasPermission } from '../../../authorization/server';
 import { cleanRoomHistory } from '../functions';
 
 Meteor.methods({
-	async cleanRoomHistory({
+	cleanRoomHistory({
 		roomId,
 		latest,
 		oldest,

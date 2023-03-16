@@ -105,7 +105,7 @@ export class Messages extends Base {
 		return this.update({ _id: messageId }, { $unset: { reactions: 1 } });
 	}
 
-	async deleteOldOTRMessages(roomId, ts) {
+	deleteOldOTRMessages(roomId, ts) {
 		const OTRMessageTypes = [
 			'otr',
 			otrSystemMessages.USER_JOINED_OTR,
@@ -119,7 +119,7 @@ export class Messages extends Base {
 			},
 			ts: { $lte: ts },
 		};
-		await ReadReceipts.removeByRoomIdAndTypesUntilDate(roomId, OTRMessageTypes, ts);
+		ReadReceipts.removeByRoomIdAndTypesUntilDate(roomId, OTRMessageTypes, ts);
 		return this.remove(query);
 	}
 
@@ -952,15 +952,15 @@ export class Messages extends Base {
 		return this.remove(query);
 	}
 
-	async removeByRoomId(roomId) {
+	removeByRoomId(roomId) {
 		const query = { rid: roomId };
 
-		await ReadReceipts.removeByRoomId(roomId);
+		ReadReceipts.removeByRoomId(roomId);
 		return this.remove(query);
 	}
 
-	async removeByRoomIds(rids) {
-		await ReadReceipts.removeByRoomIds(rids);
+	removeByRoomIds(rids) {
+		ReadReceipts.removeByRoomIds(rids);
 		return this.remove({ rid: { $in: rids } });
 	}
 
@@ -1041,10 +1041,10 @@ export class Messages extends Base {
 		return count;
 	}
 
-	async removeByUserId(userId) {
+	removeByUserId(userId) {
 		const query = { 'u._id': userId };
 
-		await ReadReceipts.removeByUserId(userId);
+		ReadReceipts.removeByUserId(userId);
 		return this.remove(query);
 	}
 

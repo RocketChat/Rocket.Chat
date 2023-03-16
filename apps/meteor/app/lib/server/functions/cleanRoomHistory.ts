@@ -51,7 +51,7 @@ export const cleanRoomHistory = function ({
 					fields: { drid: 1 },
 					...(limit && { limit }),
 				}) as FindCursor<IMessageDiscussion>
-			).forEach(({ drid }) => Promise.await(deleteRoom(drid))),
+			).forEach(({ drid }) => deleteRoom(drid)),
 		);
 	}
 
