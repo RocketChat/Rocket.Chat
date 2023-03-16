@@ -70,7 +70,7 @@ const FederatedRoomList: VFC<FederatedRoomListProps> = ({ serverName, roomName, 
 					Scroller: ScrollableContentWrapper,
 					EmptyPlaceholder: FederatedRoomListEmptyPlaceholder,
 				}}
-				endReached={() => fetchNextPage()}
+				endReached={isLoading || isFetchingNextPage ? () => undefined : () => fetchNextPage()}
 				itemContent={(_, room) => (
 					<FederatedRoomListItem onClickJoin={() => onClickJoin(room)} {...room} disabled={isLoadingMutation} key={room.id} />
 				)}

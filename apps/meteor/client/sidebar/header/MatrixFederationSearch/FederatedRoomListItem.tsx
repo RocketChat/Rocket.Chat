@@ -31,9 +31,18 @@ const FederatedRoomListItem: VFC<FederatedRoomListItemProps> = ({
 				<Box flexGrow={1} flexShrink={1} fontScale='p1' fontWeight='bold' title={name} withTruncatedText>
 					{name}
 				</Box>
-				<Button primary flexShrink={0} onClick={onClickJoin} disabled={!canJoin || disabled} small>
-					{t('Join')}
-				</Button>
+				{canJoin && (
+					<Button primary flexShrink={0} onClick={onClickJoin} disabled={disabled} small>
+						{t('Join')}
+					</Button>
+				)}
+				{/* Currently canJoin is only false when the ammount of members is too big. This property will be used in the future
+					in case the matrix room is knock only. When that happens, the check for this should be based on the limit setting. */}
+				{!canJoin && (
+					<Box flexShrink={0} color={'danger'} title={t('Currently_we_dont_support_joining_servers_with_this_many_people')}>
+						{t('Cant_join')}
+					</Box>
+				)}
 			</Box>
 
 			{topic && (
