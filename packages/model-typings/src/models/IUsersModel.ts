@@ -56,7 +56,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	findByIds<T = IUser>(userIds: any, options?: any): FindCursor<T>;
 
-	findByUsernames<T = IUser>(usernames: string[], options: any): FindCursor<T>;
+	findByUsernames<T = IUser>(usernames: IUser['username'][], options: any): FindCursor<T>;
 
 	findOneByUsernameIgnoringCase<T = IUser>(username: any, options: any): Promise<T>;
 
