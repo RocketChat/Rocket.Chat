@@ -10,8 +10,6 @@ import type {
 } from '@rocket.chat/core-typings';
 
 import type { TranslationKey } from '../TranslationContext';
-import type { GetReadReceiptsMethod } from './methods/getReadReceipts';
-import type { UnsubscribeMethod as MailerUnsubscribeMethod } from './methods/mailer/unsubscribe';
 
 // TODO: frontend chapter day - define methods
 
@@ -56,21 +54,13 @@ export interface ServerMethods {
 	'setAvatarFromService': (...args: any[]) => any;
 	'setUsername': (...args: any[]) => any;
 	'setUserPassword': (...args: any[]) => any;
-	'slashCommand': (params: { cmd: string; params: string; msg: IMessage; triggerId: string }) => unknown;
 	'toggleFavorite': (...args: any[]) => any;
 	'unblockUser': (...args: any[]) => any;
 	'unmuteUserInRoom': (...args: any[]) => any;
 	'unreadMessages': (...args: any[]) => any;
 	'updateIncomingIntegration': (...args: any[]) => any;
 	'updateOutgoingIntegration': (...args: any[]) => any;
-	'Mailer:unsubscribe': MailerUnsubscribeMethod;
-	'getRoomById': (rid: IRoom['_id']) => IRoom;
-	'getReadReceipts': GetReadReceiptsMethod;
-	'checkRegistrationSecretURL': (hash: string) => boolean;
-	'livechat:changeLivechatStatus': (params?: void | { status?: string; agentId?: string }) => unknown;
-	'livechat:saveAgentInfo': (_id: string, agentData: unknown, agentDepartments: unknown) => unknown;
-	'livechat:takeInquiry': (inquiryId: string, options?: { clientAction: boolean; forwardingToDepartment?: boolean }) => unknown;
-	'livechat:resumeOnHold': (roomId: string, options?: { clientAction: boolean }) => unknown;
+	'checkRegistrationSecretURL'(hash: string): boolean;
 	'spotlight': (
 		...args: (
 			| string
