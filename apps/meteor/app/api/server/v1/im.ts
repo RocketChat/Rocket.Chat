@@ -302,10 +302,13 @@ API.v1.addRoute(
 			};
 
 			const options = {
-				sort: { username: sort?.username ? sort.username : 1 },
 				projection: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1, federated: 1 },
 				skip: offset,
 				limit: count,
+				sort: {
+					_updatedAt: -1,
+					username: sort?.username ? sort.username : 1,
+				},
 			};
 
 			const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
