@@ -100,6 +100,10 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 
 	setDepartmentByRoomId(roomId: any, departmentId: any): any;
 
+	findOpenByVisitorTokenAndDepartmentId(visitorToken: string, departmentId: string, options?: any): any;
+
+	findOpenByVisitorToken(visitorToken: string, options?: any): any;
+
 	findOpen(): FindCursor<IOmnichannelRoom>;
 
 	setAutoTransferOngoingById(roomId: string): Promise<UpdateResult>;

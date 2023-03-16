@@ -1,5 +1,6 @@
-import LivechatDepartment from '../../../models/server/models/LivechatDepartment';
-import { transformMappedData } from '../../../../ee/lib/misc/transformMappedData';
+import { LivechatDepartment } from '@rocket.chat/models';
+
+import { transformMappedData } from '../../../../ee/lib/misc';
 
 export class AppDepartmentsConverter {
 	constructor(orch) {

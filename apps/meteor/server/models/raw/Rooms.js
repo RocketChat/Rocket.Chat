@@ -575,6 +575,16 @@ export class RoomsRaw extends BaseRaw {
 		});
 	}
 
+	findDirectRoomContainingAllUsernames(usernames, options) {
+		const query = {
+			t: 'd',
+			usernames: { $size: usernames.length, $all: usernames },
+			usersCount: usernames.length,
+		};
+
+		return this.findOne(query, options);
+	}
+
 	countByType(t) {
 		return this.col.countDocuments({ t });
 	}

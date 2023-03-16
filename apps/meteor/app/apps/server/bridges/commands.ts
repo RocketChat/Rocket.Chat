@@ -168,8 +168,8 @@ export class AppCommandsBridge extends CommandBridge {
 		message: RequiredField<Partial<IMessage>, 'rid'>,
 		triggerId?: string,
 	): void {
-		const user = this.orch.getConverters()?.get('users').convertById(Meteor.userId());
-		const room = this.orch.getConverters()?.get('rooms').convertById(message.rid);
+		const user = Promise.await(this.orch.getConverters()?.get('users').convertById(Meteor.userId()));
+		const room = Promise.await(this.orch.getConverters())?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
 		const params = parseParameters(parameters);
 
@@ -185,8 +185,8 @@ export class AppCommandsBridge extends CommandBridge {
 	}
 
 	private _appCommandPreviewer(command: string, parameters: any, message: RequiredField<Partial<IMessage>, 'rid'>): any {
-		const user = this.orch.getConverters()?.get('users').convertById(Meteor.userId());
-		const room = this.orch.getConverters()?.get('rooms').convertById(message.rid);
+		const user = Promise.await(this.orch.getConverters()?.get('users').convertById(Meteor.userId()));
+		const room = Promise.await(this.orch.getConverters()?.get('rooms').convertById(message.rid));
 		const threadId = message.tmid;
 		const params = parseParameters(parameters);
 
@@ -201,8 +201,8 @@ export class AppCommandsBridge extends CommandBridge {
 		preview: ISlashCommandPreviewItem,
 		triggerId: string,
 	): Promise<void> {
-		const user = this.orch.getConverters()?.get('users').convertById(Meteor.userId());
-		const room = this.orch.getConverters()?.get('rooms').convertById(message.rid);
+		const user = await this.orch.getConverters()?.get('users').convertById(Meteor.userId());
+		const room = await this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
 		const params = parseParameters(parameters);
 

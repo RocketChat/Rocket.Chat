@@ -1,6 +1,6 @@
 import './AppFileSystemSourceStorage';
 import './AppGridFSSourceStorage';
 
-export { AppRealLogsStorage } from './logs-storage';
+export { AppRealLogsStorage } from './LogsStorage';
 export { AppRealStorage } from './AppRealStorage';
 export { ConfigurableAppSourceStorage } from './ConfigurableAppSourceStorage';

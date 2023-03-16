@@ -92,6 +92,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findOneDirectRoomContainingAllUserIDs(uids: string[], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
+	findDirectRoomContainingAllUsernames(usernames: string[], options?: FindOptions<IRoom>): Promise<IRoom | null>;
+
 	countByType(t: IRoom['t']): Promise<number>;
 
 	findPaginatedByNameOrFNameAndRoomIdsIncludingTeamRooms(

@@ -1,5 +1,6 @@
 import './Analytics';
 import './Avatars';
+import './AppsPersistence';
 import './Banners';
 import './BannersDismiss';
 import './CredentialTokens';
