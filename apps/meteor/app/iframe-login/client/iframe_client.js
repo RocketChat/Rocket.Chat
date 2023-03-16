@@ -1,7 +1,6 @@
 import { Accounts } from 'meteor/accounts-base';
-import _ from 'underscore';
 
-import { IframeLogin } from '../../ui-utils';
+import { IframeLogin } from '../../ui-utils/client';
 
 const iframeLogin = new IframeLogin();
 
@@ -12,7 +11,7 @@ Accounts._unstoreLoginToken = function (...args) {
 };
 
 window.addEventListener('message', (e) => {
-	if (!_.isObject(e.data)) {
+	if (!(typeof e.data === 'function' || (typeof e.data === 'object' && !!e.data))) {
 		return;
 	}
 

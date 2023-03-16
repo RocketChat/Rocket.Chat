@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 
 Meteor.methods({
@@ -31,7 +31,7 @@ Meteor.methods({
 			});
 		}
 		return {
-			message: 'Your_mail_was_sent_to_s',
+			message: 'Sending_your_mail_to_s',
 			params: [user.emails[0].address],
 		};
 	},

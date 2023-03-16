@@ -1,7 +1,7 @@
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 
 import { Messages, Rooms, Users } from '../../../models/server';
-import { transformMappedData } from '../../lib/misc/transformMappedData';
+import { transformMappedData } from '../../../../ee/lib/misc/transformMappedData';
 
 export class AppMessagesConverter {
 	constructor(orch) {

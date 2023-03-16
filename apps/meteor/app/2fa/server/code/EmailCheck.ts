@@ -1,11 +1,11 @@
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Accounts } from 'meteor/accounts-base';
 import bcrypt from 'bcrypt';
 import type { IUser } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../mailer/server/api';
 import { Users } from '../../../models/server';
 import type { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 

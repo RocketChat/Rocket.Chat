@@ -1,7 +1,15 @@
 import { Meteor } from 'meteor/meteor';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { RateLimiter } from '../lib';
 import { saveCustomFields } from '../functions/saveCustomFields';
+
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		saveCustomFields: (fields: IUser['customFields']) => void;
+	}
+}
 
 Meteor.methods({
 	saveCustomFields(fields = {}) {

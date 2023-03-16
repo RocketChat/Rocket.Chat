@@ -1347,11 +1347,19 @@ describe('[Chat]', function () {
 	});
 
 	describe('[/chat.getMessageReadReceipts]', () => {
+		const isEnterprise = typeof process.env.IS_EE === 'string' ? process.env.IS_EE === 'true' : !!process.env.IS_EE;
 		describe('when execute successfully', () => {
-			it("should return the statusCode 200 and 'receipts' property and should be equal an array", (done) => {
+			it('should return statusCode: 200 and an array of receipts when running EE', function (done) {
+				if (!isEnterprise) {
+					this.skip();
+				}
+
 				request
-					.get(api(`chat.getMessageReadReceipts?messageId=${message._id}`))
+					.get(api(`chat.getMessageReadReceipts`))
 					.set(credentials)
+					.query({
+						messageId: message._id,
+					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
@@ -1363,7 +1371,33 @@ describe('[Chat]', function () {
 		});
 
 		describe('when an error occurs', () => {
-			it('should return statusCode 400 and an error', (done) => {
+			it('should throw error-action-not-allowed error when not running EE', function (done) {
+				// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+				// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+				if (isEnterprise) {
+					this.skip();
+				}
+				request
+					.get(api(`chat.getMessageReadReceipts`))
+					.set(credentials)
+					.query({
+						messageId: message._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'This is an enterprise feature [error-action-not-allowed]');
+						expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+					})
+					.end(done);
+			});
+
+			it('should return statusCode: 400 and an error when no messageId is provided', function (done) {
+				if (!isEnterprise) {
+					this.skip();
+				}
+
 				request
 					.get(api('chat.getMessageReadReceipts'))
 					.set(credentials)
@@ -1988,111 +2022,6 @@ describe('[Chat]', function () {
 		});
 	});
 
-	describe('[/chat.getSnippetedMessageById]', () => {
-		it('should return an error when the snippeted messages is disabled', (done) => {
-			updateSetting('Message_AllowSnippeting', false).then(() => {
-				request
-					.get(api('chat.getSnippetedMessageById?messageId=invalid-id'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('error-not-allowed');
-					})
-					.end(done);
-			});
-		});
-		it('should return an error when the required "messageId" parameter is not sent', (done) => {
-			updateSetting('Message_AllowSnippeting', true).then(() => {
-				request
-					.get(api('chat.getSnippetedMessageById'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.errorType).to.be.equal('error-invalid-params');
-					})
-					.end(done);
-			});
-		});
-	});
-
-	describe('[/chat.getSnippetedMessages]', () => {
-		it('should return an error when the required "roomId" parameter is not sent', (done) => {
-			request
-				.get(api('chat.getSnippetedMessages'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('error-invalid-params');
-				})
-				.end(done);
-		});
-
-		it('should return an error when the roomId is invalid', (done) => {
-			request
-				.get(api('chat.getSnippetedMessages?roomId=invalid-room'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('error-not-allowed');
-				})
-				.end(done);
-		});
-
-		it('should return an error when the snippeted messages is disabled', (done) => {
-			updateSetting('Message_AllowSnippeting', false).then(() => {
-				request
-					.get(api('chat.getSnippetedMessages?roomId=invalid-room'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('error-not-allowed');
-					})
-					.end(done);
-			});
-		});
-
-		it('should return the snippeted messages', (done) => {
-			updateSetting('Message_AllowSnippeting', true).then(() => {
-				request
-					.get(api('chat.getSnippetedMessages?roomId=GENERAL'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body.messages).to.be.an('array');
-						expect(res.body).to.have.property('offset');
-						expect(res.body).to.have.property('total');
-						expect(res.body).to.have.property('count');
-					})
-					.end(done);
-			});
-		});
-
-		it('should return an error when the messageId is invalid', (done) => {
-			request
-				.get(api('chat.getSnippetedMessageById?messageId=invalid-id'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('invalid-message');
-				})
-				.end(done);
-		});
-	});
-
 	describe('[/chat.getDiscussions]', () => {
 		const messageText = 'Message to create discussion';
 		let testChannel;
@@ -2236,19 +2165,6 @@ describe('[Chat]', function () {
 
 		messageWords.forEach((text) => {
 			filterDiscussionsByText(text);
-		});
-
-		it('should return an error when the messageId is invalid', (done) => {
-			request
-				.get(api('chat.getSnippetedMessageById?messageId=invalid-id'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('invalid-message');
-				})
-				.end(done);
 		});
 	});
 });

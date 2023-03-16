@@ -3,18 +3,20 @@ import type { ComponentProps, MouseEventHandler, ReactElement, ReactNode } from 
 import React from 'react';
 
 type ListItemProps = {
-	text: ReactNode;
 	icon?: ComponentProps<typeof OptionIcon>['name'];
-	input?: any;
+	text: ReactNode;
+	input?: ReactNode;
+	loading?: boolean;
 	action?: MouseEventHandler<HTMLOrSVGElement>;
-	clickAction?: MouseEventHandler<HTMLOrSVGElement>;
-};
+	children?: ReactNode;
+} & ComponentProps<typeof Option>;
 
-const ListItem = ({ text, icon, input, action, clickAction }: ListItemProps): ReactElement => (
-	<Option onClick={action || clickAction}>
+const ListItem = ({ icon, text, input, action, children, ...props }: ListItemProps): ReactElement => (
+	<Option onClick={action} {...props}>
 		{icon && <OptionIcon name={icon} />}
 		<OptionContent>{text}</OptionContent>
 		{input && <OptionColumn>{input}</OptionColumn>}
+		{children && <OptionColumn>{children}</OptionColumn>}
 	</Option>
 );
 

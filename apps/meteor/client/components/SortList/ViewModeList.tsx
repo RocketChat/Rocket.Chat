@@ -1,4 +1,4 @@
-import { ToggleSwitch, RadioButton, OptionTitle } from '@rocket.chat/fuselage';
+import { ToggleSwitch, RadioButton, OptionTitle, Box } from '@rocket.chat/fuselage';
 import { useUserPreference, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
@@ -28,55 +28,34 @@ function ViewModeList(): ReactElement {
 	return (
 		<>
 			<OptionTitle>{t('Display')}</OptionTitle>
-			<ul>
+			<ul aria-describedby='displayList'>
 				<ListItem
+					is='label'
+					role='listitem'
 					icon={'extended-view'}
 					text={t('Extended')}
-					clickAction={setToExtended}
-					input={
-						<RadioButton
-							pis='x24'
-							onChange={setToExtended}
-							name='sidebarViewMode'
-							value='extended'
-							checked={sidebarViewMode === 'extended'}
-						/>
-					}
+					input={<RadioButton pis='x24' onChange={setToExtended} checked={sidebarViewMode === 'extended'} />}
 				/>
 				<ListItem
+					is='label'
+					role='listitem'
 					icon={'medium-view'}
 					text={t('Medium')}
-					clickAction={setToMedium}
-					input={
-						<RadioButton pis='x24' onChange={setToMedium} name='sidebarViewMode' value='medium' checked={sidebarViewMode === 'medium'} />
-					}
+					input={<RadioButton pis='x24' onChange={setToMedium} checked={sidebarViewMode === 'medium'} />}
 				/>
 				<ListItem
+					is='label'
+					role='listitem'
 					icon={'condensed-view'}
 					text={t('Condensed')}
-					clickAction={setToCondensed}
-					input={
-						<RadioButton
-							pis='x24'
-							onChange={setToCondensed}
-							name='sidebarViewMode'
-							value='condensed'
-							checked={sidebarViewMode === 'condensed'}
-						/>
-					}
+					input={<RadioButton pis='x24' onChange={setToCondensed} checked={sidebarViewMode === 'condensed'} />}
 				/>
 				<ListItem
+					is='label'
+					role='listitem'
 					icon={'user-rounded'}
 					text={t('Avatars')}
-					clickAction={handleChangeSidebarDisplayAvatar}
-					input={
-						<ToggleSwitch
-							pis='x24'
-							onChange={handleChangeSidebarDisplayAvatar}
-							name='sidebarDisplayAvatar'
-							checked={sidebarDisplayAvatar}
-						/>
-					}
+					input={<ToggleSwitch pis='x24' onChange={handleChangeSidebarDisplayAvatar} checked={sidebarDisplayAvatar} />}
 				/>
 			</ul>
 		</>

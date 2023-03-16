@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { api, Team } from '@rocket.chat/core-services';
 
-import { hasPermission } from '../../app/authorization';
+import { hasPermission } from '../../app/authorization/server';
 import { Users, Subscriptions, Messages } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 

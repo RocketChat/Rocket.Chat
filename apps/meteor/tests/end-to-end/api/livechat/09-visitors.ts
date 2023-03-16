@@ -1,7 +1,7 @@
 /* eslint-env mocha */
 
 import { expect } from 'chai';
-import type { ILivechatAgent, ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
@@ -69,7 +69,7 @@ describe('LIVECHAT - visitors', function () {
 				scope: 'visitor',
 				visibility: 'public',
 				regexp: '',
-			} as unknown as ILivechatCustomField & { field: string });
+			});
 			const { body } = await request.post(api('livechat/visitor')).send({
 				visitor: {
 					token,
@@ -571,7 +571,6 @@ describe('LIVECHAT - visitors', function () {
 						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((res: Response) => {
-							console.log(res.body);
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.property('history');
 							expect(res.body.history).to.be.an('array');
@@ -693,7 +692,7 @@ describe('LIVECHAT - visitors', function () {
 				scope: 'visitor',
 				visibility: 'public',
 				regexp: '',
-			} as unknown as ILivechatCustomField & { field: string })
+			})
 				.then((cf) => {
 					if (!cf) {
 						throw new Error('Custom field not created');

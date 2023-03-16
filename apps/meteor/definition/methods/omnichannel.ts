@@ -7,21 +7,6 @@ declare module '@rocket.chat/ui-contexts' {
 		'livechat:addMonitor': (...args: any[]) => any;
 		'livechat:closeRoom': (...args: any[]) => any;
 		'livechat:discardTranscript': (...args: any[]) => any;
-
-		// TODO: chapter day backend - enhance/deprecate
-		'livechat:facebook':
-			| ((...args: [{ action: 'initialState' }]) => {
-					enabled: boolean;
-					hasToken: boolean;
-			  })
-			| ((...args: [{ action: 'list-pages' }]) => {
-					name: string;
-					subscribed: boolean;
-					id: string;
-			  }[])
-			| ((...args: [{ action: 'subscribe' | 'unsubscribe'; page: string }]) => void)
-			| ((...args: [{ action: 'enable' }]) => { url: string } | undefined)
-			| ((...args: [{ action: 'disable' }]) => void);
 		'livechat:getAgentOverviewData': (...args: any[]) => any;
 		'livechat:getAnalyticsChartData': (...args: any[]) => any;
 		'livechat:getAnalyticsOverviewData': (...args: any[]) => any;
@@ -30,7 +15,6 @@ declare module '@rocket.chat/ui-contexts' {
 		'livechat:removeBusinessHour': (...args: any[]) => any;
 		'livechat:removeCustomField': (...args: any[]) => any;
 		'livechat:removeMonitor': (...args: any[]) => any;
-		'livechat:removePriority': (...args: any[]) => any;
 		'livechat:removeRoom': (rid: IRoom['_id']) => void;
 		'livechat:removeTag': (...args: any[]) => any;
 		'livechat:removeTrigger': (...args: any[]) => any;
@@ -44,7 +28,6 @@ declare module '@rocket.chat/ui-contexts' {
 		'livechat:saveCustomField': (...args: any[]) => any;
 		'livechat:saveDepartment': (...args: any[]) => any;
 		'livechat:saveIntegration': (...args: any[]) => any;
-		'livechat:savePriority': (...args: any[]) => any;
 		'livechat:saveTag': (...args: any[]) => any;
 		'livechat:saveTrigger': (...args: any[]) => any;
 		'livechat:saveUnit': (...args: any[]) => any;

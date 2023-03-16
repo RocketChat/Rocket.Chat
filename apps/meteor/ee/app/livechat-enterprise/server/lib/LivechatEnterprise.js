@@ -1,26 +1,27 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { LivechatInquiry, Users, LivechatRooms } from '@rocket.chat/models';
+import {
+	LivechatInquiry,
+	Users,
+	LivechatRooms,
+	LivechatDepartment as LivechatDepartmentRaw,
+	OmnichannelServiceLevelAgreements,
+} from '@rocket.chat/models';
 
-import LivechatUnit from '../../../models/server/models/LivechatUnit';
-import LivechatTag from '../../../models/server/models/LivechatTag';
+import { hasLicense } from '../../../license/server/license';
+import { updateDepartmentAgents } from '../../../../../app/livechat/server/lib/Helper';
 import { Messages } from '../../../../../app/models/server';
-import LivechatPriority from '../../../models/server/models/LivechatPriority';
 import { addUserRoles } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRoles } from '../../../../../server/lib/roles/removeUserFromRoles';
-import {
-	processWaitingQueue,
-	removePriorityFromRooms,
-	updateInquiryQueuePriority,
-	updatePriorityInquiries,
-	updateRoomPriorityHistory,
-} from './Helper';
+import { processWaitingQueue, updateSLAInquiries } from './Helper';
+import { removeSLAFromRooms } from './SlaHelper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
 import { logger, queueLogger } from './logger';
 import { callbacks } from '../../../../../lib/callbacks';
 import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
-import { LivechatUnitMonitors } from '../../../models/server';
+import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
+import { LivechatTag, LivechatUnit, LivechatUnitMonitors } from '../../../models/server';
 
 export const LivechatEnterprise = {
 	async addMonitor(username) {
@@ -140,62 +141,50 @@ export const LivechatEnterprise = {
 		return LivechatTag.createOrUpdateTag(_id, tagData, tagDepartments);
 	},
 
-	savePriority(_id, priorityData) {
-		check(_id, Match.Maybe(String));
-
-		check(priorityData, {
-			name: String,
-			description: Match.Optional(String),
-			dueTimeInMinutes: String,
-		});
-
-		const oldPriority = _id && LivechatPriority.findOneById(_id, { fields: { dueTimeInMinutes: 1 } });
-		const priority = LivechatPriority.createOrUpdatePriority(_id, priorityData);
-		if (!oldPriority) {
-			return priority;
+	async saveSLA(_id, slaData) {
+		const oldSLA = _id && (await OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { dueTimeInMinutes: 1 } }));
+		const exists = await OmnichannelServiceLevelAgreements.findDuplicate(_id, slaData.name, slaData.dueTimeInMinutes);
+		if (exists) {
+			throw new Error('error-duplicated-sla');
 		}
 
-		const { dueTimeInMinutes: oldDueTimeInMinutes } = oldPriority;
-		const { dueTimeInMinutes } = priority;
+		const sla = await OmnichannelServiceLevelAgreements.createOrUpdatePriority(slaData, _id);
+		if (!oldSLA) {
+			return sla;
+		}
+
+		const { dueTimeInMinutes: oldDueTimeInMinutes } = oldSLA;
+		const { dueTimeInMinutes } = sla;
 
 		if (oldDueTimeInMinutes !== dueTimeInMinutes) {
-			updatePriorityInquiries(priority);
+			await updateSLAInquiries(sla);
 		}
 
-		return priority;
+		return sla;
 	},
 
-	async removePriority(_id) {
-		check(_id, String);
-
-		const priority = LivechatPriority.findOneById(_id, { fields: { _id: 1 } });
-
-		if (!priority) {
-			throw new Meteor.Error('error-invalid-priority', 'Invalid priority', {
-				method: 'livechat:removePriority',
-			});
+	async removeSLA(_id) {
+		const sla = await OmnichannelServiceLevelAgreements.findOneById(_id, { projection: { _id: 1 } });
+		if (!sla) {
+			throw new Error(`SLA with id ${_id} not found`);
 		}
-		const removed = LivechatPriority.removeById(_id);
-		if (removed) {
-			await removePriorityFromRooms(_id);
+
+		const removedResult = await OmnichannelServiceLevelAgreements.removeById(_id);
+		if (!removedResult || removedResult.deletedCount !== 1) {
+			throw new Error(`Error removing SLA with id ${_id}`);
 		}
-		return removed;
+
+		await removeSLAFromRooms(_id);
 	},
 
-	updateRoomPriority(roomId, user, priority) {
-		updateInquiryQueuePriority(roomId, priority);
-		updateRoomPriorityHistory(roomId, user, priority);
-	},
-
-	async placeRoomOnHold(room, comment, onHoldBy) {
+	placeRoomOnHold(room, comment, onHoldBy) {
 		logger.debug(`Attempting to place room ${room._id} on hold by user ${onHoldBy?._id}`);
 		const { _id: roomId, onHold } = room;
 		if (!roomId || onHold) {
 			logger.debug(`Room ${roomId} invalid or already on hold. Skipping`);
 			return false;
 		}
-
-		await LivechatRooms.setOnHoldByRoomId(roomId);
+		Promise.await(LivechatRooms.setOnHoldByRoomId(roomId));
 
 		Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldBy);
 		Meteor.defer(() => {
@@ -214,6 +203,98 @@ export const LivechatEnterprise = {
 
 		await AutoCloseOnHoldScheduler.unscheduleRoom(roomId);
 		await LivechatRooms.unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(roomId);
+	},
+
+	/**
+	 * @param {string|null} _id - The department id
+	 * @param {Partial<import('@rocket.chat/core-typings').ILivechatDepartment>} departmentData
+	 * @param {{upsert?: { agentId: string; count?: number; order?: number; }[], remove?: { agentId: string; count?: number; order?: number; }[]}} [departmentAgents] - The department agents
+	 */
+	async saveDepartment(_id, departmentData, departmentAgents) {
+		check(_id, Match.Maybe(String));
+
+		const department = _id && (await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1, archived: 1 } }));
+
+		if (!hasLicense('livechat-enterprise')) {
+			const totalDepartments = await LivechatDepartmentRaw.countTotal();
+			if (!department && totalDepartments >= 1) {
+				throw new Meteor.Error('error-max-departments-number-reached', 'Maximum number of departments reached', {
+					method: 'livechat:saveDepartment',
+				});
+			}
+		}
+
+		if (department?.archived && departmentData.enabled) {
+			throw new Meteor.Error('error-archived-department-cant-be-enabled', 'Archived departments cant be enabled', {
+				method: 'livechat:saveDepartment',
+			});
+		}
+
+		const defaultValidations = {
+			enabled: Boolean,
+			name: String,
+			description: Match.Optional(String),
+			showOnRegistration: Boolean,
+			email: String,
+			showOnOfflineForm: Boolean,
+			requestTagBeforeClosingChat: Match.Optional(Boolean),
+			chatClosingTags: Match.Optional([String]),
+			fallbackForwardDepartment: Match.Optional(String),
+			departmentsAllowedToForward: Match.Optional([String]),
+		};
+
+		// The Livechat Form department support addition/custom fields, so those fields need to be added before validating
+		Object.keys(departmentData).forEach((field) => {
+			if (!defaultValidations.hasOwnProperty(field)) {
+				defaultValidations[field] = Match.OneOf(String, Match.Integer, Boolean);
+			}
+		});
+
+		check(departmentData, defaultValidations);
+		check(
+			departmentAgents,
+			Match.Maybe({
+				upsert: Match.Maybe(Array),
+				remove: Match.Maybe(Array),
+			}),
+		);
+
+		const { requestTagBeforeClosingChat, chatClosingTags, fallbackForwardDepartment } = departmentData;
+		if (requestTagBeforeClosingChat && (!chatClosingTags || chatClosingTags.length === 0)) {
+			throw new Meteor.Error(
+				'error-validating-department-chat-closing-tags',
+				'At least one closing tag is required when the department requires tag(s) on closing conversations.',
+				{ method: 'livechat:saveDepartment' },
+			);
+		}
+
+		if (_id && !department) {
+			throw new Meteor.Error('error-department-not-found', 'Department not found', {
+				method: 'livechat:saveDepartment',
+			});
+		}
+
+		if (fallbackForwardDepartment === _id) {
+			throw new Meteor.Error(
+				'error-fallback-department-circular',
+				'Cannot save department. Circular reference between fallback department and department',
+			);
+		}
+
+		if (fallbackForwardDepartment && !(await LivechatDepartmentRaw.findOneById(fallbackForwardDepartment))) {
+			throw new Meteor.Error('error-fallback-department-not-found', 'Fallback department not found', { method: 'livechat:saveDepartment' });
+		}
+
+		const departmentDB = await LivechatDepartmentRaw.createOrUpdateDepartment(_id, departmentData);
+		if (departmentDB && departmentAgents) {
+			updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
+		}
+
+		return departmentDB;
+	},
+
+	async isDepartmentCreationAvailable() {
+		return hasLicense('livechat-enterprise') || (await LivechatDepartmentRaw.countTotal()) === 0;
 	},
 };
 
@@ -269,7 +350,7 @@ const queueWorker = {
 	async checkQueue(queue) {
 		queueLogger.debug(`Processing items for queue ${queue || 'Public'}`);
 		try {
-			const nextInquiry = await LivechatInquiry.findNextAndLock(queue);
+			const nextInquiry = await LivechatInquiry.findNextAndLock(getInquirySortMechanismSetting(), queue);
 			if (!nextInquiry) {
 				queueLogger.debug(`No more items for queue ${queue || 'Public'}`);
 				return;

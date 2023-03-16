@@ -1,5 +1,5 @@
 import { Users, Rooms } from '../../../../models/server';
-import { sendMessage, createDirectRoom } from '../../../../lib';
+import { sendMessage, createDirectRoom } from '../../../../lib/server';
 /*
  *
  * Get direct chat room helper
@@ -25,7 +25,7 @@ const getDirectRoom = (source, target) => {
 	};
 };
 
-export default function handleSentMessage(args) {
+export default async function handleSentMessage(args) {
 	const user = Users.findOne({
 		'profile.irc.nick': args.nick,
 	});

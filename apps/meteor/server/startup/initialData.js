@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Settings } from '@rocket.chat/models';
+import colors from 'colors/safe';
 
-import { RocketChatFile } from '../../app/file';
+import { RocketChatFile } from '../../app/file/server';
 import { FileUpload } from '../../app/file-upload/server';
 import { getUsersInRole } from '../../app/authorization/server';
 import { addUserRolesAsync } from '../lib/roles/addUserRoles';
@@ -56,7 +57,7 @@ Meteor.startup(async function () {
 
 	if (process.env.ADMIN_PASS) {
 		if ((await (await getUsersInRole('admin')).count()) === 0) {
-			console.log('Inserting admin user:'.green);
+			console.log(colors.green('Inserting admin user:'));
 			const adminUser = {
 				name: 'Administrator',
 				username: 'admin',
@@ -70,7 +71,7 @@ Meteor.startup(async function () {
 				adminUser.name = process.env.ADMIN_NAME;
 			}
 
-			console.log(`Name: ${adminUser.name}`.green);
+			console.log(colors.green(`Name: ${adminUser.name}`));
 
 			if (process.env.ADMIN_EMAIL) {
 				if (validateEmail(process.env.ADMIN_EMAIL)) {
@@ -82,12 +83,12 @@ Meteor.startup(async function () {
 							},
 						];
 
-						console.log(`Email: ${process.env.ADMIN_EMAIL}`.green);
+						console.log(colors.green(`Email: ${process.env.ADMIN_EMAIL}`));
 					} else {
-						console.log('Email provided already exists; Ignoring environment variables ADMIN_EMAIL'.red);
+						console.log(colors.red('Email provided already exists; Ignoring environment variables ADMIN_EMAIL'));
 					}
 				} else {
-					console.log('Email provided is invalid; Ignoring environment variables ADMIN_EMAIL'.red);
+					console.log(colors.red('Email provided is invalid; Ignoring environment variables ADMIN_EMAIL'));
 				}
 			}
 
@@ -104,14 +105,14 @@ Meteor.startup(async function () {
 					if (checkUsernameAvailability(process.env.ADMIN_USERNAME)) {
 						adminUser.username = process.env.ADMIN_USERNAME;
 					} else {
-						console.log('Username provided already exists; Ignoring environment variables ADMIN_USERNAME'.red);
+						console.log(colors.red('Username provided already exists; Ignoring environment variables ADMIN_USERNAME'));
 					}
 				} else {
-					console.log('Username provided is invalid; Ignoring environment variables ADMIN_USERNAME'.red);
+					console.log(colors.red('Username provided is invalid; Ignoring environment variables ADMIN_USERNAME'));
 				}
 			}
 
-			console.log(`Username: ${adminUser.username}`.green);
+			console.log(colors.green(`Username: ${adminUser.username}`));
 
 			adminUser.type = 'user';
 
@@ -121,7 +122,7 @@ Meteor.startup(async function () {
 
 			await addUserRolesAsync(id, ['admin']);
 		} else {
-			console.log('Users with admin role already exist; Ignoring environment variables ADMIN_PASS'.red);
+			console.log(colors.red('Users with admin role already exist; Ignoring environment variables ADMIN_PASS'));
 		}
 	}
 
@@ -130,16 +131,16 @@ Meteor.startup(async function () {
 			const initialUser = JSON.parse(process.env.INITIAL_USER);
 
 			if (!initialUser._id) {
-				console.log('No _id provided; Ignoring environment variable INITIAL_USER'.red);
+				console.log(colors.red('No _id provided; Ignoring environment variable INITIAL_USER'));
 			} else if (!Users.findOneById(initialUser._id)) {
-				console.log('Inserting initial user:'.green);
-				console.log(JSON.stringify(initialUser, null, 2).green);
+				console.log(colors.green('Inserting initial user:'));
+				console.log(colors.green(JSON.stringify(initialUser, null, 2)));
 				Users.create(initialUser);
 
 				await addUserToDefaultChannels(initialUser, true);
 			}
 		} catch (e) {
-			console.log('Error processing environment variable INITIAL_USER'.red, e);
+			console.log(colors.red('Error processing environment variable INITIAL_USER'), e);
 		}
 	}
 
@@ -162,7 +163,7 @@ Meteor.startup(async function () {
 	Users.removeById('rocketchat.internal.admin.test');
 
 	if (process.env.TEST_MODE === 'true') {
-		console.log('Inserting admin test user:'.green);
+		console.log(colors.green('Inserting admin test user:'));
 
 		const adminUser = {
 			_id: 'rocketchat.internal.admin.test',
@@ -181,10 +182,10 @@ Meteor.startup(async function () {
 			type: 'user',
 		};
 
-		console.log(`Name: ${adminUser.name}`.green);
-		console.log(`Email: ${adminUser.emails[0].address}`.green);
-		console.log(`Username: ${adminUser.username}`.green);
-		console.log(`Password: ${adminUser._id}`.green);
+		console.log(colors.green(`Name: ${adminUser.name}`));
+		console.log(colors.green(`Email: ${adminUser.emails[0].address}`));
+		console.log(colors.green(`Username: ${adminUser.username}`));
+		console.log(colors.green(`Password: ${adminUser._id}`));
 
 		if (Users.findOneByEmailAddress(adminUser.emails[0].address)) {
 			throw new Meteor.Error(`Email ${adminUser.emails[0].address} already exists`, "Rocket.Chat can't run in test mode");

@@ -1288,4 +1288,115 @@ export class LivechatRoomsRaw extends BaseRaw {
 			},
 		]);
 	}
+
+	// These 3 methods shouldn't be here :( but current EE model has a meteor dependency
+	// And refactoring it could take time
+	setTranscriptRequestedPdfById(rid) {
+		return this.updateOne(
+			{
+				_id: rid,
+			},
+			{
+				$set: { pdfTranscriptRequested: true },
+			},
+			{},
+			{
+				bypassUnits: true,
+			},
+		);
+	}
+
+	unsetTranscriptRequestedPdfById(rid) {
+		return this.updateOne(
+			{
+				_id: rid,
+			},
+			{
+				$unset: { pdfTranscriptRequested: 1 },
+			},
+			{},
+			{
+				bypassUnits: true,
+			},
+		);
+	}
+
+	setPdfTranscriptFileIdById(rid, fileId) {
+		return this.updateOne(
+			{
+				_id: rid,
+			},
+			{
+				$set: { pdfTranscriptFileId: fileId },
+			},
+			{},
+			{
+				bypassUnits: true,
+			},
+		);
+	}
+
+	setEmailTranscriptRequestedByRoomId(roomId, transcriptInfo) {
+		const { requestedAt, requestedBy, email, subject } = transcriptInfo;
+
+		return this.updateOne(
+			{
+				_id: roomId,
+				t: 'l',
+			},
+			{
+				$set: {
+					transcriptRequest: {
+						requestedAt,
+						requestedBy,
+						email,
+						subject,
+					},
+				},
+			},
+		);
+	}
+
+	unsetEmailTranscriptRequestedByRoomId(roomId) {
+		return this.updateOne(
+			{
+				_id: roomId,
+				t: 'l',
+			},
+			{
+				$unset: {
+					transcriptRequest: 1,
+				},
+			},
+		);
+	}
+
+	closeRoomById(roomId, closeInfo) {
+		const { closer, closedBy, closedAt, chatDuration, serviceTimeDuration, tags } = closeInfo;
+
+		return this.updateOne(
+			{
+				_id: roomId,
+				t: 'l',
+			},
+			{
+				$set: {
+					closedAt,
+					'metrics.chatDuration': chatDuration,
+					'metrics.serviceTimeDuration': serviceTimeDuration,
+					'v.status': 'offline',
+					...(closer && { closer }),
+					...(closedBy && { closedBy }),
+					...(tags && { tags }),
+				},
+				$unset: {
+					open: 1,
+				},
+			},
+		);
+	}
+
+	bulkRemoveDepartmentAndUnitsFromRooms(departmentId) {
+		return this.updateMany({ departmentId }, { $unset: { departmentId: 1, departmentAncestors: 1 } });
+	}
 }

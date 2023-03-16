@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { DDPCommon } from 'meteor/ddp-common';
 import { DDP } from 'meteor/ddp';
 import { Accounts } from 'meteor/accounts-base';
@@ -15,6 +15,7 @@ import { hasPermission } from '../../authorization/server';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import { checkCodeForUser } from '../../2fa/server/code';
 import { checkPermissionsForInvocation, checkPermissions } from './api.helpers';
+import { isObject } from '../../../lib/utils/isObject';
 
 const logger = new Logger('API');
 
@@ -41,7 +42,7 @@ const getRequestIP = (req) => {
 		return remoteAddress;
 	}
 
-	if (!_.isString(forwardedFor)) {
+	if (!forwardedFor || typeof forwardedFor.valueOf() !== 'string') {
 		return remoteAddress;
 	}
 
@@ -125,7 +126,7 @@ export class APIClass extends Restivus {
 	}
 
 	success(result = {}) {
-		if (_.isObject(result)) {
+		if (isObject(result)) {
 			result.success = true;
 		}
 
@@ -138,7 +139,7 @@ export class APIClass extends Restivus {
 	}
 
 	failure(result, errorType, stack, error) {
-		if (_.isObject(result)) {
+		if (isObject(result)) {
 			result.success = false;
 		} else {
 			result = {
@@ -322,7 +323,7 @@ export class APIClass extends Restivus {
 		const shouldVerifyPermissions = checkPermissions(options);
 
 		// Allow for more than one route using the same option and endpoints
-		if (!_.isArray(routes)) {
+		if (!Array.isArray(routes)) {
 			routes = [routes];
 		}
 		const { version } = this._config;

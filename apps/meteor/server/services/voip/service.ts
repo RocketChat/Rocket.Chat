@@ -117,7 +117,7 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 				queueName: queue,
 			})) as IVoipConnectorResult;
 			const details = queueDetails.result as IQueueDetails;
-			if (!details.members || !details.members.length) {
+			if (!details.members?.length) {
 				// Go to the next queue if queue does not have any
 				// memmbers.
 				continue;
@@ -180,7 +180,7 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 
 			const details = queueDetails.result as IQueueDetails;
 
-			if (!details.members || !details.members.length) {
+			if (!details.members?.length) {
 				// Go to the next queue if queue does not have any
 				// memmbers.
 				continue;

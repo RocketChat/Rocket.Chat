@@ -27,31 +27,34 @@ import StatusIndicators from '../../../../components/message/StatusIndicators';
 import UiKitSurface from '../../../../components/message/content/UiKitSurface';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
-import { useUserCard } from '../../../../hooks/useUserCard';
 import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
+import { useChat } from '../../../room/contexts/ChatContext';
 
 const ContactHistoryMessage: FC<{
 	message: IMessage;
 	sequential: boolean;
 	isNewDay: boolean;
-}> = ({ message, sequential, isNewDay }) => {
+	showUserAvatar: boolean;
+}> = ({ message, sequential, isNewDay, showUserAvatar }) => {
 	const format = useFormatDate();
 	const formatTime = useFormatTime();
 
 	const t = useTranslation();
-	const { open: openUserCard } = useUserCard();
+	const chat = useChat();
 
 	if (message.t === 'livechat-close') {
 		return (
 			<MessageSystem>
 				<MessageSystemLeftContainer>
-					<UserAvatar
-						url={message.avatar}
-						username={message.u.username}
-						size={'x18'}
-						onClick={openUserCard(message.u.username)}
-						style={{ cursor: 'pointer' }}
-					/>
+					{showUserAvatar && (
+						<UserAvatar
+							url={message.avatar}
+							username={message.u.username}
+							size={'x18'}
+							onClick={chat?.userCard.open(message.u.username)}
+							style={{ cursor: 'pointer' }}
+						/>
+					)}
 				</MessageSystemLeftContainer>
 				<MessageSystemContainer>
 					<MessageSystemBlock>
@@ -71,12 +74,12 @@ const ContactHistoryMessage: FC<{
 			{isNewDay && <MessageDivider>{format(message.ts)}</MessageDivider>}
 			<MessageTemplate isPending={message.temp} sequential={sequential} role='listitem' data-qa='chat-history-message'>
 				<MessageLeftContainer>
-					{!sequential && message.u.username && (
+					{!sequential && message.u.username && showUserAvatar && (
 						<UserAvatar
 							url={message.avatar}
 							username={message.u.username}
 							size={'x36'}
-							onClick={openUserCard(message.u.username)}
+							onClick={chat?.userCard.open(message.u.username)}
 							style={{ cursor: 'pointer' }}
 						/>
 					)}
