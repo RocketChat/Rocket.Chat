@@ -34,7 +34,7 @@ export const getConnection = ((): ((options?: MongoClientOptions) => Promise<Db>
 		if (db) {
 			return db;
 		}
-		if (!client) {
+		if (client == null) {
 			client = connectDb(options);
 			client.then((c) => {
 				db = c.db(name);

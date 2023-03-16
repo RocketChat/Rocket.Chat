@@ -246,7 +246,9 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 
 	const isSubscribedToRoom = async (): Promise<boolean> => !!ChatSubscription.findOne({ rid }, { reactive: false });
 
-	const joinRoom = async (): Promise<void> => call('joinRoom', rid);
+	const joinRoom = async (): Promise<void> => {
+		await call('joinRoom', rid);
+	};
 
 	const markRoomAsRead = async (): Promise<void> => {
 		readMessage.readNow(rid);
