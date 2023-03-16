@@ -7,6 +7,14 @@ import type {
 	ISetting,
 	ISubscription,
 	IUser,
+	IRole,
+	IEmoji,
+	ICustomSound,
+	INotificationDesktop,
+	IWebdavAccount,
+	VoipEventDataSignature,
+	// IEmoji,
+	// ICustomSound,
 } from '@rocket.chat/core-typings';
 
 import type { TranslationKey } from '../TranslationContext';
@@ -131,3 +139,107 @@ export type ServerMethodReturn<MethodName extends ServerMethodName> = Awaited<Re
 export type ServerMethodFunction<MethodName extends ServerMethodName> = (
 	...args: ServerMethodParameters<MethodName>
 ) => Promise<ServerMethodReturn<MethodName>>;
+
+type StreamerKeyArgs<K, T extends unknown[]> = (key: K, cb: (...args: T) => void) => () => void;
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export interface StreamerEvents {
+	'roles': StreamerKeyArgs<'roles', [IRole]>;
+
+	'notify-room': StreamerKeyArgs<`${string}/user-activity`, [username: string, activities: string]> &
+		StreamerKeyArgs<
+			`${string}/deleteMessageBulk`,
+			[args: { rid: IMessage['rid']; excludePinned: boolean; ignoreDiscussion: boolean; ts: Record<string, Date>; users: string[] }]
+		> &
+		StreamerKeyArgs<`${string}/deleteMessage`, [{ _id: IMessage['_id'] }]> &
+		StreamerKeyArgs<`${string}/${string}`, []>;
+
+	'room-messages': StreamerKeyArgs<string, [IMessage]>;
+
+	'notify-all': StreamerKeyArgs<
+		'deleteEmojiCustom',
+		[
+			{
+				emojiData: IEmoji;
+			},
+		]
+	> &
+		StreamerKeyArgs<
+			'updateCustomSound',
+			[
+				{
+					soundData: ICustomSound;
+				},
+			]
+		> &
+		StreamerKeyArgs<'public-settings-changed', ['inserted' | 'updated' | 'removed' | 'changed', ISetting]>;
+
+	'notify-user': StreamerKeyArgs<`${string}/rooms-changed`, [IRoom]> &
+		StreamerKeyArgs<`${string}/subscriptions-changed`, [ISubscription]> &
+		StreamerKeyArgs<`${string}/message`, [IMessage]> &
+		StreamerKeyArgs<`${string}/force_logout`, []> &
+		StreamerKeyArgs<
+			`${string}/webdav`,
+			[
+				| {
+						type: 'changed';
+						account: Partial<IWebdavAccount>;
+				  }
+				| {
+						type: 'removed';
+						account: { _id: IWebdavAccount['_id'] };
+				  },
+			]
+		> &
+		StreamerKeyArgs<`${string}/e2ekeyRequest`, [string, string]> &
+		StreamerKeyArgs<`${string}/notification`, [INotificationDesktop]> &
+		StreamerKeyArgs<`${string}/voip.events`, [VoipEventDataSignature]> &
+		StreamerKeyArgs<
+			`${string}/call.hangup`,
+			[
+				{
+					roomId: string;
+				},
+			]
+		>;
+
+	'importers': StreamerKeyArgs<'progress', [{ rate: number }]>;
+
+	// 'notify-logged': (
+	// 	e:
+	// 		| 'voip.statuschanged'
+	// 		| 'private-settings-changed'
+	// 		| 'permissions-changed'
+	// 		| 'roles-change'
+	// 		| 'deleteCustomUserStatus'
+	// 		| 'updateCustomUserStatus'
+	// 		| 'deleteEmojiCustom'
+	// 		| 'updateEmojiCustom'
+	// 		| 'banner-changed'
+	// 		| 'updateAvatar'
+	// 		| 'Users:NameChanged'
+	// 		| 'Users:Deleted',
+	// ) => [void];
+	// 'notify-room-users': (e: `${string}/video-conference` | `${string}/webrtc` | `${string}/otr` | `${string}/userData`) => [void];
+
+	// 'apps': (
+	// 	e:
+	// 		| 'app/added'
+	// 		| 'app/removed'
+	// 		| 'app/updated'
+	// 		| 'app/statusUpdate'
+	// 		| 'app/settingUpdate'
+	// 		| 'command/added'
+	// 		| 'command/disabled'
+	// 		| 'command/updated'
+	// 		| 'command/removed'
+	// 		| 'actions/changed',
+	// ) => [unknown];
+	// 'user-presence': () => [void];
+}
+
+export type ServerStreamerNames = keyof StreamerEvents;
+
+export type ServerStreamerParameters<MethodName extends ServerStreamerNames> = Parameters<StreamerEvents[MethodName]>;
+
+export type ServerStreamerReturn<MethodName extends ServerStreamerNames> = ReturnType<StreamerEvents[MethodName]>;

@@ -22,7 +22,7 @@ const useStreamBySubPath = (
 
     events.set(
       subpath,
-      streamer(subpath, () => {
+      (streamer as any)(subpath, () => {
         ee.emit(subpath);
       })
     );

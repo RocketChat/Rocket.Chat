@@ -10,6 +10,13 @@ import Page from '../../../components/Page';
 import type { ProgressStep } from './ImportTypes';
 import { useErrorHandler } from './useErrorHandler';
 
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface StreamerEvents {
+		importers: (key: 'progress', cb: (progress: { rate: number }) => void) => () => void;
+	}
+}
+
 const ImportProgressPage = function ImportProgressPage() {
 	const queryClient = useQueryClient();
 	const streamer = useStream('importers');
