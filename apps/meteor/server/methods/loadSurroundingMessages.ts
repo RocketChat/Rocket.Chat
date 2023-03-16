@@ -1,11 +1,29 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import type { IMessage } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { canAccessRoomId } from '../../app/authorization/server';
 import { Messages } from '../../app/models/server';
 import { normalizeMessagesForUser } from '../../app/utils/server/lib/normalizeMessagesForUser';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		loadSurroundingMessages(
+			message: Pick<IMessage, '_id' | 'rid'> & { ts?: Date },
+			limit?: number,
+		):
+			| {
+					messages: IMessage[];
+					moreBefore: boolean;
+					moreAfter: boolean;
+			  }
+			| false;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	loadSurroundingMessages(message, limit = 50) {
 		check(message, Object);
 		check(limit, Number);
@@ -16,7 +34,7 @@ Meteor.methods({
 			});
 		}
 
-		const fromId = Meteor.userId();
+		const fromId = Meteor.userId() ?? undefined;
 
 		if (!message._id) {
 			return false;
@@ -24,7 +42,7 @@ Meteor.methods({
 
 		message = Messages.findOneById(message._id);
 
-		if (!message || !message.rid) {
+		if (!message?.rid) {
 			return false;
 		}
 
@@ -60,7 +78,7 @@ Meteor.methods({
 		messages.push(...afterMessages);
 
 		return {
-			messages: normalizeMessagesForUser(messages, fromId),
+			messages: fromId ? normalizeMessagesForUser(messages, fromId) : messages,
 			moreBefore,
 			moreAfter,
 		};
