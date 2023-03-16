@@ -141,7 +141,7 @@ Meteor.startup(async function () {
 		label: 'Copy',
 		// classes: 'clipboard',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
-		action(_, props) {
+		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			const msgText = getMainMessageText(message).msg;
 			await navigator.clipboard.writeText(msgText);

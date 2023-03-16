@@ -204,7 +204,7 @@ const computation = Tracker.autorun(() => {
 
 							callbacks.run('streamMessage', msg);
 
-							return fireGlobalEvent('new-message', msg);
+							fireGlobalEvent('new-message', msg);
 						})
 						.then(() => {
 							record.streamActive = true;

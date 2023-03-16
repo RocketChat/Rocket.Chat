@@ -54,7 +54,7 @@ declare module 'meteor/rocketchat:streamer' {
 
 		emit(event: string, ...data: any[]): void;
 
-		on(event: string, fn: (...data: any[]) => void): void;
+		on(event: string, fn: (...data: any[]) => void): Promise<void>;
 
 		removeSubscription(subscription: DDPSubscription, eventName: string): void;
 
