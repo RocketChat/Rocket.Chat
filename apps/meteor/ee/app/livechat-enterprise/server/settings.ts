@@ -44,7 +44,7 @@ export const createSettings = async (): Promise<void> => {
 		enableQuery: omnichannelEnabledQuery,
 	});
 
-	settingsRegistry.addGroup('Omnichannel', function () {
+	void settingsRegistry.addGroup('Omnichannel', function () {
 		this.section('Business_Hours', function () {
 			this.add('Livechat_business_hour_type', 'Single', {
 				type: 'select',

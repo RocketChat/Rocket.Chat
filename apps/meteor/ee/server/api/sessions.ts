@@ -71,7 +71,7 @@ API.v1.addRoute(
 				return API.v1.notFound('Session not found');
 			}
 
-			Promise.all([
+			await Promise.all([
 				Users.unsetOneLoginToken(this.userId, sessionObj.loginToken),
 				Sessions.logoutByloginTokenAndUserId({ loginToken: sessionObj.loginToken, userId: this.userId }),
 			]);
