@@ -1,10 +1,18 @@
 import { Meteor } from 'meteor/meteor';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Mailer } from '../lib/Mailer';
 import { hasPermission } from '../../../authorization/server';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'Mailer.sendMail'(from: string, subject: string, body: string, dryrun?: boolean, query?: string): any;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	'Mailer.sendMail'(from, subject, body, dryrun, query) {
 		methodDeprecationLogger.warn('Mailer.sendMail will be deprecated in future versions of Rocket.Chat');
 

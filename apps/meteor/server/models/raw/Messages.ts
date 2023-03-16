@@ -26,8 +26,8 @@ import type {
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
-import { escapeExternalFederationEventId } from '../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/MessageConverter';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { escapeExternalFederationEventId } from '../../services/federation/infrastructure/rocket-chat/adapters/federation-id-escape-helper';
 
 export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMessage>>) {

@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 
-import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+import { Apps } from '@rocket.chat/core-services';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 
 import { Users } from '../../../../app/models/server';
@@ -11,11 +11,10 @@ import { getTagColor } from './getTagColor';
 import type { ILicense, LicenseAppSources } from '../definition/ILicense';
 import type { ILicenseTag } from '../definition/ILicenseTag';
 import { isUnderAppLimits } from './lib/isUnderAppLimits';
-import type { AppServerOrchestrator } from '../../../server/apps/orchestrator';
 
 const EnterpriseLicenses = new EventEmitter();
 
-export interface IValidLicense {
+interface IValidLicense {
 	valid?: boolean;
 	license: ILicense;
 }
@@ -38,22 +37,6 @@ class LicenseClass {
 		maxPrivateApps: 3,
 		maxMarketplaceApps: 5,
 	};
-
-	private Apps: AppServerOrchestrator;
-
-	constructor() {
-		/**
-		 * Importing the Apps variable statically at the top of the file causes a change
-		 * in the import order and ends up causing an error during the server initialization
-		 *
-		 * We added a dynamic import here to avoid this issue
-		 * @TODO as soon as the Apps-Engine service is available, use it instead of this dynamic import
-		 */
-		// eslint-disable-next-line @typescript-eslint/naming-convention
-		import('../../../server/apps').then(({ Apps }) => {
-			this.Apps = Apps;
-		});
-	}
 
 	private _validateExpiration(expiration: string): boolean {
 		return new Date() > new Date(expiration);
@@ -237,11 +220,11 @@ class LicenseClass {
 	}
 
 	async canEnableApp(source: LicenseAppSources): Promise<boolean> {
-		if (!this.Apps?.isInitialized()) {
+		if (!(await Apps.isInitialized())) {
 			return false;
 		}
 
-		return isUnderAppLimits({ appManager: this.Apps.getManager() as AppManager }, this.appsConfig, source);
+		return isUnderAppLimits(this.appsConfig, source);
 	}
 
 	showLicenses(): void {
@@ -369,7 +352,7 @@ export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void):
 	EnterpriseLicenses.once(`valid:${feature}`, cb);
 }
 
-export function onValidFeature(feature: BundleFeature, cb: () => void): () => void {
+function onValidFeature(feature: BundleFeature, cb: () => void): () => void {
 	EnterpriseLicenses.on(`valid:${feature}`, cb);
 
 	if (hasLicense(feature)) {
@@ -381,7 +364,7 @@ export function onValidFeature(feature: BundleFeature, cb: () => void): () => vo
 	};
 }
 
-export function onInvalidFeature(feature: BundleFeature, cb: () => void): () => void {
+function onInvalidFeature(feature: BundleFeature, cb: () => void): () => void {
 	EnterpriseLicenses.on(`invalid:${feature}`, cb);
 
 	if (!hasLicense(feature)) {
@@ -399,8 +382,8 @@ export function onToggledFeature(
 		up,
 		down,
 	}: {
-		up?: () => void;
-		down?: () => void;
+		up?: () => Promise<void> | void;
+		down?: () => Promise<void> | void;
 	},
 ): () => void {
 	let enabled = hasLicense(feature);
@@ -446,7 +429,7 @@ export function flatModules(modulesAndBundles: string[]): string[] {
 	return modules.concat(modulesFromBundles);
 }
 
-export interface IOverrideClassProperties {
+interface IOverrideClassProperties {
 	[key: string]: (...args: any[]) => any;
 }
 

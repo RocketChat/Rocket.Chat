@@ -1,4 +1,4 @@
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 
 import { Messages, Rooms, Users } from '../../../models/server';
 import { transformMappedData } from '../../../../ee/lib/misc/transformMappedData';
