@@ -98,10 +98,18 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 		}
 	}, [dispatchToastMessage, email, previousEmail, sendConfirmationEmail, t]);
 
+	// this is will decide whether form can be saved
 	const passwordError = useMemo(
-		() => (!password || !confirmationPassword || password === confirmationPassword ? undefined : t('Passwords_do_not_match')),
+		() => (password && confirmationPassword && password === confirmationPassword ? undefined : t('Passwords_do_not_match')),
 		[t, password, confirmationPassword],
 	);
+
+	// this will decide when to password mismatch on UI
+	const showPasswordError = useMemo(
+		() => (!password || !confirmationPassword ? false : !!passwordError),
+		[passwordError, password, confirmationPassword],
+	);
+
 	const emailError = useMemo(() => (validateEmail(email) ? undefined : 'error-invalid-email-address'), [email]);
 	const checkUsername = useDebouncedCallback(
 		async (username: string) => {
@@ -335,7 +343,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 											<PasswordInput
 												autoComplete='off'
 												disabled={!allowPasswordChange}
-												error={passwordError}
+												error={showPasswordError ? passwordError : undefined}
 												flexGrow={1}
 												value={password}
 												onChange={handlePassword}
@@ -345,7 +353,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 										{!allowPasswordChange && <Field.Hint>{t('Password_Change_Disabled')}</Field.Hint>}
 									</Field>
 								),
-								[t, password, handlePassword, passwordError, allowPasswordChange],
+								[t, password, handlePassword, passwordError, allowPasswordChange, showPasswordError],
 							)}
 							{useMemo(
 								() => (
@@ -355,18 +363,18 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 											<Field.Row>
 												<PasswordInput
 													autoComplete='off'
-													error={passwordError}
+													error={showPasswordError ? passwordError : undefined}
 													flexGrow={1}
 													value={confirmationPassword}
 													onChange={handleConfirmationPassword}
 													addon={<Icon name='key' size='x20' />}
 												/>
 											</Field.Row>
-											{passwordError && <Field.Error>{passwordError}</Field.Error>}
+											{passwordError && <Field.Error>{showPasswordError ? passwordError : undefined}</Field.Error>}
 										</AnimatedVisibility>
 									</Field>
 								),
-								[t, confirmationPassword, handleConfirmationPassword, password, passwordError],
+								[t, confirmationPassword, handleConfirmationPassword, password, passwordError, showPasswordError],
 							)}
 						</FieldGroup>
 					</Grid.Item>
