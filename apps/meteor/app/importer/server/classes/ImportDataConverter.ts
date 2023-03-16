@@ -11,11 +11,13 @@ import type {
 	IImportMessageRecord,
 	IUser,
 	IUserEmail,
+	IImportData,
+	IImportRecordType,
 } from '@rocket.chat/core-typings';
-import { ImportData as ImportDataRaw } from '@rocket.chat/models';
+import { ImportData } from '@rocket.chat/models';
 
 import type { IConversionCallbacks } from '../definitions/IConversionCallbacks';
-import { Users, Rooms, Subscriptions, ImportData } from '../../../models/server';
+import { Users, Rooms, Subscriptions } from '../../../models/server';
 import { generateUsernameSuggestion, insertMessage, saveUserIdentity, addUserToDefaultChannels } from '../../../lib/server';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import type { Logger } from '../../../../server/lib/logger/Logger';
@@ -124,8 +126,8 @@ export class ImportDataConverter {
 		this.addUserToCache(userData.importIds[0], userData._id, userData.username);
 	}
 
-	protected addObject(type: string, data: Record<string, any>, options: Record<string, any> = {}): void {
-		ImportData.model.rawCollection().insert({
+	protected async addObject(type: IImportRecordType, data: IImportData, options: Record<string, any> = {}): Promise<void> {
+		await ImportData.col.insertOne({
 			_id: new ObjectId().toHexString(),
 			data,
 			dataType: type,
@@ -133,16 +135,16 @@ export class ImportDataConverter {
 		});
 	}
 
-	addUser(data: IImportUser): void {
-		this.addObject('user', data);
+	async addUser(data: IImportUser): Promise<void> {
+		await this.addObject('user', data);
 	}
 
-	addChannel(data: IImportChannel): void {
-		this.addObject('channel', data);
+	async addChannel(data: IImportChannel): Promise<void> {
+		await this.addObject('channel', data);
 	}
 
-	addMessage(data: IImportMessage, useQuickInsert = false): void {
-		this.addObject('message', data, {
+	async addMessage(data: IImportMessage, useQuickInsert = false): Promise<void> {
+		await this.addObject('message', data, {
 			useQuickInsert: useQuickInsert || undefined,
 		});
 	}
@@ -296,7 +298,7 @@ export class ImportDataConverter {
 	}
 
 	protected async getUsersToImport(): Promise<Array<IImportUserRecord>> {
-		return ImportDataRaw.getAllUsers().toArray();
+		return ImportData.getAllUsers().toArray();
 	}
 
 	findExistingUser(data: IImportUser): IUser | undefined {
@@ -319,7 +321,7 @@ export class ImportDataConverter {
 		users.forEach(({ data, _id }) => {
 			try {
 				if (beforeImportFn && !beforeImportFn(data, 'user')) {
-					this.skipRecord(_id);
+					await this.skipRecord(_id);
 					return;
 				}
 
@@ -332,7 +334,7 @@ export class ImportDataConverter {
 
 				let existingUser = this.findExistingUser(data);
 				if (existingUser && this._options.skipExistingUsers) {
-					this.skipRecord(_id);
+					await this.skipRecord(_id);
 					return;
 				}
 
@@ -368,14 +370,14 @@ export class ImportDataConverter {
 				}
 			} catch (e) {
 				this._logger.error(e);
-				this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
+				await this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
 			}
 		});
 	}
 
-	protected saveError(importId: string, error: Error): void {
+	protected async saveError(importId: string, error: Error): Promise<void> {
 		this._logger.error(error);
-		ImportData.update(
+		await ImportData.updateOne(
 			{
 				_id: importId,
 			},
@@ -390,8 +392,8 @@ export class ImportDataConverter {
 		);
 	}
 
-	protected skipRecord(_id: string): void {
-		ImportData.update(
+	protected async skipRecord(_id: string): Promise<void> {
+		await ImportData.updateOne(
 			{
 				_id,
 			},
@@ -543,17 +545,18 @@ export class ImportDataConverter {
 	}
 
 	protected async getMessagesToImport(): Promise<Array<IImportMessageRecord>> {
-		return ImportDataRaw.getAllMessages().toArray();
+		return ImportData.getAllMessages().toArray();
 	}
 
 	async convertMessages({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): Promise<void> {
 		const rids: Array<string> = [];
 		const messages = await this.getMessagesToImport();
 
-		messages.forEach(({ data, _id }: IImportMessageRecord) => {
+		// TODO: does this forEach work with promises?
+		messages.forEach(async ({ data, _id }: IImportMessageRecord) => {
 			try {
 				if (beforeImportFn && !beforeImportFn(data, 'message')) {
-					this.skipRecord(_id);
+					await this.skipRecord(_id);
 					return;
 				}
 
@@ -624,7 +627,7 @@ export class ImportDataConverter {
 					afterImportFn(data, 'message', true);
 				}
 			} catch (e) {
-				this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
+				await this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
 			}
 		});
 
@@ -651,9 +654,10 @@ export class ImportDataConverter {
 		this.updateRoomId(room._id, roomData);
 	}
 
-	public findDMForImportedUsers(...users: Array<string>): IImportChannel | undefined {
-		const record = ImportData.findDMForImportedUsers(...users);
+	public async findDMForImportedUsers(...users: Array<string>): Promise<IImportChannel | undefined> {
+		const record = await ImportData.findDMForImportedUsers(...users);
 		if (record) {
+			// @ts-expect-error - typings
 			return record.data;
 		}
 	}
@@ -895,7 +899,7 @@ export class ImportDataConverter {
 	}
 
 	protected async getChannelsToImport(): Promise<Array<IImportChannelRecord>> {
-		return ImportDataRaw.getAllChannels().toArray();
+		return ImportData.getAllChannels().toArray();
 	}
 
 	async convertChannels(startedByUserId: string, { beforeImportFn, afterImportFn }: IConversionCallbacks = {}): Promise<void> {
@@ -903,7 +907,7 @@ export class ImportDataConverter {
 		channels.forEach(({ data, _id }: IImportChannelRecord) => {
 			try {
 				if (beforeImportFn && !beforeImportFn(data, 'channel')) {
-					this.skipRecord(_id);
+					await this.skipRecord(_id);
 					return;
 				}
 
@@ -934,7 +938,7 @@ export class ImportDataConverter {
 					afterImportFn(data, 'channel', !existingRoom);
 				}
 			} catch (e) {
-				this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
+				await this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
 			}
 		});
 	}
@@ -949,18 +953,18 @@ export class ImportDataConverter {
 		await this.convertChannels(startedByUserId, callbacks);
 		await this.convertMessages(callbacks);
 
-		process.nextTick(() => {
-			this.clearSuccessfullyImportedData();
+		process.nextTick(async () => {
+			await this.clearSuccessfullyImportedData();
 		});
 	}
 
 	public async clearImportData(): Promise<void> {
 		// Using raw collection since its faster
-		await ImportData.model.rawCollection().remove({});
+		await ImportData.col.deleteMany({});
 	}
 
-	clearSuccessfullyImportedData(): void {
-		ImportData.model.rawCollection().remove({
+	async clearSuccessfullyImportedData(): Promise<void> {
+		await ImportData.col.deleteMany({
 			errors: {
 				$exists: false,
 			},

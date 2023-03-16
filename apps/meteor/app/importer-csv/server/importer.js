@@ -54,7 +54,7 @@ export class CsvImporter extends Base {
 			return roomIds.get(roomName);
 		};
 
-		zip.forEach((entry) => {
+		const operations = zip.map(async (entry) => {
 			this.logger.debug(`Entry: ${entry.entryName}`);
 
 			// Ignore anything that has `__MACOSX` in it's name, as sadly these things seem to mess everything up
@@ -75,7 +75,7 @@ export class CsvImporter extends Base {
 				const parsedChannels = this.csvParser(entry.getData().toString());
 				channelsCount = parsedChannels.length;
 
-				for (const c of parsedChannels) {
+				for await (const c of parsedChannels) {
 					const name = c[0].trim();
 					const id = getRoomId(name);
 					const creator = c[1].trim();
@@ -86,7 +86,7 @@ export class CsvImporter extends Base {
 						.map((m) => m.trim())
 						.filter((m) => m);
 
-					this.converter.addChannel({
+					await this.converter.addChannel({
 						importIds: [id],
 						u: {
 							_id: creator,
@@ -167,11 +167,11 @@ export class CsvImporter extends Base {
 				super.updateRecord({ messagesstatus: channelName });
 
 				if (isDirect) {
-					for (const msg of data) {
+					for await (const msg of data) {
 						const sourceId = [msg.username, msg.otherUsername].sort().join('/');
 
 						if (!dmRooms.has(sourceId)) {
-							this.converter.addChannel({
+							await this.converter.addChannel({
 								importIds: [sourceId],
 								users: [msg.username, msg.otherUsername],
 								t: 'd',
@@ -191,12 +191,12 @@ export class CsvImporter extends Base {
 
 						usedUsernames.add(msg.username);
 						usedUsernames.add(msg.otherUsername);
-						this.converter.addMessage(newMessage);
+						await this.converter.addMessage(newMessage);
 					}
 				} else {
 					const rid = getRoomId(folderName);
 
-					for (const msg of data) {
+					for await (const msg of data) {
 						const newMessage = {
 							rid,
 							u: {
@@ -207,7 +207,7 @@ export class CsvImporter extends Base {
 						};
 
 						usedUsernames.add(msg.username);
-						this.converter.addMessage(newMessage);
+						await this.converter.addMessage(newMessage);
 					}
 				}
 
@@ -217,6 +217,8 @@ export class CsvImporter extends Base {
 
 			increaseProgressCount();
 		});
+
+		await Promise.all(operations);
 
 		if (usersCount) {
 			await Settings.incrementValueById('CSV_Importer_Count', usersCount);

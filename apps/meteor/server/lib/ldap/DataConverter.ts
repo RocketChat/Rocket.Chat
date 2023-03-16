@@ -36,7 +36,7 @@ export class LDAPDataConverter extends VirtualDataConverter {
 
 	static async convertSingleUser(userData: IImportUser, options?: IConverterOptions): Promise<void> {
 		const converter = new LDAPDataConverter(true, options);
-		converter.addUser(userData);
+		await converter.addUser(userData);
 		await converter.convertUsers();
 	}
 }
