@@ -1,15 +1,4 @@
-import type {
-	IMessage,
-	IPermission,
-	IRoom,
-	IMessageSearchProvider,
-	IMessageSearchSuggestion,
-	ISetting,
-	ISubscription,
-	IUser,
-} from '@rocket.chat/core-typings';
-
-import type { TranslationKey } from '../TranslationContext';
+import type { IMessage, IRoom, IMessageSearchProvider, IMessageSearchSuggestion, IUser } from '@rocket.chat/core-typings';
 
 // TODO: frontend chapter day - define methods
 
@@ -61,38 +50,6 @@ export interface ServerMethods {
 	'updateIncomingIntegration': (...args: any[]) => any;
 	'updateOutgoingIntegration': (...args: any[]) => any;
 	'checkRegistrationSecretURL'(hash: string): boolean;
-	'spotlight': (
-		...args: (
-			| string
-			| string[]
-			| {
-					users?: boolean;
-					rooms?: boolean;
-					mentions?: boolean;
-			  }
-		)[]
-	) => {
-		rooms: { _id: string; name: string; t: string; uids?: string[] }[];
-		users: {
-			_id: string;
-			status: 'offline' | 'online' | 'busy' | 'away';
-			name: string;
-			username: string;
-			outside: boolean;
-			avatarETag?: string;
-			nickname?: string;
-		}[];
-	};
-	'getPasswordPolicy': (params?: { token: string }) => {
-		enabled: boolean;
-		policy: [name: TranslationKey, options?: Record<string, unknown>][];
-	};
-	'subscriptions/get': (updatedSince?: Date) => ISubscription[] | { update: ISubscription[]; remove: ISubscription[] };
-	'permissions/get': (updatedSince?: Date) => IPermission[] | { update: IPermission[]; remove: IPermission[] };
-	'public-settings/get': (updatedSince?: Date) => ISetting[] | { update: ISetting[]; remove: ISetting[] };
-	'private-settings/get': (updatedSince?: Date) => ISetting[] | { update: ISetting[]; remove: ISetting[] };
-	'pinMessage': (message: IMessage) => void;
-	'unpinMessage': (message: IMessage) => void;
 	'rocketchatSearch.getProvider': () => IMessageSearchProvider | undefined;
 	'rocketchatSearch.search': (
 		text: string,
