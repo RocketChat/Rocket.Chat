@@ -29,13 +29,13 @@ Meteor.startup(function () {
 		await Presence.removeLostConnections(nodeId);
 	});
 
-	Accounts.onLogin(async function (login: any): Promise<void> {
+	Accounts.onLogin(function (login: any): void {
 		if (login.type !== 'resume') {
 			return;
 		}
-		await Presence.newConnection(login.user._id, login.connection.id, nodeId);
-
-		updateConns();
+		void Presence.newConnection(login.user._id, login.connection.id, nodeId).then(() => {
+			updateConns();
+		});
 	});
 
 	Accounts.onLogout(async function (login: any): Promise<void> {
