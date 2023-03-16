@@ -1,17 +1,4 @@
-import type {
-	IMessage,
-	IPermission,
-	IRoom,
-	IMessageSearchProvider,
-	IMessageSearchSuggestion,
-	ISetting,
-	ISubscription,
-	IUser,
-} from '@rocket.chat/core-typings';
-
-import type { TranslationKey } from '../TranslationContext';
-import type { GetReadReceiptsMethod } from './methods/getReadReceipts';
-import type { UnsubscribeMethod as MailerUnsubscribeMethod } from './methods/mailer/unsubscribe';
+import type { IMessage, IRoom, IMessageSearchProvider, IMessageSearchSuggestion, IUser } from '@rocket.chat/core-typings';
 
 // TODO: frontend chapter day - define methods
 
@@ -54,57 +41,15 @@ export interface ServerMethods {
 	'sendConfirmationEmail': (...args: any[]) => any;
 	'setAdminStatus': (...args: any[]) => any;
 	'setAvatarFromService': (...args: any[]) => any;
-	'setReaction': (reaction: string, mid: IMessage['_id']) => void;
 	'setUsername': (...args: any[]) => any;
 	'setUserPassword': (...args: any[]) => any;
-	'setUserStatus': (statusType: IUser['status'], statusText: IUser['statusText']) => void;
-	'slashCommand': (params: { cmd: string; params: string; msg: IMessage; triggerId: string }) => unknown;
 	'toggleFavorite': (...args: any[]) => any;
 	'unblockUser': (...args: any[]) => any;
 	'unmuteUserInRoom': (...args: any[]) => any;
 	'unreadMessages': (...args: any[]) => any;
 	'updateIncomingIntegration': (...args: any[]) => any;
 	'updateOutgoingIntegration': (...args: any[]) => any;
-	'Mailer:unsubscribe': MailerUnsubscribeMethod;
-	'getRoomById': (rid: IRoom['_id']) => IRoom;
-	'getReadReceipts': GetReadReceiptsMethod;
-	'checkRegistrationSecretURL': (hash: string) => boolean;
-	'livechat:changeLivechatStatus': (params?: void | { status?: string; agentId?: string }) => unknown;
-	'livechat:saveAgentInfo': (_id: string, agentData: unknown, agentDepartments: unknown) => unknown;
-	'livechat:takeInquiry': (inquiryId: string, options?: { clientAction: boolean; forwardingToDepartment?: boolean }) => unknown;
-	'livechat:resumeOnHold': (roomId: string, options?: { clientAction: boolean }) => unknown;
-	'spotlight': (
-		...args: (
-			| string
-			| string[]
-			| {
-					users?: boolean;
-					rooms?: boolean;
-					mentions?: boolean;
-			  }
-		)[]
-	) => {
-		rooms: { _id: string; name: string; t: string; uids?: string[] }[];
-		users: {
-			_id: string;
-			status: 'offline' | 'online' | 'busy' | 'away';
-			name: string;
-			username: string;
-			outside: boolean;
-			avatarETag?: string;
-			nickname?: string;
-		}[];
-	};
-	'getPasswordPolicy': (params?: { token: string }) => {
-		enabled: boolean;
-		policy: [name: TranslationKey, options?: Record<string, unknown>][];
-	};
-	'subscriptions/get': (updatedSince?: Date) => ISubscription[] | { update: ISubscription[]; remove: ISubscription[] };
-	'permissions/get': (updatedSince?: Date) => IPermission[] | { update: IPermission[]; remove: IPermission[] };
-	'public-settings/get': (updatedSince?: Date) => ISetting[] | { update: ISetting[]; remove: ISetting[] };
-	'private-settings/get': (updatedSince?: Date) => ISetting[] | { update: ISetting[]; remove: ISetting[] };
-	'pinMessage': (message: IMessage) => void;
-	'unpinMessage': (message: IMessage) => void;
+	'checkRegistrationSecretURL'(hash: string): boolean;
 	'rocketchatSearch.getProvider': () => IMessageSearchProvider | undefined;
 	'rocketchatSearch.search': (
 		text: string,
