@@ -98252,6 +98252,50 @@
           ]
         }
       ]
+    },
+    "5.4.5": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.2",
+        "4.4",
+        "5.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "28363",
+          "title": "fix(upload): Restriction setting not being applied to the old UFS route",
+          "userLogin": "rodrigok",
+          "milestone": "5.4.5",
+          "contributors": [
+            "rodrigok",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28121",
+          "title": "Regression: Gracefully stop DDP Streamer publication and close WS",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.4.5",
+          "contributors": [
+            "sampaiodiego",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27929",
+          "title": "[FIX][ENTERPRISE] DDP streamer sending data to destroyed streams",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.4.5",
+          "contributors": [
+            "sampaiodiego",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        }
+      ]
     }
   },
   "5.4.0-rc.0": {

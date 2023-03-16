@@ -1,4 +1,32 @@
 
+# 5.4.5
+`2023-03-16  ·  1 🐛  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- **ENTERPRISE:** DDP streamer sending data to destroyed streams ([#27929](https://github.com/RocketChat/Rocket.Chat/pull/27929))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- fix(upload): Restriction setting not being applied to the old UFS route ([#28363](https://github.com/RocketChat/Rocket.Chat/pull/28363))
+
+- Regression: Gracefully stop DDP Streamer publication and close WS ([#28121](https://github.com/RocketChat/Rocket.Chat/pull/28121))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 5.4.4
 `2023-03-08  ·  1 🔍  ·  1 👩‍💻👨‍💻`
 
