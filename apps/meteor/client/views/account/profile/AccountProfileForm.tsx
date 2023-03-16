@@ -176,7 +176,7 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 		emails: [{ verified = false } = { verified: false }],
 	} = user as any;
 
-	const canSave = !![!!passwordError, !!emailError, !!usernameError, !!nameError, !!statusTextError, !!bioError].filter(Boolean);
+	const canSave = !(!!passwordError || !!emailError || !!usernameError || !!nameError || !!statusTextError || !!bioError);
 
 	useEffect(() => {
 		onSaveStateChange(canSave);
