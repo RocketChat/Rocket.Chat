@@ -1,10 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { Permissions } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermission } from '../functions/hasPermission';
 import { CONSTANTS } from '../../lib';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'authorization:removeRoleFromPermission'(permissionId: string, role: string): void;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async 'authorization:removeRoleFromPermission'(permissionId, role) {
 		const uid = Meteor.userId();
 		const permission = await Permissions.findOneById(permissionId);
