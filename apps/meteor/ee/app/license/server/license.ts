@@ -220,7 +220,7 @@ class LicenseClass {
 	}
 
 	async canEnableApp(source: LicenseAppSources): Promise<boolean> {
-		if (!Apps.isInitialized()) {
+		if (!(await Apps.isInitialized())) {
 			return false;
 		}
 
@@ -382,8 +382,8 @@ export function onToggledFeature(
 		up,
 		down,
 	}: {
-		up?: () => void;
-		down?: () => void;
+		up?: () => Promise<void> | void;
+		down?: () => Promise<void> | void;
 	},
 ): () => void {
 	let enabled = hasLicense(feature);

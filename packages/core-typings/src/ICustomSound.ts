@@ -1,6 +1,6 @@
-import type { IRocketChatRecord } from './IRocketChatRecord';
-
-export interface ICustomSound extends IRocketChatRecord {
+export interface ICustomSound {
+	_id: string;
 	name: string;
-	statusType: string;
+	extension: string;
+	_updatedAt?: Date;
 }

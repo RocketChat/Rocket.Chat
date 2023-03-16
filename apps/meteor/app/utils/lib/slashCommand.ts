@@ -59,7 +59,7 @@ export const slashCommands = {
 
 		return cmd.callback(command, params, message, triggerId);
 	},
-	getPreviews(command: string, params: string, message: IMessage): SlashCommandPreviews | undefined {
+	getPreviews(command: string, params: string, message: RequiredField<Partial<IMessage>, 'rid'>): SlashCommandPreviews | undefined {
 		const cmd = this.commands[command];
 		if (typeof cmd?.previewer !== 'function') {
 			return;
@@ -82,7 +82,13 @@ export const slashCommands = {
 
 		return previewInfo;
 	},
-	executePreview(command: string, params: string, message: IMessage, preview: SlashCommandPreviewItem, triggerId: string): void {
+	executePreview(
+		command: string,
+		params: string,
+		message: Pick<IMessage, 'rid'> & Partial<Omit<IMessage, 'rid'>>,
+		preview: SlashCommandPreviewItem,
+		triggerId?: string,
+	): void {
 		const cmd = this.commands[command];
 		if (typeof cmd?.previewCallback !== 'function') {
 			return;
