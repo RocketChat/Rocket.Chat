@@ -71,12 +71,12 @@ class E2E extends Emitter {
 		this._ready = new ReactiveVar(false);
 		this.instancesByRoomId = {};
 
-		this.on('ready', () => {
+		this.on('ready', async () => {
 			this._ready.set(true);
 			this.log('startClient -> Done');
 			this.log('decryptSubscriptions');
 
-			this.decryptSubscriptions();
+			await this.decryptSubscriptions();
 			this.log('decryptSubscriptions -> Done');
 		});
 	}

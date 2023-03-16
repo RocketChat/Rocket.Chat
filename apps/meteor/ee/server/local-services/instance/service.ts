@@ -31,9 +31,9 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 			}
 		});
 
-		this.onEvent('license.module', ({ module, valid }) => {
+		this.onEvent('license.module', async ({ module, valid }) => {
 			if (module === 'scalability' && valid) {
-				this.startBroadcast();
+				await this.startBroadcast();
 			}
 		});
 
