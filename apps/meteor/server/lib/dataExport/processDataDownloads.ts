@@ -36,7 +36,7 @@ const loadUserSubscriptions = (_exportOperation: IExportOperation, fileType: 'js
 	)[] = [];
 
 	const cursor: FindCursor<ISubscription> = Subscriptions.findByUserId(userId);
-	cursor.forEach((subscription) => {
+	await cursor.forEach((subscription) => {
 		const roomData = getRoomData(subscription.rid, userId);
 		roomData.targetFile = `${(fileType === 'json' && roomData.roomName) || subscription.rid}.${fileType}`;
 
