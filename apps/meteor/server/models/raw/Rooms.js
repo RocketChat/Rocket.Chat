@@ -79,30 +79,33 @@ export class RoomsRaw extends BaseRaw {
 							],
 					  }
 					: {},
-				{
-					$or: [
-						{
-							t: {
-								$in: types,
-							},
-						},
-						...(discussion ? [{ prid: { $exists: true } }] : []),
-						...(teams
-							? [
-									{
-										teamMain: {
-											$exists: true,
-										},
+				types && types.length
+					? {
+							$or: [
+								{
+									t: {
+										$in: types,
 									},
-							  ]
-							: []),
-					],
-				},
+								},
+								...(discussion ? [{ prid: { $exists: true } }] : []),
+								...(teams
+									? [
+											{
+												teamMain: {
+													$exists: true,
+												},
+											},
+									  ]
+									: []),
+							],
+					  }
+					: {},
 			],
 			...(!discussion ? { prid: { $exists: false } } : {}),
 			...(!teams ? { teamMain: { $exists: false } } : {}),
 		};
 
+		console.log(JSON.stringify(query));
 		return this.findPaginated(query, options);
 	}
 
