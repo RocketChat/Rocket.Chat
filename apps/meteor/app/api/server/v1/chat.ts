@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 import { canAccessRoom, canAccessRoomId, roomAccessAttributes, hasPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
@@ -197,7 +198,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-params', 'The "message" parameter must be provided.');
 			}
 
-			const sent = await executeSendMessage(this.userId, this.bodyParams.message);
+			const sent = await executeSendMessage(this.userId, this.bodyParams.message as Pick<IMessage, 'rid'>);
 			const [message] = await normalizeMessagesForUser([sent], this.userId);
 
 			return API.v1.success({

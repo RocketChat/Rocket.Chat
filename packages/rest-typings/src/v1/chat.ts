@@ -468,26 +468,6 @@ const ChatGetMessageReadReceiptsSchema = {
 
 export const isChatGetMessageReadReceiptsProps = ajv.compile<ChatGetMessageReadReceipts>(ChatGetMessageReadReceiptsSchema);
 
-type ChatPostMessage = {
-	roomId: IRoom['_id'];
-	text?: string;
-};
-
-const ChatPostMessageSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-		},
-		text: {
-			type: 'string',
-		},
-	},
-	required: ['roomId'],
-	additionalProperties: false,
-};
-
-export const isChatPostMessageSchemaProps = ajv.compile<ChatPostMessage>(ChatPostMessageSchema);
 
 type GetStarredMessages = {
 	roomId: IRoom['_id'];
@@ -857,9 +837,6 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.getMessageReadReceipts': {
 		GET: (params: ChatGetMessageReadReceipts) => { receipts: ReadReceipt[] };
-	};
-	'/v1/chat.postMessage': {
-		POST: (params: ChatPostMessage) => IMessage;
 	};
 	'/v1/chat.getStarredMessages': {
 		GET: (params: GetStarredMessages) => {
