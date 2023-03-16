@@ -464,8 +464,10 @@ describe('LIVECHAT - visitors', function () {
 			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
-			const agent = await createAgent();
-			await takeInquiry(room._id, agent._id);
+
+			await createAgent();
+			await takeInquiry(room._id);
+
 			await request
 				.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/${visitor._id}?closedChatsOnly=false&servedChatsOnly=false`))
 				.set(credentials)
@@ -490,9 +492,10 @@ describe('LIVECHAT - visitors', function () {
 			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
-			const agent = await createAgent();
 
-			await takeInquiry(room._id, agent._id);
+			await createAgent();
+			await takeInquiry(room._id);
+
 			await request
 				.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/${visitor._id}?source=api`))
 				.set(credentials)

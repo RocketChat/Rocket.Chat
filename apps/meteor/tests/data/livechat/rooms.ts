@@ -60,7 +60,7 @@ export const createVisitor = (department?: string): Promise<ILivechatVisitor> =>
 		});
 	});
 
-export const takeInquiry = (roomId: string, agentCredentials?: unknown): Promise<IOmnichannelRoom> => {
+export const takeInquiry = (roomId: string, agentCredentials?: object): Promise<IOmnichannelRoom> => {
 	return new Promise((resolve, reject) => {
 		request
 			.post(methodCall(`livechat:takeInquiry`))
