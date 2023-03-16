@@ -1,6 +1,4 @@
 import type {
-	AtLeast,
-	IInstanceStatus,
 	IMessage,
 	IPermission,
 	IRoom,
@@ -12,15 +10,8 @@ import type {
 } from '@rocket.chat/core-typings';
 
 import type { TranslationKey } from '../TranslationContext';
-import type { GetWebdavFileList, GetWebdavFilePreview } from './methods/webdav';
 import type { GetReadReceiptsMethod } from './methods/getReadReceipts';
-import type { JoinRoomMethod } from './methods/joinRoom';
 import type { UnsubscribeMethod as MailerUnsubscribeMethod } from './methods/mailer/unsubscribe';
-import type { RoomNameExistsMethod } from './methods/roomNameExists';
-import type { SaveRoomSettingsMethod } from './methods/saveRoomSettings';
-import type { SaveSettingsMethod } from './methods/saveSettings';
-import type { SaveUserPreferencesMethod } from './methods/saveUserPreferences';
-import type { ReportMessageMethod } from './methods/message/reportMessage';
 
 // TODO: frontend chapter day - define methods
 
@@ -34,86 +25,33 @@ export interface ServerMethods {
 	'checkUsernameAvailability': (...args: any[]) => any;
 	'cleanRoomHistory': (...args: any[]) => any;
 	'clearIntegrationHistory': (...args: any[]) => any;
-	'deleteCustomSound': (...args: any[]) => any;
 	'deleteCustomUserStatus': (...args: any[]) => any;
 	'deleteFileMessage': (...args: any[]) => any;
 	'deleteUserOwnAccount': (...args: any[]) => any;
 	'e2e.resetOwnE2EKey': (...args: any[]) => any;
 	'eraseRoom': (...args: any[]) => any;
 	'getAvatarSuggestion': (...args: any[]) => any;
-	'getRoomRoles': (rid: IRoom['_id']) => ISubscription[];
-	'getSetupWizardParameters': () => {
-		settings: ISetting[];
-		serverAlreadyRegistered: boolean;
-		hasAdmin: boolean;
-	};
-	'getSingleMessage': (mid: IMessage['_id']) => IMessage;
-	'getThreadMessages': (params: { tmid: IMessage['_id'] }) => IMessage[];
 	'getUsersOfRoom': (...args: any[]) => any;
-	'getWebdavFileList': GetWebdavFileList;
-	'getWebdavFilePreview': GetWebdavFilePreview;
 	'hideRoom': (...args: any[]) => any;
 	'ignoreUser': (...args: any[]) => any;
-	'insertOrUpdateSound': (args: { previousName?: string; name?: string; _id?: string; extension: string }) => string;
 	'insertOrUpdateUserStatus': (...args: any[]) => any;
-	'instances/get': () => IInstanceStatus[];
-	'joinRoom': JoinRoomMethod;
 	'leaveRoom': (...args: any[]) => any;
-	'loadHistory': (
-		rid: IRoom['_id'],
-		ts?: Date,
-		limit?: number,
-		ls?: string,
-		showThreadMessages?: boolean,
-	) => {
-		messages: IMessage[];
-		firstUnread: IMessage;
-		unreadNotLoaded: number;
-	};
-	'loadMissedMessages': (rid: IRoom['_id'], ts: Date) => IMessage[];
-	'loadNextMessages': (
-		rid: IRoom['_id'],
-		end?: Date,
-		limit?: number,
-	) => {
-		messages: IMessage[];
-	};
-	'loadSurroundingMessages': (
-		message: Pick<IMessage, '_id' | 'rid'> & { ts?: Date },
-		limit?: number,
-	) =>
-		| {
-				messages: IMessage[];
-				moreBefore: boolean;
-				moreAfter: boolean;
-		  }
-		| false;
-	'logoutCleanUp': (user: IUser) => void;
-	'Mailer.sendMail': (from: string, subject: string, body: string, dryrun: boolean, query: string) => any;
 	'muteUserInRoom': (...args: any[]) => any;
-	'openRoom': (rid: IRoom['_id']) => ISubscription;
 	'personalAccessTokens:generateToken': (...args: any[]) => any;
 	'personalAccessTokens:regenerateToken': (...args: any[]) => any;
 	'personalAccessTokens:removeToken': (...args: any[]) => any;
 	'e2e.requestSubscriptionKeys': (...args: any[]) => any;
 	'readMessages': (...args: any[]) => any;
-	'readThreads': (tmid: IMessage['_id']) => void;
 	'refreshOAuthService': (...args: any[]) => any;
 	'registerUser': (...args: any[]) => any;
 	'removeOAuthService': (...args: any[]) => any;
 	'removeCannedResponse': (...args: any[]) => any;
 	'replayOutgoingIntegration': (...args: any[]) => any;
-	'reportMessage': ReportMessageMethod;
 	'requestDataDownload': (...args: any[]) => any;
 	'resetPassword': (...args: any[]) => any;
-	'roomNameExists': RoomNameExistsMethod;
 	'saveCannedResponse': (...args: any[]) => any;
-	'saveRoomSettings': SaveRoomSettingsMethod;
-	'saveSettings': SaveSettingsMethod;
-	'saveUserPreferences': SaveUserPreferencesMethod;
 	'saveUserProfile': (...args: any[]) => any;
 	'sendConfirmationEmail': (...args: any[]) => any;
-	'sendMessage': (message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>) => any;
 	'setAdminStatus': (...args: any[]) => any;
 	'setAvatarFromService': (...args: any[]) => any;
 	'setReaction': (reaction: string, mid: IMessage['_id']) => void;
@@ -127,7 +65,6 @@ export interface ServerMethods {
 	'unreadMessages': (...args: any[]) => any;
 	'updateIncomingIntegration': (...args: any[]) => any;
 	'updateOutgoingIntegration': (...args: any[]) => any;
-	'uploadCustomSound': (...args: any[]) => any;
 	'Mailer:unsubscribe': MailerUnsubscribeMethod;
 	'getRoomById': (rid: IRoom['_id']) => IRoom;
 	'getReadReceipts': GetReadReceiptsMethod;
