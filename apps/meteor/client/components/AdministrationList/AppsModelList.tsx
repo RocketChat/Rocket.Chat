@@ -1,4 +1,4 @@
-import { Badge, OptionSkeleton, OptionTitle } from '@rocket.chat/fuselage';
+import { Badge, OptionTitle, Skeleton } from '@rocket.chat/fuselage';
 import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -45,21 +45,19 @@ const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsMo
 
 					{appsManagementAllowed && (
 						<>
-							{appRequestStats.isLoading && <OptionSkeleton />}
-							{appRequestStats.isSuccess && (
-								<ListItem
-									icon='cube'
-									text={t('Requested')}
-									action={(): void => {
-										marketplaceRoute.push({ context: 'requested', page });
-										onDismiss();
-									}}
-								>
-									{appRequestStats.isSuccess && appRequestStats.data.data.totalUnseen > 0 && (
-										<Badge variant='primary'>{appRequestStats.data.data.totalUnseen}</Badge>
-									)}
-								</ListItem>
-							)}
+							<ListItem
+								icon='cube'
+								text={t('Requested')}
+								action={(): void => {
+									marketplaceRoute.push({ context: 'requested', page });
+									onDismiss();
+								}}
+							>
+								{appRequestStats.isLoading && <Skeleton variant='rect' height={16} width={16} />}
+								{appRequestStats.isSuccess && appRequestStats.data.data.totalUnseen > 0 && (
+									<Badge variant='primary'>{appRequestStats.data.data.totalUnseen}</Badge>
+								)}
+							</ListItem>
 						</>
 					)}
 				</>
