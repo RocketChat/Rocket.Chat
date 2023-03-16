@@ -6,6 +6,13 @@ import type { SubscriptionWithRoom } from '../../../../client/definitions/Subscr
 import { ChatRoom } from './ChatRoom';
 import { CachedChatRoom } from './CachedChatRoom';
 
+declare module '@rocket.chat/core-typings' {
+	interface ISubscription {
+		lowerCaseName: string;
+		lowerCaseFName: string;
+	}
+}
+
 class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom, ISubscription> {
 	constructor() {
 		super({ name: 'subscriptions' });

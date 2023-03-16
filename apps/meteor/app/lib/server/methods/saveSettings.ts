@@ -1,15 +1,34 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Settings } from '@rocket.chat/models';
+import type { ISetting } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermission } from '../../../authorization/server';
 import { getSettingPermissionId } from '../../../authorization/lib';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 
-Meteor.methods({
-	saveSettings: twoFactorRequired(async function (params = []) {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		saveSettings(
+			changes: {
+				_id: ISetting['_id'];
+				value: ISetting['value'];
+			}[],
+		): Promise<boolean>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	saveSettings: twoFactorRequired(async function (
+		params: {
+			_id: ISetting['_id'];
+			value: ISetting['value'];
+		}[] = [],
+	) {
 		const uid = Meteor.userId();
-		const settingsNotAllowed = [];
+		const settingsNotAllowed: ISetting['_id'][] = [];
 		if (uid === null) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {
 				method: 'saveSetting',
@@ -55,7 +74,7 @@ Meteor.methods({
 			});
 		}
 
-		await Promise.all(params.map(({ _id, value, editor }) => Settings.updateValueById(_id, value, editor)));
+		await Promise.all(params.map(({ _id, value }) => Settings.updateValueById(_id, value)));
 
 		return true;
 	}, {}),

@@ -532,7 +532,10 @@ API.v1.addRoute(
 				skip,
 				limit,
 				filter,
-				...(sort?.username && { sort: { username: sort.username } }),
+				sort: {
+					_updatedAt: -1,
+					...(sort?.username && { username: sort.username }),
+				},
 			});
 
 			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
