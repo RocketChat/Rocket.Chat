@@ -20,12 +20,13 @@ const AuditModelList: FC<AuditModelListProps> = ({ showAudit, showAuditLog, onDi
 	return (
 		<>
 			<OptionTitle>{t('Audit')}</OptionTitle>
-			<ul>
+			<ul aria-description='auditList'>
 				{showAudit && (
 					<ListItem
+						role='listitem'
 						icon='document-eye'
 						text={t('Messages')}
-						action={(): void => {
+						onClick={() => {
 							auditHomeRoute.push();
 							onDismiss();
 						}}
@@ -33,9 +34,10 @@ const AuditModelList: FC<AuditModelListProps> = ({ showAudit, showAuditLog, onDi
 				)}
 				{showAuditLog && (
 					<ListItem
+						role='listitem'
 						icon='document-eye'
 						text={t('Logs')}
-						action={(): void => {
+						onClick={() => {
 							auditSettingsRoute.push();
 							onDismiss();
 						}}
