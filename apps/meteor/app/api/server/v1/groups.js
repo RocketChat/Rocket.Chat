@@ -18,7 +18,7 @@ import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 
 // Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
-export function findPrivateGroupByIdOrName({ params, userId, checkedArchived = true }) {
+function findPrivateGroupByIdOrName({ params, userId, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
 		throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
@@ -666,7 +666,10 @@ API.v1.addRoute(
 				skip,
 				limit,
 				filter,
-				...(sort?.username && { sort: { username: sort.username } }),
+				sort: {
+					_updatedAt: -1,
+					...(sort?.username && { username: sort.username }),
+				},
 			});
 
 			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
@@ -1156,10 +1159,7 @@ API.v1.addRoute(
 			}
 
 			const room = findPrivateGroupByIdOrName({
-				params: {
-					roomId,
-					roomName,
-				},
+				params: roomId ? { roomId } : { roomName },
 				userId: this.userId,
 			});
 

@@ -5,6 +5,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
+import ShareMessageModal from '../../../../client/views/room/modals/ShareMessageModal';
 import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { Rooms, Subscriptions } from '../../../models/client';
@@ -15,15 +16,6 @@ import ReactionList from '../../../../client/views/room/modals/ReactionListModal
 import ReportMessageModal from '../../../../client/views/room/modals/ReportMessageModal';
 import CreateDiscussion from '../../../../client/components/CreateDiscussion/CreateDiscussion';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
-
-export const addMessageToList = (messagesList: IMessage[], message: IMessage): IMessage[] => {
-	// checks if the message is not already on the list
-	if (!messagesList.find(({ _id }) => _id === message._id)) {
-		messagesList.push(message);
-	}
-
-	return messagesList;
-};
 
 const getMainMessageText = (message: IMessage): IMessage => {
 	const newMessage = { ...message };
@@ -70,7 +62,28 @@ Meteor.startup(async function () {
 		order: 0,
 		group: 'menu',
 	});
-
+	MessageAction.addButton({
+		id: 'share-message',
+		icon: 'arrow-forward',
+		label: 'Share_Message',
+		context: ['message', 'message-mobile', 'threads'],
+		async action(_, props) {
+			const { message = messageArgs(this).msg } = props;
+			const permalink = await MessageAction.getPermaLink(message._id);
+			imperativeModal.open({
+				component: ShareMessageModal,
+				props: {
+					message,
+					permalink,
+					onClose: (): void => {
+						imperativeModal.close();
+					},
+				},
+			});
+		},
+		order: 0,
+		group: ['message', 'menu'],
+	});
 	MessageAction.addButton({
 		id: 'quote-message',
 		icon: 'quote',

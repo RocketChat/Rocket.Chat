@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 import { Permissions } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-Meteor.methods({
-	async 'permissions/get'(updatedAt: Date) {
+Meteor.methods<ServerMethods>({
+	async 'permissions/get'(updatedAt?: Date) {
 		check(updatedAt, Match.Maybe(Date));
 
 		// TODO: should we return this for non logged users?

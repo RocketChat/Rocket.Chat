@@ -6,7 +6,7 @@ import { addUserToRoom, createRoom } from '../../../../app/lib/server/functions'
 import { Logger } from '../../../../app/logger/server';
 import { syncUserRoles } from '../syncUserRoles';
 
-export const logger = new Logger('OAuth');
+const logger = new Logger('OAuth');
 
 export class OAuthEEManager {
 	static mapSSOGroupsToChannels(
@@ -29,7 +29,7 @@ export class OAuthEEManager {
 						let room = Rooms.findOneByNonValidatedName(channel);
 						if (!room) {
 							room = createRoom('c', channel, channelsAdmin, [], false);
-							if (!room || !room.rid) {
+							if (!room?.rid) {
 								logger.error(`could not create channel ${channel}`);
 								return;
 							}

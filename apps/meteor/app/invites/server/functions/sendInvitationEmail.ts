@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Settings } from '@rocket.chat/models';
 
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../mailer/server/api';
 import { hasPermission } from '../../../authorization/server';
 import { settings } from '../../../settings/server';
 

@@ -1,16 +1,16 @@
 import type { IMessage, SlashCommand } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { settings } from '../../../../app/settings/client';
 import { generateTriggerId } from '../../../../app/ui-message/client/ActionManager';
 import { slashCommands, APIClient, t } from '../../../../app/utils/client';
-import { getRandomId } from '../../../../lib/random';
 import { call } from '../../utils/call';
 import type { ChatAPI } from '../ChatAPI';
 
 const parse = (msg: string): { command: string; params: string } | { command: SlashCommand; params: string } | undefined => {
-	const match = msg.match(/^\/([^\s]+)(.*)/m);
+	const match = msg.match(/^\/([^\s]+)(.*)/);
 
 	if (!match) {
 		return undefined;
@@ -30,7 +30,7 @@ const warnUnrecognizedSlashCommand = async (chat: ChatAPI, command: string): Pro
 	console.error(t('No_such_command', { command: escapeHTML(command) }));
 
 	await chat.data.pushEphemeralMessage({
-		_id: getRandomId(),
+		_id: Random.id(),
 		ts: new Date(),
 		msg: t('No_such_command', { command: escapeHTML(command) }),
 		u: {

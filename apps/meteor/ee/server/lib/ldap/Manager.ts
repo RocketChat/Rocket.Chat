@@ -41,7 +41,7 @@ export class LDAPEEManager extends LDAPManager {
 				await this.reviewExistingUsers(ldap, converter, { updateExistingUsers, removeDeletedUsers });
 			}
 
-			converter.convertUsers({
+			await converter.convertUsers({
 				afterImportFn: ((data: IImportUser, _type: string, isNewRecord: boolean): void =>
 					Promise.await(this.advancedSync(ldap, data, converter, isNewRecord))) as ImporterAfterImportCallback,
 			});
