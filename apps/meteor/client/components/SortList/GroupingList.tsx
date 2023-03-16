@@ -24,25 +24,25 @@ const GroupingList = function GroupingList(): ReactElement {
 	return (
 		<>
 			<OptionTitle>{t('Group_by')}</OptionTitle>
-			<ul aria-describedby='groupByList'>
+			<ul aria-description='groupByList'>
 				<ListItem
 					is='label'
 					role='listitem'
-					icon={'flag'}
+					icon='flag'
 					text={t('Unread')}
 					input={<CheckBox pis='x24' onChange={handleChangeShowUnread} checked={sidebarShowUnread} />}
 				/>
 				<ListItem
 					is='label'
 					role='listitem'
-					icon={'star'}
+					icon='star'
 					text={t('Favorites')}
 					input={<CheckBox pis='x24' onChange={handleChangeShoFavorite} checked={sidebarShowFavorites} />}
 				/>
 				<ListItem
 					is='label'
 					role='listitem'
-					icon={'group-by-type'}
+					icon='group-by-type'
 					text={t('Types')}
 					input={<CheckBox pis='x24' onChange={handleChangeGroupByType} checked={sidebarGroupByType} />}
 				/>

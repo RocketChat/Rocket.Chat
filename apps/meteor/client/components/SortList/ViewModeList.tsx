@@ -1,4 +1,4 @@
-import { ToggleSwitch, RadioButton, OptionTitle, Box } from '@rocket.chat/fuselage';
+import { ToggleSwitch, RadioButton, OptionTitle } from '@rocket.chat/fuselage';
 import { useUserPreference, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React, { useCallback } from 'react';
@@ -28,32 +28,32 @@ function ViewModeList(): ReactElement {
 	return (
 		<>
 			<OptionTitle>{t('Display')}</OptionTitle>
-			<ul aria-describedby='displayList'>
+			<ul aria-description='displayList'>
 				<ListItem
 					is='label'
 					role='listitem'
-					icon={'extended-view'}
+					icon='extended-view'
 					text={t('Extended')}
 					input={<RadioButton pis='x24' onChange={setToExtended} checked={sidebarViewMode === 'extended'} />}
 				/>
 				<ListItem
 					is='label'
 					role='listitem'
-					icon={'medium-view'}
+					icon='medium-view'
 					text={t('Medium')}
 					input={<RadioButton pis='x24' onChange={setToMedium} checked={sidebarViewMode === 'medium'} />}
 				/>
 				<ListItem
 					is='label'
 					role='listitem'
-					icon={'condensed-view'}
+					icon='condensed-view'
 					text={t('Condensed')}
 					input={<RadioButton pis='x24' onChange={setToCondensed} checked={sidebarViewMode === 'condensed'} />}
 				/>
 				<ListItem
 					is='label'
 					role='listitem'
-					icon={'user-rounded'}
+					icon='user-rounded'
 					text={t('Avatars')}
 					input={<ToggleSwitch pis='x24' onChange={handleChangeSidebarDisplayAvatar} checked={sidebarDisplayAvatar} />}
 				/>

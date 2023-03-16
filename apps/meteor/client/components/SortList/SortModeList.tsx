@@ -22,23 +22,22 @@ function SortModeList(): ReactElement {
 	return (
 		<>
 			<OptionTitle>{t('Sort_By')}</OptionTitle>
-			<ul aria-describedby='sortByList'>
+			<ul aria-description='sortByList'>
 				<ListItem
 					is='label'
 					role='listitem'
-					icon={'clock'}
+					icon='clock'
 					text={t('Activity')}
 					input={<RadioButton pis='x24' onChange={setToActivity} checked={sidebarSortBy === 'activity'} />}
 				/>
 				<ListItem
 					is='label'
 					role='listitem'
-					icon={'sort-az'}
+					icon='sort-az'
 					text={t('Name')}
 					input={<RadioButton pis='x24' name='sidebarSortby' onChange={setToAlphabetical} checked={sidebarSortBy === 'alphabetical'} />}
 				/>
 			</ul>
-
 			{isOmnichannelEnabled && <OmnichannelSortingDisclaimer id='sortByList' />}
 		</>
 	);
