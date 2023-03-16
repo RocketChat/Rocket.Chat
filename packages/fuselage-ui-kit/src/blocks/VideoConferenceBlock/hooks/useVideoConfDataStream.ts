@@ -5,14 +5,14 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { useVideoConfData } from './useVideoConfData';
 
-const ee = new Emitter<Record<string, void>>();
+const ee = new Emitter();
 
 const events = new Map<string, () => void>();
 
-const useStreamBySubPath = (
-  streamer: ReturnType<typeof useStream>,
-  subpath: string,
-  callback: () => void
+const useStreamBySubPath = <T extends ReturnType<typeof useStream>>(
+  streamer: T,
+  subpath: Parameters<T>[0],
+  callback: Parameters<T>[1]
 ) => {
   const maybeSubscribe = useCallback(() => {
     // If we're already subscribed, don't do it again
@@ -43,10 +43,10 @@ const useStreamBySubPath = (
 
   useEffect(() => {
     maybeSubscribe();
-    ee.on(subpath, callback);
+    ee.on(subpath, callback as any);
 
     return () => {
-      ee.off(subpath, callback);
+      ee.off(subpath, callback as any);
       maybeUnsubscribe();
     };
   }, [callback, subpath]);
@@ -60,16 +60,21 @@ export const useVideoConfDataStream = ({
   callId: string;
 }) => {
   const queryClient = useQueryClient();
-  const subpath = `${rid}/${callId}`;
 
   const subscribeNotifyRoom = useStream('notify-room');
 
   useStreamBySubPath(
     subscribeNotifyRoom,
-    subpath,
-    useCallback(() => {
-      queryClient.invalidateQueries(['video-conference', callId]);
-    }, [subpath])
+    `${rid}/videoconf`,
+    useCallback(
+      (id) => {
+        if (id !== callId) {
+          return;
+        }
+        queryClient.invalidateQueries(['video-conference', callId]);
+      },
+      [callId, queryClient]
+    )
   );
   return useVideoConfData({ callId });
 };
