@@ -682,8 +682,9 @@ describe('LIVECHAT - rooms', function () {
 
 		it('should throw an error if the file is not attached', async () => {
 			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
 			await request
-				.post(api('livechat/upload/test'))
+				.post(api(`livechat/upload/${room._id}`))
 				.set(credentials)
 				.set('x-visitor-token', visitor.token)
 				.expect('Content-Type', 'application/json')

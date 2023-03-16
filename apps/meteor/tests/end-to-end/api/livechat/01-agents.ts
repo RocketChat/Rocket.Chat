@@ -287,6 +287,8 @@ describe('LIVECHAT - Agents', function () {
 						expect(department.agentId).to.be.equal(agent._id);
 					});
 				});
+
+			await updatePermission('view-l-room', ['livechat-manager', 'livechat-agent', 'admin']);
 		});
 	});
 
@@ -308,13 +310,13 @@ describe('LIVECHAT - Agents', function () {
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
 			const inq = await fetchInquiry(room._id);
-			const roomUpdate = await takeInquiry(inq._id);
+			const roomUpdate = await takeInquiry(inq._id, agent2.credentials);
 			expect(roomUpdate).to.have.property('success', true);
 
 			const { body } = await request.get(api(`livechat/agent.info/${room._id}/${visitor.token}`));
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('agent');
-			expect(body.agent).to.have.property('_id', 'rocketchat.internal.admin.test');
+			expect(body.agent).to.have.property('_id', agent2.user._id);
 		});
 	});
 
