@@ -108,7 +108,7 @@ async function handleMaxSeatsBanners() {
 	}
 }
 
-const handleMaxSeatsBannersSync = Meteor.wrapAsync(handleMaxSeatsBanners);
+const handleMaxSeatsBannersSync = () => Promise.await(handleMaxSeatsBanners);
 
 callbacks.add('afterCreateUser', handleMaxSeatsBannersSync, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
 
