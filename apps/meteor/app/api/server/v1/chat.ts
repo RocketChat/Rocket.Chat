@@ -1,33 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import {
-	isChatDeleteProps,
-	isChatGetMessageProps,
-	isChatPinMessageProps,
-	isChatSyncMessagesProps,
-	isChatSearchProps,
-	isChatStarMessageProps,
-	isChatUnpinMessageProps,
-	isChatReactProps,
-	isChatReportMessageProps,
-	isChatIgnoreUserProps,
-	isChatUnstarMessageProps,
-	isChatGetPinnedMessagesProps,
-	isChatGetThreadsListProps,
-	isChatSyncThreadsListProps,
-	isChatFollowMessageProps,
-	isChatUnfollowMessageProps,
-	isChatGetMentionedMessagesProps,
-	isChatGetStarredMessagesProps,
-	isChatGetDiscussionsProps,
-	isChatSyncThreadMessagesProps,
-	isChatGetThreadMessagesProps,
-	isChatGetDeletedMessagesProps,
-	isChatUpdateProps,
-	isChatSendMessageProps,
-	isChatPostMessageProps,
-} from '@rocket.chat/rest-typings';
 
 import { canAccessRoom, canAccessRoomId, roomAccessAttributes, hasPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
@@ -40,9 +13,18 @@ import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 
 API.v1.addRoute(
 	'chat.delete',
-	{ authRequired: true, validateParams: isChatDeleteProps },
+	{ authRequired: true },
 	{
 		async post() {
+			check(
+				this.bodyParams,
+				Match.ObjectIncluding({
+					msgId: String,
+					roomId: String,
+					asUser: Match.Maybe(Boolean),
+				}),
+			);
+
 			const msg = await Messages.findOneById(this.bodyParams.msgId, { projection: { u: 1, rid: 1 } });
 
 			if (!msg) {
@@ -72,7 +54,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.syncMessages',
-	{ authRequired: true, validateParams: isChatSyncMessagesProps },
+	{ authRequired: true },
 	{
 		async get() {
 			const { roomId, lastUpdate } = this.queryParams;
@@ -107,7 +89,6 @@ API.v1.addRoute(
 	'chat.getMessage',
 	{
 		authRequired: true,
-		validateParams: isChatGetMessageProps,
 	},
 	{
 		async get() {
@@ -132,7 +113,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.pinMessage',
-	{ authRequired: true, validateParams: isChatPinMessageProps },
+	{ authRequired: true },
 	{
 		async post() {
 			if (!this.bodyParams.messageId?.trim()) {
@@ -158,7 +139,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.postMessage',
-	{ authRequired: true, validateParams: isChatPostMessageProps },
+	{ authRequired: true },
 	{
 		async post() {
 			const messageReturn = await processWebhookMessage(this.bodyParams, this.user)[0];
@@ -180,7 +161,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.search',
-	{ authRequired: true, validateParams: isChatSearchProps },
+	{ authRequired: true },
 	{
 		async get() {
 			const { roomId, searchText } = this.queryParams;
@@ -208,7 +189,7 @@ API.v1.addRoute(
 // one channel whereas the other one allows for sending to more than one channel at a time.
 API.v1.addRoute(
 	'chat.sendMessage',
-	{ authRequired: true, validateParams: isChatSendMessageProps },
+	{ authRequired: true },
 	{
 		async post() {
 			if (!this.bodyParams.message) {
@@ -227,7 +208,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.starMessage',
-	{ authRequired: true, validateParams: isChatStarMessageProps },
+	{ authRequired: true },
 	{
 		async post() {
 			if (!this.bodyParams.messageId?.trim()) {
@@ -253,7 +234,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.unPinMessage',
-	{ authRequired: true, validateParams: isChatUnpinMessageProps },
+	{ authRequired: true },
 	{
 		async post() {
 			if (!this.bodyParams.messageId?.trim()) {
@@ -275,7 +256,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.unStarMessage',
-	{ authRequired: true, validateParams: isChatUnstarMessageProps },
+	{ authRequired: true },
 	{
 		async post() {
 			if (!this.bodyParams.messageId?.trim()) {
@@ -301,9 +282,18 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.update',
-	{ authRequired: true, validateParams: isChatUpdateProps },
+	{ authRequired: true },
 	{
 		async post() {
+			check(
+				this.bodyParams,
+				Match.ObjectIncluding({
+					roomId: String,
+					msgId: String,
+					text: String, // Using text to be consistant with chat.postMessage
+				}),
+			);
+
 			const msg = await Messages.findOneById(this.bodyParams.msgId);
 
 			// Ensure the message exists
@@ -330,7 +320,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.react',
-	{ authRequired: true, validateParams: isChatReactProps },
+	{ authRequired: true },
 	{
 		async post() {
 			if (!this.bodyParams.messageId?.trim()) {
@@ -343,7 +333,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
-			const emoji = 'emoji' in this.bodyParams ? this.bodyParams.emoji : this.bodyParams.reaction;
+			const emoji = 'emoji' in this.bodyParams ? this.bodyParams.emoji : (this.bodyParams as { reaction: string }).reaction;
 
 			if (!emoji) {
 				throw new Meteor.Error('error-emoji-param-not-provided', 'The required "emoji" param is missing.');
@@ -358,7 +348,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.reportMessage',
-	{ authRequired: true, validateParams: isChatReportMessageProps },
+	{ authRequired: true },
 	{
 		async post() {
 			const { messageId, description } = this.bodyParams;
@@ -379,7 +369,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.ignoreUser',
-	{ authRequired: true, validateParams: isChatIgnoreUserProps },
+	{ authRequired: true },
 	{
 		async get() {
 			const { rid, userId } = this.queryParams;
@@ -404,7 +394,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getDeletedMessages',
-	{ authRequired: true, validateParams: isChatGetDeletedMessagesProps },
+	{ authRequired: true },
 	{
 		async get() {
 			const { roomId, since } = this.queryParams;
@@ -444,7 +434,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getPinnedMessages',
-	{ authRequired: true, validateParams: isChatGetPinnedMessagesProps },
+	{ authRequired: true },
 	{
 		async get() {
 			const { roomId } = this.queryParams;
@@ -477,10 +467,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getThreadsList',
-	{ authRequired: true, validateParams: isChatGetThreadsListProps },
+	{ authRequired: true },
 	{
 		async get() {
 			const { rid, type, text } = this.queryParams;
+			check(rid, String);
+			check(type, Match.Maybe(String));
+			check(text, Match.Maybe(String));
 
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
@@ -524,7 +517,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.syncThreadsList',
-	{ authRequired: true, validateParams: isChatSyncThreadsListProps },
+	{ authRequired: true },
 	{
 		async get() {
 			const { rid } = this.queryParams;
@@ -573,7 +566,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getThreadMessages',
-	{ authRequired: true, validateParams: isChatGetThreadMessagesProps },
+	{ authRequired: true },
 	{
 		async get() {
 			const { tmid } = this.queryParams;
@@ -620,7 +613,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.syncThreadMessages',
-	{ authRequired: true, validateParams: isChatSyncThreadMessagesProps },
+	{ authRequired: true },
 	{
 		async get() {
 			const { tmid } = this.queryParams;
@@ -663,7 +656,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.followMessage',
-	{ authRequired: true, validateParams: isChatFollowMessageProps },
+	{ authRequired: true },
 	{
 		async post() {
 			const { mid } = this.bodyParams;
@@ -681,7 +674,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.unfollowMessage',
-	{ authRequired: true, validateParams: isChatUnfollowMessageProps },
+	{ authRequired: true },
 	{
 		async post() {
 			const { mid } = this.bodyParams;
@@ -699,7 +692,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getMentionedMessages',
-	{ authRequired: true, validateParams: isChatGetMentionedMessagesProps },
+	{ authRequired: true },
 	{
 		async get() {
 			const { roomId } = this.queryParams;
@@ -725,7 +718,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getStarredMessages',
-	{ authRequired: true, validateParams: isChatGetStarredMessagesProps },
+	{ authRequired: true },
 	{
 		async get() {
 			const { roomId } = this.queryParams;
@@ -754,7 +747,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'chat.getDiscussions',
-	{ authRequired: true, validateParams: isChatGetDiscussionsProps },
+	{ authRequired: true },
 	{
 		async get() {
 			const { roomId, text } = this.queryParams;
