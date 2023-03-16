@@ -10,9 +10,8 @@ import type {
 	IWebdavAccount,
 	VoipEventDataSignature,
 	IUser,
-	// IEmoji,
-	// ICustomSound,
 	IOmnichannelRoom,
+	VideoConference,
 } from '@rocket.chat/core-typings';
 
 type StreamerKeyArgs<K, T extends unknown[]> = (key: K, cb: (...args: T) => void) => () => void;
@@ -27,7 +26,7 @@ export interface StreamerEvents {
 			[args: { rid: IMessage['rid']; excludePinned: boolean; ignoreDiscussion: boolean; ts: Record<string, Date>; users: string[] }]
 		> &
 		StreamerKeyArgs<`${string}/deleteMessage`, [{ _id: IMessage['_id'] }]> &
-		StreamerKeyArgs<`${string}/${string}`, []>;
+		StreamerKeyArgs<`${string}/videoconf`, [id: string]>;
 
 	'room-messages': StreamerKeyArgs<string, [IMessage]>;
 
@@ -112,6 +111,22 @@ export interface StreamerEvents {
 	>;
 
 	'room-data': StreamerKeyArgs<string, [IOmnichannelRoom]>;
+	'notify-room-users': StreamerKeyArgs<
+		`${string}/video-conference`,
+		[
+			{
+				action: string;
+				params: {
+					callId: VideoConference['_id'];
+					uid: IUser['_id'];
+					rid: IRoom['_id'];
+				};
+			},
+		]
+	> &
+		StreamerKeyArgs<`${string}/webrtc`, unknown[]> &
+		StreamerKeyArgs<`${string}/otr`, unknown[]> &
+		StreamerKeyArgs<`${string}/userData`, unknown[]>;
 
 	// 'notify-logged': (
 	// 	e:
@@ -125,7 +140,6 @@ export interface StreamerEvents {
 	// 		| 'updateAvatar'
 	// 		| 'Users:Deleted',
 	// ) => [void];
-	// 'notify-room-users': (e: `${string}/video-conference` | `${string}/webrtc` | `${string}/otr` | `${string}/userData`) => [void];
 
 	// 'apps': (
 	// 	e:
