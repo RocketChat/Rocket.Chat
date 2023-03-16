@@ -1,3 +1,4 @@
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation, useRouteParameter, useRoute, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useRef } from 'react';
 
@@ -7,7 +8,6 @@ import VerticalBar from '../../../components/VerticalBar';
 import MessageReportInfo from './MessageReportInfo';
 import ModerationConsoleTable from './ModerationConsoleTable';
 import UserMessages from './UserMessages';
-// import { MessageAction } from '../../../client/../app/ui-utils/client';
 
 const ModerationConsolePage = () => {
 	const t = useTranslation();
@@ -36,7 +36,6 @@ const ModerationConsolePage = () => {
 			<Page>
 				<Page.Header title={t('Moderation_Console')} />
 				<Page.Content>
-					<h1>Moderation Console</h1>
 					<ModerationConsoleTable reload={reloadRef} onReload={handleReload} />
 				</Page.Content>
 			</Page>
@@ -50,6 +49,11 @@ const ModerationConsolePage = () => {
 						<VerticalBar.Close onClick={() => moderationRoute.push({})} />
 					</VerticalBar.Header>
 					{context === 'info' && id && <UserMessages userId={id} reload={reloadRef} onRedirect={handleRedirect} />}
+					<VerticalBar.Footer>
+						<ButtonGroup vertical stretch>
+							<Button onClick={() => moderationRoute.push({})}>{t('Back')}</Button>
+						</ButtonGroup>
+					</VerticalBar.Footer>
 
 					{context === 'reports' && id && <MessageReportInfo msgId={id} reload={reloadRef} />}
 				</VerticalBar>

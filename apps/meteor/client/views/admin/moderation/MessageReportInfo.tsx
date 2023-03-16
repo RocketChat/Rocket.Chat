@@ -55,8 +55,6 @@ const MessageReportInfo = ({ msgId, reload }: { msgId: string; reload: MutableRe
 
 	const { reports } = reportsByMessage;
 
-	console.log('data', reportsByMessage);
-
 	return (
 		<>
 			{isSuccessReportsByMessage && reportsByMessage?.reports && (

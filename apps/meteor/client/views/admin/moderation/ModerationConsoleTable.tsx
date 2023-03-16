@@ -120,7 +120,6 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReloa
 
 	return (
 		<>
-			{isLoading && <div>Loading...</div>}
 			<FilterByText autoFocus placeholder={'Search'} onChange={({ text }): void => setText(text)} />
 			{isLoading && (
 				<GenericTable>
