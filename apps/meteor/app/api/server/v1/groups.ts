@@ -45,7 +45,10 @@ async function findPrivateGroupByIdOrName({
 	name: string;
 	broadcast: boolean;
 }> {
-	if (('roomId' in params && !params.roomId) || ('roomName' in params && !params.roomName)) {
+	if (
+		(!('roomId' in params) && !('roomName' in params)) ||
+		('roomId' in params && !params.roomId && 'roomName' in params && !params.roomName)
+	) {
 		throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
 
