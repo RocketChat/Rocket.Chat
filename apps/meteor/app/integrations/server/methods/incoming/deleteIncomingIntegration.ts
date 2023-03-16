@@ -21,7 +21,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!integration) {
+		if (!(await integration)) {
 			throw new Meteor.Error('error-invalid-integration', 'Invalid integration', {
 				method: 'deleteIncomingIntegration',
 			});

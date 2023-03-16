@@ -480,16 +480,16 @@ export class MatrixBridge implements IFederationBridge {
 			registration: AppServiceRegistration.fromObject(this.convertRegistrationFileToMatrixFormat(registrationFile)),
 			disableStores: true,
 			controller: {
-				onEvent: async (request): Promise<void> => {
+				onEvent: (request) => {
 					const event = request.getData() as unknown as AbstractMatrixEvent;
 					this.eventHandler(event);
 				},
-				onLog: async (line, isError): Promise<void> => {
+				onLog: (line, isError) => {
 					console.log(line, isError);
 				},
 				...(this.internalSettings.generateRegistrationFileObject().enableEphemeralEvents
 					? {
-							onEphemeralEvent: async (request): Promise<void> => {
+							onEphemeralEvent: (request) => {
 								const event = request.getData() as unknown as AbstractMatrixEvent;
 								this.eventHandler(event);
 							},
