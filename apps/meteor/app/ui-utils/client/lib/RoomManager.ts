@@ -177,8 +177,8 @@ const computation = Tracker.autorun(() => {
 
 			if (room) {
 				if (record.streamActive !== true) {
-					roomMessagesStream
-						.on(record.rid, async (msg) => {
+					void (
+						roomMessagesStream.on(record.rid, async (msg) => {
 							// Should not send message to room if room has not loaded all the current messages
 							// if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
 							// 	return;
@@ -205,11 +205,11 @@ const computation = Tracker.autorun(() => {
 							callbacks.run('streamMessage', msg);
 
 							fireGlobalEvent('new-message', msg);
-						})
-						.then(() => {
-							record.streamActive = true;
-							openedRoomsDependency.changed();
-						});
+						}) as unknown as Promise<void>
+					).then(() => {
+						record.streamActive = true;
+						openedRoomsDependency.changed();
+					});
 					Notifications.onRoom(record.rid, 'deleteMessage', onDeleteMessageStream);
 					Notifications.onRoom(record.rid, 'deleteMessageBulk', onDeleteMessageBulkStream);
 				}
