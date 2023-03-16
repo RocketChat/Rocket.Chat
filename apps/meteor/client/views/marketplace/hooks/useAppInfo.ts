@@ -1,10 +1,9 @@
 import type { App } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 
 import type { ISettings } from '../../../../ee/client/apps/@types/IOrchestrator';
 import { Apps } from '../../../../ee/client/apps/orchestrator';
-import { AppsContext } from '../AppsContext';
 import type { AppInfo } from '../definitions/AppInfo';
 
 const getBundledInApp = async (app: App): Promise<App['bundledIn']> => {
@@ -19,9 +18,7 @@ const getBundledInApp = async (app: App): Promise<App['bundledIn']> => {
 	);
 };
 
-export const useAppInfo = (appId: string, context: string): AppInfo | undefined => {
-	const { installedApps, marketplaceApps, privateApps } = useContext(AppsContext);
-
+export const useAppInfo = (appId: string): AppInfo | undefined => {
 	const [appData, setAppData] = useState<AppInfo>();
 
 	const getSettings = useEndpoint('GET', '/apps/:id/settings', { id: appId });
@@ -31,20 +28,7 @@ export const useAppInfo = (appId: string, context: string): AppInfo | undefined 
 
 	useEffect(() => {
 		const fetchAppInfo = async (): Promise<void> => {
-			if ((!marketplaceApps.value?.apps?.length && !installedApps.value?.apps.length && !privateApps.value?.apps.length) || !appId) {
-				return;
-			}
-
-			let appResult: App | undefined;
-			const marketplaceAppsContexts = ['explore', 'enterprise', 'requested'];
-
-			if (marketplaceAppsContexts.includes(context)) appResult = marketplaceApps.value?.apps.find((app) => app.id === appId);
-
-			if (context === 'private') appResult = privateApps.value?.apps.find((app) => app.id === appId);
-
-			if (context === 'installed') appResult = installedApps.value?.apps.find((app) => app.id === appId);
-
-			if (!appResult) return;
+			const appResult = await Apps.getApp(appId);
 
 			const [settings, apis, screenshots, bundledIn] = await Promise.all([
 				getSettings().catch(() => ({
@@ -83,7 +67,7 @@ export const useAppInfo = (appId: string, context: string): AppInfo | undefined 
 		};
 
 		fetchAppInfo();
-	}, [appId, context, getApis, getBundledIn, getScreenshots, getSettings, installedApps, marketplaceApps, privateApps.value]);
+	}, [appId, getApis, getBundledIn, getScreenshots, getSettings]);
 
 	return appData;
 };

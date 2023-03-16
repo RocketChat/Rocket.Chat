@@ -47,7 +47,7 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 	const tab = useRouteParameter('tab');
 	const context = useRouteParameter('context');
 
-	const appData = useAppInfo(id, context || '');
+	const appData = useAppInfo(id);
 
 	const handleReturn = useMutableCallback((): void => {
 		context && router.push({ context, page: 'list' });
