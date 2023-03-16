@@ -1148,6 +1148,10 @@ export class Messages extends Base {
 		return this.find(query, {
 			fields: {
 				_id: 1,
+				t: 1,
+				pinned: 1,
+				drid: 1,
+				tmid: 1,
 			},
 		});
 	}
@@ -1167,6 +1171,10 @@ export class Messages extends Base {
 		return this.find(query, {
 			fields: {
 				_id: 1,
+				t: 1,
+				pinned: 1,
+				drid: 1,
+				tmid: 1,
 			},
 		});
 	}
@@ -1241,6 +1249,7 @@ export class Messages extends Base {
 			},
 		};
 
+		ReadReceipts.incrementThreadMessagesCountById(tmid);
 		return this.update(query, update);
 	}
 
@@ -1266,6 +1275,7 @@ export class Messages extends Base {
 			},
 		};
 
+		ReadReceipts.unsetThreadMessagesCountById(tmid);
 		return this.update(query, update);
 	}
 
@@ -1283,6 +1293,7 @@ export class Messages extends Base {
 			},
 		};
 
+		ReadReceipts.incrementThreadMessagesCountById(tmid);
 		return this.update(query, update);
 	}
 
@@ -1354,6 +1365,7 @@ export class Messages extends Base {
 				tcount: inc,
 			},
 		};
+		ReadReceipts.incrementThreadMessagesCountById(_id, inc);
 		return this.update(query, update);
 	}
 }

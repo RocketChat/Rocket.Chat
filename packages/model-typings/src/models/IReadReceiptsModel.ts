@@ -20,4 +20,6 @@ export interface IReadReceiptsModel extends IBaseModel<ReadReceipt> {
 		ignoreThreads: boolean,
 	): Promise<DeleteResult>;
 	setPinnedByMessageId(messageId: string, pinned: boolean): Promise<Document | UpdateResult>;
+	incrementThreadMessagesCountById(messageId: string, inc: number): Promise<Document | UpdateResult>;
+	unsetThreadMessagesCountById(messageId: string): Promise<Document | UpdateResult>;
 }
