@@ -10,28 +10,23 @@ import RegisterWorkspaceTokenModal from './RegisterWorkspaceTokenModal';
 type RegisterWorkspaceModalProps = {
 	onClose: () => void;
 	onStatusChange?: () => void;
-	isConnectedToCloud?: boolean | string;
 };
 
 const documentationLink = 'https://go.rocket.chat/i/register-info-collected';
 
-const RegisterWorkspaceModal = ({ onClose, onStatusChange, isConnectedToCloud = false, ...props }: RegisterWorkspaceModalProps) => {
+const RegisterWorkspaceModal = ({ onClose, onStatusChange, ...props }: RegisterWorkspaceModalProps) => {
 	const setModal = useSetModal();
 	const bulletFeatures = useFeatureBullets();
 	const t = useTranslation();
 
 	const handleTokenModal = (): void => {
 		const handleModalClose = (): void => setModal(null);
-		setModal(
-			<RegisterWorkspaceTokenModal isConnectedToCloud={isConnectedToCloud} onClose={handleModalClose} onStatusChange={onStatusChange} />,
-		);
+		setModal(<RegisterWorkspaceTokenModal onClose={handleModalClose} onStatusChange={onStatusChange} />);
 	};
 
 	const handleSetupModal = (): void => {
 		const handleModalClose = (): void => setModal(null);
-		setModal(
-			<RegisterWorkspaceSetupModal isConnectedToCloud={isConnectedToCloud} onClose={handleModalClose} onStatusChange={onStatusChange} />,
-		);
+		setModal(<RegisterWorkspaceSetupModal onClose={handleModalClose} onStatusChange={onStatusChange} />);
 	};
 
 	return (

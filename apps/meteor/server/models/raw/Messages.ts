@@ -26,8 +26,8 @@ import type {
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from './BaseRaw';
-import { escapeExternalFederationEventId } from '../../../app/federation-v2/server/infrastructure/rocket-chat/adapters/MessageConverter';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { escapeExternalFederationEventId } from '../../services/federation/infrastructure/rocket-chat/adapters/federation-id-escape-helper';
 
 export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMessage>>) {
@@ -233,6 +233,16 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
+	findLivechatClosingMessage(rid: IRoom['_id'], options?: FindOptions<IMessage>): Promise<IMessage | null> {
+		return this.findOne<IMessage>(
+			{
+				rid,
+				t: 'livechat-close',
+			},
+			options,
+		);
+	}
+
 	findLivechatMessages(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
 		return this.find(
 			{
@@ -241,6 +251,70 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 			options,
 		);
+	}
+
+	findVisibleByRoomIdNotContainingTypesBeforeTs(
+		roomId: IRoom['_id'],
+		types: IMessage['t'][],
+		ts: Date,
+		options?: FindOptions<IMessage>,
+		showThreadMessages = true,
+	): FindCursor<IMessage> {
+		const query: Filter<IMessage> = {
+			_hidden: {
+				$ne: true,
+			},
+			rid: roomId,
+			ts: { $lt: ts },
+			...(!showThreadMessages && {
+				$or: [
+					{
+						tmid: { $exists: false },
+					},
+					{
+						tshow: true,
+					},
+				],
+			}),
+		};
+
+		if (types.length > 0) {
+			query.t = { $nin: types };
+		}
+
+		return this.find(query, options);
+	}
+
+	findVisibleByRoomIdNotContainingTypesAndUsers(
+		roomId: IRoom['_id'],
+		types: IMessage['t'][],
+		users?: string[],
+		options?: FindOptions<IMessage>,
+		showThreadMessages = true,
+	): FindCursor<IMessage> {
+		const query: Filter<IMessage> = {
+			_hidden: {
+				$ne: true,
+			},
+			...(Array.isArray(users) && users.length > 0 && { 'u._id': { $nin: users } }),
+			rid: roomId,
+			...(!showThreadMessages && {
+				$or: [
+					{
+						tmid: { $exists: false },
+					},
+					{
+						tshow: true,
+					},
+				],
+			}),
+		};
+
+		if (types.length > 0) {
+			query.t = { $nin: types };
+		}
+
+		return this.find(query, options);
 	}
 
 	findLivechatMessagesWithoutClosing(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
