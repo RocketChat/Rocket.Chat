@@ -25,7 +25,7 @@ const getDirectRoom = (source, target) => {
 	};
 };
 
-export default function handleSentMessage(args) {
+export default async function handleSentMessage(args) {
 	const user = Users.findOne({
 		'profile.irc.nick': args.nick,
 	});

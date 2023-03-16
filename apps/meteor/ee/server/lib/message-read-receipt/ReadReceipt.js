@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { LivechatVisitors, ReadReceipts } from '@rocket.chat/models';
 
 import { Subscriptions, Messages, Rooms, Users } from '../../../../app/models/server';

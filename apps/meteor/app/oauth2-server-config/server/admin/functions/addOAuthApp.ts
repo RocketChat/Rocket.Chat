@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { OAuthApps, Users } from '@rocket.chat/models';
 import type { OauthAppsAddParams } from '@rocket.chat/rest-typings';
 import type { IOAuthApps, IUser } from '@rocket.chat/core-typings';
