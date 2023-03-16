@@ -54,10 +54,8 @@ export interface ServerMethods {
 	'sendConfirmationEmail': (...args: any[]) => any;
 	'setAdminStatus': (...args: any[]) => any;
 	'setAvatarFromService': (...args: any[]) => any;
-	'setReaction': (reaction: string, mid: IMessage['_id']) => void;
 	'setUsername': (...args: any[]) => any;
 	'setUserPassword': (...args: any[]) => any;
-	'setUserStatus': (statusType: IUser['status'], statusText: IUser['statusText']) => void;
 	'slashCommand': (params: { cmd: string; params: string; msg: IMessage; triggerId: string }) => unknown;
 	'toggleFavorite': (...args: any[]) => any;
 	'unblockUser': (...args: any[]) => any;
