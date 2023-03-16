@@ -113,7 +113,7 @@ export const FileUpload = {
 		try {
 			Promise.await(Apps.triggerEvent(AppEvents.IPreFileUpload, { file, content }));
 		} catch (error) {
-			if (error instanceof AppsEngineException) {
+			if (error.name === AppsEngineException.name) {
 				throw new Meteor.Error('error-app-prevented', error.message);
 			}
 
