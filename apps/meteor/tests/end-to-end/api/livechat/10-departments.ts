@@ -22,40 +22,35 @@ import { createMonitor, createUnit } from '../../../data/livechat/units';
 (IS_EE ? describe : describe.skip)('LIVECHAT - Departments', function () {
 	before((done) => getCredentials(done));
 
-	before((done) => {
-		updateSetting('Livechat_enabled', true).then(() =>
-			updatePermission('view-livechat-manager', ['admin'])
-				.then(() => createAgent())
-				.then(() => makeAgentAvailable())
-				.then(() => updateSetting('Omnichannel_enable_department_removal', true))
-				.then(() => done()),
-		);
+	before(async () => {
+		await updateSetting('Livechat_enabled', true);
+		await updatePermission('view-livechat-manager', ['admin']);
+		await createAgent();
+		await makeAgentAvailable();
+		await updateSetting('Omnichannel_enable_department_removal', true);
 	});
 
 	describe('GET livechat/department', () => {
-		it('should return unauthorized error when the user does not have the necessary permission', (done) => {
-			updatePermission('view-livechat-departments', [])
-				.then(() => updatePermission('view-l-room', []))
-				.then(() => {
-					request.get(api('livechat/department')).set(credentials).expect('Content-Type', 'application/json').expect(403).end(done);
-				});
+		it('should return unauthorized error when the user does not have the necessary permission', async () => {
+			await updatePermission('view-livechat-departments', []);
+			await updatePermission('view-l-room', []);
+
+			await request.get(api('livechat/department')).set(credentials).expect('Content-Type', 'application/json').expect(403);
 		});
 
-		it('should return a list of departments', (done) => {
-			updatePermission('view-livechat-departments', ['admin']).then(() => {
-				request
-					.get(api('livechat/department'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('departments');
-						expect(res.body.departments).to.be.an('array');
-						expect(res.body.departments).to.have.length.of.at.least(0);
-					})
-					.end(done);
-			});
+		it('should return a list of departments', async () => {
+			await updatePermission('view-livechat-departments', ['admin']);
+			await request
+				.get(api('livechat/department'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('departments');
+					expect(res.body.departments).to.be.an('array');
+					expect(res.body.departments).to.have.length.of.at.least(0);
+				});
 		});
 	});
 
@@ -102,31 +97,27 @@ import { createMonitor, createUnit } from '../../../data/livechat/units';
 	});
 
 	describe('GET livechat/department/:_id', () => {
-		it('should return unauthorized error when the user does not have the necessary permission', (done) => {
-			updatePermission('view-livechat-departments', []).then(() => {
-				request
-					.get(api('livechat/department/testetetetstetete'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(403)
-					.end(done);
-			});
+		it('should return unauthorized error when the user does not have the necessary permission', async () => {
+			await updatePermission('view-livechat-departments', []);
+			await request
+				.get(api('livechat/department/testetetetstetete'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403);
 		}).timeout(5000);
 
-		it('should return an error when the department does not exist', (done) => {
-			updatePermission('view-livechat-departments', ['admin']).then(() => {
-				request
-					.get(api('livechat/department/testesteteste'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('department');
-						expect(res.body.department).to.be.null;
-					})
-					.end(done);
-			});
+		it('should return an error when the department does not exist', async () => {
+			await updatePermission('view-livechat-departments', ['admin']);
+			await request
+				.get(api('livechat/department/testesteteste'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('department');
+					expect(res.body.department).to.be.null;
+				});
 		}).timeout(5000);
 
 		it('should return the department', async () => {
@@ -273,86 +264,67 @@ import { createMonitor, createUnit } from '../../../data/livechat/units';
 	});
 
 	describe('GET livechat/department.autocomplete', () => {
-		it('should return an error when the user does not have the necessary permission', (done) => {
-			updatePermission('view-livechat-departments', [])
-				.then(() => updatePermission('view-l-room', []))
-				.then(() => {
-					request
-						.get(api('livechat/department.autocomplete'))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(403)
-						.end(done);
-				});
+		it('should return an error when the user does not have the necessary permission', async () => {
+			await updatePermission('view-livechat-departments', []);
+			await updatePermission('view-l-room', []);
+			await request.get(api('livechat/department.autocomplete')).set(credentials).expect('Content-Type', 'application/json').expect(403);
 		});
-		it('should return an error when the query is not provided', (done) => {
-			updatePermission('view-livechat-departments', ['admin'])
-				.then(() => updatePermission('view-l-room', ['admin']))
-				.then(() => {
-					request
-						.get(api('livechat/department.autocomplete'))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res: Response) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('error');
-						})
-						.end(done);
+		it('should return an error when the query is not provided', async () => {
+			await updatePermission('view-livechat-departments', ['admin']);
+			await updatePermission('view-l-room', ['admin']);
+			await request
+				.get(api('livechat/department.autocomplete'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
 				});
 		});
 
-		it('should return an error when the query is empty', (done) => {
-			updatePermission('view-livechat-departments', ['admin'])
-				.then(() => updatePermission('view-l-room', ['admin']))
-				.then(() => {
-					request
-						.get(api('livechat/department.autocomplete'))
-						.set(credentials)
-						.query({ selector: '' })
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res: Response) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('error');
-						})
-						.end(done);
+		it('should return an error when the query is empty', async () => {
+			await updatePermission('view-livechat-departments', ['admin']);
+			await updatePermission('view-l-room', ['admin']);
+			await request
+				.get(api('livechat/department.autocomplete'))
+				.set(credentials)
+				.query({ selector: '' })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
 				});
 		});
 
-		it('should return an error when the query is not a string', (done) => {
-			updatePermission('view-livechat-departments', ['admin'])
-				.then(() => updatePermission('view-l-room', ['admin']))
-				.then(() => {
-					request
-						.get(api('livechat/department.autocomplete'))
-						.set(credentials)
-						.query({ selector: { name: 'test' } })
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res: Response) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('error');
-						})
-						.end(done);
+		it('should return an error when the query is not a string', async () => {
+			await updatePermission('view-livechat-departments', ['admin']);
+			await updatePermission('view-l-room', ['admin']);
+			await request
+				.get(api('livechat/department.autocomplete'))
+				.set(credentials)
+				.query({ selector: { name: 'test' } })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
 				});
 		});
 
-		it('should return an error when selector is not valid JSON', (done) => {
-			updatePermission('view-livechat-departments', ['admin'])
-				.then(() => updatePermission('view-l-room', ['admin']))
-				.then(() => {
-					request
-						.get(api('livechat/department.autocomplete'))
-						.set(credentials)
-						.query({ selector: '{name: "test"' })
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res: Response) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('error');
-						})
-						.end(done);
+		it('should return an error when selector is not valid JSON', async () => {
+			await updatePermission('view-livechat-departments', ['admin']);
+			await updatePermission('view-l-room', ['admin']);
+			await request
+				.get(api('livechat/department.autocomplete'))
+				.set(credentials)
+				.query({ selector: '{name: "test"' })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
 				});
 		});
 
@@ -376,122 +348,91 @@ import { createMonitor, createUnit } from '../../../data/livechat/units';
 			await deleteDepartment(department._id);
 		});
 
-		it('should return a list of departments excluding the ids on selector.exceptions', function (done) {
+		it('should return a list of departments excluding the ids on selector.exceptions', async function () {
 			if (!IS_EE) {
 				this.skip();
 			}
 
-			let dep1: ILivechatDepartment;
-
-			updatePermission('view-livechat-departments', ['admin'])
-				.then(() => updatePermission('view-l-room', ['admin']))
-				.then(() => createDepartment())
-				.then((department: ILivechatDepartment) => {
-					dep1 = department;
-				})
-				.then(() => createDepartment())
-				.then(() => {
-					request
-						.get(api('livechat/department.autocomplete'))
-						.set(credentials)
-						.query({ selector: `{"exceptions":["${dep1._id}"]}` })
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res: Response) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('items');
-							expect(res.body.items).to.be.an('array');
-							expect(res.body.items).to.have.length.of.at.least(1);
-							expect(res.body.items[0]).to.have.property('_id');
-							expect(res.body.items[0]).to.have.property('name');
-							expect(res.body.items.every((department: ILivechatDepartment) => department._id !== dep1._id)).to.be.true;
-						})
-						.end(done);
+			await updatePermission('view-livechat-departments', ['admin']);
+			await updatePermission('view-l-room', ['admin']);
+			const dep1 = await createDepartment();
+			await createDepartment();
+			await request
+				.get(api('livechat/department.autocomplete'))
+				.set(credentials)
+				.query({ selector: `{"exceptions":["${dep1._id}"]}` })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('items');
+					expect(res.body.items).to.be.an('array');
+					expect(res.body.items).to.have.length.of.at.least(1);
+					expect(res.body.items[0]).to.have.property('_id');
+					expect(res.body.items[0]).to.have.property('name');
+					expect(res.body.items.every((department: ILivechatDepartment) => department._id !== dep1._id)).to.be.true;
 				});
 		});
 	});
 
 	describe('GET livechat/departments.listByIds', () => {
-		it('should throw an error if the user doesnt have the permission to view the departments', (done) => {
-			updatePermission('view-livechat-departments', [])
-				.then(() => updatePermission('view-l-room', []))
-				.then(() => {
-					request
-						.get(api('livechat/department.listByIds'))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(403)
-						.end(done);
+		it('should throw an error if the user doesnt have the permission to view the departments', async () => {
+			await updatePermission('view-livechat-departments', []);
+			await updatePermission('view-l-room', []);
+			await request.get(api('livechat/department.listByIds')).set(credentials).expect('Content-Type', 'application/json').expect(403);
+		});
+
+		it('should return an error when the query is not present', async () => {
+			await updatePermission('view-livechat-departments', ['admin']);
+			await updatePermission('view-l-room', ['admin']);
+			await request
+				.get(api('livechat/department.listByIds'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
 				});
 		});
 
-		it('should return an error when the query is not present', (done) => {
-			updatePermission('view-livechat-departments', ['admin'])
-				.then(() => updatePermission('view-l-room', ['admin']))
-				.then(() => {
-					request
-						.get(api('livechat/department.listByIds'))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res: Response) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('error');
-						})
-						.end(done);
-				});
-		});
-
-		it('should return an error when the query is not an array', (done) => {
-			updatePermission('view-livechat-departments', ['admin'])
-				.then(() => updatePermission('view-l-room', ['admin']))
-				.then(() => {
-					request
-						.get(api('livechat/department.listByIds'))
-						.set(credentials)
-						.query({ ids: 'test' })
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res: Response) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('error');
-						})
-						.end(done);
+		it('should return an error when the query is not an array', async () => {
+			await updatePermission('view-livechat-departments', ['admin']);
+			await updatePermission('view-l-room', ['admin']);
+			await request
+				.get(api('livechat/department.listByIds'))
+				.set(credentials)
+				.query({ ids: 'test' })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
 				});
 		});
 	});
 
 	describe('GET livechat/department/:departmentId/agents', () => {
-		it('should throw an error if the user doesnt have the permission to view the departments', (done) => {
-			updatePermission('view-livechat-departments', [])
-				.then(() => updatePermission('view-l-room', []))
-				.then(() => {
-					request
-						.get(api('livechat/department/test/agents'))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(403)
-						.end(done);
-				});
+		it('should throw an error if the user doesnt have the permission to view the departments', async () => {
+			await updatePermission('view-livechat-departments', []);
+			await updatePermission('view-l-room', []);
+			await request.get(api('livechat/department/test/agents')).set(credentials).expect('Content-Type', 'application/json').expect(403);
 		});
 
-		it('should return an empty array when the departmentId is not valid', (done) => {
-			updatePermission('view-livechat-departments', ['admin'])
-				.then(() => updatePermission('view-l-room', ['admin', 'livechat-agent']))
-				.then(() => {
-					request
-						.get(api('livechat/department/test/agents'))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res: Response) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('agents');
-							expect(res.body.agents).to.be.an('array');
-							expect(res.body.agents).to.have.lengthOf(0);
-							expect(res.body.total).to.be.equal(0);
-						})
-						.end(done);
+		it('should return an empty array when the departmentId is not valid', async () => {
+			await updatePermission('view-livechat-departments', ['admin']);
+			await updatePermission('view-l-room', ['admin', 'livechat-agent']);
+			await request
+				.get(api('livechat/department/test/agents'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('agents');
+					expect(res.body.agents).to.be.an('array');
+					expect(res.body.agents).to.have.lengthOf(0);
+					expect(res.body.total).to.be.equal(0);
 				});
 		});
 
@@ -534,34 +475,24 @@ import { createMonitor, createUnit } from '../../../data/livechat/units';
 	});
 
 	describe('POST livechat/department/:departmentId/agents', () => {
-		it('should throw an error if the user doesnt have the permission to manage the departments', (done) => {
-			updatePermission('manage-livechat-departments', [])
-				.then(() => updatePermission('add-livechat-department-agents', []))
-				.then(() => {
-					request
-						.post(api('livechat/department/test/agents'))
-						.set(credentials)
-						.expect('Content-Type', 'application/json')
-						.expect(403)
-						.end(done);
-				});
+		it('should throw an error if the user doesnt have the permission to manage the departments', async () => {
+			await updatePermission('manage-livechat-departments', []);
+			await updatePermission('add-livechat-department-agents', []);
+			await request.post(api('livechat/department/test/agents')).set(credentials).expect('Content-Type', 'application/json').expect(403);
 		});
 
-		it('should throw an error if the departmentId is not valid', (done) => {
-			updatePermission('manage-livechat-departments', ['admin'])
-				.then(() => updatePermission('add-livechat-department-agents', ['admin', 'livechat-manager']))
-				.then(() => {
-					request
-						.post(api('livechat/department/test/agents'))
-						.set(credentials)
-						.send({ upsert: [], remove: [] })
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res: Response) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('error', 'Department not found [error-department-not-found]');
-						})
-						.end(done);
+		it('should throw an error if the departmentId is not valid', async () => {
+			await updatePermission('manage-livechat-departments', ['admin']);
+			await updatePermission('add-livechat-department-agents', ['admin', 'livechat-manager']);
+			await request
+				.post(api('livechat/department/test/agents'))
+				.set(credentials)
+				.send({ upsert: [], remove: [] })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Department not found [error-department-not-found]');
 				});
 		});
 

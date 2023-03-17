@@ -1225,7 +1225,7 @@ export const Livechat = {
 		}
 
 		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
-			api.broadcast('omnichannel.room', room._id, {
+			void api.broadcast('omnichannel.room', room._id, {
 				type: 'agentStatus',
 				status,
 			});
@@ -1241,7 +1241,7 @@ export const Livechat = {
 	},
 
 	notifyRoomVisitorChange(roomId, visitor) {
-		api.broadcast('omnichannel.room', roomId, {
+		void api.broadcast('omnichannel.room', roomId, {
 			type: 'visitorData',
 			visitor,
 		});

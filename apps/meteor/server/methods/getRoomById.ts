@@ -1,11 +1,20 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Rooms } from '../../app/models/server';
 import { canAccessRoom } from '../../app/authorization/server';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		getRoomById(rid: IRoom['_id']): IRoom;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	getRoomById(rid) {
 		check(rid, String);
 		const userId = Meteor.userId();
@@ -21,7 +30,7 @@ Meteor.methods({
 				method: 'getRoomNameById',
 			});
 		}
-		if (!canAccessRoom(room, Meteor.user())) {
+		if (!canAccessRoom(room, Meteor.user() as IUser)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'getRoomById',
 			});
