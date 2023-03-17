@@ -1,10 +1,19 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import type { IUser } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { settings } from '../../../settings/server';
 import { RateLimiter, setStatusText } from '../../../lib/server';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		setUserStatus(statusType: IUser['status'], statusText: IUser['statusText']): void;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	setUserStatus: (statusType, statusText) => {
 		const userId = Meteor.userId();
 		if (!userId) {

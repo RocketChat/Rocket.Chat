@@ -50,7 +50,7 @@ export function upsertMessageBulk(
 		if (index === msgs.length - 1) {
 			collection.queries = queries;
 		}
-		upsertMessage({ msg, subscription }, collection);
+		void upsertMessage({ msg, subscription }, collection);
 	});
 }
 

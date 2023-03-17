@@ -107,7 +107,7 @@ export const addUserToRoom = function (
 			// Keep the current event
 			callbacks.run('afterJoinRoom', userToBeAdded, room);
 
-			Apps.triggerEvent(AppEvents.IPostRoomUserJoined, room, userToBeAdded, inviter);
+			void Apps.triggerEvent(AppEvents.IPostRoomUserJoined, room, userToBeAdded, inviter);
 		});
 	}
 
