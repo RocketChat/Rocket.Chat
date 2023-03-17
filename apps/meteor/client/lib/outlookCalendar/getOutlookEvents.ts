@@ -9,6 +9,8 @@ import {
 	CalendarView,
 	DateTime,
 	WellKnownFolderName,
+	PropertySet,
+	BasePropertySet,
 } from 'ews-js-api-browser';
 
 // #ToDo: Remove this line
@@ -26,5 +28,11 @@ export const getOutlookEvents = async (date: Date, server: string, user: string,
 		new DateTime(date.getFullYear(), date.getMonth() + 1, date.getDate(), 23, 59, 59),
 	);
 
-	return (await exchange.FindItems(folderId, view)).Items as Appointment[];
+	const appointments = (await exchange.FindAppointments(folderId, view)).Items as Appointment[];
+
+	const propertySet = new PropertySet(BasePropertySet.FirstClassProperties);
+
+	await exchange.LoadPropertiesForItems(appointments, propertySet);
+
+	return appointments;
 };

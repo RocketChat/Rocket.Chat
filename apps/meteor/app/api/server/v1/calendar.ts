@@ -44,15 +44,20 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isCalendarEventUpdateProps },
 	{
 		async post() {
-			// const { userId: uid } = this;
-			// const { startTime, externalId, subject } = this.bodyParams;
+			const { userId } = this;
+			const { eventId, startTime, subject, description } = this.bodyParams;
 
-			// await Calendar.update({
-			// 	uid,
-			// 	startTime: new Date(startTime),
-			// 	externalId,
-			// 	subject,
-			// });
+			const event = await Calendar.get(eventId);
+
+			if (!event || event.uid !== userId) {
+				return API.v1.failure('invalid-calendar-event');
+			}
+
+			await Calendar.update(eventId, {
+				startTime: new Date(startTime),
+				subject,
+				description,
+			});
 
 			return API.v1.success();
 		},
