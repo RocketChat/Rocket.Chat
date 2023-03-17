@@ -46,5 +46,3 @@ yarn-error.log*
 .exrc
 .history
 .envrc
-
-.eslintcache
