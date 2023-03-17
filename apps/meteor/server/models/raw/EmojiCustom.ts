@@ -14,7 +14,7 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 	}
 
 	// find
-	findByNameOrAlias(emojiName: string, options: FindOptions<IEmojiCustom>): FindCursor<IEmojiCustom> {
+	findByNameOrAlias(emojiName: string, options?: FindOptions<IEmojiCustom>): FindCursor<IEmojiCustom> {
 		let name = emojiName;
 
 		if (typeof emojiName === 'string') {
@@ -28,7 +28,7 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 		return this.find(query, options);
 	}
 
-	findByNameOrAliasExceptID(name: string, except: string, options: FindOptions<IEmojiCustom>): FindCursor<IEmojiCustom> {
+	findByNameOrAliasExceptID(name: string, except: string, options?: FindOptions<IEmojiCustom>): FindCursor<IEmojiCustom> {
 		const query = {
 			_id: { $nin: [except] },
 			$or: [{ name }, { aliases: name }],

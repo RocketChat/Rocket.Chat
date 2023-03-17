@@ -24,20 +24,22 @@ const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsMo
 	return (
 		<>
 			<OptionTitle>{t('Apps')}</OptionTitle>
-			<ul>
+			<ul aria-description='appsList'>
 				<>
 					<ListItem
+						role='listitem'
 						icon='store'
 						text={t('Marketplace')}
-						action={(): void => {
+						onClick={() => {
 							marketplaceRoute.push({ context: 'explore', page });
 							onDismiss();
 						}}
 					/>
 					<ListItem
+						role='listitem'
 						icon='circle-arrow-down'
 						text={t('Installed')}
-						action={(): void => {
+						onClick={() => {
 							marketplaceRoute.push({ context: 'installed', page });
 							onDismiss();
 						}}
@@ -46,9 +48,10 @@ const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsMo
 					{appsManagementAllowed && (
 						<>
 							<ListItem
+								role='listitem'
 								icon='cube'
 								text={t('Requested')}
-								action={(): void => {
+								onClick={(): void => {
 									marketplaceRoute.push({ context: 'requested', page });
 									onDismiss();
 								}}
@@ -64,7 +67,7 @@ const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsMo
 				{appBoxItems.length > 0 && (
 					<>
 						{appBoxItems.map((item, key) => {
-							const action = (): void => {
+							const action = () => {
 								triggerActionButtonAction({
 									rid: '',
 									mid: '',
@@ -74,7 +77,14 @@ const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsMo
 								});
 								onDismiss();
 							};
-							return <ListItem text={(t.has(item.name) && t(item.name)) || item.name} action={action} key={item.actionId + key} />;
+							return (
+								<ListItem
+									role='listitem'
+									text={(t.has(item.name) && t(item.name)) || item.name}
+									onClick={action}
+									key={item.actionId + key}
+								/>
+							);
 						})}
 					</>
 				)}

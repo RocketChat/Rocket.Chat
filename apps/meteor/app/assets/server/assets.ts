@@ -244,7 +244,7 @@ class RocketChatAssetsClass {
 						defaultUrl: assetInstance.defaultUrl,
 					};
 
-					Settings.updateValueById(key, value);
+					void Settings.updateValueById(key, value);
 					// eslint-disable-next-line @typescript-eslint/no-use-before-define
 					return RocketChatAssets.processAsset(key, value);
 				}, 200);
@@ -267,7 +267,7 @@ class RocketChatAssetsClass {
 			defaultUrl: getAssetByKey(asset).defaultUrl,
 		};
 
-		Settings.updateValueById(key, value);
+		void Settings.updateValueById(key, value);
 		// eslint-disable-next-line @typescript-eslint/no-use-before-define
 		RocketChatAssets.processAsset(key, value);
 	}
@@ -332,7 +332,7 @@ class RocketChatAssetsClass {
 
 export const RocketChatAssets = new RocketChatAssetsClass();
 
-settingsRegistry.addGroup('Assets', function () {
+void settingsRegistry.addGroup('Assets', function () {
 	this.add('Assets_SvgFavicon_Enable', true, {
 		type: 'boolean',
 		group: 'Assets',
