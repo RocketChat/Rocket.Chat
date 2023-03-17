@@ -1,6 +1,6 @@
 import { Box, Icon, Tag } from '@rocket.chat/fuselage';
 import type { IconProps } from '@rocket.chat/fuselage';
-import { useRoutePath, useRouteUrl } from '@rocket.chat/ui-contexts';
+import { useRoutePath } from '@rocket.chat/ui-contexts';
 import type { FC, ReactElement } from 'react';
 import React, { memo, useMemo } from 'react';
 
