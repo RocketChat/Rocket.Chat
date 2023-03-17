@@ -2,7 +2,6 @@
 export interface ServerMethods {
 	'addUsersToRoom': (...args: any[]) => any;
 	'cleanRoomHistory': (...args: any[]) => any;
-	'getAvatarSuggestion': (...args: any[]) => any;
 	'getUsersOfRoom': (...args: any[]) => any;
 	'insertOrUpdateUserStatus': (...args: any[]) => any;
 	'muteUserInRoom': (...args: any[]) => any;
@@ -15,9 +14,7 @@ export interface ServerMethods {
 	'saveUserProfile': (...args: any[]) => any;
 	sendConfirmationEmail(to: string): boolean;
 	'setAvatarFromService': (...args: any[]) => any;
-	'setUsername': (...args: any[]) => any;
-	'setUserPassword': (...args: any[]) => any;
-	'toggleFavorite': (...args: any[]) => any;
+	setUserPassword(password: string): void;
 	'unmuteUserInRoom': (...args: any[]) => any;
 	'unreadMessages': (...args: any[]) => any;
 	'updateIncomingIntegration': (...args: any[]) => any;
