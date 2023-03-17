@@ -2,12 +2,12 @@ import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../settings/server';
 import { isTheLastMessage } from '../../lib/server';
-import { canAccessRoom, roomAccessAttributes } from '../../authorization/server';
+import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { Subscriptions, Rooms, Messages } from '../../models/server';
 import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
 
 Meteor.methods({
-	starMessage(message) {
+	async starMessage(message) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'starMessage',
@@ -33,7 +33,7 @@ Meteor.methods({
 
 		const room = Rooms.findOneById(message.rid, { fields: { ...roomAccessAttributes, lastMessage: 1 } });
 
-		if (!canAccessRoom(room, { _id: Meteor.userId() })) {
+		if (!(await canAccessRoomAsync(room, { _id: Meteor.userId() }))) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'starMessage' });
 		}
 

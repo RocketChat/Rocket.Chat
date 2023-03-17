@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import mem from 'mem';
 
 import SearchLogger from '../logger/logger';
-import { canAccessRoom } from '../../../authorization/server';
+import { canAccessRoomAsync } from '../../../authorization/server';
 import { Users, Rooms } from '../../../models/server';
 
 class ValidationService {
@@ -17,7 +17,7 @@ class ValidationService {
 				return;
 			}
 
-			if (!canAccessRoom(room, { _id: uid })) {
+			if (!Promise.await(canAccessRoomAsync(room, { _id: uid }))) {
 				return;
 			}
 

@@ -14,7 +14,7 @@ import {
 	findChannelAndPrivateAutocompleteWithPagination,
 } from '../lib/rooms';
 import * as dataExport from '../../../../server/lib/dataExport';
-import { canAccessRoom, canAccessRoomId, hasPermission } from '../../../authorization/server';
+import { canAccessRoomAsync, canAccessRoomId, hasPermission } from '../../../authorization/server';
 import { settings } from '../../../settings/server/index';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
@@ -83,7 +83,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			if (!canAccessRoomId(this.urlParams.rid, this.userId)) {
+			if (!await canAccessRoomAsync(this.urlParams.rid, this.userId)) {
 				return API.v1.unauthorized();
 			}
 
@@ -233,7 +233,7 @@ API.v1.addRoute(
 			const room = findRoomByIdOrName({ params: this.requestParams() });
 			const { fields } = this.parseJsonQuery();
 
-			if (!room || !canAccessRoom(room, { _id: this.userId })) {
+			if (!room || !await canAccessRoomAsync(room, { _id: this.userId })) {
 				return API.v1.failure('not-allowed', 'Not Allowed');
 			}
 
@@ -302,7 +302,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
-			if (!room || !canAccessRoom(room, { _id: this.userId })) {
+			if (!room || !await canAccessRoomAsync(room, { _id: this.userId })) {
 				return API.v1.failure('not-allowed', 'Not Allowed');
 			}
 
@@ -509,7 +509,7 @@ API.v1.addRoute(
 	'rooms.export',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			const { rid, type } = this.bodyParams;
 
 			if (!rid || !type || !['email', 'file'].includes(type)) {
@@ -527,7 +527,7 @@ API.v1.addRoute(
 
 			const user = Meteor.users.findOne({ _id: this.userId });
 
-			if (!canAccessRoom(room, user)) {
+			if (!await canAccessRoomAsync(room, user)) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
 
