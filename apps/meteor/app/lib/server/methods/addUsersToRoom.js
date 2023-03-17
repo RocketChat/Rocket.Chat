@@ -11,7 +11,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { Federation } from '../../../../server/services/federation/Federation';
 
 Meteor.methods({
-	addUsersToRoom(data = {}) {
+	async addUsersToRoom(data = {}) {
 		// Validate user and room
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -80,7 +80,7 @@ Meteor.methods({
 			}
 			const subscription = newUser && Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
 			if (!subscription) {
-				addUserToRoom(data.rid, newUser || username, user);
+				await addUserToRoom(data.rid, newUser || username, user);
 			} else {
 				void api.broadcast('notify.ephemeralMessage', userId, data.rid, {
 					msg: TAPi18n.__(

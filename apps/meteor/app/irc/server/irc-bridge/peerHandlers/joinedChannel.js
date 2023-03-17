@@ -18,7 +18,7 @@ export default async function handleJoinedChannel(args) {
 
 		this.log(`${user.username} created room ${args.roomName}`);
 	} else {
-		addUserToRoom(room._id, user);
+		await addUserToRoom(room._id, user);
 
 		this.log(`${user.username} joined room ${room.name}`);
 	}
