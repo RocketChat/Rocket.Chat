@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
 import { settings } from '../../app/settings/server';
-import { setUserAvatar } from '../../app/lib';
+import { setUserAvatar } from '../../app/lib/server';
 import { Users } from '../../app/models/server';
 import { hasPermission } from '../../app/authorization/server';
 

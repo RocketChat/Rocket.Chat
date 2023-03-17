@@ -3,7 +3,7 @@ import { Base } from '../../../../../app/models/server';
 /**
  * Livechat Priority model
  */
-export class LivechatPriority extends Base {
+class LivechatPriority extends Base {
 	constructor() {
 		super('livechat_priority');
 
@@ -43,4 +43,4 @@ export class LivechatPriority extends Base {
 	}
 }
 
-export default new LivechatPriority();
+new LivechatPriority();

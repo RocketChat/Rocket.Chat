@@ -5,7 +5,7 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings/server';
 import { LivechatRooms } from '../../../../../app/models/server';
 import { cbLogger } from '../lib/logger';
-import type { CloseRoomParams } from '../../../../../app/livechat/server/lib/LivechatTyped.d';
+import type { CloseRoomParams } from '../../../../../app/livechat/server/lib/LivechatTyped';
 
 type LivechatCloseCallbackParams = {
 	room: IOmnichannelRoom;

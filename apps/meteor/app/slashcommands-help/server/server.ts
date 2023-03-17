@@ -57,7 +57,7 @@ slashCommands.add({
 			},
 		];
 		keys.forEach((key) => {
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__(key.key, {
 					postProcess: 'sprintf',
 					sprintf: [key.command],

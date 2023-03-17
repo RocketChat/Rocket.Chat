@@ -28,7 +28,7 @@ Meteor.methods({
 		}
 
 		const user = Users.findOneById(userId);
-		if (!user || !user.username) {
+		if (!user?.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'removeRoomOwner',
 			});
@@ -84,9 +84,9 @@ Meteor.methods({
 			scope: rid,
 		};
 		if (settings.get('UI_DisplayRoles')) {
-			api.broadcast('user.roleUpdate', event);
+			void api.broadcast('user.roleUpdate', event);
 		}
-		api.broadcast('federation.userRoleChanged', { ...event, givenByUserId: uid });
+		void api.broadcast('federation.userRoleChanged', { ...event, givenByUserId: uid });
 		return true;
 	},
 });
