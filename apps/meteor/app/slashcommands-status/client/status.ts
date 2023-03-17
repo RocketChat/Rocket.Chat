@@ -16,7 +16,7 @@ slashCommands.add({
 				dispatchToastMessage({ type: 'error', message: error });
 				return;
 			}
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('StatusMessage_Changed_Successfully', { lng: settings.get('Language') || 'en' }),
 			});
 		});

@@ -148,7 +148,7 @@ Meteor.methods<ServerMethods>({
 			return executeSetReaction(reaction, messageId, shouldReact);
 		} catch (e: any) {
 			if (e.error === 'error-not-allowed' && e.reason && e.details && e.details.rid) {
-				api.broadcast('notify.ephemeralMessage', uid, e.details.rid, {
+				void api.broadcast('notify.ephemeralMessage', uid, e.details.rid, {
 					msg: e.reason,
 				});
 
