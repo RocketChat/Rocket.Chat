@@ -1,9 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Subscriptions } from '../../app/models/server';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		ignoreUser(params: { rid: string; userId: string; ignore?: boolean }): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	ignoreUser({ rid, userId: ignoredUser, ignore = true }) {
 		check(ignoredUser, String);
 		check(rid, String);
