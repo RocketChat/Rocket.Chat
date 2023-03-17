@@ -1,9 +1,10 @@
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel, createTargetTeam, createDirectMessage } from './utils';
+import { setSettingValueById } from './utils/setSettingValueById';
 import { expect, test } from './utils/test';
 
-test.use({ storageState: Users.user1.state });
+test.use({ storageState: Users.admin.state });
 
 test.describe('video conference', () => {
 	let poHomeChannel: HomeChannel;
@@ -16,6 +17,7 @@ test.describe('video conference', () => {
 		targetReadOnlyChannel = await createTargetChannel(api, { readOnly: true });
 		targetTeam = await createTargetTeam(api);
 		await createDirectMessage(api);
+		await expect((await setSettingValueById(api, 'Accounts_Default_User_Preferences_messagesLayout', 'username')).status()).toBe(200);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -72,12 +74,15 @@ test.describe('video conference', () => {
 		});
 	});
 
-	test('expect create video conference in a direct multiple', async () => {
-		await poHomeChannel.sidenav.openChat('user2, rocketchat.internal.admin.test');
+	test.describe('expect create video conference in a direct multiple', async () => {
+		test.use({ storageState: Users.user1.state });
+		test('expect user to create video conference in a direct multiple', async () => {
+			await poHomeChannel.sidenav.openChat('rocketchat.internal.admin.test, user2');
 
-		await poHomeChannel.content.btnCall.click();
-		await poHomeChannel.content.btnStartCall.click();
-		await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
+			await poHomeChannel.content.btnCall.click();
+			await poHomeChannel.content.btnStartCall.click();
+			await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
+		});
 	});
 
 	test.describe('received in a direct multiple', async () => {
