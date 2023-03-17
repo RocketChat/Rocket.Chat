@@ -3,7 +3,6 @@ import { useContext, useMemo } from 'react';
 
 import { ServerContext } from '../ServerContext';
 
-// T extends (...args: any) => any> = T extends (...args: infer P) => any ? P : never;
 export type ServerStreamFunction<StreamName extends ServerStreamerNames> = (
 	args: StreamerEvents[StreamName],
 	callback: (...args: any) => void,
