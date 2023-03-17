@@ -54,19 +54,21 @@ export class CsvImporter extends Base {
 			return roomIds.get(roomName);
 		};
 
-		const operations = zip.map(async (entry) => {
+		for await (const entry of zip.getEntries()) {
 			this.logger.debug(`Entry: ${entry.entryName}`);
 
 			// Ignore anything that has `__MACOSX` in it's name, as sadly these things seem to mess everything up
 			if (entry.entryName.indexOf('__MACOSX') > -1) {
 				this.logger.debug(`Ignoring the file: ${entry.entryName}`);
-				return increaseProgressCount();
+				increaseProgressCount();
+				continue;
 			}
 
 			// Directories are ignored, since they are "virtual" in a zip file
 			if (entry.isDirectory) {
 				this.logger.debug(`Ignoring the directory entry: ${entry.entryName}`);
-				return increaseProgressCount();
+				increaseProgressCount();
+				continue;
 			}
 
 			// Parse the channels
@@ -98,7 +100,8 @@ export class CsvImporter extends Base {
 				}
 
 				await super.updateRecord({ 'count.channels': channelsCount });
-				return increaseProgressCount();
+				increaseProgressCount();
+				continue;
 			}
 
 			// Parse the users
@@ -107,14 +110,14 @@ export class CsvImporter extends Base {
 				const parsedUsers = this.csvParser(entry.getData().toString());
 				usersCount = parsedUsers.length;
 
-				for (const u of parsedUsers) {
+				for await (const u of parsedUsers) {
 					const username = u[0].trim();
 					availableUsernames.add(username);
 
 					const email = u[1].trim();
 					const name = u[2].trim();
 
-					this.converter.addUser({
+					await this.converter.addUser({
 						importIds: [username],
 						emails: [email],
 						username,
@@ -123,7 +126,8 @@ export class CsvImporter extends Base {
 				}
 
 				await super.updateRecord({ 'count.users': usersCount });
-				return increaseProgressCount();
+				increaseProgressCount();
+				continue;
 			}
 
 			// Parse the messages
@@ -141,7 +145,8 @@ export class CsvImporter extends Base {
 					msgs = this.csvParser(entry.getData().toString());
 				} catch (e) {
 					this.logger.warn(`The file ${entry.entryName} contains invalid syntax`, e);
-					return increaseProgressCount();
+					increaseProgressCount();
+					continue;
 				}
 
 				let data;
@@ -212,13 +217,12 @@ export class CsvImporter extends Base {
 				}
 
 				await super.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
-				return increaseProgressCount();
+				increaseProgressCount();
+				continue;
 			}
 
 			increaseProgressCount();
-		});
-
-		await Promise.all(operations);
+		}
 
 		if (usersCount) {
 			await Settings.incrementValueById('CSV_Importer_Count', usersCount);

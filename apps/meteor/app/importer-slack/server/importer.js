@@ -191,43 +191,48 @@ export class SlackImporter extends Base {
 
 		try {
 			// we need to iterate the zip file twice so that all channels are loaded before the messages
+			console.log('------------------');
+			console.log(zip.getEntries());
 
-			const promises = zip.map(async (entry) => {
+			for await (const entry of zip.getEntries()) {
 				try {
 					if (entry.entryName === 'channels.json') {
 						channelCount += await this.prepareChannelsFile(entry);
 						await this.updateRecord({ 'count.channels': channelCount });
-						return increaseProgress();
+						increaseProgress();
+						continue;
 					}
 
 					if (entry.entryName === 'groups.json') {
 						channelCount += await this.prepareGroupsFile(entry);
 						await this.updateRecord({ 'count.channels': channelCount });
-						return increaseProgress();
+						increaseProgress();
+						continue;
 					}
 
 					if (entry.entryName === 'mpims.json') {
 						channelCount += await this.prepareMpimpsFile(entry);
 						await this.updateRecord({ 'count.channels': channelCount });
-						return increaseProgress();
+						increaseProgress();
+						continue;
 					}
 
 					if (entry.entryName === 'dms.json') {
 						channelCount += await this.prepareDMsFile(entry);
 						await this.updateRecord({ 'count.channels': channelCount });
-						return increaseProgress();
+						increaseProgress();
+						continue;
 					}
 
 					if (entry.entryName === 'users.json') {
 						userCount = await this.prepareUsersFile(entry);
-						return increaseProgress();
+						increaseProgress();
+						continue;
 					}
 				} catch (e) {
 					this.logger.error(e);
 				}
-			});
-
-			await Promise.all(promises);
+			}
 
 			if (userCount) {
 				await Settings.incrementValueById('Slack_Importer_Count', userCount);
@@ -237,15 +242,19 @@ export class SlackImporter extends Base {
 			// If we have no slack message yet, then we can insert them instead of upserting
 			this._useUpsert = !Messages.findOne({ _id: /slack\-.*/ });
 
-			const operations = zip.map(async (entry) => {
+			for await (const entry of zip.getEntries()) {
 				try {
+					console.log('------------------------------------------------');
+					console.log(entry.entryName);
+					console.log(entry);
 					if (entry.entryName.includes('__MACOSX') || entry.entryName.includes('.DS_Store')) {
 						count++;
-						return this.logger.debug(`Ignoring the file: ${entry.entryName}`);
+						this.logger.debug(`Ignoring the file: ${entry.entryName}`);
+						continue;
 					}
 
 					if (['channels.json', 'groups.json', 'mpims.json', 'dms.json', 'users.json'].includes(entry.entryName)) {
-						return;
+						continue;
 					}
 
 					if (!entry.isDirectory && entry.entryName.includes('/')) {
@@ -268,21 +277,20 @@ export class SlackImporter extends Base {
 							const slackChannelId = await ImportData.findChannelImportIdByNameOrImportId(channel);
 
 							if (slackChannelId) {
-								for (const message of tempMessages) {
-									this.prepareMessageObject(message, missedTypes, slackChannelId);
+								for await (const message of tempMessages) {
+									await this.prepareMessageObject(message, missedTypes, slackChannelId);
 								}
 							}
 						} catch (error) {
 							this.logger.warn(`${entry.entryName} is not a valid JSON file! Unable to import it.`);
 						}
 					}
-					await Promise.all(operations);
 				} catch (e) {
 					this.logger.error(e);
 				}
 
 				increaseProgress();
-			});
+			}
 
 			if (!_.isEmpty(missedTypes)) {
 				this.logger.info('Missed import types:', missedTypes);
