@@ -1,4 +1,3 @@
-import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation, useRouteParameter, useRoute, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import React, { useRef } from 'react';
 
@@ -49,11 +48,6 @@ const ModerationConsolePage = () => {
 						<VerticalBar.Close onClick={() => moderationRoute.push({})} />
 					</VerticalBar.Header>
 					{context === 'info' && id && <UserMessages userId={id} reload={reloadRef} onRedirect={handleRedirect} />}
-					<VerticalBar.Footer>
-						<ButtonGroup vertical stretch>
-							<Button onClick={() => moderationRoute.push({})}>{t('Back')}</Button>
-						</ButtonGroup>
-					</VerticalBar.Footer>
 
 					{context === 'reports' && id && <MessageReportInfo msgId={id} reload={reloadRef} />}
 				</VerticalBar>
