@@ -24,15 +24,14 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { userId: uid } = this;
-			const { startTime, externalId, subject } = this.bodyParams;
-
-			console.log('Calendar.create');
+			const { startTime, externalId, subject, description } = this.bodyParams;
 
 			await Calendar.create({
 				uid,
 				startTime: new Date(startTime),
 				externalId,
 				subject,
+				description,
 			});
 
 			return API.v1.success();
