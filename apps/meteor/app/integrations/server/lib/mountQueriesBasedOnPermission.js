@@ -2,14 +2,14 @@ import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization/server';
 
-export const mountIntegrationQueryBasedOnPermissions = (userId) => {
+export const mountIntegrationQueryBasedOnPermissions = async (userId) => {
 	if (!userId) {
 		throw new Meteor.Error('You must provide the userId to the "mountIntegrationQueryBasedOnPermissions" fucntion.');
 	}
-	const canViewAllOutgoingIntegrations = hasPermission(userId, 'manage-outgoing-integrations');
-	const canViewAllIncomingIntegrations = hasPermission(userId, 'manage-incoming-integrations');
-	const canViewOnlyOwnOutgoingIntegrations = hasPermission(userId, 'manage-own-outgoing-integrations');
-	const canViewOnlyOwnIncomingIntegrations = hasPermission(userId, 'manage-own-incoming-integrations');
+	const canViewAllOutgoingIntegrations = await hasPermission(userId, 'manage-outgoing-integrations');
+	const canViewAllIncomingIntegrations = await hasPermission(userId, 'manage-incoming-integrations');
+	const canViewOnlyOwnOutgoingIntegrations = await hasPermission(userId, 'manage-own-outgoing-integrations');
+	const canViewOnlyOwnIncomingIntegrations = await hasPermission(userId, 'manage-own-incoming-integrations');
 
 	const query = {};
 

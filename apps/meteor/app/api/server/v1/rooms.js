@@ -17,6 +17,7 @@ import * as dataExport from '../../../../server/lib/dataExport';
 import { canAccessRoom, canAccessRoomId, hasPermission } from '../../../authorization/server';
 import { settings } from '../../../settings/server/index';
 import { getUploadFormData } from '../lib/getUploadFormData';
+import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 
 function findRoomByIdOrName({ params, checkedArchived = true }) {
 	if ((!params.roomId || !params.roomId.trim()) && (!params.roomName || !params.roomName.trim())) {
@@ -45,7 +46,7 @@ API.v1.addRoute(
 	'rooms.get',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { updatedSince } = this.queryParams;
 
 			let updatedSinceDate;
@@ -70,8 +71,8 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success({
-				update: result.update.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
-				remove: result.remove.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
+				update: await Promise.all(result.update.map((room) => composeRoomWithLastMessage(room, this.userId))),
+				remove: await Promise.all(result.remove.map((room) => composeRoomWithLastMessage(room, this.userId))),
 			});
 		},
 	},
