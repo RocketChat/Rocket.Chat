@@ -300,7 +300,7 @@ jobs:
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-20.04
-    needs: [test-unit, test-api, test-ui, test-api-ee, test-ui-ee]
+    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee]
 
     steps:
       - name: Test finish aggregation
