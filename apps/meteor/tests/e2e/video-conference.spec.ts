@@ -73,14 +73,11 @@ test.describe('video conference', () => {
 	});
 
 	test.describe('expect create video conference in a direct multiple', async () => {
-		test.use({ storageState: Users.user1.state });
-		test('expect create video conference invite in a direct multiple', async () => {
-			await poHomeChannel.sidenav.openChat('rocketchat.internal.admin.test, user2');
+		await poHomeChannel.sidenav.openChat('user2, rocketchat.internal.admin.test');
 
-			await poHomeChannel.content.btnCall.click();
-			await poHomeChannel.content.btnStartCall.click();
-			await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
-		});
+		await poHomeChannel.content.btnCall.click();
+		await poHomeChannel.content.btnStartCall.click();
+		await expect(poHomeChannel.content.videoConfMessageBlock.last()).toBeVisible();
 	});
 
 	test.describe('received in a direct multiple', async () => {
