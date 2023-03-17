@@ -2,7 +2,7 @@ import http from 'http';
 import fs from 'fs';
 import https from 'https';
 
-import { Settings, ImportData, Imports } from '@rocket.chat/models';
+import { Settings, ImportData, Imports, RawImports } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import AdmZip from 'adm-zip';
 import getFileType from 'file-type';
@@ -52,7 +52,7 @@ export class Base {
 		this.converter.setLogger(this.logger);
 
 		this.progress = new Progress(this.info.key, this.info.name);
-		this.collection = Imports;
+		this.collection = RawImports;
 		this.importRecordParam = importRecord;
 		this.users = {};
 		this.channels = {};
@@ -123,8 +123,8 @@ export class Base {
 	 * @param {boolean} skipTypeCheck Optional property that says to not check the type provided.
 	 * @returns {Progress} The progress record of the import.
 	 */
-	prepare(dataURI, sentContentType, fileName, skipTypeCheck) {
-		this.collection.remove({});
+	async prepare(dataURI, sentContentType, fileName, skipTypeCheck) {
+		await this.collection.deleteMany({});
 		if (!skipTypeCheck) {
 			const fileType = this.getFileType(Buffer.from(dataURI.split(',')[1], 'base64'));
 			this.logger.debug('Uploaded file information is:', fileType);

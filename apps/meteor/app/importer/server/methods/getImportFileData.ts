@@ -49,13 +49,7 @@ export const executeGetImportFileData = async (): Promise<IImportFileData | { wa
 
 	const fileName = importer.instance.importRecord.file;
 	const fullFilePath = fs.existsSync(fileName) ? fileName : path.join(RocketChatImportFileInstance.absolutePath, fileName);
-	const promise = importer.instance.prepareUsingLocalFile(fullFilePath);
-
-	if (promise && promise instanceof Promise) {
-		//  promise;
-		await promise;
-	}
-
+	await importer.instance.prepareUsingLocalFile(fullFilePath);
 	return importer.instance.buildSelection();
 };
 

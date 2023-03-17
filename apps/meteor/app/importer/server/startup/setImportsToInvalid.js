@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Imports } from '@rocket.chat/models';
+import { Imports, RawImports } from '@rocket.chat/models';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
@@ -28,11 +28,11 @@ Meteor.startup(async function () {
 		await Imports.invalidateOperationsExceptId(idToKeep);
 
 		// Clean up all the raw import data, except for the last operation
-		await runDrop(() => Imports.deleteMany({ import: { $ne: idToKeep } }));
+		await runDrop(() => RawImports.deleteMany({ import: { $ne: idToKeep } }));
 	} else {
 		await Imports.invalidateAllOperations();
 
 		// Clean up all the raw import data
-		await runDrop(() => Imports.deleteMany({}));
+		await runDrop(() => RawImports.deleteMany({}));
 	}
 });
