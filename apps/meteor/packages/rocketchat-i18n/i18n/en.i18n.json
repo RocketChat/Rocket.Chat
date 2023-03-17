@@ -804,6 +804,8 @@
   "Call": "Call",
   "Call_again": "Call again",
   "Call_back": "Call back",
+  "Call_not_found": "Call not found",
+  "Call_not_found_error": "This could happen when the call URL is not valid, or you're having connection issues. Please check with the source of the call URL and try again, or talk to your workspace administrator if the problem persists",
   "Calling": "Calling",
   "Call_Center": "Voice Channel",
   "Call_Center_Description": "Configure Rocket.Chat's voice channels",

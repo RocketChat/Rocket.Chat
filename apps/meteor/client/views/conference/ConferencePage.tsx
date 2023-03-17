@@ -5,6 +5,7 @@ import React, { useEffect } from 'react';
 import { useUserDisplayName } from '../../hooks/useUserDisplayName';
 import { useVideoOpenCall } from '../room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
 import PageLoading from '../root/PageLoading';
+import ConferencePageError from './ConferencePageError';
 
 const getQueryParams = () => {
 	const queryString = window.location.search;
@@ -22,17 +23,21 @@ const ConferencePage = (): ReactElement => {
 	const userDisplayName = useUserDisplayName({ name: user?.name, username: user?.username });
 
 	const { callUrlParam } = getQueryParams();
-	const callUrl = `${callUrlParam}&name=${userDisplayName}`;
+	const callUrl = callUrlParam && userDisplayName ? `${callUrlParam}&name=${userDisplayName}` : callUrlParam;
 
 	useEffect(() => {
 		if (!callUrl) {
-			return defaultRoute.push();
+			return;
 		}
 
 		handleOpenCall(callUrl);
 
 		defaultRoute.push();
 	}, [setModal, defaultRoute, callUrl, handleOpenCall, userDisplayName]);
+
+	if (!callUrl) {
+		return <ConferencePageError />;
+	}
 
 	return <PageLoading />;
 };
