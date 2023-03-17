@@ -350,7 +350,7 @@ export class APIClass extends Restivus {
 				// Add a try/catch for each endpoint
 				const originalAction = endpoints[method].action;
 				const api = this;
-				endpoints[method].action = function _internalRouteActionHandler() {
+				endpoints[method].action = async function _internalRouteActionHandler() {
 					const rocketchatRestApiEnd = metrics.rocketchatRestApi.startTimer({
 						method,
 						version,
@@ -432,7 +432,7 @@ export class APIClass extends Restivus {
 						if (
 							shouldVerifyPermissions &&
 							(!this.userId ||
-								!Promise.await(checkPermissionsForInvocation(this.userId, _options.permissionsRequired, this.request.method)))
+								!await checkPermissionsForInvocation(this.userId, _options.permissionsRequired, this.request.method))
 						) {
 							throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {
 								permissions: _options.permissionsRequired,
@@ -461,7 +461,7 @@ export class APIClass extends Restivus {
 						this.queryOperations = options.queryOperations;
 						this.queryFields = options.queryFields;
 
-						result = DDP._CurrentInvocation.withValue(invocation, () => Promise.await(originalAction.apply(this))) || API.v1.success();
+						result = DDP._CurrentInvocation.withValue(invocation, async () => await originalAction.apply(this)) || API.v1.success();
 
 						log.http({
 							status: result.statusCode,
