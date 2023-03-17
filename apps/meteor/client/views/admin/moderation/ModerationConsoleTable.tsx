@@ -1,6 +1,6 @@
-import { Pagination } from '@rocket.chat/fuselage';
+import { Pagination, Field } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useToastMessageDispatch, useRoute } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { FC, MutableRefObject } from 'react';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -16,15 +16,23 @@ import {
 import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
 import { useSort } from '../../../components/GenericTable/hooks/useSort';
 import ModerationConsoleTableRow from './ModerationConsoleTableRow';
+import DateRangePicker from './helpers/DateRangePicker';
 
 const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReload: () => void }> = ({ reload, onReload }) => {
 	const [text, setText] = useState('');
 	const moderationRoute = useRoute('moderation-console');
+	const t = useTranslation();
 
 	const { sortBy, sortDirection, setSort } = useSort<'reports.ts' | 'reports.message.u.username' | 'reports.description' | 'count'>(
 		'reports.ts',
 	);
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
+
+	const [dateRange, setDateRange] = useState<{ start: string | null; end: string | null }>({
+		start: '',
+		end: '',
+	});
+	const { start, end } = dateRange;
 	// write a custom query to get the reports data from the database
 
 	const query = useDebouncedValue(
@@ -34,8 +42,10 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReloa
 				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
 				count: itemsPerPage,
 				offset: current,
+				...(end && { latest: end }),
+				...(start && { oldest: start }),
 			}),
-			[current, itemsPerPage, sortBy, sortDirection, text],
+			[current, end, itemsPerPage, sortBy, sortDirection, start, text],
 		),
 		500,
 	);
@@ -120,7 +130,14 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReloa
 
 	return (
 		<>
+			<Field alignSelf='stretch'>
+				<Field.Label>{t('Date')}</Field.Label>
+				<Field.Row>
+					<DateRangePicker display='flex' flexGrow={1} onChange={setDateRange} />
+				</Field.Row>
+			</Field>
 			<FilterByText autoFocus placeholder={'Search'} onChange={({ text }): void => setText(text)} />
+
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
