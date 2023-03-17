@@ -38,8 +38,8 @@ Meteor.startup(function () {
 		});
 	});
 
-	Accounts.onLogout(async function (login: any): Promise<void> {
-		await Presence.removeConnection(login.user._id, login.connection.id, nodeId);
+	Accounts.onLogout(function (login: any): void {
+		void Presence.removeConnection(login.user._id, login.connection.id, nodeId);
 
 		updateConns();
 	});
