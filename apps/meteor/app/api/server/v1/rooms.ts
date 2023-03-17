@@ -581,7 +581,7 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-invalid-dates', 'From date cannot be after To date');
 				}
 
-				dataExport.sendFile(
+				void dataExport.sendFile(
 					{
 						rid,
 						format: format as 'html' | 'json',
