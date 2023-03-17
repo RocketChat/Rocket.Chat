@@ -7,15 +7,11 @@ import type {
 	ISetting,
 	ISubscription,
 	IUser,
-	// IEmoji,
-	// ICustomSound,
 } from '@rocket.chat/core-typings';
 
 import type { TranslationKey } from '../TranslationContext';
 import type { GetReadReceiptsMethod } from './methods/getReadReceipts';
 import type { UnsubscribeMethod as MailerUnsubscribeMethod } from './methods/mailer/unsubscribe';
-
-// TODO: frontend chapter day - define methods
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface ServerMethods {
