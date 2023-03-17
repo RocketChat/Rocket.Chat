@@ -33,11 +33,11 @@ const useDeactivateUserAction = (userId: string, onChange: () => void, onReload:
 	});
 
 	const onDeactivateUser = async () => {
+		setModal();
 		await handleDeleteMessages.mutateAsync({ userId });
 		await handleDeactivateUser.mutateAsync({ userId, activeStatus: false });
 		onChange();
 		onReload();
-		setModal();
 	};
 
 	const confirmDeactivateUser = (): void => {

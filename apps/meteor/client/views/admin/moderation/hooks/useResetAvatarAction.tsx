@@ -33,11 +33,11 @@ const useResetAvatarAction = (userId: string, onChange: () => void, onReload: ()
 	});
 
 	const onResetAvatar = async () => {
+		setModal();
 		await handleResetAvatar.mutateAsync({ userId });
 		await handleMarkAsChecked.mutateAsync({ userId });
 		onChange();
 		onReload();
-		setModal();
 	};
 
 	const confirmResetAvatar = (): void => {
