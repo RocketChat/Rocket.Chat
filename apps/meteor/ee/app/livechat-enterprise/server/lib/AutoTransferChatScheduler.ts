@@ -109,5 +109,5 @@ class AutoTransferChatSchedulerClass {
 export const AutoTransferChatScheduler = new AutoTransferChatSchedulerClass();
 
 Meteor.startup(() => {
-	AutoTransferChatScheduler.init();
+	void AutoTransferChatScheduler.init();
 });

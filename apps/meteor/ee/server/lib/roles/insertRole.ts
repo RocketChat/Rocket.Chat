@@ -24,7 +24,7 @@ const insertRoleAsync = async (roleData: Omit<IRole, '_id'>, options: InsertRole
 	const roleId = result.insertedId;
 
 	if (options.broadcastUpdate) {
-		api.broadcast('user.roleUpdate', {
+		void api.broadcast('user.roleUpdate', {
 			type: 'changed',
 			_id: roleId,
 		});

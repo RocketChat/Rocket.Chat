@@ -143,11 +143,11 @@ export class AppServerNotifier {
 	}
 
 	async appAdded(appId: string): Promise<void> {
-		api.broadcast('apps.added', appId);
+		void api.broadcast('apps.added', appId);
 	}
 
 	async appRemoved(appId: string): Promise<void> {
-		api.broadcast('apps.removed', appId);
+		void api.broadcast('apps.removed', appId);
 	}
 
 	async appUpdated(appId: string): Promise<void> {
@@ -156,7 +156,7 @@ export class AppServerNotifier {
 			return;
 		}
 
-		api.broadcast('apps.updated', appId);
+		void api.broadcast('apps.updated', appId);
 	}
 
 	async appStatusUpdated(appId: string, status: AppStatus): Promise<void> {
@@ -168,7 +168,7 @@ export class AppServerNotifier {
 			}
 		}
 
-		api.broadcast('apps.statusUpdate', appId, status);
+		void api.broadcast('apps.statusUpdate', appId, status);
 	}
 
 	async appSettingsChange(appId: string, setting: ISetting): Promise<void> {
@@ -177,26 +177,26 @@ export class AppServerNotifier {
 			return;
 		}
 
-		api.broadcast('apps.settingUpdated', appId, setting);
+		void api.broadcast('apps.settingUpdated', appId, setting);
 	}
 
 	async commandAdded(command: string): Promise<void> {
-		api.broadcast('command.added', command);
+		void api.broadcast('command.added', command);
 	}
 
 	async commandDisabled(command: string): Promise<void> {
-		api.broadcast('command.disabled', command);
+		void api.broadcast('command.disabled', command);
 	}
 
 	async commandUpdated(command: string): Promise<void> {
-		api.broadcast('command.updated', command);
+		void api.broadcast('command.updated', command);
 	}
 
 	async commandRemoved(command: string): Promise<void> {
-		api.broadcast('command.removed', command);
+		void api.broadcast('command.removed', command);
 	}
 
 	async actionsChanged(): Promise<void> {
-		api.broadcast('actions.changed');
+		void api.broadcast('actions.changed');
 	}
 }

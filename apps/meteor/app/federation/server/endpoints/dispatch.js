@@ -327,7 +327,7 @@ const eventHandlers = {
 			Messages.removeById(messageId);
 
 			// Notify the room
-			api.broadcast('notify.deleteMessage', roomId, { _id: messageId });
+			void api.broadcast('notify.deleteMessage', roomId, { _id: messageId });
 		}
 
 		return eventResult;

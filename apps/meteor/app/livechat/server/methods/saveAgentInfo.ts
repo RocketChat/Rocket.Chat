@@ -1,12 +1,21 @@
 import { Meteor } from 'meteor/meteor';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermission, hasRole } from '../../../authorization/server';
 import { Livechat } from '../lib/Livechat';
 import { Users } from '../../../models/server';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'livechat:saveAgentInfo'(_id: string, agentData: Record<string, unknown>, agentDepartments: string[]): unknown;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	'livechat:saveAgentInfo'(_id, agentData, agentDepartments) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'manage-livechat-agents')) {
+		const uid = Meteor.userId();
+		if (!uid || !hasPermission(uid, 'manage-livechat-agents')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:saveAgentInfo',
 			});
