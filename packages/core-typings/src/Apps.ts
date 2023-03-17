@@ -1,4 +1,7 @@
+import type { IAppStorageItem as IAppStorageItemType } from '@rocket.chat/apps-engine/server/storage';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+
+import type { IRocketChatRecord } from '.';
 
 export type AppScreenshot = {
 	id: string;
@@ -126,3 +129,5 @@ export type App = {
 	documentationUrl: string;
 	migrated: boolean;
 };
+
+export interface IAppStorageItem extends IRocketChatRecord, Omit<IAppStorageItemType, '_id'> {}
