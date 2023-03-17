@@ -4,7 +4,7 @@ import React, { memo } from 'react';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import { clickableItem } from '../../../../lib/clickableItem';
 import { normalizeThreadMessage } from '../../../../lib/normalizeThreadMessage';
-import DiscussionListMessage from './components/Message';
+import DiscussionListMessage from './components/DiscussionMessage';
 import { mapProps } from './mapProps';
 
 const Discussion = memo(mapProps(clickableItem(DiscussionListMessage)));

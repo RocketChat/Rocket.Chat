@@ -16,6 +16,7 @@ import type {
 	SettingValue,
 	ILivechatInquiryRecord,
 	IRole,
+	ILivechatPriority,
 } from '@rocket.chat/core-typings';
 import {
 	Subscriptions,
@@ -33,6 +34,7 @@ import {
 	EmailInbox,
 	PbxEvents,
 	Permissions,
+	LivechatPriority,
 } from '@rocket.chat/models';
 import type { EventSignatures } from '@rocket.chat/core-services';
 
@@ -308,7 +310,7 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 				const history = await IntegrationHistory.findOneById<Pick<IIntegrationHistory, 'integration'>>(id, {
 					projection: { 'integration._id': 1 },
 				});
-				if (!history || !history.integration) {
+				if (!history?.integration) {
 					return;
 				}
 				broadcast('watch.integrationHistory', { clientAction, data: history, diff, id });
@@ -364,6 +366,22 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 
 			broadcast('watch.pbxevents', { clientAction, data, id });
 		}
+	});
+
+	watcher.on<ILivechatPriority>(LivechatPriority.getCollectionName(), async ({ clientAction, id, data: eventData, diff }) => {
+		if (clientAction !== 'updated' || !diff || !('name' in diff)) {
+			// For now, we don't support this actions from happening
+			return;
+		}
+
+		const data = eventData ?? (await LivechatPriority.findOne({ _id: id }));
+		if (!data) {
+			return;
+		}
+
+		// This solves the problem of broadcasting, since now, watcher is the one in charge of doing it.
+		// What i don't like is the idea of giving more responsibilities to watcher, even when this works
+		broadcast('watch.priorities', { clientAction, data, id, diff });
 	});
 
 	watcherStarted = true;

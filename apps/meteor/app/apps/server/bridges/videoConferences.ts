@@ -3,7 +3,7 @@ import type { AppVideoConference, VideoConference } from '@rocket.chat/apps-engi
 import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders';
 import { VideoConf } from '@rocket.chat/core-services';
 
-import type { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { videoConfProviders } from '../../../../server/lib/videoConfProviders';
 import type { AppVideoConferencesConverter } from '../converters/videoConferences';
 

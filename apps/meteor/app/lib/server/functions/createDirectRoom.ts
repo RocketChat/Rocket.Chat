@@ -1,13 +1,13 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import type { ICreatedRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
 import type { MatchKeysAndValues } from 'mongodb';
-import type { ICreateRoomParams } from '@rocket.chat/core-services';
+import type { ISubscriptionExtraData } from '@rocket.chat/core-services';
 
 import { Users, Rooms } from '../../../models/server';
-import { Apps } from '../../../apps/server';
+import { Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/server';
@@ -41,7 +41,11 @@ const getName = (members: IUser[]): string => members.map(({ username }) => user
 export const createDirectRoom = function (
 	members: IUser[] | string[],
 	roomExtraData = {},
-	options: ICreateRoomParams['options'],
+	options: {
+		nameValidationRegex?: string;
+		creator?: string;
+		subscriptionExtra?: ISubscriptionExtraData;
+	},
 ): ICreatedRoom {
 	if (members.length > (settings.get('DirectMesssage_maxUsers') || 1)) {
 		throw new Error('error-direct-message-max-user-exceeded');

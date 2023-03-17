@@ -1,5 +1,4 @@
 import type { ComponentProps, ContextType } from 'react';
-import _ from 'underscore';
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -24,15 +23,6 @@ const getMessage = async (msgId: string): Promise<Serialized<IMessage> | null> =
 	}
 };
 
-export const addMessageToList = (messagesList: IMessage[], message: IMessage): IMessage[] => {
-	// checks if the message is not already on the list
-	if (!messagesList.find(({ _id }) => _id === message._id)) {
-		messagesList.push(message);
-	}
-
-	return messagesList;
-};
-
 type MessageActionGroup = 'message' | 'menu';
 export type MessageActionContext =
 	| 'message'
@@ -43,7 +33,8 @@ export type MessageActionContext =
 	| 'starred'
 	| 'mentions'
 	| 'federated'
-	| 'videoconf';
+	| 'videoconf'
+	| 'search';
 
 type MessageActionConditionProps = {
 	message: IMessage;
@@ -101,7 +92,7 @@ export const MessageAction = new (class {
 	buttons = new ReactiveVar<Record<string, MessageActionConfig>>({});
 
 	addButton(config: MessageActionConfig): void {
-		if (!config || !config.id) {
+		if (!config?.id) {
 			return;
 		}
 
@@ -134,7 +125,7 @@ export const MessageAction = new (class {
 		return Tracker.nonreactive(() => {
 			const btns = this.buttons.get();
 			if (btns[id]) {
-				btns[id] = _.extend(btns[id], config);
+				btns[id] = Object.assign(btns[id], config);
 				return this.buttons.set(btns);
 			}
 		});
@@ -145,7 +136,9 @@ export const MessageAction = new (class {
 		return allButtons[id];
 	}
 
-	_getButtons = mem((): MessageActionConfigList => _.sortBy(_.toArray(this.buttons.get()), 'order'), { maxAge: 1000 });
+	_getButtons = mem((): MessageActionConfigList => Object.values(this.buttons.get()).sort((a, b) => (a.order ?? 0) - (b.order ?? 0)), {
+		maxAge: 1000,
+	});
 
 	async getButtonsByCondition(
 		prop: MessageActionConditionProps,

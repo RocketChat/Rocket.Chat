@@ -3,7 +3,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
-import { Users, Subscriptions } from '../../models/server';
+import { Users } from '../../models/server';
 import { settings } from '../../settings/server';
 
 /*
@@ -12,7 +12,7 @@ import { settings } from '../../settings/server';
 
 slashCommands.add({
 	command: 'unmute',
-	callback: function Unmute(_command, params, item): void | Promise<void> {
+	callback: function Unmute(_command, params, item): void {
 		const username = params.trim().replace('@', '');
 		if (username === '') {
 			return;
@@ -20,27 +20,16 @@ slashCommands.add({
 		const userId = Meteor.userId() as string;
 		const unmutedUser = Users.findOneByUsernameIgnoringCase(username);
 		if (unmutedUser == null) {
-			return api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('Username_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [username],
 					lng: settings.get('Language') || 'en',
 				}),
 			});
+			return;
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(item.rid, unmutedUser._id, {
-			fields: { _id: 1 },
-		});
-		if (!subscription) {
-			return api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__('Username_is_not_in_this_room', {
-					postProcess: 'sprintf',
-					sprintf: [username],
-					lng: settings.get('Language') || 'en',
-				}),
-			});
-		}
 		Meteor.call('unmuteUserInRoom', {
 			rid: item.rid,
 			username,

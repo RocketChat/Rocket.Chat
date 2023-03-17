@@ -30,6 +30,14 @@ settingsRegistry.addGroup('FileUpload', function () {
 		i18nDescription: 'FileUpload_ProtectFilesDescription',
 	});
 
+	this.add('FileUpload_Restrict_to_room_members', false, {
+		type: 'boolean',
+		enableQuery: {
+			_id: 'FileUpload_ProtectFiles',
+			value: true,
+		},
+	});
+
 	this.add('FileUpload_RotateImages', true, {
 		type: 'boolean',
 		public: true,
@@ -98,20 +106,22 @@ settingsRegistry.addGroup('FileUpload', function () {
 			},
 		});
 		this.add('FileUpload_S3_AWSAccessKeyId', '', {
-			type: 'string',
+			type: 'password',
+			autocomplete: false,
+			secret: true,
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
 				value: 'AmazonS3',
 			},
-			secret: true,
 		});
 		this.add('FileUpload_S3_AWSSecretAccessKey', '', {
-			type: 'string',
+			type: 'password',
+			autocomplete: false,
+			secret: true,
 			enableQuery: {
 				_id: 'FileUpload_Storage_Type',
 				value: 'AmazonS3',
 			},
-			secret: true,
 		});
 		this.add('FileUpload_S3_CDN', '', {
 			type: 'string',

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
 
 import { getWorkspaceAccessToken } from '../../app/cloud/server';
-import { statistics } from '../../app/statistics';
+import { statistics } from '../../app/statistics/server';
 import { settings } from '../../app/settings/server';
 
 async function generateStatistics(logger) {

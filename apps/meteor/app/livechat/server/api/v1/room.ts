@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { ILivechatAgent, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
-import { LivechatVisitors, Users } from '@rocket.chat/models';
+import { LivechatVisitors, Users, LivechatRooms as LivechatRoomsRaw, Subscriptions } from '@rocket.chat/models';
 import {
 	isLiveChatRoomForwardProps,
 	isPOSTLivechatRoomCloseParams,
@@ -13,6 +13,7 @@ import {
 	isLiveChatRoomJoinProps,
 	isPUTLivechatRoomVisitorParams,
 	isLiveChatRoomSaveInfoProps,
+	isPOSTLivechatRoomCloseByUserParams,
 } from '@rocket.chat/rest-typings';
 
 import { settings as rcSettings } from '../../../../settings/server';
@@ -20,13 +21,16 @@ import { Messages, LivechatRooms } from '../../../../models/server';
 import { API } from '../../../../api/server';
 import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
+import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
 import { canAccessRoom, hasPermission } from '../../../../authorization/server';
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../../../../lib/server/functions';
 import { apiDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 import { deprecationWarning } from '../../../../api/server/helpers/deprecationWarning';
 import { callbacks } from '../../../../../lib/callbacks';
+import type { CloseRoomParams } from '../../lib/LivechatTyped';
 
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: true }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
 
@@ -86,6 +90,8 @@ API.v1.addRoute('livechat/room', {
 	},
 });
 
+// Note: use this route if a visitor is closing a room
+// If a RC user(like eg agent) is closing a room, use the `livechat/room.closeByUser` route
 API.v1.addRoute(
 	'livechat/room.close',
 	{ validateParams: isPOSTLivechatRoomCloseParams },
@@ -110,12 +116,117 @@ API.v1.addRoute(
 			const language = rcSettings.get<string>('Language') || 'en';
 			const comment = TAPi18n.__('Closed_by_visitor', { lng: language });
 
-			// @ts-expect-error -- typings on closeRoom are wrong
-			if (!Livechat.closeRoom({ visitor, room, comment })) {
-				return API.v1.failure();
+			const options: CloseRoomParams['options'] = {};
+			if (room.servedBy) {
+				const servingAgent: Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset' | 'settings' | 'language'> | null =
+					await Users.findOneById(room.servedBy._id, {
+						projection: {
+							name: 1,
+							username: 1,
+							utcOffset: 1,
+							settings: 1,
+							language: 1,
+						},
+					});
+
+				if (servingAgent?.settings?.preferences?.omnichannelTranscriptPDF) {
+					options.pdfTranscript = {
+						requestedBy: servingAgent._id,
+					};
+				}
+
+				// We'll send the transcript by email only if the setting is disabled (that means, we're not asking the user if he wants to receive the transcript by email)
+				// And the agent has the preference enabled to send the transcript by email and the visitor has an email address
+				// When Livechat_enable_transcript is enabled, the email will be sent via livechat/transcript route
+				if (
+					!rcSettings.get<boolean>('Livechat_enable_transcript') &&
+					servingAgent?.settings?.preferences?.omnichannelTranscriptEmail &&
+					visitor.visitorEmails?.length &&
+					visitor.visitorEmails?.[0]?.address
+				) {
+					const visitorEmail = visitor.visitorEmails?.[0]?.address;
+
+					const language = servingAgent.language || rcSettings.get<string>('Language') || 'en';
+					const t = (s: string): string => TAPi18n.__(s, { lng: language });
+					const subject = t('Transcript_of_your_livechat_conversation');
+
+					options.emailTranscript = {
+						sendToVisitor: true,
+						requestData: {
+							email: visitorEmail,
+							requestedAt: new Date(),
+							requestedBy: servingAgent,
+							subject,
+						},
+					};
+				}
 			}
 
+			await LivechatTyped.closeRoom({ visitor, room, comment, options });
+
 			return API.v1.success({ rid, comment });
+		},
+	},
+);
+
+API.v1.addRoute(
+	'livechat/room.closeByUser',
+	{
+		validateParams: isPOSTLivechatRoomCloseByUserParams,
+		authRequired: true,
+		permissionsRequired: ['close-livechat-room'],
+	},
+	{
+		async post() {
+			const { rid, comment, tags, generateTranscriptPdf, transcriptEmail } = this.bodyParams;
+
+			const room = await LivechatRoomsRaw.findOneById(rid);
+			if (!room || !isOmnichannelRoom(room)) {
+				throw new Error('error-invalid-room');
+			}
+
+			if (!room.open) {
+				throw new Error('error-room-already-closed');
+			}
+
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, this.userId, { projection: { _id: 1 } });
+			if (!subscription && !(await hasPermissionAsync(this.userId, 'close-others-livechat-room'))) {
+				throw new Error('error-not-authorized');
+			}
+
+			const options: CloseRoomParams['options'] = {
+				clientAction: true,
+				tags,
+				...(generateTranscriptPdf && { pdfTranscript: { requestedBy: this.userId } }),
+				...(transcriptEmail && {
+					...(transcriptEmail.sendToVisitor
+						? {
+								emailTranscript: {
+									sendToVisitor: true,
+									requestData: {
+										email: transcriptEmail.requestData.email,
+										subject: transcriptEmail.requestData.subject,
+										requestedAt: new Date(),
+										requestedBy: this.user,
+									},
+								},
+						  }
+						: {
+								emailTranscript: {
+									sendToVisitor: false,
+								},
+						  }),
+				}),
+			};
+
+			await LivechatTyped.closeRoom({
+				room,
+				user: this.user,
+				options,
+				comment,
+			});
+
+			return API.v1.success();
 		},
 	},
 );
@@ -179,7 +290,7 @@ API.v1.addRoute(
 			}
 
 			const config = await settings();
-			if (!config.survey || !config.survey.items || !config.survey.values) {
+			if (!config.survey?.items || !config.survey.values) {
 				throw new Error('invalid-livechat-config');
 			}
 
