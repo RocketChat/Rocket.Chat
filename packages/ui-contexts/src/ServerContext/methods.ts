@@ -1,8 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface ServerMethods {
 	'addUsersToRoom': (...args: any[]) => any;
-	'checkUsernameAvailability': (...args: any[]) => any;
 	'cleanRoomHistory': (...args: any[]) => any;
+	'getAvatarSuggestion': (...args: any[]) => any;
 	'getUsersOfRoom': (...args: any[]) => any;
 	'insertOrUpdateUserStatus': (...args: any[]) => any;
 	'muteUserInRoom': (...args: any[]) => any;
