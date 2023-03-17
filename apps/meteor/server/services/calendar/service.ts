@@ -1,4 +1,4 @@
-import type { InsertOneResult, UpdateResult } from 'mongodb';
+import type { InsertOneResult, UpdateResult, DeleteResult } from 'mongodb';
 import type { IUser, ICalendarEvent } from '@rocket.chat/core-typings';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { CalendarEvent } from '@rocket.chat/models';
@@ -36,5 +36,11 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 				},
 			},
 		);
+	}
+
+	public async delete(eventId: ICalendarEvent['_id']): Promise<DeleteResult> {
+		return CalendarEvent.deleteOne({
+			_id: eventId,
+		});
 	}
 }

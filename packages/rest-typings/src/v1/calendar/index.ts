@@ -2,9 +2,10 @@ import type { ICalendarEvent } from '@rocket.chat/core-typings';
 import type { CalendarEventCreateProps } from './CalendarEventCreateProps';
 import type { CalendarEventListProps } from './CalendarEventListProps';
 import type { CalendarEventUpdateProps } from './CalendarEventUpdateProps';
-// import type { PaginatedResult } from '../../helpers/PaginatedResult';
+import type { CalendarEventDeleteProps } from './CalendarEventDeleteProps';
 
 export * from './CalendarEventCreateProps';
+export * from './CalendarEventDeleteProps';
 export * from './CalendarEventUpdateProps';
 export * from './CalendarEventListProps';
 
@@ -19,7 +20,11 @@ export type CalendarEndpoints = {
 
 	'/v1/calendar-events.update': {
 		POST: (params: CalendarEventUpdateProps) => void;
-	}
+	};
+
+	'/v1/calendar-events.delete': {
+		POST: (params: CalendarEventDeleteProps) => void;
+	};
 };
 
 
