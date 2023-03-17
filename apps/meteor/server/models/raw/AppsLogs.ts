@@ -1,4 +1,4 @@
-import type { ILoggerStorageEntry } from '@rocket.chat/apps-engine/server/logging';
+import type { ILoggerStorageEntry } from '@rocket.chat/core-typings';
 import type { IAppsLogsModel } from '@rocket.chat/model-typings';
 import type { Db, IndexDescription } from 'mongodb';
 

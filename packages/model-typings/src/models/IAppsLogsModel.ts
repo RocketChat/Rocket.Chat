@@ -1,4 +1,4 @@
-import type { ILoggerStorageEntry } from '@rocket.chat/apps-engine/server/logging';
+import type { ILoggerStorageEntry } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
 

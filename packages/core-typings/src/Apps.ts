@@ -1,3 +1,5 @@
+import type { IPersistenceItem as IAppPersistenceItem } from '@rocket.chat/apps-engine/definition/persistence';
+import type { ILoggerStorageEntry as IAppLoggerStorageEntry } from '@rocket.chat/apps-engine/server/logging';
 import type { IAppStorageItem as IAppStorageItemType } from '@rocket.chat/apps-engine/server/storage';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 
@@ -130,4 +132,8 @@ export type App = {
 	migrated: boolean;
 };
 
-export interface IAppStorageItem extends IRocketChatRecord, Omit<IAppStorageItemType, '_id'> {}
+export type IAppStorageItem = IRocketChatRecord & Omit<IAppStorageItemType, '_id'>;
+
+export type ILoggerStorageEntry = IRocketChatRecord & IAppLoggerStorageEntry;
+
+export type IPersistenceItem = IRocketChatRecord & IAppPersistenceItem;

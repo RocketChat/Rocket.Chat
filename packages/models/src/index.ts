@@ -1,6 +1,9 @@
 import type {
 	IAnalyticsModel,
 	IAvatarsModel,
+	IAppsModel,
+	IAppsLogsModel,
+	IAppsPersistenceModel,
 	IBannersDismissModel,
 	IBannersModel,
 	ICannedResponseModel,
@@ -77,6 +80,9 @@ export { registerModel } from './proxify';
 
 export const Analytics = proxify<IAnalyticsModel>('IAnalyticsModel');
 export const Avatars = proxify<IAvatarsModel>('IAvatarsModel');
+export const Apps = proxify<IAppsModel>('IAppsModel');
+export const AppsLogs = proxify<IAppsLogsModel>('IAppsLogsModel');
+export const AppsPersistence = proxify<IAppsPersistenceModel>('IAppsPersistenceModel');
 export const BannersDismiss = proxify<IBannersDismissModel>('IBannersDismissModel');
 export const Banners = proxify<IBannersModel>('IBannersModel');
 export const CannedResponse = proxify<ICannedResponseModel>('ICannedResponseModel');

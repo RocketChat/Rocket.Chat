@@ -40,7 +40,7 @@ export class AppUploadsConverter {
 				delete upload.rid;
 				return result;
 			},
-			user: (upload) => {
+			user: async (upload) => {
 				if (!upload.userId) {
 					return undefined;
 				}

@@ -5,7 +5,6 @@ import { Meteor } from 'meteor/meteor';
 import { Apps as AppsModel, AppsLogs as AppsLogsModel, AppsPersistence as AppsPersistenceModel } from '@rocket.chat/models';
 
 import { Logger } from '../../../server/lib/logger/Logger';
-import { AppsLogsModel } from '../../../app/models/server';
 import { settings, settingsRegistry } from '../../../app/settings/server';
 import { RealAppBridges } from '../../../app/apps/server/bridges';
 import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
