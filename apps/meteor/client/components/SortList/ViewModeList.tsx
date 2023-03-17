@@ -28,33 +28,34 @@ function ViewModeList(): ReactElement {
 	return (
 		<>
 			<OptionTitle>{t('Display')}</OptionTitle>
-			<ul>
+			<ul aria-description='displayList'>
 				<ListItem
-					icon={'extended-view'}
+					is='label'
+					role='listitem'
+					icon='extended-view'
 					text={t('Extended')}
-					input={<RadioButton pis='x24' onChange={setToExtended} value='extended' checked={sidebarViewMode === 'extended'} />}
+					input={<RadioButton pis='x24' onChange={setToExtended} checked={sidebarViewMode === 'extended'} />}
 				/>
 				<ListItem
-					icon={'medium-view'}
+					is='label'
+					role='listitem'
+					icon='medium-view'
 					text={t('Medium')}
-					input={<RadioButton pis='x24' onChange={setToMedium} value='medium' checked={sidebarViewMode === 'medium'} />}
+					input={<RadioButton pis='x24' onChange={setToMedium} checked={sidebarViewMode === 'medium'} />}
 				/>
 				<ListItem
-					icon={'condensed-view'}
+					is='label'
+					role='listitem'
+					icon='condensed-view'
 					text={t('Condensed')}
-					input={<RadioButton pis='x24' onChange={setToCondensed} value='condensed' checked={sidebarViewMode === 'condensed'} />}
+					input={<RadioButton pis='x24' onChange={setToCondensed} checked={sidebarViewMode === 'condensed'} />}
 				/>
 				<ListItem
-					icon={'user-rounded'}
+					is='label'
+					role='listitem'
+					icon='user-rounded'
 					text={t('Avatars')}
-					input={
-						<ToggleSwitch
-							pis='x24'
-							onChange={handleChangeSidebarDisplayAvatar}
-							name='sidebarDisplayAvatar'
-							checked={sidebarDisplayAvatar}
-						/>
-					}
+					input={<ToggleSwitch pis='x24' onChange={handleChangeSidebarDisplayAvatar} checked={sidebarDisplayAvatar} />}
 				/>
 			</ul>
 		</>

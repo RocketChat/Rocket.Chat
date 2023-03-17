@@ -32,7 +32,7 @@ const notifications = new NotificationsModule(Stream);
 notifications.configure();
 
 notifications.streamLocal.on('broadcast', ({ eventName, args }) => {
-	api.broadcastLocal(eventName, ...args);
+	void api.broadcastLocal(eventName, ...args);
 });
 
 export default notifications;

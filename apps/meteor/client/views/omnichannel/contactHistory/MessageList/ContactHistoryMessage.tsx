@@ -34,7 +34,8 @@ const ContactHistoryMessage: FC<{
 	message: IMessage;
 	sequential: boolean;
 	isNewDay: boolean;
-}> = ({ message, sequential, isNewDay }) => {
+	showUserAvatar: boolean;
+}> = ({ message, sequential, isNewDay, showUserAvatar }) => {
 	const format = useFormatDate();
 	const formatTime = useFormatTime();
 
@@ -45,13 +46,15 @@ const ContactHistoryMessage: FC<{
 		return (
 			<MessageSystem>
 				<MessageSystemLeftContainer>
-					<UserAvatar
-						url={message.avatar}
-						username={message.u.username}
-						size={'x18'}
-						onClick={chat?.userCard.open(message.u.username)}
-						style={{ cursor: 'pointer' }}
-					/>
+					{showUserAvatar && (
+						<UserAvatar
+							url={message.avatar}
+							username={message.u.username}
+							size={'x18'}
+							onClick={chat?.userCard.open(message.u.username)}
+							style={{ cursor: 'pointer' }}
+						/>
+					)}
 				</MessageSystemLeftContainer>
 				<MessageSystemContainer>
 					<MessageSystemBlock>
@@ -71,7 +74,7 @@ const ContactHistoryMessage: FC<{
 			{isNewDay && <MessageDivider>{format(message.ts)}</MessageDivider>}
 			<MessageTemplate isPending={message.temp} sequential={sequential} role='listitem' data-qa='chat-history-message'>
 				<MessageLeftContainer>
-					{!sequential && message.u.username && (
+					{!sequential && message.u.username && showUserAvatar && (
 						<UserAvatar
 							url={message.avatar}
 							username={message.u.username}

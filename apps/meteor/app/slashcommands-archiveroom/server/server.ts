@@ -28,7 +28,7 @@ slashCommands.add({
 		}
 
 		if (!room) {
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('Channel_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
@@ -44,7 +44,7 @@ slashCommands.add({
 		}
 
 		if (room.archived) {
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('Duplicate_archived_channel_name', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
@@ -56,7 +56,7 @@ slashCommands.add({
 		Meteor.call('archiveRoom', room._id);
 
 		Messages.createRoomArchivedByRoomIdAndUser(room._id, Meteor.user());
-		api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+		void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 			msg: TAPi18n.__('Channel_Archived', {
 				postProcess: 'sprintf',
 				sprintf: [channel],
