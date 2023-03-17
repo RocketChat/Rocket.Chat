@@ -9,7 +9,7 @@ const MarketplaceRequestBadge = () => {
 	const requestStatsResult = useAppRequestStats();
 
 	if (requestStatsResult.isLoading)
-		return requestStatsResult.fetchStatus !== 'idle' ? <Skeleton variant='rect' height='x16' width='x16' /> : null;
+		return requestStatsResult.fetchStatus !== 'idle' ? <Skeleton variant='circle' height='x16' width='x16' /> : null;
 
 	if (requestStatsResult.isError) return null;
 
