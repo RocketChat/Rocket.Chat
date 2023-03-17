@@ -160,7 +160,7 @@ class MessageSearchQueryParser {
 	private consumeBefore(text: string) {
 		return text.replace(/before:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/g, (_: string, day: string, month: string, year: string) => {
 			const beforeDate = new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10));
-			beforeDate.setHours(beforeDate.getUTCHours() + beforeDate.getTimezoneOffset() / 60 + (this.user?.utcOffset ?? 0));
+			beforeDate.setUTCHours(beforeDate.getUTCHours() + beforeDate.getTimezoneOffset() / 60 + (this.user?.utcOffset ?? 0));
 
 			this.query.ts = {
 				...this.query.ts,

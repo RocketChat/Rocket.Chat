@@ -60,7 +60,7 @@ export class SearchProviderService {
 		const { providers } = this;
 
 		// add settings for admininistration
-		settingsRegistry.addGroup('Search', function () {
+		void settingsRegistry.addGroup('Search', function () {
 			this.add('Search.Provider', 'defaultProvider', {
 				type: 'select',
 				values: Object.values(providers).map((provider) => ({
@@ -106,7 +106,7 @@ export class SearchProviderService {
 				const providerId = settings.get<string>('Search.Provider');
 
 				if (providerId) {
-					this.use(providerId); // TODO do something with success and errors
+					void this.use(providerId); // TODO do something with success and errors
 				}
 			}),
 		);

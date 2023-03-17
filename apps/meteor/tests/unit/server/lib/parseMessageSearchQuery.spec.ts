@@ -8,6 +8,8 @@ describe('parseMessageSearchQuery', () => {
 		user: createFakeUser(),
 	};
 
+	const utcOffset = new Date().getTimezoneOffset() / 60;
+
 	[
 		{
 			text: 'from:rodrigo mention:gabriel chat',
@@ -80,17 +82,17 @@ describe('parseMessageSearchQuery', () => {
 		},
 		{
 			text: 'before:01-01-2023',
-			query: { ts: { $lte: new Date('2023-01-01T09:00:00.000Z') } },
+			query: { ts: { $lte: new Date(2023, 0, 1, utcOffset) } },
 			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
 		},
 		{
 			text: 'after:01-01-2023',
-			query: { ts: { $gte: new Date('2023-01-02T06:00:00.000Z') } },
+			query: { ts: { $gte: new Date(2023, 0, 2, utcOffset) } },
 			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
 		},
 		{
 			text: 'on:01-01-2023',
-			query: { ts: { $gte: new Date('2023-01-01T06:00:00.000Z'), $lt: new Date('2023-01-02T06:00:00.000Z') } },
+			query: { ts: { $gte: new Date(2023, 0, 1, utcOffset), $lt: new Date(2023, 0, 2, utcOffset) } },
 			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
 		},
 		{
