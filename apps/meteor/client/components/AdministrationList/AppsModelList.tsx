@@ -56,7 +56,7 @@ const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsMo
 									onDismiss();
 								}}
 							>
-								{appRequestStats.isLoading && <Skeleton variant='rect' height={16} width={16} />}
+								{appRequestStats.isLoading && <Skeleton variant='circle' height={16} width={16} />}
 								{appRequestStats.isSuccess && appRequestStats.data.data.totalUnseen > 0 && (
 									<Badge variant='primary'>{appRequestStats.data.data.totalUnseen}</Badge>
 								)}
