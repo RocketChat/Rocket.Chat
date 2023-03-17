@@ -6752,6 +6752,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/ddp-client@workspace:packages/ddp-client":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/ddp-client@workspace:packages/ddp-client"
+  dependencies:
+    "@types/jest": ^27.4.1
+    eslint: ^8.12.0
+    jest: ^27.5.1
+    ts-jest: ^27.1.4
+    typescript: ~4.6.4
+  peerDependencies:
+    "@rocket.chat/emitter": "*"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/ddp-streamer@workspace:ee/apps/ddp-streamer":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ddp-streamer@workspace:ee/apps/ddp-streamer"
