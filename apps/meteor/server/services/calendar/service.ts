@@ -16,9 +16,15 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		return CalendarEvent.findOne({ _id: eventId });
 	}
 
-	public async list(uid: IUser['_id'], _date: Date): Promise<{ data: ICalendarEvent[] }> {
-		// #ToDo
-		const data = await CalendarEvent.find({ uid }).toArray();
+	public async list(uid: IUser['_id'], date: Date): Promise<{ data: ICalendarEvent[] }> {
+		const startTime = new Date(date.toISOString().substring(0, 10));
+		const finalTime = new Date(date.valueOf());
+		finalTime.setDate(finalTime.getDate() + 1);
+
+		const data = await CalendarEvent.find({
+			uid,
+			startTime: { $gte: startTime, $lt: finalTime },
+		}).toArray();
 
 		return {
 			data,
