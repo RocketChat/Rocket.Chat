@@ -1,10 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface ServerMethods {
-	'addOAuthService': (...args: any[]) => any;
 	'addUsersToRoom': (...args: any[]) => any;
-	'bbbEnd': (...args: any[]) => any;
-	'bbbJoin': (...args: any[]) => any;
-	'blockUser': (...args: any[]) => any;
 	'checkUsernameAvailability': (...args: any[]) => any;
 	'cleanRoomHistory': (...args: any[]) => any;
 	'clearIntegrationHistory': (...args: any[]) => any;
@@ -40,7 +36,6 @@ export interface ServerMethods {
 	'setUsername': (...args: any[]) => any;
 	'setUserPassword': (...args: any[]) => any;
 	'toggleFavorite': (...args: any[]) => any;
-	'unblockUser': (...args: any[]) => any;
 	'unmuteUserInRoom': (...args: any[]) => any;
 	'unreadMessages': (...args: any[]) => any;
 	'updateIncomingIntegration': (...args: any[]) => any;
