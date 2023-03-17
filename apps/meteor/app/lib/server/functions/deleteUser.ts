@@ -77,7 +77,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 
 		// Don't broadcast user.deleted for Erasure Type of 'Keep' so that messages don't disappear from logged in sessions
 		if (messageErasureType !== 'Keep') {
-			api.broadcast('user.deleted', user);
+			void api.broadcast('user.deleted', user);
 		}
 	}
 

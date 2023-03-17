@@ -4,7 +4,7 @@ import { Random } from '@rocket.chat/random';
 import type { ICreatedRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
 import type { MatchKeysAndValues } from 'mongodb';
-import type { ICreateRoomParams } from '@rocket.chat/core-services';
+import type { ISubscriptionExtraData } from '@rocket.chat/core-services';
 
 import { Users, Rooms } from '../../../models/server';
 import { Apps } from '../../../../ee/server/apps';
@@ -41,7 +41,11 @@ const getName = (members: IUser[]): string => members.map(({ username }) => user
 export const createDirectRoom = function (
 	members: IUser[] | string[],
 	roomExtraData = {},
-	options: ICreateRoomParams['options'],
+	options: {
+		nameValidationRegex?: string;
+		creator?: string;
+		subscriptionExtra?: ISubscriptionExtraData;
+	},
 ): ICreatedRoom {
 	if (members.length > (settings.get('DirectMesssage_maxUsers') || 1)) {
 		throw new Error('error-direct-message-max-user-exceeded');
@@ -157,7 +161,7 @@ export const createDirectRoom = function (
 
 		callbacks.run('afterCreateDirectRoom', insertedRoom, { members: roomMembers, creatorId: options?.creator });
 
-		Apps.triggerEvent('IPostRoomCreate', insertedRoom);
+		void Apps.triggerEvent('IPostRoomCreate', insertedRoom);
 	}
 
 	return {

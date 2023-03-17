@@ -17,14 +17,14 @@ slashCommands.add({
 
 			if (err) {
 				if (err.error === 'error-not-allowed') {
-					api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+					void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 						msg: TAPi18n.__('StatusMessage_Change_Disabled', { lng }),
 					});
 				}
 
 				throw err;
 			} else {
-				api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+				void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 					msg: TAPi18n.__('StatusMessage_Changed_Successfully', { lng }),
 				});
 			}

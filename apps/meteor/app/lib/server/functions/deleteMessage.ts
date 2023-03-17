@@ -65,10 +65,10 @@ export const deleteMessage = async function (message: IMessage, user: IUser): Pr
 	if (showDeletedStatus) {
 		Messages.setAsDeletedByIdAndUser(message._id, user);
 	} else {
-		api.broadcast('notify.deleteMessage', message.rid, { _id: message._id });
+		void api.broadcast('notify.deleteMessage', message.rid, { _id: message._id });
 	}
 
 	if (bridges) {
-		bridges.getListenerBridge().messageEvent('IPostMessageDeleted', deletedMsg, user);
+		void bridges.getListenerBridge().messageEvent('IPostMessageDeleted', deletedMsg, user);
 	}
 };

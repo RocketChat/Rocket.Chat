@@ -21,7 +21,7 @@ slashCommands.add({
 		const userId = Meteor.userId() as string;
 		const mutedUser = Users.findOneByUsernameIgnoringCase(username);
 		if (mutedUser == null) {
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('Username_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [username],

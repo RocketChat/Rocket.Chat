@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IMessage, IRoom, IUser, MessageAttachmentDefault } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasAtLeastOnePermission, canSendMessage } from '../../../authorization/server';
 import { Messages, Rooms } from '../../../models/server';
@@ -177,7 +178,14 @@ const create = ({ prid, pmid, t_name: discussionName, reply, users, user, encryp
 	return discussion;
 };
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		createDiscussion: typeof create;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	/**
 	 * Create discussion by room or message
 	 * @constructor

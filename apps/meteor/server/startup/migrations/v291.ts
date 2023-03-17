@@ -21,7 +21,7 @@ addMigration({
 
 		const promises: Array<ReturnType<AppRealStorage['update']>> = [];
 
-		apps.forEach(async (app) =>
+		apps.forEach((app) =>
 			promises.push(
 				appsStorage.update({
 					...app,
