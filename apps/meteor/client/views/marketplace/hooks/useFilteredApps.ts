@@ -84,7 +84,7 @@ export const useFilteredApps = ({
 		};
 
 		if (purchaseType && purchaseType !== 'all') {
-			filterByPurchaseType[purchaseType]();
+			filtered = filterByPurchaseType[purchaseType]();
 
 			if (!filtered.length) shouldShowSearchText = false;
 		}
