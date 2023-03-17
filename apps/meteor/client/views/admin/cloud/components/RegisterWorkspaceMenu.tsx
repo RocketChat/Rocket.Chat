@@ -28,6 +28,19 @@ const RegisterWorkspaceMenu = ({
 		setModal(<RegisteredWorkspaceModal onClose={handleModalClose} onStatusChange={onStatusChange} />);
 	};
 
+	const renderTopOptionButtons = () => {
+		const title = isWorkspaceRegistered ? t('ConnectWorkspace_Button') : t('RegisterWorkspace_Button');
+
+		return (
+			<ButtonGroup>
+				<Button onClick={onClickOfflineRegistration}>{t('Cloud_Register_manually')}</Button>
+				<Button primary onClick={onClick}>
+					{title}
+				</Button>
+			</ButtonGroup>
+		);
+	};
+
 	return (
 		<ButtonGroup>
 			{isWorkspaceRegistered && isConnectedToCloud && (
@@ -42,22 +55,8 @@ const RegisterWorkspaceMenu = ({
 					</Button>
 				</>
 			)}
-			{isWorkspaceRegistered && !isConnectedToCloud && (
-				<>
-					<Button onClick={onClickOfflineRegistration}>{t('Cloud_Register_manually')}</Button>
-					<Button primary onClick={onClick}>
-						{t('ConnectWorkspace_Button')}
-					</Button>
-				</>
-			)}
-			{!isWorkspaceRegistered && (
-				<>
-					<Button onClick={onClickOfflineRegistration}>{t('Cloud_Register_manually')}</Button>
-					<Button primary onClick={onClick}>
-						{t('RegisterWorkspace_Button')}
-					</Button>
-				</>
-			)}
+			{isWorkspaceRegistered && !isConnectedToCloud && renderTopOptionButtons()}
+			{!isWorkspaceRegistered && renderTopOptionButtons()}
 		</ButtonGroup>
 	);
 };
