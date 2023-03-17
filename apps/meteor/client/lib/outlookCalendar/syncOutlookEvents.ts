@@ -41,6 +41,7 @@ export const syncOutlookEvents = async (date: Date, server: string, user: string
 			eventId: existingEvent._id,
 			startTime,
 			subject,
+			description,
 		});
 	}
 
