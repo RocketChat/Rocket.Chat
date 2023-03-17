@@ -16,12 +16,12 @@ export class LicenseService extends ServiceClassInternal implements ILicense {
 				return;
 			}
 
-			api.broadcast('authorization.guestPermissions', guestPermissions);
-			resetEnterprisePermissions();
+			void api.broadcast('authorization.guestPermissions', guestPermissions);
+			void resetEnterprisePermissions();
 		});
 
 		onModule((licenseModule) => {
-			api.broadcast('license.module', licenseModule);
+			void api.broadcast('license.module', licenseModule);
 		});
 	}
 
@@ -30,7 +30,7 @@ export class LicenseService extends ServiceClassInternal implements ILicense {
 			return;
 		}
 
-		api.broadcast('authorization.guestPermissions', guestPermissions);
+		void api.broadcast('authorization.guestPermissions', guestPermissions);
 		resetEnterprisePermissions();
 	}
 

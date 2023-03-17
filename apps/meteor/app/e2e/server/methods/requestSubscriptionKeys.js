@@ -27,7 +27,7 @@ Meteor.methods({
 
 		const rooms = Rooms.find(query);
 		rooms.forEach((room) => {
-			api.broadcast('notify.e2e.keyRequest', room._id, room.e2eKeyId);
+			void api.broadcast('notify.e2e.keyRequest', room._id, room.e2eKeyId);
 		});
 
 		return true;

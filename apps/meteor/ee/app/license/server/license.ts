@@ -390,20 +390,20 @@ export function onToggledFeature(
 
 	const offValidFeature = onValidFeature(feature, () => {
 		if (!enabled) {
-			up?.();
+			void up?.();
 			enabled = true;
 		}
 	});
 
 	const offInvalidFeature = onInvalidFeature(feature, () => {
 		if (enabled) {
-			down?.();
+			void down?.();
 			enabled = false;
 		}
 	});
 
 	if (enabled) {
-		up?.();
+		void up?.();
 	}
 
 	return (): void => {
