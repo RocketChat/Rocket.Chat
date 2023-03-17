@@ -62,8 +62,10 @@ const events = {
 		}
 		delete inquiry.type;
 		const saveResult = LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
+		const userId = Meteor.userId() as ILivechatInquiryRecord['_id'];
+		const { poolMaxIncoming, queuedChatsCount } = getPoolMaxIncomingAndQueuedChatsCount(userId);
 
-		if (!saveResult?.insertedId) {
+		if (!saveResult?.insertedId || queuedChatsCount >= poolMaxIncoming) {
 			return;
 		}
 
