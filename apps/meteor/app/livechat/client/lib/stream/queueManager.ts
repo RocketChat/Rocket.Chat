@@ -139,7 +139,7 @@ const subscribe = async (userId: IOmnichannelAgent['_id']) => {
 	const globalCleanup = addGlobalListener();
 	const inquiriesFromAPI = (await getInquiriesFromAPI()) as unknown as ILivechatInquiryRecord[];
 
-	updateInquiries(inquiriesFromAPI);
+	await updateInquiries(inquiriesFromAPI);
 
 	return () => {
 		LivechatInquiry.remove({});
