@@ -48,7 +48,7 @@ const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxI
 	return (
 		<>
 			<OptionTitle>{t('Administration')}</OptionTitle>
-			<ul aria-description='administrationList'>
+			<ul>
 				{showUpgradeItem && (
 					<ListItem
 						icon='arrow-stack-up'
