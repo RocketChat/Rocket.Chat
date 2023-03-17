@@ -9,10 +9,17 @@ type RegisterWorkspaceMenuProps = {
 	isWorkspaceRegistered: boolean | string;
 	isConnectedToCloud: boolean | string;
 	onClick: () => void;
+	onClickOfflineRegistration: () => void;
 	onStatusChange?: () => void;
 };
 
-const RegisterWorkspaceMenu = ({ isWorkspaceRegistered, isConnectedToCloud, onClick, onStatusChange }: RegisterWorkspaceMenuProps) => {
+const RegisterWorkspaceMenu = ({
+	isWorkspaceRegistered,
+	isConnectedToCloud,
+	onClick,
+	onClickOfflineRegistration,
+	onStatusChange,
+}: RegisterWorkspaceMenuProps) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 
@@ -36,14 +43,20 @@ const RegisterWorkspaceMenu = ({ isWorkspaceRegistered, isConnectedToCloud, onCl
 				</>
 			)}
 			{isWorkspaceRegistered && !isConnectedToCloud && (
-				<Button primary onClick={onClick}>
-					{t('ConnectWorkspace_Button')}
-				</Button>
+				<>
+					<Button onClick={onClickOfflineRegistration}>{t('Cloud_Register_manually')}</Button>
+					<Button primary onClick={onClick}>
+						{t('ConnectWorkspace_Button')}
+					</Button>
+				</>
 			)}
 			{!isWorkspaceRegistered && (
-				<Button primary onClick={onClick}>
-					{t('RegisterWorkspace_Button')}
-				</Button>
+				<>
+					<Button onClick={onClickOfflineRegistration}>{t('Cloud_Register_manually')}</Button>
+					<Button primary onClick={onClick}>
+						{t('RegisterWorkspace_Button')}
+					</Button>
+				</>
 			)}
 		</ButtonGroup>
 	);

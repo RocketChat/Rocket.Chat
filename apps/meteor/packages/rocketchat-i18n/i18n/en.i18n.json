@@ -990,7 +990,7 @@
   "Cloud_Apply_license": "Apply license",
   "Cloud_connectivity": "Cloud Connectivity",
   "Cloud_address_to_send_registration_to": "The address to send your Cloud registration email to.",
-  "Cloud_click_here": "After copy the text, go to [cloud console (click here)](__cloudConsoleUrl__).",
+  "Cloud_click_here": "After copying the text, go to [cloud console (click here)](__cloudConsoleUrl__).",
   "Cloud_console": "Cloud Console",
   "Cloud_error_code": "Code:  __errorCode__",
   "Cloud_error_in_authenticating": "Error received while authenticating",
