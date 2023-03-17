@@ -172,7 +172,7 @@ export class RocketChatSettingsAdapter {
 	private addFederationSettings(): void {
 		const preExistingConfiguration = this.getRegistrationFileFromHomeserver();
 
-		settingsRegistry.addGroup('Federation', function () {
+		void settingsRegistry.addGroup('Federation', function () {
 			this.section('Matrix Bridge', function () {
 				this.add('Federation_Matrix_enabled', Boolean(preExistingConfiguration), {
 					readonly: false,

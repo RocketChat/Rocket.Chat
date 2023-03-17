@@ -234,7 +234,7 @@ export class AppServerOrchestrator {
 export const AppEvents = AppInterface;
 export const Apps = new AppServerOrchestrator();
 
-settingsRegistry.addGroup('General', function () {
+void settingsRegistry.addGroup('General', function () {
 	this.section('Apps', function () {
 		this.add('Apps_Logs_TTL', '30_days', {
 			type: 'select',

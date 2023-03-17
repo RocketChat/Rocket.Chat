@@ -98,7 +98,7 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 		return roomCanMute && userCanMute
 			? {
 					label: t(isMuted ? 'Unmute_user' : 'Mute_user'),
-					icon: isMuted ? 'mic' : 'mic-off',
+					icon: isMuted ? ('mic' as const) : ('mic-off' as const),
 					action,
 			  }
 			: undefined;

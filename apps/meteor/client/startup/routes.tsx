@@ -211,7 +211,7 @@ FlowRouter.route('/conference/:id', {
 FlowRouter.route('/setup-wizard/:step?', {
 	name: 'setup-wizard',
 	action: () => {
-		appLayout.render(<SetupWizardRoute />);
+		appLayout.renderStandalone(<SetupWizardRoute />);
 	},
 });
 
