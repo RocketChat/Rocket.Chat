@@ -100,7 +100,7 @@ export const addUserToRoom = function (
 	}
 
 	if (room.t === 'c' || room.t === 'p') {
-		Meteor.defer(function () {
+		process.nextTick(function () {
 			// Add a new event, with an optional inviter
 			callbacks.run('afterAddedToRoom', { user: userToBeAdded, inviter }, room);
 

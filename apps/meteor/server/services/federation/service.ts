@@ -296,7 +296,7 @@ abstract class AbstractBaseFederationService extends AbstractFederationService {
 
 	public async stopped(): Promise<void> {
 		await this.stopFederation();
-		super.cleanUpSettingObserver();
+		await super.cleanUpSettingObserver();
 	}
 
 	public async created(): Promise<void> {
