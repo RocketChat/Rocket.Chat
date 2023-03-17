@@ -135,7 +135,7 @@ API.v1.addRoute(
 
 			importer.instance = new importer.importer(importer); // eslint-disable-line new-cap
 			await importer.instance.build();
-			const count = importer.instance.prepareFileCount();
+			const count = await importer.instance.prepareFileCount();
 
 			return API.v1.success({
 				count,
@@ -160,7 +160,7 @@ API.v1.addRoute(
 
 			importer.instance = new importer.importer(importer); // eslint-disable-line new-cap
 			await importer.instance.build();
-			const count = importer.instance.prepareFileCount();
+			const count = await importer.instance.prepareFileCount();
 
 			return API.v1.success({
 				count,
