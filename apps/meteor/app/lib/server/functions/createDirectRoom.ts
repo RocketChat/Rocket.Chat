@@ -161,7 +161,7 @@ export const createDirectRoom = function (
 
 		callbacks.run('afterCreateDirectRoom', insertedRoom, { members: roomMembers, creatorId: options?.creator });
 
-		Apps.triggerEvent('IPostRoomCreate', insertedRoom);
+		void Apps.triggerEvent('IPostRoomCreate', insertedRoom);
 	}
 
 	return {

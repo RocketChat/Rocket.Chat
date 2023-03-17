@@ -164,7 +164,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 			return;
 		}
 
-		this.broker.broadcast('broadcast', { streamName, eventName, args });
+		void this.broker.broadcast('broadcast', { streamName, eventName, args });
 	}
 
 	async getInstances(): Promise<BrokerNode[]> {

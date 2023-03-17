@@ -79,7 +79,7 @@ export function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage,
 		SystemLogger.error({ msg: 'Error sending message:', err });
 
 		const errorMessage = typeof err === 'string' ? err : err.error || err.message;
-		api.broadcast('notify.ephemeralMessage', uid, message.rid, {
+		void api.broadcast('notify.ephemeralMessage', uid, message.rid, {
 			msg: TAPi18n.__(errorMessage, {}, user.language),
 		});
 

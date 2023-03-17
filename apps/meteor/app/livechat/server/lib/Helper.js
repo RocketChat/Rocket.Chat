@@ -270,7 +270,7 @@ export const normalizeAgent = (agentId) => {
 export const dispatchAgentDelegated = (rid, agentId) => {
 	const agent = normalizeAgent(agentId);
 
-	api.broadcast('omnichannel.room', rid, {
+	void api.broadcast('omnichannel.room', rid, {
 		type: 'agentData',
 		data: agent,
 	});

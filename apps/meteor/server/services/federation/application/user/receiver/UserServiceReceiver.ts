@@ -59,7 +59,7 @@ export class FederationUserServiceReceiver extends AbstractFederationApplication
 		this.usersTypingByRoomIdCache.set(
 			externalRoomId,
 			federatedUsers.map((federatedUser) => {
-				this.internalNotificationAdapter.notifyUserTypingOnRoom(
+				void this.internalNotificationAdapter.notifyUserTypingOnRoom(
 					federatedRoom.getInternalId(),
 					federatedUser.getUsername() as string,
 					isTyping,

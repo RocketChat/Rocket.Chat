@@ -40,4 +40,4 @@ const startEmailInterceptor = _.debounce(async function () {
 
 settings.watchByRegex(/^Direct_Reply_.+/, startEmailInterceptor);
 
-startEmailInterceptor();
+void startEmailInterceptor();

@@ -15,7 +15,7 @@ import './methods/requestSubscriptionKeys';
 callbacks.add(
 	'afterJoinRoom',
 	(user, room) => {
-		api.broadcast('notify.e2e.keyRequest', room._id, room.e2eKeyId);
+		void api.broadcast('notify.e2e.keyRequest', room._id, room.e2eKeyId);
 	},
 	callbacks.priority.MEDIUM,
 	'e2e',
