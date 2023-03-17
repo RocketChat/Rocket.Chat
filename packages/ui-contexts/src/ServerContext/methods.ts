@@ -1,14 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface ServerMethods {
 	'addUsersToRoom': (...args: any[]) => any;
-	'checkUsernameAvailability': (...args: any[]) => any;
 	'cleanRoomHistory': (...args: any[]) => any;
-	'clearIntegrationHistory': (...args: any[]) => any;
-	'deleteCustomUserStatus': (...args: any[]) => any;
-	'deleteFileMessage': (...args: any[]) => any;
-	'deleteUserOwnAccount': (...args: any[]) => any;
-	'e2e.resetOwnE2EKey': (...args: any[]) => any;
-	'eraseRoom': (...args: any[]) => any;
 	'getAvatarSuggestion': (...args: any[]) => any;
 	'getUsersOfRoom': (...args: any[]) => any;
 	'hideRoom': (...args: any[]) => any;
