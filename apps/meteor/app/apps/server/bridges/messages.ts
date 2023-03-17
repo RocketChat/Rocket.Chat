@@ -60,7 +60,7 @@ export class AppMessageBridge extends MessageBridge {
 			return;
 		}
 
-		api.broadcast('notify.ephemeralMessage', user.id, msg.rid, {
+		void api.broadcast('notify.ephemeralMessage', user.id, msg.rid, {
 			...msg,
 		});
 	}
@@ -81,7 +81,7 @@ export class AppMessageBridge extends MessageBridge {
 		const usersToNotify = await Users.findByIds(users, { projection: { _id: 1 } }).toArray();
 
 		for (const user of usersToNotify) {
-			api.broadcast('notify.ephemeralMessage', user._id, room.id, {
+			void api.broadcast('notify.ephemeralMessage', user._id, room.id, {
 				...msg,
 			});
 		}

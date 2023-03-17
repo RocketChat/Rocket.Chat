@@ -79,12 +79,12 @@ callbacks.add(
 	'check-max-user-seats',
 );
 
-const handleMaxSeatsBanners = (): void => {
+async function handleMaxSeatsBanners() {
 	const maxActiveUsers = getMaxActiveUsers();
 
 	if (!maxActiveUsers) {
-		disableWarningBannerDiscardingDismissal();
-		disableDangerBannerDiscardingDismissal();
+		await disableWarningBannerDiscardingDismissal();
+		await disableDangerBannerDiscardingDismissal();
 		return;
 	}
 
@@ -96,32 +96,34 @@ const handleMaxSeatsBanners = (): void => {
 	const seatsLeft = maxActiveUsers - activeUsers;
 
 	if (ratio < 0.8 || ratio >= 1) {
-		disableWarningBannerDiscardingDismissal();
+		await disableWarningBannerDiscardingDismissal();
 	} else {
-		enableWarningBanner(seatsLeft);
+		await enableWarningBanner(seatsLeft);
 	}
 
 	if (ratio < 1) {
-		disableDangerBannerDiscardingDismissal();
+		await disableDangerBannerDiscardingDismissal();
 	} else {
-		enableDangerBanner();
+		await enableDangerBanner();
 	}
-};
+}
 
-callbacks.add('afterCreateUser', handleMaxSeatsBanners, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
+const handleMaxSeatsBannersSync = () => Promise.await(handleMaxSeatsBanners);
 
-callbacks.add('afterSaveUser', handleMaxSeatsBanners, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
+callbacks.add('afterCreateUser', handleMaxSeatsBannersSync, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
 
-callbacks.add('afterDeleteUser', handleMaxSeatsBanners, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
+callbacks.add('afterSaveUser', handleMaxSeatsBannersSync, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
 
-callbacks.add('afterDeactivateUser', handleMaxSeatsBanners, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
+callbacks.add('afterDeleteUser', handleMaxSeatsBannersSync, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
 
-callbacks.add('afterActivateUser', handleMaxSeatsBanners, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
+callbacks.add('afterDeactivateUser', handleMaxSeatsBannersSync, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
 
-Meteor.startup(() => {
-	createSeatsLimitBanners();
+callbacks.add('afterActivateUser', handleMaxSeatsBannersSync, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
 
-	handleMaxSeatsBanners();
+Meteor.startup(async () => {
+	await createSeatsLimitBanners();
 
-	onValidateLicenses(handleMaxSeatsBanners);
+	await handleMaxSeatsBanners();
+
+	onValidateLicenses(handleMaxSeatsBannersSync);
 });

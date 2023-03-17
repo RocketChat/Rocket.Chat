@@ -30,7 +30,7 @@ Meteor.methods({
 
 		const removed = await WebdavAccounts.removeByUserAndId(accountId, userId);
 		if (removed) {
-			api.broadcast('notify.webdav', userId, {
+			void api.broadcast('notify.webdav', userId, {
 				type: 'removed',
 				account: { _id: accountId },
 			});
