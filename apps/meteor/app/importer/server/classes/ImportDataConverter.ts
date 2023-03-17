@@ -628,9 +628,9 @@ export class ImportDataConverter {
 			}
 		});
 
-		for (const rid of rids) {
+		for await (const rid of rids) {
 			try {
-				Rooms.resetLastMessageById(rid);
+				await Rooms.resetLastMessageById(rid);
 			} catch (e) {
 				this._logger.warn(`Failed to update last message of room ${rid}`);
 				this._logger.error(e);
