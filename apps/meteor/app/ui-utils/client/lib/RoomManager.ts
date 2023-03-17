@@ -132,7 +132,7 @@ const handleTrackSettingsChange = (msg: IMessage) => {
 		return;
 	}
 
-	Tracker.nonreactive(() => {
+	void Tracker.nonreactive(async () => {
 		if (msg.t === 'room_changed_privacy') {
 			const type = FlowRouter.current().route?.name === 'channel' ? 'c' : 'p';
 			close(type + FlowRouter.getParam('name'));
@@ -174,11 +174,11 @@ const computation = Tracker.autorun(() => {
 
 			const room = roomCoordinator.getRoomDirectives(type)?.findRoom(name);
 
-			RoomHistoryManager.getMoreIfIsEmpty(record.rid);
+			void RoomHistoryManager.getMoreIfIsEmpty(record.rid);
 
 			if (room) {
 				if (record.streamActive !== true) {
-					(
+					void (
 						roomMessagesStream.on(record.rid, async (msg) => {
 							// Should not send message to room if room has not loaded all the current messages
 							// if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
