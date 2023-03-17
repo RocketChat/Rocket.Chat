@@ -1,4 +1,4 @@
-import Ajv from 'ajv';
+import Ajv from 'ajv/dist/2019';
 
 const ajv = new Ajv({
 	coerceTypes: true,
@@ -6,9 +6,10 @@ const ajv = new Ajv({
 
 export type GroupsCreateProps = {
 	name: string;
-	members: string[];
-	readOnly: boolean;
-	extraData: {
+	members?: string[];
+	customFields?: Record<string, any>;
+	readOnly?: boolean;
+	extraData?: {
 		broadcast: boolean;
 		encrypted: boolean;
 		teamId?: string;
@@ -24,9 +25,15 @@ const GroupsCreatePropsSchema = {
 		members: {
 			type: 'array',
 			items: { type: 'string' },
+			nullable: true,
 		},
 		readOnly: {
 			type: 'boolean',
+			nullable: true,
+		},
+		customFields: {
+			type: 'object',
+			nullable: true,
 		},
 		extraData: {
 			type: 'object',
@@ -37,16 +44,27 @@ const GroupsCreatePropsSchema = {
 				encrypted: {
 					type: 'boolean',
 				},
+				federated: {
+					type: 'boolean',
+					nullable: true,
+				},
 				teamId: {
 					type: 'string',
 					nullable: true,
 				},
+				topic: {
+					type: 'string',
+					nullable: true,
+				},
 			},
-			required: ['broadcast', 'encrypted'],
+			dependentSchemas: {
+				extraData: { required: ['broadcast', 'encrypted'] },
+			},
 			additionalProperties: false,
+			nullable: true,
 		},
 	},
-	required: ['name', 'members', 'readOnly', 'extraData'],
+	required: ['name'],
 	additionalProperties: false,
 };
 

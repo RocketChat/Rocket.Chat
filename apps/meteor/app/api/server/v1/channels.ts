@@ -29,6 +29,7 @@ import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { settings } from '../../../settings/server';
+import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 async function findChannelByIdOrName({
@@ -816,7 +817,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields: projection, query } = this.parseJsonQuery();
 
-			ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query, ourQuery);
+			ourQuery = Object.assign(await mountIntegrationQueryBasedOnPermissions(this.userId), query, ourQuery);
 
 			const { cursor, totalCount } = await Integrations.findPaginated(ourQuery, {
 				sort: sort || { _createdAt: 1 },
@@ -929,7 +930,7 @@ API.v1.addRoute(
 			const [channels, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				channels: channels.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
+				channels: await Promise.all(channels.map((room) => composeRoomWithLastMessage(room, this.userId))),
 				count: channels.length,
 				offset,
 				total,
@@ -963,7 +964,7 @@ API.v1.addRoute(
 			const [channels, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				channels: channels.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
+				channels: await Promise.all(channels.map((room) => composeRoomWithLastMessage(room, this.userId))),
 				offset,
 				count: channels.length,
 				total,
@@ -1277,7 +1278,7 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success({
-				channel: this.composeRoomWithLastMessage(room, this.userId),
+				channel: await composeRoomWithLastMessage(room, this.userId),
 			});
 		},
 	},

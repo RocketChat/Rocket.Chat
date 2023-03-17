@@ -7,7 +7,7 @@ import type {
 	PathPattern,
 	UrlParams,
 } from '@rocket.chat/rest-typings';
-import type { IUser, IMethodConnection, IRoom } from '@rocket.chat/core-typings';
+import type { IUser, IMethodConnection } from '@rocket.chat/core-typings';
 import type { ValidateFunction } from 'ajv';
 import type { Request, Response } from 'express';
 
@@ -139,7 +139,6 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 	getUserInfo(
 		me: IUser,
 	): TOptions extends { authRequired: true } ? UserInfo : TOptions extends { authOrAnonRequired: true } ? UserInfo | undefined : undefined;
-	composeRoomWithLastMessage(room: IRoom, userId: string): IRoom;
 	isWidget(): boolean;
 } & (TOptions extends { authRequired: true }
 	? {
