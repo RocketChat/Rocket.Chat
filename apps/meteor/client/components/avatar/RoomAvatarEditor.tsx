@@ -68,7 +68,6 @@ const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }
 					</Button>
 
 					<Button
-						primary
 						small
 						danger
 						title={t('Accounts_SetDefaultAvatar')}

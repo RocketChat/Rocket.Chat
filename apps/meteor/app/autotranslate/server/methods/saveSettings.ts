@@ -1,10 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermission } from '../../../authorization/server';
 import { Subscriptions } from '../../../models/server';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'autoTranslate.saveSettings'(rid: string, field: string, value: string, options: { defaultLanguage: string }): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	'autoTranslate.saveSettings'(rid, field, value, options) {
 		const userId = Meteor.userId();
 		if (!userId) {

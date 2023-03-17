@@ -314,8 +314,8 @@ export class ImportDataConverter {
 		}
 	}
 
-	public convertUsers({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
-		const users = Promise.await(this.getUsersToImport()) as IImportUserRecord[];
+	public async convertUsers({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): Promise<void> {
+		const users = (await this.getUsersToImport()) as IImportUserRecord[];
 		users.forEach(({ data, _id }) => {
 			try {
 				if (beforeImportFn && !beforeImportFn(data, 'user')) {
@@ -546,9 +546,10 @@ export class ImportDataConverter {
 		return ImportDataRaw.getAllMessages().toArray();
 	}
 
-	convertMessages({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
+	async convertMessages({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): Promise<void> {
 		const rids: Array<string> = [];
-		const messages = Promise.await(this.getMessagesToImport());
+		const messages = await this.getMessagesToImport();
+
 		messages.forEach(({ data, _id }: IImportMessageRecord) => {
 			try {
 				if (beforeImportFn && !beforeImportFn(data, 'message')) {
@@ -897,8 +898,8 @@ export class ImportDataConverter {
 		return ImportDataRaw.getAllChannels().toArray();
 	}
 
-	convertChannels(startedByUserId: string, { beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
-		const channels = Promise.await(this.getChannelsToImport());
+	async convertChannels(startedByUserId: string, { beforeImportFn, afterImportFn }: IConversionCallbacks = {}): Promise<void> {
+		const channels = await this.getChannelsToImport();
 		channels.forEach(({ data, _id }: IImportChannelRecord) => {
 			try {
 				if (beforeImportFn && !beforeImportFn(data, 'channel')) {
@@ -943,19 +944,19 @@ export class ImportDataConverter {
 		Subscriptions.archiveByRoomId(rid);
 	}
 
-	convertData(startedByUserId: string, callbacks: IConversionCallbacks = {}): void {
-		this.convertUsers(callbacks);
-		this.convertChannels(startedByUserId, callbacks);
-		this.convertMessages(callbacks);
+	async convertData(startedByUserId: string, callbacks: IConversionCallbacks = {}): Promise<void> {
+		await this.convertUsers(callbacks);
+		await this.convertChannels(startedByUserId, callbacks);
+		await this.convertMessages(callbacks);
 
-		Meteor.defer(() => {
+		process.nextTick(() => {
 			this.clearSuccessfullyImportedData();
 		});
 	}
 
-	public clearImportData(): void {
+	public async clearImportData(): Promise<void> {
 		// Using raw collection since its faster
-		Promise.await(ImportData.model.rawCollection().remove({}));
+		await ImportData.model.rawCollection().remove({});
 	}
 
 	clearSuccessfullyImportedData(): void {

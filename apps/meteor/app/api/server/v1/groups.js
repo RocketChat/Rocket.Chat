@@ -666,7 +666,10 @@ API.v1.addRoute(
 				skip,
 				limit,
 				filter,
-				...(sort?.username && { sort: { username: sort.username } }),
+				sort: {
+					_updatedAt: -1,
+					...(sort?.username && { username: sort.username }),
+				},
 			});
 
 			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
@@ -1156,10 +1159,7 @@ API.v1.addRoute(
 			}
 
 			const room = findPrivateGroupByIdOrName({
-				params: {
-					roomId,
-					roomName,
-				},
+				params: roomId ? { roomId } : { roomName },
 				userId: this.userId,
 			});
 

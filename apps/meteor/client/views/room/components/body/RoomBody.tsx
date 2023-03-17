@@ -513,7 +513,7 @@ const RoomBody = (): ReactElement => {
 		(e): void => {
 			/*
 			 * check if the element is a button or anchor
-			 * it considers the aria-role as well
+			 * it considers the role as well
 			 * usually, the flex tab is closed when clicking outside of it
 			 * but if the user clicks on a button or anchor, we don't want to close the flex tab
 			 * because the user could be actually trying to open the flex tab through those elements
@@ -523,10 +523,10 @@ const RoomBody = (): ReactElement => {
 				if (!element) {
 					return false;
 				}
-				if (element instanceof HTMLButtonElement || element.getAttribute('aria-role') === 'button') {
+				if (element instanceof HTMLButtonElement || element.getAttribute('role') === 'button') {
 					return true;
 				}
-				if (element instanceof HTMLAnchorElement || element.getAttribute('aria-role') === 'link') {
+				if (element instanceof HTMLAnchorElement || element.getAttribute('role') === 'link') {
 					return true;
 				}
 				return checkElement(element.parentElement);
