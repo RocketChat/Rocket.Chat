@@ -390,7 +390,7 @@ jobs:
   build-docker-preview:
     name: 🚢 Build Docker Image (preview)
     runs-on: ubuntu-20.04
-    needs: [build, release-versions]
+    needs: [build, checks, release-versions]
     if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
     steps:
       - uses: actions/checkout@v3
