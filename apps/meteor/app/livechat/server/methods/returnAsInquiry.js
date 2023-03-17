@@ -5,7 +5,7 @@ import { LivechatRooms } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
-	'livechat:returnAsInquiry'(rid, departmentId) {
+	async 'livechat:returnAsInquiry'(rid, departmentId) {
 		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-l-room')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:returnAsInquiry',

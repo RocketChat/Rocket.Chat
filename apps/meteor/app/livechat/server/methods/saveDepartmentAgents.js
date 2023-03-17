@@ -5,7 +5,7 @@ import { Livechat } from '../lib/Livechat';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
-	'livechat:saveDepartmentAgents'(_id, departmentAgents) {
+	async 'livechat:saveDepartmentAgents'(_id, departmentAgents) {
 		methodDeprecationLogger.warn('livechat:saveDepartmentAgents will be deprecated in future versions of Rocket.Chat');
 
 		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'add-livechat-department-agents')) {
