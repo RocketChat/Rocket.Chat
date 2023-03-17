@@ -21,6 +21,7 @@ import {
 	findRoomsAvailableForTeams,
 } from '../lib/rooms';
 import * as dataExport from '../../../../server/lib/dataExport';
+import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 
 async function findRoomByIdOrName({
 	params,
@@ -122,8 +123,8 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success({
-				update: result.update.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
-				remove: result.remove.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
+				update: await Promise.all(result.update.map((room) => composeRoomWithLastMessage(room, this.userId))),
+				remove: await Promise.all(result.remove.map((room) => composeRoomWithLastMessage(room, this.userId))),
 			});
 		},
 	},
