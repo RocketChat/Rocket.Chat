@@ -11,7 +11,7 @@ import { onClientMessageReceived } from '../../../../client/lib/onClientMessageR
 import { trim } from '../../../../lib/utils/stringUtils';
 
 Meteor.methods<ServerMethods>({
-	sendMessage(message) {
+	async sendMessage(message) {
 		const uid = Meteor.userId();
 		if (!uid || trim(message.msg) === '') {
 			return false;
@@ -42,7 +42,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		message = callbacks.run('beforeSaveMessage', message);
-		onClientMessageReceived(message as IMessage).then(function (message) {
+		await onClientMessageReceived(message as IMessage).then(function (message) {
 			ChatMessage.insert(message);
 			return callbacks.run('afterSaveMessage', message);
 		});

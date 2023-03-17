@@ -29,7 +29,7 @@ export const createRoom = <T extends RoomType>(
 	callbacks.run('beforeCreateRoom', { type, name, owner: ownerUsername, members, readOnly, extraData, options });
 
 	if (type === 'd') {
-		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || ownerUsername });
+		return Promise.await(createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || ownerUsername }));
 	}
 
 	if (!isValidName(name)) {
