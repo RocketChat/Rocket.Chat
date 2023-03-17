@@ -39,7 +39,7 @@ const updateRoleAsync = async (roleId: IRole['_id'], roleData: Omit<IRole, '_id'
 	await Roles.updateById(roleId, roleData.name, roleData.scope, roleData.description, roleData.mandatory2fa);
 
 	if (options.broadcastUpdate) {
-		api.broadcast('user.roleUpdate', {
+		void api.broadcast('user.roleUpdate', {
 			type: 'changed',
 			_id: roleId,
 		});

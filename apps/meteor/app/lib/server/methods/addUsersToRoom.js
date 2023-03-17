@@ -82,7 +82,7 @@ Meteor.methods({
 			if (!subscription) {
 				addUserToRoom(data.rid, newUser || username, user);
 			} else {
-				api.broadcast('notify.ephemeralMessage', userId, data.rid, {
+				void api.broadcast('notify.ephemeralMessage', userId, data.rid, {
 					msg: TAPi18n.__(
 						'Username_is_already_in_here',
 						{

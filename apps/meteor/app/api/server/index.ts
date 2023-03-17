@@ -11,7 +11,6 @@ import './helpers/requestParams';
 import './helpers/isWidget';
 import './default/info';
 import './v1/assets';
-import './v1/channels.js';
 import './v1/channels.ts';
 import './v1/chat';
 import './v1/cloud';

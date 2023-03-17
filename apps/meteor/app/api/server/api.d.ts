@@ -125,6 +125,7 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 		readonly offset: number;
 		readonly count: number;
 	};
+	getUserListFromParams(): IUser[];
 	parseJsonQuery(): {
 		sort: Record<string, 1 | -1>;
 		fields: Record<string, 0 | 1>;
@@ -260,6 +261,27 @@ declare const API: {
 	default: APIClass;
 	helperMethods: Map<string, (...args: any[]) => unknown>;
 	ApiClass: APIClass;
+	channels: {
+		create: {
+			validate: (params: {
+				user: { value: string };
+				name?: { key: string; value?: string };
+				members?: { key: string; value?: string[] };
+				customFields?: { key: string; value?: string };
+				teams?: { key: string; value?: string[] };
+			}) => void;
+			execute: (
+				userId: string,
+				params: {
+					name?: string;
+					members?: string[];
+					customFields?: Record<string, any>;
+					extraData?: Record<string, any>;
+					readOnly?: boolean;
+				},
+			) => Promise<{ channel: IRoom }>;
+		};
+	};
 };
 
 declare const defaultRateLimiterOptions: {
