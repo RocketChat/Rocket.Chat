@@ -21,33 +21,32 @@ describe('LIVECHAT - Integrations', function () {
 			await updatePermission('view-livechat-manager', []);
 			await request.get(api('livechat/integrations.settings')).set(credentials).expect('Content-Type', 'application/json').expect(403);
 		});
-		it('should return an array of settings', (done) => {
-			updatePermission('view-livechat-manager', ['admin']).then(() => {
-				await request
-					.get(api('livechat/integrations.settings'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body.settings).to.be.an('array');
-						const settingIds = res.body.settings.map((setting: ISetting) => setting._id);
-						expect(settingIds).to.include.members([
-							'Livechat_webhookUrl',
-							'Livechat_secret_token',
-							'Livechat_http_timeout',
-							'Livechat_webhook_on_start',
-							'Livechat_webhook_on_close',
-							'Livechat_webhook_on_chat_taken',
-							'Livechat_webhook_on_chat_queued',
-							'Livechat_webhook_on_forward',
-							'Livechat_webhook_on_offline_msg',
-							'Livechat_webhook_on_visitor_message',
-							'Livechat_webhook_on_agent_message',
-						]);
-					})
-					.end(done);
-			});
+		it('should return an array of settings', async (done) => {
+			await updatePermission('view-livechat-manager', ['admin']);
+			await request
+				.get(api('livechat/integrations.settings'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.settings).to.be.an('array');
+					const settingIds = res.body.settings.map((setting: ISetting) => setting._id);
+					expect(settingIds).to.include.members([
+						'Livechat_webhookUrl',
+						'Livechat_secret_token',
+						'Livechat_http_timeout',
+						'Livechat_webhook_on_start',
+						'Livechat_webhook_on_close',
+						'Livechat_webhook_on_chat_taken',
+						'Livechat_webhook_on_chat_queued',
+						'Livechat_webhook_on_forward',
+						'Livechat_webhook_on_offline_msg',
+						'Livechat_webhook_on_visitor_message',
+						'Livechat_webhook_on_agent_message',
+					]);
+				});
+			done();
 		});
 	});
 
