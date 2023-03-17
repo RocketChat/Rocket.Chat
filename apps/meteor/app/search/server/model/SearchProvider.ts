@@ -11,10 +11,10 @@ export abstract class SearchProvider<TPayload = any> {
 	protected _settings: Settings;
 
 	/**
-	 * Create search provider, key must match /^[a-z0-9]+$/
+	 * Create search provider, key must match /^[A-Za-z0-9]+$/
 	 */
 	constructor(key: string) {
-		if (!key.match(/^[A-z0-9]+$/)) {
+		if (!key.match(/^[A-Za-z0-9]+$/)) {
 			throw new Error(`cannot instantiate provider: ${key} does not match key-pattern`);
 		}
 

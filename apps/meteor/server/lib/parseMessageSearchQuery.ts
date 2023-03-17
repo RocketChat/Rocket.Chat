@@ -38,7 +38,7 @@ class MessageSearchQueryParser {
 	private consumeFrom(text: string) {
 		const from: string[] = [];
 
-		return text.replace(/from:([a-z0-9.-_]+)/gi, (_, username) => {
+		return text.replace(/from:([a-z0-9.\-_]+)/gi, (_, username) => {
 			if (username === 'me' && this.user?.username && !from.includes(this.user.username)) {
 				username = this.user.username;
 			}
@@ -56,7 +56,7 @@ class MessageSearchQueryParser {
 	private consumeMention(text: string) {
 		const mentions: string[] = [];
 
-		return text.replace(/mention:([a-z0-9.-_]+)/gi, (_: string, username: string) => {
+		return text.replace(/mention:([a-z0-9.\-_]+)/gi, (_: string, username: string) => {
 			mentions.push(username);
 
 			this.query['mentions.username'] = {
