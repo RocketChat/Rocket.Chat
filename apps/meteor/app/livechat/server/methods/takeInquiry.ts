@@ -1,12 +1,21 @@
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization/server';
 import { Users, LivechatInquiry } from '../../../models/server';
 import { RoutingManager } from '../lib/RoutingManager';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'livechat:takeInquiry'(inquiryId: string, options?: { clientAction: boolean; forwardingToDepartment?: boolean }): unknown;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async 'livechat:takeInquiry'(inquiryId, options) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-l-room')) {
+		const uid = Meteor.userId();
+		if (!uid || !hasPermission(uid, 'view-l-room')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:takeInquiry',
 			});
@@ -26,9 +35,7 @@ Meteor.methods({
 			});
 		}
 
-		const user = Users.findOneOnlineAgentById(Meteor.userId(), {
-			fields: { _id: 1, username: 1, roles: 1, status: 1, statusLivechat: 1 },
-		});
+		const user = Users.findOneOnlineAgentById(uid);
 		if (!user) {
 			throw new Meteor.Error('error-agent-status-service-offline', 'Agent status is offline or Omnichannel service is not active', {
 				method: 'livechat:takeInquiry',
@@ -42,7 +49,7 @@ Meteor.methods({
 
 		try {
 			await RoutingManager.takeInquiry(inquiry, agent, options);
-		} catch (e) {
+		} catch (e: any) {
 			throw new Meteor.Error(e.message);
 		}
 	},

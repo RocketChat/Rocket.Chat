@@ -7,6 +7,7 @@ import type {
 	SlashCommandPreviewItem,
 	SlashCommandPreviews,
 } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 interface ISlashCommandAddParams<T extends string> {
 	command: string;
@@ -107,7 +108,14 @@ export const slashCommands = {
 	},
 };
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		slashCommand(params: { cmd: string; params: string; msg: IMessage; triggerId: string }): unknown;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	slashCommand(command) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
