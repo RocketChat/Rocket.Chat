@@ -400,7 +400,7 @@ describe('Settings', () => {
 		settings.watchByRegex(/setting_callback/gi, spiedCallback2, { debounce: 1 });
 
 		settings.initialized();
-		settingsRegistry.addGroup('group', function () {
+		void settingsRegistry.addGroup('group', function () {
 			this.section('section', function () {
 				this.add('setting_callback', 'value2', {
 					type: 'string',
