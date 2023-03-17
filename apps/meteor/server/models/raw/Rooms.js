@@ -105,7 +105,6 @@ export class RoomsRaw extends BaseRaw {
 			...(!teams ? { teamMain: { $exists: false } } : {}),
 		};
 
-		console.log(JSON.stringify(query));
 		return this.findPaginated(query, options);
 	}
 
