@@ -197,7 +197,7 @@ jobs:
         env:
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
         run: |
-          for i in $(seq 1 5); do
+          for i in $(seq 1 2); do
             npm run testapi && s=0 && break || s=$?
 
             docker compose -f ../../docker-compose-ci.yml logs --tail=100

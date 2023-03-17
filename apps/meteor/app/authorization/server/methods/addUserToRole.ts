@@ -75,7 +75,7 @@ Meteor.methods<ServerMethods>({
 		const add = await Roles.addUserRoles(user._id, [role._id], scope);
 
 		if (settings.get('UI_DisplayRoles')) {
-			api.broadcast('user.roleUpdate', {
+			void api.broadcast('user.roleUpdate', {
 				type: 'added',
 				_id: role._id,
 				u: {

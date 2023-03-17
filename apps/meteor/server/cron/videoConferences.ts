@@ -18,7 +18,7 @@ async function runVideoConferences(): Promise<void> {
 }
 
 export function videoConferencesCron(syncedCron: typeof SyncedCron): void {
-	runVideoConferences();
+	void runVideoConferences();
 
 	syncedCron.add({
 		name: 'VideoConferences',

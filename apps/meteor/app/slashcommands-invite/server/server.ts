@@ -27,7 +27,7 @@ slashCommands.add({
 		});
 		const userId = Meteor.userId() as string;
 		if (users.count() === 0) {
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('User_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [usernames.join(' @')],
@@ -44,7 +44,7 @@ slashCommands.add({
 				return true;
 			}
 			const usernameStr = user.username as string;
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('Username_is_already_in_here', {
 					postProcess: 'sprintf',
 					sprintf: [usernameStr],
@@ -65,11 +65,11 @@ slashCommands.add({
 					return;
 				}
 				if (error === 'cant-invite-for-direct-room') {
-					api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+					void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 						msg: TAPi18n.__('Cannot_invite_users_to_direct_rooms', { lng: settings.get('Language') || 'en' }),
 					});
 				} else {
-					api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+					void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 						msg: TAPi18n.__(error, { lng: settings.get('Language') || 'en' }),
 					});
 				}

@@ -40,7 +40,9 @@ export const useRemoteBanners = () => {
 			});
 		};
 
-		const handleBannerChange = async (event: { bannerId: string }): Promise<void> => {
+		fetchInitialBanners();
+
+		const unsubscribeFromBannerChanged = subscribeToNotifyLoggedIn('banner-changed', async (event): Promise<void> => {
 			const response = await serverContext.callEndpoint({
 				method: 'GET',
 				pathPattern: '/v1/banners/:id',
@@ -59,11 +61,7 @@ export const useRemoteBanners = () => {
 			response.banners.forEach((banner) => {
 				banners.open(mapBanner(banner));
 			});
-		};
-
-		fetchInitialBanners();
-
-		const unsubscribeFromBannerChanged = subscribeToNotifyLoggedIn('banner-changed', handleBannerChange);
+		});
 
 		return () => {
 			controller.abort();
