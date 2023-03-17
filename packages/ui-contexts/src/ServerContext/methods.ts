@@ -1,5 +1,3 @@
-import type { IMessage, IRoom, IMessageSearchProvider, IMessageSearchSuggestion, IUser } from '@rocket.chat/core-typings';
-
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface ServerMethods {
 	'addOAuthService': (...args: any[]) => any;
@@ -48,21 +46,6 @@ export interface ServerMethods {
 	'updateIncomingIntegration': (...args: any[]) => any;
 	'updateOutgoingIntegration': (...args: any[]) => any;
 	'checkRegistrationSecretURL'(hash: string): boolean;
-	'rocketchatSearch.getProvider': () => IMessageSearchProvider | undefined;
-	'rocketchatSearch.search': (
-		text: string,
-		context: { uid?: IUser['_id']; rid: IRoom['_id'] },
-		payload: unknown,
-	) => {
-		message: {
-			docs: IMessage[];
-		};
-	};
-	'rocketchatSearch.suggest': (
-		text: string,
-		context: { uid?: IUser['_id']; rid: IRoom['_id'] },
-		payload: unknown,
-	) => IMessageSearchSuggestion[];
 }
 
 export type ServerMethodName = keyof ServerMethods;
