@@ -415,7 +415,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		action: string,
 		params: { uid: IUser['_id']; rid: IRoom['_id']; callId: VideoConference['_id'] },
 	): void {
-		api.broadcast('user.video-conference', { userId, action, params });
+		void api.broadcast('user.video-conference', { userId, action, params });
 	}
 
 	private notifyVideoConfUpdate(rid: IRoom['_id'], callId: VideoConference['_id']): void {
@@ -532,7 +532,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			lng: language,
 		});
 
-		api.broadcast('notify.ephemeralMessage', uid, rid, {
+		void api.broadcast('notify.ephemeralMessage', uid, rid, {
 			msg,
 		});
 	}
