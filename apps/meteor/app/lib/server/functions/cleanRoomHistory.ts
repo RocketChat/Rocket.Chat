@@ -70,7 +70,7 @@ export const cleanRoomHistory = function ({
 	const count = Messages.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, limit, fromUsers, ignoreThreads);
 	if (count) {
 		Rooms.resetLastMessageById(rid);
-		api.broadcast('notify.deleteMessageBulk', rid, {
+		void api.broadcast('notify.deleteMessageBulk', rid, {
 			rid,
 			excludePinned,
 			ignoreDiscussion,

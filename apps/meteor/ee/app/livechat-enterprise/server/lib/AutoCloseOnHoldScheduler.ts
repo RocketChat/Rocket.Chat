@@ -81,5 +81,5 @@ class AutoCloseOnHoldSchedulerClass {
 export const AutoCloseOnHoldScheduler = new AutoCloseOnHoldSchedulerClass();
 
 Meteor.startup(() => {
-	AutoCloseOnHoldScheduler.init();
+	void AutoCloseOnHoldScheduler.init();
 });

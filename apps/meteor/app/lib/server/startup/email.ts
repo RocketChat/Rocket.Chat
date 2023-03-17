@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../../settings/server';
 
-settingsRegistry.addGroup('Email', function () {
+void settingsRegistry.addGroup('Email', function () {
 	this.section('Style', function () {
 		this.add('email_plain_text_only', false, {
 			type: 'boolean',
