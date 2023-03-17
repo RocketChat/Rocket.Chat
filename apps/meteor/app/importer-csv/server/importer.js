@@ -97,7 +97,7 @@ export class CsvImporter extends Base {
 					});
 				}
 
-				super.updateRecord({ 'count.channels': channelsCount });
+				await super.updateRecord({ 'count.channels': channelsCount });
 				return increaseProgressCount();
 			}
 
@@ -122,7 +122,7 @@ export class CsvImporter extends Base {
 					});
 				}
 
-				super.updateRecord({ 'count.users': usersCount });
+				await super.updateRecord({ 'count.users': usersCount });
 				return increaseProgressCount();
 			}
 
@@ -164,7 +164,7 @@ export class CsvImporter extends Base {
 				messagesCount += data.length;
 				const channelName = `${folderName}/${msgGroupData}`;
 
-				super.updateRecord({ messagesstatus: channelName });
+				await super.updateRecord({ messagesstatus: channelName });
 
 				if (isDirect) {
 					for await (const msg of data) {
@@ -211,7 +211,7 @@ export class CsvImporter extends Base {
 					}
 				}
 
-				super.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
+				await super.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
 				return increaseProgressCount();
 			}
 

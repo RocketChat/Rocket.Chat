@@ -129,7 +129,7 @@ export class SlackImporter extends Base {
 		this.logger.debug(`loaded ${data.length} users.`);
 
 		// Insert the users record
-		this.updateRecord({ 'count.users': data.length });
+		await this.updateRecord({ 'count.users': data.length });
 		this.addCountToTotal(data.length);
 
 		for await (const user of data) {
@@ -196,25 +196,25 @@ export class SlackImporter extends Base {
 				try {
 					if (entry.entryName === 'channels.json') {
 						channelCount += await this.prepareChannelsFile(entry);
-						this.updateRecord({ 'count.channels': channelCount });
+						await this.updateRecord({ 'count.channels': channelCount });
 						return increaseProgress();
 					}
 
 					if (entry.entryName === 'groups.json') {
 						channelCount += await this.prepareGroupsFile(entry);
-						this.updateRecord({ 'count.channels': channelCount });
+						await this.updateRecord({ 'count.channels': channelCount });
 						return increaseProgress();
 					}
 
 					if (entry.entryName === 'mpims.json') {
 						channelCount += await this.prepareMpimpsFile(entry);
-						this.updateRecord({ 'count.channels': channelCount });
+						await this.updateRecord({ 'count.channels': channelCount });
 						return increaseProgress();
 					}
 
 					if (entry.entryName === 'dms.json') {
 						channelCount += await this.prepareDMsFile(entry);
-						this.updateRecord({ 'count.channels': channelCount });
+						await this.updateRecord({ 'count.channels': channelCount });
 						return increaseProgress();
 					}
 
@@ -262,7 +262,7 @@ export class SlackImporter extends Base {
 
 							const tempMessages = JSON.parse(entry.getData().toString());
 							messagesCount += tempMessages.length;
-							this.updateRecord({ messagesstatus: `${channel}/${date}` });
+							await this.updateRecord({ messagesstatus: `${channel}/${date}` });
 							this.addCountToTotal(tempMessages.length);
 
 							const slackChannelId = await ImportData.findChannelImportIdByNameOrImportId(channel);
@@ -293,7 +293,7 @@ export class SlackImporter extends Base {
 		}
 
 		ImporterWebsocket.progressUpdated({ rate: 100 });
-		this.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
+		await this.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
 	}
 
 	parseMentions(newMessage) {

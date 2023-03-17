@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+import { Imports } from '@rocket.chat/models';
 
-import { Imports } from '../../../models/server';
 import { hasPermission } from '../../../authorization/server';
 
-export const executeGetLatestImportOperations = () => {
-	const data = Imports.find(
+export const executeGetLatestImportOperations = async () => {
+	const data = await Imports.find(
 		{},
 		{
 			sort: { _updatedAt: -1 },
@@ -12,11 +12,11 @@ export const executeGetLatestImportOperations = () => {
 		},
 	);
 
-	return data.fetch();
+	return data.toArray();
 };
 
 Meteor.methods({
-	getLatestImportOperations() {
+	async getLatestImportOperations() {
 		const userId = Meteor.userId();
 
 		if (!userId) {
