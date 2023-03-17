@@ -1,11 +1,24 @@
 import { Meteor } from 'meteor/meteor';
-import type { ISetting } from '@rocket.chat/core-typings';
+import type { ISetting, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { WithId } from 'mongodb';
 
 import { hasPermission, hasAtLeastOnePermission } from '../../../app/authorization/server';
 import { getSettingPermissionId } from '../../../app/authorization/lib';
 import { SettingsEvents } from '../../../app/settings/server';
+
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'public-settings/get'(
+			updatedSince?: Date,
+		): Promise<ISetting[] | { update: ISetting[]; remove: WithId<RocketChatRecordDeleted<ISetting>>[] }>;
+		'private-settings/get'(
+			updatedSince?: Date,
+		): Promise<ISetting[] | { update: ISetting[]; remove: WithId<RocketChatRecordDeleted<ISetting>>[] }>;
+	}
+}
 
 Meteor.methods<ServerMethods>({
 	async 'public-settings/get'(updatedAt) {
