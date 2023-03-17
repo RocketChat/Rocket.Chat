@@ -3,9 +3,11 @@ import { Permissions } from '@rocket.chat/models';
 import { settingsRegistry } from '../../../../app/settings/server/index';
 
 export const createPermissions = async (): Promise<void> => {
-	Permissions.create('view-device-management', ['admin']);
-	Permissions.create('logout-device-management', ['admin']);
-	Permissions.create('block-ip-device-management', ['admin']);
+	await Promise.all([
+		Permissions.create('view-device-management', ['admin']),
+		Permissions.create('logout-device-management', ['admin']),
+		Permissions.create('block-ip-device-management', ['admin']),
+	]);
 };
 
 export const createEmailTemplates = async (): Promise<void> => {
