@@ -529,7 +529,7 @@ export class LDAPEEManager extends LDAPManager {
 		return new Promise((resolve, reject) => {
 			let count = 0;
 
-			ldap.searchAllUsers<IImportUser>({
+			void ldap.searchAllUsers<IImportUser>({
 				entryCallback: (entry: ldapjs.SearchEntry): IImportUser | undefined => {
 					const data = ldap.extractLdapEntryData(entry);
 					count++;

@@ -47,7 +47,7 @@ export async function eraseRoom(rid: string, uid: string): Promise<void> {
 	}
 
 	if (Apps?.isLoaded()) {
-		Apps.getBridges()?.getListenerBridge().roomEvent('IPostRoomDeleted', room);
+		void Apps.getBridges()?.getListenerBridge().roomEvent('IPostRoomDeleted', room);
 	}
 }
 
