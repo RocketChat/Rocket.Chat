@@ -533,6 +533,28 @@ describe('[Chat]', function () {
 				.end(done);
 		});
 
+		describe('should throw an error if user is not a member of the room', () => {
+			before(() => request.post(api('channels.leave')).set(credentials).send({ roomId: 'GENERAL' }).expect(200));
+
+			it('should throw an error', () =>
+				request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: 'GENERAL',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-room-not-found');
+					}));
+
+			after(() => request.post(api('channels.join')).set(credentials).send({ roomId: 'GENERAL' }).expect(200));
+		});
+
 		describe('should throw an error when the sensitive properties contain malicious XSS values', () => {
 			it('attachment.message_link', () =>
 				request
