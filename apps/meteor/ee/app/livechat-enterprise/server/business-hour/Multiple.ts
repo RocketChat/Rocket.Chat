@@ -270,6 +270,6 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 	}
 
 	private async closeBusinessHour(businessHour: Record<string, any>): Promise<void> {
-		closeBusinessHour(businessHour);
+		await closeBusinessHour(businessHour);
 	}
 }

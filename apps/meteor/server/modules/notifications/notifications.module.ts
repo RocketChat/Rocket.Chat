@@ -86,7 +86,7 @@ export class NotificationsModule {
 		this.streamLocal = new this.Streamer('local');
 	}
 
-	async configure(): Promise<void> {
+	configure(): void {
 		const notifyUser = this.notifyUser.bind(this);
 
 		this.streamRoomMessage.allowWrite('none');
