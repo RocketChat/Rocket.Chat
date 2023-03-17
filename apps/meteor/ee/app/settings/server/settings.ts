@@ -52,7 +52,7 @@ SettingsEvents.on('fetch-settings', (settings: Array<ISetting>): void => {
 function updateSettings(): void {
 	const enterpriseSettings = Promise.await(Settings.findEnterpriseSettings());
 
-	enterpriseSettings.forEach((record: ISetting) => settings.set(record));
+	void enterpriseSettings.forEach((record: ISetting) => settings.set(record));
 }
 
 Meteor.startup(() => {

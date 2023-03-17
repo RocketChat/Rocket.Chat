@@ -5,6 +5,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
+import ShareMessageModal from '../../../../client/views/room/modals/ShareMessageModal';
 import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { Rooms, Subscriptions } from '../../../models/client';
@@ -61,7 +62,28 @@ Meteor.startup(async function () {
 		order: 0,
 		group: 'menu',
 	});
-
+	MessageAction.addButton({
+		id: 'share-message',
+		icon: 'arrow-forward',
+		label: 'Share_Message',
+		context: ['message', 'message-mobile', 'threads'],
+		async action(_, props) {
+			const { message = messageArgs(this).msg } = props;
+			const permalink = await MessageAction.getPermaLink(message._id);
+			imperativeModal.open({
+				component: ShareMessageModal,
+				props: {
+					message,
+					permalink,
+					onClose: (): void => {
+						imperativeModal.close();
+					},
+				},
+			});
+		},
+		order: 0,
+		group: ['message', 'menu'],
+	});
 	MessageAction.addButton({
 		id: 'quote-message',
 		icon: 'quote',

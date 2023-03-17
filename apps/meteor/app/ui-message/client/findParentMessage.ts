@@ -21,7 +21,7 @@ export const findParentMessage = (() => {
 	});
 
 	const get = async (tmid: IMessage['_id']) => {
-		getMessages();
+		void getMessages();
 		const messages = await pending;
 		return messages.find(({ _id }) => _id === tmid);
 	};

@@ -44,7 +44,7 @@ Meteor.methods({
 
 		FileUpload.getStore('Avatars').deleteByName(user.username);
 		Users.unsetAvatarData(user._id);
-		api.broadcast('user.avatarUpdate', { username: user.username, avatarETag: null });
+		void api.broadcast('user.avatarUpdate', { username: user.username, avatarETag: null });
 	},
 });
 

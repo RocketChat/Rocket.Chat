@@ -9,7 +9,7 @@ export const createPermissions = async (): Promise<void> => {
 };
 
 export const createEmailTemplates = async (): Promise<void> => {
-	settingsRegistry.addGroup('Email', function () {
+	void settingsRegistry.addGroup('Email', function () {
 		this.section('Device Management - Login Detected', function () {
 			this.add('Device_Management_Email_Subject', '{Device_Management_Email_Subject}', {
 				type: 'string',

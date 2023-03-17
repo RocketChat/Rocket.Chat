@@ -16,7 +16,7 @@ Meteor.methods({
 		}
 
 		await CustomUserStatus.removeById(userStatusID);
-		api.broadcast('user.deleteCustomStatus', userStatus);
+		void api.broadcast('user.deleteCustomStatus', userStatus);
 
 		return true;
 	},
