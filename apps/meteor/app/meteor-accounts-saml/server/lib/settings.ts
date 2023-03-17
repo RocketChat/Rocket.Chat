@@ -139,7 +139,7 @@ export const addSamlService = function (name: string): void {
 };
 
 export const addSettings = function (name: string): void {
-	settingsRegistry.addGroup('SAML', function () {
+	void settingsRegistry.addGroup('SAML', function () {
 		this.with(
 			{
 				tab: 'SAML_Connection',

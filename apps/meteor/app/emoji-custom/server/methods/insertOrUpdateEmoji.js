@@ -96,7 +96,7 @@ Meteor.methods({
 
 			const _id = (await EmojiCustom.create(createEmoji)).insertedId;
 
-			api.broadcast('emoji.updateCustom', createEmoji);
+			void api.broadcast('emoji.updateCustom', createEmoji);
 
 			return _id;
 		}
@@ -138,7 +138,7 @@ Meteor.methods({
 			await EmojiCustom.setAliases(emojiData._id, []);
 		}
 
-		api.broadcast('emoji.updateCustom', emojiData);
+		void api.broadcast('emoji.updateCustom', emojiData);
 
 		return true;
 	},

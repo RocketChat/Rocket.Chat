@@ -54,9 +54,6 @@ const CustomSoundsRoute = (): ReactElement => {
 		async () => {
 			const { sounds } = await getSounds(query);
 
-			if (sounds.length === 0) {
-				throw new Error(t('No_results_found'));
-			}
 			return sounds;
 		},
 		{
@@ -112,6 +109,7 @@ const CustomSoundsRoute = (): ReactElement => {
 				</Page.Header>
 				<Page.Content>
 					<>
+						<FilterByText onChange={({ text }): void => setParams(text)} />
 						{isLoading && (
 							<GenericTable>
 								<GenericTableHeader>{headers}</GenericTableHeader>
@@ -122,7 +120,6 @@ const CustomSoundsRoute = (): ReactElement => {
 						)}
 						{isSuccess && data && data.length > 0 && (
 							<>
-								<FilterByText onChange={({ text }): void => setParams(text)} />
 								<GenericTable>
 									<GenericTableHeader>{headers}</GenericTableHeader>
 									<GenericTableBody>
