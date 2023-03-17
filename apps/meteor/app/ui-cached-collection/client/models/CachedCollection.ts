@@ -70,12 +70,12 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 		CachedCollectionManager.register(this);
 
 		if (!userRelated) {
-			this.init();
+			void this.init();
 			return;
 		}
 
 		CachedCollectionManager.onLogin(() => {
-			this.init();
+			void this.init();
 		});
 	}
 
@@ -210,7 +210,7 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 
 	clearCacheOnLogout() {
 		if (this.userRelated === true) {
-			this.clearCache();
+			void this.clearCache();
 		}
 	}
 

@@ -6,7 +6,7 @@ import { Presence } from '@rocket.chat/core-services';
 
 // update connections count every 30 seconds
 const updateConns = throttle(function _updateConns() {
-	InstanceStatus.updateConnections(Meteor.server.sessions.size);
+	void InstanceStatus.updateConnections(Meteor.server.sessions.size);
 }, 30000);
 
 Meteor.startup(function () {
@@ -33,13 +33,13 @@ Meteor.startup(function () {
 		if (login.type !== 'resume') {
 			return;
 		}
-		Presence.newConnection(login.user._id, login.connection.id, nodeId);
-
-		updateConns();
+		void Presence.newConnection(login.user._id, login.connection.id, nodeId).then(() => {
+			updateConns();
+		});
 	});
 
 	Accounts.onLogout(function (login: any): void {
-		Presence.removeConnection(login.user._id, login.connection.id, nodeId);
+		void Presence.removeConnection(login.user._id, login.connection.id, nodeId);
 
 		updateConns();
 	});
