@@ -16,12 +16,17 @@ describe('Apps - Video Conferences', function () {
 	let roomId: string | undefined;
 
 	before(async () => {
-		await createRoom({
+		const res = await createRoom({
 			type: 'p',
 			name: roomName,
-		} as any).end((_err: unknown, createdRoom: any) => {
-			roomId = createdRoom.body.group._id;
+			username: undefined,
+			token: undefined,
+			agentId: undefined,
+			members: undefined,
+			credentials: undefined,
 		});
+
+		roomId = res.body.group._id;
 	});
 
 	describe('[With No App]', () => {

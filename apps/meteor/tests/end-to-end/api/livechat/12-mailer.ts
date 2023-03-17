@@ -1,9 +1,11 @@
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
-import { api, request, credentials } from '../../../data/api-data';
+import { api, request, credentials, getCredentials } from '../../../data/api-data';
 
 describe('Mailer', () => {
+	before((done) => getCredentials(done));
+
 	describe('POST mailer', () => {
 		it('should send an email if the payload is correct', async () => {
 			await request
@@ -12,7 +14,7 @@ describe('Mailer', () => {
 				.send({
 					from: 'test-email@example.com',
 					subject: 'Test email subject',
-					body: 'Test email body',
+					body: 'Test email body [unsubscribe]',
 					dryrun: true,
 					query: '',
 				})

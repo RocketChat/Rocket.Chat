@@ -1,7 +1,5 @@
 import type { IMessage, IRoom, IMessageSearchProvider, IMessageSearchSuggestion, IUser } from '@rocket.chat/core-typings';
 
-// TODO: frontend chapter day - define methods
-
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface ServerMethods {
 	'addOAuthService': (...args: any[]) => any;
