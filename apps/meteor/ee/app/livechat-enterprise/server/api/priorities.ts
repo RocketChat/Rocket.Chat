@@ -1,4 +1,4 @@
-import { LivechatPriority } from '@rocket.chat/models';
+import { LivechatPriority, Settings } from '@rocket.chat/models';
 import { isGETLivechatPrioritiesParams, isPUTLivechatPriority } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../../app/api/server';
@@ -13,6 +13,9 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 			const { text } = this.queryParams;
@@ -43,6 +46,9 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { priorityId } = this.urlParams;
 			const priority = await LivechatPriority.findOneById(priorityId);
 
@@ -53,6 +59,9 @@ API.v1.addRoute(
 			return API.v1.success(priority);
 		},
 		async put() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { priorityId } = this.urlParams;
 			await updatePriority(priorityId, this.requestParams());
 			return API.v1.success();
@@ -71,6 +80,9 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			if (!(await LivechatPriority.canResetPriorities())) {
 				return API.v1.failure();
 			}

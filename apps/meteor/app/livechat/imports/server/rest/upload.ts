@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import filesize from 'filesize';
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatVisitors, Settings } from '@rocket.chat/models';
 
 import { settings } from '../../../../settings/server';
 import { LivechatRooms } from '../../../../models/server';
@@ -11,6 +11,9 @@ import { getUploadFormData } from '../../../../api/server/lib/getUploadFormData'
 
 API.v1.addRoute('livechat/upload/:rid', {
 	async post() {
+		if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+			return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+		}
 		if (!this.request.headers['x-visitor-token']) {
 			return API.v1.unauthorized();
 		}

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { isPOSTLivechatRoomPriorityParams } from '@rocket.chat/rest-typings';
-import { LivechatRooms } from '@rocket.chat/models';
+import { LivechatRooms, Settings } from '@rocket.chat/models';
 
 import { API } from '../../../../../app/api/server';
 import { hasPermission } from '../../../../../app/authorization/server';
@@ -14,6 +14,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['on-hold-livechat-room'] },
 	{
 		async post() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { roomId } = this.bodyParams;
 			if (!roomId || roomId.trim() === '') {
 				return API.v1.failure('Invalid room Id');
@@ -70,6 +73,9 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { rid } = this.urlParams;
 			const { priorityId } = this.bodyParams;
 

@@ -1,5 +1,5 @@
 import { isLivechatPrioritiesProps, isCreateOrUpdateLivechatSlaProps } from '@rocket.chat/rest-typings';
-import { OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
+import { OmnichannelServiceLevelAgreements, Settings } from '@rocket.chat/models';
 
 import { API } from '../../../../../app/api/server';
 import { findSLA } from './lib/sla';
@@ -20,6 +20,9 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 			const { text } = this.queryParams;
@@ -36,6 +39,9 @@ API.v1.addRoute(
 			);
 		},
 		async post() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { name, description, dueTimeInMinutes } = this.bodyParams;
 
 			const newSla = await LivechatEnterprise.saveSLA(null, {

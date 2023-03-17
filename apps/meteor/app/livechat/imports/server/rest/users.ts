@@ -1,6 +1,7 @@
 import { check } from 'meteor/check';
 import _ from 'underscore';
 import { isLivechatUsersManagerGETProps, isPOSTLivechatUsersTypeProps } from '@rocket.chat/rest-typings';
+import { Settings } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
 import { Users } from '../../../../models/server';
@@ -26,6 +27,9 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			check(this.urlParams, {
 				type: String,
 			});
@@ -68,6 +72,9 @@ API.v1.addRoute(
 			throw new Error('Invalid type');
 		},
 		async post() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			if (this.urlParams.type === 'agent') {
 				const user = Livechat.addAgent(this.bodyParams.username);
 				if (user) {
@@ -92,6 +99,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const user = Users.findOneById(this.urlParams._id);
 
 			if (!user) {
@@ -119,6 +129,9 @@ API.v1.addRoute(
 			});
 		},
 		async delete() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const user = Users.findOneById(this.urlParams._id);
 
 			if (!user) {

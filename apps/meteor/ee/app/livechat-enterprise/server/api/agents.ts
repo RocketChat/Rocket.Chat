@@ -1,3 +1,4 @@
+import { Settings } from '@rocket.chat/models';
 import {
 	isLivechatAnalyticsAgentsTotalServiceTimeProps,
 	isLivechatAnalyticsAgentsAverageServiceTimeProps,
@@ -16,6 +17,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isLivechatAnalyticsAgentsAverageServiceTimeProps },
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { offset, count } = this.getPaginationItems();
 			const { start, end } = this.requestParams();
 
@@ -49,6 +53,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isLivechatAnalyticsAgentsTotalServiceTimeProps },
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { offset, count } = this.getPaginationItems();
 			const { start, end } = this.requestParams();
 
@@ -86,6 +93,9 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { offset, count } = this.getPaginationItems();
 			const { start, end } = this.requestParams();
 			const { fullReport } = this.requestParams();

@@ -8,7 +8,7 @@ import {
 	isLivechatRidMessagesProps,
 	isGETLivechatVisitorsSearch,
 } from '@rocket.chat/rest-typings';
-import { Messages } from '@rocket.chat/models';
+import { Messages, Settings } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
 import {
@@ -28,6 +28,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isLivechatVisitorsInfoProps },
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const visitor = await findVisitorInfo({ visitorId: this.queryParams.visitorId });
 			return API.v1.success(visitor);
 		},
@@ -39,6 +42,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isGETLivechatVisitorsPagesVisitedRoomIdParams },
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 
@@ -64,6 +70,9 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 			const history = await findChatHistory({
@@ -91,6 +100,9 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { roomId, visitorId } = this.urlParams;
 			const { searchText, closedChatsOnly, servedChatsOnly, source } = this.queryParams;
 			const { offset, count } = this.getPaginationItems();
@@ -119,6 +131,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isGETLivechatVisitorsAutocompleteParams },
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { selector } = this.queryParams;
 
 			return API.v1.success(
@@ -135,6 +150,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isGETLivechatVisitorsSearch },
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { term } = this.requestParams();
 
 			const { offset, count } = this.getPaginationItems();
@@ -162,6 +180,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isLivechatRidMessagesProps },
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 			const { searchTerm } = this.requestParams();

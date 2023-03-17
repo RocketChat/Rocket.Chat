@@ -122,8 +122,10 @@ export const statistics = {
 		statistics.totalThreads = Messages.countThreads();
 
 		// livechat visitors
-		statistics.totalLivechatVisitors = await LivechatVisitors.col.estimatedDocumentCount();
-
+		const widgetEnabled = settings.get<boolean>('Livechat_widget_enabled');
+		if (!widgetEnabled) {
+			statistics.totalLivechatVisitors = await LivechatVisitors.col.estimatedDocumentCount();
+		}
 		// livechat agents
 		statistics.totalLivechatAgents = Users.findAgents().count();
 		statistics.totalLivechatManagers = await UsersRaw.col.countDocuments({ roles: 'livechat-manager' });
@@ -213,8 +215,9 @@ export const statistics = {
 		statistics.assignNewConversationsToContactManager = settings.get('Omnichannel_contact_manager_routing');
 
 		// How to handle Visitor Abandonment setting
-		statistics.visitorAbandonment = settings.get('Livechat_abandoned_rooms_action');
-
+		if (widgetEnabled) {
+			statistics.visitorAbandonment = settings.get('Livechat_abandoned_rooms_action');
+		}
 		// Amount of chats placed on hold
 		statsPms.push(
 			MessagesRaw.countRoomsWithMessageType('omnichannel_placed_chat_on_hold', { readPreference }).then((total) => {
@@ -260,39 +263,59 @@ export const statistics = {
 		);
 
 		// Message statistics
-		statistics.totalChannelMessages = _.reduce(
-			Rooms.findByType('c', { fields: { msgs: 1 } }).fetch(),
-			function _countChannelMessages(num: number, room: IRoom) {
-				return num + room.msgs;
-			},
-			0,
+		const totalPms: Promise<null>[] = [];
+		totalPms.push(
+			new Promise(async (resolve) => {
+				statistics.totalChannelMessages = Rooms.findByType('c', { fields: { msgs: 1 } })
+					.fetch()
+					.reduce(function _countChannelMessages(num: number, _prev: number, curr: number, rooms: IRoom[]) {
+						return num + rooms[curr].msgs;
+					}, 0);
+				resolve(null);
+			}),
 		);
-		statistics.totalPrivateGroupMessages = _.reduce(
-			Rooms.findByType('p', { fields: { msgs: 1 } }).fetch(),
-			function _countPrivateGroupMessages(num: number, room: IRoom) {
-				return num + room.msgs;
-			},
-			0,
+
+		totalPms.push(
+			new Promise(async (resolve) => {
+				statistics.totalPrivateGroupMessages = Rooms.findByType('p', { fields: { msgs: 1 } })
+					.fetch()
+					.reduce(function _countPrivateGroupMessages(num: number, _val: number, curr: number, rooms: IRoom[]) {
+						return num + rooms[curr].msgs;
+					}, 0);
+				resolve(null);
+			}),
 		);
-		statistics.totalDirectMessages = _.reduce(
-			Rooms.findByType('d', { fields: { msgs: 1 } }).fetch(),
-			function _countDirectMessages(num: number, room: IRoom) {
-				return num + room.msgs;
-			},
-			0,
+		totalPms.push(
+			new Promise(async (resolve) => {
+				statistics.totalDirectMessages = Rooms.findByType('d', { fields: { msgs: 1 } })
+					.fetch()
+					.reduce(function _countDirectMessages(num: number, _val: number, curr: number, rooms: IRoom[]) {
+						return num + rooms[curr].msgs;
+					}, 0);
+				resolve(null);
+			}),
 		);
-		statistics.totalLivechatMessages = _.reduce(
-			Rooms.findByType('l', { fields: { msgs: 1 } }).fetch(),
-			function _countLivechatMessages(num: number, room: IRoom) {
-				return num + room.msgs;
-			},
-			0,
+		totalPms.push(
+			new Promise(async (resolve) => {
+				statistics.totalLivechatMessages = Rooms.findByType('l', { fields: { msgs: 1 } })
+					.fetch()
+					.reduce(function _countLivechatMessages(num: number, _val: number, curr: number, rooms: IRoom[]) {
+						return num + rooms[curr].msgs;
+					}, 0);
+				resolve(null);
+			}),
 		);
-		statistics.totalMessages =
-			statistics.totalChannelMessages +
-			statistics.totalPrivateGroupMessages +
-			statistics.totalDirectMessages +
-			statistics.totalLivechatMessages;
+		statsPms.push(
+			new Promise(async (resolve) => {
+				await Promise.all(totalPms);
+				statistics.totalMessages =
+					statistics.totalChannelMessages +
+					statistics.totalPrivateGroupMessages +
+					statistics.totalDirectMessages +
+					statistics.totalLivechatMessages;
+				resolve(null);
+			}),
+		);
 
 		// Federation statistics
 		statsPms.push(
@@ -480,7 +503,6 @@ export const statistics = {
 		statsPms.push(Analytics.resetSeatRequestCount());
 
 		// TODO: Is that the best way to do this? maybe we should use a promise.all()
-
 		statistics.dashboardCount = settings.get('Engagement_Dashboard_Load_Count');
 		statistics.messageAuditApply = settings.get('Message_Auditing_Apply_Count');
 		statistics.messageAuditLoad = settings.get('Message_Auditing_Panel_Load_Count');
@@ -488,25 +510,101 @@ export const statistics = {
 		statistics.slashCommandsJitsi = settings.get('Jitsi_Start_SlashCommands_Count');
 		statistics.totalOTRRooms = Rooms.findByCreatedOTR().count();
 		statistics.totalOTR = settings.get('OTR_Count');
-		statistics.totalBroadcastRooms = await RoomsRaw.findByBroadcast().count();
-		statistics.totalRoomsWithActiveLivestream = await RoomsRaw.findByActiveLivestream().count();
+		statsPms.push(
+			RoomsRaw.findByBroadcast()
+				.count()
+				.then((count: number) => {
+					statistics.totalBroadcastRooms = count;
+				}),
+		);
+		statsPms.push(
+			RoomsRaw.findByActiveLivestream()
+				.count()
+				.then((count: number) => {
+					statistics.totalRoomsWithActiveLivestream = count;
+				}),
+		);
 		statistics.totalTriggeredEmails = settings.get('Triggered_Emails_Count');
-		statistics.totalRoomsWithStarred = await MessagesRaw.countRoomsWithStarredMessages({ readPreference });
-		statistics.totalRoomsWithPinned = await MessagesRaw.countRoomsWithPinnedMessages({ readPreference });
-		statistics.totalUserTOTP = await UsersRaw.findActiveUsersTOTPEnable({ readPreference }).count();
-		statistics.totalUserEmail2fa = await UsersRaw.findActiveUsersEmail2faEnable({ readPreference }).count();
-		statistics.totalPinned = await MessagesRaw.findPinned({ readPreference }).count();
-		statistics.totalStarred = await MessagesRaw.findStarred({ readPreference }).count();
-		statistics.totalLinkInvitation = await Invites.find().count();
-		statistics.totalLinkInvitationUses = await Invites.countUses();
+		statsPms.push(
+			MessagesRaw.countRoomsWithStarredMessages({ readPreference }).then((count) => {
+				statistics.totalRoomsWithStarred = count;
+			}),
+		);
+		statsPms.push(
+			MessagesRaw.countRoomsWithPinnedMessages({ readPreference }).then((count) => {
+				statistics.totalRoomsWithPinned = count;
+			}),
+		);
+		statsPms.push(
+			UsersRaw.findActiveUsersTOTPEnable({ readPreference })
+				.count()
+				.then((count: number) => {
+					statistics.totalUserTOTP = count;
+				}),
+		);
+		statsPms.push(
+			UsersRaw.findActiveUsersEmail2faEnable({ readPreference })
+				.count()
+				.then((count: number) => {
+					statistics.totalUserEmail2fa = count;
+				}),
+		);
+		statsPms.push(
+			MessagesRaw.findPinned({ readPreference })
+				.count()
+				.then((count: number) => {
+					statistics.totalPinned = count;
+				}),
+		);
+		statsPms.push(
+			MessagesRaw.findStarred({ readPreference })
+				.count()
+				.then((count: number) => {
+					statistics.totalStarred = count;
+				}),
+		);
+		statsPms.push(
+			Invites.find()
+				.count()
+				.then((count: number) => {
+					statistics.totalLinkInvitation = count;
+				}),
+		);
+		statsPms.push(
+			Invites.countUses().then((count: number) => {
+				statistics.totalLinkInvitationUses = count;
+			}),
+		);
 		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
-		statistics.totalE2ERooms = await RoomsRaw.findByE2E({ readPreference }).count();
+		statsPms.push(
+			RoomsRaw.findByE2E({ readPreference })
+				.count()
+				.then((count: number) => {
+					statistics.totalE2ERooms = count;
+				}),
+		);
 		statistics.logoChange = Object.keys(settings.get('Assets_logo')).includes('url');
 		statistics.showHomeButton = settings.get('Layout_Show_Home_Button');
-		statistics.totalEncryptedMessages = await MessagesRaw.countByType('e2e', { readPreference });
+		statsPms.push(
+			MessagesRaw.countByType('e2e', { readPreference }).then((count: number) => {
+				statistics.totalEncryptedMessages = count;
+			}),
+		);
 		statistics.totalManuallyAddedUsers = settings.get('Manual_Entry_User_Count');
-		statistics.totalSubscriptionRoles = await RolesRaw.findByScope('Subscriptions').count();
-		statistics.totalUserRoles = await RolesRaw.findByScope('Users').count();
+		statsPms.push(
+			RolesRaw.findByScope('Subscriptions')
+				.count()
+				.then((count: number) => {
+					statistics.totalSubscriptionRoles = count;
+				}),
+		);
+		statsPms.push(
+			RolesRaw.findByScope('Users')
+				.count()
+				.then((count: number) => {
+					statistics.totalUserRoles = count;
+				}),
+		);
 		statistics.totalWebRTCCalls = settings.get('WebRTC_Calls_Count');
 		statistics.uncaughtExceptionsCount = settings.get('Uncaught_Exceptions_Count');
 
@@ -527,14 +625,18 @@ export const statistics = {
 
 		const defaultLoggedInCustomScript = (await Settings.findOneById('Custom_Script_Logged_In'))?.packageValue;
 		statistics.loggedInCustomScriptChanged = settings.get('Custom_Script_Logged_In') !== defaultLoggedInCustomScript;
-
-		statistics.matrixFederation = await getMatrixFederationStatistics();
-
+		statsPms.push(
+			getMatrixFederationStatistics().then((matrixFederation) => {
+				statistics.matrixFederation = matrixFederation;
+			}),
+		);
 		// Omnichannel call stats
-		statistics.webRTCEnabled = settings.get('WebRTC_Enabled');
-		statistics.webRTCEnabledForOmnichannel = settings.get('Omnichannel_call_provider') === 'WebRTC';
-		statistics.omnichannelWebRTCCalls = await RoomsRaw.findCountOfRoomsWithActiveCalls();
+		if (widgetEnabled) {
+			statistics.webRTCEnabled = settings.get('WebRTC_Enabled');
+			statistics.webRTCEnabledForOmnichannel = settings.get('Omnichannel_call_provider') === 'WebRTC';
 
+			statistics.omnichannelWebRTCCalls = await RoomsRaw.findCountOfRoomsWithActiveCalls();
+		}
 		await Promise.all(statsPms).catch(log);
 
 		return statistics;

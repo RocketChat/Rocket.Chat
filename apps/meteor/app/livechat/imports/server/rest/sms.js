@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatVisitors, Settings } from '@rocket.chat/models';
 import { OmnichannelIntegration } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../../file-upload/server';
@@ -73,6 +73,9 @@ const normalizeLocationSharing = (payload) => {
 
 API.v1.addRoute('livechat/sms-incoming/:service', {
 	async post() {
+		if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+			return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+		}
 		if (!(await OmnichannelIntegration.isConfiguredSmsService(this.urlParams.service))) {
 			return API.v1.failure('Invalid service');
 		}

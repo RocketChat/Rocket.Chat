@@ -1,4 +1,5 @@
 import type { IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
+import { Settings } from '@rocket.chat/models';
 
 import { API } from '../../../../../app/api/server';
 import { findUnits, findUnitById, findUnitMonitors } from './lib/units';
@@ -10,6 +11,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['manage-livechat-monitors'] },
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { unitId } = this.urlParams;
 
 			if (!unitId) {
@@ -29,6 +33,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['manage-livechat-units'] },
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 			const { text } = this.queryParams;
@@ -45,6 +52,9 @@ API.v1.addRoute(
 			);
 		},
 		async post() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { unitData, unitMonitors, unitDepartments } = this.bodyParams;
 			return API.v1.success(LivechatEnterprise.saveUnit(null, unitData, unitMonitors, unitDepartments) as IOmnichannelBusinessUnit);
 		},
@@ -56,6 +66,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['manage-livechat-units'] },
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { id } = this.urlParams;
 			const unit = await findUnitById({
 				unitId: id,
@@ -64,12 +77,18 @@ API.v1.addRoute(
 			return API.v1.success(unit);
 		},
 		async post() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { unitData, unitMonitors, unitDepartments } = this.bodyParams;
 			const { id } = this.urlParams;
 
 			return API.v1.success(LivechatEnterprise.saveUnit(id, unitData, unitMonitors, unitDepartments) as IOmnichannelBusinessUnit);
 		},
 		async delete() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { id } = this.urlParams;
 
 			return LivechatEnterprise.removeUnit(id);
@@ -82,6 +101,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['manage-livechat-units'] },
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { offset, count } = this.getPaginationItems();
 			const { unitId } = this.urlParams;
 
@@ -102,6 +124,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['manage-livechat-units'] },
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { offset, count } = this.getPaginationItems();
 			const { unitId } = this.urlParams;
 			const { text, onlyMyDepartments } = this.queryParams;

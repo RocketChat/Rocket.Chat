@@ -13,6 +13,13 @@ Meteor.startup(function () {
 			public: true,
 		});
 
+		this.add('Livechat_widget_enabled', true, {
+			type: 'boolean',
+			group: 'Omnichannel',
+			i18nLabel: 'Livechat_widget_enabled',
+			public: true,
+		});
+
 		this.add('Livechat_title', 'Rocket.Chat', {
 			type: 'string',
 			group: 'Omnichannel',

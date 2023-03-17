@@ -4,7 +4,7 @@ import { Random } from '@rocket.chat/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ILivechatAgent, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
-import { LivechatVisitors, Users, LivechatRooms as LivechatRoomsRaw, Subscriptions } from '@rocket.chat/models';
+import { LivechatVisitors, Users, LivechatRooms as LivechatRoomsRaw, Subscriptions, Settings } from '@rocket.chat/models';
 import {
 	isLiveChatRoomForwardProps,
 	isPOSTLivechatRoomCloseParams,
@@ -36,6 +36,10 @@ const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: true }): agent
 
 API.v1.addRoute('livechat/room', {
 	async get() {
+		if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+			return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+		}
+
 		// I'll temporary use check for validation, as validateParams doesnt support what's being done here
 		const extraCheckParams = onCheckRoomParams({
 			token: String,
@@ -97,6 +101,10 @@ API.v1.addRoute(
 	{ validateParams: isPOSTLivechatRoomCloseParams },
 	{
 		async post() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
+
 			const { rid, token } = this.bodyParams;
 
 			const visitor = await findGuest(token);
@@ -178,6 +186,10 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
+
 			const { rid, comment, tags, generateTranscriptPdf, transcriptEmail } = this.bodyParams;
 
 			const room = await LivechatRoomsRaw.findOneById(rid);
@@ -236,6 +248,10 @@ API.v1.addRoute(
 	{ validateParams: isPOSTLivechatRoomTransferParams },
 	{
 		async post() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
+
 			apiDeprecationLogger.warn('livechat/room.transfer has been deprecated. Use livechat/room.forward instead.');
 
 			const { rid, token, department } = this.bodyParams;
@@ -277,6 +293,10 @@ API.v1.addRoute(
 	{ validateParams: isPOSTLivechatRoomSurveyParams },
 	{
 		async post() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
+
 			const { rid, token, data } = this.bodyParams;
 
 			const visitor = await findGuest(token);
@@ -319,6 +339,10 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-l-room', 'transfer-livechat-guest'], validateParams: isLiveChatRoomForwardProps },
 	{
 		async post() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
+
 			const transferData: typeof this.bodyParams & {
 				transferredBy?: unknown;
 				transferredTo?: { _id: string; username?: string; name?: string };
@@ -358,6 +382,10 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isPUTLivechatRoomVisitorParams },
 	{
 		async put() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
+
 			// This endpoint is deprecated and will be removed in future versions.
 			const { rid, newVisitorId, oldVisitorId } = this.bodyParams;
 
@@ -388,6 +416,10 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isLiveChatRoomJoinProps },
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
+
 			const { roomId } = this.queryParams;
 
 			const { user } = this;
@@ -418,6 +450,10 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isLiveChatRoomSaveInfoProps },
 	{
 		async post() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
+
 			const { roomData, guestData } = this.bodyParams;
 			const room = await LivechatRooms.findOneById(roomData._id);
 			if (!room || !isOmnichannelRoom(room)) {

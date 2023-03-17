@@ -1,6 +1,6 @@
 import { isGETLivechatDepartmentProps, isPOSTLivechatDepartmentProps } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
-import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
+import { LivechatDepartment, LivechatDepartmentAgents, Settings } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
 import { hasPermission } from '../../../../authorization/server';
@@ -28,6 +28,9 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 
@@ -52,6 +55,9 @@ API.v1.addRoute(
 			return API.v1.success({ departments, count: departments.length, offset, total });
 		},
 		async post() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			check(this.bodyParams, {
 				department: Object,
 				agents: Match.Maybe(Array),
@@ -84,6 +90,9 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			check(this.urlParams, {
 				_id: String,
 			});
@@ -104,6 +113,9 @@ API.v1.addRoute(
 			return API.v1.success({ department, agents });
 		},
 		async put() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const permissionToSave = hasPermission(this.userId, 'manage-livechat-departments');
 			const permissionToAddAgents = hasPermission(this.userId, 'add-livechat-department-agents');
 
@@ -138,6 +150,9 @@ API.v1.addRoute(
 			return API.v1.failure();
 		},
 		async delete() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			check(this.urlParams, {
 				_id: String,
 			});
@@ -160,6 +175,9 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 
@@ -190,6 +208,9 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			if (await Livechat.archiveDepartment(this.urlParams._id)) {
 				return API.v1.success();
 			}
@@ -207,6 +228,9 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			if (await Livechat.unarchiveDepartment(this.urlParams._id)) {
 				return API.v1.success();
 			}
@@ -221,6 +245,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: { GET: { permissions: ['view-livechat-departments', 'view-l-room'], operation: 'hasAny' } } },
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { selector, onlyMyDepartments, showArchived } = this.queryParams;
 			if (!selector) {
 				return API.v1.failure("The 'selector' param is required");
@@ -249,6 +276,9 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			check(this.urlParams, {
 				_id: String,
 			});
@@ -269,6 +299,9 @@ API.v1.addRoute(
 			return API.v1.success(agents);
 		},
 		async post() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			check(this.urlParams, {
 				_id: String,
 			});
@@ -292,6 +325,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: { GET: { permissions: ['view-livechat-departments', 'view-l-room'], operation: 'hasAny' } } },
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { ids } = this.queryParams;
 			const { fields } = this.parseJsonQuery();
 			if (!ids) {
@@ -320,6 +356,9 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const isDepartmentCreationAvailable = await LivechatEnterprise.isDepartmentCreationAvailable();
 			return API.v1.success({ isDepartmentCreationAvailable });
 		},

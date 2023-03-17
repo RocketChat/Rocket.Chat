@@ -1,3 +1,5 @@
+import { Settings } from '@rocket.chat/models';
+
 import { API } from '../../../../../app/api/server';
 import { findTags, findTagById } from './lib/tags';
 
@@ -6,6 +8,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: { GET: { permissions: ['view-l-room', 'manage-livechat-tags'], operation: 'hasAny' } } },
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 			const { text } = this.queryParams;
@@ -30,6 +35,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: { GET: { permissions: ['view-l-room', 'manage-livechat-tags'], operation: 'hasAny' } } },
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { tagId } = this.urlParams;
 
 			return API.v1.success(

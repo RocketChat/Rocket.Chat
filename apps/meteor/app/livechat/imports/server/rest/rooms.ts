@@ -1,5 +1,5 @@
 import { isGETLivechatRoomsParams } from '@rocket.chat/rest-typings';
-import { LivechatRooms } from '@rocket.chat/models';
+import { LivechatRooms, Settings } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
 import { findRooms } from '../../../server/api/lib/rooms';
@@ -27,6 +27,9 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isGETLivechatRoomsParams },
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields } = this.parseJsonQuery();
 			const { agents, departmentId, open, tags, roomName, onhold } = this.requestParams();
@@ -79,6 +82,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-l-room'] },
 	{
 		async get() {
+			if (!(await Settings.findOne('Livechat_widget_enabled'))?.value) {
+				return API.v1.failure('Livechat widget is disabled, please enable to use the endpoint.');
+			}
 			return API.v1.success({
 				filters: (await LivechatRooms.findAvailableSources().toArray())[0].fullTypes,
 			});
