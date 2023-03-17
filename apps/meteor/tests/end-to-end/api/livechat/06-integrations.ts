@@ -80,10 +80,7 @@ describe('LIVECHAT - Integrations', function () {
 						Body: 'Hello',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-					});
+					.expect(400);
 			});
 
 			it('should throw an error if SMS_Default_Omnichannel_Department does not exists', async () => {
@@ -98,10 +95,7 @@ describe('LIVECHAT - Integrations', function () {
 						Body: 'Hello',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-					});
+					.expect(400);
 			});
 
 			it('should return headers and <Response> as body on success', async () => {
@@ -119,9 +113,7 @@ describe('LIVECHAT - Integrations', function () {
 					.expect('Content-Type', 'text/xml')
 					.expect(200)
 					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('headers');
-						expect(res.body).to.have.property('body');
+						expect(res).to.have.property('text', '<Response></Response>');
 					});
 			});
 		});

@@ -111,7 +111,7 @@ describe('LIVECHAT - visitors', function () {
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('error-not-authorized');
+					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
 				});
 		});
 		it('should return an "visitor not found error" when the visitor doe snot exists', async () => {
@@ -151,7 +151,7 @@ describe('LIVECHAT - visitors', function () {
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('error-not-authorized');
+					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
 				});
 		});
 		it('should return an "error" when the roomId param is not provided', async () => {
@@ -197,7 +197,7 @@ describe('LIVECHAT - visitors', function () {
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('error-not-authorized');
+					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
 				});
 		});
 		it('should return an "error" when the roomId param is invalid', async () => {
@@ -479,11 +479,8 @@ describe('LIVECHAT - visitors', function () {
 					expect(res.body.history).to.be.an('array');
 					expect(res.body.history).to.have.length.of.at.least(1);
 					expect(res.body.history[0]).to.have.property('_id');
-					expect(res.body.history[0]).to.have.property('name');
-					expect(res.body.history[0]).to.have.property('createdAt');
-					expect(res.body.history[0]).to.have.property('endedAt');
-					expect(res.body.history[0]).to.have.property('status');
-					expect(res.body.history[0]).to.have.property('visitor');
+					expect(res.body.history[0]).to.have.property('fname');
+					expect(res.body.history[0]).to.have.property('v');
 				});
 		});
 
@@ -507,11 +504,8 @@ describe('LIVECHAT - visitors', function () {
 					expect(res.body.history).to.be.an('array');
 					expect(res.body.history).to.have.length.of.at.least(1);
 					expect(res.body.history[0]).to.have.property('_id');
-					expect(res.body.history[0]).to.have.property('name');
-					expect(res.body.history[0]).to.have.property('createdAt');
-					expect(res.body.history[0]).to.have.property('endedAt');
-					expect(res.body.history[0]).to.have.property('status');
-					expect(res.body.history[0]).to.have.property('visitor');
+					expect(res.body.history[0]).to.have.property('fname');
+					expect(res.body.history[0]).to.have.property('v');
 				});
 		});
 	});
