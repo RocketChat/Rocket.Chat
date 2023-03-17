@@ -176,7 +176,7 @@ export const createRoom = <T extends RoomType>(
 		callbacks.runAsync('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members as string[] });
 	}
 
-	Apps.triggerEvent('IPostRoomCreate', room);
+	void Apps.triggerEvent('IPostRoomCreate', room);
 
 	return {
 		rid: room._id, // backwards compatible

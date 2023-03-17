@@ -55,7 +55,7 @@ export class IMAPInterceptor extends EventEmitter {
 		});
 		this.retries = 0;
 		this.inboxId = id;
-		this.start();
+		void this.start();
 	}
 
 	openInbox(): Promise<IMAP.Box> {
