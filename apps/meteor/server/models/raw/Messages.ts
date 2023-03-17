@@ -219,7 +219,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() }).toArray();
+		return this.col.aggregate(params, { allowDiskUse: true, readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	findLivechatClosedMessages(rid: IRoom['_id'], searchTerm?: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
