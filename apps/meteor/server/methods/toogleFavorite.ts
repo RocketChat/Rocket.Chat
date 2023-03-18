@@ -1,9 +1,18 @@
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import type { IRoom } from '@rocket.chat/core-typings';
 
 import { Subscriptions } from '../../app/models/server';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		toggleFavorite(rid: IRoom['_id'], f?: boolean): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	toggleFavorite(rid, f) {
 		check(rid, String);
 
