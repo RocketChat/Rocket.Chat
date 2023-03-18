@@ -1,12 +1,12 @@
 import { EJSON } from 'meteor/ejson';
-import { FederationServers } from '@rocket.chat/models';
+import { FederationServers, FederationRoomEvents } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 import { eventTypes } from '@rocket.chat/core-typings';
 
 import { API } from '../../../api/server';
 import { serverLogger } from '../lib/logger';
 import { contextDefinitions } from '../lib/context';
-import { FederationRoomEvents, Messages, Rooms, Subscriptions, Users } from '../../../models/server';
+import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
 import { FileUpload } from '../../../file-upload/server';
