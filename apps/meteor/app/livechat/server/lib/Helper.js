@@ -5,7 +5,7 @@ import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/l
 import { OmnichannelSourceType, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
 import { api } from '@rocket.chat/core-services';
-import { LivechatDepartmentAgents } from '@rocket.chat/models';
+import { LivechatDepartmentAgents, Users as UsersRaw } from '@rocket.chat/models';
 
 import { hasRole } from '../../../authorization/server';
 import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatInquiry, LivechatDepartment } from '../../../models/server';
@@ -296,12 +296,12 @@ export const dispatchInquiryQueued = async (inquiry, agent) => {
 	logger.debug(`Notifying ${onlineAgents.count()} agents of new inquiry`);
 	const notificationUserName = v && (v.name || v.username);
 
-	onlineAgents.forEach((agent) => {
+	for await (let agent of onlineAgents) {
 		if (agent.agentId) {
-			agent = Users.findOneById(agent.agentId);
+			agent = await UsersRaw.findOneById(agent.agentId);
 		}
 		const { _id, active, emails, language, status, statusConnection, username } = agent;
-		sendNotification({
+		await sendNotification({
 			// fake a subscription in order to make use of the function defined above
 			subscription: {
 				rid,
@@ -329,7 +329,7 @@ export const dispatchInquiryQueued = async (inquiry, agent) => {
 			room: Object.assign(room, { name: TAPi18n.__('New_chat_in_queue', {}, language) }),
 			mentionIds: [],
 		});
-	});
+	}
 };
 
 export const forwardRoomToAgent = async (room, transferData) => {
