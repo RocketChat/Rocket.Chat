@@ -40,7 +40,6 @@ const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMes
 		chat?.composer?.setRecordingMode(false);
 
 		const blob = await new Promise<Blob>((resolve) => audioRecorder.stop(resolve));
-
 		return blob;
 	});
 
@@ -57,6 +56,7 @@ const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMes
 
 		try {
 			await audioRecorder.start();
+			console.log(audioRecorder, 'started');
 			chat?.action.performContinuously('recording');
 			const startTime = new Date();
 			setRecordingInterval(
@@ -82,13 +82,14 @@ const AudioMessageRecorder = ({ rid, chatContext, isMicrophoneDenied }: AudioMes
 	const chat = useChat() ?? chatContext;
 
 	const handleDoneButtonClick = useMutableCallback(async () => {
+		console.log(audioRecorder);
 		setState('loading');
 
 		const blob = await stopRecording();
 
 		const fileName = `${t('Audio_record')}.mp3`;
 		const file = new File([blob], fileName, { type: 'audio/mpeg' });
-
+		console.log(file);
 		await chat?.flows.uploadFiles([file]);
 	});
 

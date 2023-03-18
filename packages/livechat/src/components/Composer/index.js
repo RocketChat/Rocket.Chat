@@ -1,5 +1,6 @@
 import { Component } from 'preact';
 
+import AudioRecorderBar from '../AudioRecorderBar';
 import { createClassName, parse } from '../helpers';
 import styles from './styles.scss';
 
@@ -142,17 +143,26 @@ export class Composer extends Component {
 
 	// we only update composer if value length changed from 0 to 1 or 1 to 0
 	// everything else is managed by this.el
-	shouldComponentUpdate({ value: nextValue }) {
-		const { value, limitTextLength } = this.props;
+	shouldComponentUpdate({ value: nextValue, isRecording: nextIsRecordingValue }) {
+		const { value, limitTextLength, isRecording } = this.props;
 
 		const nextValueEmpty = !nextValue || nextValue.length === 0;
 		const valueEmpty = !value || value.length === 0;
 
 		if (nextValueEmpty !== valueEmpty) {
+			this.handleInnertext();
 			return true;
 		}
 
 		if (nextValue.length === limitTextLength || value.length === limitTextLength) {
+			this.handleInnertext();
+			return true;
+		}
+
+		if (isRecording !== nextIsRecordingValue) {
+			if (nextIsRecordingValue === false) {
+				this.handleInnertext();
+			}
 			return true;
 		}
 
@@ -160,6 +170,22 @@ export class Composer extends Component {
 	}
 
 	componentDidUpdate() {
+		// const { el } = this;
+		// if (!el) {
+		// 	return;
+		// }
+
+		// if (this.props.value !== el.innerHTML) {
+		// 	this.value = this.props.value;
+		// 	el.innerHTML = this.value;
+		// }
+		// replaceCaret(el);'
+		if (!this.props.isRecording) {
+			this.handleInnertext();
+		}
+	}
+
+	handleInnertext() {
 		const { el } = this;
 		if (!el) {
 			return;
@@ -218,34 +244,42 @@ export class Composer extends Component {
 		return 0;
 	}
 
-	render = ({ pre, post, value, placeholder, onChange, onSubmit, onUpload, className, style }) => (
-		<div className={createClassName(styles, 'composer', {}, [className])} style={style}>
-			{pre}
-			<div
-				ref={this.handleRef}
-				{...{
-					'contentEditable': true,
-					'data-placeholder': placeholder,
-					'onInput': this.handleInput(onChange),
-					'onKeypress': this.handleKeypress(onSubmit),
-					'onPaste': this.handlePaste(onUpload),
-					'onDrop': this.handleDrop(onUpload),
-					'onClick': this.handleClick,
-				}}
-				onCompositionStart={() => {
-					this.handleInputLock(true);
-				}}
-				onCompositionEnd={() => {
-					this.handleInputLock(false);
-					onChange && onChange(this.el.innerText);
-				}}
-				className={createClassName(styles, 'composer__input')}
-			>
-				{value}
+	render = ({ pre, post, value, placeholder, onChange, onSubmit, onUpload, className, style, isRecording, handleRecording }) => {
+		return (
+			<div className={createClassName(styles, 'composer', {}, [className])} style={style}>
+				{pre}
+				{!isRecording ? (
+					<div
+						ref={this.handleRef}
+						{...{
+							'contentEditable': true,
+							'data-placeholder': placeholder,
+							'onInput': this.handleInput(onChange),
+							'onKeypress': this.handleKeypress(onSubmit),
+							'onPaste': this.handlePaste(onUpload),
+							'onDrop': this.handleDrop(onUpload),
+							'onClick': this.handleClick,
+						}}
+						onCompositionStart={() => {
+							this.handleInputLock(true);
+						}}
+						onCompositionEnd={() => {
+							this.handleInputLock(false);
+							onChange && onChange(this.el.innerText);
+						}}
+						className={createClassName(styles, 'composer__input')}
+					>
+						{value}
+					</div>
+				) : (
+					<div className={createClassName(styles, 'composer__input')}>
+						<AudioRecorderBar handleRecording={handleRecording} onUpload={onUpload} />
+					</div>
+				)}
+				{post}
 			</div>
-			{post}
-		</div>
-	);
+		);
+	};
 }
 
 export { ComposerAction } from './ComposerAction';
