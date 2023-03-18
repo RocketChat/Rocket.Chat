@@ -350,7 +350,7 @@ settingsRegistry.addGroup('Accounts', function () {
 			public: true,
 			i18nLabel: 'Collapse_Embedded_Media_By_Default',
 		});
-		this.add('Accounts_Default_User_Preferences_messagesLayout', 'full_name', {
+		this.add('Accounts_Default_User_Preferences_messagesLayout', 'username', {
 			type: 'select',
 			values: [
 				{
