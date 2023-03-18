@@ -72,7 +72,7 @@ test.describe('video conference', () => {
 		});
 	});
 
-	test.describe('expect create video conference in a direct multiple', async () => {
+	test('expect create video conference in a direct multiple', async () => {
 		await poHomeChannel.sidenav.openChat('rocketchat.internal.admin.test, user2');
 
 		await poHomeChannel.content.btnCall.click();
