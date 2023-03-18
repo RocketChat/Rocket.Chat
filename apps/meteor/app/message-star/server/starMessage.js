@@ -41,7 +41,7 @@ Meteor.methods({
 			Rooms.updateLastMessageStar(room._id, Meteor.userId(), message.starred);
 		}
 
-		Promise.await(Apps.triggerEvent(AppEvents.IPostMessageStarred, message, Meteor.user(), message.starred));
+		await Apps.triggerEvent(AppEvents.IPostMessageStarred, message, Meteor.user(), message.starred);
 
 		return Messages.updateUserStarById(message._id, Meteor.userId(), message.starred);
 	},
