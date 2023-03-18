@@ -71,7 +71,7 @@ Meteor.methods({
 			return true;
 		}
 
-		data.users.forEach((username) => {
+		await Promise.all(data.users.map(async(username) => {
 			const newUser = Users.findOneByUsernameIgnoringCase(username);
 			if (!newUser && !Federation.isAFederatedUsername(username)) {
 				throw new Meteor.Error('error-invalid-username', 'Invalid username', {
@@ -93,7 +93,7 @@ Meteor.methods({
 					),
 				});
 			}
-		});
+		}));
 
 		return true;
 	},

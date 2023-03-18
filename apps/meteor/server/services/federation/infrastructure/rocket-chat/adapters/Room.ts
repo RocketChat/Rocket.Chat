@@ -104,7 +104,7 @@ export class RocketChatRoomAdapter {
 	}
 
 	public async addUserToRoom(federatedRoom: FederatedRoom, inviteeUser: FederatedUser, inviterUser?: FederatedUser): Promise<void> {
-		addUserToRoom(federatedRoom.getInternalId(), inviteeUser.getInternalReference(), inviterUser?.getInternalReference());
+		return addUserToRoom(federatedRoom.getInternalId(), inviteeUser.getInternalReference(), inviterUser?.getInternalReference());
 	}
 
 	public async removeUserFromRoom(federatedRoom: FederatedRoom, affectedUser: FederatedUser, byUser: FederatedUser): Promise<void> {
