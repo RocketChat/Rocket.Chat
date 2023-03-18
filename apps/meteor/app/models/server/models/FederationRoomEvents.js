@@ -1,4 +1,7 @@
-import { FederationEventsModel, contextDefinitions, eventTypes } from './FederationEvents';
+import { eventTypes } from '@rocket.chat/core-typings';
+
+import { contextDefinitions } from '../../../federation/server/lib/context';
+import { FederationEventsModel } from './FederationEvents';
 
 const { type, contextQuery } = contextDefinitions.ROOM;
 
