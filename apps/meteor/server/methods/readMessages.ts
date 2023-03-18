@@ -30,7 +30,7 @@ Meteor.methods<ServerMethods>({
 		if (!room) {
 			throw new Meteor.Error('error-room-does-not-exist', 'This room does not exist', { method: 'readMessages' });
 		}
-		if (!canAccessRoomAsync(room, user)) {
+		if (!(await canAccessRoomAsync(room, user))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'readMessages' });
 		}
 
