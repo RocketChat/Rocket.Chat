@@ -9,7 +9,7 @@ import { settings } from '../../app/settings/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 
 Meteor.methods({
-	messageSearch(text, rid, limit, offset) {
+	async messageSearch(text, rid, limit, offset) {
 		check(text, String);
 		check(rid, Match.Maybe(String));
 		check(limit, Match.Optional(Number));
@@ -245,12 +245,10 @@ Meteor.methods({
 				};
 			}
 
-			result.message.docs = Promise.await(
-				Messages.find(query, {
-					readPreference: readSecondaryPreferred(Messages.col.s.db),
-					...options,
-				}).toArray(),
-			);
+			result.message.docs = await Messages.find(query, {
+				readPreference: readSecondaryPreferred(Messages.col.s.db),
+				...options,
+			}).toArray();
 		}
 
 		return result;
