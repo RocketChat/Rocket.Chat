@@ -44,7 +44,7 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		if (!fromId || !canAccessRoomAsync(room, { _id: fromId })) {
+		if (!fromId || !(await canAccessRoomAsync(room, { _id: fromId }))) {
 			return false;
 		}
 
