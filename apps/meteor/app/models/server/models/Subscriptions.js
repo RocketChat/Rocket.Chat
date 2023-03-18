@@ -632,7 +632,7 @@ class Subscriptions extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	hideByRoomIdAndUserId(roomId, userId) {
+	hideByRoomIdAndUserId(roomId, userId, keepClosed) {
 		const query = {
 			'rid': roomId,
 			'u._id': userId,
@@ -642,8 +642,13 @@ class Subscriptions extends Base {
 			$set: {
 				alert: false,
 				open: false,
+				...(keepClosed ? { keepClosed: true } : {}),
 			},
 		};
+
+		if (keepClosed === false) {
+			update.$unset = { keepClosed: 1 };
+		}
 
 		return this.update(query, update);
 	}
@@ -910,6 +915,7 @@ class Subscriptions extends Base {
 				$ne: userId,
 			},
 			'open': { $ne: true },
+			'keepClosed': { $ne: true },
 		};
 
 		const update = {
