@@ -1,13 +1,23 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermission } from '../../../../../app/authorization/server';
 import CannedResponse from '../../../models/server/models/CannedResponse';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		removeCannedResponse(_id: string): void;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	removeCannedResponse(_id) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'remove-canned-responses')) {
+		const uid = Meteor.userId();
+
+		if (!uid || !hasPermission(uid, 'remove-canned-responses')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'removeCannedResponse',
 			});

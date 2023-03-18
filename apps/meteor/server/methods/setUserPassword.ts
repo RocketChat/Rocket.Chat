@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Users } from '../../app/models/server';
 import { passwordPolicy } from '../../app/lib/server';
 import { compareUserPassword } from '../lib/compareUserPassword';
 
-Meteor.methods({
+Meteor.methods<ServerMethods>({
 	setUserPassword(password) {
 		check(password, String);
 
