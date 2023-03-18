@@ -15,7 +15,7 @@ import {
 	LivechatCustomField,
 	Settings,
 	LivechatRooms as LivechatRoomsRaw,
-	LivechatInquiry as LivechatInquiryRaw,
+	LivechatInquiry,
 	Subscriptions as SubscriptionsRaw,
 	Messages as MessagesRaw,
 	LivechatDepartment as LivechatDepartmentRaw,
@@ -28,7 +28,7 @@ import { RoutingManager } from './RoutingManager';
 import { Analytics } from './Analytics';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Users, LivechatRooms, Messages, Subscriptions, Rooms, LivechatDepartment, LivechatInquiry } from '../../../models/server';
+import { Users, LivechatRooms, Messages, Subscriptions, Rooms, LivechatDepartment } from '../../../models/server';
 import { Logger } from '../../../logger/server';
 import { hasPermission, hasRole, canAccessRoom, roomAccessAttributes } from '../../../authorization/server';
 import * as Mailer from '../../../mailer/server/api';
@@ -440,7 +440,7 @@ export const Livechat = {
 		const result = await Promise.allSettled([
 			MessagesRaw.removeByRoomId(rid),
 			SubscriptionsRaw.removeByRoomId(rid),
-			LivechatInquiryRaw.removeByRoomId(rid),
+			LivechatInquiry.removeByRoomId(rid),
 			LivechatRoomsRaw.removeById(rid),
 		]);
 
@@ -569,7 +569,7 @@ export const Livechat = {
 			const { name } = guestData;
 			return (
 				Rooms.setFnameById(rid, name) &&
-				LivechatInquiry.setNameByRoomId(rid, name) &&
+				(await LivechatInquiry.setNameByRoomId(rid, name)) &&
 				// This one needs to be the last since the agent may not have the subscription
 				// when the conversation is in the queue, then the result will be 0(zero)
 				Subscriptions.updateDisplayNameByRoomId(rid, name)
@@ -736,7 +736,7 @@ export const Livechat = {
 		}
 
 		// find inquiry corresponding to room
-		const inquiry = LivechatInquiry.findOne({ rid });
+		const inquiry = await LivechatInquiry.findOne({ rid });
 		if (!inquiry) {
 			return false;
 		}
@@ -966,7 +966,7 @@ export const Livechat = {
 
 		Subscriptions.removeByVisitorToken(token);
 		LivechatRooms.removeByVisitorToken(token);
-		LivechatInquiry.removeByVisitorToken(token);
+		await LivechatInquiry.removeByVisitorToken(token);
 	},
 
 	async saveDepartmentAgents(_id, departmentAgents) {
@@ -1158,8 +1158,8 @@ export const Livechat = {
 		return true;
 	},
 
-	notifyGuestStatusChanged(token, status) {
-		LivechatInquiry.updateVisitorStatus(token, status);
+	async notifyGuestStatusChanged(token, status) {
+		await LivechatInquiry.updateVisitorStatus(token, status);
 		LivechatRooms.updateVisitorStatus(token, status);
 	},
 

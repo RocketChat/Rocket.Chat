@@ -1,8 +1,8 @@
 import type { IUser, ILivechatDepartment, IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { LivechatDepartmentAgents } from '@rocket.chat/models';
+import { LivechatDepartmentAgents, LivechatInquiry } from '@rocket.chat/models';
 
 import { hasPermission, hasRole } from '../../authorization/server';
-import { LivechatDepartment, LivechatInquiry, LivechatRooms } from '../../models/server';
+import { LivechatDepartment, LivechatRooms } from '../../models/server';
 import { RoutingManager } from './lib/RoutingManager';
 
 type OmniRoomAccessValidator = (room: IOmnichannelRoom, user?: Pick<IUser, '_id'>, extraData?: Record<string, any>) => boolean;
@@ -61,7 +61,7 @@ export const validators: OmniRoomAccessValidator[] = [
 			],
 		};
 
-		const inquiry = LivechatInquiry.findOne(filter, { fields: { status: 1 } });
+		const inquiry = await LivechatInquiry.findOne(filter, { projection: { status: 1 } });
 		return inquiry && inquiry.status === 'queued';
 	},
 	async function (room, user) {
