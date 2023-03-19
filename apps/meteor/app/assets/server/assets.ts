@@ -244,7 +244,7 @@ class RocketChatAssetsClass {
 						defaultUrl: assetInstance.defaultUrl,
 					};
 
-					Settings.updateValueById(key, value);
+					void Settings.updateValueById(key, value);
 					// eslint-disable-next-line @typescript-eslint/no-use-before-define
 					return RocketChatAssets.processAsset(key, value);
 				}, 200);
@@ -267,7 +267,7 @@ class RocketChatAssetsClass {
 			defaultUrl: getAssetByKey(asset).defaultUrl,
 		};
 
-		Settings.updateValueById(key, value);
+		void Settings.updateValueById(key, value);
 		// eslint-disable-next-line @typescript-eslint/no-use-before-define
 		RocketChatAssets.processAsset(key, value);
 	}
@@ -332,7 +332,7 @@ class RocketChatAssetsClass {
 
 export const RocketChatAssets = new RocketChatAssetsClass();
 
-settingsRegistry.addGroup('Assets', function () {
+void settingsRegistry.addGroup('Assets', function () {
 	this.add('Assets_SvgFavicon_Enable', true, {
 		type: 'boolean',
 		group: 'Assets',
@@ -340,10 +340,10 @@ settingsRegistry.addGroup('Assets', function () {
 	});
 });
 
-function addAssetToSetting(asset: string, value: IRocketChatAsset): void {
+async function addAssetToSetting(asset: string, value: IRocketChatAsset): Promise<void> {
 	const key = `Assets_${asset}`;
 
-	settingsRegistry.add(
+	await settingsRegistry.add(
 		key,
 		{
 			defaultUrl: value.defaultUrl,
@@ -363,14 +363,16 @@ function addAssetToSetting(asset: string, value: IRocketChatAsset): void {
 
 	if (typeof currentValue === 'object' && currentValue.defaultUrl !== getAssetByKey(asset).defaultUrl) {
 		currentValue.defaultUrl = getAssetByKey(asset).defaultUrl;
-		Promise.await(Settings.updateValueById(key, currentValue));
+		await Settings.updateValueById(key, currentValue);
 	}
 }
 
-for (const key of Object.keys(assets)) {
-	const value = getAssetByKey(key);
-	addAssetToSetting(key, value);
-}
+void (async () => {
+	for await (const key of Object.keys(assets)) {
+		const value = getAssetByKey(key);
+		await addAssetToSetting(key, value);
+	}
+})();
 
 settings.watchByRegex(/^Assets_/, (key, value) => RocketChatAssets.processAsset(key, value));
 

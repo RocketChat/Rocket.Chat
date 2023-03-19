@@ -95,7 +95,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields: projection, query } = this.parseJsonQuery();
 
-			const ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query) as Filter<IIntegration>;
+			const ourQuery = Object.assign(await mountIntegrationQueryBasedOnPermissions(this.userId), query) as Filter<IIntegration>;
 
 			const { cursor, totalCount } = Integrations.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },
