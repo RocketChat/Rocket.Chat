@@ -30,7 +30,7 @@ API.v1.addRoute(
 				throw new Error('invalid-token');
 			}
 
-			const room = findRoom(token, rid);
+			const room = await findRoom(token, rid);
 			if (!room) {
 				throw new Error('invalid-room');
 			}
@@ -88,7 +88,7 @@ API.v1.addRoute(
 				throw new Error('invalid-token');
 			}
 
-			const room = findRoom(token, rid);
+			const room = await findRoom(token, rid);
 			if (!room) {
 				throw new Error('invalid-room');
 			}
@@ -114,7 +114,7 @@ API.v1.addRoute(
 				throw new Error('invalid-token');
 			}
 
-			const room = findRoom(token, rid);
+			const room = await findRoom(token, rid);
 			if (!room) {
 				throw new Error('invalid-room');
 			}
@@ -148,7 +148,7 @@ API.v1.addRoute(
 				throw new Error('invalid-token');
 			}
 
-			const room = findRoom(token, rid);
+			const room = await findRoom(token, rid);
 			if (!room) {
 				throw new Error('invalid-room');
 			}
@@ -191,7 +191,7 @@ API.v1.addRoute(
 				throw new Error('invalid-token');
 			}
 
-			const room = findRoom(token, rid);
+			const room = await findRoom(token, rid);
 			if (!room) {
 				throw new Error('invalid-room');
 			}

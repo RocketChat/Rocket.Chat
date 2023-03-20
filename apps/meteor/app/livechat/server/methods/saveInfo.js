@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatRooms } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../authorization/server';
-import { LivechatRooms } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
@@ -45,7 +45,7 @@ Meteor.methods({
 			}),
 		);
 
-		const room = LivechatRooms.findOneById(roomData._id);
+		const room = await LivechatRooms.findOneById(roomData._id);
 		if (!room || !isOmnichannelRoom(room)) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:saveInfo' });
 		}
@@ -62,8 +62,9 @@ Meteor.methods({
 
 		const user = Meteor.users.findOne({ _id: userId }, { fields: { _id: 1, username: 1 } });
 
-		Meteor.defer(() => {
-			callbacks.run('livechat.saveInfo', LivechatRooms.findOneById(roomData._id), {
+		// TODO: check if meteor.defer is necessary
+		Meteor.defer(async () => {
+			callbacks.run('livechat.saveInfo', await LivechatRooms.findOneById(roomData._id), {
 				user,
 				oldRoom: room,
 			});

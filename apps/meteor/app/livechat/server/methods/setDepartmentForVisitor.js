@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 
-import { LivechatRooms, Messages } from '../../../models/server';
+import { Messages } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 import { normalizeTransferredByData } from '../lib/Helper';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
@@ -15,7 +15,7 @@ Meteor.methods({
 		check(visitorToken, String);
 		check(departmentId, String);
 
-		const room = LivechatRooms.findOneById(roomId);
+		const room = await LivechatRooms.findOneById(roomId);
 		const visitor = await LivechatVisitors.getVisitorByToken(visitorToken);
 
 		if (!room || room.t !== 'l' || !room.v || room.v.token !== visitor.token) {

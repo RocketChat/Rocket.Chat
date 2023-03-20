@@ -3,9 +3,9 @@ import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatRooms } from '@rocket.chat/models';
 
 import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
-import { LivechatRooms } from '../../models/server';
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
 import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';
@@ -18,7 +18,8 @@ import { RoutingManager } from './lib/RoutingManager';
 import './roomAccessValidator.internalService';
 
 Meteor.startup(async () => {
-	roomCoordinator.setRoomFind('l', (_id) => LivechatRooms.findOneById(_id));
+	// TODO: remove promise.await when roomCoordinator supports async functions
+	roomCoordinator.setRoomFind('l', (_id) => Promise.await(LivechatRooms.findOneById(_id)));
 
 	callbacks.add(
 		'beforeLeaveRoom',

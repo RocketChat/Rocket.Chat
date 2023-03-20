@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../authorization/server';
-import { LivechatRooms, Subscriptions, Users } from '../../../models/server';
+import { Subscriptions, Users } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 import { normalizeTransferredByData } from '../lib/Helper';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
@@ -25,7 +25,7 @@ Meteor.methods({
 			clientAction: Match.Optional(Boolean),
 		});
 
-		const room = LivechatRooms.findOneById(transferData.roomId);
+		const room = await LivechatRooms.findOneById(transferData.roomId);
 		if (!room || room.t !== 'l') {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:transfer' });
 		}

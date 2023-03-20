@@ -116,5 +116,5 @@ export interface IRoomTypeServerDirectives {
 	includeInRoomSearch: () => boolean;
 	getReadReceiptsExtraData: (message: IMessage) => Partial<ReadReceipt>;
 	includeInDashboard: () => boolean;
-	roomFind?: (rid: string) => IRoom | undefined;
+	roomFind?: (rid: string) => IRoom | undefined | null;
 }

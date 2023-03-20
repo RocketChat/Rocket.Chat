@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+import { LivechatRooms } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../authorization/server';
-import { LivechatRooms } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
@@ -12,7 +12,7 @@ Meteor.methods({
 			});
 		}
 
-		const room = LivechatRooms.findOneById(rid);
+		const room = await LivechatRooms.findOneById(rid);
 		if (!room || room.t !== 'l') {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 				method: 'livechat:returnAsInquiry',

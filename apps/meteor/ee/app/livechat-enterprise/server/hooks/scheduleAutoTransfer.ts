@@ -1,9 +1,9 @@
 import type { IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatRooms } from '@rocket.chat/models';
 
 import { AutoTransferChatScheduler } from '../lib/AutoTransferChatScheduler';
 import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings/server';
-import { LivechatRooms } from '../../../../../app/models/server';
 import { cbLogger } from '../lib/logger';
 import type { CloseRoomParams } from '../../../../../app/livechat/server/lib/LivechatTyped';
 
@@ -26,8 +26,13 @@ const handleAfterTakeInquiryCallback = async (inquiry: any = {}): Promise<any> =
 		return inquiry;
 	}
 
-	const room = LivechatRooms.findOneById(rid, { autoTransferredAt: 1, autoTransferOngoing: 1 });
-	if (!room || room.autoTransferredAt || room.autoTransferOngoing) {
+	const room = await LivechatRooms.findOneById(rid, { projection: { _id: 1, autoTransferredAt: 1, autoTransferOngoing: 1 } });
+	if (!room) {
+		cbLogger.debug(`Skipping callback. Room ${rid} not found`);
+		return inquiry;
+	}
+
+	if (room.autoTransferredAt || room.autoTransferOngoing) {
 		cbLogger.debug(`Skipping callback. Room ${room._id} already being transfered or not found`);
 		return inquiry;
 	}

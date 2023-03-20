@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
-import { LivechatVisitors, LivechatCustomField } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatCustomField, LivechatRooms } from '@rocket.chat/models';
 
-import { LivechatRooms } from '../../../models/server';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({

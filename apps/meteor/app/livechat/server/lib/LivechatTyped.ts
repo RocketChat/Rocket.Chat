@@ -120,6 +120,7 @@ class LivechatClass {
 			transcriptRequested: !!transcriptRequest,
 		};
 
+		// TODO: properly validate that room exists before using instead of typecast :)
 		// Retrieve the closed room
 		room = (await LivechatRooms.findOneById(rid)) as IOmnichannelRoom;
 

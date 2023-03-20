@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+import { LivechatRooms } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { LivechatRooms } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
@@ -11,7 +11,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:removeRoom' });
 		}
 
-		const room = LivechatRooms.findOneById(rid);
+		const room = await LivechatRooms.findOneById(rid);
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {

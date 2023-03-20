@@ -5,7 +5,7 @@ import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/l
 import { OmnichannelSourceType, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
 import { api } from '@rocket.chat/core-services';
-import { LivechatDepartmentAgents, Users as UsersRaw, LivechatInquiry } from '@rocket.chat/models';
+import { LivechatDepartmentAgents, Users as UsersRaw, LivechatInquiry, LivechatRooms as LivechatRoomsRaw } from '@rocket.chat/models';
 
 import { hasRole } from '../../../authorization/server';
 import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatDepartment } from '../../../models/server';
@@ -204,8 +204,8 @@ export const createLivechatSubscription = (rid, name, guest, agent, department) 
 	return Subscriptions.insert(subscriptionData);
 };
 
-export const removeAgentFromSubscription = (rid, { _id, username }) => {
-	const room = LivechatRooms.findOneById(rid);
+export const removeAgentFromSubscription = async (rid, { _id, username }) => {
+	const room = await LivechatRoomsRaw.findOneById(rid);
 	const user = Users.findOneById(_id);
 
 	Subscriptions.removeByRoomIdAndUserId(rid, _id);
@@ -275,7 +275,7 @@ export const dispatchInquiryQueued = async (inquiry, agent) => {
 	logger.debug(`Notifying agents of new inquiry ${inquiry._id} queued`);
 
 	const { department, rid, v } = inquiry;
-	const room = LivechatRooms.findOneById(rid);
+	const room = await LivechatRoomsRaw.findOneById(rid);
 	Meteor.defer(() => callbacks.run('livechat.chatQueued', room));
 
 	if (RoutingManager.getConfig().autoAssignAgent) {

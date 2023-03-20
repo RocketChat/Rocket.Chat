@@ -1,11 +1,13 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatRooms } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Messages, LivechatRooms } from '../../../models/server';
+import { Messages } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 
+// TODO: remove Promise.await from this file when callbacks are async
 const msgNavType = 'livechat_navigation_history';
 const msgClosingType = 'livechat-close';
 
@@ -141,7 +143,7 @@ callbacks.add(
 		}
 
 		const { rid } = inquiry;
-		const room = LivechatRooms.findOneById(rid);
+		const room = Promise.await(LivechatRooms.findOneById(rid));
 
 		return sendToCRM('LivechatSessionTaken', room);
 	},
@@ -170,7 +172,7 @@ callbacks.add(
 			return params;
 		}
 
-		const originalRoom = LivechatRooms.findOneById(rid);
+		const originalRoom = Promise.await(LivechatRooms.findOneById(rid));
 		const room = Object.assign(originalRoom, { oldServedBy });
 		sendToCRM('LivechatSessionForwarded', room);
 		return params;
@@ -187,7 +189,7 @@ callbacks.add(
 			return params;
 		}
 
-		const originalRoom = LivechatRooms.findOneById(rid);
+		const originalRoom = Promise.await(LivechatRooms.findOneById(rid));
 		const room = Object.assign(originalRoom, { oldDepartmentId });
 		sendToCRM('LivechatSessionForwarded', room);
 		return params;

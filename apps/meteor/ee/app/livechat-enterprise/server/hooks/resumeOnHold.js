@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
-import { LivechatRooms } from '../../../../../app/models/server';
 
 const handleAfterSaveMessage = (message, roomParams) => {
 	// skips this callback if the message was edited
@@ -26,8 +26,9 @@ const handleAfterSaveMessage = (message, roomParams) => {
 		return message;
 	}
 
+	// TODO: remove promise.await
 	// Need to read the room every time, the room object is not updated
-	const room = LivechatRooms.findOneById(rid, { t: 1, v: 1, onHold: 1 });
+	const room = Promise.await(LivechatRooms.findOneById(rid, { projection: { t: 1, v: 1, onHold: 1 } }));
 	if (!room) {
 		return message;
 	}
