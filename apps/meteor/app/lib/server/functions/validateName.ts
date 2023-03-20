@@ -1,12 +1,7 @@
-import { Settings } from '@rocket.chat/models';
+import { settings } from '../../../settings/server';
 
-export const validateName = async function (name: string): Promise<boolean> {
-	const setting = await Settings.findOneById('Accounts_SystemBlockedUsernameList');
-	if (!setting) {
-		return true;
-	}
-
-	const blockedNames = setting.value;
+export const validateName = function (name: string): boolean {
+	const blockedNames = settings.get('Accounts_SystemBlockedUsernameList');
 	if (!blockedNames || typeof blockedNames !== 'string') {
 		return true;
 	}

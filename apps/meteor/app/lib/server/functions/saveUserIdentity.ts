@@ -14,7 +14,7 @@ import { validateName } from './validateName';
  * @param {object} changes changes to the user
  */
 
-export async function saveUserIdentity({
+export function saveUserIdentity({
 	_id,
 	name: rawName,
 	username: rawUsername,
@@ -38,11 +38,11 @@ export async function saveUserIdentity({
 	const usernameChanged = previousUsername !== username;
 
 	if (typeof rawUsername !== 'undefined' && usernameChanged) {
-		if (!(await validateName(username))) {
+		if (!validateName(username)) {
 			return false;
 		}
 
-		if (!(await _setUsername(_id, username, user))) {
+		if (!_setUsername(_id, username, user)) {
 			return false;
 		}
 		user.username = username;

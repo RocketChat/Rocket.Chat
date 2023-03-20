@@ -16,7 +16,7 @@ const isValidName = (name: unknown): name is string => {
 };
 
 // eslint-disable-next-line complexity
-export const createRoom = async <T extends RoomType>(
+export const createRoom = <T extends RoomType>(
 	type: T,
 	name: T extends 'd' ? undefined : string,
 	ownerUsername: string | undefined,
@@ -24,7 +24,7 @@ export const createRoom = async <T extends RoomType>(
 	readOnly?: boolean,
 	roomExtraData?: Partial<IRoom>,
 	options?: ICreateRoomParams['options'],
-): Promise<ICreatedRoom> => {
+): ICreatedRoom => {
 	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
 	callbacks.run('beforeCreateRoom', { type, name, owner: ownerUsername, members, readOnly, extraData, options });
 
@@ -66,7 +66,7 @@ export const createRoom = async <T extends RoomType>(
 	const roomProps: Omit<IRoom, '_id' | '_updatedAt' | 'uids' | 'autoTranslateLanguage'> = {
 		fname: name,
 		...extraData,
-		name: await getValidRoomName(name.trim(), undefined, {
+		name: getValidRoomName(name.trim(), undefined, {
 			...(options?.nameValidationRegex && { nameValidationRegex: options.nameValidationRegex }),
 		}),
 		t: type,

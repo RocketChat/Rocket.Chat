@@ -55,13 +55,13 @@ function getChannelsMap(channelsMap: string): Record<string, any> | undefined {
 }
 
 onLicense('oauth-enterprise', () => {
-	callbacks.add('afterProcessOAuthUser', async (auth: IOAuthUserService) => {
+	callbacks.add('afterProcessOAuthUser', (auth: IOAuthUserService) => {
 		auth.serviceName = capitalize(auth.serviceName);
 		const settings = getOAuthSettings(auth.serviceName);
 
 		if (settings.mapChannels) {
 			const channelsMap = getChannelsMap(settings.channelsMap);
-			await OAuthEEManager.mapSSOGroupsToChannels(auth.user, auth.serviceData, settings.groupsClaim, channelsMap, settings.channelsAdmin);
+			OAuthEEManager.mapSSOGroupsToChannels(auth.user, auth.serviceData, settings.groupsClaim, channelsMap, settings.channelsAdmin);
 		}
 
 		if (settings.mergeRoles) {
@@ -74,13 +74,13 @@ onLicense('oauth-enterprise', () => {
 		}
 	});
 
-	callbacks.add('afterValidateNewOAuthUser', async (auth: IOAuthUserIdentity) => {
+	callbacks.add('afterValidateNewOAuthUser', (auth: IOAuthUserIdentity) => {
 		auth.serviceName = capitalize(auth.serviceName);
 		const settings = getOAuthSettings(auth.serviceName);
 
 		if (settings.mapChannels) {
 			const channelsMap = getChannelsMap(settings.channelsMap);
-			await OAuthEEManager.mapSSOGroupsToChannels(auth.user, auth.identity, settings.groupsClaim, channelsMap, settings.channelsAdmin);
+			OAuthEEManager.mapSSOGroupsToChannels(auth.user, auth.identity, settings.groupsClaim, channelsMap, settings.channelsAdmin);
 		}
 
 		if (settings.mergeRoles) {

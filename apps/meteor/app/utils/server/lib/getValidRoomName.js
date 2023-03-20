@@ -1,18 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import limax from 'limax';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import { Settings, Rooms } from '@rocket.chat/models';
 
+import { settings } from '../../../settings/server';
+import { Rooms } from '../../../models/server';
 import { validateName } from '../../../lib/server/functions/validateName';
 
-// TODO: temporal while settings are made async
-export const getValidRoomName = async (displayName, rid = '', options = {}) => {
+export const getValidRoomName = (displayName, rid = '', options = {}) => {
 	let slugifiedName = displayName;
 
-	if ((await Settings.findOneById('UI_Allow_room_names_with_special_chars')).value) {
+	if (settings.get('UI_Allow_room_names_with_special_chars')) {
 		const cleanName = limax(displayName, { maintainCase: true });
 		if (options.allowDuplicates !== true) {
-			const room = await Rooms.findOneByDisplayName(displayName);
+			const room = Rooms.findOneByDisplayName(displayName);
 			if (room && room._id !== rid) {
 				if (room.archived) {
 					throw new Meteor.Error('error-archived-duplicate-name', `There's an archived channel with name ${cleanName}`, {
@@ -36,13 +36,13 @@ export const getValidRoomName = async (displayName, rid = '', options = {}) => {
 		nameValidation = new RegExp(options.nameValidationRegex);
 	} else {
 		try {
-			nameValidation = new RegExp(`^${(await Settings.findOneById('UTF8_Channel_Names_Validation')).value}$`);
+			nameValidation = new RegExp(`^${settings.get('UTF8_Channel_Names_Validation')}$`);
 		} catch (error) {
 			nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 		}
 	}
 
-	if (!nameValidation.test(slugifiedName) || !(await validateName(slugifiedName))) {
+	if (!nameValidation.test(slugifiedName) || !validateName(slugifiedName)) {
 		throw new Meteor.Error('error-invalid-room-name', `${escapeHTML(slugifiedName)} is not a valid room name.`, {
 			function: 'RocketChat.getValidRoomName',
 			channel_name: escapeHTML(slugifiedName),
@@ -50,13 +50,12 @@ export const getValidRoomName = async (displayName, rid = '', options = {}) => {
 	}
 
 	if (options.allowDuplicates !== true) {
-		const room = await Rooms.findOneByName(slugifiedName);
+		const room = Rooms.findOneByName(slugifiedName);
 		if (room && room._id !== rid) {
-			if ((await Settings.findOneById('UI_Allow_room_names_with_special_chars')).value) {
+			if (settings.get('UI_Allow_room_names_with_special_chars')) {
 				let tmpName = slugifiedName;
 				let next = 0;
-				// eslint-disable-next-line no-await-in-loop
-				while (await Rooms.findOneByNameAndNotId(tmpName, rid)) {
+				while (Rooms.findOneByNameAndNotId(tmpName, rid)) {
 					tmpName = `${slugifiedName}-${++next}`;
 				}
 				slugifiedName = tmpName;

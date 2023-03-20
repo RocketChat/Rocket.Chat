@@ -1283,7 +1283,12 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.updateOne(query, update);
 	}
 
-	setPinnedByIdAndUserId(_id: string, pinnedBy: unknown, pinned?: boolean, pinnedAt?: Date): Promise<UpdateResult> {
+	setPinnedByIdAndUserId(
+		_id: string,
+		pinnedBy: Pick<IUser, '_id' | 'username'> | undefined,
+		pinned?: boolean,
+		pinnedAt?: Date,
+	): Promise<UpdateResult> {
 		if (pinned == null) {
 			pinned = true;
 		}

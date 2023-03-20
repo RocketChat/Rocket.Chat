@@ -18,7 +18,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	async setUsername(username, param = {}) {
+	setUsername(username, param = {}) {
 		const { joinDefaultChannelsSilenced } = param;
 		check(username, String);
 
@@ -50,14 +50,14 @@ Meteor.methods<ServerMethods>({
 			);
 		}
 
-		if (!(await checkUsernameAvailability(username))) {
+		if (!checkUsernameAvailability(username)) {
 			throw new Meteor.Error('error-field-unavailable', `<strong>${_.escape(username)}</strong> is already in use :(`, {
 				method: 'setUsername',
 				field: username,
 			});
 		}
 
-		if (!(await saveUserIdentity({ _id: user._id, username }))) {
+		if (!saveUserIdentity({ _id: user._id, username })) {
 			throw new Meteor.Error('error-could-not-change-username', 'Could not change username', {
 				method: 'setUsername',
 			});

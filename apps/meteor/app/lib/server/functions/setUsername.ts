@@ -13,7 +13,7 @@ import { checkUsernameAvailability, setUserAvatar } from '.';
 import { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export const _setUsername = async function (userId: string, u: string, fullUser: IUser): Promise<unknown> {
+export const _setUsername = function (userId: string, u: string, fullUser: IUser): unknown {
 	const username = u.trim();
 	if (!userId || !username) {
 		return false;
@@ -35,7 +35,7 @@ export const _setUsername = async function (userId: string, u: string, fullUser:
 	const previousUsername = user.username;
 	// Check username availability or if the user already owns a different casing of the name
 	if (!previousUsername || !(username.toLowerCase() === previousUsername.toLowerCase())) {
-		if (!(await checkUsernameAvailability(username))) {
+		if (!checkUsernameAvailability(username)) {
 			return false;
 		}
 	}

@@ -246,7 +246,7 @@ API.v1.addRoute(
 	'users.create',
 	{ authRequired: true, validateParams: isUserCreateParamsPOST },
 	{
-		async post() {
+		post() {
 			// New change made by pull request #5152
 			if (typeof this.bodyParams.joinDefaultChannels === 'undefined') {
 				this.bodyParams.joinDefaultChannels = true;
@@ -256,7 +256,7 @@ API.v1.addRoute(
 				validateCustomFields(this.bodyParams.customFields);
 			}
 
-			const newUserId = await saveUser(this.userId, this.bodyParams);
+			const newUserId = saveUser(this.userId, this.bodyParams);
 
 			if (this.bodyParams.customFields) {
 				saveCustomFieldsWithoutValidation(newUserId, this.bodyParams.customFields);
@@ -520,12 +520,12 @@ API.v1.addRoute(
 		validateParams: isUserRegisterParamsPOST,
 	},
 	{
-		async post() {
+		post() {
 			if (this.userId) {
 				return API.v1.failure('Logged in users can not register again.');
 			}
 
-			if (!(await checkUsernameAvailability(this.bodyParams.username))) {
+			if (!checkUsernameAvailability(this.bodyParams.username)) {
 				return API.v1.failure('Username is already in use');
 			}
 

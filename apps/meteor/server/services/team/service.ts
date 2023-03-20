@@ -38,7 +38,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 	protected name = 'team';
 
 	async create(uid: string, { team, room = { name: team.name, extraData: {} }, members, owner }: ITeamCreateParams): Promise<ITeam> {
-		if (!(await checkUsernameAvailability(team.name))) {
+		if (!checkUsernameAvailability(team.name)) {
 			throw new Error('team-name-already-exists');
 		}
 

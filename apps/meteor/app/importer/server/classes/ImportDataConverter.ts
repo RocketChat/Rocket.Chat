@@ -226,7 +226,7 @@ export class ImportDataConverter {
 		subset(userData.customFields, 'customFields');
 	}
 
-	async updateUser(existingUser: IUser, userData: IImportUser): Promise<void> {
+	updateUser(existingUser: IUser, userData: IImportUser): void {
 		const { _id } = existingUser;
 
 		userData._id = _id;
@@ -267,7 +267,7 @@ export class ImportDataConverter {
 		}
 
 		if (userData.name || userData.username) {
-			await saveUserIdentity({ _id, name: userData.name, username: userData.username } as Parameters<typeof saveUserIdentity>[0]);
+			saveUserIdentity({ _id, name: userData.name, username: userData.username } as Parameters<typeof saveUserIdentity>[0]);
 		}
 
 		if (userData.importIds.length) {
@@ -275,7 +275,7 @@ export class ImportDataConverter {
 		}
 	}
 
-	async insertUser(userData: IImportUser): Promise<IUser> {
+	insertUser(userData: IImportUser): IUser {
 		const password = `${Date.now()}${userData.name || ''}${userData.emails.length ? userData.emails[0].toUpperCase() : ''}`;
 		const userId = userData.emails.length
 			? Accounts.createUser({
@@ -289,7 +289,7 @@ export class ImportDataConverter {
 			  });
 
 		const user = Users.findOneById(userId, {});
-		await this.updateUser(user, userData);
+		this.updateUser(user, userData);
 
 		addUserToDefaultChannels(user, true);
 		return user;
@@ -346,13 +346,13 @@ export class ImportDataConverter {
 				const isNewUser = !existingUser;
 
 				if (existingUser) {
-					await this.updateUser(existingUser, data);
+					this.updateUser(existingUser, data);
 				} else {
 					if (!data.name && data.username) {
 						data.name = guessNameFromUsername(data.username);
 					}
 
-					existingUser = await this.insertUser(data);
+					existingUser = this.insertUser(data);
 				}
 
 				// Deleted users are 'inactive' users in Rocket.Chat
@@ -493,7 +493,7 @@ export class ImportDataConverter {
 		return result;
 	}
 
-	async getMentionedChannelData(importId: string): Promise<IMentionedChannel | undefined> {
+	getMentionedChannelData(importId: string): IMentionedChannel | undefined {
 		// loading the name will also store the id on the cache if it's missing, so this won't run two queries
 		const name = this.findImportedRoomName(importId);
 		const _id = this.findImportedRoomId(importId);
@@ -506,7 +506,7 @@ export class ImportDataConverter {
 		}
 
 		// If the importId was not found, check if we have a room with that name
-		const room = await Rooms.findOneByNonValidatedName(importId, { fields: { name: 1 } });
+		const room = Rooms.findOneByNonValidatedName(importId, { fields: { name: 1 } });
 		if (room) {
 			this.addRoomToCache(importId, room._id);
 			this.addRoomNameToCache(importId, room.name);
@@ -518,15 +518,15 @@ export class ImportDataConverter {
 		}
 	}
 
-	async convertMessageChannels(message: IImportMessage): Promise<Array<IMentionedChannel> | undefined> {
+	convertMessageChannels(message: IImportMessage): Array<IMentionedChannel> | undefined {
 		const { channels } = message;
 		if (!channels) {
 			return;
 		}
 
 		const result: Array<IMentionedChannel> = [];
-		for await (const importId of channels) {
-			const { name, _id } = (await this.getMentionedChannelData(importId)) || {};
+		for (const importId of channels) {
+			const { name, _id } = this.getMentionedChannelData(importId) || {};
 
 			if (!_id || !name) {
 				this._logger.warn(`Mentioned room not found: ${importId}`);
@@ -552,7 +552,7 @@ export class ImportDataConverter {
 		const rids: Array<string> = [];
 		const messages = await this.getMessagesToImport();
 
-		messages.forEach(async ({ data, _id }: IImportMessageRecord) => {
+		messages.forEach(({ data, _id }: IImportMessageRecord) => {
 			try {
 				if (beforeImportFn && !beforeImportFn(data, 'message')) {
 					this.skipRecord(_id);
@@ -579,7 +579,7 @@ export class ImportDataConverter {
 
 				// Convert the mentions and channels first because these conversions can also modify the msg in the message object
 				const mentions = data.mentions && this.convertMessageMentions(data);
-				const channels = data.channels && (await this.convertMessageChannels(data));
+				const channels = data.channels && this.convertMessageChannels(data);
 
 				const msgObj: IMessage = {
 					rid,
@@ -873,7 +873,7 @@ export class ImportDataConverter {
 			.filter((user) => user);
 	}
 
-	findExistingRoom(data: IImportChannel): Promise<IRoom> {
+	findExistingRoom(data: IImportChannel): IRoom {
 		if (data._id && data._id.toUpperCase() === 'GENERAL') {
 			const room = Rooms.findOneById('GENERAL', {});
 			// Prevent the importer from trying to create a new general

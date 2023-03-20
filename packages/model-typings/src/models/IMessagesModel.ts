@@ -239,7 +239,12 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	setAsDeletedByIdAndUser(_id: string, user: IMessage['u']): Promise<UpdateResult>;
 	setHiddenById(_id: string, hidden: boolean): Promise<UpdateResult>;
-	setPinnedByIdAndUserId(_id: string, pinnedBy: unknown, pinned?: boolean, pinnedAt?: Date): Promise<UpdateResult>;
+	setPinnedByIdAndUserId(
+		_id: string,
+		pinnedBy: Pick<IUser, '_id' | 'username'> | undefined,
+		pinned?: boolean,
+		pinnedAt?: Date,
+	): Promise<UpdateResult>;
 	findOneByRoomIdAndMessageId(rid: string, messageId: string, options?: FindOptions<IMessage>): Promise<IMessage | null>;
 
 	updateUserStarById(_id: string, userId: string, starred?: boolean): Promise<UpdateResult>;

@@ -290,7 +290,7 @@ class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
-	async findOneByNonValidatedName(name, options) {
+	findOneByNonValidatedName(name, options) {
 		const room = this.findOneByNameOrFname(name, options);
 		if (room) {
 			return room;
@@ -299,8 +299,8 @@ class Rooms extends Base {
 		let channelName = trim(name);
 		try {
 			// TODO evaluate if this function call should be here
-			const { getValidRoomName } = await import('../../../utils/server/lib/getValidRoomName');
-			channelName = await getValidRoomName(channelName, null, { allowDuplicates: true });
+			const { getValidRoomName } = Promise.await(import('../../../utils/server/lib/getValidRoomName'));
+			channelName = getValidRoomName(channelName, null, { allowDuplicates: true });
 		} catch (e) {
 			console.error(e);
 		}

@@ -1034,25 +1034,6 @@ export class RoomsRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	async findOneByNonValidatedName(name, options) {
-		const room = this.findOneByNameOrFname(name, options);
-		if (room) {
-			return room;
-		}
-
-		let channelName = name.trim();
-		try {
-			// TODO evaluate if this function call should be here
-			// EDIT: this definitely should not be here, but i wont refactor it for now
-			const { getValidRoomName } = await import('../../../app/utils/server/lib/getValidRoomName');
-			channelName = await getValidRoomName(channelName, null, { allowDuplicates: true });
-		} catch (e) {
-			console.error(e);
-		}
-
-		return this.findOneByName(channelName, options);
-	}
-
 	findOneByNameAndNotId(name, rid) {
 		const query = {
 			_id: { $ne: rid },
