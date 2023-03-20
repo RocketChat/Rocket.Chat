@@ -1,4 +1,3 @@
-import type { FindCursor } from 'mongodb';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IMessage, IMessageDiscussion } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
@@ -45,14 +44,10 @@ export const cleanRoomHistory = function ({
 	}
 
 	if (!ignoreDiscussion) {
-		Promise.await(
-			(
-				Messages.findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers, {
-					fields: { drid: 1 },
-					...(limit && { limit }),
-				}) as FindCursor<IMessageDiscussion>
-			).forEach(({ drid }) => deleteRoom(drid)),
-		);
+		Messages.findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers, {
+			fields: { drid: 1 },
+			...(limit && { limit }),
+		}).forEach(({ drid }: IMessageDiscussion) => deleteRoom(drid));
 	}
 
 	if (!ignoreThreads) {
