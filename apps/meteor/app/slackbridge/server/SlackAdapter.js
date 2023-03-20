@@ -804,7 +804,7 @@ export default class SlackAdapter {
 				updatedBySlack: true,
 			};
 
-			this.rocket.createAndSaveMessage(rocketChannel, rocketUser, slackMessage, msgDataDefaults, false);
+			await this.rocket.createAndSaveMessage(rocketChannel, rocketUser, slackMessage, msgDataDefaults, false);
 		}
 	}
 
@@ -882,7 +882,7 @@ export default class SlackAdapter {
 				msgDataDefaults.imported = 'slackbridge';
 			}
 			try {
-				this.rocket.createAndSaveMessage(rocketChannel, rocketUser, slackMessage, msgDataDefaults, isImporting, this);
+				await this.rocket.createAndSaveMessage(rocketChannel, rocketUser, slackMessage, msgDataDefaults, isImporting, this);
 			} catch (e) {
 				// http://www.mongodb.org/about/contributors/error-codes/
 				// 11000 == duplicate key error
@@ -895,7 +895,7 @@ export default class SlackAdapter {
 		}
 	}
 
-	processBotMessage(rocketChannel, slackMessage) {
+	async processBotMessage(rocketChannel, slackMessage) {
 		const excludeBotNames = settings.get('SlackBridge_ExcludeBotnames');
 		if (slackMessage.username !== undefined && excludeBotNames && slackMessage.username.match(excludeBotNames)) {
 			return;
@@ -926,13 +926,13 @@ export default class SlackAdapter {
 		return rocketMsgObj;
 	}
 
-	processMeMessage(rocketUser, slackMessage) {
+	async processMeMessage(rocketUser, slackMessage) {
 		return this.rocket.addAliasToMsg(rocketUser.username, {
 			msg: `_${this.rocket.convertSlackMsgTxtToRocketTxtFormat(slackMessage.text)}_`,
 		});
 	}
 
-	processChannelJoinMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
+	async processChannelJoinMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
 		if (isImporting) {
 			Messages.createUserJoinWithRoomIdAndUser(rocketChannel._id, rocketUser, {
 				ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
@@ -943,7 +943,7 @@ export default class SlackAdapter {
 		}
 	}
 
-	processGroupJoinMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
+	async processGroupJoinMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
 		if (slackMessage.inviter) {
 			const inviter = slackMessage.inviter ? this.rocket.findUser(slackMessage.inviter) || this.rocket.addUser(slackMessage.inviter) : null;
 			if (isImporting) {
@@ -961,18 +961,18 @@ export default class SlackAdapter {
 		}
 	}
 
-	processLeaveMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
+	async processLeaveMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
 		if (isImporting) {
 			Messages.createUserLeaveWithRoomIdAndUser(rocketChannel._id, rocketUser, {
 				ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
 				imported: 'slackbridge',
 			});
 		} else {
-			Promise.await(removeUserFromRoom(rocketChannel._id, rocketUser));
+			await removeUserFromRoom(rocketChannel._id, rocketUser);
 		}
 	}
 
-	processTopicMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
+	async processTopicMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
 		if (isImporting) {
 			Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser(
 				'room_changed_topic',
@@ -986,7 +986,7 @@ export default class SlackAdapter {
 		}
 	}
 
-	processPurposeMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
+	async processPurposeMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
 		if (isImporting) {
 			Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser(
 				'room_changed_topic',
@@ -1000,14 +1000,14 @@ export default class SlackAdapter {
 		}
 	}
 
-	processNameMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
+	async processNameMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
 		if (isImporting) {
 			Messages.createRoomRenamedWithRoomIdRoomNameAndUser(rocketChannel._id, slackMessage.name, rocketUser, {
 				ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
 				imported: 'slackbridge',
 			});
 		} else {
-			Promise.await(saveRoomName(rocketChannel._id, slackMessage.name, rocketUser, false));
+			await saveRoomName(rocketChannel._id, slackMessage.name, rocketUser, false);
 		}
 	}
 
@@ -1065,7 +1065,7 @@ export default class SlackAdapter {
 		slackLogger.error('Pinned item with no attachment');
 	}
 
-	processSubtypedMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
+	async processSubtypedMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
 		switch (slackMessage.subtype) {
 			case 'bot_message':
 				return this.processBotMessage(rocketChannel, slackMessage);
