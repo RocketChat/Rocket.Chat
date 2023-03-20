@@ -406,7 +406,7 @@ API.v1.addRoute(
 				throw new Error('error-not-allowed');
 			}
 
-			addUserToRoom(roomId, user);
+			await addUserToRoom(roomId, user);
 
 			return API.v1.success();
 		},
