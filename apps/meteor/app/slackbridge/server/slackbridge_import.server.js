@@ -8,7 +8,7 @@ import { Rooms } from '../../models/server';
 import { msgStream } from '../../lib/server';
 import { slashCommands } from '../../utils/server';
 
-async function SlackBridgeImport(command, params, item) {
+function SlackBridgeImport(command, params, item) {
 	if (command !== 'slackbridge-import' || !Match.test(params, String)) {
 		return;
 	}
@@ -33,40 +33,41 @@ async function SlackBridgeImport(command, params, item) {
 	});
 
 	try {
-		for await (const slack of SlackBridge.slackAdapters) {
-			try {
-				await slack.importMessages(item.rid);
-				msgStream.emit(item.rid, {
-					_id: Random.id(),
-					rid: item.rid,
-					u: { username: 'rocket.cat' },
-					ts: new Date(),
-					msg: TAPi18n.__(
-						'SlackBridge_finish',
-						{
-							postProcess: 'sprintf',
-							sprintf: [channel],
-						},
-						user.language,
-					),
-				});
-			} catch (e) {
-				msgStream.emit(item.rid, {
-					_id: Random.id(),
-					rid: item.rid,
-					u: { username: 'rocket.cat' },
-					ts: new Date(),
-					msg: TAPi18n.__(
-						'SlackBridge_error',
-						{
-							postProcess: 'sprintf',
-							sprintf: [channel, e.message],
-						},
-						user.language,
-					),
-				});
-			}
-		}
+		SlackBridge.slackAdapters.forEach((slack) => {
+			slack.importMessages(item.rid, (error) => {
+				if (error) {
+					msgStream.emit(item.rid, {
+						_id: Random.id(),
+						rid: item.rid,
+						u: { username: 'rocket.cat' },
+						ts: new Date(),
+						msg: TAPi18n.__(
+							'SlackBridge_error',
+							{
+								postProcess: 'sprintf',
+								sprintf: [channel, error.message],
+							},
+							user.language,
+						),
+					});
+				} else {
+					msgStream.emit(item.rid, {
+						_id: Random.id(),
+						rid: item.rid,
+						u: { username: 'rocket.cat' },
+						ts: new Date(),
+						msg: TAPi18n.__(
+							'SlackBridge_finish',
+							{
+								postProcess: 'sprintf',
+								sprintf: [channel],
+							},
+							user.language,
+						),
+					});
+				}
+			});
+		});
 	} catch (error) {
 		msgStream.emit(item.rid, {
 			_id: Random.id(),
@@ -86,5 +87,4 @@ async function SlackBridgeImport(command, params, item) {
 	}
 }
 
-// TODO slash commands to async
 slashCommands.add({ command: 'slackbridge-import', callback: SlackBridgeImport });
