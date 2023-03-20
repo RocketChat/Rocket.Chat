@@ -148,7 +148,7 @@ test.describe.serial('e2e-encryption', () => {
 
 		await poHomeChannel.sidenav.openNewByLabel('Channel');
 		await poHomeChannel.sidenav.inputChannelName.type(channelName);
-		await poHomeChannel.sidenav.checkboxEncryption.check({ force: true });
+		await poHomeChannel.sidenav.checkboxEncryption.click();
 		await poHomeChannel.sidenav.btnCreate.click();
 
 		await expect(page).toHaveURL(`/group/${channelName}`);

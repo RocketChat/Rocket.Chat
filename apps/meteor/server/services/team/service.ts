@@ -492,7 +492,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		options?: undefined | FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
 	): Promise<P[] | ITeamMember[]> {
 		if (options) {
-			TeamMember.findByUserId(uid, options).toArray();
+			return TeamMember.findByUserId(uid, options).toArray();
 		}
 		return TeamMember.findByUserId(uid).toArray();
 	}
@@ -779,7 +779,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 					}
 				}
 
-				TeamMember.removeById(existingMember._id);
+				await TeamMember.removeById(existingMember._id);
 			}
 
 			const removedUser = usersToRemove.find((u) => u._id === (existingMember || member).userId);

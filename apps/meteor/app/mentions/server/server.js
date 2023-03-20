@@ -59,7 +59,7 @@ const mention = new MentionsServer({
 		const { language } = this.getUser(sender._id);
 		const msg = TAPi18n.__('Group_mentions_disabled_x_members', { total: this.messageMaxAll }, language);
 
-		api.broadcast('notify.ephemeralMessage', sender._id, rid, {
+		void api.broadcast('notify.ephemeralMessage', sender._id, rid, {
 			msg,
 		});
 
