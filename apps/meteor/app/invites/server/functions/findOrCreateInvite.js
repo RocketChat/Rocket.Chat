@@ -100,7 +100,7 @@ export const findOrCreateInvite = async (userId, invite) => {
 
 	await Invites.insertOne(createInvite);
 
-	api.broadcast('notify.updateInvites', userId, { invite: createInvite });
+	void api.broadcast('notify.updateInvites', userId, { invite: createInvite });
 
 	createInvite.url = getInviteUrl(createInvite);
 	return createInvite;

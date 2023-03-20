@@ -636,7 +636,7 @@ describe('FederationEE - Application - FederationRoomServiceSender', () => {
 			roomAdapter.getFederatedRoomByInternalId.resolves(room);
 			userAdapter.getInternalUserById.resolves({ username: 'username', name: 'name' } as any);
 
-			expect(service.onUsersAddedToARoom({ invitees, internalInviterId: '' } as any)).not.to.be.rejectedWith(
+			await expect(service.onUsersAddedToARoom({ invitees, internalInviterId: '' } as any)).not.to.be.rejectedWith(
 				'User with internalId internalInviterId not found',
 			);
 		});

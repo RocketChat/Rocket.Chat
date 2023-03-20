@@ -12,12 +12,10 @@ import { isRunningMs } from '../../../server/lib/isRunningMs';
 
 // only starts network broker if running in micro services mode
 if (isRunningMs()) {
-	(async () => {
-		const { broker } = await import('./broker');
+	const { broker } = await import('./broker');
 
-		api.setBroker(broker);
-		api.start();
-	})();
+	api.setBroker(broker);
+	void api.start();
 } else {
 	require('./presence');
 }

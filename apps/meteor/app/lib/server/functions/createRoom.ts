@@ -22,14 +22,14 @@ export const createRoom = <T extends RoomType>(
 	ownerUsername: string | undefined,
 	members: T extends 'd' ? IUser[] : string[] = [],
 	readOnly?: boolean,
-	roomExtraData?: Partial<IRoom>,
+	roomExtraData?: Partial<IRoom> & { customFields?: unknown },
 	options?: ICreateRoomParams['options'],
 ): ICreatedRoom => {
 	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
 	callbacks.run('beforeCreateRoom', { type, name, owner: ownerUsername, members, readOnly, extraData, options });
 
 	if (type === 'd') {
-		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || ownerUsername });
+		return Promise.await(createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || ownerUsername }));
 	}
 
 	if (!isValidName(name)) {
@@ -177,7 +177,7 @@ export const createRoom = <T extends RoomType>(
 		callbacks.runAsync('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members as string[] });
 	}
 
-	Apps.triggerEvent('IPostRoomCreate', room);
+	void Apps.triggerEvent('IPostRoomCreate', room);
 
 	return {
 		rid: room._id, // backwards compatible

@@ -130,13 +130,13 @@ class LivechatClass {
 
 		this.logger.debug(`Running callbacks for room ${room._id}`);
 
-		Meteor.defer(() => {
+		process.nextTick(() => {
 			/**
 			 * @deprecated the `AppEvents.ILivechatRoomClosedHandler` event will be removed
 			 * in the next major version of the Apps-Engine
 			 */
-			Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, room);
-			Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, room);
+			void Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, room);
+			void Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, room);
 		});
 		callbacks.runAsync('livechat.closeRoom', {
 			room,

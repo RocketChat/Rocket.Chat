@@ -24,14 +24,13 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 
 	before((done) => getCredentials(done));
 
-	before((done) => {
-		updateSetting('Livechat_enabled', true)
-			.then(() => updateSetting('Livechat_Routing_Method', 'Manual_Selection'))
-			.then(done);
+	before(async () => {
+		await updateSetting('Livechat_enabled', true);
+		await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 	});
 
 	this.afterAll(async () => {
-		addPermissions({
+		await addPermissions({
 			'manage-livechat-priorities': ['admin', 'livechat-manager'],
 			'manage-livechat-sla': ['admin', 'livechat-manager'],
 			'view-l-room': ['admin', 'livechat-manager', 'livechat-agent'],
@@ -118,8 +117,7 @@ import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 			expect(response.body).to.have.property('success', true);
 			expect(response.body).to.be.an('object');
 			expect(response.body._id).to.be.equal(sla._id);
-			const deleteResponse = deleteSLA(sla._id);
-			expect(deleteResponse).to.not.be.rejected;
+			await deleteSLA(sla._id);
 		});
 		// PUT
 		it('should return an "unauthorized error" when the user does not have the necessary permission for [PUT] livechat/sla/:slaId endpoint', async () => {
