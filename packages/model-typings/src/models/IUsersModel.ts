@@ -1,5 +1,5 @@
-import type { Document, UpdateResult, FindCursor, FindOptions } from 'mongodb';
-import type { IUser, IRole, IRoom, ILivechatAgent, UserStatus } from '@rocket.chat/core-typings';
+import type { Document, UpdateResult, FindCursor, FindOptions, Filter, InsertOneResult, DeleteResult } from 'mongodb';
+import type { IUser, IRole, IRoom, ILivechatAgent, UserStatus, ILoginToken } from '@rocket.chat/core-typings';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -194,4 +194,157 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	addServerNameToSearchedServerNamesList(userId: string, serverName: string): Promise<UpdateResult>;
 
 	removeServerNameFromSearchedServerNamesList(userId: string, serverName: string): Promise<UpdateResult>;
+	findOnlineUserFromList(userList: string[], isLivechatEnabledWhenAgentIdle?: boolean): FindCursor<IUser>;
+	getUnavailableAgents(
+		departmentId?: string,
+		extraQuery?: Document,
+	): Promise<
+		{
+			agentId: string;
+			username: string;
+			lastAssignTime: string;
+			lastRoutingTime: string;
+			livechat: { maxNumberSimultaneousChat: number };
+			queueInfo: { chats: number };
+		}[]
+	>;
+	findOneOnlineAgentByUserList(
+		userList: string[],
+		options?: FindOptions<IUser>,
+		isLivechatEnabledWhenAgentIdle?: boolean,
+	): Promise<IUser | null>;
+
+	findBotAgents(usernameList: string[]): FindCursor<IUser>;
+	removeAllRoomsByUserId(userId: string): Promise<UpdateResult>;
+	removeRoomByUserId(userId: string, rid: string): Promise<UpdateResult>;
+	addRoomByUserId(userId: string, rid: string): Promise<UpdateResult>;
+	removeRoomByRoomIds(rids: string[]): Promise<UpdateResult | Document>;
+	getLoginTokensByUserId(userId: string): FindCursor<ILoginToken>;
+	addPersonalAccessTokenToUser(data: { userId: string; loginTokenObject: ILoginToken }): Promise<UpdateResult>;
+	removePersonalAccessTokenOfUser(data: { userId: string; loginTokenObject: ILoginToken }): Promise<UpdateResult>;
+	findPersonalAccessTokenByTokenNameAndUserId(data: { userId: string; tokenName: string }): Promise<IUser | null>;
+	setOperator(userId: string, operator: boolean): Promise<UpdateResult>;
+	checkOnlineAgents(agentId: string): Promise<boolean>;
+	findOnlineAgents(agentId: string): FindCursor<ILivechatAgent>;
+	findOneBotAgent(): Promise<ILivechatAgent | null>;
+	findOneOnlineAgentbyId(agentId: string): Promise<ILivechatAgent | null>;
+	findAgents(): FindCursor<ILivechatAgent>;
+	getNextAgent(ignoreAgentId: string, extraQuery?: Filter<IUser>): Promise<{ agentId: string; username: string } | null>;
+	getNextBotAgent(ignoreAgentId: string): Promise<{ agentId: string; username: string } | null>;
+	setLivechatStatus(userId: string, status: UserStatus): Promise<UpdateResult>;
+	setLivechatData(userId: string, data?: Record<string, any>): Promise<UpdateResult>;
+	closeOffice(): Promise<void>;
+	openOffice(): Promise<void>;
+	getAgentInfo(
+		agentId: string,
+		showAgentEmail?: boolean,
+	): Promise<Pick<ILivechatAgent, 'name' | 'username' | 'phone' | 'customFields' | 'status' | 'livechat'> | null>;
+	roleBaseQuery(userId: string): { _id: string };
+	setE2EPublicAndPrivateKeysByUserId(userId: string, e2e: { publicKey: string; privateKey: string }): Promise<UpdateResult>;
+	rocketMailUnsubscribe(userId: string, createdAt: string): Promise<number>;
+	fetchKeysByUserId(userId: string): Promise<{ public_key: string; private_key: string } | Record<string, never>>;
+	disable2FAAndSetTempSecretByUserId(userId: string, tempSecret: string): Promise<UpdateResult>;
+	enable2FAAndSetSecretAndCodesByUserId(userId: string, secret: string, codes: string[]): Promise<UpdateResult>;
+	disable2FAByUserId(userId: string): Promise<UpdateResult>;
+	update2FABackupCodesByUserId(userId: string, codes: string[]): Promise<UpdateResult>;
+	enableEmail2FAByUserId(userId: string): Promise<UpdateResult>;
+	disableEmail2FAByUserId(userId: string): Promise<UpdateResult>;
+	findByIdsWithPublicE2EKey(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
+	resetE2EKey(userId: string): Promise<UpdateResult>;
+	removeExpiredEmailCodesOfUserId(userId: string): Promise<UpdateResult>;
+	removeEmailCodeByUserIdAndCode(userId: string, code: string): Promise<UpdateResult>;
+	addEmailCodeByUserId(userId: string, code: string, expire: Date): Promise<UpdateResult>;
+	findActiveUsersInRoles(roles: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
+	findOneByUsernameAndServiceNameIgnoringCase(
+		username: string,
+		userId: string,
+		serviceName: string,
+		options?: FindOptions<IUser>,
+	): Promise<IUser | null>;
+	findOneByEmailAddressAndServiceNameIgnoringCase(
+		emailAddress: string,
+		userId: string,
+		serviceName: string,
+		options?: FindOptions<IUser>,
+	): Promise<IUser | null>;
+	findOneByEmailAddress(emailAddress: string, options?: FindOptions<IUser>): Promise<IUser | null>;
+	findOneAdmin(admin: boolean, options?: FindOptions<IUser>): Promise<IUser | null>;
+	findOneByIdAndLoginToken(userId: string, loginToken: string, options?: FindOptions<IUser>): Promise<IUser | null>;
+	findOneActiveById(userId: string, options?: FindOptions<IUser>): Promise<IUser | null>;
+	findOneByIdOrUsername(userId: string, options?: FindOptions<IUser>): Promise<IUser | null>;
+	findOneByRolesAndType(roles: string[], type: string, options?: FindOptions<IUser>): Promise<IUser | null>;
+	findNotOfflineByIds(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
+	findUsersNotOffline(options?: FindOptions<IUser>): FindCursor<IUser>;
+	findNotIdUpdatedFrom(userId: string, updatedFrom: Date, options?: FindOptions<IUser>): FindCursor<IUser>;
+	findByRoomId(roomId: string, options?: FindOptions<IUser>): FindCursor<IUser>;
+	findByUsername(username: string, options?: FindOptions<IUser>): FindCursor<IUser>;
+	findByUsernamesIgnoringCase(usernames: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
+	findActiveByUserIds(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
+	findActiveLocalGuests(idsExceptions: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
+	countActiveLocalGuests(idsExceptions: string[]): Promise<number>;
+	findUsersByNameOrUsername(name: string, options?: FindOptions<IUser>): FindCursor<IUser>;
+	findByUsernameNameOrEmailAddress(nameOrUsernameOrEmail: string, options?: FindOptions<IUser>): FindCursor<IUser>;
+	findCrowdUsers(options?: FindOptions<IUser>): FindCursor<IUser>;
+	getLastLogin(options?: FindOptions<IUser>): Promise<Date | undefined>;
+	findUsersByUsernames(usernames: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
+	findUsersByIds(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
+	findUsersWithUsernameByIds(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
+	findUsersWithUsernameByIdsNotOffline(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
+	getOldest(options?: FindOptions<IUser>): Promise<IUser | null>;
+	findRemoteUsers(options?: FindOptions<IUser>): FindCursor<IUser>;
+	findActiveRemoteUsers(options?: FindOptions<IUser>): FindCursor<IUser>;
+	findActiveFederated(options?: FindOptions<IUser>): FindCursor<IUser>;
+	getSAMLByIdAndSAMLProvider(userId: string, samlProvider: string): Promise<IUser | null>;
+	findBySAMLNameIdOrIdpSession(samlNameId: string, idpSession: string): Promise<IUser | null>;
+	findBySAMLInResponseTo(inResponseTo: string): Promise<IUser | null>;
+	addImportIds(userId: string, importIds: Array<{ service: string; id: string }>): Promise<UpdateResult>;
+	updateInviteToken(userId: string, token: string): Promise<UpdateResult>;
+	updateLastLoginById(userId: string): Promise<UpdateResult>;
+	addPasswordToHistory(userId: string, password: string, passwordHistoryAmount: number): Promise<UpdateResult>;
+	setServiceId(userId: string, serviceName: string, serviceId: string): Promise<UpdateResult>;
+	setUsername(userId: string, username: string): Promise<UpdateResult>;
+	setEmail(userId: string, email: string): Promise<UpdateResult>;
+	setEmailVerified(userId: string, email: string): Promise<UpdateResult>;
+	setName(userId: string, name: string): Promise<UpdateResult>;
+	unsetName(userId: string): Promise<UpdateResult>;
+	setCustomFields(userId: string, customFields: Record<string, unknown>): Promise<UpdateResult>;
+	setAvatarData(userId: string, origin: string, etag: Date): Promise<UpdateResult>;
+	unsetAvatarData(userId: string): Promise<UpdateResult>;
+	setUserActive(userId: string, active: boolean): Promise<UpdateResult>;
+	setAllUsersActive(active: boolean): Promise<UpdateResult | Document>;
+	setActiveNotLoggedInAfterWithRole(latestLastLoginDate: Date, role?: string, active?: boolean): Promise<UpdateResult | Document>;
+	unsetRequirePasswordChange(userId: string): Promise<UpdateResult>;
+	resetPasswordAndSetRequirePasswordChange(
+		userId: string,
+		requirePasswordChange: boolean,
+		requirePasswordChangeReason: string,
+	): Promise<UpdateResult>;
+	setLanguage(userId: string, language: string): Promise<UpdateResult>;
+	setProfile(userId: string, profile: Record<string, unknown>): Promise<UpdateResult>;
+	setBio(userId: string, bio?: string): Promise<UpdateResult>;
+	setNickname(userId: string, nickname?: string): Promise<UpdateResult>;
+	clearSettings(userId: string): Promise<UpdateResult>;
+	setPreferences(userId: string, preferences: Record<string, unknown>): Promise<UpdateResult>;
+	setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(userId: string, token: string, hash: string, until: Date): Promise<UpdateResult>;
+	setUtcOffset(userId: string, utcOffset: number): Promise<UpdateResult>;
+	saveUserById(userId: string, user: Partial<IUser>): Promise<UpdateResult>;
+	setReason(userId: string, reason: string): Promise<UpdateResult>;
+	unsetReason(userId: string): Promise<UpdateResult>;
+	bannerExistsById(userId: string, bannerId: string): Promise<boolean>;
+	setBannerReadById(userId: string, bannerId: string): Promise<UpdateResult>;
+	removeBannerById(userId: string, bannerId: string): Promise<UpdateResult>;
+	removeSamlServiceSession(userId: string): Promise<UpdateResult>;
+	updateDefaultStatus(userId: string, status: string): Promise<UpdateResult>;
+	setSamlInResponseTo(userId: string, inResponseTo: string): Promise<UpdateResult>;
+	create(data: Partial<IUser>): Promise<InsertOneResult<IUser>>;
+	removeById(userId: string): Promise<DeleteResult>;
+	removeLivechatData(userId: string): Promise<UpdateResult>;
+	getUsersToSendOfflineEmail(userIds: string[]): FindCursor<Pick<IUser, 'name' | 'username' | 'emails' | 'settings' | 'language'>>;
+	countActiveUsersByService(service: string, options?: FindOptions<IUser>): Promise<number>;
+	getActiveLocalUserCount(): Promise<number>;
+	getActiveLocalGuestCount(): Promise<number>;
+	removeOlderResumeTokensByUserId(userId: string, fromDate: Date): Promise<UpdateResult>;
+	findAllUsersWithPendingAvatar(): FindCursor<IUser>;
+	updateCustomFieldsById(userId: string, customFields: Record<string, unknown>): Promise<UpdateResult>;
+	countRoomMembers(roomId: string): Promise<number>;
 }
