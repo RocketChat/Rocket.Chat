@@ -200,7 +200,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		users: string[],
 		options?: FindOptions<IMessage>,
 	): FindCursor<IMessage>;
-	findInvisibleByRoomId(roomId: string, options: FindOptions<IMessage>): FindCursor<IMessage>;
 	findVisibleByRoomIdAfterTimestamp(roomId: string, timestamp: Date, options?: FindOptions<IMessage>): FindCursor<IMessage>;
 	findVisibleByRoomIdBeforeTimestampNotContainingTypes(
 		roomId: string,

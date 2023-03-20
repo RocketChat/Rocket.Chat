@@ -212,15 +212,6 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findInvisibleByRoomId(roomId, options) {
-		const query = {
-			_hidden: true,
-			rid: roomId,
-		};
-
-		return this.find(query, options);
-	}
-
 	findVisibleByRoomIdAfterTimestamp(roomId, timestamp, options) {
 		const query = {
 			_hidden: {

@@ -1009,15 +1009,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findInvisibleByRoomId(roomId: string, options: FindOptions<IMessage> = {}): FindCursor<IMessage> {
-		const query = {
-			_hidden: true,
-			rid: roomId,
-		};
-
-		return this.find(query, options);
-	}
-
 	findVisibleByRoomIdAfterTimestamp(roomId: string, timestamp: Date, options?: FindOptions<IMessage>): FindCursor<IMessage> {
 		const query = {
 			_hidden: {
