@@ -182,10 +182,10 @@ API.v1.addRoute(
 				}
 
 				if (isSettingColor(setting) && isSettingsUpdatePropsColor(this.bodyParams)) {
-					Settings.updateOptionsById<ISettingColor>(this.urlParams._id, {
+					await Settings.updateOptionsById<ISettingColor>(this.urlParams._id, {
 						editor: this.bodyParams.editor,
 					});
-					Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
+					await Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
 					return API.v1.success();
 				}
 

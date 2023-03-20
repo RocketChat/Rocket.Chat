@@ -1,26 +1,14 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
+
+import type { GroupsBaseProps } from './BaseProps';
+import { withGroupBaseProperties } from './BaseProps';
 
 const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type GroupsConvertToTeamProps =
-	| { roomId: IRoom['_id']; roomName?: never }
-	| { roomName: Exclude<IRoom['name'], undefined>; roomId?: never };
+export type GroupsConvertToTeamProps = GroupsBaseProps;
 
-const GroupsConvertToTeamPropsSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-		},
-		roomName: {
-			type: 'string',
-		},
-	},
-	required: ['roomId', 'roomName'],
-	additionalProperties: false,
-};
+const GroupsConvertToTeamPropsSchema = withGroupBaseProperties();
 
 export const isGroupsConvertToTeamProps = ajv.compile<GroupsConvertToTeamProps>(GroupsConvertToTeamPropsSchema);

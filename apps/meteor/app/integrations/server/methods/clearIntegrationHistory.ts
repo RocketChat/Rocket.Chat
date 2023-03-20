@@ -4,6 +4,13 @@ import { Integrations, IntegrationHistory } from '@rocket.chat/models';
 import { hasPermission } from '../../../authorization/server';
 import notifications from '../../../notifications/server/lib/Notifications';
 
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		clearIntegrationHistory(integrationId: string): Promise<boolean>;
+	}
+}
+
 Meteor.methods({
 	async clearIntegrationHistory(integrationId) {
 		let integration;

@@ -62,7 +62,7 @@ Meteor.methods({
 
 			const _id = await (await CustomUserStatus.create(createUserStatus)).insertedId;
 
-			api.broadcast('user.updateCustomStatus', createUserStatus);
+			void api.broadcast('user.updateCustomStatus', createUserStatus);
 
 			return _id;
 		}
@@ -76,7 +76,7 @@ Meteor.methods({
 			await CustomUserStatus.setStatusType(userStatusData._id, userStatusData.statusType);
 		}
 
-		api.broadcast('user.updateCustomStatus', userStatusData);
+		void api.broadcast('user.updateCustomStatus', userStatusData);
 
 		return true;
 	},
