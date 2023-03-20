@@ -318,11 +318,11 @@ export class ImportDataConverter {
 
 	public async convertUsers({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): Promise<void> {
 		const users = (await this.getUsersToImport()) as IImportUserRecord[];
-		users.forEach(({ data, _id }) => {
+		for await (const { data, _id } of users) {
 			try {
 				if (beforeImportFn && !beforeImportFn(data, 'user')) {
 					await this.skipRecord(_id);
-					return;
+					continue;
 				}
 
 				const emails = data.emails.filter(Boolean).map((email) => ({ address: email }));
@@ -335,7 +335,7 @@ export class ImportDataConverter {
 				let existingUser = this.findExistingUser(data);
 				if (existingUser && this._options.skipExistingUsers) {
 					await this.skipRecord(_id);
-					return;
+					continue;
 				}
 
 				if (!data.username) {
@@ -372,7 +372,7 @@ export class ImportDataConverter {
 				this._logger.error(e);
 				await this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
 			}
-		});
+		}
 	}
 
 	protected async saveError(importId: string, error: Error): Promise<void> {
@@ -904,11 +904,11 @@ export class ImportDataConverter {
 
 	async convertChannels(startedByUserId: string, { beforeImportFn, afterImportFn }: IConversionCallbacks = {}): Promise<void> {
 		const channels = await this.getChannelsToImport();
-		channels.forEach(({ data, _id }: IImportChannelRecord) => {
+		for await (const { data, _id } of channels) {
 			try {
 				if (beforeImportFn && !beforeImportFn(data, 'channel')) {
 					await this.skipRecord(_id);
-					return;
+					continue;
 				}
 
 				if (!data.name && data.t !== 'd') {
@@ -940,7 +940,7 @@ export class ImportDataConverter {
 			} catch (e) {
 				await this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
 			}
-		});
+		}
 	}
 
 	archiveRoomById(rid: string): void {
