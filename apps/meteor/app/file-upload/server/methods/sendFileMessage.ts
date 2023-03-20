@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import type { MessageAttachment, FileAttachmentProps, IUser, IUpload, AtLeast } from '@rocket.chat/core-typings';
 import { Rooms, Uploads } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { FileUpload } from '../lib/FileUpload';
@@ -118,7 +119,14 @@ export const parseFileIntoMessageAttachments = async (
 	return { files, attachments };
 };
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		sendFileMessage: (roomId: string, _store: string, file: Partial<IUpload>, msgData?: Record<string, any>) => boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async sendFileMessage(roomId, _store, file, msgData = {}) {
 		const user = Meteor.user() as IUser | undefined;
 		if (!user) {

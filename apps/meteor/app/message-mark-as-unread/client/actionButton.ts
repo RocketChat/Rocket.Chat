@@ -15,7 +15,7 @@ Meteor.startup(() => {
 		context: ['message', 'message-mobile', 'threads'],
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			return Meteor.call('unreadMessages', message, function (error: unknown) {
+			return Meteor.call('unreadMessages', message, async function (error: unknown) {
 				if (error) {
 					dispatchToastMessage({ type: 'error', message: error });
 					return;
@@ -26,7 +26,7 @@ Meteor.startup(() => {
 				if (subscription == null) {
 					return;
 				}
-				RoomManager.close(subscription.t + subscription.name);
+				await RoomManager.close(subscription.t + subscription.name);
 				return FlowRouter.go('home');
 			});
 		},

@@ -5,7 +5,7 @@ import dns from 'dns';
 
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { HTTP } from 'meteor/http';
 import UAParser from 'ua-parser-js';
@@ -39,7 +39,7 @@ import {
 } from '../../../models/server';
 import { Logger } from '../../../logger/server';
 import { hasPermission, hasRole, canAccessRoom, roomAccessAttributes } from '../../../authorization/server';
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../mailer/server/api';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
@@ -1225,7 +1225,7 @@ export const Livechat = {
 		}
 
 		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
-			api.broadcast('omnichannel.room', room._id, {
+			void api.broadcast('omnichannel.room', room._id, {
 				type: 'agentStatus',
 				status,
 			});
@@ -1241,7 +1241,7 @@ export const Livechat = {
 	},
 
 	notifyRoomVisitorChange(roomId, visitor) {
-		api.broadcast('omnichannel.room', roomId, {
+		void api.broadcast('omnichannel.room', roomId, {
 			type: 'visitorData',
 			visitor,
 		});

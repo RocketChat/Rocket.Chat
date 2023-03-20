@@ -19,9 +19,10 @@ type ThreadMessageProps = {
 	message: IThreadMessage | IThreadMainMessage;
 	unread: boolean;
 	sequential: boolean;
+	showUserAvatar: boolean;
 };
 
-const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): ReactElement => {
+const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMessageProps): ReactElement => {
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
 	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored);
@@ -47,7 +48,7 @@ const ThreadMessage = ({ message, sequential, unread }: ThreadMessageProps): Rea
 			data-qa-type='message'
 		>
 			<MessageLeftContainer>
-				{!sequential && message.u.username && (
+				{!sequential && message.u.username && showUserAvatar && (
 					<UserAvatar
 						url={message.avatar}
 						username={message.u.username}

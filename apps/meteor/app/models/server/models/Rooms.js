@@ -6,7 +6,7 @@ import Messages from './Messages';
 import Subscriptions from './Subscriptions';
 import { trim } from '../../../../lib/utils/stringUtils';
 
-export class Rooms extends Base {
+class Rooms extends Base {
 	constructor(...args) {
 		super(...args);
 
@@ -850,7 +850,6 @@ export class Rooms extends Base {
 	/**
 	 * @param {string} _id
 	 * @param {string?} messageId
-	 * @returns {Promise<void>}
 	 */
 	resetLastMessageById(_id, messageId = undefined) {
 		const query = { _id };

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { api, Team } from '@rocket.chat/core-services';
 
-import { hasPermission } from '../../app/authorization';
+import { hasPermission } from '../../app/authorization/server';
 import { Users, Subscriptions, Messages } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 
@@ -63,7 +63,7 @@ Meteor.methods({
 		}
 
 		if (settings.get('UI_DisplayRoles')) {
-			api.broadcast('user.roleUpdate', {
+			void api.broadcast('user.roleUpdate', {
 				type: 'added',
 				_id: 'leader',
 				u: {
