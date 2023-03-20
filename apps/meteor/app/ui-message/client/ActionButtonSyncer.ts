@@ -10,7 +10,7 @@ import * as DropdownAction from './actionButtons/dropdownAction';
 
 let registeredButtons: Array<IUIActionButton> = [];
 
-const addButton = (button: IUIActionButton): void => {
+const addButton = async (button: IUIActionButton): Promise<void> => {
 	switch (button.context) {
 		case UIActionButtonContext.MESSAGE_ACTION:
 			MessageAction.onAdded(button);
@@ -22,14 +22,14 @@ const addButton = (button: IUIActionButton): void => {
 			MessageBox.onAdded(button);
 			break;
 		case UIActionButtonContext.USER_DROPDOWN_ACTION:
-			DropdownAction.onAdded(button);
+			await DropdownAction.onAdded(button);
 			break;
 	}
 
 	registeredButtons.push(Object.freeze(button));
 };
 
-const removeButton = (button: IUIActionButton): void => {
+const removeButton = async (button: IUIActionButton): Promise<void> => {
 	switch (button.context) {
 		case UIActionButtonContext.MESSAGE_ACTION:
 			MessageAction.onRemoved(button);
@@ -41,7 +41,7 @@ const removeButton = (button: IUIActionButton): void => {
 			MessageBox.onRemoved(button);
 			break;
 		case UIActionButtonContext.USER_DROPDOWN_ACTION:
-			DropdownAction.onRemoved(button);
+			await DropdownAction.onRemoved(button);
 			break;
 	}
 };

@@ -143,7 +143,7 @@ class LivechatClass {
 
 		this.logger.debug(`Running callbacks for room ${room._id}`);
 
-		Meteor.defer(() => {
+		process.nextTick(() => {
 			/**
 			 * @deprecated the `AppEvents.ILivechatRoomClosedHandler` event will be removed
 			 * in the next major version of the Apps-Engine

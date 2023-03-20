@@ -24,7 +24,7 @@ Meteor.startup(function () {
 					return;
 				}
 
-				callWithErrorHandling('followMessage', { mid: message._id }).then(() =>
+				await callWithErrorHandling('followMessage', { mid: message._id }).then(() =>
 					dispatchToastMessage({
 						type: 'success',
 						message: TAPi18n.__('You_followed_this_message'),

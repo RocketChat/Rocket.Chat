@@ -28,7 +28,7 @@ const removeUserReaction = (message: IMessage, reaction: string, username: strin
 async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction: string, shouldReact?: boolean) {
 	reaction = `:${reaction.replace(/:/g, '')}:`;
 
-	if (!emoji.list[reaction] && (await EmojiCustom.findByNameOrAlias(reaction).count()) === 0) {
+	if (!emoji.list[reaction] && (await EmojiCustom.findByNameOrAlias(reaction, {}).count()) === 0) {
 		throw new Meteor.Error('error-not-allowed', 'Invalid emoji provided.', {
 			method: 'setReaction',
 		});

@@ -1,10 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import { Settings } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermission } from '../../../authorization/server';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		refreshOAuthService(): Promise<void>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async refreshOAuthService() {
 		const userId = Meteor.userId();
 
