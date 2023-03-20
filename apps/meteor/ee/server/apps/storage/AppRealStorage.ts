@@ -43,7 +43,7 @@ export class AppRealStorage extends AppMetadataStorage {
 	}
 
 	public async remove(id: string): Promise<{ success: boolean }> {
-		await this.db.removeById(id);
+		await this.db.deleteOne({ _id: id });
 		return { success: true };
 	}
 }
