@@ -4,6 +4,7 @@ import { WebdavAccounts } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 import type { IWebdavAccount } from '@rocket.chat/core-typings';
 import type { DeleteResult } from 'mongodb';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
@@ -14,7 +15,7 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
-Meteor.methods({
+Meteor.methods<ServerMethods>({
 	async removeWebdavAccount(accountId) {
 		const userId = Meteor.userId();
 

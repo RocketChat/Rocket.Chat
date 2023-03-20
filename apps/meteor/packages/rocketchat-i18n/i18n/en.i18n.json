@@ -5444,6 +5444,7 @@
   "Webdav_account_removed": "WebDAV account removed",
   "webdav-account-saved": "WebDAV account saved",
   "webdav-account-updated": "WebDAV account updated",
+  "webdav-server-not-found": "WebDAV server not found",
   "Webhook_Details": "WebHook Details",
   "Webhook_URL": "Webhook URL",
   "Webhooks": "Webhooks",
