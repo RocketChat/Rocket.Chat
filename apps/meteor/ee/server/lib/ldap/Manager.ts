@@ -535,7 +535,7 @@ export class LDAPEEManager extends LDAPManager {
 					count++;
 
 					const userData = this.mapUserData(data);
-					converter.addUser(userData);
+					converter.addUserSync(userData);
 					return userData;
 				},
 				endCallback: (error: any): void => {
@@ -559,7 +559,7 @@ export class LDAPEEManager extends LDAPManager {
 
 			if (ldapUser) {
 				const userData = this.mapUserData(ldapUser, user.username);
-				converter.addUser(userData);
+				converter.addUserSync(userData);
 			}
 		}
 	}
