@@ -231,6 +231,9 @@ type CallbackTracker = (callback: Callback) => () => void;
 
 type HookTracker = (params: { hook: Hook; length: number }) => () => void;
 
+// Temporary since we are still using callbacks on client side
+Promise.await = Promise.await || ((promise: Promise<unknown>) => promise);
+
 class Callbacks {
 	private logger: Logger | undefined = undefined;
 
