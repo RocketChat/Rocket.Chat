@@ -11,7 +11,6 @@ export class AudioRecorder {
 		}
 
 		this.audioContext = new AudioContext();
-		console.log(this.audioContext, 'createAudioContext');
 	}
 
 	destroyAudioContext() {
@@ -29,7 +28,6 @@ export class AudioRecorder {
 		}
 
 		this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-		console.log(this.stream, 'createStream');
 	}
 
 	destroyStream() {
@@ -48,7 +46,6 @@ export class AudioRecorder {
 
 		const input = this.audioContext?.createMediaStreamSource(this.stream);
 		this.encoder = new AudioEncoder(input, { bitRate: 32 });
-		console.log(this.encoder, 'createEncoder');
 	}
 
 	destroyEncoder() {
@@ -67,11 +64,10 @@ export class AudioRecorder {
 			await this.createEncoder();
 			cb?.call(this, true);
 		} catch (error) {
-			console.error(error.message);
+			console.error(error);
 			this.destroyEncoder();
 			this.destroyStream();
 			this.destroyAudioContext();
-			console.log('Error start');
 			cb?.call(this, false);
 		}
 	}
@@ -81,7 +77,6 @@ export class AudioRecorder {
 		this.encoder?.close();
 
 		this.destroyEncoder();
-		console.log('stop');
 		this.destroyStream();
 		this.destroyAudioContext();
 	}

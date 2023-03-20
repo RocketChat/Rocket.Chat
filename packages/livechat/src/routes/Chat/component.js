@@ -29,6 +29,7 @@ class Chat extends Component {
 		text: '',
 		emojiPickerActive: false,
 		isRecording: false,
+		microphoneAccess: false,
 	};
 
 	handleFilesDropTargetRef = (ref) => {
@@ -57,6 +58,9 @@ class Chat extends Component {
 
 	handleUploadClick = (event) => {
 		event.preventDefault();
+		// if (this.state.isRecording !== false) {
+		// 	return;
+		// }
 		this.filesDropTarget.browse();
 	};
 
@@ -102,15 +106,21 @@ class Chat extends Component {
 		}
 	};
 
-	handleRecording = async () => {
-		console.log('handle recording');
-		// console.log(this.state.isRecording);
-		this.setState({ isRecording: !this.state.isRecording });
-	};
-
-	cancelRecording = () => {
-		console.log(this.state.isRecording);
-		this.setState({ isRecording: false });
+	handleRecording = () => {
+		if (!this.microphoneAccess) {
+			const permissions = navigator.mediaDevices.getUserMedia({ audio: true });
+			permissions
+				.then(() => {
+					this.setState({ isRecording: !this.state.isRecording });
+					this.setState({ microphoneAccess: true });
+				})
+				.catch((err) => {
+					this.setState({ microphoneAccess: false });
+					console.log(`${err.name} : ${err.message}`);
+				});
+		} else {
+			this.setState({ isRecording: !this.state.isRecording });
+		}
 	};
 
 	render = (
@@ -233,7 +243,11 @@ class Chat extends Component {
 							handleRecording={this.handleRecording}
 							pre={
 								<ComposerActions>
-									<ComposerAction className={createClassName(styles, 'emoji-picker-icon')} onClick={this.toggleEmojiPickerState}>
+									<ComposerAction
+										isDisabled={this.state.isRecording !== false}
+										className={createClassName(styles, 'emoji-picker-icon')}
+										onClick={this.toggleEmojiPickerState}
+									>
 										<EmojiIcon width={20} height={20} />
 									</ComposerAction>
 								</ComposerActions>
@@ -245,7 +259,7 @@ class Chat extends Component {
 											<ComposerAction onClick={this.handleRecording}>
 												<MicIcon width={20} height={20} />
 											</ComposerAction>
-											<ComposerAction onClick={this.handleUploadClick}>
+											<ComposerAction onClick={this.handleUploadClick} isDisabled={this.state.isRecording !== false}>
 												<PlusIcon width={20} height={20} />
 											</ComposerAction>
 										</ComposerActions>
