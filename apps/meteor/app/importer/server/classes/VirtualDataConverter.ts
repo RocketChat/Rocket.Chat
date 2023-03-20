@@ -1,5 +1,6 @@
 import { Random } from '@rocket.chat/random';
 import type {
+	IImportUser,
 	IImportUserRecord,
 	IImportChannelRecord,
 	IImportMessageRecord,
@@ -55,9 +56,21 @@ export class VirtualDataConverter extends ImportDataConverter {
 		return undefined;
 	}
 
+	public addUserSync(data: IImportUser): void {
+		return this.addObjectSync('user', data);
+	}
+
 	protected async addObject(type: IImportRecordType, data: IImportData, options: Record<string, any> = {}): Promise<void> {
 		if (!this.useVirtual) {
 			return super.addObject(type, data, options);
+		}
+
+		this.addObjectSync(type, data, options);
+	}
+
+	protected addObjectSync(type: IImportRecordType, data: IImportData, options: Record<string, any> = {}): void {
+		if (!this.useVirtual) {
+			throw new Error('Sync operations can only be used on virtual converter');
 		}
 
 		const list = this.getObjectList(type);
