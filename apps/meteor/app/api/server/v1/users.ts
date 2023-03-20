@@ -1119,7 +1119,7 @@ API.v1.addRoute(
 						});
 
 						const { _id, username, statusText, roles, name } = user;
-						api.broadcast('presence.status', {
+						void api.broadcast('presence.status', {
 							user: { status, _id, username, statusText, roles, name },
 							previousStatus: user.status,
 						});

@@ -94,7 +94,7 @@ export class AppUserBridge extends UserBridge {
 		}
 
 		try {
-			deleteUser(user.id);
+			await deleteUser(user.id);
 		} catch (err) {
 			throw new Error(`Errors occurred while deleting an app user: ${err}`);
 		}

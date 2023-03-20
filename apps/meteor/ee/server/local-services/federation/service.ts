@@ -134,7 +134,7 @@ abstract class AbstractBaseFederationServiceEE extends AbstractFederationService
 
 	public async stopped(): Promise<void> {
 		await this.stopFederation();
-		super.stopped();
+		await super.stopped();
 	}
 }
 

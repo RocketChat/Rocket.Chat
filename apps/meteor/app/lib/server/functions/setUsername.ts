@@ -81,7 +81,7 @@ export const _setUsername = async function (userId: string, u: string, fullUser:
 		}
 	}
 
-	api.broadcast('user.nameChanged', {
+	void api.broadcast('user.nameChanged', {
 		_id: user._id,
 		name: user.name,
 		username: user.username,

@@ -22,6 +22,7 @@ import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { settings } from '../../../settings/server';
+import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 
 // TODO: Refact or remove
 
@@ -446,7 +447,7 @@ API.v1.addRoute(
 			const [ims, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				ims: ims.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId)),
+				ims: await Promise.all(ims.map((room: IRoom) => composeRoomWithLastMessage(room, this.userId))),
 				offset,
 				count: ims.length,
 				total,
@@ -480,7 +481,7 @@ API.v1.addRoute(
 			const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				ims: rooms.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId)),
+				ims: await Promise.all(rooms.map((room: IRoom) => composeRoomWithLastMessage(room, this.userId))),
 				offset,
 				count: rooms.length,
 				total,

@@ -7,14 +7,14 @@ Meteor.startup(function () {
 		_id: 'Katex_Enabled',
 		value: true,
 	};
-	settingsRegistry.add('Katex_Enabled', true, {
+	void settingsRegistry.add('Katex_Enabled', true, {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Katex',
 		public: true,
 		i18nDescription: 'Katex_Enabled_Description',
 	});
-	settingsRegistry.add('Katex_Parenthesis_Syntax', true, {
+	void settingsRegistry.add('Katex_Parenthesis_Syntax', true, {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Katex',
@@ -22,7 +22,7 @@ Meteor.startup(function () {
 		enableQuery,
 		i18nDescription: 'Katex_Parenthesis_Syntax_Description',
 	});
-	return settingsRegistry.add('Katex_Dollar_Syntax', false, {
+	return void settingsRegistry.add('Katex_Dollar_Syntax', false, {
 		type: 'boolean',
 		group: 'Message',
 		section: 'Katex',
