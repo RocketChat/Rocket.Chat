@@ -303,15 +303,6 @@ export class Messages extends Base {
 		return this.findOne(query);
 	}
 
-	findOneByRoomIdAndMessageId(rid, messageId, options) {
-		const query = {
-			rid,
-			_id: messageId,
-		};
-
-		return this.findOne(query, options);
-	}
-
 	findByRoomId(roomId, options) {
 		const query = {
 			rid: roomId,
@@ -465,27 +456,6 @@ export class Messages extends Base {
 				'msg': newMessage,
 			},
 		};
-
-		return this.update(query, update);
-	}
-
-	updateUserStarById(_id, userId, starred) {
-		let update;
-		const query = { _id };
-
-		if (starred) {
-			update = {
-				$addToSet: {
-					starred: { _id: userId },
-				},
-			};
-		} else {
-			update = {
-				$pull: {
-					starred: { _id: userId },
-				},
-			};
-		}
 
 		return this.update(query, update);
 	}
