@@ -77,7 +77,7 @@ export class SAML {
 		await CredentialTokens.create(credentialToken, loginResult);
 	}
 
-	public static insertOrUpdateSAMLUser(userObject: ISAMLUser): { userId: string; token: string } {
+	public static async insertOrUpdateSAMLUser(userObject: ISAMLUser): Promise<{ userId: string; token: string }> {
 		const {
 			generateUsername,
 			immutableProperty,
@@ -218,7 +218,7 @@ export class SAML {
 		);
 
 		if (username && username !== user.username) {
-			saveUserIdentity({ _id: user._id, username });
+			await saveUserIdentity({ _id: user._id, username });
 		}
 
 		// sending token along with the userId

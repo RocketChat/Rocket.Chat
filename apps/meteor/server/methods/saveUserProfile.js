@@ -12,7 +12,8 @@ import { compareUserPassword } from '../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';
 import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
 
-function saveUserProfile(settings, customFields) {
+// TODO
+async function saveUserProfile(settings, customFields) {
 	if (!rcSettings.get('Accounts_AllowUserProfileChange')) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 			method: 'saveUserProfile',
@@ -38,11 +39,11 @@ function saveUserProfile(settings, customFields) {
 
 	if (settings.realname || settings.username) {
 		if (
-			!saveUserIdentity({
+			!(await saveUserIdentity({
 				_id: this.userId,
 				name: settings.realname,
 				username: settings.username,
-			})
+			}))
 		) {
 			throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', {
 				method: 'saveUserProfile',
@@ -131,7 +132,7 @@ const saveUserProfileWithTwoFactor = twoFactorRequired(saveUserProfile, {
 });
 
 Meteor.methods({
-	saveUserProfile(settings, customFields, ...args) {
+	async saveUserProfile(settings, customFields, ...args) {
 		check(settings, Object);
 		check(customFields, Match.Maybe(Object));
 
