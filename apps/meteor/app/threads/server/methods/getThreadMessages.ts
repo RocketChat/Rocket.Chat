@@ -4,7 +4,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { Messages, Rooms } from '../../../models/server';
-import { canAccessRoom } from '../../../authorization/server';
+import { canAccessRoomAsync } from '../../../authorization/server';
 import { settings } from '../../../settings/server';
 import { readThread } from '../functions';
 
@@ -18,7 +18,7 @@ declare module '@rocket.chat/ui-contexts' {
 const MAX_LIMIT = 100;
 
 Meteor.methods<ServerMethods>({
-	getThreadMessages({ tmid, limit, skip }) {
+	async getThreadMessages({ tmid, limit, skip }) {
 		if ((limit ?? 0) > MAX_LIMIT) {
 			throw new Meteor.Error('error-not-allowed', `max limit: ${MAX_LIMIT}`, {
 				method: 'getThreadMessages',
@@ -39,7 +39,7 @@ Meteor.methods<ServerMethods>({
 		const user = Meteor.user();
 		const room = Rooms.findOneById(thread.rid);
 
-		if (!user || !canAccessRoom(room, user)) {
+		if (!user || !(await canAccessRoomAsync(room, user))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getThreadMessages' });
 		}
 

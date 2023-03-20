@@ -4,7 +4,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
 import { isTheLastMessage } from '../../lib/server';
-import { canAccessRoom, roomAccessAttributes } from '../../authorization/server';
+import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { Subscriptions, Rooms, Messages } from '../../models/server';
 import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
 
@@ -16,7 +16,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	starMessage(message) {
+	async starMessage(message) {
 		const uid = Meteor.userId();
 
 		if (!uid) {
@@ -44,7 +44,7 @@ Meteor.methods<ServerMethods>({
 
 		const room = Rooms.findOneById(message.rid, { fields: { ...roomAccessAttributes, lastMessage: 1 } });
 
-		if (!canAccessRoom(room, { _id: uid })) {
+		if (!(await canAccessRoomAsync(room, { _id: uid }))) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'starMessage' });
 		}
 
