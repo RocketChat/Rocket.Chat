@@ -29,7 +29,7 @@ class RoomCoordinatorServer extends RoomCoordinator {
 			preventRenaming(): boolean {
 				return false;
 			},
-			getDiscussionType(): RoomType {
+			async getDiscussionType(): Promise<RoomType> {
 				return 'p';
 			},
 			canAccessUploadedFile(_params: { rc_uid: string; rc_rid: string; rc_token: string }): boolean {

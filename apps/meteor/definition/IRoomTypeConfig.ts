@@ -104,7 +104,7 @@ export interface IRoomTypeServerDirectives {
 	isGroupChat: (room: IRoom) => boolean;
 	canBeDeleted: (hasPermission: (permissionId: string, rid?: string) => boolean, room: IRoom) => boolean;
 	preventRenaming: () => boolean;
-	getDiscussionType: (room?: AtLeast<IRoom, 'teamId'>) => RoomType;
+	getDiscussionType: (room?: AtLeast<IRoom, 'teamId'>) => Promise<RoomType>;
 	canAccessUploadedFile: (params: { rc_uid: string; rc_rid: string; rc_token: string }) => boolean;
 	getNotificationDetails: (
 		room: IRoom,

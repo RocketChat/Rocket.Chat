@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { hasPermission } from '../../../authorization/server';
-import { cleanRoomHistory } from '../functions';
+import { cleanRoomHistory } from '../functions/cleanRoomHistory';
 
 Meteor.methods({
 	cleanRoomHistory({

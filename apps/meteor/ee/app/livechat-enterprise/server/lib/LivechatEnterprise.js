@@ -35,7 +35,7 @@ export const LivechatEnterprise = {
 			});
 		}
 
-		if (addUserRoles(user._id, ['livechat-monitor'])) {
+		if (await addUserRoles(user._id, ['livechat-monitor'])) {
 			return user;
 		}
 
