@@ -2,11 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 
-import { ChatMessage, Rooms, Users } from '../../../models/client';
+import { ChatMessage, Rooms } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { callbacks } from '../../../../lib/callbacks';
 import { t } from '../../../utils/client';
-import { shouldUseRealName } from '../../../utils/lib/shouldUseRealName';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import { trim } from '../../../../lib/utils/stringUtils';
@@ -22,17 +21,15 @@ Meteor.methods<ServerMethods>({
 			return dispatchToastMessage({ type: 'error', message: t('Message_Already_Sent') });
 		}
 		const user = Meteor.user() as IUser | null;
-		if (!user?.username) {
+		if (!user?.username || !user?.name) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'sendMessage' });
 		}
 
-		const defaultMessagesLayout = settings.get('Accounts_Default_User_Preferences_messagesLayout');
-		const userSettings = uid ? Users.findOneById(uid, { fields: { settings: 1 } }) : undefined;
 		message.ts = new Date();
 		message.u = {
 			_id: uid,
 			username: user.username,
-			...(shouldUseRealName(defaultMessagesLayout, userSettings) && user.name && { name: user.name }),
+			name: user.name,
 		};
 		message.temp = true;
 		if (settings.get('Message_Read_Receipt_Enabled')) {
