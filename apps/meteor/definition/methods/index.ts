@@ -1,2 +1,1 @@
 import './federation';
-import './omnichannel';
