@@ -1,7 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Users, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
 
-import { hasAllPermission, hasPermission, canAccessRoom, roomAccessAttributes } from '../../app/authorization/server';
+import { hasAllPermission, hasPermission, canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
 import { Subscriptions, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
@@ -167,7 +167,7 @@ export class Spotlight {
 		}
 
 		const canListOutsiders = hasAllPermission(userId, ['view-outside-room', 'view-d-room']);
-		const canListInsiders = canListOutsiders || (rid && canAccessRoom(room, { _id: userId }));
+		const canListInsiders = canListOutsiders || (rid && Promise.await(canAccessRoomAsync(room, { _id: userId })));
 
 		const insiderExtraQuery = [];
 

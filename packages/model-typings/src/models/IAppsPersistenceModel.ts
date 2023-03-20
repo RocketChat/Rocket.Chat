@@ -1,8 +1,8 @@
 import type { IPersistenceItem } from '@rocket.chat/core-typings';
+import type { DeleteResult, Filter } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface IAppsPersistenceModel extends IBaseModel<IPersistenceItem> {
-	//
+	remove(query: Filter<any>): Promise<DeleteResult>;
 }

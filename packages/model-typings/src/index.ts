@@ -67,3 +67,8 @@ export * from './models/IWebdavAccountsModel';
 export * from './models/IMatrixBridgeRoomModel';
 export * from './models/IMatrixBridgeUserModel';
 export * from './models/IOmnichannelServiceLevelAgreementsModel';
+export * from './models/IAppLogsModel';
+export * from './models/IAppsModel';
+export * from './models/IAppsPersistenceModel';
+export * from './models/IImportsModel';
+export * from './models/IFederationRoomEventsModel';

@@ -7,7 +7,7 @@ import { settings } from '../../app/settings/server';
 
 type FindUsersParam = {
 	rid: string;
-	status?: string;
+	status?: { $in: string[] };
 	skip?: number;
 	limit?: number;
 	filter?: string;
