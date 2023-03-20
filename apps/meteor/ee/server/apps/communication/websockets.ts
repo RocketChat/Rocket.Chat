@@ -84,6 +84,10 @@ export class AppServerListener {
 
 		const storageItem = await this.orch.getStorage()!.retrieveOne(appId);
 
+		if (!storageItem) {
+			return;
+		}
+
 		const appPackage = await this.orch.getAppSourceStorage()!.fetch(storageItem);
 
 		await this.orch.getManager()!.updateLocal(storageItem, appPackage);

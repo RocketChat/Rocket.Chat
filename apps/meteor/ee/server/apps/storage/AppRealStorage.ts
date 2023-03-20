@@ -5,7 +5,6 @@ import type { IAppsModel } from '@rocket.chat/model-typings';
 export class AppRealStorage extends AppMetadataStorage {
 	constructor(private db: IAppsModel) {
 		super('mongodb');
-		console.log('what is appsmodel', db);
 	}
 
 	public async create(item: IAppStorageItem): Promise<IAppStorageItem> {
@@ -24,7 +23,7 @@ export class AppRealStorage extends AppMetadataStorage {
 		return item;
 	}
 
-	public retrieveOne(id: string): Promise<IAppStorageItem> {
+	public retrieveOne(id: string): Promise<IAppStorageItem | null> {
 		return this.db.findOne({ $or: [{ _id: id }, { id }] });
 	}
 
@@ -38,13 +37,13 @@ export class AppRealStorage extends AppMetadataStorage {
 		return items;
 	}
 
-	public async update(item: IAppStorageItem): Promise<IAppStorageItem> {
-		await this.db.updateOne({ id: item.id }, item);
+	public async update(item: IAppStorageItem): Promise<IAppStorageItem | null> {
+		await this.db.updateOne({ id: item.id }, { $set: { ...item } });
 		return this.retrieveOne(item.id);
 	}
 
 	public async remove(id: string): Promise<{ success: boolean }> {
-		this.db.removeById(id);
+		await this.db.removeById(id);
 		return { success: true };
 	}
 }

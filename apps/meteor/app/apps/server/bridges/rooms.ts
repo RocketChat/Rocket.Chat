@@ -118,15 +118,17 @@ export class AppRoomBridge extends RoomBridge {
 
 		await Rooms.update(rm._id, rm);
 
-		for (const username of members) {
-			const member = Users.findOneByUsername(username, {});
+		const addUsersToRoom = members.map(async (username: string) => {
+			const member = await Users.findOneByUsername(username, {});
 
-			if (!member) {
-				continue;
+			if (member) {
+				return addUserToRoom(rm._id, member);
 			}
 
-			addUserToRoom(rm._id, member);
-		}
+			return undefined;
+		});
+
+		await Promise.all(addUsersToRoom);
 	}
 
 	protected async delete(roomId: string, appId: string): Promise<void> {

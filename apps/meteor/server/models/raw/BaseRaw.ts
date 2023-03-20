@@ -21,8 +21,8 @@ import type {
 	InsertOneResult,
 	DeleteResult,
 	DeleteOptions,
-    IndexSpecification,
-    CreateIndexesOptions,
+	IndexSpecification,
+	CreateIndexesOptions,
 } from 'mongodb';
 import { ObjectId } from 'mongodb';
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
