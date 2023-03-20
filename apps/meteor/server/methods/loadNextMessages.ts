@@ -2,20 +2,21 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Messages } from '@rocket.chat/models';
 
 import { canAccessRoomId } from '../../app/authorization/server';
-import { Messages } from '../../app/models/server';
+import { Messages as MessagesSync } from '../../app/models/server';
 import { normalizeMessagesForUser } from '../../app/utils/server/lib/normalizeMessagesForUser';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		loadNextMessages(rid: IRoom['_id'], end?: Date, limit?: number): { messages: IMessage[] };
+		loadNextMessages(rid: IRoom['_id'], end?: Date, limit?: number): Promise<{ messages: IMessage[] }>;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	loadNextMessages(rid, end, limit = 20) {
+	async loadNextMessages(rid, end, limit = 20) {
 		check(rid, String);
 		check(limit, Number);
 
@@ -44,9 +45,14 @@ Meteor.methods<ServerMethods>({
 
 		let records;
 		if (end) {
-			records = Messages.findVisibleByRoomIdAfterTimestamp(rid, end, options).fetch();
+			records = MessagesSync.findVisibleByRoomIdAfterTimestamp(rid, end, options).fetch();
 		} else {
-			records = Messages.findVisibleByRoomId(rid, options).fetch();
+			records = await Messages.findVisibleByRoomId(rid, {
+				sort: {
+					ts: 1,
+				},
+				limit,
+			}).toArray();
 		}
 
 		return {
