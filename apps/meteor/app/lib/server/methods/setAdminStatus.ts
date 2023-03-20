@@ -1,10 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { isUserFederated } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermission } from '../../../authorization/server';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		setAdminStatus(userId: string, admin?: boolean): void;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	setAdminStatus(userId, admin) {
 		check(userId, String);
 		check(admin, Match.Optional(Boolean));

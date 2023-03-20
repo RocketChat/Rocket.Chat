@@ -1,8 +1,16 @@
 import { Meteor } from 'meteor/meteor';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { getStatusText } from '../../../lib/server';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		getUserStatusText(userId: string): string | undefined;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	getUserStatusText(userId) {
 		const currentUserId = Meteor.userId();
 		if (!currentUserId) {
