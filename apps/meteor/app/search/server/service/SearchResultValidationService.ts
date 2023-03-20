@@ -3,7 +3,7 @@ import mem from 'mem';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { SearchLogger } from '../logger/logger';
-import { canAccessRoom } from '../../../authorization/server';
+import { canAccessRoomAsync } from '../../../authorization/server';
 import { Users, Rooms } from '../../../models/server';
 import type { IRawSearchResult, ISearchResult } from '../model/ISearchResult';
 import { isTruthy } from '../../../../lib/isTruthy';
@@ -19,7 +19,7 @@ export class SearchResultValidationService {
 			return;
 		}
 
-		if (!uid || !canAccessRoom(room, { _id: uid })) {
+		if (!uid || !Promise.await(canAccessRoomAsync(room, { _id: uid }))) {
 			return;
 		}
 

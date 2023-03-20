@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import moment from 'moment';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { IEditedMessage, IUser } from '@rocket.chat/core-typings';
 
 import { Messages } from '../../../models/server';
 import { settings } from '../../../settings/server';
@@ -9,16 +11,25 @@ import { updateMessage } from '../functions';
 
 const allowedEditedFields = ['tshow', 'alias', 'attachments', 'avatar', 'emoji', 'msg'];
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		updateMessage(message: IEditedMessage): void;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	updateMessage(message) {
 		check(message, Match.ObjectIncluding({ _id: String }));
 
-		if (!Meteor.userId()) {
+		const uid = Meteor.userId();
+
+		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'updateMessage' });
 		}
 
 		const originalMessage = Messages.findOneById(message._id);
-		if (!originalMessage || !originalMessage._id) {
+		if (!originalMessage?._id) {
 			return;
 		}
 
@@ -45,9 +56,9 @@ Meteor.methods({
 			throw new Meteor.Error('error-message-change-to-thread', 'Cannot update message to a thread', { method: 'updateMessage' });
 		}
 
-		const _hasPermission = hasPermission(Meteor.userId(), 'edit-message', message.rid);
+		const _hasPermission = hasPermission(uid, 'edit-message', message.rid);
 		const editAllowed = settings.get('Message_AllowEditing');
-		const editOwn = originalMessage.u && originalMessage.u._id === Meteor.userId();
+		const editOwn = originalMessage.u && originalMessage.u._id === uid;
 
 		if (!_hasPermission && (!editAllowed || !editOwn)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Message editing not allowed', {
@@ -57,10 +68,10 @@ Meteor.methods({
 		}
 
 		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
-		const bypassBlockTimeLimit = hasPermission(Meteor.userId(), 'bypass-time-limit-edit-and-delete');
+		const bypassBlockTimeLimit = hasPermission(uid, 'bypass-time-limit-edit-and-delete');
 
 		if (!bypassBlockTimeLimit && Match.test(blockEditInMinutes, Number) && blockEditInMinutes !== 0) {
-			let currentTsDiff;
+			let currentTsDiff = 0;
 			let msgTs;
 
 			if (originalMessage.ts instanceof Date || Match.test(originalMessage.ts, Number)) {
@@ -76,18 +87,18 @@ Meteor.methods({
 			}
 		}
 
-		const user = Meteor.users.findOne(Meteor.userId());
-		canSendMessage(message.rid, { uid: user._id, ...user });
+		const user = Meteor.users.findOne(uid) as IUser;
+		canSendMessage(message.rid, { uid: user._id, username: user.username ?? undefined, ...user });
 
 		// It is possible to have an empty array as the attachments property, so ensure both things exist
 		if (originalMessage.attachments && originalMessage.attachments.length > 0 && originalMessage.attachments[0].description !== undefined) {
+			originalMessage.attachments[0].description = message.msg;
 			message.attachments = originalMessage.attachments;
-			message.attachments[0].description = message.msg;
 			message.msg = originalMessage.msg;
 		}
 
 		message.u = originalMessage.u;
 
-		return updateMessage(message, Meteor.user(), originalMessage);
+		return updateMessage(message, user, originalMessage);
 	},
 });

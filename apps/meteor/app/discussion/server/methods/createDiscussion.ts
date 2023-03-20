@@ -118,7 +118,7 @@ const create = ({ prid, pmid, t_name: discussionName, reply, users, user, encryp
 		);
 		if (discussionAlreadyExists) {
 			// do not allow multiple discussions to the same message'\
-			addUserToRoom(discussionAlreadyExists._id, user);
+			Promise.await(addUserToRoom(discussionAlreadyExists._id, user));
 			return discussionAlreadyExists;
 		}
 	}
