@@ -21,14 +21,14 @@ describe('LIVECHAT - Integrations', function () {
 			await updatePermission('view-livechat-manager', []);
 			await request.get(api('livechat/integrations.settings')).set(credentials).expect('Content-Type', 'application/json').expect(403);
 		});
-		it('should return an array of settings', async (done) => {
-			await updatePermission('view-livechat-manager', ['admin']);
-			await request
-				.get(api('livechat/integrations.settings'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
+		it('should return an array of settings', (done) => {
+			updatePermission('view-livechat-manager', ['admin'])
+				.then(async () => {
+					const res = await request
+						.get(api('livechat/integrations.settings'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200);
 					expect(res.body).to.have.property('success', true);
 					expect(res.body.settings).to.be.an('array');
 					const settingIds = res.body.settings.map((setting: ISetting) => setting._id);
@@ -45,8 +45,9 @@ describe('LIVECHAT - Integrations', function () {
 						'Livechat_webhook_on_visitor_message',
 						'Livechat_webhook_on_agent_message',
 					]);
-				});
-			done();
+				})
+				.then(done)
+				.catch(done);
 		});
 	});
 
