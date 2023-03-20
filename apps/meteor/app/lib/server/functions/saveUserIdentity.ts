@@ -14,7 +14,7 @@ import { validateName } from './validateName';
  * @param {object} changes changes to the user
  */
 
-export function saveUserIdentity({
+export async function saveUserIdentity({
 	_id,
 	name: rawName,
 	username: rawUsername,
