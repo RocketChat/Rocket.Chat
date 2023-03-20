@@ -23,11 +23,13 @@ import type {
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
 export interface IMessagesModel extends IBaseModel<IMessage> {
-	findVisibleByMentionAndRoomId(
+	findPaginatedVisibleByMentionAndRoomId(
 		username: IUser['username'],
 		rid: IRoom['_id'],
 		options: FindOptions<IMessage>,
 	): FindPaginated<FindCursor<IMessage>>;
+
+	findVisibleByMentionAndRoomId(username: IUser['username'], rid: IRoom['_id'], options: FindOptions<IMessage>): FindCursor<IMessage>;
 
 	findStarredByUserAtRoom(userId: IUser['_id'], roomId: IRoom['_id'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
 
