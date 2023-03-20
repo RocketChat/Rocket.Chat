@@ -219,7 +219,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		showThreadMessages?: boolean,
 		inclusive?: boolean,
 	): FindCursor<IMessage>;
-	findVisibleCreatedOrEditedAfterTimestamp(timestamp: Date, options?: FindOptions<IMessage>): FindCursor<IMessage>;
 	findVisibleByRoomIdBeforeTimestamp(roomId: string, timestamp: Date, options?: FindOptions<IMessage>): FindCursor<IMessage>;
 	getLastTimestamp(options?: FindOptions<IMessage>): Promise<Date | undefined>;
 	findOneBySlackBotIdAndSlackTs(slackBotId: string, slackTs: Date): Promise<IMessage | null>;

@@ -277,26 +277,6 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleCreatedOrEditedAfterTimestamp(timestamp, options) {
-		const query = {
-			_hidden: { $ne: true },
-			$or: [
-				{
-					ts: {
-						$gt: timestamp,
-					},
-				},
-				{
-					editedAt: {
-						$gt: timestamp,
-					},
-				},
-			],
-		};
-
-		return this.find(query, options);
-	}
-
 	findStarredByUserAtRoom(userId, roomId, options) {
 		const query = {
 			'_hidden': { $ne: true },
