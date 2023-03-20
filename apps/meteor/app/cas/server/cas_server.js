@@ -258,11 +258,11 @@ Accounts.registerLoginHandler('cas', function (options) {
 
 		logger.debug(`Joining user to attribute channels: ${int_attrs.rooms}`);
 		if (int_attrs.rooms) {
-			_.each(int_attrs.rooms.split(','), function (room_name) {
+			_.each(int_attrs.rooms.split(','), async function (room_name) {
 				if (room_name) {
 					let room = Rooms.findOneByNameAndType(room_name, 'c');
 					if (!room) {
-						room = createRoom('c', room_name, user.username);
+						room = await createRoom('c', room_name, user.username);
 					}
 				}
 			});

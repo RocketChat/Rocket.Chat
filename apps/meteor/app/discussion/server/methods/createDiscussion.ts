@@ -58,7 +58,7 @@ type CreateDiscussionProperties = {
 	encrypted?: boolean;
 };
 
-const create = ({ prid, pmid, t_name: discussionName, reply, users, user, encrypted }: CreateDiscussionProperties) => {
+const create = async ({ prid, pmid, t_name: discussionName, reply, users, user, encrypted }: CreateDiscussionProperties) => {
 	// if you set both, prid and pmid, and the rooms dont match... should throw an error)
 	let message: undefined | IMessage;
 	if (pmid) {
@@ -138,7 +138,7 @@ const create = ({ prid, pmid, t_name: discussionName, reply, users, user, encryp
 		});
 	}
 
-	const discussion = createRoom(
+	const discussion = await createRoom(
 		type,
 		name,
 		user.username as string,
@@ -196,7 +196,7 @@ Meteor.methods<ServerMethods>({
 	 * @param {string[]} users - users to be added
 	 * @param {boolean} encrypted - if the discussion's e2e encryption should be enabled.
 	 */
-	createDiscussion({ prid, pmid, t_name: discussionName, reply, users, encrypted }: CreateDiscussionProperties) {
+	async createDiscussion({ prid, pmid, t_name: discussionName, reply, users, encrypted }: CreateDiscussionProperties) {
 		if (!settings.get('Discussion_enabled')) {
 			throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
 		}

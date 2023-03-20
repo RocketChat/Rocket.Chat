@@ -77,7 +77,7 @@ export class SAML {
 		await CredentialTokens.create(credentialToken, loginResult);
 	}
 
-	public static insertOrUpdateSAMLUser(userObject: ISAMLUser): { userId: string; token: string } {
+	public static async insertOrUpdateSAMLUser(userObject: ISAMLUser): Promise<{ userId: string; token: string }> {
 		const {
 			generateUsername,
 			immutableProperty,
@@ -166,7 +166,7 @@ export class SAML {
 			user = Users.findOne(userId);
 
 			if (userObject.channels && channelsAttributeUpdate !== true) {
-				SAML.subscribeToSAMLChannels(userObject.channels, user);
+				await SAML.subscribeToSAMLChannels(userObject.channels, user);
 			}
 		}
 
@@ -205,7 +205,7 @@ export class SAML {
 		}
 
 		if (userObject.channels && channelsAttributeUpdate === true) {
-			SAML.subscribeToSAMLChannels(userObject.channels, user);
+			await SAML.subscribeToSAMLChannels(userObject.channels, user);
 		}
 
 		Users.update(
@@ -467,10 +467,10 @@ export class SAML {
 			.replace(/^\w/, (u) => u.toUpperCase());
 	}
 
-	private static subscribeToSAMLChannels(channels: Array<string>, user: IUser): void {
+	private static async subscribeToSAMLChannels(channels: Array<string>, user: IUser): Promise<void> {
 		const { includePrivateChannelsInUpdate } = SAMLUtils.globalSettings;
 		try {
-			for (let roomName of channels) {
+			for await (let roomName of channels) {
 				roomName = roomName.trim();
 				if (!roomName) {
 					continue;
@@ -492,7 +492,7 @@ export class SAML {
 				if (!room && !privRoom) {
 					// If the user doesn't have an username yet, we can't create new rooms for them
 					if (user.username) {
-						createRoom('c', roomName, user.username);
+						await createRoom('c', roomName, user.username);
 					}
 				}
 			}

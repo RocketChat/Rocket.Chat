@@ -259,7 +259,7 @@ class Callbacks {
 		const stopTracking = this.trackCallback?.(callback);
 
 		try {
-			return callback(item, constant);
+			return Promise.await(callback(item, constant));
 		} finally {
 			stopTracking?.();
 		}

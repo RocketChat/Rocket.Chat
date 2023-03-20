@@ -247,14 +247,14 @@ export class LDAPEEManager extends LDAPManager {
 		});
 	}
 
-	private static createRoomForSync(channel: string): IRoom | undefined {
+	private static async createRoomForSync(channel: string): Promise<IRoom | undefined> {
 		logger.debug(`Channel '${channel}' doesn't exist, creating it.`);
 
 		const roomOwner = settings.get<string>('LDAP_Sync_User_Data_Channels_Admin') || '';
 		// #ToDo: Remove typecastings when createRoom is converted to ts.
-		const room = createRoom('c', channel, roomOwner, [], false, {
+		const room = (await createRoom('c', channel, roomOwner, [], false, {
 			customFields: { ldap: true },
-		} as any) as unknown as ICreatedRoom | undefined;
+		} as any)) as unknown as ICreatedRoom | undefined;
 		if (!room?.rid) {
 			logger.error(`Unable to auto-create channel '${channel}' during ldap sync.`);
 			return;
@@ -302,7 +302,7 @@ export class LDAPEEManager extends LDAPManager {
 			const channels: Array<string> = [].concat(fieldMap[ldapField]);
 			for await (const channel of channels) {
 				try {
-					const room: IRoom | undefined = Rooms.findOneByNonValidatedName(channel) || this.createRoomForSync(channel);
+					const room: IRoom | undefined = Rooms.findOneByNonValidatedName(channel) || (await this.createRoomForSync(channel));
 					if (!room) {
 						return;
 					}
