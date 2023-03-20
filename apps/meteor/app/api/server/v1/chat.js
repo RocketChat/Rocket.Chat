@@ -22,6 +22,7 @@ import {
 	findDiscussionsFromRoom,
 } from '../lib/messages';
 import { canDeleteMessage } from '../../../authorization/server/functions/canDeleteMessage';
+import { reportMessage } from '../../../../server/lib/moderation/reportMessage';
 
 API.v1.addRoute(
 	'chat.delete',
@@ -420,7 +421,7 @@ API.v1.addRoute(
 	'chat.reportMessage',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			const { messageId, description } = this.bodyParams;
 			if (!messageId) {
 				return API.v1.failure('The required "messageId" param is missing.');
@@ -430,7 +431,7 @@ API.v1.addRoute(
 				return API.v1.failure('The required "description" param is missing.');
 			}
 
-			Meteor.call('reportMessage', messageId, description);
+			await reportMessage(messageId, description, this.userId);
 
 			return API.v1.success();
 		},

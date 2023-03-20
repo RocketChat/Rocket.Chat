@@ -5,9 +5,12 @@ import { Reports, Rooms } from '@rocket.chat/models';
 import { Messages } from '../../app/models/server';
 import { canAccessRoomAsync } from '../../app/authorization/server/functions/canAccessRoom';
 import { AppEvents, Apps } from '../../app/apps/server';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
 	async reportMessage(messageId, description) {
+		methodDeprecationLogger.warn('reportMessage is deprecated and will be removed in future versions of Rocket.Chat');
+
 		check(messageId, String);
 		check(description, String);
 
