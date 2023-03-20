@@ -223,7 +223,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 			});
 
 			if (saveResult.upsertedId) {
-				incNumAgents(departmentId, 1);
+				await incNumAgents(departmentId, 1);
 			}
 		});
 
