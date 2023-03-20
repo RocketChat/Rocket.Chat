@@ -267,7 +267,7 @@ API.v1.addRoute(
 				validateCustomFields(this.bodyParams.customFields);
 			}
 
-			const newUserId = saveUser(this.userId, this.bodyParams);
+			const newUserId = await saveUser(this.userId, this.bodyParams);
 
 			if (this.bodyParams.customFields) {
 				saveCustomFieldsWithoutValidation(newUserId, this.bodyParams.customFields);

@@ -10,7 +10,7 @@ API.default.addRoute(
 			const request = this.request as Record<string, any>;
 			const user = await getLoggedInUser(request.headers['x-auth-token'] as string, request.headers['x-user-id'] as string);
 
-			return API.v1.success(Promise.await(getServerInfo(user?._id)));
+			return API.v1.success(await getServerInfo(user?._id));
 		},
 	},
 );
