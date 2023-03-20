@@ -4,7 +4,7 @@ import { FileUpload } from '../../../file-upload/server';
 import { Subscriptions, Messages, Rooms } from '../../../models/server';
 import type { SubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 
-const bulkRoomCleanUp = async (rids: string[]): unknown => {
+const bulkRoomCleanUp = async (rids: string[]): Promise<unknown> => {
 	// no bulk deletion for files
 	rids.forEach((rid) => FileUpload.removeFilesByRoomId(rid));
 
