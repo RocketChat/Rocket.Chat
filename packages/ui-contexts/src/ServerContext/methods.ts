@@ -2,7 +2,6 @@
 export interface ServerMethods {
 	'addUsersToRoom': (...args: any[]) => any;
 	'cleanRoomHistory': (...args: any[]) => any;
-	'getUsersOfRoom': (...args: any[]) => any;
 	'insertOrUpdateUserStatus': (...args: any[]) => any;
 	'muteUserInRoom': (...args: any[]) => any;
 	'personalAccessTokens:generateToken': (...args: any[]) => any;
