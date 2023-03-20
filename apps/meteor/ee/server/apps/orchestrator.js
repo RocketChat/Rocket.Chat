@@ -2,10 +2,10 @@ import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definiti
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { Meteor } from 'meteor/meteor';
-import { AppLogs } from '@rocket.chat/models';
+import { AppLogs, Apps as AppsModel } from '@rocket.chat/models';
 
 import { Logger } from '../../../server/lib/logger/Logger';
-import { AppsModel, AppsPersistenceModel } from '../../../app/models/server';
+import { AppsPersistenceModel } from '../../../app/models/server';
 import { settings, settingsRegistry } from '../../../app/settings/server';
 import { RealAppBridges } from '../../../app/apps/server/bridges';
 import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
