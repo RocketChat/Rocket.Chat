@@ -349,9 +349,9 @@ export class LDAPConnection {
 
 				const entries: T[] = [];
 
-				res.on('searchEntry', async (entry) => {
+				res.on('searchEntry', (entry) => {
 					try {
-						const result = await entryCallback(entry);
+						const result = Promise.await(entryCallback(entry));
 						if (result) {
 							entries.push(result as T);
 						}
@@ -481,9 +481,9 @@ export class LDAPConnection {
 
 			const entries: T[] = [];
 
-			res.on('searchEntry', async (entry) => {
+			res.on('searchEntry', (entry) => {
 				try {
-					const result = entryCallback ? await entryCallback(entry) : entry;
+					const result = entryCallback ? Promise.await(entryCallback(entry)) : entry;
 					entries.push(result as T);
 				} catch (e) {
 					searchLogger.error(e);
@@ -547,9 +547,9 @@ export class LDAPConnection {
 			let entries: T[] = [];
 			const internalPageSize = pageSize * 2;
 
-			res.on('searchEntry', async (entry) => {
+			res.on('searchEntry', (entry) => {
 				try {
-					const result = entryCallback ? await entryCallback(entry) : entry;
+					const result = entryCallback ? Promise.await(entryCallback(entry)) : entry;
 					entries.push(result as T);
 
 					if (entries.length >= internalPageSize) {
