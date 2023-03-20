@@ -1,3 +1,3 @@
-export const isDisplayRealNamePreference = function (messagesLayout: string) {
+export const isDisplayRealNamePreference = function (messagesLayout?: string) {
 	return messagesLayout !== 'username';
 };

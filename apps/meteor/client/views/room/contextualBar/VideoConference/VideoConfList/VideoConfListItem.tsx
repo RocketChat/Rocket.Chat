@@ -2,10 +2,11 @@ import type { IGroupVideoConference } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Button, Message, Box, Avatar, Palette } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
+import { isDisplayRealNamePreference } from '../../../../../../app/utils/lib/isDisplayRealNamePreference';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useVideoConfJoinCall } from '../../../../../contexts/VideoConfContext';
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
@@ -25,10 +26,7 @@ const VideoConfListItem = ({
 	const formatDate = useTimeAgo();
 	const joinCall = useVideoConfJoinCall();
 
-	const messagesLayoutPreference = useUserPreference<string>('messagesLayout');
-	const defaultMessagesLayout = useSetting<string>('Accounts_Default_User_Preferences_messagesLayout');
-	const showRealName =
-		messagesLayoutPreference !== 'default' ? messagesLayoutPreference !== 'username' : defaultMessagesLayout !== 'username';
+	const showRealName = isDisplayRealNamePreference(useUserPreference('messagesLayout'));
 
 	const {
 		_id: callId,

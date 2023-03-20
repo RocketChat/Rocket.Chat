@@ -1,9 +1,10 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
+import { isDisplayRealNamePreference } from '../../../../../app/utils/lib/isDisplayRealNamePreference';
 import Emoji from '../../../../components/Emoji';
 import ReactionUserTag from './ReactionUserTag';
 
@@ -13,10 +14,7 @@ type ReactionsProps = {
 };
 
 const Reactions = ({ reactions, onClick }: ReactionsProps): ReactElement => {
-	const messagesLayoutPreference = useUserPreference('messagesLayout');
-	const defaultMessagesLayout = useSetting('Accounts_Default_User_Preferences_messagesLayout');
-	const useRealName =
-		messagesLayoutPreference !== 'default' ? messagesLayoutPreference !== 'username' : defaultMessagesLayout !== 'username';
+	const useRealName = isDisplayRealNamePreference(useUserPreference('messagesLayout'));
 	return (
 		<Box display='flex' flexDirection='column'>
 			{Object.entries(reactions).map(([reaction, { names = [], usernames }]) => (

@@ -47,7 +47,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 		autoImageLoad: useUserPreference('autoImageLoad'),
 		saveMobileBandwidth: useUserPreference('saveMobileBandwidth'),
 		collapseMediaByDefault: useUserPreference('collapseMediaByDefault'),
-		messagesLayout: messagesLayoutPreference !== 'default' ? messagesLayoutPreference : defaultMessagesLayout,
+		messagesLayout: messagesLayoutPreference,
 		hideRoles: useUserPreference('hideRoles'),
 		hideFlexTab: useUserPreference('hideFlexTab'),
 		clockMode: useUserPreference('clockMode') ?? 0,
