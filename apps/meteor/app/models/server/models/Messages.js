@@ -332,33 +332,6 @@ export class Messages extends Base {
 		return this.findOne(query, options);
 	}
 
-	setAsDeletedByIdAndUser(_id, user) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				msg: '',
-				t: 'rm',
-				urls: [],
-				mentions: [],
-				attachments: [],
-				reactions: [],
-				editedAt: new Date(),
-				editedBy: {
-					_id: user._id,
-					username: user.username,
-				},
-			},
-			$unset: {
-				md: 1,
-				blocks: 1,
-				tshow: 1,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	setPinnedByIdAndUserId(_id, pinnedBy, pinned, pinnedAt) {
 		if (pinned == null) {
 			pinned = true;

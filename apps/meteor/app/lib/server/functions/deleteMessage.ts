@@ -64,7 +64,8 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 	Rooms.decreaseMessageCountById(message.rid, 1);
 
 	if (showDeletedStatus) {
-		MessagesSync.setAsDeletedByIdAndUser(message._id, user);
+		// TODO is there a better way to tell TS "IUser[username]" is not undefined?
+		await Messages.setAsDeletedByIdAndUser(message._id, user as Required<Pick<IUser, '_id' | 'username' | 'name'>>);
 	} else {
 		void api.broadcast('notify.deleteMessage', message.rid, { _id: message._id });
 	}
