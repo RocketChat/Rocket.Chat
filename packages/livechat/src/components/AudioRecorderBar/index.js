@@ -27,7 +27,6 @@ const AudioRecorderBar = ({ handleRecording, onUpload }) => {
 
 		setTime('00:00');
 		const blob = await new Promise((resolve, reject) => {
-			console.log(resolve);
 			audioRecorder.stop(resolve);
 		});
 
@@ -35,12 +34,9 @@ const AudioRecorderBar = ({ handleRecording, onUpload }) => {
 	});
 
 	const handleDoneButtonClick = useMutableCallback(async () => {
-		console.log(audioRecorder);
 		const blob = await stopRecording();
-		console.log(blob, 'blob');
 		const fileName = `${'Audio_record'}.mp3`;
 		const file = new File([blob], fileName, { type: 'audio/mpeg' });
-		console.log(file);
 		await onUpload([file]);
 	});
 
@@ -51,7 +47,6 @@ const AudioRecorderBar = ({ handleRecording, onUpload }) => {
 	const handleRecord = useMutableCallback(async () => {
 		try {
 			await audioRecorder.start();
-			console.log(audioRecorder, 'started');
 			const startTime = new Date();
 			setRecordingInterval(
 				setInterval(() => {
@@ -74,9 +69,6 @@ const AudioRecorderBar = ({ handleRecording, onUpload }) => {
 		await stopRecording();
 	});
 
-	// if (isMicrophoneDenied) {
-	// 	return null;
-	// }
 	return (
 		<Box pi='x4'>
 			{/* {state === 'recording' && ( */}
