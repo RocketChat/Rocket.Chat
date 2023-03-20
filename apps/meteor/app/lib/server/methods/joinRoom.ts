@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission, canAccessRoom } from '../../../authorization/server';
+import { hasPermission, canAccessRoomAsync } from '../../../authorization/server';
 import { Rooms } from '../../../models/server';
 import { addUserToRoom } from '../functions';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -17,7 +17,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	joinRoom(rid, code) {
+	async joinRoom(rid, code) {
 		check(rid, String);
 
 		const user = Meteor.user();
@@ -36,7 +36,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
 		}
 
-		if (!canAccessRoom(room, user)) {
+		if (!(await canAccessRoomAsync(room, user))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
 		}
 		if (room.joinCodeRequired === true && code !== room.joinCode && !hasPermission(user._id, 'join-without-join-code')) {
