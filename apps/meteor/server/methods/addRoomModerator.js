@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import { api, Team } from '@rocket.chat/core-services';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
-import { hasPermission } from '../../app/authorization';
+import { hasPermission } from '../../app/authorization/server';
 import { Users, Subscriptions, Messages, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 
@@ -76,10 +76,10 @@ Meteor.methods({
 		};
 
 		if (settings.get('UI_DisplayRoles')) {
-			api.broadcast('user.roleUpdate', event);
+			void api.broadcast('user.roleUpdate', event);
 		}
 
-		api.broadcast('federation.userRoleChanged', { ...event, givenByUserId: Meteor.userId() });
+		void api.broadcast('federation.userRoleChanged', { ...event, givenByUserId: Meteor.userId() });
 
 		return true;
 	},

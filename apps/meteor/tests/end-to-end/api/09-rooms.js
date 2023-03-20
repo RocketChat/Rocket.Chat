@@ -6,52 +6,8 @@ import { closeRoom, createRoom } from '../../data/rooms.helper';
 import { imgURL } from '../../data/interactions.js';
 import { updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
 import { sendSimpleMessage } from '../../data/chat.helper';
-import { createUser } from '../../data/users.helper';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
-
-function createTestUser() {
-	return new Promise((resolve) => {
-		const username = `user.test.${Date.now()}`;
-		const email = `${username}@rocket.chat`;
-		request
-			.post(api('users.create'))
-			.set(credentials)
-			.send({ email, name: username, username, password, joinDefaultChannels: false })
-			.end((err, res) => resolve(res.body.user));
-	});
-}
-
-function loginTestUser(user) {
-	return new Promise((resolve, reject) => {
-		request
-			.post(api('login'))
-			.send({
-				user: user.username,
-				password,
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				const userCredentials = {};
-				userCredentials['X-Auth-Token'] = res.body.data.authToken;
-				userCredentials['X-User-Id'] = res.body.data.userId;
-				resolve(userCredentials);
-			})
-			.end((err) => (err ? reject(err) : resolve()));
-	});
-}
-
-function deleteTestUser(user) {
-	return new Promise((resolve) => {
-		request
-			.post(api('users.delete'))
-			.set(credentials)
-			.send({
-				userId: user._id,
-			})
-			.end(resolve);
-	});
-}
 
 describe('[Rooms]', function () {
 	this.retries(0);
@@ -124,12 +80,12 @@ describe('[Rooms]', function () {
 		let userCredentials;
 
 		before(async () => {
-			user = await createTestUser();
-			userCredentials = await loginTestUser(user);
+			user = await createUser({ joinDefaultChannels: false });
+			userCredentials = await login(user.username, password);
 		});
 
 		after(async () => {
-			await deleteTestUser(user);
+			await deleteUser(user);
 			user = undefined;
 
 			await updateSetting('FileUpload_Restrict_to_room_members', false);
@@ -186,7 +142,8 @@ describe('[Rooms]', function () {
 				.end(done);
 		});
 
-		let fileUrl;
+		let fileNewUrl;
+		let fileOldUrl;
 		it('upload a file to room', (done) => {
 			request
 				.post(api(`rooms.upload/${testChannel._id}`))
@@ -201,36 +158,43 @@ describe('[Rooms]', function () {
 					expect(res.body).to.have.nested.property('message.rid', testChannel._id);
 					expect(res.body).to.have.nested.property('message.file._id', message.file._id);
 					expect(res.body).to.have.nested.property('message.file.type', message.file.type);
-					fileUrl = `/file-upload/${message.file._id}/${message.file.name}`;
+					fileNewUrl = `/file-upload/${message.file._id}/${message.file.name}`;
+					fileOldUrl = `/ufs/GridFS:Uploads/${message.file._id}/${message.file.name}`;
 				})
 				.end(done);
 		});
 
 		it('should be able to get the file', async () => {
-			await request.get(fileUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileNewUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileOldUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
 		});
 
 		it('should be able to get the file when no access to the room', async () => {
-			await request.get(fileUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileNewUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileOldUrl).set(userCredentials).expect('Content-Type', 'image/png').expect(200);
 		});
 
 		it('should not be able to get the file when no access to the room if setting blocks', async () => {
 			await updateSetting('FileUpload_Restrict_to_room_members', true);
-			await request.get(fileUrl).set(userCredentials).expect(403);
+			await request.get(fileNewUrl).set(userCredentials).expect(403);
+			await request.get(fileOldUrl).set(userCredentials).expect(403);
 		});
 
 		it('should be able to get the file if member and setting blocks outside access', async () => {
 			await updateSetting('FileUpload_Restrict_to_room_members', true);
-			await request.get(fileUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileNewUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileOldUrl).set(credentials).expect('Content-Type', 'image/png').expect(200);
 		});
 
 		it('should not be able to get the file without credentials', async () => {
-			await request.get(fileUrl).attach('file', imgURL).expect(403);
+			await request.get(fileNewUrl).attach('file', imgURL).expect(403);
+			await request.get(fileOldUrl).attach('file', imgURL).expect(403);
 		});
 
 		it('should be able to get the file without credentials if setting allows', async () => {
 			await updateSetting('FileUpload_ProtectFiles', false);
-			await request.get(fileUrl).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileNewUrl).expect('Content-Type', 'image/png').expect(200);
+			await request.get(fileOldUrl).expect('Content-Type', 'image/png').expect(200);
 		});
 	});
 

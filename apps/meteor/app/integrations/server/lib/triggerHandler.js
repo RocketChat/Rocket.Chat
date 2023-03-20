@@ -1,6 +1,6 @@
 import { VM, VMScript } from 'vm2';
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import moment from 'moment';
@@ -17,7 +17,7 @@ import { outgoingEvents } from '../../lib/outgoingEvents';
 import { fetch } from '../../../../server/lib/http/fetch';
 import { omit } from '../../../../lib/utils/omit';
 
-export class RocketChatIntegrationHandler {
+class RocketChatIntegrationHandler {
 	constructor() {
 		this.successResults = [200, 201, 202];
 		this.compiledScripts = {};

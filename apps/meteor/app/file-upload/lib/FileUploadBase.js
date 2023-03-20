@@ -1,7 +1,7 @@
 import path from 'path';
 
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { UploadFS } from 'meteor/jalik:ufs';
 import _ from 'underscore';
 

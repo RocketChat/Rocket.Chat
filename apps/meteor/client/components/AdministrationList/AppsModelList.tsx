@@ -1,4 +1,4 @@
-import { Badge, OptionSkeleton, OptionTitle } from '@rocket.chat/fuselage';
+import { Badge, OptionTitle, Skeleton } from '@rocket.chat/fuselage';
 import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
@@ -27,17 +27,19 @@ const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsMo
 			<ul>
 				<>
 					<ListItem
+						role='listitem'
 						icon='store'
 						text={t('Marketplace')}
-						action={(): void => {
+						onClick={() => {
 							marketplaceRoute.push({ context: 'explore', page });
 							onDismiss();
 						}}
 					/>
 					<ListItem
+						role='listitem'
 						icon='circle-arrow-down'
 						text={t('Installed')}
-						action={(): void => {
+						onClick={() => {
 							marketplaceRoute.push({ context: 'installed', page });
 							onDismiss();
 						}}
@@ -45,28 +47,27 @@ const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsMo
 
 					{appsManagementAllowed && (
 						<>
-							{appRequestStats.isLoading && <OptionSkeleton />}
-							{appRequestStats.isSuccess && (
-								<ListItem
-									icon='cube'
-									text={t('Requested')}
-									action={(): void => {
-										marketplaceRoute.push({ context: 'requested', page });
-										onDismiss();
-									}}
-								>
-									{appRequestStats.isSuccess && appRequestStats.data.data.totalUnseen > 0 && (
-										<Badge variant='primary'>{appRequestStats.data.data.totalUnseen}</Badge>
-									)}
-								</ListItem>
-							)}
+							<ListItem
+								role='listitem'
+								icon='cube'
+								text={t('Requested')}
+								onClick={(): void => {
+									marketplaceRoute.push({ context: 'requested', page });
+									onDismiss();
+								}}
+							>
+								{appRequestStats.isLoading && <Skeleton variant='circle' height={16} width={16} />}
+								{appRequestStats.isSuccess && appRequestStats.data.data.totalUnseen > 0 && (
+									<Badge variant='primary'>{appRequestStats.data.data.totalUnseen}</Badge>
+								)}
+							</ListItem>
 						</>
 					)}
 				</>
 				{appBoxItems.length > 0 && (
 					<>
 						{appBoxItems.map((item, key) => {
-							const action = (): void => {
+							const action = () => {
 								triggerActionButtonAction({
 									rid: '',
 									mid: '',
@@ -76,7 +77,14 @@ const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsMo
 								});
 								onDismiss();
 							};
-							return <ListItem text={(t.has(item.name) && t(item.name)) || item.name} action={action} key={item.actionId + key} />;
+							return (
+								<ListItem
+									role='listitem'
+									text={(t.has(item.name) && t(item.name)) || item.name}
+									onClick={action}
+									key={item.actionId + key}
+								/>
+							);
 						})}
 					</>
 				)}

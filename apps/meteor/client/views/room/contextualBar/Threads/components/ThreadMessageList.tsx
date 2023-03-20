@@ -51,7 +51,11 @@ type ThreadMessageListProps = {
 
 const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElement => {
 	const { messages, loading } = useLegacyThreadMessages(mainMessage._id);
-	const { listWrapperRef: listWrapperScrollRef, listRef: listScrollRef, onScroll: handleScroll } = useLegacyThreadMessageListScrolling();
+	const {
+		listWrapperRef: listWrapperScrollRef,
+		listRef: listScrollRef,
+		onScroll: handleScroll,
+	} = useLegacyThreadMessageListScrolling(mainMessage);
 	const { parentRef: listJumpRef } = useLegacyThreadMessageJump({ enabled: !loading });
 
 	const listRef = useMergedRefs<HTMLElement | null>(listScrollRef, listJumpRef);
@@ -59,6 +63,7 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 	const defaultMessagesLayout = useSetting('Accounts_Default_User_Preferences_messagesLayout');
 	const messagesLayout = messagesLayoutPreference !== 'default' ? messagesLayoutPreference : defaultMessagesLayout;
 	const hideUsernames = messagesLayout === 'full_name';
+	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
 	const subscription = useRoomSubscription();
 	const formatDate = useFormatDate();
@@ -100,9 +105,14 @@ const ThreadMessageList = ({ mainMessage }: ThreadMessageListProps): ReactElemen
 										)}
 										<li>
 											{system ? (
-												<SystemMessage message={message} />
+												<SystemMessage message={message} showUserAvatar={showUserAvatar} />
 											) : (
-												<ThreadMessage message={message} sequential={shouldShowAsSequential} unread={firstUnread} />
+												<ThreadMessage
+													message={message}
+													sequential={shouldShowAsSequential}
+													unread={firstUnread}
+													showUserAvatar={showUserAvatar}
+												/>
 											)}
 										</li>
 									</Fragment>

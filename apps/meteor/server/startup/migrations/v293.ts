@@ -23,7 +23,7 @@ addMigration({
 			},
 		});
 
-		Settings.update(
+		await Settings.update(
 			{
 				_id: 'Accounts_Default_User_Preferences_messagesLayout',
 			},

@@ -39,7 +39,7 @@ export class LDAPEEManager extends LDAPManager {
 				await this.updateExistingUsers(ldap, converter);
 			}
 
-			converter.convertUsers({
+			await converter.convertUsers({
 				afterImportFn: ((data: IImportUser, _type: string, isNewRecord: boolean): void =>
 					Promise.await(this.advancedSync(ldap, data, converter, isNewRecord))) as ImporterAfterImportCallback,
 			});
@@ -529,7 +529,7 @@ export class LDAPEEManager extends LDAPManager {
 		return new Promise((resolve, reject) => {
 			let count = 0;
 
-			ldap.searchAllUsers<IImportUser>({
+			void ldap.searchAllUsers<IImportUser>({
 				entryCallback: (entry: ldapjs.SearchEntry): IImportUser | undefined => {
 					const data = ldap.extractLdapEntryData(entry);
 					count++;

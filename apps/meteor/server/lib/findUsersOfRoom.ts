@@ -9,7 +9,7 @@ import { shouldUseRealName } from '../../app/utils/lib/shouldUseRealName';
 
 type FindUsersParam = {
 	rid: string;
-	status?: string;
+	status?: { $in: string[] };
 	skip?: number;
 	limit?: number;
 	filter?: string;

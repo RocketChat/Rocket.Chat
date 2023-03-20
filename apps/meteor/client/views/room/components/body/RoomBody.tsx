@@ -62,7 +62,7 @@ const RoomBody = (): ReactElement => {
 	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
 	const [hasNewMessages, setHasNewMessages] = useState(false);
 
-	const hideFlexTab = useUserPreference<boolean>('hideFlexTab');
+	const hideFlexTab = useUserPreference<boolean>('hideFlexTab') || undefined;
 
 	const messagesLayoutPreference = useUserPreference<string>('messagesLayout');
 	const defaultMessagesLayout = useSetting('Accounts_Default_User_Preferences_messagesLayout');
@@ -458,11 +458,11 @@ const RoomBody = (): ReactElement => {
 			timer2s = setTimeout(() => checkIfScrollIsAtBottom(), 2000);
 		};
 
-		wrapper.addEventListener('mousewheel', handleWheel);
-		wrapper.addEventListener('wheel', handleWheel);
+		// wrapper.addEventListener('mousewheel', handleWheel);
+		// wrapper.addEventListener('wheel', handleWheel);
 		wrapper.addEventListener('scroll', handleWheel);
-		wrapper.addEventListener('touchstart', handleTouchStart);
-		wrapper.addEventListener('touchend', handleTouchEnd);
+		// wrapper.addEventListener('touchstart', handleTouchStart);
+		// wrapper.addEventListener('touchend', handleTouchEnd);
 
 		return (): void => {
 			if (timer1s) clearTimeout(timer1s);
@@ -516,26 +516,34 @@ const RoomBody = (): ReactElement => {
 
 	const handleCloseFlexTab: MouseEventHandler<HTMLElement> = useCallback(
 		(e): void => {
-			const checkIfElementOrParentIsInstanceOfButton = (element: HTMLElement | null): boolean => {
+			/*
+			 * check if the element is a button or anchor
+			 * it considers the role as well
+			 * usually, the flex tab is closed when clicking outside of it
+			 * but if the user clicks on a button or anchor, we don't want to close the flex tab
+			 * because the user could be actually trying to open the flex tab through those elements
+			 */
+
+			const checkElement = (element: HTMLElement | null): boolean => {
 				if (!element) {
 					return false;
 				}
-				if (element instanceof HTMLButtonElement) {
+				if (element instanceof HTMLButtonElement || element.getAttribute('role') === 'button') {
 					return true;
 				}
-				return checkIfElementOrParentIsInstanceOfButton(element.parentElement);
+				if (element instanceof HTMLAnchorElement || element.getAttribute('role') === 'link') {
+					return true;
+				}
+				return checkElement(element.parentElement);
 			};
-			if (!hideFlexTab) {
-				return;
-			}
 
-			if (checkIfElementOrParentIsInstanceOfButton(e.target as HTMLElement)) {
+			if (checkElement(e.target as HTMLElement)) {
 				return;
 			}
 
 			toolbox.close();
 		},
-		[toolbox, hideFlexTab],
+		[toolbox],
 	);
 
 	return (
@@ -546,7 +554,7 @@ const RoomBody = (): ReactElement => {
 					className={`messages-container flex-tab-main-content ${admin ? 'admin' : ''}`}
 					id={`chat-window-${room._id}`}
 					aria-label={t('Channel')}
-					onClick={handleCloseFlexTab}
+					onClick={hideFlexTab && handleCloseFlexTab}
 				>
 					<div className='messages-container-wrapper'>
 						<div className='messages-container-main' {...fileUploadTriggerProps}>

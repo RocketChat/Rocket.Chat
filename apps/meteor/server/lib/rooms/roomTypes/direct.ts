@@ -8,10 +8,10 @@ import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoo
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
 import { roomCoordinator } from '../roomCoordinator';
 import { Subscriptions, Users } from '../../../../app/models/server';
-import { Federation } from '../../../../app/federation-v2/server/Federation';
+import { Federation } from '../../../services/federation/Federation';
 import { shouldUseRealName } from '../../../../app/utils/lib/shouldUseRealName';
 
-export const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
+const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
 
 const getCurrentUserId = (): string | undefined => {
 	try {

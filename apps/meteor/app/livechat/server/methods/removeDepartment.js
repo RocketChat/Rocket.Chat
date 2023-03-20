@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { DepartmentHelper } from '../lib/Departments';
 

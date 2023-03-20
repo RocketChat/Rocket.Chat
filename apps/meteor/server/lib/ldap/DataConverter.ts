@@ -34,9 +34,9 @@ export class LDAPDataConverter extends VirtualDataConverter {
 		return super.findExistingUser(data);
 	}
 
-	static convertSingleUser(userData: IImportUser, options?: IConverterOptions): void {
+	static async convertSingleUser(userData: IImportUser, options?: IConverterOptions): Promise<void> {
 		const converter = new LDAPDataConverter(true, options);
 		converter.addUser(userData);
-		converter.convertUsers();
+		await converter.convertUsers();
 	}
 }

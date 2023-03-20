@@ -43,7 +43,7 @@ function hash(str: string): number {
 	return hash;
 }
 
-export class PushNotification {
+class PushNotification {
 	getNotificationId(roomId: string): number {
 		const serverId = settings.get('uniqueID');
 		return hash(`${serverId}|${roomId}`); // hash

@@ -36,13 +36,13 @@ export const _setRealName = function (userId: string, name: string, fullUser: IU
 
 	const defaultMessagesLayout = settings.get<string>('Accounts_Default_User_Preferences_messagesLayout');
 	if (shouldUseRealName(defaultMessagesLayout, user)) {
-		api.broadcast('user.nameChanged', {
+		void api.broadcast('user.nameChanged', {
 			_id: user._id,
 			name: user.name,
 			username: user.username,
 		});
 	}
-	api.broadcast('user.realNameChanged', {
+	void api.broadcast('user.realNameChanged', {
 		_id: user._id,
 		name,
 		username: user.username,
