@@ -8,9 +8,9 @@ import {
 	isGETLivechatMessagesHistoryRidParams,
 	isGETLivechatMessagesParams,
 } from '@rocket.chat/rest-typings';
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 
-import { Messages, LivechatRooms } from '../../../../models/server';
+import { Messages } from '../../../../models/server';
 import { API } from '../../../../api/server';
 import { loadMessageHistory } from '../../../../lib/server';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
@@ -236,7 +236,7 @@ API.v1.addRoute(
 			let visitor = await LivechatVisitors.getVisitorByToken(visitorToken, {});
 			let rid: string;
 			if (visitor) {
-				const rooms = LivechatRooms.findOpenByVisitorToken(visitorToken).fetch();
+				const rooms = await LivechatRooms.findOpenByVisitorToken(visitorToken).toArray();
 				if (rooms && rooms.length > 0) {
 					rid = rooms[0]._id;
 				} else {

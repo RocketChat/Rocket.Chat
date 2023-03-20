@@ -1,7 +1,7 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { LivechatRooms } from '../../../models/server';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 import { callbackLogger } from '../lib/callbackLogger';
 
@@ -24,7 +24,7 @@ callbacks.add(
 			// When visitor sends a mesage, most metrics wont be calculated/served.
 			// But, v.lq (last query) will be updated to the message time. This has to be done
 			// As not doing it will cause the metrics to be crazy and not have real values.
-			LivechatRooms.saveAnalyticsDataByRoomId(room, message);
+			Promise.await(LivechatRooms.saveAnalyticsDataByRoomId(room, message));
 			return message;
 		}
 
@@ -80,7 +80,7 @@ callbacks.add(
 			};
 		} // ignore, its continuing response
 
-		LivechatRooms.saveAnalyticsDataByRoomId(room, message, analyticsData);
+		Promise.await(LivechatRooms.saveAnalyticsDataByRoomId(room, message, analyticsData));
 		return message;
 	},
 	callbacks.priority.LOW,

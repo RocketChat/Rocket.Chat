@@ -1,7 +1,6 @@
 import type { AtLeast, ValueOf } from '@rocket.chat/core-typings';
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 
-import { LivechatRooms } from '../../../../app/models/server';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { getLivechatRoomType } from '../../../../lib/rooms/roomTypes/livechat';
@@ -28,7 +27,7 @@ roomCoordinator.add(LivechatRoomType, {
 	},
 
 	canAccessUploadedFile({ rc_token: token, rc_rid: rid }) {
-		return token && rid && LivechatRooms.findOneOpenByRoomIdAndVisitorToken(rid, token);
+		return token && rid && !!Promise.await(LivechatRooms.findOneOpenByRoomIdAndVisitorToken(rid, token));
 	},
 
 	getNotificationDetails(room, _sender, notificationMessage, userId) {

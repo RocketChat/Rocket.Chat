@@ -138,12 +138,12 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	): Promise<IOmnichannelRoom | null>;
 	findOneByVisitorTokenAndEmailThread(
 		visitorToken: string,
-		emailThread: string,
+		emailThread: string[],
 		options?: FindOptions<IOmnichannelRoom>,
 	): Promise<IOmnichannelRoom | null>;
 	findOneByVisitorTokenAndEmailThreadAndDepartment(
 		visitorToken: string,
-		emailThread: string,
+		emailThread: string[],
 		departmentId?: string,
 		options?: FindOptions<IOmnichannelRoom>,
 	): Promise<IOmnichannelRoom | null>;
@@ -152,7 +152,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		emailThread: string,
 		options: FindOptions<IOmnichannelRoom>,
 	): Promise<IOmnichannelRoom | null>;
-	updateEmailThreadByRoomId(roomId: string, threadIds: string[]): Promise<UpdateResult>;
+	updateEmailThreadByRoomId(roomId: string, threadIds: string): Promise<UpdateResult>;
 	findOneLastServedAndClosedByVisitorToken(visitorToken: string, options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
 	findOneByVisitorToken(visitorToken: string, fields?: FindOptions<IOmnichannelRoom>['projection']): Promise<IOmnichannelRoom | null>;
 	updateRoomCount(): Promise<ISetting | null>;

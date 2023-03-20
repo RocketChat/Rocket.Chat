@@ -1,5 +1,6 @@
+import { LivechatRooms } from '@rocket.chat/models';
+
 import { callbacks } from '../../../../lib/callbacks';
-import { LivechatRooms } from '../../../models/server';
 
 callbacks.add(
 	'afterSaveMessage',
@@ -19,7 +20,7 @@ callbacks.add(
 			return message;
 		}
 
-		LivechatRooms.setNotResponseByRoomId(room._id);
+		Promise.await(LivechatRooms.setNotResponseByRoomId(room._id));
 
 		return message;
 	},
