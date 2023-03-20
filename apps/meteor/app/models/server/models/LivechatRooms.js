@@ -1,12 +1,12 @@
-import s from 'underscore.string';
 import _ from 'underscore';
 import { Settings } from '@rocket.chat/models';
 
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
+import { trim } from '../../../../lib/utils/stringUtils';
 
-export class LivechatRooms extends Base {
+class LivechatRooms extends Base {
 	constructor(...args) {
 		super(...args);
 
@@ -35,6 +35,11 @@ export class LivechatRooms extends Base {
 			},
 		);
 		this.tryEnsureIndex({ 'livechatData.$**': 1 });
+		this.tryEnsureIndex({ pdfTranscriptRequested: 1 }, { sparse: true });
+		this.tryEnsureIndex({ pdfTranscriptFileId: 1 }, { sparse: true }); // used on statistics
+		this.tryEnsureIndex({ callStatus: 1 }, { sparse: true }); // used on statistics
+		this.tryEnsureIndex({ priorityId: 1 }, { sparse: true });
+		this.tryEnsureIndex({ slaId: 1 }, { sparse: true });
 	}
 
 	findOneByIdOrName(_idOrName, options) {
@@ -94,8 +99,8 @@ export class LivechatRooms extends Base {
 		const unsetData = {};
 
 		if (topic != null) {
-			if (!_.isEmpty(s.trim(topic))) {
-				setData.topic = s.trim(topic);
+			if (!_.isEmpty(trim(topic))) {
+				setData.topic = trim(topic);
 			} else {
 				unsetData.topic = 1;
 			}
@@ -107,9 +112,18 @@ export class LivechatRooms extends Base {
 			unsetData.tags = 1;
 		}
 
+		if (extra.priorityId === '') {
+			unsetData.priorityId = 1;
+			delete setData.priorityId;
+		}
+		if (extra.slaId === '') {
+			unsetData.slaId = 1;
+			delete setData.slaId;
+		}
+
 		if (livechatData) {
 			Object.keys(livechatData).forEach((key) => {
-				const value = s.trim(livechatData[key]);
+				const value = trim(livechatData[key]);
 				if (value) {
 					setData[`livechatData.${key}`] = value;
 				} else {
@@ -646,66 +660,6 @@ export class LivechatRooms extends Base {
 				},
 			],
 			{ readPreference: readSecondaryPreferred() },
-		);
-	}
-
-	closeByRoomId(roomId, closeInfo) {
-		const { closer, closedBy, closedAt, chatDuration, serviceTimeDuration, ...extraData } = closeInfo;
-
-		return this.update(
-			{
-				_id: roomId,
-				t: 'l',
-			},
-			{
-				$set: {
-					closer,
-					closedBy,
-					closedAt,
-					'metrics.chatDuration': chatDuration,
-					'metrics.serviceTimeDuration': serviceTimeDuration,
-					'v.status': 'offline',
-					...extraData,
-				},
-				$unset: {
-					open: 1,
-				},
-			},
-		);
-	}
-
-	requestTranscriptByRoomId(roomId, transcriptInfo = {}) {
-		const { requestedAt, requestedBy, email, subject } = transcriptInfo;
-
-		return this.update(
-			{
-				_id: roomId,
-				t: 'l',
-			},
-			{
-				$set: {
-					transcriptRequest: {
-						requestedAt,
-						requestedBy,
-						email,
-						subject,
-					},
-				},
-			},
-		);
-	}
-
-	removeTranscriptRequestByRoomId(roomId) {
-		return this.update(
-			{
-				_id: roomId,
-				t: 'l',
-			},
-			{
-				$unset: {
-					transcriptRequest: 1,
-				},
-			},
 		);
 	}
 

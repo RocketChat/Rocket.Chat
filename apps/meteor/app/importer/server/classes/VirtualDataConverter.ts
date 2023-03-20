@@ -1,4 +1,4 @@
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import type {
 	IImportUserRecord,
 	IImportChannelRecord,
@@ -30,7 +30,7 @@ export class VirtualDataConverter extends ImportDataConverter {
 		}
 	}
 
-	public clearImportData(): void {
+	public async clearImportData(): Promise<void> {
 		if (!this.useVirtual) {
 			return super.clearImportData();
 		}

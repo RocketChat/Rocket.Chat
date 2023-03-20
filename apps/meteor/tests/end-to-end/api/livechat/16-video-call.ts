@@ -11,10 +11,9 @@ describe('LIVECHAT - WebRTC video call', function () {
 
 	before((done) => getCredentials(done));
 
-	before((done) => {
-		updateSetting('Livechat_enabled', true)
-			.then(() => updateSetting('Livechat_accept_chats_with_no_agents', true))
-			.then(() => done());
+	before(async () => {
+		await updateSetting('Livechat_enabled', true);
+		await updateSetting('Livechat_accept_chats_with_no_agents', true);
 	});
 
 	describe('livechat/webrtc.call', () => {

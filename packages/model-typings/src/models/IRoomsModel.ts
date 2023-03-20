@@ -12,11 +12,18 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	getMostRecentAverageChatDurationTime(numberMostRecentChats: any, department: any): Promise<any>;
 
-	findByNameContainingAndTypes(name: any, types: any, discussion?: boolean, teams?: boolean, showOnlyTeams?: boolean, options?: any): any;
+	findByNameOrFnameContainingAndTypes(
+		name: any,
+		types: any,
+		discussion?: boolean,
+		teams?: boolean,
+		showOnlyTeams?: boolean,
+		options?: any,
+	): any;
 
 	findByTypes(types: any, discussion?: boolean, teams?: boolean, onlyTeams?: boolean, options?: any): any;
 
-	findByNameContaining(name: any, discussion?: boolean, teams?: boolean, onlyTeams?: boolean, options?: any): any;
+	findByNameOrFnameContaining(name: any, discussion?: boolean, teams?: boolean, onlyTeams?: boolean, options?: any): any;
 
 	findByTeamId(teamId: any, options?: any): any;
 
@@ -73,7 +80,9 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	setRoomTypeById(roomId: any, roomType: any): any;
 
-	setRoomNameById(roomId: any, name: any, fname: any): any;
+	setRoomNameById(roomId: any, name: any): any;
+
+	setFnameById(roomId: any, fname: any): any;
 
 	setRoomTopicById(roomId: any, topic: any): any;
 
@@ -101,4 +110,5 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findPaginatedByTypeAndIds(type: IRoom['t'], ids: string[], options?: FindOptions<IRoom>): FindPaginated<FindCursor<IRoom>>;
 
 	findFederatedRooms(options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findCountOfRoomsWithActiveCalls(): Promise<number>;
 }

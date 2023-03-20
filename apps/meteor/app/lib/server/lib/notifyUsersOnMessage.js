@@ -14,8 +14,7 @@ import { callbacks } from '../../../../lib/callbacks';
  *
  * @returns {boolean}
  */
-
-export function messageContainsHighlight(message, highlights) {
+function messageContainsHighlight(message, highlights) {
 	if (!highlights || highlights.length === 0) {
 		return false;
 	}
@@ -63,14 +62,14 @@ export function getMentions(message) {
 
 const incGroupMentions = (rid, roomType, excludeUserId, unreadCount) => {
 	const incUnreadByGroup = ['all_messages', 'group_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount);
-	const incUnread = roomType === 'd' || incUnreadByGroup ? 1 : 0;
+	const incUnread = roomType === 'd' || roomType === 'l' || incUnreadByGroup ? 1 : 0;
 
 	Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(rid, excludeUserId, 1, incUnread);
 };
 
 const incUserMentions = (rid, roomType, uids, unreadCount) => {
 	const incUnreadByUser = ['all_messages', 'user_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount);
-	const incUnread = roomType === 'd' || incUnreadByUser ? 1 : 0;
+	const incUnread = roomType === 'd' || roomType === 'l' || incUnreadByUser ? 1 : 0;
 
 	Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(rid, uids, 1, incUnread);
 };
@@ -86,15 +85,34 @@ const getUserIdsFromHighlights = (rid, message) => {
 		.map(({ u: { _id: uid } }) => uid);
 };
 
-export async function updateUsersSubscriptions(message, room) {
+/*
+ * {IRoom['t']} roomType - The type of the room
+ * @returns {string} - The setting value for unread count
+ */
+const getUnreadSettingCount = (roomType) => {
+	let unreadSetting = 'Unread_Count';
+	switch (roomType) {
+		case 'd': {
+			unreadSetting = 'Unread_Count_DM';
+			break;
+		}
+		case 'l': {
+			unreadSetting = 'Unread_Count_Omni';
+			break;
+		}
+	}
+
+	return settings.get(unreadSetting);
+};
+
+async function updateUsersSubscriptions(message, room) {
 	// Don't increase unread counter on thread messages
 	if (room != null && !message.tmid) {
 		const { toAll, toHere, mentionIds } = getMentions(message);
 
 		const userIds = new Set(mentionIds);
 
-		const unreadSetting = room.t === 'd' ? 'Unread_Count_DM' : 'Unread_Count';
-		const unreadCount = settings.get(unreadSetting);
+		const unreadCount = getUnreadSettingCount(room.t);
 
 		getUserIdsFromHighlights(room._id, message).forEach((uid) => userIds.add(uid));
 

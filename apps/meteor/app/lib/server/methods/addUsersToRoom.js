@@ -2,11 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { Rooms, Subscriptions, Users } from '../../../models/server';
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 import { addUserToRoom } from '../functions';
-import { Federation } from '../../../federation-v2/server/Federation';
+import { callbacks } from '../../../../lib/callbacks';
+import { Federation } from '../../../../server/services/federation/Federation';
 
 Meteor.methods({
 	addUsersToRoom(data = {}) {
@@ -64,6 +66,11 @@ Meteor.methods({
 
 		// Validate each user, then add to room
 		const user = Meteor.user();
+		if (isRoomFederated(room)) {
+			callbacks.run('federation.onAddUsersToARoom', { invitees: data.users, inviter: user }, room);
+			return true;
+		}
+
 		data.users.forEach((username) => {
 			const newUser = Users.findOneByUsernameIgnoringCase(username);
 			if (!newUser && !Federation.isAFederatedUsername(username)) {
@@ -75,7 +82,7 @@ Meteor.methods({
 			if (!subscription) {
 				addUserToRoom(data.rid, newUser || username, user);
 			} else {
-				api.broadcast('notify.ephemeralMessage', userId, data.rid, {
+				void api.broadcast('notify.ephemeralMessage', userId, data.rid, {
 					msg: TAPi18n.__(
 						'Username_is_already_in_here',
 						{

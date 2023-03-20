@@ -13,7 +13,7 @@ const { AppMessagesConverter } = proxyquire.noCallThru().load('../../../../../ap
 		Rooms: new RoomsMock(),
 		Users: new UsersMock(),
 	},
-	'meteor/random': {
+	'@rocket.chat/random': {
 		Random: {
 			id: () => 1,
 		},

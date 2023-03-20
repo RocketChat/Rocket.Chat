@@ -1,12 +1,16 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import { faker } from '@faker-js/faker';
+import type { IUser } from '@rocket.chat/core-typings';
+
+import type { IUserState } from '../userStates';
 
 type UserFixture = IUser & {
 	username: string;
 	__rooms: string[];
 };
 
-export function createUserFixture(username: string): UserFixture {
+export function createUserFixture(user: IUserState): UserFixture {
+	const {username, hashedToken, loginExpire} = user.data;
+
 	return {
 		_id: `${username}`,
 		type: 'user',
@@ -30,7 +34,10 @@ export function createUserFixture(username: string): UserFixture {
 					},
 				],
 			},
-			resume: { loginTokens: [] },
+			resume: { loginTokens: [ {
+				when: loginExpire,
+				hashedToken
+			} ] },
 			emailCode: [{ code: '', expire: new Date() }],
 		},
 		createdAt: new Date(),

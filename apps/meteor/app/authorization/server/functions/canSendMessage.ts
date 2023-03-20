@@ -26,7 +26,7 @@ async function validateRoomMessagePermissionsAsync(
 		throw new Error('error-not-allowed');
 	}
 
-	if (roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.BLOCK)) {
+	if (roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.BLOCK, uid)) {
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, uid, subscriptionOptions);
 		if (subscription && (subscription.blocked || subscription.blocker)) {
 			throw new Error('room_is_blocked');
@@ -45,7 +45,7 @@ async function validateRoomMessagePermissionsAsync(
 	}
 }
 
-export async function canSendMessageAsync(
+async function canSendMessageAsync(
 	rid: IRoom['_id'],
 	{ uid, username, type }: { uid: IUser['_id']; username: IUser['username']; type: IUser['type'] },
 	extraData?: Record<string, any>,

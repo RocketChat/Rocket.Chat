@@ -1,6 +1,6 @@
 import limax from 'limax';
+import { SHA256 } from '@rocket.chat/sha256';
 // #ToDo: #TODO: Remove Meteor dependencies
-import { SHA256 } from 'meteor/sha';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import ldapEscape from 'ldap-escape';
@@ -287,7 +287,7 @@ export class LDAPManager {
 		}
 
 		const options = this.getConverterOptions();
-		LDAPDataConverter.convertSingleUser(userData, options);
+		await LDAPDataConverter.convertSingleUser(userData, options);
 
 		return existingUser || this.findExistingLDAPUser(ldapUser);
 	}

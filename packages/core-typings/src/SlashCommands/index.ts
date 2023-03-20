@@ -19,14 +19,18 @@ export type SlashCommandPreviews = {
 	items: SlashCommandPreviewItem[];
 };
 
-type SlashCommandPreviewer = (command: string, params: string, message: IMessage) => SlashCommandPreviews | undefined;
+type SlashCommandPreviewer = (
+	command: string,
+	params: string,
+	message: RequiredField<Partial<IMessage>, 'rid'>,
+) => SlashCommandPreviews | undefined;
 
 type SlashCommandPreviewCallback = (
 	command: string,
 	params: string,
-	message: IMessage,
+	message: RequiredField<Partial<IMessage>, 'rid'>,
 	preview: SlashCommandPreviewItem,
-	triggerId: string,
+	triggerId?: string,
 ) => void;
 
 export type SlashCommandOptions = {

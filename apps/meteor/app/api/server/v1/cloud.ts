@@ -5,6 +5,7 @@ import { hasPermission, hasRole } from '../../../authorization/server';
 import { saveRegistrationData } from '../../../cloud/server/functions/saveRegistrationData';
 import { retrieveRegistrationStatus } from '../../../cloud/server/functions/retrieveRegistrationStatus';
 import { startRegisterWorkspaceSetupWizard } from '../../../cloud/server/functions/startRegisterWorkspaceSetupWizard';
+import { registerPreIntentWorkspaceWizard } from '../../../cloud/server/functions/registerPreIntentWorkspaceWizard';
 import { getConfirmationPoll } from '../../../cloud/server/functions/getConfirmationPoll';
 
 API.v1.addRoute(
@@ -61,6 +62,20 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
+	'cloud.registerPreIntent',
+	{ authRequired: true },
+	{
+		async post() {
+			if (!hasPermission(this.userId, 'manage-cloud')) {
+				return API.v1.unauthorized();
+			}
+
+			return API.v1.success({ offline: !(await registerPreIntentWorkspaceWizard()) });
+		},
+	},
+);
+
+API.v1.addRoute(
 	'cloud.confirmationPoll',
 	{ authRequired: true },
 	{
@@ -81,7 +96,7 @@ API.v1.addRoute(
 			const pollData = await getConfirmationPoll(deviceCode);
 			if (pollData) {
 				if ('successful' in pollData && pollData.successful) {
-					Promise.await(saveRegistrationData(pollData.payload));
+					await saveRegistrationData(pollData.payload);
 				}
 				return API.v1.success({ pollData });
 			}

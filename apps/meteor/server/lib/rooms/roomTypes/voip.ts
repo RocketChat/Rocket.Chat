@@ -5,7 +5,7 @@ import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomType
 import { getVoipRoomType } from '../../../../lib/rooms/roomTypes/voip';
 import { roomCoordinator } from '../roomCoordinator';
 
-export const VoipRoomType = getVoipRoomType(roomCoordinator);
+const VoipRoomType = getVoipRoomType(roomCoordinator);
 
 roomCoordinator.add(VoipRoomType, {
 	roomName(room, _userId?) {

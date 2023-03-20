@@ -104,7 +104,7 @@ const RoomList = (): ReactElement => {
 			padding-block-start: 12px;
 		}
 
-		@media (width <= 400px) {
+		@media (max-width: 400px) {
 			padding: 0 calc(var(--sidebar-small-default-padding) - 4px);
 
 			&__type,

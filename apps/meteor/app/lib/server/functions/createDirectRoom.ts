@@ -1,13 +1,13 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import type { ICreatedRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
 import type { MatchKeysAndValues } from 'mongodb';
-import type { ICreateRoomParams } from '@rocket.chat/core-services';
+import type { ISubscriptionExtraData } from '@rocket.chat/core-services';
 
 import { Users, Rooms } from '../../../models/server';
-import { Apps } from '../../../apps/server';
+import { Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/server';
@@ -38,11 +38,15 @@ const generateSubscription = (
 const getFname = (members: IUser[]): string => members.map(({ name, username }) => name || username).join(', ');
 const getName = (members: IUser[]): string => members.map(({ username }) => username).join(', ');
 
-export const createDirectRoom = function (
+export async function createDirectRoom(
 	members: IUser[] | string[],
 	roomExtraData = {},
-	options: ICreateRoomParams['options'],
-): ICreatedRoom {
+	options: {
+		nameValidationRegex?: string;
+		creator?: string;
+		subscriptionExtra?: ISubscriptionExtraData;
+	},
+): Promise<ICreatedRoom> {
 	if (members.length > (settings.get('DirectMesssage_maxUsers') || 1)) {
 		throw new Error('error-direct-message-max-user-exceeded');
 	}
@@ -117,7 +121,7 @@ export const createDirectRoom = function (
 
 	if (roomMembers.length === 1) {
 		// dm to yourself
-		Subscriptions.updateOne(
+		await Subscriptions.updateOne(
 			{ rid, 'u._id': roomMembers[0]._id },
 			{
 				$set: { open: true },
@@ -135,9 +139,9 @@ export const createDirectRoom = function (
 			{ projection: { 'username': 1, 'settings.preferences': 1 } },
 		);
 
-		membersWithPreferences.forEach((member) => {
+		for await (const member of membersWithPreferences) {
 			const otherMembers = sortedMembers.filter(({ _id }) => _id !== member._id);
-			Subscriptions.updateOne(
+			await Subscriptions.updateOne(
 				{ rid, 'u._id': member._id },
 				{
 					...(options?.creator === member._id && { $set: { open: true } }),
@@ -148,7 +152,7 @@ export const createDirectRoom = function (
 				},
 				{ upsert: true },
 			);
-		});
+		}
 	}
 
 	// If the room is new, run a callback
@@ -157,7 +161,7 @@ export const createDirectRoom = function (
 
 		callbacks.run('afterCreateDirectRoom', insertedRoom, { members: roomMembers, creatorId: options?.creator });
 
-		Apps.triggerEvent('IPostRoomCreate', insertedRoom);
+		void Apps.triggerEvent('IPostRoomCreate', insertedRoom);
 	}
 
 	return {
@@ -167,4 +171,4 @@ export const createDirectRoom = function (
 		inserted: isNewRoom,
 		...room,
 	};
-};
+}
