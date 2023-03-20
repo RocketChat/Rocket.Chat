@@ -760,7 +760,7 @@ describe('[Chat]', function () {
 				const imgUrlMsgPayload = {
 					_id: `id-${Date.now()}1`,
 					rid: 'GENERAL',
-					msg: 'https://i.picsum.photos/id/671/200/200.jpg?hmac=F8KUqkSzkLxagDZW5rOEHLjzFVxRZWnkrFPvq2BlnhE',
+					msg: 'https://fastly.picsum.photos/id/671/200/200.jpg?hmac=F8KUqkSzkLxagDZW5rOEHLjzFVxRZWnkrFPvq2BlnhE',
 					emoji: ':smirk:',
 				};
 

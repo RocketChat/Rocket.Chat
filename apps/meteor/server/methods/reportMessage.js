@@ -5,9 +5,12 @@ import { Reports, Rooms } from '@rocket.chat/models';
 import { Messages } from '../../app/models/server';
 import { canAccessRoomAsync } from '../../app/authorization/server/functions/canAccessRoom';
 import { AppEvents, Apps } from '../../app/apps/server';
+import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
 	async reportMessage(messageId, description) {
+		methodDeprecationLogger.warn('reportMessage is deprecated and will be removed in future versions of Rocket.Chat');
+
 		check(messageId, String);
 		check(description, String);
 
@@ -31,6 +34,7 @@ Meteor.methods({
 		}
 
 		const uid = Meteor.userId();
+		const user = Meteor.user();
 		const { rid } = message;
 		// If the user can't access the room where the message is, report that the message id is invalid
 		const room = await Rooms.findOneById(rid);
@@ -40,7 +44,23 @@ Meteor.methods({
 			});
 		}
 
-		await Reports.createWithMessageDescriptionAndUserId(message, description, uid);
+		const reportedBy = {
+			_id: user._id,
+			username: user.username,
+			name: user.name,
+			active: user.active,
+			avatarETag: user.avatarETag,
+		};
+
+		const roomInfo = {
+			rid,
+			name: room.name,
+			t: room.t,
+			federated: room.federated,
+			fname: room.fname,
+		};
+
+		await Reports.createWithMessageDescriptionAndUserId(message, description, roomInfo, reportedBy);
 
 		Promise.await(Apps.triggerEvent(AppEvents.IPostMessageReported, message, Meteor.user(), description));
 

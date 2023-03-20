@@ -319,7 +319,7 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isUserSetActiveStatusParamsPOST },
 	{
 		post() {
-			if (!hasPermission(this.userId, 'edit-other-user-active-status')) {
+			if (!hasPermission(this.userId, 'edit-other-user-active-status') && !hasPermission(this.userId, 'manage-moderation-actions')) {
 				return API.v1.unauthorized();
 			}
 
@@ -542,7 +542,7 @@ API.v1.addRoute(
 
 			if (settings.get('Accounts_AllowUserAvatarChange') && user._id === this.userId) {
 				Meteor.runAsUser(this.userId, () => Meteor.call('resetAvatar'));
-			} else if (hasPermission(this.userId, 'edit-other-user-avatar')) {
+			} else if (hasPermission(this.userId, 'edit-other-user-avatar') || hasPermission(this.userId, 'manage-moderation-actions')) {
 				Meteor.runAsUser(this.userId, () => Meteor.call('resetAvatar', user._id));
 			} else {
 				throw new Meteor.Error('error-not-allowed', 'Reset avatar is not allowed', {

@@ -6,7 +6,7 @@ import { Messages as MessagesRaw } from '@rocket.chat/models';
 import { Messages } from '../../../models/server';
 import { canAccessRoom, canAccessRoomId, roomAccessAttributes, hasPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
-import { processWebhookMessage } from '../../../lib/server';
+import { deleteMessage, processWebhookMessage } from '../../../lib/server';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { API } from '../api';
@@ -21,12 +21,14 @@ import {
 	findSnippetedMessages,
 	findDiscussionsFromRoom,
 } from '../lib/messages';
+import { canDeleteMessage } from '../../../authorization/server/functions/canDeleteMessage';
+import { reportMessage } from '../../../../server/lib/moderation/reportMessage';
 
 API.v1.addRoute(
 	'chat.delete',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			check(
 				this.bodyParams,
 				Match.ObjectIncluding({
@@ -36,7 +38,21 @@ API.v1.addRoute(
 				}),
 			);
 
-			const msg = Messages.findOneById(this.bodyParams.msgId, { fields: { u: 1, rid: 1 } });
+			const { userId } = this;
+
+			if (!userId) {
+				return API.v1.unauthorized();
+			}
+
+			const msg = Messages.findOneById(this.bodyParams.msgId, {
+				fields: {
+					u: 1,
+					rid: 1,
+					file: 1,
+					files: 1,
+					ts: 1,
+				},
+			});
 
 			if (!msg) {
 				return API.v1.failure(`No message found with the id of "${this.bodyParams.msgId}".`);
@@ -46,13 +62,17 @@ API.v1.addRoute(
 				return API.v1.failure('The room id provided does not match where the message is from.');
 			}
 
-			if (this.bodyParams.asUser && msg.u._id !== this.userId && !hasPermission(this.userId, 'force-delete-message', msg.rid)) {
+			if (this.bodyParams.asUser && msg.u._id !== userId && !hasPermission(userId, 'force-delete-message', msg.rid)) {
 				return API.v1.failure('Unauthorized. You must have the permission "force-delete-message" to delete other\'s message as them.');
 			}
 
-			Meteor.runAsUser(this.bodyParams.asUser ? msg.u._id : this.userId, () => {
-				Meteor.call('deleteMessage', { _id: msg._id });
-			});
+			if (!canDeleteMessage(userId, msg)) {
+				return API.v1.failure(
+					'You are not allowed to delete this message. You must have the permission "delete-message" to delete this message.',
+				);
+			}
+
+			await deleteMessage(msg, this.bodyParams.asUser ? msg.u._id : this.userId);
 
 			return API.v1.success({
 				_id: msg._id,
@@ -401,7 +421,7 @@ API.v1.addRoute(
 	'chat.reportMessage',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			const { messageId, description } = this.bodyParams;
 			if (!messageId) {
 				return API.v1.failure('The required "messageId" param is missing.');
@@ -411,7 +431,7 @@ API.v1.addRoute(
 				return API.v1.failure('The required "description" param is missing.');
 			}
 
-			Meteor.call('reportMessage', messageId, description);
+			await reportMessage(messageId, description, this.userId);
 
 			return API.v1.success();
 		},
