@@ -17,7 +17,7 @@ import { Team } from '@rocket.chat/core-services';
 
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { Rooms, Users } from '../../../models/server';
-import { canAccessRoom, hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
+import { canAccessRoomAsync, hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { parseJsonQuery } from '../helpers/parseJsonQuery';
@@ -592,7 +592,7 @@ API.v1.addRoute(
 				return API.v1.failure('Room not found');
 			}
 
-			const canViewInfo = canAccessRoom(room, { _id: this.userId }) || hasPermission(this.userId, 'view-all-teams');
+			const canViewInfo = (await canAccessRoomAsync(room, { _id: this.userId })) || hasPermission(this.userId, 'view-all-teams');
 
 			if (!canViewInfo) {
 				return API.v1.unauthorized();

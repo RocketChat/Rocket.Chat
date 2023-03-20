@@ -22,7 +22,7 @@ import { Integrations, Messages, Rooms, Subscriptions, Uploads } from '@rocket.c
 import { Team } from '@rocket.chat/core-services';
 
 import { Messages as MessagesSync, Subscriptions as SubscriptionsSync, Users as UsersSync } from '../../../models/server';
-import { canAccessRoom, hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
+import { canAccessRoomAsync, hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
@@ -768,7 +768,7 @@ API.v1.addRoute(
 				checkedArchived: false,
 			});
 
-			if (!(await canAccessRoom(findResult, { _id: this.userId }))) {
+			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
 				return API.v1.unauthorized();
 			}
 
@@ -1100,7 +1100,7 @@ API.v1.addRoute(
 
 			const user = await getLoggedInUser(this.request.headers['x-auth-token'] as string, this.request.headers['x-user-id'] as string);
 
-			if (!room || !user || !(await canAccessRoom(room, user))) {
+			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
 

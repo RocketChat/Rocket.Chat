@@ -8,7 +8,7 @@ import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { isTheLastMessage } from '../../lib/server';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
-import { canAccessRoom, hasPermission, roomAccessAttributes } from '../../authorization/server';
+import { canAccessRoomAsync, hasPermission, roomAccessAttributes } from '../../authorization/server';
 import { Subscriptions, Messages, Users, Rooms } from '../../models/server';
 import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
 import { isTruthy } from '../../../lib/isTruthy';
@@ -42,7 +42,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	pinMessage(message, pinnedAt) {
+	async pinMessage(message, pinnedAt) {
 		check(message._id, String);
 
 		const userId = Meteor.userId();
@@ -88,7 +88,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		const room = Rooms.findOneById(originalMessage.rid);
-		if (!canAccessRoom(room, { _id: userId })) {
+		if (!(await canAccessRoomAsync(room, { _id: userId }))) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
 		}
 
@@ -131,7 +131,7 @@ Meteor.methods<ServerMethods>({
 			],
 		});
 	},
-	unpinMessage(message) {
+	async unpinMessage(message) {
 		check(message._id, String);
 
 		const userId = Meteor.userId();
@@ -185,7 +185,7 @@ Meteor.methods<ServerMethods>({
 		originalMessage = callbacks.run('beforeSaveMessage', originalMessage);
 
 		const room = Rooms.findOneById(originalMessage.rid, { fields: { ...roomAccessAttributes, lastMessage: 1 } });
-		if (!canAccessRoom(room, { _id: userId })) {
+		if (!(await canAccessRoomAsync(room, { _id: userId }))) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'unpinMessage' });
 		}
 

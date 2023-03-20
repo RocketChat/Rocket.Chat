@@ -9,7 +9,7 @@ import { Rooms as RoomSync, Users as UsersSync, Messages as MessageSync, Subscri
 import {
 	hasPermission,
 	hasAtLeastOnePermission,
-	canAccessRoom,
+	canAccessRoomAsync,
 	hasAllPermission,
 	roomAccessAttributes,
 } from '../../../authorization/server';
@@ -79,7 +79,7 @@ async function findPrivateGroupByIdOrName({
 
 	const user = await Users.findOneById(userId, { projections: { username: 1 } });
 
-	if (!room || !user || !canAccessRoom(room, user)) {
+	if (!room || !user || !(await canAccessRoomAsync(room, user))) {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 	}
 
@@ -835,7 +835,7 @@ API.v1.addRoute(
 				return API.v1.failure('User does not exists');
 			}
 
-			if (!(await canAccessRoom(room, user))) {
+			if (!(await canAccessRoomAsync(room, user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
 

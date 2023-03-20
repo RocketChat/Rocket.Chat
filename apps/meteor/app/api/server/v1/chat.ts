@@ -4,7 +4,7 @@ import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { canAccessRoom, canAccessRoomId, roomAccessAttributes, hasPermission } from '../../../authorization/server';
+import { canAccessRoomId, roomAccessAttributes, hasPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { processWebhookMessage } from '../../../lib/server';
@@ -14,6 +14,7 @@ import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } f
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { parseJsonQuery } from '../helpers/parseJsonQuery';
+import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 
 API.v1.addRoute(
 	'chat.delete',
@@ -495,7 +496,7 @@ API.v1.addRoute(
 			const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
 			const room = await Rooms.findOneById(rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } });
 
-			if (!room || !user || !canAccessRoom(room, user)) {
+			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
 
@@ -559,7 +560,7 @@ API.v1.addRoute(
 			const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
 			const room = await Rooms.findOneById(rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } });
 
-			if (!room || !user || !canAccessRoom(room, user)) {
+			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
 			const threadQuery = Object.assign({}, query, { rid, tcount: { $exists: true } });
@@ -611,7 +612,7 @@ API.v1.addRoute(
 			const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
 			const room = await Rooms.findOneById(thread.rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } });
 
-			if (!room || !user || !canAccessRoom(room, user)) {
+			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
 			const { cursor, totalCount } = await Messages.findPaginated(
@@ -673,7 +674,7 @@ API.v1.addRoute(
 			const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
 			const room = await Rooms.findOneById(thread.rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } });
 
-			if (!room || !user || !canAccessRoom(room, user)) {
+			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
 			return API.v1.success({

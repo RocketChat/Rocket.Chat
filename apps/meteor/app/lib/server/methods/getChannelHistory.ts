@@ -4,7 +4,7 @@ import _ from 'underscore';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { canAccessRoom, hasPermission } from '../../../authorization/server';
+import { canAccessRoomAsync, hasPermission } from '../../../authorization/server';
 import { Subscriptions, Messages, Rooms } from '../../../models/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
@@ -26,7 +26,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	getChannelHistory({ rid, latest, oldest, inclusive, offset = 0, count = 20, unreads, showThreadMessages = true }) {
+	async getChannelHistory({ rid, latest, oldest, inclusive, offset = 0, count = 20, unreads, showThreadMessages = true }) {
 		check(rid, String);
 
 		if (!Meteor.userId()) {
@@ -43,7 +43,7 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		if (!canAccessRoom(room, { _id: fromUserId })) {
+		if (!(await canAccessRoomAsync(room, { _id: fromUserId }))) {
 			return false;
 		}
 
