@@ -15,6 +15,7 @@ export enum LivechatInquiryStatus {
 	QUEUED = 'queued',
 	TAKEN = 'taken',
 	READY = 'ready',
+	OPEN = 'open',
 }
 
 export interface IVisitor {

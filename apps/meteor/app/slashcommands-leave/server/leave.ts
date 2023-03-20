@@ -20,7 +20,7 @@ const Leave: SlashCommand<'leave'>['callback'] = function Leave(_command, _param
 			return;
 		}
 		const user = Users.findOneById(userId);
-		api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+		void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 			msg: TAPi18n.__(error, { lng: user?.language || settings.get('Language') || 'en' }),
 		});
 	}

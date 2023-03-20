@@ -20,7 +20,7 @@ export const onAdded = (button: IUIActionButton): void =>
 			return applyButtonFilters(button, Rooms.findOne(Session.get('openedRoom')));
 		},
 		action() {
-			triggerActionButtonAction({
+			void triggerActionButtonAction({
 				rid: Session.get('openedRoom'),
 				actionId: button.actionId,
 				appId: button.appId,

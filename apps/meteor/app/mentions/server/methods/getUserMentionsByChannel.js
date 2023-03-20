@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { Rooms, Users, Messages } from '../../../models/server';
-import { canAccessRoom } from '../../../authorization/server';
+import { canAccessRoomAsync } from '../../../authorization/server';
 
 Meteor.methods({
-	getUserMentionsByChannel({ roomId, options }) {
+	async getUserMentionsByChannel({ roomId, options }) {
 		check(roomId, String);
 
 		if (!Meteor.userId()) {
@@ -18,7 +18,7 @@ Meteor.methods({
 
 		const room = Rooms.findOneById(roomId);
 
-		if (!room || !canAccessRoom(room, user)) {
+		if (!room || !(await canAccessRoomAsync(room, user))) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 				method: 'getUserMentionsByChannel',
 			});

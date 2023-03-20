@@ -73,9 +73,4 @@ const beforeRouteChat = async (inquiry, agent) => {
 	return LivechatInquiry.findOneById(_id);
 };
 
-callbacks.add(
-	'livechat.beforeRouteChat',
-	(inquiry, agent) => Promise.await(beforeRouteChat(inquiry, agent)),
-	callbacks.priority.HIGH,
-	'livechat-before-routing-chat',
-);
+callbacks.add('livechat.beforeRouteChat', beforeRouteChat, callbacks.priority.HIGH, 'livechat-before-routing-chat');

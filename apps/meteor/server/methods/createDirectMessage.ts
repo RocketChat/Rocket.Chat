@@ -12,11 +12,11 @@ import { createRoom } from '../../app/lib/server/functions/createRoom';
 import { addUser } from '../../app/federation/server/functions/addUser';
 import { callbacks } from '../../lib/callbacks';
 
-export function createDirectMessage(
+export async function createDirectMessage(
 	usernames: IUser['username'][],
 	userId: IUser['_id'] | null,
 	excludeSelf = false,
-): Omit<ICreatedRoom, '_id' | 'inserted'> {
+): Promise<Omit<ICreatedRoom, '_id' | 'inserted'>> {
 	check(usernames, [String]);
 	check(userId, String);
 	check(excludeSelf, Match.Optional(Boolean));
@@ -102,7 +102,7 @@ export function createDirectMessage(
 	} catch (error) {
 		throw new Meteor.Error((error as any)?.message);
 	}
-	const { _id: rid, inserted, ...room } = createRoom('d', undefined, undefined, roomUsers, undefined, {}, options);
+	const { _id: rid, inserted, ...room } = await createRoom('d', undefined, undefined, roomUsers, undefined, {}, options);
 
 	return {
 		// @ts-expect-error - room type is already defined in the `createRoom` return type

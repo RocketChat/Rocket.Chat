@@ -38,7 +38,7 @@ slashCommands.add({
 
 		const room = Rooms.findOneByName(channelStr);
 		if (room != null) {
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('Channel_already_exist', {
 					postProcess: 'sprintf',
 					sprintf: [channelStr],

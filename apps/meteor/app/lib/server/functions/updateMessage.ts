@@ -61,7 +61,7 @@ export const updateMessage = function (message: IMessage, user: IUser, originalM
 	if (Apps?.isLoaded()) {
 		// This returns a promise, but it won't mutate anything about the message
 		// so, we don't really care if it is successful or fails
-		Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageUpdated', message);
+		void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageUpdated', message);
 	}
 
 	Meteor.defer(function () {

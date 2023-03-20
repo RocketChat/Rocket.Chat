@@ -63,7 +63,7 @@ Meteor.methods({
 		}
 
 		if (settings.get('UI_DisplayRoles')) {
-			api.broadcast('user.roleUpdate', {
+			void api.broadcast('user.roleUpdate', {
 				type: 'added',
 				_id: 'leader',
 				u: {
