@@ -17,7 +17,7 @@ API.v1.addRoute(
 
 			const { from, subject, body, dryrun, query } = this.bodyParams;
 
-			const result = Meteor.call('Mailer.sendMail', from, subject, body, Boolean(dryrun), query);
+			const result = await Meteor.callAsync('Mailer.sendMail', from, subject, body, Boolean(dryrun), query);
 
 			return API.v1.success(result);
 		},
@@ -34,9 +34,9 @@ API.v1.addRoute(
 		async post() {
 			const { _id, createdAt } = this.bodyParams;
 
-			const result = Meteor.call('Mailer:unsubscribe', _id, createdAt);
+			await Meteor.callAsync('Mailer:unsubscribe', _id, createdAt);
 
-			return API.v1.success(result);
+			return API.v1.success();
 		},
 	},
 );

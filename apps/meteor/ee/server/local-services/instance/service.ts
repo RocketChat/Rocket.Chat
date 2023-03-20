@@ -31,9 +31,9 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 			}
 		});
 
-		this.onEvent('license.module', ({ module, valid }) => {
+		this.onEvent('license.module', async ({ module, valid }) => {
 			if (module === 'scalability' && valid) {
-				this.startBroadcast();
+				await this.startBroadcast();
 			}
 		});
 
@@ -116,17 +116,17 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 			nodeVersion: process.version,
 		};
 
-		InstanceStatus.registerInstance('rocket.chat', instance);
+		await InstanceStatus.registerInstance('rocket.chat', instance);
 
 		const hasLicense = await License.hasLicense('scalability');
 		if (!hasLicense) {
 			return;
 		}
 
-		this.startBroadcast();
+		await this.startBroadcast();
 	}
 
-	private startBroadcast() {
+	private async startBroadcast() {
 		if (this.broadcastStarted) {
 			return;
 		}
@@ -135,7 +135,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 		StreamerCentral.on('broadcast', this.sendBroadcast.bind(this));
 
-		InstanceStatusRaw.find(
+		await InstanceStatusRaw.find(
 			{
 				'extraInformation.tcpPort': {
 					$exists: true,
@@ -164,7 +164,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 			return;
 		}
 
-		this.broker.broadcast('broadcast', { streamName, eventName, args });
+		void this.broker.broadcast('broadcast', { streamName, eventName, args });
 	}
 
 	async getInstances(): Promise<BrokerNode[]> {

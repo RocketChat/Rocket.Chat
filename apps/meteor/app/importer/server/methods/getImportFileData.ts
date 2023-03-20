@@ -3,6 +3,7 @@ import fs from 'fs';
 
 import { Meteor } from 'meteor/meteor';
 import type { IImportFileData } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { RocketChatImportFileInstance } from '../startup/store';
 import { hasPermission } from '../../../authorization/server';
@@ -58,7 +59,14 @@ export const executeGetImportFileData = async (): Promise<IImportFileData | { wa
 	return importer.instance.buildSelection();
 };
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		getImportFileData(): IImportFileData | { waiting: true };
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	getImportFileData() {
 		const userId = Meteor.userId();
 
