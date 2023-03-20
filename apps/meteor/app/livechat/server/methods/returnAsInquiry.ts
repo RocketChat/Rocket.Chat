@@ -1,12 +1,22 @@
+import type { ILivechatDepartment, IRoom } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization/server';
 import { LivechatRooms } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'livechat:returnAsInquiry'(rid: IRoom['_id'], departmentID?: ILivechatDepartment['_id']): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	'livechat:returnAsInquiry'(rid, departmentId) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-l-room')) {
+		const uid = Meteor.userId();
+		if (!uid || !hasPermission(uid, 'view-l-room')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:returnAsInquiry',
 			});

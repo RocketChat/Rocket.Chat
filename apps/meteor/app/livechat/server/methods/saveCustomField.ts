@@ -1,12 +1,31 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { LivechatCustomField } from '@rocket.chat/models';
+import type { ILivechatCustomField } from '@rocket.chat/core-typings';
 
 import { hasPermission } from '../../../authorization/server';
 
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'livechat:saveCustomField'(
+			_id: string,
+			customFieldData: {
+				field: string;
+				label: string;
+				scope: 'visitor' | 'room';
+				visibility: string;
+				regexp: string;
+				searchable: boolean;
+			},
+		): ILivechatCustomField;
+	}
+}
+
 Meteor.methods({
 	async 'livechat:saveCustomField'(_id, customFieldData) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-livechat-manager')) {
+		const uid = Meteor.userId();
+		if (!uid || !hasPermission(uid, 'view-livechat-manager')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:saveCustomField',
 			});

@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermission } from '../../../authorization/server';
 import { LivechatRooms } from '../../../models/server';
@@ -8,10 +9,30 @@ import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
-/**
- * @deprecated Will be removed in future versions.
- */
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'livechat:saveInfo'(
+			guestData: {
+				_id: string;
+				name?: string;
+				email?: string;
+				phone?: string;
+				livechatData?: Record<string, any>;
+			},
+			roomData: {
+				_id: string;
+				topic?: string;
+				tags?: string[];
+				livechatData?: Record<string, any>;
+				priorityId?: string;
+				slaId?: string;
+			},
+		): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async 'livechat:saveInfo'(guestData, roomData) {
 		methodDeprecationLogger.warn(
 			'livechat:saveInfo method will be deprecated in future versions of Rocket.Chat. Use "livechat/room.saveInfo" endpoint instead.',

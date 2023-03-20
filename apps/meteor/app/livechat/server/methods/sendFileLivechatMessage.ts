@@ -2,11 +2,32 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from '@rocket.chat/random';
 import { LivechatVisitors } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { MessageAttachment, ImageAttachmentProps, AudioAttachmentProps, VideoAttachmentProps } from '@rocket.chat/core-typings';
 
 import { LivechatRooms } from '../../../models/server';
 import { FileUpload } from '../../../file-upload/server';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		sendFileLivechatMessage(
+			roomId: string,
+			visitorToken: string,
+			file: {
+				_id: string;
+				name: string;
+				type: string;
+				size: number;
+				description: string;
+				identify: { size: { width: number; height: number } };
+			},
+			msgData?: { avatar?: string; emoji?: string; alias?: string; groupable?: boolean; msg?: string },
+		): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async sendFileLivechatMessage(roomId, visitorToken, file, msgData = {}) {
 		const visitor = await LivechatVisitors.getVisitorByToken(visitorToken);
 
@@ -30,7 +51,7 @@ Meteor.methods({
 
 		const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`);
 
-		const attachment = {
+		const attachment: MessageAttachment = {
 			title: file.name,
 			type: 'file',
 			description: file.description,
@@ -39,21 +60,21 @@ Meteor.methods({
 		};
 
 		if (/^image\/.+/.test(file.type)) {
-			attachment.image_url = fileUrl;
-			attachment.image_type = file.type;
-			attachment.image_size = file.size;
-			if (file.identify && file.identify.size) {
-				attachment.image_dimensions = file.identify.size;
+			(attachment as ImageAttachmentProps).image_url = fileUrl;
+			(attachment as ImageAttachmentProps).image_type = file.type;
+			(attachment as ImageAttachmentProps).image_size = file.size;
+			if (file.identify?.size) {
+				(attachment as ImageAttachmentProps).image_dimensions = file.identify.size;
 			}
-			attachment.image_preview = await FileUpload.resizeImagePreview(file);
+			(attachment as ImageAttachmentProps).image_preview = await FileUpload.resizeImagePreview(file);
 		} else if (/^audio\/.+/.test(file.type)) {
-			attachment.audio_url = fileUrl;
-			attachment.audio_type = file.type;
-			attachment.audio_size = file.size;
+			(attachment as AudioAttachmentProps).audio_url = fileUrl;
+			(attachment as AudioAttachmentProps).audio_type = file.type;
+			(attachment as AudioAttachmentProps).audio_size = file.size;
 		} else if (/^video\/.+/.test(file.type)) {
-			attachment.video_url = fileUrl;
-			attachment.video_type = file.type;
-			attachment.video_size = file.size;
+			(attachment as VideoAttachmentProps).video_url = fileUrl;
+			(attachment as VideoAttachmentProps).video_type = file.type;
+			(attachment as VideoAttachmentProps).video_size = file.size;
 		}
 
 		const msg = Object.assign(

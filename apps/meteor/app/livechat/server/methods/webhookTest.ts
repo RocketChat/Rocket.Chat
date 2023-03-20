@@ -1,19 +1,27 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { settings } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
-const postCatchError = function (url, options) {
+const postCatchError = function (url: string, options?: HTTP.HTTPRequest | undefined) {
 	try {
 		return HTTP.post(url, options);
 	} catch (e) {
-		return e;
+		return undefined; // TODO: should we return the error?
 	}
 };
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'livechat:webhookTest'(): any;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	'livechat:webhookTest'() {
 		methodDeprecationLogger.info(`Method 'livechat:webhookTest' is deprecated and will be removed in future versions of Rocket.Chat`);
 		this.unblock();
@@ -66,7 +74,7 @@ Meteor.methods({
 
 		const options = {
 			headers: {
-				'X-RocketChat-Livechat-Token': settings.get('Livechat_secret_token'),
+				'X-RocketChat-Livechat-Token': settings.get<string>('Livechat_secret_token'),
 			},
 			data: sampleData,
 		};
@@ -75,7 +83,7 @@ Meteor.methods({
 
 		SystemLogger.debug({ response });
 
-		if (response && response.statusCode && response.statusCode === 200) {
+		if (response?.statusCode && response.statusCode === 200) {
 			return true;
 		}
 		throw new Meteor.Error('error-invalid-webhook-response');
