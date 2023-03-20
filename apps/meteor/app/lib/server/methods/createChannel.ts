@@ -5,7 +5,7 @@ import { hasPermission } from '../../../authorization/server';
 import { createRoom } from '../functions';
 
 Meteor.methods({
-	async createChannel(name, members, readOnly = false, customFields = {}, extraData = {}) {
+	createChannel(name, members, readOnly = false, customFields = {}, extraData = {}) {
 		check(name, String);
 		check(members, Match.Optional([String]));
 

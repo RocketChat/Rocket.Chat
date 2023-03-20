@@ -13,9 +13,7 @@ import { Users } from '../../models/server';
 
 slashCommands.add({
 	command: 'msg',
-	// This is while we convert slashcommands to support async callbacks
-	// eslint-disable-next-line @typescript-eslint/no-misused-promises
-	callback: async function Msg(_command: 'msg', params, item): Promise<void> {
+	callback: function Msg(_command: 'msg', params, item): void {
 		const trimmedParams = params.trim();
 		const separator = trimmedParams.indexOf(' ');
 		const userId = Meteor.userId() as string;
@@ -40,7 +38,7 @@ slashCommands.add({
 			});
 			return;
 		}
-		const { rid } = await Meteor.callAsync('createDirectMessage', targetUsername);
+		const { rid } = Meteor.call('createDirectMessage', targetUsername);
 		const msgObject = {
 			_id: Random.id(),
 			rid,

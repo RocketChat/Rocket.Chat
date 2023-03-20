@@ -259,11 +259,11 @@ export default class RocketAdapter {
 		return slackChannel.creator ? this.findUser(slackChannel.creator) || this.addUser(slackChannel.creator) : null;
 	}
 
-	async addChannel(slackChannelID, hasRetried = false) {
+	addChannel(slackChannelID, hasRetried = false) {
 		rocketLogger.debug('Adding Rocket.Chat channel from Slack', slackChannelID);
 		let addedRoom;
 
-		const prom = this.slackAdapters.map(async (slack) => {
+		this.slackAdapters.forEach((slack) => {
 			if (addedRoom) {
 				return;
 			}
@@ -292,7 +292,7 @@ export default class RocketAdapter {
 
 					try {
 						const isPrivate = slackChannel.is_private;
-						const rocketChannel = await createRoom(isPrivate ? 'p' : 'c', slackChannel.name, rocketUserCreator.username, rocketUsers);
+						const rocketChannel = createRoom(isPrivate ? 'p' : 'c', slackChannel.name, rocketUserCreator.username, rocketUsers);
 						rocketChannel.rocketId = rocketChannel.rid;
 					} catch (e) {
 						if (!hasRetried) {
@@ -325,8 +325,6 @@ export default class RocketAdapter {
 				addedRoom = Rooms.findOneById(slackChannel.rocketId);
 			}
 		});
-
-		await Promise.all(prom);
 
 		if (!addedRoom) {
 			rocketLogger.debug('Channel not added');

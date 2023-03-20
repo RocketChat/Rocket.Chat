@@ -77,7 +77,7 @@ export class SAML {
 		await CredentialTokens.create(credentialToken, loginResult);
 	}
 
-	public static async insertOrUpdateSAMLUser(userObject: ISAMLUser): Promise<{ userId: string; token: string }> {
+	public static insertOrUpdateSAMLUser(userObject: ISAMLUser): { userId: string; token: string } {
 		const {
 			generateUsername,
 			immutableProperty,
@@ -166,7 +166,7 @@ export class SAML {
 			user = Users.findOne(userId);
 
 			if (userObject.channels && channelsAttributeUpdate !== true) {
-				await SAML.subscribeToSAMLChannels(userObject.channels, user);
+				SAML.subscribeToSAMLChannels(userObject.channels, user);
 			}
 		}
 
@@ -205,7 +205,7 @@ export class SAML {
 		}
 
 		if (userObject.channels && channelsAttributeUpdate === true) {
-			await SAML.subscribeToSAMLChannels(userObject.channels, user);
+			SAML.subscribeToSAMLChannels(userObject.channels, user);
 		}
 
 		Users.update(
@@ -467,7 +467,7 @@ export class SAML {
 			.replace(/^\w/, (u) => u.toUpperCase());
 	}
 
-	private static async subscribeToSAMLChannels(channels: Array<string>, user: IUser): Promise<void> {
+	private static subscribeToSAMLChannels(channels: Array<string>, user: IUser): void {
 		const { includePrivateChannelsInUpdate } = SAMLUtils.globalSettings;
 		try {
 			for (let roomName of channels) {
@@ -492,8 +492,7 @@ export class SAML {
 				if (!room && !privRoom) {
 					// If the user doesn't have an username yet, we can't create new rooms for them
 					if (user.username) {
-						// eslint-disable-next-line no-await-in-loop
-						await createRoom('c', roomName, user.username);
+						createRoom('c', roomName, user.username);
 					}
 				}
 			}

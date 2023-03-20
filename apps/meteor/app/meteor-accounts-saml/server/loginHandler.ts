@@ -11,7 +11,7 @@ const makeError = (message: string): Record<string, any> => ({
 	error: new Meteor.Error(Accounts.LoginCancelledError.numericError, message),
 });
 
-Accounts.registerLoginHandler('saml', async function (loginRequest) {
+Accounts.registerLoginHandler('saml', function (loginRequest) {
 	if (!loginRequest.saml || !loginRequest.credentialToken || typeof loginRequest.credentialToken !== 'string') {
 		return undefined;
 	}
@@ -29,7 +29,7 @@ Accounts.registerLoginHandler('saml', async function (loginRequest) {
 
 	try {
 		const userObject = SAMLUtils.mapProfileToUserObject(loginResult.profile);
-		const updatedUser = await SAML.insertOrUpdateSAMLUser(userObject);
+		const updatedUser = SAML.insertOrUpdateSAMLUser(userObject);
 		SAMLUtils.events.emit('updateCustomFields', loginResult, updatedUser);
 
 		return updatedUser;

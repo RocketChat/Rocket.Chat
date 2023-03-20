@@ -44,7 +44,7 @@ export async function saveRoomName(rid, displayName, user, sendMessage = true) {
 	if (isDiscussion || isRoomFederated(room)) {
 		update = updateFName(rid, displayName);
 	} else {
-		update = await updateRoomName(rid, displayName);
+		update = updateRoomName(rid, displayName);
 	}
 
 	if (!update) {

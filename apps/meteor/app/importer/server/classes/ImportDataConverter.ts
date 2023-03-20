@@ -316,7 +316,7 @@ export class ImportDataConverter {
 
 	public async convertUsers({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): Promise<void> {
 		const users = (await this.getUsersToImport()) as IImportUserRecord[];
-		const promises = users.map(async ({ data, _id }) => {
+		users.forEach(({ data, _id }) => {
 			try {
 				if (beforeImportFn && !beforeImportFn(data, 'user')) {
 					this.skipRecord(_id);
@@ -371,8 +371,6 @@ export class ImportDataConverter {
 				this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
 			}
 		});
-
-		await Promise.all(promises);
 	}
 
 	protected saveError(importId: string, error: Error): void {
@@ -826,11 +824,11 @@ export class ImportDataConverter {
 
 		// Create the channel
 		try {
-			Meteor.runAsUser(creatorId, async () => {
+			Meteor.runAsUser(creatorId, () => {
 				const roomInfo =
 					roomData.t === 'd'
-						? await Meteor.callAsync('createDirectMessage', ...members)
-						: await Meteor.callAsync(roomData.t === 'p' ? 'createPrivateGroup' : 'createChannel', roomData.name, members);
+						? Meteor.call('createDirectMessage', ...members)
+						: Meteor.call(roomData.t === 'p' ? 'createPrivateGroup' : 'createChannel', roomData.name, members);
 
 				roomData._id = roomInfo.rid;
 			});
@@ -902,7 +900,7 @@ export class ImportDataConverter {
 
 	async convertChannels(startedByUserId: string, { beforeImportFn, afterImportFn }: IConversionCallbacks = {}): Promise<void> {
 		const channels = await this.getChannelsToImport();
-		const promises = channels.map(async ({ data, _id }: IImportChannelRecord) => {
+		channels.forEach(({ data, _id }: IImportChannelRecord) => {
 			try {
 				if (beforeImportFn && !beforeImportFn(data, 'channel')) {
 					this.skipRecord(_id);
@@ -920,7 +918,7 @@ export class ImportDataConverter {
 					throw new Error('importer-channel-missing-import-id');
 				}
 
-				const existingRoom = await this.findExistingRoom(data);
+				const existingRoom = this.findExistingRoom(data);
 
 				if (existingRoom) {
 					this.updateRoom(existingRoom, data, startedByUserId);
@@ -939,8 +937,6 @@ export class ImportDataConverter {
 				this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
 			}
 		});
-
-		await Promise.all(promises);
 	}
 
 	archiveRoomById(rid: string): void {
