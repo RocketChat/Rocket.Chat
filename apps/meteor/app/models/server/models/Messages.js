@@ -40,23 +40,6 @@ export class Messages extends Base {
 		return this.update({ _id: messageId }, { $set: { reactions } });
 	}
 
-	setRoomIdByToken(token, rid) {
-		return this.update(
-			{
-				'navigation.token': token,
-				'rid': null,
-			},
-			{
-				$set: {
-					rid,
-				},
-			},
-			{
-				multi: true,
-			},
-		);
-	}
-
 	createRoomArchivedByRoomIdAndUser(roomId, user) {
 		return this.createWithTypeRoomIdMessageAndUser('room-archived', roomId, '', user);
 	}
