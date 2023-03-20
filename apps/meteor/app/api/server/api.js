@@ -350,7 +350,8 @@ export class APIClass extends Restivus {
 				// Add a try/catch for each endpoint
 				const originalAction = endpoints[method].action;
 				const api = this;
-				const newAction = async function _internalRouteActionHandler() {
+
+				endpoints[method].action = async function _internalRouteActionHandler() {
 					const rocketchatRestApiEnd = metrics.rocketchatRestApi.startTimer({
 						method,
 						version,
@@ -489,10 +490,6 @@ export class APIClass extends Restivus {
 					});
 
 					return result;
-				};
-
-				endpoints[method].action = function () {
-					return Promise.await(newAction.apply(this));
 				};
 
 				for (const [name, helperMethod] of this.getHelperMethods()) {

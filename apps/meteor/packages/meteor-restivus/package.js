@@ -11,12 +11,16 @@ Package.onUse(function (api) {
 
 	// Meteor dependencies
 	api.use('check');
+	api.use('webapp');
 	api.use('ecmascript');
-	api.use('underscore');
 	api.use('accounts-password');
-	api.use('simple:json-routes@2.3.1');
 
 	api.mainModule('lib/restivus.js', 'server');
+});
+
+Npm.depends({
+	'connect': '2.30.2',
+	'connect-route': '0.1.5',
 });
 
 // Package.onTest(function (api) {

@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { JsonRoutes, JsonRoute } from 'meteor/simple:json-routes';
-import _ from 'underscore';
 
 import { ironRouterSendErrorToResponse } from './iron-router-error-to-response';
+import { JsonRoutes } from './json-routes';
 
 const availableMethods = ['get', 'post', 'put', 'patch', 'delete', 'options'];
 
@@ -33,13 +32,13 @@ export class Route {
 		const allowedMethods = availableMethods.filter(function (method) {
 			return Object.keys(self.endpoints).includes(method);
 		});
-		const rejectedMethods = _.reject(availableMethods, function (method) {
-			return Object.keys(self.endpoints).includes(method);
+		const rejectedMethods = availableMethods.filter(function (method) {
+			return !Object.keys(self.endpoints).includes(method);
 		});
 		const fullPath = this.api._config.apiPath + this.path;
 		allowedMethods.forEach(function (method) {
 			const endpoint = self.endpoints[method];
-			return JsonRoutes.add(method, fullPath, function (req, res) {
+			return JsonRoutes.add(method, fullPath, async function (req, res) {
 				let responseInitiated = false;
 				const doneFunc = function () {
 					responseInitiated = true;
@@ -55,7 +54,7 @@ export class Route {
 				};
 				let responseData = null;
 				try {
-					responseData = self._callEndpoint(endpointContext, endpoint);
+					responseData = await self._callEndpoint(endpointContext, endpoint);
 				} catch (e) {
 					ironRouterSendErrorToResponse(e, req, res);
 					return;
@@ -131,8 +130,8 @@ export class Route {
 				if (!endpoint.roleRequired) {
 					endpoint.roleRequired = [];
 				}
-				endpoint.roleRequired = _.union(endpoint.roleRequired, this.options.roleRequired);
-				if (_.isEmpty(endpoint.roleRequired)) {
+				endpoint.roleRequired = [...endpoint.roleRequired, ...this.options.roleRequired];
+				if (endpoint.roleRequired.length === 0) {
 					endpoint.roleRequired = false;
 				}
 				if (endpoint.authRequired === void 0) {
@@ -264,7 +263,8 @@ export class Route {
 
 	_roleAccepted(endpointContext, endpoint) {
 		if (endpoint.roleRequired) {
-			if (_.isEmpty(_.intersection(endpoint.roleRequired, endpointContext.user.roles))) {
+			const intersection = [endpoint.roleRequired, endpointContext.user.roles].reduce((a, b) => a.filter((c) => b.includes(c)));
+			if (intersection.length === 0) {
 				return false;
 			}
 		}
@@ -287,7 +287,7 @@ export class Route {
 		}
 		const defaultHeaders = this._lowerCaseKeys(this.api._config.defaultHeaders);
 		headers = this._lowerCaseKeys(headers);
-		headers = _.extend(defaultHeaders, headers);
+		headers = { ...defaultHeaders, ...headers };
 		if (headers['content-type'].match(/json|javascript/) !== null) {
 			if (this.api._config.prettyJson) {
 				body = JSON.stringify(body, void 0, 2);
@@ -314,12 +314,9 @@ export class Route {
 		*/
 
 	_lowerCaseKeys(object) {
-		return _.chain(object)
-			.pairs()
-			.map(function (attr) {
-				return [attr[0].toLowerCase(), attr[1]];
-			})
-			.object()
-			.value();
+		return Object.keys(object).reduce((accumulator, key) => {
+			accumulator[key.toLowerCase()] = object[key];
+			return accumulator;
+		}, {});
 	}
 }
