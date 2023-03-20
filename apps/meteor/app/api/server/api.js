@@ -16,6 +16,7 @@ import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUse
 import { checkCodeForUser } from '../../2fa/server/code';
 import { checkPermissionsForInvocation, checkPermissions } from './api.helpers';
 import { isObject } from '../../../lib/utils/isObject';
+import { getUserInfo } from './helpers/getUserInfo';
 
 const logger = new Logger('API');
 
@@ -585,7 +586,6 @@ export class APIClass extends Restivus {
 			{
 				post() {
 					const args = loginCompatibility(this.bodyParams, this.request);
-					const getUserInfo = self.getHelperMethod('getUserInfo');
 
 					const invocation = new DDPCommon.MethodInvocation({
 						connection: {
