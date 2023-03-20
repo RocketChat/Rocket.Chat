@@ -3,6 +3,13 @@ import { check } from 'meteor/check';
 
 import { Subscriptions } from '../../../models/server';
 
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		unblockUser({ rid, blocked }: { rid: string; blocked: string }): boolean;
+	}
+}
+
 Meteor.methods({
 	unblockUser({ rid, blocked }) {
 		check(rid, String);

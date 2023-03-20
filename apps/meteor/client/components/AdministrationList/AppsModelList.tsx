@@ -24,7 +24,7 @@ const AppsModelList = ({ appBoxItems, appsManagementAllowed, onDismiss }: AppsMo
 	return (
 		<>
 			<OptionTitle>{t('Apps')}</OptionTitle>
-			<ul aria-description='appsList'>
+			<ul>
 				<>
 					<ListItem
 						role='listitem'
