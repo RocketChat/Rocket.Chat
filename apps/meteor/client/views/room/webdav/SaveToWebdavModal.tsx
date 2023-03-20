@@ -66,7 +66,7 @@ const SaveToWebdavModal = ({ onClose, data }: SaveToWebdavModalProps): ReactElem
 					}
 					const response = await uploadFileToWebdav(accountId, fileData, title);
 					if (!response.success) {
-						throw new Error(t(response.message));
+						throw new Error(response.message ? t(response.message) : 'Error uploading file');
 					}
 					return dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
 				} catch (error) {
