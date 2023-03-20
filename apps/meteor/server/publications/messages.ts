@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { Messages } from '@rocket.chat/models';
 
 import { canAccessRoomId } from '../../app/authorization/server';
-import { Messages } from '../../app/models/server';
+import { Messages as MessagesSync } from '../../app/models/server';
 
 Meteor.methods({
-	'messages/get'(rid, { lastUpdate, latestDate = new Date(), oldestDate, inclusive = false, count = 20, unreads = false }) {
+	async 'messages/get'(rid, { lastUpdate, latestDate = new Date(), oldestDate, inclusive = false, count = 20, unreads = false }) {
 		check(rid, String);
 
 		const fromId = Meteor.userId();
@@ -34,8 +35,12 @@ Meteor.methods({
 
 		if (lastUpdate instanceof Date) {
 			return {
-				updated: Messages.findForUpdates(rid, lastUpdate, options).fetch(),
-				deleted: Messages.trashFindDeletedAfter(lastUpdate, { rid }, { ...options, fields: { _id: 1, _deletedAt: 1 } }).fetch(),
+				updated: await Messages.findForUpdates(rid, lastUpdate, {
+					sort: {
+						ts: -1,
+					},
+				}).toArray(),
+				deleted: MessagesSync.trashFindDeletedAfter(lastUpdate, { rid }, { ...options, fields: { _id: 1, _deletedAt: 1 } }).fetch(),
 			};
 		}
 
