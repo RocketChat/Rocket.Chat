@@ -378,6 +378,35 @@ export class NotificationsModule {
 		this.streamLivechatQueueData.allowRead(async function () {
 			return this.userId ? Authorization.hasPermission(this.userId, 'view-l-room') : false;
 		});
+		this.streamLivechatQueueData.on(
+			'_afterPublish',
+			async (streamer: IStreamer, publication: IPublication, eventName: string): Promise<void> => {
+				const { userId } = publication._session;
+				if (!userId) {
+					return;
+				}
+
+				const inquiryEvent = async ({ type, rid }: { type: string; rid: string }): Promise<void> => {
+					switch (type) {
+						case 'removed':
+						case 'changed':
+							const payload = this.streamUser.changedPayload(this.streamUser.subscriptionName, 'id', {
+								eventName: `${userId}/rooms-changed`,
+								args: ['changed', await Rooms.findOneById(rid)],
+							});
+
+							payload && publication._session.socket?.send(payload);
+							break;
+					}
+				};
+
+				streamer.on(eventName, inquiryEvent);
+
+				publication.onStop(() => {
+					streamer.removeListener(eventName, inquiryEvent);
+				});
+			},
+		);
 
 		this.streamStdout.allowWrite('none');
 		this.streamStdout.allowRead(async function () {
