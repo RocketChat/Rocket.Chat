@@ -20,6 +20,7 @@ export interface ServerMethods {
 	'updateIncomingIntegration': (...args: any[]) => any;
 	'updateOutgoingIntegration': (...args: any[]) => any;
 	'checkRegistrationSecretURL'(hash: string): boolean;
+	setUsername(username: string, param?: { joinDefaultChannelsSilenced?: boolean }): Promise<string>;
 }
 
 export type ServerMethodName = keyof ServerMethods;

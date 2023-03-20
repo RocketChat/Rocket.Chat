@@ -10,15 +10,8 @@ import { checkUsernameAvailability } from '../functions';
 import { RateLimiter } from '../lib';
 import { saveUserIdentity } from '../functions/saveUserIdentity';
 
-declare module '@rocket.chat/ui-contexts' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		setUsername(username: string, param?: { joinDefaultChannelsSilenced?: boolean }): string;
-	}
-}
-
 Meteor.methods<ServerMethods>({
-	setUsername(username, param = {}) {
+	async setUsername(username, param = {}) {
 		const { joinDefaultChannelsSilenced } = param;
 		check(username, String);
 
@@ -57,7 +50,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!saveUserIdentity({ _id: user._id, username })) {
+		if (!(await saveUserIdentity({ _id: user._id, username }))) {
 			throw new Meteor.Error('error-could-not-change-username', 'Could not change username', {
 				method: 'setUsername',
 			});

@@ -218,7 +218,7 @@ export class SAML {
 		);
 
 		if (username && username !== user.username) {
-			saveUserIdentity({ _id: user._id, username });
+			Promise.await(saveUserIdentity({ _id: user._id, username }));
 		}
 
 		// sending token along with the userId

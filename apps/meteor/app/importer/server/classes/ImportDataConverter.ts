@@ -125,7 +125,7 @@ export class ImportDataConverter {
 	}
 
 	protected addObject(type: string, data: Record<string, any>, options: Record<string, any> = {}): void {
-		ImportData.model.rawCollection().insert({
+		void ImportData.model.rawCollection().insert({
 			_id: new ObjectId().toHexString(),
 			data,
 			dataType: type,
@@ -267,7 +267,8 @@ export class ImportDataConverter {
 		}
 
 		if (userData.name || userData.username) {
-			saveUserIdentity({ _id, name: userData.name, username: userData.username } as Parameters<typeof saveUserIdentity>[0]);
+			// TODO: remove this Promise.await
+			Promise.await(saveUserIdentity({ _id, name: userData.name, username: userData.username } as Parameters<typeof saveUserIdentity>[0]));
 		}
 
 		if (userData.importIds.length) {
