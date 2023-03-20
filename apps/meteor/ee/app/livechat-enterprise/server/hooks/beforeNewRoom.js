@@ -5,7 +5,7 @@ import { callbacks } from '../../../../../lib/callbacks';
 
 callbacks.add(
 	'livechat.beforeRoom',
-	(roomInfo, extraData) => {
+	async (roomInfo, extraData) => {
 		if (!extraData) {
 			return roomInfo;
 		}
@@ -15,7 +15,7 @@ callbacks.add(
 			return roomInfo;
 		}
 
-		const sla = Promise.await(OmnichannelServiceLevelAgreements.findOneByIdOrName(searchTerm));
+		const sla = await OmnichannelServiceLevelAgreements.findOneByIdOrName(searchTerm);
 		if (!sla) {
 			throw new Meteor.Error('error-invalid-sla', 'Invalid sla', {
 				function: 'livechat.beforeRoom',

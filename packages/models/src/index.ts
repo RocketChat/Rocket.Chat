@@ -64,6 +64,10 @@ import type {
 	IMatrixBridgedRoomModel,
 	IMatrixBridgedUserModel,
 	IOmnichannelServiceLevelAgreementsModel,
+	IAppsModel,
+	IAppsPersistenceModel,
+	IAppLogsModel,
+	IImportsModel,
 } from '@rocket.chat/model-typings';
 
 import { proxify } from './proxify';
@@ -75,6 +79,9 @@ export function getCollectionName(name: string): string {
 
 export { registerModel } from './proxify';
 
+export const Apps = proxify<IAppsModel>('IAppsModel');
+export const AppsPersistence = proxify<IAppsPersistenceModel>('IAppsPersistenceModel');
+export const AppLogs = proxify<IAppLogsModel>('IAppLogsModel');
 export const Analytics = proxify<IAnalyticsModel>('IAnalyticsModel');
 export const Avatars = proxify<IAvatarsModel>('IAvatarsModel');
 export const BannersDismiss = proxify<IBannersDismissModel>('IBannersDismissModel');
@@ -90,6 +97,7 @@ export const ExportOperations = proxify<IExportOperationsModel>('IExportOperatio
 export const FederationServers = proxify<IFederationServersModel>('IFederationServersModel');
 export const FederationKeys = proxify<IFederationKeysModel>('IFederationKeysModel');
 export const ImportData = proxify<IImportDataModel>('IImportDataModel');
+export const Imports = proxify<IImportsModel>('IImportsModel');
 export const InstanceStatus = proxify<IInstanceStatusModel>('IInstanceStatusModel');
 export const IntegrationHistory = proxify<IIntegrationHistoryModel>('IIntegrationHistoryModel');
 export const Integrations = proxify<IIntegrationsModel>('IIntegrationsModel');
