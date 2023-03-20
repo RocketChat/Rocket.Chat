@@ -56,7 +56,7 @@ export class TooltipContainer extends Component {
 		placement: null,
 	};
 
-	showTooltip = (event, { content, placement = 'bottom', childIndex }) => {
+	showTooltip = (event, { content, placement = 'bottom-left', childIndex }) => {
 		const triggerBounds = event.target.getBoundingClientRect();
 		this.setState({
 			tooltip: (
