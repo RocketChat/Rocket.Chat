@@ -11,8 +11,6 @@ import LivechatRooms from './models/LivechatRooms';
 import LivechatInquiry from './models/LivechatInquiry';
 import ImportData from './models/ImportData';
 
-export { AppsPersistenceModel } from './models/apps-persistence-model';
-
 export {
 	Base,
 	BaseDb,
