@@ -8,7 +8,7 @@ import { isEmpty } from './lib/utils';
 import { Streamer, StreamerCentral } from '../../../../apps/meteor/server/modules/streamer/streamer.module';
 
 StreamerCentral.on('broadcast', (name, eventName, args) => {
-	api.broadcast('stream', [name, eventName, args]);
+	void api.broadcast('stream', [name, eventName, args]);
 });
 
 export class Stream extends Streamer {

@@ -745,6 +745,9 @@ export class Messages extends Base {
 	}
 
 	// INSERT
+	/**
+	 * @returns {Pick<IMessage, '_id' | 't' | 'rid' | 'ts' | 'msg' | 'u' | 'groupable' | 'unread'>}
+	 */
 	createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {
 		const record = {
 			t: type,

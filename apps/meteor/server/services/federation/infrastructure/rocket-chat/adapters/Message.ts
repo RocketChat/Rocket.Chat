@@ -191,12 +191,12 @@ export class RocketChatMessageAdapter {
 	}
 
 	public async deleteMessage(message: IMessage, user: FederatedUser): Promise<void> {
-		deleteMessage(message, user.getInternalReference());
+		await deleteMessage(message, user.getInternalReference());
 	}
 
 	public async reactToMessage(user: FederatedUser, message: IMessage, reaction: string, externalEventId: string): Promise<void> {
 		// we need to run this as the user due to a high coupling in this function that relies on the logged in user
-		Meteor.runAsUser(user.getInternalId(), async () => {
+		await Meteor.runAsUser(user.getInternalId(), async () => {
 			try {
 				await executeSetReaction(reaction, message._id);
 				user.getUsername() &&
@@ -211,7 +211,7 @@ export class RocketChatMessageAdapter {
 
 	public async unreactToMessage(user: FederatedUser, message: IMessage, reaction: string, externalEventId: string): Promise<void> {
 		// we need to run this as the user due to a high coupling in this function that relies on the logged in user
-		Meteor.runAsUser(user.getInternalId(), async () => {
+		await Meteor.runAsUser(user.getInternalId(), async () => {
 			await executeSetReaction(reaction, message._id);
 			await Messages.unsetFederationReactionEventId(externalEventId, message._id, reaction);
 		});
