@@ -1,7 +1,6 @@
-import _ from 'underscore';
-import { Base64 } from 'meteor/base64';
+import { Base64 } from '@rocket.chat/base64';
 import { EJSON } from 'meteor/ejson';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { Session } from 'meteor/session';
 import { Emitter } from '@rocket.chat/emitter';
 
@@ -264,7 +263,8 @@ export class E2ERoom extends Emitter {
 			const decryptedKey = await decryptRSA(e2e.privateKey, groupKey);
 			this.sessionKeyExportedString = toString(decryptedKey);
 		} catch (error) {
-			return this.error('Error decrypting group key: ', error);
+			this.error('Error decrypting group key: ', error);
+			return false;
 		}
 
 		this.keyID = Base64.encode(this.sessionKeyExportedString).slice(0, 12);
@@ -275,8 +275,11 @@ export class E2ERoom extends Emitter {
 			// Key has been obtained. E2E is now in session.
 			this.groupSessionKey = key;
 		} catch (error) {
-			return this.error('Error importing group key: ', error);
+			this.error('Error importing group key: ', error);
+			return false;
 		}
+
+		return true;
 	}
 
 	async createGroupKey() {
@@ -373,7 +376,7 @@ export class E2ERoom extends Emitter {
 
 	// Encrypts messages
 	async encryptText(data) {
-		if (!_.isObject(data)) {
+		if (!(typeof data === 'function' || (typeof data === 'object' && !!data))) {
 			data = new TextEncoder('UTF-8').encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) }));
 		}
 

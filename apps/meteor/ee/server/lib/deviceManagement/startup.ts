@@ -3,13 +3,15 @@ import { Permissions } from '@rocket.chat/models';
 import { settingsRegistry } from '../../../../app/settings/server/index';
 
 export const createPermissions = async (): Promise<void> => {
-	Permissions.create('view-device-management', ['admin']);
-	Permissions.create('logout-device-management', ['admin']);
-	Permissions.create('block-ip-device-management', ['admin']);
+	await Promise.all([
+		Permissions.create('view-device-management', ['admin']),
+		Permissions.create('logout-device-management', ['admin']),
+		Permissions.create('block-ip-device-management', ['admin']),
+	]);
 };
 
 export const createEmailTemplates = async (): Promise<void> => {
-	settingsRegistry.addGroup('Email', function () {
+	void settingsRegistry.addGroup('Email', function () {
 		this.section('Device Management - Login Detected', function () {
 			this.add('Device_Management_Email_Subject', '{Device_Management_Email_Subject}', {
 				type: 'string',

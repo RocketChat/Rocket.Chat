@@ -80,7 +80,7 @@ export async function syncWorkspace(reconnectCheck = false) {
 		const now = new Date();
 
 		if (startAt.getFullYear() === now.getFullYear() && startAt.getMonth() === now.getMonth() && startAt.getDate() === now.getDate()) {
-			getAndCreateNpsSurvey(npsId);
+			await getAndCreateNpsSurvey(npsId);
 		}
 	}
 

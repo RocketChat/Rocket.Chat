@@ -43,5 +43,8 @@
 	"main": "./dist/ee/apps/presence-service/src/service.js",
 	"files": [
 		"/dist"
-	]
+	],
+	"volta": {
+		"extends": "../../../package.json"
+	}
 }

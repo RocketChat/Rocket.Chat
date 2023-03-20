@@ -5,6 +5,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
+import ShareMessageModal from '../../../../client/views/room/modals/ShareMessageModal';
 import { messageArgs } from '../../../../client/lib/utils/messageArgs';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { Rooms, Subscriptions } from '../../../models/client';
@@ -16,13 +17,11 @@ import ReportMessageModal from '../../../../client/views/room/modals/ReportMessa
 import CreateDiscussion from '../../../../client/components/CreateDiscussion/CreateDiscussion';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 
-export const addMessageToList = (messagesList: IMessage[], message: IMessage): IMessage[] => {
-	// checks if the message is not already on the list
-	if (!messagesList.find(({ _id }) => _id === message._id)) {
-		messagesList.push(message);
-	}
-
-	return messagesList;
+const getMainMessageText = (message: IMessage): IMessage => {
+	const newMessage = { ...message };
+	newMessage.msg = newMessage.msg || newMessage.attachments?.[0]?.description || newMessage.attachments?.[0]?.title || '';
+	newMessage.md = newMessage.md || newMessage.attachments?.[0]?.descriptionMd || undefined;
+	return { ...newMessage };
 };
 
 Meteor.startup(async function () {
@@ -63,23 +62,47 @@ Meteor.startup(async function () {
 		order: 0,
 		group: 'menu',
 	});
-
+	MessageAction.addButton({
+		id: 'share-message',
+		icon: 'arrow-forward',
+		label: 'Share_Message',
+		context: ['message', 'message-mobile', 'threads'],
+		async action(_, props) {
+			const { message = messageArgs(this).msg } = props;
+			const permalink = await MessageAction.getPermaLink(message._id);
+			imperativeModal.open({
+				component: ShareMessageModal,
+				props: {
+					message,
+					permalink,
+					onClose: (): void => {
+						imperativeModal.close();
+					},
+				},
+			});
+		},
+		order: 0,
+		group: ['message', 'menu'],
+	});
 	MessageAction.addButton({
 		id: 'quote-message',
 		icon: 'quote',
 		label: 'Quote',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
-		action(_, props) {
-			const { message = messageArgs(this).msg, chat } = props;
+		async action(_, props) {
+			const { message = messageArgs(this).msg, chat, autoTranslateOptions } = props;
 
-			chat?.composer?.quoteMessage(message);
-		},
-		condition({ subscription, room }) {
-			if (subscription == null) {
-				return false;
+			if (message && autoTranslateOptions?.autoTranslateEnabled && autoTranslateOptions.showAutoTranslate(message)) {
+				message.msg =
+					message.translations && autoTranslateOptions.autoTranslateLanguage
+						? message.translations[autoTranslateOptions.autoTranslateLanguage]
+						: message.msg;
 			}
-			const isLivechatRoom = roomCoordinator.isLivechatRoom(room.t);
-			if (isLivechatRoom) {
+
+			await chat?.composer?.quoteMessage(message);
+		},
+		condition({ subscription }) {
+			if (subscription == null) {
 				return false;
 			}
 
@@ -99,7 +122,7 @@ Meteor.startup(async function () {
 			try {
 				const { message = messageArgs(this).msg } = props;
 				const permalink = await MessageAction.getPermaLink(message._id);
-				navigator.clipboard.writeText(permalink);
+				await navigator.clipboard.writeText(permalink);
 				dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
 			} catch (e) {
 				dispatchToastMessage({ type: 'error', message: e });
@@ -118,9 +141,10 @@ Meteor.startup(async function () {
 		label: 'Copy',
 		// classes: 'clipboard',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
-		action(_, props) {
+		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			navigator.clipboard.writeText(message.msg);
+			const msgText = getMainMessageText(message).msg;
+			await navigator.clipboard.writeText(msgText);
 			dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
 		},
 		condition({ subscription }) {
@@ -135,9 +159,9 @@ Meteor.startup(async function () {
 		icon: 'edit',
 		label: 'Edit',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
-		action(_, props) {
+		async action(_, props) {
 			const { message = messageArgs(this).msg, chat } = props;
-			chat?.messageEditing.editMessage(message);
+			await chat?.messageEditing.editMessage(message);
 		},
 		condition({ message, subscription, settings, room }) {
 			if (subscription == null) {
@@ -146,14 +170,16 @@ Meteor.startup(async function () {
 			if (isRoomFederated(room)) {
 				return message.u._id === Meteor.userId();
 			}
-			const hasPermission = hasAtLeastOnePermission('edit-message', message.rid);
+			const canEditMessage = hasAtLeastOnePermission('edit-message', message.rid);
 			const isEditAllowed = settings.Message_AllowEditing;
 			const editOwn = message.u && message.u._id === Meteor.userId();
-			if (!(hasPermission || (isEditAllowed && editOwn))) {
+			if (!(canEditMessage || (isEditAllowed && editOwn))) {
 				return false;
 			}
 			const blockEditInMinutes = settings.Message_AllowEditing_BlockEditInMinutes;
-			if (blockEditInMinutes) {
+			const bypassBlockTimeLimit = hasPermission('bypass-time-limit-edit-and-delete');
+
+			if (!bypassBlockTimeLimit && blockEditInMinutes) {
 				let msgTs;
 				if (message.ts != null) {
 					msgTs = moment(message.ts);
@@ -176,8 +202,8 @@ Meteor.startup(async function () {
 		label: 'Delete',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		color: 'alert',
-		action(this: unknown, _, { message = messageArgs(this).msg, chat }) {
-			chat?.flows.requestMessageDeletion(message);
+		async action(this: unknown, _, { message = messageArgs(this).msg, chat }) {
+			await chat?.flows.requestMessageDeletion(message);
 		},
 		condition({ message, subscription, room, chat }) {
 			if (!subscription) {
@@ -207,8 +233,7 @@ Meteor.startup(async function () {
 			imperativeModal.open({
 				component: ReportMessageModal,
 				props: {
-					messageText: message.msg || message.attachments?.[0]?.description || message.file?.name,
-					messageId: message._id,
+					message: getMainMessageText(message),
 					onClose: imperativeModal.close,
 				},
 			});
@@ -229,10 +254,10 @@ Meteor.startup(async function () {
 		icon: 'emoji',
 		label: 'Reactions',
 		context: ['message', 'message-mobile', 'threads'],
-		action(this: unknown, _, { tabbar, message: { reactions = {}, rid } = messageArgs(this).msg }) {
+		action(this: unknown, _, { message: { reactions = {} } = messageArgs(this).msg }) {
 			imperativeModal.open({
 				component: ReactionList,
-				props: { reactions, rid, tabBar: tabbar, onClose: imperativeModal.close },
+				props: { reactions, onClose: imperativeModal.close },
 			});
 		},
 		condition({ message: { reactions } }) {

@@ -5,11 +5,10 @@ import React, { useState, useCallback } from 'react';
 
 import VerticalBar from '../../../components/VerticalBar';
 import { useFileInput } from '../../../hooks/useFileInput';
-import type { soundDataType } from './lib';
 import { validate, createSoundData } from './lib';
 
 type AddCustomSoundProps = {
-	goToNew: (where: string) => () => void;
+	goToNew: (_id: string) => () => void;
 	close: () => void;
 	onChange: () => void;
 };
@@ -22,7 +21,6 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	const [sound, setSound] = useState<{ name: string }>();
 
 	const uploadCustomSound = useMethod('uploadCustomSound');
-
 	const insertOrUpdateSound = useMethod('insertOrUpdateSound');
 
 	const handleChangeFile = useCallback((soundFile) => {
@@ -33,7 +31,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 
 	const saveAction = useCallback(
 		async (name, soundFile): Promise<string | undefined> => {
-			const soundData: soundDataType = createSoundData(soundFile, name);
+			const soundData = createSoundData(soundFile, name);
 			const validation = validate(soundData, soundFile) as Array<Parameters<typeof t>[0]>;
 
 			validation.forEach((error) => {
@@ -53,7 +51,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 				reader.readAsBinaryString(soundFile);
 				reader.onloadend = (): void => {
 					try {
-						uploadCustomSound(reader.result, soundFile.type, {
+						uploadCustomSound(reader.result as string, soundFile.type, {
 							...soundData,
 							_id: soundId,
 							random: Math.round(Math.random() * 1000),
@@ -74,11 +72,8 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	const handleSave = useCallback(async () => {
 		try {
 			const result = await saveAction(name, sound);
-			if (!result) {
-				throw new Error('error-something-went-wrong');
-			}
-			goToNew(result);
 			dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });
+			result && goToNew(result);
 			onChange();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Team } from '@rocket.chat/core-services';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { deleteRoom } from '../../app/lib/server/functions/deleteRoom';
 import { hasPermission } from '../../app/authorization/server';
 import { Rooms, Messages } from '../../app/models/server';
-import { Apps } from '../../app/apps/server';
+import { Apps } from '../../ee/server/apps';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
 export async function eraseRoom(rid: string, uid: string): Promise<void> {
@@ -47,11 +48,18 @@ export async function eraseRoom(rid: string, uid: string): Promise<void> {
 	}
 
 	if (Apps?.isLoaded()) {
-		Apps.getBridges()?.getListenerBridge().roomEvent('IPostRoomDeleted', room);
+		void Apps.getBridges()?.getListenerBridge().roomEvent('IPostRoomDeleted', room);
 	}
 }
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		eraseRoom(rid: string): Promise<boolean>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async eraseRoom(rid: string) {
 		methodDeprecationLogger.warn('eraseRoom is deprecated and will be removed in future versions of Rocket.Chat');
 

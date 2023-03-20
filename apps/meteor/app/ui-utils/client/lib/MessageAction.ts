@@ -1,11 +1,10 @@
 import type { ComponentProps, ContextType } from 'react';
-import _ from 'underscore';
 import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import type { Icon } from '@rocket.chat/fuselage';
-import type { IMessage, IUser, ISubscription, IRoom, SettingValue, Serialized } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, ISubscription, IRoom, SettingValue, Serialized, ITranslatedMessage } from '@rocket.chat/core-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
@@ -13,6 +12,7 @@ import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import type { ToolboxContextValue } from '../../../../client/views/room/contexts/ToolboxContext';
 import type { ChatContext } from '../../../../client/views/room/contexts/ChatContext';
 import { APIClient } from '../../../utils/client';
+import type { AutoTranslateOptions } from '../../../../client/views/room/MessageList/hooks/useAutoTranslate';
 
 const getMessage = async (msgId: string): Promise<Serialized<IMessage> | null> => {
 	try {
@@ -21,15 +21,6 @@ const getMessage = async (msgId: string): Promise<Serialized<IMessage> | null> =
 	} catch {
 		return null;
 	}
-};
-
-export const addMessageToList = (messagesList: IMessage[], message: IMessage): IMessage[] => {
-	// checks if the message is not already on the list
-	if (!messagesList.find(({ _id }) => _id === message._id)) {
-		messagesList.push(message);
-	}
-
-	return messagesList;
 };
 
 type MessageActionGroup = 'message' | 'menu';
@@ -42,7 +33,8 @@ export type MessageActionContext =
 	| 'starred'
 	| 'mentions'
 	| 'federated'
-	| 'videoconf';
+	| 'videoconf'
+	| 'search';
 
 type MessageActionConditionProps = {
 	message: IMessage;
@@ -71,7 +63,14 @@ export type MessageActionConfig = {
 			tabbar,
 			room,
 			chat,
-		}: { message?: IMessage; tabbar: ToolboxContextValue; room?: IRoom; chat: ContextType<typeof ChatContext> },
+			autoTranslateOptions,
+		}: {
+			message?: IMessage & Partial<ITranslatedMessage>;
+			tabbar: ToolboxContextValue;
+			room?: IRoom;
+			chat: ContextType<typeof ChatContext>;
+			autoTranslateOptions?: AutoTranslateOptions;
+		},
 	) => any;
 	condition?: (props: MessageActionConditionProps) => Promise<boolean> | boolean;
 };
@@ -93,7 +92,7 @@ export const MessageAction = new (class {
 	buttons = new ReactiveVar<Record<string, MessageActionConfig>>({});
 
 	addButton(config: MessageActionConfig): void {
-		if (!config || !config.id) {
+		if (!config?.id) {
 			return;
 		}
 
@@ -126,7 +125,7 @@ export const MessageAction = new (class {
 		return Tracker.nonreactive(() => {
 			const btns = this.buttons.get();
 			if (btns[id]) {
-				btns[id] = _.extend(btns[id], config);
+				btns[id] = Object.assign(btns[id], config);
 				return this.buttons.set(btns);
 			}
 		});
@@ -137,7 +136,9 @@ export const MessageAction = new (class {
 		return allButtons[id];
 	}
 
-	_getButtons = mem((): MessageActionConfigList => _.sortBy(_.toArray(this.buttons.get()), 'order'), { maxAge: 1000 });
+	_getButtons = mem((): MessageActionConfigList => Object.values(this.buttons.get()).sort((a, b) => (a.order ?? 0) - (b.order ?? 0)), {
+		maxAge: 1000,
+	});
 
 	async getButtonsByCondition(
 		prop: MessageActionConditionProps,

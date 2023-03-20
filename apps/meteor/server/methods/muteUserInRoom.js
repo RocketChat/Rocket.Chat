@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { Rooms, Subscriptions, Users, Messages } from '../../app/models/server';
-import { hasPermission } from '../../app/authorization';
+import { hasPermission } from '../../app/authorization/server';
 import { callbacks } from '../../lib/callbacks';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
@@ -39,7 +39,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.MUTE)) {
+		if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.MUTE, fromId)) {
 			throw new Meteor.Error('error-invalid-room-type', `${room.t} is not a valid room type`, {
 				method: 'muteUserInRoom',
 				type: room.t,

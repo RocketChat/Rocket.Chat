@@ -1,9 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
-import s from 'underscore.string';
 import type { INewIncomingIntegration, IIncomingIntegration } from '@rocket.chat/core-typings';
 import { Integrations, Roles } from '@rocket.chat/models';
 
@@ -38,7 +37,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!_.isString(integration.channel)) {
+		if (!integration.channel || typeof integration.channel.valueOf() !== 'string') {
 			throw new Meteor.Error('error-invalid-channel', 'Invalid channel', {
 				method: 'addIncomingIntegration',
 			});
@@ -50,7 +49,7 @@ Meteor.methods({
 			});
 		}
 
-		const channels = _.map(integration.channel.split(','), (channel) => s.trim(channel));
+		const channels = integration.channel.split(',').map((channel) => channel.trim());
 
 		for (const channel of channels) {
 			if (!validChannelChars.includes(channel[0])) {
@@ -60,7 +59,7 @@ Meteor.methods({
 			}
 		}
 
-		if (!_.isString(integration.username) || integration.username.trim() === '') {
+		if (!integration.username || typeof integration.username.valueOf() !== 'string' || integration.username.trim() === '') {
 			throw new Meteor.Error('error-invalid-username', 'Invalid username', {
 				method: 'addIncomingIntegration',
 			});

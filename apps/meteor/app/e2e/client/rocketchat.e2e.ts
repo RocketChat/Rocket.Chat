@@ -8,7 +8,7 @@ import type { ReactiveVar as ReactiveVarType } from 'meteor/reactive-var';
 import { EJSON } from 'meteor/ejson';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Emitter } from '@rocket.chat/emitter';
-import type { IE2EEMessage, IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IE2EEMessage, IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 
 import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
@@ -71,12 +71,12 @@ class E2E extends Emitter {
 		this._ready = new ReactiveVar(false);
 		this.instancesByRoomId = {};
 
-		this.on('ready', () => {
+		this.on('ready', async () => {
 			this._ready.set(true);
 			this.log('startClient -> Done');
 			this.log('decryptSubscriptions');
 
-			this.decryptSubscriptions();
+			await this.decryptSubscriptions();
 			this.log('decryptSubscriptions -> Done');
 		});
 	}
@@ -136,6 +136,18 @@ class E2E extends Emitter {
 		});
 	}
 
+	async acceptSuggestedKey(rid: string): Promise<void> {
+		await APIClient.post('/v1/e2e.acceptSuggestedGroupKey', {
+			rid,
+		});
+	}
+
+	async rejectSuggestedKey(rid: string): Promise<void> {
+		await APIClient.post('/v1/e2e.rejectSuggestedGroupKey', {
+			rid,
+		});
+	}
+
 	getKeysFromLocalStorage(): KeyPair {
 		return {
 			public_key: Meteor._localStorage.getItem('public_key'),
@@ -172,8 +184,8 @@ class E2E extends Emitter {
 					modifiers: ['large', 'danger'],
 					closable: true,
 					icon: 'key',
-					action: () => {
-						this.startClient();
+					action: async () => {
+						await this.startClient();
 						this.closeAlert();
 					},
 				});
@@ -188,7 +200,7 @@ class E2E extends Emitter {
 		}
 
 		if (!this.db_public_key || !this.db_private_key) {
-			this.persistKeys(this.getKeysFromLocalStorage(), await this.createRandomPassword());
+			await this.persistKeys(this.getKeysFromLocalStorage(), await this.createRandomPassword());
 		}
 
 		const randomPassword = Meteor._localStorage.getItem('e2e.randomPassword');
@@ -297,11 +309,11 @@ class E2E extends Emitter {
 			return this.error('Error exporting private key: ', error);
 		}
 
-		this.requestSubscriptionKeys();
+		await this.requestSubscriptionKeys();
 	}
 
 	async requestSubscriptionKeys(): Promise<void> {
-		call('e2e.requestSubscriptionKeys');
+		await call('e2e.requestSubscriptionKeys');
 	}
 
 	async createRandomPassword(): Promise<string> {
@@ -435,16 +447,16 @@ class E2E extends Emitter {
 		});
 	}
 
-	async decryptSubscription(rid: IRoom['_id']): Promise<void> {
-		const e2eRoom = await this.getInstanceByRoomId(rid);
-		this.log('decryptSubscription ->', rid);
-		e2eRoom?.decryptSubscription();
+	async decryptSubscription(subscriptionId: ISubscription['_id']): Promise<void> {
+		const e2eRoom = await this.getInstanceByRoomId(subscriptionId);
+		this.log('decryptSubscription ->', subscriptionId);
+		await e2eRoom?.decryptSubscription();
 	}
 
 	async decryptSubscriptions(): Promise<void> {
 		Subscriptions.find({
 			encrypted: true,
-		}).forEach((room: IRoom) => this.decryptSubscription(room._id));
+		}).forEach((subscription) => this.decryptSubscription(subscription._id));
 	}
 
 	openAlert(config: Omit<LegacyBannerPayload, 'id'>): void {

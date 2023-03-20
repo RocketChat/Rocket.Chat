@@ -25,7 +25,7 @@ slashCommands.add({
 		const userId = Meteor.userId() as string;
 
 		if (!room) {
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('Channel_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
@@ -36,12 +36,12 @@ slashCommands.add({
 		}
 
 		// You can not archive direct messages.
-		if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.ARCHIVE)) {
+		if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.ARCHIVE, userId)) {
 			return;
 		}
 
 		if (!room.archived) {
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('Channel_already_Unarchived', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
@@ -54,7 +54,7 @@ slashCommands.add({
 		Meteor.call('unarchiveRoom', room._id);
 
 		Messages.createRoomUnarchivedByRoomIdAndUser(room._id, Meteor.user());
-		api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+		void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 			msg: TAPi18n.__('Channel_Unarchived', {
 				postProcess: 'sprintf',
 				sprintf: [channel],

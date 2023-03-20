@@ -1,14 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import _ from 'underscore';
 import mem from 'mem';
 
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import Users from './Users';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
+import { isTruthy } from '../../../../lib/isTruthy';
 
-export class Subscriptions extends Base {
+class Subscriptions extends Base {
 	constructor(...args) {
 		super(...args);
 
@@ -118,7 +118,7 @@ export class Subscriptions extends Base {
 		}
 
 		const query = { 'u._id': userId };
-		if (!_.isUndefined(scope)) {
+		if (scope !== undefined) {
 			query.rid = scope;
 		}
 		return query;
@@ -347,13 +347,6 @@ export class Subscriptions extends Base {
 		return this.find(query, options);
 	}
 
-	updateGroupE2EKey(_id, key) {
-		const query = { _id };
-		const update = { $set: { E2EKey: key } };
-		this.update(query, update);
-		return this.findOne({ _id });
-	}
-
 	/**
 	 * @param {IRole['_id'][]} roles
 	 * @param {string} scope the value for the role scope (room id)
@@ -372,13 +365,15 @@ export class Subscriptions extends Base {
 
 		const subscriptions = this.find(query).fetch();
 
-		const users = _.compact(
-			_.map(subscriptions, function (subscription) {
+		const users = subscriptions
+			.map((subscription) => {
 				if (typeof subscription.u !== 'undefined' && typeof subscription.u._id !== 'undefined') {
 					return subscription.u._id;
 				}
-			}),
-		);
+
+				return undefined;
+			})
+			.filter(isTruthy);
 
 		return Users.find({ _id: { $in: users } }, options);
 	}

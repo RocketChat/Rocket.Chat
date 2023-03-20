@@ -5,18 +5,26 @@ import { Rooms, Subscriptions } from '../../../models/server';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		blockUser({ rid, blocked }: { rid: string; blocked: string }): boolean;
+	}
+}
+
 Meteor.methods({
 	blockUser({ rid, blocked }) {
 		check(rid, String);
 		check(blocked, String);
+		const userId = Meteor.userId();
 
-		if (!Meteor.userId()) {
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'blockUser' });
 		}
 
 		const room = Rooms.findOne({ _id: rid });
 
-		if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.BLOCK)) {
+		if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.BLOCK, userId)) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'blockUser' });
 		}
 

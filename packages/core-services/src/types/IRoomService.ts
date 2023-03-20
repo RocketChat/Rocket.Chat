@@ -2,8 +2,8 @@ import type { IRoom } from '@rocket.chat/core-typings';
 
 export interface ISubscriptionExtraData {
 	open: boolean;
-	ls: Date;
-	prid: string;
+	ls?: Date;
+	prid?: string;
 }
 
 interface ICreateRoomOptions extends Partial<Record<string, string | ISubscriptionExtraData>> {
@@ -28,4 +28,5 @@ export interface ICreateRoomParams {
 export interface IRoomService {
 	addMember(uid: string, rid: string): Promise<boolean>;
 	create(uid: string, params: ICreateRoomParams): Promise<IRoom>;
+	createDirectMessage(data: { to: string; from: string }): Promise<{ rid: string }>;
 }

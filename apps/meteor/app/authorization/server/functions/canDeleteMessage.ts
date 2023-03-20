@@ -9,7 +9,7 @@ const elapsedTime = (ts: number): number => {
 	return Math.round(dif / 1000 / 60);
 };
 
-export const canDeleteMessageAsync = async (uid: string, { u, rid, ts }: { u: IUser; rid: string; ts: number }): Promise<boolean> => {
+const canDeleteMessageAsync = async (uid: string, { u, rid, ts }: { u: IUser; rid: string; ts: number }): Promise<boolean> => {
 	const forceDelete = await hasPermissionAsync(uid, 'force-delete-message', rid);
 
 	if (forceDelete) {
@@ -31,11 +31,15 @@ export const canDeleteMessageAsync = async (uid: string, { u, rid, ts }: { u: IU
 	if (!allowed) {
 		return false;
 	}
-	const blockDeleteInMinutes = await getValue('Message_AllowDeleting_BlockDeleteInMinutes');
+	const bypassBlockTimeLimit = await hasPermissionAsync(uid, 'bypass-time-limit-edit-and-delete');
 
-	if (blockDeleteInMinutes) {
-		const timeElapsedForMessage = elapsedTime(ts);
-		return timeElapsedForMessage <= blockDeleteInMinutes;
+	if (!bypassBlockTimeLimit) {
+		const blockDeleteInMinutes = await getValue('Message_AllowDeleting_BlockDeleteInMinutes');
+
+		if (blockDeleteInMinutes) {
+			const timeElapsedForMessage = elapsedTime(ts);
+			return timeElapsedForMessage <= blockDeleteInMinutes;
+		}
 	}
 
 	const room = await Rooms.findOneById(rid, { fields: { ro: 1, unmuted: 1 } });

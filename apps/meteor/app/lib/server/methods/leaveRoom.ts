@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermission, hasRole } from '../../../authorization/server';
 import { Subscriptions, Rooms } from '../../../models/server';
@@ -9,7 +10,14 @@ import { removeUserFromRoom } from '../functions';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		leaveRoom(rid: string): Promise<void>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async leaveRoom(rid) {
 		check(rid, String);
 
@@ -20,7 +28,7 @@ Meteor.methods({
 		const room = Rooms.findOneById(rid);
 		const user = Meteor.user() as unknown as IUser;
 
-		if (!user || !roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.LEAVE)) {
+		if (!user || !roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.LEAVE, user._id)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'leaveRoom' });
 		}
 

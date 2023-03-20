@@ -10,6 +10,7 @@ import {
 	ThreadMessageBody,
 	ThreadMessageUnfollow,
 	CheckBox,
+	MessageStatusIndicatorItem,
 } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -24,21 +25,22 @@ import {
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useMessageBody } from '../../../views/room/MessageList/hooks/useMessageBody';
 import { useParentMessage } from '../../../views/room/MessageList/hooks/useParentMessage';
-import { useMessageActions } from '../../../views/room/contexts/MessageContext';
+import { isParsedMessage } from '../../../views/room/MessageList/lib/isParsedMessage';
+import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
 import UserAvatar from '../../avatar/UserAvatar';
+import { useShowTranslated } from '../list/MessageListContext';
 import ThreadMessagePreviewBody from './threadPreview/ThreadMessagePreviewBody';
 
 type ThreadMessagePreviewProps = {
 	message: IThreadMessage;
+	showUserAvatar: boolean;
 	sequential: boolean;
 };
 
-const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePreviewProps): ReactElement => {
-	const {
-		actions: { openThread },
-	} = useMessageActions();
+const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }: ThreadMessagePreviewProps): ReactElement => {
 	const parentMessage = useParentMessage(message.tmid);
-	const body = useMessageBody(parentMessage.data);
+
+	const translated = useShowTranslated(message);
 	const t = useTranslation();
 
 	const isSelecting = useIsSelecting();
@@ -47,11 +49,23 @@ const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePr
 	useCountSelected();
 
 	const messageType = parentMessage.isSuccess ? MessageTypes.getType(parentMessage.data) : null;
+	const messageBody = useMessageBody(parentMessage.data, message.rid);
+
+	const previewMessage = isParsedMessage(messageBody) ? { md: messageBody } : { msg: messageBody };
+
+	const goToThread = useGoToThread();
 
 	return (
 		<ThreadMessage {...props} onClick={isSelecting ? toggleSelected : undefined} isSelected={isSelected} data-qa-selected={isSelected}>
 			{!sequential && (
-				<ThreadMessageRow onClick={!isSelecting && parentMessage.isSuccess ? openThread(message.tmid, parentMessage.data?._id) : undefined}>
+				<ThreadMessageRow
+					role='link'
+					onClick={
+						!isSelecting && parentMessage.isSuccess
+							? () => goToThread({ rid: message.rid, tmid: message.tmid, msg: parentMessage.data?._id })
+							: undefined
+					}
+				>
 					<ThreadMessageLeftContainer>
 						<ThreadMessageIconThread />
 					</ThreadMessageLeftContainer>
@@ -62,7 +76,13 @@ const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePr
 									{(parentMessage.data as { ignored?: boolean })?.ignored ? (
 										t('Message_Ignored')
 									) : (
-										<ThreadMessagePreviewBody message={{ ...parentMessage.data, msg: body }} />
+										<ThreadMessagePreviewBody message={{ ...parentMessage.data, ...previewMessage }} />
+									)}
+									{translated && (
+										<>
+											{' '}
+											<MessageStatusIndicatorItem name='language' color='info' title={t('Translated')} />
+										</>
 									)}
 								</>
 							)}
@@ -73,14 +93,26 @@ const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePr
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
 			)}
-			<ThreadMessageRow onClick={!isSelecting ? openThread(message.tmid, message._id) : undefined}>
+			<ThreadMessageRow onClick={!isSelecting ? () => goToThread({ rid: message.rid, tmid: message.tmid, msg: message._id }) : undefined}>
 				<ThreadMessageLeftContainer>
-					{!isSelecting && <UserAvatar username={message.u.username} size='x18' />}
+					{!isSelecting && showUserAvatar && <UserAvatar username={message.u.username} size='x18' />}
 					{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 				</ThreadMessageLeftContainer>
 				<ThreadMessageContainer>
 					<ThreadMessageBody>
-						{(message as { ignored?: boolean }).ignored ? t('Message_Ignored') : <ThreadMessagePreviewBody message={message} />}
+						{(message as { ignored?: boolean }).ignored ? (
+							t('Message_Ignored')
+						) : (
+							<>
+								<ThreadMessagePreviewBody message={message} />
+								{translated && (
+									<>
+										{' '}
+										<MessageStatusIndicatorItem name='language' title={t('Translated')} />
+									</>
+								)}
+							</>
+						)}
 					</ThreadMessageBody>
 				</ThreadMessageContainer>
 			</ThreadMessageRow>

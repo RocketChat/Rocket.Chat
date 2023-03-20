@@ -5,7 +5,7 @@ import moment from 'moment';
 import { LivechatRooms, Users } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
 
-import { Livechat } from '../../../../../app/livechat/server';
+import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 
 const SCHEDULER_NAME = 'omnichannel_auto_close_on_hold_scheduler';
 
@@ -16,7 +16,7 @@ class AutoCloseOnHoldSchedulerClass {
 
 	running: boolean;
 
-	public init(): void {
+	public async init(): Promise<void> {
 		if (this.running) {
 			return;
 		}
@@ -27,7 +27,7 @@ class AutoCloseOnHoldSchedulerClass {
 			defaultConcurrency: 1,
 		});
 
-		this.scheduler.start();
+		await this.scheduler.start();
 		this.running = true;
 	}
 
@@ -49,15 +49,20 @@ class AutoCloseOnHoldSchedulerClass {
 	private async executeJob({ attrs: { data } }: any = {}): Promise<void> {
 		const { roomId, comment } = data;
 
+		const [room, user] = await Promise.all([LivechatRooms.findOneById(roomId), this.getSchedulerUser()]);
+		if (!room || !user) {
+			throw new Error(
+				`Unable to process AutoCloseOnHoldScheduler job because room or user not found for roomId: ${roomId} and userId: rocket.cat`,
+			);
+		}
+
 		const payload = {
-			user: await this.getSchedulerUser(),
-			room: await LivechatRooms.findOneById(roomId),
+			room,
+			user,
 			comment,
-			options: {},
-			visitor: undefined,
 		};
 
-		Livechat.closeRoom(payload);
+		await Livechat.closeRoom(payload);
 	}
 
 	private async getSchedulerUser(): Promise<IUser> {
@@ -76,5 +81,5 @@ class AutoCloseOnHoldSchedulerClass {
 export const AutoCloseOnHoldScheduler = new AutoCloseOnHoldSchedulerClass();
 
 Meteor.startup(() => {
-	AutoCloseOnHoldScheduler.init();
+	void AutoCloseOnHoldScheduler.init();
 });

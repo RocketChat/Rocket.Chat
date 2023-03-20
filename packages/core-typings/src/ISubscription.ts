@@ -18,7 +18,7 @@ export interface ISubscription extends IRocketChatRecord {
 	unread: number;
 	t: RoomType;
 	ls: Date;
-	f?: true;
+	f?: boolean;
 	lr: Date;
 	hideUnreadStatus?: true;
 	hideMentionStatus?: true;
@@ -40,6 +40,7 @@ export interface ISubscription extends IRocketChatRecord {
 	onHold?: boolean;
 	encrypted?: boolean;
 	E2EKey?: string;
+	E2ESuggestedKey?: string;
 	unreadAlert?: 'default' | 'all' | 'mentions' | 'nothing';
 
 	fname?: string;
