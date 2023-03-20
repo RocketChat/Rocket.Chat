@@ -5,6 +5,13 @@ import { Rooms, Subscriptions } from '../../../models/server';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		blockUser({ rid, blocked }: { rid: string; blocked: string }): boolean;
+	}
+}
+
 Meteor.methods({
 	blockUser({ rid, blocked }) {
 		check(rid, String);
