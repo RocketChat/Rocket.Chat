@@ -50,7 +50,7 @@ const events = {
 		const userId = Meteor.userId() as ILivechatInquiryRecord['_id'];
 		const { poolMaxIncoming, queuedChatsCount } = getPoolMaxIncomingAndQueuedChatsCount(userId);
 
-		if (queuedChatsCount >= poolMaxIncoming) {
+		if (poolMaxIncoming && queuedChatsCount >= poolMaxIncoming) {
 			return;
 		}
 
@@ -65,7 +65,7 @@ const events = {
 		const userId = Meteor.userId() as ILivechatInquiryRecord['_id'];
 		const { poolMaxIncoming, queuedChatsCount } = getPoolMaxIncomingAndQueuedChatsCount(userId);
 
-		if (!saveResult?.insertedId || queuedChatsCount >= poolMaxIncoming) {
+		if (!saveResult?.insertedId || (poolMaxIncoming && queuedChatsCount >= poolMaxIncoming)) {
 			return;
 		}
 
@@ -76,7 +76,7 @@ const events = {
 		const userId = Meteor.userId() as ILivechatInquiryRecord['_id'];
 		const { poolMaxIncoming, queuedChatsCount } = getPoolMaxIncomingAndQueuedChatsCount(userId);
 
-		if (queuedChatsCount < poolMaxIncoming) {
+		if (!poolMaxIncoming || queuedChatsCount < poolMaxIncoming) {
 			return;
 		}
 
