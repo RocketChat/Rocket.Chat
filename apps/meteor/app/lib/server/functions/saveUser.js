@@ -356,11 +356,11 @@ export const saveUser = async function (userId, userData) {
 	// update user
 	if (userData.hasOwnProperty('username') || userData.hasOwnProperty('name')) {
 		if (
-			!saveUserIdentity({
+			!(await saveUserIdentity({
 				_id: userData._id,
 				username: userData.username,
 				name: userData.name,
-			})
+			}))
 		) {
 			throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', {
 				method: 'saveUser',
