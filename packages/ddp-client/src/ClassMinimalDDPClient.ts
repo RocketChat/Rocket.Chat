@@ -1,8 +1,8 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import type { ConnectPayload } from './ConnectingPayload';
+import type { ConnectedPayload, ConnectPayload, FailedPayload } from './ConnectingPayload';
 import type { PingPayload, PongPayload } from './HeartbeatPayloads';
-import type { MethodPayload, ServerMethodPayloads } from './MethodPayloads';
+import type { MethodPayload, ResultPayload, ServerMethodPayloads } from './MethodPayloads';
 import type { ClientPublicationPayloads, ServerPublicationPayloads, SubscribePayload, UnsubscribePayload } from './PublishPayloads';
 
 /* This class was created to be used together with the WebSocket class.
@@ -47,21 +47,34 @@ export interface DDPMethods {
 	// The handleMessage function is called whenever a message is received.
 	handleMessage: (msg: string) => void;
 
+	// Send the connect message to the server
+	connect: () => void;
+
 	// this function is called once after the subscription is ready or rejected
 	onPublish: (name: string, callback: (payload: ServerPublicationPayloads) => void) => RemoveListener;
 	// this function is called once after the method is resolved or rejected
-	onResult: (id: string, callback: (payload: ServerMethodPayloads) => void) => RemoveListener;
+	onResult: (id: string, callback: (payload: ResultPayload) => void) => RemoveListener;
 	// this function is called every time the subscription is updated
 	onUpdate: (id: string, callback: (payload: ServerMethodPayloads) => void) => RemoveListener;
 	// this function is called once after the subscription is stopped
 	onNoSub: (id: string, callback: (payload: ServerMethodPayloads) => void) => RemoveListener;
 	// this function is called every time a new document is added/updated/removed from the collection
 	onCollection: (name: string, callback: (payload: ServerPublicationPayloads) => void) => RemoveListener;
+	// this function is called once after the connection is established or rejected
+	onConnection: (callback: (payload: ConnectedPayload | FailedPayload) => void) => RemoveListener;
 }
 
 type MessagePayload = PingPayload | PongPayload | ConnectPayload | ClientPublicationPayloads | MethodPayload;
 
-type MessageHandlerPayload = PingPayload | PongPayload | ServerPublicationPayloads | ServerMethodPayloads;
+type MessageHandlerPayload =
+	| PingPayload
+	| PongPayload
+	| ServerPublicationPayloads
+	| ServerMethodPayloads
+	| ConnectedPayload
+	| FailedPayload
+	| SubscribePayload
+	| UnsubscribePayload;
 
 /**
  * Creates a unique id for a DDP client.
@@ -106,7 +119,7 @@ export class ClassMinimalDDPClient extends Emitter implements DDPMethods {
 			case 'added':
 			case 'changed':
 			case 'removed':
-				this.emit(`collection/${data.id}`, data);
+				this.emit(`collection/${data.collection}`, data);
 				break;
 
 			// DDP/RCP related messages
@@ -118,6 +131,11 @@ export class ClassMinimalDDPClient extends Emitter implements DDPMethods {
 				data.methods.forEach((id) => {
 					this.emit(`updated/${id}`, data);
 				});
+				break;
+
+			case 'connected':
+			case 'failed':
+				this.emit('connection', data);
 				break;
 			default:
 				throw new Error(`Unknown message type: ${data}`);
@@ -176,7 +194,7 @@ export class ClassMinimalDDPClient extends Emitter implements DDPMethods {
 		return this.once(`publication/${name}`, callback);
 	}
 
-	onResult(id: string, callback: (payload: ServerMethodPayloads) => void): RemoveListener {
+	onResult(id: string, callback: (payload: ResultPayload) => void): RemoveListener {
 		return this.once(`result/${id}`, callback);
 	}
 
@@ -190,5 +208,9 @@ export class ClassMinimalDDPClient extends Emitter implements DDPMethods {
 
 	onCollection(name: string, callback: (payload: ServerPublicationPayloads) => void): RemoveListener {
 		return this.on(`collection/${name}`, callback);
+	}
+
+	onConnection(callback: (payload: ConnectedPayload | FailedPayload) => void): RemoveListener {
+		return this.once('connection', callback);
 	}
 }

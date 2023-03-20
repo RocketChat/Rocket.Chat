@@ -174,7 +174,7 @@ describe('ClassMinimalDDPClient ping/pong test', () => {
 
 			const id = client.subscribe('test');
 
-			client.onCollection(id, handlerCallback);
+			client.onCollection('test', handlerCallback);
 
 			client.onPublish(id, readyCallback);
 
@@ -220,7 +220,7 @@ describe('ClassMinimalDDPClient ping/pong test', () => {
 
 			const id = client.subscribe('test');
 
-			client.onCollection(id, handlerCallback);
+			client.onCollection('test', handlerCallback);
 
 			client.onPublish(id, readyCallback);
 
@@ -266,7 +266,7 @@ describe('ClassMinimalDDPClient ping/pong test', () => {
 
 			const id = client.subscribe('test');
 
-			client.onCollection(id, handlerCallback);
+			client.onCollection('test', handlerCallback);
 
 			client.onPublish(id, readyCallback);
 
