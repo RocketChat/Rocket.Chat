@@ -120,21 +120,6 @@ export class Messages extends Base {
 		);
 	}
 
-	countVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			ts: {
-				$gte: afterTimestamp,
-				$lte: beforeTimestamp,
-			},
-		};
-
-		return this.find(query).count();
-	}
-
 	// FIND
 	findByMention(username, options) {
 		const query = { 'mentions.username': username };
