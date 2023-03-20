@@ -332,26 +332,6 @@ export class Messages extends Base {
 		return this.findOne(query, options);
 	}
 
-	setPinnedByIdAndUserId(_id, pinnedBy, pinned, pinnedAt) {
-		if (pinned == null) {
-			pinned = true;
-		}
-		if (pinnedAt == null) {
-			pinnedAt = 0;
-		}
-		const query = { _id };
-
-		const update = {
-			$set: {
-				pinned,
-				pinnedAt: pinnedAt || new Date(),
-				pinnedBy,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	setUrlsById(_id, urls) {
 		const query = { _id };
 

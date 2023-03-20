@@ -3,6 +3,7 @@ import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
+import { Messages as MessagesRaw } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
@@ -37,7 +38,7 @@ declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		pinMessage(message: IMessage, pinnedAt?: Date): Pick<IMessage, '_id' | 't' | 'rid' | 'ts' | 'msg' | 'u' | 'groupable'>;
-		unpinMessage(message: IMessage): number;
+		unpinMessage(message: IMessage): boolean;
 	}
 }
 
@@ -84,7 +85,7 @@ Meteor.methods<ServerMethods>({
 
 		// If we keep history of edits, insert a new message to store history information
 		if (settings.get('Message_KeepHistory')) {
-			await Messages.cloneAndSaveAsHistoryById(message._id, me);
+			await MessagesRaw.cloneAndSaveAsHistoryById(message._id, me);
 		}
 
 		const room = Rooms.findOneById(originalMessage.rid);
@@ -101,7 +102,7 @@ Meteor.methods<ServerMethods>({
 
 		originalMessage = callbacks.run('beforeSaveMessage', originalMessage);
 
-		Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
+		await MessagesRaw.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
 		if (isTheLastMessage(room, message)) {
 			Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
 		}
@@ -174,7 +175,7 @@ Meteor.methods<ServerMethods>({
 
 		// If we keep history of edits, insert a new message to store history information
 		if (settings.get('Message_KeepHistory')) {
-			await Messages.cloneAndSaveAsHistoryById(originalMessage._id, me);
+			await MessagesRaw.cloneAndSaveAsHistoryById(originalMessage._id, me);
 		}
 
 		originalMessage.pinned = false;
@@ -196,6 +197,8 @@ Meteor.methods<ServerMethods>({
 		// App IPostMessagePinned event hook
 		Promise.await(Apps.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, Meteor.user(), originalMessage.pinned));
 
-		return Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
+		await MessagesRaw.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
+
+		return true;
 	},
 });

@@ -4,6 +4,7 @@ import https from 'https';
 
 import { RTMClient } from '@slack/rtm-api';
 import { Meteor } from 'meteor/meteor';
+import { Messages as MessagesRaw } from '@rocket.chat/models';
 
 import { slackLogger } from './logger';
 import { SlackAPI } from './SlackAPI';
@@ -1052,11 +1053,13 @@ export default class SlackAdapter {
 			};
 
 			if (!isImporting) {
-				Messages.setPinnedByIdAndUserId(
-					`slack-${slackMessage.attachments[0].channel_id}-${slackMessage.attachments[0].ts.replace(/\./g, '-')}`,
-					rocketMsgObj.u,
-					true,
-					new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
+				Promise.await(
+					MessagesRaw.setPinnedByIdAndUserId(
+						`slack-${slackMessage.attachments[0].channel_id}-${slackMessage.attachments[0].ts.replace(/\./g, '-')}`,
+						rocketMsgObj.u,
+						true,
+						new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
+					),
 				);
 			}
 
@@ -1270,11 +1273,13 @@ export default class SlackAdapter {
 						],
 					};
 
-					Messages.setPinnedByIdAndUserId(
-						`slack-${pin.channel}-${pin.message.ts.replace(/\./g, '-')}`,
-						msgObj.u,
-						true,
-						new Date(parseInt(pin.message.ts.split('.')[0]) * 1000),
+					Promise.await(
+						MessagesRaw.setPinnedByIdAndUserId(
+							`slack-${pin.channel}-${pin.message.ts.replace(/\./g, '-')}`,
+							msgObj.u,
+							true,
+							new Date(parseInt(pin.message.ts.split('.')[0]) * 1000),
+						),
 					);
 				}
 			}
