@@ -43,7 +43,7 @@ export class VisitorInactivityMonitor {
 			name: this._name,
 			schedule: (parser) => parser.cron(everyMinute),
 			job: () => {
-				return this.handleAbandonedRooms();
+				return Promise.await(this.handleAbandonedRooms());
 			},
 		});
 		this._started = true;
