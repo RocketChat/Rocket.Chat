@@ -75,7 +75,7 @@ export async function configureEmailInboxes(): Promise<void> {
 				}),
 			);
 
-			imap.start();
+			await imap.start();
 
 			const smtp = nodemailer.createTransport({
 				host: emailInboxRecord.smtp.server,

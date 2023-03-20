@@ -20,7 +20,7 @@ class AutoTransferChatSchedulerClass {
 
 	user: IUser;
 
-	public init(): void {
+	public async init(): Promise<void> {
 		if (this.running) {
 			return;
 		}
@@ -31,7 +31,7 @@ class AutoTransferChatSchedulerClass {
 			defaultConcurrency: 1,
 		});
 
-		this.scheduler.start();
+		await this.scheduler.start();
 		this.running = true;
 	}
 
