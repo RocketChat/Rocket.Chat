@@ -53,9 +53,9 @@ export async function getUserListFromParams(params: {
 
 	if (params.userIds || params.userId) {
 		users = await Users.findByIds(userListParam, { fields: { username: 1 } });
-	} else {
-		users = await UsersSync.findByUsernamesIgnoringCase(userListParam, { fields: { username: 1 } });
+		return users.toArray();
 	}
+	users = await UsersSync.findByUsernamesIgnoringCase(userListParam, { fields: { username: 1 } });
 
 	return users.fetch();
 }
