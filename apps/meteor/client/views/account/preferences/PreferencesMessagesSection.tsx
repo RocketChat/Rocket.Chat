@@ -233,7 +233,7 @@ const PreferencesMessagesSection = ({ onChange, commitRef, ...props }: FormSecti
 						<Field display='flex' flexDirection='row' justifyContent='spaceBetween' flexGrow={1}>
 							<Field.Label>{t('Hide_flextab')}</Field.Label>
 							<Field.Row>
-								<ToggleSwitch checked={hideFlexTab} onChange={handleHideFlexTab} />
+								<ToggleSwitch checked={hideFlexTab} onChange={handleHideFlexTab} role='checkbox' name='hideFlexTab' />
 							</Field.Row>
 						</Field>
 					),
