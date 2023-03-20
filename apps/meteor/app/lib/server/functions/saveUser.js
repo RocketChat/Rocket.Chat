@@ -329,7 +329,7 @@ const saveNewUser = function (userData, sendPassword) {
 	return _id;
 };
 
-export const saveUser = function (userId, userData) {
+export const saveUser = async function (userId, userData) {
 	const oldUserData = Users.findOneById(userData._id);
 	if (oldUserData && isUserFederated(oldUserData)) {
 		throw new Meteor.Error('Edit_Federated_User_Not_Allowed', 'Not possible to edit a federated user');
@@ -420,13 +420,12 @@ export const saveUser = function (userId, userData) {
 
 	// App IPostUserUpdated event hook
 	const userUpdated = Users.findOneById(userId);
-	Promise.await(
-		Apps.triggerEvent(AppEvents.IPostUserUpdated, {
-			user: userUpdated,
-			previousUser: oldUserData,
-			performedBy: safeGetMeteorUser(),
-		}),
-	);
+
+	await Apps.triggerEvent(AppEvents.IPostUserUpdated, {
+		user: userUpdated,
+		previousUser: oldUserData,
+		performedBy: safeGetMeteorUser(),
+	});
 
 	if (sendPassword) {
 		_sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
