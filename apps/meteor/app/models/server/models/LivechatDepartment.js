@@ -27,12 +27,14 @@ export class LivechatDepartment extends Base {
 		return this.findOne(query, options);
 	}
 
+	// This is the same as the above :)
 	findByDepartmentId(_id, options) {
 		const query = { _id };
 
 		return this.find(query, options);
 	}
 
+	// migrated
 	createOrUpdateDepartment(_id, data = {}) {
 		const oldData = _id && this.findOneById(_id);
 
