@@ -431,8 +431,7 @@ export class APIClass extends Restivus {
 						}
 						if (
 							shouldVerifyPermissions &&
-							(!this.userId ||
-								!await checkPermissionsForInvocation(this.userId, _options.permissionsRequired, this.request.method))
+							(!this.userId || !(await checkPermissionsForInvocation(this.userId, _options.permissionsRequired, this.request.method)))
 						) {
 							throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {
 								permissions: _options.permissionsRequired,
@@ -461,7 +460,7 @@ export class APIClass extends Restivus {
 						this.queryOperations = options.queryOperations;
 						this.queryFields = options.queryFields;
 
-						result = DDP._CurrentInvocation.withValue(invocation, async () => await originalAction.apply(this)) || API.v1.success();
+						result = DDP._CurrentInvocation.withValue(invocation, async () => originalAction.apply(this)) || API.v1.success();
 
 						log.http({
 							status: result.statusCode,
