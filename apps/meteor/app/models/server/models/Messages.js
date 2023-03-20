@@ -277,16 +277,6 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findStarredByUserAtRoom(userId, roomId, options) {
-		const query = {
-			'_hidden': { $ne: true },
-			'starred._id': userId,
-			'rid': roomId,
-		};
-
-		return this.find(query, options);
-	}
-
 	getLastTimestamp(options = { fields: { _id: 0, ts: 1 } }) {
 		options.sort = { ts: -1 };
 		options.limit = 1;
