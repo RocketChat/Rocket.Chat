@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import { eventTypes } from '@rocket.chat/core-typings';
 
-import { eventTypes } from '../../../models/server/models/FederationEvents';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { dispatchEvent } from '../handler';
 

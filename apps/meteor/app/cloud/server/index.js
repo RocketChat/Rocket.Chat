@@ -12,7 +12,7 @@ import './methods';
 
 const licenseCronName = 'Cloud Workspace Sync';
 
-Meteor.startup(function () {
+Meteor.startup(async function () {
 	// run token/license sync if registered
 	let TroubleshootDisableWorkspaceSync;
 	settings.watch('Troubleshoot_Disable_Workspace_Sync', (value) => {
@@ -43,7 +43,7 @@ Meteor.startup(function () {
 		try {
 			SystemLogger.info('REG_TOKEN Provided. Attempting to register');
 
-			if (!Promise.await(connectWorkspace(process.env.REG_TOKEN))) {
+			if (!(await connectWorkspace(process.env.REG_TOKEN))) {
 				throw new Error("Couldn't register with token.  Please make sure token is valid or hasn't already been used");
 			}
 

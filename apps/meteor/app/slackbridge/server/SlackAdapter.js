@@ -939,7 +939,7 @@ export default class SlackAdapter {
 				imported: 'slackbridge',
 			});
 		} else {
-			addUserToRoom(rocketChannel._id, rocketUser);
+			Promise.await(addUserToRoom(rocketChannel._id, rocketUser));
 		}
 	}
 
@@ -956,7 +956,7 @@ export default class SlackAdapter {
 					imported: 'slackbridge',
 				});
 			} else {
-				addUserToRoom(rocketChannel._id, rocketUser, inviter);
+				Promise.await(addUserToRoom(rocketChannel._id, rocketUser, inviter));
 			}
 		}
 	}
@@ -1212,7 +1212,7 @@ export default class SlackAdapter {
 					const user = this.rocket.findUser(member) || this.rocket.addUser(member);
 					if (user) {
 						slackLogger.debug('Adding user to room', user.username, rid);
-						addUserToRoom(rid, user, null, true);
+						Promise.await(addUserToRoom(rid, user, null, true));
 					}
 				}
 			}

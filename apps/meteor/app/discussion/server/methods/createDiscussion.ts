@@ -118,7 +118,7 @@ const create = async ({ prid, pmid, t_name: discussionName, reply, users, user, 
 		);
 		if (discussionAlreadyExists) {
 			// do not allow multiple discussions to the same message'\
-			addUserToRoom(discussionAlreadyExists._id, user);
+			Promise.await(addUserToRoom(discussionAlreadyExists._id, user));
 			return discussionAlreadyExists;
 		}
 	}
