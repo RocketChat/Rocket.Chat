@@ -188,16 +188,6 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleByMentionAndRoomId(username, rid, options) {
-		const query = {
-			'_hidden': { $ne: true },
-			'mentions.username': username,
-			rid,
-		};
-
-		return this.find(query, options);
-	}
-
 	findVisibleByRoomId(rid, options) {
 		const query = {
 			_hidden: {
