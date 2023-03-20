@@ -4,7 +4,6 @@ import _ from 'underscore';
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import { settings } from '../../../settings/server';
-import { otrSystemMessages } from '../../../otr/lib/constants';
 
 export class Messages extends Base {
 	constructor() {
@@ -184,17 +183,6 @@ export class Messages extends Base {
 		if (users.length) {
 			query['u.username'] = { $in: users };
 		}
-
-		return this.find(query, options);
-	}
-
-	findVisibleByIds(ids, options) {
-		const query = {
-			_id: { $in: ids },
-			_hidden: {
-				$ne: true,
-			},
-		};
 
 		return this.find(query, options);
 	}
