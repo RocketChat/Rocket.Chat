@@ -94,6 +94,12 @@ export type MessageTypesValues =
 	| 'command'
 	| 'videoconf'
 	| 'message_pinned'
+	| 'new-moderator'
+	| 'moderator-removed'
+	| 'new-owner'
+	| 'owner-removed'
+	| 'new-leader'
+	| 'leader-removed'
 	| LivechatMessageTypes
 	| TeamMessageTypes
 	| VoipMessageTypesValues
