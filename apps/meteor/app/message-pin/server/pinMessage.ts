@@ -84,7 +84,7 @@ Meteor.methods<ServerMethods>({
 
 		// If we keep history of edits, insert a new message to store history information
 		if (settings.get('Message_KeepHistory')) {
-			Messages.cloneAndSaveAsHistoryById(message._id, me);
+			await Messages.cloneAndSaveAsHistoryById(message._id, me);
 		}
 
 		const room = Rooms.findOneById(originalMessage.rid);
@@ -174,7 +174,7 @@ Meteor.methods<ServerMethods>({
 
 		// If we keep history of edits, insert a new message to store history information
 		if (settings.get('Message_KeepHistory')) {
-			Messages.cloneAndSaveAsHistoryById(originalMessage._id, me);
+			await Messages.cloneAndSaveAsHistoryById(originalMessage._id, me);
 		}
 
 		originalMessage.pinned = false;

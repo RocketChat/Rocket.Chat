@@ -32,7 +32,7 @@ export const updateMessage = function (message: IMessage, user: IUser, originalM
 
 	// If we keep history of edits, insert a new message to store history information
 	if (settings.get('Message_KeepHistory')) {
-		Messages.cloneAndSaveAsHistoryById(message._id, user);
+		Promise.await(Messages.cloneAndSaveAsHistoryById(message._id, user));
 	}
 
 	Object.assign<IMessage, Omit<IEditedMessage, keyof IMessage>>(message, {

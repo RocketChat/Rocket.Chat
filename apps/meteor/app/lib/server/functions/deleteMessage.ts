@@ -1,16 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
-import { Uploads } from '@rocket.chat/models';
+import { Messages, Uploads } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
-import { Messages, Rooms } from '../../../models/server';
+import { Messages as MessagesSync, Rooms } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Apps } from '../../../../ee/server/apps';
 
 export async function deleteMessage(message: IMessage, user: IUser): Promise<void> {
-	const deletedMsg = Messages.findOneById(message._id);
+	const deletedMsg = MessagesSync.findOneById(message._id);
 	const isThread = deletedMsg.tcount > 0;
 	const keepHistory = settings.get('Message_KeepHistory') || isThread;
 	const showDeletedStatus = settings.get('Message_ShowDeletedStatus') || isThread;
@@ -24,16 +24,17 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 	}
 
 	if (deletedMsg.tmid) {
-		Messages.decreaseReplyCountById(deletedMsg.tmid, -1);
+		MessagesSync.decreaseReplyCountById(deletedMsg.tmid, -1);
 	}
 
 	const files = (message.files || [message.file]).filter(Boolean); // Keep compatibility with old messages
 
 	if (keepHistory) {
 		if (showDeletedStatus) {
-			Messages.cloneAndSaveAsHistoryById(message._id, user);
+			// TODO is there a better way to tell TS "IUser[username]" is not undefined?
+			await Messages.cloneAndSaveAsHistoryById(message._id, user as Required<Pick<IUser, '_id' | 'username' | 'name'>>);
 		} else {
-			Messages.setHiddenById(message._id, true);
+			MessagesSync.setHiddenById(message._id, true);
 		}
 
 		for await (const file of files) {
@@ -41,7 +42,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 		}
 	} else {
 		if (!showDeletedStatus) {
-			Messages.removeById(message._id);
+			MessagesSync.removeById(message._id);
 		}
 
 		files.forEach((file) => {
@@ -63,7 +64,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 	Rooms.decreaseMessageCountById(message.rid, 1);
 
 	if (showDeletedStatus) {
-		Messages.setAsDeletedByIdAndUser(message._id, user);
+		MessagesSync.setAsDeletedByIdAndUser(message._id, user);
 	} else {
 		void api.broadcast('notify.deleteMessage', message.rid, { _id: message._id });
 	}

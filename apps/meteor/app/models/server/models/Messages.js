@@ -332,19 +332,6 @@ export class Messages extends Base {
 		return this.findOne(query, options);
 	}
 
-	cloneAndSaveAsHistoryById(_id, user) {
-		const record = this.findOneById(_id);
-		record._hidden = true;
-		record.parent = record._id;
-		record.editedAt = new Date();
-		record.editedBy = {
-			_id: user._id,
-			username: user.username,
-		};
-		delete record._id;
-		return this.insert(record);
-	}
-
 	// UPDATE
 	setHiddenById(_id, hidden) {
 		if (hidden == null) {
