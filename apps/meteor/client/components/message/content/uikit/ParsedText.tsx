@@ -1,4 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import type { Options } from '@rocket.chat/message-parser';
 import { parse } from '@rocket.chat/message-parser';
 import React, { memo, useMemo } from 'react';
 
@@ -22,7 +23,11 @@ const ParsedText = ({ text, mentions, channels, searchText }: ParsedTextProps) =
 			return undefined;
 		}
 
-		return parse(text, { emoticons: true });
+		const parseOptions: Options = {
+			emoticons: true,
+		};
+
+		return parse(text, parseOptions);
 	}, [text]);
 
 	if (!tokens) {
