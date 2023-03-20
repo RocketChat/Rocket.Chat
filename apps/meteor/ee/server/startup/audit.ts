@@ -4,5 +4,5 @@ import { createPermissions } from '../lib/audit/startup';
 onLicense('auditing', async () => {
 	await import('../lib/audit/methods');
 
-	void createPermissions();
+	await createPermissions();
 });
