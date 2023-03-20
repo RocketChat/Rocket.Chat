@@ -14,7 +14,7 @@ import {
 } from './Helper';
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../../server/lib/logger/Logger';
-import { LivechatRooms, Rooms, Messages, Users, Subscriptions } from '../../../models/server';
+import { Rooms, Messages, Users, Subscriptions } from '../../../models/server';
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 
 const logger = new Logger('RoutingManager');
@@ -100,7 +100,7 @@ export const RoutingManager = {
 			throw new Meteor.Error('error-creating-subscription', 'Error creating subscription');
 		}
 
-		LivechatRooms.changeAgentByRoomId(rid, agent);
+		await LivechatRoomsRaw.changeAgentByRoomId(rid, agent);
 		Rooms.incUsersCountById(rid);
 
 		const user = Users.findOneById(agent.agentId);
@@ -139,7 +139,7 @@ export const RoutingManager = {
 
 		if (servedBy) {
 			logger.debug(`Unassigning current agent for inquiry ${inquiry._id}`);
-			LivechatRooms.removeAgentByRoomId(rid);
+			await LivechatRoomsRaw.removeAgentByRoomId(rid);
 			this.removeAllRoomSubscriptions(room);
 			dispatchAgentDelegated(rid, null);
 		}

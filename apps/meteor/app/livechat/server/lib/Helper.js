@@ -8,7 +8,7 @@ import { api } from '@rocket.chat/core-services';
 import { LivechatDepartmentAgents, Users as UsersRaw, LivechatInquiry, LivechatRooms as LivechatRoomsRaw } from '@rocket.chat/models';
 
 import { hasRole } from '../../../authorization/server';
-import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatDepartment } from '../../../models/server';
+import { Messages, Rooms, Subscriptions, Users, LivechatDepartment } from '../../../models/server';
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../../lib/callbacks';
@@ -398,7 +398,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 };
 
 export const updateChatDepartment = async ({ rid, newDepartmentId, oldDepartmentId }) => {
-	LivechatRooms.changeDepartmentIdByRoomId(rid, newDepartmentId);
+	await LivechatRoomsRaw.changeDepartmentIdByRoomId(rid, newDepartmentId);
 	await LivechatInquiry.changeDepartmentIdByRoomId(rid, newDepartmentId);
 	Subscriptions.changeDepartmentByRoomId(rid, newDepartmentId);
 
@@ -500,7 +500,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	if (chatQueued) {
 		logger.debug(`Forwarding succesful. Marking inquiry ${inquiry._id} as ready`);
 		await LivechatInquiry.readyInquiry(inquiry._id);
-		LivechatRooms.removeAgentByRoomId(rid);
+		await LivechatRoomsRaw.removeAgentByRoomId(rid);
 		dispatchAgentDelegated(rid, null);
 		const newInquiry = await LivechatInquiry.findOneById(inquiry._id);
 		await queueInquiry(room, newInquiry);

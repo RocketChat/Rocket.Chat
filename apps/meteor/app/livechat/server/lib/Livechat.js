@@ -28,7 +28,7 @@ import { RoutingManager } from './RoutingManager';
 import { Analytics } from './Analytics';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Users, LivechatRooms, Messages, Subscriptions, Rooms, LivechatDepartment } from '../../../models/server';
+import { Users, Messages, Subscriptions, Rooms, LivechatDepartment } from '../../../models/server';
 import { Logger } from '../../../logger/server';
 import { hasRole, canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -603,18 +603,18 @@ export const Livechat = {
 		Livechat.logger.debug(`Closing open chats for user ${userId}`);
 		const user = Users.findOneById(userId);
 
-		const openChats = LivechatRooms.findOpenByAgent(userId);
+		const openChats = LivechatRoomsRaw.findOpenByAgent(userId);
 		const promises = [];
-		openChats.forEach((room) => {
+		await openChats.forEach((room) => {
 			promises.push(LivechatTyped.closeRoom({ user, room, comment }));
 		});
 
 		await Promise.all(promises);
 	},
 
-	forwardOpenChats(userId) {
+	async forwardOpenChats(userId) {
 		Livechat.logger.debug(`Transferring open chats for user ${userId}`);
-		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
+		await LivechatRoomsRaw.findOpenByAgent(userId).forEach((room) => {
 			// TODO: refactor to use normal await
 			const guest = Promise.await(LivechatVisitors.findOneById(room.v._id));
 			const user = Users.findOneById(userId);
@@ -987,7 +987,7 @@ export const Livechat = {
 		});
 
 		Subscriptions.removeByVisitorToken(token);
-		LivechatRooms.removeByVisitorToken(token);
+		await LivechatRoomsRaw.removeByVisitorToken(token);
 		await LivechatInquiry.removeByVisitorToken(token);
 	},
 
@@ -1182,7 +1182,7 @@ export const Livechat = {
 
 	async notifyGuestStatusChanged(token, status) {
 		await LivechatInquiry.updateVisitorStatus(token, status);
-		LivechatRooms.updateVisitorStatus(token, status);
+		await LivechatRoomsRaw.updateVisitorStatus(token, status);
 	},
 
 	sendOfflineMessage(data = {}) {
@@ -1240,13 +1240,13 @@ export const Livechat = {
 		return true;
 	},
 
-	notifyAgentStatusChanged(userId, status) {
+	async notifyAgentStatusChanged(userId, status) {
 		callbacks.runAsync('livechat.agentStatusChanged', { userId, status });
 		if (!settings.get('Livechat_show_agent_info')) {
 			return;
 		}
 
-		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
+		await LivechatRoomsRaw.findOpenByAgent(userId).forEach((room) => {
 			void api.broadcast('omnichannel.room', room._id, {
 				type: 'agentStatus',
 				status,
@@ -1279,7 +1279,7 @@ export const Livechat = {
 			throw new Error('error-not-authorized');
 		}
 
-		const room = await LivechatRooms.findOneById(roomId, { ...roomAccessAttributes, _id: 1, t: 1 });
+		const room = await LivechatRoomsRaw.findOneById(roomId, { ...roomAccessAttributes, _id: 1, t: 1 });
 
 		if (!room) {
 			throw new Meteor.Error('invalid-room');
@@ -1289,11 +1289,11 @@ export const Livechat = {
 			throw new Error('error-not-allowed');
 		}
 
-		LivechatRooms.changeVisitorByRoomId(room._id, visitor);
+		await LivechatRoomsRaw.changeVisitorByRoomId(room._id, visitor);
 
 		Livechat.notifyRoomVisitorChange(room._id, visitor);
 
-		return LivechatRooms.findOneById(roomId);
+		return LivechatRoomsRaw.findOneById(roomId);
 	},
 	async updateLastChat(contactId, lastChat) {
 		const updateUser = {

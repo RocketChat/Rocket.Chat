@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { LivechatInquiry, LivechatRooms as LivechatRoomsRaw } from '@rocket.chat/models';
 
-import { LivechatRooms, Users } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { checkServiceStatus, createLivechatRoom, createLivechatInquiry } from './Helper';
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
@@ -55,7 +55,7 @@ export const QueueManager = {
 		const { rid } = message;
 		const name = (roomInfo && roomInfo.fname) || guest.name || guest.username;
 
-		const room = LivechatRooms.findOneById(await createLivechatRoom(rid, name, guest, roomInfo, extraData));
+		const room = await LivechatRoomsRaw.findOneById(await createLivechatRoom(rid, name, guest, roomInfo, extraData));
 		logger.debug(`Room for visitor ${guest._id} created with id ${room._id}`);
 
 		const inquiry = await LivechatInquiry.findOneById(
@@ -112,7 +112,7 @@ export const QueueManager = {
 			defaultAgent = { agentId: servedBy._id, username: servedBy.username };
 		}
 
-		LivechatRooms.unarchiveOneById(rid);
+		await LivechatRoomsRaw.unarchiveOneById(rid);
 		const room = await LivechatRoomsRaw.findOneById(rid);
 		if (!room) {
 			logger.debug(`Room with id ${rid} not found`);
