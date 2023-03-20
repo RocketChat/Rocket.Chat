@@ -2,7 +2,7 @@ import http from 'http';
 import fs from 'fs';
 import https from 'https';
 
-import { Settings } from '@rocket.chat/models';
+import { Settings, ImportData } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import AdmZip from 'adm-zip';
 import getFileType from 'file-type';
@@ -12,7 +12,7 @@ import { ImporterWebsocket } from './ImporterWebsocket';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { ImporterInfo } from '../../lib/ImporterInfo';
 import { RawImports } from '../models/RawImports';
-import { Imports, ImportData } from '../../../models/server';
+import { Imports } from '../../../models/server';
 import { Logger } from '../../../logger/server';
 import { ImportDataConverter } from './ImportDataConverter';
 import { t } from '../../../utils/server';
@@ -216,8 +216,8 @@ export class Base {
 
 				this.updateProgress(ProgressStep.FINISHING);
 
-				process.nextTick(() => {
-					this.converter.clearSuccessfullyImportedData();
+				process.nextTick(async () => {
+					await this.converter.clearSuccessfullyImportedData();
 				});
 
 				this.updateProgress(ProgressStep.DONE);
@@ -399,12 +399,12 @@ export class Base {
 		return this.importRecord;
 	}
 
-	buildSelection() {
+	async buildSelection() {
 		this.updateProgress(ProgressStep.USER_SELECTION);
 
-		const users = ImportData.getAllUsersForSelection();
-		const channels = ImportData.getAllChannelsForSelection();
-		const hasDM = ImportData.checkIfDirectMessagesExists();
+		const users = await ImportData.getAllUsersForSelection();
+		const channels = await ImportData.getAllChannelsForSelection();
+		const hasDM = await ImportData.checkIfDirectMessagesExists();
 
 		const selectionUsers = users.map(
 			(u) =>
@@ -422,7 +422,7 @@ export class Base {
 					c.data.t === 'd',
 				),
 		);
-		const selectionMessages = ImportData.countMessages();
+		const selectionMessages = await ImportData.countMessages();
 
 		if (hasDM) {
 			selectionChannels.push(new SelectionChannel('__directMessages__', t('Direct_Messages'), false, true, true, undefined, true));
