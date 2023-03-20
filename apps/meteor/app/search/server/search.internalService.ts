@@ -2,8 +2,8 @@ import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 
 import { Users } from '../../models/server';
 import { settings } from '../../settings/server';
-import { searchProviderService } from './service/providerService';
-import { searchEventService } from './events/events';
+import { searchProviderService } from './service';
+import { searchEventService } from './events';
 
 class Search extends ServiceClassInternal {
 	protected name = 'search';

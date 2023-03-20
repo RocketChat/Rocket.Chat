@@ -14,7 +14,7 @@ export const createPermissions = () => {
 	] as const;
 
 	for (const permission of permissions) {
-		Permissions.create(permission._id, permission.roles);
+		void Permissions.create(permission._id, permission.roles);
 	}
 
 	defaultRoles.forEach((role) => createOrUpdateProtectedRole(role.name, role));

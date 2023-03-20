@@ -850,7 +850,6 @@ class Rooms extends Base {
 	/**
 	 * @param {string} _id
 	 * @param {string?} messageId
-	 * @returns {Promise<void>}
 	 */
 	resetLastMessageById(_id, messageId = undefined) {
 		const query = { _id };
