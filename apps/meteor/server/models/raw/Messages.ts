@@ -178,7 +178,17 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		];
 	}
 
-	findVisibleByMentionAndRoomId(
+	findVisibleByMentionAndRoomId(username: IUser['username'], rid: IRoom['_id'], options: FindOptions<IMessage>): FindCursor<IMessage> {
+		const query: Filter<IMessage> = {
+			'_hidden': { $ne: true },
+			'mentions.username': username,
+			rid,
+		};
+
+		return this.find(query, options);
+	}
+
+	findPaginatedVisibleByMentionAndRoomId(
 		username: IUser['username'],
 		rid: IRoom['_id'],
 		options: FindOptions<IMessage>,
