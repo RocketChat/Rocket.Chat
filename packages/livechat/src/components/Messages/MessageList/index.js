@@ -168,8 +168,12 @@ export class MessageList extends MemoizedComponent {
 			);
 
 			const showUnreadSeparator = lastReadMessageId && nextMessage && lastReadMessageId === message._id;
-			if (showUnreadSeparator) {
+			if (showUnreadSeparator || store.state.lastUnreadMessageId === message._id) {
 				items.push(<MessageSeparator key='unread' use='li' unread />);
+
+				if (store.state.lastUnreadMessageId !== message._id && store.state.lastUnreadMessageId !== null) {
+					store.setState({ lastUnreadMessageId: message._id });
+				}
 			}
 		}
 
