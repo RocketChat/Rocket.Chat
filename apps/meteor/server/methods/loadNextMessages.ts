@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { canAccessRoomId } from '../../app/authorization/server';
 import { Messages } from '../../app/models/server';
@@ -13,7 +14,7 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
-Meteor.methods({
+Meteor.methods<ServerMethods>({
 	loadNextMessages(rid, end, limit = 20) {
 		check(rid, String);
 		check(limit, Number);
@@ -31,7 +32,7 @@ Meteor.methods({
 		const fromId = Meteor.userId();
 
 		if (!fromId || !canAccessRoomId(rid, fromId)) {
-			return false;
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'loadNextMessages' });
 		}
 
 		const options = {

@@ -1,5 +1,6 @@
 import type { IImportProgress } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermission } from '../../../authorization/server';
 import { Imports } from '../../../models/server';
@@ -22,7 +23,14 @@ export const executeGetImportProgress = (): IImportProgress => {
 	return importer.instance.getProgress();
 };
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		getImportProgress(): IImportProgress;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	getImportProgress() {
 		const userId = Meteor.userId();
 		if (!userId) {

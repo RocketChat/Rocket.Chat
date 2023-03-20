@@ -1,10 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { Integrations, IntegrationHistory } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermission } from '../../../../authorization/server';
 import { triggerHandler } from '../../lib/triggerHandler';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		replayOutgoingIntegration(params: { integrationId: string; historyId: string }): Promise<boolean>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async replayOutgoingIntegration({ integrationId, historyId }) {
 		let integration;
 

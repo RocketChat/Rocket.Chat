@@ -11,6 +11,7 @@ import AuditLog from './AuditLog';
 import { LivechatRooms, Rooms, Messages, Users } from '../../../../app/models/server';
 import { hasPermission } from '../../../../app/authorization/server';
 import { updateCounter } from '../../../../app/statistics/server';
+import type { IAuditLog } from '../../../definition/IAuditLog';
 
 const getValue = (room?: IRoom) => room && { rids: [room._id], name: room.name };
 
@@ -49,7 +50,33 @@ const getRoomInfoByAuditParams = ({
 	}
 };
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		auditGetAuditions: (params: { startDate: Date; endDate: Date }) => IAuditLog[];
+		auditGetMessages: (params: {
+			rid: IRoom['_id'];
+			startDate: Date;
+			endDate: Date;
+			users: IUser['username'][];
+			msg: IMessage['msg'];
+			type: string;
+			visitor: ILivechatVisitor['_id'];
+			agent: ILivechatAgent['_id'];
+		}) => IMessage[];
+		auditGetOmnichannelMessages: (params: {
+			startDate: Date;
+			endDate: Date;
+			users: IUser['username'][];
+			msg: IMessage['msg'];
+			type: 'l';
+			visitor?: ILivechatVisitor['_id'];
+			agent?: ILivechatAgent['_id'];
+		}) => IMessage[];
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	auditGetOmnichannelMessages({ startDate, endDate, users: usernames, msg, type, visitor, agent }) {
 		check(startDate, Date);
 		check(endDate, Date);
@@ -157,7 +184,7 @@ Meteor.methods({
 			},
 		}).fetch();
 	},
-} as Pick<ServerMethods, 'auditGetAuditions' | 'auditGetMessages' | 'auditGetOmnichannelMessages'>);
+});
 
 DDPRateLimiter.addRule(
 	{
