@@ -246,7 +246,7 @@ API.v1.addRoute(
 	'users.create',
 	{ authRequired: true, validateParams: isUserCreateParamsPOST },
 	{
-		post() {
+		async post() {
 			// New change made by pull request #5152
 			if (typeof this.bodyParams.joinDefaultChannels === 'undefined') {
 				this.bodyParams.joinDefaultChannels = true;
@@ -256,7 +256,7 @@ API.v1.addRoute(
 				validateCustomFields(this.bodyParams.customFields);
 			}
 
-			const newUserId = saveUser(this.userId, this.bodyParams);
+			const newUserId = await saveUser(this.userId, this.bodyParams);
 
 			if (this.bodyParams.customFields) {
 				saveCustomFieldsWithoutValidation(newUserId, this.bodyParams.customFields);

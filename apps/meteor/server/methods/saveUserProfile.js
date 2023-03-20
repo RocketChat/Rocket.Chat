@@ -38,11 +38,11 @@ async function saveUserProfile(settings, customFields) {
 
 	if (settings.realname || settings.username) {
 		if (
-			!saveUserIdentity({
+			!(await saveUserIdentity({
 				_id: this.userId,
 				name: settings.realname,
 				username: settings.username,
-			})
+			}))
 		) {
 			throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', {
 				method: 'saveUserProfile',
@@ -131,7 +131,7 @@ const saveUserProfileWithTwoFactor = twoFactorRequired(saveUserProfile, {
 });
 
 Meteor.methods({
-	saveUserProfile(settings, customFields, ...args) {
+	async saveUserProfile(settings, customFields, ...args) {
 		check(settings, Object);
 		check(customFields, Match.Maybe(Object));
 
