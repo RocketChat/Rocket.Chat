@@ -14,7 +14,7 @@ import { validateName } from './validateName';
  * @param {object} changes changes to the user
  */
 
-export function saveUserIdentity({
+export async function saveUserIdentity({
 	_id,
 	name: rawName,
 	username: rawUsername,
@@ -71,8 +71,8 @@ export function saveUserIdentity({
 			LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
 
 			const fileStore = FileUpload.getStore('Avatars');
-			const previousFile = Promise.await(fileStore.model.findOneByName(previousUsername));
-			const file = Promise.await(fileStore.model.findOneByName(username));
+			const previousFile = await fileStore.model.findOneByName(previousUsername);
+			const file = await fileStore.model.findOneByName(username);
 			if (file) {
 				fileStore.model.deleteFile(file._id);
 			}
@@ -90,7 +90,7 @@ export function saveUserIdentity({
 			updateGroupDMsName(user);
 
 			// update name and username of users on video conferences
-			Promise.await(VideoConference.updateUserReferences(user._id, username || previousUsername, name || previousName));
+			await VideoConference.updateUserReferences(user._id, username || previousUsername, name || previousName);
 		}
 	}
 

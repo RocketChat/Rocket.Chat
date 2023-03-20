@@ -323,8 +323,8 @@ export class LDAPEEManager extends LDAPManager {
 			}
 		}
 
-		for (const rid of channelsToAdd) {
-			addUserToRoom(rid, user);
+		for await (const rid of channelsToAdd) {
+			await addUserToRoom(rid, user);
 			logger.debug(`Synced user channel ${rid} from LDAP for ${username}`);
 		}
 
