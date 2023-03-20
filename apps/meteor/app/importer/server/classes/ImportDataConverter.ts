@@ -552,12 +552,11 @@ export class ImportDataConverter {
 		const rids: Array<string> = [];
 		const messages = await this.getMessagesToImport();
 
-		// TODO: does this forEach work with promises?
-		messages.forEach(async ({ data, _id }: IImportMessageRecord) => {
+		for await (const { data, _id } of messages) {
 			try {
 				if (beforeImportFn && !beforeImportFn(data, 'message')) {
 					await this.skipRecord(_id);
-					return;
+					continue;
 				}
 
 				if (!data.ts || isNaN(data.ts as unknown as number)) {
@@ -629,7 +628,7 @@ export class ImportDataConverter {
 			} catch (e) {
 				await this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
 			}
-		});
+		}
 
 		for await (const rid of rids) {
 			try {
@@ -657,7 +656,6 @@ export class ImportDataConverter {
 	public async findDMForImportedUsers(...users: Array<string>): Promise<IImportChannel | undefined> {
 		const record = await ImportData.findDMForImportedUsers(...users);
 		if (record) {
-			// @ts-expect-error - typings
 			return record.data;
 		}
 	}
