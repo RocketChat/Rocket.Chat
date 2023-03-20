@@ -69,7 +69,7 @@ callbacks.add(
 
 		try {
 			callbackLogger.debug(`Message will be sent to ${visitor.phone[0].phoneNumber} through service ${settings.get('SMS_Service')}`);
-			SMSService.send(room.sms.from, visitor.phone[0].phoneNumber, message.msg, extraData);
+			Promise.await(SMSService.send(room.sms.from, visitor.phone[0].phoneNumber, message.msg, extraData));
 			callbackLogger.debug(`SMS message sent to ${visitor.phone[0].phoneNumber}`);
 		} catch (e) {
 			callbackLogger.error(e);

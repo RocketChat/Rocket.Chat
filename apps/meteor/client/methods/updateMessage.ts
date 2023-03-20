@@ -1,4 +1,5 @@
-import type { IEditedMessage, IMessage } from '@rocket.chat/core-typings';
+import type { IEditedMessage } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import moment from 'moment';
@@ -10,18 +11,11 @@ import { t } from '../../app/utils/client';
 import { callbacks } from '../../lib/callbacks';
 import { dispatchToastMessage } from '../lib/toast';
 
-declare module '@rocket.chat/ui-contexts' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		updateMessage(message: Pick<IMessage, '_id'> & Partial<Omit<IEditedMessage, '_id'>>): void;
-	}
-}
-
-Meteor.methods({
+Meteor.methods<ServerMethods>({
 	updateMessage(message) {
 		const uid = Meteor.userId();
 		if (!uid) {
-			return false;
+			return;
 		}
 
 		const originalMessage = ChatMessage.findOne(message._id);
@@ -45,7 +39,7 @@ Meteor.methods({
 		const me = Meteor.users.findOne(uid);
 
 		if (!me) {
-			return false;
+			return;
 		}
 
 		if (!(canEditMessage || (editAllowed && editOwn))) {
@@ -53,7 +47,7 @@ Meteor.methods({
 				type: 'error',
 				message: t('error-action-not-allowed', { action: t('Message_editing') }),
 			});
-			return false;
+			return;
 		}
 
 		const blockEditInMinutes = Number(settings.get('Message_AllowEditing_BlockEditInMinutes') as number | undefined);
@@ -66,7 +60,7 @@ Meteor.methods({
 					const currentTsDiff = moment().diff(msgTs, 'minutes');
 					if (currentTsDiff > blockEditInMinutes) {
 						dispatchToastMessage({ type: 'error', message: t('error-message-editing-blocked') });
-						return false;
+						return;
 					}
 				}
 			}
@@ -80,7 +74,7 @@ Meteor.methods({
 				username: me.username,
 			};
 
-			message = callbacks.run('beforeSaveMessage', message);
+			message = callbacks.run('beforeSaveMessage', message) as IEditedMessage;
 			const messageObject: Partial<IEditedMessage> = {
 				editedAt: message.editedAt,
 				editedBy: message.editedBy,

@@ -226,7 +226,7 @@ export class ImportDataConverter {
 		subset(userData.customFields, 'customFields');
 	}
 
-	updateUser(existingUser: IUser, userData: IImportUser): void {
+	async updateUser(existingUser: IUser, userData: IImportUser): Promise<void> {
 		const { _id } = existingUser;
 
 		userData._id = _id;
@@ -267,7 +267,7 @@ export class ImportDataConverter {
 		}
 
 		if (userData.name || userData.username) {
-			saveUserIdentity({ _id, name: userData.name, username: userData.username } as Parameters<typeof saveUserIdentity>[0]);
+			await saveUserIdentity({ _id, name: userData.name, username: userData.username } as Parameters<typeof saveUserIdentity>[0]);
 		}
 
 		if (userData.importIds.length) {
@@ -275,7 +275,8 @@ export class ImportDataConverter {
 		}
 	}
 
-	insertUser(userData: IImportUser): IUser {
+	// TODO
+	async insertUser(userData: IImportUser): Promise<IUser> {
 		const password = `${Date.now()}${userData.name || ''}${userData.emails.length ? userData.emails[0].toUpperCase() : ''}`;
 		const userId = userData.emails.length
 			? Accounts.createUser({
@@ -289,7 +290,7 @@ export class ImportDataConverter {
 			  });
 
 		const user = Users.findOneById(userId, {});
-		this.updateUser(user, userData);
+		await this.updateUser(user, userData);
 
 		addUserToDefaultChannels(user, true);
 		return user;
@@ -316,7 +317,7 @@ export class ImportDataConverter {
 
 	public async convertUsers({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): Promise<void> {
 		const users = (await this.getUsersToImport()) as IImportUserRecord[];
-		users.forEach(({ data, _id }) => {
+		for await (const { data, _id } of users) {
 			try {
 				if (beforeImportFn && !beforeImportFn(data, 'user')) {
 					this.skipRecord(_id);
@@ -346,13 +347,13 @@ export class ImportDataConverter {
 				const isNewUser = !existingUser;
 
 				if (existingUser) {
-					this.updateUser(existingUser, data);
+					await this.updateUser(existingUser, data);
 				} else {
 					if (!data.name && data.username) {
 						data.name = guessNameFromUsername(data.username);
 					}
 
-					existingUser = this.insertUser(data);
+					existingUser = await this.insertUser(data);
 				}
 
 				// Deleted users are 'inactive' users in Rocket.Chat
@@ -370,7 +371,7 @@ export class ImportDataConverter {
 				this._logger.error(e);
 				this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
 			}
-		});
+		}
 	}
 
 	protected saveError(importId: string, error: Error): void {
@@ -628,9 +629,9 @@ export class ImportDataConverter {
 			}
 		});
 
-		for (const rid of rids) {
+		for await (const rid of rids) {
 			try {
-				Rooms.resetLastMessageById(rid);
+				await Rooms.resetLastMessageById(rid);
 			} catch (e) {
 				this._logger.warn(`Failed to update last message of room ${rid}`);
 				this._logger.error(e);

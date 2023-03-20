@@ -217,7 +217,7 @@ const settingSavers: RoomSettingsSavers = {
 		}
 
 		if (room.teamId && room.teamMain) {
-			Team.update(user._id, room.teamId, {
+			void Team.update(user._id, room.teamId, {
 				type: room.t === 'c' ? TEAM_TYPE.PUBLIC : TEAM_TYPE.PRIVATE,
 				name: value,
 				updateRoom: false,
@@ -264,7 +264,7 @@ const settingSavers: RoomSettingsSavers = {
 
 		if (room.teamId && room.teamMain) {
 			const type = value === 'c' ? TEAM_TYPE.PUBLIC : TEAM_TYPE.PRIVATE;
-			Team.update(user._id, room.teamId, { type, updateRoom: false });
+			void Team.update(user._id, room.teamId, { type, updateRoom: false });
 		}
 	},
 	streamingOptions({ value, rid }) {
@@ -313,7 +313,7 @@ const settingSavers: RoomSettingsSavers = {
 		Rooms.saveRetentionOverrideGlobalById(rid, value);
 	},
 	encrypted({ value, room, rid, user }) {
-		saveRoomEncrypted(rid, value, user, Boolean(room.encrypted) !== Boolean(value));
+		void saveRoomEncrypted(rid, value, user, Boolean(room.encrypted) !== Boolean(value));
 	},
 	favorite({ value, rid }) {
 		Rooms.saveFavoriteById(rid, value.favorite, value.defaultValue);

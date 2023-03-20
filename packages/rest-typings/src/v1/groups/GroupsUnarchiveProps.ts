@@ -1,21 +1,14 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
 
-const ajv = new Ajv();
+import type { GroupsBaseProps } from './BaseProps';
+import { withGroupBaseProperties } from './BaseProps';
 
-export type GroupsUnarchiveProps = {
-	roomId: IRoom['_id'];
-};
+const ajv = new Ajv({
+	coerceTypes: true,
+});
 
-const GroupsUnarchivePropsSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-		},
-	},
-	required: ['roomId'],
-	additionalProperties: false,
-};
+export type GroupsUnarchiveProps = GroupsBaseProps;
+
+const GroupsUnarchivePropsSchema = withGroupBaseProperties();
 
 export const isGroupsUnarchiveProps = ajv.compile<GroupsUnarchiveProps>(GroupsUnarchivePropsSchema);
