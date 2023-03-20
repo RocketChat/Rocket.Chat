@@ -170,7 +170,7 @@ API.v1.addRoute(
 	'commands.run',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			const body = this.bodyParams;
 
 			if (typeof body.command !== 'string') {
@@ -215,7 +215,7 @@ API.v1.addRoute(
 
 			const { triggerId } = body;
 
-			const result = slashCommands.run(cmd, params, message, triggerId);
+			const result = await slashCommands.run(cmd, params, message, triggerId);
 
 			return API.v1.success({ result });
 		},

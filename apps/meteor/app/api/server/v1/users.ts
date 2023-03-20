@@ -633,9 +633,9 @@ API.v1.addRoute(
 		validateParams: isUsersCheckUsernameAvailabilityParamsGET,
 	},
 	{
-		get() {
+		async get() {
 			const { username } = this.queryParams;
-			const result = Meteor.call('checkUsernameAvailability', username);
+			const result = await Meteor.callAsync('checkUsernameAvailability', username);
 
 			return API.v1.success({ result });
 		},

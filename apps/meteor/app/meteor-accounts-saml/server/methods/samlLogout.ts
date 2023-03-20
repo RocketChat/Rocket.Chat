@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Users } from '../../../models/server';
 import { SAMLServiceProvider } from '../lib/ServiceProvider';
@@ -24,7 +25,14 @@ function getSamlServiceProviderOptions(provider: string): IServiceProviderOption
 	return providers.filter(samlProvider)[0];
 }
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		samlLogout(provider: string): void;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	samlLogout(provider: string) {
 		// Make sure the user is logged in before we initiate SAML Logout
 		if (!Meteor.userId()) {
@@ -35,7 +43,7 @@ Meteor.methods({
 		SAMLUtils.log({ msg: 'Logout request', providerConfig });
 		// This query should respect upcoming array of SAML logins
 		const user = Users.getSAMLByIdAndSAMLProvider(Meteor.userId(), provider);
-		if (!user || !user.services || !user.services.saml) {
+		if (!user?.services?.saml) {
 			return;
 		}
 

@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Team } from '@rocket.chat/core-services';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermission, hasRole, getUsersInRole } from '../../app/authorization/server';
 import { removeUserFromRolesAsync } from '../lib/roles/removeUserFromRoles';
@@ -9,7 +10,14 @@ import { callbacks } from '../../lib/callbacks';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		removeUserFromRoom(data: { rid: string; username: string }): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async removeUserFromRoom(data) {
 		check(
 			data,
