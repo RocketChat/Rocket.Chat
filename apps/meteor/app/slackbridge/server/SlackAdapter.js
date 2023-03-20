@@ -477,10 +477,10 @@ export default class SlackAdapter {
 		if (slackMessage.subtype) {
 			switch (slackMessage.subtype) {
 				case 'message_deleted':
-					this.processMessageDeleted(slackMessage);
+					await this.processMessageDeleted(slackMessage);
 					break;
 				case 'message_changed':
-					this.processMessageChanged(slackMessage);
+					await this.processMessageChanged(slackMessage);
 					break;
 				case 'channel_join':
 					this.processChannelJoin(slackMessage);
@@ -784,7 +784,7 @@ export default class SlackAdapter {
 		const file = slackMessage.files[0];
 
 		if (file && file.url_private_download !== undefined) {
-			const rocketChannel = this.rocket.getChannel(slackMessage);
+			const rocketChannel = await this.rocket.getChannel(slackMessage);
 			const rocketUser = this.rocket.getUser(slackMessage.user);
 
 			// Hack to notify that a file was attempted to be uploaded
@@ -811,9 +811,9 @@ export default class SlackAdapter {
 	/*
 	 https://api.slack.com/events/message/message_deleted
 	 */
-	processMessageDeleted(slackMessage) {
+	async processMessageDeleted(slackMessage) {
 		if (slackMessage.previous_message) {
-			const rocketChannel = this.rocket.getChannel(slackMessage);
+			const rocketChannel = await this.rocket.getChannel(slackMessage);
 			const rocketUser = Users.findOneById('rocket.cat', { fields: { username: 1 } });
 
 			if (rocketChannel && rocketUser) {
@@ -837,13 +837,13 @@ export default class SlackAdapter {
 	/*
 	 https://api.slack.com/events/message/message_changed
 	 */
-	processMessageChanged(slackMessage) {
+	async processMessageChanged(slackMessage) {
 		if (slackMessage.previous_message) {
 			const currentMsg = Messages.findOneById(this.rocket.createRocketID(slackMessage.channel, slackMessage.message.ts));
 
 			// Only process this change, if its an actual update (not just Slack repeating back our Rocket original change)
 			if (currentMsg && slackMessage.message.text !== currentMsg.msg) {
-				const rocketChannel = this.rocket.getChannel(slackMessage);
+				const rocketChannel = await this.rocket.getChannel(slackMessage);
 				const rocketUser = slackMessage.previous_message.user
 					? this.rocket.findUser(slackMessage.previous_message.user) || this.rocket.addUser(slackMessage.previous_message.user)
 					: null;
@@ -866,7 +866,7 @@ export default class SlackAdapter {
 	 This method will get refactored and broken down into single responsibilities
 	 */
 	async processNewMessage(slackMessage, isImporting) {
-		const rocketChannel = this.rocket.getChannel(slackMessage);
+		const rocketChannel = await this.rocket.getChannel(slackMessage);
 		let rocketUser = null;
 		if (slackMessage.subtype === 'bot_message') {
 			rocketUser = Users.findOneById('rocket.cat', { fields: { username: 1 } });
