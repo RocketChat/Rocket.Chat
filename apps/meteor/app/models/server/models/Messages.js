@@ -332,22 +332,6 @@ export class Messages extends Base {
 		return this.findOne(query, options);
 	}
 
-	// UPDATE
-	setHiddenById(_id, hidden) {
-		if (hidden == null) {
-			hidden = true;
-		}
-		const query = { _id };
-
-		const update = {
-			$set: {
-				_hidden: hidden,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	setAsDeletedByIdAndUser(_id, user) {
 		const query = { _id };
 

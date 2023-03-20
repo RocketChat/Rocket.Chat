@@ -34,7 +34,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 			// TODO is there a better way to tell TS "IUser[username]" is not undefined?
 			await Messages.cloneAndSaveAsHistoryById(message._id, user as Required<Pick<IUser, '_id' | 'username' | 'name'>>);
 		} else {
-			MessagesSync.setHiddenById(message._id, true);
+			await Messages.setHiddenById(message._id, true);
 		}
 
 		for await (const file of files) {
