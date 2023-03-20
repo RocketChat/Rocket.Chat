@@ -35,7 +35,7 @@ export class BusinessHourManager {
 	async startManager(): Promise<void> {
 		await this.createCronJobsForWorkHours();
 		this.setupCallbacks();
-		this.behavior.onStartBusinessHours();
+		await this.behavior.onStartBusinessHours();
 	}
 
 	async stopManager(): Promise<void> {

@@ -94,6 +94,12 @@ export type MessageTypesValues =
 	| 'command'
 	| 'videoconf'
 	| 'message_pinned'
+	| 'new-moderator'
+	| 'moderator-removed'
+	| 'new-owner'
+	| 'owner-removed'
+	| 'new-leader'
+	| 'leader-removed'
 	| LivechatMessageTypes
 	| TeamMessageTypes
 	| VoipMessageTypesValues
@@ -140,6 +146,8 @@ export interface IMessage extends IRocketChatRecord {
 	};
 	starred?: { _id: IUser['_id'] }[];
 	pinned?: boolean;
+	pinnedAt?: Date;
+	pinnedBy?: Pick<IUser, '_id' | 'username'>;
 	unread?: boolean;
 	temp?: boolean;
 	drid?: RoomID;

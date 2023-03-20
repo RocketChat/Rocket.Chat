@@ -17,7 +17,7 @@ const onLoadConfigApi = async (options = {}) => {
 callbacks.add(
 	'livechat.onLoadConfigApi',
 	// TODO callbacks cannot be async
-	(options) => Promise.await(onLoadConfigApi(options)),
+	onLoadConfigApi,
 	callbacks.priority.MEDIUM,
 	'livechat-on-load-config-api',
 );

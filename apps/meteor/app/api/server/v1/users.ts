@@ -81,10 +81,10 @@ API.v1.addRoute(
 	'users.update',
 	{ authRequired: true, twoFactorRequired: true, validateParams: isUsersUpdateParamsPOST },
 	{
-		post() {
+		async post() {
 			const userData = { _id: this.bodyParams.userId, ...this.bodyParams.data };
 
-			Meteor.runAsUser(this.userId, () => saveUser(this.userId, userData));
+			await saveUser(this.userId, userData);
 
 			if (this.bodyParams.data.customFields) {
 				saveCustomFields(this.bodyParams.userId, this.bodyParams.data.customFields);
@@ -246,7 +246,7 @@ API.v1.addRoute(
 	'users.create',
 	{ authRequired: true, validateParams: isUserCreateParamsPOST },
 	{
-		post() {
+		async post() {
 			// New change made by pull request #5152
 			if (typeof this.bodyParams.joinDefaultChannels === 'undefined') {
 				this.bodyParams.joinDefaultChannels = true;
@@ -256,7 +256,7 @@ API.v1.addRoute(
 				validateCustomFields(this.bodyParams.customFields);
 			}
 
-			const newUserId = saveUser(this.userId, this.bodyParams);
+			const newUserId = await saveUser(this.userId, this.bodyParams);
 
 			if (this.bodyParams.customFields) {
 				saveCustomFieldsWithoutValidation(newUserId, this.bodyParams.customFields);
@@ -633,9 +633,9 @@ API.v1.addRoute(
 		validateParams: isUsersCheckUsernameAvailabilityParamsGET,
 	},
 	{
-		get() {
+		async get() {
 			const { username } = this.queryParams;
-			const result = Meteor.call('checkUsernameAvailability', username);
+			const result = await Meteor.callAsync('checkUsernameAvailability', username);
 
 			return API.v1.success({ result });
 		},
@@ -1119,7 +1119,7 @@ API.v1.addRoute(
 						});
 
 						const { _id, username, statusText, roles, name } = user;
-						api.broadcast('presence.status', {
+						void api.broadcast('presence.status', {
 							user: { status, _id, username, statusText, roles, name },
 							previousStatus: user.status,
 						});

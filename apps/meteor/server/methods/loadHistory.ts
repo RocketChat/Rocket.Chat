@@ -4,7 +4,7 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Subscriptions, Rooms } from '../../app/models/server';
-import { canAccessRoom, hasPermission, roomAccessAttributes } from '../../app/authorization/server';
+import { canAccessRoomAsync, hasPermission, roomAccessAttributes } from '../../app/authorization/server';
 import { settings } from '../../app/settings/server';
 import { loadMessageHistory } from '../../app/lib/server';
 
@@ -28,7 +28,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	loadHistory(rid, end, limit = 20, ls, showThreadMessages = true) {
+	async loadHistory(rid, end, limit = 20, ls, showThreadMessages = true) {
 		check(rid, String);
 
 		if (!Meteor.userId() && settings.get('Accounts_AllowAnonymousRead') === false) {
@@ -44,7 +44,7 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		if (!fromId || !canAccessRoom(room, { _id: fromId })) {
+		if (!fromId || !(await canAccessRoomAsync(room, { _id: fromId }))) {
 			return false;
 		}
 

@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../../settings/server';
 
-settingsRegistry.addGroup('FileUpload', function () {
+void settingsRegistry.addGroup('FileUpload', function () {
 	this.add('FileUpload_Enabled', true, {
 		type: 'boolean',
 		public: true,

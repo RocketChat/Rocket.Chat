@@ -27,7 +27,7 @@ class CachedChatSubscription extends CachedCollection<SubscriptionWithRoom, ISub
 
 		if (action === 'removed') {
 			ChatRoom.remove(newRecord.rid);
-			CachedChatRoom.save();
+			void CachedChatRoom.save();
 		}
 
 		return newRecord;

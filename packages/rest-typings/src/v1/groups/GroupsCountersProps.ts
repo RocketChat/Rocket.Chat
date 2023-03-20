@@ -1,22 +1,19 @@
 import Ajv from 'ajv';
 
+import type { GroupsBaseProps } from './BaseProps';
+import { withGroupBaseProperties } from './BaseProps';
+
 const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type GroupsCountersProps = {
-	roomId: string;
-};
+export type GroupsCountersProps = GroupsBaseProps & { userId?: string };
 
-const GroupsCountersPropsSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-		},
+const GroupsCountersPropsSchema = withGroupBaseProperties({
+	userId: {
+		type: 'string',
+		nullable: true,
 	},
-	required: ['roomId'],
-	additionalProperties: false,
-};
+});
 
 export const isGroupsCountersProps = ajv.compile<GroupsCountersProps>(GroupsCountersPropsSchema);

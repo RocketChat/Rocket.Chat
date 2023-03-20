@@ -1,9 +1,17 @@
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../../../app/authorization/server';
 import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'livechat:removeBusinessHour'(id: string, type: string): void;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	'livechat:removeBusinessHour'(id: string, type: string) {
 		const userId = Meteor.userId();
 

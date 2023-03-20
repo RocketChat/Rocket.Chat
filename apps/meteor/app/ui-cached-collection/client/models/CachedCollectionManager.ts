@@ -56,7 +56,7 @@ class CachedCollectionManager extends Emitter<{ reconnect: void; login: string |
 
 	clearAllCache() {
 		for (const item of this.items) {
-			item.clearCache();
+			void item.clearCache();
 		}
 	}
 

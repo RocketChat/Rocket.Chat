@@ -2,12 +2,20 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { api, Team } from '@rocket.chat/core-services';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermission, getUsersInRole } from '../../app/authorization/server';
 import { Users, Subscriptions, Messages, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		removeRoomOwner(rid: string, userId: string): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async removeRoomOwner(rid, userId) {
 		check(rid, String);
 		check(userId, String);
@@ -84,9 +92,9 @@ Meteor.methods({
 			scope: rid,
 		};
 		if (settings.get('UI_DisplayRoles')) {
-			api.broadcast('user.roleUpdate', event);
+			void api.broadcast('user.roleUpdate', event);
 		}
-		api.broadcast('federation.userRoleChanged', { ...event, givenByUserId: uid });
+		void api.broadcast('federation.userRoleChanged', { ...event, givenByUserId: uid });
 		return true;
 	},
 });

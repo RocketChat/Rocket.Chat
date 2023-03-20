@@ -1,6 +1,7 @@
 import { Users, Rooms } from '../../../../models/server';
 import { createRoom, addUserToRoom } from '../../../../lib/server';
 
+// TODO doesn't seem to be used anywhere, remove
 export default async function handleJoinedChannel(args) {
 	const user = Users.findOne({
 		'profile.irc.nick': args.nick,
@@ -18,7 +19,7 @@ export default async function handleJoinedChannel(args) {
 
 		this.log(`${user.username} created room ${args.roomName}`);
 	} else {
-		addUserToRoom(room._id, user);
+		await addUserToRoom(room._id, user);
 
 		this.log(`${user.username} joined room ${room.name}`);
 	}

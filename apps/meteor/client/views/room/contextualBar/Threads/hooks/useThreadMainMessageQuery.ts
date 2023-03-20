@@ -13,8 +13,6 @@ import { useGetMessageByID } from './useGetMessageByID';
 
 type RoomMessagesRidEvent = IMessage;
 
-type NotifyRoomRidDeleteMessageEvent = { _id: IMessage['_id'] };
-
 type NotifyRoomRidDeleteMessageBulkEvent = {
 	rid: IMessage['rid'];
 	excludePinned: boolean;
@@ -50,20 +48,14 @@ const useSubscribeToMessage = () => {
 				if (message._id === event._id) onMutate?.(event);
 			});
 
-			const unsubscribeFromDeleteMessage = subscribeToNotifyRoom(
-				`${message.rid}/deleteMessage`,
-				(event: NotifyRoomRidDeleteMessageEvent) => {
-					if (message._id === event._id) onDelete?.();
-				},
-			);
+			const unsubscribeFromDeleteMessage = subscribeToNotifyRoom(`${message.rid}/deleteMessage`, (event) => {
+				if (message._id === event._id) onDelete?.();
+			});
 
-			const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom(
-				`${message.rid}/deleteMessageBulk`,
-				(params: NotifyRoomRidDeleteMessageBulkEvent) => {
-					const matchDeleteCriteria = createDeleteCriteria(params);
-					if (matchDeleteCriteria(message)) onDelete?.();
-				},
-			);
+			const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom(`${message.rid}/deleteMessageBulk`, (params) => {
+				const matchDeleteCriteria = createDeleteCriteria(params);
+				if (matchDeleteCriteria(message)) onDelete?.();
+			});
 
 			return () => {
 				unsubscribeFromRoomMessages();
