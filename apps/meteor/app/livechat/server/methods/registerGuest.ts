@@ -1,13 +1,41 @@
 import { Meteor } from 'meteor/meteor';
 import { LivechatVisitors, Messages } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { ILivechatVisitor, IRoom } from '@rocket.chat/core-typings';
 
 import { LivechatRooms } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'livechat:registerGuest'({
+			token,
+			name,
+			email,
+			department,
+			customFields,
+		}?: {
+			token?: string;
+			name?: string;
+			email?: string;
+			department?: string;
+			customFields?: Array<{ key: string; value: string; overwrite: boolean; scope?: unknown }>;
+		}): {
+			userId: string;
+			visitor: ILivechatVisitor | null;
+		};
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async 'livechat:registerGuest'({ token, name, email, department, customFields } = {}) {
 		methodDeprecationLogger.warn('livechat:registerGuest will be deprecated in future versions of Rocket.Chat');
+
+		if (!token) {
+			throw new Meteor.Error('error-invalid-token', 'Invalid token', { method: 'livechat:registerGuest' });
+		}
 
 		const userId = await Livechat.registerGuest.call(this, {
 			token,
@@ -30,7 +58,7 @@ Meteor.methods({
 		});
 
 		// If it's updating an existing visitor, it must also update the roomInfo
-		const rooms = LivechatRooms.findOpenByVisitorToken(token).fetch();
+		const rooms: IRoom[] = LivechatRooms.findOpenByVisitorToken(token).fetch();
 		await Promise.all(rooms.map((room) => Livechat.saveRoomInfo(room, visitor)));
 
 		if (customFields && customFields instanceof Array) {

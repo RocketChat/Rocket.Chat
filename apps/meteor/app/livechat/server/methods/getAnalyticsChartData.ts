@@ -1,10 +1,24 @@
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermission } from '../../../authorization/server';
 import { Users } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'livechat:getAnalyticsChartData'(options: { chartOptions: { name: string } }):
+			| {
+					chartLabel: string;
+					dataLabels: string[];
+					dataPoints: number[];
+			  }
+			| undefined;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	'livechat:getAnalyticsChartData'(options) {
 		const userId = Meteor.userId();
 		if (!userId || !hasPermission(userId, 'view-livechat-manager')) {
@@ -13,7 +27,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!(options.chartOptions && options.chartOptions.name)) {
+		if (!options.chartOptions?.name) {
 			Livechat.logger.warn('Incorrect chart options');
 			return;
 		}

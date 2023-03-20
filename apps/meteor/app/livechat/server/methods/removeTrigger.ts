@@ -1,12 +1,21 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { LivechatTrigger } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermission } from '../../../authorization/server';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'livechat:removeTrigger'(triggerId: string): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async 'livechat:removeTrigger'(triggerId) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-livechat-manager')) {
+		const uid = Meteor.userId();
+		if (!uid || !hasPermission(uid, 'view-livechat-manager')) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:removeTrigger',
 			});

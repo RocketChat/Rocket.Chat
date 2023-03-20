@@ -1,11 +1,26 @@
 import { Meteor } from 'meteor/meteor';
 import { LivechatVisitors } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 import { loadMessageHistory } from '../../../lib/server';
 import { LivechatRooms } from '../../../models/server';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'livechat:loadHistory'(params: { token: string; rid: string; end?: Date; limit?: number; ls: Date }):
+			| {
+					messages: IMessage[];
+					firstUnread: any;
+					unreadNotLoaded: number;
+			  }
+			| undefined;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async 'livechat:loadHistory'({ token, rid, end, limit = 20, ls }) {
 		methodDeprecationLogger.warn('livechat:loadHistory will be deprecated in future versions of Rocket.Chat');
 

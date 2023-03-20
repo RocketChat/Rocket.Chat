@@ -1,9 +1,17 @@
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'livechat:getDepartmentForwardRestrictions'(departmentId: string): unknown;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	'livechat:getDepartmentForwardRestrictions'(departmentId) {
 		methodDeprecationLogger.warn('livechat:getDepartmentForwardRestrictions will be deprecated in future versions of Rocket.Chat');
 		if (!Meteor.userId()) {
@@ -13,7 +21,7 @@ Meteor.methods({
 		}
 
 		const options = callbacks.run('livechat.onLoadForwardDepartmentRestrictions', { departmentId });
-		const { restrictions } = options;
+		const { restrictions } = options as { restrictions?: unknown };
 
 		return restrictions;
 	},
