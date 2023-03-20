@@ -39,7 +39,7 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 
 				if (room._id !== name && type === 'd') {
 					// Redirect old url using username to rid
-					RoomManager.close(type + name);
+					await RoomManager.close(type + name);
 					FlowRouter.go('direct', { rid: room._id }, FlowRouter.current().queryParams);
 					return;
 				}

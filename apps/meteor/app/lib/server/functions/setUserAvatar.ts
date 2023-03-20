@@ -112,7 +112,7 @@ export function setUserAvatar(
 
 	Meteor.setTimeout(function () {
 		Users.setAvatarData(user._id, service, avatarETag);
-		api.broadcast('user.avatarUpdate', {
+		void api.broadcast('user.avatarUpdate', {
 			username: user.username,
 			avatarETag,
 		});

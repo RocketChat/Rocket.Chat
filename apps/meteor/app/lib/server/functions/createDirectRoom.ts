@@ -38,7 +38,7 @@ const generateSubscription = (
 const getFname = (members: IUser[]): string => members.map(({ name, username }) => name || username).join(', ');
 const getName = (members: IUser[]): string => members.map(({ username }) => username).join(', ');
 
-export const createDirectRoom = function (
+export async function createDirectRoom(
 	members: IUser[] | string[],
 	roomExtraData = {},
 	options: {
@@ -46,7 +46,7 @@ export const createDirectRoom = function (
 		creator?: string;
 		subscriptionExtra?: ISubscriptionExtraData;
 	},
-): ICreatedRoom {
+): Promise<ICreatedRoom> {
 	if (members.length > (settings.get('DirectMesssage_maxUsers') || 1)) {
 		throw new Error('error-direct-message-max-user-exceeded');
 	}
@@ -121,7 +121,7 @@ export const createDirectRoom = function (
 
 	if (roomMembers.length === 1) {
 		// dm to yourself
-		Subscriptions.updateOne(
+		await Subscriptions.updateOne(
 			{ rid, 'u._id': roomMembers[0]._id },
 			{
 				$set: { open: true },
@@ -139,9 +139,9 @@ export const createDirectRoom = function (
 			{ projection: { 'username': 1, 'settings.preferences': 1 } },
 		);
 
-		membersWithPreferences.forEach((member) => {
+		for await (const member of membersWithPreferences) {
 			const otherMembers = sortedMembers.filter(({ _id }) => _id !== member._id);
-			Subscriptions.updateOne(
+			await Subscriptions.updateOne(
 				{ rid, 'u._id': member._id },
 				{
 					...(options?.creator === member._id && { $set: { open: true } }),
@@ -152,7 +152,7 @@ export const createDirectRoom = function (
 				},
 				{ upsert: true },
 			);
-		});
+		}
 	}
 
 	// If the room is new, run a callback
@@ -161,7 +161,7 @@ export const createDirectRoom = function (
 
 		callbacks.run('afterCreateDirectRoom', insertedRoom, { members: roomMembers, creatorId: options?.creator });
 
-		Apps.triggerEvent('IPostRoomCreate', insertedRoom);
+		void Apps.triggerEvent('IPostRoomCreate', insertedRoom);
 	}
 
 	return {
@@ -171,4 +171,4 @@ export const createDirectRoom = function (
 		inserted: isNewRoom,
 		...room,
 	};
-};
+}

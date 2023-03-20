@@ -41,9 +41,9 @@ class NotificationClass {
 			return;
 		}
 
-		setTimeout(() => {
+		setTimeout(async () => {
 			try {
-				this.worker();
+				await this.worker();
 			} catch (err) {
 				SystemLogger.error({ msg: 'Error sending notification', err });
 				this.executeWorkerLater();
@@ -79,7 +79,7 @@ class NotificationClass {
 				}
 			}
 
-			NotificationQueue.removeById(notification._id);
+			await NotificationQueue.removeById(notification._id);
 		} catch (e) {
 			SystemLogger.error(e);
 			await NotificationQueue.setErrorById(notification._id, e instanceof Error ? e.message : String(e));
@@ -88,7 +88,7 @@ class NotificationClass {
 		if (counter >= this.maxBatchSize) {
 			return this.executeWorkerLater();
 		}
-		this.worker(counter++);
+		await this.worker(counter++);
 	}
 
 	getNextNotification(): Promise<INotification | null> {

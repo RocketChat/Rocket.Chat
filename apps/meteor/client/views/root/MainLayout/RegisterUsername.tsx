@@ -19,7 +19,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import AccountsCustomFields from '../../../components/AccountsCustomFields';
 
 type RegisterUsernamePayload = {
-	username: IUser['username'];
+	username: Exclude<IUser['username'], undefined>;
 } & IUser['customFields'];
 
 const RegisterUsername = () => {
@@ -58,7 +58,7 @@ const RegisterUsername = () => {
 	});
 
 	const registerUsernameMutation = useMutation({
-		mutationFn: (data: RegisterUsernamePayload) => {
+		mutationFn: async (data: RegisterUsernamePayload) => {
 			const { username, ...customFields } = data;
 			return Promise.all([setUsername(username), saveCustomFields({ ...customFields })]);
 		},
