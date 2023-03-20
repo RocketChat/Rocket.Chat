@@ -226,7 +226,7 @@ export class ImportDataConverter {
 		subset(userData.customFields, 'customFields');
 	}
 
-	updateUser(existingUser: IUser, userData: IImportUser): void {
+	async updateUser(existingUser: IUser, userData: IImportUser): Promise<void> {
 		const { _id } = existingUser;
 
 		userData._id = _id;
@@ -267,7 +267,7 @@ export class ImportDataConverter {
 		}
 
 		if (userData.name || userData.username) {
-			saveUserIdentity({ _id, name: userData.name, username: userData.username } as Parameters<typeof saveUserIdentity>[0]);
+			await saveUserIdentity({ _id, name: userData.name, username: userData.username } as Parameters<typeof saveUserIdentity>[0]);
 		}
 
 		if (userData.importIds.length) {
@@ -275,7 +275,8 @@ export class ImportDataConverter {
 		}
 	}
 
-	insertUser(userData: IImportUser): IUser {
+	// TODO
+	async insertUser(userData: IImportUser): Promise<IUser> {
 		const password = `${Date.now()}${userData.name || ''}${userData.emails.length ? userData.emails[0].toUpperCase() : ''}`;
 		const userId = userData.emails.length
 			? Accounts.createUser({
@@ -289,7 +290,7 @@ export class ImportDataConverter {
 			  });
 
 		const user = Users.findOneById(userId, {});
-		this.updateUser(user, userData);
+		await this.updateUser(user, userData);
 
 		addUserToDefaultChannels(user, true);
 		return user;
@@ -314,9 +315,9 @@ export class ImportDataConverter {
 		}
 	}
 
-	public convertUsers({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
-		const users = Promise.await(this.getUsersToImport()) as IImportUserRecord[];
-		users.forEach(({ data, _id }) => {
+	public async convertUsers({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): Promise<void> {
+		const users = (await this.getUsersToImport()) as IImportUserRecord[];
+		for await (const { data, _id } of users) {
 			try {
 				if (beforeImportFn && !beforeImportFn(data, 'user')) {
 					this.skipRecord(_id);
@@ -346,13 +347,13 @@ export class ImportDataConverter {
 				const isNewUser = !existingUser;
 
 				if (existingUser) {
-					this.updateUser(existingUser, data);
+					await this.updateUser(existingUser, data);
 				} else {
 					if (!data.name && data.username) {
 						data.name = guessNameFromUsername(data.username);
 					}
 
-					existingUser = this.insertUser(data);
+					existingUser = await this.insertUser(data);
 				}
 
 				// Deleted users are 'inactive' users in Rocket.Chat
@@ -370,7 +371,7 @@ export class ImportDataConverter {
 				this._logger.error(e);
 				this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
 			}
-		});
+		}
 	}
 
 	protected saveError(importId: string, error: Error): void {
@@ -546,9 +547,10 @@ export class ImportDataConverter {
 		return ImportDataRaw.getAllMessages().toArray();
 	}
 
-	convertMessages({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
+	async convertMessages({ beforeImportFn, afterImportFn }: IConversionCallbacks = {}): Promise<void> {
 		const rids: Array<string> = [];
-		const messages = Promise.await(this.getMessagesToImport());
+		const messages = await this.getMessagesToImport();
+
 		messages.forEach(({ data, _id }: IImportMessageRecord) => {
 			try {
 				if (beforeImportFn && !beforeImportFn(data, 'message')) {
@@ -627,9 +629,9 @@ export class ImportDataConverter {
 			}
 		});
 
-		for (const rid of rids) {
+		for await (const rid of rids) {
 			try {
-				Rooms.resetLastMessageById(rid);
+				await Rooms.resetLastMessageById(rid);
 			} catch (e) {
 				this._logger.warn(`Failed to update last message of room ${rid}`);
 				this._logger.error(e);
@@ -897,8 +899,8 @@ export class ImportDataConverter {
 		return ImportDataRaw.getAllChannels().toArray();
 	}
 
-	convertChannels(startedByUserId: string, { beforeImportFn, afterImportFn }: IConversionCallbacks = {}): void {
-		const channels = Promise.await(this.getChannelsToImport());
+	async convertChannels(startedByUserId: string, { beforeImportFn, afterImportFn }: IConversionCallbacks = {}): Promise<void> {
+		const channels = await this.getChannelsToImport();
 		channels.forEach(({ data, _id }: IImportChannelRecord) => {
 			try {
 				if (beforeImportFn && !beforeImportFn(data, 'channel')) {
@@ -943,19 +945,19 @@ export class ImportDataConverter {
 		Subscriptions.archiveByRoomId(rid);
 	}
 
-	convertData(startedByUserId: string, callbacks: IConversionCallbacks = {}): void {
-		this.convertUsers(callbacks);
-		this.convertChannels(startedByUserId, callbacks);
-		this.convertMessages(callbacks);
+	async convertData(startedByUserId: string, callbacks: IConversionCallbacks = {}): Promise<void> {
+		await this.convertUsers(callbacks);
+		await this.convertChannels(startedByUserId, callbacks);
+		await this.convertMessages(callbacks);
 
-		Meteor.defer(() => {
+		process.nextTick(() => {
 			this.clearSuccessfullyImportedData();
 		});
 	}
 
-	public clearImportData(): void {
+	public async clearImportData(): Promise<void> {
 		// Using raw collection since its faster
-		Promise.await(ImportData.model.rawCollection().remove({}));
+		await ImportData.model.rawCollection().remove({});
 	}
 
 	clearSuccessfullyImportedData(): void {

@@ -1,11 +1,19 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { IMessage } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { canAccessRoomId } from '../../../authorization/server';
 import { Messages } from '../../../models/server';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		getMessages(messages: IMessage['_id'][]): IMessage[];
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	getMessages(messages) {
 		check(messages, [String]);
 		const uid = Meteor.userId();

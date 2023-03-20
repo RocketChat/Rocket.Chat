@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
+import { FederationRoomEvents } from '@rocket.chat/models';
 
 import { hasPermission } from '../../../authorization/server';
-import { FederationRoomEvents } from '../../../models/server';
 
 Meteor.methods({
-	'federation:loadContextEvents': (latestEventTimestamp) => {
+	'federation:loadContextEvents': async (latestEventTimestamp) => {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'loadContextEvents' });
 		}

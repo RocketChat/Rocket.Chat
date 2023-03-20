@@ -33,10 +33,11 @@ import ThreadMessagePreviewBody from './threadPreview/ThreadMessagePreviewBody';
 
 type ThreadMessagePreviewProps = {
 	message: IThreadMessage;
+	showUserAvatar: boolean;
 	sequential: boolean;
 };
 
-const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePreviewProps): ReactElement => {
+const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }: ThreadMessagePreviewProps): ReactElement => {
 	const parentMessage = useParentMessage(message.tmid);
 
 	const translated = useShowTranslated(message);
@@ -58,7 +59,7 @@ const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePr
 		<ThreadMessage {...props} onClick={isSelecting ? toggleSelected : undefined} isSelected={isSelected} data-qa-selected={isSelected}>
 			{!sequential && (
 				<ThreadMessageRow
-					aria-role='link'
+					role='link'
 					onClick={
 						!isSelecting && parentMessage.isSuccess
 							? () => goToThread({ rid: message.rid, tmid: message.tmid, msg: parentMessage.data?._id })
@@ -94,7 +95,7 @@ const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePr
 			)}
 			<ThreadMessageRow onClick={!isSelecting ? () => goToThread({ rid: message.rid, tmid: message.tmid, msg: message._id }) : undefined}>
 				<ThreadMessageLeftContainer>
-					{!isSelecting && <UserAvatar username={message.u.username} size='x18' />}
+					{!isSelecting && showUserAvatar && <UserAvatar username={message.u.username} size='x18' />}
 					{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 				</ThreadMessageLeftContainer>
 				<ThreadMessageContainer>

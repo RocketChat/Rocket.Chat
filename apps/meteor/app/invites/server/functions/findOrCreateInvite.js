@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { Invites } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
@@ -100,7 +100,7 @@ export const findOrCreateInvite = async (userId, invite) => {
 
 	await Invites.insertOne(createInvite);
 
-	api.broadcast('notify.updateInvites', userId, { invite: createInvite });
+	void api.broadcast('notify.updateInvites', userId, { invite: createInvite });
 
 	createInvite.url = getInviteUrl(createInvite);
 	return createInvite;

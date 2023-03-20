@@ -1,11 +1,11 @@
 import path from 'path';
 
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { UploadFS } from 'meteor/jalik:ufs';
 import _ from 'underscore';
 
-import { canAccessRoom, hasPermission } from '../../authorization';
+import { canAccessRoomAsync, hasPermission } from '../../authorization';
 import { settings } from '../../settings';
 
 // set ufs temp dir to $TMPDIR/ufs instead of /tmp/ufs if the variable is set
@@ -29,7 +29,7 @@ UploadFS.config.defaultStorePermissions = new UploadFS.StorePermissions({
 			return true;
 		}
 
-		if (canAccessRoom(null, null, doc)) {
+		if (Promise.await(canAccessRoomAsync(null, null, doc))) {
 			return true;
 		}
 

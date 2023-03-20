@@ -1,7 +1,7 @@
 import { settingsRegistry } from '../../../app/settings/server';
 
 export function addSettings(): void {
-	settingsRegistry.addGroup('Video_Conference', function () {
+	void settingsRegistry.addGroup('Video_Conference', function () {
 		this.with(
 			{
 				enterprise: true,
