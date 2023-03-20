@@ -68,22 +68,6 @@ export class Messages extends Base {
 		return this.update({ _id: messageId }, { $unset: { reactions: 1 } });
 	}
 
-	deleteOldOTRMessages(roomId, ts) {
-		const query = {
-			rid: roomId,
-			t: {
-				$in: [
-					'otr',
-					otrSystemMessages.USER_JOINED_OTR,
-					otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,
-					otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
-				],
-			},
-			ts: { $lte: ts },
-		};
-		return this.remove(query);
-	}
-
 	updateOTRAck(_id, otrAck) {
 		const query = { _id };
 		const update = { $set: { otrAck } };
