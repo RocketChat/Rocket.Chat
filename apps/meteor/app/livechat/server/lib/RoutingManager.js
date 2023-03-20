@@ -106,6 +106,7 @@ export const RoutingManager = {
 		const room = LivechatRooms.findOneById(rid);
 
 		Messages.createCommandWithRoomIdAndUser('connected', rid, user);
+		Messages.createUserJoinWithRoomIdAndUser(rid, user);
 		dispatchAgentDelegated(rid, agent.agentId);
 		logger.debug(`Agent ${agent.agentId} assigned to inquriy ${inquiry._id}. Instances notified`);
 

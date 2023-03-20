@@ -1,4 +1,5 @@
-import type { IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { AutoTransferChatScheduler } from '../lib/AutoTransferChatScheduler';
 import { callbacks } from '../../../../../lib/callbacks';
@@ -16,7 +17,7 @@ let autoTransferTimeout = 0;
 
 const handleAfterTakeInquiryCallback = async (inquiry: any = {}): Promise<any> => {
 	const { rid } = inquiry;
-	if (!rid || !rid.trim()) {
+	if (!rid?.trim()) {
 		cbLogger.debug('Skipping callback. Invalid room id');
 		return;
 	}
@@ -38,15 +39,25 @@ const handleAfterTakeInquiryCallback = async (inquiry: any = {}): Promise<any> =
 	return inquiry;
 };
 
-const handleAfterSaveMessage = (message: any = {}, room: any = {}): IMessage => {
-	const { _id: rid, t, autoTransferredAt, autoTransferOngoing } = room;
-	const { token } = message;
+const handleAfterSaveMessage = (message: IMessage, room: IRoom | undefined): IMessage => {
+	if (!room || !isOmnichannelRoom(room)) {
+		return message;
+	}
+
+	const { _id: rid, autoTransferredAt, autoTransferOngoing } = room;
+	const { token, t: messageType } = message;
+
+	if (messageType) {
+		// ignore system messages
+		return message;
+	}
 
 	if (!autoTransferTimeout || autoTransferTimeout <= 0) {
 		return message;
 	}
 
-	if (!rid || !message || rid === '' || t !== 'l' || token) {
+	if (!message || token) {
+		// ignore messages from visitors
 		return message;
 	}
 
