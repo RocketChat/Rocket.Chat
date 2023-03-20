@@ -212,20 +212,6 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomIdAfterTimestamp(roomId, timestamp, options) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			ts: {
-				$gt: timestamp,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
 	findForUpdates(roomId, timestamp, options) {
 		const query = {
 			_hidden: {
@@ -236,20 +222,6 @@ export class Messages extends Base {
 				$gt: timestamp,
 			},
 		};
-		return this.find(query, options);
-	}
-
-	findVisibleByRoomIdBeforeTimestamp(roomId, timestamp, options) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			ts: {
-				$lt: timestamp,
-			},
-		};
-
 		return this.find(query, options);
 	}
 

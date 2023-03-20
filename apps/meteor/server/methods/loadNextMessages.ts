@@ -5,7 +5,6 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Messages } from '@rocket.chat/models';
 
 import { canAccessRoomId } from '../../app/authorization/server';
-import { Messages as MessagesSync } from '../../app/models/server';
 import { normalizeMessagesForUser } from '../../app/utils/server/lib/normalizeMessagesForUser';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -36,16 +35,14 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'loadNextMessages' });
 		}
 
-		const options = {
-			sort: {
-				ts: 1,
-			},
-			limit,
-		};
-
 		let records;
 		if (end) {
-			records = MessagesSync.findVisibleByRoomIdAfterTimestamp(rid, end, options).fetch();
+			records = await Messages.findVisibleByRoomIdAfterTimestamp(rid, end, {
+				sort: {
+					ts: 1,
+				},
+				limit,
+			}).toArray();
 		} else {
 			records = await Messages.findVisibleByRoomId(rid, {
 				sort: {
