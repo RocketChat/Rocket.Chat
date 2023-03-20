@@ -26,7 +26,7 @@ Meteor.methods<ServerMethods>({
 			return 0;
 		}
 		dispatchToastMessage({ type: 'success', message: t('Message_has_been_unpinned') });
-		return ChatMessage.update(
+		ChatMessage.update(
 			{
 				_id: message._id,
 				rid: message.rid,
@@ -37,5 +37,7 @@ Meteor.methods<ServerMethods>({
 				},
 			},
 		);
+
+		return true;
 	},
 });
