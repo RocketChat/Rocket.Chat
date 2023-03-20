@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStatus';
 import { connectWorkspace } from './functions/connectWorkspace';
@@ -38,7 +39,7 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
-Meteor.methods({
+Meteor.methods<ServerMethods>({
 	'cloud:checkRegisterStatus'() {
 		const uid = Meteor.userId();
 

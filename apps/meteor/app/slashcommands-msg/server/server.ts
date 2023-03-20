@@ -18,7 +18,7 @@ slashCommands.add({
 		const separator = trimmedParams.indexOf(' ');
 		const userId = Meteor.userId() as string;
 		if (separator === -1) {
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('Username_and_message_must_not_be_empty', { lng: settings.get('Language') || 'en' }),
 			});
 			return;
@@ -29,7 +29,7 @@ slashCommands.add({
 		const targetUser = Users.findOneByUsernameIgnoringCase(targetUsername);
 		if (targetUser == null) {
 			const user = Users.findOneById(userId, { fields: { language: 1 } });
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('Username_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [targetUsernameOrig],

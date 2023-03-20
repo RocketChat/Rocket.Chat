@@ -37,7 +37,7 @@ export function notifyDesktopUser({ userId, user, message, room, duration, notif
 
 	metrics.notificationsSent.inc({ notification_type: 'desktop' });
 
-	api.broadcast('notify.desktop', userId, payload);
+	void api.broadcast('notify.desktop', userId, payload);
 }
 
 export function shouldNotifyDesktop({

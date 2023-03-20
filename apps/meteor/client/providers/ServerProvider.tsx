@@ -1,4 +1,5 @@
 import type { Serialized } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
 import type { Method, PathFor, OperationParams, OperationResult, UrlParams, PathPattern } from '@rocket.chat/rest-typings';
 import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn, UploadResult } from '@rocket.chat/ui-contexts';
 import { ServerContext } from '@rocket.chat/ui-contexts';
@@ -68,6 +69,43 @@ const getStream = (
 	};
 };
 
+const ee = new Emitter<Record<string, void>>();
+
+const events = new Map<string, () => void>();
+
+const getSingleStream = (
+	streamName: string,
+): (<TEvent extends unknown[]>(eventName: string, callback: (...event: TEvent) => void) => () => void) => {
+	const stream = getStream(streamName);
+	return (eventName, callback): (() => void) => {
+		ee.on(`${streamName}/${eventName}`, callback);
+
+		const handler = (...args: any[]): void => {
+			ee.emit(`${streamName}/${eventName}`, ...args);
+		};
+
+		const stop = (): void => {
+			// If someone is still listening, don't unsubscribe
+			ee.off(`${streamName}/${eventName}`, callback);
+
+			if (ee.has(`${streamName}/${eventName}`)) {
+				return;
+			}
+
+			const unsubscribe = events.get(`${streamName}/${eventName}`);
+			if (unsubscribe) {
+				unsubscribe();
+				events.delete(`${streamName}/${eventName}`);
+			}
+		};
+
+		if (!events.has(`${streamName}/${eventName}`)) {
+			events.set(`${streamName}/${eventName}`, stream(eventName, handler));
+		}
+		return stop;
+	};
+};
+
 const contextValue = {
 	info,
 	absoluteUrl,
@@ -75,6 +113,7 @@ const contextValue = {
 	callEndpoint,
 	uploadToEndpoint,
 	getStream,
+	getSingleStream,
 };
 
 const ServerProvider: FC = ({ children }) => <ServerContext.Provider children={children} value={contextValue} />;

@@ -41,7 +41,7 @@ export const sendInvitationEmail = async (userId: string, emails: string[]) => {
 		});
 	}
 
-	return validEmails.filter((email) => {
+	for await (const email of validEmails) {
 		try {
 			const mailerResult = Mailer.send({
 				to: email,
@@ -53,7 +53,7 @@ export const sendInvitationEmail = async (userId: string, emails: string[]) => {
 				},
 			});
 
-			Settings.incrementValueById('Invitation_Email_Count');
+			await Settings.incrementValueById('Invitation_Email_Count');
 			return mailerResult;
 		} catch ({ message }) {
 			throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
@@ -61,5 +61,5 @@ export const sendInvitationEmail = async (userId: string, emails: string[]) => {
 				message,
 			});
 		}
-	});
+	}
 };

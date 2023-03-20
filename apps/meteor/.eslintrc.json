@@ -43,11 +43,11 @@
 					"error",
 					{
 						"checksVoidReturn": {
-							"arguments": false,
-							"attributes": false
+							"arguments": false
 						}
 					}
-				]
+				],
+				"@typescript-eslint/no-floating-promises": "error"
 			},
 			"parserOptions": {
 				"project": ["./tsconfig.json"]

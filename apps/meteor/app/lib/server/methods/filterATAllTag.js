@@ -27,7 +27,7 @@ callbacks.add(
 
 				// Add a notification to the chat, informing the user that this
 				// action is not allowed.
-				api.broadcast('notify.ephemeralMessage', message.u._id, message.rid, {
+				void api.broadcast('notify.ephemeralMessage', message.u._id, message.rid, {
 					msg: TAPi18n.__('error-action-not-allowed', { action }, language),
 				});
 

@@ -60,7 +60,7 @@ export class AppMessageBridge extends MessageBridge {
 			return;
 		}
 
-		api.broadcast('notify.ephemeralMessage', user.id, msg.rid, {
+		void api.broadcast('notify.ephemeralMessage', user.id, msg.rid, {
 			...msg,
 		});
 	}
@@ -80,10 +80,11 @@ export class AppMessageBridge extends MessageBridge {
 
 		Users.findByIds(users, { fields: { _id: 1 } })
 			.fetch()
-			.forEach(({ _id }: { _id: string }) =>
-				api.broadcast('notify.ephemeralMessage', _id, room.id, {
-					...msg,
-				}),
+			.forEach(
+				({ _id }: { _id: string }) =>
+					void api.broadcast('notify.ephemeralMessage', _id, room.id, {
+						...msg,
+					}),
 			);
 	}
 
