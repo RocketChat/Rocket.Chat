@@ -106,7 +106,7 @@ export class Restivus {
 			'login',
 			{ authRequired: false },
 			{
-				post() {
+				async post() {
 					const user = {};
 					if (this.bodyParams.user) {
 						if (this.bodyParams.user.indexOf('@') === -1) {
@@ -128,7 +128,7 @@ export class Restivus {
 					}
 					let auth;
 					try {
-						auth = Auth.loginWithPassword(user, password);
+						auth = await Auth.loginWithPassword(user, password);
 					} catch (e) {
 						return {
 							statusCode: e.error,
@@ -137,7 +137,7 @@ export class Restivus {
 					if (auth.userId && auth.authToken) {
 						const searchQuery = {};
 						searchQuery[self._config.auth.token] = Accounts._hashLoginToken(auth.authToken);
-						this.user = Meteor.users.findOne(
+						this.user = await Meteor.users.findOneAsync(
 							{
 								_id: auth.userId,
 							},
@@ -159,7 +159,7 @@ export class Restivus {
 				},
 			},
 		);
-		const logout = function () {
+		const logout = async function () {
 			const authToken = this.request.headers['x-auth-token'];
 			const hashedToken = Accounts._hashLoginToken(authToken);
 			const tokenLocation = self._config.auth.token;
@@ -170,7 +170,7 @@ export class Restivus {
 			tokenToRemove[tokenFieldName] = hashedToken;
 			const tokenRemovalQuery = {};
 			tokenRemovalQuery[tokenPath] = tokenToRemove;
-			Meteor.users.update(this.user._id, {
+			await Meteor.users.updateAsync(this.user._id, {
 				$pull: tokenRemovalQuery,
 			});
 			const response = {
@@ -198,7 +198,7 @@ export class Restivus {
 			'logout',
 			{ authRequired: true },
 			{
-				get() {
+				async get() {
 					console.warn('Warning: Default logout via GET will be removed in Restivus v1.0. Use POST instead.');
 					console.warn('    See https://github.com/kahmali/meteor-restivus/issues/100');
 					return logout.call(this);

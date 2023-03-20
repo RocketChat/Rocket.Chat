@@ -56,7 +56,7 @@ const getUserQuerySelector = function (user) {
   Log a user in with their password
 */
 export class Auth {
-	loginWithPassword(user, password) {
+	async loginWithPassword(user, password) {
 		if (!user || !password) {
 			throw new Meteor.Error(401, 'Unauthorized');
 		}
@@ -67,7 +67,7 @@ export class Auth {
 
 		// Retrieve the user from the database
 		const authenticatingUserSelector = getUserQuerySelector(user);
-		const authenticatingUser = Meteor.users.findOne(authenticatingUserSelector);
+		const authenticatingUser = await Meteor.users.findOneAsync(authenticatingUserSelector);
 
 		if (!authenticatingUser) {
 			throw new Meteor.Error(401, 'Unauthorized');

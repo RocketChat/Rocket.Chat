@@ -151,8 +151,8 @@ export class Route {
 		@returns The endpoint response or a 401 if authentication fails
 		*/
 
-	_callEndpoint(endpointContext, endpoint) {
-		const auth = this._authAccepted(endpointContext, endpoint);
+	async _callEndpoint(endpointContext, endpoint) {
+		const auth = await this._authAccepted(endpointContext, endpoint);
 		if (auth.success) {
 			if (this._roleAccepted(endpointContext, endpoint)) {
 				return endpoint.action.call(endpointContext);
@@ -195,7 +195,7 @@ export class Route {
 			will contain the auth data when successful and an optional error response when auth fails.
 		*/
 
-	_authAccepted(endpointContext, endpoint) {
+	async _authAccepted(endpointContext, endpoint) {
 		if (endpoint.authRequired) {
 			return this._authenticate(endpointContext);
 		}
@@ -220,7 +220,7 @@ export class Route {
 			will contain the auth data when successful and an optional error response when auth fails.
 		*/
 
-	_authenticate(endpointContext) {
+	async _authenticate(endpointContext) {
 		const auth = this.api._config.auth.user.call(endpointContext);
 		if (!auth) {
 			return {
@@ -231,7 +231,7 @@ export class Route {
 			const userSelector = {};
 			userSelector._id = auth.userId;
 			userSelector[this.api._config.auth.token] = auth.token;
-			auth.user = Meteor.users.findOne(userSelector);
+			auth.user = await Meteor.users.findOneAsync(userSelector);
 		}
 		if (auth.error) {
 			return {
