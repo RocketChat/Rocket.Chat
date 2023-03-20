@@ -9,7 +9,7 @@ import { Messages, Rooms } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Apps } from '../../../../ee/server/apps';
 
-export const deleteMessage = async function (message: IMessage, user: IUser): Promise<void> {
+export async function deleteMessage(message: IMessage, user: IUser): Promise<void> {
 	const deletedMsg = Messages.findOneById(message._id);
 	const isThread = deletedMsg.tcount > 0;
 	const keepHistory = settings.get('Message_KeepHistory') || isThread;
@@ -65,10 +65,10 @@ export const deleteMessage = async function (message: IMessage, user: IUser): Pr
 	if (showDeletedStatus) {
 		Messages.setAsDeletedByIdAndUser(message._id, user);
 	} else {
-		api.broadcast('notify.deleteMessage', message.rid, { _id: message._id });
+		void api.broadcast('notify.deleteMessage', message.rid, { _id: message._id });
 	}
 
 	if (bridges) {
-		bridges.getListenerBridge().messageEvent('IPostMessageDeleted', deletedMsg, user);
+		void bridges.getListenerBridge().messageEvent('IPostMessageDeleted', deletedMsg, user);
 	}
-};
+}

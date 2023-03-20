@@ -75,7 +75,7 @@ export class NetworkBroker implements IBroker {
 		if (!name) {
 			return;
 		}
-		this.broker.destroyService(name);
+		void this.broker.destroyService(name);
 	}
 
 	createService(instance: IServiceClass, serviceDependencies?: string[]): void {
@@ -165,7 +165,7 @@ export class NetworkBroker implements IBroker {
 	}
 
 	async broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
-		this.broker.broadcastLocal(event, args);
+		void this.broker.broadcastLocal(event, args);
 	}
 
 	async broadcastToServices<T extends keyof EventSignatures>(
@@ -173,7 +173,7 @@ export class NetworkBroker implements IBroker {
 		event: T,
 		...args: Parameters<EventSignatures[T]>
 	): Promise<void> {
-		this.broker.broadcast(event, args, services);
+		void this.broker.broadcast(event, args, services);
 	}
 
 	async nodeList(): Promise<IBrokerNode[]> {

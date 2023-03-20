@@ -1,10 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { Integrations, IntegrationHistory } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermission } from '../../../authorization/server';
 import notifications from '../../../notifications/server/lib/Notifications';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		clearIntegrationHistory(integrationId: string): Promise<boolean>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async clearIntegrationHistory(integrationId) {
 		let integration;
 

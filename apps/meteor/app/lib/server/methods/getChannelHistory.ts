@@ -1,13 +1,31 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import _ from 'underscore';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 import { canAccessRoom, hasPermission } from '../../../authorization/server';
 import { Subscriptions, Messages, Rooms } from '../../../models/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		getChannelHistory(params: {
+			rid: string;
+			latest?: Date;
+			oldest?: Date;
+			inclusive?: boolean;
+			offset?: number;
+			count?: number;
+			unreads?: boolean;
+			showThreadMessages?: boolean;
+		}): boolean | IMessage[] | { messages: IMessage[]; firstUnread?: any; unreadNotLoaded?: number };
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	getChannelHistory({ rid, latest, oldest, inclusive, offset = 0, count = 20, unreads, showThreadMessages = true }) {
 		check(rid, String);
 

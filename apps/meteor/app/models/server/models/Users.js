@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
@@ -717,7 +716,7 @@ export class Users extends Base {
 	findOneByIdAndLoginToken(_id, token, options) {
 		const query = {
 			_id,
-			'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(token),
+			'services.resume.loginTokens.hashedToken': token,
 		};
 
 		return this.findOne(query, options);

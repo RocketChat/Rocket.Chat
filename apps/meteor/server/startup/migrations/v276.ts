@@ -5,7 +5,7 @@ import { Users } from '../../../app/models/server';
 
 addMigration({
 	version: 276,
-	up() {
+	async up() {
 		Users.update(
 			{ 'settings.preferences.enableNewMessageTemplate': { $exists: 1 } },
 			{
@@ -13,6 +13,6 @@ addMigration({
 			},
 			{ multi: true },
 		);
-		return Settings.removeById('Accounts_Default_User_Preferences_enableNewMessageTemplate');
+		await Settings.removeById('Accounts_Default_User_Preferences_enableNewMessageTemplate');
 	},
 });
