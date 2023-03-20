@@ -8,7 +8,7 @@ import { Subscriptions } from '../../app/models/server';
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		toggleFavorite(rid: IRoom['_id'], f?: boolean): boolean;
+		toggleFavorite(rid: IRoom['_id'], f?: boolean): number;
 	}
 }
 

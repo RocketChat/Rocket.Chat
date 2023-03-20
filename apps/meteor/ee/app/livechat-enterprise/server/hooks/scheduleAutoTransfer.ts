@@ -38,7 +38,7 @@ const handleAfterTakeInquiryCallback = async (inquiry: any = {}): Promise<any> =
 	return inquiry;
 };
 
-const handleAfterSaveMessage = (message: any = {}, room: any = {}): IMessage => {
+const handleAfterSaveMessage = async (message: any = {}, room: any = {}): Promise<IMessage> => {
 	const { _id: rid, t, autoTransferredAt, autoTransferOngoing } = room;
 	const { token } = message;
 
@@ -58,11 +58,11 @@ const handleAfterSaveMessage = (message: any = {}, room: any = {}): IMessage => 
 		return message;
 	}
 
-	Promise.await(AutoTransferChatScheduler.unscheduleRoom(rid));
+	await AutoTransferChatScheduler.unscheduleRoom(rid);
 	return message;
 };
 
-const handleAfterCloseRoom = (params: LivechatCloseCallbackParams): LivechatCloseCallbackParams => {
+const handleAfterCloseRoom = async (params: LivechatCloseCallbackParams): Promise<LivechatCloseCallbackParams> => {
 	const { room } = params;
 
 	const { _id: rid, autoTransferredAt, autoTransferOngoing } = room;
@@ -79,7 +79,7 @@ const handleAfterCloseRoom = (params: LivechatCloseCallbackParams): LivechatClos
 		return params;
 	}
 
-	Promise.await(AutoTransferChatScheduler.unscheduleRoom(rid));
+	await AutoTransferChatScheduler.unscheduleRoom(rid);
 	return params;
 };
 
@@ -94,7 +94,7 @@ settings.watch('Livechat_auto_transfer_chat_timeout', function (value) {
 
 	callbacks.add(
 		'livechat.afterTakeInquiry',
-		(inquiry) => Promise.await(handleAfterTakeInquiryCallback(inquiry)),
+		handleAfterTakeInquiryCallback,
 		callbacks.priority.MEDIUM,
 		'livechat-auto-transfer-job-inquiry',
 	);

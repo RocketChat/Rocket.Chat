@@ -451,11 +451,11 @@ export default class RocketAdapter {
 		return rocketMsgObj;
 	}
 
-	createAndSaveMessage(rocketChannel, rocketUser, slackMessage, rocketMsgDataDefaults, isImporting, slack) {
+	async createAndSaveMessage(rocketChannel, rocketUser, slackMessage, rocketMsgDataDefaults, isImporting, slack) {
 		if (slackMessage.type === 'message') {
 			let rocketMsgObj = {};
 			if (!_.isEmpty(slackMessage.subtype)) {
-				rocketMsgObj = slack.processSubtypedMessage(rocketChannel, rocketUser, slackMessage, isImporting);
+				rocketMsgObj = await slack.processSubtypedMessage(rocketChannel, rocketUser, slackMessage, isImporting);
 				if (!rocketMsgObj) {
 					return;
 				}

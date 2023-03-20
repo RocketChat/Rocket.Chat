@@ -3,6 +3,6 @@ import { RocketChatRoomAdapter } from '../../../../../../../server/services/fede
 
 export class RocketChatRoomAdapterEE extends RocketChatRoomAdapter {
 	public async createLocalDirectMessageRoom(members: string[], creatorId: string): Promise<void> {
-		createDirectMessage(members, creatorId);
+		await createDirectMessage(members, creatorId);
 	}
 }

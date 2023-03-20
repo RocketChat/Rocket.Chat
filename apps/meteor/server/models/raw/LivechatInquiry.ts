@@ -1,5 +1,18 @@
 import type { ILivechatInquiryModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, Document, FindOptions, DistinctOptions, UpdateResult, ModifyResult, Filter, DeleteResult } from 'mongodb';
+import type {
+	Collection,
+	Db,
+	Document,
+	FindOptions,
+	DistinctOptions,
+	UpdateResult,
+	ModifyResult,
+	Filter,
+	DeleteResult,
+	IndexDescription,
+	FindCursor,
+	UpdateFilter,
+} from 'mongodb';
 import type {
 	ILivechatInquiryRecord,
 	IMessage,
@@ -16,6 +29,79 @@ import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
 export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implements ILivechatInquiryModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatInquiryRecord>>) {
 		super(db, 'livechat_inquiry', trash);
+	}
+
+	protected modelIndexes(): Array<IndexDescription> {
+		return [
+			{
+				key: {
+					rid: 1,
+				},
+			},
+			{
+				key: {
+					name: 1,
+				},
+			},
+			{
+				key: {
+					message: 1,
+				},
+			},
+			{
+				key: {
+					ts: 1,
+				},
+			},
+			{
+				key: {
+					department: 1,
+				},
+			},
+			{
+				key: {
+					status: 1,
+				},
+			},
+			{
+				key: {
+					priorityId: 1,
+					priorityWeight: 1,
+				},
+				sparse: true,
+			},
+			{
+				key: {
+					priorityWeight: 1,
+					ts: 1,
+				},
+				partialFilterExpression: {
+					status: { $eq: LivechatInquiryStatus.QUEUED },
+				},
+			},
+			{
+				key: {
+					estimatedWaitingTimeQueue: 1,
+					ts: 1,
+				},
+				partialFilterExpression: {
+					status: { $eq: LivechatInquiryStatus.QUEUED },
+				},
+			},
+			{
+				key: {
+					'v.token': 1,
+					'status': 1,
+				},
+			},
+			{
+				key: {
+					locked: 1,
+					lockedAt: 1,
+				},
+				sparse: true,
+			},
+		];
 	}
 
 	findOneQueuedByRoomId(rid: string): Promise<(ILivechatInquiryRecord & { status: LivechatInquiryStatus.QUEUED }) | null> {
@@ -181,5 +267,153 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 
 	async removeByRoomId(rid: string): Promise<DeleteResult> {
 		return this.deleteOne({ rid });
+	}
+
+	getQueuedInquiries(options?: FindOptions<ILivechatInquiryRecord>): FindCursor<ILivechatInquiryRecord> {
+		return this.find({ status: LivechatInquiryStatus.QUEUED }, options);
+	}
+
+	async takeInquiry(inquiryId: string): Promise<void> {
+		await this.updateOne(
+			{
+				_id: inquiryId,
+			},
+			{
+				$set: { status: LivechatInquiryStatus.TAKEN, takenAt: new Date() },
+				$unset: { defaultAgent: 1, estimatedInactivityCloseTimeAt: 1 },
+			},
+		);
+	}
+
+	openInquiry(inquiryId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{
+				_id: inquiryId,
+			},
+			{
+				$set: { status: LivechatInquiryStatus.OPEN },
+			},
+		);
+	}
+
+	queueInquiry(inquiryId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{
+				_id: inquiryId,
+			},
+			{
+				$set: { status: LivechatInquiryStatus.QUEUED, queuedAt: new Date() },
+				$unset: { takenAt: 1 },
+			},
+		);
+	}
+
+	queueInquiryAndRemoveDefaultAgent(inquiryId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{
+				_id: inquiryId,
+			},
+			{
+				$set: { status: LivechatInquiryStatus.QUEUED, queuedAt: new Date() },
+				$unset: { takenAt: 1, defaultAgent: 1 },
+			},
+		);
+	}
+
+	readyInquiry(inquiryId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{
+				_id: inquiryId,
+			},
+			{
+				$set: {
+					status: LivechatInquiryStatus.READY,
+				},
+			},
+		);
+	}
+
+	async changeDepartmentIdByRoomId(rid: string, department: string): Promise<void> {
+		const query = {
+			rid,
+		};
+		const updateObj = {
+			$set: {
+				department,
+			},
+		};
+
+		await this.updateOne(query, updateObj);
+	}
+
+	async getStatus(inquiryId: string): Promise<ILivechatInquiryRecord['status'] | undefined> {
+		return (await this.findOne({ _id: inquiryId }))?.status;
+	}
+
+	updateVisitorStatus(token: string, status: ILivechatInquiryRecord['v']['status']): Promise<UpdateResult> {
+		const query: Filter<ILivechatInquiryRecord> = {
+			'v.token': token,
+			'status': LivechatInquiryStatus.QUEUED,
+		};
+
+		const update: UpdateFilter<ILivechatInquiryRecord> = {
+			$set: {
+				'v.status': status,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	setDefaultAgentById(inquiryId: string, defaultAgent: ILivechatInquiryRecord['defaultAgent']): Promise<UpdateResult> {
+		return this.updateOne(
+			{
+				_id: inquiryId,
+			},
+			{
+				$set: {
+					defaultAgent,
+				},
+			},
+		);
+	}
+
+	setNameByRoomId(rid: string, name: string): Promise<UpdateResult> {
+		const query = { rid };
+
+		const update = {
+			$set: {
+				name,
+			},
+		};
+		return this.updateOne(query, update);
+	}
+
+	findOneByToken(token: string): Promise<ILivechatInquiryRecord | null> {
+		const query: Filter<ILivechatInquiryRecord> = {
+			'v.token': token,
+			'status': LivechatInquiryStatus.QUEUED,
+		};
+
+		return this.findOne(query);
+	}
+
+	removeDefaultAgentById(inquiryId: string): Promise<UpdateResult | Document> {
+		return this.updateOne(
+			{
+				_id: inquiryId,
+			},
+			{
+				$unset: { defaultAgent: 1 },
+			},
+		);
+	}
+
+	async removeByVisitorToken(token: string): Promise<void> {
+		const query = {
+			'v.token': token,
+		};
+
+		await this.deleteMany(query);
 	}
 }
