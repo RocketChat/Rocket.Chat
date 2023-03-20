@@ -2,13 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
 import { Users, Rooms } from '../../app/models/server';
-import { canAccessRoom } from '../../app/authorization/server';
+import { canAccessRoomAsync } from '../../app/authorization/server';
 import { settings } from '../../app/settings/server';
 
 if (['yes', 'true'].includes(String(process.env.ALLOW_CANACCESSROOM_METHOD).toLowerCase())) {
 	console.warn('Method canAccessRoom is deprecated and will be removed after version 5.0');
 	Meteor.methods({
-		canAccessRoom(rid, userId, extraData) {
+		async canAccessRoom(rid, userId, extraData) {
 			check(rid, String);
 			check(userId, Match.Maybe(String));
 
@@ -42,7 +42,7 @@ if (['yes', 'true'].includes(String(process.env.ALLOW_CANACCESSROOM_METHOD).toLo
 				});
 			}
 
-			if (canAccessRoom.call(this, room, user, extraData)) {
+			if (await canAccessRoomAsync(room, user, extraData)) {
 				if (user) {
 					room.username = user.username;
 				}
