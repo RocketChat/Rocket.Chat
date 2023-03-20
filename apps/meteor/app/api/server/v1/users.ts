@@ -44,13 +44,17 @@ import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { isValidQuery } from '../lib/isValidQuery';
 import { getURL } from '../../../utils/server';
 import { getUploadFormData } from '../lib/getUploadFormData';
+import { getPaginationItems } from '../helpers/getPaginationItems';
+import { getUserFromParams } from '../helpers/getUserFromParams';
+import { isUserFromParams } from '../helpers/isUserFromParams';
+import { parseJsonQuery } from '../helpers/parseJsonQuery';
 
 API.v1.addRoute(
 	'users.getAvatar',
 	{ authRequired: false },
 	{
-		get() {
-			const user = this.getUserFromParams();
+		async get() {
+			const user = await getUserFromParams(this.queryParams);
 
 			const url = getURL(`/avatar/${user.username}`, { cdn: false, full: true });
 			this.response.setHeader('Location', url);
@@ -81,7 +85,7 @@ API.v1.addRoute(
 	'users.update',
 	{ authRequired: true, twoFactorRequired: true, validateParams: isUsersUpdateParamsPOST },
 	{
-		post() {
+		async post() {
 			const userData = { _id: this.bodyParams.userId, ...this.bodyParams.data };
 
 			Meteor.runAsUser(this.userId, () => saveUser(this.userId, userData));
@@ -99,7 +103,14 @@ API.v1.addRoute(
 
 				Meteor.call('setUserActiveStatus', userId, active, Boolean(confirmRelinquish));
 			}
-			const { fields } = this.parseJsonQuery();
+			const { fields } = await parseJsonQuery(
+				this.request.route,
+				this.userId,
+				this.queryParams,
+				this.logger,
+				this.queryFields,
+				this.queryOperations,
+			);
 
 			return API.v1.success({ user: Users.findOneById(this.bodyParams.userId, { fields }) });
 		},
@@ -186,12 +197,12 @@ API.v1.addRoute(
 				});
 			}
 
-			let user = ((): IUser | undefined => {
-				if (this.isUserFromParams()) {
+			let user = await (async (): Promise<Pick<IUser, '_id' | 'roles' | 'username' | 'name' | 'status' | 'statusText'> | undefined> => {
+				if (isUserFromParams(this.bodyParams, this.userId, this.user)) {
 					return Meteor.users.findOne(this.userId) as IUser | undefined;
 				}
 				if (canEditOtherUserAvatar) {
-					return this.getUserFromParams();
+					return getUserFromParams(this.bodyParams);
 				}
 			})();
 
@@ -246,7 +257,7 @@ API.v1.addRoute(
 	'users.create',
 	{ authRequired: true, validateParams: isUserCreateParamsPOST },
 	{
-		post() {
+		async post() {
 			// New change made by pull request #5152
 			if (typeof this.bodyParams.joinDefaultChannels === 'undefined') {
 				this.bodyParams.joinDefaultChannels = true;
@@ -266,7 +277,14 @@ API.v1.addRoute(
 				Meteor.call('setUserActiveStatus', newUserId, this.bodyParams.active);
 			}
 
-			const { fields } = this.parseJsonQuery();
+			const { fields } = await parseJsonQuery(
+				this.request.route,
+				this.userId,
+				this.queryParams,
+				this.logger,
+				this.queryFields,
+				this.queryOperations,
+			);
 
 			return API.v1.success({ user: Users.findOneById(newUserId, { fields }) });
 		},
@@ -277,13 +295,13 @@ API.v1.addRoute(
 	'users.delete',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			if (!hasPermission(this.userId, 'delete-user')) {
 				return API.v1.unauthorized();
 			}
 
-			const user = this.getUserFromParams();
-			const { confirmRelinquish = false } = this.requestParams();
+			const user = await getUserFromParams(this.bodyParams);
+			const { confirmRelinquish = false } = this.bodyParams;
 
 			Meteor.call('deleteUser', user._id, confirmRelinquish);
 
@@ -297,7 +315,8 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		post() {
-			const { password } = this.bodyParams;
+			const params = this.bodyParams as Record<string, any>;
+			const { password } = params;
 			if (!password) {
 				return API.v1.failure('Body parameter "password" is required.');
 			}
@@ -305,7 +324,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 
-			const { confirmRelinquish = false } = this.requestParams();
+			const { confirmRelinquish = false } = params;
 
 			Meteor.call('deleteUserOwnAccount', password, confirmRelinquish);
 
@@ -360,7 +379,14 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isUsersInfoParamsGetProps },
 	{
 		async get() {
-			const { fields } = this.parseJsonQuery();
+			const { fields } = await parseJsonQuery(
+				this.request.route,
+				this.userId,
+				this.queryParams,
+				this.logger,
+				this.queryFields,
+				this.queryOperations,
+			);
 
 			const user = await getFullUserDataByIdOrUsername(this.userId, {
 				filterId: (this.queryParams as any).userId,
@@ -416,8 +442,15 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields, query } = await parseJsonQuery(
+				this.request.route,
+				this.userId,
+				this.queryParams,
+				this.logger,
+				this.queryFields,
+				this.queryOperations,
+			);
 
 			const nonEmptyQuery = getNonEmptyQuery(query, hasPermission(this.userId, 'view-full-other-user-info'));
 			const nonEmptyFields = getNonEmptyFields(fields);
@@ -520,7 +553,7 @@ API.v1.addRoute(
 		validateParams: isUserRegisterParamsPOST,
 	},
 	{
-		post() {
+		async post() {
 			if (this.userId) {
 				return API.v1.failure('Logged in users can not register again.');
 			}
@@ -538,7 +571,14 @@ API.v1.addRoute(
 
 			// Now set their username
 			Meteor.runAsUser(userId, () => Meteor.call('setUsername', this.bodyParams.username));
-			const { fields } = this.parseJsonQuery();
+			const { fields } = await parseJsonQuery(
+				this.request.route,
+				this.userId || '',
+				this.queryParams,
+				this.logger,
+				this.queryFields,
+				this.queryOperations,
+			);
 
 			return API.v1.success({ user: Users.findOneById(userId, { fields }) });
 		},
@@ -549,8 +589,8 @@ API.v1.addRoute(
 	'users.resetAvatar',
 	{ authRequired: true },
 	{
-		post() {
-			const user = this.getUserFromParams();
+		async post() {
+			const user = await getUserFromParams(this.bodyParams);
 
 			if (settings.get('Accounts_AllowUserAvatarChange') && user._id === this.userId) {
 				Meteor.runAsUser(this.userId, () => Meteor.call('resetAvatar'));
@@ -571,8 +611,8 @@ API.v1.addRoute(
 	'users.createToken',
 	{ authRequired: true },
 	{
-		post() {
-			const user = this.getUserFromParams();
+		async post() {
+			const user = await getUserFromParams(this.bodyParams as unknown as Record<string, any>);
 			const data = Meteor.call('createToken', user._id);
 			return data ? API.v1.success({ data }) : API.v1.unauthorized();
 		},
@@ -927,10 +967,10 @@ API.v1.addRoute(
 	'users.resetE2EKey',
 	{ authRequired: true, twoFactorRequired: true, twoFactorOptions: { disableRememberMe: true } },
 	{
-		post() {
+		async post() {
 			if ('userId' in this.bodyParams || 'username' in this.bodyParams || 'user' in this.bodyParams) {
 				// reset other user keys
-				const user = this.getUserFromParams();
+				const user = await getUserFromParams(this.bodyParams);
 				if (!user) {
 					throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 				}
@@ -971,7 +1011,7 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
 
-				const user = this.getUserFromParams();
+				const user = await getUserFromParams(this.bodyParams);
 				if (!user) {
 					throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 				}
@@ -1039,8 +1079,8 @@ API.v1.addRoute(
 	'users.getPresence',
 	{ authRequired: true },
 	{
-		get() {
-			if (this.isUserFromParams()) {
+		async get() {
+			if (isUserFromParams(this.queryParams as Record<string, any>, this.userId, this.user)) {
 				const user = Users.findOneById(this.userId);
 				return API.v1.success({
 					presence: user.status || 'offline',
@@ -1049,7 +1089,7 @@ API.v1.addRoute(
 				});
 			}
 
-			const user = this.getUserFromParams();
+			const user = await getUserFromParams(this.queryParams);
 
 			return API.v1.success({
 				presence: user.status || 'offline',
@@ -1062,7 +1102,7 @@ API.v1.addRoute(
 	'users.setStatus',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			check(
 				this.bodyParams,
 				Match.OneOf(
@@ -1082,13 +1122,14 @@ API.v1.addRoute(
 					method: 'users.setStatus',
 				});
 			}
+			const params = this.bodyParams as unknown as Record<string, any>;
 
-			const user = ((): IUser | undefined => {
-				if (this.isUserFromParams()) {
+			const user = await (async (): Promise<Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'statusText' | 'roles'> | undefined> => {
+				if (isUserFromParams(params, this.userId, this.user)) {
 					return Meteor.users.findOne(this.userId) as IUser;
 				}
-				if (hasPermission(this.userId, 'edit-other-user-info')) {
-					return this.getUserFromParams();
+				if (await hasPermission(this.userId, 'edit-other-user-info')) {
+					return getUserFromParams(params);
 				}
 			})();
 
@@ -1146,8 +1187,9 @@ API.v1.addRoute(
 	'users.getStatus',
 	{ authRequired: true },
 	{
-		get() {
-			if (this.isUserFromParams()) {
+		async get() {
+			const params = this.queryParams as unknown as Record<string, any>;
+			if (isUserFromParams(params, this.userId, this.user)) {
 				const user = Users.findOneById(this.userId);
 				return API.v1.success({
 					_id: user._id,
@@ -1157,7 +1199,7 @@ API.v1.addRoute(
 				});
 			}
 
-			const user = this.getUserFromParams();
+			const user = await getUserFromParams(params);
 
 			return API.v1.success({
 				_id: user._id,

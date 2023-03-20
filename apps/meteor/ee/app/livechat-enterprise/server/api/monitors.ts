@@ -2,6 +2,8 @@ import type { ILivechatMonitor } from '@rocket.chat/core-typings';
 
 import { API } from '../../../../../app/api/server';
 import { findMonitors, findMonitorByUsername } from './lib/monitors';
+import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
+import { parseJsonQuery } from '../../../../../app/api/server/helpers/parseJsonQuery';
 
 API.v1.addRoute(
 	'livechat/monitors',
@@ -11,8 +13,15 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await parseJsonQuery(
+				this.request.route,
+				this.userId,
+				this.queryParams,
+				this.logger,
+				this.queryFields,
+				this.queryOperations,
+			);
 			const { text } = this.queryParams;
 
 			return API.v1.success(

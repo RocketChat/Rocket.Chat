@@ -15,6 +15,8 @@ import {
 } from '../../../server/api/lib/departments';
 import { LivechatEnterprise } from '../../../../../ee/app/livechat-enterprise/server/lib/LivechatEnterprise';
 import { DepartmentHelper } from '../../../server/lib/Departments';
+import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
+import { parseJsonQuery } from '../../../../api/server/helpers/parseJsonQuery';
 
 API.v1.addRoute(
 	'livechat/department',
@@ -28,8 +30,15 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await parseJsonQuery(
+				this.request.route,
+				this.userId,
+				this.queryParams,
+				this.logger,
+				this.queryFields,
+				this.queryOperations,
+			);
 
 			const { text, enabled, onlyMyDepartments, excludeDepartmentId, showArchived } = this.queryParams;
 
@@ -160,8 +169,15 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await parseJsonQuery(
+				this.request.route,
+				this.userId,
+				this.queryParams,
+				this.logger,
+				this.queryFields,
+				this.queryOperations,
+			);
 
 			const { text, onlyMyDepartments, excludeDepartmentId } = this.queryParams;
 
@@ -252,9 +268,9 @@ API.v1.addRoute(
 			check(this.urlParams, {
 				_id: String,
 			});
-
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const params = this.queryParams as Record<string, any>;
+			const { offset, count } = await getPaginationItems(params);
+			const { sort } = await parseJsonQuery(this.request.route, this.userId, params, this.logger, this.queryFields, this.queryOperations);
 
 			const agents = await findDepartmentAgents({
 				userId: this.userId,
@@ -293,7 +309,14 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { ids } = this.queryParams;
-			const { fields } = this.parseJsonQuery();
+			const { fields } = await parseJsonQuery(
+				this.request.route,
+				this.userId,
+				this.queryParams as Record<string, any>,
+				this.logger,
+				this.queryFields,
+				this.queryOperations,
+			);
 			if (!ids) {
 				return API.v1.failure("The 'ids' param is required");
 			}

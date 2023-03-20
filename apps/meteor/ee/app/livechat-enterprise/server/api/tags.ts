@@ -1,4 +1,6 @@
 import { API } from '../../../../../app/api/server';
+import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
+import { parseJsonQuery } from '../../../../../app/api/server/helpers/parseJsonQuery';
 import { findTags, findTagById } from './lib/tags';
 
 API.v1.addRoute(
@@ -6,8 +8,15 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: { GET: { permissions: ['view-l-room', 'manage-livechat-tags'], operation: 'hasAny' } } },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await parseJsonQuery(
+				this.request.route,
+				this.userId,
+				this.queryParams,
+				this.logger,
+				this.queryFields,
+				this.queryOperations,
+			);
 			const { text } = this.queryParams;
 
 			return API.v1.success(

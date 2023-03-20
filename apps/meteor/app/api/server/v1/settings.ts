@@ -17,6 +17,8 @@ import type { ResultFor } from '../api';
 import { API } from '../api';
 import { SettingsEvents, settings } from '../../../settings/server';
 import { setValue } from '../../../settings/server/raw';
+import { getPaginationItems } from '../helpers/getPaginationItems';
+import { parseJsonQuery } from '../helpers/parseJsonQuery';
 
 async function fetchSettings(
 	query: Parameters<typeof Settings.find>[0],
@@ -44,8 +46,16 @@ API.v1.addRoute(
 	{ authRequired: false },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
+			const params = this.queryParams as unknown as Record<string, any>;
+			const { offset, count } = await getPaginationItems(params);
+			const { sort, fields, query } = await parseJsonQuery(
+				this.request.route,
+				this.userId || '',
+				params,
+				this.logger,
+				this.queryFields,
+				this.queryOperations,
+			);
 
 			const ourQuery = {
 				...query,
@@ -118,8 +128,16 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
+			const params = this.queryParams as unknown as Record<string, any>;
+			const { offset, count } = await getPaginationItems(params);
+			const { sort, fields, query } = await parseJsonQuery(
+				this.request.route,
+				this.userId,
+				params,
+				this.logger,
+				this.queryFields,
+				this.queryOperations,
+			);
 
 			let ourQuery: Parameters<typeof Settings.find>[0] = {
 				hidden: { $ne: true },

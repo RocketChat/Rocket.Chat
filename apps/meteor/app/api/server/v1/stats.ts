@@ -1,13 +1,15 @@
 import { API } from '../api';
 import { getStatistics, getLastStatistics } from '../../../statistics/server';
 import telemetryEvent from '../../../statistics/server/lib/telemetryEvents';
+import { getPaginationItems } from '../helpers/getPaginationItems';
+import { parseJsonQuery } from '../helpers/parseJsonQuery';
 
 API.v1.addRoute(
 	'statistics',
 	{ authRequired: true },
 	{
 		async get() {
-			const { refresh = 'false' } = this.requestParams();
+			const { refresh = 'false' } = this.queryParams;
 
 			return API.v1.success(
 				await getLastStatistics({
@@ -24,8 +26,15 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields, query } = await parseJsonQuery(
+				this.request.route,
+				this.userId,
+				this.queryParams,
+				this.logger,
+				this.queryFields,
+				this.queryOperations,
+			);
 
 			return API.v1.success(
 				await getStatistics({
@@ -48,9 +57,9 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		post() {
-			const events = this.requestParams();
+			const events = this.bodyParams;
 
-			events.params.forEach((event) => {
+			events?.params?.forEach((event) => {
 				const { eventName, ...params } = event;
 				void telemetryEvent.call(eventName, params);
 			});

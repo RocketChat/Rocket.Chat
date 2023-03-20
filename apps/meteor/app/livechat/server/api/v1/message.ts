@@ -17,6 +17,8 @@ import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { normalizeMessageFileUpload } from '../../../../utils/server/functions/normalizeMessageFileUpload';
 import { settings } from '../../../../settings/server';
+import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
+import { isWidget } from '../../../../api/server/helpers/isWidget';
 
 API.v1.addRoute(
 	'livechat/message',
@@ -59,7 +61,7 @@ API.v1.addRoute(
 				agent,
 				roomInfo: {
 					source: {
-						type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
+						type: isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
 					},
 				},
 			};
@@ -178,7 +180,7 @@ API.v1.addRoute(
 	{ validateParams: isGETLivechatMessagesHistoryRidParams },
 	{
 		async get() {
-			const { offset } = this.getPaginationItems();
+			const { offset } = await getPaginationItems(this.queryParams);
 			const { token } = this.queryParams;
 			const { rid } = this.urlParams;
 
@@ -265,7 +267,7 @@ API.v1.addRoute(
 						},
 						roomInfo: {
 							source: {
-								type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
+								type: isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
 							},
 						},
 					};

@@ -12,6 +12,7 @@ import type { ValidateFunction } from 'ajv';
 import type { Request, Response } from 'express';
 
 import type { ITwoFactorOptions } from '../../2fa/server/code';
+import type { Logger } from '../../logger/server';
 
 type SuccessResult<T> = {
 	statusCode: 200;
@@ -117,29 +118,8 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 	readonly request: Request;
 
 	readonly queryOperations: TOptions extends { queryOperations: infer T } ? T : never;
-
-	/* @deprecated */
-	requestParams(): OperationParams<TMethod, TPathPattern>;
-	getLoggedInUser(): TOptions extends { authRequired: true } ? IUser : IUser | undefined;
-	getPaginationItems(): {
-		readonly offset: number;
-		readonly count: number;
-	};
-	getUserListFromParams(): IUser[];
-	parseJsonQuery(): {
-		sort: Record<string, 1 | -1>;
-		fields: Record<string, 0 | 1>;
-		query: Record<string, unknown>;
-	};
-	/* @deprecated */
-	getUserFromParams(): IUser;
-	/* @deprecated */
-	isUserFromParams(): boolean;
-	/* @deprecated */
-	getUserInfo(
-		me: IUser,
-	): TOptions extends { authRequired: true } ? UserInfo : TOptions extends { authOrAnonRequired: true } ? UserInfo | undefined : undefined;
-	isWidget(): boolean;
+	readonly queryFields: TOptions extends { queryFields: infer T } ? T : never;
+	readonly logger: Logger;
 } & (TOptions extends { authRequired: true }
 	? {
 			readonly user: IUser;

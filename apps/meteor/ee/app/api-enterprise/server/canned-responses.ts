@@ -3,6 +3,8 @@ import { isPOSTCannedResponsesProps, isDELETECannedResponsesProps, isCannedRespo
 
 import { API } from '../../../../app/api/server';
 import { findAllCannedResponses, findAllCannedResponsesFilter, findOneCannedResponse } from './lib/canned-responses';
+import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
+import { parseJsonQuery } from '../../../../app/api/server/helpers/parseJsonQuery';
 
 API.v1.addRoute(
 	'canned-responses.get',
@@ -25,9 +27,16 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields } = this.parseJsonQuery();
-			const { shortcut, text, scope, tags, departmentId, createdBy } = this.requestParams();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields } = await parseJsonQuery(
+				this.request.route,
+				this.userId,
+				this.queryParams,
+				this.logger,
+				this.queryFields,
+				this.queryOperations,
+			);
+			const { shortcut, text, scope, tags, departmentId, createdBy } = this.queryParams;
 			const { cannedResponses, total } = await findAllCannedResponsesFilter({
 				shortcut,
 				text,
@@ -64,7 +73,7 @@ API.v1.addRoute(
 			return API.v1.success();
 		},
 		async delete() {
-			const { _id } = this.requestParams();
+			const { _id } = this.bodyParams;
 			Meteor.runAsUser(this.userId, () => {
 				Meteor.call('removeCannedResponse', _id);
 			});

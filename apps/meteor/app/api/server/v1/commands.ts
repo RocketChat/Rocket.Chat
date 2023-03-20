@@ -6,6 +6,9 @@ import { slashCommands } from '../../../utils/server';
 import { Messages } from '../../../models/server';
 import { canAccessRoomId } from '../../../authorization/server';
 import { API } from '../api';
+import { getLoggedInUser } from '../helpers/getLoggedInUser';
+import { getPaginationItems } from '../helpers/getPaginationItems';
+import { parseJsonQuery } from '../helpers/parseJsonQuery';
 
 API.v1.addRoute(
 	'commands.get',
@@ -139,9 +142,17 @@ API.v1.addRoute(
 	'commands.list',
 	{ authRequired: true },
 	{
-		get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort, query } = this.parseJsonQuery();
+		async get() {
+			const params = this.queryParams as Record<string, any>;
+			const { offset, count } = await getPaginationItems(params);
+			const { sort, query } = await parseJsonQuery(
+				this.request.route,
+				this.userId,
+				params,
+				this.logger,
+				this.queryFields,
+				this.queryOperations,
+			);
 
 			let commands = Object.values(slashCommands.commands);
 
@@ -229,7 +240,7 @@ API.v1.addRoute(
 		// Expects these query params: command: 'giphy', params: 'mine', roomId: 'value'
 		async get() {
 			const query = this.queryParams;
-			const user = this.getLoggedInUser();
+			const user = await getLoggedInUser(this.request.headers['x-auth-token'] as string, this.request.headers['x-user-id'] as string);
 
 			if (typeof query.command !== 'string') {
 				return API.v1.failure('You must provide a command to get the previews from.');
@@ -248,7 +259,7 @@ API.v1.addRoute(
 				return API.v1.failure('The command provided does not exist (or is disabled).');
 			}
 
-			if (!canAccessRoomId(query.roomId, user._id)) {
+			if (!canAccessRoomId(query.roomId, user?._id)) {
 				return API.v1.unauthorized();
 			}
 

@@ -19,14 +19,24 @@ import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFrom
 import { Rooms, Users } from '../../../models/server';
 import { canAccessRoom, hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
 import { API } from '../api';
+import { getPaginationItems } from '../helpers/getPaginationItems';
+import { parseJsonQuery } from '../helpers/parseJsonQuery';
 
 API.v1.addRoute(
 	'teams.list',
 	{ authRequired: true },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort, query } = this.parseJsonQuery();
+			const params = this.queryParams as unknown as Record<string, any>;
+			const { offset, count } = await getPaginationItems(params);
+			const { sort, query } = await parseJsonQuery(
+				this.request.route,
+				this.userId,
+				params,
+				this.logger,
+				this.queryFields,
+				this.queryOperations,
+			);
 
 			const { records, total } = await Team.list(this.userId, { offset, count }, { sort, query });
 
@@ -49,7 +59,7 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams as unknown as Record<string, any>);
 
 			const { records, total } = await Team.listAll({ offset, count });
 
@@ -182,7 +192,7 @@ API.v1.addRoute(
 				return API.v1.unauthorized('error-no-permission-team-channel');
 			}
 
-			const { rooms } = this.bodyParams;
+			const { rooms } = this.bodyParams as unknown as { rooms: string[] };
 
 			const validRooms = await Team.addRooms(this.userId, rooms, team._id);
 
@@ -277,7 +287,7 @@ API.v1.addRoute(
 			);
 
 			const { filter, type } = this.queryParams;
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams as unknown as Record<string, any>);
 
 			const team = await getTeamByIdOrName(this.queryParams);
 			if (!team) {
@@ -338,7 +348,7 @@ API.v1.addRoute(
 				}),
 			);
 
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams as unknown as Record<string, any>);
 
 			const team = await getTeamByIdOrName(this.queryParams);
 			if (!team) {
@@ -374,7 +384,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams as unknown as Record<string, any>);
 
 			check(
 				this.queryParams,

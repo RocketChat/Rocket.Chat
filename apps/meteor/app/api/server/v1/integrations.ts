@@ -18,6 +18,8 @@ import {
 	mountIntegrationQueryBasedOnPermissions,
 } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { findOneIntegration } from '../lib/integrations';
+import { getPaginationItems } from '../helpers/getPaginationItems';
+import { parseJsonQuery } from '../helpers/parseJsonQuery';
 
 API.v1.addRoute(
 	'integrations.create',
@@ -52,8 +54,12 @@ API.v1.addRoute(
 			}
 
 			const { id } = queryParams;
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields: projection, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const {
+				sort,
+				fields: projection,
+				query,
+			} = await parseJsonQuery(this.request.route, this.userId, this.queryParams, this.logger, this.queryFields, this.queryOperations);
 			const ourQuery = Object.assign(mountIntegrationHistoryQueryBasedOnPermissions(userId, id), query);
 
 			const { cursor, totalCount } = IntegrationHistory.findPaginated(ourQuery, {
@@ -92,8 +98,12 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields: projection, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const {
+				sort,
+				fields: projection,
+				query,
+			} = await parseJsonQuery(this.request.route, this.userId, this.queryParams, this.logger, this.queryFields, this.queryOperations);
 
 			const ourQuery = Object.assign(await mountIntegrationQueryBasedOnPermissions(this.userId), query) as Filter<IIntegration>;
 

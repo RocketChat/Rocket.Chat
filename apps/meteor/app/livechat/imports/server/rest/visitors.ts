@@ -22,6 +22,8 @@ import {
 import { LivechatRooms } from '../../../../models/server';
 import { normalizeMessagesForUser } from '../../../../utils/server/lib/normalizeMessagesForUser';
 import { canAccessRoom } from '../../../../authorization/server';
+import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
+import { parseJsonQuery } from '../../../../api/server/helpers/parseJsonQuery';
 
 API.v1.addRoute(
 	'livechat/visitors.info',
@@ -39,8 +41,15 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isGETLivechatVisitorsPagesVisitedRoomIdParams },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await parseJsonQuery(
+				this.request.route,
+				this.userId,
+				this.queryParams,
+				this.logger,
+				this.queryFields,
+				this.queryOperations,
+			);
 
 			const pages = await findVisitedPages({
 				roomId: this.urlParams.roomId,
@@ -64,8 +73,15 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await parseJsonQuery(
+				this.request.route,
+				this.userId,
+				this.queryParams,
+				this.logger,
+				this.queryFields,
+				this.queryOperations,
+			);
 			const history = await findChatHistory({
 				userId: this.userId,
 				roomId: this.urlParams.roomId,
@@ -93,8 +109,15 @@ API.v1.addRoute(
 		async get() {
 			const { roomId, visitorId } = this.urlParams;
 			const { searchText, closedChatsOnly, servedChatsOnly, source } = this.queryParams;
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await parseJsonQuery(
+				this.request.route,
+				this.userId,
+				this.queryParams,
+				this.logger,
+				this.queryFields,
+				this.queryOperations,
+			);
 			const history = await searchChats({
 				userId: this.userId,
 				roomId,
@@ -135,10 +158,17 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isGETLivechatVisitorsSearch },
 	{
 		async get() {
-			const { term } = this.requestParams();
+			const { term } = this.queryParams;
 
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await parseJsonQuery(
+				this.request.route,
+				this.userId,
+				this.queryParams,
+				this.logger,
+				this.queryFields,
+				this.queryOperations,
+			);
 
 			const nameOrUsername = term ? new RegExp(escapeRegExp(term), 'i') : undefined;
 
@@ -162,9 +192,16 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isLivechatRidMessagesProps },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
-			const { searchTerm } = this.requestParams();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await parseJsonQuery(
+				this.request.route,
+				this.userId,
+				this.queryParams,
+				this.logger,
+				this.queryFields,
+				this.queryOperations,
+			);
+			const { searchTerm } = this.queryParams;
 
 			const room = LivechatRooms.findOneById(this.urlParams.rid);
 

@@ -27,6 +27,11 @@ import { getURL } from '../../../utils/lib/getURL';
 import { getLogs } from '../../../../server/stream/stdout';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { passwordPolicy } from '../../../lib/server';
+import { getLoggedInUser } from '../helpers/getLoggedInUser';
+import { getUserInfo } from '../helpers/getUserInfo';
+import { parseJsonQuery } from '../helpers/parseJsonQuery';
+import { getPaginationItems } from '../helpers/getPaginationItems';
+import { getUserFromParams } from '../helpers/getUserFromParams';
 
 /**
  * @openapi
@@ -173,7 +178,7 @@ API.v1.addRoute(
 			const { services, ...user } = Users.findOneById(this.userId, { fields }) as IUser;
 
 			return API.v1.success(
-				this.getUserInfo({
+				await getUserInfo({
 					...user,
 					...(services && {
 						services: {
@@ -205,7 +210,7 @@ API.v1.addRoute(
 		validateParams: isShieldSvgProps,
 	},
 	{
-		get() {
+		async get() {
 			const { type, icon } = this.queryParams;
 			let { channel, name } = this.queryParams;
 			if (!settings.get('API_Enable_Shields')) {
@@ -251,10 +256,13 @@ API.v1.addRoute(
 					text = `#${channel}`;
 					break;
 				case 'user':
-					if (settings.get('API_Shield_user_require_auth') && !this.getLoggedInUser()) {
+					if (
+						settings.get('API_Shield_user_require_auth') &&
+						!(await getLoggedInUser(this.request.headers['x-auth-token'] as string, this.request.headers['x-user-id'] as string))
+					) {
 						return API.v1.failure('You must be logged in to do this.');
 					}
-					const user = this.getUserFromParams();
+					const user = await getUserFromParams(this.queryParams as Record<string, any>);
 
 					// Respect the server's choice for using their real names or not
 					if (user.name && settings.get('UI_Use_Real_Name')) {
@@ -351,9 +359,16 @@ API.v1.addRoute(
 		validateParams: isDirectoryProps,
 	},
 	{
-		get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort, query } = this.parseJsonQuery();
+		async get() {
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, query } = await parseJsonQuery(
+				this.request.route,
+				this.userId,
+				this.queryParams,
+				this.logger,
+				this.queryFields,
+				this.queryOperations,
+			);
 
 			const { text, type, workspace = 'local' } = query;
 

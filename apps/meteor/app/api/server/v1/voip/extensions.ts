@@ -43,12 +43,12 @@ API.v1.addRoute(
 	{
 		async get() {
 			check(
-				this.requestParams(),
+				this.queryParams,
 				Match.ObjectIncluding({
 					extension: String,
 				}),
 			);
-			const endpointDetails = await Voip.getExtensionDetails(this.requestParams());
+			const endpointDetails = await Voip.getExtensionDetails(this.queryParams);
 			return API.v1.success({ ...endpointDetails.result });
 		},
 	},
@@ -63,12 +63,12 @@ API.v1.addRoute(
 	{
 		async get() {
 			check(
-				this.requestParams(),
+				this.queryParams,
 				Match.ObjectIncluding({
 					extension: String,
 				}),
 			);
-			const endpointDetails = await Voip.getRegistrationInfo(this.requestParams());
+			const endpointDetails = await Voip.getRegistrationInfo(this.queryParams);
 			const encKey = settings.get('VoIP_JWT_Secret');
 			if (!encKey) {
 				logger.warn('No JWT keys set. Sending registration info as plain text');
@@ -87,12 +87,12 @@ API.v1.addRoute(
 	{
 		async get() {
 			check(
-				this.requestParams(),
+				this.queryParams,
 				Match.ObjectIncluding({
 					id: String,
 				}),
 			);
-			const { id } = this.requestParams();
+			const { id } = this.queryParams;
 
 			if (id !== this.userId) {
 				return API.v1.unauthorized();

@@ -7,6 +7,8 @@ import { LivechatVoip } from '@rocket.chat/core-services';
 import { API } from '../../api';
 import { hasPermission } from '../../../../authorization/server';
 import { typedJsonParse } from '../../../../../lib/typedJSONParse';
+import { getPaginationItems } from '../../helpers/getPaginationItems';
+import { parseJsonQuery } from '../../helpers/parseJsonQuery';
 
 type DateParam = { start?: string; end?: string };
 const parseDateParams = (date?: string): DateParam => {
@@ -159,11 +161,18 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isVoipRoomsProps },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
-			const { sort, fields } = this.parseJsonQuery();
-			const { agents, open, tags, queue, visitorId, direction, roomName } = this.requestParams();
-			const { createdAt: createdAtParam, closedAt: closedAtParam } = this.requestParams();
+			const { sort, fields } = await parseJsonQuery(
+				this.request.route,
+				this.userId,
+				this.queryParams,
+				this.logger,
+				this.queryFields,
+				this.queryOperations,
+			);
+			const { agents, open, tags, queue, visitorId, direction, roomName } = this.queryParams;
+			const { createdAt: createdAtParam, closedAt: closedAtParam } = this.queryParams;
 
 			// Reusing same L room permissions for simplicity
 			const hasAdminAccess = hasPermission(this.userId, 'view-livechat-rooms');

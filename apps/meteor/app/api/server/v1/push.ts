@@ -79,7 +79,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const params = this.requestParams();
+			const params = this.queryParams;
 			check(
 				params,
 				Match.ObjectIncluding({
