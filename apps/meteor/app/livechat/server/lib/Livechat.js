@@ -30,7 +30,7 @@ import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Users, LivechatRooms, Messages, Subscriptions, Rooms, LivechatDepartment } from '../../../models/server';
 import { Logger } from '../../../logger/server';
-import { hasPermission, hasRole, canAccessRoom, roomAccessAttributes } from '../../../authorization/server';
+import { hasPermission, hasRole, canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
 import * as Mailer from '../../../mailer/server/api';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
@@ -1263,7 +1263,7 @@ export const Livechat = {
 			throw new Meteor.Error('invalid-room');
 		}
 
-		if (!canAccessRoom(room, user)) {
+		if (!Promise.await(canAccessRoomAsync(room, user))) {
 			throw new Error('error-not-allowed');
 		}
 

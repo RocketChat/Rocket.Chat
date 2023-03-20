@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { canDeleteMessage } from '../../../authorization/server/functions/canDeleteMessage';
+import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
 import { Messages } from '../../../models/server';
 import { deleteMessage } from '../functions';
 
@@ -41,7 +41,7 @@ Meteor.methods<ServerMethods>({
 			},
 		});
 
-		if (!originalMessage || !canDeleteMessage(uid, originalMessage)) {
+		if (!originalMessage || !(await canDeleteMessageAsync(uid, originalMessage))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
 				method: 'deleteMessage',
 				action: 'Delete_message',
