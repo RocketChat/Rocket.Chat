@@ -5,19 +5,7 @@ import Rooms from './models/Rooms';
 import Subscriptions from './models/Subscriptions';
 import Users from './models/Users';
 import LivechatDepartment from './models/LivechatDepartment';
-import LivechatDepartmentAgents from './models/LivechatDepartmentAgents';
 import LivechatRooms from './models/LivechatRooms';
 import LivechatInquiry from './models/LivechatInquiry';
 
-export {
-	Base,
-	BaseDb,
-	Messages,
-	Rooms,
-	Subscriptions,
-	Users,
-	LivechatDepartment,
-	LivechatDepartmentAgents,
-	LivechatRooms,
-	LivechatInquiry,
-};
+export { Base, BaseDb, Messages, Rooms, Subscriptions, Users, LivechatDepartment, LivechatRooms, LivechatInquiry };
