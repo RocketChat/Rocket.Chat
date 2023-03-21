@@ -5,7 +5,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { settings } from '../../app/settings/server';
 import { Messages, Rooms } from '../../app/models/server';
-import { canAccessRoom } from '../../app/authorization/server';
+import { canAccessRoomAsync } from '../../app/authorization/server';
 import { readThread } from '../../app/threads/server/functions';
 import { callbacks } from '../../lib/callbacks';
 
@@ -17,7 +17,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	readThreads(tmid) {
+	async readThreads(tmid) {
 		check(tmid, String);
 
 		if (!Meteor.userId() || !settings.get('Threads_enabled')) {
@@ -35,7 +35,7 @@ Meteor.methods<ServerMethods>({
 
 		const room = Rooms.findOneById(thread.rid);
 
-		if (!canAccessRoom(room, user)) {
+		if (!(await canAccessRoomAsync(room, user))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getThreadMessages' });
 		}
 

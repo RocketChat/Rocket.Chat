@@ -59,6 +59,7 @@ async function canSendMessageAsync(
 	return room;
 }
 
+/* deprecated */
 export function canSendMessage(
 	rid: IRoom['_id'],
 	{ uid, username, type }: { uid: IUser['_id']; username: IUser['username']; type: IUser['type'] },
@@ -66,6 +67,8 @@ export function canSendMessage(
 ): IRoom {
 	return Promise.await(canSendMessageAsync(rid, { uid, username, type }, extraData));
 }
+
+/* deprecated */
 export function validateRoomMessagePermissions(
 	room: IRoom,
 	{ uid, username, type }: { uid: IUser['_id']; username: IUser['username']; type: IUser['type'] },

@@ -1,5 +1,7 @@
+import { FederationRoomEvents } from '@rocket.chat/models';
+
 import { clientLogger } from '../lib/logger';
-import { FederationRoomEvents, Subscriptions, Users } from '../../../models/server';
+import { Subscriptions, Users } from '../../../models/server';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
 import { getFederationDomain } from '../lib/getFederationDomain';

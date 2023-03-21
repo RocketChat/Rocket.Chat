@@ -8,7 +8,7 @@ import { Users, Subscriptions, Messages, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 
 Meteor.methods({
-	addRoomModerator(rid, userId) {
+	async addRoomModerator(rid, userId) {
 		check(rid, String);
 		check(userId, String);
 
@@ -59,9 +59,9 @@ Meteor.methods({
 			role: 'moderator',
 		});
 
-		const team = Promise.await(Team.getOneByMainRoomId(rid));
+		const team = await Team.getOneByMainRoomId(rid);
 		if (team) {
-			Promise.await(Team.addRolesToMember(team._id, userId, ['moderator']));
+			await Team.addRolesToMember(team._id, userId, ['moderator']);
 		}
 
 		const event = {
