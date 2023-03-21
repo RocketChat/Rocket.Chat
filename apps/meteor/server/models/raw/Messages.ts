@@ -1367,18 +1367,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.updateOne(query, update);
 	}
 
-	upgradeEtsToEditAt(): Promise<UpdateResult | Document> {
-		const query = { ets: { $exists: 1 } };
-
-		const update = {
-			$rename: {
-				ets: 'editedAt',
-			},
-		};
-
-		return this.updateMany(query, update);
-	}
-
 	setMessageAttachments(_id: string, attachments: IMessage['attachments']): Promise<UpdateResult> {
 		const query = { _id };
 

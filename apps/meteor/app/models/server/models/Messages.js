@@ -340,18 +340,6 @@ export class Messages extends Base {
 		return this.update(query, update);
 	}
 
-	upgradeEtsToEditAt() {
-		const query = { ets: { $exists: 1 } };
-
-		const update = {
-			$rename: {
-				ets: 'editedAt',
-			},
-		};
-
-		return this.update(query, update, { multi: true });
-	}
-
 	setSlackBotIdAndSlackTs(_id, slackBotId, slackTs) {
 		const query = { _id };
 
