@@ -1,10 +1,18 @@
 import { Meteor } from 'meteor/meteor';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Rooms } from '../../models/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { settings } from '../../settings/server';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		removeSlackBridgeChannelLinks(): { message: string; params: unknown[] };
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async removeSlackBridgeChannelLinks() {
 		const user = Meteor.user();
 		if (!user) {
