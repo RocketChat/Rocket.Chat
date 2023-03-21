@@ -20,7 +20,7 @@ class RoomCoordinatorServer extends RoomCoordinator {
 			isGroupChat(_room: IRoom): boolean {
 				return false;
 			},
-			canBeDeleted(hasPermission: (permissionId: string, rid?: string) => boolean, room: IRoom): boolean {
+			async canBeDeleted(hasPermission: (permissionId: string, rid?: string) => Promise<boolean> | boolean, room: IRoom): Promise<boolean> {
 				if (!hasPermission && typeof hasPermission !== 'function') {
 					throw new Error('You MUST provide the "hasPermission" to canBeDeleted function');
 				}

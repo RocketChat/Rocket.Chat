@@ -6,13 +6,8 @@ import { Team } from '@rocket.chat/core-services';
 import type { Filter } from 'mongodb';
 
 import { Rooms as RoomSync, Users as UsersSync, Messages as MessageSync, Subscriptions as SubscriptionsSync } from '../../../models/server';
-import {
-	hasPermission,
-	hasAtLeastOnePermission,
-	canAccessRoomAsync,
-	hasAllPermission,
-	roomAccessAttributes,
-} from '../../../authorization/server';
+import { hasAtLeastOnePermission, canAccessRoomAsync, hasAllPermission, roomAccessAttributes } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
@@ -227,7 +222,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const access = await hasPermission(this.userId, 'view-room-administration');
+			const access = await hasPermissionAsync(this.userId, 'view-room-administration');
 			const params = this.queryParams;
 			let user = this.userId;
 			let room;
@@ -302,7 +297,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			if (!(await hasPermission(this.userId, 'create-p'))) {
+			if (!(await hasPermissionAsync(this.userId, 'create-p'))) {
 				return API.v1.unauthorized();
 			}
 
@@ -652,7 +647,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			if (!(await hasPermission(this.userId, 'view-room-administration'))) {
+			if (!(await hasPermissionAsync(this.userId, 'view-room-administration'))) {
 				return API.v1.unauthorized();
 			}
 			const { offset, count } = this.getPaginationItems();
@@ -688,7 +683,7 @@ API.v1.addRoute(
 				userId: this.userId,
 			});
 
-			if (findResult.broadcast && !(await hasPermission(this.userId, 'view-broadcast-member-list', findResult.rid))) {
+			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult.rid))) {
 				return API.v1.unauthorized();
 			}
 

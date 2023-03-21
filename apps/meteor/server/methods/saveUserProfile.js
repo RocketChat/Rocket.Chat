@@ -26,7 +26,7 @@ async function saveUserProfile(settings, customFields) {
 		});
 	}
 
-	validateUserEditing(this.userId, {
+	await validateUserEditing(this.userId, {
 		_id: this.userId,
 		email: settings.email,
 		username: settings.username,

@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
-import { hasPermission } from '../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 
 slashCommands.add({
 	command: 'topic',
-	callback: function Topic(_command: 'topic', params, item): void {
-		if (Meteor.isServer && hasPermission(Meteor.userId() as string, 'edit-room', item.rid)) {
+	callback: async function Topic(_command: 'topic', params, item) {
+		if (await hasPermissionAsync(Meteor.userId() as string, 'edit-room', item.rid)) {
 			Meteor.call('saveRoomSettings', item.rid, 'roomTopic', params, (err: Meteor.Error) => {
 				if (err) {
 					throw err;

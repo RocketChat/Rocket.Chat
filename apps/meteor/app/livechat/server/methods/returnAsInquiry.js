@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { LivechatRooms } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
-	'livechat:returnAsInquiry'(rid, departmentId) {
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-l-room')) {
+	async 'livechat:returnAsInquiry'(rid, departmentId) {
+		if (!Meteor.userId() || !(await hasPermissionAsync(Meteor.userId(), 'view-l-room'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:returnAsInquiry',
 			});

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { LivechatVisitors } from '@rocket.chat/models';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { LivechatRooms, Subscriptions, Users } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 import { normalizeTransferredByData } from '../lib/Helper';
@@ -13,7 +13,7 @@ import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarn
 Meteor.methods({
 	async 'livechat:transfer'(transferData) {
 		methodDeprecationLogger.warn('livechat:transfer method is deprecated in favor of "livechat/room.forward" endpoint');
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-l-room')) {
+		if (!Meteor.userId() || !(await hasPermissionAsync(Meteor.userId(), 'view-l-room'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:transfer' });
 		}
 
@@ -37,7 +37,7 @@ Meteor.methods({
 		const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, Meteor.userId(), {
 			fields: { _id: 1 },
 		});
-		if (!subscription && !hasPermission(Meteor.userId(), 'transfer-livechat-guest')) {
+		if (!subscription && !(await hasPermissionAsync(Meteor.userId(), 'transfer-livechat-guest'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'livechat:transfer',
 			});

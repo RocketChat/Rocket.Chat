@@ -42,7 +42,7 @@ export const RateLimiterClass = new (class {
 			name: methodName,
 		};
 		_.each(matchers, function (matcher, key) {
-			match[key] = matchers[key];
+			match[key] = (...args) => matchers[key](...args);
 		});
 		return DDPRateLimiter.addRule(match, numRequests, timeInterval);
 	}

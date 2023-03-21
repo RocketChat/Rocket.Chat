@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { cleanRoomHistory } from '../functions/cleanRoomHistory';
 
 Meteor.methods({
-	cleanRoomHistory({
+	async cleanRoomHistory({
 		roomId,
 		latest,
 		oldest,
@@ -33,7 +33,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cleanRoomHistory' });
 		}
 
-		if (!hasPermission(userId, 'clean-channel-history', roomId)) {
+		if (!(await hasPermissionAsync(userId, 'clean-channel-history', roomId))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'cleanRoomHistory' });
 		}
 

@@ -15,7 +15,7 @@ import { Settings } from '@rocket.chat/models';
 import { settings, settingsRegistry } from '../../settings/server';
 import { getURL } from '../../utils/lib/getURL';
 import { getExtension } from '../../utils/lib/mimeTypes';
-import { hasPermission } from '../../authorization/server';
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { RocketChatFile } from '../../file/server';
 import { methodDeprecationLogger } from '../../lib/server/lib/deprecationWarningLogger';
 
@@ -443,7 +443,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	refreshClients() {
+	async refreshClients() {
 		methodDeprecationLogger.warn('refreshClients will be deprecated in future versions of Rocket.Chat');
 
 		if (!Meteor.userId()) {
@@ -452,7 +452,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const _hasPermission = hasPermission(Meteor.userId() as string, 'manage-assets');
+		const _hasPermission = await hasPermissionAsync(Meteor.userId() as string, 'manage-assets');
 		if (!_hasPermission) {
 			throw new Meteor.Error('error-action-not-allowed', 'Managing assets not allowed', {
 				method: 'refreshClients',
@@ -463,14 +463,14 @@ Meteor.methods<ServerMethods>({
 		return RocketChatAssets.refreshClients();
 	},
 
-	unsetAsset(asset) {
+	async unsetAsset(asset) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'unsetAsset',
 			});
 		}
 
-		const _hasPermission = hasPermission(Meteor.userId() as string, 'manage-assets');
+		const _hasPermission = await hasPermissionAsync(Meteor.userId() as string, 'manage-assets');
 		if (!_hasPermission) {
 			throw new Meteor.Error('error-action-not-allowed', 'Managing assets not allowed', {
 				method: 'unsetAsset',
@@ -481,14 +481,14 @@ Meteor.methods<ServerMethods>({
 		return RocketChatAssets.unsetAsset(asset);
 	},
 
-	setAsset(binaryContent, contentType, asset) {
+	async setAsset(binaryContent, contentType, asset) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'setAsset',
 			});
 		}
 
-		const _hasPermission = hasPermission(Meteor.userId() as string, 'manage-assets');
+		const _hasPermission = await hasPermissionAsync(Meteor.userId() as string, 'manage-assets');
 		if (!_hasPermission) {
 			throw new Meteor.Error('error-action-not-allowed', 'Managing assets not allowed', {
 				method: 'setAsset',
