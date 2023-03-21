@@ -4,7 +4,7 @@ import limax from 'limax';
 import { EmojiCustom } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
 import { trim } from '../../../../lib/utils/stringUtils';
 
@@ -96,7 +96,7 @@ Meteor.methods({
 
 			const _id = (await EmojiCustom.create(createEmoji)).insertedId;
 
-			api.broadcast('emoji.updateCustom', createEmoji);
+			void api.broadcast('emoji.updateCustom', createEmoji);
 
 			return _id;
 		}
@@ -138,7 +138,7 @@ Meteor.methods({
 			await EmojiCustom.setAliases(emojiData._id, []);
 		}
 
-		api.broadcast('emoji.updateCustom', emojiData);
+		void api.broadcast('emoji.updateCustom', emojiData);
 
 		return true;
 	},

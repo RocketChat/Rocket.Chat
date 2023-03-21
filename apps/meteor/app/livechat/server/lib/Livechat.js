@@ -5,10 +5,9 @@ import dns from 'dns';
 
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { HTTP } from 'meteor/http';
-import moment from 'moment-timezone';
 import UAParser from 'ua-parser-js';
 import {
 	Users as UsersRaw,
@@ -27,7 +26,6 @@ import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { Analytics } from './Analytics';
 import { settings } from '../../../settings/server';
-import { getTimezone } from '../../../utils/server/lib/getTimezone';
 import { callbacks } from '../../../../lib/callbacks';
 import {
 	Users,
@@ -40,8 +38,8 @@ import {
 	LivechatInquiry,
 } from '../../../models/server';
 import { Logger } from '../../../logger/server';
-import { hasPermission, hasRole, canAccessRoom, roomAccessAttributes } from '../../../authorization/server';
-import * as Mailer from '../../../mailer';
+import { hasPermission, hasRole, canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
+import * as Mailer from '../../../mailer/server/api';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
@@ -50,7 +48,7 @@ import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAge
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { businessHourManager } from '../business-hour';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
-import { removeUserFromRoles } from '../../../../server/lib/roles/removeUserFromRoles';
+import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 
@@ -219,7 +217,7 @@ export const Livechat = {
 		}
 
 		if (newRoom) {
-			Messages.setRoomIdByToken(guest.token, room._id);
+			await MessagesRaw.setRoomIdByToken(guest.token, room._id);
 		}
 
 		return { room, newRoom };
@@ -282,6 +280,19 @@ export const Livechat = {
 		return true;
 	},
 
+	/**
+	 * Returns the next visitor in the queue
+	 * @param {object} options
+	 * @param {string} [options.id] - The visitor's id
+	 * @param {string} options.token - The visitor's token
+	 * @param {string} [options.name] - The visitor's name
+	 * @param {string} [options.email] - The visitor's email
+	 * @param {string} [options.department] - The visitor's department
+	 * @param {object} [options.phone] - The visitor's phone
+	 * @param {string} [options.username] - The visitor's username
+	 * @param {string} [options.connectionData] - The visitor's connection data
+	 * @param {string} [options.status] - The visitor's status
+	 */
 	async registerGuest({ id, token, name, email, department, phone, username, connectionData, status = 'online' } = {}) {
 		check(token, String);
 		check(id, Match.Maybe(String));
@@ -887,7 +898,7 @@ export const Livechat = {
 		return false;
 	},
 
-	removeAgent(username) {
+	async removeAgent(username) {
 		check(username, String);
 
 		const user = Users.findOneByUsername(username, { fields: { _id: 1 } });
@@ -900,7 +911,7 @@ export const Livechat = {
 
 		const { _id } = user;
 
-		if (removeUserFromRoles(_id, ['livechat-agent'])) {
+		if (await removeUserFromRolesAsync(_id, ['livechat-agent'])) {
 			Users.setOperator(_id, false);
 			Users.removeLivechatData(_id);
 			this.setUserStatusLivechat(_id, 'not-available');
@@ -923,7 +934,7 @@ export const Livechat = {
 			});
 		}
 
-		return removeUserFromRoles(user._id, ['livechat-manager']);
+		return removeUserFromRolesAsync(user._id, ['livechat-manager']);
 	},
 
 	async removeGuest(_id) {
@@ -1096,90 +1107,6 @@ export const Livechat = {
 		});
 	},
 
-	async sendTranscript({ token, rid, email, subject, user }) {
-		check(rid, String);
-		check(email, String);
-		Livechat.logger.debug(`Sending conversation transcript of room ${rid} to user with token ${token}`);
-
-		const room = LivechatRooms.findOneById(rid);
-
-		const visitor = await LivechatVisitors.getVisitorByToken(token, {
-			projection: { _id: 1, token: 1, language: 1, username: 1, name: 1 },
-		});
-
-		if (!visitor) {
-			throw new Meteor.Error('error-invalid-token', 'Invalid token');
-		}
-
-		const userLanguage = (visitor && visitor.language) || settings.get('Language') || 'en';
-		const timezone = getTimezone(user);
-		Livechat.logger.debug(`Transcript will be sent using ${timezone} as timezone`);
-
-		// allow to only user to send transcripts from their own chats
-		if (!room || room.t !== 'l' || !room.v || room.v.token !== token) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room');
-		}
-
-		const showAgentInfo = settings.get('Livechat_show_agent_info');
-		const ignoredMessageTypes = [
-			'livechat_navigation_history',
-			'livechat_transcript_history',
-			'command',
-			'livechat-close',
-			'livechat-started',
-			'livechat_video_call',
-		];
-		const messages = Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, {
-			sort: { ts: 1 },
-		});
-
-		let html = '<div> <hr>';
-		messages.forEach((message) => {
-			let author;
-			if (message.u._id === visitor._id) {
-				author = TAPi18n.__('You', { lng: userLanguage });
-			} else {
-				author = showAgentInfo ? message.u.name || message.u.username : TAPi18n.__('Agent', { lng: userLanguage });
-			}
-
-			const datetime = moment.tz(message.ts, timezone).locale(userLanguage).format('LLL');
-			const singleMessage = `
-				<p><strong>${author}</strong>  <em>${datetime}</em></p>
-				<p>${message.msg}</p>
-			`;
-			html += singleMessage;
-		});
-
-		html = `${html}</div>`;
-
-		let fromEmail = settings.get('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
-
-		if (fromEmail) {
-			fromEmail = fromEmail[0];
-		} else {
-			fromEmail = settings.get('From_Email');
-		}
-
-		const mailSubject = subject || TAPi18n.__('Transcript_of_your_livechat_conversation', { lng: userLanguage });
-
-		this.sendEmail(fromEmail, email, fromEmail, mailSubject, html);
-
-		Meteor.defer(() => {
-			callbacks.run('livechat.sendTranscript', messages, email);
-		});
-
-		let type = 'user';
-		if (!user) {
-			user = Users.findOneById('rocket.cat', { fields: { _id: 1, username: 1, name: 1 } });
-			type = 'visitor';
-		}
-
-		Messages.createTranscriptHistoryWithRoomIdMessageAndUser(room._id, '', user, {
-			requestData: { type, visitor, user },
-		});
-		return true;
-	},
-
 	getRoomMessages({ rid }) {
 		check(rid, String);
 
@@ -1311,7 +1238,7 @@ export const Livechat = {
 		}
 
 		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
-			api.broadcast('omnichannel.room', room._id, {
+			void api.broadcast('omnichannel.room', room._id, {
 				type: 'agentStatus',
 				status,
 			});
@@ -1327,7 +1254,7 @@ export const Livechat = {
 	},
 
 	notifyRoomVisitorChange(roomId, visitor) {
-		api.broadcast('omnichannel.room', roomId, {
+		void api.broadcast('omnichannel.room', roomId, {
 			type: 'visitorData',
 			visitor,
 		});
@@ -1349,7 +1276,7 @@ export const Livechat = {
 			throw new Meteor.Error('invalid-room');
 		}
 
-		if (!canAccessRoom(room, user)) {
+		if (!Promise.await(canAccessRoomAsync(room, user))) {
 			throw new Error('error-not-allowed');
 		}
 

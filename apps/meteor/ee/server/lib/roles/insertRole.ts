@@ -24,7 +24,7 @@ export const insertRoleAsync = async (roleData: Omit<IRole, '_id'>, options: Ins
 	const roleId = result.insertedId;
 
 	if (options.broadcastUpdate) {
-		api.broadcast('user.roleUpdate', {
+		void api.broadcast('user.roleUpdate', {
 			type: 'changed',
 			_id: roleId,
 		});
@@ -37,5 +37,3 @@ export const insertRoleAsync = async (roleData: Omit<IRole, '_id'>, options: Ins
 
 	return newRole;
 };
-
-export const insertRole = (...args: Parameters<typeof insertRoleAsync>): IRole => Promise.await(insertRoleAsync(...args));

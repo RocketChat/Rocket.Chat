@@ -9,7 +9,7 @@ import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { Messages, Rooms, Users } from '../../models/server';
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
-import { canAccessRoom } from '../../authorization/server/functions/canAccessRoom';
+import { canAccessRoomAsync } from '../../authorization/server/functions/canAccessRoom';
 
 const recursiveRemove = (attachments: MessageAttachment, deep = 1): MessageAttachment => {
 	if (attachments && isQuoteAttachment(attachments)) {
@@ -24,7 +24,7 @@ const recursiveRemove = (attachments: MessageAttachment, deep = 1): MessageAttac
 };
 
 const validateAttachmentDeepness = (message: ITranslatedMessage): ITranslatedMessage => {
-	if (!message || !message.attachments) {
+	if (!message?.attachments) {
 		return message;
 	}
 
@@ -37,7 +37,7 @@ callbacks.add(
 	'beforeSaveMessage',
 	(msg) => {
 		// if no message is present, or the message doesn't have any URL, skip
-		if (!msg || !msg.urls || !msg.urls.length) {
+		if (!msg?.urls?.length) {
 			return msg;
 		}
 
@@ -71,7 +71,7 @@ callbacks.add(
 			// user has to belong to the room the message was first wrote in
 			const room = Rooms.findOneById(jumpToMessage.rid);
 			const isLiveChatRoomVisitor = !!msg.token && !!room.v?.token && msg.token === room.v.token;
-			const canAccessRoomForUser = isLiveChatRoomVisitor || canAccessRoom(room, currentUser);
+			const canAccessRoomForUser = isLiveChatRoomVisitor || Promise.await(canAccessRoomAsync(room, currentUser));
 			if (!canAccessRoomForUser) {
 				return;
 			}

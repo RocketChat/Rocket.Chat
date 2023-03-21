@@ -2,10 +2,18 @@ import { capitalize } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Settings } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermission } from '../../../authorization/server';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		removeOAuthService(name: string): Promise<void>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async removeOAuthService(name) {
 		check(name, String);
 

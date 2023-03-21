@@ -1,5 +1,6 @@
-import type { IMessage, IMessageEdited, IUser } from '@rocket.chat/core-typings';
+import type { IEditedMessage, IMessage, IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
+import { Messages as MessagesRaw } from '@rocket.chat/models';
 
 import { Messages, Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
@@ -32,14 +33,16 @@ export const updateMessage = function (message: IMessage, user: IUser, originalM
 
 	// If we keep history of edits, insert a new message to store history information
 	if (settings.get('Message_KeepHistory')) {
-		Messages.cloneAndSaveAsHistoryById(message._id, user);
+		Promise.await(MessagesRaw.cloneAndSaveAsHistoryById(message._id, user as Required<Pick<IUser, '_id' | 'username' | 'name'>>));
 	}
 
-	(message as IMessageEdited).editedAt = new Date();
-	(message as IMessageEdited).editedBy = {
-		_id: user._id,
-		username: user.username,
-	};
+	Object.assign<IMessage, Omit<IEditedMessage, keyof IMessage>>(message, {
+		editedAt: new Date(),
+		editedBy: {
+			_id: user._id,
+			username: user.username,
+		},
+	});
 
 	parseUrlsInMessage(message);
 
@@ -59,7 +62,7 @@ export const updateMessage = function (message: IMessage, user: IUser, originalM
 	if (Apps?.isLoaded()) {
 		// This returns a promise, but it won't mutate anything about the message
 		// so, we don't really care if it is successful or fails
-		Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageUpdated', message);
+		void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageUpdated', message);
 	}
 
 	Meteor.defer(function () {

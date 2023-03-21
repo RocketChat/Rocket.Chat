@@ -1,20 +1,47 @@
-// Goal is to have a typed version of apps/meteor/app/livechat/server/lib/Livechat.js
-// This is a work in progress, and is not yet complete
-// But it is a start.
-
-// Important note: Try to not use the original Livechat.js file, but use this one instead.
-// If possible, move methods from Livechat.js to this file.
-// This is because we want to slowly convert the code to typescript, and this is a good way to do it.
-import type { IOmnichannelRoom, IOmnichannelRoomClosingInfo } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IOmnichannelRoomClosingInfo, IUser, MessageTypesValues, ILivechatVisitor } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { LivechatDepartment, LivechatInquiry, LivechatRooms, Subscriptions } from '@rocket.chat/models';
+import { LivechatDepartment, LivechatInquiry, LivechatRooms, Subscriptions, LivechatVisitors, Messages, Users } from '@rocket.chat/models';
+import moment from 'moment-timezone';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
-import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './LivechatTyped.d';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { Messages as LegacyMessage } from '../../../models/server';
+import { getTimezone } from '../../../utils/server/lib/getTimezone';
+import { settings } from '../../../settings/server';
+import * as Mailer from '../../../mailer/server/api';
+
+type GenericCloseRoomParams = {
+	room: IOmnichannelRoom;
+	comment?: string;
+	options?: {
+		clientAction?: boolean;
+		tags?: string[];
+		emailTranscript?:
+			| {
+					sendToVisitor: false;
+			  }
+			| {
+					sendToVisitor: true;
+					requestData: NonNullable<IOmnichannelRoom['transcriptRequest']>;
+			  };
+		pdfTranscript?: {
+			requestedBy: string;
+		};
+	};
+};
+
+export type CloseRoomParamsByUser = {
+	user: IUser;
+} & GenericCloseRoomParams;
+
+export type CloseRoomParamsByVisitor = {
+	visitor: ILivechatVisitor;
+} & GenericCloseRoomParams;
+
+export type CloseRoomParams = CloseRoomParamsByUser | CloseRoomParamsByVisitor;
 
 class LivechatClass {
 	logger: Logger;
@@ -103,13 +130,13 @@ class LivechatClass {
 
 		this.logger.debug(`Running callbacks for room ${room._id}`);
 
-		Meteor.defer(() => {
+		process.nextTick(() => {
 			/**
 			 * @deprecated the `AppEvents.ILivechatRoomClosedHandler` event will be removed
 			 * in the next major version of the Apps-Engine
 			 */
-			Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, room);
-			Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, room);
+			void Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, room);
+			void Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, room);
 		});
 		callbacks.runAsync('livechat.closeRoom', {
 			room,
@@ -176,6 +203,128 @@ class LivechatClass {
 				...(extraRoomTags.length && { tags: extraRoomTags }),
 			},
 		};
+	}
+
+	private sendEmail(from: string, to: string, replyTo: string, subject: string, html: string): void {
+		Mailer.send({
+			to,
+			from,
+			replyTo,
+			subject,
+			html,
+		});
+	}
+
+	async sendTranscript({
+		token,
+		rid,
+		email,
+		subject,
+		user,
+	}: {
+		token: string;
+		rid: string;
+		email: string;
+		subject?: string;
+		user?: Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'>;
+	}): Promise<boolean> {
+		check(rid, String);
+		check(email, String);
+		this.logger.debug(`Sending conversation transcript of room ${rid} to user with token ${token}`);
+
+		const room = await LivechatRooms.findOneById(rid);
+
+		const visitor = await LivechatVisitors.getVisitorByToken(token, {
+			projection: { _id: 1, token: 1, language: 1, username: 1, name: 1 },
+		});
+
+		if (!visitor) {
+			throw new Error('error-invalid-token');
+		}
+
+		// @ts-expect-error - Visitor typings should include language?
+		const userLanguage = visitor?.language || settings.get('Language') || 'en';
+		const timezone = getTimezone(user);
+		this.logger.debug(`Transcript will be sent using ${timezone} as timezone`);
+
+		if (!room) {
+			throw new Error('error-invalid-room');
+		}
+
+		// allow to only user to send transcripts from their own chats
+		if (room.t !== 'l' || !room.v || room.v.token !== token) {
+			throw new Error('error-invalid-room');
+		}
+
+		const showAgentInfo = settings.get<string>('Livechat_show_agent_info');
+		const closingMessage = await Messages.findLivechatClosingMessage(rid, { projection: { ts: 1 } });
+		const ignoredMessageTypes: MessageTypesValues[] = [
+			'livechat_navigation_history',
+			'livechat_transcript_history',
+			'command',
+			'livechat-close',
+			'livechat-started',
+			'livechat_video_call',
+		];
+		const messages = await Messages.findVisibleByRoomIdNotContainingTypesBeforeTs(
+			rid,
+			ignoredMessageTypes,
+			closingMessage?.ts ? new Date(closingMessage.ts) : new Date(),
+			{
+				sort: { ts: 1 },
+			},
+		);
+
+		let html = '<div> <hr>';
+		await messages.forEach((message) => {
+			let author;
+			if (message.u._id === visitor._id) {
+				author = TAPi18n.__('You', { lng: userLanguage });
+			} else {
+				author = showAgentInfo ? message.u.name || message.u.username : TAPi18n.__('Agent', { lng: userLanguage });
+			}
+
+			const datetime = moment.tz(message.ts, timezone).locale(userLanguage).format('LLL');
+			const singleMessage = `
+				<p><strong>${author}</strong>  <em>${datetime}</em></p>
+				<p>${message.msg}</p>
+			`;
+			html += singleMessage;
+		});
+
+		html = `${html}</div>`;
+
+		const fromEmail = settings.get<string>('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
+		let emailFromRegexp = '';
+		if (fromEmail) {
+			emailFromRegexp = fromEmail[0];
+		} else {
+			emailFromRegexp = settings.get<string>('From_Email');
+		}
+
+		const mailSubject = subject || TAPi18n.__('Transcript_of_your_livechat_conversation', { lng: userLanguage });
+
+		this.sendEmail(emailFromRegexp, email, emailFromRegexp, mailSubject, html);
+
+		Meteor.defer(() => {
+			callbacks.run('livechat.sendTranscript', messages, email);
+		});
+
+		let type = 'user';
+		if (!user) {
+			const cat = await Users.findOneById('rocket.cat', { projection: { _id: 1, username: 1, name: 1 } });
+			if (!cat) {
+				this.logger.error('rocket.cat user not found');
+				throw new Error('No user provided and rocket.cat not found');
+			}
+			user = cat;
+			type = 'visitor';
+		}
+
+		LegacyMessage.createTranscriptHistoryWithRoomIdMessageAndUser(room._id, '', user, {
+			requestData: { type, visitor, user },
+		});
+		return true;
 	}
 }
 

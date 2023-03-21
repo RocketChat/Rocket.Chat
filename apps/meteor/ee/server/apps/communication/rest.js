@@ -8,7 +8,7 @@ import { API } from '../../../../app/api/server';
 import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormData';
 import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
 import { settings } from '../../../../app/settings/server';
-import { Info } from '../../../../app/utils';
+import { Info } from '../../../../app/utils/server';
 import { Users } from '../../../../app/models/server';
 import { Apps } from '../orchestrator';
 import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
@@ -818,7 +818,7 @@ export class AppsRestApi {
 								msg: TAPi18n.__('App_Request_Admin_Message', {
 									admin_name: adminUser.name,
 									app_name: appName,
-									user_name: this.user.name || this.user.username,
+									user_name: `@${this.user.username}`,
 									message,
 									learn_more: learnMore,
 								}),

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Subscriptions, Users } from '../../../models/server';
@@ -408,7 +408,7 @@ settings.watch('Troubleshoot_Disable_Notifications', (value) => {
 
 	callbacks.add(
 		'afterSaveMessage',
-		(message, room) => Promise.await(sendAllNotifications(message, room)),
+		(message, room) => sendAllNotifications(message, room),
 		callbacks.priority.LOW,
 		'sendNotificationsOnMessage',
 	);

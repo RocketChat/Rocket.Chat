@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 import { createRoom } from '../functions';
 
 Meteor.methods({
-	createPrivateGroup(name, members, readOnly = false, customFields = {}, extraData = {}) {
+	async createPrivateGroup(name, members, readOnly = false, customFields = {}, extraData = {}) {
 		check(name, String);
 		check(members, Match.Optional([String]));
 

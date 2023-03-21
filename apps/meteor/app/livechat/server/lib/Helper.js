@@ -6,7 +6,7 @@ import { OmnichannelSourceType, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typ
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
 import { api } from '@rocket.chat/core-services';
 
-import { hasRole } from '../../../authorization';
+import { hasRole } from '../../../authorization/server';
 import {
 	Messages,
 	LivechatRooms,
@@ -20,7 +20,7 @@ import {
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../../lib/callbacks';
-import { Logger } from '../../../logger';
+import { Logger } from '../../../logger/server';
 import { settings } from '../../../settings/server';
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { sendNotification } from '../../../lib/server';
@@ -270,7 +270,7 @@ export const normalizeAgent = (agentId) => {
 export const dispatchAgentDelegated = (rid, agentId) => {
 	const agent = normalizeAgent(agentId);
 
-	api.broadcast('omnichannel.room', rid, {
+	void api.broadcast('omnichannel.room', rid, {
 		type: 'agentData',
 		data: agent,
 	});

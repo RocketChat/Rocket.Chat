@@ -3,10 +3,10 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { Rooms } from '../../app/models/server';
-import { canAccessRoom } from '../../app/authorization';
+import { canAccessRoomAsync } from '../../app/authorization/server';
 
 Meteor.methods({
-	getRoomIdByNameOrId(rid) {
+	async getRoomIdByNameOrId(rid) {
 		check(rid, String);
 
 		if (!Meteor.userId()) {
@@ -23,7 +23,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!canAccessRoom(room, Meteor.user())) {
+		if (!(await canAccessRoomAsync(room, Meteor.user()))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'getRoomIdByNameOrId',
 			});

@@ -114,7 +114,7 @@ slashCommands.add({
 		FileUpload.getBuffer(file, (_err?: Error, buffer?: Buffer) => {
 			!_err &&
 				buffer &&
-				sendEmail(
+				void sendEmail(
 					inbox,
 					{
 						to: room.email.replyTo,
@@ -235,7 +235,7 @@ callbacks.add(
 			return message;
 		}
 
-		sendEmail(
+		void sendEmail(
 			inbox,
 			{
 				text: match.groups.text,
@@ -303,7 +303,7 @@ export async function sendTestEmailToInbox(emailInboxRecord: IEmailInbox, user: 
 	}
 
 	logger.info(`Sending testing email to ${address}`);
-	sendEmail(inbox, {
+	void sendEmail(inbox, {
 		to: address,
 		subject: 'Test of inbox configuration',
 		text: 'Test of inbox configuration successful',

@@ -492,7 +492,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		options?: undefined | FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
 	): Promise<P[] | ITeamMember[]> {
 		if (options) {
-			TeamMember.findByUserId(uid, options).toArray();
+			return TeamMember.findByUserId(uid, options).toArray();
 		}
 		return TeamMember.findByUserId(uid).toArray();
 	}
@@ -779,7 +779,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 					}
 				}
 
-				TeamMember.removeById(existingMember._id);
+				await TeamMember.removeById(existingMember._id);
 			}
 
 			const removedUser = usersToRemove.find((u) => u._id === (existingMember || member).userId);
@@ -962,7 +962,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			// at this point, users are already part of the team so we won't check for membership
 			for await (const user of users) {
 				// add each user to the default room
-				addUserToRoom(room._id, user, inviter, false);
+				await addUserToRoom(room._id, user, inviter, false);
 			}
 		});
 	}

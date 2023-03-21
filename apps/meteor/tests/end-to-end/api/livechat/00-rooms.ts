@@ -17,9 +17,8 @@ import {
 	makeAgentAvailable,
 	getLivechatRoomInfo,
 	sendMessage,
-	closeRoom,
-	takeInquiry,
-	fetchInquiry,
+	startANewLivechatRoomAndTakeIt,
+	closeOmnichanelRoom,
 } from '../../../data/livechat/rooms';
 import { addPermissions, updateEEPermission, updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { createUser, login } from '../../../data/users.helper.js';
@@ -40,20 +39,13 @@ describe('LIVECHAT - rooms', function () {
 
 	before((done) => getCredentials(done));
 
-	before((done) => {
-		updateSetting('Livechat_enabled', true).then(() => {
-			createAgent()
-				.then(() => makeAgentAvailable())
-				.then(() => createVisitor())
-				.then((createdVisitor) => {
-					visitor = createdVisitor;
-					return createLivechatRoom(createdVisitor.token);
-				})
-				.then((createdRoom) => {
-					room = createdRoom;
-					done();
-				});
-		});
+	before(async () => {
+		await updateSetting('Livechat_enabled', true);
+		await createAgent();
+		await makeAgentAvailable();
+		visitor = await createVisitor();
+
+		room = await createLivechatRoom(visitor.token);
 	});
 
 	describe('livechat/room', () => {
@@ -118,112 +110,101 @@ describe('LIVECHAT - rooms', function () {
 	});
 
 	describe('livechat/rooms', () => {
-		it('should return an "unauthorized error" when the user does not have the necessary permission', (done) => {
-			updatePermission('view-livechat-rooms', []).then(() => {
-				request
-					.get(api('livechat/rooms'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(403)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('unauthorized');
-					})
-					.end(done);
-			});
+		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+			await updatePermission('view-livechat-rooms', []);
+			await request
+				.get(api('livechat/rooms'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.be.equal('unauthorized');
+				});
 		});
-		it('should return an error when the "agents" query parameter is not valid', (done) => {
-			updatePermission('view-livechat-rooms', ['admin']).then(() => {
-				request
-					.get(api('livechat/rooms?agents=invalid'))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', false);
-					})
-					.end(done);
-			});
+		it('should return an error when the "agents" query parameter is not valid', async () => {
+			await updatePermission('view-livechat-rooms', ['admin']);
+			await request
+				.get(api('livechat/rooms?agents=invalid'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
 		});
-		it('should return an error when the "roomName" query parameter is not valid', (done) => {
-			request
+		it('should return an error when the "roomName" query parameter is not valid', async () => {
+			await request
 				.get(api('livechat/rooms?roomName[]=invalid'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				});
 		});
-		it('should return an error when the "departmentId" query parameter is not valid', (done) => {
-			request
+		it('should return an error when the "departmentId" query parameter is not valid', async () => {
+			await request
 				.get(api('livechat/rooms?departmentId[]=marcos'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				});
 		});
-		it('should return an error when the "open" query parameter is not valid', (done) => {
-			request
+		it('should return an error when the "open" query parameter is not valid', async () => {
+			await request
 				.get(api('livechat/rooms?open[]=true'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				});
 		});
-		it('should return an error when the "tags" query parameter is not valid', (done) => {
-			request
+		it('should return an error when the "tags" query parameter is not valid', async () => {
+			await request
 				.get(api('livechat/rooms?tags=invalid'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				});
 		});
-		it('should return an error when the "createdAt" query parameter is not valid', (done) => {
-			request
+		it('should return an error when the "createdAt" query parameter is not valid', async () => {
+			await request
 				.get(api('livechat/rooms?createdAt=invalid'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				});
 		});
-		it('should return an error when the "closedAt" query parameter is not valid', (done) => {
-			request
+		it('should return an error when the "closedAt" query parameter is not valid', async () => {
+			await request
 				.get(api('livechat/rooms?closedAt=invalid'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				});
 		});
-		it('should return an error when the "customFields" query parameter is not valid', (done) => {
-			request
+		it('should return an error when the "customFields" query parameter is not valid', async () => {
+			await request
 				.get(api('livechat/rooms?customFields=invalid'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				});
 		});
-		it('should return an array of rooms when has no parameters', (done) => {
-			request
+		it('should return an array of rooms when has no parameters', async () => {
+			await request
 				.get(api('livechat/rooms'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -234,11 +215,10 @@ describe('LIVECHAT - rooms', function () {
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('count');
-				})
-				.end(done);
+				});
 		});
-		it('should return an array of rooms when the query params is all valid', (done) => {
-			request
+		it('should return an array of rooms when the query params is all valid', async () => {
+			await request
 				.get(api(`livechat/rooms`))
 				.set(credentials)
 				.query({
@@ -263,11 +243,10 @@ describe('LIVECHAT - rooms', function () {
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('count');
-				})
-				.end(done);
+				});
 		});
-		it('should not cause issues when the customFields is empty', (done) => {
-			request
+		it('should not cause issues when the customFields is empty', async () => {
+			await request
 				.get(api(`livechat/rooms`))
 				.set(credentials)
 				.query({ customFields: {}, roomName: 'test' })
@@ -279,11 +258,10 @@ describe('LIVECHAT - rooms', function () {
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('count');
-				})
-				.end(done);
+				});
 		});
-		it('should throw an error if customFields param is not a object', (done) => {
-			request
+		it('should throw an error if customFields param is not a object', async () => {
+			await request
 				.get(api(`livechat/rooms`))
 				.set(credentials)
 				.query({ customFields: 'string' })
@@ -291,14 +269,13 @@ describe('LIVECHAT - rooms', function () {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				});
 		});
 		it('should only return closed rooms when "open" is set to false', async () => {
 			// Create and close a room
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
-			await closeRoom(room._id);
+			await closeOmnichanelRoom(room._id);
 
 			const { body } = await request.get(api('livechat/rooms')).query({ open: false, roomName: room.fname }).set(credentials).expect(200);
 			expect(body.rooms.every((room: IOmnichannelRoom) => !!room.closedAt)).to.be.true;
@@ -308,7 +285,7 @@ describe('LIVECHAT - rooms', function () {
 			// Create and close a room
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
-			await closeRoom(room._id);
+			await closeOmnichanelRoom(room._id);
 
 			const { body } = await request.get(api('livechat/rooms')).query({ open: true, roomName: room.fname }).set(credentials).expect(200);
 			expect(body.rooms.every((room: IOmnichannelRoom) => room.open)).to.be.true;
@@ -318,7 +295,7 @@ describe('LIVECHAT - rooms', function () {
 			// Create and close a room
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
-			await closeRoom(room._id);
+			await closeOmnichanelRoom(room._id);
 
 			const { body } = await request.get(api('livechat/rooms')).set(credentials).expect(200);
 			expect(body.rooms.some((room: IOmnichannelRoom) => !!room.closedAt)).to.be.true;
@@ -367,36 +344,31 @@ describe('LIVECHAT - rooms', function () {
 	});
 
 	describe('livechat/room.close', () => {
-		it('should return an "invalid-token" error when the visitor is not found due to an invalid token', (done) => {
-			request
+		it('should return an "invalid-token" error when the visitor is not found due to an invalid token', async () => {
+			await request
 				.post(api('livechat/room.close'))
-				.set(credentials)
 				.send({
 					token: 'invalid-token',
 					rid: room._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.end(done);
+				.expect(400);
 		});
 
-		it('should return an "invalid-room" error when the room is not found due to invalid token and/or rid', (done) => {
-			request
+		it('should return an "invalid-room" error when the room is not found due to invalid token and/or rid', async () => {
+			await request
 				.post(api('livechat/room.close'))
-				.set(credentials)
 				.send({
 					token: visitor.token,
 					rid: 'invalid-rid',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.end(done);
+				.expect(400);
 		});
 
-		it('should return both the rid and the comment of the room when the query params is all valid', (done) => {
-			request
+		it('should return both the rid and the comment of the room when the query params is all valid', async () => {
+			await request
 				.post(api(`livechat/room.close`))
-				.set(credentials)
 				.send({
 					token: visitor.token,
 					rid: room._id,
@@ -407,22 +379,71 @@ describe('LIVECHAT - rooms', function () {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('rid');
 					expect(res.body).to.have.property('comment');
-				})
-				.end(done);
+				});
 		});
 
-		it('should return an "room-closed" error when the room is already closed', (done) => {
-			request
+		it('should return an "room-closed" error when the room is already closed', async () => {
+			await request
 				.post(api('livechat/room.close'))
-				.set(credentials)
 				.send({
 					token: visitor.token,
 					rid: room._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
-				.end(done);
+				.expect(400);
 		});
+
+		(IS_EE ? it : it.skip)(
+			'should close room when chat is closed by visitor and should also generate pdf transcript if serving agent has set appropriate preference set',
+			async () => {
+				const {
+					room: { _id: roomId },
+					visitor,
+				} = await startANewLivechatRoomAndTakeIt();
+
+				await request
+					.post(api('users.setPreferences'))
+					.set(credentials)
+					.send({
+						data: {
+							omnichannelTranscriptPDF: true,
+						},
+					})
+					.expect(200);
+
+				await request.post(api('livechat/room.close')).send({ rid: roomId, token: visitor.token }).expect(200);
+
+				// Wait for the pdf to be generated
+				await sleep(1500);
+
+				const latestRoom = await getLivechatRoomInfo(roomId);
+				expect(latestRoom).to.have.property('pdfTranscriptFileId').and.to.be.a('string');
+			},
+		);
+
+		(IS_EE ? it : it.skip)(
+			'should close room when chat is closed by visitor and should not generate pdf transcript if serving agent has not set appropriate preference set',
+			async () => {
+				const {
+					room: { _id: roomId },
+					visitor,
+				} = await startANewLivechatRoomAndTakeIt();
+
+				await request
+					.post(api('users.setPreferences'))
+					.set(credentials)
+					.send({ data: { omnichannelTranscriptPDF: false } })
+					.expect(200);
+
+				await request.post(api('livechat/room.close')).send({ rid: roomId, token: visitor.token }).expect(200);
+
+				// Wait for the pdf to not be generated
+				await sleep(1500);
+
+				const latestRoom = await getLivechatRoomInfo(roomId);
+				expect(latestRoom).to.not.have.property('pdfTranscriptFileId');
+			},
+		);
 	});
 
 	describe('livechat/room.forward', () => {
@@ -556,8 +577,8 @@ describe('LIVECHAT - rooms', function () {
 	});
 
 	describe('livechat/room.survey', () => {
-		it('should return an "invalid-token" error when the visitor is not found due to an invalid token', (done) => {
-			request
+		it('should return an "invalid-token" error when the visitor is not found due to an invalid token', async () => {
+			await request
 				.post(api('livechat/room.survey'))
 				.set(credentials)
 				.send({
@@ -569,12 +590,11 @@ describe('LIVECHAT - rooms', function () {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				});
 		});
 
-		it('should return an "invalid-room" error when the room is not found due to invalid token and/or rid', (done) => {
-			request
+		it('should return an "invalid-room" error when the room is not found due to invalid token and/or rid', async () => {
+			await request
 				.post(api('livechat/room.survey'))
 				.set(credentials)
 				.send({
@@ -586,12 +606,11 @@ describe('LIVECHAT - rooms', function () {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				});
 		});
 
-		it('should return "invalid-data" when the items answered are not part of config.survey.items', (done) => {
-			request
+		it('should return "invalid-data" when the items answered are not part of config.survey.items', async () => {
+			await request
 				.post(api('livechat/room.survey'))
 				.set(credentials)
 				.send({
@@ -603,12 +622,11 @@ describe('LIVECHAT - rooms', function () {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
+				});
 		});
 
-		it('should return the room id and the answers when the query params is all valid', (done) => {
-			request
+		it('should return the room id and the answers when the query params is all valid', async () => {
+			await request
 				.post(api('livechat/room.survey'))
 				.set(credentials)
 				.send({
@@ -627,79 +645,68 @@ describe('LIVECHAT - rooms', function () {
 					expect(res.body).to.have.property('data');
 					expect(res.body.data.satisfaction).to.be.equal('5');
 					expect(res.body.data.agentKnowledge).to.be.equal('3');
-				})
-				.end(done);
+				});
 		});
 	});
 
 	describe('livechat/upload/:rid', () => {
-		it('should throw an error if x-visitor-token header is not present', (done) => {
-			request
+		it('should throw an error if x-visitor-token header is not present', async () => {
+			await request
 				.post(api('livechat/upload/test'))
 				.set(credentials)
 				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
 				.expect('Content-Type', 'application/json')
-				.expect(403)
-				.end(done);
+				.expect(403);
 		});
 
-		it('should throw an error if x-visitor-token is present but with an invalid value', (done) => {
-			request
+		it('should throw an error if x-visitor-token is present but with an invalid value', async () => {
+			await request
 				.post(api('livechat/upload/test'))
 				.set(credentials)
 				.set('x-visitor-token', 'invalid-token')
 				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
 				.expect('Content-Type', 'application/json')
-				.expect(403)
-				.end(done);
+				.expect(403);
 		});
 
-		it('should throw unauthorized if visitor with token exists but room is invalid', (done) => {
-			createVisitor()
-				.then((visitor) => {
-					request
-						.post(api('livechat/upload/test'))
-						.set(credentials)
-						.set('x-visitor-token', visitor.token)
-						.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
-						.expect('Content-Type', 'application/json')
-						.expect(403);
-				})
-				.then(() => done());
+		it('should throw unauthorized if visitor with token exists but room is invalid', async () => {
+			const visitor = await createVisitor();
+			await request
+				.post(api('livechat/upload/test'))
+				.set(credentials)
+				.set('x-visitor-token', visitor.token)
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+				.expect('Content-Type', 'application/json')
+				.expect(403);
 		});
 
-		it('should throw an error if the file is not attached', (done) => {
-			createVisitor()
-				.then((visitor) => {
-					request
-						.post(api('livechat/upload/test'))
-						.set(credentials)
-						.set('x-visitor-token', visitor.token)
-						.expect('Content-Type', 'application/json')
-						.expect(400);
-				})
-				.then(() => done());
+		it('should throw an error if the file is not attached', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await request
+				.post(api(`livechat/upload/${room._id}`))
+				.set(credentials)
+				.set('x-visitor-token', visitor.token)
+				.expect('Content-Type', 'application/json')
+				.expect(400);
 		});
 
-		it('should upload an image on the room if all params are valid', (done) => {
-			createVisitor()
-				.then((visitor) => Promise.all([visitor, createLivechatRoom(visitor.token)]))
-				.then(([visitor, room]) => {
-					request
-						.post(api(`livechat/upload/${room._id}`))
-						.set(credentials)
-						.set('x-visitor-token', visitor.token)
-						.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
-						.expect('Content-Type', 'application/json')
-						.expect(200);
-				})
-				.then(() => done());
+		it('should upload an image on the room if all params are valid', async () => {
+			const visitor = await createVisitor();
+			const room = await createLivechatRoom(visitor.token);
+			await request
+				.post(api(`livechat/upload/${room._id}`))
+				.set(credentials)
+				.set('x-visitor-token', visitor.token)
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+				.expect('Content-Type', 'application/json')
+				.expect(200);
 		});
 	});
 
 	describe('livechat/:rid/messages', () => {
-		it('should fail if room provided is invalid', (done) => {
-			request.get(api('livechat/test/messages')).set(credentials).expect('Content-Type', 'application/json').expect(400).end(done);
+		it('should fail if room provided is invalid', async () => {
+			await request.get(api('livechat/test/messages')).set(credentials).expect('Content-Type', 'application/json').expect(400);
 		});
 		it('should throw an error if user doesnt have permission view-l-room', async () => {
 			await updatePermission('view-l-room', []);
@@ -1600,12 +1607,6 @@ describe('LIVECHAT - rooms', function () {
 			await updatePermission('close-livechat-room', ['admin']);
 			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: 'invalid-room-id' }).expect(400);
 		});
-		it('should fail if room is closed', async () => {
-			const visitor = await createVisitor();
-			const { _id } = await createLivechatRoom(visitor.token);
-			await closeRoom(_id);
-			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id }).expect(400);
-		});
 		it('should fail if user is not serving and doesnt have close-others-livechat-room permission', async () => {
 			await updatePermission('close-others-livechat-room', []);
 			const visitor = await createVisitor();
@@ -1617,6 +1618,44 @@ describe('LIVECHAT - rooms', function () {
 			const visitor = await createVisitor();
 			const { _id } = await createLivechatRoom(visitor.token);
 			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id }).expect(200);
+		});
+		it('should fail if room is closed', async () => {
+			const visitor = await createVisitor();
+			const { _id } = await createLivechatRoom(visitor.token);
+
+			// close room
+			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id }).expect(200);
+
+			// try to close again
+			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: _id }).expect(400);
+		});
+
+		(IS_EE ? it : it.skip)('should close room and generate transcript pdf', async () => {
+			const {
+				room: { _id: roomId },
+			} = await startANewLivechatRoomAndTakeIt();
+
+			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: roomId, generateTranscriptPdf: true }).expect(200);
+
+			// Wait for the pdf to be generated
+			await sleep(1500);
+
+			const latestRoom = await getLivechatRoomInfo(roomId);
+			expect(latestRoom).to.have.property('pdfTranscriptFileId').and.to.be.a('string');
+		});
+
+		(IS_EE ? it : it.skip)('should close room and not generate transcript pdf', async () => {
+			const {
+				room: { _id: roomId },
+			} = await startANewLivechatRoomAndTakeIt();
+
+			await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: roomId, generateTranscriptPdf: false }).expect(200);
+
+			// Wait for the pdf to not be generated
+			await sleep(1500);
+
+			const latestRoom = await getLivechatRoomInfo(roomId);
+			expect(latestRoom).to.not.have.property('pdfTranscriptFileId');
 		});
 	});
 
@@ -1642,7 +1681,6 @@ describe('LIVECHAT - rooms', function () {
 				.set(credentials)
 				.expect(403);
 		});
-		// Increasing a bit the timeout since service calls + other calls are a bit slow on pipe
 		it('should fail if room is not closed', async () => {
 			await updatePermission('request-pdf-transcript', ['admin', 'livechat-agent', 'livechat-manager']);
 			const visitor = await createVisitor();
@@ -1652,33 +1690,40 @@ describe('LIVECHAT - rooms', function () {
 				.set(credentials)
 				.expect(400);
 		});
-		it('should fail if no one is serving the room', async () => {
+		it('should return OK if no one is serving the room (queued)', async () => {
 			const visitor = await createVisitor();
 			const { _id } = await createLivechatRoom(visitor.token);
-			await closeRoom(_id);
-			await request
-				.post(api(`omnichannel/${_id}/request-transcript`))
-				.set(credentials)
-				.expect(400);
-		});
-		let roomId: string;
-		it('should request a pdf transcript when all conditions are met', async () => {
-			await createAgent();
-			const visitor = await createVisitor();
-			const { _id } = await createLivechatRoom(visitor.token);
-			const inq = await fetchInquiry(_id);
-			roomId = _id;
-			await takeInquiry(inq._id);
-			await closeRoom(_id);
-
+			await closeOmnichanelRoom(_id);
 			await request
 				.post(api(`omnichannel/${_id}/request-transcript`))
 				.set(credentials)
 				.expect(200);
 		});
-		it('should return immediately if transcript was already requested', async () => {
+		let roomWithTranscriptGenerated: string;
+		it('should request a pdf transcript when all conditions are met', async () => {
+			const {
+				room: { _id: roomId },
+			} = await startANewLivechatRoomAndTakeIt();
+
+			// close room since pdf transcript is only generated for closed rooms
+			await closeOmnichanelRoom(roomId);
+
 			await request
 				.post(api(`omnichannel/${roomId}/request-transcript`))
+				.set(credentials)
+				.expect(200);
+
+			// wait for the pdf to be generated
+			await sleep(1500);
+
+			const latestRoom = await getLivechatRoomInfo(roomId);
+			expect(latestRoom).to.have.property('pdfTranscriptFileId').and.to.be.a('string');
+
+			roomWithTranscriptGenerated = roomId;
+		});
+		it('should return immediately if transcript was already requested', async () => {
+			await request
+				.post(api(`omnichannel/${roomWithTranscriptGenerated}/request-transcript`))
 				.set(credentials)
 				.expect(200);
 		});

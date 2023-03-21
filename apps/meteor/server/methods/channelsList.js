@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 
-import { hasPermission } from '../../app/authorization';
+import { hasPermission } from '../../app/authorization/server';
 import { Rooms, Subscriptions, Users } from '../../app/models/server';
-import { getUserPreference } from '../../app/utils';
+import { getUserPreference } from '../../app/utils/server';
 import { settings } from '../../app/settings/server';
 import { trim } from '../../lib/utils/stringUtils';
 
