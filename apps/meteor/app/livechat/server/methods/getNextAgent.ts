@@ -25,7 +25,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		if (!department) {
-			const requireDeparment = Livechat.getRequiredDepartment();
+			const requireDeparment = await Livechat.getRequiredDepartment();
 			if (requireDeparment) {
 				department = requireDeparment._id;
 			}

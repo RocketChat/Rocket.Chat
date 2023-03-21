@@ -18,7 +18,7 @@ export class SlackUsersImporter extends Base {
 		return super.prepareUsingLocalFile(fullFilePath);
 	}
 
-	prepare(dataURI, sentContentType, fileName) {
+	async prepare(dataURI, sentContentType, fileName) {
 		this.logger.debug('start preparing import operation');
 		super.prepare(dataURI, sentContentType, fileName, true);
 
