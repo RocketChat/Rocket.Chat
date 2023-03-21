@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import type { StartImportParamsPOST } from '@rocket.chat/rest-typings';
+import { Imports } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermission } from '../../../authorization/server';
-import { Imports } from '../../../models/server';
 import { Importers, Selection, SelectionChannel, SelectionUser } from '..';
 
-export const executeStartImport = ({ input }: StartImportParamsPOST) => {
-	const operation = Imports.findLastImport();
+export const executeStartImport = async ({ input }: StartImportParamsPOST) => {
+	const operation = await Imports.findLastImport();
 	if (!operation) {
 		throw new Meteor.Error('error-operation-not-found', 'Import Operation Not Found', 'startImport');
 	}
@@ -19,6 +19,7 @@ export const executeStartImport = ({ input }: StartImportParamsPOST) => {
 	}
 
 	importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
+	await importer.instance.build();
 
 	const usersSelection = input.users.map(
 		(user) => new SelectionUser(user.user_id, user.username, user.email, user.is_deleted, user.is_bot, user.do_import),

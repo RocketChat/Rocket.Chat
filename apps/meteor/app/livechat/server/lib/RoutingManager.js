@@ -113,7 +113,7 @@ export const RoutingManager = {
 		return inquiry;
 	},
 
-	unassignAgent(inquiry, departmentId) {
+	async unassignAgent(inquiry, departmentId) {
 		const { rid, department } = inquiry;
 		const room = LivechatRooms.findOneById(rid);
 
@@ -143,7 +143,7 @@ export const RoutingManager = {
 			dispatchAgentDelegated(rid, null);
 		}
 
-		dispatchInquiryQueued(inquiry);
+		await dispatchInquiryQueued(inquiry);
 		return true;
 	},
 
@@ -222,7 +222,7 @@ export const RoutingManager = {
 		return false;
 	},
 
-	delegateAgent(agent, inquiry) {
+	async delegateAgent(agent, inquiry) {
 		logger.debug(`Delegating Inquiry ${inquiry._id}`);
 		const defaultAgent = callbacks.run('livechat.beforeDelegateAgent', agent, {
 			department: inquiry?.department,
@@ -234,7 +234,7 @@ export const RoutingManager = {
 		}
 
 		logger.debug(`Queueing inquiry ${inquiry._id}`);
-		dispatchInquiryQueued(inquiry, defaultAgent);
+		await dispatchInquiryQueued(inquiry, defaultAgent);
 		return defaultAgent;
 	},
 
