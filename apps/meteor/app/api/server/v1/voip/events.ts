@@ -4,7 +4,7 @@ import { VoipRoom } from '@rocket.chat/models';
 import { LivechatVoip } from '@rocket.chat/core-services';
 
 import { API } from '../../api';
-import { canAccessRoom } from '../../../../authorization/server';
+import { canAccessRoomAsync } from '../../../../authorization/server';
 
 API.v1.addRoute(
 	'voip/events',
@@ -25,7 +25,7 @@ API.v1.addRoute(
 			if (!room) {
 				return API.v1.notFound();
 			}
-			if (!canAccessRoom(room, this.user)) {
+			if (!(await canAccessRoomAsync(room, this.user))) {
 				return API.v1.unauthorized();
 			}
 
