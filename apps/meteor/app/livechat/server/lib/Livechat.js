@@ -280,6 +280,19 @@ export const Livechat = {
 		return true;
 	},
 
+	/**
+	 * Returns the next visitor in the queue
+	 * @param {object} options
+	 * @param {string} [options.id] - The visitor's id
+	 * @param {string} options.token - The visitor's token
+	 * @param {string} [options.name] - The visitor's name
+	 * @param {string} [options.email] - The visitor's email
+	 * @param {string} [options.department] - The visitor's department
+	 * @param {object} [options.phone] - The visitor's phone
+	 * @param {string} [options.username] - The visitor's username
+	 * @param {string} [options.connectionData] - The visitor's connection data
+	 * @param {string} [options.status] - The visitor's status
+	 */
 	async registerGuest({ id, token, name, email, department, phone, username, connectionData, status = 'online' } = {}) {
 		check(token, String);
 		check(id, Match.Maybe(String));
