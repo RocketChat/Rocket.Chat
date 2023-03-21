@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import type { IRoom, AtLeast } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import { Subscriptions } from '@rocket.chat/models';
 
 import { settings } from '../../../../app/settings/server';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
 import { roomCoordinator } from '../roomCoordinator';
-import { Subscriptions } from '../../../../app/models/server';
 import { Federation } from '../../../services/federation/Federation';
 
 const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
@@ -55,26 +55,29 @@ roomCoordinator.add(DirectMessageRoomType, {
 	},
 
 	roomName(room, userId?) {
-		const subscription = ((): { fname?: string; name?: string } | undefined => {
-			if (room.fname || room.name) {
-				return {
-					fname: room.fname,
-					name: room.name,
-				};
-			}
+		// TODO: remove this when roomCoordinator is async
+		const subscription = Promise.await(
+			(async (): Promise<{ fname?: string; name?: string } | null | undefined> => {
+				if (room.fname || room.name) {
+					return {
+						fname: room.fname,
+						name: room.name,
+					};
+				}
 
-			if (!room._id) {
-				return undefined;
-			}
+				if (!room._id) {
+					return undefined;
+				}
 
-			const uid = userId || getCurrentUserId();
-			if (uid) {
-				return Subscriptions.findOneByRoomIdAndUserId(room._id, uid, { fields: { name: 1, fname: 1 } });
-			}
+				const uid = userId || getCurrentUserId();
+				if (uid) {
+					return Subscriptions.findOneByRoomIdAndUserId(room._id, uid, { projection: { name: 1, fname: 1 } });
+				}
 
-			// If we don't know what user is requesting the roomName, then any subscription will do
-			return Subscriptions.findOne({ rid: room._id }, { fields: { name: 1, fname: 1 } });
-		})();
+				// If we don't know what user is requesting the roomName, then any subscription will do
+				return Subscriptions.findOne({ rid: room._id }, { projection: { name: 1, fname: 1 } });
+			})(),
+		);
 
 		if (!subscription) {
 			return;

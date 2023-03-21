@@ -2,11 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Team } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Subscriptions } from '@rocket.chat/models';
 
 import { hasRole, getUsersInRole } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { removeUserFromRolesAsync } from '../lib/roles/removeUserFromRoles';
-import { Users, Subscriptions, Rooms, Messages } from '../../app/models/server';
+import { Users, Rooms, Messages } from '../../app/models/server';
 import { callbacks } from '../../lib/callbacks';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
@@ -54,8 +55,8 @@ Meteor.methods<ServerMethods>({
 
 		const fromUser = Users.findOneById(fromId);
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(data.rid, removedUser._id, {
-			fields: { _id: 1 },
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, removedUser._id, {
+			projection: { _id: 1 },
 		});
 		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
@@ -75,7 +76,7 @@ Meteor.methods<ServerMethods>({
 
 		callbacks.run('beforeRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
 
-		Subscriptions.removeByRoomIdAndUserId(data.rid, removedUser._id);
+		await Subscriptions.removeByRoomIdAndUserId(data.rid, removedUser._id);
 
 		if (['c', 'p'].includes(room.t) === true) {
 			await removeUserFromRolesAsync(removedUser._id, ['moderator', 'owner'], data.rid);

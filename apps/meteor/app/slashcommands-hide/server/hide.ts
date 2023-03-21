@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
+import { Subscriptions } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
-import { Rooms, Subscriptions, Users } from '../../models/server';
+import { Rooms, Users } from '../../models/server';
 import { slashCommands } from '../../utils/server';
 
 /*
@@ -11,6 +12,7 @@ import { slashCommands } from '../../utils/server';
  * @param {Object} message - The message object
  */
 
+// TODO: remove promise.await when slashcommands can be async
 slashCommands.add({
 	command: 'hide',
 	callback: async (_command: 'hide', param, item): Promise<void> => {
@@ -51,7 +53,7 @@ slashCommands.add({
 					}),
 				});
 			}
-			if (!Subscriptions.findOneByRoomIdAndUserId(roomObject._id, user._id, { fields: { _id: 1 } })) {
+			if (!Promise.await(Subscriptions.findOneByRoomIdAndUserId(roomObject._id, user._id, { projection: { _id: 1 } }))) {
 				void api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
 					msg: TAPi18n.__('error-logged-user-not-in-room', {
 						postProcess: 'sprintf',

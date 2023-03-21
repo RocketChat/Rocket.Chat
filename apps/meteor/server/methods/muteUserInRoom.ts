@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { Subscriptions } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import { Rooms, Subscriptions, Users, Messages } from '../../app/models/server';
+import { Rooms, Users, Messages } from '../../app/models/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
@@ -55,8 +56,8 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUsername(data.rid, data.username, {
-			fields: { _id: 1 },
+		const subscription = await Subscriptions.findOneByRoomIdAndUsername(data.rid, data.username, {
+			projection: { _id: 1 },
 		});
 		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {

@@ -6,7 +6,6 @@ import { Base } from './_Base';
 import Rooms from './Rooms';
 import Users from './Users';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
-import { isTruthy } from '../../../../lib/isTruthy';
 
 class Subscriptions extends Base {
 	constructor(...args) {
@@ -59,51 +58,11 @@ class Subscriptions extends Base {
 		this.update(query, update);
 	}
 
-	/**
-	 * @param {IRole['_id'][]} roles
-	 * @param {string} scope the value for the role scope (room id)
-	 * @param {any} options
-	 */
-	findUsersInRoles(roles, scope, options) {
-		roles = [].concat(roles);
-
-		const query = {
-			roles: { $in: roles },
-		};
-
-		if (scope) {
-			query.rid = scope;
-		}
-
-		const subscriptions = this.find(query).fetch();
-
-		const users = subscriptions
-			.map((subscription) => {
-				if (typeof subscription.u !== 'undefined' && typeof subscription.u._id !== 'undefined') {
-					return subscription.u._id;
-				}
-
-				return undefined;
-			})
-			.filter(isTruthy);
-
-		return Users.find({ _id: { $in: users } }, options);
-	}
-
 	// FIND ONE
 	findOneByRoomIdAndUserId(roomId, userId, options = {}) {
 		const query = {
 			'rid': roomId,
 			'u._id': userId,
-		};
-
-		return this.findOne(query, options);
-	}
-
-	findOneByRoomIdAndUsername(roomId, username, options) {
-		const query = {
-			'rid': roomId,
-			'u.username': username,
 		};
 
 		return this.findOne(query, options);
@@ -401,24 +360,6 @@ class Subscriptions extends Base {
 		const options = { multi: true };
 
 		return this.update(query, update, options);
-	}
-
-	setFavoriteByRoomIdAndUserId(roomId, userId, favorite) {
-		if (favorite == null) {
-			favorite = true;
-		}
-		const query = {
-			'rid': roomId,
-			'u._id': userId,
-		};
-
-		const update = {
-			$set: {
-				f: favorite,
-			},
-		};
-
-		return this.update(query, update);
 	}
 
 	updateNameAndAlertByRoomId(roomId, name, fname) {
@@ -750,38 +691,6 @@ class Subscriptions extends Base {
 		};
 
 		return this.update(query, update, { multi: true });
-	}
-
-	/**
-	 * @param {string} _id the subscription id
-	 * @param {IRole['_id']} role the id of the role
-	 */
-	addRoleById(_id, role) {
-		const query = { _id };
-
-		const update = {
-			$addToSet: {
-				roles: role,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	/**
-	 * @param {string} _id the subscription id
-	 * @param {IRole['_id']} role the id of the role
-	 */
-	removeRoleById(_id, role) {
-		const query = { _id };
-
-		const update = {
-			$pull: {
-				roles: role,
-			},
-		};
-
-		return this.update(query, update);
 	}
 
 	setArchivedByUsername(username, archived) {

@@ -1,11 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
+import { Subscriptions } from '@rocket.chat/models';
 
-import { Rooms, Subscriptions } from '../../models/server';
+import { Rooms } from '../../models/server';
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 
+// TODO: remove promise.await when slashcommands can be async
 slashCommands.add({
 	command: 'join',
 	callback: async (_command: 'join', params, item): Promise<void> => {
@@ -34,9 +36,11 @@ slashCommands.add({
 			});
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
-			fields: { _id: 1 },
-		});
+		const subscription = Promise.await(
+			Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
+				projection: { _id: 1 },
+			}),
+		);
 
 		if (subscription) {
 			throw new Meteor.Error('error-user-already-in-room', 'You are already in the channel', {

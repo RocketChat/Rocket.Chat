@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Roles } from '@rocket.chat/models';
+import { Roles, Subscriptions } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasRole } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Subscriptions, Rooms } from '../../../models/server';
+import { Rooms } from '../../../models/server';
 import { removeUserFromRoom } from '../functions';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
@@ -40,8 +40,8 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'leaveRoom' });
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id, {
-			fields: { _id: 1 },
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id, {
+			projection: { _id: 1 },
 		});
 		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'You are not in this room', {
