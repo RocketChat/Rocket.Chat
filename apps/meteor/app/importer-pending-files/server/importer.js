@@ -15,7 +15,7 @@ export class PendingFileImporter extends Base {
 		this.bots = {};
 	}
 
-	prepareFileCount() {
+	async prepareFileCount() {
 		this.logger.debug('start preparing import operation');
 		super.updateProgress(ProgressStep.PREPARING_STARTED);
 
@@ -27,11 +27,11 @@ export class PendingFileImporter extends Base {
 			return 0;
 		}
 
-		this.updateRecord({ 'count.messages': fileCount, 'messagesstatus': null });
+		await this.updateRecord({ 'count.messages': fileCount, 'messagesstatus': null });
 		this.addCountToTotal(fileCount);
 
 		const fileData = new Selection(this.name, [], [], fileCount);
-		this.updateRecord({ fileData });
+		await this.updateRecord({ fileData });
 
 		super.updateProgress(ProgressStep.IMPORTING_FILES);
 		Meteor.defer(() => {

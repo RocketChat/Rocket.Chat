@@ -54,7 +54,7 @@ export class HipChatEnterpriseImporter extends Base {
 		}
 
 		await Settings.incrementValueById('Hipchat_Enterprise_Importer_Count', count);
-		super.updateRecord({ 'count.users': count });
+		await super.updateRecord({ 'count.users': count });
 		super.addCountToTotal(count);
 	}
 
@@ -79,7 +79,7 @@ export class HipChatEnterpriseImporter extends Base {
 			count++;
 		}
 
-		super.updateRecord({ 'count.channels': count });
+		await super.updateRecord({ 'count.channels': count });
 		super.addCountToTotal(count);
 	}
 
@@ -235,7 +235,7 @@ export class HipChatEnterpriseImporter extends Base {
 		const [type, id] = info.dir.split('/');
 		const roomIdentifier = `${type}/${id}`;
 
-		super.updateRecord({ messagesstatus: roomIdentifier });
+		await super.updateRecord({ messagesstatus: roomIdentifier });
 
 		switch (type) {
 			case 'users':
@@ -313,7 +313,7 @@ export class HipChatEnterpriseImporter extends Base {
 							const newMessageCount = await this.prepareFile(info, data, header.name);
 
 							messageCount += newMessageCount;
-							super.updateRecord({ 'count.messages': messageCount });
+							await super.updateRecord({ 'count.messages': messageCount });
 							super.addCountToTotal(newMessageCount);
 
 							data = undefined;
