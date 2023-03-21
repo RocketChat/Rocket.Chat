@@ -355,7 +355,6 @@ export class APIClass extends Restivus {
 					});
 
 					this.requestIp = getRequestIP(this.request);
-					this.parseJsonQuery = api.parseJsonQuery.bind(this);
 
 					const startTime = Date.now();
 
@@ -457,6 +456,7 @@ export class APIClass extends Restivus {
 
 						this.queryOperations = options.queryOperations;
 						this.queryFields = options.queryFields;
+						this.parseJsonQuery = api.parseJsonQuery.bind(this);
 
 						result = DDP._CurrentInvocation.withValue(invocation, () => Promise.await(originalAction.apply(this))) || API.v1.success();
 
