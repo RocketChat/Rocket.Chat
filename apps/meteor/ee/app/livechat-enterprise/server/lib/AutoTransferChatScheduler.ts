@@ -9,6 +9,7 @@ import { Livechat } from '../../../../../app/livechat/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { forwardRoomToAgent } from '../../../../../app/livechat/server/lib/Helper';
 import { settings } from '../../../../../app/settings/server';
+import { logger } from './logger';
 
 const schedulerUser = Users.findOneById('rocket.cat');
 const SCHEDULER_NAME = 'omnichannel_scheduler';
@@ -54,7 +55,7 @@ class AutoTransferChatSchedulerClass {
 		await this.scheduler.cancel({ name: jobName });
 	}
 
-	private async transferRoom(roomId: string): Promise<boolean> {
+	private async transferRoom(roomId: string): Promise<void> {
 		const room = await LivechatRooms.findOneById(roomId, {
 			_id: 1,
 			v: 1,
@@ -63,7 +64,7 @@ class AutoTransferChatSchedulerClass {
 			departmentId: 1,
 		});
 		if (!room?.open || !room?.servedBy?._id) {
-			return false;
+			throw new Error('Room is not open or is not being served by an agent');
 		}
 
 		const {
@@ -74,35 +75,39 @@ class AutoTransferChatSchedulerClass {
 		const timeoutDuration = settings.get<number>('Livechat_auto_transfer_chat_timeout').toString();
 
 		if (!RoutingManager.getConfig().autoAssignAgent) {
-			return Livechat.returnRoomAsInquiry(room._id, departmentId, {
+			Livechat.returnRoomAsInquiry(room._id, departmentId, {
 				scope: 'autoTransferUnansweredChatsToQueue',
 				comment: timeoutDuration,
 				transferredBy: schedulerUser,
 			});
+			return;
 		}
 
 		const agent = await RoutingManager.getNextAgent(departmentId, ignoreAgentId);
-		if (agent) {
-			return forwardRoomToAgent(room, {
-				userId: agent.agentId,
-				transferredBy: schedulerUser,
-				transferredTo: agent,
-				scope: 'autoTransferUnansweredChatsToAgent',
-				comment: timeoutDuration,
-			});
+		if (!agent) {
+			logger.error(`No agent found to transfer room ${room._id} which hasn't been answered in ${timeoutDuration} seconds`);
 		}
 
-		return false;
+		await forwardRoomToAgent(room, {
+			userId: agent.agentId,
+			transferredBy: schedulerUser,
+			transferredTo: agent,
+			scope: 'autoTransferUnansweredChatsToAgent',
+			comment: timeoutDuration,
+		});
 	}
 
 	private async executeJob({ attrs: { data } }: any = {}): Promise<void> {
 		const { roomId } = data;
 
-		if (await this.transferRoom(roomId)) {
+		try {
+			await this.transferRoom(roomId);
 			await LivechatRooms.setAutoTransferredAtById(roomId);
+		} catch (error) {
+			logger.error(`Error while executing job ${SCHEDULER_NAME} for room ${roomId}:`, error);
+		} finally {
+			await this.unscheduleRoom(roomId);
 		}
-
-		await this.unscheduleRoom(roomId);
 	}
 }
 
