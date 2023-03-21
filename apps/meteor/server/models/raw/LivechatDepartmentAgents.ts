@@ -139,8 +139,8 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		return this.find({ departmentId: { $in: departmentIds } }, options);
 	}
 
-	findAgentsByAgentIdAndBusinessHourId(_agentId: string, _businessHourId: string): Promise<ILivechatDepartmentAgents[]> {
-		return [] as unknown as Promise<ILivechatDepartmentAgents[]>;
+	async findAgentsByAgentIdAndBusinessHourId(_agentId: string, _businessHourId: string): Promise<ILivechatDepartmentAgents[]> {
+		return [];
 	}
 
 	setDepartmentEnabledByDepartmentId(departmentId: string, departmentEnabled: boolean): Promise<Document | UpdateResult> {

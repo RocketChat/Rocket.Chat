@@ -12,4 +12,4 @@ import AppsModel from './models/apps-model';
 export { AppsLogsModel } from './models/apps-logs-model';
 export { AppsPersistenceModel } from './models/apps-persistence-model';
 
-export { AppsModel, Base, BaseDb, Messages, Rooms, Subscriptions, Users, Imports, LivechatDepartment, LivechatRooms, ImportData };
+export { AppsModel, Base, BaseDb, Messages, Rooms, Subscriptions, Users, Imports, LivechatDepartment, LivechatRooms };

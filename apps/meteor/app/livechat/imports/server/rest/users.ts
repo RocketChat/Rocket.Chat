@@ -130,7 +130,7 @@ API.v1.addRoute(
 					return API.v1.success();
 				}
 			} else if (this.urlParams.type === 'manager') {
-				if (Livechat.removeManager(user.username)) {
+				if (await Livechat.removeManager(user.username)) {
 					return API.v1.success();
 				}
 			} else {
