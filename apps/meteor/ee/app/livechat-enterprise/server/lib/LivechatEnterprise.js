@@ -287,7 +287,7 @@ export const LivechatEnterprise = {
 
 		const departmentDB = await LivechatDepartmentRaw.createOrUpdateDepartment(_id, departmentData);
 		if (departmentDB && departmentAgents) {
-			updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
+			await updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
 		}
 
 		return departmentDB;

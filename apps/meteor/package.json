@@ -308,7 +308,7 @@
 		"express-rate-limit": "^5.5.1",
 		"fastq": "^1.13.0",
 		"fflate": "^0.7.3",
-		"fibers": "^5.0.1",
+		"fibers": "^5.0.2",
 		"file-type": "^16.5.3",
 		"filenamify": "^4.3.0",
 		"filesize": "9.0.11",

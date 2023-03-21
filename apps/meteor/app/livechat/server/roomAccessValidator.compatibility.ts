@@ -1,7 +1,8 @@
-import type { IUser, ILivechatDepartment, ILivechatDepartmentAgents, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { IUser, ILivechatDepartment, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatDepartmentAgents } from '@rocket.chat/models';
 
 import { hasPermission, hasRole } from '../../authorization/server';
-import { LivechatDepartment, LivechatDepartmentAgents, LivechatInquiry, LivechatRooms } from '../../models/server';
+import { LivechatDepartment, LivechatInquiry, LivechatRooms } from '../../models/server';
 import { RoutingManager } from './lib/RoutingManager';
 
 type OmniRoomAccessValidator = (room: IOmnichannelRoom, user?: Pick<IUser, '_id'>, extraData?: Record<string, any>) => boolean;
@@ -28,7 +29,7 @@ export const validators: OmniRoomAccessValidator[] = [
 		}
 		return extraData?.visitorToken && room.v && room.v.token === extraData.visitorToken;
 	},
-	function (room, user) {
+	async function (room, user) {
 		if (!user?._id) {
 			return false;
 		}
@@ -39,9 +40,7 @@ export const validators: OmniRoomAccessValidator[] = [
 
 		let departmentIds;
 		if (!hasRole(user._id, 'livechat-manager')) {
-			const departmentAgents = LivechatDepartmentAgents.findByAgentId(user._id)
-				.fetch()
-				.map((d: ILivechatDepartmentAgents) => d.departmentId);
+			const departmentAgents = (await LivechatDepartmentAgents.findByAgentId(user._id).toArray()).map((d) => d.departmentId);
 			departmentIds = LivechatDepartment.find({ _id: { $in: departmentAgents }, enabled: true })
 				.fetch()
 				.map((d: ILivechatDepartment) => d._id);
@@ -65,11 +64,11 @@ export const validators: OmniRoomAccessValidator[] = [
 		const inquiry = LivechatInquiry.findOne(filter, { fields: { status: 1 } });
 		return inquiry && inquiry.status === 'queued';
 	},
-	function (room, user) {
+	async function (room, user) {
 		if (!room.departmentId || room.open || !user?._id) {
 			return;
 		}
-		const agentOfDepartment = LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(user._id, room.departmentId);
+		const agentOfDepartment = await LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(user._id, room.departmentId);
 		if (!agentOfDepartment) {
 			return;
 		}
