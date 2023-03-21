@@ -171,7 +171,7 @@ Meteor.methods<ServerMethods>({
 		check(customFields, Match.Maybe(Object));
 
 		if (settings.email || settings.newPassword) {
-			return saveUserProfileWithTwoFactor.call(this, settings, customFields, ...args);
+			return saveUserProfileWithTwoFactor.call(this, settings, customFields);
 		}
 
 		return saveUserProfile.call(this, settings, customFields, ...args);
