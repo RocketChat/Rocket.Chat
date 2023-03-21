@@ -30,6 +30,7 @@ export const validators: OmniRoomAccessValidator[] = [
 		return extraData?.visitorToken && room.v && room.v.token === extraData.visitorToken;
 	},
 	async function (room, user) {
+	async function (room, user) {
 		if (!user?._id) {
 			return false;
 		}
@@ -40,6 +41,7 @@ export const validators: OmniRoomAccessValidator[] = [
 
 		let departmentIds;
 		if (!hasRole(user._id, 'livechat-manager')) {
+			const departmentAgents = (await LivechatDepartmentAgents.findByAgentId(user._id).toArray()).map((d) => d.departmentId);
 			const departmentAgents = (await LivechatDepartmentAgents.findByAgentId(user._id).toArray()).map((d) => d.departmentId);
 			departmentIds = LivechatDepartment.find({ _id: { $in: departmentAgents }, enabled: true })
 				.fetch()
@@ -65,9 +67,11 @@ export const validators: OmniRoomAccessValidator[] = [
 		return inquiry && inquiry.status === 'queued';
 	},
 	async function (room, user) {
+	async function (room, user) {
 		if (!room.departmentId || room.open || !user?._id) {
 			return;
 		}
+		const agentOfDepartment = await LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(user._id, room.departmentId);
 		const agentOfDepartment = await LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(user._id, room.departmentId);
 		if (!agentOfDepartment) {
 			return;

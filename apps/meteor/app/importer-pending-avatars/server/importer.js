@@ -4,7 +4,7 @@ import { Base, ProgressStep, Selection } from '../../importer/server';
 import { Users } from '../../models/server';
 
 export class PendingAvatarImporter extends Base {
-	prepareFileCount() {
+	async prepareFileCount() {
 		this.logger.debug('start preparing import operation');
 		super.updateProgress(ProgressStep.PREPARING_STARTED);
 
@@ -16,11 +16,11 @@ export class PendingAvatarImporter extends Base {
 			return 0;
 		}
 
-		this.updateRecord({ 'count.messages': fileCount, 'messagesstatus': null });
+		await this.updateRecord({ 'count.messages': fileCount, 'messagesstatus': null });
 		this.addCountToTotal(fileCount);
 
 		const fileData = new Selection(this.name, [], [], fileCount);
-		this.updateRecord({ fileData });
+		await this.updateRecord({ fileData });
 
 		super.updateProgress(ProgressStep.IMPORTING_FILES);
 		Meteor.defer(() => {
