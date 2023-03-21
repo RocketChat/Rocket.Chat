@@ -20,7 +20,7 @@ export class SlackUsersImporter extends Base {
 
 	async prepare(dataURI, sentContentType, fileName) {
 		this.logger.debug('start preparing import operation');
-		super.prepare(dataURI, sentContentType, fileName, true);
+		await super.prepare(dataURI, sentContentType, fileName, true);
 
 		super.updateProgress(ProgressStep.PREPARING_USERS);
 		const uriResult = RocketChatFile.dataURIParse(dataURI);
@@ -69,13 +69,13 @@ export class SlackUsersImporter extends Base {
 
 		if (userCount === 0) {
 			this.logger.error('No users found in the import file.');
-			super.updateProgress(ProgressStep.ERROR);
+			await super.updateProgress(ProgressStep.ERROR);
 			return super.getProgress();
 		}
 
-		super.updateProgress(ProgressStep.USER_SELECTION);
-		super.addCountToTotal(userCount);
-		Settings.incrementValueById('Slack_Users_Importer_Count', userCount);
+		await super.updateProgress(ProgressStep.USER_SELECTION);
+		await super.addCountToTotal(userCount);
+		await Settings.incrementValueById('Slack_Users_Importer_Count', userCount);
 		return super.updateRecord({ 'count.users': userCount });
 	}
 }

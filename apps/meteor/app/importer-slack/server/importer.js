@@ -195,30 +195,30 @@ export class SlackImporter extends Base {
 				try {
 					if (entry.entryName === 'channels.json') {
 						channelCount += Promise.await(this.prepareChannelsFile(entry));
-						Promise.await(this.updateRecord({ 'count.channels': channelCount }));
+						await this.updateRecord({ 'count.channels': channelCount });
 						return increaseProgress();
 					}
 
 					if (entry.entryName === 'groups.json') {
-						channelCount += Promise.await(this.prepareGroupsFile(entry));
-						Promise.await(this.updateRecord({ 'count.channels': channelCount }));
+						channelCount += await this.prepareGroupsFile(entry);
+						await this.updateRecord({ 'count.channels': channelCount });
 						return increaseProgress();
 					}
 
 					if (entry.entryName === 'mpims.json') {
-						channelCount += Promise.await(this.prepareMpimpsFile(entry));
-						Promise.await(this.updateRecord({ 'count.channels': channelCount }));
+						channelCount += await this.prepareMpimpsFile(entry);
+						await this.updateRecord({ 'count.channels': channelCount });
 						return increaseProgress();
 					}
 
 					if (entry.entryName === 'dms.json') {
-						channelCount += Promise.await(this.prepareDMsFile(entry));
-						Promise.await(this.updateRecord({ 'count.channels': channelCount }));
+						channelCount += await this.prepareDMsFile(entry);
+						await this.updateRecord({ 'count.channels': channelCount });
 						return increaseProgress();
 					}
 
 					if (entry.entryName === 'users.json') {
-						userCount = Promise.await(this.prepareUsersFile(entry));
+						userCount = await this.prepareUsersFile(entry);
 						return increaseProgress();
 					}
 				} catch (e) {
