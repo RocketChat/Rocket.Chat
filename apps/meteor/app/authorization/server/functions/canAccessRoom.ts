@@ -10,6 +10,7 @@ export const roomAccessAttributes = {
 	prid: 1,
 };
 
+/* deprecated */
 export const canAccessRoom = (...args: Parameters<IAuthorization['canAccessRoom']>): boolean => Promise.await(canAccessRoomAsync(...args));
 export const canAccessRoomId = (...args: Parameters<IAuthorization['canAccessRoomId']>): boolean =>
 	Promise.await(canAccessRoomIdAsync(...args));

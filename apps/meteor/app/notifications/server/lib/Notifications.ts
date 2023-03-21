@@ -1,9 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPCommon } from 'meteor/ddp-common';
 import { api } from '@rocket.chat/core-services';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { NotificationsModule } from '../../../../server/modules/notifications/notifications.module';
 import { Streamer } from '../../../../server/modules/streamer/streamer.module';
+
 import './Presence';
 
 class Stream extends Streamer {
@@ -13,7 +15,7 @@ class Stream extends Streamer {
 		});
 	}
 
-	registerMethod(methods: Record<string, (eventName: string, ...args: any[]) => any>): void {
+	registerMethod(methods: Partial<ServerMethods>): void {
 		Meteor.methods(methods);
 	}
 
@@ -32,7 +34,7 @@ const notifications = new NotificationsModule(Stream);
 notifications.configure();
 
 notifications.streamLocal.on('broadcast', ({ eventName, args }) => {
-	api.broadcastLocal(eventName, ...args);
+	void api.broadcastLocal(eventName, ...args);
 });
 
 export default notifications;

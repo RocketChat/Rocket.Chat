@@ -20,7 +20,7 @@ export async function sendDirectMessageToUsers(
 
 	for await (const user of users) {
 		try {
-			const { rid } = createDirectMessage([user.username], fromId);
+			const { rid } = await createDirectMessage([user.username], fromId);
 			const msg = typeof messageFn === 'function' ? messageFn(user) : messageFn;
 
 			executeSendMessage(fromId, { rid, msg });

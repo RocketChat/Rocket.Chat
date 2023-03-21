@@ -1,11 +1,26 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { ICreatedRoom } from '@rocket.chat/core-typings';
 
 import { hasPermission } from '../../../authorization/server';
 import { createRoom } from '../functions';
 
-Meteor.methods({
-	createChannel(name, members, readOnly = false, customFields = {}, extraData = {}) {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		createChannel(
+			name: string,
+			members: string[],
+			readOnly?: boolean,
+			customFields?: Record<string, any>,
+			extraData?: Record<string, any>,
+		): ICreatedRoom;
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async createChannel(name, members, readOnly = false, customFields = {}, extraData = {}) {
 		check(name, String);
 		check(members, Match.Optional([String]));
 
