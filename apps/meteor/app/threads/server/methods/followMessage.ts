@@ -18,7 +18,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	followMessage({ mid }) {
+	async followMessage({ mid }) {
 		check(mid, String);
 
 		const uid = Meteor.userId();
@@ -44,7 +44,7 @@ Meteor.methods<ServerMethods>({
 		const followResult = follow({ tmid: message.tmid || message._id, uid });
 
 		const isFollowed = true;
-		Promise.await(Apps.triggerEvent(AppEvents.IPostMessageFollowed, message, Meteor.user(), isFollowed));
+		await Apps.triggerEvent(AppEvents.IPostMessageFollowed, message, Meteor.user(), isFollowed);
 
 		return followResult;
 	},
