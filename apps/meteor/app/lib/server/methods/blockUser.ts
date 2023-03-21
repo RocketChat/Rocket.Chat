@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Subscriptions } from '@rocket.chat/models';
 
-import { Rooms, Subscriptions } from '../../../models/server';
+import { Rooms } from '../../../models/server';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
@@ -14,7 +15,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	blockUser({ rid, blocked }) {
+	async blockUser({ rid, blocked }) {
 		check(rid, String);
 		check(blocked, String);
 		const userId = Meteor.userId();
@@ -29,14 +30,14 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'blockUser' });
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, Meteor.userId());
-		const subscription2 = Subscriptions.findOneByRoomIdAndUserId(rid, blocked);
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userId);
+		const subscription2 = await Subscriptions.findOneByRoomIdAndUserId(rid, blocked);
 
 		if (!subscription || !subscription2) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'blockUser' });
 		}
 
-		Subscriptions.setBlockedByRoomId(rid, blocked, Meteor.userId());
+		await Subscriptions.setBlockedByRoomId(rid, blocked, userId);
 
 		return true;
 	},

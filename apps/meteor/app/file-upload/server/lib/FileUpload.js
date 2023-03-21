@@ -12,13 +12,12 @@ import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Avatars, UserDataFiles, Uploads, Settings } from '@rocket.chat/models';
+import { Avatars, UserDataFiles, Uploads, Settings, Subscriptions } from '@rocket.chat/models';
 import { hashLoginToken } from '@rocket.chat/account-utils';
 
 import { settings } from '../../../settings/server';
 import Users from '../../../models/server/models/Users';
 import Rooms from '../../../models/server/models/Rooms';
-import Subscriptions from '../../../models/server/models/Subscriptions';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -164,9 +163,9 @@ export const FileUpload = {
 				return `${settings.get('uniqueID')}/uploads/${file.rid}/${file.userId}/${file._id}`;
 			},
 			onValidate: FileUpload.uploadsOnValidate,
-			onRead(fileId, file, req, res) {
+			async onRead(fileId, file, req, res) {
 				// Deprecated: Remove support to usf path
-				if (!FileUpload.requestCanAccessFiles(req, file)) {
+				if (!(await FileUpload.requestCanAccessFiles(req, file))) {
 					res.writeHead(403);
 					return false;
 				}
@@ -199,8 +198,8 @@ export const FileUpload = {
 				return `${settings.get('uniqueID')}/uploads/userData/${file.userId}`;
 			},
 			onValidate: FileUpload.uploadsOnValidate,
-			onRead(fileId, file, req, res) {
-				if (!FileUpload.requestCanAccessFiles(req)) {
+			async onRead(fileId, file, req, res) {
+				if (!(await FileUpload.requestCanAccessFiles(req))) {
 					res.writeHead(403);
 					return false;
 				}
@@ -434,7 +433,7 @@ export const FileUpload = {
 		// console.log('upload finished ->', file);
 	},
 
-	requestCanAccessFiles({ headers = {}, query = {} }, file) {
+	async requestCanAccessFiles({ headers = {}, query = {} }, file) {
 		if (!settings.get('FileUpload_ProtectFiles')) {
 			return true;
 		}
@@ -473,7 +472,7 @@ export const FileUpload = {
 			return true;
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(file.rid, user._id, { fields: { _id: 1 } });
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(file.rid, user._id, { projection: { _id: 1 } });
 
 		if (subscription) {
 			return true;

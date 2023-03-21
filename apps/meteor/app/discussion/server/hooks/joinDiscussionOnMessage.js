@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
+import { Subscriptions } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { Subscriptions } from '../../../models/server';
 
 callbacks.add(
 	'beforeSaveMessage',
@@ -12,9 +12,11 @@ callbacks.add(
 		}
 
 		// check if user already joined the discussion
-		const sub = Subscriptions.findOneByRoomIdAndUserId(room._id, message.u._id, {
-			fields: { _id: 1 },
-		});
+		const sub = Promise.await(
+			Subscriptions.findOneByRoomIdAndUserId(room._id, message.u._id, {
+				projection: { _id: 1 },
+			}),
+		);
 		if (sub) {
 			return message;
 		}

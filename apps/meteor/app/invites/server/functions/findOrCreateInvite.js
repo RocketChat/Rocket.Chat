@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
-import { Invites } from '@rocket.chat/models';
+import { Invites, Subscriptions } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Subscriptions, Rooms } from '../../../models/server';
+import { Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { getURL } from '../../../utils/lib/getURL';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -41,8 +41,8 @@ export const findOrCreateInvite = async (userId, invite) => {
 		throw new Meteor.Error('not_authorized');
 	}
 
-	const subscription = Subscriptions.findOneByRoomIdAndUserId(invite.rid, userId, {
-		fields: { _id: 1 },
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(invite.rid, userId, {
+		projection: { _id: 1 },
 	});
 	if (!subscription) {
 		throw new Meteor.Error('error-invalid-room', 'The rid field is invalid', {

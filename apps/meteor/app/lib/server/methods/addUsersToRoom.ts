@@ -5,8 +5,9 @@ import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Subscriptions } from '@rocket.chat/models';
 
-import { Rooms, Subscriptions, Users } from '../../../models/server';
+import { Rooms, Users } from '../../../models/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../functions';
 import { callbacks } from '../../../../lib/callbacks';
@@ -37,9 +38,9 @@ Meteor.methods<ServerMethods>({
 
 		// Get user and room details
 		const room = Rooms.findOneById(data.rid);
-		const userId = uid;
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(data.rid, userId, {
-			fields: { _id: 1 },
+		const userId = Meteor.userId();
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, userId, {
+			projection: { _id: 1 },
 		});
 		const userInRoom = subscription != null;
 
@@ -89,7 +90,7 @@ Meteor.methods<ServerMethods>({
 						method: 'addUsersToRoom',
 					});
 				}
-				const subscription = newUser && Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
+				const subscription = newUser && (await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id));
 				if (!subscription) {
 					await addUserToRoom(data.rid, newUser || username, user);
 				} else {
