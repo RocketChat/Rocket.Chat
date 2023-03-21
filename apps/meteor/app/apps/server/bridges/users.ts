@@ -1,4 +1,4 @@
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { UserBridge } from '@rocket.chat/apps-engine/server/bridges/UserBridge';
 import type { IUserCreationOptions, IUser, UserType } from '@rocket.chat/apps-engine/definition/users';
 import { Subscriptions, Users as UsersRaw } from '@rocket.chat/models';
@@ -94,7 +94,7 @@ export class AppUserBridge extends UserBridge {
 		}
 
 		try {
-			deleteUser(user.id);
+			await deleteUser(user.id);
 		} catch (err) {
 			throw new Error(`Errors occurred while deleting an app user: ${err}`);
 		}

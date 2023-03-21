@@ -1,7 +1,7 @@
 import type { ServerResponse } from 'http';
 
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import fiber from 'fibers';
@@ -218,7 +218,7 @@ export class SAML {
 		);
 
 		if (username && username !== user.username) {
-			saveUserIdentity({ _id: user._id, username } as Parameters<typeof saveUserIdentity>[0]);
+			saveUserIdentity({ _id: user._id, username });
 		}
 
 		// sending token along with the userId

@@ -12,12 +12,12 @@ function updateSetting(id: string, value: SettingValue | null): void {
 		const setting = settings.get(id);
 
 		if (setting === undefined) {
-			settingsRegistry.add(id, value);
+			void settingsRegistry.add(id, value);
 		} else {
-			Settings.updateValueById(id, value);
+			void Settings.updateValueById(id, value);
 		}
 	} else {
-		Settings.updateValueById(id, null);
+		void Settings.updateValueById(id, null);
 	}
 }
 
@@ -58,7 +58,7 @@ async function runFederation(): Promise<void> {
 
 	// Test if federation is healthy
 	try {
-		dispatchEvent([getFederationDomain()], {
+		void dispatchEvent([getFederationDomain()], {
 			type: eventTypes.PING,
 		});
 

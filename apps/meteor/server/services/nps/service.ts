@@ -21,7 +21,7 @@ export class NPSService extends ServiceClassInternal implements INPSService {
 
 		const any = await Nps.findOne({}, { projection: { _id: 1 } });
 		if (!any) {
-			Banner.create(getBannerForAdmins(nps.startAt));
+			await Banner.create(getBannerForAdmins(nps.startAt));
 
 			notifyAdmins(nps.startAt);
 		}

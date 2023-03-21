@@ -1,5 +1,5 @@
 import type ldapjs from 'ldapjs';
-import type { ILDAPEntry, IUser, IRoom, ICreatedRoom, IRole, IImportUser } from '@rocket.chat/core-typings';
+import type { ILDAPEntry, IUser, IRoom, IRole, IImportUser } from '@rocket.chat/core-typings';
 import { Users as UsersRaw, Roles, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
 import { Team } from '@rocket.chat/core-services';
 
@@ -39,7 +39,7 @@ export class LDAPEEManager extends LDAPManager {
 				await this.updateExistingUsers(ldap, converter);
 			}
 
-			converter.convertUsers({
+			await converter.convertUsers({
 				afterImportFn: ((data: IImportUser, _type: string, isNewRecord: boolean): void =>
 					Promise.await(this.advancedSync(ldap, data, converter, isNewRecord))) as ImporterAfterImportCallback,
 			});
@@ -254,7 +254,7 @@ export class LDAPEEManager extends LDAPManager {
 		// #ToDo: Remove typecastings when createRoom is converted to ts.
 		const room = createRoom('c', channel, roomOwner, [], false, {
 			customFields: { ldap: true },
-		} as any) as unknown as ICreatedRoom | undefined;
+		} as any);
 		if (!room?.rid) {
 			logger.error(`Unable to auto-create channel '${channel}' during ldap sync.`);
 			return;
@@ -529,7 +529,7 @@ export class LDAPEEManager extends LDAPManager {
 		return new Promise((resolve, reject) => {
 			let count = 0;
 
-			ldap.searchAllUsers<IImportUser>({
+			void ldap.searchAllUsers<IImportUser>({
 				entryCallback: (entry: ldapjs.SearchEntry): IImportUser | undefined => {
 					const data = ldap.extractLdapEntryData(entry);
 					count++;

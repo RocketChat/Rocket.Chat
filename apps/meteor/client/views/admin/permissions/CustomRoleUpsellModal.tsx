@@ -19,7 +19,9 @@ const CustomRoleUpsellModal: VFC<CustomRoleUpsellModalProps> = ({ onClose }) => 
 			onCancel={onClose}
 			cancelText={t('Close')}
 			confirmText={t('Talk_to_sales')}
-			onConfirm={() => window.open('https://go.rocket.chat/i/ce-custom-roles')}
+			onConfirm={() => {
+				window.open('https://go.rocket.chat/i/ce-custom-roles');
+			}}
 			variant='warning'
 			icon={null}
 		>

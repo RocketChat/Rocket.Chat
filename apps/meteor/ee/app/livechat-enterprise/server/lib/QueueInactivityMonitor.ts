@@ -52,7 +52,7 @@ class OmnichannelQueueInactivityMonitorClass {
 	}
 
 	createIndex(): void {
-		this._db.collection(SCHEDULER_NAME).createIndex(
+		void this._db.collection(SCHEDULER_NAME).createIndex(
 			{
 				'data.inquiryId': 1,
 			},

@@ -1,6 +1,7 @@
 import { Users, Rooms } from '../../../../models/server';
 import { createRoom, addUserToRoom } from '../../../../lib/server';
 
+// TODO doesn't seem to be used anywhere, remove
 export default function handleJoinedChannel(args) {
 	const user = Users.findOne({
 		'profile.irc.nick': args.nick,

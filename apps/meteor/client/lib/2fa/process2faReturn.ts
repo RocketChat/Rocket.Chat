@@ -1,5 +1,5 @@
+import { SHA256 } from '@rocket.chat/sha256';
 import { Meteor } from 'meteor/meteor';
-import { SHA256 } from 'meteor/sha';
 
 import TwoFactorModal from '../../components/TwoFactorModal';
 import { imperativeModal } from '../imperativeModal';
@@ -83,7 +83,7 @@ export async function process2faAsyncReturn({
 	emailOrUsername,
 }: {
 	promise: Promise<unknown>;
-	onCode: (code: string, method: string) => void;
+	onCode: (code: string, method: string) => unknown | Promise<unknown>;
 	emailOrUsername: string | null | undefined;
 }): Promise<unknown> {
 	// if the promise is rejected, we need to check if it's a 2fa error
