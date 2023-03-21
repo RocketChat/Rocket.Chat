@@ -109,24 +109,24 @@ export class CsvImporter extends Base {
 						const parsedUsers = this.csvParser(entry.getData().toString());
 						usersCount = parsedUsers.length;
 
-				for await (const u of parsedUsers) {
-					const username = u[0].trim();
-					availableUsernames.add(username);
+						for await (const u of parsedUsers) {
+							const username = u[0].trim();
+							availableUsernames.add(username);
 
 							const email = u[1].trim();
 							const name = u[2].trim();
 
-					await this.converter.addUser({
-						importIds: [username],
-						emails: [email],
-						username,
-						name,
-					});
-				}
+							await this.converter.addUser({
+								importIds: [username],
+								emails: [email],
+								username,
+								name,
+							});
+						}
 
-				await super.updateRecord({ 'count.users': usersCount });
-				return increaseProgressCount();
-			}
+						await super.updateRecord({ 'count.users': usersCount });
+						return increaseProgressCount();
+					}
 
 					// Parse the messages
 					if (entry.entryName.indexOf('/') > -1) {
@@ -166,18 +166,18 @@ export class CsvImporter extends Base {
 						messagesCount += data.length;
 						const channelName = `${folderName}/${msgGroupData}`;
 
-				await super.updateRecord({ messagesstatus: channelName });
+						await super.updateRecord({ messagesstatus: channelName });
 
-				if (isDirect) {
-					for await (const msg of data) {
-						const sourceId = [msg.username, msg.otherUsername].sort().join('/');
+						if (isDirect) {
+							for await (const msg of data) {
+								const sourceId = [msg.username, msg.otherUsername].sort().join('/');
 
-						if (!dmRooms.has(sourceId)) {
-							await this.converter.addChannel({
-								importIds: [sourceId],
-								users: [msg.username, msg.otherUsername],
-								t: 'd',
-							});
+								if (!dmRooms.has(sourceId)) {
+									await this.converter.addChannel({
+										importIds: [sourceId],
+										users: [msg.username, msg.otherUsername],
+										t: 'd',
+									});
 
 									dmRooms.set(sourceId, true);
 								}
@@ -220,7 +220,7 @@ export class CsvImporter extends Base {
 			);
 
 			increaseProgressCount();
-		}
+		});
 
 		if (usersCount) {
 			await Settings.incrementValueById('CSV_Importer_Count', usersCount);

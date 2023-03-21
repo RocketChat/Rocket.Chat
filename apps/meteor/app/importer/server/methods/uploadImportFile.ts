@@ -53,7 +53,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	uploadImportFile(binaryContent, contentType, fileName, importerKey) {
+	async uploadImportFile(binaryContent, contentType, fileName, importerKey) {
 		const userId = Meteor.userId();
 
 		if (!userId) {
