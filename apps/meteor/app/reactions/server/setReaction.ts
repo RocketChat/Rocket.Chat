@@ -10,7 +10,7 @@ import { Messages, Rooms } from '../../models/server';
 import { callbacks } from '../../../lib/callbacks';
 import { emoji } from '../../emoji/server';
 import { isTheLastMessage, msgStream } from '../../lib/server';
-import { canAccessRoom, hasPermission } from '../../authorization/server';
+import { canAccessRoomAsync, hasPermission } from '../../authorization/server';
 import { AppEvents, Apps } from '../../../ee/server/apps/orchestrator';
 
 const removeUserReaction = (message: IMessage, reaction: string, username: string) => {
@@ -28,7 +28,7 @@ const removeUserReaction = (message: IMessage, reaction: string, username: strin
 async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction: string, shouldReact?: boolean) {
 	reaction = `:${reaction.replace(/:/g, '')}:`;
 
-	if (!emoji.list[reaction] && (await EmojiCustom.findByNameOrAlias(reaction).count()) === 0) {
+	if (!emoji.list[reaction] && (await EmojiCustom.findByNameOrAlias(reaction, {}).count()) === 0) {
 		throw new Meteor.Error('error-not-allowed', 'Invalid emoji provided.', {
 			method: 'setReaction',
 		});
@@ -123,7 +123,7 @@ export const executeSetReaction = async (reaction: string, messageId: IMessage['
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
 	}
 
-	if (!canAccessRoom(room, user)) {
+	if (!(await canAccessRoomAsync(room, user))) {
 		throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'setReaction' });
 	}
 

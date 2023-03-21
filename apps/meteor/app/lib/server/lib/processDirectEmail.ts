@@ -6,7 +6,7 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { settings } from '../../../settings/server';
 import { Rooms, Messages, Users, Subscriptions } from '../../../models/server';
 import { metrics } from '../../../metrics/server';
-import { canAccessRoom, hasPermission } from '../../../authorization/server';
+import { canAccessRoomAsync, hasPermission } from '../../../authorization/server';
 import { sendMessage } from '../functions/sendMessage';
 
 const isParsedEmail = (email: ParsedMail): email is Required<ParsedMail> => 'date' in email && 'html' in email;
@@ -57,7 +57,7 @@ export const processDirectEmail = Meteor.bindEnvironment(function (email: Parsed
 
 	const roomInfo: IRoom = Rooms.findOneById(prevMessage.rid);
 
-	const room = canAccessRoom(roomInfo, user);
+	const room = Promise.await(canAccessRoomAsync(roomInfo, user));
 	if (!room) {
 		return;
 	}

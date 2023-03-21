@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import type { StartImportParamsPOST } from '@rocket.chat/rest-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermission } from '../../../authorization/server';
 import { Imports } from '../../../models/server';
@@ -38,7 +39,14 @@ export const executeStartImport = ({ input }: StartImportParamsPOST) => {
 	return importer.instance.startImport(selection);
 };
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		startImport(params: StartImportParamsPOST): void;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	startImport({ input }: StartImportParamsPOST) {
 		const userId = Meteor.userId();
 		// Takes name and object with users / channels selected to import

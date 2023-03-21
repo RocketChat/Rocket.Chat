@@ -38,8 +38,8 @@ Meteor.methods<ServerMethods>({
 		// related to this group have been removed
 
 		if (permission.groupPermissionId) {
-			Permissions.removeRole(permission.groupPermissionId, role);
+			await Permissions.removeRole(permission.groupPermissionId, role);
 		}
-		Permissions.removeRole(permission._id, role);
+		await Permissions.removeRole(permission._id, role);
 	},
 });
