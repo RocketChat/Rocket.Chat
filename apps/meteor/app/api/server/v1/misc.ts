@@ -18,7 +18,7 @@ import {
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users as UsersRaw } from '@rocket.chat/models';
 
-import { hasPermissionAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { API } from '../api';

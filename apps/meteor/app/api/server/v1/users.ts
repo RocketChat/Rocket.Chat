@@ -24,7 +24,7 @@ import type { Filter } from 'mongodb';
 import { Team, api } from '@rocket.chat/core-services';
 
 import { Users, Subscriptions } from '../../../models/server';
-import { hasPermissionAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import {
 	validateCustomFields,
@@ -110,7 +110,7 @@ API.v1.addRoute(
 	'users.updateOwnBasicInfo',
 	{ authRequired: true, validateParams: isUsersUpdateOwnBasicInfoParamsPOST },
 	{
-		post() {
+		async post() {
 			const userData = {
 				email: this.bodyParams.data.email,
 				realname: this.bodyParams.data.name,
@@ -142,7 +142,7 @@ API.v1.addRoute(
 	'users.setPreferences',
 	{ authRequired: true, validateParams: isUsersSetPreferencesParamsPOST },
 	{
-		post() {
+		async post() {
 			if (
 				this.bodyParams.userId &&
 				this.bodyParams.userId !== this.userId &&
@@ -281,7 +281,7 @@ API.v1.addRoute(
 	'users.delete',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			if (!(await hasPermissionAsync(this.userId, 'delete-user'))) {
 				return API.v1.unauthorized();
 			}
@@ -322,7 +322,7 @@ API.v1.addRoute(
 	'users.setActiveStatus',
 	{ authRequired: true, validateParams: isUserSetActiveStatusParamsPOST },
 	{
-		post() {
+		async post() {
 			if (!(await hasPermissionAsync(this.userId, 'edit-other-user-active-status'))) {
 				return API.v1.unauthorized();
 			}
@@ -340,7 +340,7 @@ API.v1.addRoute(
 	'users.deactivateIdle',
 	{ authRequired: true, validateParams: isUserDeactivateIdleParamsPOST },
 	{
-		post() {
+		async post() {
 			if (!(await hasPermissionAsync(this.userId, 'edit-other-user-active-status'))) {
 				return API.v1.unauthorized();
 			}
@@ -556,7 +556,7 @@ API.v1.addRoute(
 	'users.resetAvatar',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			const user = this.getUserFromParams();
 
 			if (settings.get('Accounts_AllowUserAvatarChange') && user._id === this.userId) {
@@ -685,7 +685,7 @@ API.v1.addRoute(
 	'users.getPersonalAccessTokens',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (!(await hasPermissionAsync(this.userId, 'create-personal-access-tokens'))) {
 				throw new Meteor.Error('not-authorized', 'Not Authorized');
 			}
@@ -934,7 +934,7 @@ API.v1.addRoute(
 	'users.resetE2EKey',
 	{ authRequired: true, twoFactorRequired: true, twoFactorOptions: { disableRememberMe: true } },
 	{
-		post() {
+		async post() {
 			if ('userId' in this.bodyParams || 'username' in this.bodyParams || 'user' in this.bodyParams) {
 				// reset other user keys
 				const user = this.getUserFromParams();
@@ -1023,7 +1023,7 @@ API.v1.addRoute(
 	'users.logout',
 	{ authRequired: true, validateParams: isUserLogoutParamsPOST },
 	{
-		post() {
+		async post() {
 			const userId = this.bodyParams.userId || this.userId;
 
 			if (userId !== this.userId && !(await hasPermissionAsync(this.userId, 'logout-other-user'))) {
@@ -1069,7 +1069,7 @@ API.v1.addRoute(
 	'users.setStatus',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			check(
 				this.bodyParams,
 				Match.OneOf(
@@ -1090,7 +1090,7 @@ API.v1.addRoute(
 				});
 			}
 
-			const user = ((): IUser | undefined => {
+			const user = await (async (): Promise<IUser | undefined> => {
 				if (this.isUserFromParams()) {
 					return Meteor.users.findOne(this.userId) as IUser;
 				}

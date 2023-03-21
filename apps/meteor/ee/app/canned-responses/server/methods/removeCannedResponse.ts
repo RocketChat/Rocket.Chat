@@ -17,7 +17,7 @@ Meteor.methods<ServerMethods>({
 	async removeCannedResponse(_id) {
 		const uid = Meteor.userId();
 
-		if (!uid || !(await (uid, 'remove-canned-responses'))) {
+		if (!uid || !(await hasPermissionAsync(uid, 'remove-canned-responses'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'removeCannedResponse',
 			});

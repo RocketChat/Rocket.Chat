@@ -18,7 +18,7 @@ API.v1.addRoute(
 	'licenses.get',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			if (!(await hasPermissionAsync(this.userId, 'view-privileged-setting'))) {
 				return API.v1.unauthorized();
 			}

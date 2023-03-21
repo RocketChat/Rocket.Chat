@@ -6,7 +6,8 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Media } from '@rocket.chat/core-services';
 
 import { API } from '../api';
-import { canAccessRoomAsync, canAccessRoomId, hasPermissionAsync } from '../../../authorization/server';
+import { canAccessRoomAsync, canAccessRoomId } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { settings } from '../../../settings/server';
 import { eraseRoom } from '../../../../server/methods/eraseRoom';

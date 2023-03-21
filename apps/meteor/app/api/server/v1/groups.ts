@@ -6,13 +6,8 @@ import { Team } from '@rocket.chat/core-services';
 import type { Filter } from 'mongodb';
 
 import { Rooms as RoomSync, Users as UsersSync, Messages as MessageSync, Subscriptions as SubscriptionsSync } from '../../../models/server';
-import {
-	hasPermissionAsync,
-	hasAtLeastOnePermission,
-	canAccessRoomAsync,
-	hasAllPermission,
-	roomAccessAttributes,
-} from '../../../authorization/server';
+import { hasAtLeastOnePermission, canAccessRoomAsync, hasAllPermission, roomAccessAttributes } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';

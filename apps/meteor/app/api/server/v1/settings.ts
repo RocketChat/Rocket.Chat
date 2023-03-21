@@ -12,7 +12,7 @@ import {
 import { Settings } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
-import { hasPermissionAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import type { ResultFor } from '../api';
 import { API } from '../api';
 import { SettingsEvents, settings } from '../../../settings/server';

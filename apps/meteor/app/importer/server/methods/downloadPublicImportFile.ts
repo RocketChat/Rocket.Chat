@@ -8,7 +8,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { RocketChatImportFileInstance } from '../startup/store';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
-import { hasPermissionAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Importers } from '..';
 
 function downloadHttpFile(fileUrl: string, writeStream: fs.WriteStream): void {

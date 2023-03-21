@@ -6,7 +6,7 @@ import { Team } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
-import { hasPermissionAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Rooms } from '../../../models/server';
 import { saveRoomName } from '../functions/saveRoomName';
 import { saveRoomTopic } from '../functions/saveRoomTopic';
@@ -56,14 +56,14 @@ type RoomSettingsValidators = {
 		value: RoomSettings[TRoomSetting];
 		room: IRoom;
 		rid: IRoom['_id'];
-	}) => void;
+	}) => Promise<void> | void;
 };
 
 const hasRetentionPolicy = (room: IRoom & { retention?: any }): room is IRoomWithRetentionPolicy =>
 	'retention' in room && room.retention !== undefined;
 
 const validators: RoomSettingsValidators = {
-	default({ userId }) {
+	async default({ userId }) {
 		if (!(await hasPermissionAsync(userId, 'view-room-administration'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Viewing room administration is not allowed', {
 				method: 'saveRoomSettings',
@@ -71,7 +71,7 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 	},
-	featured({ userId }) {
+	async featured({ userId }) {
 		if (!(await hasPermissionAsync(userId, 'view-room-administration'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Viewing room administration is not allowed', {
 				method: 'saveRoomSettings',
@@ -79,7 +79,7 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 	},
-	roomType({ userId, room, value }) {
+	async roomType({ userId, room, value }) {
 		if (value === room.t) {
 			return;
 		}
@@ -98,7 +98,7 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 	},
-	encrypted({ userId, value, room, rid }) {
+	async encrypted({ userId, value, room, rid }) {
 		if (value !== room.encrypted) {
 			if (!roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange(room, RoomSettingsEnum.E2E)) {
 				throw new Meteor.Error('error-action-not-allowed', 'Only groups or direct channels can enable encryption', {
@@ -115,7 +115,7 @@ const validators: RoomSettingsValidators = {
 			}
 		}
 	},
-	retentionEnabled({ userId, value, room, rid }) {
+	async retentionEnabled({ userId, value, room, rid }) {
 		if (!hasRetentionPolicy(room)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Room does not have retention policy', {
 				method: 'saveRoomSettings',
@@ -130,7 +130,7 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 	},
-	retentionMaxAge({ userId, value, room, rid }) {
+	async retentionMaxAge({ userId, value, room, rid }) {
 		if (!hasRetentionPolicy(room)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Room does not have retention policy', {
 				method: 'saveRoomSettings',
@@ -145,7 +145,7 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 	},
-	retentionExcludePinned({ userId, value, room, rid }) {
+	async retentionExcludePinned({ userId, value, room, rid }) {
 		if (!hasRetentionPolicy(room)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Room does not have retention policy', {
 				method: 'saveRoomSettings',
@@ -160,7 +160,7 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 	},
-	retentionFilesOnly({ userId, value, room, rid }) {
+	async retentionFilesOnly({ userId, value, room, rid }) {
 		if (!hasRetentionPolicy(room)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Room does not have retention policy', {
 				method: 'saveRoomSettings',
@@ -175,7 +175,7 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 	},
-	retentionIgnoreThreads({ userId, value, room, rid }) {
+	async retentionIgnoreThreads({ userId, value, room, rid }) {
 		if (!hasRetentionPolicy(room)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Room does not have retention policy', {
 				method: 'saveRoomSettings',
@@ -190,7 +190,7 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 	},
-	roomAvatar({ userId, rid }) {
+	async roomAvatar({ userId, rid }) {
 		if (!(await hasPermissionAsync(userId, 'edit-room-avatar', rid))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing a room avatar is not allowed', {
 				method: 'saveRoomSettings',
@@ -370,7 +370,7 @@ const validate = <TRoomSetting extends keyof RoomSettings>(
 	},
 ) => {
 	const validator = validators[setting];
-	validator?.(params);
+	return validator?.(params);
 };
 
 async function save<TRoomSetting extends keyof RoomSettings>(

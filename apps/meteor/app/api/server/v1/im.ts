@@ -15,7 +15,7 @@ import { Match, check } from 'meteor/check';
 import { Subscriptions, Uploads, Messages, Rooms, Users } from '@rocket.chat/models';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { hasPermissionAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';

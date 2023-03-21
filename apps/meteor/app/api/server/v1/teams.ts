@@ -17,7 +17,8 @@ import { Team } from '@rocket.chat/core-services';
 
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { Rooms, Users } from '../../../models/server';
-import { canAccessRoomAsync, hasAtLeastOnePermission, hasPermissionAsync } from '../../../authorization/server';
+import { canAccessRoomAsync, hasAtLeastOnePermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
 
 API.v1.addRoute(

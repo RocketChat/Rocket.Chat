@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermissionAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Subscriptions } from '../../../models/server';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -13,7 +13,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	'autoTranslate.saveSettings'(rid, field, value, options) {
+	async 'autoTranslate.saveSettings'(rid, field, value, options) {
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

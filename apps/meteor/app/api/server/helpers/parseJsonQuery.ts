@@ -78,13 +78,13 @@ API.helperMethods.set(
 		if (typeof fields === 'object') {
 			let nonSelectableFields = Object.keys(API.v1.defaultFieldsToExclude);
 			if (this.request.route.includes('/v1/users.')) {
-				const getFields = (): string[] =>
+				nonSelectableFields = nonSelectableFields.concat(
 					Object.keys(
 						(await hasPermissionAsync(this.userId, 'view-full-other-user-info'))
 							? API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser
 							: API.v1.limitedUserFieldsToExclude,
-					);
-				nonSelectableFields = nonSelectableFields.concat(getFields());
+					),
+				);
 			}
 
 			Object.keys(fields).forEach((k) => {

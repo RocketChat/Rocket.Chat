@@ -13,7 +13,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	setUserActiveStatus(userId, active, confirmRelinquish) {
+	async setUserActiveStatus(userId, active, confirmRelinquish) {
 		check(userId, String);
 		check(active, Boolean);
 

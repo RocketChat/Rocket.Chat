@@ -5,7 +5,7 @@ import { hasPermissionAsync } from '../../authorization/server/functions/hasPerm
 
 slashCommands.add({
 	command: 'topic',
-	callback: async function Topic(_command: 'topic', params, item): void {
+	callback: async function Topic(_command: 'topic', params, item) {
 		if (await hasPermissionAsync(Meteor.userId() as string, 'edit-room', item.rid)) {
 			Meteor.call('saveRoomSettings', item.rid, 'roomTopic', params, (err: Meteor.Error) => {
 				if (err) {

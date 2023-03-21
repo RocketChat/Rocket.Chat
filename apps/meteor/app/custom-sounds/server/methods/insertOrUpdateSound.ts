@@ -4,7 +4,7 @@ import { CustomSounds } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermissionAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
 
 export type ICustomSoundData = {

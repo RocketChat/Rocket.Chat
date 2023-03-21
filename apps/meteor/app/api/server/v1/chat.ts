@@ -4,7 +4,8 @@ import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { canAccessRoomId, roomAccessAttributes, hasPermissionAsync } from '../../../authorization/server';
+import { canAccessRoomId, roomAccessAttributes } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { processWebhookMessage } from '../../../lib/server';

@@ -3,7 +3,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IImport } from '@rocket.chat/core-typings';
 
 import { Imports } from '../../../models/server';
-import { hasPermissionAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 export const executeGetLatestImportOperations = () => {
 	const data = Imports.find(

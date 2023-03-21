@@ -3,7 +3,7 @@ import { api } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { RequiredField } from '@rocket.chat/core-typings';
 
-import { hasPermissionAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RocketChatFile } from '../../../file/server';
 import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
 import type { ICustomSoundData } from './insertOrUpdateSound';
@@ -16,7 +16,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	uploadCustomSound(binaryContent, contentType, soundData) {
+	async uploadCustomSound(binaryContent, contentType, soundData) {
 		if (!this.userId || !(await hasPermissionAsync(this.userId, 'manage-sounds'))) {
 			throw new Meteor.Error('not_authorized');
 		}

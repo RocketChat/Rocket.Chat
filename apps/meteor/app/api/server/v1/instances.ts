@@ -1,7 +1,7 @@
 import { InstanceStatus } from '@rocket.chat/models';
 
 import { Instance as InstanceService } from '../../../../ee/server/sdk';
-import { hasPermissionAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
 import { isRunningMs } from '../../../../server/lib/isRunningMs';
 

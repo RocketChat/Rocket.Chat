@@ -2,7 +2,7 @@ import type { IImportProgress } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermissionAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Imports } from '../../../models/server';
 import { Importers } from '..';
 

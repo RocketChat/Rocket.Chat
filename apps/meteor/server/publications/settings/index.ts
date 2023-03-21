@@ -4,7 +4,8 @@ import { Settings } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { WithId } from 'mongodb';
 
-import { hasPermissionAsync, hasAtLeastOnePermission } from '../../../app/authorization/server';
+import { hasAtLeastOnePermission } from '../../../app/authorization/server';
+import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { getSettingPermissionId } from '../../../app/authorization/lib';
 import { SettingsEvents } from '../../../app/settings/server';
 
@@ -70,7 +71,15 @@ Meteor.methods<ServerMethods>({
 		const applyFilter = <T extends any[], U>(fn: (args: T) => Promise<U>, args: T): Promise<U> => fn(args);
 
 		const getAuthorizedSettingsFiltered = async (settings: ISetting[]): Promise<ISetting[]> =>
-			(await Promise.all(settings.map((record) => hasPermissionAsync(uid, getSettingPermissionId(record._id))))).filter(Boolean);
+			(
+				await Promise.all(
+					settings.map(async (record) => {
+						if (await hasPermissionAsync(uid, getSettingPermissionId(record._id))) {
+							return record;
+						}
+					}),
+				)
+			).filter(Boolean) as ISetting[];
 
 		const getAuthorizedSettings = async (updatedAfter: Date | undefined, privilegedSetting: boolean): Promise<ISetting[]> =>
 			applyFilter(

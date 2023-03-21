@@ -12,7 +12,7 @@ import { sendMessage } from '../functions/sendMessage';
 
 const isParsedEmail = (email: ParsedMail): email is Required<ParsedMail> => 'date' in email && 'html' in email;
 
-export const processDirectEmail = Meteor.bindEnvironment(async function (email: ParsedMail): void {
+export const processDirectEmail = Meteor.bindEnvironment(async function (email: ParsedMail): Promise<void> {
 	if (!isParsedEmail(email)) {
 		return;
 	}

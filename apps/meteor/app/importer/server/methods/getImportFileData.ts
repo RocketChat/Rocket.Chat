@@ -6,7 +6,7 @@ import type { IImportFileData } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { RocketChatImportFileInstance } from '../startup/store';
-import { hasPermissionAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Imports } from '../../../models/server';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { Importers } from '..';
@@ -67,7 +67,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	getImportFileData() {
+	async getImportFileData() {
 		const userId = Meteor.userId();
 
 		if (!userId) {

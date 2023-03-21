@@ -22,7 +22,8 @@ import { Integrations, Messages, Rooms, Subscriptions, Uploads } from '@rocket.c
 import { Team } from '@rocket.chat/core-services';
 
 import { Messages as MessagesSync, Subscriptions as SubscriptionsSync, Users as UsersSync } from '../../../models/server';
-import { canAccessRoomAsync, hasAtLeastOnePermission, hasPermissionAsync } from '../../../authorization/server';
+import { canAccessRoomAsync, hasAtLeastOnePermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
@@ -269,12 +270,12 @@ API.v1.addRoute(
 
 			// Special check for the permissions
 			if (
-				(await hasPermissionAsyncAsync(this.userId, 'view-joined-room')) &&
+				(await hasPermissionAsync(this.userId, 'view-joined-room')) &&
 				!(await Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId, { projection: { _id: 1 } }))
 			) {
 				return API.v1.unauthorized();
 			}
-			if (!(await hasPermissionAsyncAsync(this.userId, 'view-c-room'))) {
+			if (!(await hasPermissionAsync(this.userId, 'view-c-room'))) {
 				return API.v1.unauthorized();
 			}
 
