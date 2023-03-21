@@ -3,10 +3,7 @@ export interface ServerMethods {
 	resetPassword(token: string, password: string): { token: string };
 	setUserPassword(password: string): void;
 	sendConfirmationEmail(to: string): boolean;
-	unreadMessages: (...args: any[]) => any;
-	updateIncomingIntegration: (...args: any[]) => any;
-	updateOutgoingIntegration: (...args: any[]) => any;
-	'checkRegistrationSecretURL'(hash: string): boolean;
+	checkRegistrationSecretURL(hash: string): boolean;
 }
 
 export type ServerMethodName = keyof ServerMethods;
