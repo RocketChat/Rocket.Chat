@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { MeteorError } from '@rocket.chat/core-services';
 import type { IWebdavAccount } from '@rocket.chat/core-typings';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { ServerMethods, TranslationKey } from '@rocket.chat/ui-contexts';
 
 import { settings } from '../../../settings/server';
 import { Logger } from '../../../logger/server';
@@ -16,11 +16,11 @@ declare module '@rocket.chat/ui-contexts' {
 			accountId: IWebdavAccount['_id'],
 			fileData: string | Buffer | ArrayBuffer,
 			name: string,
-		): Promise<{ success: boolean; message: TranslationKey }>;
+		): { success: boolean; message?: TranslationKey };
 	}
 }
 
-Meteor.methods({
+Meteor.methods<ServerMethods>({
 	async uploadFileToWebdav(accountId, fileData, name) {
 		if (!Meteor.userId()) {
 			throw new MeteorError('error-invalid-user', 'Invalid User', {

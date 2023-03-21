@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Subscriptions } from '../../app/models/server';
@@ -8,7 +8,7 @@ import { Subscriptions } from '../../app/models/server';
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		openRoom(rid: IRoom['_id']): ISubscription;
+		openRoom(rid: IRoom['_id']): number;
 	}
 }
 

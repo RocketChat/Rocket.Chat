@@ -345,12 +345,7 @@ const OEmbed: {
 
 settings.watch('API_Embed', function (value) {
 	if (value) {
-		return callbacks.add(
-			'afterSaveMessage',
-			(message) => Promise.await(OEmbed.rocketUrlParser(message)),
-			callbacks.priority.LOW,
-			'API_Embed',
-		);
+		return callbacks.add('afterSaveMessage', (message) => OEmbed.rocketUrlParser(message), callbacks.priority.LOW, 'API_Embed');
 	}
 	return callbacks.remove('afterSaveMessage', 'API_Embed');
 });
