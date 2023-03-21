@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { Users } from '../../app/models/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
@@ -7,17 +9,18 @@ import { callbacks } from '../../lib/callbacks';
 import { deleteUser } from '../../app/lib/server';
 import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		deleteUser(userId: IUser['_id'], confirmRelinquish?: boolean): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async deleteUser(userId, confirmRelinquish = false) {
 		check(userId, String);
-
-		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-				method: 'deleteUser',
-			});
-		}
-
-		if ((await hasPermissionAsync(Meteor.userId(), 'delete-user')) !== true) {
+		const uid = Meteor.userId();
+		if (!uid || (await hasPermissionAsync(uid, 'delete-user')) !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'deleteUser',
 			});
