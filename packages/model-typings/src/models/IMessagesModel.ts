@@ -23,11 +23,13 @@ import type {
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
 export interface IMessagesModel extends IBaseModel<IMessage> {
-	findVisibleByMentionAndRoomId(
+	findPaginatedVisibleByMentionAndRoomId(
 		username: IUser['username'],
 		rid: IRoom['_id'],
 		options: FindOptions<IMessage>,
 	): FindPaginated<FindCursor<IMessage>>;
+
+	findVisibleByMentionAndRoomId(username: IUser['username'], rid: IRoom['_id'], options: FindOptions<IMessage>): FindCursor<IMessage>;
 
 	findStarredByUserAtRoom(userId: IUser['_id'], roomId: IRoom['_id'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
 
@@ -200,7 +202,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		users: string[],
 		options?: FindOptions<IMessage>,
 	): FindCursor<IMessage>;
-	findInvisibleByRoomId(roomId: string, options: FindOptions<IMessage>): FindCursor<IMessage>;
 	findVisibleByRoomIdAfterTimestamp(roomId: string, timestamp: Date, options?: FindOptions<IMessage>): FindCursor<IMessage>;
 	findVisibleByRoomIdBeforeTimestampNotContainingTypes(
 		roomId: string,
@@ -220,7 +221,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		showThreadMessages?: boolean,
 		inclusive?: boolean,
 	): FindCursor<IMessage>;
-	findVisibleCreatedOrEditedAfterTimestamp(timestamp: Date, options?: FindOptions<IMessage>): FindCursor<IMessage>;
 	findVisibleByRoomIdBeforeTimestamp(roomId: string, timestamp: Date, options?: FindOptions<IMessage>): FindCursor<IMessage>;
 	getLastTimestamp(options?: FindOptions<IMessage>): Promise<Date | undefined>;
 	findOneBySlackBotIdAndSlackTs(slackBotId: string, slackTs: Date): Promise<IMessage | null>;

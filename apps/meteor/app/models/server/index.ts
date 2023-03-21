@@ -9,7 +9,6 @@ import LivechatDepartment from './models/LivechatDepartment';
 import LivechatDepartmentAgents from './models/LivechatDepartmentAgents';
 import LivechatRooms from './models/LivechatRooms';
 import LivechatInquiry from './models/LivechatInquiry';
-import ImportData from './models/ImportData';
 
 export {
 	Base,
@@ -23,5 +22,4 @@ export {
 	LivechatDepartmentAgents,
 	LivechatRooms,
 	LivechatInquiry,
-	ImportData,
 };

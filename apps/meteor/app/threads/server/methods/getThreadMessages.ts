@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Messages } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { Messages, Rooms } from '../../../models/server';
+import { Rooms } from '../../../models/server';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { settings } from '../../../settings/server';
 import { readThread } from '../functions';
@@ -11,7 +12,7 @@ import { readThread } from '../functions';
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		getThreadMessages(params: { tmid: IMessage['_id']; limit?: number; skip?: number }): IMessage[];
+		getThreadMessages(params: { tmid: IMessage['_id']; limit?: number; skip?: number }): Promise<IMessage[]>;
 	}
 }
 
@@ -31,7 +32,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const thread = Messages.findOneById(tmid);
+		const thread = await Messages.findOneById(tmid);
 		if (!thread) {
 			return [];
 		}
@@ -50,11 +51,11 @@ Meteor.methods<ServerMethods>({
 		callbacks.run('beforeReadMessages', thread.rid, user._id);
 		readThread({ userId: user._id, rid: thread.rid, tmid });
 
-		const result = Messages.findVisibleThreadByThreadId(tmid, {
+		const result = await Messages.findVisibleThreadByThreadId(tmid, {
 			...(skip && { skip }),
 			...(limit && { limit }),
 			sort: { ts: -1 },
-		}).fetch();
+		}).toArray();
 		callbacks.runAsync('afterReadMessages', room._id, { uid: user._id, tmid });
 
 		return [thread, ...result];
