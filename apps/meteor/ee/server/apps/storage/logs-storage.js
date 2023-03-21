@@ -22,7 +22,7 @@ export class AppRealLogsStorage extends AppLogStorage {
 		item.instanceId = InstanceStatus.id();
 
 		try {
-			const id = await this.db.insertOne(item);
+			const id = (await this.db.insertOne(item)).insertedId;
 
 			return this.db.findOneById(id);
 		} catch (e) {

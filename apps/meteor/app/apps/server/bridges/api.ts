@@ -103,7 +103,8 @@ export class AppApisBridge extends ApiBridge {
 	}
 
 	private _appApiExecutor(endpoint: IApiEndpoint, appId: string): RequestHandler {
-		return (req: IRequestWithPrivateHash, res: Response): void => {
+		// eslint-disable-next-line @typescript-eslint/no-misused-promises
+		return async (req: IRequestWithPrivateHash, res: Response): Promise<void> => {
 			const request: IApiRequest = {
 				method: req.method.toLowerCase() as RequestMethod,
 				headers: req.headers as { [key: string]: string },
@@ -114,7 +115,7 @@ export class AppApisBridge extends ApiBridge {
 				user: req.user && this.orch.getConverters()?.get('users')?.convertToApp(req.user),
 			};
 
-			this.orch
+			await this.orch
 				.getManager()
 				?.getApiManager()
 				.executeApi(appId, endpoint.path, request)

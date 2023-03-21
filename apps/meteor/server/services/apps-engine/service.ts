@@ -31,10 +31,14 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		this.onEvent('apps.removed', async (appId: string): Promise<void> => {
 			const app = Apps.getManager()?.getOneById(appId);
 			if (!app) {
-				return;
+				/* empty */
 			}
 
-			await Apps.getManager()?.removeLocal(appId);
+			// Models removal made this more obvious: this event is getting duplicated (or triplicated)
+			// Commenting it while apps team provides a fix
+			// Apparently, since some things are now "promises", theres bigger change of this event being called while the app is being removed
+			// Triggering the whole remove process again, which fails (cause some data is not there anymore)
+			// await Apps.getManager()?.removeLocal(appId);
 		});
 
 		this.onEvent('apps.updated', async (appId: string): Promise<void> => {
