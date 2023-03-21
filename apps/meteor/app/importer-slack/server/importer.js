@@ -129,7 +129,7 @@ export class SlackImporter extends Base {
 		this.logger.debug(`loaded ${data.length} users.`);
 
 		// Insert the users record
-		this.updateRecord({ 'count.users': data.length });
+		await this.updateRecord({ 'count.users': data.length });
 		this.addCountToTotal(data.length);
 
 		for await (const user of data) {
@@ -191,30 +191,29 @@ export class SlackImporter extends Base {
 
 		try {
 			// we need to iterate the zip file twice so that all channels are loaded before the messages
-
-			zip.forEach((entry) => {
+			for await (const entry of zip.getEntries()) {
 				try {
 					if (entry.entryName === 'channels.json') {
 						channelCount += Promise.await(this.prepareChannelsFile(entry));
-						this.updateRecord({ 'count.channels': channelCount });
+						Promise.await(this.updateRecord({ 'count.channels': channelCount }));
 						return increaseProgress();
 					}
 
 					if (entry.entryName === 'groups.json') {
 						channelCount += Promise.await(this.prepareGroupsFile(entry));
-						this.updateRecord({ 'count.channels': channelCount });
+						Promise.await(this.updateRecord({ 'count.channels': channelCount }));
 						return increaseProgress();
 					}
 
 					if (entry.entryName === 'mpims.json') {
 						channelCount += Promise.await(this.prepareMpimpsFile(entry));
-						this.updateRecord({ 'count.channels': channelCount });
+						Promise.await(this.updateRecord({ 'count.channels': channelCount }));
 						return increaseProgress();
 					}
 
 					if (entry.entryName === 'dms.json') {
 						channelCount += Promise.await(this.prepareDMsFile(entry));
-						this.updateRecord({ 'count.channels': channelCount });
+						Promise.await(this.updateRecord({ 'count.channels': channelCount }));
 						return increaseProgress();
 					}
 
@@ -225,7 +224,7 @@ export class SlackImporter extends Base {
 				} catch (e) {
 					this.logger.error(e);
 				}
-			});
+			}
 
 			if (userCount) {
 				await Settings.incrementValueById('Slack_Importer_Count', userCount);
@@ -235,15 +234,16 @@ export class SlackImporter extends Base {
 			// If we have no slack message yet, then we can insert them instead of upserting
 			this._useUpsert = !Messages.findOne({ _id: /slack\-.*/ });
 
-			zip.forEach((entry) => {
+			for await (const entry of zip.getEntries()) {
 				try {
 					if (entry.entryName.includes('__MACOSX') || entry.entryName.includes('.DS_Store')) {
 						count++;
-						return this.logger.debug(`Ignoring the file: ${entry.entryName}`);
+						this.logger.debug(`Ignoring the file: ${entry.entryName}`);
+						continue;
 					}
 
 					if (['channels.json', 'groups.json', 'mpims.json', 'dms.json', 'users.json'].includes(entry.entryName)) {
-						return;
+						continue;
 					}
 
 					if (!entry.isDirectory && entry.entryName.includes('/')) {
@@ -260,14 +260,14 @@ export class SlackImporter extends Base {
 
 							const tempMessages = JSON.parse(entry.getData().toString());
 							messagesCount += tempMessages.length;
-							this.updateRecord({ messagesstatus: `${channel}/${date}` });
+							await this.updateRecord({ messagesstatus: `${channel}/${date}` });
 							this.addCountToTotal(tempMessages.length);
 
 							const slackChannelId = Promise.await(ImportData.findChannelImportIdByNameOrImportId(channel));
 
 							if (slackChannelId) {
-								for (const message of tempMessages) {
-									this.prepareMessageObject(message, missedTypes, slackChannelId);
+								for await (const message of tempMessages) {
+									await this.prepareMessageObject(message, missedTypes, slackChannelId);
 								}
 							}
 						} catch (error) {
@@ -279,7 +279,7 @@ export class SlackImporter extends Base {
 				}
 
 				increaseProgress();
-			});
+			}
 
 			if (!_.isEmpty(missedTypes)) {
 				this.logger.info('Missed import types:', missedTypes);
@@ -290,7 +290,7 @@ export class SlackImporter extends Base {
 		}
 
 		ImporterWebsocket.progressUpdated({ rate: 100 });
-		this.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
+		await this.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
 	}
 
 	parseMentions(newMessage) {
