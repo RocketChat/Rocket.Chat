@@ -54,6 +54,9 @@ test.describe.serial('Threads', () => {
 
 			await accountPage.goto('/account/preferences');
 			await accountPage.locator('role=heading[name="Messages"]').click();
+			if (await accountPage.locator('role=checkbox >> [name="hideFlexTab"]').isChecked()) {
+				return;
+			}
 			await accountPage.locator('role=checkbox >> [name="hideFlexTab"]').setChecked(true, { force: true });
 			await accountPage.locator('role=button[name="Save changes"]').click();
 		});
@@ -63,6 +66,9 @@ test.describe.serial('Threads', () => {
 
 			await accountPage.goto('/account/preferences');
 			await accountPage.locator('role=heading[name="Messages"]').click();
+			if (await accountPage.locator('role=checkbox >> [name="hideFlexTab"]').isChecked() === false) {
+				return;
+			}
 			await accountPage.locator('role=checkbox >> [name="hideFlexTab"]').setChecked(false, { force: true });
 			await accountPage.locator('role=button[name="Save changes"]').click();
 			await accountPage.close();
