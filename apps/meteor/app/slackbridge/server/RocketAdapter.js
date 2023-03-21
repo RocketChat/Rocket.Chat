@@ -163,11 +163,13 @@ export default class RocketAdapter {
 
 	processSendMessage(rocketMessage, slack) {
 		// Since we got this message, SlackBridge_Out_Enabled is true
+		console.log('message no process', rocketMessage);
 		if (settings.get('SlackBridge_Out_All') === true) {
 			slack.postMessage(slack.getSlackChannel(rocketMessage.rid), rocketMessage);
 		} else {
 			// They want to limit to certain groups
 			const outSlackChannels = _.pluck(settings.get('SlackBridge_Out_Channels'), '_id') || [];
+			console.log(outSlackChannels);
 			// rocketLogger.debug('Out SlackChannels: ', outSlackChannels);
 			if (outSlackChannels.indexOf(rocketMessage.rid) !== -1) {
 				slack.postMessage(slack.getSlackChannel(rocketMessage.rid), rocketMessage);

@@ -1,22 +1,24 @@
-import { Box, Field, Flex, Icon } from '@rocket.chat/fuselage';
+import type { SettingValueRoomPick } from '@rocket.chat/core-typings';
+import { Box, Field, Flex } from '@rocket.chat/fuselage';
+import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
 import type { ReactElement, MutableRefObject } from 'react';
 import React, { useRef, useEffect, useLayoutEffect } from 'react';
 
+import RoomAutoCompleteMultiple from '../../../../components/RoomAutoComplete/RoomAutoCompleteMultiple';
 import ResetSettingButton from '../ResetSettingButton';
 
-type ValueType = { _id: string; name: string }[];
 type RoomPickSettingInputProps = {
 	_id: string;
 	label: string;
-	value?: ValueType;
+	value?: SettingValueRoomPick;
 	placeholder?: string;
 	readonly?: boolean;
 	autocomplete?: boolean;
 	disabled?: boolean;
 	hasResetButton?: boolean;
-	onChangeValue?: (value: ValueType) => void;
+	onChangeValue: (value: string[]) => void;
 	onResetButtonClick?: () => void;
 };
 
@@ -89,6 +91,16 @@ function RoomPickSettingInput({
 		};
 	}, [_id, autocomplete, disabled, onChangeValue, placeholder, readonly, valueRef]);
 
+	const handleChangeRooms = useMutableCallback((currentValue, action) => {
+		if (!action) {
+			if (value.includes(currentValue)) {
+				return;
+			}
+			return onChangeValue([...value, currentValue]);
+		}
+		onChangeValue(value.filter((current) => current !== currentValue));
+	});
+
 	return (
 		<>
 			<Flex.Container>
@@ -99,14 +111,23 @@ function RoomPickSettingInput({
 					{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={onResetButtonClick} />}
 				</Box>
 			</Flex.Container>
-			<div style={{ position: 'relative' }} ref={wrapperRef} />
+			<Field.Row>
+				<RoomAutoCompleteMultiple
+					readOnly={readonly}
+					placeholder={placeholder}
+					disabled={disabled}
+					value={value}
+					onChange={handleChangeRooms}
+				/>
+			</Field.Row>
+			{/* <div style={{ position: 'relative' }} ref={wrapperRef} />
 			<ul className='selected-rooms'>
 				{value?.map(({ _id, name }) => (
 					<li key={_id} className='remove-room' onClick={handleRemoveRoomButtonClick(_id)}>
 						{name} <Icon name='cross' />
 					</li>
 				))}
-			</ul>
+			</ul> */}
 		</>
 	);
 }
