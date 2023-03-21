@@ -12,7 +12,6 @@ import { compareUserPassword } from '../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';
 import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
 
-// TODO
 async function saveUserProfile(settings, customFields) {
 	if (!rcSettings.get('Accounts_AllowUserProfileChange')) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
@@ -122,7 +121,7 @@ async function saveUserProfile(settings, customFields) {
 
 	// App IPostUserUpdated event hook
 	const updatedUser = Users.findOneById(this.userId);
-	Promise.await(Apps.triggerEvent(AppEvents.IPostUserUpdated, { user: updatedUser, previousUser: user }));
+	await Apps.triggerEvent(AppEvents.IPostUserUpdated, { user: updatedUser, previousUser: user });
 
 	return true;
 }

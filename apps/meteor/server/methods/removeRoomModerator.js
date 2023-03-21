@@ -8,7 +8,7 @@ import { Users, Subscriptions, Messages, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 
 Meteor.methods({
-	removeRoomModerator(rid, userId) {
+	async removeRoomModerator(rid, userId) {
 		check(rid, String);
 		check(userId, String);
 
@@ -59,9 +59,9 @@ Meteor.methods({
 			role: 'moderator',
 		});
 
-		const team = Promise.await(Team.getOneByMainRoomId(rid));
+		const team = await Team.getOneByMainRoomId(rid);
 		if (team) {
-			Promise.await(Team.removeRolesFromMember(team._id, userId, ['moderator']));
+			await Team.removeRolesFromMember(team._id, userId, ['moderator']);
 		}
 
 		const event = {
