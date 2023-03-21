@@ -20,12 +20,12 @@ export class SlackImporter extends Base {
 	}
 
 	async prepareChannelsFile(entry) {
-		super.updateProgress(ProgressStep.PREPARING_CHANNELS);
+		await super.updateProgress(ProgressStep.PREPARING_CHANNELS);
 		const data = JSON.parse(entry.getData().toString()).filter((channel) => channel.creator != null);
 
 		this.logger.debug(`loaded ${data.length} channels.`);
 
-		this.addCountToTotal(data.length);
+		await this.addCountToTotal(data.length);
 
 		for await (const channel of data) {
 			await this.converter.addChannel({
@@ -48,12 +48,12 @@ export class SlackImporter extends Base {
 	}
 
 	async prepareGroupsFile(entry) {
-		super.updateProgress(ProgressStep.PREPARING_CHANNELS);
+		await super.updateProgress(ProgressStep.PREPARING_CHANNELS);
 		const data = JSON.parse(entry.getData().toString()).filter((channel) => channel.creator != null);
 
 		this.logger.debug(`loaded ${data.length} groups.`);
 
-		this.addCountToTotal(data.length);
+		await this.addCountToTotal(data.length);
 
 		for await (const channel of data) {
 			await this.converter.addChannel({
@@ -75,12 +75,12 @@ export class SlackImporter extends Base {
 	}
 
 	async prepareMpimpsFile(entry) {
-		super.updateProgress(ProgressStep.PREPARING_CHANNELS);
+		await super.updateProgress(ProgressStep.PREPARING_CHANNELS);
 		const data = JSON.parse(entry.getData().toString()).filter((channel) => channel.creator != null);
 
 		this.logger.debug(`loaded ${data.length} mpims.`);
 
-		this.addCountToTotal(data.length);
+		await this.addCountToTotal(data.length);
 
 		const maxUsers = settings.get('DirectMesssage_maxUsers') || 1;
 
@@ -104,12 +104,12 @@ export class SlackImporter extends Base {
 	}
 
 	async prepareDMsFile(entry) {
-		super.updateProgress(ProgressStep.PREPARING_CHANNELS);
+		await super.updateProgress(ProgressStep.PREPARING_CHANNELS);
 		const data = JSON.parse(entry.getData().toString());
 
 		this.logger.debug(`loaded ${data.length} dms.`);
 
-		this.addCountToTotal(data.length);
+		await this.addCountToTotal(data.length);
 		for await (const channel of data) {
 			await this.converter.addChannel({
 				importIds: [channel.id],
@@ -123,14 +123,14 @@ export class SlackImporter extends Base {
 	}
 
 	async prepareUsersFile(entry) {
-		super.updateProgress(ProgressStep.PREPARING_USERS);
+		await super.updateProgress(ProgressStep.PREPARING_USERS);
 		const data = JSON.parse(entry.getData().toString());
 
 		this.logger.debug(`loaded ${data.length} users.`);
 
 		// Insert the users record
 		await this.updateRecord({ 'count.users': data.length });
-		this.addCountToTotal(data.length);
+		await this.addCountToTotal(data.length);
 
 		for await (const user of data) {
 			const newUser = {
@@ -255,13 +255,13 @@ export class SlackImporter extends Base {
 						try {
 							// Insert the messages records
 							if (this.progress.step !== ProgressStep.PREPARING_MESSAGES) {
-								super.updateProgress(ProgressStep.PREPARING_MESSAGES);
+								await super.updateProgress(ProgressStep.PREPARING_MESSAGES);
 							}
 
 							const tempMessages = JSON.parse(entry.getData().toString());
 							messagesCount += tempMessages.length;
 							await this.updateRecord({ messagesstatus: `${channel}/${date}` });
-							this.addCountToTotal(tempMessages.length);
+							await this.addCountToTotal(tempMessages.length);
 
 							const slackChannelId = Promise.await(ImportData.findChannelImportIdByNameOrImportId(channel));
 
