@@ -62,17 +62,16 @@ Meteor.methods<ServerMethods>({
 		await Promise.all(rooms.map((room) => Livechat.saveRoomInfo(room, visitor)));
 
 		if (customFields && customFields instanceof Array) {
-			// TODO: refactor to use normal await
-			customFields.forEach((customField) => {
+			for await (const customField of customFields) {
 				if (typeof customField !== 'object') {
 					return;
 				}
 
 				if (!customField.scope || customField.scope !== 'room') {
 					const { key, value, overwrite } = customField;
-					Promise.await(LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite));
+					await LivechatVisitors.updateLivechatDataByToken(token, key, value, overwrite);
 				}
-			});
+			}
 		}
 
 		return {
