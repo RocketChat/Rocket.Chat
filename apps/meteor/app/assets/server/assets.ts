@@ -436,7 +436,7 @@ WebAppHashing.calculateClientHash = function (manifest, includeFilter, runtimeCo
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		refreshClients: () => void;
+		refreshClients: () => boolean;
 		unsetAsset: (asset: string) => void;
 		setAsset: (binaryContent: BufferEncoding, contentType: string, asset: string) => void;
 	}
@@ -444,15 +444,16 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async refreshClients() {
+		const uid = Meteor.userId();
 		methodDeprecationLogger.warn('refreshClients will be deprecated in future versions of Rocket.Chat');
 
-		if (!Meteor.userId()) {
+		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'refreshClients',
 			});
 		}
 
-		const _hasPermission = await hasPermissionAsync(Meteor.userId() as string, 'manage-assets');
+		const _hasPermission = await hasPermissionAsync(uid, 'manage-assets');
 		if (!_hasPermission) {
 			throw new Meteor.Error('error-action-not-allowed', 'Managing assets not allowed', {
 				method: 'refreshClients',
@@ -498,7 +499,7 @@ Meteor.methods<ServerMethods>({
 
 		RocketChatAssets.setAsset(binaryContent, contentType, asset);
 	},
-} as Pick<ServerMethods, 'refreshClients' | 'unsetAsset' | 'setAsset'>);
+});
 
 const listener = Meteor.bindEnvironment((req: IncomingMessage, res: ServerResponse, next: NextHandleFunction) => {
 	if (!req.url) {
