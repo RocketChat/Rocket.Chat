@@ -68,4 +68,5 @@ export * from './models/IMatrixBridgeRoomModel';
 export * from './models/IMatrixBridgeUserModel';
 export * from './models/IOmnichannelServiceLevelAgreementsModel';
 export * from './models/IImportsModel';
+export * from './models/IRawImportsModel';
 export * from './models/IFederationRoomEventsModel';
