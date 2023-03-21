@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { IRoom } from '@rocket.chat/core-typings';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { callbacks } from '../../lib/callbacks';
@@ -7,7 +9,14 @@ import { Rooms, Subscriptions, Users, Messages } from '../../app/models/server';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		unmuteUserInRoom(data: { rid: IRoom['_id']; username: string }): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async unmuteUserInRoom(data) {
 		const fromId = Meteor.userId();
 
@@ -19,7 +28,7 @@ Meteor.methods({
 			}),
 		);
 
-		if (!(await hasPermissionAsync(fromId, 'mute-user', data.rid))) {
+		if (!fromId || !(await hasPermissionAsync(fromId, 'mute-user', data.rid))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'unmuteUserInRoom',
 			});

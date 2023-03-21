@@ -3,8 +3,6 @@ export interface ServerMethods {
 	resetPassword(token: string, password: string): { token: string };
 	setUserPassword(password: string): void;
 	sendConfirmationEmail(to: string): boolean;
-	setAvatarFromService: (...args: any[]) => any;
-	unmuteUserInRoom: (...args: any[]) => any;
 	unreadMessages: (...args: any[]) => any;
 	updateIncomingIntegration: (...args: any[]) => any;
 	updateOutgoingIntegration: (...args: any[]) => any;
