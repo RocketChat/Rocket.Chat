@@ -226,7 +226,7 @@ export class APIClass<TBasePath extends string = '/'> extends Restivus {
 				response.body.errorType = errorType;
 			}
 
-			if (error && 'details' in error && error?.details) {
+			if (error && typeof error === 'object' && 'details' in error && error?.details) {
 				try {
 					response.body.details = JSON.parse(error.details as unknown as string);
 				} catch (e) {
