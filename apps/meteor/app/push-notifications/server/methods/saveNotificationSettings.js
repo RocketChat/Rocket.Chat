@@ -1,14 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { Subscriptions } from '@rocket.chat/models';
 
-import { Subscriptions } from '../../../models/server';
 import { getUserNotificationPreference } from '../../../utils/server';
 
 const saveAudioNotificationValue = (subId, value) =>
 	value === 'default' ? Subscriptions.clearAudioNotificationValueById(subId) : Subscriptions.updateAudioNotificationValueById(subId, value);
 
 Meteor.methods({
-	saveNotificationSettings(roomId, field, value) {
+	async saveNotificationSettings(roomId, field, value) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'saveNotificationSettings',
@@ -96,19 +96,19 @@ Meteor.methods({
 			});
 		}
 
-		notifications[field].updateMethod(subscription, value);
+		await notifications[field].updateMethod(subscription, value);
 
 		return true;
 	},
 
-	saveAudioNotificationValue(rid, value) {
+	async saveAudioNotificationValue(rid, value) {
 		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, Meteor.userId());
 		if (!subscription) {
 			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', {
 				method: 'saveAudioNotificationValue',
 			});
 		}
-		saveAudioNotificationValue(subscription._id, value);
+		await saveAudioNotificationValue(subscription._id, value);
 		return true;
 	},
 });

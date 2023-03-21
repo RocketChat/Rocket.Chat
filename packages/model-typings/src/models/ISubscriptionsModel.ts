@@ -22,7 +22,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	countUnarchivedByRoomId(rid: string): Promise<number>;
 
-	isUserInRole(uid: IUser['_id'], roleId: IRole['_id'], rid?: IRoom['_id']): Promise<ISubscription | null>;
+	isUserInRole(uid: IUser['_id'], roleId: IRole['_id'], rid?: IRoom['_id']): Promise<boolean>;
 
 	setAsReadByRoomIdAndUserId(
 		rid: string,
