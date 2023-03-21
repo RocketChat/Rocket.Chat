@@ -125,7 +125,7 @@ API.v1.addRoute(
 			}
 
 			if (success && agents && permissionToAddAgents) {
-				success = await Livechat.saveDepartmentAgents(_id, { upsert: agents });
+				success = Livechat.saveDepartmentAgents(_id, { upsert: agents });
 			}
 
 			if (success) {
@@ -280,7 +280,7 @@ API.v1.addRoute(
 					remove: Array,
 				}),
 			);
-			await Livechat.saveDepartmentAgents(this.urlParams._id, this.bodyParams);
+			Livechat.saveDepartmentAgents(this.urlParams._id, this.bodyParams);
 
 			return API.v1.success();
 		},
