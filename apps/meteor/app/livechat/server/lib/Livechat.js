@@ -19,6 +19,7 @@ import {
 	Subscriptions as SubscriptionsRaw,
 	Messages as MessagesRaw,
 	LivechatDepartment as LivechatDepartmentRaw,
+	LivechatDepartmentAgents,
 } from '@rocket.chat/models';
 import { VideoConf, api } from '@rocket.chat/core-services';
 
@@ -27,16 +28,7 @@ import { RoutingManager } from './RoutingManager';
 import { Analytics } from './Analytics';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import {
-	Users,
-	LivechatRooms,
-	Messages,
-	Subscriptions,
-	Rooms,
-	LivechatDepartmentAgents,
-	LivechatDepartment,
-	LivechatInquiry,
-} from '../../../models/server';
+import { Users, LivechatRooms, Messages, Subscriptions, Rooms, LivechatDepartment, LivechatInquiry } from '../../../models/server';
 import { Logger } from '../../../logger/server';
 import { hasRole, canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -110,7 +102,7 @@ export const Livechat = {
 		return Users.findAgents();
 	},
 
-	getOnlineAgents(department, agent) {
+	async getOnlineAgents(department, agent) {
 		if (agent?.agentId) {
 			return Users.findOnlineAgents(agent.agentId);
 		}
@@ -121,13 +113,13 @@ export const Livechat = {
 		return Users.findOnlineAgents();
 	},
 
-	checkOnlineAgents(department, agent, skipFallbackCheck = false) {
+	async checkOnlineAgents(department, agent, skipFallbackCheck = false) {
 		if (agent?.agentId) {
 			return Users.checkOnlineAgents(agent.agentId);
 		}
 
 		if (department) {
-			const onlineForDep = LivechatDepartmentAgents.checkOnlineForDepartment(department);
+			const onlineForDep = await LivechatDepartmentAgents.checkOnlineForDepartment(department);
 			if (onlineForDep || skipFallbackCheck) {
 				return onlineForDep;
 			}
@@ -143,7 +135,7 @@ export const Livechat = {
 		return Users.checkOnlineAgents();
 	},
 
-	getBotAgents(department) {
+	async getBotAgents(department) {
 		if (department) {
 			return LivechatDepartmentAgents.getBotsForDepartment(department);
 		}
@@ -151,19 +143,22 @@ export const Livechat = {
 		return Users.findBotAgents();
 	},
 
-	getRequiredDepartment(onlineRequired = true) {
+	async getRequiredDepartment(onlineRequired = true) {
 		const departments = LivechatDepartment.findEnabledWithAgents();
 
-		return departments.fetch().find((dept) => {
+		for await (const dept of departments.fetch()) {
 			if (!dept.showOnRegistration) {
-				return false;
+				continue;
 			}
 			if (!onlineRequired) {
-				return true;
+				return dept;
 			}
-			const onlineAgents = LivechatDepartmentAgents.getOnlineForDepartment(dept._id);
-			return onlineAgents && onlineAgents.count() > 0;
-		});
+
+			const onlineAgents = await LivechatDepartmentAgents.getOnlineForDepartment(dept._id);
+			if (onlineAgents && onlineAgents.length) {
+				return dept;
+			}
+		}
 	},
 
 	async getRoom(guest, message, roomInfo, agent, extraData) {
@@ -189,7 +184,7 @@ export const Livechat = {
 			const defaultAgent = callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, guest);
 			// if no department selected verify if there is at least one active and pick the first
 			if (!defaultAgent && !guest.department) {
-				const department = this.getRequiredDepartment();
+				const department = await this.getRequiredDepartment();
 				Livechat.logger.debug(`No department or default agent selected for ${guest._id}`);
 
 				if (department) {
@@ -722,7 +717,7 @@ export const Livechat = {
 		return RoutingManager.transferRoom(room, guest, transferData);
 	},
 
-	returnRoomAsInquiry(rid, departmentId, overrideTransferData = {}) {
+	async returnRoomAsInquiry(rid, departmentId, overrideTransferData = {}) {
 		Livechat.logger.debug(`Transfering room ${rid} to ${departmentId ? 'department' : ''} queue`);
 		const room = LivechatRooms.findOneById(rid);
 		if (!room) {
@@ -765,7 +760,7 @@ export const Livechat = {
 		const transferData = { roomId: rid, scope: 'queue', departmentId, transferredBy, ...overrideTransferData };
 		try {
 			this.saveTransferHistory(room, transferData);
-			RoutingManager.unassignAgent(inquiry, departmentId);
+			await RoutingManager.unassignAgent(inquiry, departmentId);
 		} catch (e) {
 			this.logger.error(e);
 			throw new Meteor.Error('error-returning-inquiry', 'Error returning inquiry to the queue', {
@@ -916,8 +911,12 @@ export const Livechat = {
 			Users.setOperator(_id, false);
 			Users.removeLivechatData(_id);
 			this.setUserStatusLivechat(_id, 'not-available');
-			LivechatDepartmentAgents.removeByAgentId(_id);
-			Promise.await(Promise.all([LivechatVisitors.removeContactManagerByUsername(username), UsersRaw.unsetExtension(_id)]));
+
+			await Promise.all([
+				LivechatDepartmentAgents.removeByAgentId(_id),
+				LivechatVisitors.removeContactManagerByUsername(username),
+				UsersRaw.unsetExtension(_id),
+			]);
 			return true;
 		}
 
@@ -984,7 +983,7 @@ export const Livechat = {
 		LivechatInquiry.removeByVisitorToken(token);
 	},
 
-	saveDepartmentAgents(_id, departmentAgents) {
+	async saveDepartmentAgents(_id, departmentAgents) {
 		check(_id, String);
 		check(departmentAgents, {
 			upsert: Match.Maybe([
@@ -1033,7 +1032,10 @@ export const Livechat = {
 		return true;
 	},
 
-	removeDepartment(_id) {
+	/*
+	 * @deprecated - Use the equivalent from DepartmentHelpers class
+	 */
+	async removeDepartment(_id) {
 		check(_id, String);
 
 		const departmentRemovalEnabled = settings.get('Omnichannel_enable_department_removal');
@@ -1052,10 +1054,8 @@ export const Livechat = {
 			});
 		}
 		const ret = LivechatDepartment.removeById(_id);
-		const agentsIds = LivechatDepartmentAgents.findByDepartmentId(_id)
-			.fetch()
-			.map((agent) => agent.agentId);
-		LivechatDepartmentAgents.removeByDepartmentId(_id);
+		const agentsIds = (await LivechatDepartmentAgents.findByDepartmentId(_id).toArray()).map((agent) => agent.agentId);
+		await LivechatDepartmentAgents.removeByDepartmentId(_id);
 		LivechatDepartment.unsetFallbackDepartmentByDepartmentId(_id);
 		if (ret) {
 			Meteor.defer(() => {
