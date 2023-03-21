@@ -217,7 +217,7 @@ export const Livechat = {
 		}
 
 		if (newRoom) {
-			Messages.setRoomIdByToken(guest.token, room._id);
+			await MessagesRaw.setRoomIdByToken(guest.token, room._id);
 		}
 
 		return { room, newRoom };

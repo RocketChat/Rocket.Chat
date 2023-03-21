@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatVisitors, Messages } from '@rocket.chat/models';
 
-import { LivechatRooms, Messages } from '../../../models/server';
+import { LivechatRooms } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 import { normalizeTransferredByData } from '../lib/Helper';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
@@ -23,7 +23,7 @@ Meteor.methods({
 		}
 
 		// update visited page history to not expire
-		Messages.keepHistoryForToken(visitorToken);
+		await Messages.keepHistoryForToken(visitorToken);
 
 		const transferData = {
 			roomId,

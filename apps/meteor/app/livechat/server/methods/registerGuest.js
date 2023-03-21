@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatVisitors, Messages } from '@rocket.chat/models';
 
-import { Messages, LivechatRooms } from '../../../models/server';
+import { LivechatRooms } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
@@ -17,7 +17,7 @@ Meteor.methods({
 		});
 
 		// update visited page history to not expire
-		Messages.keepHistoryForToken(token);
+		await Messages.keepHistoryForToken(token);
 
 		const visitor = await LivechatVisitors.getVisitorByToken(token, {
 			projection: {
