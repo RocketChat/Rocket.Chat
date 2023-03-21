@@ -81,6 +81,8 @@ type EventLikeCallbackSignatures = {
 	'usernameSet': () => void;
 	'beforeLeaveRoom': (user: IUser, room: IRoom) => void;
 	'beforeJoinRoom': (user: IUser, room: IRoom) => void;
+	'beforeMuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
+	'afterMuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
 };
 
 /**
