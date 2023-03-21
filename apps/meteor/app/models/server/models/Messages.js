@@ -353,23 +353,6 @@ export class Messages extends Base {
 		return this.update(query, update);
 	}
 
-	unlinkUserId(userId, newUserId, newUsername, newNameAlias) {
-		const query = {
-			'u._id': userId,
-		};
-
-		const update = {
-			$set: {
-				'alias': newNameAlias,
-				'u._id': newUserId,
-				'u.username': newUsername,
-				'u.name': undefined,
-			},
-		};
-
-		return this.update(query, update, { multi: true });
-	}
-
 	// INSERT
 	/**
 	 * @returns {Pick<IMessage, '_id' | 't' | 'rid' | 'ts' | 'msg' | 'u' | 'groupable' | 'unread'>}
