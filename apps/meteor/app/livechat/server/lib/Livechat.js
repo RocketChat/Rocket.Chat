@@ -38,7 +38,7 @@ import {
 	LivechatInquiry,
 } from '../../../models/server';
 import { Logger } from '../../../logger/server';
-import { hasPermission, hasRole, canAccessRoom, roomAccessAttributes } from '../../../authorization/server';
+import { hasPermission, hasRole, canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
 import * as Mailer from '../../../mailer/server/api';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
@@ -48,7 +48,7 @@ import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAge
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { businessHourManager } from '../business-hour';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
-import { removeUserFromRoles } from '../../../../server/lib/roles/removeUserFromRoles';
+import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 
@@ -217,7 +217,7 @@ export const Livechat = {
 		}
 
 		if (newRoom) {
-			Messages.setRoomIdByToken(guest.token, room._id);
+			await MessagesRaw.setRoomIdByToken(guest.token, room._id);
 		}
 
 		return { room, newRoom };
@@ -280,6 +280,19 @@ export const Livechat = {
 		return true;
 	},
 
+	/**
+	 * Returns the next visitor in the queue
+	 * @param {object} options
+	 * @param {string} [options.id] - The visitor's id
+	 * @param {string} options.token - The visitor's token
+	 * @param {string} [options.name] - The visitor's name
+	 * @param {string} [options.email] - The visitor's email
+	 * @param {string} [options.department] - The visitor's department
+	 * @param {object} [options.phone] - The visitor's phone
+	 * @param {string} [options.username] - The visitor's username
+	 * @param {string} [options.connectionData] - The visitor's connection data
+	 * @param {string} [options.status] - The visitor's status
+	 */
 	async registerGuest({ id, token, name, email, department, phone, username, connectionData, status = 'online' } = {}) {
 		check(token, String);
 		check(id, Match.Maybe(String));
@@ -885,7 +898,7 @@ export const Livechat = {
 		return false;
 	},
 
-	removeAgent(username) {
+	async removeAgent(username) {
 		check(username, String);
 
 		const user = Users.findOneByUsername(username, { fields: { _id: 1 } });
@@ -898,7 +911,7 @@ export const Livechat = {
 
 		const { _id } = user;
 
-		if (removeUserFromRoles(_id, ['livechat-agent'])) {
+		if (await removeUserFromRolesAsync(_id, ['livechat-agent'])) {
 			Users.setOperator(_id, false);
 			Users.removeLivechatData(_id);
 			this.setUserStatusLivechat(_id, 'not-available');
@@ -921,7 +934,7 @@ export const Livechat = {
 			});
 		}
 
-		return removeUserFromRoles(user._id, ['livechat-manager']);
+		return removeUserFromRolesAsync(user._id, ['livechat-manager']);
 	},
 
 	async removeGuest(_id) {
@@ -1225,7 +1238,7 @@ export const Livechat = {
 		}
 
 		LivechatRooms.findOpenByAgent(userId).forEach((room) => {
-			api.broadcast('omnichannel.room', room._id, {
+			void api.broadcast('omnichannel.room', room._id, {
 				type: 'agentStatus',
 				status,
 			});
@@ -1241,7 +1254,7 @@ export const Livechat = {
 	},
 
 	notifyRoomVisitorChange(roomId, visitor) {
-		api.broadcast('omnichannel.room', roomId, {
+		void api.broadcast('omnichannel.room', roomId, {
 			type: 'visitorData',
 			visitor,
 		});
@@ -1263,7 +1276,7 @@ export const Livechat = {
 			throw new Meteor.Error('invalid-room');
 		}
 
-		if (!canAccessRoom(room, user)) {
+		if (!Promise.await(canAccessRoomAsync(room, user))) {
 			throw new Error('error-not-allowed');
 		}
 

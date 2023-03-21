@@ -1,10 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermission } from '../../../authorization/server';
 import { addOAuthService } from '../functions/addOAuthService';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		addOAuthService(name: string): void;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	addOAuthService(name) {
 		check(name, String);
 

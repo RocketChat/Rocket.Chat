@@ -77,11 +77,11 @@ export const _setUsername = function (userId: string, u: string, fullUser: IUser
 	if (!previousUsername && user.inviteToken) {
 		const inviteData = Promise.await(Invites.findOneById(user.inviteToken));
 		if (inviteData?.rid) {
-			addUserToRoom(inviteData.rid, user);
+			Promise.await(addUserToRoom(inviteData.rid, user));
 		}
 	}
 
-	api.broadcast('user.nameChanged', {
+	void api.broadcast('user.nameChanged', {
 		_id: user._id,
 		name: user.name,
 		username: user.username,

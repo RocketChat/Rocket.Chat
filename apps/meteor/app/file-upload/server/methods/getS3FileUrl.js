@@ -4,7 +4,7 @@ import { UploadFS } from 'meteor/jalik:ufs';
 import { Uploads } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
-import { canAccessRoom } from '../../../authorization/server';
+import { canAccessRoomAsync } from '../../../authorization/server';
 
 let protectedFiles;
 
@@ -19,7 +19,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'sendFileMessage' });
 		}
 		const file = await Uploads.findOneById(fileId);
-		if (!file.rid || !canAccessRoom({ _id: file.rid }, { _id: this.userId })) {
+		if (!file.rid || !(await canAccessRoomAsync({ _id: file.rid }, { _id: this.userId }))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed');
 		}
 
