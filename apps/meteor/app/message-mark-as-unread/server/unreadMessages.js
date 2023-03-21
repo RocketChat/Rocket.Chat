@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
+import { Messages } from '@rocket.chat/models';
 
 import logger from './logger';
-import { Messages, Subscriptions } from '../../models/server';
+import { Subscriptions } from '../../models/server';
 
 Meteor.methods({
-	unreadMessages(firstUnreadMessage, room) {
+	async unreadMessages(firstUnreadMessage, room) {
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -13,10 +14,12 @@ Meteor.methods({
 		}
 
 		if (room && typeof room === 'string') {
-			const lastMessage = Messages.findVisibleByRoomId(room, {
-				limit: 1,
-				sort: { ts: -1 },
-			}).fetch()[0];
+			const lastMessage = (
+				await Messages.findVisibleByRoomId(room, {
+					limit: 1,
+					sort: { ts: -1 },
+				}).toArray()
+			)[0];
 
 			if (lastMessage == null) {
 				throw new Meteor.Error('error-no-message-for-unread', 'There are no messages to mark unread', {
@@ -35,8 +38,8 @@ Meteor.methods({
 			});
 		}
 
-		const originalMessage = Messages.findOneById(firstUnreadMessage._id, {
-			fields: {
+		const originalMessage = await Messages.findOneById(firstUnreadMessage._id, {
+			projection: {
 				u: 1,
 				rid: 1,
 				file: 1,
