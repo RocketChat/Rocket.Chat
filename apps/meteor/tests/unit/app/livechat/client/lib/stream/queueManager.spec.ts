@@ -17,17 +17,16 @@ const loadMock = (stubs?: Record<string, unknown>) => {
 	});
 };
 
-describe('getPoolMaxIncomingAndQueuedChatsCount', () => {
+describe('getQueuedChatsCount', () => {
 	it(`should return max incoming 0 and max queued 0 when poolMaxIncoming is 0`, () => {
-		const { getPoolMaxIncomingAndQueuedChatsCount } = loadMock();
+		const { getQueuedChatsCount } = loadMock();
 
-		const result = getPoolMaxIncomingAndQueuedChatsCount('');
-		expect(result.poolMaxIncoming).to.be.equal(0);
-		expect(result.queuedChatsCount).to.be.equal(0);
+		const queuedChatsCount = getQueuedChatsCount('');
+		expect(queuedChatsCount).to.be.equal(0);
 	});
 
 	it(`should return max incoming 1 and when poolMaxIncoming is 1`, () => {
-		const { getPoolMaxIncomingAndQueuedChatsCount } = loadMock({
+		const { getQueuedChatsCount } = loadMock({
 			'../../../../settings/client': {
 				settings: { get: () => 1 },
 			},
@@ -35,16 +34,15 @@ describe('getPoolMaxIncomingAndQueuedChatsCount', () => {
 				LivechatInquiry: {
 					find: () => {
 						return {
-							count: () => 0,
+							count: () => 1,
 						};
 					},
 				},
 			},
 		});
 
-		const result = getPoolMaxIncomingAndQueuedChatsCount('');
-		expect(result.poolMaxIncoming).to.be.equal(1);
-		expect(result.queuedChatsCount).to.be.equal(0);
+		const queuedChatsCount = getQueuedChatsCount('');
+		expect(queuedChatsCount).to.be.equal(1);
 	});
 });
 

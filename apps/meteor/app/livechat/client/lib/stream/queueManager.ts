@@ -12,9 +12,10 @@ const departments = new Set();
 
 type ILivechatInquiryWithType = ILivechatInquiryRecord & { type?: 'added' | 'removed' | 'changed' };
 
-export const getPoolMaxIncomingAndQueuedChatsCount = (userId: IOmnichannelAgent['_id']) => {
-	const poolMaxIncoming = settings.get('Livechat_guest_pool_max_number_incoming_livechats_displayed');
-	const queuedChatsCount = poolMaxIncoming
+const poolMaxIncoming = settings.get('Livechat_guest_pool_max_number_incoming_livechats_displayed');
+
+export const getQueuedChatsCount = (userId: IOmnichannelAgent['_id']) =>
+	poolMaxIncoming
 		? LivechatInquiry.find(
 				{
 					status: 'queued',
@@ -25,8 +26,6 @@ export const getPoolMaxIncomingAndQueuedChatsCount = (userId: IOmnichannelAgent[
 				},
 		  ).count()
 		: 0;
-	return { poolMaxIncoming, queuedChatsCount };
-};
 
 export const newInquirySound = () => {
 	const user = Meteor.user() as IOmnichannelAgent;
@@ -48,7 +47,7 @@ const events = {
 		delete inquiry.type;
 		departments.has(inquiry.department) && LivechatInquiry.insert({ ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
 		const userId = Meteor.userId() as ILivechatInquiryRecord['_id'];
-		const { poolMaxIncoming, queuedChatsCount } = getPoolMaxIncomingAndQueuedChatsCount(userId);
+		const queuedChatsCount = getQueuedChatsCount(userId);
 
 		if (poolMaxIncoming && queuedChatsCount >= poolMaxIncoming) {
 			return;
@@ -63,7 +62,7 @@ const events = {
 		delete inquiry.type;
 		const saveResult = LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
 		const userId = Meteor.userId() as ILivechatInquiryRecord['_id'];
-		const { poolMaxIncoming, queuedChatsCount } = getPoolMaxIncomingAndQueuedChatsCount(userId);
+		const queuedChatsCount = getQueuedChatsCount(userId);
 
 		if (!saveResult?.insertedId || (poolMaxIncoming && queuedChatsCount >= poolMaxIncoming)) {
 			return;
@@ -74,7 +73,7 @@ const events = {
 	removed: (inquiry: ILivechatInquiryWithType) => {
 		LivechatInquiry.remove(inquiry._id);
 		const userId = Meteor.userId() as ILivechatInquiryRecord['_id'];
-		const { poolMaxIncoming, queuedChatsCount } = getPoolMaxIncomingAndQueuedChatsCount(userId);
+		const queuedChatsCount = getQueuedChatsCount(userId);
 
 		if (!poolMaxIncoming || queuedChatsCount < poolMaxIncoming) {
 			return;
