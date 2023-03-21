@@ -324,18 +324,6 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	setUrlsById(_id, urls) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				urls,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	updateAllUsernamesByUserId(userId, username) {
 		const query = { 'u._id': userId };
 
@@ -386,18 +374,6 @@ export class Messages extends Base {
 		};
 
 		return this.update(query, update, { multi: true });
-	}
-
-	setMessageAttachments(_id, attachments) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				attachments,
-			},
-		};
-
-		return this.update(query, update);
 	}
 
 	setSlackBotIdAndSlackTs(_id, slackBotId, slackTs) {
