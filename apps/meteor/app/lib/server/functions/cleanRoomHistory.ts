@@ -1,12 +1,13 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IMessage, IMessageDiscussion } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
+import { Messages as MessagesRaw, Rooms } from '@rocket.chat/models';
 
 import { deleteRoom } from './deleteRoom';
 import { FileUpload } from '../../../file-upload/server';
-import { Messages, Rooms, Subscriptions } from '../../../models/server';
+import { Messages, Subscriptions } from '../../../models/server';
 
-export const cleanRoomHistory = function ({
+export async function cleanRoomHistory({
 	rid = '',
 	latest = new Date(),
 	oldest = new Date('0001-01-01T00:00:00Z'),
@@ -17,7 +18,7 @@ export const cleanRoomHistory = function ({
 	filesOnly = false,
 	fromUsers = [],
 	ignoreThreads = true,
-}): unknown {
+}): Promise<number> {
 	const gt = inclusive ? '$gte' : '$gt';
 	const lt = inclusive ? '$lte' : '$lt';
 
@@ -64,7 +65,8 @@ export const cleanRoomHistory = function ({
 
 	const count = Messages.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, limit, fromUsers, ignoreThreads);
 	if (count) {
-		Rooms.resetLastMessageById(rid);
+		const lastMessage = await MessagesRaw.getLastVisibleMessageSentWithNoTypeByRoomId(rid);
+		await Rooms.resetLastMessageById(rid, lastMessage);
 		void api.broadcast('notify.deleteMessageBulk', rid, {
 			rid,
 			excludePinned,
@@ -74,4 +76,4 @@ export const cleanRoomHistory = function ({
 		});
 	}
 	return count;
-};
+}

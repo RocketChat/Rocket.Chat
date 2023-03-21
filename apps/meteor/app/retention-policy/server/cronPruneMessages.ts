@@ -37,15 +37,17 @@ function job(): void {
 			},
 			{ fields: { _id: 1 } },
 		).forEach(({ _id: rid }: IRoomWithRetentionPolicy) => {
-			cleanRoomHistory({
-				rid,
-				latest,
-				oldest,
-				filesOnly,
-				excludePinned,
-				ignoreDiscussion,
-				ignoreThreads,
-			});
+			Promise.await(
+				cleanRoomHistory({
+					rid,
+					latest,
+					oldest,
+					filesOnly,
+					excludePinned,
+					ignoreDiscussion,
+					ignoreThreads,
+				}),
+			);
 		});
 	});
 
@@ -56,15 +58,17 @@ function job(): void {
 	}).forEach((room: IRoomWithRetentionPolicy) => {
 		const { maxAge = 30, filesOnly, excludePinned, ignoreThreads } = room.retention;
 		const latest = new Date(now.getTime() - toDays(maxAge));
-		cleanRoomHistory({
-			rid: room._id,
-			latest,
-			oldest,
-			filesOnly,
-			excludePinned,
-			ignoreDiscussion,
-			ignoreThreads,
-		});
+		Promise.await(
+			cleanRoomHistory({
+				rid: room._id,
+				latest,
+				oldest,
+				filesOnly,
+				excludePinned,
+				ignoreDiscussion,
+				ignoreThreads,
+			}),
+		);
 	});
 }
 

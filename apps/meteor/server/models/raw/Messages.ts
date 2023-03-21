@@ -1182,7 +1182,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	getLastVisibleMessageSentWithNoTypeByRoomId(rid: string, messageId: string): Promise<IMessage | null> {
+	getLastVisibleMessageSentWithNoTypeByRoomId(rid: string, messageId?: string): Promise<IMessage | null> {
 		const query = {
 			rid,
 			_hidden: { $ne: true },

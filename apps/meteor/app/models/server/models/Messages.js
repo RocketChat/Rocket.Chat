@@ -324,27 +324,6 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	getLastVisibleMessageSentWithNoTypeByRoomId(rid, messageId) {
-		const query = {
-			rid,
-			_hidden: { $ne: true },
-			t: { $exists: false },
-			$or: [{ tmid: { $exists: false } }, { tshow: true }],
-		};
-
-		if (messageId) {
-			query._id = { $ne: messageId };
-		}
-
-		const options = {
-			sort: {
-				ts: -1,
-			},
-		};
-
-		return this.findOne(query, options);
-	}
-
 	setUrlsById(_id, urls) {
 		const query = { _id };
 
