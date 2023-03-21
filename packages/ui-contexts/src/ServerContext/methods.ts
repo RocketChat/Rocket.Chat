@@ -1,19 +1,16 @@
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface ServerMethods {
-	'personalAccessTokens:generateToken': (...args: any[]) => any;
-	'personalAccessTokens:regenerateToken': (...args: any[]) => any;
-	'personalAccessTokens:removeToken': (...args: any[]) => any;
-	'registerUser': (...args: any[]) => any;
-	'resetPassword': (...args: any[]) => any;
-	'saveCannedResponse': (...args: any[]) => any;
-	'saveUserProfile': (...args: any[]) => any;
+	registerUser: (...args: any[]) => any;
+	resetPassword: (...args: any[]) => any;
+	saveCannedResponse: (...args: any[]) => any;
+	saveUserProfile: (...args: any[]) => any;
 	sendConfirmationEmail(to: string): boolean;
-	'setAvatarFromService': (...args: any[]) => any;
+	setAvatarFromService: (...args: any[]) => any;
 	setUserPassword(password: string): void;
-	'unmuteUserInRoom': (...args: any[]) => any;
-	'unreadMessages': (...args: any[]) => any;
-	'updateIncomingIntegration': (...args: any[]) => any;
-	'updateOutgoingIntegration': (...args: any[]) => any;
+	unmuteUserInRoom: (...args: any[]) => any;
+	unreadMessages: (...args: any[]) => any;
+	updateIncomingIntegration: (...args: any[]) => any;
+	updateOutgoingIntegration: (...args: any[]) => any;
 	'checkRegistrationSecretURL'(hash: string): boolean;
 }
 
