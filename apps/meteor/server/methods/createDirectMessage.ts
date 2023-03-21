@@ -121,7 +121,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	createDirectMessage(...usernames) {
+	async createDirectMessage(...usernames) {
 		return createDirectMessage(usernames, Meteor.userId());
 	},
 });

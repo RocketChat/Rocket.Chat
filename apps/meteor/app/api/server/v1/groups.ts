@@ -5,7 +5,7 @@ import { Subscriptions, Rooms, Messages, Users, Uploads, Integrations } from '@r
 import { Team } from '@rocket.chat/core-services';
 import type { Filter } from 'mongodb';
 
-import { Rooms as RoomSync, Users as UsersSync, Messages as MessageSync, Subscriptions as SubscriptionsSync } from '../../../models/server';
+import { Rooms as RoomSync, Users as UsersSync, Subscriptions as SubscriptionsSync } from '../../../models/server';
 import { hasAtLeastOnePermission, canAccessRoomAsync, hasAllPermission, roomAccessAttributes } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
@@ -262,11 +262,7 @@ API.v1.addRoute(
 			const lm = room.lm ? room.lm : room._updatedAt;
 
 			if (subscription?.open) {
-				unreads = await MessageSync.countVisibleByRoomIdBetweenTimestampsInclusive(
-					subscription.rid,
-					subscription.ls || subscription.ts,
-					lm,
-				);
+				unreads = await Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls || subscription.ts, lm);
 				unreadsFrom = subscription.ls || subscription.ts;
 				userMentions = subscription.userMentions;
 				joined = true;

@@ -59,9 +59,9 @@ Meteor.methods({
 			role: 'owner',
 		});
 
-		const team = Promise.await(Team.getOneByMainRoomId(rid));
+		const team = await Team.getOneByMainRoomId(rid);
 		if (team) {
-			Promise.await(Team.addRolesToMember(team._id, userId, ['owner']));
+			await Team.addRolesToMember(team._id, userId, ['owner']);
 		}
 		const event = {
 			type: 'added',

@@ -36,7 +36,7 @@ export async function eraseRoom(rid: string, uid: string): Promise<void> {
 	}
 
 	if (Apps?.isLoaded()) {
-		const prevent = Promise.await(Apps.getBridges()?.getListenerBridge().roomEvent('IPreRoomDeletePrevent', room));
+		const prevent = await Apps.getBridges()?.getListenerBridge().roomEvent('IPreRoomDeletePrevent', room);
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented-deleting', 'A Rocket.Chat App prevented the room erasing.');
 		}

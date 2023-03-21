@@ -21,7 +21,7 @@ import {
 import { Integrations, Messages, Rooms, Subscriptions, Uploads } from '@rocket.chat/models';
 import { Team } from '@rocket.chat/core-services';
 
-import { Messages as MessagesSync, Subscriptions as SubscriptionsSync, Users as UsersSync } from '../../../models/server';
+import { Subscriptions as SubscriptionsSync, Users as UsersSync } from '../../../models/server';
 import { canAccessRoomAsync, hasAtLeastOnePermission } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
@@ -599,7 +599,7 @@ API.v1.addRoute(
 			const lm = room.lm ? room.lm : room._updatedAt;
 
 			if (subscription?.open) {
-				unreads = await MessagesSync.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls, lm);
+				unreads = await Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls, lm);
 				unreadsFrom = subscription.ls || subscription.ts;
 				userMentions = subscription.userMentions;
 				joined = true;

@@ -59,9 +59,9 @@ Meteor.methods({
 			role: 'moderator',
 		});
 
-		const team = Promise.await(Team.getOneByMainRoomId(rid));
+		const team = await Team.getOneByMainRoomId(rid);
 		if (team) {
-			Promise.await(Team.removeRolesFromMember(team._id, userId, ['moderator']));
+			await Team.removeRolesFromMember(team._id, userId, ['moderator']);
 		}
 
 		const event = {

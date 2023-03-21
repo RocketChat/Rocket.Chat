@@ -138,7 +138,7 @@ const create = async ({ prid, pmid, t_name: discussionName, reply, users, user, 
 		});
 	}
 
-	const discussion = createRoom(
+	const discussion = await createRoom(
 		type,
 		name,
 		user.username as string,

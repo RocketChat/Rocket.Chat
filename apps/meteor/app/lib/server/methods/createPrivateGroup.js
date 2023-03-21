@@ -5,7 +5,7 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { createRoom } from '../functions';
 
 Meteor.methods({
-	createPrivateGroup(name, members, readOnly = false, customFields = {}, extraData = {}) {
+	async createPrivateGroup(name, members, readOnly = false, customFields = {}, extraData = {}) {
 		check(name, String);
 		check(members, Match.Optional([String]));
 

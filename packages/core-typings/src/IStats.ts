@@ -46,7 +46,7 @@ export interface IStats {
 	federatedServers: number;
 	federatedUsers: number;
 	lastLogin: string;
-	lastMessageSentAt: string;
+	lastMessageSentAt: Date | undefined;
 	lastSeenSubscription: string;
 	os: {
 		type: string;

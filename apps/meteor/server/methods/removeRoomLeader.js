@@ -57,9 +57,9 @@ Meteor.methods({
 			role: 'leader',
 		});
 
-		const team = Promise.await(Team.getOneByMainRoomId(rid));
+		const team = await Team.getOneByMainRoomId(rid);
 		if (team) {
-			Promise.await(Team.removeRolesFromMember(team._id, userId, ['leader']));
+			await Team.removeRolesFromMember(team._id, userId, ['leader']);
 		}
 
 		if (settings.get('UI_DisplayRoles')) {
