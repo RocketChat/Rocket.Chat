@@ -1,7 +1,7 @@
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../../../app/authorization/server';
+import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -12,10 +12,10 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	'livechat:removeBusinessHour'(id: string, type: string) {
+	async 'livechat:removeBusinessHour'(id: string, type: string) {
 		const userId = Meteor.userId();
 
-		if (!userId || !hasPermission(userId, 'view-livechat-business-hours')) {
+		if (!userId || !(await hasPermissionAsync(userId, 'view-livechat-business-hours'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:removeBusinessHour',
 			});

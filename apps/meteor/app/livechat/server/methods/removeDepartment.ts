@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { DeleteResult } from 'mongodb';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { DepartmentHelper } from '../lib/Departments';
 
@@ -15,14 +15,14 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	'livechat:removeDepartment'(_id) {
+	async 'livechat:removeDepartment'(_id) {
 		methodDeprecationLogger.warn('livechat:removeDepartment will be deprecated in future versions of Rocket.Chat');
 
 		check(_id, String);
 
 		const uid = Meteor.userId();
 
-		if (!uid || !hasPermission(uid, 'manage-livechat-departments')) {
+		if (!uid || !(await hasPermissionAsync(uid, 'manage-livechat-departments'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:removeDepartment',
 			});
