@@ -99,7 +99,7 @@ export class CsvImporter extends Base {
 							});
 						}
 
-						super.updateRecord({ 'count.channels': channelsCount });
+						await super.updateRecord({ 'count.channels': channelsCount });
 						return increaseProgressCount();
 					}
 
@@ -109,14 +109,14 @@ export class CsvImporter extends Base {
 						const parsedUsers = this.csvParser(entry.getData().toString());
 						usersCount = parsedUsers.length;
 
-						for (const u of parsedUsers) {
+						for await (const u of parsedUsers) {
 							const username = u[0].trim();
 							availableUsernames.add(username);
 
 							const email = u[1].trim();
 							const name = u[2].trim();
 
-							this.converter.addUser({
+							await this.converter.addUser({
 								importIds: [username],
 								emails: [email],
 								username,
@@ -124,7 +124,7 @@ export class CsvImporter extends Base {
 							});
 						}
 
-						super.updateRecord({ 'count.users': usersCount });
+						await super.updateRecord({ 'count.users': usersCount });
 						return increaseProgressCount();
 					}
 
@@ -166,7 +166,7 @@ export class CsvImporter extends Base {
 						messagesCount += data.length;
 						const channelName = `${folderName}/${msgGroupData}`;
 
-						super.updateRecord({ messagesstatus: channelName });
+						await super.updateRecord({ messagesstatus: channelName });
 
 						if (isDirect) {
 							for await (const msg of data) {
@@ -213,7 +213,7 @@ export class CsvImporter extends Base {
 							}
 						}
 
-						super.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
+						await super.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
 						return increaseProgressCount();
 					}
 				})(),
