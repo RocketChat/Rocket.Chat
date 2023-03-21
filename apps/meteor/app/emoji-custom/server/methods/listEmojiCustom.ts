@@ -1,14 +1,19 @@
 import { Meteor } from 'meteor/meteor';
 import { EmojiCustom } from '@rocket.chat/models';
 import { check, Match } from 'meteor/check';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { IEmojiCustom } from '@rocket.chat/core-typings';
 
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
-/**
- * @deprecated Will be removed in future versions.
- */
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		listEmojiCustom(options?: { name?: string; aliases?: string[] }): IEmojiCustom[];
+	}
+}
 
-Meteor.methods({
+Meteor.methods<ServerMethods>({
 	async listEmojiCustom(options = {}) {
 		methodDeprecationLogger.warn('listEmojiCustom will be removed in future versions of Rocket.Chat');
 
