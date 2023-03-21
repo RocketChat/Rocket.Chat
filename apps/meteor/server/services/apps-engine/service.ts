@@ -76,7 +76,7 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 			const oldSetting = app?.getStorageItem().settings[setting.id].value;
 
 			// avoid updating the setting if the value is the same,
-			// creating an infinite loop
+			// which caused an infinite loop
 			if (oldSetting === setting.value) {
 				return;
 			}
