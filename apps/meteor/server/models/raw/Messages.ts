@@ -1132,26 +1132,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findVisibleCreatedOrEditedAfterTimestamp(timestamp: Date, options?: FindOptions<IMessage>): FindCursor<IMessage> {
-		const query = {
-			_hidden: { $ne: true },
-			$or: [
-				{
-					ts: {
-						$gt: timestamp,
-					},
-				},
-				{
-					editedAt: {
-						$gt: timestamp,
-					},
-				},
-			],
-		};
-
-		return this.find(query, options);
-	}
-
 	async getLastTimestamp(options: FindOptions<IMessage> = { projection: { _id: 0, ts: 1 } }): Promise<Date | undefined> {
 		options.sort = { ts: -1 };
 		options.limit = 1;

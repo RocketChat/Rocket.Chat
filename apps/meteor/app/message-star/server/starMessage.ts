@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage } from '@rocket.chat/core-typings';
+import { Messages } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
 import { isTheLastMessage } from '../../lib/server';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
-import { Subscriptions, Rooms, Messages } from '../../models/server';
+import { Subscriptions, Rooms } from '../../models/server';
 import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -38,7 +39,7 @@ Meteor.methods<ServerMethods>({
 		if (!subscription) {
 			return false;
 		}
-		if (!Messages.findOneByRoomIdAndMessageId(message.rid, message._id)) {
+		if (!(await Messages.findOneByRoomIdAndMessageId(message.rid, message._id))) {
 			return false;
 		}
 
@@ -54,6 +55,8 @@ Meteor.methods<ServerMethods>({
 
 		await Apps.triggerEvent(AppEvents.IPostMessageStarred, message, Meteor.user(), message.starred);
 
-		return Messages.updateUserStarById(message._id, uid, message.starred);
+		await Messages.updateUserStarById(message._id, uid, message.starred);
+
+		return true;
 	},
 });
