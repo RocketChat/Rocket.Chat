@@ -7,6 +7,7 @@ import React from 'react';
 import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import MessageContentBody from '../../MessageContentBody';
 import Attachments from '../Attachments';
+import DescriptionAttachment from './DescriptionAttachment';
 import AttachmentAuthor from './structure/AttachmentAuthor';
 import AttachmentAuthorAvatar from './structure/AttachmentAuthorAvatar';
 import AttachmentAuthorName from './structure/AttachmentAuthorName';
@@ -65,6 +66,7 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElem
 							</Box>
 						)}
 					</AttachmentAuthor>
+					{attachment.attachments && <DescriptionAttachment attachments={attachment.attachments} />}
 					{attachment.md ? <MessageContentBody md={attachment.md} /> : attachment.text.substring(attachment.text.indexOf('\n') + 1)}
 					{attachment.attachments && (
 						<AttachmentInner>
