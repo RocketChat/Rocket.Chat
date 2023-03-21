@@ -3,7 +3,7 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { ISupportedLanguage } from '@rocket.chat/core-typings';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server';
 import { TranslationProviderRegistry } from '..';
 import { settings } from '../../../settings/server';
 
@@ -27,7 +27,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!hasPermission(userId, 'auto-translate')) {
+		if (!(await hasPermissionAsync(userId, 'auto-translate'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Auto-Translate is not allowed', {
 				method: 'autoTranslate.saveSettings',
 			});

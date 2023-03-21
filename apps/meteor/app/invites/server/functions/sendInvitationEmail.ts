@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import { Settings } from '@rocket.chat/models';
 
 import * as Mailer from '../../../mailer/server/api';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 
 let html = '';
@@ -20,7 +20,7 @@ export const sendInvitationEmail = async (userId: string, emails: string[]) => {
 			method: 'sendInvitationEmail',
 		});
 	}
-	if (!hasPermission(userId, 'bulk-register-user')) {
+	if (!(await hasPermissionAsync(userId, 'bulk-register-user'))) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 			method: 'sendInvitationEmail',
 		});

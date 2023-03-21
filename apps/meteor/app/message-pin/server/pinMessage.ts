@@ -8,7 +8,8 @@ import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { isTheLastMessage } from '../../lib/server';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
-import { canAccessRoomAsync, hasPermission, roomAccessAttributes } from '../../authorization/server';
+import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { Subscriptions, Messages, Users, Rooms } from '../../models/server';
 import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
 import { isTruthy } from '../../../lib/isTruthy';
@@ -76,7 +77,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!hasPermission(userId, 'pin-message', originalMessage.rid)) {
+		if (!(await hasPermissionAsync(userId, 'pin-message', originalMessage.rid))) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
 		}
 
@@ -117,7 +118,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		// App IPostMessagePinned event hook
-		Promise.await(Apps.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, Meteor.user(), originalMessage.pinned));
+		await Apps.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, Meteor.user(), originalMessage.pinned);
 
 		return Messages.createWithTypeRoomIdMessageAndUser('message_pinned', originalMessage.rid, '', me, {
 			attachments: [
@@ -166,7 +167,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!hasPermission(userId, 'pin-message', originalMessage.rid)) {
+		if (!(await hasPermissionAsync(userId, 'pin-message', originalMessage.rid))) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'unpinMessage' });
 		}
 

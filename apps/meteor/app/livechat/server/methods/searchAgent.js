@@ -1,14 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Users } from '../../../models/server';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 Meteor.methods({
-	'livechat:searchAgent'(username) {
+	async 'livechat:searchAgent'(username) {
 		methodDeprecationLogger.warn('livechat:searchAgent will be deprecated in future versions of Rocket.Chat');
 
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'view-livechat-manager')) {
+		if (!Meteor.userId() || !(await hasPermissionAsync(Meteor.userId(), 'view-livechat-manager'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:searchAgent',
 			});

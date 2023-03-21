@@ -39,6 +39,7 @@ import {
 } from '../../../models/server';
 import { Logger } from '../../../logger/server';
 import { hasPermission, hasRole, canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import * as Mailer from '../../../mailer/server/api';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
@@ -403,7 +404,7 @@ export const Livechat = {
 
 		const customFields = {};
 
-		if ((!userId || hasPermission(userId, 'edit-livechat-room-customfields')) && Object.keys(livechatData).length) {
+		if ((!userId || (await hasPermissionAsync(userId, 'edit-livechat-room-customfields'))) && Object.keys(livechatData).length) {
 			Livechat.logger.debug(`Saving custom fields for visitor ${_id}`);
 			const fields = LivechatCustomField.findByScope('visitor');
 			for await (const field of fields) {
@@ -539,7 +540,7 @@ export const Livechat = {
 		const { livechatData = {} } = roomData;
 		const customFields = {};
 
-		if ((!userId || hasPermission(userId, 'edit-livechat-room-customfields')) && Object.keys(livechatData).length) {
+		if ((!userId || (await hasPermissionAsync(userId, 'edit-livechat-room-customfields'))) && Object.keys(livechatData).length) {
 			Livechat.logger.debug(`Updating custom fields on room ${roomData._id}`);
 			const fields = LivechatCustomField.findByScope('room');
 			for await (const field of fields) {
@@ -1247,23 +1248,23 @@ export const Livechat = {
 		});
 	},
 
-	changeRoomVisitor(userId, roomId, visitor) {
-		const user = Promise.await(Users.findOneById(userId));
+	async changeRoomVisitor(userId, roomId, visitor) {
+		const user = await Users.findOneById(userId);
 		if (!user) {
 			throw new Error('error-user-not-found');
 		}
 
-		if (!hasPermission(userId, 'change-livechat-room-visitor')) {
+		if (!(await hasPermissionAsync(userId, 'change-livechat-room-visitor'))) {
 			throw new Error('error-not-authorized');
 		}
 
-		const room = Promise.await(LivechatRooms.findOneById(roomId, { ...roomAccessAttributes, _id: 1, t: 1 }));
+		const room = await LivechatRooms.findOneById(roomId, { ...roomAccessAttributes, _id: 1, t: 1 });
 
 		if (!room) {
 			throw new Meteor.Error('invalid-room');
 		}
 
-		if (!Promise.await(canAccessRoomAsync(room, user))) {
+		if (!(await canAccessRoomAsync(room, user))) {
 			throw new Error('error-not-allowed');
 		}
 

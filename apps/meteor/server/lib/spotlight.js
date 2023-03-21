@@ -1,7 +1,8 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Users, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
 
-import { hasAllPermission, hasPermission, canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
+import { hasAllPermission, canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { Subscriptions, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
@@ -10,7 +11,7 @@ import { trim } from '../../lib/utils/stringUtils';
 
 export class Spotlight {
 	fetchRooms(userId, rooms) {
-		if (!settings.get('Store_Last_Message') || hasPermission(userId, 'preview-c-room')) {
+		if (!settings.get('Store_Last_Message') || Promise.await(hasPermissionAsync(userId, 'preview-c-room'))) {
 			return rooms;
 		}
 

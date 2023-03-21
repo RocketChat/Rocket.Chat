@@ -22,7 +22,7 @@ import { Integrations, Messages, Rooms, Subscriptions, Uploads } from '@rocket.c
 import { Team } from '@rocket.chat/core-services';
 
 import { Messages as MessagesSync, Subscriptions as SubscriptionsSync, Users as UsersSync } from '../../../models/server';
-import { canAccessRoomAsync, hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
+import { canAccessRoomAsync, hasAtLeastOnePermission, hasPermissionAsync } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
@@ -269,12 +269,12 @@ API.v1.addRoute(
 
 			// Special check for the permissions
 			if (
-				(await hasPermission(this.userId, 'view-joined-room')) &&
+				(await hasPermissionAsyncAsync(this.userId, 'view-joined-room')) &&
 				!(await Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId, { projection: { _id: 1 } }))
 			) {
 				return API.v1.unauthorized();
 			}
-			if (!(await hasPermission(this.userId, 'view-c-room'))) {
+			if (!(await hasPermissionAsyncAsync(this.userId, 'view-c-room'))) {
 				return API.v1.unauthorized();
 			}
 
@@ -462,7 +462,7 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			if (!(await hasPermission(this.userId, 'create-team'))) {
+			if (!(await hasPermissionAsync(this.userId, 'create-team'))) {
 				return API.v1.unauthorized();
 			}
 
@@ -472,7 +472,7 @@ API.v1.addRoute(
 				return API.v1.failure('The parameter "channelId" or "channelName" is required');
 			}
 
-			if (channelId && !(await hasPermission(this.userId, 'edit-room', channelId))) {
+			if (channelId && !(await hasPermissionAsync(this.userId, 'edit-room', channelId))) {
 				return API.v1.unauthorized();
 			}
 
@@ -574,7 +574,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const access = await hasPermission(this.userId, 'view-room-administration');
+			const access = await hasPermissionAsync(this.userId, 'view-room-administration');
 			const { userId } = this.queryParams;
 			let user = this.userId;
 			let unreads = null;
@@ -623,14 +623,14 @@ API.v1.addRoute(
 	},
 );
 
-function createChannelValidator(params: {
+async function createChannelValidator(params: {
 	user: { value: string };
 	name?: { key: string; value?: string };
 	members?: { key: string; value?: string[] };
 	customFields?: { key: string; value?: string };
 	teams?: { key: string; value?: string[] };
-}): void {
-	if (!hasPermission(params.user.value, 'create-c')) {
+}) {
+	if (!(await hasPermissionAsync(params.user.value, 'create-c'))) {
 		throw new Error('unauthorized');
 	}
 
@@ -717,7 +717,7 @@ API.v1.addRoute(
 			}
 
 			if (bodyParams.teams) {
-				const canSeeAllTeams = await hasPermission(this.userId, 'view-all-teams');
+				const canSeeAllTeams = await hasPermissionAsync(this.userId, 'view-all-teams');
 				const teams = await Team.listByNames(bodyParams.teams, { projection: { _id: 1 } });
 				const teamMembers = [];
 
@@ -883,12 +883,12 @@ API.v1.addRoute(
 		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
-			const hasPermissionToSeeAllPublicChannels = await hasPermission(this.userId, 'view-c-room');
+			const hasPermissionToSeeAllPublicChannels = await hasPermissionAsync(this.userId, 'view-c-room');
 
 			const ourQuery: Record<string, any> = { ...query, t: 'c' };
 
 			if (!hasPermissionToSeeAllPublicChannels) {
-				if (!(await hasPermission(this.userId, 'view-joined-room'))) {
+				if (!(await hasPermissionAsync(this.userId, 'view-joined-room'))) {
 					return API.v1.unauthorized();
 				}
 				const roomIds = await SubscriptionsSync.findByUserIdAndType(this.userId, 'c', {
@@ -983,7 +983,7 @@ API.v1.addRoute(
 				checkedArchived: false,
 			});
 
-			if (findResult.broadcast && !(await hasPermission(this.userId, 'view-broadcast-member-list', findResult._id))) {
+			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
 				return API.v1.unauthorized();
 			}
 

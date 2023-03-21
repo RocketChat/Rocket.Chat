@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../../../../app/authorization/server';
+import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import CannedResponse from '../../../models/server/models/CannedResponse';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
 
@@ -14,10 +14,10 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	removeCannedResponse(_id) {
+	async removeCannedResponse(_id) {
 		const uid = Meteor.userId();
 
-		if (!uid || !hasPermission(uid, 'remove-canned-responses')) {
+		if (!uid || !(await (uid, 'remove-canned-responses'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'removeCannedResponse',
 			});

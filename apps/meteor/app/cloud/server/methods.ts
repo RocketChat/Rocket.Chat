@@ -12,7 +12,7 @@ import { disconnectWorkspace } from './functions/disconnectWorkspace';
 import { syncWorkspace } from './functions/syncWorkspace';
 import { checkUserHasCloudLogin } from './functions/checkUserHasCloudLogin';
 import { userLogout } from './functions/userLogout';
-import { hasPermission } from '../../authorization/server';
+import { hasPermissionAsync } from '../../authorization/server';
 import { buildWorkspaceRegistrationData } from './functions/buildRegistrationData';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -49,7 +49,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!hasPermission(uid, 'manage-cloud')) {
+		if (!(await hasPermissionAsync(uid, 'manage-cloud'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'cloud:checkRegisterStatus',
 			});
@@ -66,7 +66,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!hasPermission(uid, 'manage-cloud')) {
+		if (!(await hasPermissionAsync(uid, 'manage-cloud'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'cloud:getWorkspaceRegisterData',
 			});
@@ -83,7 +83,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!hasPermission(uid, 'manage-cloud')) {
+		if (!(await hasPermissionAsync(uid, 'manage-cloud'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'cloud:registerWorkspace',
 			});
@@ -100,7 +100,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!hasPermission(uid, 'manage-cloud')) {
+		if (!(await hasPermissionAsync(uid, 'manage-cloud'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'cloud:syncWorkspace',
 			});
@@ -119,7 +119,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!hasPermission(uid, 'manage-cloud')) {
+		if (!(await hasPermissionAsync(uid, 'manage-cloud'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'cloud:connectWorkspace',
 			});
@@ -141,7 +141,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!hasPermission(uid, 'manage-cloud')) {
+		if (!(await hasPermissionAsync(uid, 'manage-cloud'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'cloud:connectServer',
 			});
@@ -157,7 +157,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!hasPermission(uid, 'manage-cloud')) {
+		if (!(await hasPermissionAsync(uid, 'manage-cloud'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'cloud:reconnectWorkspace',
 			});
@@ -174,7 +174,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!hasPermission(uid, 'manage-cloud')) {
+		if (!(await hasPermissionAsync(uid, 'manage-cloud'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'cloud:getOAuthAuthorizationUrl',
 			});
@@ -194,7 +194,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!hasPermission(uid, 'manage-cloud')) {
+		if (!(await hasPermissionAsync(uid, 'manage-cloud'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'cloud:finishOAuthAuthorization',
 			});
@@ -210,7 +210,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!hasPermission(uid, 'manage-cloud')) {
+		if (!(await hasPermissionAsync(uid, 'manage-cloud'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'cloud:checkUserLoggedIn',
 			});
@@ -226,7 +226,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!hasPermission(uid, 'manage-cloud')) {
+		if (!(await hasPermissionAsync(uid, 'manage-cloud'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'cloud:logout',
 			});

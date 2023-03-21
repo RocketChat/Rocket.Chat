@@ -2,12 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { api, Team } from '@rocket.chat/core-services';
 
-import { hasPermission } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { Users, Subscriptions, Messages } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 
 Meteor.methods({
-	removeRoomLeader(rid, userId) {
+	async removeRoomLeader(rid, userId) {
 		check(rid, String);
 		check(userId, String);
 
@@ -17,7 +17,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!hasPermission(Meteor.userId(), 'set-leader', rid)) {
+		if (!(await hasPermissionAsync(Meteor.userId(), 'set-leader', rid))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'removeRoomLeader',
 			});

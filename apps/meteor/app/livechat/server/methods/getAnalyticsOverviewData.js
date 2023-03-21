@@ -1,14 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Livechat } from '../lib/Livechat';
 
 Meteor.methods({
-	'livechat:getAnalyticsOverviewData'(options) {
+	async 'livechat:getAnalyticsOverviewData'(options) {
 		const userId = Meteor.userId();
-		if (!userId || !hasPermission(userId, 'view-livechat-manager')) {
+		if (!userId || !(await hasPermissionAsync(userId, 'view-livechat-manager'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:getAnalyticsOverviewData',
 			});

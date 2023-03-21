@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Integrations } from '@rocket.chat/models';
 
-import { hasPermission } from '../../../../authorization/server';
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { Users } from '../../../../models/server';
 import { validateOutgoingIntegration } from '../../lib/validateOutgoingIntegration';
 
@@ -17,9 +17,9 @@ Meteor.methods({
 
 		let currentIntegration;
 
-		if (hasPermission(this.userId, 'manage-outgoing-integrations')) {
+		if (await hasPermissionAsync(this.userId, 'manage-outgoing-integrations')) {
 			currentIntegration = await Integrations.findOneById(integrationId);
-		} else if (hasPermission(this.userId, 'manage-own-outgoing-integrations')) {
+		} else if (await hasPermissionAsync(this.userId, 'manage-own-outgoing-integrations')) {
 			currentIntegration = await Integrations.findOne({
 				'_id': integrationId,
 				'_createdBy._id': this.userId,

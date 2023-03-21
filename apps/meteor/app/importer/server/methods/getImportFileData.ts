@@ -6,7 +6,7 @@ import type { IImportFileData } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { RocketChatImportFileInstance } from '../startup/store';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server';
 import { Imports } from '../../../models/server';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { Importers } from '..';
@@ -74,7 +74,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', 'getImportFileData');
 		}
 
-		if (!hasPermission(userId, 'run-import')) {
+		if (!(await hasPermissionAsync(userId, 'run-import'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', 'getImportFileData');
 		}
 

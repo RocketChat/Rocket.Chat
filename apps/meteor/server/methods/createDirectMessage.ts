@@ -5,7 +5,7 @@ import type { ICreatedRoom, IUser } from '@rocket.chat/core-typings';
 import type { ICreateRoomParams } from '@rocket.chat/core-services';
 
 import { settings } from '../../app/settings/server';
-import { hasPermission } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { Users, Rooms } from '../../app/models/server';
 import { RateLimiterClass as RateLimiter } from '../../app/lib/server/lib/RateLimiter';
 import { createRoom } from '../../app/lib/server/functions/createRoom';
@@ -73,9 +73,9 @@ export async function createDirectMessage(
 		});
 	}
 
-	if (!hasPermission(userId, 'create-d')) {
+	if (!(await hasPermissionAsync(userId, 'create-d'))) {
 		// If the user can't create DMs but can access already existing ones
-		if (hasPermission(userId, 'view-d-room')) {
+		if (await hasPermissionAsync(userId, 'view-d-room')) {
 			// Check if the direct room already exists, then return it
 			const uids = roomUsers.map(({ _id }) => _id).sort();
 			const room = Rooms.findOneDirectRoomContainingAllUserIDs(uids, { fields: { _id: 1 } });
@@ -94,7 +94,7 @@ export async function createDirectMessage(
 	}
 
 	const options: Exclude<ICreateRoomParams['options'], undefined> = { creator: me._id };
-	if (excludeSelf && hasPermission(userId, 'view-room-administration')) {
+	if (excludeSelf && (await hasPermissionAsync(userId, 'view-room-administration'))) {
 		options.subscriptionExtra = { open: true };
 	}
 	try {
@@ -128,6 +128,6 @@ Meteor.methods<ServerMethods>({
 
 RateLimiter.limitMethod('createDirectMessage', 10, 60000, {
 	userId(userId: IUser['_id']) {
-		return !hasPermission(userId, 'send-many-messages');
+		return !Promise.await(hasPermissionAsync(userId, 'send-many-messages'));
 	},
 });

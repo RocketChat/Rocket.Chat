@@ -3,15 +3,15 @@ import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 
 import { Users } from '../../../models/server';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Livechat } from '../lib/LivechatTyped';
 
 Meteor.methods({
-	'livechat:sendTranscript'(token, rid, email, subject) {
+	async 'livechat:sendTranscript'(token, rid, email, subject) {
 		check(rid, String);
 		check(email, String);
 
-		if (!Meteor.userId() || !hasPermission(Meteor.userId(), 'send-omnichannel-chat-transcript')) {
+		if (!Meteor.userId() || !(await hasPermissionAsync(Meteor.userId(), 'send-omnichannel-chat-transcript'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:sendTranscript',
 			});

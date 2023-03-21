@@ -4,7 +4,7 @@ import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { canAccessRoomId, roomAccessAttributes, hasPermission } from '../../../authorization/server';
+import { canAccessRoomId, roomAccessAttributes, hasPermissionAsync } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { processWebhookMessage } from '../../../lib/server';
@@ -38,7 +38,11 @@ API.v1.addRoute(
 				return API.v1.failure('The room id provided does not match where the message is from.');
 			}
 
-			if (this.bodyParams.asUser && msg.u._id !== this.userId && !hasPermission(this.userId, 'force-delete-message', msg.rid)) {
+			if (
+				this.bodyParams.asUser &&
+				msg.u._id !== this.userId &&
+				!(await hasPermissionAsync(this.userId, 'force-delete-message', msg.rid))
+			) {
 				return API.v1.failure('Unauthorized. You must have the permission "force-delete-message" to delete other\'s message as them.');
 			}
 

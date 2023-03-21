@@ -4,7 +4,7 @@ import type { INewOutgoingIntegration, IOutgoingIntegration } from '@rocket.chat
 import { Integrations } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../../../authorization/server';
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { validateOutgoingIntegration } from '../../lib/validateOutgoingIntegration';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -17,10 +17,6 @@ declare module '@rocket.chat/ui-contexts' {
 Meteor.methods<ServerMethods>({
 	async addOutgoingIntegration(integration: INewOutgoingIntegration): Promise<IOutgoingIntegration> {
 		const { userId } = this;
-
-		if (!userId || (!hasPermission(userId, 'manage-outgoing-integrations') && !hasPermission(userId, 'manage-own-outgoing-integrations'))) {
-			throw new Meteor.Error('not_authorized');
-		}
 
 		check(
 			integration,
@@ -48,6 +44,14 @@ Meteor.methods<ServerMethods>({
 				triggerWordAnywhere: Match.Maybe(Boolean),
 			}),
 		);
+
+		if (
+			!userId ||
+			(!(await hasPermissionAsync(userId, 'manage-outgoing-integrations')) &&
+				!(await hasPermissionAsync(userId, 'manage-own-outgoing-integrations')))
+		) {
+			throw new Meteor.Error('not_authorized');
+		}
 
 		const integrationData = validateOutgoingIntegration(integration, userId);
 
