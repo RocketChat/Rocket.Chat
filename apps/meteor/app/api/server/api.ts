@@ -187,8 +187,17 @@ export class APIClass<TBasePath extends string = '/'> extends Restivus {
 	public success<T>(result?: T): SuccessResult<T> {
 		const response: { statusCode: 200; body: any & { success?: boolean } } = {
 			statusCode: 200,
-			body: !result || isObject(result) ? { success: true, ...(!result ? {} : result) } : result,
+			body: result,
 		};
+
+		if (result === undefined) {
+			response.body = {
+				success: true,
+			};
+		}
+		if (isObject(result)) {
+			response.body.success = true;
+		}
 
 		return response;
 	}
@@ -392,7 +401,7 @@ export class APIClass<TBasePath extends string = '/'> extends Restivus {
 			user: userId,
 			code,
 			method,
-			options: options && 'twoFactorOption' in options ? (options as Record<string, any>).twoFactorOption || {} : {},
+			options: options && 'twoFactorOptions' in options ? (options as Record<string, any>).twoFactorOptions || {} : {},
 			connection,
 		});
 
