@@ -1,5 +1,4 @@
-import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
+import { AvatarContainer } from '@rocket.chat/fuselage';
 import type { VFC, CSSProperties, ComponentProps, HTMLAttributes } from 'react';
 import React from 'react';
 
@@ -15,20 +14,12 @@ type MessageAvatarProps = {
 	style?: CSSProperties;
 } & Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
-const EmojiSize = css`
-	span {
-		display: inline-block;
-		width: 100%;
-		height: 100%;
-	}
-`;
-
-const MessageAvatar: VFC<MessageAvatarProps> = ({ emoji, avatarUrl, username, size = 'x36', className, ...props }) => {
+const MessageAvatar: VFC<MessageAvatarProps> = ({ emoji = ':rocket:', avatarUrl, username, size = 'x36', className, ...props }) => {
 	if (emoji) {
 		return (
-			<Box className={EmojiSize} size={size} {...props}>
-				<Emoji emojiHandle={emoji} />
-			</Box>
+			<AvatarContainer size={size} {...props}>
+				<Emoji emojiHandle={emoji} fillContainer />
+			</AvatarContainer>
 		);
 	}
 	return <UserAvatar url={avatarUrl} username={username} size={size} className={className} {...props} />;
