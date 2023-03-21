@@ -1337,6 +1337,25 @@ describe('[Rooms]', function () {
 				})
 				.end(done);
 		});
+		it('should return a list of admin rooms correctly sorted', async () => {
+			const lowercaseRoom = 'a_room';
+			const capitalizedRoom = 'A_ROOM';
+
+			await Promise.all([createRoom({ type: 'c', name: capitalizedRoom }), createRoom({ type: 'c', name: lowercaseRoom })]);
+
+			await request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					const indexOfCapitalized = res.body.rooms.findIndex((r) => r.name === capitalizedRoom);
+					const indexOfLowercased = res.body.rooms.findIndex((r) => r.name === lowercaseRoom);
+
+					expect(indexOfCapitalized).to.be.greaterThan(indexOfLowercased);
+				});
+		});
 		it('should return a list of admin rooms even requested with count and offset params', (done) => {
 			request
 				.get(api('rooms.adminRooms'))
