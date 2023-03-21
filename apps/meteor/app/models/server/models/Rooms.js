@@ -1,6 +1,9 @@
+import { Subscriptions } from '@rocket.chat/models';
+
 import { Base } from './_Base';
 import { trim } from '../../../../lib/utils/stringUtils';
 
+// TODO: Promise.awaits will go with the model so..
 class Rooms extends Base {
 	constructor(...args) {
 		super(...args);
@@ -92,6 +95,193 @@ class Rooms extends Base {
 	}
 
 	// FIND
+
+	findById(roomId, options) {
+		return this.find({ _id: roomId }, options);
+	}
+
+	findByIds(roomIds, options) {
+		return this.find({ _id: { $in: [].concat(roomIds) } }, options);
+	}
+
+	findByType(type, options) {
+		const query = { t: type };
+
+		return this.find(query, options);
+	}
+
+	findByTypeInIds(type, ids, options) {
+		const query = {
+			_id: {
+				$in: ids,
+			},
+			t: type,
+		};
+
+		return this.find(query, options);
+	}
+
+	findByUserId(userId, options) {
+		const query = { 'u._id': userId };
+
+		return this.find(query, options);
+	}
+
+	findBySubscriptionUserId(userId, options) {
+		const data = Subscriptions.cachedFindByUserId(userId, { fields: { rid: 1 } })
+			.fetch()
+			.map((item) => item.rid);
+
+		const query = {
+			_id: {
+				$in: data,
+			},
+			$or: [
+				{
+					teamId: {
+						$exists: false,
+					},
+				},
+				{
+					teamId: {
+						$exists: true,
+					},
+					_id: {
+						$in: data,
+					},
+				},
+			],
+		};
+
+		return this.find(query, options);
+	}
+
+	findBySubscriptionUserIdUpdatedAfter(userId, _updatedAt, options) {
+		const ids = Subscriptions.findByUserId(userId, { fields: { rid: 1 } })
+			.fetch()
+			.map((item) => item.rid);
+
+		const query = {
+			_id: {
+				$in: ids,
+			},
+			_updatedAt: {
+				$gt: _updatedAt,
+			},
+			$or: [
+				{
+					teamId: {
+						$exists: false,
+					},
+				},
+				{
+					teamId: {
+						$exists: true,
+					},
+					_id: {
+						$in: ids,
+					},
+				},
+			],
+		};
+
+		return this.find(query, options);
+	}
+
+	findByNameAndType(name, type, options) {
+		const query = {
+			t: type,
+			name,
+		};
+
+		// do not use cache
+		return this._db.find(query, options);
+	}
+
+	findByNameOrFNameAndType(name, type, options) {
+		const query = {
+			t: type,
+			teamId: {
+				$exists: false,
+			},
+			$or: [
+				{
+					name,
+				},
+				{
+					fname: name,
+				},
+			],
+		};
+
+		// do not use cache
+		return this._db.find(query, options);
+	}
+
+	findByNameAndTypeNotDefault(name, type, options, includeFederatedRooms = false) {
+		const query = {
+			t: type,
+			default: {
+				$ne: true,
+			},
+			$or: [
+				{
+					teamId: {
+						$exists: false,
+					},
+				},
+				{
+					teamMain: true,
+				},
+			],
+			...(includeFederatedRooms
+				? { $or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }] }
+				: { $or: [{ federated: { $exists: false } }, { federated: false }], name }),
+		};
+
+		// do not use cache
+		return this._db.find(query, options);
+	}
+
+	findByNameAndTypesNotInIds(name, types, ids, options, includeFederatedRooms = false) {
+		const query = {
+			_id: {
+				$nin: ids,
+			},
+			t: {
+				$in: types,
+			},
+			$or: [
+				{
+					teamId: {
+						$exists: false,
+					},
+				},
+				{
+					teamId: {
+						$exists: true,
+					},
+					_id: {
+						$in: ids,
+					},
+				},
+				{
+					// Also return the main room of public teams
+					// this will have no effect if the method is called without the 'c' type, as the type filter is outside the $or group.
+					teamMain: true,
+					t: 'c',
+				},
+			],
+			...(includeFederatedRooms
+				? {
+						$or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }],
+				  }
+				: { $or: [{ federated: { $exists: false } }, { federated: false }], name }),
+		};
+
+		// do not use cache
+		return this._db.find(query, options);
+	}
 
 	findByDefaultAndTypes(defaultValue, types, options) {
 		const query = {

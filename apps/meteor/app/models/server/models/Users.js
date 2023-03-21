@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { Subscriptions } from '@rocket.chat/models';
 
 import { Base } from './_Base';
-import Subscriptions from './Subscriptions';
 import { settings } from '../../../settings/server';
 import { trim } from '../../../../lib/utils/stringUtils';
 
@@ -31,6 +31,7 @@ const queryStatusAgentOnline = (extraFilters = {}) => ({
 		statusConnection: { $ne: 'away' },
 	}),
 });
+// The promise.await will die with the model :)
 export class Users extends Base {
 	constructor(...args) {
 		super(...args);
@@ -800,9 +801,7 @@ export class Users extends Base {
 	}
 
 	findByRoomId(rid, options) {
-		const data = Subscriptions.findByRoomId(rid)
-			.fetch()
-			.map((item) => item.u._id);
+		const data = Promise.await(Subscriptions.findByRoomId(rid).toArray()).map((item) => item.u._id);
 		const query = {
 			_id: {
 				$in: data,
