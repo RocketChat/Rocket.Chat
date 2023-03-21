@@ -1,86 +1,27 @@
-import { Meteor } from 'meteor/meteor';
-import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelAgent } from '@rocket.chat/core-typings';
+\import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelAgent } from '@rocket.chat/core-typings';
 
-import { APIClient, getUserPreference } from '../../../../utils/client';
+import { APIClient } from '../../../../utils/client';
 import { LivechatInquiry } from '../../collections/LivechatInquiry';
 import { inquiryDataStream } from './inquiry';
 import { callWithErrorHandling } from '../../../../../client/lib/utils/callWithErrorHandling';
-import { CustomSounds } from '../../../../custom-sounds/client/lib/CustomSounds';
-import { settings } from '../../../../settings/client';
 
 const departments = new Set();
 
 type ILivechatInquiryWithType = ILivechatInquiryRecord & { type?: 'added' | 'removed' | 'changed' };
 
-const poolMaxIncoming = settings.get('Livechat_guest_pool_max_number_incoming_livechats_displayed');
-
-export const getQueuedChatsCount = (userId: IOmnichannelAgent['_id']) =>
-	poolMaxIncoming
-		? LivechatInquiry.find(
-				{
-					status: 'queued',
-					$or: [{ defaultAgent: { $exists: false } }, { 'defaultAgent.agentId': userId }],
-				},
-				{
-					limit: poolMaxIncoming,
-				},
-		  ).count()
-		: 0;
-
-export const newInquirySound = () => {
-	const user = Meteor.user() as IOmnichannelAgent;
-	const audioVolume = getUserPreference(user?._id, 'notificationsSoundVolume') as number;
-	const newRoomNotification = getUserPreference(user?._id, 'newRoomNotification');
-	const isAgentAvailable = user.statusLivechat === 'available';
-
-	if (!isAgentAvailable || newRoomNotification === 'none') {
-		return;
-	}
-
-	CustomSounds.play(newRoomNotification, {
-		volume: Number((audioVolume / 100).toPrecision(2)),
-	});
-};
-
 const events = {
 	added: (inquiry: ILivechatInquiryWithType) => {
 		delete inquiry.type;
 		departments.has(inquiry.department) && LivechatInquiry.insert({ ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
-		const userId = Meteor.userId() as ILivechatInquiryRecord['_id'];
-		const queuedChatsCount = getQueuedChatsCount(userId);
-
-		if (poolMaxIncoming && queuedChatsCount >= poolMaxIncoming) {
-			return;
-		}
-
-		newInquirySound();
 	},
 	changed: (inquiry: ILivechatInquiryWithType) => {
 		if (inquiry.status !== 'queued' || (inquiry.department && !departments.has(inquiry.department))) {
 			return LivechatInquiry.remove(inquiry._id);
 		}
 		delete inquiry.type;
-		const saveResult = LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
-		const userId = Meteor.userId() as ILivechatInquiryRecord['_id'];
-		const queuedChatsCount = getQueuedChatsCount(userId);
-
-		if (!saveResult?.insertedId || (poolMaxIncoming && queuedChatsCount >= poolMaxIncoming)) {
-			return;
-		}
-
-		newInquirySound();
+		LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) })
 	},
-	removed: (inquiry: ILivechatInquiryWithType) => {
-		LivechatInquiry.remove(inquiry._id);
-		const userId = Meteor.userId() as ILivechatInquiryRecord['_id'];
-		const queuedChatsCount = getQueuedChatsCount(userId);
-
-		if (!poolMaxIncoming || queuedChatsCount < poolMaxIncoming) {
-			return;
-		}
-
-		newInquirySound();
-	},
+	removed: (inquiry: ILivechatInquiryWithType) => LivechatInquiry.remove(inquiry._id),
 };
 
 const updateCollection = (inquiry: ILivechatInquiryWithType) => {
