@@ -5,8 +5,8 @@ import { Gravatar } from 'meteor/jparker:gravatar';
 import { isUserFederated } from '@rocket.chat/core-typings';
 
 import * as Mailer from '../../../mailer/server/api';
-import { getRoles, hasPermissionAsync } from '../../../authorization/server';
-import { hasPermissionAsyncAsync } from '../../../authorization/server/functions/hasPermission';
+import { getRoles } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { passwordPolicy } from '../lib/passwordPolicy';
 import { validateEmailDomain } from '../lib';
@@ -381,7 +381,7 @@ export const saveUser = async function (userId, userData) {
 	if (
 		userData.password &&
 		userData.password.trim() &&
-		(await await hasPermissionAsyncAsync(userId, 'edit-other-user-password')) &&
+		(await hasPermissionAsync(userId, 'edit-other-user-password')) &&
 		passwordPolicy.validate(userData.password)
 	) {
 		Accounts.setPassword(userData._id, userData.password.trim());
