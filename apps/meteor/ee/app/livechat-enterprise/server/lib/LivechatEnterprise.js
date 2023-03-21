@@ -208,7 +208,7 @@ export const LivechatEnterprise = {
 	/**
 	 * @param {string|null} _id - The department id
 	 * @param {Partial<import('@rocket.chat/core-typings').ILivechatDepartment>} departmentData
-	 * @param {{upsert?: { agentId: string; count?: number; order?: number; }[], remove?: { agentId: string; count?: number; order?: number; }[]}} [departmentAgents] - The department agents
+	 * @param {{upsert?: { agentId: string; count?: number; order?: number; }[], remove?: { agentId: string; count?: number; order?: number; }}} [departmentAgents] - The department agents
 	 */
 	async saveDepartment(_id, departmentData, departmentAgents) {
 		check(_id, Match.Maybe(String));
