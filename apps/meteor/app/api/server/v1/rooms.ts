@@ -6,7 +6,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Media } from '@rocket.chat/core-services';
 
 import { API } from '../api';
-import { canAccessRoom, canAccessRoomId, hasPermission } from '../../../authorization/server';
+import { canAccessRoomAsync, canAccessRoomId, hasPermission } from '../../../authorization/server';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { settings } from '../../../settings/server';
 import { eraseRoom } from '../../../../server/methods/eraseRoom';
@@ -282,7 +282,7 @@ API.v1.addRoute(
 			const room = await findRoomByIdOrName({ params: this.queryParams });
 			const { fields } = this.parseJsonQuery();
 
-			if (!room || !(await canAccessRoom(room, { _id: this.userId }))) {
+			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
 				return API.v1.failure('not-allowed', 'Not Allowed');
 			}
 
@@ -348,7 +348,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
-			if (!room || !canAccessRoom(room, { _id: this.userId })) {
+			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
 				return API.v1.failure('not-allowed', 'Not Allowed');
 			}
 
@@ -561,7 +561,7 @@ API.v1.addRoute(
 
 			const user = await Users.findOneById(this.userId);
 
-			if (!user || !(await canAccessRoom(room, user))) {
+			if (!user || !(await canAccessRoomAsync(room, user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
 
