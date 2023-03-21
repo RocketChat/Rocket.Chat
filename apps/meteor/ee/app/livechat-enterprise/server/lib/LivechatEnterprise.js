@@ -12,7 +12,7 @@ import { hasLicense } from '../../../license/server/license';
 import { updateDepartmentAgents } from '../../../../../app/livechat/server/lib/Helper';
 import { Messages } from '../../../../../app/models/server';
 import { addUserRoles } from '../../../../../server/lib/roles/addUserRoles';
-import { removeUserFromRoles } from '../../../../../server/lib/roles/removeUserFromRoles';
+import { removeUserFromRolesAsync } from '../../../../../server/lib/roles/removeUserFromRoles';
 import { processWaitingQueue, updateSLAInquiries } from './Helper';
 import { removeSLAFromRooms } from './SlaHelper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
@@ -53,7 +53,7 @@ export const LivechatEnterprise = {
 			});
 		}
 
-		const removeRoleResult = removeUserFromRoles(user._id, ['livechat-monitor']);
+		const removeRoleResult = await removeUserFromRolesAsync(user._id, ['livechat-monitor']);
 		if (!removeRoleResult) {
 			return false;
 		}
