@@ -280,7 +280,7 @@ API.v1.addRoute(
 					remove: Array,
 				}),
 			);
-			Livechat.saveDepartmentAgents(this.urlParams._id, this.bodyParams);
+			await Livechat.saveDepartmentAgents(this.urlParams._id, this.bodyParams);
 
 			return API.v1.success();
 		},
