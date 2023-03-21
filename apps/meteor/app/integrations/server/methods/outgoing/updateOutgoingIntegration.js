@@ -7,7 +7,7 @@ import { validateOutgoingIntegration } from '../../lib/validateOutgoingIntegrati
 
 Meteor.methods({
 	async updateOutgoingIntegration(integrationId, integration) {
-		integration = validateOutgoingIntegration(integration, this.userId);
+		integration = await validateOutgoingIntegration(integration, this.userId);
 
 		if (!integration.token || integration.token.trim() === '') {
 			throw new Meteor.Error('error-invalid-token', 'Invalid token', {

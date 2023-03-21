@@ -63,11 +63,7 @@ export const slashCommands = {
 			throw new Meteor.Error('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
 
-		const result = cmd.callback(command, params, message, triggerId) as any;
-
-		if (result && result instanceof Promise) {
-			await result;
-		}
+		return cmd.callback(command, params, message, triggerId);
 	},
 	getPreviews(command: string, params: string, message: RequiredField<Partial<IMessage>, 'rid'>): SlashCommandPreviews | undefined {
 		const cmd = this.commands[command];

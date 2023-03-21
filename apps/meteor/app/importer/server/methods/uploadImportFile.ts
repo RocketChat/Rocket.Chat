@@ -4,7 +4,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { RocketChatFile } from '../../../file/server';
 import { RocketChatImportFileInstance } from '../startup/store';
-import { hasPermissionAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { Importers } from '..';
 

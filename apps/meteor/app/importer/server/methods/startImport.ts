@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import type { StartImportParamsPOST } from '@rocket.chat/rest-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermissionAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Imports } from '../../../models/server';
 import { Importers, Selection, SelectionChannel, SelectionUser } from '..';
 
@@ -54,7 +54,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', 'startImport');
 		}
 
-		if (!(await (userId, 'run-import'))) {
+		if (!(await hasPermissionAsync(userId, 'run-import'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', 'startImport');
 		}
 

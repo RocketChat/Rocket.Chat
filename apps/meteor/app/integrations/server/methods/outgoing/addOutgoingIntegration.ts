@@ -53,7 +53,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('not_authorized');
 		}
 
-		const integrationData = validateOutgoingIntegration(integration, userId);
+		const integrationData = await validateOutgoingIntegration(integration, userId);
 
 		const result = await Integrations.insertOne(integrationData);
 		integrationData._id = result.insertedId;
