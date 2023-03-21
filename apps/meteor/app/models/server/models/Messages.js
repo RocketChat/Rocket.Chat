@@ -592,57 +592,6 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	removeByIdPinnedTimestampLimitAndUsers(rid, pinned, ignoreDiscussion = true, ts, limit, users = [], ignoreThreads = true) {
-		const query = {
-			rid,
-			ts,
-		};
-
-		if (pinned) {
-			query.pinned = { $ne: true };
-		}
-
-		if (ignoreDiscussion) {
-			query.drid = { $exists: 0 };
-		}
-
-		if (ignoreThreads) {
-			query.tmid = { $exists: 0 };
-			query.tcount = { $exists: 0 };
-		}
-
-		if (users.length) {
-			query['u.username'] = { $in: users };
-		}
-
-		if (!limit) {
-			const count = this.remove(query);
-
-			// decrease message count
-			Rooms.decreaseMessageCountById(rid, count);
-
-			return count;
-		}
-
-		const messagesToDelete = this.find(query, {
-			fields: {
-				_id: 1,
-			},
-			limit,
-		}).map(({ _id }) => _id);
-
-		const count = this.remove({
-			_id: {
-				$in: messagesToDelete,
-			},
-		});
-
-		// decrease message count
-		Rooms.decreaseMessageCountById(rid, count);
-
-		return count;
-	}
-
 	removeByUserId(userId) {
 		const query = { 'u._id': userId };
 

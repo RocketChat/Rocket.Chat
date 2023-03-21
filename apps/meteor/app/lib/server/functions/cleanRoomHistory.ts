@@ -63,7 +63,15 @@ export async function cleanRoomHistory({
 		}
 	}
 
-	const count = Messages.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, limit, fromUsers, ignoreThreads);
+	const count = await MessagesRaw.removeByIdPinnedTimestampLimitAndUsers(
+		rid,
+		excludePinned,
+		ignoreDiscussion,
+		ts,
+		limit,
+		fromUsers,
+		ignoreThreads,
+	);
 	if (count) {
 		const lastMessage = await MessagesRaw.getLastVisibleMessageSentWithNoTypeByRoomId(rid);
 		await Rooms.resetLastMessageById(rid, lastMessage);
