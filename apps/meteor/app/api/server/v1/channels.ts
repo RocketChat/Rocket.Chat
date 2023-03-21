@@ -688,7 +688,7 @@ API.v1.addRoute(
 			let error;
 
 			try {
-				API.channels.create.validate({
+				await API.channels.create.validate({
 					user: {
 						value: userId,
 					},

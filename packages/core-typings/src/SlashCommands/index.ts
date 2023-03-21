@@ -6,7 +6,7 @@ type SlashCommandCallback<T extends string = string> = (
 	params: string,
 	message: RequiredField<Partial<IMessage>, 'rid'>,
 	triggerId?: string,
-) => void;
+) => Promise<void> | void;
 
 export type SlashCommandPreviewItem = {
 	id: string;

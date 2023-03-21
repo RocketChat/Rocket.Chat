@@ -8,7 +8,7 @@ import { settings } from '../../app/settings/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 
 Meteor.methods({
-	resetAvatar(userId) {
+	async resetAvatar(userId) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'resetAvatar',

@@ -15,7 +15,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!await hasPermissionAsync(Meteor.userId(), 'create-p')) {
+		if (!(await hasPermissionAsync(Meteor.userId(), 'create-p'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createPrivateGroup' });
 		}
 

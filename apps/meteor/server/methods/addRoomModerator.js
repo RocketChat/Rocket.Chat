@@ -19,7 +19,7 @@ Meteor.methods({
 		}
 
 		const room = Rooms.findOneById(rid, { fields: { t: 1, federated: 1 } });
-		if (!await hasPermissionAsync(Meteor.userId(), 'set-moderator', rid) && !isRoomFederated(room)) {
+		if (!(await hasPermissionAsync(Meteor.userId(), 'set-moderator', rid)) && !isRoomFederated(room)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'addRoomModerator',
 			});

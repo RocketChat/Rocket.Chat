@@ -5,7 +5,7 @@ import { Rooms, Subscriptions } from '../../app/models/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 
 Meteor.methods({
-	getRoomNameById(rid) {
+	async getRoomNameById(rid) {
 		check(rid, String);
 		const userId = Meteor.userId();
 		if (!userId) {

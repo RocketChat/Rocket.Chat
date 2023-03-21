@@ -38,7 +38,7 @@ import {
 	LivechatInquiry,
 } from '../../../models/server';
 import { Logger } from '../../../logger/server';
-import { hasPermission, hasRole, canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
+import { hasRole, canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import * as Mailer from '../../../mailer/server/api';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
