@@ -90,9 +90,9 @@ Meteor.methods<ServerMethods>({
 			scope,
 		};
 		if (settings.get('UI_DisplayRoles')) {
-			api.broadcast('user.roleUpdate', event);
+			void api.broadcast('user.roleUpdate', event);
 		}
-		api.broadcast('federation.userRoleChanged', { ...event, givenByUserId: userId });
+		void api.broadcast('federation.userRoleChanged', { ...event, givenByUserId: userId });
 
 		return remove;
 	},

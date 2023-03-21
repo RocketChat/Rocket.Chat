@@ -29,7 +29,7 @@ export class RocketChatNotificationAdapter {
 	}
 
 	public async broadcastUserTypingOnRoom(username: string, activity: string[], roomId: string): Promise<void> {
-		api.broadcast('user.typing', {
+		void api.broadcast('user.typing', {
 			user: { username },
 			isTyping: activity.includes('user-typing'),
 			roomId,
@@ -37,7 +37,7 @@ export class RocketChatNotificationAdapter {
 	}
 
 	public notifyWithEphemeralMessage(i18nMessageKey: string, userId: string, roomId: string, language = 'en'): void {
-		api.broadcast('notify.ephemeralMessage', userId, roomId, {
+		void api.broadcast('notify.ephemeralMessage', userId, roomId, {
 			msg: TAPi18n.__(i18nMessageKey, {
 				postProcess: 'sprintf',
 				lng: language,

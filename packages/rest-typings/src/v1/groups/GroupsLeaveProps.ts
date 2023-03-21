@@ -1,22 +1,14 @@
 import Ajv from 'ajv';
 
+import type { GroupsBaseProps } from './BaseProps';
+import { withGroupBaseProperties } from './BaseProps';
+
 const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type GroupsLeaveProps = {
-	roomId: string;
-};
+export type GroupsLeaveProps = GroupsBaseProps;
 
-const GroupsLeavePropsSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-		},
-	},
-	required: ['roomId'],
-	additionalProperties: false,
-};
+const GroupsLeavePropsSchema = withGroupBaseProperties();
 
 export const isGroupsLeaveProps = ajv.compile<GroupsLeaveProps>(GroupsLeavePropsSchema);

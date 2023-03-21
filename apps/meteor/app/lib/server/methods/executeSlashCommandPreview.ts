@@ -1,4 +1,5 @@
 import type { IMessage, RequiredField, SlashCommandPreviewItem } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { slashCommands } from '../../../utils/server';
@@ -14,11 +15,11 @@ declare module '@rocket.chat/ui-contexts' {
 				triggerId?: string;
 			},
 			preview: SlashCommandPreviewItem,
-		): Promise<void>;
+		): void;
 	}
 }
 
-Meteor.methods({
+Meteor.methods<ServerMethods>({
 	executeSlashCommandPreview(command, preview) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

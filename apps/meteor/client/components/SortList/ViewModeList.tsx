@@ -28,7 +28,7 @@ function ViewModeList(): ReactElement {
 	return (
 		<>
 			<OptionTitle>{t('Display')}</OptionTitle>
-			<ul aria-description='displayList'>
+			<ul>
 				<ListItem
 					is='label'
 					role='listitem'

@@ -12,8 +12,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 	before((done) => getCredentials(done));
 
-	before((done) => {
-		updateSetting('Livechat_enabled', true).then(done);
+	before(async () => {
+		await updateSetting('Livechat_enabled', true);
 	});
 
 	describe('livechat/room.onHold', () => {
