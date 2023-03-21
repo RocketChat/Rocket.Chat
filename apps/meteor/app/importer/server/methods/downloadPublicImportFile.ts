@@ -4,6 +4,7 @@ import fs from 'fs';
 
 import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { RocketChatImportFileInstance } from '../startup/store';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
@@ -81,7 +82,14 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 	}
 };
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		downloadPublicImportFile(fileUrl: string, importerKey: string): void;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	downloadPublicImportFile(fileUrl: string, importerKey: string) {
 		const userId = Meteor.userId();
 

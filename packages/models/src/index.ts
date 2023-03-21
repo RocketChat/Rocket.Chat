@@ -69,6 +69,7 @@ import type {
 	IAppLogsModel,
 	IImportsModel,
 	IRawImportsModel,
+	IFederationRoomEventsModel,
 } from '@rocket.chat/model-typings';
 
 import { proxify } from './proxify';
@@ -97,6 +98,7 @@ export const EmojiCustom = proxify<IEmojiCustomModel>('IEmojiCustomModel');
 export const ExportOperations = proxify<IExportOperationsModel>('IExportOperationsModel');
 export const FederationServers = proxify<IFederationServersModel>('IFederationServersModel');
 export const FederationKeys = proxify<IFederationKeysModel>('IFederationKeysModel');
+export const FederationRoomEvents = proxify<IFederationRoomEventsModel>('IFederationRoomEventsModel');
 export const ImportData = proxify<IImportDataModel>('IImportDataModel');
 export const Imports = proxify<IImportsModel>('IImportsModel');
 export const InstanceStatus = proxify<IInstanceStatusModel>('IInstanceStatusModel');

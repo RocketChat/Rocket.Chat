@@ -2,11 +2,19 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import type { INewOutgoingIntegration, IOutgoingIntegration } from '@rocket.chat/core-typings';
 import { Integrations } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermission } from '../../../../authorization/server';
 import { validateOutgoingIntegration } from '../../lib/validateOutgoingIntegration';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		addOutgoingIntegration(integration: INewOutgoingIntegration): Promise<IOutgoingIntegration>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async addOutgoingIntegration(integration: INewOutgoingIntegration): Promise<IOutgoingIntegration> {
 		const { userId } = this;
 

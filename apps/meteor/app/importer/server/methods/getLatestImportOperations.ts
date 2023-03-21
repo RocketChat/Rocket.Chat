@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Imports } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { IImport } from '@rocket.chat/core-typings';
 
 import { hasPermission } from '../../../authorization/server';
 
@@ -15,8 +17,15 @@ export const executeGetLatestImportOperations = async () => {
 	return data.toArray();
 };
 
-Meteor.methods({
-	async getLatestImportOperations() {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		getLatestImportOperations(): IImport[];
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	getLatestImportOperations() {
 		const userId = Meteor.userId();
 
 		if (!userId) {

@@ -194,37 +194,32 @@ export class SlackImporter extends Base {
 			for await (const entry of zip.getEntries()) {
 				try {
 					if (entry.entryName === 'channels.json') {
-						channelCount += await this.prepareChannelsFile(entry);
-						await this.updateRecord({ 'count.channels': channelCount });
-						increaseProgress();
-						continue;
+						channelCount += Promise.await(this.prepareChannelsFile(entry));
+						Promise.await(this.updateRecord({ 'count.channels': channelCount }));
+						return increaseProgress();
 					}
 
 					if (entry.entryName === 'groups.json') {
-						channelCount += await this.prepareGroupsFile(entry);
-						await this.updateRecord({ 'count.channels': channelCount });
-						increaseProgress();
-						continue;
+						channelCount += Promise.await(this.prepareGroupsFile(entry));
+						Promise.await(this.updateRecord({ 'count.channels': channelCount }));
+						return increaseProgress();
 					}
 
 					if (entry.entryName === 'mpims.json') {
-						channelCount += await this.prepareMpimpsFile(entry);
-						await this.updateRecord({ 'count.channels': channelCount });
-						increaseProgress();
-						continue;
+						channelCount += Promise.await(this.prepareMpimpsFile(entry));
+						Promise.await(this.updateRecord({ 'count.channels': channelCount }));
+						return increaseProgress();
 					}
 
 					if (entry.entryName === 'dms.json') {
-						channelCount += await this.prepareDMsFile(entry);
-						await this.updateRecord({ 'count.channels': channelCount });
-						increaseProgress();
-						continue;
+						channelCount += Promise.await(this.prepareDMsFile(entry));
+						Promise.await(this.updateRecord({ 'count.channels': channelCount }));
+						return increaseProgress();
 					}
 
 					if (entry.entryName === 'users.json') {
-						userCount = await this.prepareUsersFile(entry);
-						increaseProgress();
-						continue;
+						userCount = Promise.await(this.prepareUsersFile(entry));
+						return increaseProgress();
 					}
 				} catch (e) {
 					this.logger.error(e);
@@ -268,7 +263,7 @@ export class SlackImporter extends Base {
 							await this.updateRecord({ messagesstatus: `${channel}/${date}` });
 							this.addCountToTotal(tempMessages.length);
 
-							const slackChannelId = await ImportData.findChannelImportIdByNameOrImportId(channel);
+							const slackChannelId = Promise.await(ImportData.findChannelImportIdByNameOrImportId(channel));
 
 							if (slackChannelId) {
 								for await (const message of tempMessages) {

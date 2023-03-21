@@ -21,7 +21,7 @@ import Rooms from '../../../models/server/models/Rooms';
 import Subscriptions from '../../../models/server/models/Subscriptions';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { hasPermission } from '../../../authorization/server/functions/hasPermission';
-import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
+import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 import { Messages } from '../../../models/server';
@@ -80,7 +80,7 @@ export const FileUpload = {
 		const room = Rooms.findOneById(file.rid);
 		const directMessageAllowed = settings.get('FileUpload_Enabled_Direct');
 		const fileUploadAllowed = settings.get('FileUpload_Enabled');
-		if (user?.type !== 'app' && canAccessRoom(room, user, file) !== true) {
+		if (user?.type !== 'app' && Promise.await(canAccessRoomAsync(room, user, file)) !== true) {
 			return false;
 		}
 		const language = user ? user.language : 'en';

@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { RocketChatFile } from '../../../file/server';
 import { RocketChatImportFileInstance } from '../startup/store';
@@ -44,8 +45,15 @@ export const executeUploadImportFile = async (
 	readStream.pipe(writeStream);
 };
 
-Meteor.methods({
-	async uploadImportFile(binaryContent, contentType, fileName, importerKey) {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		uploadImportFile(binaryContent: string, contentType: string, fileName: string, importerKey: string): void;
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	uploadImportFile(binaryContent, contentType, fileName, importerKey) {
 		const userId = Meteor.userId();
 
 		if (!userId) {
