@@ -26,6 +26,7 @@ async function saveUserProfile(
 		nickname?: string;
 	},
 	customFields: Record<string, unknown>,
+	..._: unknown[]
 ) {
 	if (!rcSettings.get<boolean>('Accounts_AllowUserProfileChange')) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
@@ -97,7 +98,7 @@ async function saveUserProfile(
 	const canChangePasswordForOAuth = rcSettings.get<boolean>('Accounts_AllowPasswordChangeForOAuthUsers');
 	if (canChangePasswordForOAuth || user.services?.password) {
 		// Should be the last check to prevent error when trying to check password for users without password
-		if (settings.newPassword && rcSettings.get('Accounts_AllowPasswordChange') === true) {
+		if (settings.newPassword && rcSettings.get<boolean>('Accounts_AllowPasswordChange') === true) {
 			// don't let user change to same password
 			if (compareUserPassword(user, { plain: settings.newPassword })) {
 				throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
@@ -159,19 +160,20 @@ declare module '@rocket.chat/ui-contexts' {
 				nickname?: string;
 			},
 			customFields: Record<string, any>,
+			...args: unknown[]
 		): boolean;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	async saveUserProfile(settings, customFields) {
+	async saveUserProfile(settings, customFields, ...args) {
 		check(settings, Object);
 		check(customFields, Match.Maybe(Object));
 
 		if (settings.email || settings.newPassword) {
-			return saveUserProfileWithTwoFactor.call(this, settings, customFields);
+			return saveUserProfileWithTwoFactor.call(this, settings, customFields, ...args);
 		}
 
-		return saveUserProfile.call(this, settings, customFields);
+		return saveUserProfile.call(this, settings, customFields, ...args);
 	},
 });
