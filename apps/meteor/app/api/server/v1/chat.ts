@@ -13,7 +13,6 @@ import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
-import { parseJsonQuery } from '../helpers/parseJsonQuery';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 
 API.v1.addRoute(
@@ -481,14 +480,7 @@ API.v1.addRoute(
 			check(text, Match.Maybe(String));
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort, fields, query } = await this.parseJsonQuery();
 
 			if (!settings.get<boolean>('Threads_enabled')) {
 				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
@@ -533,14 +525,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { rid } = this.queryParams;
-			const { query, fields, sort } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams as Record<string, any>,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { query, fields, sort } = await this.parseJsonQuery();
 			const { updatedSince } = this.queryParams;
 			let updatedSinceDate;
 			if (!settings.get<boolean>('Threads_enabled')) {
@@ -589,14 +574,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { tmid } = this.queryParams;
-			const { query, fields, sort } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { query, fields, sort } = await this.parseJsonQuery();
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!settings.get('Threads_enabled')) {
@@ -643,14 +621,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { tmid } = this.queryParams;
-			const { query, fields, sort } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { query, fields, sort } = await this.parseJsonQuery();
 			const { updatedSince } = this.queryParams;
 			let updatedSinceDate;
 			if (!settings.get<boolean>('Threads_enabled')) {
@@ -729,14 +700,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId } = this.queryParams;
-			const { sort } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort } = await this.parseJsonQuery();
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			if (!roomId) {
 				throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
@@ -762,14 +726,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId } = this.queryParams;
-			const { sort } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort } = await this.parseJsonQuery();
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!roomId) {
@@ -798,14 +755,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId, text } = this.queryParams;
-			const { sort } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort } = await this.parseJsonQuery();
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!roomId) {

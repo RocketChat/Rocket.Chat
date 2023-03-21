@@ -29,7 +29,6 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { passwordPolicy } from '../../../lib/server';
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getUserInfo } from '../helpers/getUserInfo';
-import { parseJsonQuery } from '../helpers/parseJsonQuery';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 
@@ -361,14 +360,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, query } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort, query } = await this.parseJsonQuery();
 
 			const { text, type, workspace = 'local' } = query;
 

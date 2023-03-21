@@ -120,6 +120,11 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 	readonly queryOperations: TOptions extends { queryOperations: infer T } ? T : never;
 	readonly queryFields: TOptions extends { queryFields: infer T } ? T : never;
 	readonly logger: Logger;
+	parseJsonQuery(): Promise<{
+		sort: Record<string, 1 | -1>;
+		fields: Record<string, 0 | 1>;
+		query: Record<string, unknown>;
+	}>;
 } & (TOptions extends { authRequired: true }
 	? {
 			readonly user: IUser;

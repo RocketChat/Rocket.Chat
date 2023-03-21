@@ -18,7 +18,6 @@ import { API } from '../api';
 import { SettingsEvents, settings } from '../../../settings/server';
 import { setValue } from '../../../settings/server/raw';
 import { getPaginationItems } from '../helpers/getPaginationItems';
-import { parseJsonQuery } from '../helpers/parseJsonQuery';
 
 async function fetchSettings(
 	query: Parameters<typeof Settings.find>[0],
@@ -48,14 +47,7 @@ API.v1.addRoute(
 		async get() {
 			const params = this.queryParams as unknown as Record<string, any>;
 			const { offset, count } = await getPaginationItems(params);
-			const { sort, fields, query } = await parseJsonQuery(
-				this.request.route,
-				this.userId || '',
-				params,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort, fields, query } = await this.parseJsonQuery();
 
 			const ourQuery = {
 				...query,
@@ -130,14 +122,7 @@ API.v1.addRoute(
 		async get() {
 			const params = this.queryParams as unknown as Record<string, any>;
 			const { offset, count } = await getPaginationItems(params);
-			const { sort, fields, query } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				params,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort, fields, query } = await this.parseJsonQuery();
 
 			let ourQuery: Parameters<typeof Settings.find>[0] = {
 				hidden: { $ne: true },

@@ -17,6 +17,9 @@ import { checkCodeForUser } from '../../2fa/server/code';
 import { checkPermissionsForInvocation, checkPermissions } from './api.helpers';
 import { isObject } from '../../../lib/utils/isObject';
 import { getUserInfo } from './helpers/getUserInfo';
+import { parseJsonQuery } from './helpers/parseJsonQuery';
+
+('./helpers/parseJsonQuery');
 
 const logger = new Logger('API');
 
@@ -99,20 +102,12 @@ export class APIClass extends Restivus {
 		};
 	}
 
-	hasHelperMethods() {
-		return API.helperMethods.size !== 0;
-	}
-
-	getHelperMethods() {
-		return API.helperMethods;
-	}
-
-	getHelperMethod(name) {
-		return API.helperMethods.get(name);
-	}
-
 	addAuthMethod(method) {
 		this.authMethods.push(method);
+	}
+
+	async parseJsonQuery() {
+		return parseJsonQuery(this.request.route, this.userId, this.queryParams, this.logger, this.queryFields, this.queryOperations);
 	}
 
 	shouldAddRateLimitToRoute(options) {
@@ -360,6 +355,7 @@ export class APIClass extends Restivus {
 					});
 
 					this.requestIp = getRequestIP(this.request);
+					this.parseJsonQuery = api.parseJsonQuery.bind(this);
 
 					const startTime = Date.now();
 
@@ -492,10 +488,6 @@ export class APIClass extends Restivus {
 
 					return result;
 				};
-
-				for (const [name, helperMethod] of this.getHelperMethods()) {
-					endpoints[method][name] = helperMethod;
-				}
 
 				// Allow the endpoints to make usage of the logger which respects the user's settings
 				endpoints[method].logger = logger;

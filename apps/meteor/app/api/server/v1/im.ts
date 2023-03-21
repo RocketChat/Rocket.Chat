@@ -24,8 +24,6 @@ import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { settings } from '../../../settings/server';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
-import { parseJsonQuery } from '../helpers/parseJsonQuery';
-
 // TODO: Refact or remove
 
 type findDirectMessageRoomProps =
@@ -207,14 +205,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort, fields, query } = await this.parseJsonQuery();
 
 			const { room } = await findDirectMessageRoom(this.queryParams, this.userId);
 
@@ -295,14 +286,7 @@ API.v1.addRoute(
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort } = await this.parseJsonQuery();
 
 			check(
 				this.queryParams,
@@ -360,14 +344,7 @@ API.v1.addRoute(
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort, fields, query } = await this.parseJsonQuery();
 
 			const ourQuery = { rid: room._id, ...query };
 			const sortObj = { ts: sort?.ts ?? -1 };
@@ -417,14 +394,7 @@ API.v1.addRoute(
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort, fields, query } = await this.parseJsonQuery();
 			const ourQuery = Object.assign({}, query, { rid: room._id });
 
 			const { cursor, totalCount } = Messages.findPaginated<IMessage>(ourQuery, {
@@ -456,14 +426,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort = { name: 1 }, fields } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort = { name: 1 }, fields } = await this.parseJsonQuery();
 
 			// TODO: CACHE: Add Breaking notice since we removed the query param
 
@@ -503,14 +466,7 @@ API.v1.addRoute(
 			}
 
 			const { offset, count }: { offset: number; count: number } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort, fields, query } = await this.parseJsonQuery();
 
 			const { cursor, totalCount } = Rooms.findPaginated(
 				{ ...query, t: 'd' },

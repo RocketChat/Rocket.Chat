@@ -8,21 +8,13 @@ import { findEmojisCustom } from '../lib/emoji-custom';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 import { getPaginationItems } from '../helpers/getPaginationItems';
-import { parseJsonQuery } from '../helpers/parseJsonQuery';
 
 API.v1.addRoute(
 	'emoji-custom.list',
 	{ authRequired: true },
 	{
 		async get() {
-			const { query } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { query } = await this.parseJsonQuery();
 			const { updatedSince } = this.queryParams;
 			if (updatedSince) {
 				const updatedSinceDate = new Date(updatedSince);
@@ -57,14 +49,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, query } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort, query } = await this.parseJsonQuery();
 
 			return API.v1.success(
 				await findEmojisCustom({

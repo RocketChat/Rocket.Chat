@@ -3,7 +3,6 @@ import { isGETLivechatQueueParams } from '@rocket.chat/rest-typings';
 import { API } from '../../../../api/server';
 import { findQueueMetrics } from '../../../server/api/lib/queue';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
-import { parseJsonQuery } from '../../../../api/server/helpers/parseJsonQuery';
 
 API.v1.addRoute(
 	'livechat/queue',
@@ -11,14 +10,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort } = await this.parseJsonQuery();
 			const { agentId, includeOfflineAgents, departmentId } = this.queryParams;
 			const users = await findQueueMetrics({
 				agentId,

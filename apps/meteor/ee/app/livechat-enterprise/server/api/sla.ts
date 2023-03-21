@@ -5,7 +5,6 @@ import { API } from '../../../../../app/api/server';
 import { findSLA } from './lib/sla';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
-import { parseJsonQuery } from '../../../../../app/api/server/helpers/parseJsonQuery';
 
 API.v1.addRoute(
 	'livechat/sla',
@@ -23,14 +22,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort } = await this.parseJsonQuery();
 			const { text } = this.queryParams;
 
 			return API.v1.success(

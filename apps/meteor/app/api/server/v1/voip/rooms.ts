@@ -8,7 +8,6 @@ import { API } from '../../api';
 import { hasPermission } from '../../../../authorization/server';
 import { typedJsonParse } from '../../../../../lib/typedJSONParse';
 import { getPaginationItems } from '../../helpers/getPaginationItems';
-import { parseJsonQuery } from '../../helpers/parseJsonQuery';
 
 type DateParam = { start?: string; end?: string };
 const parseDateParams = (date?: string): DateParam => {
@@ -163,14 +162,7 @@ API.v1.addRoute(
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
-			const { sort, fields } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort, fields } = await this.parseJsonQuery();
 			const { agents, open, tags, queue, visitorId, direction, roomName } = this.queryParams;
 			const { createdAt: createdAtParam, closedAt: closedAtParam } = this.queryParams;
 

@@ -20,7 +20,6 @@ import { canEnableApp } from '../../../app/license/server/license';
 import { appsCountHandler } from './endpoints/appsCountHandler';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
 import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
-import { parseJsonQuery } from '../../../../app/api/server/helpers/parseJsonQuery';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -955,14 +954,7 @@ export class AppsRestApi {
 
 					if (prl) {
 						const { offset, count } = await getPaginationItems(this.queryParams);
-						const { sort, fields, query } = await parseJsonQuery(
-							this.request.route,
-							this.userId,
-							this.queryParams,
-							this.logger,
-							this.queryFields,
-							this.queryOperations,
-						);
+						const { sort, fields, query } = await this.parseJsonQuery();
 
 						const ourQuery = Object.assign({}, query, { appId: prl.getID() });
 						const options = {

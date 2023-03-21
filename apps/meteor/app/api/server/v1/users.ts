@@ -47,7 +47,6 @@ import { getUploadFormData } from '../lib/getUploadFormData';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { isUserFromParams } from '../helpers/isUserFromParams';
-import { parseJsonQuery } from '../helpers/parseJsonQuery';
 
 API.v1.addRoute(
 	'users.getAvatar',
@@ -103,14 +102,7 @@ API.v1.addRoute(
 
 				Meteor.call('setUserActiveStatus', userId, active, Boolean(confirmRelinquish));
 			}
-			const { fields } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { fields } = await this.parseJsonQuery();
 
 			return API.v1.success({ user: Users.findOneById(this.bodyParams.userId, { fields }) });
 		},
@@ -277,14 +269,7 @@ API.v1.addRoute(
 				Meteor.call('setUserActiveStatus', newUserId, this.bodyParams.active);
 			}
 
-			const { fields } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { fields } = await this.parseJsonQuery();
 
 			return API.v1.success({ user: Users.findOneById(newUserId, { fields }) });
 		},
@@ -379,14 +364,7 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isUsersInfoParamsGetProps },
 	{
 		async get() {
-			const { fields } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { fields } = await this.parseJsonQuery();
 
 			const user = await getFullUserDataByIdOrUsername(this.userId, {
 				filterId: (this.queryParams as any).userId,
@@ -443,14 +421,7 @@ API.v1.addRoute(
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort, fields, query } = await this.parseJsonQuery();
 
 			const nonEmptyQuery = getNonEmptyQuery(query, hasPermission(this.userId, 'view-full-other-user-info'));
 			const nonEmptyFields = getNonEmptyFields(fields);
@@ -571,14 +542,7 @@ API.v1.addRoute(
 
 			// Now set their username
 			Meteor.runAsUser(userId, () => Meteor.call('setUsername', this.bodyParams.username));
-			const { fields } = await parseJsonQuery(
-				this.request.route,
-				this.userId || '',
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { fields } = await this.parseJsonQuery();
 
 			return API.v1.success({ user: Users.findOneById(userId, { fields }) });
 		},

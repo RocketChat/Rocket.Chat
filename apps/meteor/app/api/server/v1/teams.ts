@@ -20,7 +20,6 @@ import { Rooms, Users } from '../../../models/server';
 import { canAccessRoomAsync, hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
-import { parseJsonQuery } from '../helpers/parseJsonQuery';
 
 API.v1.addRoute(
 	'teams.list',
@@ -29,14 +28,7 @@ API.v1.addRoute(
 		async get() {
 			const params = this.queryParams as unknown as Record<string, any>;
 			const { offset, count } = await getPaginationItems(params);
-			const { sort, query } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				params,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort, query } = await this.parseJsonQuery();
 
 			const { records, total } = await Team.list(this.userId, { offset, count }, { sort, query });
 

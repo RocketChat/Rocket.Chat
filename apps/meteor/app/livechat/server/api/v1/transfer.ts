@@ -2,7 +2,6 @@ import { LivechatRooms } from '../../../../models/server';
 import { API } from '../../../../api/server';
 import { findLivechatTransferHistory } from '../lib/transfer';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
-import { parseJsonQuery } from '../../../../api/server/helpers/parseJsonQuery';
 
 API.v1.addRoute(
 	'livechat/transfer.history/:rid',
@@ -17,7 +16,7 @@ API.v1.addRoute(
 			}
 			const params = this.queryParams as unknown as Record<string, any>;
 			const { offset, count } = await getPaginationItems(params);
-			const { sort } = await parseJsonQuery(this.request.route, this.userId, params, this.logger, this.queryFields, this.queryOperations);
+			const { sort } = await this.parseJsonQuery();
 
 			const history = await findLivechatTransferHistory({
 				rid,

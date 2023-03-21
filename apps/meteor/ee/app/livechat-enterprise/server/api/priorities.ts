@@ -4,7 +4,6 @@ import { isGETLivechatPrioritiesParams, isPUTLivechatPriority } from '@rocket.ch
 import { API } from '../../../../../app/api/server';
 import { findPriority, updatePriority } from './lib/priorities';
 import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
-import { parseJsonQuery } from '../../../../../app/api/server/helpers/parseJsonQuery';
 
 API.v1.addRoute(
 	'livechat/priorities',
@@ -16,14 +15,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort } = await this.parseJsonQuery();
 			const { text } = this.queryParams;
 
 			return API.v1.success(

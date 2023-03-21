@@ -2,7 +2,6 @@ import { CustomSounds } from '@rocket.chat/models';
 
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
-import { parseJsonQuery } from '../helpers/parseJsonQuery';
 
 API.v1.addRoute(
 	'custom-sounds.list',
@@ -10,14 +9,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, query } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort, query } = await this.parseJsonQuery();
 			const { cursor, totalCount } = CustomSounds.findPaginated(query, {
 				sort: sort || { name: 1 },
 				skip: offset,

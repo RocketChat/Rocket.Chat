@@ -5,7 +5,6 @@ import { API } from '../../../../api/server';
 import { findRooms } from '../../../server/api/lib/rooms';
 import { hasPermission } from '../../../../authorization/server';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
-import { parseJsonQuery } from '../../../../api/server/helpers/parseJsonQuery';
 
 const validateDateParams = (property: string, date?: string) => {
 	let parsedDate: { start?: string; end?: string } | undefined = undefined;
@@ -30,14 +29,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort, fields } = await this.parseJsonQuery();
 			const { agents, departmentId, open, tags, roomName, onhold } = this.queryParams;
 			const { createdAt, customFields, closedAt } = this.queryParams;
 

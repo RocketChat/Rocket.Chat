@@ -5,7 +5,6 @@ import { findUnits, findUnitById, findUnitMonitors } from './lib/units';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 import { findAllDepartmentsAvailable, findAllDepartmentsByUnit } from '../lib/Department';
 import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
-import { parseJsonQuery } from '../../../../../app/api/server/helpers/parseJsonQuery';
 
 API.v1.addRoute(
 	'livechat/units/:unitId/monitors',
@@ -33,7 +32,7 @@ API.v1.addRoute(
 		async get() {
 			const params = this.queryParams as Record<string, any>;
 			const { offset, count } = await getPaginationItems(params);
-			const { sort } = await parseJsonQuery(this.request.route, this.userId, params, this.logger, this.queryFields, this.queryOperations);
+			const { sort } = await this.parseJsonQuery();
 			const { text } = this.queryParams;
 
 			return API.v1.success(

@@ -22,7 +22,6 @@ import {
 } from '../lib/rooms';
 import * as dataExport from '../../../../server/lib/dataExport';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
-import { parseJsonQuery } from '../helpers/parseJsonQuery';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
 async function findRoomByIdOrName({
@@ -282,14 +281,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const room = await findRoomByIdOrName({ params: this.queryParams });
-			const { fields } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams as Record<string, any>,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { fields } = await this.parseJsonQuery();
 
 			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
 				return API.v1.failure('not-allowed', 'Not Allowed');
@@ -355,14 +347,7 @@ API.v1.addRoute(
 		async get() {
 			const room = await findRoomByIdOrName({ params: this.queryParams });
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort, fields, query } = await this.parseJsonQuery();
 
 			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
 				return API.v1.failure('not-allowed', 'Not Allowed');
@@ -395,14 +380,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort } = await this.parseJsonQuery();
 			const { types, filter } = this.queryParams;
 
 			return API.v1.success(
@@ -487,14 +465,7 @@ API.v1.addRoute(
 		async get() {
 			const { selector } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort } = await this.parseJsonQuery();
 
 			if (!selector) {
 				return API.v1.failure("The 'selector' param is required");

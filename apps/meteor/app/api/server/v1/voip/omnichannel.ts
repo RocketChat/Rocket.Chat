@@ -6,7 +6,6 @@ import { LivechatVoip } from '@rocket.chat/core-services';
 import { API } from '../../api';
 import { logger } from './logger';
 import { getPaginationItems } from '../../helpers/getPaginationItems';
-import { parseJsonQuery } from '../../helpers/parseJsonQuery';
 
 function filter(
 	array: IVoipExtensionWithAgentInfo[],
@@ -249,14 +248,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort } = await this.parseJsonQuery();
 			const { text, includeExtension = '' } = this.queryParams;
 
 			const { agents, total } = await LivechatVoip.getAvailableAgents(includeExtension, text, count, offset, sort);

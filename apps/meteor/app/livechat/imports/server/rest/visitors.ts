@@ -22,7 +22,6 @@ import {
 import { LivechatRooms } from '../../../../models/server';
 import { normalizeMessagesForUser } from '../../../../utils/server/lib/normalizeMessagesForUser';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
-import { parseJsonQuery } from '../../../../api/server/helpers/parseJsonQuery';
 import { canAccessRoomAsync } from '../../../../authorization/server';
 
 API.v1.addRoute(
@@ -42,14 +41,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort } = await this.parseJsonQuery();
 
 			const pages = await findVisitedPages({
 				roomId: this.urlParams.roomId,
@@ -74,14 +66,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort } = await this.parseJsonQuery();
 			const history = await findChatHistory({
 				userId: this.userId,
 				roomId: this.urlParams.roomId,
@@ -110,14 +95,7 @@ API.v1.addRoute(
 			const { roomId, visitorId } = this.urlParams;
 			const { searchText, closedChatsOnly, servedChatsOnly, source } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort } = await this.parseJsonQuery();
 			const history = await searchChats({
 				userId: this.userId,
 				roomId,
@@ -161,14 +139,7 @@ API.v1.addRoute(
 			const { term } = this.queryParams;
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort } = await this.parseJsonQuery();
 
 			const nameOrUsername = term ? new RegExp(escapeRegExp(term), 'i') : undefined;
 
@@ -193,14 +164,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort } = await this.parseJsonQuery();
 			const { searchTerm } = this.queryParams;
 
 			const room = LivechatRooms.findOneById(this.urlParams.rid);

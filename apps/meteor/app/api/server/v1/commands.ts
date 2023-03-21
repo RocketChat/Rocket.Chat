@@ -8,7 +8,6 @@ import { canAccessRoomId } from '../../../authorization/server';
 import { API } from '../api';
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
-import { parseJsonQuery } from '../helpers/parseJsonQuery';
 
 API.v1.addRoute(
 	'commands.get',
@@ -145,14 +144,7 @@ API.v1.addRoute(
 		async get() {
 			const params = this.queryParams as Record<string, any>;
 			const { offset, count } = await getPaginationItems(params);
-			const { sort, query } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				params,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort, query } = await this.parseJsonQuery();
 
 			let commands = Object.values(slashCommands.commands);
 

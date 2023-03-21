@@ -4,7 +4,6 @@ import { isPOSTCannedResponsesProps, isDELETECannedResponsesProps, isCannedRespo
 import { API } from '../../../../app/api/server';
 import { findAllCannedResponses, findAllCannedResponsesFilter, findOneCannedResponse } from './lib/canned-responses';
 import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
-import { parseJsonQuery } from '../../../../app/api/server/helpers/parseJsonQuery';
 
 API.v1.addRoute(
 	'canned-responses.get',
@@ -28,14 +27,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort, fields } = await this.parseJsonQuery();
 			const { shortcut, text, scope, tags, departmentId, createdBy } = this.queryParams;
 			const { cannedResponses, total } = await findAllCannedResponsesFilter({
 				shortcut,

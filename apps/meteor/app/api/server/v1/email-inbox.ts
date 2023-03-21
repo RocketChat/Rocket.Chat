@@ -6,7 +6,6 @@ import { insertOneEmailInbox, findEmailInboxes, findOneEmailInbox, updateEmailIn
 import Users from '../../../models/server/models/Users';
 import { sendTestEmailToInbox } from '../../../../server/features/EmailInbox/EmailInbox_Outgoing';
 import { getPaginationItems } from '../helpers/getPaginationItems';
-import { parseJsonQuery } from '../helpers/parseJsonQuery';
 
 API.v1.addRoute(
 	'email-inbox.list',
@@ -14,14 +13,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, query } = await parseJsonQuery(
-				this.request.route,
-				this.userId,
-				this.queryParams,
-				this.logger,
-				this.queryFields,
-				this.queryOperations,
-			);
+			const { sort, query } = await this.parseJsonQuery();
 			const emailInboxes = await findEmailInboxes({ query, pagination: { offset, count, sort } });
 
 			return API.v1.success(emailInboxes);
