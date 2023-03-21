@@ -166,7 +166,7 @@ export class SAML {
 			user = Users.findOne(userId);
 
 			if (userObject.channels && channelsAttributeUpdate !== true) {
-				SAML.subscribeToSAMLChannels(userObject.channels, user);
+				await SAML.subscribeToSAMLChannels(userObject.channels, user);
 			}
 		}
 
@@ -205,7 +205,7 @@ export class SAML {
 		}
 
 		if (userObject.channels && channelsAttributeUpdate === true) {
-			SAML.subscribeToSAMLChannels(userObject.channels, user);
+			await SAML.subscribeToSAMLChannels(userObject.channels, user);
 		}
 
 		Users.update(
@@ -467,10 +467,10 @@ export class SAML {
 			.replace(/^\w/, (u) => u.toUpperCase());
 	}
 
-	private static subscribeToSAMLChannels(channels: Array<string>, user: IUser): void {
+	private static async subscribeToSAMLChannels(channels: Array<string>, user: IUser): Promise<void> {
 		const { includePrivateChannelsInUpdate } = SAMLUtils.globalSettings;
 		try {
-			for (let roomName of channels) {
+			for await (let roomName of channels) {
 				roomName = roomName.trim();
 				if (!roomName) {
 					continue;
@@ -480,19 +480,19 @@ export class SAML {
 				const privRoom = Rooms.findOneByNameAndType(roomName, 'p', {});
 
 				if (privRoom && includePrivateChannelsInUpdate === true) {
-					addUserToRoom(privRoom._id, user);
+					Promise.await(addUserToRoom(privRoom._id, user));
 					continue;
 				}
 
 				if (room) {
-					addUserToRoom(room._id, user);
+					Promise.await(addUserToRoom(room._id, user));
 					continue;
 				}
 
 				if (!room && !privRoom) {
 					// If the user doesn't have an username yet, we can't create new rooms for them
 					if (user.username) {
-						createRoom('c', roomName, user.username);
+						await createRoom('c', roomName, user.username);
 					}
 				}
 			}
