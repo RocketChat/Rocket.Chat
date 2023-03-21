@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { saveCustomFields, passwordPolicy } from '../../app/lib/server';
 import { validateUserEditing } from '../../app/lib/server/functions/saveUser';
@@ -12,8 +13,21 @@ import { compareUserPassword } from '../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';
 import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
 
-async function saveUserProfile(settings, customFields) {
-	if (!rcSettings.get('Accounts_AllowUserProfileChange')) {
+async function saveUserProfile(
+	this: Meteor.MethodThisType,
+	settings: {
+		email?: string;
+		username?: string;
+		realname?: string;
+		newPassword?: string;
+		statusText?: string;
+		statusType?: string;
+		bio?: string;
+		nickname?: string;
+	},
+	customFields: Record<string, unknown>,
+) {
+	if (!rcSettings.get<boolean>('Accounts_AllowUserProfileChange')) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 			method: 'saveUserProfile',
 		});
@@ -58,7 +72,7 @@ async function saveUserProfile(settings, customFields) {
 		Meteor.call('setUserStatus', settings.statusType, null);
 	}
 
-	if (settings.bio != null) {
+	if (settings.bio) {
 		if (typeof settings.bio !== 'string' || settings.bio.length > 260) {
 			throw new Meteor.Error('error-invalid-field', 'bio', {
 				method: 'saveUserProfile',
@@ -67,7 +81,7 @@ async function saveUserProfile(settings, customFields) {
 		Users.setBio(user._id, settings.bio.trim());
 	}
 
-	if (settings.nickname != null) {
+	if (settings.nickname) {
 		if (typeof settings.nickname !== 'string' || settings.nickname.length > 120) {
 			throw new Meteor.Error('error-invalid-field', 'nickname', {
 				method: 'saveUserProfile',
@@ -80,7 +94,7 @@ async function saveUserProfile(settings, customFields) {
 		Meteor.call('setEmail', settings.email);
 	}
 
-	const canChangePasswordForOAuth = rcSettings.get('Accounts_AllowPasswordChangeForOAuthUsers');
+	const canChangePasswordForOAuth = rcSettings.get<boolean>('Accounts_AllowPasswordChangeForOAuthUsers');
 	if (canChangePasswordForOAuth || user.services?.password) {
 		// Should be the last check to prevent error when trying to check password for users without password
 		if (settings.newPassword && rcSettings.get('Accounts_AllowPasswordChange') === true) {
@@ -130,13 +144,32 @@ const saveUserProfileWithTwoFactor = twoFactorRequired(saveUserProfile, {
 	requireSecondFactor: true,
 });
 
-Meteor.methods({
-	async saveUserProfile(settings, customFields, ...args) {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		saveUserProfile(
+			settings: {
+				email?: string;
+				username?: string;
+				realname?: string;
+				newPassword?: string;
+				statusText?: string;
+				statusType?: string;
+				bio?: string;
+				nickname?: string;
+			},
+			customFields: Record<string, any>,
+		): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async saveUserProfile(settings, customFields) {
 		check(settings, Object);
 		check(customFields, Match.Maybe(Object));
 
 		if (settings.email || settings.newPassword) {
-			return saveUserProfileWithTwoFactor.call(this, settings, customFields, ...args);
+			return saveUserProfileWithTwoFactor.call(this, settings, customFields);
 		}
 
 		return saveUserProfile.call(this, settings, customFields);
