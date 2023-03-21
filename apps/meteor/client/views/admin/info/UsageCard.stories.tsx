@@ -65,7 +65,7 @@ export default {
 			federatedServers: 0,
 			federatedUsers: 0,
 			lastLogin: '',
-			lastMessageSentAt: '',
+			lastMessageSentAt: new Date(),
 			lastSeenSubscription: '',
 			os: {
 				type: '',
