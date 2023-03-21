@@ -40,7 +40,7 @@ const isTwilioData = (data: unknown): data is TwilioData => {
 const MAX_FILE_SIZE = 5242880;
 
 const notifyAgent = (userId: string, rid: string, msg: string) =>
-	api.broadcast('notify.ephemeralMessage', userId, rid, {
+	void api.broadcast('notify.ephemeralMessage', userId, rid, {
 		msg,
 	});
 
@@ -153,7 +153,7 @@ export class Twilio implements ISMSProvider {
 			}
 
 			if (reason) {
-				rid && userId && notifyAgent(userId, rid, reason);
+				rid && userId && (await notifyAgent(userId, rid, reason));
 				SystemLogger.error(`(Twilio) -> ${reason}`);
 			}
 

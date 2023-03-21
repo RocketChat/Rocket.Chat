@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IEditedMessage, IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import moment from 'moment';
 
@@ -175,8 +175,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		Messages.upsert({ _id: message._id }, { $set: { ...message, rid, ...(tmid && { tmid }) } });
 	};
 
-	const updateMessage = async (message: Pick<IMessage, '_id' | 't'> & Partial<Omit<IMessage, '_id' | 't'>>): Promise<void> =>
-		call('updateMessage', message);
+	const updateMessage = async (message: IEditedMessage): Promise<void> => call('updateMessage', message);
 
 	const canDeleteMessage = async (message: IMessage): Promise<boolean> => {
 		const uid = Meteor.userId();
@@ -246,7 +245,9 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 
 	const isSubscribedToRoom = async (): Promise<boolean> => !!ChatSubscription.findOne({ rid }, { reactive: false });
 
-	const joinRoom = async (): Promise<void> => call('joinRoom', rid);
+	const joinRoom = async (): Promise<void> => {
+		await call('joinRoom', rid);
+	};
 
 	const markRoomAsRead = async (): Promise<void> => {
 		readMessage.readNow(rid);

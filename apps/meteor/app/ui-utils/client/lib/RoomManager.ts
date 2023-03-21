@@ -111,11 +111,10 @@ function closeOlderRooms() {
 	return Array.from(roomsToClose).map((roomToClose) => close(roomToClose.typeName));
 }
 
-function closeAllRooms() {
-	Object.keys(openedRooms).forEach((key) => {
-		const openedRoom = openedRooms[key];
-		close(openedRoom.typeName);
-	});
+async function closeAllRooms() {
+	for await (const openedRoom of Object.values(openedRooms)) {
+		await close(openedRoom.typeName);
+	}
 	Session.set('openedRoom', undefined);
 }
 
@@ -132,10 +131,10 @@ const handleTrackSettingsChange = (msg: IMessage) => {
 		return;
 	}
 
-	Tracker.nonreactive(() => {
+	void Tracker.nonreactive(async () => {
 		if (msg.t === 'room_changed_privacy') {
 			const type = FlowRouter.current().route?.name === 'channel' ? 'c' : 'p';
-			close(type + FlowRouter.getParam('name'));
+			await close(type + FlowRouter.getParam('name'));
 
 			const subscription = ChatSubscription.findOne({ rid: msg.rid });
 			if (!subscription) {
@@ -151,7 +150,7 @@ const handleTrackSettingsChange = (msg: IMessage) => {
 				throw new Error('Room not found');
 			}
 			if (room.name !== FlowRouter.getParam('name')) {
-				close(room.t + FlowRouter.getParam('name'));
+				await close(room.t + FlowRouter.getParam('name'));
 				roomCoordinator.openRouteLink(room.t, room, FlowRouter.current().queryParams);
 			}
 		}
@@ -174,11 +173,11 @@ const computation = Tracker.autorun(() => {
 
 			const room = roomCoordinator.getRoomDirectives(type)?.findRoom(name);
 
-			RoomHistoryManager.getMoreIfIsEmpty(record.rid);
+			void RoomHistoryManager.getMoreIfIsEmpty(record.rid);
 
 			if (room) {
 				if (record.streamActive !== true) {
-					(
+					void (
 						roomMessagesStream.on(record.rid, async (msg) => {
 							// Should not send message to room if room has not loaded all the current messages
 							// if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
@@ -188,7 +187,7 @@ const computation = Tracker.autorun(() => {
 							if (msg.t !== 'command') {
 								const subscription = ChatSubscription.findOne({ rid: record.rid }, { reactive: false });
 								const isNew = !ChatMessage.findOne({ _id: msg._id, temp: { $ne: true } });
-								upsertMessage({ msg, subscription });
+								await upsertMessage({ msg, subscription });
 
 								msg.room = {
 									type,
@@ -205,7 +204,7 @@ const computation = Tracker.autorun(() => {
 
 							callbacks.run('streamMessage', msg);
 
-							return fireGlobalEvent('new-message', msg);
+							fireGlobalEvent('new-message', msg);
 						}) as unknown as Promise<void>
 					).then(() => {
 						record.streamActive = true;

@@ -4,7 +4,7 @@ import { setPredictedVisitorAbandonmentTime } from '../lib/Helper';
 
 callbacks.add(
 	'afterSaveMessage',
-	function (message, room) {
+	async function (message, room) {
 		if (
 			!settings.get('Livechat_abandoned_rooms_action') ||
 			settings.get('Livechat_abandoned_rooms_action') === 'none' ||
@@ -26,10 +26,10 @@ callbacks.add(
 		}
 		const sentByAgent = !message.token;
 		if (sentByAgent) {
-			Promise.await(setPredictedVisitorAbandonmentTime(room));
+			await setPredictedVisitorAbandonmentTime(room);
 		}
 		return message;
 	},
 	callbacks.priority.MEDIUM,
 	'save-visitor-inactivity',
-); // This hook priority should always be less than the priority of hook "save-last-visitor-message-timestamp" bcs, the room.v.lastMessage property set there is being used here for determinting visitor abandonment
+); // This hook priority should always be less than the priority of hook "save-last-visitor-message-timestamp" bcs, the room.v.lastMessage property set there is being used here for determining visitor abandonment

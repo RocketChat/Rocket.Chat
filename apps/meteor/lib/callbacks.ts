@@ -17,6 +17,7 @@ import type {
 	OEmbedUrlContent,
 	Username,
 	IOmnichannelRoom,
+	ILivechatTag,
 } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 
@@ -149,6 +150,7 @@ type ChainedCallbackSignatures = {
 		parsedUrl: ParsedUrl;
 		content: OEmbedUrlContent;
 	};
+	'livechat.beforeListTags': () => ILivechatTag[];
 };
 
 type Hook =
@@ -178,7 +180,6 @@ type Hook =
 	| 'enter-room'
 	| 'livechat.beforeForwardRoomToDepartment'
 	| 'livechat.beforeInquiry'
-	| 'livechat.beforeListTags'
 	| 'livechat.beforeRoom'
 	| 'livechat.beforeRouteChat'
 	| 'livechat.chatQueued'
@@ -231,6 +232,9 @@ type CallbackTracker = (callback: Callback) => () => void;
 
 type HookTracker = (params: { hook: Hook; length: number }) => () => void;
 
+// Temporary since we are still using callbacks on client side
+Promise.await = Promise.await || ((promise: Promise<unknown>) => promise);
+
 class Callbacks {
 	private logger: Logger | undefined = undefined;
 
@@ -259,7 +263,7 @@ class Callbacks {
 		const stopTracking = this.trackCallback?.(callback);
 
 		try {
-			return callback(item, constant);
+			return Promise.await(callback(item, constant));
 		} finally {
 			stopTracking?.();
 		}

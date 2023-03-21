@@ -7,7 +7,7 @@ export class AnalyticsService extends ServiceClassInternal implements IAnalytics
 	protected name = 'analytics';
 
 	async saveSeatRequest(): Promise<void> {
-		Analytics.update({ type: 'seat-request' }, { $inc: { count: 1 } }, { upsert: true });
+		await Analytics.update({ type: 'seat-request' }, { $inc: { count: 1 } }, { upsert: true });
 	}
 
 	async getSeatRequestCount(): Promise<number> {

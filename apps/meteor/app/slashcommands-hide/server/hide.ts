@@ -43,7 +43,7 @@ slashCommands.add({
 							usernames: { $all: [user.username, strippedRoom] },
 					  });
 			if (!roomObject) {
-				api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
+				void api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
 					msg: TAPi18n.__('Channel_doesnt_exist', {
 						postProcess: 'sprintf',
 						sprintf: [room],
@@ -52,7 +52,7 @@ slashCommands.add({
 				});
 			}
 			if (!Subscriptions.findOneByRoomIdAndUserId(roomObject._id, user._id, { fields: { _id: 1 } })) {
-				api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
+				void api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
 					msg: TAPi18n.__('error-logged-user-not-in-room', {
 						postProcess: 'sprintf',
 						sprintf: [room],

@@ -54,7 +54,7 @@ export class HipChatEnterpriseImporter extends Base {
 		}
 
 		await Settings.incrementValueById('Hipchat_Enterprise_Importer_Count', count);
-		super.updateRecord({ 'count.users': count });
+		await super.updateRecord({ 'count.users': count });
 		super.addCountToTotal(count);
 	}
 
@@ -62,8 +62,8 @@ export class HipChatEnterpriseImporter extends Base {
 		super.updateProgress(ProgressStep.PREPARING_CHANNELS);
 		let count = 0;
 
-		for (const r of file) {
-			this.converter.addChannel({
+		for await (const r of file) {
+			await this.converter.addChannel({
 				u: {
 					_id: r.Room.owner,
 				},
@@ -79,7 +79,7 @@ export class HipChatEnterpriseImporter extends Base {
 			count++;
 		}
 
-		super.updateRecord({ 'count.channels': count });
+		await super.updateRecord({ 'count.channels': count });
 		super.addCountToTotal(count);
 	}
 
@@ -88,7 +88,7 @@ export class HipChatEnterpriseImporter extends Base {
 		let count = 0;
 		const dmRooms = [];
 
-		for (const m of file) {
+		for await (const m of file) {
 			if (!m.PrivateUserMessage) {
 				continue;
 			}
@@ -104,7 +104,7 @@ export class HipChatEnterpriseImporter extends Base {
 			const users = [senderId, receiverId].sort();
 
 			if (!dmRooms[receiverId]) {
-				dmRooms[receiverId] = this.converter.findDMForImportedUsers(senderId, receiverId);
+				dmRooms[receiverId] = await this.converter.findDMForImportedUsers(senderId, receiverId);
 
 				if (!dmRooms[receiverId]) {
 					const room = {
@@ -113,7 +113,7 @@ export class HipChatEnterpriseImporter extends Base {
 						t: 'd',
 						ts: new Date(m.PrivateUserMessage.timestamp.split(' ')[0]),
 					};
-					this.converter.addChannel(room);
+					await this.converter.addChannel(room);
 					dmRooms[receiverId] = room;
 				}
 			}
@@ -121,7 +121,7 @@ export class HipChatEnterpriseImporter extends Base {
 			const rid = dmRooms[receiverId].importIds[0];
 			const newMessage = this.convertImportedMessage(m.PrivateUserMessage, rid, 'private');
 			count++;
-			this.converter.addMessage(newMessage);
+			await this.converter.addMessage(newMessage);
 		}
 
 		return count;
@@ -199,23 +199,23 @@ export class HipChatEnterpriseImporter extends Base {
 
 		await this.loadTurndownService();
 
-		for (const m of file) {
+		for await (const m of file) {
 			if (m.UserMessage) {
 				const newMessage = this.convertImportedMessage(m.UserMessage, rid, 'user');
-				this.converter.addMessage(newMessage);
+				await this.converter.addMessage(newMessage);
 				count++;
 			} else if (m.NotificationMessage) {
 				const newMessage = this.convertImportedMessage(m.NotificationMessage, rid, 'notif');
 				newMessage.u._id = 'rocket.cat';
 				newMessage.alias = m.NotificationMessage.sender;
 
-				this.converter.addMessage(newMessage);
+				await this.converter.addMessage(newMessage);
 				count++;
 			} else if (m.TopicRoomMessage) {
 				const newMessage = this.convertImportedMessage(m.TopicRoomMessage, rid, 'topic');
 				newMessage.t = 'room_changed_topic';
 
-				this.converter.addMessage(newMessage);
+				await this.converter.addMessage(newMessage);
 				count++;
 			} else if (m.ArchiveRoomMessage) {
 				this.logger.warn('Archived Room Notification was ignored.');
@@ -235,7 +235,7 @@ export class HipChatEnterpriseImporter extends Base {
 		const [type, id] = info.dir.split('/');
 		const roomIdentifier = `${type}/${id}`;
 
-		super.updateRecord({ messagesstatus: roomIdentifier });
+		await super.updateRecord({ messagesstatus: roomIdentifier });
 
 		switch (type) {
 			case 'users':
@@ -313,7 +313,7 @@ export class HipChatEnterpriseImporter extends Base {
 							const newMessageCount = await this.prepareFile(info, data, header.name);
 
 							messageCount += newMessageCount;
-							super.updateRecord({ 'count.messages': messageCount });
+							await super.updateRecord({ 'count.messages': messageCount });
 							super.addCountToTotal(newMessageCount);
 
 							data = undefined;

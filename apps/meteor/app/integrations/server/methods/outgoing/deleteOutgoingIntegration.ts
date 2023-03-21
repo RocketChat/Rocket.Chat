@@ -1,9 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import { Integrations, IntegrationHistory } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermission } from '../../../../authorization/server';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		deleteOutgoingIntegration(integrationId: string): Promise<boolean>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async deleteOutgoingIntegration(integrationId) {
 		let integration;
 
@@ -26,7 +34,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!integration) {
+		if (!(await integration)) {
 			throw new Meteor.Error('error-invalid-integration', 'Invalid integration', {
 				method: 'deleteOutgoingIntegration',
 			});

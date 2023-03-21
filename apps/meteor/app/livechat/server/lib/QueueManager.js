@@ -16,7 +16,7 @@ export const saveQueueInquiry = (inquiry) => {
 };
 
 export const queueInquiry = async (room, inquiry, defaultAgent) => {
-	const inquiryAgent = RoutingManager.delegateAgent(defaultAgent, inquiry);
+	const inquiryAgent = await RoutingManager.delegateAgent(defaultAgent, inquiry);
 	logger.debug(`Delegating inquiry with id ${inquiry._id} to agent ${defaultAgent?.username}`);
 
 	await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
