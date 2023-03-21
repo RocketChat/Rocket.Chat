@@ -53,7 +53,7 @@ export const slashCommands = {
 		params: string,
 		message: RequiredField<Partial<IMessage>, 'rid'>,
 		triggerId?: string | undefined,
-	): Promise<void> {
+	): Promise<unknown> {
 		const cmd = this.commands[command];
 		if (typeof cmd?.callback !== 'function') {
 			return;
