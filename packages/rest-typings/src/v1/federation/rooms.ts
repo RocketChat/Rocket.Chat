@@ -30,7 +30,7 @@ export type FederationEndpoints = {
 	'/v1/federation/removeServerByUser': {
 		POST: (params: FederationRemoveServerProps) => void;
 	};
-	'/v1/federation/verifyeMatrixId': {
+	'/v1/federation/verifyMatrixId': {
 		GET: (params: FederationVerifyMatrixIdProps) => { result: string };
 	};
 };

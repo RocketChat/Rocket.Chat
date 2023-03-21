@@ -95,7 +95,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'federation/verifyeMatrixId',
+	'federation/verifyMatrixId',
 	{
 		authRequired: true,
 		validateParams: isFederationVerifyMatrixIdProps,

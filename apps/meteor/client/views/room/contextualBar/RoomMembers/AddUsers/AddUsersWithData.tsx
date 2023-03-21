@@ -43,7 +43,7 @@ const AddUsersWithData = ({ rid, onClickBack, reload }: AddUsersWithDataProps): 
 		reload,
 		users,
 	} as useMatrixIdValidationProps);
-	const dispatchVerifyEndpoint = useEndpoint('GET', '/v1/federation/verifyeMatrixId', undefined);
+	const dispatchVerifyEndpoint = useEndpoint('GET', '/v1/federation/verifyMatrixId', undefined);
 
 	const onChangeUsers = useMutableCallback((value, action) => {
 		if (!action) {
