@@ -44,6 +44,7 @@ import type { MeEndpoints } from './v1/me';
 import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
 import type { ImportEndpoints } from './v1/import';
 import type { FederationEndpoints } from './v1/federation';
+import type { AuthEndpoints } from './v1/auth';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/naming-convention
 export interface Endpoints
@@ -90,6 +91,7 @@ export interface Endpoints
 		SubscriptionsEndpoints,
 		AutoTranslateEndpoints,
 		FederationEndpoints,
+		AuthEndpoints,
 		ImportEndpoints {}
 
 type OperationsByPathPatternAndMethod<
@@ -250,3 +252,4 @@ export * from './v1/federation';
 export * from './v1/rooms';
 export * from './v1/groups';
 export * from './v1/chat';
+export * from './v1/auth';

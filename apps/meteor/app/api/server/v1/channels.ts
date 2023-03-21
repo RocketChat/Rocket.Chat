@@ -690,7 +690,7 @@ API.v1.addRoute(
 			let error;
 
 			try {
-				API.channels.create.validate({
+				API.channels?.create.validate({
 					user: {
 						value: userId,
 					},
@@ -738,7 +738,7 @@ API.v1.addRoute(
 				bodyParams.members = [...membersToAdd].filter(Boolean) as string[];
 			}
 
-			return API.v1.success(await API.channels.create.execute(userId, bodyParams));
+			return API.v1.success(await API.channels?.create.execute(userId, bodyParams));
 		},
 	},
 );

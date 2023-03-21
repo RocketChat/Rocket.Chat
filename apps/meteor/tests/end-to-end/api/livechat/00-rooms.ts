@@ -25,7 +25,7 @@ import { createUser, login } from '../../../data/users.helper.js';
 import { adminUsername, password } from '../../../data/user.js';
 import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
 import type { DummyResponse } from '../../../data/livechat/utils';
-import type { SuccessResult } from '../../../../app/api/server/api';
+import type { SuccessResult } from '../../../../app/api/server/definition';
 import { sleep } from '../../../data/livechat/utils';
 import { IS_EE } from '../../../e2e/config/constants';
 import { createCustomField } from '../../../data/livechat/custom-fields';
