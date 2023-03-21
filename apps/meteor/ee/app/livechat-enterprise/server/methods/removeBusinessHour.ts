@@ -12,7 +12,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	'livechat:removeBusinessHour'(id: string, type: string) {
+	async 'livechat:removeBusinessHour'(id: string, type: string) {
 		const userId = Meteor.userId();
 
 		if (!userId || !hasPermission(userId, 'view-livechat-business-hours')) {
@@ -21,6 +21,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		return Promise.await(businessHourManager.removeBusinessHourByIdAndType(id, type));
+		return businessHourManager.removeBusinessHourByIdAndType(id, type);
 	},
 });
