@@ -29,7 +29,7 @@ function logUsingFibers(fibersMethod) {
 function wrapFunction(fn, fibersMethod) {
 	return function (...args) {
 		logUsingFibers(fibersMethod);
-		return fn.apply(this, ...args);
+		return fn.call(this, ...args);
 	};
 }
 
