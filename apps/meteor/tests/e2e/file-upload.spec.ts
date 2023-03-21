@@ -1,8 +1,9 @@
-import { expect, test } from './utils/test';
+import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
+import { expect, test } from './utils/test';
 
-test.use({ storageState: 'user1-session.json' });
+test.use({ storageState: Users.user1.state });
 
 test.describe.serial('file-upload', () => {
 	let poHomeChannel: HomeChannel;

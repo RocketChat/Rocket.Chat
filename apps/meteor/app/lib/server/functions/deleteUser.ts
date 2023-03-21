@@ -15,19 +15,11 @@ import { LivechatUnitMonitors } from '../../../../ee/app/models/server';
 
 export async function deleteUser(userId: string, confirmRelinquish = false): Promise<void> {
 	const user = Users.findOneById(userId, {
-		fields: { username: 1, avatarOrigin: 1, federation: 1, roles: 1 },
+		fields: { username: 1, avatarOrigin: 1, roles: 1, federated: 1 },
 	});
 
 	if (!user) {
 		return;
-	}
-
-	if (user.federation) {
-		const existingSubscriptions = Subscriptions.find({ 'u._id': user._id }).count();
-
-		if (existingSubscriptions > 0) {
-			throw new Meteor.Error('FEDERATION_Error_user_is_federated_on_rooms');
-		}
 	}
 
 	const subscribedRooms = getSubscribedRoomsForUserWithDetails(userId);
@@ -85,7 +77,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 
 		// Don't broadcast user.deleted for Erasure Type of 'Keep' so that messages don't disappear from logged in sessions
 		if (messageErasureType !== 'Keep') {
-			api.broadcast('user.deleted', user);
+			void api.broadcast('user.deleted', user);
 		}
 	}
 

@@ -3,7 +3,7 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useTranslation, useUserRoom, useUserId, useUserSubscriptionByName } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { closeUserCard } from '../../../../../../app/ui/client/lib/UserCard';
+import { closeUserCard } from '../../../../../../app/ui/client/lib/userCard';
 import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '../../../../../contexts/VideoConfContext';
 import { VideoConfManager } from '../../../../../lib/VideoConfManager';
 import type { Action } from '../../../../hooks/useActionSpread';
@@ -38,7 +38,7 @@ export const useCallAction = (user: Pick<IUser, '_id' | 'username'>): Action | u
 		return room && !isRoomFederated(room) && user._id !== ownUserId
 			? {
 					label: t('Start_call'),
-					icon: 'phone',
+					icon: 'phone' as const,
 					action,
 			  }
 			: undefined;

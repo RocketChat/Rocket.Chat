@@ -1,15 +1,22 @@
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 import type { IRole, IUser, IRoom } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { hasPermission } from '../functions/hasPermission';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'authorization:addUserToRole'(roleId: IRole['_id'], username: IUser['username'], scope: IRoom['_id'] | undefined): Promise<boolean>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async 'authorization:addUserToRole'(roleId: IRole['_id'], username: IUser['username'], scope: IRoom['_id'] | undefined) {
 		const userId = Meteor.userId();
 
@@ -20,7 +27,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!roleId || !_.isString(roleId) || !username || !_.isString(username)) {
+		if (!roleId || typeof roleId.valueOf() !== 'string' || !username || typeof username.valueOf() !== 'string') {
 			throw new Meteor.Error('error-invalid-arguments', 'Invalid arguments', {
 				method: 'authorization:addUserToRole',
 			});
@@ -52,7 +59,7 @@ Meteor.methods({
 			},
 		});
 
-		if (!user || !user._id) {
+		if (!user?._id) {
 			throw new Meteor.Error('error-user-not-found', 'User not found', {
 				method: 'authorization:addUserToRole',
 			});
@@ -68,7 +75,7 @@ Meteor.methods({
 		const add = await Roles.addUserRoles(user._id, [role._id], scope);
 
 		if (settings.get('UI_DisplayRoles')) {
-			api.broadcast('user.roleUpdate', {
+			void api.broadcast('user.roleUpdate', {
 				type: 'added',
 				_id: role._id,
 				u: {

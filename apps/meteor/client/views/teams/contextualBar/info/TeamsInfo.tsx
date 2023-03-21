@@ -53,36 +53,36 @@ const TeamsInfo = ({
 			...(onClickEdit && {
 				edit: {
 					label: t('Edit'),
-					icon: 'edit',
 					action: onClickEdit,
+					icon: 'edit' as const,
 				},
 			}),
 			...(onClickDelete && {
 				delete: {
 					label: t('Delete'),
-					icon: 'trash',
 					action: onClickDelete,
+					icon: 'trash' as const,
 				},
 			}),
 			...(onClickConvertToChannel && {
 				convertToChannel: {
 					label: t('Convert_to_channel'),
 					action: onClickConvertToChannel,
-					icon: 'hash',
+					icon: 'hash' as const,
 				},
 			}),
 			...(onClickHide && {
 				hide: {
 					label: t('Hide'),
 					action: onClickHide,
-					icon: 'eye-off',
+					icon: 'eye-off' as const,
 				},
 			}),
 			...(onClickLeave && {
 				leave: {
 					label: t('Leave'),
 					action: onClickLeave,
-					icon: 'sign-out',
+					icon: 'sign-out' as const,
 				},
 			}),
 		}),

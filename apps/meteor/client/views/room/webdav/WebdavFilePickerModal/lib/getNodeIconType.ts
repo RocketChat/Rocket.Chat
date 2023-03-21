@@ -1,10 +1,14 @@
-export const getNodeIconType = (basename: string, fileType: string, mime: string): { icon: string; type: string; extension?: string } => {
+export const getNodeIconType = (basename: string, fileType: string, mime?: string): { icon: string; type: string; extension?: string } => {
 	let icon = 'clip';
 	let type = '';
 
 	let extension = basename?.split('.').pop();
 	if (extension === basename) {
 		extension = '';
+	}
+
+	if (!mime) {
+		throw new Error('mime is required');
 	}
 
 	if (fileType === 'directory') {

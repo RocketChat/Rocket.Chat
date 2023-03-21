@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
-import s from 'underscore.string';
 import limax from 'limax';
 import { EmojiCustom } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
-import { hasPermission } from '../../../authorization';
+import { hasPermission } from '../../../authorization/server';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
+import { trim } from '../../../../lib/utils/stringUtils';
 
 Meteor.methods({
 	async insertOrUpdateEmoji(emojiData) {
@@ -14,7 +14,7 @@ Meteor.methods({
 			throw new Meteor.Error('not_authorized');
 		}
 
-		if (!s.trim(emojiData.name)) {
+		if (!trim(emojiData.name)) {
 			throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', {
 				method: 'insertOrUpdateEmoji',
 				field: 'Name',
@@ -96,7 +96,7 @@ Meteor.methods({
 
 			const _id = (await EmojiCustom.create(createEmoji)).insertedId;
 
-			api.broadcast('emoji.updateCustom', createEmoji);
+			void api.broadcast('emoji.updateCustom', createEmoji);
 
 			return _id;
 		}
@@ -138,7 +138,7 @@ Meteor.methods({
 			await EmojiCustom.setAliases(emojiData._id, []);
 		}
 
-		api.broadcast('emoji.updateCustom', emojiData);
+		void api.broadcast('emoji.updateCustom', emojiData);
 
 		return true;
 	},

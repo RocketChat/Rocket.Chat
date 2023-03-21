@@ -30,7 +30,7 @@ function withDefault(key, defaultValue) {
 	return key || defaultValue;
 }
 
-function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
+function EditDepartment({ data, id, title, allowedToForwardData }) {
 	const t = useTranslation();
 	const departmentsRoute = useRoute('omnichannel-departments');
 
@@ -200,8 +200,8 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 			visitorInactivityTimeoutInSeconds,
 			abandonedRoomsCloseCustomMessage,
 			waitingQueueMessage,
-			departmentsAllowedToForward: departmentsAllowedToForward?.map((dep) => dep.value).join(),
-			fallbackForwardDepartment: fallbackForwardDepartment.value,
+			departmentsAllowedToForward: departmentsAllowedToForward?.map((dep) => dep.value),
+			fallbackForwardDepartment,
 		};
 
 		const agentListPayload = {
@@ -224,7 +224,6 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 				await saveDepartmentInfo(id, payload, agentList);
 			}
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			reload();
 			departmentsRoute.push({});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -422,6 +421,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 									placeholder={t('Fallback_forward_department')}
 									label={t('Fallback_forward_department')}
 									onlyMyDepartments
+									showArchived
 								/>
 							</Field>
 						)}

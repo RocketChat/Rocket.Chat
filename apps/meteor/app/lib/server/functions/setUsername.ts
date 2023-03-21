@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import s from 'underscore.string';
 import { Accounts } from 'meteor/accounts-base';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Invites } from '@rocket.chat/models';
@@ -15,7 +14,7 @@ import { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export const _setUsername = function (userId: string, u: string, fullUser: IUser): unknown {
-	const username = s.trim(u);
+	const username = u.trim();
 	if (!userId || !username) {
 		return false;
 	}
@@ -78,11 +77,11 @@ export const _setUsername = function (userId: string, u: string, fullUser: IUser
 	if (!previousUsername && user.inviteToken) {
 		const inviteData = Promise.await(Invites.findOneById(user.inviteToken));
 		if (inviteData?.rid) {
-			addUserToRoom(inviteData.rid, user);
+			Promise.await(addUserToRoom(inviteData.rid, user));
 		}
 	}
 
-	api.broadcast('user.nameChanged', {
+	void api.broadcast('user.nameChanged', {
 		_id: user._id,
 		name: user.name,
 		username: user.username,

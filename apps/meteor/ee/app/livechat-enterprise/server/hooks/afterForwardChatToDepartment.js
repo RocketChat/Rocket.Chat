@@ -6,15 +6,15 @@ import { cbLogger } from '../lib/logger';
 
 callbacks.add(
 	'livechat.afterForwardChatToDepartment',
-	(options) => {
+	async (options) => {
 		const { rid, newDepartmentId } = options;
 
-		const room = Promise.await(LivechatRooms.findOneById(rid));
+		const room = await LivechatRooms.findOneById(rid);
 		if (!room) {
 			cbLogger.debug('Skipping callback. No room found');
 			return options;
 		}
-		Promise.await(LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id));
+		await LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id);
 
 		const department = LivechatDepartment.findOneById(newDepartmentId, {
 			fields: { ancestors: 1 },
@@ -32,7 +32,7 @@ callbacks.add(
 		}
 
 		cbLogger.debug(`Updating department ${newDepartmentId} ancestors for room ${rid}`);
-		Promise.await(LivechatRooms.updateDepartmentAncestorsById(room._id, ancestors));
+		await LivechatRooms.updateDepartmentAncestorsById(room._id, ancestors);
 
 		return options;
 	},

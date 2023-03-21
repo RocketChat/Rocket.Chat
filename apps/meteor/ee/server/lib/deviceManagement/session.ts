@@ -4,7 +4,7 @@ import { UAParser } from 'ua-parser-js';
 import type { ISocketConnection, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import * as Mailer from '../../../../app/mailer';
+import * as Mailer from '../../../../app/mailer/server/api';
 import { settings } from '../../../../app/settings/server';
 import { UAParserDesktop, UAParserMobile } from '../../../../app/statistics/server/lib/UAParserCustom';
 import { deviceManagementEvents } from '../../../../server/services/device-management/events';
@@ -52,7 +52,7 @@ export const listenSessionLogin = async (): Promise<void> => {
 				name,
 				username,
 				browserInfo: `${browser.name} ${browser.version}`,
-				osInfo: `${os.name} ${os.version || ''}`,
+				osInfo: `${os.name}`,
 				deviceInfo: `${device.type || t('Device_Management_Device_Unknown')} ${device.vendor || ''} ${device.model || ''} ${
 					cpu.architecture || ''
 				}`,
@@ -65,17 +65,17 @@ export const listenSessionLogin = async (): Promise<void> => {
 				case 'tablet':
 				case 'smarttv':
 					mailData.browserInfo = `${browser.name} ${browser.version}`;
-					mailData.osInfo = `${os.name} ${os.version || ''}`;
+					mailData.osInfo = `${os.name}`;
 					mailData.deviceInfo = `${device.type} ${device.vendor || ''} ${device.model || ''} ${cpu.architecture || ''}`;
 					break;
 				case 'mobile-app':
 					mailData.browserInfo = `Rocket.Chat App ${app?.bundle || app?.version}`;
-					mailData.osInfo = `${os.name} ${os.version || ''}`;
+					mailData.osInfo = `${os.name}`;
 					mailData.deviceInfo = 'Mobile App';
 					break;
 				case 'desktop-app':
 					mailData.browserInfo = `Rocket.Chat ${app?.name || browser.name} ${app?.bundle || app?.version || browser.version}`;
-					mailData.osInfo = `${os.name} ${os.version || ''}`;
+					mailData.osInfo = `${os.name}`;
 					mailData.deviceInfo = `Desktop App ${cpu.architecture || ''}`;
 					break;
 				default:

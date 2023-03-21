@@ -1,13 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { api, Team } from '@rocket.chat/core-services';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
-import { hasPermission } from '../../app/authorization';
-import { Users, Subscriptions, Messages } from '../../app/models/server';
+import { hasPermission } from '../../app/authorization/server';
+import { Users, Subscriptions, Messages, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 
 Meteor.methods({
-	removeRoomModerator(rid, userId) {
+	async removeRoomModerator(rid, userId) {
 		check(rid, String);
 		check(userId, String);
 
@@ -17,7 +18,8 @@ Meteor.methods({
 			});
 		}
 
-		if (!hasPermission(Meteor.userId(), 'set-moderator', rid)) {
+		const room = Rooms.findOneById(rid, { fields: { t: 1, federated: 1 } });
+		if (!hasPermission(Meteor.userId(), 'set-moderator', rid) && !isRoomFederated(room)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'removeRoomModerator',
 			});
@@ -57,23 +59,25 @@ Meteor.methods({
 			role: 'moderator',
 		});
 
-		const team = Promise.await(Team.getOneByMainRoomId(rid));
+		const team = await Team.getOneByMainRoomId(rid);
 		if (team) {
-			Promise.await(Team.removeRolesFromMember(team._id, userId, ['moderator']));
+			await Team.removeRolesFromMember(team._id, userId, ['moderator']);
 		}
 
+		const event = {
+			type: 'removed',
+			_id: 'moderator',
+			u: {
+				_id: user._id,
+				username: user.username,
+				name: user.name,
+			},
+			scope: rid,
+		};
 		if (settings.get('UI_DisplayRoles')) {
-			api.broadcast('user.roleUpdate', {
-				type: 'removed',
-				_id: 'moderator',
-				u: {
-					_id: user._id,
-					username: user.username,
-					name: user.name,
-				},
-				scope: rid,
-			});
+			void api.broadcast('user.roleUpdate', event);
 		}
+		void api.broadcast('federation.userRoleChanged', { ...event, givenByUserId: Meteor.userId() });
 
 		return true;
 	},

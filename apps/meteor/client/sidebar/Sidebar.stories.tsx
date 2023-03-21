@@ -25,6 +25,7 @@ const settings: Record<string, ISetting> = {
 		type: 'boolean',
 		value: true,
 		public: true,
+		_updatedAt: new Date(),
 	},
 };
 
@@ -66,6 +67,8 @@ const subscriptions: ISubscription[] = [
 		ls: new Date(),
 		lr: new Date(),
 		tunread: [],
+		lowerCaseName: 'general',
+		lowerCaseFName: 'general',
 	},
 ];
 

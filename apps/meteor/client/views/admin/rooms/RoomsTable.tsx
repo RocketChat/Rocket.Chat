@@ -1,14 +1,13 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Box, Table, Icon } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { CSSProperties, ReactElement, MutableRefObject } from 'react';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 
 import GenericTable from '../../../components/GenericTable';
 import RoomAvatar from '../../../components/avatar/RoomAvatar';
-import { useEndpointData } from '../../../hooks/useEndpointData';
-import { AsyncStatePhase } from '../../../lib/asyncState';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import FilterByTypeAndText from './FilterByTypeAndText';
 
@@ -23,7 +22,7 @@ const style: CSSProperties = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', o
 
 export const DEFAULT_TYPES = ['d', 'p', 'c', 'teams'];
 
-const useQuery = (
+const useQueryLc = (
 	{
 		text,
 		types,
@@ -72,28 +71,6 @@ const getRoomType = (room: IRoom): typeof roomTypeI18nMap[keyof typeof roomTypeI
 const getRoomDisplayName = (room: IRoom): string | undefined =>
 	room.t === 'd' ? room.usernames?.join(' x ') : roomCoordinator.getRoomName(room.t, room);
 
-const useDisplayData = (asyncState: any, sort: [string, 'asc' | 'desc']): IRoom[] =>
-	useMemo(() => {
-		const { value = {}, phase } = asyncState;
-
-		if (phase === AsyncStatePhase.LOADING) {
-			return null;
-		}
-
-		if (sort[0] === 'name' && value.rooms) {
-			return value.rooms.sort((a: IRoom, b: IRoom) => {
-				const aName = getRoomDisplayName(a) || '';
-				const bName = getRoomDisplayName(b) || '';
-				if (aName === bName) {
-					return 0;
-				}
-				const result = aName < bName ? -1 : 1;
-				return sort[1] === 'asc' ? result : result * -1;
-			});
-		}
-		return value.rooms;
-	}, [asyncState, sort]);
-
 const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): ReactElement => {
 	const t = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
@@ -111,15 +88,31 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
 
-	const query = useQuery(debouncedParams, debouncedSort);
+	const query = useQueryLc(debouncedParams, debouncedSort);
 
-	const endpointData = useEndpointData('/v1/rooms.adminRooms', { params: query });
+	const getAdminRooms = useEndpoint('GET', '/v1/rooms.adminRooms');
 
-	const { value: data, reload: reloadEndPoint } = endpointData;
+	const dispatchToastMessage = useToastMessageDispatch();
+
+	const endpointData = useQuery(
+		['rooms', query, 'admin'],
+		async () => {
+			const adminRooms = await getAdminRooms(query);
+
+			return { ...adminRooms, rooms: adminRooms.rooms as IRoom[] };
+		},
+		{
+			onError: (error) => {
+				dispatchToastMessage({ type: 'error', message: error });
+			},
+		},
+	);
+
+	const { data, refetch, isLoading } = endpointData;
 
 	useEffect(() => {
-		reload.current = reloadEndPoint;
-	}, [reload, reloadEndPoint]);
+		reload.current = refetch;
+	}, [reload, refetch]);
 
 	const router = useRoute(routeName);
 
@@ -145,7 +138,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 		[sort, setSort],
 	);
 
-	const displayData = useDisplayData(endpointData, sort);
+	const displayData = !isLoading && data ? data.rooms : undefined;
 
 	const header = useMemo(
 		() =>
@@ -220,7 +213,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 							<Box display='flex' style={style} mi='x8'>
 								<Box display='flex' flexDirection='row' alignSelf='center' alignItems='center' style={style}>
 									{icon && <Icon mi='x2' name={icon === 'omnichannel' ? 'livechat' : icon} fontScale='p2m' color='hint' />}
-									<Box fontScale='p2m' style={style} color='default'>
+									<Box fontScale='p2m' style={style} color='default' qa-room-name={roomName}>
 										{roomName}
 									</Box>
 								</Box>

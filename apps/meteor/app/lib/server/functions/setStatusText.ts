@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import s from 'underscore.string';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
@@ -12,7 +11,7 @@ async function _setStatusTextPromise(userId: string, statusText: string): Promis
 		return false;
 	}
 
-	statusText = s.trim(statusText).substr(0, 120);
+	statusText = statusText.trim().substr(0, 120);
 
 	const user = await Users.findOneById<Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'statusText'>>(userId, {
 		projection: { username: 1, name: 1, status: 1, roles: 1, statusText: 1 },
@@ -29,7 +28,7 @@ async function _setStatusTextPromise(userId: string, statusText: string): Promis
 	await Users.updateStatusText(user._id, statusText);
 
 	const { _id, username, status, name, roles } = user;
-	api.broadcast('presence.status', {
+	void api.broadcast('presence.status', {
 		user: { _id, username, status, statusText, name, roles },
 		previousStatus: status,
 	});
