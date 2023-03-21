@@ -170,16 +170,6 @@ export class Composer extends Component {
 	}
 
 	componentDidUpdate() {
-		// const { el } = this;
-		// if (!el) {
-		// 	return;
-		// }
-
-		// if (this.props.value !== el.innerHTML) {
-		// 	this.value = this.props.value;
-		// 	el.innerHTML = this.value;
-		// }
-		// replaceCaret(el);'
 		if (!this.props.isRecording) {
 			this.handleInnertext();
 		}
