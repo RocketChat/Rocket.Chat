@@ -5,18 +5,10 @@ import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/l
 import { OmnichannelSourceType, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
 import { api } from '@rocket.chat/core-services';
+import { LivechatDepartmentAgents, Users as UsersRaw } from '@rocket.chat/models';
 
 import { hasRole } from '../../../authorization/server';
-import {
-	Messages,
-	LivechatRooms,
-	Rooms,
-	Subscriptions,
-	Users,
-	LivechatInquiry,
-	LivechatDepartment,
-	LivechatDepartmentAgents,
-} from '../../../models/server';
+import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatInquiry, LivechatDepartment } from '../../../models/server';
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../../lib/callbacks';
@@ -276,7 +268,7 @@ export const dispatchAgentDelegated = (rid, agentId) => {
 	});
 };
 
-export const dispatchInquiryQueued = (inquiry, agent) => {
+export const dispatchInquiryQueued = async (inquiry, agent) => {
 	if (!inquiry?._id) {
 		return;
 	}
@@ -295,7 +287,7 @@ export const dispatchInquiryQueued = (inquiry, agent) => {
 	}
 
 	// Alert only the online agents of the queued request
-	const onlineAgents = Livechat.getOnlineAgents(department, agent);
+	const onlineAgents = await Livechat.getOnlineAgents(department, agent);
 	if (!onlineAgents) {
 		logger.debug('Cannot notify agents of queued inquiry. No online agents found');
 		return;
@@ -304,12 +296,12 @@ export const dispatchInquiryQueued = (inquiry, agent) => {
 	logger.debug(`Notifying ${onlineAgents.count()} agents of new inquiry`);
 	const notificationUserName = v && (v.name || v.username);
 
-	onlineAgents.forEach((agent) => {
+	for await (let agent of onlineAgents) {
 		if (agent.agentId) {
-			agent = Users.findOneById(agent.agentId);
+			agent = await UsersRaw.findOneById(agent.agentId);
 		}
 		const { _id, active, emails, language, status, statusConnection, username } = agent;
-		sendNotification({
+		await sendNotification({
 			// fake a subscription in order to make use of the function defined above
 			subscription: {
 				rid,
@@ -337,7 +329,7 @@ export const dispatchInquiryQueued = (inquiry, agent) => {
 			room: Object.assign(room, { name: TAPi18n.__('New_chat_in_queue', {}, language) }),
 			mentionIds: [],
 		});
-	});
+	}
 };
 
 export const forwardRoomToAgent = async (room, transferData) => {
@@ -456,7 +448,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 		if (!user) {
 			throw new Error('error-user-is-offline');
 		}
-		user = LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(agentId, departmentId);
+		user = await LivechatDepartmentAgents.findOneByAgentIdAndDepartmentId(agentId, departmentId);
 		if (!user) {
 			throw new Error('error-user-not-belong-to-department');
 		}
@@ -550,7 +542,7 @@ export const checkServiceStatus = ({ guest, agent }) => {
 	return users && users.count() > 0;
 };
 
-export const updateDepartmentAgents = (departmentId, agents, departmentEnabled) => {
+export const updateDepartmentAgents = async (departmentId, agents, departmentEnabled) => {
 	check(departmentId, String);
 	check(
 		agents,
@@ -563,22 +555,22 @@ export const updateDepartmentAgents = (departmentId, agents, departmentEnabled) 
 	const { upsert = [], remove = [] } = agents;
 	const agentsRemoved = [];
 	const agentsAdded = [];
-	remove.forEach(({ agentId }) => {
-		LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(departmentId, agentId);
+	for await (const { agentId } of remove) {
+		await LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(departmentId, agentId);
 		agentsRemoved.push(agentId);
-	});
+	}
 
 	if (agentsRemoved.length > 0) {
 		callbacks.runAsync('livechat.removeAgentDepartment', { departmentId, agentsId: agentsRemoved });
 	}
 
-	upsert.forEach((agent) => {
+	for await (const agent of upsert) {
 		const agentFromDb = Users.findOneById(agent.agentId, { fields: { _id: 1, username: 1 } });
 		if (!agentFromDb) {
-			return;
+			continue;
 		}
 
-		LivechatDepartmentAgents.saveAgent({
+		await LivechatDepartmentAgents.saveAgent({
 			agentId: agent.agentId,
 			departmentId,
 			username: agentFromDb.username,
@@ -587,7 +579,7 @@ export const updateDepartmentAgents = (departmentId, agents, departmentEnabled) 
 			departmentEnabled,
 		});
 		agentsAdded.push(agent.agentId);
-	});
+	}
 
 	if (agentsAdded.length > 0) {
 		callbacks.runAsync('livechat.saveAgentDepartment', {
@@ -598,7 +590,7 @@ export const updateDepartmentAgents = (departmentId, agents, departmentEnabled) 
 
 	if (agentsRemoved.length > 0 || agentsAdded.length > 0) {
 		const numAgents = LivechatDepartmentAgents.find({ departmentId }).count();
-		LivechatDepartment.updateNumAgentsById(departmentId, numAgents);
+		await LivechatDepartment.updateNumAgentsById(departmentId, numAgents);
 	}
 
 	return true;

@@ -42,7 +42,7 @@ API.v1.addRoute(
 
 			let { department } = this.queryParams;
 			if (!department) {
-				const requireDeparment = Livechat.getRequiredDepartment();
+				const requireDeparment = await Livechat.getRequiredDepartment();
 				if (requireDeparment) {
 					department = requireDeparment._id;
 				}
