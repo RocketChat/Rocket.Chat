@@ -64,7 +64,7 @@ Meteor.methods<ServerMethods>({
 		if (customFields && customFields instanceof Array) {
 			for await (const customField of customFields) {
 				if (typeof customField !== 'object') {
-					return;
+					continue;
 				}
 
 				if (!customField.scope || customField.scope !== 'room') {
