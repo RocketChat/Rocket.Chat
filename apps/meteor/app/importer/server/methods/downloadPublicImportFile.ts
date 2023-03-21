@@ -23,7 +23,7 @@ function copyLocalFile(filePath: fs.PathLike, writeStream: fs.WriteStream): void
 	readStream.pipe(writeStream);
 }
 
-export const executeDownloadPublicImportFile = (userId: IUser['_id'], fileUrl: string, importerKey: string): void => {
+export const executeDownloadPublicImportFile = async (userId: IUser['_id'], fileUrl: string, importerKey: string): Promise<void> => {
 	const importer = Importers.get(importerKey);
 	const isUrl = fileUrl.startsWith('http');
 	if (!importer) {
@@ -41,6 +41,7 @@ export const executeDownloadPublicImportFile = (userId: IUser['_id'], fileUrl: s
 	}
 
 	importer.instance = new importer.importer(importer); // eslint-disable-line new-cap
+	await importer.instance.build();
 
 	const oldFileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1).split('?')[0];
 	const date = new Date();
@@ -72,8 +73,8 @@ export const executeDownloadPublicImportFile = (userId: IUser['_id'], fileUrl: s
 	} else {
 		// If the url is actually a folder path on the current machine, skip moving it to the file store
 		if (fs.statSync(fileUrl).isDirectory()) {
-			importer.instance.updateRecord({ file: fileUrl });
-			importer.instance.updateProgress(ProgressStep.FILE_LOADED);
+			await importer.instance.updateRecord({ file: fileUrl });
+			await importer.instance.updateProgress(ProgressStep.FILE_LOADED);
 			return;
 		}
 
@@ -100,6 +101,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', 'downloadPublicImportFile');
 		}
 
-		executeDownloadPublicImportFile(userId, fileUrl, importerKey);
+		await executeDownloadPublicImportFile(userId, fileUrl, importerKey);
 	},
 });

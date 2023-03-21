@@ -8,19 +8,20 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { Importers } from '..';
 
-export const executeUploadImportFile = (
+export const executeUploadImportFile = async (
 	userId: IUser['_id'],
 	binaryContent: string,
 	contentType: string,
 	fileName: string,
 	importerKey: string,
-): void => {
+): Promise<void> => {
 	const importer = Importers.get(importerKey);
 	if (!importer) {
 		throw new Meteor.Error('error-importer-not-defined', `The importer (${importerKey}) has no import class defined.`, 'uploadImportFile');
 	}
 
 	importer.instance = new importer.importer(importer); // eslint-disable-line new-cap
+	await importer.instance.build();
 
 	const date = new Date();
 	const dateStr = `${date.getUTCFullYear()}${date.getUTCMonth()}${date.getUTCDate()}${date.getUTCHours()}${date.getUTCMinutes()}${date.getUTCSeconds()}`;
@@ -63,6 +64,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', 'uploadImportFile');
 		}
 
-		executeUploadImportFile(userId, binaryContent, contentType, fileName, importerKey);
+		await executeUploadImportFile(userId, binaryContent, contentType, fileName, importerKey);
 	},
 });

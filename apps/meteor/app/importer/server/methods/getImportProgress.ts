@@ -1,13 +1,13 @@
 import type { IImportProgress } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
+import { Imports } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Imports } from '../../../models/server';
 import { Importers } from '..';
 
-export const executeGetImportProgress = (): IImportProgress => {
-	const operation = Imports.findLastImport();
+export const executeGetImportProgress = async (): Promise<IImportProgress> => {
+	const operation = await Imports.findLastImport();
 	if (!operation) {
 		throw new Meteor.Error('error-operation-not-found', 'Import Operation Not Found', 'getImportProgress');
 	}
@@ -19,6 +19,7 @@ export const executeGetImportProgress = (): IImportProgress => {
 	}
 
 	importer.instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
+	await importer.instance.build();
 
 	return importer.instance.getProgress();
 };
