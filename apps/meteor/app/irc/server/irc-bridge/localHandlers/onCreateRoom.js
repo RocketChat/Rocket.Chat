@@ -1,6 +1,6 @@
 import { Users } from '../../../../models/server';
 
-export default function handleOnCreateRoom(user, room) {
+export default async function handleOnCreateRoom(user, room) {
 	const users = Users.findByRoomId(room._id);
 
 	users.forEach((user) => {

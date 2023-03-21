@@ -3,7 +3,7 @@ import mem from 'mem';
 
 import LivechatUnit from '../../../models/server/models/LivechatUnit';
 
-export function hasUnits(): boolean {
+function hasUnits(): boolean {
 	// @ts-expect-error - this prop is injected dynamically on ee license
 	return LivechatUnit.unfilteredFind({ type: 'u' }).count() > 0;
 }

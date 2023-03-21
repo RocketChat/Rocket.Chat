@@ -17,10 +17,9 @@ import {
 	useVideoConfManager,
 	useVideoConfSetPreferences,
 } from '../../../contexts/VideoConfContext';
-import { renderMessageBody } from '../../../lib/utils/renderMessageBody';
 import CalendarAuthModal from '../../../views/calendarIntegration/CalendarAuthModal';
 import { useVideoConfWarning } from '../../../views/room/contextualBar/VideoConference/useVideoConfWarning';
-import { useBlockRendered } from '../hooks/useBlockRendered';
+import ParsedText from './uikit/ParsedText';
 
 let patched = false;
 const patchMessageParser = () => {
@@ -36,11 +35,11 @@ const patchMessageParser = () => {
 			return <>{text}</>;
 		}
 
-		return <span dangerouslySetInnerHTML={{ __html: renderMessageBody({ msg: text }) }} />;
+		return <ParsedText text={text} />;
 	};
 
 	// TODO: move this to fuselage-ui-kit itself
-	messageParser.mrkdwn = ({ text }) => (text ? <span dangerouslySetInnerHTML={{ __html: renderMessageBody({ msg: text }) }} /> : null);
+	messageParser.mrkdwn = ({ text }) => <ParsedText text={text} />;
 };
 
 type UiKitSurfaceProps = {
@@ -51,7 +50,6 @@ type UiKitSurfaceProps = {
 };
 
 const UiKitSurface = ({ mid: _mid, blocks, rid, appId }: UiKitSurfaceProps): ReactElement => {
-	const { ref, className } = useBlockRendered<HTMLDivElement>();
 	const joinCall = useVideoConfJoinCall();
 	const setPreferences = useVideoConfSetPreferences();
 	const isCalling = useVideoConfIsCalling();
@@ -121,7 +119,6 @@ const UiKitSurface = ({ mid: _mid, blocks, rid, appId }: UiKitSurfaceProps): Rea
 	return (
 		<MessageBlock fixedWidth>
 			<kitContext.Provider value={context}>
-				<div className={className} ref={ref} />
 				<UiKitComponent render={UiKitMessage} blocks={blocks} />
 			</kitContext.Provider>
 		</MessageBlock>

@@ -18,7 +18,7 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { IExportOperation, IPersonalAccessToken, IUser } from '@rocket.chat/core-typings';
+import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser } from '@rocket.chat/core-typings';
 import { Users as UsersRaw } from '@rocket.chat/models';
 import type { Filter } from 'mongodb';
 import { Team, api } from '@rocket.chat/core-services';
@@ -81,10 +81,10 @@ API.v1.addRoute(
 	'users.update',
 	{ authRequired: true, twoFactorRequired: true, validateParams: isUsersUpdateParamsPOST },
 	{
-		post() {
+		async post() {
 			const userData = { _id: this.bodyParams.userId, ...this.bodyParams.data };
 
-			Meteor.runAsUser(this.userId, () => saveUser(this.userId, userData));
+			await saveUser(this.userId, userData);
 
 			if (this.bodyParams.data.customFields) {
 				saveCustomFields(this.bodyParams.userId, this.bodyParams.data.customFields);
@@ -246,7 +246,7 @@ API.v1.addRoute(
 	'users.create',
 	{ authRequired: true, validateParams: isUserCreateParamsPOST },
 	{
-		post() {
+		async post() {
 			// New change made by pull request #5152
 			if (typeof this.bodyParams.joinDefaultChannels === 'undefined') {
 				this.bodyParams.joinDefaultChannels = true;
@@ -256,7 +256,7 @@ API.v1.addRoute(
 				validateCustomFields(this.bodyParams.customFields);
 			}
 
-			const newUserId = saveUser(this.userId, this.bodyParams);
+			const newUserId = await saveUser(this.userId, this.bodyParams);
 
 			if (this.bodyParams.customFields) {
 				saveCustomFieldsWithoutValidation(newUserId, this.bodyParams.customFields);
@@ -412,6 +412,10 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
+			if (settings.get('API_Apply_permission_view-outside-room_on_users-list') && !hasPermission(this.userId, 'view-outside-room')) {
+				return API.v1.unauthorized();
+			}
+
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
@@ -439,7 +443,15 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
 			}
 
-			const actualSort = sort?.name ? { nameInsensitive: sort.name, ...sort } : sort || { username: 1 };
+			const actualSort = sort || { username: 1 };
+
+			if (sort?.status) {
+				actualSort.active = sort.status;
+			}
+
+			if (sort?.name) {
+				actualSort.nameInsensitive = sort.name;
+			}
 
 			const limit =
 				count !== 0
@@ -621,9 +633,9 @@ API.v1.addRoute(
 		validateParams: isUsersCheckUsernameAvailabilityParamsGET,
 	},
 	{
-		get() {
+		async get() {
 			const { username } = this.queryParams;
-			const result = Meteor.call('checkUsernameAvailability', username);
+			const result = await Meteor.callAsync('checkUsernameAvailability', username);
 
 			return API.v1.success({ result });
 		},
@@ -673,16 +685,17 @@ API.v1.addRoute(
 
 			const user = Users.getLoginTokensByUserId(this.userId).fetch()[0] as IUser | undefined;
 
+			const isPersonalAccessToken = (loginToken: ILoginToken | IPersonalAccessToken): loginToken is IPersonalAccessToken =>
+				'type' in loginToken && loginToken.type === 'personalAccessToken';
+
 			return API.v1.success({
 				tokens:
-					user?.services?.resume?.loginTokens
-						?.filter((loginToken: any) => loginToken.type === 'personalAccessToken')
-						.map((loginToken: IPersonalAccessToken) => ({
-							name: loginToken.name,
-							createdAt: loginToken.createdAt.toISOString(),
-							lastTokenPart: loginToken.lastTokenPart,
-							bypassTwoFactor: Boolean(loginToken.bypassTwoFactor),
-						})) || [],
+					user?.services?.resume?.loginTokens?.filter(isPersonalAccessToken).map((loginToken) => ({
+						name: loginToken.name,
+						createdAt: loginToken.createdAt.toISOString(),
+						lastTokenPart: loginToken.lastTokenPart,
+						bypassTwoFactor: Boolean(loginToken.bypassTwoFactor),
+					})) || [],
 			});
 		},
 	},
@@ -775,6 +788,14 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		get() {
+			// if presence broadcast is disabled, return an empty array (all users are "offline")
+			if (settings.get('Presence_broadcast_disabled')) {
+				return API.v1.success({
+					users: [],
+					full: true,
+				});
+			}
+
 			const { from, ids } = this.queryParams;
 
 			const options = {
@@ -854,12 +875,12 @@ API.v1.addRoute(
 
 			const token = me.services?.resume?.loginTokens?.find((token) => token.hashedToken === hashedToken);
 
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			const tokenExpires = new Date(token!.when.getTime() + settings.get<number>('Accounts_LoginExpiration') * 1000);
+			const tokenExpires =
+				(token && 'when' in token && new Date(token.when.getTime() + settings.get<number>('Accounts_LoginExpiration') * 1000)) || undefined;
 
 			return API.v1.success({
 				token: xAuthToken,
-				tokenExpires: tokenExpires.toISOString() || '',
+				tokenExpires: tokenExpires?.toISOString() || '',
 			});
 		},
 	},
@@ -1098,7 +1119,7 @@ API.v1.addRoute(
 						});
 
 						const { _id, username, statusText, roles, name } = user;
-						api.broadcast('presence.status', {
+						void api.broadcast('presence.status', {
 							user: { status, _id, username, statusText, roles, name },
 							previousStatus: user.status,
 						});

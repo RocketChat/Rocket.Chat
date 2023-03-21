@@ -1,5 +1,5 @@
 import stripHtml from 'string-strip-html';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import type { ParsedMail, Attachment } from 'mailparser';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';

@@ -7,12 +7,11 @@ import { useCallback, useEffect, useRef } from 'react';
 
 import type { FieldExpression, Query } from '../../../../../lib/minimongo';
 import { createFilterFromQuery } from '../../../../../lib/minimongo';
+import { onClientMessageReceived } from '../../../../../lib/onClientMessageReceived';
 import { useRoom } from '../../../contexts/RoomContext';
 import { useGetMessageByID } from './useGetMessageByID';
 
 type RoomMessagesRidEvent = IMessage;
-
-type NotifyRoomRidDeleteMessageEvent = { _id: IMessage['_id'] };
 
 type NotifyRoomRidDeleteMessageBulkEvent = {
 	rid: IMessage['rid'];
@@ -49,20 +48,14 @@ const useSubscribeToMessage = () => {
 				if (message._id === event._id) onMutate?.(event);
 			});
 
-			const unsubscribeFromDeleteMessage = subscribeToNotifyRoom(
-				`${message.rid}/deleteMessage`,
-				(event: NotifyRoomRidDeleteMessageEvent) => {
-					if (message._id === event._id) onDelete?.();
-				},
-			);
+			const unsubscribeFromDeleteMessage = subscribeToNotifyRoom(`${message.rid}/deleteMessage`, (event) => {
+				if (message._id === event._id) onDelete?.();
+			});
 
-			const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom(
-				`${message.rid}/deleteMessageBulk`,
-				(params: NotifyRoomRidDeleteMessageBulkEvent) => {
-					const matchDeleteCriteria = createDeleteCriteria(params);
-					if (matchDeleteCriteria(message)) onDelete?.();
-				},
-			);
+			const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom(`${message.rid}/deleteMessageBulk`, (params) => {
+				const matchDeleteCriteria = createDeleteCriteria(params);
+				if (matchDeleteCriteria(message)) onDelete?.();
+			});
 
 			return () => {
 				unsubscribeFromRoomMessages();
@@ -93,7 +86,9 @@ export const useThreadMainMessageQuery = (
 	}, []);
 
 	return useQuery(['rooms', room._id, 'threads', tmid, 'main-message'] as const, async ({ queryKey }) => {
-		const mainMessage = await getMessage(tmid);
+		const message = await getMessage(tmid);
+
+		const mainMessage = (await onClientMessageReceived(message)) || message;
 
 		if (!mainMessage && !isThreadMainMessage(mainMessage)) {
 			throw new Error('Invalid main message');

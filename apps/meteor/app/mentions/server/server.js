@@ -28,7 +28,20 @@ export class MentionQueries {
 	}
 
 	getChannels(channels) {
-		return Rooms.find({ name: { $in: [...new Set(channels)] }, t: { $in: ['c', 'p'] } }, { fields: { _id: 1, name: 1 } }).fetch();
+		return Rooms.find(
+			{
+				$and: [
+					{
+						$or: [
+							{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name: { $in: [...new Set(channels)] } }] },
+							{ federated: true, fname: { $in: [...new Set(channels)] } },
+						],
+					},
+				],
+				t: { $in: ['c', 'p'] },
+			},
+			{ fields: { _id: 1, name: 1, fname: 1, federated: 1 } },
+		).fetch();
 	}
 }
 
@@ -46,7 +59,7 @@ const mention = new MentionsServer({
 		const { language } = this.getUser(sender._id);
 		const msg = TAPi18n.__('Group_mentions_disabled_x_members', { total: this.messageMaxAll }, language);
 
-		api.broadcast('notify.ephemeralMessage', sender._id, rid, {
+		void api.broadcast('notify.ephemeralMessage', sender._id, rid, {
 			msg,
 		});
 

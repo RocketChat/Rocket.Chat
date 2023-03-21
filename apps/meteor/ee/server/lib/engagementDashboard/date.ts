@@ -19,7 +19,7 @@ export const mapDateForAPI = (input: string): Date => {
 
 export const convertDateToInt = (date: Date): number => parseInt(moment(date).clone().format('YYYYMMDD'), 10);
 export const convertIntToDate = (intValue: number): Date => moment(intValue, 'YYYYMMDD').clone().toDate();
-export const diffBetweenDays = (start: string | number | Date, end: string | number | Date): number =>
+const diffBetweenDays = (start: string | number | Date, end: string | number | Date): number =>
 	moment(new Date(start)).clone().diff(new Date(end), 'days');
 export const diffBetweenDaysInclusive = (start: string | number | Date, end: string | number | Date): number =>
 	diffBetweenDays(start, end) + 1;

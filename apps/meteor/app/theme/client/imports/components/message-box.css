@@ -31,32 +31,6 @@
 		font-size: 0.75rem;
 	}
 
-	&__textarea {
-		overflow-y: auto;
-
-		width: 100%;
-		height: 23px;
-
-		min-height: 23px;
-		max-height: 155px;
-		padding: 0;
-
-		resize: none;
-
-		color: var(--message-box-color);
-		border: 0;
-		background-color: transparent;
-
-		font-family: inherit;
-		font-size: var(--message-box-text-size);
-
-		line-height: 21px;
-
-		&::placeholder {
-			color: var(--message-box-placeholder-color);
-		}
-	}
-
 	&__audio-message {
 		display: flex;
 

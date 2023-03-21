@@ -30,13 +30,13 @@ Meteor.startup(async function () {
 	settings.change('Livechat_visitor_inactivity_timeout', function () {
 		Promise.await(updatePredictedVisitorAbandonment());
 	});
-	settings.change<string>('Livechat_business_hour_type', (value) => {
+	settings.change<string>('Livechat_business_hour_type', async (value) => {
 		if (!Object.keys(businessHours).includes(value)) {
 			return;
 		}
 		businessHourManager.registerBusinessHourBehavior(businessHours[value as keyof typeof businessHours]);
 		if (settings.get('Livechat_enable_business_hours')) {
-			businessHourManager.startManager();
+			await businessHourManager.startManager();
 		}
 	});
 

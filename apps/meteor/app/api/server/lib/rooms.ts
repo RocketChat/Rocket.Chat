@@ -1,4 +1,4 @@
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -14,7 +14,7 @@ export async function findAdminRooms({
 	uid: string;
 	filter: string;
 	types: string[];
-	pagination: { offset: number; count: number; sort: [string, number][] };
+	pagination: { offset: number; count: number; sort: Record<string, 1 | -1> };
 }): Promise<{
 	rooms: IRoom[];
 	count: number;
@@ -32,23 +32,22 @@ export async function findAdminRooms({
 	const showTypes = Array.isArray(types) ? types.filter((type) => !typesToRemove.includes(type)) : [];
 	const options = {
 		projection: adminFields,
-		sort: sort || { default: -1, name: 1 },
 		skip: offset,
 		limit: count,
 	};
 
 	let result;
 	if (name && showTypes.length) {
-		result = Rooms.findByNameContainingAndTypes(name, showTypes, discussion, includeTeams, showOnlyTeams, options);
+		result = Rooms.findByNameOrFnameContainingAndTypes(name, showTypes, discussion, includeTeams, showOnlyTeams, options);
 	} else if (showTypes.length) {
 		result = Rooms.findByTypes(showTypes, discussion, includeTeams, showOnlyTeams, options);
 	} else {
-		result = Rooms.findByNameContaining(name, discussion, includeTeams, showOnlyTeams, options);
+		result = Rooms.findByNameOrFnameContaining(name, discussion, includeTeams, showOnlyTeams, options);
 	}
 
 	const { cursor, totalCount } = result;
 
-	const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
+	const [rooms, total] = await Promise.all([cursor.sort(sort || { default: -1, name: 1 }).toArray(), totalCount]);
 
 	return {
 		rooms,
@@ -58,7 +57,7 @@ export async function findAdminRooms({
 	};
 }
 
-export async function findAdminRoom({ uid, rid }: { uid: string; rid: string }): Promise<unknown> {
+export async function findAdminRoom({ uid, rid }: { uid: string; rid: string }): Promise<Pick<IRoom, RoomAdminFieldsType> | null> {
 	if (!(await hasPermissionAsync(uid, 'view-room-administration'))) {
 		throw new Error('error-not-authorized');
 	}
@@ -128,7 +127,7 @@ export async function findChannelAndPrivateAutocompleteWithPagination({
 }: {
 	uid: string;
 	selector: { name: string };
-	pagination: { offset: number; count: number; sort: [string, number][] };
+	pagination: { offset: number; count: number; sort: Record<string, 1 | -1> };
 }): Promise<{
 	items: IRoom[];
 	total: number;

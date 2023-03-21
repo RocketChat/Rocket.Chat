@@ -3,17 +3,19 @@ import { settings } from '../../../../../app/settings/server';
 import { debouncedDispatchWaitingQueueStatus } from '../lib/Helper';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 
-const onCloseLivechat = (room) => {
-	Promise.await(LivechatEnterprise.releaseOnHoldChat(room));
+const onCloseLivechat = async (params) => {
+	const { room } = params;
+
+	await LivechatEnterprise.releaseOnHoldChat(room);
 
 	if (!settings.get('Livechat_waiting_queue')) {
-		return room;
+		return params;
 	}
 
 	const { departmentId } = room || {};
 	debouncedDispatchWaitingQueueStatus(departmentId);
 
-	return room;
+	return params;
 };
 
 callbacks.add('livechat.closeRoom', onCloseLivechat, callbacks.priority.HIGH, 'livechat-waiting-queue-monitor-close-room');

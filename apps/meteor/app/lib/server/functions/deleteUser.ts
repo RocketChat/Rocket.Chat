@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { FileProp } from '@rocket.chat/core-typings';
-import { Integrations, FederationServers, LivechatVisitors } from '@rocket.chat/models';
+import { Integrations, FederationServers, LivechatVisitors, LivechatDepartmentAgents } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../file-upload/server';
-import { Users, Subscriptions, Messages, Rooms, LivechatDepartmentAgents } from '../../../models/server';
+import { Users, Subscriptions, Messages, Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
@@ -15,19 +15,11 @@ import { LivechatUnitMonitors } from '../../../../ee/app/models/server';
 
 export async function deleteUser(userId: string, confirmRelinquish = false): Promise<void> {
 	const user = Users.findOneById(userId, {
-		fields: { username: 1, avatarOrigin: 1, federation: 1, roles: 1 },
+		fields: { username: 1, avatarOrigin: 1, roles: 1, federated: 1 },
 	});
 
 	if (!user) {
 		return;
-	}
-
-	if (user.federation) {
-		const existingSubscriptions = Subscriptions.find({ 'u._id': user._id }).count();
-
-		if (existingSubscriptions > 0) {
-			throw new Meteor.Error('FEDERATION_Error_user_is_federated_on_rooms');
-		}
 	}
 
 	const subscribedRooms = getSubscribedRoomsForUserWithDetails(userId);
@@ -64,7 +56,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 
 		if (user.roles.includes('livechat-agent')) {
 			// Remove user as livechat agent
-			LivechatDepartmentAgents.removeByAgentId(userId);
+			await LivechatDepartmentAgents.removeByAgentId(userId);
 		}
 
 		if (user.roles.includes('livechat-monitor')) {
@@ -85,7 +77,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 
 		// Don't broadcast user.deleted for Erasure Type of 'Keep' so that messages don't disappear from logged in sessions
 		if (messageErasureType !== 'Keep') {
-			api.broadcast('user.deleted', user);
+			void api.broadcast('user.deleted', user);
 		}
 	}
 

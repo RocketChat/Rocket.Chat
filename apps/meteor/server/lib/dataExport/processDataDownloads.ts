@@ -6,7 +6,6 @@ import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import { Avatars, ExportOperations, UserDataFiles } from '@rocket.chat/models';
 import type { IExportOperation, ISubscription, IUser, RoomType } from '@rocket.chat/core-typings';
-import type { FindCursor } from 'mongodb';
 
 import { settings } from '../../../app/settings/server';
 import { Subscriptions } from '../../../app/models/server';
@@ -35,8 +34,8 @@ const loadUserSubscriptions = (_exportOperation: IExportOperation, fileType: 'js
 		| Record<string, never>
 	)[] = [];
 
-	const cursor: FindCursor<ISubscription> = Subscriptions.findByUserId(userId);
-	cursor.forEach((subscription) => {
+	const cursor = Subscriptions.findByUserId(userId);
+	cursor.forEach((subscription: ISubscription) => {
 		const roomData = getRoomData(subscription.rid, userId);
 		roomData.targetFile = `${(fileType === 'json' && roomData.roomName) || subscription.rid}.${fileType}`;
 

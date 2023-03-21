@@ -17,16 +17,16 @@ export interface ITwoFactorOptions {
 	requireSecondFactor?: boolean; // whether any two factor should be required
 }
 
-export const totpCheck = new TOTPCheck();
+const totpCheck = new TOTPCheck();
 export const emailCheck = new EmailCheck();
-export const passwordCheckFallback = new PasswordCheckFallback();
+const passwordCheckFallback = new PasswordCheckFallback();
 
-export const checkMethods = new Map<string, ICodeCheck>();
+const checkMethods = new Map<string, ICodeCheck>();
 
 checkMethods.set(totpCheck.name, totpCheck);
 checkMethods.set(emailCheck.name, emailCheck);
 
-export function getMethodByNameOrFirstActiveForUser(user: IUser, name?: string): ICodeCheck | undefined {
+function getMethodByNameOrFirstActiveForUser(user: IUser, name?: string): ICodeCheck | undefined {
 	if (name && checkMethods.has(name)) {
 		return checkMethods.get(name);
 	}
@@ -34,7 +34,7 @@ export function getMethodByNameOrFirstActiveForUser(user: IUser, name?: string):
 	return Array.from(checkMethods.values()).find((method) => method.isEnabled(user));
 }
 
-export function getAvailableMethodNames(user: IUser): string[] | [] {
+function getAvailableMethodNames(user: IUser): string[] | [] {
 	return (
 		Array.from(checkMethods)
 			.filter(([, method]) => method.isEnabled(user))
@@ -57,7 +57,7 @@ export function getUserForCheck(userId: string): IUser {
 	});
 }
 
-export function getFingerprintFromConnection(connection: IMethodConnection): string {
+function getFingerprintFromConnection(connection: IMethodConnection): string {
 	const data = JSON.stringify({
 		userAgent: connection.httpHeaders['user-agent'],
 		clientAddress: connection.clientAddress,
@@ -79,7 +79,7 @@ function getRememberDate(from: Date = new Date()): Date | undefined {
 	return expires;
 }
 
-export function isAuthorizedForToken(connection: IMethodConnection, user: IUser, options: ITwoFactorOptions): boolean {
+function isAuthorizedForToken(connection: IMethodConnection, user: IUser, options: ITwoFactorOptions): boolean {
 	const currentToken = Accounts._getLoginToken(connection.id);
 	const tokenObject = user.services?.resume?.loginTokens?.find((i) => i.hashedToken === currentToken);
 
@@ -92,7 +92,7 @@ export function isAuthorizedForToken(connection: IMethodConnection, user: IUser,
 		return false;
 	}
 
-	if (tokenObject.bypassTwoFactor === true) {
+	if ('bypassTwoFactor' in tokenObject && tokenObject.bypassTwoFactor === true) {
 		return true;
 	}
 
@@ -121,7 +121,7 @@ export function isAuthorizedForToken(connection: IMethodConnection, user: IUser,
 	return true;
 }
 
-export function rememberAuthorization(connection: IMethodConnection, user: IUser): void {
+function rememberAuthorization(connection: IMethodConnection, user: IUser): void {
 	const currentToken = Accounts._getLoginToken(connection.id);
 
 	const expires = getRememberDate();

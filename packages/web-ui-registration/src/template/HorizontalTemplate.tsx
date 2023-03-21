@@ -8,21 +8,22 @@ import {
 } from '@rocket.chat/layout';
 import type { ReactElement, ReactNode } from 'react';
 import { Box } from '@rocket.chat/fuselage';
+import { useSetting, useAssetWithDarkModePath } from '@rocket.chat/ui-contexts';
 
 import LoginSwitchLanguageFooter from '../components/LoginSwitchLanguageFooter';
 import LoginPoweredBy from '../components/LoginPoweredBy';
 import LoginTerms from '../components/LoginTerms';
 import { RegisterTitle } from '../components/RegisterTitle';
-import { useAssetPath } from '../hooks/useAssetPath';
 
 const HorizontalTemplate = ({ children }: { children: ReactNode }): ReactElement => {
-	const customLogo = useAssetPath('Assets_logo');
-	const customBackground = useAssetPath('Assets_background');
+	const hideLogo = useSetting<boolean>('Layout_Login_Hide_Logo');
+	const customLogo = useAssetWithDarkModePath('logo');
+	const customBackground = useAssetWithDarkModePath('background');
 
 	return (
 		<HorizontalWizardLayout
 			background={customBackground}
-			logo={customLogo ? <Box is='img' maxHeight='x40' mi='neg-x8' src={customLogo} alt='Logo' /> : undefined}
+			logo={!hideLogo && customLogo ? <Box is='img' maxHeight='x40' mi='neg-x8' src={customLogo} alt='Logo' /> : <></>}
 		>
 			<HorizontalWizardLayoutAside>
 				<HorizontalWizardLayoutTitle>

@@ -36,8 +36,7 @@ function BooleanSettingInput({
 				id={_id}
 				value='true'
 				checked={value === true}
-				disabled={disabled}
-				readOnly={readonly}
+				disabled={disabled || readonly}
 				onChange={handleChange}
 			/>
 			<Field.Label htmlFor={_id} title={_id}>

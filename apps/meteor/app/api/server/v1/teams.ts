@@ -17,7 +17,7 @@ import { Team } from '@rocket.chat/core-services';
 
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { Rooms, Users } from '../../../models/server';
-import { canAccessRoom, hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
+import { canAccessRoomAsync, hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -582,7 +582,7 @@ API.v1.addRoute(
 				return API.v1.failure('Room not found');
 			}
 
-			const canViewInfo = canAccessRoom(room, { _id: this.userId }) || hasPermission(this.userId, 'view-all-teams');
+			const canViewInfo = (await canAccessRoomAsync(room, { _id: this.userId })) || hasPermission(this.userId, 'view-all-teams');
 
 			if (!canViewInfo) {
 				return API.v1.unauthorized();
@@ -625,10 +625,10 @@ API.v1.addRoute(
 			await Team.unsetTeamIdOfRooms(this.userId, team._id);
 
 			// Remove the team's main room
-			Meteor.call('eraseRoom', team.roomId);
+			await Meteor.callAsync('eraseRoom', team.roomId);
 
 			// Delete all team memberships
-			Team.removeAllMembersFromTeam(team._id);
+			await Team.removeAllMembersFromTeam(team._id);
 
 			// And finally delete the team itself
 			await Team.deleteById(team._id);

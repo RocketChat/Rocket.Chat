@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { LivechatInquiry as LivechatInquiryRaw } from '@rocket.chat/models';
 
 import { LivechatRooms, LivechatInquiry, Users } from '../../../models/server';
 import { checkServiceStatus, createLivechatRoom, createLivechatInquiry } from './Helper';
 import { callbacks } from '../../../../lib/callbacks';
-import { Logger } from '../../../logger';
+import { Logger } from '../../../logger/server';
 import { RoutingManager } from './RoutingManager';
 
 const logger = new Logger('QueueManager');
@@ -15,7 +16,7 @@ export const saveQueueInquiry = (inquiry) => {
 };
 
 export const queueInquiry = async (room, inquiry, defaultAgent) => {
-	const inquiryAgent = RoutingManager.delegateAgent(defaultAgent, inquiry);
+	const inquiryAgent = await RoutingManager.delegateAgent(defaultAgent, inquiry);
 	logger.debug(`Delegating inquiry with id ${inquiry._id} to agent ${defaultAgent?.username}`);
 
 	await callbacks.run('livechat.beforeRouteChat', inquiry, inquiryAgent);
@@ -98,7 +99,7 @@ export const QueueManager = {
 		const oldInquiry = LivechatInquiry.findOneByRoomId(rid);
 		if (oldInquiry) {
 			logger.debug(`Removing old inquiry (${oldInquiry._id}) for room ${rid}`);
-			LivechatInquiry.removeByRoomId(rid);
+			await LivechatInquiryRaw.removeByRoomId(rid);
 		}
 
 		const guest = {

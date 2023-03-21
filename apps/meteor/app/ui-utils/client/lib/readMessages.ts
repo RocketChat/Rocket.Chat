@@ -9,7 +9,7 @@ import { RoomManager } from './RoomManager';
 import { ChatSubscription, ChatMessage } from '../../../models/client';
 import { APIClient } from '../../../utils/client';
 
-export class ReadMessage extends Emitter {
+class ReadMessage extends Emitter {
 	protected enabled: boolean;
 
 	protected debug = false;
@@ -134,7 +134,7 @@ export class ReadMessage extends Emitter {
 			lastReadRecord = { ts: new Date(0) };
 		}
 
-		room.unreadSince.set((lastReadRecord || unreadNotLoaded.get() > 0) && subscription.ls);
+		room.unreadSince.set(lastReadRecord || unreadNotLoaded.get() > 0 ? subscription.ls : undefined);
 
 		if (!lastReadRecord) {
 			return;

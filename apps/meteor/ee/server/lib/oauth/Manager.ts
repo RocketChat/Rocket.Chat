@@ -6,36 +6,36 @@ import { addUserToRoom, createRoom } from '../../../../app/lib/server/functions'
 import { Logger } from '../../../../app/logger/server';
 import { syncUserRoles } from '../syncUserRoles';
 
-export const logger = new Logger('OAuth');
+const logger = new Logger('OAuth');
 
 export class OAuthEEManager {
-	static mapSSOGroupsToChannels(
+	static async mapSSOGroupsToChannels(
 		user: IUser,
 		identity: Record<string, any>,
 		groupClaimName: string,
 		channelsMap: Record<string, any> | undefined,
 		channelsAdmin: string,
-	): void {
-		if (user && identity && groupClaimName) {
+	): Promise<void> {
+		if (channelsMap && user && identity && groupClaimName) {
 			const groupsFromSSO = identity[groupClaimName] || [];
 
-			for (const ssoGroup in channelsMap) {
+			for await (const ssoGroup of Object.keys(channelsMap)) {
 				if (typeof ssoGroup === 'string') {
 					let channels = channelsMap[ssoGroup];
 					if (!Array.isArray(channels)) {
 						channels = [channels];
 					}
-					for (const channel of channels) {
+					for await (const channel of channels) {
 						let room = Rooms.findOneByNonValidatedName(channel);
 						if (!room) {
-							room = createRoom('c', channel, channelsAdmin, [], false);
-							if (!room || !room.rid) {
+							room = await createRoom('c', channel, channelsAdmin, [], false);
+							if (!room?.rid) {
 								logger.error(`could not create channel ${channel}`);
 								return;
 							}
 						}
 						if (Array.isArray(groupsFromSSO) && groupsFromSSO.includes(ssoGroup)) {
-							addUserToRoom(room._id, user);
+							Promise.await(addUserToRoom(room._id, user));
 						}
 					}
 				}

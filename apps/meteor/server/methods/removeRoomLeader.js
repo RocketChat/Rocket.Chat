@@ -2,12 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { api, Team } from '@rocket.chat/core-services';
 
-import { hasPermission } from '../../app/authorization';
+import { hasPermission } from '../../app/authorization/server';
 import { Users, Subscriptions, Messages } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 
 Meteor.methods({
-	removeRoomLeader(rid, userId) {
+	async removeRoomLeader(rid, userId) {
 		check(rid, String);
 		check(userId, String);
 
@@ -57,13 +57,13 @@ Meteor.methods({
 			role: 'leader',
 		});
 
-		const team = Promise.await(Team.getOneByMainRoomId(rid));
+		const team = await Team.getOneByMainRoomId(rid);
 		if (team) {
-			Promise.await(Team.removeRolesFromMember(team._id, userId, ['leader']));
+			await Team.removeRolesFromMember(team._id, userId, ['leader']);
 		}
 
 		if (settings.get('UI_DisplayRoles')) {
-			api.broadcast('user.roleUpdate', {
+			void api.broadcast('user.roleUpdate', {
 				type: 'removed',
 				_id: 'leader',
 				u: {

@@ -33,5 +33,6 @@ module.exports = {
 		'tests/unit/lib/**/*.tests.ts',
 		'tests/unit/lib/**/*.spec.ts',
 		'tests/unit/server/**/*.tests.ts',
+		'tests/unit/server/**/*.spec.ts',
 	],
 };
