@@ -48,7 +48,7 @@ import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAge
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { businessHourManager } from '../business-hour';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
-import { removeUserFromRoles } from '../../../../server/lib/roles/removeUserFromRoles';
+import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 
@@ -885,7 +885,7 @@ export const Livechat = {
 		return false;
 	},
 
-	removeAgent(username) {
+	async removeAgent(username) {
 		check(username, String);
 
 		const user = Users.findOneByUsername(username, { fields: { _id: 1 } });
@@ -898,7 +898,7 @@ export const Livechat = {
 
 		const { _id } = user;
 
-		if (removeUserFromRoles(_id, ['livechat-agent'])) {
+		if (await removeUserFromRolesAsync(_id, ['livechat-agent'])) {
 			Users.setOperator(_id, false);
 			Users.removeLivechatData(_id);
 			this.setUserStatusLivechat(_id, 'not-available');
@@ -921,7 +921,7 @@ export const Livechat = {
 			});
 		}
 
-		return removeUserFromRoles(user._id, ['livechat-manager']);
+		return removeUserFromRolesAsync(user._id, ['livechat-manager']);
 	},
 
 	async removeGuest(_id) {

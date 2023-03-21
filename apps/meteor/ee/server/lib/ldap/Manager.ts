@@ -247,12 +247,12 @@ export class LDAPEEManager extends LDAPManager {
 		});
 	}
 
-	private static createRoomForSync(channel: string): IRoom | undefined {
+	private static async createRoomForSync(channel: string): Promise<IRoom | undefined> {
 		logger.debug(`Channel '${channel}' doesn't exist, creating it.`);
 
 		const roomOwner = settings.get<string>('LDAP_Sync_User_Data_Channels_Admin') || '';
 		// #ToDo: Remove typecastings when createRoom is converted to ts.
-		const room = createRoom('c', channel, roomOwner, [], false, {
+		const room = await createRoom('c', channel, roomOwner, [], false, {
 			customFields: { ldap: true },
 		} as any);
 		if (!room?.rid) {
@@ -302,7 +302,7 @@ export class LDAPEEManager extends LDAPManager {
 			const channels: Array<string> = [].concat(fieldMap[ldapField]);
 			for await (const channel of channels) {
 				try {
-					const room: IRoom | undefined = Rooms.findOneByNonValidatedName(channel) || this.createRoomForSync(channel);
+					const room: IRoom | undefined = Rooms.findOneByNonValidatedName(channel) || (await this.createRoomForSync(channel));
 					if (!room) {
 						return;
 					}
@@ -323,8 +323,8 @@ export class LDAPEEManager extends LDAPManager {
 			}
 		}
 
-		for (const rid of channelsToAdd) {
-			addUserToRoom(rid, user);
+		for await (const rid of channelsToAdd) {
+			await addUserToRoom(rid, user);
 			logger.debug(`Synced user channel ${rid} from LDAP for ${username}`);
 		}
 
@@ -535,7 +535,7 @@ export class LDAPEEManager extends LDAPManager {
 					count++;
 
 					const userData = this.mapUserData(data);
-					converter.addUser(userData);
+					converter.addUserSync(userData);
 					return userData;
 				},
 				endCallback: (error: any): void => {
@@ -559,7 +559,7 @@ export class LDAPEEManager extends LDAPManager {
 
 			if (ldapUser) {
 				const userData = this.mapUserData(ldapUser, user.username);
-				converter.addUser(userData);
+				converter.addUserSync(userData);
 			}
 		}
 	}

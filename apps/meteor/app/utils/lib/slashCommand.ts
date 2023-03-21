@@ -79,7 +79,7 @@ export const slashCommands = {
 			throw new Meteor.Error('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
 
-		const previewInfo = cmd.previewer(command, params, message);
+		const previewInfo = Promise.await(cmd.previewer(command, params, message));
 
 		if (!previewInfo?.items?.length) {
 			return;
@@ -113,7 +113,7 @@ export const slashCommands = {
 			throw new Meteor.Error('error-invalid-preview', 'Preview Item must have an id, type, and value.');
 		}
 
-		return cmd.previewCallback(command, params, message, preview, triggerId);
+		return Promise.await(cmd.previewCallback(command, params, message, preview, triggerId));
 	},
 };
 
