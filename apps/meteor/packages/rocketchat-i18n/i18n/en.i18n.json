@@ -505,6 +505,8 @@
   "Apps_context_private": "Private Apps",
   "Apps_Count_Enabled": "__count__ app enabled",
   "Apps_Count_Enabled_plural": "__count__ apps enabled",
+  "Private_Apps_Count_Enabled": "__count__ private app enabled",
+  "Private_Apps_Count_Enabled_plural": "__count__ private apps enabled",
   "Apps_Count_Enabled_tooltip": "Community Edition workspaces can enable up to __number__ __context__ apps",
   "Apps_disabled_when_Enterprise_trial_ended": "Apps disabled when Enterprise trial ended",
   "Apps_disabled_when_Enterprise_trial_ended_description": "Workspaces on Community Edition can have up to 5 marketplace apps and 3 private apps enabled. Ask your workspace admin to reenable apps.",

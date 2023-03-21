@@ -18,6 +18,9 @@ const EnabledAppsCount = ({
 }): ReactElement | null => {
 	const t = useTranslation();
 
+	const privateAppsCountText: string = t('Private_Apps_Count_Enabled', { count: enabled });
+	const marketplaceAppsCountText: string = t('Apps_Count_Enabled', { count: enabled });
+
 	return (
 		<Box
 			display='flex'
@@ -31,13 +34,15 @@ const EnabledAppsCount = ({
 			})}
 		>
 			<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' w='full'>
-				<Box fontScale='c1'>{t('Apps_Count_Enabled', { count: enabled })}</Box>
+				<Box fontScale='c1'>{context === 'private' ? privateAppsCountText : marketplaceAppsCountText}</Box>
 
 				<Box fontScale='c1' color='annotation'>
 					{`${enabled} / ${limit}`}
 				</Box>
 			</Box>
-			<ProgressBar variant={variant} percentage={percentage} />
+			<Box mbs='x8'>
+				<ProgressBar variant={variant} percentage={percentage} />
+			</Box>
 		</Box>
 	);
 };
