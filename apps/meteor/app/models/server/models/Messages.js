@@ -324,18 +324,6 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	updateUsernameOfEditByUserId(userId, username) {
-		const query = { 'editedBy._id': userId };
-
-		const update = {
-			$set: {
-				'editedBy.username': username,
-			},
-		};
-
-		return this.update(query, update, { multi: true });
-	}
-
 	updateUsernameAndMessageOfMentionByIdAndOldUsername(_id, oldUsername, newUsername, newMessage) {
 		const query = {
 			_id,
