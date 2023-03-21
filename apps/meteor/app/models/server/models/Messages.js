@@ -4,7 +4,6 @@ import _ from 'underscore';
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import { settings } from '../../../settings/server';
-import { otrSystemMessages } from '../../../otr/lib/constants';
 
 export class Messages extends Base {
 	constructor() {
@@ -40,42 +39,6 @@ export class Messages extends Base {
 		return this.update({ _id: messageId }, { $set: { reactions } });
 	}
 
-	keepHistoryForToken(token) {
-		return this.update(
-			{
-				'navigation.token': token,
-				'expireAt': {
-					$exists: true,
-				},
-			},
-			{
-				$unset: {
-					expireAt: 1,
-				},
-			},
-			{
-				multi: true,
-			},
-		);
-	}
-
-	setRoomIdByToken(token, rid) {
-		return this.update(
-			{
-				'navigation.token': token,
-				'rid': null,
-			},
-			{
-				$set: {
-					rid,
-				},
-			},
-			{
-				multi: true,
-			},
-		);
-	}
-
 	createRoomArchivedByRoomIdAndUser(roomId, user) {
 		return this.createWithTypeRoomIdMessageAndUser('room-archived', roomId, '', user);
 	}
@@ -102,22 +65,6 @@ export class Messages extends Base {
 
 	unsetReactions(messageId) {
 		return this.update({ _id: messageId }, { $unset: { reactions: 1 } });
-	}
-
-	deleteOldOTRMessages(roomId, ts) {
-		const query = {
-			rid: roomId,
-			t: {
-				$in: [
-					'otr',
-					otrSystemMessages.USER_JOINED_OTR,
-					otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,
-					otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
-				],
-			},
-			ts: { $lte: ts },
-		};
-		return this.remove(query);
 	}
 
 	updateOTRAck(_id, otrAck) {
@@ -170,21 +117,6 @@ export class Messages extends Base {
 			},
 			{ multi: true },
 		);
-	}
-
-	countVisibleByRoomIdBetweenTimestampsInclusive(roomId, afterTimestamp, beforeTimestamp) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			ts: {
-				$gte: afterTimestamp,
-				$lte: beforeTimestamp,
-			},
-		};
-
-		return this.find(query).count();
 	}
 
 	// FIND
@@ -255,51 +187,6 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleByMentionAndRoomId(username, rid, options) {
-		const query = {
-			'_hidden': { $ne: true },
-			'mentions.username': username,
-			rid,
-		};
-
-		return this.find(query, options);
-	}
-
-	findVisibleByRoomId(rid, options) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-
-			rid,
-		};
-
-		return this.find(query, options);
-	}
-
-	findVisibleByIds(ids, options) {
-		const query = {
-			_id: { $in: ids },
-			_hidden: {
-				$ne: true,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	findVisibleThreadByThreadId(tmid, options) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-
-			tmid,
-		};
-
-		return this.find(query, options);
-	}
-
 	findVisibleByRoomIdNotContainingTypes(roomId, types, options, showThreadMessages = true) {
 		const query = {
 			_hidden: {
@@ -325,29 +212,6 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findInvisibleByRoomId(roomId, options) {
-		const query = {
-			_hidden: true,
-			rid: roomId,
-		};
-
-		return this.find(query, options);
-	}
-
-	findVisibleByRoomIdAfterTimestamp(roomId, timestamp, options) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			ts: {
-				$gt: timestamp,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
 	findForUpdates(roomId, timestamp, options) {
 		const query = {
 			_hidden: {
@@ -358,20 +222,6 @@ export class Messages extends Base {
 				$gt: timestamp,
 			},
 		};
-		return this.find(query, options);
-	}
-
-	findVisibleByRoomIdBeforeTimestamp(roomId, timestamp, options) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			ts: {
-				$lt: timestamp,
-			},
-		};
-
 		return this.find(query, options);
 	}
 
