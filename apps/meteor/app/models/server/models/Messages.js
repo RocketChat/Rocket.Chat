@@ -290,43 +290,6 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleCreatedOrEditedAfterTimestamp(timestamp, options) {
-		const query = {
-			_hidden: { $ne: true },
-			$or: [
-				{
-					ts: {
-						$gt: timestamp,
-					},
-				},
-				{
-					editedAt: {
-						$gt: timestamp,
-					},
-				},
-			],
-		};
-
-		return this.find(query, options);
-	}
-
-	findStarredByUserAtRoom(userId, roomId, options) {
-		const query = {
-			'_hidden': { $ne: true },
-			'starred._id': userId,
-			'rid': roomId,
-		};
-
-		return this.find(query, options);
-	}
-
-	getLastTimestamp(options = { fields: { _id: 0, ts: 1 } }) {
-		options.sort = { ts: -1 };
-		options.limit = 1;
-		const [message] = this.find({}, options).fetch();
-		return message?.ts;
-	}
-
 	findByRoomIdAndMessageIds(rid, messageIds, options) {
 		const query = {
 			rid,
@@ -351,15 +314,6 @@ export class Messages extends Base {
 		const query = { slackTs };
 
 		return this.findOne(query);
-	}
-
-	findOneByRoomIdAndMessageId(rid, messageId, options) {
-		const query = {
-			rid,
-			_id: messageId,
-		};
-
-		return this.findOne(query, options);
 	}
 
 	findByRoomId(roomId, options) {
@@ -389,82 +343,6 @@ export class Messages extends Base {
 		};
 
 		return this.findOne(query, options);
-	}
-
-	cloneAndSaveAsHistoryById(_id, user) {
-		const record = this.findOneById(_id);
-		record._hidden = true;
-		record.parent = record._id;
-		record.editedAt = new Date();
-		record.editedBy = {
-			_id: user._id,
-			username: user.username,
-		};
-		delete record._id;
-		return this.insert(record);
-	}
-
-	// UPDATE
-	setHiddenById(_id, hidden) {
-		if (hidden == null) {
-			hidden = true;
-		}
-		const query = { _id };
-
-		const update = {
-			$set: {
-				_hidden: hidden,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	setAsDeletedByIdAndUser(_id, user) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				msg: '',
-				t: 'rm',
-				urls: [],
-				mentions: [],
-				attachments: [],
-				reactions: [],
-				editedAt: new Date(),
-				editedBy: {
-					_id: user._id,
-					username: user.username,
-				},
-			},
-			$unset: {
-				md: 1,
-				blocks: 1,
-				tshow: 1,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	setPinnedByIdAndUserId(_id, pinnedBy, pinned, pinnedAt) {
-		if (pinned == null) {
-			pinned = true;
-		}
-		if (pinnedAt == null) {
-			pinnedAt = 0;
-		}
-		const query = { _id };
-
-		const update = {
-			$set: {
-				pinned,
-				pinnedAt: pinnedAt || new Date(),
-				pinnedBy,
-			},
-		};
-
-		return this.update(query, update);
 	}
 
 	setUrlsById(_id, urls) {
@@ -515,27 +393,6 @@ export class Messages extends Base {
 				'msg': newMessage,
 			},
 		};
-
-		return this.update(query, update);
-	}
-
-	updateUserStarById(_id, userId, starred) {
-		let update;
-		const query = { _id };
-
-		if (starred) {
-			update = {
-				$addToSet: {
-					starred: { _id: userId },
-				},
-			};
-		} else {
-			update = {
-				$pull: {
-					starred: { _id: userId },
-				},
-			};
-		}
 
 		return this.update(query, update);
 	}

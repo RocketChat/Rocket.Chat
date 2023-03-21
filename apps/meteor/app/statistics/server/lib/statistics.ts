@@ -303,7 +303,7 @@ export const statistics = {
 		);
 
 		statistics.lastLogin = Users.getLastLogin();
-		statistics.lastMessageSentAt = Messages.getLastTimestamp();
+		statistics.lastMessageSentAt = await MessagesRaw.getLastTimestamp();
 		statistics.lastSeenSubscription = Subscriptions.getLastSeen();
 
 		statistics.os = {
