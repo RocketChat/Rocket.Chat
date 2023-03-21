@@ -90,7 +90,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	downloadPublicImportFile(fileUrl: string, importerKey: string) {
+	async downloadPublicImportFile(fileUrl: string, importerKey: string) {
 		const userId = Meteor.userId();
 
 		if (!userId) {
@@ -101,6 +101,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', 'downloadPublicImportFile');
 		}
 
-		executeDownloadPublicImportFile(userId, fileUrl, importerKey);
+		await executeDownloadPublicImportFile(userId, fileUrl, importerKey);
 	},
 });

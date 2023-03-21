@@ -657,7 +657,6 @@ export class ImportDataConverter {
 	public async findDMForImportedUsers(...users: Array<string>): Promise<IImportChannel | undefined> {
 		const record = await ImportData.findDMForImportedUsers(...users);
 		if (record) {
-			// @ts-expect-error - typings
 			return record.data;
 		}
 	}

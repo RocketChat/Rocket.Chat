@@ -46,9 +46,9 @@ API.v1.addRoute(
 		permissionsRequired: ['run-import'],
 	},
 	{
-		post() {
+		async post() {
 			const { fileUrl, importerKey } = this.bodyParams;
-			executeDownloadPublicImportFile(this.userId, fileUrl, importerKey);
+			await executeDownloadPublicImportFile(this.userId, fileUrl, importerKey);
 
 			return API.v1.success();
 		},
@@ -63,10 +63,10 @@ API.v1.addRoute(
 		permissionsRequired: ['run-import'],
 	},
 	{
-		post() {
+		async post() {
 			const { input } = this.bodyParams;
 
-			executeStartImport({ input });
+			await executeStartImport({ input });
 
 			return API.v1.success();
 		},
