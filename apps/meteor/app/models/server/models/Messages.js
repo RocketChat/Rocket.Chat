@@ -628,24 +628,6 @@ export class Messages extends Base {
 		);
 	}
 
-	setThreadMessagesAsRead(tmid, until) {
-		return this.update(
-			{
-				tmid,
-				unread: true,
-				ts: { $lt: until },
-			},
-			{
-				$unset: {
-					unread: 1,
-				},
-			},
-			{
-				multi: true,
-			},
-		);
-	}
-
 	setAsReadById(_id) {
 		return this.update(
 			{
