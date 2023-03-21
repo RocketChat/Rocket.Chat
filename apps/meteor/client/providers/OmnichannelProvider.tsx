@@ -1,4 +1,9 @@
-import type { IOmnichannelAgent, IRoom, OmichannelRoutingConfig, OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
+import type {
+	IOmnichannelAgent,
+	OmichannelRoutingConfig,
+	OmnichannelSortingMechanismSettingType,
+	ILivechatInquiryRecord,
+} from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useUser, useSetting, usePermission, useMethod, useEndpoint, useStream } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -9,6 +14,7 @@ import { LivechatInquiry } from '../../app/livechat/client/collections/LivechatI
 import { initializeLivechatInquiryStream } from '../../app/livechat/client/lib/stream/queueManager';
 import { getOmniChatSortQuery } from '../../app/livechat/lib/inquiries';
 import { Notifications } from '../../app/notifications/client';
+import { KonchatNotification } from '../../app/ui/client';
 import { useHasLicenseModule } from '../../ee/client/hooks/useHasLicenseModule';
 import { ClientLogger } from '../../lib/ClientLogger';
 import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
@@ -47,6 +53,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 	const getRoutingConfig = useMethod('livechat:getRoutingConfig');
 
 	const [routeConfig, setRouteConfig] = useSafely(useState<OmichannelRoutingConfig | undefined>(undefined));
+	const [queueNotification, setQueueNotification] = useState(new Set());
 
 	const accessible = hasAccess && omniChannelEnabled;
 	const iceServersSetting: any = useSetting('WebRTC_Servers');
@@ -116,7 +123,7 @@ const OmnichannelProvider: FC = ({ children }) => {
 		};
 	}, [manuallySelected, user?._id]);
 
-	const queue = useReactiveValue<IRoom[] | undefined>(
+	const queue = useReactiveValue<ILivechatInquiryRecord[] | undefined>(
 		useCallback(() => {
 			if (!manuallySelected) {
 				return undefined;
@@ -134,6 +141,14 @@ const OmnichannelProvider: FC = ({ children }) => {
 			).fetch();
 		}, [manuallySelected, omnichannelPoolMaxIncoming, omnichannelSortingMechanism, user?._id]),
 	);
+
+	queue?.map(({ rid }) => {
+		if (queueNotification.has(rid)) {
+			return;
+		}
+		setQueueNotification((prev) => new Set([...prev, rid]));
+		return KonchatNotification.newRoom(rid);
+	});
 
 	const contextValue = useMemo<OmnichannelContextValue>(() => {
 		if (!enabled) {

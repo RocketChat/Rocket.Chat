@@ -1,4 +1,4 @@
-\import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelAgent } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelAgent } from '@rocket.chat/core-typings';
 
 import { APIClient } from '../../../../utils/client';
 import { LivechatInquiry } from '../../collections/LivechatInquiry';
@@ -19,7 +19,7 @@ const events = {
 			return LivechatInquiry.remove(inquiry._id);
 		}
 		delete inquiry.type;
-		LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) })
+		LivechatInquiry.upsert({ _id: inquiry._id }, { ...inquiry, alert: true, _updatedAt: new Date(inquiry._updatedAt) });
 	},
 	removed: (inquiry: ILivechatInquiryWithType) => LivechatInquiry.remove(inquiry._id),
 };
