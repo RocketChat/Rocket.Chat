@@ -420,13 +420,12 @@ export const saveUser = async function (userId, userData) {
 
 	// App IPostUserUpdated event hook
 	const userUpdated = Users.findOneById(userId);
-	Promise.await(
-		Apps.triggerEvent(AppEvents.IPostUserUpdated, {
-			user: userUpdated,
-			previousUser: oldUserData,
-			performedBy: safeGetMeteorUser(),
-		}),
-	);
+
+	await Apps.triggerEvent(AppEvents.IPostUserUpdated, {
+		user: userUpdated,
+		previousUser: oldUserData,
+		performedBy: safeGetMeteorUser(),
+	});
 
 	if (sendPassword) {
 		_sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);

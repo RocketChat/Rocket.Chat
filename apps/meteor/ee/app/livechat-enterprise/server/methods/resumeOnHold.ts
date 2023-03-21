@@ -29,6 +29,13 @@ async function resolveOnHoldCommentInfo(options: { clientAction: boolean }, room
 	return TAPi18n.__('Omnichannel_on_hold_chat_automatically', { guest });
 }
 
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'livechat:resumeOnHold'(roomId: string, options?: { clientAction: boolean }): void;
+	}
+}
+
 Meteor.methods<ServerMethods>({
 	async 'livechat:resumeOnHold'(roomId, options = { clientAction: false }) {
 		const room = await LivechatRooms.findOneById(roomId);

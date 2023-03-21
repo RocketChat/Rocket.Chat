@@ -19,7 +19,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	messageSearch(text, rid, limit, offset) {
+	async messageSearch(text, rid, limit, offset) {
 		check(text, String);
 		check(rid, Match.Maybe(String));
 		check(limit, Match.Optional(Number));
@@ -83,13 +83,11 @@ Meteor.methods<ServerMethods>({
 
 		return {
 			message: {
-				docs: Promise.await(
-					Messages.find(query, {
-						// @ts-expect-error col.s.db is not typed
-						readPreference: readSecondaryPreferred(Messages.col.s.db),
-						...options,
-					}).toArray(),
-				),
+				docs: await Messages.find(query, {
+					// @ts-expect-error col.s.db is not typed
+					readPreference: readSecondaryPreferred(Messages.col.s.db),
+					...options,
+				}).toArray(),
 			},
 		};
 	},

@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { IMessage } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { canAccessRoomId } from '../../../authorization/server';
 import { Messages } from '../../../models/server';
@@ -12,7 +13,7 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
-Meteor.methods({
+Meteor.methods<ServerMethods>({
 	getSingleMessage(mid) {
 		check(mid, String);
 

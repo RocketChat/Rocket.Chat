@@ -68,3 +68,5 @@ export * from './models/IAppLogsModel';
 export * from './models/IAppsModel';
 export * from './models/IAppsPersistenceModel';
 export * from './models/IImportsModel';
+export * from './models/IRawImportsModel';
+export * from './models/IFederationRoomEventsModel';

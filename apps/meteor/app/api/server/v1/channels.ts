@@ -21,8 +21,8 @@ import {
 import { Integrations, Messages, Rooms, Subscriptions, Uploads } from '@rocket.chat/models';
 import { Team } from '@rocket.chat/core-services';
 
-import { Messages as MessagesSync, Subscriptions as SubscriptionsSync, Users as UsersSync } from '../../../models/server';
-import { canAccessRoom, hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
+import { Subscriptions as SubscriptionsSync, Users as UsersSync } from '../../../models/server';
+import { canAccessRoomAsync, hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
@@ -598,7 +598,7 @@ API.v1.addRoute(
 			const lm = room.lm ? room.lm : room._updatedAt;
 
 			if (subscription?.open) {
-				unreads = await MessagesSync.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls, lm);
+				unreads = await Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls, lm);
 				unreadsFrom = subscription.ls || subscription.ts;
 				userMentions = subscription.userMentions;
 				joined = true;
@@ -750,7 +750,7 @@ API.v1.addRoute(
 				checkedArchived: false,
 			});
 
-			if (!(await canAccessRoom(findResult, { _id: this.userId }))) {
+			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
 				return API.v1.unauthorized();
 			}
 
@@ -1042,7 +1042,7 @@ API.v1.addRoute(
 
 			const user = this.getLoggedInUser();
 
-			if (!room || !user || !(await canAccessRoom(room, user))) {
+			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
 

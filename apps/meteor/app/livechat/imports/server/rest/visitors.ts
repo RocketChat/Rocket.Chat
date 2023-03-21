@@ -20,7 +20,7 @@ import {
 	findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField,
 } from '../../../server/api/lib/visitors';
 import { normalizeMessagesForUser } from '../../../../utils/server/lib/normalizeMessagesForUser';
-import { canAccessRoom } from '../../../../authorization/server';
+import { canAccessRoomAsync } from '../../../../authorization/server';
 
 API.v1.addRoute(
 	'livechat/visitors.info',
@@ -171,7 +171,7 @@ API.v1.addRoute(
 				throw new Error('invalid-room');
 			}
 
-			if (!canAccessRoom(room, this.user)) {
+			if (!(await canAccessRoomAsync(room, this.user))) {
 				throw new Error('not-allowed');
 			}
 
