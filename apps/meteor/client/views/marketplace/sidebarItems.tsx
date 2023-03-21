@@ -55,7 +55,7 @@ export const {
 	},
 	{ divider: true, i18nLabel: 'marketplace/private' },
 	{
-		href: 'https://docs.rocket.chat/extend-rocket.chat-capabilities/rocket.chat-marketplace',
+		href: 'https://go.rocket.chat/i/developing-an-app',
 		icon: 'new-window',
 		i18nLabel: 'Documentation',
 		externalUrl: true,
