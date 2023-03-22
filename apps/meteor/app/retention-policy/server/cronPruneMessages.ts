@@ -51,7 +51,7 @@ async function job(): Promise<void> {
 		}
 	}
 
-	const rooms = Rooms.find(
+	const rooms = await Rooms.find<IRoomWithRetentionPolicy>(
 		{
 			'retention.enabled': { $eq: true },
 			'retention.overrideGlobal': { $eq: true },
