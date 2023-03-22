@@ -1006,13 +1006,14 @@ export class AppsRestApi {
 					const { settings } = prl.getStorageItem();
 
 					const updated = [];
-					this.bodyParams.settings.forEach((s) => {
+
+					for await (const s of this.bodyParams.settings) {
 						if (settings[s.id] && settings[s.id].value !== s.value) {
 							await manager.getSettingsManager().updateAppSetting(this.urlParams.id, s);
 							// Updating?
 							updated.push(s);
 						}
-					});
+					}
 
 					return API.v1.success({ updated });
 				},
