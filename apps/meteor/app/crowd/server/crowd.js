@@ -7,7 +7,7 @@ import { Logger } from '../../logger/server';
 import { _setRealName } from '../../lib/server';
 import { Users } from '../../models/server';
 import { settings } from '../../settings/server';
-import { hasPermission } from '../../authorization/server';
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { deleteUser } from '../../lib/server/functions';
 import { setUserActiveStatus } from '../../lib/server/functions/setUserActiveStatus';
 
@@ -336,7 +336,7 @@ Meteor.startup(() => {
 });
 
 Meteor.methods({
-	crowd_test_connection() {
+	async crowd_test_connection() {
 		const user = Meteor.user();
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -344,7 +344,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!hasPermission(user._id, 'test-admin-options')) {
+		if (!(await hasPermissionAsync(user._id, 'test-admin-options'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'crowd_test_connection',
 			});
@@ -370,13 +370,13 @@ Meteor.methods({
 			throw new Meteor.Error('Invalid connection details', '', { method: 'crowd_test_connection' });
 		}
 	},
-	crowd_sync_users() {
+	async crowd_sync_users() {
 		const user = Meteor.user();
 		if (settings.get('CROWD_Enable') !== true) {
 			throw new Meteor.Error('crowd_disabled');
 		}
 
-		if (!hasPermission(user._id, 'sync-auth-services-users')) {
+		if (!(await hasPermissionAsync(user._id, 'sync-auth-services-users'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'crowd_sync_users',
 			});
