@@ -27,6 +27,6 @@ async function afterMuteUser(involvedUsers, room) {
 
 export const definition = {
 	hook: 'afterMuteUser',
-	callback: (involvedUsers, room) => Promise.await(afterMuteUser(involvedUsers, room)),
+	callback: afterMuteUser,
 	id: 'federation-after-mute-user',
 };
