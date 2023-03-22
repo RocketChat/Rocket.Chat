@@ -119,7 +119,7 @@ export const statistics = {
 		statistics.totalDirect = Rooms.findByType('d').count();
 		statistics.totalLivechat = Rooms.findByType('l').count();
 		statistics.totalDiscussions = Rooms.countDiscussions();
-		statistics.totalThreads = Messages.countThreads();
+		statistics.totalThreads = await MessagesRaw.countThreads();
 
 		// livechat visitors
 		statistics.totalLivechatVisitors = await LivechatVisitors.col.estimatedDocumentCount();

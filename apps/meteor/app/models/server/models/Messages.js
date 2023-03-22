@@ -685,13 +685,6 @@ export class Messages extends Base {
 		});
 	}
 
-	// //////////////////////////////////////////////////////////////////
-	// threads
-
-	countThreads() {
-		return this.find({ tcount: { $exists: true } }).count();
-	}
-
 	findAllImportedMessagesWithFilesToDownload() {
 		const query = {
 			'_importFile.downloadUrl': {
