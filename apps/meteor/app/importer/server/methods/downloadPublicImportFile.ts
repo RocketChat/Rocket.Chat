@@ -49,22 +49,22 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 	const newFileName = `${dateStr}_${userId}_${oldFileName}`;
 
 	// Store the file name on the imports collection
-	importer.instance.startFileUpload(newFileName);
-	importer.instance.updateProgress(ProgressStep.DOWNLOADING_FILE);
+	await importer.instance.startFileUpload(newFileName);
+	await importer.instance.updateProgress(ProgressStep.DOWNLOADING_FILE);
 
 	const writeStream = RocketChatImportFileInstance.createWriteStream(newFileName);
 
 	writeStream.on(
 		'error',
 		Meteor.bindEnvironment(() => {
-			importer.instance.updateProgress(ProgressStep.ERROR);
+			void importer.instance.updateProgress(ProgressStep.ERROR);
 		}),
 	);
 
 	writeStream.on(
 		'end',
 		Meteor.bindEnvironment(() => {
-			importer.instance.updateProgress(ProgressStep.FILE_LOADED);
+			void importer.instance.updateProgress(ProgressStep.FILE_LOADED);
 		}),
 	);
 

@@ -21,6 +21,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		return Promise.await(businessHourManager.removeBusinessHourByIdAndType(id, type));
+		return businessHourManager.removeBusinessHourByIdAndType(id, type);
 	},
 });

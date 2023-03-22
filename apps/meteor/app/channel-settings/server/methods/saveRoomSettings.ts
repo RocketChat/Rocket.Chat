@@ -211,8 +211,8 @@ type RoomSettingsSavers = {
 };
 
 const settingSavers: RoomSettingsSavers = {
-	roomName({ value, rid, user, room }) {
-		if (!Promise.await(saveRoomName(rid, value, user))) {
+	async roomName({ value, rid, user, room }) {
+		if (!(await saveRoomName(rid, value, user))) {
 			return;
 		}
 
