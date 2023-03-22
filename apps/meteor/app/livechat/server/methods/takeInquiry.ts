@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { LivechatInquiry } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Users, LivechatInquiry } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { RoutingManager } from '../lib/RoutingManager';
 
 declare module '@rocket.chat/ui-contexts' {
