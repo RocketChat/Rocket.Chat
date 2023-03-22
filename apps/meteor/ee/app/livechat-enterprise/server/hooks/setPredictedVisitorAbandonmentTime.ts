@@ -1,3 +1,5 @@
+import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
+
 import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings/server';
 import { setPredictedVisitorAbandonmentTime } from '../lib/Helper';
@@ -8,14 +10,19 @@ callbacks.add(
 		if (
 			!settings.get('Livechat_abandoned_rooms_action') ||
 			settings.get('Livechat_abandoned_rooms_action') === 'none' ||
-			settings.get('Livechat_visitor_inactivity_timeout') <= 0
+			settings.get<number>('Livechat_visitor_inactivity_timeout') <= 0
 		) {
 			return message;
 		}
 		// skips this callback if the message was edited
-		if (message.editedAt) {
+		if (isEditedMessage(message)) {
 			return message;
 		}
+
+		if (!isOmnichannelRoom(room)) {
+			return message;
+		}
+
 		// message valid only if it is a livechat room
 		if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.v && room.v.token)) {
 			return message;

@@ -23,7 +23,7 @@ callbacks.add(
 		}
 
 		const { _id: slaId } = sla;
-		return Object.assign({ ...roomInfo }, { slaId });
+		return { ...roomInfo, slaId };
 	},
 	callbacks.priority.MEDIUM,
 	'livechat-before-new-room',
