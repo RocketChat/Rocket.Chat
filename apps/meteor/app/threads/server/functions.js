@@ -44,15 +44,15 @@ export async function follow({ tmid, uid }) {
 	await MessagesRaw.addThreadFollowerByThreadId(tmid, uid);
 }
 
-export const unfollow = ({ tmid, rid, uid }) => {
+export async function unfollow({ tmid, rid, uid }) {
 	if (!tmid || !uid) {
 		return false;
 	}
 
 	Subscriptions.removeUnreadThreadByRoomIdAndUserId(rid, uid, tmid);
 
-	return Messages.removeThreadFollowerByThreadId(tmid, uid);
-};
+	await Messages.removeThreadFollowerByThreadId(tmid, uid);
+}
 
 export const readThread = ({ userId, rid, tmid }) => {
 	const fields = { tunread: 1 };

@@ -733,20 +733,6 @@ export class Messages extends Base {
 		return this.findOne({ tmid }, { fields: { ts: 1 }, sort: { ts: 1 } });
 	}
 
-	removeThreadFollowerByThreadId(tmid, userId) {
-		const query = {
-			_id: tmid,
-		};
-
-		const update = {
-			$pull: {
-				replies: userId,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	findThreadsByRoomId(rid, skip, limit) {
 		return this.find({ rid, tcount: { $exists: true } }, { sort: { tlm: -1 }, skip, limit });
 	}
