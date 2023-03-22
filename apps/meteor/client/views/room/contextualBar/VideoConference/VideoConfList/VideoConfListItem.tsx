@@ -25,7 +25,6 @@ const VideoConfListItem = ({
 	const t = useTranslation();
 	const formatDate = useTimeAgo();
 	const joinCall = useVideoConfJoinCall();
-
 	const showRealName = isDisplayRealNamePreference(useUserPreference('messagesLayout'));
 
 	const {

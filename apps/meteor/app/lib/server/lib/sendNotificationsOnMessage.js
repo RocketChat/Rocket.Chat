@@ -17,7 +17,6 @@ import { notifyDesktopUser, shouldNotifyDesktop } from '../functions/notificatio
 import { Notification } from '../../../notification-queue/server/NotificationQueue';
 import { getMentions } from './notifyUsersOnMessage';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
-import { shouldUseRealName } from '../../../utils/lib/shouldUseRealName';
 
 let TroubleshootDisableNotifications;
 
@@ -240,8 +239,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 
 	let notificationMessage = callbacks.run('beforeSendMessageNotifications', message.msg);
 
-	const defaultMessagesLayout = settings.get('Accounts_Default_User_Preferences_messagesLayout');
-	if (mentionIds.length > 0 && shouldUseRealName(defaultMessagesLayout, sender)) {
+	if (mentionIds.length > 0 && settings.get('UI_Use_Real_Name')) {
 		notificationMessage = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
 	}
 

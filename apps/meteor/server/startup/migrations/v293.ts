@@ -17,11 +17,7 @@ addMigration({
 		};
 
 		const newValue = getNewSettingValue(!!hideUsernames?.value);
-		await Settings.deleteMany({
-			_id: {
-				$in: ['Accounts_Default_User_Preferences_hideUsernames', 'UI_Use_Real_Name'],
-			},
-		});
+		await Settings.deleteOne({ _id: 'Accounts_Default_User_Preferences_hideUsernames' });
 
 		await Settings.update(
 			{
