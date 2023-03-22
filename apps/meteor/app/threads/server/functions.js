@@ -1,6 +1,6 @@
-import { Messages as MessagesRaw } from '@rocket.chat/models';
+import { Messages } from '@rocket.chat/models';
 
-import { Messages, Subscriptions } from '../../models/server';
+import { Subscriptions } from '../../models/server';
 import { getMentions } from '../../lib/server/lib/notifyUsersOnMessage';
 
 export async function reply({ tmid }, message, parentMessage, followers) {
@@ -19,9 +19,9 @@ export async function reply({ tmid }, message, parentMessage, followers) {
 		]),
 	];
 
-	await MessagesRaw.updateRepliesByThreadId(tmid, addToReplies, ts);
+	await Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
 
-	const replies = await MessagesRaw.getThreadFollowsByThreadId(tmid);
+	const replies = await Messages.getThreadFollowsByThreadId(tmid);
 
 	const repliesFiltered = replies.filter((userId) => userId !== u._id).filter((userId) => !mentionIds.includes(userId));
 
@@ -41,7 +41,7 @@ export async function follow({ tmid, uid }) {
 		return false;
 	}
 
-	await MessagesRaw.addThreadFollowerByThreadId(tmid, uid);
+	await Messages.addThreadFollowerByThreadId(tmid, uid);
 }
 
 export async function unfollow({ tmid, rid, uid }) {
