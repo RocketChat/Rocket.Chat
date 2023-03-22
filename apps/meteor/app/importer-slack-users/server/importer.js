@@ -28,16 +28,16 @@ export class SlackUsersImporter extends Base {
 		const parsed = this.csvParser(buf.toString());
 
 		let userCount = 0;
-		parsed.forEach((user, index) => {
+		for await (const [index, user] of parsed.entries()) {
 			// Ignore the first column
 			if (index === 0) {
-				return;
+				continue;
 			}
 
 			const username = user[0];
 			const email = user[1];
 			if (!email) {
-				return;
+				continue;
 			}
 
 			const name = user[7] || user[8] || username;
@@ -63,9 +63,9 @@ export class SlackUsersImporter extends Base {
 					break;
 			}
 
-			this.converter.addUser(newUser);
+			await this.converter.addUser(newUser);
 			userCount++;
-		});
+		}
 
 		if (userCount === 0) {
 			this.logger.error('No users found in the import file.');

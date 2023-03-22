@@ -196,30 +196,35 @@ export class SlackImporter extends Base {
 					if (entry.entryName === 'channels.json') {
 						channelCount += Promise.await(this.prepareChannelsFile(entry));
 						await this.updateRecord({ 'count.channels': channelCount });
-						return increaseProgress();
+						increaseProgress();
+						continue;
 					}
 
 					if (entry.entryName === 'groups.json') {
 						channelCount += await this.prepareGroupsFile(entry);
 						await this.updateRecord({ 'count.channels': channelCount });
-						return increaseProgress();
+						increaseProgress();
+						continue;
 					}
 
 					if (entry.entryName === 'mpims.json') {
 						channelCount += await this.prepareMpimpsFile(entry);
 						await this.updateRecord({ 'count.channels': channelCount });
-						return increaseProgress();
+						increaseProgress();
+						continue;
 					}
 
 					if (entry.entryName === 'dms.json') {
 						channelCount += await this.prepareDMsFile(entry);
 						await this.updateRecord({ 'count.channels': channelCount });
-						return increaseProgress();
+						increaseProgress();
+						continue;
 					}
 
 					if (entry.entryName === 'users.json') {
 						userCount = await this.prepareUsersFile(entry);
-						return increaseProgress();
+						increaseProgress();
+						continue;
 					}
 				} catch (e) {
 					this.logger.error(e);
