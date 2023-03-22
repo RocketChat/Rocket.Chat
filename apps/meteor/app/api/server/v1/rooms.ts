@@ -178,9 +178,6 @@ API.v1.addRoute(
 			await Meteor.call('sendFileMessage', this.urlParams.rid, null, uploadedFile, fields);
 
 			const message = await Messages.getMessageByFileIdAndUsername(uploadedFile._id, this.userId);
-			if (!message) {
-				throw new Meteor.Error('message-not-found', 'Message not found');
-			}
 
 			return API.v1.success({
 				message,
