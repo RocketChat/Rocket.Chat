@@ -1007,7 +1007,7 @@ export class AppsRestApi {
 
 					const updated = [];
 					this.bodyParams.settings.forEach((s) => {
-						if (settings[s.id]) {
+						if (settings[s.id] && settings[s.id].value !== s.value) {
 							Promise.await(manager.getSettingsManager().updateAppSetting(this.urlParams.id, s));
 							// Updating?
 							updated.push(s);

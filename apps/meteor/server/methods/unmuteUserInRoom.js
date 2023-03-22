@@ -1,14 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { hasPermission } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { Rooms, Subscriptions, Users, Messages } from '../../app/models/server';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 
 Meteor.methods({
-	unmuteUserInRoom(data) {
+	async unmuteUserInRoom(data) {
 		const fromId = Meteor.userId();
 
 		check(
@@ -19,7 +19,7 @@ Meteor.methods({
 			}),
 		);
 
-		if (!hasPermission(fromId, 'mute-user', data.rid)) {
+		if (!(await hasPermissionAsync(fromId, 'mute-user', data.rid))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'unmuteUserInRoom',
 			});

@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { Messages } from '@rocket.chat/models';
 
-import { Rooms, Users, Messages } from '../../../models/server';
+import { Rooms, Users } from '../../../models/server';
 import { canAccessRoomAsync } from '../../../authorization/server';
 
 Meteor.methods({
@@ -24,6 +25,6 @@ Meteor.methods({
 			});
 		}
 
-		return Messages.findVisibleByMentionAndRoomId(user.username, roomId, options).fetch();
+		return Messages.findVisibleByMentionAndRoomId(user.username, roomId, options).toArray();
 	},
 });

@@ -1,8 +1,9 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { Messages } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Messages, LivechatRooms } from '../../../models/server';
+import { LivechatRooms } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 
@@ -51,7 +52,7 @@ function sendToCRM(type, room, includeMessages = true) {
 
 	let messages;
 	if (typeof includeMessages === 'boolean' && includeMessages) {
-		messages = Messages.findVisibleByRoomId(room._id, { sort: { ts: 1 } });
+		messages = Promise.await(Messages.findVisibleByRoomId(room._id, { sort: { ts: 1 } }).toArray());
 	} else if (includeMessages instanceof Array) {
 		messages = includeMessages;
 	}
