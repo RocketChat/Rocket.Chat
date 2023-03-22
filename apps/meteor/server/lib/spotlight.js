@@ -1,7 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Users, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
 
-import { hasAllPermission, hasPermission, canAccessRoom, roomAccessAttributes } from '../../app/authorization/server';
+import { hasAllPermission, hasPermission, canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
 import { Subscriptions, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
@@ -137,11 +137,11 @@ export class Spotlight {
 		}
 	}
 
-	_performExtraUserSearches(/* userId, searchParams */) {
+	async _performExtraUserSearches(/* userId, searchParams */) {
 		// Overwrite this method to include extra searches
 	}
 
-	searchUsers({ userId, rid, text, usernames, mentions }) {
+	async searchUsers({ userId, rid, text, usernames, mentions }) {
 		const users = [];
 
 		const options = {
@@ -167,7 +167,7 @@ export class Spotlight {
 		}
 
 		const canListOutsiders = hasAllPermission(userId, ['view-outside-room', 'view-d-room']);
-		const canListInsiders = canListOutsiders || (rid && canAccessRoom(room, { _id: userId }));
+		const canListInsiders = canListOutsiders || (rid && (await canAccessRoomAsync(room, { _id: userId })));
 
 		const insiderExtraQuery = [];
 
@@ -256,7 +256,7 @@ export class Spotlight {
 			return users;
 		}
 
-		if (this._performExtraUserSearches(userId, searchParams)) {
+		if (await this._performExtraUserSearches(userId, searchParams)) {
 			return users;
 		}
 

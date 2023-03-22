@@ -1,15 +1,24 @@
 import { Meteor } from 'meteor/meteor';
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { DeleteResult } from 'mongodb';
 
-import { hasPermission } from '../functions/hasPermission';
+import { hasPermissionAsync } from '../functions/hasPermission';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'authorization:deleteRole'(roleId: IRole['_id'] | IRole['name']): Promise<DeleteResult>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async 'authorization:deleteRole'(roleId) {
 		const userId = Meteor.userId();
 
-		if (!userId || !hasPermission(userId, 'access-permissions')) {
+		if (!userId || !(await hasPermissionAsync(userId, 'access-permissions'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed', {
 				method: 'authorization:deleteRole',
 				action: 'Accessing_permissions',

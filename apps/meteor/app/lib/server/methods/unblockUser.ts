@@ -1,9 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Subscriptions } from '../../../models/server';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		unblockUser({ rid, blocked }: { rid: string; blocked: string }): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	unblockUser({ rid, blocked }) {
 		check(rid, String);
 		check(blocked, String);

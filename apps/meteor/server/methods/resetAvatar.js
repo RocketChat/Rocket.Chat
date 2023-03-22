@@ -5,16 +5,16 @@ import { api } from '@rocket.chat/core-services';
 import { FileUpload } from '../../app/file-upload/server';
 import { Users } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
-import { hasPermission } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 
 Meteor.methods({
-	resetAvatar(userId) {
+	async resetAvatar(userId) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'resetAvatar',
 			});
 		}
-		const canEditOtherUserAvatar = hasPermission(Meteor.userId(), 'edit-other-user-avatar');
+		const canEditOtherUserAvatar = await hasPermissionAsync(Meteor.userId(), 'edit-other-user-avatar');
 
 		if (!settings.get('Accounts_AllowUserAvatarChange') && !canEditOtherUserAvatar) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
@@ -44,7 +44,7 @@ Meteor.methods({
 
 		FileUpload.getStore('Avatars').deleteByName(user.username);
 		Users.unsetAvatarData(user._id);
-		api.broadcast('user.avatarUpdate', { username: user.username, avatarETag: null });
+		void api.broadcast('user.avatarUpdate', { username: user.username, avatarETag: null });
 	},
 });
 
