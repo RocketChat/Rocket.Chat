@@ -12,7 +12,7 @@ import { settings } from '../../../settings/client';
 import { callbacks } from '../../../../lib/callbacks';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { call } from '../../../../client/lib/utils/call';
-import { RoomManager } from '..';
+import { LegacyRoomManager } from '..';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import MainLayout from '../../../../client/views/root/MainLayout';
@@ -21,8 +21,8 @@ import { RoomSkeleton, RoomProvider, Room, RoomNotFound } from '../../../../clie
 
 export async function openRoom(type: RoomType, name: string, render = true) {
 	setTimeout(() => {
-		RoomManager.currentTracker?.stop();
-		RoomManager.currentTracker = Tracker.autorun(async function (c) {
+		LegacyRoomManager.currentTracker?.stop();
+		LegacyRoomManager.currentTracker = Tracker.autorun(async function (c) {
 			const user = Meteor.user();
 			if ((user && user.username == null) || (user == null && settings.get('Accounts_AllowAnonymousRead') === false)) {
 				appLayout.render(<MainLayout />);
@@ -39,12 +39,12 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 
 				if (room._id !== name && type === 'd') {
 					// Redirect old url using username to rid
-					await RoomManager.close(type + name);
+					await LegacyRoomManager.close(type + name);
 					FlowRouter.go('direct', { rid: room._id }, FlowRouter.current().queryParams);
 					return;
 				}
 
-				RoomManager.open({ typeName: type + name, rid: room._id });
+				LegacyRoomManager.open({ typeName: type + name, rid: room._id });
 
 				c.stop();
 
@@ -64,8 +64,8 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 					);
 				}
 
-				if (RoomManager.currentTracker) {
-					RoomManager.currentTracker = undefined;
+				if (LegacyRoomManager.currentTracker) {
+					LegacyRoomManager.currentTracker = undefined;
 				}
 
 				fireGlobalEvent('room-opened', omit(room, 'usernames'));

@@ -12,7 +12,7 @@ import { mainReady } from './mainReady';
 import { callbacks } from '../../../../lib/callbacks';
 import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom } from '../../../models/client';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
-import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
+import { RoomManager } from '../../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { Notifications } from '../../../notifications/client';
 
@@ -95,7 +95,7 @@ function close(typeName: string) {
 		delete openedRooms[typeName];
 
 		if (rid) {
-			NewRoomManager.close(rid);
+			RoomManager.close(rid);
 			return RoomHistoryManager.clear(rid);
 		}
 	}
@@ -260,7 +260,7 @@ let openedRoom: string | undefined = undefined;
 
 let currentTracker: Tracker.Computation | undefined = undefined;
 
-export const RoomManager = {
+export const LegacyRoomManager = {
 	get openedRoom() {
 		return openedRoom;
 	},

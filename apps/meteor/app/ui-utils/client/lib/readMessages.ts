@@ -5,7 +5,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import $ from 'jquery';
 
 import { RoomHistoryManager } from './RoomHistoryManager';
-import { RoomManager } from './RoomManager';
+import { LegacyRoomManager } from './LegacyRoomManager';
 import { ChatSubscription, ChatMessage } from '../../../models/client';
 import { APIClient } from '../../../utils/client';
 
@@ -52,7 +52,7 @@ class ReadMessage extends Emitter {
 			return;
 		}
 
-		const room = RoomManager.getOpenedRoomByRid(rid);
+		const room = LegacyRoomManager.getOpenedRoomByRid(rid);
 		if (room == null) {
 			this.log('readMessage -> readNow canceled, no room found for typeName:', subscription.t + subscription.name);
 			return;
@@ -104,7 +104,7 @@ class ReadMessage extends Emitter {
 			return;
 		}
 
-		const room = RoomManager.openedRooms[subscription.t + subscription.name];
+		const room = LegacyRoomManager.openedRooms[subscription.t + subscription.name];
 		if (!room) {
 			return;
 		}

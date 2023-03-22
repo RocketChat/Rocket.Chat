@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import type { Dispatch, SetStateAction } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
-import { RoomManager, RoomHistoryManager } from '../../../../../app/ui-utils/client';
+import { LegacyRoomManager, RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 
 interface IUnreadMessages {
@@ -18,7 +18,7 @@ export const useUnreadMessages = (
 
 	const count = useMemo(() => notLoadedCount + loadedCount, [notLoadedCount, loadedCount]);
 
-	const since = useReactiveValue(useCallback(() => RoomManager.getOpenedRoomByRid(room._id)?.unreadSince.get(), [room._id]));
+	const since = useReactiveValue(useCallback(() => LegacyRoomManager.getOpenedRoomByRid(room._id)?.unreadSince.get(), [room._id]));
 
 	return useMemo(() => {
 		if (count && since) {
