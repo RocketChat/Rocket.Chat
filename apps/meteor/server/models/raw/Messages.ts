@@ -178,7 +178,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		];
 	}
 
-	findVisibleByMentionAndRoomId(username: IUser['username'], rid: IRoom['_id'], options: FindOptions<IMessage>): FindCursor<IMessage> {
+	findVisibleByMentionAndRoomId(username: IUser['username'], rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
 		const query: Filter<IMessage> = {
 			'_hidden': { $ne: true },
 			'mentions.username': username,
@@ -191,7 +191,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	findPaginatedVisibleByMentionAndRoomId(
 		username: IUser['username'],
 		rid: IRoom['_id'],
-		options: FindOptions<IMessage>,
+		options?: FindOptions<IMessage>,
 	): FindPaginated<FindCursor<IMessage>> {
 		const query: Filter<IMessage> = {
 			'_hidden': { $ne: true },
@@ -202,7 +202,11 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findPaginated(query, options);
 	}
 
-	findStarredByUserAtRoom(userId: IUser['_id'], roomId: IRoom['_id'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
+	findStarredByUserAtRoom(
+		userId: IUser['_id'],
+		roomId: IRoom['_id'],
+		options?: FindOptions<IMessage>,
+	): FindPaginated<FindCursor<IMessage>> {
 		const query: Filter<IMessage> = {
 			'_hidden': { $ne: true },
 			'starred._id': userId,
@@ -226,13 +230,13 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	// TODO: do we need this? currently not used anywhere
-	findDiscussionsByRoom(rid: IRoom['_id'], options: FindOptions<IMessage>): FindCursor<IMessage> {
+	findDiscussionsByRoom(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
 		const query: Filter<IMessage> = { rid, drid: { $exists: true } };
 
 		return this.find(query, options);
 	}
 
-	findDiscussionsByRoomAndText(rid: IRoom['_id'], text: string, options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
+	findDiscussionsByRoomAndText(rid: IRoom['_id'], text: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
 		const query: Filter<IMessage> = {
 			rid,
 			drid: { $exists: true },
@@ -556,7 +560,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return queryResult?.total || 0;
 	}
 
-	findPinned(options: FindOptions<IMessage>): FindCursor<IMessage> {
+	findPinned(options?: FindOptions<IMessage>): FindCursor<IMessage> {
 		const query: Filter<IMessage> = {
 			t: { $ne: 'rm' as MessageTypesValues },
 			_hidden: { $ne: true },
@@ -566,7 +570,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findPaginatedPinnedByRoom(roomId: IMessage['rid'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
+	findPaginatedPinnedByRoom(roomId: IMessage['rid'], options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
 		const query: Filter<IMessage> = {
 			t: { $ne: 'rm' },
 			_hidden: { $ne: true },
@@ -577,7 +581,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findPaginated(query, options);
 	}
 
-	findStarred(options: FindOptions<IMessage>): FindCursor<IMessage> {
+	findStarred(options?: FindOptions<IMessage>): FindCursor<IMessage> {
 		const query: Filter<IMessage> = {
 			'_hidden': { $ne: true },
 			'starred._id': { $exists: true },
@@ -1784,7 +1788,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			ts,
 			users = [],
 		}: { rid: string; pinned: boolean; ignoreDiscussion?: boolean; ts: Date; users: string[] },
-		options: FindOptions<IMessage>,
+		options?: FindOptions<IMessage>,
 	): FindCursor<IMessage> {
 		const query: Filter<IMessage> = {
 			rid,
