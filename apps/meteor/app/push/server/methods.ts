@@ -2,11 +2,28 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from '@rocket.chat/random';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { Mongo } from 'meteor/mongo';
 
 import { _matchToken, appTokensCollection } from './push';
 import { logger } from './logger';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'raix:push-update'(options: {
+			id?: string;
+			token: string;
+			authToken: string;
+			appName: string;
+			userId?: string;
+			metadata?: Record<string, unknown>;
+		}): void;
+		'raix:push-setuser'(options: { id: string; userId: string }): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	'raix:push-update'(options) {
 		logger.debug('Got push token from app:', options);
 
@@ -59,16 +76,17 @@ Meteor.methods({
 				enabled: true,
 				createdAt: new Date(),
 				updatedAt: new Date(),
+
+				// XXX: We might want to check the id - Why isnt there a match for id
+				// in the Meteor check... Normal length 17 (could be larger), and
+				// numbers+letters are used in Random.id() with exception of 0 and 1
+				_id: options.id || Random.id(),
+				// The user wanted us to use a specific id, we didn't find this while
+				// searching. The client could depend on the id eg. as reference so
+				// we respect this and try to create a document with the selected id;
 			};
 
-			// XXX: We might want to check the id - Why isnt there a match for id
-			// in the Meteor check... Normal length 17 (could be larger), and
-			// numbers+letters are used in Random.id() with exception of 0 and 1
-			doc._id = options.id || Random.id();
-			// The user wanted us to use a specific id, we didn't find this while
-			// searching. The client could depend on the id eg. as reference so
-			// we respect this and try to create a document with the selected id;
-			appTokensCollection._collection.insert(doc);
+			(appTokensCollection as Mongo.Collection<any> & { _collection: Mongo.Collection<any> })._collection.insert(doc);
 		} else {
 			// We found the app so update the updatedAt and set the token
 			appTokensCollection.update(

@@ -1,11 +1,13 @@
 import { Meteor } from 'meteor/meteor';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
 import { callbacks } from '../../../../lib/callbacks';
 import { emoji } from '../../../emoji/client';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 
-Meteor.methods({
+Meteor.methods<ServerMethods>({
 	setReaction(reaction, messageId) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error(203, 'User_logged_out');
@@ -13,8 +15,19 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		const message = Messages.findOne({ _id: messageId });
-		const room = Rooms.findOne({ _id: message.rid });
+		if (!user?.username) {
+			return false;
+		}
+
+		const message: IMessage | undefined = Messages.findOne({ _id: messageId });
+		if (!message) {
+			return false;
+		}
+
+		const room: IRoom | undefined = Rooms.findOne({ _id: message.rid });
+		if (!room) {
+			return false;
+		}
 
 		if (message.private) {
 			return false;
@@ -32,7 +45,7 @@ Meteor.methods({
 			return false;
 		}
 
-		if (message.reactions && message.reactions[reaction] && message.reactions[reaction].usernames.indexOf(user.username) !== -1) {
+		if (message.reactions?.[reaction] && message.reactions[reaction].usernames.indexOf(user.username) !== -1) {
 			message.reactions[reaction].usernames.splice(message.reactions[reaction].usernames.indexOf(user.username), 1);
 
 			if (message.reactions[reaction].usernames.length === 0) {

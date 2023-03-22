@@ -1,13 +1,36 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { ISubscription } from '@rocket.chat/core-typings';
 
 import { Subscriptions } from '../../../models/server';
 import { getUserNotificationPreference } from '../../../utils/server';
 
-const saveAudioNotificationValue = (subId, value) =>
+const saveAudioNotificationValue = (subId: ISubscription['_id'], value: unknown) =>
 	value === 'default' ? Subscriptions.clearAudioNotificationValueById(subId) : Subscriptions.updateAudioNotificationValueById(subId, value);
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		saveNotificationSettings(
+			roomId: string,
+			field:
+				| 'desktopNotifications'
+				| 'mobilePushNotifications'
+				| 'emailNotifications'
+				| 'unreadAlert'
+				| 'disableNotifications'
+				| 'hideUnreadStatus'
+				| 'hideMentionStatus'
+				| 'muteGroupMentions'
+				| 'audioNotificationValue',
+			value: string,
+		): boolean;
+		saveAudioNotificationValue(subId: string, value: string): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	saveNotificationSettings(roomId, field, value) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -18,17 +41,17 @@ Meteor.methods({
 		check(field, String);
 		check(value, String);
 
-		const getNotificationPrefValue = (field, value) => {
+		const getNotificationPrefValue = (field: string, value: unknown) => {
 			if (value === 'default') {
 				const userPref = getUserNotificationPreference(Meteor.userId(), field);
-				return userPref.origin === 'server' ? null : userPref;
+				return userPref?.origin === 'server' ? null : userPref;
 			}
 			return { value, origin: 'subscription' };
 		};
 
 		const notifications = {
 			desktopNotifications: {
-				updateMethod: (subscription, value) =>
+				updateMethod: (subscription: ISubscription, value: unknown) =>
 					Subscriptions.updateNotificationsPrefById(
 						subscription._id,
 						getNotificationPrefValue('desktop', value),
@@ -37,7 +60,7 @@ Meteor.methods({
 					),
 			},
 			mobilePushNotifications: {
-				updateMethod: (subscription, value) =>
+				updateMethod: (subscription: ISubscription, value: unknown) =>
 					Subscriptions.updateNotificationsPrefById(
 						subscription._id,
 						getNotificationPrefValue('mobile', value),
@@ -46,7 +69,7 @@ Meteor.methods({
 					),
 			},
 			emailNotifications: {
-				updateMethod: (subscription, value) =>
+				updateMethod: (subscription: ISubscription, value: unknown) =>
 					Subscriptions.updateNotificationsPrefById(
 						subscription._id,
 						getNotificationPrefValue('email', value),
@@ -55,22 +78,26 @@ Meteor.methods({
 					),
 			},
 			unreadAlert: {
-				updateMethod: (subscription, value) => Subscriptions.updateUnreadAlertById(subscription._id, value),
+				updateMethod: (subscription: ISubscription, value: unknown) => Subscriptions.updateUnreadAlertById(subscription._id, value),
 			},
 			disableNotifications: {
-				updateMethod: (subscription, value) => Subscriptions.updateDisableNotificationsById(subscription._id, value === '1'),
+				updateMethod: (subscription: ISubscription, value: unknown) =>
+					Subscriptions.updateDisableNotificationsById(subscription._id, value === '1'),
 			},
 			hideUnreadStatus: {
-				updateMethod: (subscription, value) => Subscriptions.updateHideUnreadStatusById(subscription._id, value === '1'),
+				updateMethod: (subscription: ISubscription, value: unknown) =>
+					Subscriptions.updateHideUnreadStatusById(subscription._id, value === '1'),
 			},
 			hideMentionStatus: {
-				updateMethod: (subscription, value) => Subscriptions.updateHideMentionStatusById(subscription._id, value === '1'),
+				updateMethod: (subscription: ISubscription, value: unknown) =>
+					Subscriptions.updateHideMentionStatusById(subscription._id, value === '1'),
 			},
 			muteGroupMentions: {
-				updateMethod: (subscription, value) => Subscriptions.updateMuteGroupMentions(subscription._id, value === '1'),
+				updateMethod: (subscription: ISubscription, value: unknown) =>
+					Subscriptions.updateMuteGroupMentions(subscription._id, value === '1'),
 			},
 			audioNotificationValue: {
-				updateMethod: (subscription, value) => saveAudioNotificationValue(subscription._id, value),
+				updateMethod: (subscription: ISubscription, value: unknown) => saveAudioNotificationValue(subscription._id, value),
 			},
 		};
 		const isInvalidNotification = !Object.keys(notifications).includes(field);

@@ -2,12 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import limax from 'limax';
 import sharp from 'sharp';
 import { api, Media } from '@rocket.chat/core-services';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RocketChatFile } from '../../../file/server';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
 
-const getFile = async (file, extension) => {
+const getFile = async (file: Buffer, extension: string) => {
 	if (extension !== 'svg+xml') {
 		return file;
 	}
@@ -15,11 +16,26 @@ const getFile = async (file, extension) => {
 	return sharp(file).png().toBuffer();
 };
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		uploadEmojiCustom(
+			binaryContent: string,
+			contentType: string,
+			emojiData: {
+				name: string;
+				aliases?: string;
+				extension: string;
+			},
+		): void;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async uploadEmojiCustom(binaryContent, contentType, emojiData) {
 		// technically, since this method doesnt have any datatype validations, users can
 		// upload videos as emojis. The FE won't play them, but they will waste space for sure.
-		if (!(await hasPermissionAsync(this.userId, 'manage-emoji'))) {
+		if (!this.userId || !(await hasPermissionAsync(this.userId, 'manage-emoji'))) {
 			throw new Meteor.Error('not_authorized');
 		}
 

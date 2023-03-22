@@ -1,9 +1,13 @@
 import { Meteor } from 'meteor/meteor';
+import type { Mongo } from 'meteor/mongo';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Users, Rooms } from '../../models/server';
 import { settings } from '../../settings/server';
 import { hasRole } from '../../authorization/server';
-import { isObject } from '../../../lib/utils/isObject';
+
 import './settings';
 
 /**
@@ -12,15 +16,26 @@ import './settings';
  * "public" properties use getters to fetch and filter collections as array
  */
 class BotHelpers {
+	private queries: {
+		online: Mongo.Query<IUser>;
+		users: Mongo.Query<IUser>;
+	};
+
+	private userFields: Record<string, 1>;
+
+	private _allUsers: Mongo.Cursor<IUser>;
+
+	private _onlineUsers: Mongo.Cursor<IUser>;
+
 	constructor() {
 		this.queries = {
-			online: { status: { $ne: 'offline' } },
+			online: { status: { $ne: UserStatus.OFFLINE } },
 			users: { roles: { $not: { $all: ['bot'] } } },
 		};
 	}
 
 	// setup collection cursors with array of fields from setting
-	setupCursors(fieldsSetting) {
+	setupCursors(fieldsSetting: string | string[]) {
 		this.userFields = {};
 		if (typeof fieldsSetting === 'string') {
 			fieldsSetting = fieldsSetting.split(',');
@@ -33,47 +48,51 @@ class BotHelpers {
 	}
 
 	// request methods or props as arguments to Meteor.call
-	request(prop, ...params) {
-		if (typeof this[prop] === 'undefined') {
+	request(prop: keyof this, ...params: unknown[]) {
+		const p = this[prop];
+
+		if (typeof p === 'undefined') {
 			return null;
 		}
-		if (typeof this[prop] === 'function') {
-			return this[prop](...params);
+		if (typeof p === 'function') {
+			return p(...params);
 		}
-		return this[prop];
+
+		return p;
 	}
 
-	addUserToRole(userName, roleId) {
+	addUserToRole(userName: string, roleId: string) {
 		Meteor.call('authorization:addUserToRole', roleId, userName);
 	}
 
-	removeUserFromRole(userName, roleId) {
+	removeUserFromRole(userName: string, roleId: string) {
 		Meteor.call('authorization:removeUserFromRole', roleId, userName);
 	}
 
-	addUserToRoom(userName, room) {
-		const foundRoom = Rooms.findOneByIdOrName(room);
+	addUserToRoom(userName: string, room: string) {
+		const foundRoom: IRoom = Rooms.findOneByIdOrName(room);
 
-		if (!isObject(foundRoom)) {
+		if (!foundRoom) {
 			throw new Meteor.Error('invalid-channel');
 		}
 
-		const data = {};
-		data.rid = foundRoom._id;
-		data.username = userName;
-		Meteor.call('addUserToRoom', data);
+		Meteor.call('addUserToRoom', {
+			rid: foundRoom._id,
+			username: userName,
+		});
 	}
 
-	removeUserFromRoom(userName, room) {
-		const foundRoom = Rooms.findOneByIdOrName(room);
+	removeUserFromRoom(userName: string, room: string) {
+		const foundRoom: IRoom = Rooms.findOneByIdOrName(room);
 
-		if (!isObject(foundRoom)) {
+		if (!foundRoom) {
 			throw new Meteor.Error('invalid-channel');
 		}
-		const data = {};
-		data.rid = foundRoom._id;
-		data.username = userName;
-		Meteor.call('removeUserFromRoom', data);
+
+		Meteor.call('removeUserFromRoom', {
+			rid: foundRoom._id,
+			username: userName,
+		});
 	}
 
 	// generic error whenever property access insufficient to fill request
@@ -155,11 +174,18 @@ class BotHelpers {
 const botHelpers = new BotHelpers();
 
 // init cursors with fields setting and update on setting change
-settings.watch('BotHelpers_userFields', function (settingValue) {
-	botHelpers.setupCursors(settingValue);
+settings.watch<string>('BotHelpers_userFields', (value) => {
+	botHelpers.setupCursors(value);
 });
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		botRequest: (prop: keyof BotHelpers, ...params: unknown[]) => unknown;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	botRequest: (...args) => {
 		const userID = Meteor.userId();
 		if (userID && hasRole(userID, 'bot')) {

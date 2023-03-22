@@ -1,10 +1,21 @@
 import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		sendSMTPTestEmail(): {
+			message: string;
+			params: string[];
+		};
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	sendSMTPTestEmail() {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -12,7 +23,7 @@ Meteor.methods({
 			});
 		}
 		const user = Meteor.user();
-		if (!user.emails && !user.emails[0] && user.emails[0].address) {
+		if (!user?.emails?.[0]?.address) {
 			throw new Meteor.Error('error-invalid-email', 'Invalid email', {
 				method: 'sendSMTPTestEmail',
 			});

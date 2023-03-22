@@ -3,14 +3,30 @@ import _ from 'underscore';
 import limax from 'limax';
 import { EmojiCustom } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
 import { trim } from '../../../../lib/utils/stringUtils';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		insertOrUpdateEmoji(emojiData: {
+			_id?: string;
+			name: string;
+			aliases: string;
+			extension: string;
+			previousName?: string;
+			previousExtension?: string;
+			newFile?: boolean;
+		}): string | boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async insertOrUpdateEmoji(emojiData) {
-		if (!(await hasPermissionAsync(this.userId, 'manage-emoji'))) {
+		if (!this.userId || !(await hasPermissionAsync(this.userId, 'manage-emoji'))) {
 			throw new Meteor.Error('not_authorized');
 		}
 
@@ -41,6 +57,7 @@ Meteor.methods({
 			});
 		}
 
+		let aliases: string[] = [];
 		if (emojiData.aliases) {
 			if (aliasValidation.test(emojiData.aliases)) {
 				throw new Meteor.Error('error-input-is-not-a-valid-field', `${emojiData.aliases} is not a valid alias set`, {
@@ -49,11 +66,7 @@ Meteor.methods({
 					field: 'Alias_Set',
 				});
 			}
-			emojiData.aliases = emojiData.aliases.split(/[\s,]/);
-			emojiData.aliases = emojiData.aliases.filter(Boolean);
-			emojiData.aliases = _.without(emojiData.aliases, emojiData.name);
-		} else {
-			emojiData.aliases = [];
+			aliases = _.without(emojiData.aliases.split(/[\s,]/).filter(Boolean), emojiData.name);
 		}
 
 		emojiData.extension = emojiData.extension === 'svg+xml' ? 'png' : emojiData.extension;
@@ -62,12 +75,12 @@ Meteor.methods({
 
 		if (emojiData._id) {
 			matchingResults = await EmojiCustom.findByNameOrAliasExceptID(emojiData.name, emojiData._id).toArray();
-			for await (const alias of emojiData.aliases) {
+			for await (const alias of aliases) {
 				matchingResults = matchingResults.concat(await EmojiCustom.findByNameOrAliasExceptID(alias, emojiData._id).toArray());
 			}
 		} else {
 			matchingResults = await EmojiCustom.findByNameOrAlias(emojiData.name).toArray();
-			for await (const alias of emojiData.aliases) {
+			for await (const alias of aliases) {
 				matchingResults = matchingResults.concat(await EmojiCustom.findByNameOrAlias(alias).toArray());
 			}
 		}
@@ -90,7 +103,7 @@ Meteor.methods({
 			// insert emoji
 			const createEmoji = {
 				name: emojiData.name,
-				aliases: emojiData.aliases,
+				aliases,
 				extension: emojiData.extension,
 			};
 
@@ -133,7 +146,7 @@ Meteor.methods({
 		}
 
 		if (emojiData.aliases) {
-			await EmojiCustom.setAliases(emojiData._id, emojiData.aliases);
+			await EmojiCustom.setAliases(emojiData._id, aliases);
 		} else {
 			await EmojiCustom.setAliases(emojiData._id, []);
 		}
