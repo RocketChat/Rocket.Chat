@@ -89,7 +89,7 @@ API.v1.addRoute(
 				throw new Error('invalid-callId');
 			}
 
-			Livechat.updateCallStatus(callId, rid, status, this.user);
+			await Livechat.updateCallStatus(callId, rid, status, this.user);
 
 			return API.v1.success({ status });
 		},

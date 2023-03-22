@@ -1295,7 +1295,7 @@ export const Livechat = {
 		};
 		await LivechatVisitors.updateById(contactId, updateUser);
 	},
-	updateCallStatus(callId, rid, status, user) {
+	async updateCallStatus(callId, rid, status, user) {
 		Rooms.setCallStatus(rid, status);
 		if (status === 'ended' || status === 'declined') {
 			if (Promise.await(VideoConf.declineLivechatCall(callId))) {
