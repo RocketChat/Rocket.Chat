@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { LivechatRooms } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
@@ -39,7 +39,7 @@ Meteor.methods<ServerMethods>({
 		);
 		const userId = Meteor.userId();
 
-		if (!userId || !hasPermission(userId, 'view-l-room')) {
+		if (!userId || !(await hasPermissionAsync(userId, 'view-l-room'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveInfo' });
 		}
 
@@ -71,7 +71,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:saveInfo' });
 		}
 
-		if ((!room.servedBy || room.servedBy._id !== userId) && !hasPermission(userId, 'save-others-livechat-room-info')) {
+		if ((!room.servedBy || room.servedBy._id !== userId) && !(await hasPermissionAsync(userId, 'save-others-livechat-room-info'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveInfo' });
 		}
 

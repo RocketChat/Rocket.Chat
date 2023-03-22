@@ -5,10 +5,10 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { settings } from '../../app/settings/server';
 import { setUserAvatar } from '../../app/lib/server';
 import { Users } from '../../app/models/server';
-import { hasPermission } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 
 Meteor.methods({
-	setAvatarFromService(dataURI, contentType, service, userId) {
+	async setAvatarFromService(dataURI, contentType, service, userId) {
 		check(dataURI, String);
 		check(contentType, Match.Optional(String));
 		check(service, Match.Optional(String));
@@ -29,7 +29,7 @@ Meteor.methods({
 		let user;
 
 		if (userId && userId !== Meteor.userId()) {
-			if (!hasPermission(Meteor.userId(), 'edit-other-user-avatar')) {
+			if (!(await hasPermissionAsync(Meteor.userId(), 'edit-other-user-avatar'))) {
 				throw new Meteor.Error('error-unauthorized', 'Unauthorized', {
 					method: 'setAvatarFromService',
 				});

@@ -19,8 +19,6 @@ import { isObject } from '../../../lib/utils/isObject';
 import { getUserInfo } from './helpers/getUserInfo';
 import { parseJsonQuery } from './helpers/parseJsonQuery';
 
-('./helpers/parseJsonQuery');
-
 const logger = new Logger('API');
 
 const rateLimiterDictionary = {};
