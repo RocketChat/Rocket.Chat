@@ -102,9 +102,9 @@ export interface IRoomTypeServerDirectives {
 	allowMemberAction: (room: IRoom, action: ValueOf<typeof RoomMemberActions>, userId?: IUser['_id']) => boolean;
 	roomName: (room: IRoom, userId?: string) => string | undefined;
 	isGroupChat: (room: IRoom) => boolean;
-	canBeDeleted: (hasPermission: (permissionId: string, rid?: string) => boolean, room: IRoom) => boolean;
+	canBeDeleted: (hasPermission: (permissionId: string, rid?: string) => Promise<boolean> | boolean, room: IRoom) => Promise<boolean>;
 	preventRenaming: () => boolean;
-	getDiscussionType: (room?: AtLeast<IRoom, 'teamId'>) => RoomType;
+	getDiscussionType: (room?: AtLeast<IRoom, 'teamId'>) => Promise<RoomType>;
 	canAccessUploadedFile: (params: { rc_uid: string; rc_rid: string; rc_token: string }) => boolean;
 	getNotificationDetails: (
 		room: IRoom,

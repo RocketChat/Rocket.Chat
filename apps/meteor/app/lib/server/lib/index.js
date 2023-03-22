@@ -13,5 +13,4 @@ export { hostname } from '../startup/settingsOnLoadSiteUrl';
 export { passwordPolicy } from './passwordPolicy';
 export { validateEmailDomain } from './validateEmailDomain';
 export { RateLimiterClass as RateLimiter } from './RateLimiter';
-export { processDirectEmail } from './processDirectEmail';
 export { msgStream } from './msgStream';
