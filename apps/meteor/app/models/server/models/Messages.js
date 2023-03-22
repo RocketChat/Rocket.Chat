@@ -628,19 +628,6 @@ export class Messages extends Base {
 		);
 	}
 
-	setAsReadById(_id) {
-		return this.update(
-			{
-				_id,
-			},
-			{
-				$unset: {
-					unread: 1,
-				},
-			},
-		);
-	}
-
 	findAllImportedMessagesWithFilesToDownload() {
 		const query = {
 			'_importFile.downloadUrl': {

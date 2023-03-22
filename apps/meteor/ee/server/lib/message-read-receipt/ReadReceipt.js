@@ -52,7 +52,7 @@ export const ReadReceipt = {
 		updateMessages(room);
 	},
 
-	markMessageAsReadBySender(message, { _id: roomId, t }, userId) {
+	async markMessageAsReadBySender(message, { _id: roomId, t }, userId) {
 		if (!settings.get('Message_Read_Receipt_Enabled')) {
 			return;
 		}
@@ -64,7 +64,7 @@ export const ReadReceipt = {
 		// mark message as read if the sender is the only one in the room
 		const isUserAlone = Subscriptions.findByRoomIdAndNotUserId(roomId, userId, { fields: { _id: 1 } }).count() === 0;
 		if (isUserAlone) {
-			Messages.setAsReadById(message._id);
+			await MessagesRaw.setAsReadById(message._id);
 		}
 
 		const extraData = roomCoordinator.getRoomDirectives(t)?.getReadReceiptsExtraData(message);
