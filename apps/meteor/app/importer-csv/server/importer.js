@@ -73,7 +73,7 @@ export class CsvImporter extends Base {
 
 					// Parse the channels
 					if (entry.entryName.toLowerCase() === 'channels.csv') {
-						super.updateProgress(ProgressStep.PREPARING_CHANNELS);
+						await super.updateProgress(ProgressStep.PREPARING_CHANNELS);
 						const parsedChannels = this.csvParser(entry.getData().toString());
 						channelsCount = parsedChannels.length;
 
@@ -99,24 +99,24 @@ export class CsvImporter extends Base {
 							});
 						}
 
-						super.updateRecord({ 'count.channels': channelsCount });
+						await super.updateRecord({ 'count.channels': channelsCount });
 						return increaseProgressCount();
 					}
 
 					// Parse the users
 					if (entry.entryName.toLowerCase() === 'users.csv') {
-						super.updateProgress(ProgressStep.PREPARING_USERS);
+						await super.updateProgress(ProgressStep.PREPARING_USERS);
 						const parsedUsers = this.csvParser(entry.getData().toString());
 						usersCount = parsedUsers.length;
 
-						for (const u of parsedUsers) {
+						for await (const u of parsedUsers) {
 							const username = u[0].trim();
 							availableUsernames.add(username);
 
 							const email = u[1].trim();
 							const name = u[2].trim();
 
-							this.converter.addUser({
+							await this.converter.addUser({
 								importIds: [username],
 								emails: [email],
 								username,
@@ -124,14 +124,14 @@ export class CsvImporter extends Base {
 							});
 						}
 
-						super.updateRecord({ 'count.users': usersCount });
+						await super.updateRecord({ 'count.users': usersCount });
 						return increaseProgressCount();
 					}
 
 					// Parse the messages
 					if (entry.entryName.indexOf('/') > -1) {
 						if (this.progress.step !== ProgressStep.PREPARING_MESSAGES) {
-							super.updateProgress(ProgressStep.PREPARING_MESSAGES);
+							await super.updateProgress(ProgressStep.PREPARING_MESSAGES);
 						}
 
 						const item = entry.entryName.split('/'); // random/messages.csv
@@ -166,7 +166,7 @@ export class CsvImporter extends Base {
 						messagesCount += data.length;
 						const channelName = `${folderName}/${msgGroupData}`;
 
-						super.updateRecord({ messagesstatus: channelName });
+						await super.updateRecord({ messagesstatus: channelName });
 
 						if (isDirect) {
 							for await (const msg of data) {
@@ -213,7 +213,7 @@ export class CsvImporter extends Base {
 							}
 						}
 
-						super.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
+						await super.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
 						return increaseProgressCount();
 					}
 				})(),
@@ -241,13 +241,13 @@ export class CsvImporter extends Base {
 			}
 		}
 
-		super.addCountToTotal(messagesCount + usersCount + channelsCount);
+		await super.addCountToTotal(messagesCount + usersCount + channelsCount);
 		ImporterWebsocket.progressUpdated({ rate: 100 });
 
 		// Ensure we have at least a single user, channel, or message
 		if (usersCount === 0 && channelsCount === 0 && messagesCount === 0) {
 			this.logger.error('No users, channels, or messages found in the import file.');
-			super.updateProgress(ProgressStep.ERROR);
+			await super.updateProgress(ProgressStep.ERROR);
 			return super.getProgress();
 		}
 	}

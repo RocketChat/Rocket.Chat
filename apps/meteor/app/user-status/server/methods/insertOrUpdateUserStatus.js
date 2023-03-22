@@ -2,12 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { CustomUserStatus } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { trim } from '../../../../lib/utils/stringUtils';
 
 Meteor.methods({
 	async insertOrUpdateUserStatus(userStatusData) {
-		if (!hasPermission(this.userId, 'manage-user-status')) {
+		if (!(await hasPermissionAsync(this.userId, 'manage-user-status'))) {
 			throw new Meteor.Error('not_authorized');
 		}
 

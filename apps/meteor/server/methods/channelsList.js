@@ -2,14 +2,14 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 
-import { hasPermission } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { Rooms, Subscriptions, Users } from '../../app/models/server';
 import { getUserPreference } from '../../app/utils/server';
 import { settings } from '../../app/settings/server';
 import { trim } from '../../lib/utils/stringUtils';
 
 Meteor.methods({
-	channelsList(filter, channelType, limit, sort) {
+	async channelsList(filter, channelType, limit, sort) {
 		check(filter, String);
 		check(channelType, String);
 		check(limit, Match.Optional(Number));
@@ -54,13 +54,13 @@ Meteor.methods({
 		const userId = Meteor.userId();
 
 		if (channelType !== 'private') {
-			if (hasPermission(userId, 'view-c-room')) {
+			if (await (userId, 'view-c-room')) {
 				if (filter) {
 					channels = channels.concat(Rooms.findByTypeAndNameContaining('c', filter, options).fetch());
 				} else {
 					channels = channels.concat(Rooms.findByType('c', options).fetch());
 				}
-			} else if (hasPermission(userId, 'view-joined-room')) {
+			} else if (await hasPermissionAsync(userId, 'view-joined-room')) {
 				const roomIds = Subscriptions.findByTypeAndUserId('c', userId, { fields: { rid: 1 } })
 					.fetch()
 					.map((s) => s.rid);
@@ -72,7 +72,7 @@ Meteor.methods({
 			}
 		}
 
-		if (channelType !== 'public' && hasPermission(userId, 'view-p-room')) {
+		if (channelType !== 'public' && (await hasPermissionAsync(userId, 'view-p-room'))) {
 			const user = Users.findOne(userId, {
 				fields: {
 					'username': 1,

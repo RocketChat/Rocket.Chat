@@ -6,7 +6,8 @@ import type { IEditedMessage, IUser } from '@rocket.chat/core-typings';
 
 import { Messages } from '../../../models/server';
 import { settings } from '../../../settings/server';
-import { hasPermission, canSendMessage } from '../../../authorization/server';
+import { canSendMessage } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { updateMessage } from '../functions';
 
 const allowedEditedFields = ['tshow', 'alias', 'attachments', 'avatar', 'emoji', 'msg'];
@@ -19,7 +20,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	updateMessage(message) {
+	async updateMessage(message) {
 		check(message, Match.ObjectIncluding({ _id: String }));
 
 		const uid = Meteor.userId();
@@ -56,7 +57,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-message-change-to-thread', 'Cannot update message to a thread', { method: 'updateMessage' });
 		}
 
-		const _hasPermission = hasPermission(uid, 'edit-message', message.rid);
+		const _hasPermission = await hasPermissionAsync(uid, 'edit-message', message.rid);
 		const editAllowed = settings.get('Message_AllowEditing');
 		const editOwn = originalMessage.u && originalMessage.u._id === uid;
 
@@ -68,7 +69,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
-		const bypassBlockTimeLimit = hasPermission(uid, 'bypass-time-limit-edit-and-delete');
+		const bypassBlockTimeLimit = await hasPermissionAsync(uid, 'bypass-time-limit-edit-and-delete');
 
 		if (!bypassBlockTimeLimit && Match.test(blockEditInMinutes, Number) && blockEditInMinutes !== 0) {
 			let currentTsDiff = 0;

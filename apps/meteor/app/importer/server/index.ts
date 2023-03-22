@@ -5,7 +5,6 @@ import { SelectionChannel } from './classes/ImporterSelectionChannel';
 import { SelectionUser } from './classes/ImporterSelectionUser';
 import { ProgressStep } from '../lib/ImporterProgressStep';
 import { Importers } from '../lib/Importers';
-import './models/RawImports';
 import './methods';
 import './startup/setImportsToInvalid';
 import './startup/store';
