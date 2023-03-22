@@ -706,13 +706,15 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateOne(query, update);
 	}
 
-	updateHideUnreadStatusById(_id: string, hideUnreadStatus: true): Promise<UpdateResult> {
+	updateHideUnreadStatusById(_id: string, hideUnreadStatus: boolean): Promise<UpdateResult> {
 		const query = {
 			_id,
 		};
 
 		const update: UpdateFilter<ISubscription> = {
 			$set: {
+				// @ts-expect-error - Check types of subscription
+				// If this is "true", update saveNotificationSettings method to reflect that when calling
 				hideUnreadStatus,
 			},
 		};
