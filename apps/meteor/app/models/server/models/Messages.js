@@ -729,10 +729,6 @@ export class Messages extends Base {
 		return msg && msg.replies;
 	}
 
-	getFirstReplyTsByThreadId(tmid) {
-		return this.findOne({ tmid }, { fields: { ts: 1 }, sort: { ts: 1 } });
-	}
-
 	findThreadsByRoomId(rid, skip, limit) {
 		return this.find({ rid, tcount: { $exists: true } }, { sort: { tlm: -1 }, skip, limit });
 	}

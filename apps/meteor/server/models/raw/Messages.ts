@@ -2040,10 +2040,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return msg?.replies;
 	}
 
-	getFirstReplyTsByThreadId(tmid: string): Promise<Pick<IMessage, 'ts'> | null> {
-		return this.findOne({ tmid }, { projection: { ts: 1 }, sort: { ts: 1 } });
-	}
-
 	addThreadFollowerByThreadId(tmid: string, userId: string): Promise<UpdateResult> {
 		const query = {
 			_id: tmid,
