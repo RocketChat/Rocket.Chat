@@ -592,12 +592,6 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	removeByUserId(userId) {
-		const query = { 'u._id': userId };
-
-		return this.remove(query);
-	}
-
 	setVisibleMessagesAsRead(rid, until) {
 		return this.update(
 			{
