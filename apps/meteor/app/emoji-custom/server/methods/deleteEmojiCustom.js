@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { EmojiCustom } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
-import { hasPermissionAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
 
 Meteor.methods({
