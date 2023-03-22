@@ -28,7 +28,7 @@ export const executeUploadImportFile = async (
 	const newFileName = `${dateStr}_${userId}_${fileName}`;
 
 	// Store the file name and content type on the imports collection
-	importer.instance.startFileUpload(newFileName, contentType);
+	await importer.instance.startFileUpload(newFileName, contentType);
 
 	// Save the file on the File Store
 	const file = Buffer.from(binaryContent, 'base64');

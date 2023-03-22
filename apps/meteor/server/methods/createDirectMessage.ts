@@ -40,30 +40,32 @@ export async function createDirectMessage(
 		});
 	}
 
-	const users = usernames
-		.filter((username) => username !== me.username)
-		.map((username) => {
-			let to = Users.findOneByUsernameIgnoringCase(username);
+	const users = await Promise.all(
+		usernames
+			.filter((username) => username !== me.username)
+			.map(async (username) => {
+				let to = Users.findOneByUsernameIgnoringCase(username);
 
-			// If the username does have an `@`, but does not exist locally, we create it first
-			if (!to && username.includes('@')) {
-				try {
-					to = Promise.await(addUser(username));
-				} catch {
-					// no-op
+				// If the username does have an `@`, but does not exist locally, we create it first
+				if (!to && username.includes('@')) {
+					try {
+						to = await addUser(username);
+					} catch {
+						// no-op
+					}
+					if (!to) {
+						return username;
+					}
 				}
+
 				if (!to) {
-					return username;
+					throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+						method: 'createDirectMessage',
+					});
 				}
-			}
-
-			if (!to) {
-				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-					method: 'createDirectMessage',
-				});
-			}
-			return to;
-		});
+				return to;
+			}),
+	);
 	const roomUsers = excludeSelf ? users : [me, ...users];
 
 	// allow self-DMs
