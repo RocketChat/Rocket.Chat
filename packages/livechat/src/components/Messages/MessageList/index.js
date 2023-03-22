@@ -41,7 +41,7 @@ export class MessageList extends MemoizedComponent {
 			scrollPosition = MessageList.SCROLL_AT_BOTTOM;
 		} else if (this.base.scrollTop === 0) {
 			scrollPosition = MessageList.SCROLL_AT_TOP;
-		} else if (scrollBottom <= MessageList.SCROLL_AT_BOTOM_AREA) {
+		} else if (scrollBottom <= MessageList.SCROLL_AT_BOTTOM_AREA) {
 			// TODO: Once we convert these classes to functional components we should use refs to check if the last message is within the viewport
 			// For now we are using a fixed value to check if the last message is within the bottom of the scroll area
 			scrollPosition = MessageList.SCROLL_AT_BOTTOM;
