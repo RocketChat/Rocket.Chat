@@ -21,7 +21,7 @@ export default class MentionsServer extends MentionsParser {
 	}
 
 	get getUsers() {
-		return typeof this._getUsers === 'function' ? this._getUsers : () => this._getUsers;
+		return typeof this._getUsers === 'function' ? this._getUsers : async () => this._getUsers;
 	}
 
 	set getChannels(m) {
@@ -48,7 +48,7 @@ export default class MentionsServer extends MentionsParser {
 		return typeof this._messageMaxAll === 'function' ? this._messageMaxAll() : this._messageMaxAll;
 	}
 
-	getUsersByMentions({ msg, rid, u: sender }) {
+	async getUsersByMentions({ msg, rid, u: sender }) {
 		let mentions = this.getUserMentions(msg);
 		const mentionsAll = [];
 		const userMentions = [];
@@ -66,7 +66,7 @@ export default class MentionsServer extends MentionsParser {
 				username: mention,
 			});
 		});
-		mentions = userMentions.length ? this.getUsers(userMentions) : [];
+		mentions = userMentions.length ? await this.getUsers(userMentions) : [];
 		return [...mentionsAll, ...mentions];
 	}
 
@@ -75,8 +75,8 @@ export default class MentionsServer extends MentionsParser {
 		return this.getChannels(channels.map((c) => c.trim().substr(1)));
 	}
 
-	execute(message) {
-		const mentionsAll = this.getUsersByMentions(message);
+	async execute(message) {
+		const mentionsAll = await this.getUsersByMentions(message);
 		const channels = this.getChannelbyMentions(message);
 
 		message.mentions = mentionsAll;

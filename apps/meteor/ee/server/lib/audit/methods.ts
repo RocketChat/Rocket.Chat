@@ -9,7 +9,7 @@ import type { Mongo } from 'meteor/mongo';
 
 import AuditLog from './AuditLog';
 import { LivechatRooms, Rooms, Messages, Users } from '../../../../app/models/server';
-import { hasPermission } from '../../../../app/authorization/server';
+import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
 import { updateCounter } from '../../../../app/statistics/server';
 import type { IAuditLog } from '../../../definition/IAuditLog';
 
@@ -77,12 +77,12 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	auditGetOmnichannelMessages({ startDate, endDate, users: usernames, msg, type, visitor, agent }) {
+	async auditGetOmnichannelMessages({ startDate, endDate, users: usernames, msg, type, visitor, agent }) {
 		check(startDate, Date);
 		check(endDate, Date);
 
 		const user = Meteor.user();
-		if (!user || !hasPermission(user._id, 'can-audit')) {
+		if (!user || !(await hasPermissionAsync(user._id, 'can-audit'))) {
 			throw new Meteor.Error('Not allowed');
 		}
 
@@ -117,12 +117,12 @@ Meteor.methods<ServerMethods>({
 
 		return messages;
 	},
-	auditGetMessages({ rid, startDate, endDate, users: usernames, msg, type, visitor, agent }) {
+	async auditGetMessages({ rid, startDate, endDate, users: usernames, msg, type, visitor, agent }) {
 		check(startDate, Date);
 		check(endDate, Date);
 
 		const user = Meteor.user();
-		if (!user || !hasPermission(user._id, 'can-audit')) {
+		if (!user || !(await hasPermissionAsync(user._id, 'can-audit'))) {
 			throw new Meteor.Error('Not allowed');
 		}
 
@@ -169,11 +169,11 @@ Meteor.methods<ServerMethods>({
 
 		return messages;
 	},
-	auditGetAuditions({ startDate, endDate }) {
+	async auditGetAuditions({ startDate, endDate }) {
 		check(startDate, Date);
 		check(endDate, Date);
 		const uid = Meteor.userId();
-		if (!uid || !hasPermission(uid, 'can-audit-log')) {
+		if (!uid || !(await hasPermissionAsync(uid, 'can-audit-log'))) {
 			throw new Meteor.Error('Not allowed');
 		}
 		return AuditLog.find({

@@ -4,7 +4,8 @@ import _ from 'underscore';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { canAccessRoomAsync, hasPermission } from '../../../authorization/server';
+import { canAccessRoomAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Subscriptions, Messages, Rooms } from '../../../models/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
@@ -50,7 +51,7 @@ Meteor.methods<ServerMethods>({
 		// Make sure they can access the room
 		if (
 			room.t === 'c' &&
-			!hasPermission(fromUserId, 'preview-c-room') &&
+			!(await hasPermissionAsync(fromUserId, 'preview-c-room')) &&
 			!Subscriptions.findOneByRoomIdAndUserId(rid, fromUserId, { fields: { _id: 1 } })
 		) {
 			return false;

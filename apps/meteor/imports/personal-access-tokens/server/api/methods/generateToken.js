@@ -2,18 +2,18 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 
-import { hasPermission } from '../../../../../app/authorization/server';
+import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import { Users } from '../../../../../app/models/server';
 import { twoFactorRequired } from '../../../../../app/2fa/server/twoFactorRequired';
 
 Meteor.methods({
-	'personalAccessTokens:generateToken': twoFactorRequired(function ({ tokenName, bypassTwoFactor }) {
+	'personalAccessTokens:generateToken': twoFactorRequired(async function ({ tokenName, bypassTwoFactor }) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', {
 				method: 'personalAccessTokens:generateToken',
 			});
 		}
-		if (!hasPermission(Meteor.userId(), 'create-personal-access-tokens')) {
+		if (!(await hasPermissionAsync(Meteor.userId(), 'create-personal-access-tokens'))) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', {
 				method: 'personalAccessTokens:generateToken',
 			});

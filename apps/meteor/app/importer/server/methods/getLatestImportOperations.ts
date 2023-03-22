@@ -3,10 +3,10 @@ import { Imports } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IImport } from '@rocket.chat/core-typings';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 export const executeGetLatestImportOperations = async () => {
-	const data = await Imports.find(
+	const data = Imports.find(
 		{},
 		{
 			sort: { _updatedAt: -1 },
@@ -25,14 +25,14 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	getLatestImportOperations() {
+	async getLatestImportOperations() {
 		const userId = Meteor.userId();
 
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', 'getLatestImportOperations');
 		}
 
-		if (!hasPermission(userId, 'view-import-operations')) {
+		if (!(await hasPermissionAsync(userId, 'view-import-operations'))) {
 			throw new Meteor.Error('not_authorized', 'User not authorized', 'getLatestImportOperations');
 		}
 

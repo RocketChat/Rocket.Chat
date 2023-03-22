@@ -5,7 +5,7 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Rooms, Users } from '@rocket.chat/models';
 import { Team } from '@rocket.chat/core-services';
 
-import { hasPermission } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { Subscriptions } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
@@ -45,7 +45,7 @@ const sortUsers = function (field, direction) {
 };
 
 async function getChannelsAndGroups(user, canViewAnon, searchTerm, sort, pagination) {
-	if ((!user && !canViewAnon) || (user && !hasPermission(user._id, 'view-c-room'))) {
+	if ((!user && !canViewAnon) || (user && !(await hasPermissionAsync(user._id, 'view-c-room')))) {
 		return;
 	}
 
@@ -204,11 +204,11 @@ async function findUsers({ text, sort, pagination, workspace, viewFullOtherUserI
 }
 
 const getUsers = async (user, text, workspace, sort, pagination) => {
-	if (!user || !hasPermission(user._id, 'view-outside-room') || !hasPermission(user._id, 'view-d-room')) {
+	if (!user || !(await hasPermissionAsync(user._id, 'view-outside-room')) || !(await hasPermissionAsync(user._id, 'view-d-room'))) {
 		return;
 	}
 
-	const viewFullOtherUserInfo = hasPermission(user._id, 'view-full-other-user-info');
+	const viewFullOtherUserInfo = await hasPermissionAsync(user._id, 'view-full-other-user-info');
 
 	const { total, results } = await findUsers({ text, sort, pagination, workspace, viewFullOtherUserInfo });
 
