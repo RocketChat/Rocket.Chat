@@ -68,6 +68,6 @@ async function afterCreateDirectRoom(room, extras) {
 
 export const definition = {
 	hook: 'afterCreateDirectRoom',
-	callback: (room, extras) => Promise.await(afterCreateDirectRoom(room, extras)),
+	callback: afterCreateDirectRoom,
 	id: 'federation-after-create-direct-room',
 };
