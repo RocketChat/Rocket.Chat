@@ -43,7 +43,7 @@ export const sendInvitationEmail = async (userId: string, emails: string[]) => {
 
 	for await (const email of validEmails) {
 		try {
-			const mailerResult = Mailer.send({
+			Mailer.send({
 				to: email,
 				from: settings.get('From_Email'),
 				subject,
@@ -54,7 +54,7 @@ export const sendInvitationEmail = async (userId: string, emails: string[]) => {
 			});
 
 			await Settings.incrementValueById('Invitation_Email_Count');
-			return mailerResult;
+			continue;
 		} catch ({ message }) {
 			throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
 				method: 'sendInvitationEmail',

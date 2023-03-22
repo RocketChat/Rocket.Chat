@@ -17,6 +17,7 @@ import type {
 	OEmbedUrlContent,
 	Username,
 	IOmnichannelRoom,
+	ILivechatTag,
 } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 
@@ -149,6 +150,7 @@ type ChainedCallbackSignatures = {
 		parsedUrl: ParsedUrl;
 		content: OEmbedUrlContent;
 	};
+	'livechat.beforeListTags': () => ILivechatTag[];
 };
 
 type Hook =
@@ -178,7 +180,6 @@ type Hook =
 	| 'enter-room'
 	| 'livechat.beforeForwardRoomToDepartment'
 	| 'livechat.beforeInquiry'
-	| 'livechat.beforeListTags'
 	| 'livechat.beforeRoom'
 	| 'livechat.beforeRouteChat'
 	| 'livechat.chatQueued'
