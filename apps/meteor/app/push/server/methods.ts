@@ -3,9 +3,10 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from '@rocket.chat/random';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { Mongo } from 'meteor/mongo';
+import { AppsTokens } from '@rocket.chat/models';
+import type { IAppsTokens } from '@rocket.chat/core-typings';
 
-import { _matchToken, appTokensCollection } from './push';
+import { _matchToken } from './push';
 import { logger } from './logger';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -18,13 +19,13 @@ declare module '@rocket.chat/ui-contexts' {
 			appName: string;
 			userId?: string;
 			metadata?: Record<string, unknown>;
-		}): void;
-		'raix:push-setuser'(options: { id: string; userId: string }): boolean;
+		}): Promise<Omit<IAppsTokens, '_updatedAt'>>;
+		'raix:push-setuser'(options: { id: string; userId: string }): Promise<boolean>;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	'raix:push-update'(options) {
+	async 'raix:push-update'(options) {
 		logger.debug('Got push token from app:', options);
 
 		check(options, {
@@ -48,15 +49,15 @@ Meteor.methods<ServerMethods>({
 
 		// lookup app by id if one was included
 		if (options.id) {
-			doc = appTokensCollection.findOne({ _id: options.id });
+			doc = await AppsTokens.findOne({ _id: options.id });
 		} else if (options.userId) {
-			doc = appTokensCollection.findOne({ userId: options.userId });
+			doc = await AppsTokens.findOne({ userId: options.userId });
 		}
 
 		// No doc was found - we check the database to see if
 		// we can find a match for the app via token and appName
 		if (!doc) {
-			doc = appTokensCollection.findOne({
+			doc = await AppsTokens.findOne({
 				$and: [
 					{ token: options.token }, // Match token
 					{ appName: options.appName }, // Match appName
@@ -76,6 +77,7 @@ Meteor.methods<ServerMethods>({
 				enabled: true,
 				createdAt: new Date(),
 				updatedAt: new Date(),
+				metadata: options.metadata || {},
 
 				// XXX: We might want to check the id - Why isnt there a match for id
 				// in the Meteor check... Normal length 17 (could be larger), and
@@ -86,10 +88,10 @@ Meteor.methods<ServerMethods>({
 				// we respect this and try to create a document with the selected id;
 			};
 
-			(appTokensCollection as Mongo.Collection<any> & { _collection: Mongo.Collection<any> })._collection.insert(doc);
+			await AppsTokens.insertOne(doc);
 		} else {
 			// We found the app so update the updatedAt and set the token
-			appTokensCollection.update(
+			await AppsTokens.updateOne(
 				{ _id: doc._id },
 				{
 					$set: {
@@ -102,14 +104,16 @@ Meteor.methods<ServerMethods>({
 		}
 
 		if (doc.token) {
-			const removed = appTokensCollection.remove({
-				$and: [
-					{ _id: { $ne: doc._id } },
-					{ token: doc.token }, // Match token
-					{ appName: doc.appName }, // Match appName
-					{ token: { $exists: true } }, // Make sure token exists
-				],
-			});
+			const removed = (
+				await AppsTokens.deleteMany({
+					$and: [
+						{ _id: { $ne: doc._id } },
+						{ token: doc.token }, // Match token
+						{ appName: doc.appName }, // Match appName
+						{ token: { $exists: true } }, // Make sure token exists
+					],
+				})
+			).deletedCount;
 
 			if (removed) {
 				logger.debug(`Removed ${removed} existing app items`);
@@ -122,11 +126,14 @@ Meteor.methods<ServerMethods>({
 		return doc;
 	},
 	// Deprecated
-	'raix:push-setuser'(id) {
+	async 'raix:push-setuser'(id) {
 		check(id, String);
+		if (!this.userId) {
+			throw new Meteor.Error(403, 'Forbidden access');
+		}
 
 		logger.debug(`Settings userId "${this.userId}" for app:`, id);
-		const found = appTokensCollection.update({ _id: id }, { $set: { userId: this.userId } });
+		const found = await AppsTokens.updateOne({ _id: id }, { $set: { userId: this.userId } });
 
 		return !!found;
 	},
