@@ -1,8 +1,8 @@
 import type { IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { useRoute, useStream } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode, ContextType, ReactElement } from 'react';
-import React, { useState, useMemo, memo, useEffect, useCallback } from 'react';
+import React, { useMemo, memo, useEffect, useCallback } from 'react';
 
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
 import { UserAction } from '../../../../app/ui/client';
@@ -30,19 +30,13 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 
 	const subscribeToRoom = useStream('room-data');
 
-	const [subscribedData, setSubscribedData] = useState<Pick<IOmnichannelRoom, 'open' | 'servedBy' | 'queuedAt'> | null>(null);
+	const queryClient = useQueryClient();
 
 	useEffect(() => {
-		setSubscribedData(null);
 		return subscribeToRoom(rid, (room: IRoom | IOmnichannelRoom) => {
-			if (!isOmnichannelRoom(room)) {
-				return;
-			}
-			const { open, servedBy, queuedAt } = room;
-
-			setSubscribedData({ open, servedBy, queuedAt });
+			queryClient.setQueryData(['rooms', rid], () => room);
 		});
-	}, [subscribeToRoom, rid]);
+	}, [subscribeToRoom, rid, queryClient]);
 
 	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
 	const homeRoute = useRoute('home');
@@ -62,11 +56,10 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 		return {
 			...subscriptionQuery.data,
 			...roomQuery.data,
-			...subscribedData,
 			name: roomCoordinator.getRoomName(roomQuery.data.t, roomQuery.data),
 			federationOriginalName: roomQuery.data.name,
 		};
-	}, [roomQuery.data, subscriptionQuery.data, subscribedData]);
+	}, [roomQuery.data, subscriptionQuery.data]);
 
 	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useReactiveValue(
 		useCallback(() => {
