@@ -4,7 +4,7 @@ import { Messages } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { ISubscription, IUser } from '@rocket.chat/core-typings';
 
-import { canAccessRoomId } from '../../app/authorization/server';
+import { canAccessRoomIdAsync } from '../../app/authorization/server/functions/canAccessRoom';
 import { Subscriptions } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
@@ -34,7 +34,7 @@ Meteor.methods<ServerMethods>({
 
 		// Don't process anything else if the user can't access the room
 		if (rid) {
-			if (!canAccessRoomId(rid, currentUserId)) {
+			if (!(await canAccessRoomIdAsync(rid, currentUserId))) {
 				return false;
 			}
 		} else if (settings.get('Search.defaultProvider.GlobalSearchEnabled') !== true) {

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import type { IMessage } from '@rocket.chat/core-typings';
-import { VideoConference, LivechatDepartmentAgents } from '@rocket.chat/models';
+import { Messages as MessagesRaw, VideoConference, LivechatDepartmentAgents } from '@rocket.chat/models';
 
 import { _setUsername } from './setUsername';
 import { _setRealName } from './setRealName';
@@ -34,7 +34,7 @@ export async function saveUserIdentity({ _id, name: rawName, username: rawUserna
 			return false;
 		}
 
-		if (!_setUsername(_id, username, user)) {
+		if (!(await _setUsername(_id, username, user))) {
 			return false;
 		}
 		user.username = username;
@@ -49,8 +49,8 @@ export async function saveUserIdentity({ _id, name: rawName, username: rawUserna
 	// if coming from old username, update all references
 	if (previousUsername) {
 		if (usernameChanged && typeof rawUsername !== 'undefined') {
-			Messages.updateAllUsernamesByUserId(user._id, username);
-			Messages.updateUsernameOfEditByUserId(user._id, username);
+			await MessagesRaw.updateAllUsernamesByUserId(user._id, username);
+			await MessagesRaw.updateUsernameOfEditByUserId(user._id, username);
 			Messages.findByMention(previousUsername).forEach(function (msg: IMessage) {
 				const updatedMsg = msg.msg.replace(new RegExp(`@${previousUsername}`, 'ig'), `@${username}`);
 				return Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg);

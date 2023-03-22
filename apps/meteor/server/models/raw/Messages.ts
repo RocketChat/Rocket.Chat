@@ -1186,7 +1186,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	getLastVisibleMessageSentWithNoTypeByRoomId(rid: string, messageId: string): Promise<IMessage | null> {
+	getLastVisibleMessageSentWithNoTypeByRoomId(rid: string, messageId?: string): Promise<IMessage | null> {
 		const query = {
 			rid,
 			_hidden: { $ne: true },
@@ -1369,18 +1369,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		}
 
 		return this.updateOne(query, update);
-	}
-
-	upgradeEtsToEditAt(): Promise<UpdateResult | Document> {
-		const query = { ets: { $exists: 1 } };
-
-		const update = {
-			$rename: {
-				ets: 'editedAt',
-			},
-		};
-
-		return this.updateMany(query, update);
 	}
 
 	setMessageAttachments(_id: string, attachments: IMessage['attachments']): Promise<UpdateResult> {
@@ -1813,7 +1801,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		rid: string,
 		pinned: boolean,
 		ignoreDiscussion = true,
-		ts: Date,
+		ts: Filter<IMessage>['ts'],
 		limit: number,
 		users: string[] = [],
 		ignoreThreads = true,
@@ -1993,25 +1981,11 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	 * to race conditions: If multiple updates occur, the current state will be updated
 	 * only if the new state of the discussion room is really newer.
 	 */
-	async refreshDiscussionMetadata({ rid }: { rid: string }): Promise<UpdateResult | Document | false> {
-		if (!rid) {
-			return false;
-		}
-		const room = await Rooms.findOneById(rid, {
-			projection: {
-				msgs: 1,
-				lm: 1,
-			},
-		});
-
-		if (!room) {
-			return false;
-		}
-
-		const { msgs: dcount, lm: dlm } = room;
+	async refreshDiscussionMetadata(room: Pick<IRoom, '_id' | 'msgs' | 'lm'>): Promise<UpdateResult | Document | false> {
+		const { _id: drid, msgs: dcount, lm: dlm } = room;
 
 		const query = {
-			drid: rid,
+			drid,
 		};
 
 		return this.updateMany(query, {
