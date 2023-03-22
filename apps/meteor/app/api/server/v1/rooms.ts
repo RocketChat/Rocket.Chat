@@ -387,7 +387,7 @@ API.v1.addRoute(
 				await findAdminRooms({
 					uid: this.userId,
 					filter: filter || '',
-					types: types || [],
+					types: types && !Array.isArray(types) ? [types] : undefined,
 					pagination: {
 						offset,
 						count,
