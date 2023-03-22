@@ -370,7 +370,7 @@ export const saveUser = async function (userId, userData) {
 	}
 
 	if (typeof userData.statusText === 'string') {
-		setStatusText(userData._id, userData.statusText);
+		await setStatusText(userData._id, userData.statusText);
 	}
 
 	if (userData.email) {
