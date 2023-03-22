@@ -52,7 +52,7 @@ API.v1.addRoute(
 
 			events.params.forEach((event) => {
 				const { eventName, ...params } = event;
-				telemetryEvent.call(eventName, params);
+				void telemetryEvent.call(eventName, params);
 			});
 
 			return API.v1.success();

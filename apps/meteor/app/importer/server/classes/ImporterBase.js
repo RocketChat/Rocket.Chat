@@ -2,7 +2,7 @@ import http from 'http';
 import fs from 'fs';
 import https from 'https';
 
-import { Settings } from '@rocket.chat/models';
+import { Settings, ImportData, Imports, RawImports } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import AdmZip from 'adm-zip';
 import getFileType from 'file-type';
@@ -11,8 +11,6 @@ import { Progress } from './ImporterProgress';
 import { ImporterWebsocket } from './ImporterWebsocket';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { ImporterInfo } from '../../lib/ImporterInfo';
-import { RawImports } from '../models/RawImports';
-import { Imports, ImportData } from '../../../models/server';
 import { Logger } from '../../../logger/server';
 import { ImportDataConverter } from './ImportDataConverter';
 import { t } from '../../../utils/server';
@@ -55,32 +53,34 @@ export class Base {
 
 		this.progress = new Progress(this.info.key, this.info.name);
 		this.collection = RawImports;
-
-		const userId = Meteor.userId();
-
-		if (importRecord) {
-			this.logger.debug('Found existing import operation');
-			this.importRecord = importRecord;
-			this.progress.step = this.importRecord.status;
-		} else {
-			this.logger.debug('Starting new import operation');
-			const importId = Imports.insert({
-				type: this.info.name,
-				importerKey: this.info.key,
-				ts: Date.now(),
-				status: this.progress.step,
-				valid: true,
-				user: userId,
-			});
-			this.importRecord = Imports.findOne(importId);
-		}
-
+		this.importRecordParam = importRecord;
 		this.users = {};
 		this.channels = {};
 		this.messages = {};
 		this.oldSettings = {};
+	}
 
-		this.logger.debug(`Constructed a new ${info.name} Importer.`);
+	async build() {
+		const userId = Meteor.userId();
+		if (this.importRecordParam) {
+			this.logger.debug('Found existing import operation');
+			this.importRecord = this.importRecordParam;
+			this.progress.step = this.importRecord.status;
+		} else {
+			this.logger.debug('Starting new import operation');
+			const importId = (
+				await Imports.insertOne({
+					type: this.info.name,
+					importerKey: this.info.key,
+					ts: Date.now(),
+					status: this.progress.step,
+					valid: true,
+					user: userId,
+				})
+			).insertedId;
+			this.importRecord = await Imports.findOne(importId);
+		}
+		this.logger.debug(`Constructed a new ${this.info.name} Importer.`);
 	}
 
 	/**
@@ -123,8 +123,8 @@ export class Base {
 	 * @param {boolean} skipTypeCheck Optional property that says to not check the type provided.
 	 * @returns {Progress} The progress record of the import.
 	 */
-	prepare(dataURI, sentContentType, fileName, skipTypeCheck) {
-		this.collection.remove({});
+	async prepare(dataURI, sentContentType, fileName, skipTypeCheck) {
+		await this.collection.deleteMany({});
 		if (!skipTypeCheck) {
 			const fileType = this.getFileType(Buffer.from(dataURI.split(',')[1], 'base64'));
 			this.logger.debug('Uploaded file information is:', fileType);
@@ -216,8 +216,8 @@ export class Base {
 
 				this.updateProgress(ProgressStep.FINISHING);
 
-				process.nextTick(() => {
-					this.converter.clearSuccessfullyImportedData();
+				process.nextTick(async () => {
+					await this.converter.clearSuccessfullyImportedData();
 				});
 
 				this.updateProgress(ProgressStep.DONE);
@@ -352,8 +352,8 @@ export class Base {
 	 * @param {int} the user id
 	 * @param {object} an exception object
 	 */
-	addUserError(userId, error) {
-		Imports.model.update(
+	async addUserError(userId, error) {
+		await Imports.updateOne(
 			{
 				'_id': this.importRecord._id,
 				'fileData.users.user_id': userId,
@@ -367,8 +367,8 @@ export class Base {
 		);
 	}
 
-	addMessageError(error, msg) {
-		Imports.model.update(
+	async addMessageError(error, msg) {
+		await Imports.updateOne(
 			{
 				_id: this.importRecord._id,
 			},
@@ -392,19 +392,19 @@ export class Base {
 	 * @param {any} fields The fields to set, it should be an object with key/values.
 	 * @returns {Imports} The import record.
 	 */
-	updateRecord(fields) {
-		Imports.update({ _id: this.importRecord._id }, { $set: fields });
-		this.importRecord = Imports.findOne(this.importRecord._id);
+	async updateRecord(fields) {
+		await Imports.update({ _id: this.importRecord._id }, { $set: fields });
+		this.importRecord = await Imports.findOne(this.importRecord._id);
 
 		return this.importRecord;
 	}
 
-	buildSelection() {
+	async buildSelection() {
 		this.updateProgress(ProgressStep.USER_SELECTION);
 
-		const users = ImportData.getAllUsersForSelection();
-		const channels = ImportData.getAllChannelsForSelection();
-		const hasDM = ImportData.checkIfDirectMessagesExists();
+		const users = await ImportData.getAllUsersForSelection();
+		const channels = await ImportData.getAllChannelsForSelection();
+		const hasDM = await ImportData.checkIfDirectMessagesExists();
 
 		const selectionUsers = users.map(
 			(u) =>
@@ -422,7 +422,7 @@ export class Base {
 					c.data.t === 'd',
 				),
 		);
-		const selectionMessages = ImportData.countMessages();
+		const selectionMessages = await ImportData.countMessages();
 
 		if (hasDM) {
 			selectionChannels.push(new SelectionChannel('__directMessages__', t('Direct_Messages'), false, true, true, undefined, true));

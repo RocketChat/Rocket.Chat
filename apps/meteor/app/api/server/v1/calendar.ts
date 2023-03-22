@@ -1,4 +1,4 @@
-import { isCalendarEventListProps, isCalendarEventCreateProps, isCalendarEventUpdateProps } from '@rocket.chat/rest-typings';
+import { isCalendarEventListProps, isCalendarEventCreateProps, isCalendarEventUpdateProps, isCalendarEventDeleteProps } from '@rocket.chat/rest-typings';
 import { Calendar } from '@rocket.chat/core-services';
 
 import { API } from '../api';
@@ -24,15 +24,14 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { userId: uid } = this;
-			const { startTime, externalId, subject } = this.bodyParams;
-
-			console.log('Calendar.create');
+			const { startTime, externalId, subject, description } = this.bodyParams;
 
 			await Calendar.create({
 				uid,
 				startTime: new Date(startTime),
 				externalId,
 				subject,
+				description,
 			});
 
 			return API.v1.success();
@@ -45,15 +44,41 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isCalendarEventUpdateProps },
 	{
 		async post() {
-			// const { userId: uid } = this;
-			// const { startTime, externalId, subject } = this.bodyParams;
+			const { userId } = this;
+			const { eventId, startTime, subject, description } = this.bodyParams;
 
-			// await Calendar.update({
-			// 	uid,
-			// 	startTime: new Date(startTime),
-			// 	externalId,
-			// 	subject,
-			// });
+			const event = await Calendar.get(eventId);
+
+			if (!event || event.uid !== userId) {
+				throw new Error('invalid-calendar-event');
+			}
+
+			await Calendar.update(eventId, {
+				startTime: new Date(startTime),
+				subject,
+				description,
+			});
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'calendar-events.delete',
+	{ authRequired: true, validateParams: isCalendarEventDeleteProps },
+	{
+		async post() {
+			const { userId } = this;
+			const { eventId } = this.bodyParams;
+
+			const event = await Calendar.get(eventId);
+
+			if (!event || event.uid !== userId) {
+				throw new Error('invalid-calendar-event');
+			}
+
+			await Calendar.delete(eventId);
 
 			return API.v1.success();
 		},

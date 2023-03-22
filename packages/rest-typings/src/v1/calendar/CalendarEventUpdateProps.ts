@@ -8,6 +8,7 @@ export type CalendarEventUpdateProps = {
 	eventId: ICalendarEvent['_id'];
 	startTime: string;
 	subject: string;
+	description: string;
 };
 
 const calendarEventUpdatePropsSchema: JSONSchemaType<CalendarEventUpdateProps> = {
@@ -24,9 +25,13 @@ const calendarEventUpdatePropsSchema: JSONSchemaType<CalendarEventUpdateProps> =
 		subject: {
 			type: 'string',
 			nullable: false,
+		},
+		description: {
+			type: 'string',
+			nullable: false,
 		}
 	},
-	required: ['eventId', 'startTime', 'subject'],
+	required: ['eventId', 'startTime', 'subject', 'description'],
 	additionalProperties: false,
 };
 

@@ -5,7 +5,7 @@ import { getOutlookEvents } from './getOutlookEvents';
 export const syncOutlookEvents = async (date: Date, server: string, user: string, password: string): Promise<void> => {
 	// Load all the event that are already on the calendar for today
 	const serverEvents = await APIClient.get('/v1/calendar-events.list', {
-		date: '2023-03-08',
+		date: date.toISOString().substring(0, 10),
 	});
 	const externalEvents = serverEvents.data.filter(({ externalId }) => externalId);
 
@@ -13,33 +13,40 @@ export const syncOutlookEvents = async (date: Date, server: string, user: string
 	const appointmentsFound = appointments.map((appointment) => appointment.Id.UniqueId);
 
 	for await (const appointment of appointments) {
-		const existingEvent = externalEvents.find(({ externalId }) => externalId === appointment.Id.UniqueId);
+		try {
+			const existingEvent = externalEvents.find(({ externalId }) => externalId === appointment.Id.UniqueId);
 
-		const externalId = appointment.Id.UniqueId;
-		const subject = appointment.Subject;
-		const startTime = appointment.Start.ToISOString();
+			const externalId = appointment.Id.UniqueId;
+			const subject = appointment.Subject;
+			const startTime = appointment.Start.ToISOString();
+			const description = appointment.Body?.Text;
 
-		// If the appointment is not in the rocket.chat calendar, add it.
-		if (!existingEvent) {
-			await APIClient.post('/v1/calendar-events.create', {
-				externalId,
-				subject,
+			// If the appointment is not in the rocket.chat calendar, add it.
+			if (!existingEvent) {
+				await APIClient.post('/v1/calendar-events.create', {
+					externalId,
+					subject,
+					startTime,
+					description,
+				});
+				continue;
+			}
+
+			// If nothing on the event has changed, do nothing.
+			if (existingEvent.subject === subject && existingEvent.startTime === startTime && existingEvent.description === description) {
+				continue;
+			}
+
+			// Update the server with the current data from outlook
+			await APIClient.post('/v1/calendar-events.update', {
+				eventId: existingEvent._id,
 				startTime,
+				subject,
+				description,
 			});
-			continue;
+		} catch (e) {
+			console.error(e);
 		}
-
-		// If nothing on the event has changed, do nothing.
-		if (existingEvent.subject === subject && existingEvent.startTime === startTime) {
-			continue;
-		}
-
-		// Update the server with the current data from outlook
-		await APIClient.post('/v1/calendar-events.update', {
-			eventId: existingEvent._id,
-			startTime,
-			subject,
-		});
 	}
 
 	for await (const event of externalEvents) {
@@ -47,8 +54,10 @@ export const syncOutlookEvents = async (date: Date, server: string, user: string
 			continue;
 		}
 
-		// #ToDo: Remove the event from the calendar.
-
-		// APIClient.post('/v1/calendar-events.delete', { });
+		try {
+			await APIClient.post('/v1/calendar-events.delete', { eventId: event._id });
+		} catch (e) {
+			console.error(e);
+		}
 	}
 };

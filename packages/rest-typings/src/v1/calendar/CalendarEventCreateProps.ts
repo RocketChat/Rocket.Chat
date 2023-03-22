@@ -7,6 +7,7 @@ export type CalendarEventCreateProps = {
 	startTime: string;
 	externalId?: string;
 	subject: string;
+	description: string;
 };
 
 const calendarEventCreatePropsSchema: JSONSchemaType<CalendarEventCreateProps> = {
@@ -24,8 +25,12 @@ const calendarEventCreatePropsSchema: JSONSchemaType<CalendarEventCreateProps> =
 			type: 'string',
 			nullable: false,
 		},
+		description: {
+			type: 'string',
+			nullable: false,
+		},
 	},
-	required: ['startTime', 'subject'],
+	required: ['startTime', 'subject', 'description'],
 	additionalProperties: false,
 };
 
