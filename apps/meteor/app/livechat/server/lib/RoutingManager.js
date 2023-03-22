@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { LivechatInquiry } from '@rocket.chat/models';
 
 import {
 	createLivechatSubscription,
@@ -13,7 +14,7 @@ import {
 } from './Helper';
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../../server/lib/logger/Logger';
-import { LivechatRooms, Rooms, Messages, Users, LivechatInquiry, Subscriptions } from '../../../models/server';
+import { LivechatRooms, Rooms, Messages, Users, Subscriptions } from '../../../models/server';
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 
 const logger = new Logger('RoutingManager');
@@ -125,7 +126,7 @@ export const RoutingManager = {
 
 		if (departmentId && departmentId !== department) {
 			logger.debug(`Switching department for inquiry ${inquiry._id} [Current: ${department} | Next: ${departmentId}]`);
-			updateChatDepartment({
+			await updateChatDepartment({
 				rid,
 				newDepartmentId: departmentId,
 				oldDepartmentId: department,
@@ -197,7 +198,7 @@ export const RoutingManager = {
 			return callbacks.run('livechat.onAgentAssignmentFailed', { inquiry, room, options });
 		}
 
-		LivechatInquiry.takeInquiry(_id);
+		await LivechatInquiry.takeInquiry(_id);
 		const inq = this.assignAgent(inquiry, agent);
 		logger.debug(`Inquiry ${inquiry._id} taken by agent ${agent.agentId}`);
 
@@ -230,7 +231,7 @@ export const RoutingManager = {
 
 		if (defaultAgent) {
 			logger.debug(`Delegating Inquiry ${inquiry._id} to agent ${defaultAgent.username}`);
-			LivechatInquiry.setDefaultAgentById(inquiry._id, defaultAgent);
+			await LivechatInquiry.setDefaultAgentById(inquiry._id, defaultAgent);
 		}
 
 		logger.debug(`Queueing inquiry ${inquiry._id}`);
