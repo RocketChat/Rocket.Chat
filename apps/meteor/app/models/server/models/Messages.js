@@ -702,28 +702,6 @@ export class Messages extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	updateRepliesByThreadId(tmid, replies, ts) {
-		const query = {
-			_id: tmid,
-		};
-
-		const update = {
-			$addToSet: {
-				replies: {
-					$each: replies,
-				},
-			},
-			$set: {
-				tlm: ts,
-			},
-			$inc: {
-				tcount: 1,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	findAllImportedMessagesWithFilesToDownload() {
 		const query = {
 			'_importFile.downloadUrl': {

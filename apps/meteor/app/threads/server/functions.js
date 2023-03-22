@@ -19,7 +19,7 @@ export async function reply({ tmid }, message, parentMessage, followers) {
 		]),
 	];
 
-	Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
+	await MessagesRaw.updateRepliesByThreadId(tmid, addToReplies, ts);
 
 	const replies = await MessagesRaw.getThreadFollowsByThreadId(tmid);
 
