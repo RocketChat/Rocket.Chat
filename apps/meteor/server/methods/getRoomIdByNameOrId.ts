@@ -1,11 +1,19 @@
 // DEPRECATE
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Rooms } from '../../app/models/server';
 import { canAccessRoomAsync } from '../../app/authorization/server';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		getRoomIdByNameOrId(rid: string): string;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async getRoomIdByNameOrId(rid) {
 		check(rid, String);
 
@@ -23,7 +31,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!(await canAccessRoomAsync(room, Meteor.user()))) {
+		if (!(await canAccessRoomAsync(room, Meteor.user() ?? undefined))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'getRoomIdByNameOrId',
 			});
