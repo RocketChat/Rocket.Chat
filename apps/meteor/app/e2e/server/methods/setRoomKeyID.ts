@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import { canAccessRoomId } from '../../../authorization/server';
+import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { Rooms } from '../../../models/server';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -14,7 +14,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	'e2e.setRoomKeyID'(rid, keyID) {
+	async 'e2e.setRoomKeyID'(rid, keyID) {
 		check(rid, String);
 		check(keyID, String);
 
@@ -27,7 +27,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'e2e.setRoomKeyID' });
 		}
 
-		if (!canAccessRoomId(rid, userId)) {
+		if (!(await canAccessRoomIdAsync(rid, userId))) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'e2e.setRoomKeyID' });
 		}
 
