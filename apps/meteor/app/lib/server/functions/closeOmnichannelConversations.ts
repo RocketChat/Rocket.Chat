@@ -16,7 +16,7 @@ export const closeOmnichannelConversations = async (user: IUser, subscribedRooms
 	const comment = TAPi18n.__('Agent_deactivated', { lng: language });
 
 	const promises: Promise<void>[] = [];
-	roomsInfo.forEach((room: any) => {
+	await roomsInfo.forEach((room: any) => {
 		promises.push(Livechat.closeRoom({ user, room, comment }));
 	});
 
