@@ -4,7 +4,7 @@ import { Settings } from '@rocket.chat/models';
 import type { ISetting } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { getSettingPermissionId } from '../../../authorization/lib';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 
@@ -34,14 +34,14 @@ Meteor.methods<ServerMethods>({
 				method: 'saveSetting',
 			});
 		}
-		const editPrivilegedSetting = hasPermission(uid, 'edit-privileged-setting');
-		const manageSelectedSettings = hasPermission(uid, 'manage-selected-settings');
+		const editPrivilegedSetting = await hasPermissionAsync(uid, 'edit-privileged-setting');
+		const manageSelectedSettings = await hasPermissionAsync(uid, 'manage-selected-settings');
 
 		await Promise.all(
 			params.map(async ({ _id, value }) => {
 				// Verify the _id passed in is a string.
 				check(_id, String);
-				if (!editPrivilegedSetting && !(manageSelectedSettings && hasPermission(uid, getSettingPermissionId(_id)))) {
+				if (!editPrivilegedSetting && !(manageSelectedSettings && (await hasPermissionAsync(uid, getSettingPermissionId(_id))))) {
 					return settingsNotAllowed.push(_id);
 				}
 

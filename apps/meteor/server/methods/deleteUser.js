@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { Users } from '../../app/models/server';
-import { hasPermission } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { deleteUser } from '../../app/lib/server';
 import { AppEvents, Apps } from '../../ee/server/apps/orchestrator';
@@ -17,7 +17,7 @@ Meteor.methods({
 			});
 		}
 
-		if (hasPermission(Meteor.userId(), 'delete-user') !== true) {
+		if ((await hasPermissionAsync(Meteor.userId(), 'delete-user')) !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'deleteUser',
 			});
