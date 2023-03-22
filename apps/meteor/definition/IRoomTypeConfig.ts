@@ -112,7 +112,7 @@ export interface IRoomTypeServerDirectives {
 		notificationMessage: string,
 		userId: string,
 	) => { title: string | undefined; text: string };
-	getMsgSender: (senderId: IRocketChatRecord['_id']) => IRocketChatRecord | undefined;
+	getMsgSender: (senderId: IRocketChatRecord['_id']) => Promise<IRocketChatRecord | undefined>;
 	includeInRoomSearch: () => boolean;
 	getReadReceiptsExtraData: (message: IMessage) => Partial<ReadReceipt>;
 	includeInDashboard: () => boolean;
