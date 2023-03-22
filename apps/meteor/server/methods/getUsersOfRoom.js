@@ -2,7 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { Rooms, Subscriptions } from '../../app/models/server';
-import { canAccessRoom, hasPermission, roomAccessAttributes } from '../../app/authorization/server';
+import { canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { findUsersOfRoom } from '../lib/findUsersOfRoom';
 
 Meteor.methods({
@@ -23,11 +24,11 @@ Meteor.methods({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getUsersOfRoom' });
 		}
 
-		if (!canAccessRoom(room, { _id: userId })) {
+		if (!(await canAccessRoomAsync(room, { _id: userId }))) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'getUsersOfRoom' });
 		}
 
-		if (room.broadcast && !hasPermission(userId, 'view-broadcast-member-list', rid)) {
+		if (room.broadcast && !(await hasPermissionAsync(userId, 'view-broadcast-member-list', rid))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getUsersOfRoom' });
 		}
 

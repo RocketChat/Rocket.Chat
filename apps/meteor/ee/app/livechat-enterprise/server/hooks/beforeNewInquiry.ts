@@ -58,9 +58,4 @@ const beforeNewInquiry = async (extraData: Props) => {
 	return { ...props, ...changes };
 };
 
-callbacks.add(
-	'livechat.beforeInquiry',
-	(extraData: Props = {}) => Promise.await(beforeNewInquiry(extraData)),
-	callbacks.priority.MEDIUM,
-	'livechat-before-new-inquiry',
-);
+callbacks.add('livechat.beforeInquiry', beforeNewInquiry, callbacks.priority.MEDIUM, 'livechat-before-new-inquiry');

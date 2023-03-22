@@ -27,7 +27,7 @@ export async function findMentionedMessages({
 		throw new Error('invalid-user');
 	}
 
-	const { cursor, totalCount } = Messages.findVisibleByMentionAndRoomId(user.username, roomId, {
+	const { cursor, totalCount } = Messages.findPaginatedVisibleByMentionAndRoomId(user.username, roomId, {
 		sort: sort || { ts: -1 },
 		skip: offset,
 		limit: count,

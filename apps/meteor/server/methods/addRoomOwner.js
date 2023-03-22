@@ -3,12 +3,12 @@ import { check } from 'meteor/check';
 import { api, Team } from '@rocket.chat/core-services';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
-import { hasPermission } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { Users, Subscriptions, Messages, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 
 Meteor.methods({
-	addRoomOwner(rid, userId) {
+	async addRoomOwner(rid, userId) {
 		check(rid, String);
 		check(userId, String);
 
@@ -19,7 +19,7 @@ Meteor.methods({
 		}
 
 		const room = Rooms.findOneById(rid, { fields: { t: 1, federated: 1 } });
-		if (!hasPermission(Meteor.userId(), 'set-owner', rid) && !isRoomFederated(room)) {
+		if (!(await hasPermissionAsync(Meteor.userId(), 'set-owner', rid)) && !isRoomFederated(room)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'addRoomOwner',
 			});
@@ -59,9 +59,9 @@ Meteor.methods({
 			role: 'owner',
 		});
 
-		const team = Promise.await(Team.getOneByMainRoomId(rid));
+		const team = await Team.getOneByMainRoomId(rid);
 		if (team) {
-			Promise.await(Team.addRolesToMember(team._id, userId, ['owner']));
+			await Team.addRolesToMember(team._id, userId, ['owner']);
 		}
 		const event = {
 			type: 'added',

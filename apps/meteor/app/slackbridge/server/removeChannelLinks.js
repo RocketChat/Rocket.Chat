@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 
 import { Rooms } from '../../models/server';
-import { hasPermission } from '../../authorization/server';
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { settings } from '../../settings/server';
 
 Meteor.methods({
-	removeSlackBridgeChannelLinks() {
+	async removeSlackBridgeChannelLinks() {
 		const user = Meteor.user();
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -13,7 +13,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!hasPermission(user._id, 'remove-slackbridge-links')) {
+		if (!(await hasPermissionAsync(user._id, 'remove-slackbridge-links'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'removeSlackBridgeChannelLinks',
 			});
