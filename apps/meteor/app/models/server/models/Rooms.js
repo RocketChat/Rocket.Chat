@@ -2,7 +2,6 @@ import _ from 'underscore';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Base } from './_Base';
-import Messages from './Messages';
 import Subscriptions from './Subscriptions';
 import { trim } from '../../../../lib/utils/stringUtils';
 
@@ -843,29 +842,6 @@ class Rooms extends Base {
 				lastMessage,
 			},
 		};
-
-		return this.update(query, update);
-	}
-
-	/**
-	 * @param {string} _id
-	 * @param {string?} messageId
-	 */
-	resetLastMessageById(_id, messageId = undefined) {
-		const query = { _id };
-		const lastMessage = Messages.getLastVisibleMessageSentWithNoTypeByRoomId(_id, messageId);
-
-		const update = lastMessage
-			? {
-					$set: {
-						lastMessage,
-					},
-			  }
-			: {
-					$unset: {
-						lastMessage: 1,
-					},
-			  };
 
 		return this.update(query, update);
 	}

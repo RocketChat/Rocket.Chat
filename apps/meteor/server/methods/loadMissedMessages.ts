@@ -4,7 +4,7 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Messages } from '@rocket.chat/models';
 
-import { canAccessRoomId } from '../../app/authorization/server';
+import { canAccessRoomIdAsync } from '../../app/authorization/server/functions/canAccessRoom';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -24,7 +24,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getUsersOfRoom' });
 		}
 
-		if (!canAccessRoomId(rid, fromId)) {
+		if (!(await canAccessRoomIdAsync(rid, fromId))) {
 			return false;
 		}
 

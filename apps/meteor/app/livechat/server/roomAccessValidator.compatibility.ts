@@ -1,9 +1,9 @@
 import type { IUser, ILivechatDepartment, IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { LivechatDepartmentAgents } from '@rocket.chat/models';
+import { LivechatDepartmentAgents, LivechatInquiry } from '@rocket.chat/models';
 
 import { hasRole } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
-import { LivechatDepartment, LivechatInquiry, LivechatRooms } from '../../models/server';
+import { LivechatDepartment, LivechatRooms } from '../../models/server';
 import { RoutingManager } from './lib/RoutingManager';
 
 type OmnichannelRoomAccessValidator = (
@@ -66,7 +66,7 @@ export const validators: OmnichannelRoomAccessValidator[] = [
 			],
 		};
 
-		const inquiry = LivechatInquiry.findOne(filter, { fields: { status: 1 } });
+		const inquiry = await LivechatInquiry.findOne(filter, { projection: { status: 1 } });
 		return inquiry && inquiry.status === 'queued';
 	},
 	async function (room, user) {
