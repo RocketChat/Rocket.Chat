@@ -2,8 +2,16 @@
 
 import { expect } from 'chai';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { createVisitor, createLivechatRoom, sendMessage, closeOmnichanelRoom } from '../../../data/livechat/rooms';
+import { getCredentials, api, request, credentials, methodCall } from '../../../data/api-data';
+import {
+	createVisitor,
+	createLivechatRoom,
+	sendMessage,
+	closeOmnichanelRoom,
+	setRoomOnHold,
+	startANewLivechatRoomAndTakeIt,
+	sendAgentMessage,
+} from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
@@ -122,6 +130,40 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(200);
 
 			expect(response.body.success).to.be.true;
+		});
+		it('should remove room from hold', async () => {
+			await updatePermission('on-hold-others-livechat-room', ['admin', 'livechat-manager']);
+			const { room } = await startANewLivechatRoomAndTakeIt();
+			await sendAgentMessage(room._id);
+			await setRoomOnHold(room._id);
+			const response = await request
+				.post(methodCall('livechat:resumeOnHold'))
+				.set(credentials)
+				.send({ message: JSON.stringify({ params: [room._id], msg: 'method', method: 'livechat:resumeOnHold', id: 'id' }) })
+				.expect(200);
+			expect(response.body.success).to.be.true;
+		});
+		it('should not remove room from hold if room is not on hold', async () => {
+			await updatePermission('on-hold-others-livechat-room', ['admin', 'livechat-manager']);
+			const { room } = await startANewLivechatRoomAndTakeIt();
+			await sendAgentMessage(room._id);
+			const response = await request
+				.post(methodCall('livechat:resumeOnHold'))
+				.set(credentials)
+				.send({ message: JSON.stringify({ params: [room._id], msg: 'method', method: 'livechat:resumeOnHold', id: 'id' }) })
+				.expect(200);
+			expect(response.body.success).to.be.true;
+			expect(JSON.parse(response.body.message).error.reason).to.be.equal('Room is not OnHold');
+		});
+		it('should not remove room from hold if room does not exist', async () => {
+			await updatePermission('on-hold-others-livechat-room', ['admin', 'livechat-manager']);
+			const response = await request
+				.post(methodCall('livechat:resumeOnHold'))
+				.set(credentials)
+				.send({ message: JSON.stringify({ params: ['asdfasdf'], msg: 'method', method: 'livechat:resumeOnHold', id: 'id' }) })
+				.expect(200);
+			expect(response.body.success).to.be.true;
+			expect(JSON.parse(response.body.message).error.reason).to.be.equal('Invalid room');
 		});
 	});
 });
