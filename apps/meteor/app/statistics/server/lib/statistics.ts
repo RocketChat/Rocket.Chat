@@ -362,7 +362,7 @@ export const statistics = {
 			}),
 		);
 
-		const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
+		const { oplogEnabled, mongoVersion, mongoStorageEngine } = await getMongoInfo();
 		statistics.msEnabled = isRunningMs();
 		statistics.oplogEnabled = oplogEnabled;
 		statistics.mongoVersion = mongoVersion;

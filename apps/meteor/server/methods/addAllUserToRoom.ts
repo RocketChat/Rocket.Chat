@@ -1,30 +1,42 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { Mongo } from 'meteor/mongo';
 
-import { hasPermission } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { Users, Rooms, Subscriptions, Messages } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { callbacks } from '../../lib/callbacks';
 
-Meteor.methods({
-	addAllUserToRoom(rid, activeUsersOnly = false) {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		addAllUserToRoom(rid: IRoom['_id'], activeUsersOnly?: boolean): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async addAllUserToRoom(rid, activeUsersOnly = false) {
 		check(rid, String);
 		check(activeUsersOnly, Boolean);
 
-		if (!hasPermission(this.userId, 'add-all-to-room')) {
+		if (!this.userId || !(await hasPermissionAsync(this.userId, 'add-all-to-room'))) {
 			throw new Meteor.Error(403, 'Access to Method Forbidden', {
 				method: 'addAllToRoom',
 			});
 		}
 
-		const userFilter = {};
+		const userFilter: {
+			active?: boolean;
+		} = {};
 		if (activeUsersOnly === true) {
 			userFilter.active = true;
 		}
 
-		const userCursor = Users.find(userFilter);
+		const userCursor: Mongo.Cursor<IUser> = Users.find(userFilter);
 		const usersCount = userCursor.count();
-		if (usersCount > settings.get('API_User_Limit')) {
+		if (usersCount > settings.get<number>('API_User_Limit')) {
 			throw new Meteor.Error('error-user-limit-exceeded', 'User Limit Exceeded', {
 				method: 'addAllToRoom',
 			});
@@ -56,7 +68,6 @@ Meteor.methods({
 			Messages.createUserJoinWithRoomIdAndUser(rid, user, {
 				ts: now,
 			});
-			Meteor.defer(function () {});
 			return callbacks.run('afterJoinRoom', user, room);
 		});
 		return true;

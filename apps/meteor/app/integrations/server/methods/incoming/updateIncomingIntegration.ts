@@ -2,14 +2,32 @@ import { Meteor } from 'meteor/meteor';
 import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
 import { Integrations, Roles } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { IIntegration, INewIncomingIntegration, IUpdateIncomingIntegration } from '@rocket.chat/core-typings';
 
 import { Rooms, Users, Subscriptions } from '../../../../models/server';
-import { hasAllPermission, hasPermission } from '../../../../authorization/server';
+import { hasAllPermission, hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 
 const validChannelChars = ['@', '#'];
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		updateIncomingIntegration(
+			integrationId: string,
+			integration: INewIncomingIntegration | IUpdateIncomingIntegration,
+		): IIntegration | null;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async updateIncomingIntegration(integrationId, integration) {
+		if (!this.userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'updateOutgoingIntegration',
+			});
+		}
+
 		if (!integration.channel || typeof integration.channel.valueOf() !== 'string' || integration.channel.trim() === '') {
 			throw new Meteor.Error('error-invalid-channel', 'Invalid channel', {
 				method: 'updateIncomingIntegration',
@@ -28,9 +46,9 @@ Meteor.methods({
 
 		let currentIntegration;
 
-		if (hasPermission(this.userId, 'manage-incoming-integrations')) {
+		if (await hasPermissionAsync(this.userId, 'manage-incoming-integrations')) {
 			currentIntegration = await Integrations.findOneById(integrationId);
-		} else if (hasPermission(this.userId, 'manage-own-incoming-integrations')) {
+		} else if (await hasPermissionAsync(this.userId, 'manage-own-incoming-integrations')) {
 			currentIntegration = await Integrations.findOne({
 				'_id': integrationId,
 				'_createdBy._id': this.userId,
@@ -47,28 +65,36 @@ Meteor.methods({
 			});
 		}
 
+		let scriptCompiled: string | undefined;
+		let scriptError: Pick<Error, 'name' | 'message' | 'stack'> | undefined;
+
 		if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
 			try {
 				let babelOptions = Babel.getDefaultOptions({ runtime: false });
 				babelOptions = _.extend(babelOptions, { compact: true, minified: true, comments: false });
 
-				integration.scriptCompiled = Babel.compile(integration.script, babelOptions).code;
-				integration.scriptError = undefined;
-				await Integrations.updateOne(
-					{ _id: integrationId },
-					{
-						$set: { scriptCompiled: integration.scriptCompiled },
-						$unset: { scriptError: 1 },
-					},
-				);
-			} catch (e) {
-				integration.scriptCompiled = undefined;
-				integration.scriptError = _.pick(e, 'name', 'message', 'stack');
+				scriptCompiled = Babel.compile(integration.script, babelOptions).code;
+				scriptError = undefined;
 				await Integrations.updateOne(
 					{ _id: integrationId },
 					{
 						$set: {
-							scriptError: integration.scriptError,
+							scriptCompiled,
+						},
+						$unset: { scriptError: 1 },
+					},
+				);
+			} catch (e) {
+				scriptCompiled = undefined;
+				if (e instanceof Error) {
+					const { name, message, stack } = e;
+					scriptError = { name, message, stack };
+				}
+				await Integrations.updateOne(
+					{ _id: integrationId },
+					{
+						$set: {
+							scriptError,
 						},
 						$unset: {
 							scriptCompiled: 1,
@@ -80,7 +106,7 @@ Meteor.methods({
 
 		for (let channel of channels) {
 			const channelType = channel[0];
-			channel = channel.substr(1);
+			channel = channel.slice(1);
 			let record;
 
 			switch (channelType) {
@@ -114,7 +140,7 @@ Meteor.methods({
 
 		const user = Users.findOne({ username: currentIntegration.username });
 
-		if (!user || !user._id) {
+		if (!user?._id) {
 			throw new Meteor.Error('error-invalid-post-as-user', 'Invalid Post As User', {
 				method: 'updateIncomingIntegration',
 			});

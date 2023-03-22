@@ -1,13 +1,31 @@
 import { Meteor } from 'meteor/meteor';
 import { Integrations } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { IIntegration, INewOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
 
-import { hasPermission } from '../../../../authorization/server';
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { Users } from '../../../../models/server';
 import { validateOutgoingIntegration } from '../../lib/validateOutgoingIntegration';
 
-Meteor.methods({
-	async updateOutgoingIntegration(integrationId, integration) {
-		integration = validateOutgoingIntegration(integration, this.userId);
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		updateOutgoingIntegration(
+			integrationId: string,
+			integration: INewOutgoingIntegration | IUpdateOutgoingIntegration,
+		): IIntegration | null;
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async updateOutgoingIntegration(integrationId, _integration) {
+		if (!this.userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'updateOutgoingIntegration',
+			});
+		}
+
+		const integration = validateOutgoingIntegration(_integration, this.userId);
 
 		if (!integration.token || integration.token.trim() === '') {
 			throw new Meteor.Error('error-invalid-token', 'Invalid token', {
@@ -15,11 +33,11 @@ Meteor.methods({
 			});
 		}
 
-		let currentIntegration;
+		let currentIntegration: IIntegration | null;
 
-		if (hasPermission(this.userId, 'manage-outgoing-integrations')) {
+		if (await hasPermissionAsync(this.userId, 'manage-outgoing-integrations')) {
 			currentIntegration = await Integrations.findOneById(integrationId);
-		} else if (hasPermission(this.userId, 'manage-own-outgoing-integrations')) {
+		} else if (await hasPermissionAsync(this.userId, 'manage-own-outgoing-integrations')) {
 			currentIntegration = await Integrations.findOne({
 				'_id': integrationId,
 				'_createdBy._id': this.userId,
@@ -33,6 +51,7 @@ Meteor.methods({
 		if (!currentIntegration) {
 			throw new Meteor.Error('invalid_integration', '[methods] updateOutgoingIntegration -> integration not found');
 		}
+
 		if (integration.scriptCompiled) {
 			await Integrations.updateOne(
 				{ _id: integrationId },
@@ -61,7 +80,7 @@ Meteor.methods({
 					avatar: integration.avatar,
 					emoji: integration.emoji,
 					alias: integration.alias,
-					channel: integration.channel,
+					channel: typeof integration.channel === 'string' ? [integration.channel] : integration.channel,
 					targetRoom: integration.targetRoom,
 					impersonateUser: integration.impersonateUser,
 					username: integration.username,

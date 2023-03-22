@@ -18,15 +18,15 @@ export function setUserAvatar(
 export function setUserAvatar(
 	user: Pick<IUser, '_id' | 'username'>,
 	dataURI: string,
-	contentType: string,
-	service: 'initials' | 'url' | 'rest' | string,
+	contentType?: string,
+	service?: 'initials' | 'url' | 'rest' | string,
 	etag?: string,
 ): void;
 export function setUserAvatar(
 	user: Pick<IUser, '_id' | 'username'>,
 	dataURI: string | Buffer,
-	contentType: string,
-	service: 'initials' | 'url' | 'rest' | string,
+	contentType: string | undefined,
+	service?: 'initials' | 'url' | 'rest' | string,
 	etag?: string,
 ): void {
 	if (service === 'initials') {
@@ -82,6 +82,12 @@ export function setUserAvatar(
 			}
 
 			if (service === 'rest') {
+				if (!contentType) {
+					throw new Meteor.Error('error-avatar-invalid-content-type', 'Invalid avatar content type', {
+						function: 'setUserAvatar',
+					});
+				}
+
 				return {
 					buffer: dataURI instanceof Buffer ? dataURI : Buffer.from(dataURI, 'binary'),
 					type: contentType,

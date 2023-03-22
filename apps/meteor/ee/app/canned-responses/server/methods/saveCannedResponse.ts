@@ -1,16 +1,33 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../../../../app/authorization/server';
+import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import CannedResponse from '../../../models/server/models/CannedResponse';
 import LivechatDepartment from '../../../../../app/models/server/models/LivechatDepartment';
 import { Users } from '../../../../../app/models/server';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
 
-Meteor.methods({
-	saveCannedResponse(_id, responseData) {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		saveCannedResponse(
+			_id: string,
+			responseData: {
+				shortcut: string;
+				text: string;
+				scope: string;
+				tags?: string[];
+				departmentId?: string;
+			},
+		): void;
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async saveCannedResponse(_id, responseData) {
 		const userId = Meteor.userId();
-		if (!userId || !hasPermission(userId, 'save-canned-responses')) {
+		if (!userId || !(await hasPermissionAsync(userId, 'save-canned-responses'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'saveCannedResponse' });
 		}
 
@@ -24,14 +41,14 @@ Meteor.methods({
 			departmentId: Match.Maybe(String),
 		});
 
-		const canSaveAll = hasPermission(userId, 'save-all-canned-responses');
+		const canSaveAll = await hasPermissionAsync(userId, 'save-all-canned-responses');
 		if (!canSaveAll && ['global'].includes(responseData.scope)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed to modify canned responses on *global* scope', {
 				method: 'saveCannedResponse',
 			});
 		}
 
-		const canSaveDepartment = hasPermission(userId, 'save-department-canned-responses');
+		const canSaveDepartment = await hasPermissionAsync(userId, 'save-department-canned-responses');
 		if (!canSaveAll && !canSaveDepartment && ['department'].includes(responseData.scope)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed to modify canned responses on *department* scope', {
 				method: 'saveCannedResponse',
@@ -66,6 +83,20 @@ Meteor.methods({
 			});
 		}
 
+		const data: {
+			shortcut: string;
+			text: string;
+			scope: string;
+			tags: string[];
+			departmentId?: string;
+			createdBy?: {
+				_id: string;
+				username: string;
+			};
+			_createdAt?: Date;
+			userId?: string;
+		} = { ...responseData, departmentId: responseData.departmentId ?? undefined };
+
 		if (_id) {
 			const cannedResponse = CannedResponse.findOneById(_id);
 			if (!cannedResponse) {
@@ -74,17 +105,17 @@ Meteor.methods({
 				});
 			}
 
-			responseData.createdBy = cannedResponse.createdBy;
+			data.createdBy = cannedResponse.createdBy;
 		} else {
 			const user = Users.findOneById(Meteor.userId());
 
-			if (responseData.scope === 'user') {
-				responseData.userId = user._id;
+			if (data.scope === 'user') {
+				data.userId = user._id;
 			}
-			responseData.createdBy = { _id: user._id, username: user.username };
-			responseData._createdAt = new Date();
+			data.createdBy = { _id: user._id, username: user.username };
+			data._createdAt = new Date();
 		}
-		const createdCannedResponse = CannedResponse.createOrUpdateCannedResponse(_id, responseData);
+		const createdCannedResponse = CannedResponse.createOrUpdateCannedResponse(_id, data);
 		notifications.streamCannedResponses.emit('canned-responses', {
 			type: 'changed',
 			...createdCannedResponse,

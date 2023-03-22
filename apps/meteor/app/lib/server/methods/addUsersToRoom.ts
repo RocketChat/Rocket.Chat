@@ -2,18 +2,28 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
+import type { IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Rooms, Subscriptions, Users } from '../../../models/server';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../functions';
 import { callbacks } from '../../../../lib/callbacks';
 import { Federation } from '../../../../server/services/federation/Federation';
 
-Meteor.methods({
-	async addUsersToRoom(data = {}) {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		addUsersToRoom(data: { rid: string; users: string[] }): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async addUsersToRoom(data) {
+		const uid = Meteor.userId();
 		// Validate user and room
-		if (!Meteor.userId()) {
+		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'addUsersToRoom',
 			});
@@ -27,7 +37,7 @@ Meteor.methods({
 
 		// Get user and room details
 		const room = Rooms.findOneById(data.rid);
-		const userId = Meteor.userId();
+		const userId = uid;
 		const subscription = Subscriptions.findOneByRoomIdAndUserId(data.rid, userId, {
 			fields: { _id: 1 },
 		});
@@ -42,11 +52,11 @@ Meteor.methods({
 
 		// Can add to any room you're in, with permission, otherwise need specific room type permission
 		let canAddUser = false;
-		if (userInRoom && hasPermission(userId, 'add-user-to-joined-room', room._id)) {
+		if (userInRoom && (await hasPermissionAsync(userId, 'add-user-to-joined-room', room._id))) {
 			canAddUser = true;
-		} else if (room.t === 'c' && hasPermission(userId, 'add-user-to-any-c-room')) {
+		} else if (room.t === 'c' && (await hasPermissionAsync(userId, 'add-user-to-any-c-room'))) {
 			canAddUser = true;
-		} else if (room.t === 'p' && hasPermission(userId, 'add-user-to-any-p-room')) {
+		} else if (room.t === 'p' && (await hasPermissionAsync(userId, 'add-user-to-any-p-room'))) {
 			canAddUser = true;
 		}
 
@@ -65,7 +75,7 @@ Meteor.methods({
 		}
 
 		// Validate each user, then add to room
-		const user = Meteor.user();
+		const user = (Meteor.user() as IUser | null) ?? undefined;
 		if (isRoomFederated(room)) {
 			callbacks.run('federation.onAddUsersToARoom', { invitees: data.users, inviter: user }, room);
 			return true;
@@ -90,7 +100,7 @@ Meteor.methods({
 								postProcess: 'sprintf',
 								sprintf: [newUser.username],
 							},
-							user.language,
+							user?.language,
 						),
 					});
 				}

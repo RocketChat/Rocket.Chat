@@ -2,7 +2,7 @@ import type { ILivechatDepartment, IRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { LivechatRooms } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 
@@ -14,9 +14,9 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	'livechat:returnAsInquiry'(rid, departmentId) {
+	async 'livechat:returnAsInquiry'(rid, departmentId) {
 		const uid = Meteor.userId();
-		if (!uid || !hasPermission(uid, 'view-l-room')) {
+		if (!uid || !(await hasPermissionAsync(uid, 'view-l-room'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:returnAsInquiry',
 			});

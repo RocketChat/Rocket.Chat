@@ -1,11 +1,30 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../../authorization/server';
-import { cleanRoomHistory } from '../functions';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { cleanRoomHistory } from '../functions/cleanRoomHistory';
 
-Meteor.methods({
-	cleanRoomHistory({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		cleanRoomHistory(data: {
+			roomId: string;
+			latest: Date;
+			oldest: Date;
+			inclusive?: boolean;
+			limit?: number;
+			excludePinned?: boolean;
+			ignoreDiscussion?: boolean;
+			filesOnly?: boolean;
+			fromUsers?: string[];
+			ignoreThreads?: boolean;
+		}): number;
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async cleanRoomHistory({
 		roomId,
 		latest,
 		oldest,
@@ -33,7 +52,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'cleanRoomHistory' });
 		}
 
-		if (!hasPermission(userId, 'clean-channel-history', roomId)) {
+		if (!(await hasPermissionAsync(userId, 'clean-channel-history', roomId))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'cleanRoomHistory' });
 		}
 
