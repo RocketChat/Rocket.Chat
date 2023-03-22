@@ -34,7 +34,7 @@ export async function saveUserIdentity({ _id, name: rawName, username: rawUserna
 			return false;
 		}
 
-		if (!_setUsername(_id, username, user)) {
+		if (!(await _setUsername(_id, username, user))) {
 			return false;
 		}
 		user.username = username;
