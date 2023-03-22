@@ -1,13 +1,33 @@
 import { Meteor } from 'meteor/meteor';
 import { CustomUserStatus } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { ICustomUserStatus } from '@rocket.chat/core-typings';
+import type { InsertionModel } from '@rocket.chat/model-typings';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { trim } from '../../../../lib/utils/stringUtils';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		insertOrUpdateUserStatus(userStatusData: {
+			_id?: string;
+			name: string;
+			statusType: string;
+			status: string;
+			emoji: string;
+			message: string;
+			order: number;
+			previousName?: string;
+			previousStatusType?: string;
+		}): string | boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async insertOrUpdateUserStatus(userStatusData) {
-		if (!(await hasPermissionAsync(this.userId, 'manage-user-status'))) {
+		if (!this.userId || !(await hasPermissionAsync(this.userId, 'manage-user-status'))) {
 			throw new Meteor.Error('not_authorized');
 		}
 
@@ -55,14 +75,14 @@ Meteor.methods({
 
 		if (!userStatusData._id) {
 			// insert user status
-			const createUserStatus = {
+			const createUserStatus: InsertionModel<ICustomUserStatus> = {
 				name: userStatusData.name,
-				statusType: userStatusData.statusType || null,
+				statusType: userStatusData.statusType,
 			};
 
-			const _id = await (await CustomUserStatus.create(createUserStatus)).insertedId;
+			const _id = (await CustomUserStatus.create(createUserStatus)).insertedId;
 
-			void api.broadcast('user.updateCustomStatus', createUserStatus);
+			void api.broadcast('user.updateCustomStatus', { ...createUserStatus, _id });
 
 			return _id;
 		}
@@ -76,7 +96,7 @@ Meteor.methods({
 			await CustomUserStatus.setStatusType(userStatusData._id, userStatusData.statusType);
 		}
 
-		void api.broadcast('user.updateCustomStatus', userStatusData);
+		void api.broadcast('user.updateCustomStatus', { ...userStatusData, _id: userStatusData._id });
 
 		return true;
 	},

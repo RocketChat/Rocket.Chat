@@ -9,6 +9,7 @@ export const useHasLicenseModule = (licenseName: BundleFeature): 'loading' | boo
 
 	const features = useQuery(['ee.features'], method, {
 		enabled: !!uid,
+		refetchOnWindowFocus: false,
 	});
 
 	return features.data?.includes(licenseName) ?? 'loading';

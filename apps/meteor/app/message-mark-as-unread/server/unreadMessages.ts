@@ -1,10 +1,19 @@
 import { Meteor } from 'meteor/meteor';
 import { Messages } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
 import logger from './logger';
 import { Subscriptions } from '../../models/server';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		unreadMessages(firstUnreadMessage?: IMessage, room?: IRoom['_id']): void;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async unreadMessages(firstUnreadMessage, room) {
 		const userId = Meteor.userId();
 		if (!userId) {
@@ -21,7 +30,7 @@ Meteor.methods({
 				}).toArray()
 			)[0];
 
-			if (lastMessage == null) {
+			if (!lastMessage) {
 				throw new Meteor.Error('error-no-message-for-unread', 'There are no messages to mark unread', {
 					method: 'unreadMessages',
 					action: 'Unread_messages',
@@ -46,7 +55,7 @@ Meteor.methods({
 				ts: 1,
 			},
 		});
-		if (originalMessage == null || userId === originalMessage.u._id) {
+		if (!originalMessage || userId === originalMessage.u._id) {
 			throw new Meteor.Error('error-action-not-allowed', 'Not allowed', {
 				method: 'unreadMessages',
 				action: 'Unread_messages',

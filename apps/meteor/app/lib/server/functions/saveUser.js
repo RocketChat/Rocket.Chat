@@ -153,7 +153,7 @@ async function validateUserData(userId, userData) {
  * Validate permissions to edit user fields
  *
  * @param {string} userId
- * @param {{ _id: string, roles: string[], username: string, name: string, statusText: string, email: string, password: string}} userData
+ * @param {{ _id: string, roles?: string[], username?: string, name?: string, statusText?: string, email?: string, password?: string}} userData
  */
 export async function validateUserEditing(userId, userData) {
 	const editingMyself = userData._id && userId === userData._id;

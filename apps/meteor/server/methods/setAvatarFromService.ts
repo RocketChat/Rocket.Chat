@@ -1,20 +1,32 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { settings } from '../../app/settings/server';
 import { setUserAvatar } from '../../app/lib/server';
 import { Users } from '../../app/models/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		setAvatarFromService(dataURI: string, contentType?: string, service?: string, userId?: string): void;
+		setAvatarFromService(blob: Blob, contentType?: string, service?: string, userId?: string): void; // TODO this looks wrong, but I cannot confirm it right now
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async setAvatarFromService(dataURI, contentType, service, userId) {
 		check(dataURI, String);
 		check(contentType, Match.Optional(String));
 		check(service, Match.Optional(String));
 		check(userId, Match.Optional(String));
 
-		if (!Meteor.userId()) {
+		const uid = Meteor.userId();
+
+		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'setAvatarFromService',
 			});
@@ -26,10 +38,10 @@ Meteor.methods({
 			});
 		}
 
-		let user;
+		let user: IUser | null;
 
-		if (userId && userId !== Meteor.userId()) {
-			if (!(await hasPermissionAsync(Meteor.userId(), 'edit-other-user-avatar'))) {
+		if (userId && userId !== uid) {
+			if (!(await hasPermissionAsync(uid, 'edit-other-user-avatar'))) {
 				throw new Meteor.Error('error-unauthorized', 'Unauthorized', {
 					method: 'setAvatarFromService',
 				});
@@ -37,10 +49,10 @@ Meteor.methods({
 
 			user = Users.findOneById(userId, { fields: { _id: 1, username: 1 } });
 		} else {
-			user = Meteor.user();
+			user = Meteor.user() as IUser | null;
 		}
 
-		if (user == null) {
+		if (!user) {
 			throw new Meteor.Error('error-invalid-desired-user', 'Invalid desired user', {
 				method: 'setAvatarFromService',
 			});
