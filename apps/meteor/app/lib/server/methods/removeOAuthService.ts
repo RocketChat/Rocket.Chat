@@ -4,7 +4,7 @@ import { check } from 'meteor/check';
 import { Settings } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -25,7 +25,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (hasPermission(userId, 'add-oauth-service') !== true) {
+		if ((await hasPermissionAsync(userId, 'add-oauth-service')) !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'removeOAuthService' });
 		}
 

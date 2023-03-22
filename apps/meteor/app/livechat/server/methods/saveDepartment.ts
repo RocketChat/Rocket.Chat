@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { LivechatEnterprise } from '../../../../ee/app/livechat-enterprise/server/lib/LivechatEnterprise';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -25,7 +25,7 @@ declare module '@rocket.chat/ui-contexts' {
 Meteor.methods<ServerMethods>({
 	async 'livechat:saveDepartment'(_id, departmentData, departmentAgents) {
 		const uid = Meteor.userId();
-		if (!uid || !hasPermission(uid, 'manage-livechat-departments')) {
+		if (!uid || !(await hasPermissionAsync(uid, 'manage-livechat-departments'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:saveDepartment',
 			});

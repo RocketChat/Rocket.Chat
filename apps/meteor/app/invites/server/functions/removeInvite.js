@@ -1,14 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { Invites } from '@rocket.chat/models';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 export const removeInvite = async (userId, invite) => {
 	if (!userId || !invite) {
 		return false;
 	}
 
-	if (!hasPermission(userId, 'create-invite-links')) {
+	if (!(await hasPermissionAsync(userId, 'create-invite-links'))) {
 		throw new Meteor.Error('not_authorized');
 	}
 

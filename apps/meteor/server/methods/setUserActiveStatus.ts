@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { setUserActiveStatus } from '../../app/lib/server/functions/setUserActiveStatus';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -13,7 +13,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	setUserActiveStatus(userId, active, confirmRelinquish) {
+	async setUserActiveStatus(userId, active, confirmRelinquish) {
 		check(userId, String);
 		check(active, Boolean);
 
@@ -25,7 +25,7 @@ Meteor.methods<ServerMethods>({
 
 		const uid = Meteor.userId();
 
-		if (!uid || hasPermission(uid, 'edit-other-user-active-status') !== true) {
+		if (!uid || (await hasPermissionAsync(uid, 'edit-other-user-active-status')) !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'setUserActiveStatus',
 			});
