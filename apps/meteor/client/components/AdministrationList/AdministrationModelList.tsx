@@ -52,12 +52,13 @@ const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxI
 				{showUpgradeItem && (
 					<ListItem
 						icon='arrow-stack-up'
+						role='listitem'
 						text={
 							<>
 								{t(label)} {shouldShowEmoji && <Emoji emojiHandle=':zap:' />}
 							</>
 						}
-						action={(): void => {
+						onClick={() => {
 							upgradeRoute.push({ type: tabType }, trialEndDate ? { trialEndDate } : undefined);
 							onDismiss();
 						}}
@@ -66,8 +67,9 @@ const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxI
 				{isAdmin && (
 					<ListItem
 						icon='cloud-plus'
+						role='listitem'
 						text={workspaceRegistered ? t('Registration') : t('Register')}
-						action={(): void => {
+						onClick={() => {
 							if (workspaceRegistered) {
 								cloudRoute.push({ context: '/' });
 								onDismiss();
@@ -80,8 +82,9 @@ const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxI
 				{showWorkspace && (
 					<ListItem
 						icon='cog'
+						role='listitem'
 						text={t('Workspace')}
-						action={(): void => {
+						onClick={() => {
 							if (hasInfoPermission) {
 								infoRoute.push();
 								onDismiss();
@@ -96,14 +99,14 @@ const AdministrationModelList: FC<AdministrationModelListProps> = ({ accountBoxI
 				{accountBoxItems.length > 0 && (
 					<>
 						{accountBoxItems.map((item, key) => {
-							const action = (): void => {
+							const action = () => {
 								if (item.href) {
 									FlowRouter.go(item.href);
 								}
 								onDismiss();
 							};
 
-							return <ListItem text={t(item.name)} icon={item.icon} action={action} key={item.name + key} />;
+							return <ListItem role='listitem' text={t(item.name)} icon={item.icon} onClick={action} key={item.name + key} />;
 						})}
 					</>
 				)}

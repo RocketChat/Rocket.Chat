@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { createRoom } from '../functions';
 
 Meteor.methods({
-	createPrivateGroup(name, members, readOnly = false, customFields = {}, extraData = {}) {
+	async createPrivateGroup(name, members, readOnly = false, customFields = {}, extraData = {}) {
 		check(name, String);
 		check(members, Match.Optional([String]));
 
@@ -15,7 +15,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!hasPermission(Meteor.userId(), 'create-p')) {
+		if (!(await hasPermissionAsync(Meteor.userId(), 'create-p'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createPrivateGroup' });
 		}
 

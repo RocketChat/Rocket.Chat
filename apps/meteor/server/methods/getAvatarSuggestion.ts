@@ -1,11 +1,29 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { IUser } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { getAvatarSuggestionForUser } from '../../app/lib/server/functions/getAvatarSuggestionForUser';
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		getAvatarSuggestion(): Promise<
+			Record<
+				string,
+				{
+					blob: string;
+					contentType: string;
+					service: string;
+					url: string;
+				}
+			>
+		>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async getAvatarSuggestion() {
 		methodDeprecationLogger.warn('getAvatarSuggestion will be deprecated in future versions of Rocket.Chat');
 

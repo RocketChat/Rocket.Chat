@@ -303,7 +303,7 @@ export const statistics = {
 		);
 
 		statistics.lastLogin = Users.getLastLogin();
-		statistics.lastMessageSentAt = Messages.getLastTimestamp();
+		statistics.lastMessageSentAt = await MessagesRaw.getLastTimestamp();
 		statistics.lastSeenSubscription = Subscriptions.getLastSeen();
 
 		statistics.os = {
@@ -362,7 +362,7 @@ export const statistics = {
 			}),
 		);
 
-		const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
+		const { oplogEnabled, mongoVersion, mongoStorageEngine } = await getMongoInfo();
 		statistics.msEnabled = isRunningMs();
 		statistics.oplogEnabled = oplogEnabled;
 		statistics.mongoVersion = mongoVersion;
@@ -507,6 +507,7 @@ export const statistics = {
 		statistics.totalManuallyAddedUsers = settings.get('Manual_Entry_User_Count');
 		statistics.totalSubscriptionRoles = await RolesRaw.findByScope('Subscriptions').count();
 		statistics.totalUserRoles = await RolesRaw.findByScope('Users').count();
+		statistics.totalCustomRoles = await RolesRaw.findCustomRoles({ readPreference }).count();
 		statistics.totalWebRTCCalls = settings.get('WebRTC_Calls_Count');
 		statistics.uncaughtExceptionsCount = settings.get('Uncaught_Exceptions_Count');
 

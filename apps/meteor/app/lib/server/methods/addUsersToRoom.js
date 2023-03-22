@@ -5,13 +5,13 @@ import { api } from '@rocket.chat/core-services';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { Rooms, Subscriptions, Users } from '../../../models/server';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../functions';
 import { callbacks } from '../../../../lib/callbacks';
 import { Federation } from '../../../../server/services/federation/Federation';
 
 Meteor.methods({
-	addUsersToRoom(data = {}) {
+	async addUsersToRoom(data = {}) {
 		// Validate user and room
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -42,11 +42,11 @@ Meteor.methods({
 
 		// Can add to any room you're in, with permission, otherwise need specific room type permission
 		let canAddUser = false;
-		if (userInRoom && hasPermission(userId, 'add-user-to-joined-room', room._id)) {
+		if (userInRoom && (await hasPermissionAsync(userId, 'add-user-to-joined-room', room._id))) {
 			canAddUser = true;
-		} else if (room.t === 'c' && hasPermission(userId, 'add-user-to-any-c-room')) {
+		} else if (room.t === 'c' && (await hasPermissionAsync(userId, 'add-user-to-any-c-room'))) {
 			canAddUser = true;
-		} else if (room.t === 'p' && hasPermission(userId, 'add-user-to-any-p-room')) {
+		} else if (room.t === 'p' && (await hasPermissionAsync(userId, 'add-user-to-any-p-room'))) {
 			canAddUser = true;
 		}
 
@@ -71,29 +71,31 @@ Meteor.methods({
 			return true;
 		}
 
-		data.users.forEach((username) => {
-			const newUser = Users.findOneByUsernameIgnoringCase(username);
-			if (!newUser && !Federation.isAFederatedUsername(username)) {
-				throw new Meteor.Error('error-invalid-username', 'Invalid username', {
-					method: 'addUsersToRoom',
-				});
-			}
-			const subscription = newUser && Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
-			if (!subscription) {
-				addUserToRoom(data.rid, newUser || username, user);
-			} else {
-				api.broadcast('notify.ephemeralMessage', userId, data.rid, {
-					msg: TAPi18n.__(
-						'Username_is_already_in_here',
-						{
-							postProcess: 'sprintf',
-							sprintf: [newUser.username],
-						},
-						user.language,
-					),
-				});
-			}
-		});
+		await Promise.all(
+			data.users.map(async (username) => {
+				const newUser = Users.findOneByUsernameIgnoringCase(username);
+				if (!newUser && !Federation.isAFederatedUsername(username)) {
+					throw new Meteor.Error('error-invalid-username', 'Invalid username', {
+						method: 'addUsersToRoom',
+					});
+				}
+				const subscription = newUser && Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
+				if (!subscription) {
+					await addUserToRoom(data.rid, newUser || username, user);
+				} else {
+					void api.broadcast('notify.ephemeralMessage', userId, data.rid, {
+						msg: TAPi18n.__(
+							'Username_is_already_in_here',
+							{
+								postProcess: 'sprintf',
+								sprintf: [newUser.username],
+							},
+							user.language,
+						),
+					});
+				}
+			}),
+		);
 
 		return true;
 	},

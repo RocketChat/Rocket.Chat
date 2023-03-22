@@ -5,13 +5,21 @@ import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
 import type { INewIncomingIntegration, IIncomingIntegration } from '@rocket.chat/core-typings';
 import { Integrations, Roles } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission, hasAllPermission } from '../../../../authorization/server';
+import { hasPermissionAsync, hasAllPermission } from '../../../../authorization/server/functions/hasPermission';
 import { Users, Rooms, Subscriptions } from '../../../../models/server';
 
 const validChannelChars = ['@', '#'];
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		addIncomingIntegration(integration: INewIncomingIntegration): Promise<IIncomingIntegration>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async addIncomingIntegration(integration: INewIncomingIntegration): Promise<IIncomingIntegration> {
 		const { userId } = this;
 
@@ -32,7 +40,11 @@ Meteor.methods({
 			}),
 		);
 
-		if (!userId || (!hasPermission(userId, 'manage-incoming-integrations') && !hasPermission(userId, 'manage-own-incoming-integrations'))) {
+		if (
+			!userId ||
+			(!(await hasPermissionAsync(userId, 'manage-incoming-integrations')) &&
+				!(await hasPermissionAsync(userId, 'manage-own-incoming-integrations')))
+		) {
 			throw new Meteor.Error('not_authorized', 'Unauthorized', {
 				method: 'addIncomingIntegration',
 			});

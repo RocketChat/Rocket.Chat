@@ -1,5 +1,7 @@
+import { FederationRoomEvents } from '@rocket.chat/models';
+
 import { clientLogger } from '../lib/logger';
-import { FederationRoomEvents, Rooms } from '../../../models/server';
+import { Rooms } from '../../../models/server';
 import { hasExternalDomain } from '../functions/helpers';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { dispatchEvent } from '../handler';

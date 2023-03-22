@@ -4,7 +4,7 @@ import _ from 'underscore';
 import { Integrations, Roles } from '@rocket.chat/models';
 
 import { Rooms, Users, Subscriptions } from '../../../../models/server';
-import { hasAllPermission, hasPermission } from '../../../../authorization/server';
+import { hasAllPermission, hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 
 const validChannelChars = ['@', '#'];
 
@@ -28,9 +28,9 @@ Meteor.methods({
 
 		let currentIntegration;
 
-		if (hasPermission(this.userId, 'manage-incoming-integrations')) {
+		if (await hasPermissionAsync(this.userId, 'manage-incoming-integrations')) {
 			currentIntegration = await Integrations.findOneById(integrationId);
-		} else if (hasPermission(this.userId, 'manage-own-incoming-integrations')) {
+		} else if (await hasPermissionAsync(this.userId, 'manage-own-incoming-integrations')) {
 			currentIntegration = await Integrations.findOne({
 				'_id': integrationId,
 				'_createdBy._id': this.userId,

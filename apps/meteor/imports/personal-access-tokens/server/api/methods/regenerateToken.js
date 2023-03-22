@@ -1,17 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../../../app/authorization/server';
+import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import { Users } from '../../../../../app/models/server';
 import { twoFactorRequired } from '../../../../../app/2fa/server/twoFactorRequired';
 
 Meteor.methods({
-	'personalAccessTokens:regenerateToken': twoFactorRequired(function ({ tokenName }) {
+	'personalAccessTokens:regenerateToken': twoFactorRequired(async function ({ tokenName }) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', {
 				method: 'personalAccessTokens:regenerateToken',
 			});
 		}
-		if (!hasPermission(Meteor.userId(), 'create-personal-access-tokens')) {
+		if (!(await hasPermissionAsync(Meteor.userId(), 'create-personal-access-tokens'))) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', {
 				method: 'personalAccessTokens:regenerateToken',
 			});
