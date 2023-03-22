@@ -1,10 +1,29 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { cleanRoomHistory } from '../functions/cleanRoomHistory';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		cleanRoomHistory(data: {
+			roomId: string;
+			latest: Date;
+			oldest: Date;
+			inclusive?: boolean;
+			limit?: number;
+			excludePinned?: boolean;
+			ignoreDiscussion?: boolean;
+			filesOnly?: boolean;
+			fromUsers?: string[];
+			ignoreThreads?: boolean;
+		}): number;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async cleanRoomHistory({
 		roomId,
 		latest,
