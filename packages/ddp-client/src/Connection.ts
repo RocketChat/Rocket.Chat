@@ -24,7 +24,7 @@ type RetryOptions = {
 export interface Connection {
 	session?: string;
 
-	status: 'idle' | 'connecting' | 'connected' | 'failed' | 'closed';
+	status: 'idle' | 'connecting' | 'connected' | 'failed' | 'closed' | 'disconnected';
 
 	subscriptions: Subscription[];
 
@@ -34,7 +34,7 @@ export interface Connection {
 export class ConnectionImpl implements Connection {
 	session?: string;
 
-	status: 'idle' | 'connecting' | 'connected' | 'failed' | 'closed' = 'idle';
+	status: 'idle' | 'connecting' | 'connected' | 'failed' | 'closed' | 'disconnected' = 'idle';
 
 	subscriptions: Subscription[] = [];
 
@@ -43,10 +43,31 @@ export class ConnectionImpl implements Connection {
 	constructor(private ws: WebSocket, private client: DDPMethods, private retryOptions: RetryOptions) {}
 
 	connect() {
+		this.status = 'connecting';
 		return new Promise((resolve, reject) => {
-			this.status = 'connecting';
-			this.ws.addEventListener('open', () => {
+			this.ws.onopen = () => {
+				// The server may send an initial message which is a JSON object lacking a msg key. If so, the client should ignore it. The client does not have to wait for this message.
+				// (The message was once used to help implement Meteor's hot code reload feature; it is now only included to force old clients to update).
+				this.client.onceMessage((data) => {
+					if (data.msg === undefined) {
+						return;
+					}
+					if (data.msg === 'failed') {
+						return;
+					}
+					if (data.msg === 'connected') {
+						return;
+					}
+					this.close();
+				});
+
+				// The client sends a connect message.
+
 				this.client.connect();
+
+				// If the server is willing to speak the version of the protocol specified in the connect message, it sends back a connected message.
+				// Otherwise the server sends back a failed message with a version of DDP it would rather speak, informed by the connect message's support field, and closes the underlying transport.
+
 				this.client.onConnection((payload) => {
 					if (payload.msg === 'connected') {
 						this.status = 'connected';
@@ -55,25 +76,36 @@ export class ConnectionImpl implements Connection {
 					}
 					if (payload.msg === 'failed') {
 						this.status = 'failed';
-						return reject(false);
+						return reject(payload.version);
 					}
-					this.status = 'failed';
 					reject(new Error('Unknown message type'));
 				});
-			});
+			};
 
 			this.ws.addEventListener('message', (event) => {
 				this.client.handleMessage(event.data);
 			});
+
+			this.ws.addEventListener('close', () => {
+				if (this.status === 'closed') {
+					return;
+				}
+				if (this.status === 'failed') {
+					return;
+				}
+				this.status = 'disconnected';
+				// if (this.retryOptions.retryCount > 0) {
+				// 	this.retryOptions.retryCount -= 1;
+				// 	this.retryOptions.retryTimer = setTimeout(() => {
+				// 		this.connect();
+				// 	}, this.retryOptions.retryTime);
+				// }
+			});
 		});
 	}
 
-	// static create(url: string, retryOptions: RetryOptions): ConnectionImpl {
-	// 	const ws = new WebSocket(url);
-	// 	const client = new ClassMinimalDDPClient(ws.send.bind(ws));
-	// 	ws.onmessage = (event) => {
-	// 		client.handleMessage(event.data);
-	// 	};
-	// 	return new ConnectionImpl(ws, client, retryOptions);
-	// }
+	close() {
+		this.status = 'closed';
+		this.ws.close();
+	}
 }

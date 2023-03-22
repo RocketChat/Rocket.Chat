@@ -62,6 +62,11 @@ export interface DDPMethods {
 	onCollection: (name: string, callback: (payload: ServerPublicationPayloads) => void) => RemoveListener;
 	// this function is called once after the connection is established or rejected
 	onConnection: (callback: (payload: ConnectedPayload | FailedPayload) => void) => RemoveListener;
+
+	// this function is called every time a message is received
+	onMessage: (callback: (payload: MessageHandlerPayload) => void) => RemoveListener;
+	// this function is called on the next message received
+	onceMessage: (callback: (payload: MessageHandlerPayload) => void) => RemoveListener;
 }
 
 type MessagePayload = PingPayload | PongPayload | ConnectPayload | ClientPublicationPayloads | MethodPayload;
@@ -212,5 +217,13 @@ export class ClassMinimalDDPClient extends Emitter implements DDPMethods {
 
 	onConnection(callback: (payload: ConnectedPayload | FailedPayload) => void): RemoveListener {
 		return this.once('connection', callback);
+	}
+
+	onceMessage(callback: (payload: MessageHandlerPayload) => void): RemoveListener {
+		return this.once('message', callback);
+	}
+
+	onMessage(callback: (payload: MessageHandlerPayload) => void): RemoveListener {
+		return this.on('message', callback);
 	}
 }
