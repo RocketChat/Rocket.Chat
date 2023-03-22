@@ -231,6 +231,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			if ((await LivechatDepartmentAgents.findByAgentId(agentId).count()) === 0) {
 				agentIdsWithoutDepartment.push(agentId);
 			}
+			// TODO: We're doing a full fledged aggregation with lookups and getting the whole array just for getting the length? :(
 			if (!(await LivechatDepartmentAgents.findAgentsByAgentIdAndBusinessHourId(agentId, department.businessHourId)).length) {
 				// eslint-disable-line no-await-in-loop
 				agentIdsToRemoveCurrentBusinessHour.push(agentId);

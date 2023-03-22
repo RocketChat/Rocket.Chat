@@ -4,7 +4,7 @@ import { isPOSTLivechatRoomPriorityParams } from '@rocket.chat/rest-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
 import { API } from '../../../../../app/api/server';
-import { hasPermission } from '../../../../../app/authorization/server';
+import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import { Subscriptions } from '../../../../../app/models/server';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 import { removePriorityFromRoom, updateRoomPriority } from './lib/priorities';
@@ -42,7 +42,7 @@ API.v1.addRoute(
 			}
 
 			const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, user._id, { _id: 1 });
-			if (!subscription && !hasPermission(this.userId, 'on-hold-others-livechat-room')) {
+			if (!subscription && !(await hasPermissionAsync(this.userId, 'on-hold-others-livechat-room'))) {
 				return API.v1.failure('Not authorized');
 			}
 
