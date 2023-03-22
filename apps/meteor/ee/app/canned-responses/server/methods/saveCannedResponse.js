@@ -1,16 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 
-import { hasPermission } from '../../../../../app/authorization/server';
+import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import CannedResponse from '../../../models/server/models/CannedResponse';
 import LivechatDepartment from '../../../../../app/models/server/models/LivechatDepartment';
 import { Users } from '../../../../../app/models/server';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
 
 Meteor.methods({
-	saveCannedResponse(_id, responseData) {
+	async saveCannedResponse(_id, responseData) {
 		const userId = Meteor.userId();
-		if (!userId || !hasPermission(userId, 'save-canned-responses')) {
+		if (!userId || !(await hasPermissionAsync(userId, 'save-canned-responses'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'saveCannedResponse' });
 		}
 
@@ -24,14 +24,14 @@ Meteor.methods({
 			departmentId: Match.Maybe(String),
 		});
 
-		const canSaveAll = hasPermission(userId, 'save-all-canned-responses');
+		const canSaveAll = await hasPermissionAsync(userId, 'save-all-canned-responses');
 		if (!canSaveAll && ['global'].includes(responseData.scope)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed to modify canned responses on *global* scope', {
 				method: 'saveCannedResponse',
 			});
 		}
 
-		const canSaveDepartment = hasPermission(userId, 'save-department-canned-responses');
+		const canSaveDepartment = await hasPermissionAsync(userId, 'save-department-canned-responses');
 		if (!canSaveAll && !canSaveDepartment && ['department'].includes(responseData.scope)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed to modify canned responses on *department* scope', {
 				method: 'saveCannedResponse',
