@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { FederationRoomEvents } from '@rocket.chat/models';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 Meteor.methods({
 	'federation:loadContextEvents': async (latestEventTimestamp) => {
@@ -9,7 +9,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'loadContextEvents' });
 		}
 
-		if (!hasPermission(Meteor.userId(), 'view-federation-data')) {
+		if (!(await hasPermissionAsync(Meteor.userId(), 'view-federation-data'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'loadContextEvents',
 			});
