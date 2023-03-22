@@ -472,7 +472,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	setVisibleMessagesAsRead(rid: string, until: Date): Promise<UpdateResult | Document>;
 	getMessageByFileIdAndUsername(fileID: string, userId: string): Promise<IMessage | null>;
 	getMessageByFileId(fileID: string): Promise<IMessage | null>;
-	unsetThreadByThreadId(tmid: string): Promise<UpdateResult>;
 	setThreadMessagesAsRead(tmid: string, until: Date): Promise<UpdateResult | Document>;
 	updateRepliesByThreadId(tmid: string, replies: string[], ts: Date): Promise<UpdateResult>;
 	refreshDiscussionMetadata(room: Pick<IRoom, '_id' | 'msgs' | 'lm'>): Promise<UpdateResult | Document | false>;

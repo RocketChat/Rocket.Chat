@@ -733,22 +733,6 @@ export class Messages extends Base {
 		return this.findOne({ tmid }, { fields: { ts: 1 }, sort: { ts: 1 } });
 	}
 
-	unsetThreadByThreadId(tmid) {
-		const query = {
-			_id: tmid,
-		};
-
-		const update = {
-			$unset: {
-				tcount: 1,
-				tlm: 1,
-				replies: 1,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	removeThreadFollowerByThreadId(tmid, userId) {
 		const query = {
 			_id: tmid,

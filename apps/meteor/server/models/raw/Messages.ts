@@ -2044,22 +2044,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findOne({ tmid }, { projection: { ts: 1 }, sort: { ts: 1 } });
 	}
 
-	unsetThreadByThreadId(tmid: string): Promise<UpdateResult> {
-		const query = {
-			_id: tmid,
-		};
-
-		const update: UpdateFilter<IMessage> = {
-			$unset: {
-				tcount: 1,
-				tlm: 1,
-				replies: 1,
-			},
-		};
-
-		return this.updateOne(query, update);
-	}
-
 	addThreadFollowerByThreadId(tmid: string, userId: string): Promise<UpdateResult> {
 		const query = {
 			_id: tmid,
