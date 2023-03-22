@@ -749,20 +749,6 @@ export class Messages extends Base {
 		return this.update(query, update);
 	}
 
-	addThreadFollowerByThreadId(tmid, userId) {
-		const query = {
-			_id: tmid,
-		};
-
-		const update = {
-			$addToSet: {
-				replies: userId,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	removeThreadFollowerByThreadId(tmid, userId) {
 		const query = {
 			_id: tmid,

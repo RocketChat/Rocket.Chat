@@ -1,3 +1,5 @@
+import { Messages as MessagesRaw } from '@rocket.chat/models';
+
 import { Messages, Subscriptions } from '../../models/server';
 import { getMentions } from '../../lib/server/lib/notifyUsersOnMessage';
 
@@ -34,13 +36,13 @@ export const reply = ({ tmid }, message, parentMessage, followers) => {
 	mentionIds.forEach((mentionId) => Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, [mentionId], tmid, { userMention: true }));
 };
 
-export const follow = ({ tmid, uid }) => {
+export async function follow({ tmid, uid }) {
 	if (!tmid || !uid) {
 		return false;
 	}
 
-	Messages.addThreadFollowerByThreadId(tmid, uid);
-};
+	await MessagesRaw.addThreadFollowerByThreadId(tmid, uid);
+}
 
 export const unfollow = ({ tmid, rid, uid }) => {
 	if (!tmid || !uid) {
