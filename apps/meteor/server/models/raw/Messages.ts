@@ -1977,25 +1977,11 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	 * to race conditions: If multiple updates occur, the current state will be updated
 	 * only if the new state of the discussion room is really newer.
 	 */
-	async refreshDiscussionMetadata({ rid }: { rid: string }): Promise<UpdateResult | Document | false> {
-		if (!rid) {
-			return false;
-		}
-		const room = await Rooms.findOneById(rid, {
-			projection: {
-				msgs: 1,
-				lm: 1,
-			},
-		});
-
-		if (!room) {
-			return false;
-		}
-
-		const { msgs: dcount, lm: dlm } = room;
+	async refreshDiscussionMetadata(room: Pick<IRoom, '_id' | 'msgs' | 'lm'>): Promise<UpdateResult | Document | false> {
+		const { _id: drid, msgs: dcount, lm: dlm } = room;
 
 		const query = {
-			drid: rid,
+			drid,
 		};
 
 		return this.updateMany(query, {

@@ -1,5 +1,8 @@
+import type { IRoom } from '@rocket.chat/core-typings';
+import { Messages, Rooms } from '@rocket.chat/models';
+
 import { callbacks } from '../../../../lib/callbacks';
-import { Messages, Rooms } from '../../../models/server';
+import { Rooms as RoomsSync } from '../../../models/server';
 import { deleteRoom } from '../../../lib/server';
 
 /**
@@ -8,10 +11,24 @@ import { deleteRoom } from '../../../lib/server';
  */
 callbacks.add(
 	'afterSaveMessage',
-	function (message, { _id, prid } = {}) {
-		if (prid) {
-			Messages.refreshDiscussionMetadata({ rid: _id }, message);
+	async function (message, { _id, prid }) {
+		if (!prid) {
+			return message;
 		}
+
+		const room = await Rooms.findOneById(_id, {
+			projection: {
+				msgs: 1,
+				lm: 1,
+			},
+		});
+
+		if (!room) {
+			return message;
+		}
+
+		await Messages.refreshDiscussionMetadata(room);
+
 		return message;
 	},
 	callbacks.priority.LOW,
@@ -20,9 +37,18 @@ callbacks.add(
 
 callbacks.add(
 	'afterDeleteMessage',
-	function (message, { _id, prid } = {}) {
+	async function (message, { _id, prid }) {
 		if (prid) {
-			Messages.refreshDiscussionMetadata({ rid: _id }, message);
+			const room = await Rooms.findOneById(_id, {
+				projection: {
+					msgs: 1,
+					lm: 1,
+				},
+			});
+
+			if (room) {
+				await Messages.refreshDiscussionMetadata(room);
+			}
 		}
 		if (message.drid) {
 			deleteRoom(message.drid);
@@ -36,7 +62,7 @@ callbacks.add(
 callbacks.add(
 	'afterDeleteRoom',
 	(rid) => {
-		Rooms.find({ prid: rid }, { fields: { _id: 1 } }).forEach(({ _id }) => deleteRoom(_id));
+		RoomsSync.find({ prid: rid }, { fields: { _id: 1 } }).forEach(({ _id }: Pick<IRoom, '_id'>) => deleteRoom(_id));
 		return rid;
 	},
 	callbacks.priority.LOW,
@@ -48,7 +74,7 @@ callbacks.add(
 	'afterRoomNameChange',
 	(roomConfig) => {
 		const { rid, name, oldName } = roomConfig;
-		Rooms.update({ prid: rid, ...(oldName && { topic: oldName }) }, { $set: { topic: name } }, { multi: true });
+		RoomsSync.update({ prid: rid, ...(oldName && { topic: oldName }) }, { $set: { topic: name } }, { multi: true });
 		return roomConfig;
 	},
 	callbacks.priority.LOW,
@@ -57,8 +83,8 @@ callbacks.add(
 
 callbacks.add(
 	'afterDeleteRoom',
-	(drid) => {
-		Messages.update(
+	async (drid) => {
+		await Messages.updateMany(
 			{ drid },
 			{
 				$unset: {

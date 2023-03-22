@@ -685,40 +685,6 @@ export class Messages extends Base {
 		});
 	}
 
-	/**
-	 * Copy metadata from the discussion to the system message in the parent channel
-	 * which links to the discussion.
-	 * Since we don't pass this metadata into the model's function, it is not a subject
-	 * to race conditions: If multiple updates occur, the current state will be updated
-	 * only if the new state of the discussion room is really newer.
-	 */
-	refreshDiscussionMetadata({ rid }) {
-		if (!rid) {
-			return false;
-		}
-		const { lm: dlm, msgs: dcount } = Rooms.findOneById(rid, {
-			fields: {
-				msgs: 1,
-				lm: 1,
-			},
-		});
-
-		const query = {
-			drid: rid,
-		};
-
-		return this.update(
-			query,
-			{
-				$set: {
-					dcount,
-					dlm,
-				},
-			},
-			{ multi: 1 },
-		);
-	}
-
 	// //////////////////////////////////////////////////////////////////
 	// threads
 
