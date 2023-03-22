@@ -3,7 +3,7 @@ import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
 
 import { settings } from '../../settings/server';
 import { Rooms } from '../../models/server';
-import { cleanRoomHistory } from '../../lib/server';
+import { cleanRoomHistory } from '../../lib/server/functions/cleanRoomHistory';
 
 const maxTimes = {
 	c: 0,

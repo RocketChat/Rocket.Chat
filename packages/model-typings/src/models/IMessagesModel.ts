@@ -27,12 +27,12 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	findPaginatedVisibleByMentionAndRoomId(
 		username: IUser['username'],
 		rid: IRoom['_id'],
-		options: FindOptions<IMessage>,
+		options?: FindOptions<IMessage>,
 	): FindPaginated<FindCursor<IMessage>>;
 
-	findVisibleByMentionAndRoomId(username: IUser['username'], rid: IRoom['_id'], options: FindOptions<IMessage>): FindCursor<IMessage>;
+	findVisibleByMentionAndRoomId(username: IUser['username'], rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage>;
 
-	findStarredByUserAtRoom(userId: IUser['_id'], roomId: IRoom['_id'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
+	findStarredByUserAtRoom(userId: IUser['_id'], roomId: IRoom['_id'], options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
 
 	findPaginatedByRoomIdAndType(
 		roomId: IRoom['_id'],
@@ -40,9 +40,9 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		options?: FindOptions<IMessage>,
 	): FindPaginated<FindCursor<IMessage>>;
 
-	findDiscussionsByRoom(rid: IRoom['_id'], options: FindOptions<IMessage>): FindCursor<IMessage>;
+	findDiscussionsByRoom(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage>;
 
-	findDiscussionsByRoomAndText(rid: IRoom['_id'], text: string, options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
+	findDiscussionsByRoomAndText(rid: IRoom['_id'], text: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
 
 	findAllNumberOfTransferredRooms(params: {
 		start: string;
@@ -61,9 +61,9 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	countRoomsWithPinnedMessages(options: AggregateOptions): Promise<number>;
 
-	findPinned(options: FindOptions<IMessage>): FindCursor<IMessage>;
+	findPinned(options?: FindOptions<IMessage>): FindCursor<IMessage>;
 
-	findStarred(options: FindOptions<IMessage>): FindCursor<IMessage>;
+	findStarred(options?: FindOptions<IMessage>): FindCursor<IMessage>;
 
 	setBlocksById(_id: string, blocks: Required<IMessage>['blocks']): Promise<void>;
 
@@ -73,7 +73,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	countByType(type: IMessage['t'], options: CountDocumentsOptions): Promise<number>;
 
-	findPaginatedPinnedByRoom(roomId: IMessage['rid'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
+	findPaginatedPinnedByRoom(roomId: IMessage['rid'], options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
 
 	setFederationReactionEventId(username: string, _id: string, reaction: string, federationEventId: string): Promise<void>;
 
@@ -178,7 +178,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	findByMention(username: string, options?: FindOptions<IMessage>): FindCursor<IMessage>;
 	findVisibleThreadByThreadId(tmid: string, options?: FindOptions<IMessage>): FindCursor<IMessage>;
 
-	findFilesByUserId(userId: string, options: FindOptions<IMessage>): FindCursor<IMessage>;
+	findFilesByUserId(userId: string, options?: FindOptions<IMessage>): FindCursor<IMessage>;
 	findVisibleByIds(ids: string[], options?: FindOptions<IMessage>): FindCursor<IMessage>;
 	findVisibleByRoomIdNotContainingTypes(
 		roomId: string,
@@ -193,7 +193,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		ts: Date,
 		users: string[],
 		ignoreThreads: boolean,
-		options: FindOptions<IMessage>,
+		options?: FindOptions<IMessage>,
 	): FindCursor<IMessage>;
 	findVisibleByRoomId(rid: string, options?: FindOptions<IMessage>): FindCursor<IMessage>;
 	findDiscussionByRoomIdPinnedTimestampAndUsers(
@@ -218,7 +218,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		afterTimestamp: Date,
 		beforeTimestamp: Date,
 		types: MessageTypesValues[],
-		options: FindOptions<IMessage>,
+		options?: FindOptions<IMessage>,
 		showThreadMessages?: boolean,
 		inclusive?: boolean,
 	): FindCursor<IMessage>;
@@ -454,7 +454,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	findThreadsByRoomIdPinnedTimestampAndUsers(
 		data: { rid: string; pinned: boolean; ignoreDiscussion?: boolean; ts: Date; users: string[] },
-		options: FindOptions<IMessage>,
+		options?: FindOptions<IMessage>,
 	): FindCursor<IMessage>;
 
 	removeByIdPinnedTimestampLimitAndUsers(
