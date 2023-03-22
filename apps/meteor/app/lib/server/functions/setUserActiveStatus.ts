@@ -34,7 +34,7 @@ function reactivateDirectConversations(userId: string): void {
 	Rooms.setDmReadOnlyByUserId(userId, roomsToReactivate, false, false);
 }
 
-export function setUserActiveStatus(userId: string, active: boolean, confirmRelinquish = false): boolean | undefined {
+export async function setUserActiveStatus(userId: string, active: boolean, confirmRelinquish = false): Promise<boolean | undefined> {
 	check(userId, String);
 	check(active, Boolean);
 
