@@ -1958,7 +1958,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		});
 	}
 
-	findUnreadThreadMessagesByDate(tmid: string, userId: string, after: Date): FindCursor<IMessage> {
+	findUnreadThreadMessagesByDate(tmid: string, userId: string, after: Date): FindCursor<Pick<IMessage, '_id'>> {
 		const query = {
 			'u._id': { $ne: userId },
 			'unread': true,
@@ -2001,16 +2001,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 	countThreads(): Promise<number> {
 		return this.col.countDocuments({ tcount: { $exists: true } });
-	}
-
-	removeThreadRefByThreadId(tmid: string): Promise<UpdateResult | Document> {
-		const query = { tmid };
-		const update: UpdateFilter<IMessage> = {
-			$unset: {
-				tmid: 1,
-			},
-		};
-		return this.updateMany(query, update);
 	}
 
 	updateRepliesByThreadId(tmid: string, replies: string[], ts: Date): Promise<UpdateResult> {

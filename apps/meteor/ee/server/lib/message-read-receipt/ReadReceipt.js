@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
-import { LivechatVisitors, ReadReceipts } from '@rocket.chat/models';
+import { LivechatVisitors, ReadReceipts, Messages as MessagesRaw } from '@rocket.chat/models';
 
 import { Subscriptions, Messages, Rooms, Users } from '../../../../app/models/server';
 import { settings } from '../../../../app/settings/server';
@@ -71,19 +71,19 @@ export const ReadReceipt = {
 		this.storeReadReceipts([{ _id: message._id }], roomId, userId, extraData);
 	},
 
-	storeThreadMessagesReadReceipts(tmid, userId, userLastSeen) {
+	async storeThreadMessagesReadReceipts(tmid, userId, userLastSeen) {
 		if (!settings.get('Message_Read_Receipt_Enabled')) {
 			return;
 		}
 
-		const message = Messages.findOneById(tmid, { fields: { tlm: 1, rid: 1 } });
+		const message = await MessagesRaw.findOneById(tmid, { projection: { tlm: 1, rid: 1 } });
 
 		// if users last seen is greater than thread's last message, it means the user has already marked this thread as read
 		if (!message || userLastSeen > message.tlm) {
 			return;
 		}
 
-		this.storeReadReceipts(Messages.findUnreadThreadMessagesByDate(tmid, userId, userLastSeen), message.rid, userId);
+		this.storeReadReceipts(await MessagesRaw.findUnreadThreadMessagesByDate(tmid, userId, userLastSeen), message.rid, userId);
 	},
 
 	async storeReadReceipts(messages, roomId, userId, extraData = {}) {

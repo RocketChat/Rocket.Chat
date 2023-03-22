@@ -666,25 +666,6 @@ export class Messages extends Base {
 		});
 	}
 
-	findUnreadThreadMessagesByDate(tmid, userId, after) {
-		const query = {
-			'u._id': { $ne: userId },
-			'unread': true,
-			tmid,
-			'tshow': { $exists: false },
-		};
-
-		if (after) {
-			query.ts = { $gt: after };
-		}
-
-		return this.find(query, {
-			fields: {
-				_id: 1,
-			},
-		});
-	}
-
 	findAllImportedMessagesWithFilesToDownload() {
 		const query = {
 			'_importFile.downloadUrl': {

@@ -474,7 +474,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	setThreadMessagesAsRead(tmid: string, until: Date): Promise<UpdateResult | Document>;
 	updateRepliesByThreadId(tmid: string, replies: string[], ts: Date): Promise<UpdateResult>;
 	refreshDiscussionMetadata(room: Pick<IRoom, '_id' | 'msgs' | 'lm'>): Promise<UpdateResult | Document | false>;
-	findUnreadThreadMessagesByDate(tmid: string, userId: string, after: Date): FindCursor<IMessage>;
+	findUnreadThreadMessagesByDate(tmid: string, userId: string, after: Date): FindCursor<Pick<IMessage, '_id'>>;
 	findVisibleUnreadMessagesByRoomAndDate(rid: string, after: Date): FindCursor<IMessage>;
 	setAsReadById(_id: string): Promise<UpdateResult>;
 	countThreads(): Promise<number>;
