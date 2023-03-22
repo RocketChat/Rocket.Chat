@@ -13,7 +13,7 @@ export async function findAdminRooms({
 }: {
 	uid: string;
 	filter: string;
-	types: string[];
+	types: string[] | undefined;
 	pagination: { offset: number; count: number; sort: Record<string, 1 | -1> };
 }): Promise<{
 	rooms: IRoom[];
