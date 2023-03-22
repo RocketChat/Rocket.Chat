@@ -6,7 +6,8 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Media } from '@rocket.chat/core-services';
 
 import { API } from '../api';
-import { canAccessRoomAsync, canAccessRoomId, hasPermission } from '../../../authorization/server';
+import { canAccessRoomAsync, canAccessRoomId } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { settings } from '../../../settings/server';
 import { eraseRoom } from '../../../../server/methods/eraseRoom';
@@ -551,7 +552,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-params');
 			}
 
-			if (!(await hasPermission(this.userId, 'mail-messages', rid))) {
+			if (!(await hasPermissionAsync(this.userId, 'mail-messages', rid))) {
 				throw new Meteor.Error('error-action-not-allowed', 'Mailing is not allowed');
 			}
 

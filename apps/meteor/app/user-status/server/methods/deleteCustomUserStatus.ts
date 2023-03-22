@@ -3,7 +3,7 @@ import { CustomUserStatus } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -14,7 +14,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async deleteCustomUserStatus(userStatusID) {
-		if (!this.userId || !hasPermission(this.userId, 'manage-user-status')) {
+		if (!this.userId || !(await hasPermissionAsync(this.userId, 'manage-user-status'))) {
 			throw new Meteor.Error('not_authorized');
 		}
 

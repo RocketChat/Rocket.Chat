@@ -1,17 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { hasPermission } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { Users, Rooms, Subscriptions, Messages } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { callbacks } from '../../lib/callbacks';
 
 Meteor.methods({
-	addAllUserToRoom(rid, activeUsersOnly = false) {
+	async addAllUserToRoom(rid, activeUsersOnly = false) {
 		check(rid, String);
 		check(activeUsersOnly, Boolean);
 
-		if (!hasPermission(this.userId, 'add-all-to-room')) {
+		if (!(await hasPermissionAsync(this.userId, 'add-all-to-room'))) {
 			throw new Meteor.Error(403, 'Access to Method Forbidden', {
 				method: 'addAllToRoom',
 			});

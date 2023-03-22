@@ -5,7 +5,7 @@ import { VoipRoom, LivechatVisitors, Users } from '@rocket.chat/models';
 import { LivechatVoip } from '@rocket.chat/core-services';
 
 import { API } from '../../api';
-import { hasPermission } from '../../../../authorization/server';
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { typedJsonParse } from '../../../../../lib/typedJSONParse';
 import { getPaginationItems } from '../../helpers/getPaginationItems';
 
@@ -167,8 +167,9 @@ API.v1.addRoute(
 			const { createdAt: createdAtParam, closedAt: closedAtParam } = this.queryParams;
 
 			// Reusing same L room permissions for simplicity
-			const hasAdminAccess = hasPermission(this.userId, 'view-livechat-rooms');
-			const hasAgentAccess = hasPermission(this.userId, 'view-l-room') && agents?.includes(this.userId) && agents?.length === 1;
+			const hasAdminAccess = await hasPermissionAsync(this.userId, 'view-livechat-rooms');
+			const hasAgentAccess =
+				(await hasPermissionAsync(this.userId, 'view-l-room')) && agents?.includes(this.userId) && agents?.length === 1;
 			if (!hasAdminAccess && !hasAgentAccess) {
 				return API.v1.unauthorized();
 			}

@@ -12,7 +12,7 @@ import {
 import { Settings } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import type { ResultFor } from '../definition';
 import { API } from '../api';
 import { SettingsEvents, settings } from '../../../settings/server';
@@ -128,7 +128,7 @@ API.v1.addRoute(
 				hidden: { $ne: true },
 			};
 
-			if (!hasPermission(this.userId, 'view-privileged-setting')) {
+			if (!(await hasPermissionAsync(this.userId, 'view-privileged-setting'))) {
 				ourQuery.public = true;
 			}
 
@@ -151,7 +151,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			if (!hasPermission(this.userId, 'view-privileged-setting')) {
+			if (!(await hasPermissionAsync(this.userId, 'view-privileged-setting'))) {
 				return API.v1.unauthorized();
 			}
 			const setting = await Settings.findOneNotHiddenById(this.urlParams._id);
@@ -163,7 +163,7 @@ API.v1.addRoute(
 		post: {
 			twoFactorRequired: true,
 			async action(): Promise<ResultFor<'POST', '/v1/settings/:_id'>> {
-				if (!hasPermission(this.userId, 'edit-privileged-setting')) {
+				if (!(await hasPermissionAsync(this.userId, 'edit-privileged-setting'))) {
 					return API.v1.unauthorized();
 				}
 

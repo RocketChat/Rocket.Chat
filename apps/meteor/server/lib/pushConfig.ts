@@ -3,7 +3,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { getWorkspaceAccessToken } from '../../app/cloud/server';
-import { hasPermission } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../app/settings/server';
 import { appTokensCollection, Push } from '../../app/push/server';
 
@@ -15,7 +15,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	push_test() {
+	async push_test() {
 		const user = Meteor.user();
 
 		if (!user) {
@@ -24,7 +24,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!hasPermission(user._id, 'test-admin-options')) {
+		if (!(await hasPermissionAsync(user._id, 'test-admin-options'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'push_test',
 			});
