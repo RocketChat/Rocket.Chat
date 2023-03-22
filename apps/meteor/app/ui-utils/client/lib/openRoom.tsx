@@ -18,6 +18,7 @@ import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import MainLayout from '../../../../client/views/root/MainLayout';
 import { omit } from '../../../../lib/utils/omit';
 import { RoomSkeleton, RoomProvider, Room, RoomNotFound } from '../../../../client/views/room';
+import { RoomManager } from '../../../../client/lib/RoomManager';
 
 export async function openRoom(type: RoomType, name: string, render = true) {
 	setTimeout(() => {
@@ -48,7 +49,7 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 
 				c.stop();
 
-				if (room._id === Session.get('openedRoom')) {
+				if (room._id === RoomManager.opened) {
 					return;
 				}
 

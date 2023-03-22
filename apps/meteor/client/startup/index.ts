@@ -20,7 +20,6 @@ import './messageObserve';
 import './messageTypes';
 import './notifications';
 import './oauth';
-import './openedRoom';
 import './otr';
 import './readMessage';
 import './reloadRoomAfterLogin';

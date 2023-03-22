@@ -12,7 +12,6 @@ import {
 	useTranslation,
 	useRoute,
 } from '@rocket.chat/ui-contexts';
-import { Session } from 'meteor/session';
 import React, { useCallback, useState, useEffect } from 'react';
 
 import { LivechatInquiry } from '../../../../../../../app/livechat/client/collections/LivechatInquiry';
@@ -218,7 +217,6 @@ export const useQuickActions = (
 
 	const returnChatToQueueMutation = useReturnChatToQueueMutation({
 		onSuccess: () => {
-			Session.set('openedRoom', null);
 			LegacyRoomManager.close(room.t + rid);
 			homeRoute.push();
 		},

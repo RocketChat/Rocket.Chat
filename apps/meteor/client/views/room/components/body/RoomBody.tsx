@@ -5,7 +5,6 @@ import {
 	usePermission,
 	useQueryStringParameter,
 	useRole,
-	useSession,
 	useSetting,
 	useTranslation,
 	useUser,
@@ -281,10 +280,8 @@ const RoomBody = (): ReactElement => {
 		[room._id],
 	);
 
-	const openedRoom = useSession('openedRoom');
-
 	useEffect(() => {
-		if (!routeName || !roomCoordinator.isRouteNameKnown(routeName) || room._id !== openedRoom) {
+		if (!routeName || !roomCoordinator.isRouteNameKnown(routeName)) {
 			return;
 		}
 
@@ -292,7 +289,7 @@ const RoomBody = (): ReactElement => {
 		if (subscribed && (subscription?.alert || subscription?.unread)) {
 			readMessage.refreshUnreadMark(room._id);
 		}
-	}, [debouncedReadMessageRead, openedRoom, room._id, routeName, subscribed, subscription?.alert, subscription?.unread]);
+	}, [debouncedReadMessageRead, room._id, routeName, subscribed, subscription?.alert, subscription?.unread]);
 
 	useEffect(() => {
 		if (!subscribed) {

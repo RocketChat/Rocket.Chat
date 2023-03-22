@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { Session } from 'meteor/session';
 import { Emitter } from '@rocket.chat/emitter';
 import type { IRoom } from '@rocket.chat/core-typings';
 import $ from 'jquery';
@@ -8,6 +7,7 @@ import { RoomHistoryManager } from './RoomHistoryManager';
 import { LegacyRoomManager } from './LegacyRoomManager';
 import { ChatSubscription, ChatMessage } from '../../../models/client';
 import { APIClient } from '../../../utils/client';
+import { RoomManager } from '../../../../client/lib/RoomManager';
 
 class ReadMessage extends Emitter {
 	protected enabled: boolean;
@@ -35,14 +35,19 @@ class ReadMessage extends Emitter {
 		return this.enabled === true;
 	}
 
-	public read(rid: IRoom['_id'] = Session.get('openedRoom')) {
+	public read(rid: IRoom['_id'] | undefined = RoomManager.opened) {
 		if (!this.enabled) {
 			this.log('readMessage -> readNow canceled by enabled: false');
 			return;
 		}
 
+		if (!rid) {
+			this.log('readMessage -> readNow canceled by rid: undefined');
+			return;
+		}
+
 		const subscription = ChatSubscription.findOne({ rid });
-		if (subscription == null) {
+		if (!subscription) {
 			this.log('readMessage -> readNow canceled, no subscription found for rid:', rid);
 			return;
 		}
@@ -53,7 +58,7 @@ class ReadMessage extends Emitter {
 		}
 
 		const room = LegacyRoomManager.getOpenedRoomByRid(rid);
-		if (room == null) {
+		if (!room) {
 			this.log('readMessage -> readNow canceled, no room found for typeName:', subscription.t + subscription.name);
 			return;
 		}
@@ -76,14 +81,14 @@ class ReadMessage extends Emitter {
 		return this.readNow(rid);
 	}
 
-	public readNow(rid: IRoom['_id'] = Session.get('openedRoom')) {
-		if (rid == null) {
+	public readNow(rid: IRoom['_id'] | undefined = RoomManager.opened) {
+		if (!rid) {
 			this.log('readMessage -> readNow canceled, no rid informed');
 			return;
 		}
 
 		const subscription = ChatSubscription.findOne({ rid });
-		if (subscription == null) {
+		if (!subscription) {
 			this.log('readMessage -> readNow canceled, no subscription found for rid:', rid);
 			return;
 		}

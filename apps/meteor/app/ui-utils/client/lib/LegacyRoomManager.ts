@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -115,7 +114,6 @@ async function closeAllRooms() {
 	for await (const openedRoom of Object.values(openedRooms)) {
 		await close(openedRoom.typeName);
 	}
-	Session.set('openedRoom', undefined);
 }
 
 function getOpenedRoomByRid(rid: IRoom['_id']) {
@@ -126,7 +124,7 @@ function getOpenedRoomByRid(rid: IRoom['_id']) {
 }
 
 const handleTrackSettingsChange = (msg: IMessage) => {
-	const openedRoom = Tracker.nonreactive(() => Session.get('openedRoom'));
+	const openedRoom = RoomManager.opened;
 	if (openedRoom !== msg.rid) {
 		return;
 	}
