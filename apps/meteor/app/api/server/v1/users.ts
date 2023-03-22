@@ -950,13 +950,13 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
 
-				if (!resetUserE2EEncriptionKey(user._id, true)) {
+				if (!(await resetUserE2EEncriptionKey(user._id, true))) {
 					return API.v1.failure();
 				}
 
 				return API.v1.success();
 			}
-			resetUserE2EEncriptionKey(this.userId, false);
+			await resetUserE2EEncriptionKey(this.userId, false);
 			return API.v1.success();
 		},
 	},

@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ILivechatVisitor } from '@rocket.chat/core-typings';
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatInquiry } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { LivechatRooms, LivechatInquiry, Messages, Users } from '../../../../../app/models/server';
+import { LivechatRooms, Messages, Users } from '../../../../../app/models/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { callbacks } from '../../../../../lib/callbacks';
 
@@ -32,7 +32,7 @@ async function resolveOnHoldCommentInfo(options: { clientAction: boolean }, room
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'livechat:resumeOnHold'(roomId: string, options?: { clientAction: boolean }): Promise<unknown>;
+		'livechat:resumeOnHold'(roomId: string, options?: { clientAction: boolean }): void;
 	}
 }
 
@@ -51,7 +51,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const inquiry = LivechatInquiry.findOneByRoomId(roomId, {});
+		const inquiry = await LivechatInquiry.findOneByRoomId(roomId, {});
 		if (!inquiry) {
 			throw new Meteor.Error('inquiry-not-found', 'Error! No inquiry found for this room', {
 				method: 'livechat:resumeOnHold',

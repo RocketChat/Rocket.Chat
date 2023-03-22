@@ -14,7 +14,7 @@ import type {
 	IImportData,
 	IImportRecordType,
 } from '@rocket.chat/core-typings';
-import { ImportData } from '@rocket.chat/models';
+import { ImportData, Rooms as RoomsRaw } from '@rocket.chat/models';
 
 import type { IConversionCallbacks } from '../definitions/IConversionCallbacks';
 import { Users, Rooms, Subscriptions } from '../../../models/server';
@@ -633,7 +633,7 @@ export class ImportDataConverter {
 
 		for await (const rid of rids) {
 			try {
-				await Rooms.resetLastMessageById(rid);
+				await RoomsRaw.resetLastMessageById(rid);
 			} catch (e) {
 				this._logger.warn(`Failed to update last message of room ${rid}`);
 				this._logger.error(e);

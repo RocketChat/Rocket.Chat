@@ -5,10 +5,10 @@ import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/l
 import { OmnichannelSourceType, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
 import { api } from '@rocket.chat/core-services';
-import { LivechatDepartmentAgents, Users as UsersRaw } from '@rocket.chat/models';
+import { LivechatDepartmentAgents, Users as UsersRaw, LivechatInquiry } from '@rocket.chat/models';
 
 import { hasRole } from '../../../authorization/server';
-import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatInquiry, LivechatDepartment } from '../../../models/server';
+import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatDepartment } from '../../../models/server';
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../../lib/callbacks';
@@ -97,7 +97,7 @@ export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = 
 	return roomId;
 };
 
-export const createLivechatInquiry = ({ rid, name, guest, message, initialStatus, extraData = {} }) => {
+export const createLivechatInquiry = async ({ rid, name, guest, message, initialStatus, extraData = {} }) => {
 	check(rid, String);
 	check(name, String);
 	check(
@@ -144,7 +144,7 @@ export const createLivechatInquiry = ({ rid, name, guest, message, initialStatus
 		...extraInquiryInfo,
 	};
 
-	const result = LivechatInquiry.insert(inquiry);
+	const result = (await LivechatInquiry.insertOne(inquiry)).insertedId;
 	logger.debug(`Inquiry ${result} created for visitor ${_id}`);
 
 	return result;
@@ -283,7 +283,7 @@ export const dispatchInquiryQueued = async (inquiry, agent) => {
 	}
 
 	if (!agent || !allowAgentSkipQueue(agent)) {
-		saveQueueInquiry(inquiry);
+		await saveQueueInquiry(inquiry);
 	}
 
 	// Alert only the online agents of the queued request
@@ -347,7 +347,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 	}
 
 	const { _id: rid, servedBy: oldServedBy } = room;
-	const inquiry = LivechatInquiry.findOneByRoomId(rid);
+	const inquiry = await LivechatInquiry.findOneByRoomId(rid);
 	if (!inquiry) {
 		logger.debug(`No inquiries found for room ${room._id}. Cannot forward`);
 		throw new Error('error-invalid-inquiry');
@@ -399,9 +399,9 @@ export const forwardRoomToAgent = async (room, transferData) => {
 	return true;
 };
 
-export const updateChatDepartment = ({ rid, newDepartmentId, oldDepartmentId }) => {
+export const updateChatDepartment = async ({ rid, newDepartmentId, oldDepartmentId }) => {
 	LivechatRooms.changeDepartmentIdByRoomId(rid, newDepartmentId);
-	LivechatInquiry.changeDepartmentIdByRoomId(rid, newDepartmentId);
+	await LivechatInquiry.changeDepartmentIdByRoomId(rid, newDepartmentId);
 	Subscriptions.changeDepartmentByRoomId(rid, newDepartmentId);
 
 	Meteor.defer(() => {
@@ -430,7 +430,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	const { _id: rid, servedBy: oldServedBy, departmentId: oldDepartmentId } = room;
 	let agent = null;
 
-	const inquiry = LivechatInquiry.findOneByRoomId(rid);
+	const inquiry = await LivechatInquiry.findOneByRoomId(rid);
 	if (!inquiry) {
 		logger.debug(`Cannot forward room ${room._id}. No inquiries found`);
 		throw new Error('error-transferring-inquiry');
@@ -497,14 +497,14 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 		Messages.createUserJoinWithRoomIdAndUser(rid, servedBy);
 	}
 
-	updateChatDepartment({ rid, newDepartmentId: departmentId, oldDepartmentId });
+	await updateChatDepartment({ rid, newDepartmentId: departmentId, oldDepartmentId });
 
 	if (chatQueued) {
 		logger.debug(`Forwarding succesful. Marking inquiry ${inquiry._id} as ready`);
-		LivechatInquiry.readyInquiry(inquiry._id);
+		await LivechatInquiry.readyInquiry(inquiry._id);
 		LivechatRooms.removeAgentByRoomId(rid);
 		dispatchAgentDelegated(rid, null);
-		const newInquiry = LivechatInquiry.findOneById(inquiry._id);
+		const newInquiry = await LivechatInquiry.findOneById(inquiry._id);
 		await queueInquiry(room, newInquiry);
 
 		logger.debug(`Inquiry ${inquiry._id} queued succesfully`);

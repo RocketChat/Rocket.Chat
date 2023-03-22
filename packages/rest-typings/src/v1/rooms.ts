@@ -525,7 +525,7 @@ export type RoomsEndpoints = {
 			groupable?: boolean;
 			msg?: string;
 			tmid?: string;
-		}) => { message: IMessage };
+		}) => { message: IMessage | null };
 	};
 
 	'/v1/rooms.saveNotification': {
