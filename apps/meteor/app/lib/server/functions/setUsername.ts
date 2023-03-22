@@ -6,7 +6,7 @@ import { api } from '@rocket.chat/core-services';
 
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RateLimiter } from '../lib';
 import { addUserToRoom } from './addUserToRoom';
 import { checkUsernameAvailability, setUserAvatar } from '.';
@@ -77,7 +77,7 @@ export const _setUsername = function (userId: string, u: string, fullUser: IUser
 	if (!previousUsername && user.inviteToken) {
 		const inviteData = Promise.await(Invites.findOneById(user.inviteToken));
 		if (inviteData?.rid) {
-			addUserToRoom(inviteData.rid, user);
+			Promise.await(addUserToRoom(inviteData.rid, user));
 		}
 	}
 
@@ -91,8 +91,8 @@ export const _setUsername = function (userId: string, u: string, fullUser: IUser
 };
 
 export const setUsername = RateLimiter.limitFunction(_setUsername, 1, 60000, {
-	0() {
+	async 0() {
 		const userId = Meteor.userId();
-		return !userId || !hasPermission(userId, 'edit-other-user-info');
+		return !userId || !(await hasPermissionAsync(userId, 'edit-other-user-info'));
 	},
 });

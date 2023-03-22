@@ -19,6 +19,7 @@ import {
 	Subscriptions as SubscriptionsRaw,
 	Messages as MessagesRaw,
 	LivechatDepartment as LivechatDepartmentRaw,
+	LivechatDepartmentAgents,
 } from '@rocket.chat/models';
 import { VideoConf, api } from '@rocket.chat/core-services';
 
@@ -27,18 +28,10 @@ import { RoutingManager } from './RoutingManager';
 import { Analytics } from './Analytics';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import {
-	Users,
-	LivechatRooms,
-	Messages,
-	Subscriptions,
-	Rooms,
-	LivechatDepartmentAgents,
-	LivechatDepartment,
-	LivechatInquiry,
-} from '../../../models/server';
+import { Users, LivechatRooms, Messages, Subscriptions, Rooms, LivechatDepartment, LivechatInquiry } from '../../../models/server';
 import { Logger } from '../../../logger/server';
-import { hasPermission, hasRole, canAccessRoom, roomAccessAttributes } from '../../../authorization/server';
+import { hasRole, canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import * as Mailer from '../../../mailer/server/api';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
@@ -48,7 +41,7 @@ import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAge
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { businessHourManager } from '../business-hour';
 import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
-import { removeUserFromRoles } from '../../../../server/lib/roles/removeUserFromRoles';
+import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 
@@ -109,7 +102,7 @@ export const Livechat = {
 		return Users.findAgents();
 	},
 
-	getOnlineAgents(department, agent) {
+	async getOnlineAgents(department, agent) {
 		if (agent?.agentId) {
 			return Users.findOnlineAgents(agent.agentId);
 		}
@@ -120,13 +113,13 @@ export const Livechat = {
 		return Users.findOnlineAgents();
 	},
 
-	checkOnlineAgents(department, agent, skipFallbackCheck = false) {
+	async checkOnlineAgents(department, agent, skipFallbackCheck = false) {
 		if (agent?.agentId) {
 			return Users.checkOnlineAgents(agent.agentId);
 		}
 
 		if (department) {
-			const onlineForDep = LivechatDepartmentAgents.checkOnlineForDepartment(department);
+			const onlineForDep = await LivechatDepartmentAgents.checkOnlineForDepartment(department);
 			if (onlineForDep || skipFallbackCheck) {
 				return onlineForDep;
 			}
@@ -142,7 +135,7 @@ export const Livechat = {
 		return Users.checkOnlineAgents();
 	},
 
-	getBotAgents(department) {
+	async getBotAgents(department) {
 		if (department) {
 			return LivechatDepartmentAgents.getBotsForDepartment(department);
 		}
@@ -150,19 +143,22 @@ export const Livechat = {
 		return Users.findBotAgents();
 	},
 
-	getRequiredDepartment(onlineRequired = true) {
+	async getRequiredDepartment(onlineRequired = true) {
 		const departments = LivechatDepartment.findEnabledWithAgents();
 
-		return departments.fetch().find((dept) => {
+		for await (const dept of departments.fetch()) {
 			if (!dept.showOnRegistration) {
-				return false;
+				continue;
 			}
 			if (!onlineRequired) {
-				return true;
+				return dept;
 			}
-			const onlineAgents = LivechatDepartmentAgents.getOnlineForDepartment(dept._id);
-			return onlineAgents && onlineAgents.count() > 0;
-		});
+
+			const onlineAgents = await LivechatDepartmentAgents.getOnlineForDepartment(dept._id);
+			if (onlineAgents && onlineAgents.length) {
+				return dept;
+			}
+		}
 	},
 
 	async getRoom(guest, message, roomInfo, agent, extraData) {
@@ -188,7 +184,7 @@ export const Livechat = {
 			const defaultAgent = callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, guest);
 			// if no department selected verify if there is at least one active and pick the first
 			if (!defaultAgent && !guest.department) {
-				const department = this.getRequiredDepartment();
+				const department = await this.getRequiredDepartment();
 				Livechat.logger.debug(`No department or default agent selected for ${guest._id}`);
 
 				if (department) {
@@ -217,7 +213,7 @@ export const Livechat = {
 		}
 
 		if (newRoom) {
-			Messages.setRoomIdByToken(guest.token, room._id);
+			await MessagesRaw.setRoomIdByToken(guest.token, room._id);
 		}
 
 		return { room, newRoom };
@@ -280,6 +276,19 @@ export const Livechat = {
 		return true;
 	},
 
+	/**
+	 * Returns the next visitor in the queue
+	 * @param {object} options
+	 * @param {string} [options.id] - The visitor's id
+	 * @param {string} options.token - The visitor's token
+	 * @param {string} [options.name] - The visitor's name
+	 * @param {string} [options.email] - The visitor's email
+	 * @param {string} [options.department] - The visitor's department
+	 * @param {object} [options.phone] - The visitor's phone
+	 * @param {string} [options.username] - The visitor's username
+	 * @param {string} [options.connectionData] - The visitor's connection data
+	 * @param {string} [options.status] - The visitor's status
+	 */
 	async registerGuest({ id, token, name, email, department, phone, username, connectionData, status = 'online' } = {}) {
 		check(token, String);
 		check(id, Match.Maybe(String));
@@ -403,7 +412,7 @@ export const Livechat = {
 
 		const customFields = {};
 
-		if ((!userId || hasPermission(userId, 'edit-livechat-room-customfields')) && Object.keys(livechatData).length) {
+		if ((!userId || (await hasPermissionAsync(userId, 'edit-livechat-room-customfields'))) && Object.keys(livechatData).length) {
 			Livechat.logger.debug(`Saving custom fields for visitor ${_id}`);
 			const fields = LivechatCustomField.findByScope('visitor');
 			for await (const field of fields) {
@@ -539,7 +548,7 @@ export const Livechat = {
 		const { livechatData = {} } = roomData;
 		const customFields = {};
 
-		if ((!userId || hasPermission(userId, 'edit-livechat-room-customfields')) && Object.keys(livechatData).length) {
+		if ((!userId || (await hasPermissionAsync(userId, 'edit-livechat-room-customfields'))) && Object.keys(livechatData).length) {
 			Livechat.logger.debug(`Updating custom fields on room ${roomData._id}`);
 			const fields = LivechatCustomField.findByScope('room');
 			for await (const field of fields) {
@@ -708,7 +717,7 @@ export const Livechat = {
 		return RoutingManager.transferRoom(room, guest, transferData);
 	},
 
-	returnRoomAsInquiry(rid, departmentId, overrideTransferData = {}) {
+	async returnRoomAsInquiry(rid, departmentId, overrideTransferData = {}) {
 		Livechat.logger.debug(`Transfering room ${rid} to ${departmentId ? 'department' : ''} queue`);
 		const room = LivechatRooms.findOneById(rid);
 		if (!room) {
@@ -751,7 +760,7 @@ export const Livechat = {
 		const transferData = { roomId: rid, scope: 'queue', departmentId, transferredBy, ...overrideTransferData };
 		try {
 			this.saveTransferHistory(room, transferData);
-			RoutingManager.unassignAgent(inquiry, departmentId);
+			await RoutingManager.unassignAgent(inquiry, departmentId);
 		} catch (e) {
 			this.logger.error(e);
 			throw new Meteor.Error('error-returning-inquiry', 'Error returning inquiry to the queue', {
@@ -885,7 +894,7 @@ export const Livechat = {
 		return false;
 	},
 
-	removeAgent(username) {
+	async removeAgent(username) {
 		check(username, String);
 
 		const user = Users.findOneByUsername(username, { fields: { _id: 1 } });
@@ -898,12 +907,16 @@ export const Livechat = {
 
 		const { _id } = user;
 
-		if (removeUserFromRoles(_id, ['livechat-agent'])) {
+		if (await removeUserFromRolesAsync(_id, ['livechat-agent'])) {
 			Users.setOperator(_id, false);
 			Users.removeLivechatData(_id);
 			this.setUserStatusLivechat(_id, 'not-available');
-			LivechatDepartmentAgents.removeByAgentId(_id);
-			Promise.await(Promise.all([LivechatVisitors.removeContactManagerByUsername(username), UsersRaw.unsetExtension(_id)]));
+
+			await Promise.all([
+				LivechatDepartmentAgents.removeByAgentId(_id),
+				LivechatVisitors.removeContactManagerByUsername(username),
+				UsersRaw.unsetExtension(_id),
+			]);
 			return true;
 		}
 
@@ -921,7 +934,7 @@ export const Livechat = {
 			});
 		}
 
-		return removeUserFromRoles(user._id, ['livechat-manager']);
+		return removeUserFromRolesAsync(user._id, ['livechat-manager']);
 	},
 
 	async removeGuest(_id) {
@@ -970,7 +983,7 @@ export const Livechat = {
 		LivechatInquiry.removeByVisitorToken(token);
 	},
 
-	saveDepartmentAgents(_id, departmentAgents) {
+	async saveDepartmentAgents(_id, departmentAgents) {
 		check(_id, String);
 		check(departmentAgents, {
 			upsert: Match.Maybe([
@@ -1019,7 +1032,10 @@ export const Livechat = {
 		return true;
 	},
 
-	removeDepartment(_id) {
+	/*
+	 * @deprecated - Use the equivalent from DepartmentHelpers class
+	 */
+	async removeDepartment(_id) {
 		check(_id, String);
 
 		const departmentRemovalEnabled = settings.get('Omnichannel_enable_department_removal');
@@ -1038,10 +1054,8 @@ export const Livechat = {
 			});
 		}
 		const ret = LivechatDepartment.removeById(_id);
-		const agentsIds = LivechatDepartmentAgents.findByDepartmentId(_id)
-			.fetch()
-			.map((agent) => agent.agentId);
-		LivechatDepartmentAgents.removeByDepartmentId(_id);
+		const agentsIds = (await LivechatDepartmentAgents.findByDepartmentId(_id).toArray()).map((agent) => agent.agentId);
+		await LivechatDepartmentAgents.removeByDepartmentId(_id);
 		LivechatDepartment.unsetFallbackDepartmentByDepartmentId(_id);
 		if (ret) {
 			Meteor.defer(() => {
@@ -1247,23 +1261,23 @@ export const Livechat = {
 		});
 	},
 
-	changeRoomVisitor(userId, roomId, visitor) {
-		const user = Promise.await(Users.findOneById(userId));
+	async changeRoomVisitor(userId, roomId, visitor) {
+		const user = await Users.findOneById(userId);
 		if (!user) {
 			throw new Error('error-user-not-found');
 		}
 
-		if (!hasPermission(userId, 'change-livechat-room-visitor')) {
+		if (!(await hasPermissionAsync(userId, 'change-livechat-room-visitor'))) {
 			throw new Error('error-not-authorized');
 		}
 
-		const room = Promise.await(LivechatRooms.findOneById(roomId, { ...roomAccessAttributes, _id: 1, t: 1 }));
+		const room = await LivechatRooms.findOneById(roomId, { ...roomAccessAttributes, _id: 1, t: 1 });
 
 		if (!room) {
 			throw new Meteor.Error('invalid-room');
 		}
 
-		if (!canAccessRoom(room, user)) {
+		if (!(await canAccessRoomAsync(room, user))) {
 			throw new Error('error-not-allowed');
 		}
 

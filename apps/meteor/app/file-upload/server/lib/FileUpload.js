@@ -13,14 +13,15 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Avatars, UserDataFiles, Uploads, Settings } from '@rocket.chat/models';
+import { hashLoginToken } from '@rocket.chat/account-utils';
 
 import { settings } from '../../../settings/server';
 import Users from '../../../models/server/models/Users';
 import Rooms from '../../../models/server/models/Rooms';
 import Subscriptions from '../../../models/server/models/Subscriptions';
 import { mime } from '../../../utils/lib/mimeTypes';
-import { hasPermission } from '../../../authorization/server/functions/hasPermission';
-import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 import { Messages } from '../../../models/server';
@@ -79,7 +80,7 @@ export const FileUpload = {
 		const room = Rooms.findOneById(file.rid);
 		const directMessageAllowed = settings.get('FileUpload_Enabled_Direct');
 		const fileUploadAllowed = settings.get('FileUpload_Enabled');
-		if (user?.type !== 'app' && canAccessRoom(room, user, file) !== true) {
+		if (user?.type !== 'app' && Promise.await(canAccessRoomAsync(room, user, file)) !== true) {
 			return false;
 		}
 		const language = user ? user.language : 'en';
@@ -216,10 +217,10 @@ export const FileUpload = {
 		}
 
 		if (file.rid) {
-			if (!hasPermission(Meteor.userId(), 'edit-room-avatar', file.rid)) {
+			if (!Promise.await(hasPermissionAsync(Meteor.userId(), 'edit-room-avatar', file.rid))) {
 				throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 			}
-		} else if (Meteor.userId() !== file.userId && !hasPermission(Meteor.userId(), 'edit-other-user-avatar')) {
+		} else if (Meteor.userId() !== file.userId && !Promise.await(hasPermissionAsync(Meteor.userId(), 'edit-other-user-avatar'))) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 
@@ -411,7 +412,7 @@ export const FileUpload = {
 	},
 
 	avatarRoomOnFinishUpload(file) {
-		if (!hasPermission(Meteor.userId(), 'edit-room-avatar', file.rid)) {
+		if (!Promise.await(hasPermissionAsync(Meteor.userId(), 'edit-room-avatar', file.rid))) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 	},
@@ -420,7 +421,7 @@ export const FileUpload = {
 			return FileUpload.avatarRoomOnFinishUpload(file);
 		}
 
-		if (Meteor.userId() !== file.userId && !hasPermission(Meteor.userId(), 'edit-other-user-avatar')) {
+		if (Meteor.userId() !== file.userId && !Promise.await(hasPermissionAsync(Meteor.userId(), 'edit-other-user-avatar'))) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 		// update file record to match user's username
@@ -462,7 +463,7 @@ export const FileUpload = {
 		const uid = rc_uid || headers['x-user-id'];
 		const authToken = rc_token || headers['x-auth-token'];
 
-		const user = uid && authToken && Users.findOneByIdAndLoginToken(uid, authToken, { fields: { _id: 1 } });
+		const user = uid && authToken && Users.findOneByIdAndLoginToken(uid, hashLoginToken(authToken), { fields: { _id: 1 } });
 
 		if (!user) {
 			return false;

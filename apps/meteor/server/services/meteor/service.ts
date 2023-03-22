@@ -216,7 +216,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		});
 
 		this.onEvent('watch.emailInbox', async () => {
-			configureEmailInboxes();
+			await configureEmailInboxes();
 		});
 
 		if (!disableMsgRoundtripTracking) {

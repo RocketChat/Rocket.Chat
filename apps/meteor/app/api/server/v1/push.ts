@@ -6,7 +6,7 @@ import { Messages } from '@rocket.chat/models';
 import { appTokensCollection } from '../../../push/server';
 import { API } from '../api';
 import PushNotification from '../../../push-notifications/server/lib/PushNotification';
-import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
+import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { Users, Rooms } from '../../../models/server';
 
 API.v1.addRoute(
@@ -102,7 +102,7 @@ API.v1.addRoute(
 				throw new Error('error-room-not-found');
 			}
 
-			if (!canAccessRoom(room, receiver)) {
+			if (!(await canAccessRoomAsync(room, receiver))) {
 				throw new Error('error-not-allowed');
 			}
 

@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import type { IMessage } from '@rocket.chat/core-typings';
-import { VideoConference } from '@rocket.chat/models';
+import { VideoConference, LivechatDepartmentAgents } from '@rocket.chat/models';
 
 import { _setUsername } from './setUsername';
 import { _setRealName } from './setRealName';
-import { Messages, Rooms, Subscriptions, LivechatDepartmentAgents, Users } from '../../../models/server';
+import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
 import { FileUpload } from '../../../file-upload/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { validateName } from './validateName';
@@ -14,15 +14,7 @@ import { validateName } from './validateName';
  * @param {object} changes changes to the user
  */
 
-export function saveUserIdentity({
-	_id,
-	name: rawName,
-	username: rawUsername,
-}: { _id: string } & (
-	| { name: string; username: string }
-	| { name: string; username?: undefined }
-	| { username: string; name?: undefined }
-)) {
+export async function saveUserIdentity({ _id, name: rawName, username: rawUsername }: { _id: string; name?: string; username?: string }) {
 	if (!_id) {
 		return false;
 	}
@@ -68,11 +60,11 @@ export function saveUserIdentity({
 			Rooms.replaceUsernameOfUserByUserId(user._id, username);
 			Subscriptions.setUserUsernameByUserId(user._id, username);
 
-			LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
+			await LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
 
 			const fileStore = FileUpload.getStore('Avatars');
-			const previousFile = Promise.await(fileStore.model.findOneByName(previousUsername));
-			const file = Promise.await(fileStore.model.findOneByName(username));
+			const previousFile = await fileStore.model.findOneByName(previousUsername);
+			const file = await fileStore.model.findOneByName(username);
 			if (file) {
 				fileStore.model.deleteFile(file._id);
 			}
@@ -90,7 +82,7 @@ export function saveUserIdentity({
 			updateGroupDMsName(user);
 
 			// update name and username of users on video conferences
-			Promise.await(VideoConference.updateUserReferences(user._id, username || previousUsername, name || previousName));
+			await VideoConference.updateUserReferences(user._id, username || previousUsername, name || previousName);
 		}
 	}
 
