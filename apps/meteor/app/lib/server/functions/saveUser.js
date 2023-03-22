@@ -133,7 +133,7 @@ async function validateUserData(userId, userData) {
 	}
 
 	if (!userData._id) {
-		if (!checkUsernameAvailability(userData.username)) {
+		if (!(await checkUsernameAvailability(userData.username))) {
 			throw new Meteor.Error('error-field-unavailable', `${_.escape(userData.username)} is already in use :(`, {
 				method: 'insertOrUpdateUser',
 				field: userData.username,
