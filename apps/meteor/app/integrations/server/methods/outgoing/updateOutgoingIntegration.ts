@@ -25,7 +25,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const integration = validateOutgoingIntegration(_integration, this.userId);
+		const integration = await validateOutgoingIntegration(_integration, this.userId);
 
 		if (!integration.token || integration.token.trim() === '') {
 			throw new Meteor.Error('error-invalid-token', 'Invalid token', {
