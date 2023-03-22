@@ -24,7 +24,7 @@ import { Livechat } from '../../lib/Livechat';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
-import { canAccessRoomAsync, hasPermission } from '../../../../authorization/server';
+import { canAccessRoomAsync } from '../../../../authorization/server';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../../../../lib/server/functions';
 import { apiDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
@@ -426,7 +426,10 @@ API.v1.addRoute(
 				throw new Error('error-invalid-room');
 			}
 
-			if ((!room.servedBy || room.servedBy._id !== this.userId) && !hasPermission(this.userId, 'save-others-livechat-room-info')) {
+			if (
+				(!room.servedBy || room.servedBy._id !== this.userId) &&
+				!(await hasPermissionAsync(this.userId, 'save-others-livechat-room-info'))
+			) {
 				return API.v1.unauthorized();
 			}
 

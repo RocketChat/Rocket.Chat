@@ -1,7 +1,8 @@
 import type { IUser, ILivechatDepartment, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatDepartmentAgents, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
-import { hasPermission, hasRole } from '../../authorization/server';
+import { hasRole } from '../../authorization/server';
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { LivechatDepartment } from '../../models/server';
 import { RoutingManager } from './lib/RoutingManager';
 
@@ -11,21 +12,21 @@ type OmniRoomAccessValidator = (
 	extraData?: Record<string, any>,
 ) => boolean | Promise<boolean>;
 
-export const validators: OmniRoomAccessValidator[] = [
-	function (_room, user) {
+export const validators: OmnichannelRoomAccessValidator[] = [
+	async function (_room, user) {
 		if (!user?._id) {
 			return false;
 		}
-		return hasPermission(user._id, 'view-livechat-rooms');
+		return hasPermissionAsync(user._id, 'view-livechat-rooms');
 	},
-	function (room, user) {
+	async function (room, user) {
 		if (!user?._id) {
 			return false;
 		}
 
 		const { _id: userId } = user;
 		const { servedBy: { _id: agentId } = {} } = room;
-		return userId === agentId || (!room.open && hasPermission(user._id, 'view-livechat-room-closed-by-another-agent'));
+		return userId === agentId || (!room.open && hasPermissionAsync(user._id, 'view-livechat-room-closed-by-another-agent'));
 	},
 	async function (room, _user, extraData) {
 		if (extraData?.rid) {
@@ -80,7 +81,7 @@ export const validators: OmniRoomAccessValidator[] = [
 		if (!agentOfDepartment) {
 			return;
 		}
-		return hasPermission(user._id, 'view-livechat-room-closed-same-department');
+		return hasPermissionAsync(user._id, 'view-livechat-room-closed-same-department');
 	},
 	function (_room, user) {
 		// Check if user is rocket.cat
