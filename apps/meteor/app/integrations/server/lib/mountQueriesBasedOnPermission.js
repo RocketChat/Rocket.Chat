@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 export const mountIntegrationQueryBasedOnPermissions = async (userId) => {
 	if (!userId) {

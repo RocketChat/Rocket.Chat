@@ -7,7 +7,7 @@ import { Logger } from '../../logger/server';
 import { _setRealName } from '../../lib/server';
 import { Users } from '../../models/server';
 import { settings } from '../../settings/server';
-import { hasPermissionAsync } from '../../authorization/server';
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { deleteUser } from '../../lib/server/functions';
 import { setUserActiveStatus } from '../../lib/server/functions/setUserActiveStatus';
 
