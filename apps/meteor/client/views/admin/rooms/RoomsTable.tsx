@@ -23,6 +23,11 @@ import FilterByTypeAndText from './FilterByTypeAndText';
 
 const style: CSSProperties = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
+type RoomFilters = {
+	types: string[];
+	text: string;
+};
+
 export const DEFAULT_TYPES = ['d', 'p', 'c', 'teams'];
 
 export const roomTypeI18nMap = {
@@ -49,8 +54,8 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 
 	const t = useTranslation();
 
-	const [roomFilter, setRoomFilter] = useState({ text: '', types: DEFAULT_TYPES });
-	const prevRoomFilterText = useRef<string>('');
+	const [roomFilter, setRoomFilter] = useState<RoomFilters>({ text: '', types: DEFAULT_TYPES });
+	const prevRoomFilterText = useRef<RoomFilters>(roomFilter);
 
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 't' | 'usersCount' | 'msgs' | 'default' | 'featured'>('name');
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
@@ -58,14 +63,14 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 
 	const query = useDebouncedValue(
 		useMemo(() => {
-			if (params.text !== prevRoomFilterText.current) {
+			if (params.text !== prevRoomFilterText.current.text || params.types !== prevRoomFilterText.current.types) {
 				setCurrent(0);
 			}
 			return {
 				filter: params.text || '',
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
-				offset: params.text === prevRoomFilterText.current ? current : 0,
+				offset: params.text === prevRoomFilterText.current.text && params.types === prevRoomFilterText.current.types ? current : 0,
 				types: params.types || DEFAULT_TYPES,
 			};
 		}, [params.text, params.types, sortBy, sortDirection, itemsPerPage, prevRoomFilterText, current, setCurrent]),
@@ -96,8 +101,8 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	}, [reload, refetch]);
 
 	useEffect(() => {
-		prevRoomFilterText.current = params.text;
-	}, [params.text]);
+		prevRoomFilterText.current = { text: params.text, types: params.types };
+	}, [params.text, params.types]);
 
 	const router = useRoute(routeName);
 
