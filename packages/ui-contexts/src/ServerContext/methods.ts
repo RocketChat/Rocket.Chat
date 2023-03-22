@@ -1,25 +1,9 @@
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface ServerMethods {
-	'addUsersToRoom': (...args: any[]) => any;
-	'cleanRoomHistory': (...args: any[]) => any;
-	'getUsersOfRoom': (...args: any[]) => any;
-	'insertOrUpdateUserStatus': (...args: any[]) => any;
-	'muteUserInRoom': (...args: any[]) => any;
-	'personalAccessTokens:generateToken': (...args: any[]) => any;
-	'personalAccessTokens:regenerateToken': (...args: any[]) => any;
-	'personalAccessTokens:removeToken': (...args: any[]) => any;
-	'registerUser': (...args: any[]) => any;
-	'resetPassword': (...args: any[]) => any;
-	'saveCannedResponse': (...args: any[]) => any;
-	'saveUserProfile': (...args: any[]) => any;
-	sendConfirmationEmail(to: string): boolean;
-	'setAvatarFromService': (...args: any[]) => any;
+	resetPassword(token: string, password: string): { token: string };
 	setUserPassword(password: string): void;
-	'unmuteUserInRoom': (...args: any[]) => any;
-	'unreadMessages': (...args: any[]) => any;
-	'updateIncomingIntegration': (...args: any[]) => any;
-	'updateOutgoingIntegration': (...args: any[]) => any;
-	'checkRegistrationSecretURL'(hash: string): boolean;
+	sendConfirmationEmail(to: string): boolean;
+	checkRegistrationSecretURL(hash: string): boolean;
 }
 
 export type ServerMethodName = keyof ServerMethods;
