@@ -1,19 +1,28 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import { Users } from '../../../../../app/models/server';
 import { twoFactorRequired } from '../../../../../app/2fa/server/twoFactorRequired';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'personalAccessTokens:generateToken'(params: { tokenName: string; bypassTwoFactor: boolean }): string;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	'personalAccessTokens:generateToken': twoFactorRequired(async function ({ tokenName, bypassTwoFactor }) {
-		if (!Meteor.userId()) {
+		const uid = Meteor.userId();
+		if (!uid) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', {
 				method: 'personalAccessTokens:generateToken',
 			});
 		}
-		if (!(await hasPermissionAsync(Meteor.userId(), 'create-personal-access-tokens'))) {
+		if (!(await hasPermissionAsync(uid, 'create-personal-access-tokens'))) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', {
 				method: 'personalAccessTokens:generateToken',
 			});
@@ -21,7 +30,7 @@ Meteor.methods({
 
 		const token = Random.secret();
 		const tokenExist = Users.findPersonalAccessTokenByTokenNameAndUserId({
-			userId: Meteor.userId(),
+			userId: uid,
 			tokenName,
 		});
 		if (tokenExist) {
@@ -31,7 +40,7 @@ Meteor.methods({
 		}
 
 		Users.addPersonalAccessTokenToUser({
-			userId: Meteor.userId(),
+			userId: uid,
 			loginTokenObject: {
 				hashedToken: Accounts._hashLoginToken(token),
 				type: 'personalAccessToken',

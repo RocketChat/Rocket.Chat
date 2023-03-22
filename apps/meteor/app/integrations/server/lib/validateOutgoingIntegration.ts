@@ -118,7 +118,7 @@ export const validateOutgoingIntegration = async function (
 	}
 
 	// Moved to it's own function to satisfy the complexity rule
-	await _verifyRequiredFields(integration);
+	_verifyRequiredFields(integration);
 
 	let channels: string[] = [];
 	if (outgoingEvents[integration.event].use.channel) {

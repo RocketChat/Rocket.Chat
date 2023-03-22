@@ -370,13 +370,13 @@ Meteor.methods({
 			throw new Meteor.Error('Invalid connection details', '', { method: 'crowd_test_connection' });
 		}
 	},
-	crowd_sync_users() {
+	async crowd_sync_users() {
 		const user = Meteor.user();
 		if (settings.get('CROWD_Enable') !== true) {
 			throw new Meteor.Error('crowd_disabled');
 		}
 
-		if (!Promise.await(hasPermissionAsync(user._id, 'sync-auth-services-users'))) {
+		if (!(await hasPermissionAsync(user._id, 'sync-auth-services-users'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'crowd_sync_users',
 			});

@@ -1,5 +1,5 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { IMessage, IMessageDiscussion } from '@rocket.chat/core-typings';
+import type { IMessage, IMessageDiscussion, IRoom } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
 
 import { deleteRoom } from './deleteRoom';
@@ -17,7 +17,18 @@ export const cleanRoomHistory = function ({
 	filesOnly = false,
 	fromUsers = [],
 	ignoreThreads = true,
-}): unknown {
+}: {
+	rid?: IRoom['_id'];
+	latest?: Date;
+	oldest?: Date;
+	inclusive?: boolean;
+	limit?: number;
+	excludePinned?: boolean;
+	ignoreDiscussion?: boolean;
+	filesOnly?: boolean;
+	fromUsers?: string[];
+	ignoreThreads?: boolean;
+}): number {
 	const gt = inclusive ? '$gte' : '$gt';
 	const lt = inclusive ? '$lte' : '$lt';
 
