@@ -108,22 +108,20 @@ async function handleMaxSeatsBanners() {
 	}
 }
 
-const handleMaxSeatsBannersSync = () => Promise.await(handleMaxSeatsBanners);
+callbacks.add('afterCreateUser', handleMaxSeatsBanners, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
 
-callbacks.add('afterCreateUser', handleMaxSeatsBannersSync, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
+callbacks.add('afterSaveUser', handleMaxSeatsBanners, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
 
-callbacks.add('afterSaveUser', handleMaxSeatsBannersSync, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
+callbacks.add('afterDeleteUser', handleMaxSeatsBanners, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
 
-callbacks.add('afterDeleteUser', handleMaxSeatsBannersSync, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
+callbacks.add('afterDeactivateUser', handleMaxSeatsBanners, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
 
-callbacks.add('afterDeactivateUser', handleMaxSeatsBannersSync, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
-
-callbacks.add('afterActivateUser', handleMaxSeatsBannersSync, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
+callbacks.add('afterActivateUser', handleMaxSeatsBanners, callbacks.priority.MEDIUM, 'handle-max-seats-banners');
 
 Meteor.startup(async () => {
 	await createSeatsLimitBanners();
 
 	await handleMaxSeatsBanners();
 
-	onValidateLicenses(handleMaxSeatsBannersSync);
+	onValidateLicenses(handleMaxSeatsBanners);
 });
