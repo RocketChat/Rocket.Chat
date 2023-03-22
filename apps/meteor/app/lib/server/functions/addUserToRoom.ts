@@ -41,8 +41,8 @@ export const addUserToRoom = function (
 
 	try {
 		Promise.await(Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, userToBeAdded, inviter));
-	} catch (error) {
-		if (error instanceof AppsEngineException) {
+	} catch (error: any) {
+		if (error.name === AppsEngineException.name) {
 			throw new Meteor.Error('error-app-prevented', error.message);
 		}
 
@@ -59,7 +59,7 @@ export const addUserToRoom = function (
 
 	Promise.await(
 		Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, userToBeAdded, inviter).catch((error) => {
-			if (error instanceof AppsEngineException) {
+			if (error.name === AppsEngineException.name) {
 				throw new Meteor.Error('error-app-prevented', error.message);
 			}
 
