@@ -1,9 +1,9 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import type { ConnectedPayload, ConnectPayload, FailedPayload } from './ConnectingPayload';
-import type { PingPayload, PongPayload } from './HeartbeatPayloads';
-import type { MethodPayload, ResultPayload, ServerMethodPayloads } from './MethodPayloads';
-import type { ClientPublicationPayloads, ServerPublicationPayloads, SubscribePayload, UnsubscribePayload } from './PublishPayloads';
+import type { ConnectedPayload, ConnectPayload, FailedPayload } from './types/ConnectingPayload';
+import type { PingPayload, PongPayload } from './types/HeartbeatPayloads';
+import type { MethodPayload, ResultPayload, ServerMethodPayloads } from './types/MethodPayloads';
+import type { ClientPublicationPayloads, ServerPublicationPayloads, SubscribePayload, UnsubscribePayload } from './types/PublishPayloads';
 
 /* This class was created to be used together with the WebSocket class.
  * It is responsible for low-level communication with the server.
