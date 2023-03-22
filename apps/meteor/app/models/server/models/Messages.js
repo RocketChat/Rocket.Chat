@@ -565,10 +565,6 @@ export class Messages extends Base {
 		return this.remove(query);
 	}
 
-	removeByRoomIds(rids) {
-		return this.remove({ rid: { $in: rids } });
-	}
-
 	findThreadsByRoomIdPinnedTimestampAndUsers({ rid, pinned, ignoreDiscussion = true, ts, users = [] }, options) {
 		const query = {
 			rid,
