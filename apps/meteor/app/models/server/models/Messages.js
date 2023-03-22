@@ -749,23 +749,6 @@ export class Messages extends Base {
 		return this.update(query, update);
 	}
 
-	updateThreadLastMessageAndCountByThreadId(tmid, tlm, tcount) {
-		const query = {
-			_id: tmid,
-		};
-
-		const update = {
-			$set: {
-				tlm,
-			},
-			$inc: {
-				tcount,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	addThreadFollowerByThreadId(tmid, userId) {
 		const query = {
 			_id: tmid,
