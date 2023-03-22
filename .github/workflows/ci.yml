@@ -201,7 +201,7 @@ jobs:
 
   test-unit:
     name: 🔨 Test Unit
-    needs: [build, release-versions]
+    needs: [checks, build, release-versions]
 
     uses: ./.github/workflows/ci-test-unit.yml
     with:
@@ -209,7 +209,7 @@ jobs:
 
   test-api:
     name: 🔨 Test API (CE)
-    needs: [build, release-versions]
+    needs: [checks, build, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -229,7 +229,7 @@ jobs:
 
   test-ui:
     name: 🔨 Test UI (CE)
-    needs: [build, release-versions]
+    needs: [checks, build, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -252,7 +252,7 @@ jobs:
 
   test-api-ee:
     name: 🔨 Test API (EE)
-    needs: [build, release-versions]
+    needs: [checks, build, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -275,7 +275,7 @@ jobs:
 
   test-ui-ee:
     name: 🔨 Test UI (EE)
-    needs: [build, release-versions]
+    needs: [checks, build, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:

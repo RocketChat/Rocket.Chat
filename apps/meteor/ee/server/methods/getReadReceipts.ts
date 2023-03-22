@@ -4,7 +4,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { ReadReceipt as ReadReceiptType, IMessage } from '@rocket.chat/core-typings';
 
 import { Messages } from '../../../app/models/server';
-import { canAccessRoomId } from '../../../app/authorization/server';
+import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
 import { hasLicense } from '../../app/license/server/license';
 import { ReadReceipt } from '../lib/message-read-receipt/ReadReceipt';
 
@@ -16,7 +16,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	getReadReceipts({ messageId }) {
+	async getReadReceipts({ messageId }) {
 		if (!hasLicense('message-read-receipt')) {
 			throw new Meteor.Error('error-action-not-allowed', 'This is an enterprise feature', { method: 'getReadReceipts' });
 		}
@@ -40,7 +40,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!canAccessRoomId(message.rid, uid)) {
+		if (!(await canAccessRoomIdAsync(message.rid, uid))) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getReadReceipts' });
 		}
 

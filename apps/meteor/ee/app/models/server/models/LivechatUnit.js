@@ -132,10 +132,10 @@ class LivechatUnit extends LivechatDepartment {
 		return this.update(query, update, { multi: true });
 	}
 
-	removeById(_id) {
+	async removeById(_id) {
 		LivechatUnitMonitors.removeByUnitId(_id);
 		this.removeParentAndAncestorById(_id);
-		Promise.await(LivechatRooms.removeUnitAssociationFromRooms(_id));
+		await LivechatRooms.removeUnitAssociationFromRooms(_id);
 
 		const query = { _id };
 		return this.remove(query);

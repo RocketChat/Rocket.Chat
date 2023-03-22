@@ -145,8 +145,8 @@ server.methods({
 
 		if (!this.connection.livechatToken) {
 			this.connection.livechatToken = token;
-			this.connection.onClose(() => {
-				MeteorService.notifyGuestStatusChanged(token, 'offline');
+			this.connection.onClose(async () => {
+				await MeteorService.notifyGuestStatusChanged(token, 'offline');
 			});
 		}
 	},
