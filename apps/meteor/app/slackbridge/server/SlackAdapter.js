@@ -857,7 +857,7 @@ export default class SlackAdapter {
 					updatedBySlack: true, // We don't want to notify slack about this change since Slack initiated it
 				};
 
-				updateMessage(rocketMsgObj, rocketUser);
+				await updateMessage(rocketMsgObj, rocketUser);
 				slackLogger.debug('Rocket message updated by Slack');
 			}
 		}
