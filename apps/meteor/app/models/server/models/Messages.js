@@ -598,10 +598,6 @@ export class Messages extends Base {
 		return this.remove(query);
 	}
 
-	getMessageByFileId(fileID) {
-		return this.findOne({ 'file._id': fileID });
-	}
-
 	setVisibleMessagesAsRead(rid, until) {
 		return this.update(
 			{
