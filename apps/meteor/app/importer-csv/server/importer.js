@@ -73,7 +73,7 @@ export class CsvImporter extends Base {
 
 					// Parse the channels
 					if (entry.entryName.toLowerCase() === 'channels.csv') {
-						super.updateProgress(ProgressStep.PREPARING_CHANNELS);
+						await super.updateProgress(ProgressStep.PREPARING_CHANNELS);
 						const parsedChannels = this.csvParser(entry.getData().toString());
 						channelsCount = parsedChannels.length;
 
@@ -105,7 +105,7 @@ export class CsvImporter extends Base {
 
 					// Parse the users
 					if (entry.entryName.toLowerCase() === 'users.csv') {
-						super.updateProgress(ProgressStep.PREPARING_USERS);
+						await super.updateProgress(ProgressStep.PREPARING_USERS);
 						const parsedUsers = this.csvParser(entry.getData().toString());
 						usersCount = parsedUsers.length;
 
@@ -131,7 +131,7 @@ export class CsvImporter extends Base {
 					// Parse the messages
 					if (entry.entryName.indexOf('/') > -1) {
 						if (this.progress.step !== ProgressStep.PREPARING_MESSAGES) {
-							super.updateProgress(ProgressStep.PREPARING_MESSAGES);
+							await super.updateProgress(ProgressStep.PREPARING_MESSAGES);
 						}
 
 						const item = entry.entryName.split('/'); // random/messages.csv
@@ -241,13 +241,13 @@ export class CsvImporter extends Base {
 			}
 		}
 
-		super.addCountToTotal(messagesCount + usersCount + channelsCount);
+		await super.addCountToTotal(messagesCount + usersCount + channelsCount);
 		ImporterWebsocket.progressUpdated({ rate: 100 });
 
 		// Ensure we have at least a single user, channel, or message
 		if (usersCount === 0 && channelsCount === 0 && messagesCount === 0) {
 			this.logger.error('No users, channels, or messages found in the import file.');
-			super.updateProgress(ProgressStep.ERROR);
+			await super.updateProgress(ProgressStep.ERROR);
 			return super.getProgress();
 		}
 	}
