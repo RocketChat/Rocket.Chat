@@ -264,7 +264,7 @@ API.v1.addRoute(
 		},
 
 		// Expects a body format of: { command: 'giphy', params: 'mine', roomId: 'value', tmid: 'value', triggerId: 'value', previewItem: { id: 'sadf8' type: 'image', value: 'https://dev.null/gif' } }
-		post() {
+		async post() {
 			const body = this.bodyParams;
 
 			if (typeof body.command !== 'string') {

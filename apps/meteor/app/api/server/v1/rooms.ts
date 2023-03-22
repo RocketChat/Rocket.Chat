@@ -6,7 +6,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Media } from '@rocket.chat/core-services';
 
 import { API } from '../api';
-import { canAccessRoomAsync } from '../../../authorization/server';
+import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { settings } from '../../../settings/server';

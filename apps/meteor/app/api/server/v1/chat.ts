@@ -13,7 +13,7 @@ import { settings } from '../../../settings/server';
 import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
-import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 
 API.v1.addRoute(
 	'chat.delete',
