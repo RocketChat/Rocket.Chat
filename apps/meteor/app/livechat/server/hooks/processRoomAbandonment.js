@@ -70,7 +70,7 @@ callbacks.add(
 		if (!agentLastMessage) {
 			return params;
 		}
-		const secondsSinceLastAgentResponse = Promise.await(getSecondsSinceLastAgentResponse(room, agentLastMessage));
+		const secondsSinceLastAgentResponse = await getSecondsSinceLastAgentResponse(room, agentLastMessage);
 		LivechatRooms.setVisitorInactivityInSecondsById(room._id, secondsSinceLastAgentResponse);
 
 		return params;
