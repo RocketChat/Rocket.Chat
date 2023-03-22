@@ -44,7 +44,7 @@ export const useInviteToken = async (userId, token) => {
 	// If the user already has an username, then join the invite room,
 	// If no username is set yet, then the the join will happen on the setUsername method
 	if (user.username) {
-		addUserToRoom(room._id, user);
+		Promise.await(addUserToRoom(room._id, user));
 	}
 
 	return {

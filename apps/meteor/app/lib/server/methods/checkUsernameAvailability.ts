@@ -15,7 +15,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	checkUsernameAvailability(username) {
+	async checkUsernameAvailability(username) {
 		methodDeprecationLogger.warn('checkUsernameAvailability will be deprecated in future versions of Rocket.Chat');
 
 		check(username, String);

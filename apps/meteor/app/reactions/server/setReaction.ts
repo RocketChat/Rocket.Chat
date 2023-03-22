@@ -10,7 +10,8 @@ import { Messages, Rooms } from '../../models/server';
 import { callbacks } from '../../../lib/callbacks';
 import { emoji } from '../../emoji/server';
 import { isTheLastMessage, msgStream } from '../../lib/server';
-import { canAccessRoom, hasPermission } from '../../authorization/server';
+import { canAccessRoomAsync } from '../../authorization/server';
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { AppEvents, Apps } from '../../../ee/server/apps/orchestrator';
 
 const removeUserReaction = (message: IMessage, reaction: string, username: string) => {
@@ -34,7 +35,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 		});
 	}
 
-	if (room.ro === true && !room.reactWhenReadOnly && !hasPermission(user._id, 'post-readonly', room._id)) {
+	if (room.ro === true && !room.reactWhenReadOnly && !(await hasPermissionAsync(user._id, 'post-readonly', room._id))) {
 		// Unless the user was manually unmuted
 		if (!(room.unmuted || []).includes(user.username as string)) {
 			throw new Error("You can't send messages because the room is readonly.");
@@ -123,7 +124,7 @@ export const executeSetReaction = async (reaction: string, messageId: IMessage['
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
 	}
 
-	if (!canAccessRoom(room, user)) {
+	if (!(await canAccessRoomAsync(room, user))) {
 		throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'setReaction' });
 	}
 

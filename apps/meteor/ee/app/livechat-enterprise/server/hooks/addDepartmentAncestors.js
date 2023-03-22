@@ -5,7 +5,7 @@ import LivechatDepartment from '../../../../../app/models/server/models/Livechat
 
 callbacks.add(
 	'livechat.newRoom',
-	(room) => {
+	async (room) => {
 		if (!room.departmentId) {
 			return room;
 		}
@@ -18,7 +18,7 @@ callbacks.add(
 		}
 
 		const { ancestors } = department;
-		Promise.await(LivechatRooms.updateDepartmentAncestorsById(room._id, ancestors));
+		await LivechatRooms.updateDepartmentAncestorsById(room._id, ancestors);
 
 		return room;
 	},

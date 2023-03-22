@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
 import { Rooms, Subscriptions } from '../../app/models/server';
-import { hasPermission } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 
 Meteor.methods({
-	getRoomNameById(rid) {
+	async getRoomNameById(rid) {
 		check(rid, String);
 		const userId = Meteor.userId();
 		if (!userId) {
@@ -29,7 +29,7 @@ Meteor.methods({
 			return room.name;
 		}
 
-		if (room.t !== 'c' || hasPermission(userId, 'view-c-room') !== true) {
+		if (room.t !== 'c' || (await hasPermissionAsync(userId, 'view-c-room')) !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'getRoomNameById',
 			});
