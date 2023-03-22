@@ -21,8 +21,8 @@ export const removeUserFromRoom = async function (
 
 	try {
 		await Apps.triggerEvent(AppEvents.IPreRoomUserLeave, room, user);
-	} catch (error) {
-		if (error instanceof AppsEngineException) {
+	} catch (error: any) {
+		if (error.name === AppsEngineException.name) {
 			throw new Meteor.Error('error-app-prevented', error.message);
 		}
 
