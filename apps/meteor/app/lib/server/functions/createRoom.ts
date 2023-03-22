@@ -93,7 +93,7 @@ export const createRoom = async <T extends RoomType>(
 	};
 
 	const prevent = await Apps.triggerEvent('IPreRoomCreatePrevent', tmp).catch((error) => {
-		if (error instanceof AppsEngineException) {
+		if (error.name === AppsEngineException.name) {
 			throw new Meteor.Error('error-app-prevented', error.message);
 		}
 
