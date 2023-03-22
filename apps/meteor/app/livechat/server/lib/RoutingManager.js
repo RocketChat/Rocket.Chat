@@ -199,7 +199,7 @@ export const RoutingManager = {
 		}
 
 		await LivechatInquiry.takeInquiry(_id);
-		const inq = this.assignAgent(inquiry, agent);
+		const inq = await this.assignAgent(inquiry, agent);
 		logger.debug(`Inquiry ${inquiry._id} taken by agent ${agent.agentId}`);
 
 		callbacks.runAsync('livechat.afterTakeInquiry', inq, agent);
