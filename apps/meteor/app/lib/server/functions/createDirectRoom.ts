@@ -91,7 +91,7 @@ export const createDirectRoom = function (
 
 		const prevent = Promise.await(
 			Apps.triggerEvent('IPreRoomCreatePrevent', tmpRoom).catch((error) => {
-				if (error instanceof AppsEngineException) {
+				if (error.name === AppsEngineException.name) {
 					throw new Meteor.Error('error-app-prevented', error.message);
 				}
 
