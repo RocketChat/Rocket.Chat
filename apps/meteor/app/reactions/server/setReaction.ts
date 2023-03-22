@@ -134,7 +134,7 @@ export const executeSetReaction = async (reaction: string, messageId: IMessage['
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		setReaction(reaction: string, messageId: IMessage['_id'], shouldReact?: boolean): Promise<void | boolean>;
+		setReaction(reaction: string, messageId: IMessage['_id'], shouldReact?: boolean): boolean | undefined;
 	}
 }
 
@@ -146,7 +146,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		try {
-			return executeSetReaction(reaction, messageId, shouldReact);
+			void executeSetReaction(reaction, messageId, shouldReact);
 		} catch (e: any) {
 			if (e.error === 'error-not-allowed' && e.reason && e.details && e.details.rid) {
 				void api.broadcast('notify.ephemeralMessage', uid, e.details.rid, {
