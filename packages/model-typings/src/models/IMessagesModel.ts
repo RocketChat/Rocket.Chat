@@ -18,6 +18,7 @@ import type {
 	DeleteResult,
 	UpdateResult,
 	Document,
+	Filter,
 } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -230,7 +231,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	updateAllUsernamesByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
 
 	setUrlsById(_id: string, urls: NonNullable<IMessage['urls']>): Promise<UpdateResult>;
-	getLastVisibleMessageSentWithNoTypeByRoomId(rid: string, messageId: string): Promise<IMessage | null>;
+	getLastVisibleMessageSentWithNoTypeByRoomId(rid: string, messageId?: string): Promise<IMessage | null>;
 
 	findByRoomId(roomId: string, options?: FindOptions<IMessage>): FindCursor<IMessage>;
 	findOneBySlackTs(slackTs: Date): Promise<IMessage | null>;
@@ -262,7 +263,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		readReceiptsEnabled?: boolean,
 		extraData?: Record<string, string>,
 	): Promise<Omit<IMessage, '_updatedAt'>>;
-	upgradeEtsToEditAt(): Promise<UpdateResult | Document>;
 	unlinkUserId(userId: string, newUserId: string, newUsername: string, newNameAlias: string): Promise<UpdateResult | Document>;
 	setSlackBotIdAndSlackTs(_id: string, slackBotId: string, slackTs: Date): Promise<UpdateResult>;
 	setMessageAttachments(_id: string, attachments: IMessage['attachments']): Promise<UpdateResult>;
@@ -461,7 +461,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		rid: string,
 		pinned: boolean,
 		ignoreDiscussion: boolean,
-		ts: Date,
+		ts: Filter<IMessage>['ts'],
 		limit: number,
 		users: string[],
 		ignoreThreads: boolean,
@@ -475,7 +475,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	unsetThreadByThreadId(tmid: string): Promise<UpdateResult>;
 	setThreadMessagesAsRead(tmid: string, until: Date): Promise<UpdateResult | Document>;
 	updateRepliesByThreadId(tmid: string, replies: string[], ts: Date): Promise<UpdateResult>;
-	refreshDiscussionMetadata({ rid }: { rid: string }): Promise<UpdateResult | Document | false>;
+	refreshDiscussionMetadata(room: Pick<IRoom, '_id' | 'msgs' | 'lm'>): Promise<UpdateResult | Document | false>;
 	updateThreadLastMessageAndCountByThreadId(tmid: string, tlm: Date, tcount: number): Promise<UpdateResult>;
 	findUnreadThreadMessagesByDate(tmid: string, userId: string, after: Date): FindCursor<IMessage>;
 	findVisibleUnreadMessagesByRoomAndDate(rid: string, after: Date): FindCursor<IMessage>;

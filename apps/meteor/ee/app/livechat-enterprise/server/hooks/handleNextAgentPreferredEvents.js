@@ -1,9 +1,9 @@
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatInquiry } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
-import { LivechatRooms, LivechatInquiry, Users } from '../../../../../app/models/server';
+import { LivechatRooms, Users } from '../../../../../app/models/server';
 
 let contactManagerPreferred = false;
 let lastChattedAgentPreferred = false;
@@ -62,7 +62,7 @@ const checkDefaultAgentOnNewRoom = async (defaultAgent, defaultGuest) => {
 	return lastRoomAgent || defaultAgent;
 };
 
-const onMaxNumberSimultaneousChatsReached = (inquiry) => {
+const onMaxNumberSimultaneousChatsReached = async (inquiry) => {
 	if (!inquiry || !inquiry.defaultAgent) {
 		return inquiry;
 	}
@@ -73,7 +73,7 @@ const onMaxNumberSimultaneousChatsReached = (inquiry) => {
 
 	const { _id } = inquiry;
 
-	LivechatInquiry.removeDefaultAgentById(_id);
+	await LivechatInquiry.removeDefaultAgentById(_id);
 	return LivechatInquiry.findOneById(_id);
 };
 
