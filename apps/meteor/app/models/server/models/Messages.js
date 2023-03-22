@@ -724,11 +724,6 @@ export class Messages extends Base {
 		return this.update(query, update);
 	}
 
-	getThreadFollowsByThreadId(tmid) {
-		const msg = this.findOneById(tmid, { fields: { replies: 1 } });
-		return msg && msg.replies;
-	}
-
 	findThreadsByRoomId(rid, skip, limit) {
 		return this.find({ rid, tcount: { $exists: true } }, { sort: { tlm: -1 }, skip, limit });
 	}

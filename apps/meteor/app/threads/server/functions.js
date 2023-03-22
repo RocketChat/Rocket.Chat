@@ -3,7 +3,7 @@ import { Messages as MessagesRaw } from '@rocket.chat/models';
 import { Messages, Subscriptions } from '../../models/server';
 import { getMentions } from '../../lib/server/lib/notifyUsersOnMessage';
 
-export const reply = ({ tmid }, message, parentMessage, followers) => {
+export async function reply({ tmid }, message, parentMessage, followers) {
 	const { rid, ts, u, editedAt } = message;
 	if (!tmid || editedAt) {
 		return false;
@@ -21,7 +21,7 @@ export const reply = ({ tmid }, message, parentMessage, followers) => {
 
 	Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
 
-	const replies = Messages.getThreadFollowsByThreadId(tmid);
+	const replies = await MessagesRaw.getThreadFollowsByThreadId(tmid);
 
 	const repliesFiltered = replies.filter((userId) => userId !== u._id).filter((userId) => !mentionIds.includes(userId));
 
@@ -34,7 +34,7 @@ export const reply = ({ tmid }, message, parentMessage, followers) => {
 	}
 
 	mentionIds.forEach((mentionId) => Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, [mentionId], tmid, { userMention: true }));
-};
+}
 
 export async function follow({ tmid, uid }) {
 	if (!tmid || !uid) {
