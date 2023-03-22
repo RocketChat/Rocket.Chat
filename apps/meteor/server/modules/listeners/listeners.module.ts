@@ -189,10 +189,10 @@ export class ListenersModule {
 				});
 
 				if (inquiry.department) {
-					return notifications.streamLivechatQueueData.__emit(`department/${inquiry.department}`, { type, ...inquiry });
+					return notifications.streamLivechatQueueData.emitWithoutBroadcast(`department/${inquiry.department}`, { type, ...inquiry });
 				}
 
-				return notifications.streamLivechatQueueData.__emit('public', {
+				return notifications.streamLivechatQueueData.emitWithoutBroadcast('public', {
 					type,
 					...inquiry,
 				});
@@ -221,7 +221,7 @@ export class ListenersModule {
 				});
 			}
 
-			notifications.streamLivechatQueueData.__emit(`department/${inquiry.department}`, { type, ...inquiry });
+			notifications.streamLivechatQueueData.emitWithoutBroadcast(`department/${inquiry.department}`, { type, ...inquiry });
 
 			if (clientAction === 'updated' && !diff?.department) {
 				notifications.streamLivechatQueueData.emitWithoutBroadcast('public', { type, ...inquiry });
