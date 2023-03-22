@@ -230,7 +230,7 @@ export const Livechat = {
 		});
 	},
 
-	updateMessage({ guest, message }) {
+	async updateMessage({ guest, message }) {
 		check(message, Match.ObjectIncluding({ _id: String }));
 
 		const originalMessage = Messages.findOneById(message._id);
@@ -247,7 +247,7 @@ export const Livechat = {
 			});
 		}
 
-		updateMessage(message, guest);
+		await updateMessage(message, guest);
 
 		return true;
 	},
@@ -1298,7 +1298,7 @@ export const Livechat = {
 	async updateCallStatus(callId, rid, status, user) {
 		Rooms.setCallStatus(rid, status);
 		if (status === 'ended' || status === 'declined') {
-			if (Promise.await(VideoConf.declineLivechatCall(callId))) {
+			if (await VideoConf.declineLivechatCall(callId)) {
 				return;
 			}
 
