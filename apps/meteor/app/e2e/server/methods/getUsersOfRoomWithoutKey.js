@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { canAccessRoomId } from '../../../authorization/server';
+import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { Subscriptions, Users } from '../../../models/server';
 
 Meteor.methods({
-	'e2e.getUsersOfRoomWithoutKey'(rid) {
+	async 'e2e.getUsersOfRoomWithoutKey'(rid) {
 		check(rid, String);
 
 		const userId = Meteor.userId();
@@ -21,7 +21,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!canAccessRoomId(rid, userId)) {
+		if (!(await canAccessRoomIdAsync(rid, userId))) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'e2e.getUsersOfRoomWithoutKey' });
 		}
 

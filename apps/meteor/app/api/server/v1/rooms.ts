@@ -6,7 +6,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Media } from '@rocket.chat/core-services';
 
 import { API } from '../api';
-import { canAccessRoomAsync, canAccessRoomId } from '../../../authorization/server';
+import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { settings } from '../../../settings/server';
@@ -136,7 +136,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			if (!(await canAccessRoomId(this.urlParams.rid, this.userId))) {
+			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
 				return API.v1.unauthorized();
 			}
 

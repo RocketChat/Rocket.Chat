@@ -4,7 +4,7 @@ import objectPath from 'object-path';
 
 import { slashCommands } from '../../../utils/server';
 import { Messages } from '../../../models/server';
-import { canAccessRoomId } from '../../../authorization/server';
+import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -194,7 +194,7 @@ API.v1.addRoute(
 				return API.v1.failure('The command provided does not exist (or is disabled).');
 			}
 
-			if (!canAccessRoomId(body.roomId, this.userId)) {
+			if (!(await canAccessRoomIdAsync(body.roomId, this.userId))) {
 				return API.v1.unauthorized();
 			}
 
@@ -248,7 +248,7 @@ API.v1.addRoute(
 				return API.v1.failure('The command provided does not exist (or is disabled).');
 			}
 
-			if (!canAccessRoomId(query.roomId, user._id)) {
+			if (!(await canAccessRoomIdAsync(query.roomId, user._id))) {
 				return API.v1.unauthorized();
 			}
 
@@ -300,7 +300,7 @@ API.v1.addRoute(
 				return API.v1.failure('The command provided does not exist (or is disabled).');
 			}
 
-			if (!canAccessRoomId(body.roomId, this.userId)) {
+			if (!(await canAccessRoomIdAsync(body.roomId, this.userId))) {
 				return API.v1.unauthorized();
 			}
 

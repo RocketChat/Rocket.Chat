@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Messages } from '@rocket.chat/models';
 
-import { canAccessRoomId } from '../../app/authorization/server';
+import { canAccessRoomIdAsync } from '../../app/authorization/server/functions/canAccessRoom';
 import { Messages as MessagesSync } from '../../app/models/server';
 
 Meteor.methods({
@@ -21,7 +21,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'messages/get' });
 		}
 
-		if (!canAccessRoomId(rid, fromId)) {
+		if (!(await canAccessRoomIdAsync(rid, fromId))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'messages/get',
 			});

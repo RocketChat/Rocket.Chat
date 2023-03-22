@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 
-import { canAccessRoomId } from '../../../authorization/server';
+import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { Rooms } from '../../../models/server';
 
 Meteor.methods({
-	'e2e.setRoomKeyID'(rid, keyID) {
+	async 'e2e.setRoomKeyID'(rid, keyID) {
 		check(rid, String);
 		check(keyID, String);
 
@@ -18,7 +18,7 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'e2e.setRoomKeyID' });
 		}
 
-		if (!canAccessRoomId(rid, userId)) {
+		if (!(await canAccessRoomIdAsync(rid, userId))) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'e2e.setRoomKeyID' });
 		}
 
