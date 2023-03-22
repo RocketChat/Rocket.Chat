@@ -1,14 +1,18 @@
 import type { IGroupVideoConference } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
-import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useResizeObserver, useSessionStorage } from '@rocket.chat/fuselage-hooks';
+import { useTranslation, useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React from 'react';
+import React, { useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../components/VerticalBar';
 import { getErrorMessage } from '../../../lib/errorHandling';
+import { syncOutlookEvents } from '../../../lib/outlookCalendar/syncOutlookEvents';
+import type { CalendarAuthPayload } from '../../calendarIntegration/CalendarAuthModal';
+import CalendarAuthModal from '../../calendarIntegration/CalendarAuthModal';
 import OutlookEventItem from './OutlookEventItem';
 
 type OutlookEventsListProps = {
@@ -22,87 +26,66 @@ type OutlookEventsListProps = {
 	loadMoreItems: (min: number, max: number) => void;
 };
 
-const calendarEvents = [
-	{
-		title: 'Mobile messages THIS',
-		subTitle: 'Wednesday, October 5, 9:00 - 9:30 AM ',
-		content:
-			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus molestie, urna vel sagittis sodales, libero tortor efficitur nisl, at porta dolor libero vel leo. Etiam malesuada massa id tellus aliquet rhoncus. Cras id scelerisque turpis. Sed interdum urna nec varius blandit. Nam tincidunt massa massa, eu sagittis metus imperdiet lobortis. Suspendisse urna lorem, volutpat non commodo eu, lacinia nec eros. Vivamus eget tincidunt nisl, sit amet cursus leo. Sed eu rhoncus orci. Praesent eu accumsan ante, vel ultricies elit. Cras vitae lorem vel odio vehicula sollicitudin. Nunc faucibus turpis mi, ac dapibus libero porttitor sit amet. Aliquam lacinia fringilla nulla vel ultricies.',
-		link: '#',
-	},
-	{
-		title: 'Mobile messages',
-		subTitle: 'Wednesday, October 5, 9:00 - 9:30 AM ',
-		link: '#',
-	},
-	{
-		title: 'Mobile messages',
-		subTitle: 'Wednesday, October 5, 9:00 - 9:30 AM ',
-		link: '#',
-	},
-	{
-		title: 'Mobile messages',
-		subTitle: 'Wednesday, October 5, 9:00 - 9:30 AM ',
-		link: '#',
-	},
-	{
-		title: 'Mobile messages',
-		subTitle: 'Wednesday, October 5, 9:00 - 9:30 AM ',
-		link: '#',
-	},
-	{
-		title: 'Mobile messages',
-		subTitle: 'Wednesday, October 5, 9:00 - 9:30 AM ',
-		link: '#',
-	},
-	{
-		title: 'Mobile messages',
-		subTitle: 'Wednesday, October 5, 9:00 - 9:30 AM ',
-		link: '#',
-	},
-	{
-		title: 'Mobile messages',
-		subTitle: 'Wednesday, October 5, 9:00 - 9:30 AM ',
-		link: '#',
-	},
-	{
-		title: 'Mobile messages',
-		subTitle: 'Wednesday, October 5, 9:00 - 9:30 AM ',
-		link: '#',
-	},
-	{
-		title: 'Mobile messages',
-		subTitle: 'Wednesday, October 5, 9:00 - 9:30 AM ',
-		link: '#',
-	},
-	{
-		title: 'Mobile messages',
-		subTitle: 'Wednesday, October 5, 9:00 - 9:30 AM ',
-		link: '#',
-	},
-	{
-		title: 'Mobile messages',
-		subTitle: 'Wednesday, October 5, 9:00 - 9:30 AM ',
-		link: '#',
-	},
-];
+const OUTLOOK_HOST_URL = 'https://rocketchat-pexip-exchange.eastus.cloudapp.azure.com/EWS/Exchange.asmx';
 
 const OutlookEventsList = ({
 	onClose,
 	onChangeRoute,
-	total = calendarEvents.length,
-	loading,
+	// total = calendarEvents.length,
 	error,
-	reload,
 	loadMoreItems,
 }: OutlookEventsListProps): ReactElement => {
 	const t = useTranslation();
+	const setModal = useSetModal();
+	const [isSyncing, setIsSyncing] = useState(false);
+	const dispatchToastMessage = useToastMessageDispatch();
+	const [outlookCredential, setOutlookCredential] = useSessionStorage('outlookCredential', {
+		email: undefined,
+		password: undefined,
+	});
+
+	const today = new Date('2023-03-15').toISOString();
+	const calendarData = useEndpoint('GET', '/v1/calendar-events.list');
+	const { data, isLoading, refetch } = useQuery(['calendar'], async () => calendarData({ date: today }));
 
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
 		debounceDelay: 200,
 	});
 
-	if (loading) {
+	const calendarEvents = data?.data;
+	const total = calendarEvents?.length || 0;
+
+	console.log('outlookCredential', outlookCredential);
+	console.log(data);
+
+	const handleSync = () => {
+		const fetchCalendarData = async ({ email, password, rememberCredentials }: CalendarAuthPayload) => {
+			try {
+				await syncOutlookEvents(new Date(), OUTLOOK_HOST_URL, email, password);
+
+				if (rememberCredentials) {
+					setOutlookCredential({ email, password });
+				}
+				dispatchToastMessage({ type: 'success', message: 'Sync Success' });
+				refetch();
+			} catch (error) {
+				console.log('deu error', error);
+				dispatchToastMessage({ type: 'error', message: error });
+			} finally {
+				setModal(null);
+				setIsSyncing(false);
+			}
+		};
+
+		if (outlookCredential.email && outlookCredential.password) {
+			setIsSyncing(true);
+			return fetchCalendarData({ email: outlookCredential.email, password: outlookCredential.password });
+		}
+
+		setModal(<CalendarAuthModal onCancel={() => setModal(null)} onConfirm={fetchCalendarData} />);
+	};
+
+	if (isLoading) {
 		return <VerticalBar.Skeleton />;
 	}
 
@@ -133,7 +116,7 @@ const OutlookEventsList = ({
 						)}
 					</Box>
 				)}
-				{calendarEvents.length > 0 && (
+				{calendarEvents && calendarEvents.length > 0 && (
 					<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
 						<Virtuoso
 							style={{
@@ -141,21 +124,31 @@ const OutlookEventsList = ({
 								width: inlineSize,
 							}}
 							totalCount={total}
-							endReached={(start): unknown => loadMoreItems(start, Math.min(50, total - start))}
+							// endReached={(start): unknown => loadMoreItems(start, Math.min(50, total - start))}
 							overscan={25}
 							data={calendarEvents}
 							components={{ Scroller: ScrollableContentWrapper as any }}
-							itemContent={(_index, calendarData): ReactElement => <OutlookEventItem calendarData={calendarData} reload={reload} />}
+							itemContent={(_index, calendarData): ReactElement => (
+								<OutlookEventItem
+									calendarData={calendarData}
+									// reload={reload}
+								/>
+							)}
 						/>
 					</Box>
 				)}
 			</VerticalBar.Content>
 			<VerticalBar.Footer>
-				<ButtonGroup stretch>
+				<ButtonGroup mbe='x8' stretch>
 					<Button onClick={onChangeRoute}>{t('Calendar_settings')}</Button>
-					<Button>
+					<Button onClick={() => window.open(OUTLOOK_HOST_URL, '_blank')}>
 						<Icon mie='x4' name='new-window' />
 						<Box is='span'>{t('Open_Outlook')}</Box>
+					</Button>
+				</ButtonGroup>
+				<ButtonGroup stretch>
+					<Button disabled={isSyncing} onClick={handleSync}>
+						{isSyncing ? t('Sync_in_progress') : t('Sync')}
 					</Button>
 				</ButtonGroup>
 			</VerticalBar.Footer>
