@@ -38,6 +38,6 @@ async function beforeDeleteRoom(roomId) {
 
 export const definition = {
 	hook: 'beforeDeleteRoom',
-	callback: (roomId) => Promise.await(beforeDeleteRoom(roomId)),
+	callback: beforeDeleteRoom,
 	id: 'federation-before-delete-room',
 };
