@@ -4,7 +4,7 @@ import { LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
 
-const handleAfterSaveMessage = (message, roomParams) => {
+const handleAfterSaveMessage = async (message, roomParams) => {
 	// skips this callback if the message was edited
 	if (message.editedAt) {
 		return message;
@@ -26,9 +26,8 @@ const handleAfterSaveMessage = (message, roomParams) => {
 		return message;
 	}
 
-	// TODO: remove promise.await
 	// Need to read the room every time, the room object is not updated
-	const room = Promise.await(LivechatRooms.findOneById(rid, { projection: { t: 1, v: 1, onHold: 1 } }));
+	const room = await LivechatRooms.findOneById(rid, { projection: { t: 1, v: 1, onHold: 1 } });
 	if (!room) {
 		return message;
 	}

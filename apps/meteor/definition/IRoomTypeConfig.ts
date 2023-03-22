@@ -9,6 +9,7 @@ import type {
 	ValueOf,
 	AtLeast,
 	ISubscription,
+	IOmnichannelRoom,
 } from '@rocket.chat/core-typings';
 
 export type RoomIdentification = { rid?: IRoom['_id']; name?: string };
@@ -116,5 +117,5 @@ export interface IRoomTypeServerDirectives {
 	includeInRoomSearch: () => boolean;
 	getReadReceiptsExtraData: (message: IMessage) => Partial<ReadReceipt>;
 	includeInDashboard: () => boolean;
-	roomFind?: (rid: string) => IRoom | undefined | null;
+	roomFind?: (rid: string) => IRoom | IOmnichannelRoom | undefined | null;
 }
