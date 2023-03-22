@@ -6,7 +6,7 @@ import type { IImport } from '@rocket.chat/core-typings';
 import { hasPermission } from '../../../authorization/server';
 
 export const executeGetLatestImportOperations = async () => {
-	const data = await Imports.find(
+	const data = Imports.find(
 		{},
 		{
 			sort: { _updatedAt: -1 },
