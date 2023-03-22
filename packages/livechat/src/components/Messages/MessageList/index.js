@@ -22,7 +22,7 @@ export class MessageList extends MemoizedComponent {
 
 	static SCROLL_FREE = 'free';
 
-	static SCROLL_AT_BOTOM_AREA = 128;
+	static SCROLL_AT_BOTTOM_AREA = 128;
 
 	// eslint-disable-next-line no-use-before-define
 	scrollPosition = MessageList.SCROLL_AT_BOTTOM;
