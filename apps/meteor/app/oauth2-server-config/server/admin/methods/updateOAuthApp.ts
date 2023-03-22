@@ -3,7 +3,7 @@ import { OAuthApps } from '@rocket.chat/models';
 import type { IOAuthApps } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../../../authorization/server';
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { Users } from '../../../../models/server';
 import { parseUriList } from '../functions/parseUriList';
 
@@ -20,7 +20,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'updateOAuthApp' });
 		}
 
-		if (!hasPermission(this.userId, 'manage-oauth-apps')) {
+		if (!(await hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'updateOAuthApp' });
 		}
 

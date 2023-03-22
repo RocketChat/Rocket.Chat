@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import { api, Team } from '@rocket.chat/core-services';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
-import { hasPermission } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { Users, Subscriptions, Messages, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 
@@ -19,7 +19,7 @@ Meteor.methods({
 		}
 
 		const room = Rooms.findOneById(rid, { fields: { t: 1, federated: 1 } });
-		if (!hasPermission(Meteor.userId(), 'set-moderator', rid) && !isRoomFederated(room)) {
+		if (!(await hasPermissionAsync(Meteor.userId(), 'set-moderator', rid)) && !isRoomFederated(room)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'removeRoomModerator',
 			});

@@ -4,7 +4,7 @@ import { Roles } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { DeleteResult } from 'mongodb';
 
-import { hasPermission } from '../functions/hasPermission';
+import { hasPermissionAsync } from '../functions/hasPermission';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -18,7 +18,7 @@ Meteor.methods<ServerMethods>({
 	async 'authorization:deleteRole'(roleId) {
 		const userId = Meteor.userId();
 
-		if (!userId || !hasPermission(userId, 'access-permissions')) {
+		if (!userId || !(await hasPermissionAsync(userId, 'access-permissions'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed', {
 				method: 'authorization:deleteRole',
 				action: 'Accessing_permissions',
