@@ -1,7 +1,7 @@
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Users } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 
@@ -19,9 +19,9 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	'livechat:getAnalyticsChartData'(options) {
+	async 'livechat:getAnalyticsChartData'(options) {
 		const userId = Meteor.userId();
-		if (!userId || !hasPermission(userId, 'view-livechat-manager')) {
+		if (!userId || !(await hasPermissionAsync(userId, 'view-livechat-manager'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:getAnalyticsChartData',
 			});

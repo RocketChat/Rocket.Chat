@@ -2,12 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { EmojiCustom } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RocketChatFileEmojiCustomInstance } from '../startup/emoji-custom';
 
 Meteor.methods({
 	async deleteEmojiCustom(emojiID) {
-		if (!hasPermission(this.userId, 'manage-emoji')) {
+		if (!(await hasPermissionAsync(this.userId, 'manage-emoji'))) {
 			throw new Meteor.Error('not_authorized');
 		}
 

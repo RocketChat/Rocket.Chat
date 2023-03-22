@@ -240,6 +240,7 @@ export default {
 			},
 			totalSubscriptionRoles: 0,
 			totalUserRoles: 0,
+			totalCustomRoles: 0,
 			totalWebRTCCalls: 0,
 			uncaughtExceptionsCount: 0,
 			matrixFederation: {
