@@ -163,9 +163,9 @@ export const FileUpload = {
 				return `${settings.get('uniqueID')}/uploads/${file.rid}/${file.userId}/${file._id}`;
 			},
 			onValidate: FileUpload.uploadsOnValidate,
-			async onRead(fileId, file, req, res) {
+			onRead(fileId, file, req, res) {
 				// Deprecated: Remove support to usf path
-				if (!(await FileUpload.requestCanAccessFiles(req, file))) {
+				if (!FileUpload.requestCanAccessFiles(req, file)) {
 					res.writeHead(403);
 					return false;
 				}
@@ -198,8 +198,8 @@ export const FileUpload = {
 				return `${settings.get('uniqueID')}/uploads/userData/${file.userId}`;
 			},
 			onValidate: FileUpload.uploadsOnValidate,
-			async onRead(fileId, file, req, res) {
-				if (!(await FileUpload.requestCanAccessFiles(req))) {
+			onRead(fileId, file, req, res) {
+				if (!FileUpload.requestCanAccessFiles(req)) {
 					res.writeHead(403);
 					return false;
 				}
@@ -433,7 +433,7 @@ export const FileUpload = {
 		// console.log('upload finished ->', file);
 	},
 
-	async requestCanAccessFiles({ headers = {}, query = {} }, file) {
+	requestCanAccessFiles({ headers = {}, query = {} }, file) {
 		if (!settings.get('FileUpload_ProtectFiles')) {
 			return true;
 		}
@@ -472,7 +472,7 @@ export const FileUpload = {
 			return true;
 		}
 
-		const subscription = await Subscriptions.findOneByRoomIdAndUserId(file.rid, user._id, { projection: { _id: 1 } });
+		const subscription = Promise.await(Subscriptions.findOneByRoomIdAndUserId(file.rid, user._id, { projection: { _id: 1 } }));
 
 		if (subscription) {
 			return true;
