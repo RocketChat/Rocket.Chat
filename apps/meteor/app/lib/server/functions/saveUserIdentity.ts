@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import type { IMessage } from '@rocket.chat/core-typings';
-import { VideoConference } from '@rocket.chat/models';
+import { VideoConference, LivechatDepartmentAgents } from '@rocket.chat/models';
 
 import { _setUsername } from './setUsername';
 import { _setRealName } from './setRealName';
-import { Messages, Rooms, Subscriptions, LivechatDepartmentAgents, Users } from '../../../models/server';
+import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
 import { FileUpload } from '../../../file-upload/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { validateName } from './validateName';
@@ -68,7 +68,7 @@ export async function saveUserIdentity({
 			Rooms.replaceUsernameOfUserByUserId(user._id, username);
 			Subscriptions.setUserUsernameByUserId(user._id, username);
 
-			LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
+			await LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
 
 			const fileStore = FileUpload.getStore('Avatars');
 			const previousFile = await fileStore.model.findOneByName(previousUsername);
