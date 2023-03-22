@@ -2,6 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { IUser } from '@rocket.chat/core-typings';
 
 import { Users } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
@@ -9,12 +11,26 @@ import { validateEmailDomain, passwordPolicy, RateLimiter } from '../../app/lib/
 import { validateInviteToken } from '../../app/invites/server/functions/validateInviteToken';
 import { trim } from '../../lib/utils/stringUtils';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		registerUser(
+			formData:
+				| { email: string; pass: string; username: IUser['username']; name: string; secretURL?: string; reason?: string }
+				| { email?: null },
+		): {
+			token: string;
+			when: Date;
+		};
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async registerUser(formData) {
-		const AllowAnonymousRead = settings.get('Accounts_AllowAnonymousRead');
-		const AllowAnonymousWrite = settings.get('Accounts_AllowAnonymousWrite');
-		const manuallyApproveNewUsers = settings.get('Accounts_ManuallyApproveNewUsers');
-		if (AllowAnonymousRead === true && AllowAnonymousWrite === true && formData.email == null) {
+		const AllowAnonymousRead = settings.get<boolean>('Accounts_AllowAnonymousRead');
+		const AllowAnonymousWrite = settings.get<boolean>('Accounts_AllowAnonymousWrite');
+		const manuallyApproveNewUsers = settings.get<boolean>('Accounts_ManuallyApproveNewUsers');
+		if (AllowAnonymousRead === true && AllowAnonymousWrite === true && !formData.email) {
 			const userId = Accounts.insertUserDoc(
 				{},
 				{
@@ -80,7 +96,7 @@ Meteor.methods({
 			// Check if user has already been imported and never logged in. If so, set password and let it through
 			const importedUser = Users.findOneByEmailAddress(formData.email);
 
-			if (importedUser && importedUser.importIds && importedUser.importIds.length && !importedUser.lastLogin) {
+			if (importedUser?.importIds?.length && !importedUser.lastLogin) {
 				Accounts.setPassword(importedUser._id, userData.password);
 				userId = importedUser._id;
 			} else {
@@ -91,7 +107,11 @@ Meteor.methods({
 				throw e;
 			}
 
-			throw new Meteor.Error(e.message);
+			if (e instanceof Error) {
+				throw new Meteor.Error(e.message);
+			}
+
+			throw new Meteor.Error(String(e));
 		}
 
 		Users.setName(userId, trim(formData.name));
@@ -123,6 +143,9 @@ let registerUserRuleId = RateLimiter.limitMethod(
 );
 
 settings.watch('Rate_Limiter_Limit_RegisterUser', (value) => {
+	if (!registerUserRuleId) {
+		throw new Error('Rate limiter rule for "registerUser" not found');
+	}
 	// remove old DDP rate limiter rule and create a new one with the updated setting value
 	DDPRateLimiter.removeRule(registerUserRuleId);
 	registerUserRuleId = RateLimiter.limitMethod('registerUser', value, settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'), {
