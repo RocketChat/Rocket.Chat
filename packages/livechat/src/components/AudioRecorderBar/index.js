@@ -1,9 +1,6 @@
-/* eslint-disable no-unused-vars */
-
-import { Box, Throbber } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { MessageComposerAction } from '@rocket.chat/ui-composer';
-import React, { ReactElement, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { withTranslation } from 'react-i18next';
 
 import CheckAudioIcon from '../../icons/circle-check.svg';
@@ -26,7 +23,7 @@ const AudioRecorderBar = ({ handleRecording, onUpload }) => {
 		handleRecording();
 
 		setTime('00:00');
-		const blob = await new Promise((resolve, reject) => {
+		const blob = await new Promise((resolve) => {
 			audioRecorder.stop(resolve);
 		});
 
@@ -38,10 +35,6 @@ const AudioRecorderBar = ({ handleRecording, onUpload }) => {
 		const fileName = `${'Audio_record'}.mp3`;
 		const file = new File([blob], fileName, { type: 'audio/mpeg' });
 		await onUpload([file]);
-	});
-
-	const handleUnmount = useMutableCallback(async () => {
-		await stopRecording();
 	});
 
 	const handleRecord = useMutableCallback(async () => {
@@ -71,7 +64,6 @@ const AudioRecorderBar = ({ handleRecording, onUpload }) => {
 
 	return (
 		<Box pi='x4'>
-			{/* {state === 'recording' && ( */}
 			<div className={createClassName(styles, 'audio-message')}>
 				<ComposerActions>
 					<ComposerAction className={createClassName(styles, 'audio-message__cancel')} onClick={handleCancelButtonClick}>
@@ -88,12 +80,6 @@ const AudioRecorderBar = ({ handleRecording, onUpload }) => {
 					</ComposerAction>
 				</ComposerActions>
 			</div>
-			{/* // )}
-			// {state === 'loading' && (
-			// 	<div className='rc-message-box__icon'>
-			// 		<Throbber inheritColor size='x12' />
-			// 	</div>
-			// )} */}
 		</Box>
 	);
 };

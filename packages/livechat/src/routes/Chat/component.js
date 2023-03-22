@@ -58,9 +58,6 @@ class Chat extends Component {
 
 	handleUploadClick = (event) => {
 		event.preventDefault();
-		// if (this.state.isRecording !== false) {
-		// 	return;
-		// }
 		this.filesDropTarget.browse();
 	};
 

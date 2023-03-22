@@ -1,16 +1,11 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-// import { Meteor } from 'meteor/meteor';
 import { Livechat } from '../api';
-
-// import worker from './worker.js';
-// import WebWorker from "./workerSetup";
 
 export class AudioEncoder extends Emitter {
 	constructor(source, { bufferLen = 4096, numChannels = 1, bitRate = 32 } = {}) {
 		super();
 
-		// const workerPath = Meteor.absoluteUrl('workers/mp3-encoder/index.js');
 		const workerPath = `${Livechat.client.host}/workers/mp3-encoder/index.js`;
 		this.worker = new Worker(workerPath);
 		this.worker.onmessage = this.handleWorkerMessage;
