@@ -51,7 +51,7 @@ Meteor.methods<ServerMethods>({
 
 		return {
 			users: type.users ? await spotlight.searchUsers({ userId, rid, text, usernames, mentions }) : [],
-			rooms: type.rooms ? spotlight.searchRooms({ userId, text, includeFederatedRooms }) : [],
+			rooms: type.rooms ? await spotlight.searchRooms({ userId, text, includeFederatedRooms }) : [],
 		};
 	},
 });
