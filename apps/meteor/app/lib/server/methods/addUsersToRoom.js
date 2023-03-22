@@ -5,7 +5,7 @@ import { api } from '@rocket.chat/core-services';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { Rooms, Subscriptions, Users } from '../../../models/server';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../functions';
 import { callbacks } from '../../../../lib/callbacks';
 import { Federation } from '../../../../server/services/federation/Federation';
@@ -42,11 +42,11 @@ Meteor.methods({
 
 		// Can add to any room you're in, with permission, otherwise need specific room type permission
 		let canAddUser = false;
-		if (userInRoom && hasPermission(userId, 'add-user-to-joined-room', room._id)) {
+		if (userInRoom && (await hasPermissionAsync(userId, 'add-user-to-joined-room', room._id))) {
 			canAddUser = true;
-		} else if (room.t === 'c' && hasPermission(userId, 'add-user-to-any-c-room')) {
+		} else if (room.t === 'c' && (await hasPermissionAsync(userId, 'add-user-to-any-c-room'))) {
 			canAddUser = true;
-		} else if (room.t === 'p' && hasPermission(userId, 'add-user-to-any-p-room')) {
+		} else if (room.t === 'p' && (await hasPermissionAsync(userId, 'add-user-to-any-p-room'))) {
 			canAddUser = true;
 		}
 

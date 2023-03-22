@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Subscriptions } from '@rocket.chat/models';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -21,7 +21,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!hasPermission(userId, 'auto-translate')) {
+		if (!(await hasPermissionAsync(userId, 'auto-translate'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Auto-Translate is not allowed', {
 				method: 'autoTranslate.saveSettings',
 			});

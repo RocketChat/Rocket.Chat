@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Rooms } from '../../../models/server';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -13,7 +13,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	getRoomJoinCode(rid) {
+	async getRoomJoinCode(rid) {
 		check(rid, String);
 
 		const userId = Meteor.userId();
@@ -22,7 +22,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getJoinCode' });
 		}
 
-		if (!hasPermission(userId, 'view-join-code')) {
+		if (!(await hasPermissionAsync(userId, 'view-join-code'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'getJoinCode' });
 		}
 
