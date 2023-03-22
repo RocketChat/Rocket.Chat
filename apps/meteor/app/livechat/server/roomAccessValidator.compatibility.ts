@@ -6,7 +6,7 @@ import { hasPermissionAsync } from '../../authorization/server/functions/hasPerm
 import { LivechatDepartment } from '../../models/server';
 import { RoutingManager } from './lib/RoutingManager';
 
-type OmniRoomAccessValidator = (
+type OmnichannelRoomAccessValidator = (
 	room: IOmnichannelRoom,
 	user?: Pick<IUser, '_id'>,
 	extraData?: Record<string, any>,
