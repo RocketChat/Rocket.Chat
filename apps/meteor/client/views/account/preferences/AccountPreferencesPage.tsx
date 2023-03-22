@@ -130,7 +130,7 @@ const AccountPreferencesPage = (): ReactElement => {
 		<Page>
 			<Page.Header title={t('Preferences')}>
 				<ButtonGroup>
-					<Button role='button' name='Save changes' primary disabled={!hasAnyChange} onClick={handleSave}>
+					<Button primary disabled={!hasAnyChange} onClick={handleSave}>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>
