@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import type { Notifications } from '@rocket.chat/rest-typings';
 import { isGETRoomsNameExists } from '@rocket.chat/rest-typings';
-import { Rooms, Users } from '@rocket.chat/models';
+import { Messages, Rooms, Users } from '@rocket.chat/models';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Media } from '@rocket.chat/core-services';
 
@@ -12,7 +12,7 @@ import { getUploadFormData } from '../lib/getUploadFormData';
 import { settings } from '../../../settings/server';
 import { eraseRoom } from '../../../../server/methods/eraseRoom';
 import { FileUpload } from '../../../file-upload/server';
-import { Messages as MessagesSync, Rooms as RoomsSync } from '../../../models/server';
+import { Rooms as RoomsSync } from '../../../models/server';
 import {
 	findAdminRoom,
 	findAdminRooms,
@@ -177,8 +177,10 @@ API.v1.addRoute(
 
 			await Meteor.call('sendFileMessage', this.urlParams.rid, null, uploadedFile, fields);
 
+			const message = await Messages.getMessageByFileIdAndUsername(uploadedFile._id, this.userId);
+
 			return API.v1.success({
-				message: await MessagesSync.getMessageByFileIdAndUsername(uploadedFile._id, this.userId),
+				message,
 			});
 		},
 	},

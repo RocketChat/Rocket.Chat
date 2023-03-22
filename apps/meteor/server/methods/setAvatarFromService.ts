@@ -12,8 +12,7 @@ import { hasPermissionAsync } from '../../app/authorization/server/functions/has
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		setAvatarFromService(dataURI: string, contentType?: string, service?: string, userId?: string): void;
-		setAvatarFromService(blob: Blob, contentType?: string, service?: string, userId?: string): void; // TODO this looks wrong, but I cannot confirm it right now
+		setAvatarFromService(dataURI: Buffer | Blob, contentType?: string, service?: string, userId?: string): void;
 	}
 }
 

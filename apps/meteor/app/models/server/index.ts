@@ -6,10 +6,9 @@ import Subscriptions from './models/Subscriptions';
 import Users from './models/Users';
 import LivechatDepartment from './models/LivechatDepartment';
 import LivechatRooms from './models/LivechatRooms';
-import LivechatInquiry from './models/LivechatInquiry';
 import AppsModel from './models/apps-model';
 
 export { AppsLogsModel } from './models/apps-logs-model';
 export { AppsPersistenceModel } from './models/apps-persistence-model';
 
-export { AppsModel, Base, BaseDb, Messages, Rooms, Subscriptions, Users, LivechatDepartment, LivechatRooms, LivechatInquiry };
+export { AppsModel, Base, BaseDb, Messages, Rooms, Subscriptions, Users, LivechatDepartment, LivechatRooms };
