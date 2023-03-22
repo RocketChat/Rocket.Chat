@@ -761,8 +761,9 @@ describe('[Users]', function () {
 				}),
 			};
 
-			const capitalizedUserName = `ACAPITALIZED_${Date.now()}`;
-			const lowercaseUserName = `alowercase_${Date.now()}`;
+			const now = Date.now();
+			const capitalizedUserName = `A_USER_${now}`;
+			const lowercaseUserName = `a_user_${now}`;
 
 			await Promise.all([createUser({ name: capitalizedUserName }), createUser({ name: lowercaseUserName })]);
 
