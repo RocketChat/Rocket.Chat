@@ -176,19 +176,6 @@ class Rooms extends Base {
 		return this.update({ _id }, update);
 	}
 
-	setReadOnlyById(_id, readOnly) {
-		const query = {
-			_id,
-		};
-		const update = {
-			$set: {
-				ro: readOnly,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	setDmReadOnlyByUserId(_id, ids, readOnly, reactWhenReadOnly) {
 		const query = {
 			uids: {
