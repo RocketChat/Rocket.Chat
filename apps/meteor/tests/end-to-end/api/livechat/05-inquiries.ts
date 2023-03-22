@@ -1,5 +1,6 @@
 /* eslint-env mocha */
 
+import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
@@ -145,7 +146,7 @@ describe('LIVECHAT - inquiries', function () {
 					// expect(res.body.inquiry.servedBy).to.have.property('_id', agent._id);
 					// expect(res.body.inquiry.source.type).to.equal('api');
 				});
-			const inquiry2 = await fetchInquiry(room._id);
+			const inquiry2 = (await fetchInquiry(room._id)) as ILivechatInquiryRecord;
 			expect(inquiry2.source.type).to.equal('api');
 			expect(inquiry2.status).to.equal('taken');
 		}).timeout(5000);
