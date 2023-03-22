@@ -724,16 +724,6 @@ export class Messages extends Base {
 		return this.update(query, update);
 	}
 
-	findAgentLastMessageByVisitorLastMessageTs(roomId, visitorLastMessageTs) {
-		const query = {
-			rid: roomId,
-			ts: { $gt: visitorLastMessageTs },
-			token: { $exists: false },
-		};
-
-		return this.findOne(query, { sort: { ts: 1 } });
-	}
-
 	findAllImportedMessagesWithFilesToDownload() {
 		const query = {
 			'_importFile.downloadUrl': {
