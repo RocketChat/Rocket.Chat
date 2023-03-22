@@ -1,25 +1,36 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { api, Team } from '@rocket.chat/core-services';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { Users, Subscriptions, Messages, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		addRoomModerator(rid: IRoom['_id'], userId: IUser['_id']): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async addRoomModerator(rid, userId) {
 		check(rid, String);
 		check(userId, String);
 
-		if (!Meteor.userId()) {
+		const uid = Meteor.userId();
+
+		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'addRoomModerator',
 			});
 		}
 
 		const room = Rooms.findOneById(rid, { fields: { t: 1, federated: 1 } });
-		if (!hasPermission(Meteor.userId(), 'set-moderator', rid) && !isRoomFederated(room)) {
+		if (!(await hasPermissionAsync(uid, 'set-moderator', rid)) && !isRoomFederated(room)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'addRoomModerator',
 			});
@@ -27,7 +38,7 @@ Meteor.methods({
 
 		const user = Users.findOneById(userId);
 
-		if (!user || !user.username) {
+		if (!user?.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'addRoomModerator',
 			});
@@ -49,7 +60,7 @@ Meteor.methods({
 
 		Subscriptions.addRoleById(subscription._id, 'moderator');
 
-		const fromUser = Users.findOneById(Meteor.userId());
+		const fromUser = Users.findOneById(uid);
 
 		Messages.createSubscriptionRoleAddedWithRoomIdAndUser(rid, user, {
 			u: {
@@ -75,11 +86,11 @@ Meteor.methods({
 			scope: rid,
 		};
 
-		if (settings.get('UI_DisplayRoles')) {
+		if (settings.get<boolean>('UI_DisplayRoles')) {
 			void api.broadcast('user.roleUpdate', event);
 		}
 
-		void api.broadcast('federation.userRoleChanged', { ...event, givenByUserId: Meteor.userId() });
+		void api.broadcast('federation.userRoleChanged', { ...event, givenByUserId: uid });
 
 		return true;
 	},

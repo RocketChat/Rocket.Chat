@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Settings } from '@rocket.chat/models';
 
-import { hasPermission, hasAllPermission } from '../../../authorization/server';
+import { hasPermissionAsync, hasAllPermission } from '../../../authorization/server/functions/hasPermission';
 import { getSettingPermissionId } from '../../../authorization/lib';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 
@@ -16,7 +16,7 @@ Meteor.methods({
 		}
 
 		if (
-			!hasPermission(uid, 'edit-privileged-setting') &&
+			!(await hasPermissionAsync(uid, 'edit-privileged-setting')) &&
 			!hasAllPermission(uid, ['manage-selected-settings', getSettingPermissionId(_id)])
 		) {
 			// TODO use the same function

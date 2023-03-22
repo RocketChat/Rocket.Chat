@@ -4,16 +4,19 @@ import mem from 'mem';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Rooms, Users } from '@rocket.chat/models';
 import { Team } from '@rocket.chat/core-services';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 
-import { hasPermission } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { Subscriptions } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
 import { isFederationEnabled } from '../../app/federation/server/lib/isFederationEnabled';
 import { federationSearchUsers } from '../../app/federation/server/handler';
 import { trim } from '../../lib/utils/stringUtils';
+import { isTruthy } from '../../lib/isTruthy';
 
-const sortChannels = function (field, direction) {
+const sortChannels = (field: string, direction: 'asc' | 'desc'): Record<string, 1 | -1> => {
 	switch (field) {
 		case 'createdAt':
 			return {
@@ -30,7 +33,7 @@ const sortChannels = function (field, direction) {
 	}
 };
 
-const sortUsers = function (field, direction) {
+const sortUsers = (field: string, direction: 'asc' | 'desc') => {
 	switch (field) {
 		case 'email':
 			return {
@@ -44,8 +47,17 @@ const sortUsers = function (field, direction) {
 	}
 };
 
-async function getChannelsAndGroups(user, canViewAnon, searchTerm, sort, pagination) {
-	if ((!user && !canViewAnon) || (user && !hasPermission(user._id, 'view-c-room'))) {
+const getChannelsAndGroups = async (
+	user: IUser & { __rooms?: IRoom['_id'][] },
+	canViewAnon: boolean,
+	searchTerm: string,
+	sort: Record<string, number>,
+	pagination: {
+		skip: number;
+		limit: number;
+	},
+) => {
+	if ((!user && !canViewAnon) || (user && !(await hasPermissionAsync(user._id, 'view-c-room')))) {
 		return;
 	}
 
@@ -53,7 +65,7 @@ async function getChannelsAndGroups(user, canViewAnon, searchTerm, sort, paginat
 	const publicTeamIds = teams.map(({ _id }) => _id);
 
 	const userTeamsIds = (await Team.listTeamsBySubscriberUserId(user._id, { projection: { teamId: 1 } }))?.map(({ teamId }) => teamId) || [];
-	const userRooms = user.__rooms;
+	const userRooms = user.__rooms ?? [];
 
 	const { cursor, totalCount } = Rooms.findPaginatedByNameOrFNameAndRoomIdsIncludingTeamRooms(
 		searchTerm ? new RegExp(searchTerm, 'i') : null,
@@ -86,14 +98,14 @@ async function getChannelsAndGroups(user, canViewAnon, searchTerm, sort, paginat
 
 	const [result, total] = await Promise.all([cursor.toArray(), totalCount]);
 
-	const teamIds = result.filter(({ teamId }) => teamId).map(({ teamId }) => teamId);
+	const teamIds = result.map(({ teamId }) => teamId).filter(isTruthy);
 	const teamsMains = await Team.listByIds([...new Set(teamIds)], { projection: { _id: 1, name: 1 } });
 
 	const results = result.map((room) => {
 		if (room.teamId) {
 			const team = teamsMains.find((mainRoom) => mainRoom._id === room.teamId);
 			if (team) {
-				room.belongsTo = team.name;
+				return { ...room, belongsTo: team.name };
 			}
 		}
 		return room;
@@ -103,18 +115,26 @@ async function getChannelsAndGroups(user, canViewAnon, searchTerm, sort, paginat
 		total,
 		results,
 	};
-}
+};
 
 const getChannelsCountForTeam = mem((teamId) => Rooms.findByTeamId(teamId, { projection: { _id: 1 } }).count(), {
 	maxAge: 2000,
 });
 
-async function getTeams(user, searchTerm, sort, pagination) {
+const getTeams = async (
+	user: IUser,
+	searchTerm: string,
+	sort: Record<string, number>,
+	pagination: {
+		skip: number;
+		limit: number;
+	},
+) => {
 	if (!user) {
 		return;
 	}
 
-	const userSubs = Subscriptions.cachedFindByUserId(user._id).fetch();
+	const userSubs: ISubscription[] = Subscriptions.cachedFindByUserId(user._id).fetch();
 	const ids = userSubs.map((sub) => sub.rid);
 	const { cursor, totalCount } = Rooms.findPaginatedContainingNameOrFNameInIdsAsTeamMain(
 		searchTerm ? new RegExp(searchTerm, 'i') : null,
@@ -156,11 +176,26 @@ async function getTeams(user, searchTerm, sort, pagination) {
 		total: await totalCount,
 		results,
 	};
-}
+};
 
-async function findUsers({ text, sort, pagination, workspace, viewFullOtherUserInfo }) {
+const findUsers = async ({
+	text,
+	sort,
+	pagination,
+	workspace,
+	viewFullOtherUserInfo,
+}: {
+	text: string;
+	sort: Record<string, number>;
+	pagination: {
+		skip: number;
+		limit: number;
+	};
+	workspace: string;
+	viewFullOtherUserInfo: boolean;
+}) => {
 	const searchFields =
-		workspace === 'all' ? ['username', 'name', 'emails.address'] : settings.get('Accounts_SearchFields').trim().split(',');
+		workspace === 'all' ? ['username', 'name', 'emails.address'] : settings.get<string>('Accounts_SearchFields').trim().split(',');
 
 	const options = {
 		...pagination,
@@ -177,8 +212,21 @@ async function findUsers({ text, sort, pagination, workspace, viewFullOtherUserI
 		},
 	};
 
+	type FederatedUser =
+		| IUser
+		| {
+				_id?: string;
+				username?: string;
+				name?: string;
+				bio?: string;
+				nickname?: string;
+				emails?: string;
+				federation?: unknown;
+				isRemote: true;
+		  };
+
 	if (workspace === 'all') {
-		const { cursor, totalCount } = Users.findPaginatedByActiveUsersExcept(text, [], options, searchFields);
+		const { cursor, totalCount } = Users.findPaginatedByActiveUsersExcept<FederatedUser>(text, [], options, searchFields);
 		const [results, total] = await Promise.all([cursor.toArray(), totalCount]);
 		return {
 			total,
@@ -187,7 +235,13 @@ async function findUsers({ text, sort, pagination, workspace, viewFullOtherUserI
 	}
 
 	if (workspace === 'external') {
-		const { cursor, totalCount } = Users.findPaginatedByActiveExternalUsersExcept(text, [], options, searchFields, getFederationDomain());
+		const { cursor, totalCount } = Users.findPaginatedByActiveExternalUsersExcept<FederatedUser>(
+			text,
+			[],
+			options,
+			searchFields,
+			getFederationDomain(),
+		);
 		const [results, total] = await Promise.all([cursor.toArray(), totalCount]);
 		return {
 			total,
@@ -195,20 +249,35 @@ async function findUsers({ text, sort, pagination, workspace, viewFullOtherUserI
 		};
 	}
 
-	const { cursor, totalCount } = Users.findPaginatedByActiveLocalUsersExcept(text, [], options, searchFields, getFederationDomain());
+	const { cursor, totalCount } = Users.findPaginatedByActiveLocalUsersExcept<FederatedUser>(
+		text,
+		[],
+		options,
+		searchFields,
+		getFederationDomain(),
+	);
 	const [results, total] = await Promise.all([cursor.toArray(), totalCount]);
 	return {
 		total,
 		results,
 	};
-}
+};
 
-const getUsers = async (user, text, workspace, sort, pagination) => {
-	if (!user || !hasPermission(user._id, 'view-outside-room') || !hasPermission(user._id, 'view-d-room')) {
+const getUsers = async (
+	user: IUser | undefined,
+	text: string,
+	workspace: string,
+	sort: Record<string, number>,
+	pagination: {
+		skip: number;
+		limit: number;
+	},
+) => {
+	if (!user || !(await hasPermissionAsync(user._id, 'view-outside-room')) || !(await hasPermissionAsync(user._id, 'view-d-room'))) {
 		return;
 	}
 
-	const viewFullOtherUserInfo = hasPermission(user._id, 'view-full-other-user-info');
+	const viewFullOtherUserInfo = await hasPermissionAsync(user._id, 'view-full-other-user-info');
 
 	const { total, results } = await findUsers({ text, sort, pagination, workspace, viewFullOtherUserInfo });
 
@@ -240,8 +309,33 @@ const getUsers = async (user, text, workspace, sort, pagination) => {
 	};
 };
 
-Meteor.methods({
-	async browseChannels({ text = '', workspace = '', type = 'channels', sortBy = 'name', sortDirection = 'asc', page, offset, limit = 10 }) {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		browseChannels: (params: {
+			text?: string;
+			workspace?: string;
+			type?: 'channels' | 'users' | 'teams';
+			sortBy?: 'name' | 'createdAt' | 'usersCount' | 'lastMessage' | 'usernames';
+			sortDirection?: 'asc' | 'desc';
+			page?: number;
+			offset?: number;
+			limit?: number;
+		}) => Promise<unknown>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async browseChannels({
+		text = '',
+		workspace = '',
+		type = 'channels',
+		sortBy = 'name',
+		sortDirection = 'asc',
+		page = 0,
+		offset = 0,
+		limit = 10,
+	}) {
 		const searchTerm = trim(escapeRegExp(text));
 
 		if (
@@ -270,7 +364,11 @@ Meteor.methods({
 
 		const canViewAnonymous = !!settings.get('Accounts_AllowAnonymousRead');
 
-		const user = Meteor.user();
+		const user = Meteor.user() as IUser | null;
+
+		if (!user) {
+			return;
+		}
 
 		switch (type) {
 			case 'channels':

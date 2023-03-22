@@ -1,23 +1,34 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { api, Team } from '@rocket.chat/core-services';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
-import { hasPermission } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { Users, Subscriptions, Messages } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		addRoomLeader(rid: IRoom['_id'], userId: IUser['_id']): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async addRoomLeader(rid, userId) {
 		check(rid, String);
 		check(userId, String);
 
-		if (!Meteor.userId()) {
+		const uid = Meteor.userId();
+
+		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'addRoomLeader',
 			});
 		}
 
-		if (!hasPermission(Meteor.userId(), 'set-leader', rid)) {
+		if (!(await hasPermissionAsync(uid, 'set-leader', rid))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'addRoomLeader',
 			});
@@ -25,7 +36,7 @@ Meteor.methods({
 
 		const user = Users.findOneById(userId);
 
-		if (!user || !user.username) {
+		if (!user?.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'addRoomLeader',
 			});
@@ -47,7 +58,7 @@ Meteor.methods({
 
 		Subscriptions.addRoleById(subscription._id, 'leader');
 
-		const fromUser = Users.findOneById(Meteor.userId());
+		const fromUser = Users.findOneById(uid);
 
 		Messages.createSubscriptionRoleAddedWithRoomIdAndUser(rid, user, {
 			u: {
@@ -62,7 +73,7 @@ Meteor.methods({
 			await Team.addRolesToMember(team._id, userId, ['leader']);
 		}
 
-		if (settings.get('UI_DisplayRoles')) {
+		if (settings.get<boolean>('UI_DisplayRoles')) {
 			void api.broadcast('user.roleUpdate', {
 				type: 'added',
 				_id: 'leader',

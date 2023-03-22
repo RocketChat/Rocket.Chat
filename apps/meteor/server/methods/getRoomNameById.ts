@@ -1,11 +1,20 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { IRoom } from '@rocket.chat/core-typings';
 
 import { Rooms, Subscriptions } from '../../app/models/server';
-import { hasPermission } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 
-Meteor.methods({
-	getRoomNameById(rid) {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		getRoomNameById(rid: IRoom['_id']): string;
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async getRoomNameById(rid) {
 		check(rid, String);
 		const userId = Meteor.userId();
 		if (!userId) {
@@ -29,7 +38,7 @@ Meteor.methods({
 			return room.name;
 		}
 
-		if (room.t !== 'c' || hasPermission(userId, 'view-c-room') !== true) {
+		if (room.t !== 'c' || (await hasPermissionAsync(userId, 'view-c-room')) !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'getRoomNameById',
 			});

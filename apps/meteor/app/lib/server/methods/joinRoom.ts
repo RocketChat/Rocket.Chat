@@ -3,7 +3,8 @@ import { check } from 'meteor/check';
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission, canAccessRoomAsync } from '../../../authorization/server';
+import { canAccessRoomAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Rooms } from '../../../models/server';
 import { addUserToRoom } from '../functions';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -39,7 +40,7 @@ Meteor.methods<ServerMethods>({
 		if (!(await canAccessRoomAsync(room, user))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
 		}
-		if (room.joinCodeRequired === true && code !== room.joinCode && !hasPermission(user._id, 'join-without-join-code')) {
+		if (room.joinCodeRequired === true && code !== room.joinCode && !(await hasPermissionAsync(user._id, 'join-without-join-code'))) {
 			throw new Meteor.Error('error-code-invalid', 'Invalid Room Password', {
 				method: 'joinRoom',
 			});
