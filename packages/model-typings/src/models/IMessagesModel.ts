@@ -18,6 +18,7 @@ import type {
 	DeleteResult,
 	UpdateResult,
 	Document,
+	Filter,
 } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -460,7 +461,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		rid: string,
 		pinned: boolean,
 		ignoreDiscussion: boolean,
-		ts: Date,
+		ts: Filter<IMessage>['ts'],
 		limit: number,
 		users: string[],
 		ignoreThreads: boolean,

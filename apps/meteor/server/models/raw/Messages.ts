@@ -1797,7 +1797,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		rid: string,
 		pinned: boolean,
 		ignoreDiscussion = true,
-		ts: Date,
+		ts: Filter<IMessage>['ts'],
 		limit: number,
 		users: string[] = [],
 		ignoreThreads = true,
