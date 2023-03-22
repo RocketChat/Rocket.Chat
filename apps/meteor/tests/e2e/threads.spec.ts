@@ -1,5 +1,3 @@
-import type { Page } from '@playwright/test';
-
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel } from './utils';
@@ -47,25 +45,13 @@ test.describe.serial('Threads', () => {
 	});
 
 	test.describe('hideFlexTab Preference enabled for threads', () => {
-		let accountPage: Page;
 
-		test.beforeAll(async ({ browser }) => {
-			accountPage = await browser.newPage({ storageState: Users.admin.state });
-
-			await accountPage.goto('/account/preferences');
-			await accountPage.locator('role=heading[name="Messages"]').click();
-			await accountPage.locator('role=checkbox >> [name="hideFlexTab"]').setChecked(true, { force: true, position: { x: 20, y: 10 } });
-			await accountPage.locator('role=button[name="Save changes"]').click();
+		test.beforeAll(async ({ api }) => {
+			await expect((await api.post('/users.setPreferences', { userId: 'rocketchat.internal.admin.test', data: { hideFlexTab: true } })).status()).toBe(200);
 		});
 
-		test.afterAll(async ({ browser }) => {
-			accountPage = await browser.newPage({ storageState: Users.admin.state });
-
-			await accountPage.goto('/account/preferences');
-			await accountPage.locator('role=heading[name="Messages"]').click();
-			await accountPage.locator('role=checkbox >> [name="hideFlexTab"]').setChecked(false, { force: true, position: { x: 20, y: 10 } });
-			await accountPage.locator('role=button[name="Save changes"]').click();
-			await accountPage.close();
+		test.afterAll(async ({ api }) => {
+			await expect((await api.post('/users.setPreferences', { userId: 'rocketchat.internal.admin.test', data: { hideFlexTab: false } })).status()).toBe(200);
 		});
 
 		test('expect to close thread contextual bar on clicking outside', async ({ page }) => {
