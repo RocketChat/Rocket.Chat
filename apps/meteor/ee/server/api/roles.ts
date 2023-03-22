@@ -5,7 +5,7 @@ import { hasPermissionAsync } from '../../../app/authorization/server/functions/
 import { settings } from '../../../app/settings/server/index';
 import { isEnterprise } from '../../app/license/server';
 import { isRoleCreateProps, isRoleUpdateProps } from '../../definition/rest/v1/roles';
-import { insertRole } from '../lib/roles/insertRole';
+import { insertRoleAsync } from '../lib/roles/insertRole';
 import { updateRole } from '../lib/roles/updateRole';
 
 API.v1.addRoute(
@@ -45,7 +45,7 @@ API.v1.addRoute(
 				broadcastUpdate: settings.get<boolean>('UI_DisplayRoles'),
 			};
 
-			const role = insertRole(roleData, options);
+			const role = await insertRoleAsync(roleData, options);
 
 			return API.v1.success({
 				role,
@@ -87,7 +87,7 @@ API.v1.addRoute(
 				broadcastUpdate: settings.get<boolean>('UI_DisplayRoles'),
 			};
 
-			const updatedRole = updateRole(roleId, roleData, options);
+			const updatedRole = await updateRole(roleId, roleData, options);
 
 			return API.v1.success({
 				role: updatedRole,

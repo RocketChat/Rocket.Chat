@@ -15,18 +15,18 @@ Meteor.startup(function () {
 	Meteor.onConnection(function (connection) {
 		const session = Meteor.server.sessions.get(connection.id);
 
-		connection.onClose(function () {
+		connection.onClose(async function () {
 			if (!session) {
 				return;
 			}
 
-			Presence.removeConnection(session.userId, connection.id, nodeId);
+			await Presence.removeConnection(session.userId, connection.id, nodeId);
 			updateConns();
 		});
 	});
 
-	process.on('exit', function () {
-		Presence.removeLostConnections(nodeId);
+	process.on('exit', async function () {
+		await Presence.removeLostConnections(nodeId);
 	});
 
 	Accounts.onLogin(function (login: any): void {

@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { SHA256 } from '@rocket.chat/sha256';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
@@ -9,7 +10,14 @@ import { deleteUser } from '../functions';
 import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { trim } from '../../../../lib/utils/stringUtils';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		deleteUserOwnAccount(password: string, confirmRelinquish?: boolean): Promise<boolean>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async deleteUserOwnAccount(password, confirmRelinquish) {
 		check(password, String);
 
@@ -53,7 +61,7 @@ Meteor.methods({
 		await deleteUser(uid, confirmRelinquish);
 
 		// App IPostUserDeleted event hook
-		Promise.await(Apps.triggerEvent(AppEvents.IPostUserDeleted, { user }));
+		await Apps.triggerEvent(AppEvents.IPostUserDeleted, { user });
 
 		return true;
 	},
