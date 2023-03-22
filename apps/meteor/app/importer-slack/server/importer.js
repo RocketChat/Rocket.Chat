@@ -20,12 +20,12 @@ export class SlackImporter extends Base {
 	}
 
 	async prepareChannelsFile(entry) {
-		super.updateProgress(ProgressStep.PREPARING_CHANNELS);
+		await super.updateProgress(ProgressStep.PREPARING_CHANNELS);
 		const data = JSON.parse(entry.getData().toString()).filter((channel) => channel.creator != null);
 
 		this.logger.debug(`loaded ${data.length} channels.`);
 
-		this.addCountToTotal(data.length);
+		await this.addCountToTotal(data.length);
 
 		for await (const channel of data) {
 			await this.converter.addChannel({
@@ -48,12 +48,12 @@ export class SlackImporter extends Base {
 	}
 
 	async prepareGroupsFile(entry) {
-		super.updateProgress(ProgressStep.PREPARING_CHANNELS);
+		await super.updateProgress(ProgressStep.PREPARING_CHANNELS);
 		const data = JSON.parse(entry.getData().toString()).filter((channel) => channel.creator != null);
 
 		this.logger.debug(`loaded ${data.length} groups.`);
 
-		this.addCountToTotal(data.length);
+		await this.addCountToTotal(data.length);
 
 		for await (const channel of data) {
 			await this.converter.addChannel({
@@ -75,12 +75,12 @@ export class SlackImporter extends Base {
 	}
 
 	async prepareMpimpsFile(entry) {
-		super.updateProgress(ProgressStep.PREPARING_CHANNELS);
+		await super.updateProgress(ProgressStep.PREPARING_CHANNELS);
 		const data = JSON.parse(entry.getData().toString()).filter((channel) => channel.creator != null);
 
 		this.logger.debug(`loaded ${data.length} mpims.`);
 
-		this.addCountToTotal(data.length);
+		await this.addCountToTotal(data.length);
 
 		const maxUsers = settings.get('DirectMesssage_maxUsers') || 1;
 
@@ -104,12 +104,12 @@ export class SlackImporter extends Base {
 	}
 
 	async prepareDMsFile(entry) {
-		super.updateProgress(ProgressStep.PREPARING_CHANNELS);
+		await super.updateProgress(ProgressStep.PREPARING_CHANNELS);
 		const data = JSON.parse(entry.getData().toString());
 
 		this.logger.debug(`loaded ${data.length} dms.`);
 
-		this.addCountToTotal(data.length);
+		await this.addCountToTotal(data.length);
 		for await (const channel of data) {
 			await this.converter.addChannel({
 				importIds: [channel.id],
@@ -123,14 +123,14 @@ export class SlackImporter extends Base {
 	}
 
 	async prepareUsersFile(entry) {
-		super.updateProgress(ProgressStep.PREPARING_USERS);
+		await super.updateProgress(ProgressStep.PREPARING_USERS);
 		const data = JSON.parse(entry.getData().toString());
 
 		this.logger.debug(`loaded ${data.length} users.`);
 
 		// Insert the users record
-		this.updateRecord({ 'count.users': data.length });
-		this.addCountToTotal(data.length);
+		await this.updateRecord({ 'count.users': data.length });
+		await this.addCountToTotal(data.length);
 
 		for await (const user of data) {
 			const newUser = {
@@ -191,41 +191,45 @@ export class SlackImporter extends Base {
 
 		try {
 			// we need to iterate the zip file twice so that all channels are loaded before the messages
-
-			zip.forEach((entry) => {
+			for await (const entry of zip.getEntries()) {
 				try {
 					if (entry.entryName === 'channels.json') {
-						channelCount += Promise.await(this.prepareChannelsFile(entry));
-						this.updateRecord({ 'count.channels': channelCount });
-						return increaseProgress();
+						channelCount += await this.prepareChannelsFile(entry);
+						await this.updateRecord({ 'count.channels': channelCount });
+						increaseProgress();
+						continue;
 					}
 
 					if (entry.entryName === 'groups.json') {
-						channelCount += Promise.await(this.prepareGroupsFile(entry));
-						this.updateRecord({ 'count.channels': channelCount });
-						return increaseProgress();
+						channelCount += await this.prepareGroupsFile(entry);
+						await this.updateRecord({ 'count.channels': channelCount });
+						increaseProgress();
+						continue;
 					}
 
 					if (entry.entryName === 'mpims.json') {
-						channelCount += Promise.await(this.prepareMpimpsFile(entry));
-						this.updateRecord({ 'count.channels': channelCount });
-						return increaseProgress();
+						channelCount += await this.prepareMpimpsFile(entry);
+						await this.updateRecord({ 'count.channels': channelCount });
+						increaseProgress();
+						continue;
 					}
 
 					if (entry.entryName === 'dms.json') {
-						channelCount += Promise.await(this.prepareDMsFile(entry));
-						this.updateRecord({ 'count.channels': channelCount });
-						return increaseProgress();
+						channelCount += await this.prepareDMsFile(entry);
+						await this.updateRecord({ 'count.channels': channelCount });
+						increaseProgress();
+						continue;
 					}
 
 					if (entry.entryName === 'users.json') {
-						userCount = Promise.await(this.prepareUsersFile(entry));
-						return increaseProgress();
+						userCount = await this.prepareUsersFile(entry);
+						increaseProgress();
+						continue;
 					}
 				} catch (e) {
 					this.logger.error(e);
 				}
-			});
+			}
 
 			if (userCount) {
 				await Settings.incrementValueById('Slack_Importer_Count', userCount);
@@ -235,15 +239,16 @@ export class SlackImporter extends Base {
 			// If we have no slack message yet, then we can insert them instead of upserting
 			this._useUpsert = !Messages.findOne({ _id: /slack\-.*/ });
 
-			zip.forEach((entry) => {
+			for await (const entry of zip.getEntries()) {
 				try {
 					if (entry.entryName.includes('__MACOSX') || entry.entryName.includes('.DS_Store')) {
 						count++;
-						return this.logger.debug(`Ignoring the file: ${entry.entryName}`);
+						this.logger.debug(`Ignoring the file: ${entry.entryName}`);
+						continue;
 					}
 
 					if (['channels.json', 'groups.json', 'mpims.json', 'dms.json', 'users.json'].includes(entry.entryName)) {
-						return;
+						continue;
 					}
 
 					if (!entry.isDirectory && entry.entryName.includes('/')) {
@@ -255,19 +260,19 @@ export class SlackImporter extends Base {
 						try {
 							// Insert the messages records
 							if (this.progress.step !== ProgressStep.PREPARING_MESSAGES) {
-								super.updateProgress(ProgressStep.PREPARING_MESSAGES);
+								await super.updateProgress(ProgressStep.PREPARING_MESSAGES);
 							}
 
 							const tempMessages = JSON.parse(entry.getData().toString());
 							messagesCount += tempMessages.length;
-							this.updateRecord({ messagesstatus: `${channel}/${date}` });
-							this.addCountToTotal(tempMessages.length);
+							await this.updateRecord({ messagesstatus: `${channel}/${date}` });
+							await this.addCountToTotal(tempMessages.length);
 
 							const slackChannelId = Promise.await(ImportData.findChannelImportIdByNameOrImportId(channel));
 
 							if (slackChannelId) {
-								for (const message of tempMessages) {
-									this.prepareMessageObject(message, missedTypes, slackChannelId);
+								for await (const message of tempMessages) {
+									await this.prepareMessageObject(message, missedTypes, slackChannelId);
 								}
 							}
 						} catch (error) {
@@ -279,7 +284,7 @@ export class SlackImporter extends Base {
 				}
 
 				increaseProgress();
-			});
+			}
 
 			if (!_.isEmpty(missedTypes)) {
 				this.logger.info('Missed import types:', missedTypes);
@@ -290,7 +295,7 @@ export class SlackImporter extends Base {
 		}
 
 		ImporterWebsocket.progressUpdated({ rate: 100 });
-		this.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
+		await this.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
 	}
 
 	parseMentions(newMessage) {

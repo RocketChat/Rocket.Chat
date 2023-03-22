@@ -61,9 +61,9 @@ roomCoordinator.add(PublicRoomType, {
 		return true;
 	},
 
-	getDiscussionType(room) {
+	async getDiscussionType(room) {
 		if (room?.teamId) {
-			const team = Promise.await(Team.getOneById(room.teamId, { projection: { type: 1 } }));
+			const team = await Team.getOneById(room.teamId, { projection: { type: 1 } });
 			if (team?.type === TEAM_TYPE.PRIVATE) {
 				return 'p';
 			}

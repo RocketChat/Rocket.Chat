@@ -50,6 +50,7 @@ type EventLikeCallbackSignatures = {
 	'beforeReadMessages': (rid: IRoom['_id'], uid: IUser['_id']) => void;
 	'afterDeleteUser': (user: IUser) => void;
 	'afterFileUpload': (params: { user: IUser; room: IRoom; message: IMessage }) => void;
+	'afterRoomNameChange': (params: { rid: string; name: string; oldName: string }) => void;
 	'afterSaveMessage': (message: IMessage, room: IRoom, uid?: string) => void;
 	'livechat.removeAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.saveAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
@@ -81,6 +82,10 @@ type EventLikeCallbackSignatures = {
 	'usernameSet': () => void;
 	'beforeLeaveRoom': (user: IUser, room: IRoom) => void;
 	'beforeJoinRoom': (user: IUser, room: IRoom) => void;
+	'beforeMuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
+	'afterMuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
+	'beforeUnmuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
+	'afterUnmuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
 };
 
 /**
@@ -162,7 +167,6 @@ type Hook =
 	| 'afterProcessOAuthUser'
 	| 'afterRemoveFromRoom'
 	| 'afterRoomArchived'
-	| 'afterRoomNameChange'
 	| 'afterRoomTopicChange'
 	| 'afterSaveUser'
 	| 'afterValidateLogin'

@@ -35,7 +35,7 @@ export const LivechatEnterprise = {
 			});
 		}
 
-		if (addUserRoles(user._id, ['livechat-monitor'])) {
+		if (await addUserRoles(user._id, ['livechat-monitor'])) {
 			return user;
 		}
 
@@ -64,7 +64,7 @@ export const LivechatEnterprise = {
 		return true;
 	},
 
-	removeUnit(_id) {
+	async removeUnit(_id) {
 		check(_id, String);
 
 		const unit = LivechatUnit.findOneById(_id, { fields: { _id: 1 } });
@@ -287,7 +287,7 @@ export const LivechatEnterprise = {
 
 		const departmentDB = await LivechatDepartmentRaw.createOrUpdateDepartment(_id, departmentData);
 		if (departmentDB && departmentAgents) {
-			updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
+			await updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
 		}
 
 		return departmentDB;
