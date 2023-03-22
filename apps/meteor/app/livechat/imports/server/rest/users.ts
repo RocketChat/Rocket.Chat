@@ -74,7 +74,7 @@ API.v1.addRoute(
 					return API.v1.success({ user });
 				}
 			} else if (this.urlParams.type === 'manager') {
-				const user = Livechat.addManager(this.bodyParams.username);
+				const user = await Livechat.addManager(this.bodyParams.username);
 				if (user) {
 					return API.v1.success({ user });
 				}

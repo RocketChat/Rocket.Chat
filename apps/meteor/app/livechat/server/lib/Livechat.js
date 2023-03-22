@@ -876,7 +876,7 @@ export const Livechat = {
 		return false;
 	},
 
-	addManager(username) {
+	async addManager(username) {
 		check(username, String);
 
 		const user = Users.findOneByUsername(username, { fields: { _id: 1, username: 1 } });
@@ -887,7 +887,7 @@ export const Livechat = {
 			});
 		}
 
-		if (addUserRoles(user._id, ['livechat-manager'])) {
+		if (await addUserRoles(user._id, ['livechat-manager'])) {
 			return user;
 		}
 
