@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Session } from 'meteor/session';
@@ -13,7 +13,8 @@ import { fireGlobalEvent } from '../../lib/utils/fireGlobalEvent';
 import { isLayoutEmbedded } from '../../lib/utils/isLayoutEmbedded';
 
 const notifyNewRoom = (sub: ISubscription): void => {
-	if (Session.equals(`user_${Meteor.userId()}_status`, 'busy')) {
+	const user = Meteor.user() as IUser | null;
+	if (!user || user.status === 'busy') {
 		return;
 	}
 

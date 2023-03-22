@@ -137,7 +137,7 @@ export const KonchatNotification = {
 	},
 
 	newMessage(rid) {
-		if (Session.equals(`user_${Meteor.user().username}_status`, 'busy')) {
+		if (Meteor.user().status === 'busy') {
 			return;
 		}
 

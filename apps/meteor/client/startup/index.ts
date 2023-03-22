@@ -36,5 +36,4 @@ import './streamMessage';
 import './unread';
 import './UserDeleted';
 import './userRoles';
-import './usersObserve';
 import './userStatusManuallySet';
