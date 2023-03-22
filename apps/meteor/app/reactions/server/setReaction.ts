@@ -102,7 +102,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 		isReacted = true;
 	}
 
-	Promise.await(Apps.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, isReacted));
+	await Apps.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, isReacted);
 
 	msgStream.emit(message.rid, message);
 }
