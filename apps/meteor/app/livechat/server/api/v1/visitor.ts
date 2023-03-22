@@ -47,17 +47,17 @@ API.v1.addRoute('livechat/visitor', {
 		}
 
 		if (customFields && Array.isArray(customFields)) {
-			customFields.forEach((field) => {
-				const customField = Promise.await(LivechatCustomField.findOneById(field.key));
+			for (const field of customFields) {
+				const customField = await LivechatCustomField.findOneById(field.key);
 				if (!customField) {
 					return;
 				}
 				const { key, value, overwrite } = field;
 				// TODO: refactor this to use normal await
-				if (customField.scope === 'visitor' && !Promise.await(VisitorsRaw.updateLivechatDataByToken(token, key, value, overwrite))) {
+				if (customField.scope === 'visitor' && !(await VisitorsRaw.updateLivechatDataByToken(token, key, value, overwrite))) {
 					return API.v1.failure();
 				}
-			});
+			}
 
 			visitor = await VisitorsRaw.findOneById(visitorId, {});
 		}
