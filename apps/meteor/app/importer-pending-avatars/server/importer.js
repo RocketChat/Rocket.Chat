@@ -6,23 +6,23 @@ import { Users } from '../../models/server';
 export class PendingAvatarImporter extends Base {
 	async prepareFileCount() {
 		this.logger.debug('start preparing import operation');
-		super.updateProgress(ProgressStep.PREPARING_STARTED);
+		await super.updateProgress(ProgressStep.PREPARING_STARTED);
 
 		const users = Users.findAllUsersWithPendingAvatar();
 		const fileCount = users.count();
 
 		if (fileCount === 0) {
-			super.updateProgress(ProgressStep.DONE);
+			await super.updateProgress(ProgressStep.DONE);
 			return 0;
 		}
 
 		await this.updateRecord({ 'count.messages': fileCount, 'messagesstatus': null });
-		this.addCountToTotal(fileCount);
+		await this.addCountToTotal(fileCount);
 
 		const fileData = new Selection(this.name, [], [], fileCount);
 		await this.updateRecord({ fileData });
 
-		super.updateProgress(ProgressStep.IMPORTING_FILES);
+		await super.updateProgress(ProgressStep.IMPORTING_FILES);
 		Meteor.defer(() => {
 			this.startImport(fileData);
 		});
@@ -30,7 +30,7 @@ export class PendingAvatarImporter extends Base {
 		return fileCount;
 	}
 
-	startImport() {
+	async startImport() {
 		const pendingFileUserList = Users.findAllUsersWithPendingAvatar();
 		try {
 			pendingFileUserList.forEach((user) => {
@@ -51,7 +51,7 @@ export class PendingAvatarImporter extends Base {
 							}
 						});
 					} finally {
-						this.addCountCompleted(1);
+						Promise.await(this.addCountCompleted(1));
 					}
 				} catch (error) {
 					this.logger.error(error);
@@ -64,11 +64,11 @@ export class PendingAvatarImporter extends Base {
 				return this.startImport();
 			}
 
-			super.updateProgress(ProgressStep.ERROR);
+			await super.updateProgress(ProgressStep.ERROR);
 			throw error;
 		}
 
-		super.updateProgress(ProgressStep.DONE);
+		await super.updateProgress(ProgressStep.DONE);
 		return this.getProgress();
 	}
 }
