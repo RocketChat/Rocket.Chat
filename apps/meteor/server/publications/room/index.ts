@@ -4,7 +4,8 @@ import type { IRoom, RoomType } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-import { canAccessRoomAsync, hasPermission } from '../../../app/authorization/server';
+import { canAccessRoomAsync } from '../../../app/authorization/server';
+import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { Rooms } from '../../../app/models/server';
 import { settings } from '../../../app/settings/server';
 import { roomFields } from '../../modules/watchers/publishFields';
@@ -71,7 +72,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (settings.get('Store_Last_Message') && userId && !hasPermission(userId, 'preview-c-room')) {
+		if (settings.get('Store_Last_Message') && userId && !(await hasPermissionAsync(userId, 'preview-c-room'))) {
 			delete room.lastMessage;
 		}
 
