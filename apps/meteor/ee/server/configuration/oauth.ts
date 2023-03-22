@@ -65,7 +65,7 @@ onLicense('oauth-enterprise', () => {
 		}
 
 		if (settings.mergeRoles) {
-			OAuthEEManager.updateRolesFromSSO(
+			await OAuthEEManager.updateRolesFromSSO(
 				auth.user,
 				auth.serviceData,
 				settings.rolesClaim,

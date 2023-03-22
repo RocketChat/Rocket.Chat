@@ -64,7 +64,7 @@ export const LivechatEnterprise = {
 		return true;
 	},
 
-	removeUnit(_id) {
+	async removeUnit(_id) {
 		check(_id, String);
 
 		const unit = LivechatUnit.findOneById(_id, { fields: { _id: 1 } });
