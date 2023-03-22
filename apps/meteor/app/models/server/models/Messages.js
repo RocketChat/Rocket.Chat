@@ -692,16 +692,6 @@ export class Messages extends Base {
 		return this.find({ tcount: { $exists: true } }).count();
 	}
 
-	removeThreadRefByThreadId(tmid) {
-		const query = { tmid };
-		const update = {
-			$unset: {
-				tmid: 1,
-			},
-		};
-		return this.update(query, update, { multi: true });
-	}
-
 	findAllImportedMessagesWithFilesToDownload() {
 		const query = {
 			'_importFile.downloadUrl': {

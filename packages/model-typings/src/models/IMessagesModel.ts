@@ -477,7 +477,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	findUnreadThreadMessagesByDate(tmid: string, userId: string, after: Date): FindCursor<IMessage>;
 	findVisibleUnreadMessagesByRoomAndDate(rid: string, after: Date): FindCursor<IMessage>;
 	setAsReadById(_id: string): Promise<UpdateResult>;
-	removeThreadRefByThreadId(tmid: string): Promise<UpdateResult | Document>;
 	countThreads(): Promise<number>;
 	addThreadFollowerByThreadId(tmid: string, userId: string): Promise<UpdateResult>;
 	findAllImportedMessagesWithFilesToDownload(): FindCursor<IMessage>;
