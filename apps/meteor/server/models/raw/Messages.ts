@@ -1936,7 +1936,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
-	findVisibleUnreadMessagesByRoomAndDate(rid: string, after: Date): FindCursor<IMessage> {
+	findVisibleUnreadMessagesByRoomAndDate(rid: string, after: Date): FindCursor<Pick<IMessage, '_id'>> {
 		const query = {
 			unread: true,
 			rid,

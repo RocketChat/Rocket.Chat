@@ -641,31 +641,6 @@ export class Messages extends Base {
 		);
 	}
 
-	findVisibleUnreadMessagesByRoomAndDate(rid, after) {
-		const query = {
-			unread: true,
-			rid,
-			$or: [
-				{
-					tmid: { $exists: false },
-				},
-				{
-					tshow: true,
-				},
-			],
-		};
-
-		if (after) {
-			query.ts = { $gt: after };
-		}
-
-		return this.find(query, {
-			fields: {
-				_id: 1,
-			},
-		});
-	}
-
 	findAllImportedMessagesWithFilesToDownload() {
 		const query = {
 			'_importFile.downloadUrl': {

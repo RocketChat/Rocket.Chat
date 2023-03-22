@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
-import { LivechatVisitors, ReadReceipts, Messages as MessagesRaw } from '@rocket.chat/models';
+import { LivechatVisitors, ReadReceipts, Messages as MessagesRaw, Rooms as RoomsRaw } from '@rocket.chat/models';
 
 import { Subscriptions, Messages, Rooms, Users } from '../../../../app/models/server';
 import { settings } from '../../../../app/settings/server';
@@ -35,19 +35,19 @@ const updateMessages = debounceByRoomId(
 );
 
 export const ReadReceipt = {
-	markMessagesAsRead(roomId, userId, userLastSeen) {
+	async markMessagesAsRead(roomId, userId, userLastSeen) {
 		if (!settings.get('Message_Read_Receipt_Enabled')) {
 			return;
 		}
 
-		const room = Rooms.findOneById(roomId, { fields: { lm: 1 } });
+		const room = RoomsRaw.findOneById(roomId, { projection: { lm: 1 } });
 
 		// if users last seen is greater than room's last message, it means the user already have this room marked as read
 		if (userLastSeen > room.lm) {
 			return;
 		}
 
-		this.storeReadReceipts(Messages.findVisibleUnreadMessagesByRoomAndDate(roomId, userLastSeen), roomId, userId);
+		this.storeReadReceipts(await MessagesRaw.findVisibleUnreadMessagesByRoomAndDate(roomId, userLastSeen), roomId, userId);
 
 		updateMessages(room);
 	},
