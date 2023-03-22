@@ -9,7 +9,8 @@ import { Users } from '../../../models/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RateLimiter } from '../lib';
 import { addUserToRoom } from './addUserToRoom';
-import { checkUsernameAvailability, setUserAvatar } from '.';
+import { setUserAvatar } from '.';
+import { checkUsernameAvailability } from './checkUsernameAvailability';
 import { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
