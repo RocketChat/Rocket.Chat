@@ -27,7 +27,7 @@ export const saveRoomType = function (rid, roomType, user, sendMessage = true) {
 		});
 	}
 
-	if (!roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange(room, RoomSettingsEnum.TYPE)) {
+	if (!roomCoordinator.getRoomDirectives(room.t).allowRoomSettingChange(room, RoomSettingsEnum.TYPE)) {
 		throw new Meteor.Error('error-direct-room', "Can't change type of direct rooms", {
 			function: 'RocketChat.saveRoomType',
 		});
