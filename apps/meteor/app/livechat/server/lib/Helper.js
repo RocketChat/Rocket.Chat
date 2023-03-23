@@ -33,7 +33,7 @@ export const allowAgentSkipQueue = (agent) => {
 	return hasRole(agent.agentId, 'bot');
 };
 
-export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = {}) => {
+export const createLivechatRoom = async (rid, name, guest, roomInfo = {}, extraData = {}) => {
 	check(rid, String);
 	check(name, String);
 	check(
@@ -87,12 +87,10 @@ export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = 
 
 	const roomId = Rooms.insert(room);
 
-	Meteor.defer(() => {
-		Apps.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
-		callbacks.run('livechat.newRoom', room);
-	});
+	Apps.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
+	callbacks.run('livechat.newRoom', room);
 
-	sendMessage(guest, { t: 'livechat-started', msg: '', groupable: false }, room);
+	await sendMessage(guest, { t: 'livechat-started', msg: '', groupable: false }, room);
 
 	return roomId;
 };

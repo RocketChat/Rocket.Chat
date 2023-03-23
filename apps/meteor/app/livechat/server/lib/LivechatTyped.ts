@@ -124,7 +124,7 @@ class LivechatClass {
 		room = (await LivechatRooms.findOneById(rid)) as IOmnichannelRoom;
 
 		this.logger.debug(`Sending closing message to room ${room._id}`);
-		sendMessage(chatCloser, message, room);
+		await sendMessage(chatCloser, message, room);
 
 		LegacyMessage.createCommandWithRoomIdAndUser('promptTranscript', rid, closeData.closedBy);
 
