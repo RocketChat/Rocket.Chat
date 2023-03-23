@@ -2,7 +2,7 @@
 
 import { expect } from 'chai';
 
-import { getCredentials, api, request, credentials, methodCall, wait } from '../../../data/api-data';
+import { getCredentials, api, request, credentials, methodCall } from '../../../data/api-data';
 import {
 	createVisitor,
 	createLivechatRoom,
@@ -19,9 +19,7 @@ import {
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-import { sleep } from '/tests/data/livechat/utils';
-
-(IS_EE ? describe.only : describe.skip)('[EE] LIVECHAT - rooms', function () {
+(IS_EE ? describe : describe.skip)('[EE] LIVECHAT - rooms', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
