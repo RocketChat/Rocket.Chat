@@ -117,7 +117,7 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 		servingAgent,
 		clientAction,
 	}: {
-		room: Pick<IOmnichannelRoom, '_id' | 't' | 'open' | 'onHold' | 'servedBy'>;
+		room: Pick<IOmnichannelRoom, '_id'>;
 		inquiry: ILivechatInquiryRecord;
 		servingAgent: NonNullable<IOmnichannelRoom['servedBy']>;
 		clientAction: boolean;
@@ -133,26 +133,27 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 				inquiry,
 				options: {},
 			});
+
+			return;
 		} catch (e) {
 			this.logger.debug(`Agent ${servingAgent._id} is not available to take the inquiry ${inquiry._id}`, e);
-
 			if (clientAction) {
 				// if the action was triggered by the client, we should throw the error
 				// so the client can handle it and show the error message to the user
 				throw e;
 			}
-
-			this.logger.debug(`Attempting to queue inquiry ${inquiry._id}`);
-
-			await this.removeCurrentAgentFromRoom({ room, inquiry });
-
-			const { _id: inquiryId } = inquiry;
-			const newInquiry = await LivechatInquiry.findOneById(inquiryId);
-
-			await queueInquiry(room, newInquiry);
-
-			this.logger.debug('Room queued successfully');
 		}
+
+		this.logger.debug(`Attempting to queue inquiry ${inquiry._id}`);
+
+		await this.removeCurrentAgentFromRoom({ room, inquiry });
+
+		const { _id: inquiryId } = inquiry;
+		const newInquiry = await LivechatInquiry.findOneById(inquiryId);
+
+		await queueInquiry(newInquiry);
+
+		this.logger.debug('Room queued successfully');
 	}
 
 	private async removeCurrentAgentFromRoom({
