@@ -162,14 +162,14 @@ export class AppCommandsBridge extends CommandBridge {
 		}
 	}
 
-	private _appCommandExecutor(
+	private async _appCommandExecutor(
 		command: string,
 		parameters: any,
 		message: RequiredField<Partial<IMessage>, 'rid'>,
 		triggerId?: string,
-	): void {
-		const user = Promise.await(this.orch.getConverters()?.get('users').convertById(Meteor.userId()));
-		const room = Promise.await(this.orch.getConverters())?.get('rooms').convertById(message.rid);
+	): Promise<void> {
+		const user = await this.orch.getConverters()?.get('users').convertById(Meteor.userId());
+		const room = await this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
 		const params = parseParameters(parameters);
 
@@ -181,17 +181,17 @@ export class AppCommandsBridge extends CommandBridge {
 			triggerId,
 		);
 
-		void Promise.await(this.orch.getManager()?.getCommandManager().executeCommand(command, context));
+		await this.orch.getManager()?.getCommandManager().executeCommand(command, context);
 	}
 
-	private _appCommandPreviewer(command: string, parameters: any, message: RequiredField<Partial<IMessage>, 'rid'>): any {
-		const user = Promise.await(this.orch.getConverters()?.get('users').convertById(Meteor.userId()));
-		const room = Promise.await(this.orch.getConverters()?.get('rooms').convertById(message.rid));
+	private async _appCommandPreviewer(command: string, parameters: any, message: RequiredField<Partial<IMessage>, 'rid'>): Promise<any> {
+		const user = await this.orch.getConverters()?.get('users').convertById(Meteor.userId());
+		const room = await this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
 		const params = parseParameters(parameters);
 
 		const context = new SlashCommandContext(Object.freeze(user), Object.freeze(room), Object.freeze(params) as string[], threadId);
-		return Promise.await(this.orch.getManager()?.getCommandManager().getPreviews(command, context));
+		return this.orch.getManager()?.getCommandManager().getPreviews(command, context);
 	}
 
 	private async _appCommandPreviewExecutor(
