@@ -3,7 +3,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Avatars } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
-import { RocketChatFile } from '../../../file';
+import { RocketChatFile } from '../../../file/server';
 import { FileUpload } from '../../../file-upload/server';
 import { Rooms, Messages } from '../../../models/server';
 
@@ -15,7 +15,7 @@ export const setRoomAvatar = async function (rid: string, dataURI: string, user:
 	if (!dataURI) {
 		fileStore.deleteByRoomId(rid);
 		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_avatar', rid, '', user);
-		api.broadcast('room.avatarUpdate', { _id: rid });
+		void api.broadcast('room.avatarUpdate', { _id: rid });
 
 		return Rooms.unsetAvatarData(rid);
 	}
@@ -43,7 +43,7 @@ export const setRoomAvatar = async function (rid: string, dataURI: string, user:
 		Meteor.setTimeout(function () {
 			Rooms.setAvatarData(rid, 'upload', result.etag);
 			Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_avatar', rid, '', user);
-			api.broadcast('room.avatarUpdate', { _id: rid, avatarETag: result.etag });
+			void api.broadcast('room.avatarUpdate', { _id: rid, avatarETag: result.etag });
 		}, 500);
 	});
 };

@@ -5,7 +5,6 @@ import {
 	usePermission,
 	useQueryStringParameter,
 	useRole,
-	useSession,
 	useSetting,
 	useTranslation,
 	useUser,
@@ -24,7 +23,7 @@ import { withDebouncing, withThrottling } from '../../../../../lib/utils/highOrd
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
 import { useReactiveQuery } from '../../../../hooks/useReactiveQuery';
-import { RoomManager as NewRoomManager } from '../../../../lib/RoomManager';
+import { RoomManager } from '../../../../lib/RoomManager';
 import type { Upload } from '../../../../lib/chats/Upload';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { setMessageJumpQueryStringParameter } from '../../../../lib/utils/setMessageJumpQueryStringParameter';
@@ -62,7 +61,7 @@ const RoomBody = (): ReactElement => {
 	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
 	const [hasNewMessages, setHasNewMessages] = useState(false);
 
-	const hideFlexTab = useUserPreference<boolean>('hideFlexTab');
+	const hideFlexTab = useUserPreference<boolean>('hideFlexTab') || undefined;
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
 
@@ -281,10 +280,8 @@ const RoomBody = (): ReactElement => {
 		[room._id],
 	);
 
-	const openedRoom = useSession('openedRoom');
-
 	useEffect(() => {
-		if (!routeName || !roomCoordinator.isRouteNameKnown(routeName) || room._id !== openedRoom) {
+		if (!routeName || !roomCoordinator.isRouteNameKnown(routeName)) {
 			return;
 		}
 
@@ -292,7 +289,7 @@ const RoomBody = (): ReactElement => {
 		if (subscribed && (subscription?.alert || subscription?.unread)) {
 			readMessage.refreshUnreadMark(room._id);
 		}
-	}, [debouncedReadMessageRead, openedRoom, room._id, routeName, subscribed, subscription?.alert, subscription?.unread]);
+	}, [debouncedReadMessageRead, room._id, routeName, subscribed, subscription?.alert, subscription?.unread]);
 
 	useEffect(() => {
 		if (!subscribed) {
@@ -404,7 +401,7 @@ const RoomBody = (): ReactElement => {
 			return;
 		}
 
-		const store = NewRoomManager.getStore(room._id);
+		const store = RoomManager.getStore(room._id);
 
 		const handleWrapperScroll = withThrottling({ wait: 30 })(() => {
 			store?.update({ scroll: wrapper.scrollTop, atBottom: isAtBottom(wrapper, 50) });
@@ -453,11 +450,11 @@ const RoomBody = (): ReactElement => {
 			timer2s = setTimeout(() => checkIfScrollIsAtBottom(), 2000);
 		};
 
-		wrapper.addEventListener('mousewheel', handleWheel);
-		wrapper.addEventListener('wheel', handleWheel);
+		// wrapper.addEventListener('mousewheel', handleWheel);
+		// wrapper.addEventListener('wheel', handleWheel);
 		wrapper.addEventListener('scroll', handleWheel);
-		wrapper.addEventListener('touchstart', handleTouchStart);
-		wrapper.addEventListener('touchend', handleTouchEnd);
+		// wrapper.addEventListener('touchstart', handleTouchStart);
+		// wrapper.addEventListener('touchend', handleTouchEnd);
 
 		return (): void => {
 			if (timer1s) clearTimeout(timer1s);
@@ -511,26 +508,34 @@ const RoomBody = (): ReactElement => {
 
 	const handleCloseFlexTab: MouseEventHandler<HTMLElement> = useCallback(
 		(e): void => {
-			const checkIfElementOrParentIsInstanceOfButton = (element: HTMLElement | null): boolean => {
+			/*
+			 * check if the element is a button or anchor
+			 * it considers the role as well
+			 * usually, the flex tab is closed when clicking outside of it
+			 * but if the user clicks on a button or anchor, we don't want to close the flex tab
+			 * because the user could be actually trying to open the flex tab through those elements
+			 */
+
+			const checkElement = (element: HTMLElement | null): boolean => {
 				if (!element) {
 					return false;
 				}
-				if (element instanceof HTMLButtonElement) {
+				if (element instanceof HTMLButtonElement || element.getAttribute('role') === 'button') {
 					return true;
 				}
-				return checkIfElementOrParentIsInstanceOfButton(element.parentElement);
+				if (element instanceof HTMLAnchorElement || element.getAttribute('role') === 'link') {
+					return true;
+				}
+				return checkElement(element.parentElement);
 			};
-			if (!hideFlexTab) {
-				return;
-			}
 
-			if (checkIfElementOrParentIsInstanceOfButton(e.target as HTMLElement)) {
+			if (checkElement(e.target as HTMLElement)) {
 				return;
 			}
 
 			toolbox.close();
 		},
-		[toolbox, hideFlexTab],
+		[toolbox],
 	);
 
 	return (
@@ -541,7 +546,7 @@ const RoomBody = (): ReactElement => {
 					className={`messages-container flex-tab-main-content ${admin ? 'admin' : ''}`}
 					id={`chat-window-${room._id}`}
 					aria-label={t('Channel')}
-					onClick={handleCloseFlexTab}
+					onClick={hideFlexTab && handleCloseFlexTab}
 				>
 					<div className='messages-container-wrapper'>
 						<div className='messages-container-main' {...fileUploadTriggerProps}>

@@ -1,4 +1,3 @@
 import './settings';
-import { CROWD } from './crowd';
-
-export { CROWD };
+import './crowd';
+import './methods';

@@ -1,7 +1,7 @@
 import type { Filter, FindOptions } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
-import type { ILivechatDepartmentRecord, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
@@ -15,7 +15,7 @@ type FindDepartmentParams = {
 	enabled?: boolean;
 	excludeDepartmentId?: string;
 	showArchived?: boolean;
-} & Pagination<ILivechatDepartmentRecord>;
+} & Pagination<ILivechatDepartment>;
 type FindDepartmentByIdParams = {
 	userId: string;
 	departmentId: string;
@@ -26,7 +26,7 @@ type FindDepartmentToAutocompleteParams = {
 	uid: string;
 	selector: {
 		exceptions: string[];
-		conditions: Filter<ILivechatDepartmentRecord>;
+		conditions: Filter<ILivechatDepartment>;
 		term: string;
 	};
 	onlyMyDepartments?: boolean;
@@ -45,7 +45,7 @@ export async function findDepartments({
 	excludeDepartmentId,
 	showArchived = false,
 	pagination: { offset, count, sort },
-}: FindDepartmentParams): Promise<PaginatedResult<{ departments: ILivechatDepartmentRecord[] }>> {
+}: FindDepartmentParams): Promise<PaginatedResult<{ departments: ILivechatDepartment[] }>> {
 	let query = {
 		$or: [{ type: { $eq: 'd' } }, { type: { $exists: false } }],
 		...(!showArchived && { archived: { $ne: !showArchived } }),
@@ -80,7 +80,7 @@ export async function findArchivedDepartments({
 	text,
 	excludeDepartmentId,
 	pagination: { offset, count, sort },
-}: FindDepartmentParams): Promise<PaginatedResult<{ departments: ILivechatDepartmentRecord[] }>> {
+}: FindDepartmentParams): Promise<PaginatedResult<{ departments: ILivechatDepartment[] }>> {
 	let query = {
 		$or: [{ type: { $eq: 'd' } }, { type: { $exists: false } }],
 		archived: { $eq: true },
@@ -114,7 +114,7 @@ export async function findDepartmentById({
 	includeAgents = true,
 	onlyMyDepartments = false,
 }: FindDepartmentByIdParams): Promise<{
-	department: ILivechatDepartmentRecord | null;
+	department: ILivechatDepartment | null;
 	agents?: ILivechatDepartmentAgents[];
 }> {
 	const canViewLivechatDepartments = includeAgents && (await hasPermissionAsync(userId, 'view-livechat-departments'));
@@ -141,7 +141,7 @@ export async function findDepartmentsToAutocomplete({
 	selector,
 	onlyMyDepartments = false,
 	showArchived = false,
-}: FindDepartmentToAutocompleteParams): Promise<{ items: ILivechatDepartmentRecord[] }> {
+}: FindDepartmentToAutocompleteParams): Promise<{ items: ILivechatDepartment[] }> {
 	const { exceptions = [] } = selector;
 	let { conditions = {} } = selector;
 
@@ -191,7 +191,7 @@ export async function findDepartmentsBetweenIds({
 }: {
 	ids: string[];
 	fields: Record<string, unknown>;
-}): Promise<{ departments: ILivechatDepartmentRecord[] }> {
+}): Promise<{ departments: ILivechatDepartment[] }> {
 	const departments = await LivechatDepartment.findInIds(ids, fields).toArray();
 	return { departments };
 }

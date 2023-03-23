@@ -138,7 +138,7 @@ const ServerContextMock = ({
 
 			if (handler === 'infinite') {
 				logAction('callMethod (infinite)', methodName, ...args);
-				return new Promise(() => undefined);
+				return new Promise<any>(() => undefined);
 			}
 
 			if (handler === 'errored') {

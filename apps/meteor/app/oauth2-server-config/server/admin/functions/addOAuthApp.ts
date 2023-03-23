@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { OAuthApps, Users } from '@rocket.chat/models';
 import type { OauthAppsAddParams } from '@rocket.chat/rest-typings';
 import type { IOAuthApps, IUser } from '@rocket.chat/core-typings';
 
-import { hasPermission } from '../../../../authorization/server';
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { parseUriList } from './parseUriList';
 
 export async function addOAuthApp(applicationParams: OauthAppsAddParams, uid: IUser['_id'] | undefined): Promise<IOAuthApps> {
@@ -14,12 +14,12 @@ export async function addOAuthApp(applicationParams: OauthAppsAddParams, uid: IU
 
 	const user = await Users.findOne(uid, { projection: { username: 1 } });
 
-	if (!user || !user.username) {
+	if (!user?.username) {
 		// TODO: username is required, but not always present
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'addOAuthApp' });
 	}
 
-	if (!hasPermission(uid, 'manage-oauth-apps')) {
+	if (!(await hasPermissionAsync(uid, 'manage-oauth-apps'))) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'addOAuthApp' });
 	}
 
@@ -54,7 +54,6 @@ export async function addOAuthApp(applicationParams: OauthAppsAddParams, uid: IU
 			_id: user._id,
 			username: user.username,
 		},
-		_id: '',
 	};
 
 	if (application.redirectUri.length === 0) {
@@ -63,6 +62,8 @@ export async function addOAuthApp(applicationParams: OauthAppsAddParams, uid: IU
 		});
 	}
 
-	application._id = (await OAuthApps.insertOne(application)).insertedId;
-	return application;
+	return {
+		...application,
+		_id: (await OAuthApps.insertOne(application)).insertedId,
+	};
 }

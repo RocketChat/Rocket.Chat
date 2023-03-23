@@ -6,7 +6,7 @@ import Rooms from './Rooms';
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { trim } from '../../../../lib/utils/stringUtils';
 
-export class LivechatRooms extends Base {
+class LivechatRooms extends Base {
 	constructor(...args) {
 		super(...args);
 
@@ -36,7 +36,10 @@ export class LivechatRooms extends Base {
 		);
 		this.tryEnsureIndex({ 'livechatData.$**': 1 });
 		this.tryEnsureIndex({ pdfTranscriptRequested: 1 }, { sparse: true });
-		this.tryEnsureIndex({ pdfTranscriptFileId: 1 }, { sparse: true });
+		this.tryEnsureIndex({ pdfTranscriptFileId: 1 }, { sparse: true }); // used on statistics
+		this.tryEnsureIndex({ callStatus: 1 }, { sparse: true }); // used on statistics
+		this.tryEnsureIndex({ priorityId: 1 }, { sparse: true });
+		this.tryEnsureIndex({ slaId: 1 }, { sparse: true });
 	}
 
 	findOneByIdOrName(_idOrName, options) {
