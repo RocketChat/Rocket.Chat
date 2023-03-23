@@ -33,7 +33,7 @@ export const allowAgentSkipQueue = (agent) => {
 	return hasRole(agent.agentId, 'bot');
 };
 
-export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = {}) => {
+export const createLivechatRoom = async (rid, name, guest, roomInfo = {}, extraData = {}) => {
 	check(rid, String);
 	check(name, String);
 	check(
@@ -90,7 +90,7 @@ export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = 
 	Apps.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
 	callbacks.run('livechat.newRoom', room);
 
-	Promise.await(sendMessage(guest, { t: 'livechat-started', msg: '', groupable: false }, room));
+	await sendMessage(guest, { t: 'livechat-started', msg: '', groupable: false }, room);
 
 	return roomId;
 };
