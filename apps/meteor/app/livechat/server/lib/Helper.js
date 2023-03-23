@@ -532,7 +532,7 @@ export const normalizeTransferredByData = (transferredBy, room) => {
 	};
 };
 
-export const checkServiceStatus = ({ guest, agent }) => {
+export const checkServiceStatus = async ({ guest, agent }) => {
 	if (!agent) {
 		return Livechat.online(guest.department);
 	}

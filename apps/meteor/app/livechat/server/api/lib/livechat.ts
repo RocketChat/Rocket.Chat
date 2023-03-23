@@ -16,7 +16,7 @@ import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../../lib/callbacks';
 import { normalizeAgent } from '../../lib/Helper';
 
-export function online(department: string, skipSettingCheck = false, skipFallbackCheck = false): boolean {
+export function online(department: string, skipSettingCheck = false, skipFallbackCheck = false): Promise<boolean> {
 	return Livechat.online(department, skipSettingCheck, skipFallbackCheck);
 }
 
