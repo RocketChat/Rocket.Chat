@@ -2,7 +2,7 @@
 
 import { expect } from 'chai';
 
-import { getCredentials, api, request, credentials, methodCall } from '../../../data/api-data';
+import { getCredentials, api, request, credentials, methodCall, wait } from '../../../data/api-data';
 import {
 	createVisitor,
 	createLivechatRoom,
@@ -11,11 +11,17 @@ import {
 	setRoomOnHold,
 	startANewLivechatRoomAndTakeIt,
 	sendAgentMessage,
+	unsetRoomOnHold,
+	getLivechatRoomInfo,
+	makeAgentAvailable,
+	createAgent,
 } from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-(IS_EE ? describe : describe.skip)('[EE] LIVECHAT - rooms', function () {
+import { sleep } from '/tests/data/livechat/utils';
+
+(IS_EE ? describe.only : describe.skip)('[EE] LIVECHAT - rooms', function () {
 	this.retries(0);
 
 	before((done) => getCredentials(done));
@@ -157,13 +163,25 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 		it('should not remove room from hold if room does not exist', async () => {
 			await updatePermission('on-hold-others-livechat-room', ['admin', 'livechat-manager']);
-			const response = await request
-				.post(methodCall('livechat:resumeOnHold'))
-				.set(credentials)
-				.send({ message: JSON.stringify({ params: ['asdfasdf'], msg: 'method', method: 'livechat:resumeOnHold', id: 'id' }) })
-				.expect(200);
+			const response = await unsetRoomOnHold('invalid-room-id');
 			expect(response.body.success).to.be.true;
 			expect(JSON.parse(response.body.message).error.reason).to.be.equal('Invalid room');
+		});
+		it('should change OnHold status of room when a visitor sends a message', async () => {
+			await createAgent();
+			await makeAgentAvailable();
+			await updatePermission('on-hold-others-livechat-room', ['admin', 'livechat-manager']);
+			const { room, visitor } = await startANewLivechatRoomAndTakeIt();
+			await sendAgentMessage(room._id);
+			await setRoomOnHold(room._id);
+			await sendMessage(room._id, 'test', visitor.token);
+			setTimeout(
+				() =>
+					getLivechatRoomInfo(room._id).then((info) => {
+						expect(info.onHold).to.be.equal(undefined);
+					}),
+				500,
+			);
 		});
 	});
 });

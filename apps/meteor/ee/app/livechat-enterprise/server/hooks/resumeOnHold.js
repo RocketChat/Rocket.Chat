@@ -33,10 +33,9 @@ const handleAfterSaveMessage = (message, roomParams) => {
 	}
 
 	// if a visitor sends a message in room which is On Hold
-	if (message.token && room.onHold) {
+	if (message.u.username.match(/guest/)?.[0] !== '' && room.onHold) {
 		Meteor.call('livechat:resumeOnHold', rid, { clientAction: false });
 	}
-
 	return message;
 };
 

@@ -7,6 +7,7 @@ import type {
 	IMessage,
 	IOmnichannelRoom,
 } from '@rocket.chat/core-typings';
+import type supertest from 'supertest';
 import { api, credentials, methodCall, request } from '../api-data';
 import { updatePermission } from '../permissions.helper';
 import { adminUsername } from '../user';
@@ -317,5 +318,13 @@ export const setRoomOnHold = async (roomId: string): Promise<void> => {
 		.send({
 			roomId: roomId,
 		})
+		.expect(200);
+};
+
+export const unsetRoomOnHold = async (roomId: string): Promise<supertest.Response> => {
+	return await request
+		.post(methodCall('livechat:resumeOnHold'))
+		.set(credentials)
+		.send({ message: JSON.stringify({ params: [roomId], msg: 'method', method: 'livechat:resumeOnHold', id: 'id' }) })
 		.expect(200);
 };
