@@ -23,8 +23,6 @@ class RocketChatIntegrationHandler {
 		this.successResults = [200, 201, 202];
 		this.compiledScripts = {};
 		this.triggers = {};
-
-		Promise.await(Integrations.find({ type: 'webhook-outgoing' }).forEach((data) => this.addIntegration(data)));
 	}
 
 	addIntegration(record) {
