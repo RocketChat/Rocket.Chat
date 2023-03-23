@@ -47,7 +47,6 @@ const MessageBoxReplies = (): ReactElement | null => {
 									collapsed: true,
 								} as MessageQuoteAttachment
 							}
-							file={reply?.files && reply?.files[0]}
 						/>
 						<Box
 							className={closeWrapperStyle}

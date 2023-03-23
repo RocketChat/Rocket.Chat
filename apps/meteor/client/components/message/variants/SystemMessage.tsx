@@ -111,7 +111,7 @@ const SystemMessage = ({ message, showUserAvatar }: SystemMessageProps): ReactEl
 				</MessageSystemBlock>
 				{message.attachments && (
 					<MessageSystemBlock>
-						<Attachments attachments={message.attachments} file={message.file} />
+						<Attachments attachments={message.attachments} />
 					</MessageSystemBlock>
 				)}
 				{message.actionLinks?.length && (
