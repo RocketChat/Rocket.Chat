@@ -243,17 +243,6 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findByRoomIdAndMessageIds(rid, messageIds, options) {
-		const query = {
-			rid,
-			_id: {
-				$in: messageIds,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
 	findOneBySlackBotIdAndSlackTs(slackBotId, slackTs) {
 		const query = {
 			slackBotId,
