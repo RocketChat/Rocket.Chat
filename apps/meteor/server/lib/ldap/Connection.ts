@@ -612,7 +612,7 @@ export class LDAPConnection {
 	}
 
 	private _updateIdle(override?: boolean): void {
-		// @ts-ignore calling a private method
+		// @ts-expect-error use a private function to signal to the lib that we're still working
 		this.client._updateIdle(override);
 	}
 
