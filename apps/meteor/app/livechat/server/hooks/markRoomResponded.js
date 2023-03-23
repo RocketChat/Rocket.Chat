@@ -4,7 +4,7 @@ import { callbacks } from '../../../../lib/callbacks';
 
 callbacks.add(
 	'afterSaveMessage',
-	function (message, room) {
+	async function (message, room) {
 		// skips this callback if the message was edited
 		if (!message || message.editedAt) {
 			return message;
@@ -15,7 +15,7 @@ callbacks.add(
 			return message;
 		}
 		if (room.responseBy) {
-			Promise.await(LivechatRooms.setAgentLastMessageTs(room._id));
+			await LivechatRooms.setAgentLastMessageTs(room._id);
 		}
 
 		// check if room is yet awaiting for response
@@ -23,14 +23,12 @@ callbacks.add(
 			return message;
 		}
 
-		Promise.await(
-			LivechatRooms.setResponseByRoomId(room._id, {
-				user: {
-					_id: message.u._id,
-					username: message.u.username,
-				},
-			}),
-		);
+		await LivechatRooms.setResponseByRoomId(room._id, {
+			user: {
+				_id: message.u._id,
+				username: message.u.username,
+			},
+		});
 
 		return message;
 	},

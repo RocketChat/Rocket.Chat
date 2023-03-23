@@ -24,7 +24,7 @@ callbacks.add(
 			// When visitor sends a mesage, most metrics wont be calculated/served.
 			// But, v.lq (last query) will be updated to the message time. This has to be done
 			// As not doing it will cause the metrics to be crazy and not have real values.
-			Promise.await(LivechatRooms.saveAnalyticsDataByRoomId(room, message));
+			await LivechatRooms.saveAnalyticsDataByRoomId(room, message);
 			return message;
 		}
 
@@ -80,7 +80,7 @@ callbacks.add(
 			};
 		} // ignore, its continuing response
 
-		Promise.await(LivechatRooms.saveAnalyticsDataByRoomId(room, message, analyticsData));
+		await LivechatRooms.saveAnalyticsDataByRoomId(room, message, analyticsData);
 		return message;
 	},
 	callbacks.priority.LOW,
