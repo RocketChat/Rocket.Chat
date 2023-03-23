@@ -1,5 +1,6 @@
 import { Divider, Modal, ButtonGroup, Button, Field, TextInput, Throbber } from '@rocket.chat/fuselage';
-import { useSetModal, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useSetModal, useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { VFC, FormEvent } from 'react';
 import React, { useState } from 'react';
@@ -12,12 +13,26 @@ type MatrixFederationAddServerModalProps = {
 	onClickClose: () => void;
 };
 
+const getErrorKey = (error: any): TranslationKey | undefined => {
+	if (!error) {
+		return;
+	}
+	if (error.error === 'invalid-server-name') {
+		return 'Server_doesnt_exist';
+	}
+	if (error.error === 'invalid-server-name') {
+		return 'Server_already_added';
+	}
+};
+
 const MatrixFederationAddServerModal: VFC<MatrixFederationAddServerModalProps> = ({ onClickClose }) => {
 	const t = useTranslation();
 	const addMatrixServer = useEndpoint('POST', '/v1/federation/addServerByUser');
 	const [serverName, setServerName] = useState('');
+	const [errorKey, setErrorKey] = useState<TranslationKey | undefined>();
 	const setModal = useSetModal();
 	const queryClient = useQueryClient();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const {
 		mutate: addServer,
@@ -27,6 +42,14 @@ const MatrixFederationAddServerModal: VFC<MatrixFederationAddServerModalProps> =
 		onSuccess: async () => {
 			await queryClient.invalidateQueries(['federation/listServersByUsers']);
 			setModal(<MatrixFederationSearch defaultSelectedServer={serverName} onClose={onClickClose} key={serverName} />);
+		},
+		onError: (error) => {
+			const errorKey = getErrorKey(error);
+			if (!errorKey) {
+				dispatchToastMessage({ type: 'error', message: error });
+				return;
+			}
+			setErrorKey(errorKey);
 		},
 	});
 
@@ -45,7 +68,12 @@ const MatrixFederationAddServerModal: VFC<MatrixFederationAddServerModalProps> =
 						<TextInput
 							disabled={isLoading}
 							value={serverName}
-							onChange={(e: FormEvent<HTMLInputElement>) => setServerName(e.currentTarget.value)}
+							onChange={(e: FormEvent<HTMLInputElement>) => {
+								setServerName(e.currentTarget.value);
+								if (errorKey) {
+									setErrorKey(undefined);
+								}
+							}}
 							mie='x4'
 						/>
 						<Button onClick={() => addServer()} primary disabled={isLoading}>
@@ -53,7 +81,7 @@ const MatrixFederationAddServerModal: VFC<MatrixFederationAddServerModalProps> =
 							{isLoading && <Throbber inheritColor />}
 						</Button>
 					</Field.Row>
-					{isError && <Field.Error>{t('Server_doesnt_exist')}</Field.Error>}
+					{isError && errorKey && <Field.Error>{t(errorKey)}</Field.Error>}
 					<Field.Hint>{t('Federation_Example_matrix_server')}</Field.Hint>
 				</Field>
 				<Divider mb='x16' />

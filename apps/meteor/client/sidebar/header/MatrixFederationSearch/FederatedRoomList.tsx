@@ -46,6 +46,7 @@ const FederatedRoomList: VFC<FederatedRoomListProps> = ({ serverName, roomName, 
 				if (error instanceof Error && error.message === 'already-joined') {
 					setModal(null);
 					roomCoordinator.openRouteLink('c', { rid: id });
+					return;
 				}
 
 				dispatchToastMessage({ type: 'error', message: error });
@@ -62,11 +63,11 @@ const FederatedRoomList: VFC<FederatedRoomListProps> = ({ serverName, roomName, 
 		<Box is='ul' overflow='hidden' height='356px' flexGrow={1} flexShrink={0}>
 			<Virtuoso
 				data={flattenedData || []}
-				totalCount={data?.pages[data?.pages.length - 1].total || 0}
 				computeItemKey={(index, room) => room?.id || index}
 				overscan={4}
 				components={{
-					Footer: isFetchingNextPage ? Throbber : undefined,
+					// eslint-disable-next-line react/no-multi-comp
+					Footer: () => (isFetchingNextPage ? <Throbber /> : null),
 					Scroller: ScrollableContentWrapper,
 					EmptyPlaceholder: FederatedRoomListEmptyPlaceholder,
 				}}
