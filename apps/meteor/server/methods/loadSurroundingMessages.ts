@@ -5,7 +5,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Messages } from '@rocket.chat/models';
 
-import { canAccessRoomId } from '../../app/authorization/server';
+import { canAccessRoomIdAsync } from '../../app/authorization/server/functions/canAccessRoom';
 import { normalizeMessagesForUser } from '../../app/utils/server/lib/normalizeMessagesForUser';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -47,7 +47,7 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		if (!canAccessRoomId(mainMessage.rid, fromId)) {
+		if (!(await canAccessRoomIdAsync(mainMessage.rid, fromId))) {
 			return false;
 		}
 

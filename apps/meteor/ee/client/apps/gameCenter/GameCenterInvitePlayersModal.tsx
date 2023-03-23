@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 
 import GenericModal from '../../../../client/components/GenericModal';
 import UserAutoCompleteMultipleFederated from '../../../../client/components/UserAutoCompleteMultiple/UserAutoCompleteMultipleFederated';
+import { useOpenedRoom } from '../../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import type { IGame } from './GameCenter';
@@ -22,6 +23,8 @@ const GameCenterInvitePlayersModal = ({ game, onClose }: IGameCenterInvitePlayer
 	const [users, setUsers] = useState<Array<Username>>([]);
 	const { name } = game;
 
+	const openedRoom = useOpenedRoom();
+
 	const sendInvite = async () => {
 		const privateGroupName = `${name.replace(/\s/g, '-')}-${Random.id(10)}`;
 
@@ -31,7 +34,7 @@ const GameCenterInvitePlayersModal = ({ game, onClose }: IGameCenterInvitePlayer
 			roomCoordinator.openRouteLink(result.t, result);
 
 			Tracker.autorun((c) => {
-				if (Session.get('openedRoom') !== result.rid) {
+				if (openedRoom !== result.rid) {
 					return;
 				}
 

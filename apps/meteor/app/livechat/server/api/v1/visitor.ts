@@ -47,17 +47,16 @@ API.v1.addRoute('livechat/visitor', {
 		}
 
 		if (customFields && Array.isArray(customFields)) {
-			customFields.forEach((field) => {
-				const customField = Promise.await(LivechatCustomField.findOneById(field.key));
+			for await (const field of customFields) {
+				const customField = await LivechatCustomField.findOneById(field.key);
 				if (!customField) {
-					return;
+					continue;
 				}
 				const { key, value, overwrite } = field;
-				// TODO: refactor this to use normal await
-				if (customField.scope === 'visitor' && !Promise.await(VisitorsRaw.updateLivechatDataByToken(token, key, value, overwrite))) {
+				if (customField.scope === 'visitor' && !(await VisitorsRaw.updateLivechatDataByToken(token, key, value, overwrite))) {
 					return API.v1.failure();
 				}
-			});
+			}
 
 			visitor = await VisitorsRaw.findOneById(visitorId, {});
 		}
@@ -159,7 +158,7 @@ API.v1.addRoute('livechat/visitor.callStatus', {
 		if (!guest) {
 			throw new Meteor.Error('invalid-token');
 		}
-		Livechat.updateCallStatus(callId, rid, callStatus, guest);
+		await Livechat.updateCallStatus(callId, rid, callStatus, guest);
 		return API.v1.success({ token, callStatus });
 	},
 });
@@ -178,7 +177,7 @@ API.v1.addRoute('livechat/visitor.status', {
 			throw new Meteor.Error('invalid-token');
 		}
 
-		Livechat.notifyGuestStatusChanged(token, status);
+		await Livechat.notifyGuestStatusChanged(token, status);
 
 		return API.v1.success({ token, status });
 	},

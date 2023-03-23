@@ -4,7 +4,7 @@ import { OAuthApps, Users } from '@rocket.chat/models';
 import type { OauthAppsAddParams } from '@rocket.chat/rest-typings';
 import type { IOAuthApps, IUser } from '@rocket.chat/core-typings';
 
-import { hasPermission } from '../../../../authorization/server';
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { parseUriList } from './parseUriList';
 
 export async function addOAuthApp(applicationParams: OauthAppsAddParams, uid: IUser['_id'] | undefined): Promise<IOAuthApps> {
@@ -19,7 +19,7 @@ export async function addOAuthApp(applicationParams: OauthAppsAddParams, uid: IU
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'addOAuthApp' });
 	}
 
-	if (!hasPermission(uid, 'manage-oauth-apps')) {
+	if (!(await hasPermissionAsync(uid, 'manage-oauth-apps'))) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'addOAuthApp' });
 	}
 

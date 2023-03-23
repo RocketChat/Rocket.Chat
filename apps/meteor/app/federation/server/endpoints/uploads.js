@@ -8,14 +8,14 @@ API.v1.addRoute(
 	'federation.uploads',
 	{ authRequired: false },
 	{
-		get() {
+		async get() {
 			if (!isFederationEnabled()) {
 				return API.v1.failure('Federation not enabled');
 			}
 
 			const { upload_id } = this.requestParams();
 
-			const upload = Promise.await(Uploads.findOneById(upload_id));
+			const upload = await Uploads.findOneById(upload_id);
 
 			if (!upload) {
 				return API.v1.failure('There is no such file in this server');

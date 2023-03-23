@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
 import { Users } from '../../../models/server';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RateLimiter, validateEmailDomain } from '../lib';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
@@ -80,8 +80,8 @@ const _setEmail = function (userId: string, email: string, shouldSendVerificatio
 };
 
 export const setEmail = RateLimiter.limitFunction(_setEmail, 1, 60000, {
-	0() {
+	async 0() {
 		const userId = Meteor.userId();
-		return !userId || !hasPermission(userId, 'edit-other-user-info');
+		return !userId || !(await hasPermissionAsync(userId, 'edit-other-user-info'));
 	}, // Administrators have permission to change others emails, so don't limit those
 });

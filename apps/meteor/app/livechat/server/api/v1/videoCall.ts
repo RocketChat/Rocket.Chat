@@ -33,7 +33,7 @@ API.v1.addRoute(
 			}
 
 			const config = await settings();
-			if (!config.theme || !config.theme.actionLinks || !config.theme.actionLinks.webrtc) {
+			if (!config.theme?.actionLinks?.webrtc) {
 				throw new Error('invalid-livechat-config');
 			}
 
@@ -89,7 +89,7 @@ API.v1.addRoute(
 				throw new Error('invalid-callId');
 			}
 
-			Livechat.updateCallStatus(callId, rid, status, this.user);
+			await Livechat.updateCallStatus(callId, rid, status, this.user);
 
 			return API.v1.success({ status });
 		},
