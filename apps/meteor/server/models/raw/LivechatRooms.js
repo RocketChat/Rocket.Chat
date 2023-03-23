@@ -1,4 +1,5 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { Settings } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 import { getValue } from '../../../app/settings/server/raw';
@@ -10,6 +11,40 @@ import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 export class LivechatRoomsRaw extends BaseRaw {
 	constructor(db, trash) {
 		super(db, 'room', trash);
+	}
+
+	// move indexes from constructor to here using IndexDescription as type
+	modelIndexes() {
+		return [
+			{ key: { open: 1 }, sparse: true },
+			{ key: { departmentId: 1 }, sparse: true },
+			{ key: { 'metrics.chatDuration': 1 }, sparse: true },
+			{ key: { 'metrics.serviceTimeDuration': 1 }, sparse: true },
+			{ key: { 'metrics.visitorInactivity': 1 }, sparse: true },
+			{ key: { 'omnichannel.predictedVisitorAbandonmentAt': 1 }, sparse: true },
+			{ key: { closedAt: 1 }, sparse: true },
+			{ key: { servedBy: 1 }, sparse: true },
+			{ key: { 'v.token': 1 }, sparse: true },
+			{ key: { 'v.token': 1, 'email.thread': 1 }, sparse: true },
+			{ key: { 'v._id': 1 }, sparse: true },
+			{ key: { t: 1, departmentId: 1, closedAt: 1 }, partialFilterExpression: { closedAt: { $exists: true } } },
+			{ key: { source: 1 }, sparse: true },
+			{ key: { departmentAncestors: 1 }, sparse: true },
+			{
+				key: { 't': 1, 'open': 1, 'source.type': 1, 'v.status': 1 },
+				partialFilterExpression: {
+					't': { $eq: 'l' },
+					'open': { $eq: true },
+					'source.type': { $eq: 'widget' },
+				},
+			},
+			{ key: { 'livechatData.$**': 1 } },
+			{ key: { pdfTranscriptRequested: 1 }, sparse: true },
+			{ key: { pdfTranscriptFileId: 1 }, sparse: true }, // used on statistics
+			{ key: { callStatus: 1 }, sparse: true }, // used on statistics
+			{ key: { priorityId: 1 }, sparse: true },
+			{ key: { slaId: 1 }, sparse: true },
+		];
 	}
 
 	getQueueMetrics({ departmentId, agentId, includeOfflineAgents, options = {} }) {
@@ -1398,5 +1433,781 @@ export class LivechatRoomsRaw extends BaseRaw {
 
 	bulkRemoveDepartmentAndUnitsFromRooms(departmentId) {
 		return this.updateMany({ departmentId }, { $unset: { departmentId: 1, departmentAncestors: 1 } });
+	}
+
+	findOneByIdOrName(_idOrName, options) {
+		const query = {
+			t: 'l',
+			$or: [
+				{
+					_id: _idOrName,
+				},
+				{
+					name: _idOrName,
+				},
+			],
+		};
+
+		return this.findOne(query, options);
+	}
+
+	updateSurveyFeedbackById(_id, surveyFeedback) {
+		const query = {
+			_id,
+		};
+
+		const update = {
+			$set: {
+				surveyFeedback,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	async updateDataByToken(token, key, value, overwrite = true) {
+		const query = {
+			'v.token': token,
+			'open': true,
+		};
+
+		if (!overwrite) {
+			const room = await this.findOne(query, { projection: { livechatData: 1 } });
+			if (room.livechatData && typeof room.livechatData[key] !== 'undefined') {
+				return true;
+			}
+		}
+
+		const update = {
+			$set: {
+				[`livechatData.${key}`]: value,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	async saveRoomById({ _id, topic, tags, livechatData, ...extra }) {
+		const setData = { ...extra };
+		const unsetData = {};
+
+		if (topic != null) {
+			const trimmedTopic = topic.trim();
+			if (trimmedTopic.length) {
+				setData.topic = trimmedTopic;
+			} else {
+				unsetData.topic = 1;
+			}
+		}
+
+		if (Array.isArray(tags) && tags.length > 0) {
+			setData.tags = tags;
+		} else {
+			unsetData.tags = 1;
+		}
+
+		if (extra.priorityId === '') {
+			unsetData.priorityId = 1;
+			delete setData.priorityId;
+		}
+		if (extra.slaId === '') {
+			unsetData.slaId = 1;
+			delete setData.slaId;
+		}
+
+		if (livechatData) {
+			Object.keys(livechatData).forEach((key) => {
+				const value = livechatData[key].trim();
+				if (value) {
+					setData[`livechatData.${key}`] = value;
+				} else {
+					unsetData[`livechatData.${key}`] = 1;
+				}
+			});
+		}
+
+		const update = {};
+
+		if (Object.keys(setData).length > 0) {
+			update.$set = setData;
+		}
+
+		if (Object.keys(unsetData).length > 0) {
+			update.$unset = unsetData;
+		}
+
+		if (Object.keys(update).length === 0) {
+			return;
+		}
+
+		return this.updateOne({ _id }, update);
+	}
+
+	findById(_id, fields) {
+		const options = {};
+
+		if (fields) {
+			options.projection = fields;
+		}
+
+		const query = {
+			t: 'l',
+			_id,
+		};
+
+		return this.find(query, options);
+	}
+
+	findByIds(ids, fields) {
+		const options = {};
+
+		if (fields) {
+			options.projection = fields;
+		}
+
+		const query = {
+			t: 'l',
+			_id: { $in: ids },
+		};
+
+		return this.find(query, options);
+	}
+
+	findOneByIdAndVisitorToken(_id, visitorToken, fields) {
+		const options = {};
+
+		if (fields) {
+			options.projection = fields;
+		}
+
+		const query = {
+			't': 'l',
+			_id,
+			'v.token': visitorToken,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneByVisitorTokenAndEmailThread(visitorToken, emailThread, options) {
+		const query = {
+			't': 'l',
+			'v.token': visitorToken,
+			'$or': [{ 'email.thread': { $elemMatch: { $in: emailThread } } }, { 'email.thread': new RegExp(emailThread.join('|')) }],
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneByVisitorTokenAndEmailThreadAndDepartment(visitorToken, emailThread, departmentId, options) {
+		const query = {
+			't': 'l',
+			'v.token': visitorToken,
+			'$or': [
+				{ 'email.thread': { $elemMatch: { $in: emailThread } } },
+				{ 'email.thread': new RegExp(emailThread.map((t) => `"${t}"`).join('|')) },
+			],
+			...(departmentId && { departmentId }),
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneOpenByVisitorTokenAndEmailThread(visitorToken, emailThread, options) {
+		const query = {
+			't': 'l',
+			'open': true,
+			'v.token': visitorToken,
+			'$or': [{ 'email.thread': { $elemMatch: { $in: emailThread } } }, { 'email.thread': new RegExp(emailThread.join('|')) }],
+		};
+
+		return this.findOne(query, options);
+	}
+
+	updateEmailThreadByRoomId(roomId, threadIds) {
+		const query = {
+			$addToSet: {
+				'email.thread': threadIds,
+			},
+		};
+
+		return this.updateOne({ _id: roomId }, query);
+	}
+
+	findOneLastServedAndClosedByVisitorToken(visitorToken, options = {}) {
+		const query = {
+			't': 'l',
+			'v.token': visitorToken,
+			'closedAt': { $exists: true },
+			'servedBy': { $exists: true },
+		};
+
+		options.sort = { closedAt: -1 };
+		return this.findOne(query, options);
+	}
+
+	findOneByVisitorToken(visitorToken, fields) {
+		const options = {};
+
+		if (fields) {
+			options.projection = fields;
+		}
+
+		const query = {
+			't': 'l',
+			'v.token': visitorToken,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	async updateRoomCount() {
+		const query = {
+			_id: 'Livechat_Room_Count',
+		};
+
+		const update = {
+			$inc: {
+				value: 1,
+			},
+		};
+
+		const livechatCount = await Settings.findOneAndUpdate(query, update, { returnDocument: 'after' });
+		return livechatCount.value;
+	}
+
+	findOpenByVisitorToken(visitorToken, options) {
+		const query = {
+			't': 'l',
+			'open': true,
+			'v.token': visitorToken,
+		};
+
+		return this.find(query, options);
+	}
+
+	findOneOpenByVisitorToken(visitorToken, options) {
+		const query = {
+			't': 'l',
+			'open': true,
+			'v.token': visitorToken,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneOpenByVisitorTokenAndDepartmentIdAndSource(visitorToken, departmentId, source, options) {
+		const query = {
+			't': 'l',
+			'open': true,
+			'v.token': visitorToken,
+			departmentId,
+		};
+		if (source) {
+			query['source.type'] = source;
+		}
+
+		return this.findOne(query, options);
+	}
+
+	findOpenByVisitorTokenAndDepartmentId(visitorToken, departmentId, options) {
+		const query = {
+			't': 'l',
+			'open': true,
+			'v.token': visitorToken,
+			departmentId,
+		};
+
+		return this.find(query, options);
+	}
+
+	findByVisitorToken(visitorToken) {
+		const query = {
+			't': 'l',
+			'v.token': visitorToken,
+		};
+
+		return this.find(query);
+	}
+
+	findByVisitorIdAndAgentId(visitorId, agentId, options) {
+		const query = {
+			t: 'l',
+			...(visitorId && { 'v._id': visitorId }),
+			...(agentId && { 'servedBy._id': agentId }),
+		};
+
+		return this.find(query, options);
+	}
+
+	findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken, options) {
+		const query = {
+			't': 'l',
+			'_id': roomId,
+			'open': true,
+			'v.token': visitorToken,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findClosedRooms(departmentIds, options) {
+		const query = {
+			t: 'l',
+			open: { $exists: false },
+			closedAt: { $exists: true },
+			...(Array.isArray(departmentIds) && departmentIds.length > 0 && { departmentId: { $in: departmentIds } }),
+		};
+
+		return this.find(query, options);
+	}
+
+	setResponseByRoomId(roomId, response) {
+		return this.updateOne(
+			{
+				_id: roomId,
+				t: 'l',
+			},
+			{
+				$set: {
+					responseBy: {
+						_id: response.user._id,
+						username: response.user.username,
+						lastMessageTs: new Date(),
+					},
+				},
+				$unset: {
+					waitingResponse: 1,
+				},
+			},
+		);
+	}
+
+	setNotResponseByRoomId(roomId) {
+		return this.updateOne(
+			{
+				_id: roomId,
+				t: 'l',
+			},
+			{
+				$set: {
+					waitingResponse: true,
+				},
+				$unset: {
+					responseBy: 1,
+				},
+			},
+		);
+	}
+
+	setAgentLastMessageTs(roomId) {
+		return this.updateOne(
+			{
+				_id: roomId,
+				t: 'l',
+			},
+			{
+				$set: {
+					'responseBy.lastMessageTs': new Date(),
+				},
+			},
+		);
+	}
+
+	saveAnalyticsDataByRoomId(room, message, analyticsData) {
+		const update = {
+			$set: {},
+		};
+
+		if (analyticsData) {
+			update.$set['metrics.response.avg'] = analyticsData.avgResponseTime;
+
+			update.$inc = {};
+			update.$inc['metrics.response.total'] = 1;
+			update.$inc['metrics.response.tt'] = analyticsData.responseTime;
+			update.$inc['metrics.reaction.tt'] = analyticsData.reactionTime;
+		}
+
+		if (analyticsData && analyticsData.firstResponseTime) {
+			update.$set['metrics.response.fd'] = analyticsData.firstResponseDate;
+			update.$set['metrics.response.ft'] = analyticsData.firstResponseTime;
+			update.$set['metrics.reaction.fd'] = analyticsData.firstReactionDate;
+			update.$set['metrics.reaction.ft'] = analyticsData.firstReactionTime;
+		}
+
+		// livechat analytics : update last message timestamps
+		const visitorLastQuery = room.metrics && room.metrics.v ? room.metrics.v.lq : room.ts;
+		const agentLastReply = room.metrics && room.metrics.servedBy ? room.metrics.servedBy.lr : room.ts;
+
+		if (message.token) {
+			// update visitor timestamp, only if its new inquiry and not continuing message
+			if (agentLastReply >= visitorLastQuery) {
+				// if first query, not continuing query from visitor
+				update.$set['metrics.v.lq'] = message.ts;
+			}
+		} else if (visitorLastQuery > agentLastReply) {
+			// update agent timestamp, if first response, not continuing
+			update.$set['metrics.servedBy.lr'] = message.ts;
+		}
+
+		return this.updateOne(
+			{
+				_id: room._id,
+				t: 'l',
+			},
+			update,
+		);
+	}
+
+	getTotalConversationsBetweenDate(t, date, { departmentId } = {}) {
+		const query = {
+			t,
+			ts: {
+				$gte: new Date(date.gte), // ISO Date, ts >= date.gte
+				$lt: new Date(date.lt), // ISODate, ts < date.lt
+			},
+			...(departmentId && departmentId !== 'undefined' && { departmentId }),
+		};
+
+		return this.col.countDocuments(query);
+	}
+
+	getAnalyticsMetricsBetweenDate(t, date, { departmentId } = {}) {
+		const query = {
+			t,
+			ts: {
+				$gte: new Date(date.gte), // ISO Date, ts >= date.gte
+				$lt: new Date(date.lt), // ISODate, ts < date.lt
+			},
+			...(departmentId && departmentId !== 'undefined' && { departmentId }),
+		};
+
+		return this.find(query, {
+			projection: { ts: 1, departmentId: 1, open: 1, servedBy: 1, metrics: 1, msgs: 1 },
+		});
+	}
+
+	getAnalyticsMetricsBetweenDateWithMessages(t, date, { departmentId } = {}, extraQuery) {
+		return this.col.aggregate(
+			[
+				{
+					$match: {
+						t,
+						ts: {
+							$gte: new Date(date.gte), // ISO Date, ts >= date.gte
+							$lt: new Date(date.lt), // ISODate, ts < date.lt
+						},
+						...(departmentId && departmentId !== 'undefined' && { departmentId }),
+					},
+				},
+				{ $addFields: { roomId: '$_id' } },
+				{
+					$lookup: {
+						from: 'rocketchat_message',
+						// mongo doesn't like _id as variable name here :(
+						let: { roomId: '$roomId' },
+						pipeline: [
+							{
+								$match: {
+									$expr: {
+										$and: [
+											{
+												$eq: ['$$roomId', '$rid'],
+											},
+											{
+												// this is similar to do { $exists: false }
+												$lte: ['$t', null],
+											},
+											...(extraQuery ? [extraQuery] : []),
+										],
+									},
+								},
+							},
+						],
+						as: 'messages',
+					},
+				},
+				{
+					$unwind: {
+						path: '$messages',
+						preserveNullAndEmptyArrays: true,
+					},
+				},
+				{
+					$group: {
+						_id: {
+							_id: '$_id',
+							ts: '$ts',
+							departmentId: '$departmentId',
+							open: '$open',
+							servedBy: '$servedBy',
+							metrics: '$metrics',
+						},
+						messagesCount: {
+							$sum: 1,
+						},
+					},
+				},
+				{
+					$project: {
+						_id: '$_id._id',
+						ts: '$_id.ts',
+						departmentId: '$_id.departmentId',
+						open: '$_id.open',
+						servedBy: '$_id.servedBy',
+						metrics: '$_id.metrics',
+						msgs: '$messagesCount',
+					},
+				},
+			],
+			{ readPreference: readSecondaryPreferred() },
+		);
+	}
+
+	getAnalyticsBetweenDate(date, { departmentId } = {}) {
+		return this.col.aggregate(
+			[
+				{
+					$match: {
+						t: 'l',
+						ts: {
+							$gte: new Date(date.gte), // ISO Date, ts >= date.gte
+							$lt: new Date(date.lt), // ISODate, ts < date.lt
+						},
+						...(departmentId && departmentId !== 'undefined' && { departmentId }),
+					},
+				},
+				{ $addFields: { roomId: '$_id' } },
+				{
+					$lookup: {
+						from: 'rocketchat_message',
+						// mongo doesn't like _id as variable name here :(
+						let: { roomId: '$roomId' },
+						pipeline: [
+							{
+								$match: {
+									$expr: {
+										$and: [
+											{
+												$eq: ['$$roomId', '$rid'],
+											},
+											{
+												// this is similar to do { $exists: false }
+												$lte: ['$t', null],
+											},
+										],
+									},
+								},
+							},
+						],
+						as: 'messages',
+					},
+				},
+				{
+					$unwind: {
+						path: '$messages',
+						preserveNullAndEmptyArrays: true,
+					},
+				},
+				{
+					$group: {
+						_id: {
+							_id: '$_id',
+							ts: '$ts',
+							departmentId: '$departmentId',
+							open: '$open',
+							servedBy: '$servedBy',
+							metrics: '$metrics',
+							onHold: '$onHold',
+						},
+						messagesCount: {
+							$sum: 1,
+						},
+					},
+				},
+				{
+					$project: {
+						_id: '$_id._id',
+						ts: '$_id.ts',
+						departmentId: '$_id.departmentId',
+						open: '$_id.open',
+						servedBy: '$_id.servedBy',
+						metrics: '$_id.metrics',
+						msgs: '$messagesCount',
+						onHold: '$_id.onHold',
+					},
+				},
+			],
+			{ readPreference: readSecondaryPreferred() },
+		);
+	}
+
+	findOpenByAgent(userId) {
+		const query = {
+			't': 'l',
+			'open': true,
+			'servedBy._id': userId,
+		};
+
+		return this.find(query);
+	}
+
+	changeAgentByRoomId(roomId, newAgent) {
+		const query = {
+			_id: roomId,
+			t: 'l',
+		};
+		const update = {
+			$set: {
+				servedBy: {
+					_id: newAgent.agentId,
+					username: newAgent.username,
+					ts: new Date(),
+				},
+			},
+		};
+
+		if (newAgent.ts) {
+			update.$set.servedBy.ts = newAgent.ts;
+		}
+
+		return this.updateOne(query, update);
+	}
+
+	changeDepartmentIdByRoomId(roomId, departmentId) {
+		const query = {
+			_id: roomId,
+			t: 'l',
+		};
+		const update = {
+			$set: {
+				departmentId,
+			},
+		};
+
+		this.updateOne(query, update);
+	}
+
+	saveCRMDataByRoomId(roomId, crmData) {
+		const query = {
+			_id: roomId,
+			t: 'l',
+		};
+		const update = {
+			$set: {
+				crmData,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	updateVisitorStatus(token, status) {
+		const query = {
+			'v.token': token,
+			'open': true,
+			't': 'l',
+		};
+
+		const update = {
+			$set: {
+				'v.status': status,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	removeAgentByRoomId(roomId) {
+		const query = {
+			_id: roomId,
+			t: 'l',
+		};
+		const update = {
+			$set: { queuedAt: new Date() },
+			$unset: { servedBy: 1 },
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	removeByVisitorToken(token) {
+		const query = {
+			't': 'l',
+			'v.token': token,
+		};
+
+		return this.deleteMany(query);
+	}
+
+	removeById(_id) {
+		const query = {
+			_id,
+			t: 'l',
+		};
+
+		return this.deleteOne(query);
+	}
+
+	setVisitorLastMessageTimestampByRoomId(roomId, lastMessageTs) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$set: {
+				'v.lastMessageTs': lastMessageTs,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	setVisitorInactivityInSecondsById(roomId, visitorInactivity) {
+		const query = {
+			_id: roomId,
+		};
+		const update = {
+			$set: {
+				'metrics.visitorInactivity': visitorInactivity,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	changeVisitorByRoomId(roomId, { _id, username, token }) {
+		const query = {
+			_id: roomId,
+			t: 'l',
+		};
+		const update = {
+			$set: {
+				'v._id': _id,
+				'v.username': username,
+				'v.token': token,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	unarchiveOneById(roomId) {
+		const query = {
+			_id: roomId,
+			t: 'l',
+		};
+		const update = {
+			$set: {
+				open: true,
+			},
+			$unset: {
+				servedBy: 1,
+				closedAt: 1,
+				closedBy: 1,
+				closer: 1,
+			},
+		};
+
+		return this.updateOne(query, update);
 	}
 }

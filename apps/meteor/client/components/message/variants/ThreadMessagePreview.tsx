@@ -14,7 +14,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
+import React, { memo } from 'react';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
 import {
@@ -59,7 +59,7 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 		<ThreadMessage {...props} onClick={isSelecting ? toggleSelected : undefined} isSelected={isSelected} data-qa-selected={isSelected}>
 			{!sequential && (
 				<ThreadMessageRow
-					aria-role='link'
+					role='link'
 					onClick={
 						!isSelecting && parentMessage.isSuccess
 							? () => goToThread({ rid: message.rid, tmid: message.tmid, msg: parentMessage.data?._id })
@@ -120,4 +120,4 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 	);
 };
 
-export default ThreadMessagePreview;
+export default memo(ThreadMessagePreview);

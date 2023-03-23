@@ -1,9 +1,9 @@
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatInquiry } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
-import { LivechatRooms, LivechatInquiry, Users } from '../../../../../app/models/server';
+import { LivechatRooms, Users } from '../../../../../app/models/server';
 
 let contactManagerPreferred = false;
 let lastChattedAgentPreferred = false;
@@ -20,17 +20,15 @@ const normalizeDefaultAgent = (agent) => {
 const getDefaultAgent = (username) =>
 	username && normalizeDefaultAgent(Users.findOneOnlineAgentByUserList(username, { fields: { _id: 1, username: 1 } }));
 
-const checkDefaultAgentOnNewRoom = (defaultAgent, defaultGuest) => {
+const checkDefaultAgentOnNewRoom = async (defaultAgent, defaultGuest) => {
 	if (defaultAgent || !defaultGuest) {
 		return defaultAgent;
 	}
 
 	const { _id: guestId } = defaultGuest;
-	const guest = Promise.await(
-		LivechatVisitors.findOneById(guestId, {
-			projection: { lastAgent: 1, token: 1, contactManager: 1 },
-		}),
-	);
+	const guest = await LivechatVisitors.findOneById(guestId, {
+		projection: { lastAgent: 1, token: 1, contactManager: 1 },
+	});
 	if (!guest) {
 		return defaultAgent;
 	}
@@ -64,7 +62,7 @@ const checkDefaultAgentOnNewRoom = (defaultAgent, defaultGuest) => {
 	return lastRoomAgent || defaultAgent;
 };
 
-const onMaxNumberSimultaneousChatsReached = (inquiry) => {
+const onMaxNumberSimultaneousChatsReached = async (inquiry) => {
 	if (!inquiry || !inquiry.defaultAgent) {
 		return inquiry;
 	}
@@ -75,11 +73,11 @@ const onMaxNumberSimultaneousChatsReached = (inquiry) => {
 
 	const { _id } = inquiry;
 
-	LivechatInquiry.removeDefaultAgentById(_id);
+	await LivechatInquiry.removeDefaultAgentById(_id);
 	return LivechatInquiry.findOneById(_id);
 };
 
-const afterTakeInquiry = (inquiry, agent) => {
+const afterTakeInquiry = async (inquiry, agent) => {
 	if (!inquiry || !agent) {
 		return inquiry;
 	}
@@ -93,7 +91,7 @@ const afterTakeInquiry = (inquiry, agent) => {
 		return inquiry;
 	}
 
-	Promise.await(LivechatVisitors.updateLastAgentByToken(token, { ...agent, ts: new Date() }));
+	await LivechatVisitors.updateLastAgentByToken(token, { ...agent, ts: new Date() });
 
 	return inquiry;
 };

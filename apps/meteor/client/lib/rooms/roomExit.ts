@@ -2,7 +2,7 @@ import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Tracker } from 'meteor/tracker';
 
-import { RoomManager } from '../../../app/ui-utils/client';
+import { LegacyRoomManager } from '../../../app/ui-utils/client';
 
 const testIfPathAreEquals = (oldPath = '', newPath = ''): boolean => oldPath.replace(/"/g, '') === newPath;
 export const roomExit = function (_context: { params: Record<string, string>; queryParams: Record<string, string> }): void {
@@ -29,5 +29,5 @@ export const roomExit = function (_context: { params: Record<string, string>; qu
 		}
 	});
 
-	RoomManager.currentTracker?.stop();
+	LegacyRoomManager.currentTracker?.stop();
 };

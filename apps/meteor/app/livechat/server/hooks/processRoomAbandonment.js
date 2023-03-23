@@ -1,9 +1,9 @@
 import moment from 'moment';
-import { LivechatBusinessHours, LivechatDepartment } from '@rocket.chat/models';
+import { LivechatBusinessHours, LivechatDepartment, Messages } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { LivechatRooms, Messages } from '../../../models/server';
+import { LivechatRooms } from '../../../models/server';
 import { businessHourManager } from '../business-hour';
 
 const getSecondsWhenOfficeHoursIsDisabled = (room, agentLastMessage) =>
@@ -58,7 +58,7 @@ const getSecondsSinceLastAgentResponse = async (room, agentLastMessage) => {
 
 callbacks.add(
 	'livechat.closeRoom',
-	(params) => {
+	async function (params) {
 		const { room } = params;
 
 		const closedByAgent = room.closer !== 'visitor';
@@ -66,11 +66,11 @@ callbacks.add(
 		if (!closedByAgent || !wasTheLastMessageSentByAgent) {
 			return params;
 		}
-		const agentLastMessage = Messages.findAgentLastMessageByVisitorLastMessageTs(room._id, room.v.lastMessageTs);
+		const agentLastMessage = await Messages.findAgentLastMessageByVisitorLastMessageTs(room._id, room.v.lastMessageTs);
 		if (!agentLastMessage) {
 			return params;
 		}
-		const secondsSinceLastAgentResponse = Promise.await(getSecondsSinceLastAgentResponse(room, agentLastMessage));
+		const secondsSinceLastAgentResponse = await getSecondsSinceLastAgentResponse(room, agentLastMessage);
 		LivechatRooms.setVisitorInactivityInSecondsById(room._id, secondsSinceLastAgentResponse);
 
 		return params;

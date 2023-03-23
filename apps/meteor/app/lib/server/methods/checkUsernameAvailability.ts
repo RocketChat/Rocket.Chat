@@ -1,13 +1,21 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { settings } from '../../../settings/server';
-import { checkUsernameAvailability } from '../functions';
+import { checkUsernameAvailability } from '../functions/checkUsernameAvailability';
 import { RateLimiter } from '../lib';
 import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
-Meteor.methods({
-	checkUsernameAvailability(username) {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		checkUsernameAvailability(username: string): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async checkUsernameAvailability(username) {
 		methodDeprecationLogger.warn('checkUsernameAvailability will be deprecated in future versions of Rocket.Chat');
 
 		check(username, String);

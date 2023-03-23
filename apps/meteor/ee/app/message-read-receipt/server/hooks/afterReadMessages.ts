@@ -7,16 +7,16 @@ import { settings } from '../../../../../app/settings/server';
 
 callbacks.add(
 	'afterReadMessages',
-	(rid: IRoom['_id'], params: { uid: IUser['_id']; lastSeen?: Date; tmid?: IMessage['_id'] }) => {
+	async (rid: IRoom['_id'], params: { uid: IUser['_id']; lastSeen?: Date; tmid?: IMessage['_id'] }) => {
 		if (!settings.get('Message_Read_Receipt_Enabled')) {
 			return;
 		}
 		const { uid, lastSeen, tmid } = params;
 
 		if (tmid) {
-			MessageReads.readThread(uid, tmid);
+			await MessageReads.readThread(uid, tmid);
 		} else if (lastSeen) {
-			ReadReceipt.markMessagesAsRead(rid, uid, lastSeen);
+			await ReadReceipt.markMessagesAsRead(rid, uid, lastSeen);
 		}
 	},
 	callbacks.priority.MEDIUM,
