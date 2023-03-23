@@ -18,7 +18,6 @@ import { RoutingManager } from './lib/RoutingManager';
 import './roomAccessValidator.internalService';
 
 Meteor.startup(async () => {
-	// TODO: remove promise.await when roomCoordinator supports async functions
 	roomCoordinator.setRoomFind('l', (_id) => LivechatRooms.findOneById(_id));
 
 	callbacks.add(
