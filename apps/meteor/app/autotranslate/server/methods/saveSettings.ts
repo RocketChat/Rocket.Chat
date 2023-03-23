@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Subscriptions } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Subscriptions } from '../../../models/server';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -37,7 +37,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, userId);
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userId);
 		if (!subscription) {
 			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', {
 				method: 'saveAutoTranslateSettings',
@@ -46,13 +46,13 @@ Meteor.methods<ServerMethods>({
 
 		switch (field) {
 			case 'autoTranslate':
-				Subscriptions.updateAutoTranslateById(subscription._id, value === '1');
+				await Subscriptions.updateAutoTranslateById(subscription._id, value === '1');
 				if (!subscription.autoTranslateLanguage && options.defaultLanguage) {
-					Subscriptions.updateAutoTranslateLanguageById(subscription._id, options.defaultLanguage);
+					await Subscriptions.updateAutoTranslateLanguageById(subscription._id, options.defaultLanguage);
 				}
 				break;
 			case 'autoTranslateLanguage':
-				Subscriptions.updateAutoTranslateLanguageById(subscription._id, value);
+				await Subscriptions.updateAutoTranslateLanguageById(subscription._id, value);
 				break;
 		}
 

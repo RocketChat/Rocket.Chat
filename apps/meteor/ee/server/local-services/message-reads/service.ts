@@ -17,7 +17,7 @@ export class MessageReadsService extends ServiceClassInternal implements IMessag
 		}
 
 		await MessageReads.updateReadTimestampByUserIdAndThreadId(userId, tmid);
-		ReadReceipt.storeThreadMessagesReadReceipts(tmid, userId, read?.ls || threadMessage.ts);
+		await ReadReceipt.storeThreadMessagesReadReceipts(tmid, userId, read?.ls || threadMessage.ts);
 
 		// doesn't mark as read if not all room members have read the thread
 		const membersCount = await Subscriptions.countUnarchivedByRoomId(threadMessage.rid);

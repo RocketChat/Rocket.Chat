@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { settings } from '../../../settings/server';
-import { checkUsernameAvailability } from '../functions';
+import { checkUsernameAvailability } from '../functions/checkUsernameAvailability';
 import { RateLimiter } from '../lib';
 import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 

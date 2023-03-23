@@ -40,7 +40,7 @@ import { FileUpload } from '../../../file-upload/server';
 import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents, validateEmail } from './Helper';
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { businessHourManager } from '../business-hour';
-import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
+import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { Livechat as LivechatTyped } from './LivechatTyped';
@@ -858,7 +858,7 @@ export const Livechat = {
 		return postData;
 	},
 
-	addAgent(username) {
+	async addAgent(username) {
 		check(username, String);
 
 		const user = Users.findOneByUsername(username, { fields: { _id: 1, username: 1 } });
@@ -867,7 +867,7 @@ export const Livechat = {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:addAgent' });
 		}
 
-		if (addUserRoles(user._id, ['livechat-agent'])) {
+		if (await addUserRolesAsync(user._id, ['livechat-agent'])) {
 			Users.setOperator(user._id, true);
 			this.setUserStatusLivechat(user._id, user.status !== 'offline' ? 'available' : 'not-available');
 			return user;
@@ -876,7 +876,7 @@ export const Livechat = {
 		return false;
 	},
 
-	addManager(username) {
+	async addManager(username) {
 		check(username, String);
 
 		const user = Users.findOneByUsername(username, { fields: { _id: 1, username: 1 } });
@@ -887,7 +887,7 @@ export const Livechat = {
 			});
 		}
 
-		if (addUserRoles(user._id, ['livechat-manager'])) {
+		if (await addUserRolesAsync(user._id, ['livechat-manager'])) {
 			return user;
 		}
 
