@@ -11,7 +11,7 @@ import {
 import { hasLicense } from '../../../license/server/license';
 import { updateDepartmentAgents } from '../../../../../app/livechat/server/lib/Helper';
 import { Messages } from '../../../../../app/models/server';
-import { addUserRoles } from '../../../../../server/lib/roles/addUserRoles';
+import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../../server/lib/roles/removeUserFromRoles';
 import { processWaitingQueue, updateSLAInquiries } from './Helper';
 import { removeSLAFromRooms } from './SlaHelper';
@@ -35,7 +35,7 @@ export const LivechatEnterprise = {
 			});
 		}
 
-		if (await addUserRoles(user._id, ['livechat-monitor'])) {
+		if (await addUserRolesAsync(user._id, ['livechat-monitor'])) {
 			return user;
 		}
 

@@ -1936,7 +1936,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
-	findVisibleUnreadMessagesByRoomAndDate(rid: string, after: Date): FindCursor<IMessage> {
+	findVisibleUnreadMessagesByRoomAndDate(rid: string, after: Date): FindCursor<Pick<IMessage, '_id'>> {
 		const query = {
 			unread: true,
 			rid,
@@ -1958,7 +1958,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		});
 	}
 
-	findUnreadThreadMessagesByDate(tmid: string, userId: string, after: Date): FindCursor<IMessage> {
+	findUnreadThreadMessagesByDate(tmid: string, userId: string, after: Date): FindCursor<Pick<IMessage, '_id'>> {
 		const query = {
 			'u._id': { $ne: userId },
 			'unread': true,
@@ -2003,16 +2003,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.col.countDocuments({ tcount: { $exists: true } });
 	}
 
-	removeThreadRefByThreadId(tmid: string): Promise<UpdateResult | Document> {
-		const query = { tmid };
-		const update: UpdateFilter<IMessage> = {
-			$unset: {
-				tmid: 1,
-			},
-		};
-		return this.updateMany(query, update);
-	}
-
 	updateRepliesByThreadId(tmid: string, replies: string[], ts: Date): Promise<UpdateResult> {
 		const query = {
 			_id: tmid,
@@ -2038,43 +2028,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	async getThreadFollowsByThreadId(tmid: string): Promise<string[] | undefined> {
 		const msg = await this.findOneById(tmid, { projection: { replies: 1 } });
 		return msg?.replies;
-	}
-
-	getFirstReplyTsByThreadId(tmid: string): Promise<Pick<IMessage, 'ts'> | null> {
-		return this.findOne({ tmid }, { projection: { ts: 1 }, sort: { ts: 1 } });
-	}
-
-	unsetThreadByThreadId(tmid: string): Promise<UpdateResult> {
-		const query = {
-			_id: tmid,
-		};
-
-		const update: UpdateFilter<IMessage> = {
-			$unset: {
-				tcount: 1,
-				tlm: 1,
-				replies: 1,
-			},
-		};
-
-		return this.updateOne(query, update);
-	}
-
-	updateThreadLastMessageAndCountByThreadId(tmid: string, tlm: Date, tcount: number): Promise<UpdateResult> {
-		const query = {
-			_id: tmid,
-		};
-
-		const update: UpdateFilter<IMessage> = {
-			$set: {
-				tlm,
-			},
-			$inc: {
-				tcount,
-			},
-		};
-
-		return this.updateOne(query, update);
 	}
 
 	addThreadFollowerByThreadId(tmid: string, userId: string): Promise<UpdateResult> {
