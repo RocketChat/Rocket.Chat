@@ -16,8 +16,8 @@ const addVersionCheckJob = Meteor.bindEnvironment(() => {
 	SyncedCron.add({
 		name: jobName,
 		schedule: (parser) => parser.text('at 2:00 am'),
-		job() {
-			Promise.await(checkVersionUpdate());
+		async job() {
+			await checkVersionUpdate();
 		},
 	});
 });
@@ -25,7 +25,7 @@ const addVersionCheckJob = Meteor.bindEnvironment(() => {
 Meteor.startup(() => {
 	Meteor.defer(() => {
 		if (settings.get('Update_EnableChecker')) {
-			Promise.await(checkVersionUpdate());
+			void checkVersionUpdate();
 		}
 	});
 });

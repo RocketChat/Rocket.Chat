@@ -6,12 +6,13 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { settings } from '../../../settings/server';
 import { Rooms, Messages, Users, Subscriptions } from '../../../models/server';
 import { metrics } from '../../../metrics/server';
-import { canAccessRoom, hasPermission } from '../../../authorization/server';
+import { canAccessRoomAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { sendMessage } from '../functions/sendMessage';
 
 const isParsedEmail = (email: ParsedMail): email is Required<ParsedMail> => 'date' in email && 'html' in email;
 
-export const processDirectEmail = Meteor.bindEnvironment(function (email: ParsedMail): void {
+export const processDirectEmail = Meteor.bindEnvironment(async function (email: ParsedMail): Promise<void> {
 	if (!isParsedEmail(email)) {
 		return;
 	}
@@ -57,7 +58,7 @@ export const processDirectEmail = Meteor.bindEnvironment(function (email: Parsed
 
 	const roomInfo: IRoom = Rooms.findOneById(prevMessage.rid);
 
-	const room = canAccessRoom(roomInfo, user);
+	const room = Promise.await(canAccessRoomAsync(roomInfo, user));
 	if (!room) {
 		return;
 	}
@@ -92,7 +93,7 @@ export const processDirectEmail = Meteor.bindEnvironment(function (email: Parsed
 
 	// room is readonly
 	if (roomInfo.ro === true) {
-		if (!hasPermission(user._id, 'post-readonly', roomInfo._id)) {
+		if (!(await hasPermissionAsync(user._id, 'post-readonly', roomInfo._id))) {
 			// Check if the user was manually unmuted
 			if (!(roomInfo.unmuted || []).includes(user.username)) {
 				return;

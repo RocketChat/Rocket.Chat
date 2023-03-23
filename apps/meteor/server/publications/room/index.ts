@@ -4,7 +4,8 @@ import type { IRoom, RoomType } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-import { canAccessRoom, hasPermission } from '../../../app/authorization/server';
+import { canAccessRoomAsync } from '../../../app/authorization/server';
+import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { Rooms } from '../../../app/models/server';
 import { settings } from '../../../app/settings/server';
 import { roomFields } from '../../modules/watchers/publishFields';
@@ -46,7 +47,7 @@ Meteor.methods<ServerMethods>({
 		return Rooms.findBySubscriptionUserId(user, options).fetch();
 	},
 
-	'getRoomByTypeAndName'(type, name) {
+	async 'getRoomByTypeAndName'(type, name) {
 		const userId = Meteor.userId();
 
 		if (!userId && settings.get('Accounts_AllowAnonymousRead') === false) {
@@ -57,7 +58,7 @@ Meteor.methods<ServerMethods>({
 
 		const roomFind = roomCoordinator.getRoomFind(type);
 
-		const room = roomFind ? roomFind.call(this, name) : Rooms.findByTypeAndNameOrId(type, name);
+		const room = roomFind ? await roomFind.call(this, name) : Rooms.findByTypeAndNameOrId(type, name);
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
@@ -65,13 +66,13 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (userId && !canAccessRoom(room, { _id: userId })) {
+		if (userId && !(await canAccessRoomAsync(room, { _id: userId }))) {
 			throw new Meteor.Error('error-no-permission', 'No permission', {
 				method: 'getRoomByTypeAndName',
 			});
 		}
 
-		if (settings.get('Store_Last_Message') && userId && !hasPermission(userId, 'preview-c-room')) {
+		if (settings.get('Store_Last_Message') && userId && !(await hasPermissionAsync(userId, 'preview-c-room'))) {
 			delete room.lastMessage;
 		}
 

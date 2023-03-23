@@ -21,7 +21,7 @@ class RoomCoordinatorServer extends RoomCoordinator {
 			isGroupChat(_room: IRoom): boolean {
 				return false;
 			},
-			canBeDeleted(hasPermission: (permissionId: string, rid?: string) => boolean, room: IRoom): boolean {
+			async canBeDeleted(hasPermission: (permissionId: string, rid?: string) => Promise<boolean> | boolean, room: IRoom): Promise<boolean> {
 				if (!hasPermission && typeof hasPermission !== 'function') {
 					throw new Error('You MUST provide the "hasPermission" to canBeDeleted function');
 				}
@@ -30,7 +30,7 @@ class RoomCoordinatorServer extends RoomCoordinator {
 			preventRenaming(): boolean {
 				return false;
 			},
-			getDiscussionType(): RoomType {
+			async getDiscussionType(): Promise<RoomType> {
 				return 'p';
 			},
 			canAccessUploadedFile(_params: { rc_uid: string; rc_rid: string; rc_token: string }): boolean {
@@ -51,7 +51,7 @@ class RoomCoordinatorServer extends RoomCoordinator {
 
 				return { title, text };
 			},
-			getMsgSender(senderId: IRocketChatRecord['_id']): IRocketChatRecord | undefined {
+			getMsgSender(senderId: IRocketChatRecord['_id']): Promise<IRocketChatRecord | undefined> {
 				return Users.findOneById(senderId);
 			},
 			includeInRoomSearch(): boolean {

@@ -4,7 +4,7 @@ import { api } from '@rocket.chat/core-services';
 import type { ICustomSound } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -18,7 +18,7 @@ Meteor.methods<ServerMethods>({
 	async deleteCustomSound(_id) {
 		let sound = null;
 
-		if (this.userId && hasPermission(this.userId, 'manage-sounds')) {
+		if (this.userId && (await hasPermissionAsync(this.userId, 'manage-sounds'))) {
 			sound = await CustomSounds.findOneById(_id);
 		} else {
 			throw new Meteor.Error('not_authorized');

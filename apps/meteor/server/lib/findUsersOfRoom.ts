@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
-import type { FindCursor } from 'mongodb';
+import type { FilterOperators, FindCursor } from 'mongodb';
 import type { FindPaginated } from '@rocket.chat/model-typings';
 import { Users } from '@rocket.chat/models';
 
@@ -9,7 +9,7 @@ import { shouldUseRealName } from '../../app/utils/lib/shouldUseRealName';
 
 type FindUsersParam = {
 	rid: string;
-	status?: { $in: string[] };
+	status?: FilterOperators<string>;
 	skip?: number;
 	limit?: number;
 	filter?: string;

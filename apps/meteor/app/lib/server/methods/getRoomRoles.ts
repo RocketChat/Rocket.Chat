@@ -5,7 +5,7 @@ import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
 import { getRoomRoles } from '../../../../server/lib/roles/getRoomRoles';
-import { canAccessRoom } from '../../../authorization/server';
+import { canAccessRoomAsync } from '../../../authorization/server';
 import { Rooms } from '../../../models/server';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -16,7 +16,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	getRoomRoles(rid) {
+	async getRoomRoles(rid) {
 		check(rid, String);
 		const fromUserId = Meteor.userId();
 
@@ -29,7 +29,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getRoomRoles' });
 		}
 
-		if (fromUserId && !canAccessRoom(room, { _id: fromUserId })) {
+		if (fromUserId && !(await canAccessRoomAsync(room, { _id: fromUserId }))) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getRoomRoles' });
 		}
 
