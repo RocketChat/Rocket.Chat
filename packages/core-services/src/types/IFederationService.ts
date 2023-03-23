@@ -26,4 +26,6 @@ export interface IFederationServiceEE {
 	removeSearchedServerNameByInternalUserId(internalUserId: string, serverName: string): Promise<void>;
 
 	joinExternalPublicRoom(internalUserId: string, externalRoomId: string): Promise<void>;
+
+	verifyMatrixId(matrixId: string): Promise<string>;
 }

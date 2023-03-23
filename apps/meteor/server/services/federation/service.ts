@@ -231,10 +231,6 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 	protected async cleanUpHandlers(): Promise<void> {
 		this.internalQueueInstance.setHandler(this.noop.bind(this), this.PROCESSING_CONCURRENCY);
 	}
-
-	public async verifyMatrixId(matrixId: string): Promise<string> {
-		return this.bridge.verifyInviteeId(matrixId);
-	}
 }
 
 abstract class AbstractBaseFederationService extends AbstractFederationService {
@@ -320,5 +316,9 @@ export class FederationService extends AbstractBaseFederationService implements 
 		return this.getInternalRoomServiceSender().createDirectMessageRoomAndInviteUser(
 			FederationRoomSenderConverter.toCreateDirectMessageRoomDto(internalInviterId, internalRoomId, externalInviteeId),
 		);
+	}
+
+	public async verifyMatrixId(matrixId: string): Promise<string> {
+		return this.bridge.verifyInviteeId(matrixId);
 	}
 }
