@@ -16,7 +16,11 @@ export class FederationHomeFlextabMembers {
 	}
 
 	get btnRemoveUserFromRoom(): Locator {
-		return this.page.locator('button >> text="Remove from room"');
+		return this.page.locator('[value="removeUser"]');
+	}
+
+	get btnMenuUserInfo(): Locator {
+		return this.page.locator('[data-qa="UserUserInfo-menu"]');
 	}
 
 	getKebabMenuForUser(username: string): Locator {

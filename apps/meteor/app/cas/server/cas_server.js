@@ -6,13 +6,12 @@ import { WebApp } from 'meteor/webapp';
 import { RoutePolicy } from 'meteor/routepolicy';
 import _ from 'underscore';
 import fiber from 'fibers';
-import { CredentialTokens } from '@rocket.chat/models';
+import { CredentialTokens, Rooms } from '@rocket.chat/models';
 import { validate } from '@rocket.chat/cas-validate';
 
 import { logger } from './cas_rocketchat';
 import { settings } from '../../settings/server';
-import { Rooms } from '../../models/server';
-import { _setRealName } from '../../lib';
+import { _setRealName } from '../../lib/server';
 import { createRoom } from '../../lib/server/functions/createRoom';
 
 RoutePolicy.declare('/_cas/', 'network');
@@ -112,7 +111,7 @@ WebApp.connectHandlers.use(function (req, res, next) {
  * It is call after Accounts.callLoginMethod() is call from client.
  *
  */
-Accounts.registerLoginHandler('cas', function (options) {
+Accounts.registerLoginHandler('cas', async function (options) {
 	if (!options.cas) {
 		return undefined;
 	}
@@ -258,14 +257,15 @@ Accounts.registerLoginHandler('cas', function (options) {
 
 		logger.debug(`Joining user to attribute channels: ${int_attrs.rooms}`);
 		if (int_attrs.rooms) {
-			_.each(int_attrs.rooms.split(','), function (room_name) {
-				if (room_name) {
-					let room = Rooms.findOneByNameAndType(room_name, 'c');
+			const roomNames = int_attrs.rooms.split(',');
+			for await (const roomName of roomNames) {
+				if (roomName) {
+					let room = await Rooms.findOneByNameAndType(roomName, 'c');
 					if (!room) {
-						room = createRoom('c', room_name, user.username);
+						room = await createRoom('c', roomName, user.username);
 					}
 				}
-			});
+			}
 		}
 	} else {
 		// Should fail as no user exist and can't be created

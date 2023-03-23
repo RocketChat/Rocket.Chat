@@ -43,7 +43,7 @@ export async function sendMessagesToAdmins({
 	for await (const adminUser of users) {
 		if (fromUser) {
 			try {
-				const { rid } = createDirectMessage([adminUser.username], fromId);
+				const { rid } = await createDirectMessage([adminUser.username], fromId);
 
 				getData<Partial<IMessage>>(msgs, adminUser).forEach((msg) => executeSendMessage(fromId, Object.assign({ rid }, msg)));
 			} catch (error) {

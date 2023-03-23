@@ -227,7 +227,7 @@ API.v1.addRoute(
 			await Roles.removeUserRoles(user._id, [role._id], scope);
 
 			if (settings.get('UI_DisplayRoles')) {
-				api.broadcast('user.roleUpdate', {
+				void api.broadcast('user.roleUpdate', {
 					type: 'removed',
 					_id: role._id,
 					u: {

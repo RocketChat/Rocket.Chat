@@ -1,4 +1,5 @@
-import { FederationRoomEvents } from '../../../models/server';
+import { FederationRoomEvents } from '@rocket.chat/models';
+
 import { getFederatedRoomData, hasExternalDomain, isLocalUser } from '../functions/helpers';
 import { clientLogger } from '../lib/logger';
 import { normalizers } from '../normalizers';
@@ -55,6 +56,6 @@ async function afterRemoveFromRoom(involvedUsers, room) {
 
 export const definition = {
 	hook: 'afterRemoveFromRoom',
-	callback: (roomOwner, room) => Promise.await(afterRemoveFromRoom(roomOwner, room)),
+	callback: afterRemoveFromRoom,
 	id: 'federation-after-remove-from-room',
 };

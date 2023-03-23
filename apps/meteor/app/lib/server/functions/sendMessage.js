@@ -6,7 +6,7 @@ import { Messages } from '../../../models/server';
 import { Apps } from '../../../../ee/server/apps';
 import { isURL } from '../../../../lib/utils/isURL';
 import { FileUpload } from '../../../file-upload/server';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
 import notifications from '../../../notifications/server/lib/Notifications';
@@ -159,7 +159,7 @@ export const validateMessage = (message, room, user) => {
 	if (message.alias || message.avatar) {
 		const isLiveChatGuest = !message.avatar && user.token && user.token === room.v?.token;
 
-		if (!isLiveChatGuest && !hasPermission(user._id, 'message-impersonate', room._id)) {
+		if (!isLiveChatGuest && !Promise.await(hasPermissionAsync(user._id, 'message-impersonate', room._id))) {
 			throw new Error('Not enough permission');
 		}
 	}

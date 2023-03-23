@@ -13,7 +13,7 @@ import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 
 const SCHEDULER_NAME = 'omnichannel_queue_inactivity_monitor';
 
-export class OmnichannelQueueInactivityMonitorClass {
+class OmnichannelQueueInactivityMonitorClass {
 	scheduler: Agenda;
 
 	running: boolean;
@@ -52,7 +52,7 @@ export class OmnichannelQueueInactivityMonitorClass {
 	}
 
 	createIndex(): void {
-		this._db.collection(SCHEDULER_NAME).createIndex(
+		void this._db.collection(SCHEDULER_NAME).createIndex(
 			{
 				'data.inquiryId': 1,
 			},

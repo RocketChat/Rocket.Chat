@@ -14,10 +14,10 @@ export type IWebdavAccountPayload = Pick<IWebdavAccount, 'serverURL' | 'username
 
 export type IWebdavNode = {
 	basename: string;
-	etag: string;
+	etag: string | null;
 	filename: string;
 	lastmod: string;
-	mime: string;
+	mime?: string;
 	size: number;
 	type: 'file' | 'directory';
 };

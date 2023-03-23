@@ -4,7 +4,7 @@ import { Accounts } from 'meteor/accounts-base';
 import type { IUser, IUserEmail, IDirectMessageRoom } from '@rocket.chat/core-typings';
 import { isUserFederated } from '@rocket.chat/core-typings';
 
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../mailer/server/api';
 import { Users, Subscriptions, Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
@@ -34,7 +34,7 @@ function reactivateDirectConversations(userId: string): void {
 	Rooms.setDmReadOnlyByUserId(userId, roomsToReactivate, false, false);
 }
 
-export function setUserActiveStatus(userId: string, active: boolean, confirmRelinquish = false): boolean | undefined {
+export async function setUserActiveStatus(userId: string, active: boolean, confirmRelinquish = false): Promise<boolean | undefined> {
 	check(userId, String);
 	check(active, Boolean);
 
@@ -71,13 +71,11 @@ export function setUserActiveStatus(userId: string, active: boolean, confirmReli
 			throw new Meteor.Error('user-last-owner', '', rooms);
 		}
 
-		Promise.await(
-			// We don't want one killing the other :)
-			Promise.allSettled([
-				closeOmnichannelConversations(user, livechatSubscribedRooms),
-				relinquishRoomOwnerships(user, chatSubscribedRooms, false),
-			]),
-		);
+		// We don't want one killing the other :)
+		await Promise.allSettled([
+			closeOmnichannelConversations(user, livechatSubscribedRooms),
+			relinquishRoomOwnerships(user, chatSubscribedRooms, false),
+		]);
 	}
 
 	if (active && !user.active) {
