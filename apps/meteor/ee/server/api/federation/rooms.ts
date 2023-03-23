@@ -3,7 +3,6 @@ import {
 	isFederationRemoveServerProps,
 	isFederationSearchPublicRoomsProps,
 	isFederationJoinExternalPublicRoomProps,
-	isFederationVerifyMatrixIdProps,
 } from '@rocket.chat/rest-typings';
 import { FederationEE } from '@rocket.chat/core-services';
 
@@ -90,23 +89,6 @@ API.v1.addRoute(
 			await FederationEE.joinExternalPublicRoom(this.userId, externalRoomId);
 
 			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'federation/verifyMatrixId',
-	{
-		authRequired: true,
-		validateParams: isFederationVerifyMatrixIdProps,
-	},
-	{
-		async get() {
-			const { matrixId } = this.queryParams;
-
-			const result = await FederationEE.verifyMatrixId(matrixId);
-
-			return API.v1.success({ result });
 		},
 	},
 );
