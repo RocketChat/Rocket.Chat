@@ -30,7 +30,7 @@ const updateRoomName = async (rid, displayName) => {
 
 export async function saveRoomName(rid, displayName, user, sendMessage = true) {
 	const room = Rooms.findOneById(rid);
-	if (roomCoordinator.getRoomDirectives(room.t)?.preventRenaming()) {
+	if (roomCoordinator.getRoomDirectives(room.t).preventRenaming()) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 			function: 'RocketChat.saveRoomdisplayName',
 		});

@@ -17,7 +17,7 @@ type TeamsTableRowProps = {
 const TeamsTableRow = ({ onClick, team, mediaQuery }: TeamsTableRowProps) => {
 	const formatDate = useFormatDate();
 	const { _id, ts, t, name, fname, topic, roomsCount } = team;
-	const avatarUrl = roomCoordinator.getRoomDirectives(t)?.getAvatarPath(team);
+	const avatarUrl = roomCoordinator.getRoomDirectives(t).getAvatarPath(team);
 
 	return (
 		<TableRow key={_id} onKeyDown={onClick(name, t)} onClick={onClick(name, t)} tabIndex={0} role='link' action>

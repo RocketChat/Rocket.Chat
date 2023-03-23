@@ -57,7 +57,7 @@ export const removeBusinessHourByAgentIds = async (agentIds: string[], businessH
 };
 
 export const resetDefaultBusinessHourIfNeeded = async (): Promise<void> => {
-	Meteor.call('license:isEnterprise', async (err: any, isEnterprise: any) => {
+	await Meteor.callAsync('license:isEnterprise', async (err: any, isEnterprise: any) => {
 		if (err) {
 			throw err;
 		}
