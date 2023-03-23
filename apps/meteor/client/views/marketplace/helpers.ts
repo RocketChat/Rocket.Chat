@@ -176,6 +176,7 @@ export const appButtonProps = ({
 	isEnterpriseOnly,
 	versionIncompatible,
 	isAdminUser,
+	// TODO: Unify this two variables
 	requestedEndUser,
 	endUserRequested,
 }: appButtonPropsType): appButtonResponseProps | undefined => {
