@@ -31,7 +31,7 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 			}
 
 			try {
-				const room = roomCoordinator.getRoomDirectives(type)?.findRoom(name) || (await call('getRoomByTypeAndName', type, name));
+				const room = roomCoordinator.getRoomDirectives(type).findRoom(name) || (await call('getRoomByTypeAndName', type, name));
 				if (!room._id) {
 					return;
 				}
