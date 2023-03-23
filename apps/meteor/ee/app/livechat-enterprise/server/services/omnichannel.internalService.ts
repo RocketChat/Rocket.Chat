@@ -1,12 +1,14 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IOmnichannelEEService } from '@rocket.chat/core-services';
-import type { IOmnichannelRoom, IUser, IMessage } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IUser, IMessage, ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, Subscriptions, Messages, LivechatInquiry } from '@rocket.chat/models';
 
 import { Logger } from '../../../../../app/logger/server';
 import { callbacks } from '../../../../../lib/callbacks';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
+import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
+import { queueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 
 export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelEEService {
 	protected name = 'omnichannel-ee';
@@ -85,18 +87,12 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 			throw new Error('error-invalid-inquiry');
 		}
 
-		const { _id: agentId, username } = servedBy;
-
-		await RoutingManager.takeInquiry(
+		await this.attemptToAssignRoomToServingAgentElseQueueIt({
+			room,
 			inquiry,
-			{
-				agentId,
-				username,
-			},
-			{
-				clientAction,
-			},
-		);
+			servingAgent: servedBy,
+			clientAction,
+		});
 
 		const resumeByUser: IMessage['u'] = {
 			_id: resumeBy._id,
@@ -113,5 +109,71 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 		callbacks.run('livechat:afterOnHoldChatResumed', room);
 
 		this.logger.debug(`Room ${room._id} resumed successfully`);
+	}
+
+	private async attemptToAssignRoomToServingAgentElseQueueIt({
+		room,
+		inquiry,
+		servingAgent,
+		clientAction,
+	}: {
+		room: Pick<IOmnichannelRoom, '_id' | 't' | 'open' | 'onHold' | 'servedBy'>;
+		inquiry: ILivechatInquiryRecord;
+		servingAgent: NonNullable<IOmnichannelRoom['servedBy']>;
+		clientAction: boolean;
+	}) {
+		try {
+			const agent = {
+				agentId: servingAgent._id,
+				username: servingAgent.username,
+			};
+
+			await callbacks.run('livechat.checkAgentBeforeTakeInquiry', {
+				agent,
+				inquiry,
+				options: {},
+			});
+		} catch (e) {
+			this.logger.debug(`Agent ${servingAgent._id} is not available to take the inquiry ${inquiry._id}`, e);
+
+			if (clientAction) {
+				// if the action was triggered by the client, we should throw the error
+				// so the client can handle it and show the error message to the user
+				throw e;
+			}
+
+			this.logger.debug(`Attempting to queue inquiry ${inquiry._id}`);
+
+			await this.removeCurrentAgentFromRoom({ room, inquiry });
+
+			const { _id: inquiryId } = inquiry;
+			const newInquiry = await LivechatInquiry.findOneById(inquiryId);
+
+			await queueInquiry(room, newInquiry);
+
+			this.logger.debug('Room queued successfully');
+		}
+	}
+
+	private async removeCurrentAgentFromRoom({
+		room,
+		inquiry,
+	}: {
+		room: Pick<IOmnichannelRoom, '_id'>;
+		inquiry: ILivechatInquiryRecord;
+	}): Promise<void> {
+		this.logger.debug(`Attempting to remove current agent from room ${room._id}`);
+
+		const { _id: roomId } = room;
+
+		const { _id: inquiryId } = inquiry;
+
+		await Promise.all([LivechatRooms.removeAgentByRoomId(roomId), LivechatInquiry.queueInquiryAndRemoveDefaultAgent(inquiryId)]);
+
+		RoutingManager.removeAllRoomSubscriptions(room);
+
+		dispatchAgentDelegated(roomId, null);
+
+		this.logger.debug(`Current agent removed from room ${room._id} successfully`);
 	}
 }

@@ -176,7 +176,7 @@ export const RoutingManager = {
 			return room;
 		}
 
-		if (room.servedBy && room.servedBy._id === agent.agentId && !room.onHold) {
+		if (room.servedBy && room.servedBy._id === agent.agentId) {
 			logger.debug(`Cannot take Inquiry ${inquiry._id}: Already taken by agent ${room.servedBy._id}`);
 			return room;
 		}
