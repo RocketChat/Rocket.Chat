@@ -674,7 +674,7 @@ API.v1.addRoute(
 			if (!tokenName) {
 				return API.v1.failure("The 'tokenName' param is required");
 			}
-			const token = Meteor.callAsync('personalAccessTokens:regenerateToken', { tokenName });
+			const token = await Meteor.callAsync('personalAccessTokens:regenerateToken', { tokenName });
 
 			return API.v1.success({ token });
 		},
