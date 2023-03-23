@@ -23,7 +23,7 @@ export class AppMessageBridge extends MessageBridge {
 
 		const convertedMessage = this.orch.getConverters()?.get('messages').convertAppMessage(message);
 
-		const sentMessage = executeSendMessage(convertedMessage.u._id, convertedMessage);
+		const sentMessage = await executeSendMessage(convertedMessage.u._id, convertedMessage);
 
 		return sentMessage._id;
 	}
