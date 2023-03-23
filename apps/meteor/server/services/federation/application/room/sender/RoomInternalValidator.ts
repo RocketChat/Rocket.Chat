@@ -8,7 +8,7 @@ import type { RocketChatFileAdapter } from '../../../infrastructure/rocket-chat/
 import type { RocketChatRoomAdapter } from '../../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from '../../../infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from '../../../infrastructure/rocket-chat/adapters/User';
-import { AbstractFederationApplicationService } from '../../AbstractFederationApplicationServicetionService';
+import { AbstractFederationApplicationService } from '../../AbstractFederationApplicationService';
 
 export class FederationRoomInternalValidator extends AbstractFederationApplicationService {
 	constructor(
