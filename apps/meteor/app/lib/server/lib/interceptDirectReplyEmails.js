@@ -3,7 +3,7 @@ import { simpleParser } from 'mailparser';
 
 import { settings } from '../../../settings';
 import { IMAPInterceptor } from '../../../../server/email/IMAPInterceptor';
-import { processDirectEmail } from '.';
+import { processDirectEmail } from './processDirectEmail';
 
 export class DirectReplyIMAPInterceptor extends IMAPInterceptor {
 	constructor(imapConfig, options = {}) {
@@ -21,11 +21,11 @@ export class DirectReplyIMAPInterceptor extends IMAPInterceptor {
 
 		super(imapConfig, options);
 
-		this.on('email', (email) => processDirectEmail(email));
+		this.on('email', (email) => Promise.await(processDirectEmail(email)));
 	}
 }
 
-export class POP3Intercepter {
+class POP3Intercepter {
 	constructor() {
 		this.pop3 = new POP3Lib(settings.get('Direct_Reply_Port'), settings.get('Direct_Reply_Host'), {
 			enabletls: !settings.get('Direct_Reply_IgnoreTLS'),
@@ -73,7 +73,7 @@ export class POP3Intercepter {
 
 			// parse raw email data to  JSON object
 			simpleParser(data, (err, mail) => {
-				processDirectEmail(mail);
+				Promise.await(processDirectEmail(mail));
 			});
 
 			this.currentMsgCount += 1;

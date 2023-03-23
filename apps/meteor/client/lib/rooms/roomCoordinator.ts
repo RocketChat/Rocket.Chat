@@ -1,10 +1,11 @@
-import type { IRoom, RoomType, IUser, AtLeast, ValueOf } from '@rocket.chat/core-typings';
+import type { IRoom, RoomType, IUser, AtLeast, ValueOf, ISubscription } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { RouteOptions } from 'meteor/kadira:flow-router';
-import _ from 'underscore';
 
 import { hasPermission } from '../../../app/authorization/client';
 import { ChatRoom, ChatSubscription } from '../../../app/models/client';
+import { settings } from '../../../app/settings/client';
 import { openRoom } from '../../../app/ui-utils/client/lib/openRoom';
 import type {
 	RoomSettingsEnum,
@@ -23,7 +24,12 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			allowRoomSettingChange(_room: Partial<IRoom>, _setting: ValueOf<typeof RoomSettingsEnum>): boolean {
 				return true;
 			},
-			allowMemberAction(_room: Partial<IRoom>, _action: ValueOf<typeof RoomMemberActions>): boolean {
+			allowMemberAction(
+				_room: Partial<IRoom>,
+				_action: ValueOf<typeof RoomMemberActions>,
+				_showingUserId: IUser['_id'],
+				_userSubscription?: ISubscription,
+			): boolean {
 				return false;
 			},
 			roomName(_room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid'>): string {
@@ -43,9 +49,6 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			},
 			getIcon(_room: Partial<IRoom>): IRoomTypeConfig['icon'] {
 				return this.config.icon;
-			},
-			getUserStatus(_roomId: string): string | undefined {
-				return undefined;
 			},
 			findRoom(_identifier: string): IRoom | undefined {
 				return undefined;
@@ -177,16 +180,22 @@ class RoomCoordinatorClient extends RoomCoordinator {
 	}
 
 	verifyCanSendMessage(rid: string): boolean {
-		const room = ChatRoom.findOne({ _id: rid }, { fields: { t: 1 } });
+		const room = ChatRoom.findOne({ _id: rid }, { fields: { t: 1, federated: 1 } });
 		if (!room?.t) {
 			return false;
 		}
-
-		return Boolean(this.getRoomDirectives(room.t)?.canSendMessage(rid));
+		if (!this.getRoomDirectives(room.t)?.canSendMessage(rid)) {
+			return false;
+		}
+		if (isRoomFederated(room)) {
+			return settings.get('Federation_Matrix_enabled');
+		}
+		return true;
 	}
 
 	getSortedTypes(): Array<{ config: IRoomTypeConfig; directives: IRoomTypeClientDirectives }> {
-		return _.sortBy(this.roomTypesOrder, 'order')
+		return this.roomTypesOrder
+			.sort((a, b) => a.order - b.order)
 			.map((type) => this.roomTypes[type.identifier] as { config: IRoomTypeConfig; directives: IRoomTypeClientDirectives })
 			.filter((type) => type.directives.condition());
 	}

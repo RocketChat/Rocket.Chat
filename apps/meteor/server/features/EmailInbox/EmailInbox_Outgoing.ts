@@ -81,7 +81,7 @@ async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promi
 
 slashCommands.add({
 	command: 'sendEmailAttachment',
-	callback: (command: any, params: string) => {
+	callback: async (command: any, params: string) => {
 		logger.debug('sendEmailAttachment command: ', command, params);
 		if (command !== 'sendEmailAttachment' || !Match.test(params, String)) {
 			return;
@@ -105,7 +105,7 @@ slashCommands.add({
 			});
 		}
 
-		const file = Promise.await(Uploads.findOneById(message.file._id));
+		const file = await Uploads.findOneById(message.file._id);
 
 		if (!file) {
 			return;
@@ -114,7 +114,7 @@ slashCommands.add({
 		FileUpload.getBuffer(file, (_err?: Error, buffer?: Buffer) => {
 			!_err &&
 				buffer &&
-				sendEmail(
+				void sendEmail(
 					inbox,
 					{
 						to: room.email.replyTo,
@@ -235,7 +235,7 @@ callbacks.add(
 			return message;
 		}
 
-		sendEmail(
+		void sendEmail(
 			inbox,
 			{
 				text: match.groups.text,
@@ -303,7 +303,7 @@ export async function sendTestEmailToInbox(emailInboxRecord: IEmailInbox, user: 
 	}
 
 	logger.info(`Sending testing email to ${address}`);
-	sendEmail(inbox, {
+	void sendEmail(inbox, {
 		to: address,
 		subject: 'Test of inbox configuration',
 		text: 'Test of inbox configuration successful',

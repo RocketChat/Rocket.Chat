@@ -1,5 +1,15 @@
 import type { RouteOptions } from 'meteor/kadira:flow-router';
-import type { IRoom, RoomType, IRocketChatRecord, IUser, IMessage, ReadReceipt, ValueOf, AtLeast } from '@rocket.chat/core-typings';
+import type {
+	IRoom,
+	RoomType,
+	IRocketChatRecord,
+	IUser,
+	IMessage,
+	ReadReceipt,
+	ValueOf,
+	AtLeast,
+	ISubscription,
+} from '@rocket.chat/core-typings';
 
 export type RoomIdentification = { rid?: IRoom['_id']; name?: string };
 export interface IRoomTypeRouteConfig {
@@ -63,7 +73,12 @@ export interface IRoomTypeClientDirectives {
 	config: IRoomTypeConfig;
 
 	allowRoomSettingChange: (room: Partial<IRoom>, setting: ValueOf<typeof RoomSettingsEnum>) => boolean;
-	allowMemberAction: (room: Partial<IRoom>, action: ValueOf<typeof RoomMemberActions>) => boolean;
+	allowMemberAction: (
+		room: Partial<IRoom>,
+		action: ValueOf<typeof RoomMemberActions>,
+		userId: IUser['_id'],
+		userSubscription?: ISubscription,
+	) => boolean;
 	roomName: (room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid'>) => string | undefined;
 	isGroupChat: (room: Partial<IRoom>) => boolean;
 	getUiText: (context: ValueOf<typeof UiTextContext>) => string;
@@ -72,7 +87,6 @@ export interface IRoomTypeClientDirectives {
 		room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid' | 'avatarETag' | 'uids' | 'usernames'> & { username?: IRoom['_id'] },
 	) => string;
 	getIcon: (room: Partial<IRoom>) => IRoomTypeConfig['icon'];
-	getUserStatus: (roomId: string) => string | undefined;
 	findRoom: (identifier: string) => IRoom | undefined;
 	showJoinLink: (roomId: string) => boolean;
 	isLivechatRoom: () => boolean;
@@ -84,12 +98,12 @@ export interface IRoomTypeServerDirectives {
 	config: IRoomTypeConfig;
 
 	allowRoomSettingChange: (room: IRoom, setting: ValueOf<typeof RoomSettingsEnum>) => boolean;
-	allowMemberAction: (room: IRoom, action: ValueOf<typeof RoomMemberActions>) => boolean;
+	allowMemberAction: (room: IRoom, action: ValueOf<typeof RoomMemberActions>, userId?: IUser['_id']) => boolean;
 	roomName: (room: IRoom, userId?: string) => string | undefined;
 	isGroupChat: (room: IRoom) => boolean;
-	canBeDeleted: (hasPermission: (permissionId: string, rid?: string) => boolean, room: IRoom) => boolean;
+	canBeDeleted: (hasPermission: (permissionId: string, rid?: string) => Promise<boolean> | boolean, room: IRoom) => Promise<boolean>;
 	preventRenaming: () => boolean;
-	getDiscussionType: (room?: AtLeast<IRoom, 'teamId'>) => RoomType;
+	getDiscussionType: (room?: AtLeast<IRoom, 'teamId'>) => Promise<RoomType>;
 	canAccessUploadedFile: (params: { rc_uid: string; rc_rid: string; rc_token: string }) => boolean;
 	getNotificationDetails: (
 		room: IRoom,
@@ -97,9 +111,9 @@ export interface IRoomTypeServerDirectives {
 		notificationMessage: string,
 		userId: string,
 	) => { title: string | undefined; text: string };
-	getMsgSender: (senderId: IRocketChatRecord['_id']) => IRocketChatRecord | undefined;
+	getMsgSender: (senderId: IRocketChatRecord['_id']) => Promise<IRocketChatRecord | undefined>;
 	includeInRoomSearch: () => boolean;
 	getReadReceiptsExtraData: (message: IMessage) => Partial<ReadReceipt>;
 	includeInDashboard: () => boolean;
-	roomFind?: (rid: string) => IRoom | undefined;
+	roomFind?: (rid: string) => Promise<IRoom | undefined> | IRoom | undefined;
 }

@@ -1,4 +1,5 @@
-import { FederationRoomEvents } from '../../../models/server';
+import { FederationRoomEvents } from '@rocket.chat/models';
+
 import { clientLogger } from '../lib/logger';
 import { normalizers } from '../normalizers';
 import { hasExternalDomain } from '../functions/helpers';
@@ -26,6 +27,6 @@ async function afterUnmuteUser(involvedUsers, room) {
 
 export const definition = {
 	hook: 'afterUnmuteUser',
-	callback: (involvedUsers, room) => Promise.await(afterUnmuteUser(involvedUsers, room)),
+	callback: afterUnmuteUser,
 	id: 'federation-after-unmute-user',
 };

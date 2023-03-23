@@ -1,8 +1,6 @@
-import _ from 'underscore';
-import { Base64 } from 'meteor/base64';
+import { Base64 } from '@rocket.chat/base64';
 import { EJSON } from 'meteor/ejson';
-import { Random } from 'meteor/random';
-import { Session } from 'meteor/session';
+import { Random } from '@rocket.chat/random';
 import { Emitter } from '@rocket.chat/emitter';
 
 import { e2e } from './rocketchat.e2e';
@@ -28,6 +26,7 @@ import { E2ERoomState } from './E2ERoomState';
 import { call } from '../../../client/lib/utils/call';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
+import { RoomManager } from '../../../client/lib/RoomManager';
 
 const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');
@@ -77,7 +76,7 @@ export class E2ERoom extends Emitter {
 		this.once(E2ERoomState.READY, () => this.decryptPendingMessages());
 		this.once(E2ERoomState.READY, () => this.decryptSubscription());
 		this.on('STATE_CHANGED', (prev) => {
-			if (this.roomId === Session.get('openedRoom')) {
+			if (this.roomId === RoomManager.opened) {
 				this.log(`[PREV: ${prev}]`, 'State CHANGED');
 			}
 		});
@@ -377,7 +376,7 @@ export class E2ERoom extends Emitter {
 
 	// Encrypts messages
 	async encryptText(data) {
-		if (!_.isObject(data)) {
+		if (!(typeof data === 'function' || (typeof data === 'object' && !!data))) {
 			data = new TextEncoder('UTF-8').encode(EJSON.stringify({ text: data, ack: Random.id((Random.fraction() + 1) * 20) }));
 		}
 

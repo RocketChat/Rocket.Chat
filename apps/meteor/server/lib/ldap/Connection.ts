@@ -13,7 +13,7 @@ import { logger, connLogger, searchLogger, authLogger, bindLogger, mapLogger } f
 import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
 
 interface ILDAPEntryCallback<T> {
-	(entry: ldapjs.SearchEntry): T | undefined;
+	(entry: ldapjs.SearchEntry): Promise<T | undefined>;
 }
 
 interface ILDAPSearchEndCallback {
@@ -221,16 +221,16 @@ export class LDAPConnection {
 				this.options.baseDN,
 				searchOptions,
 				this.options.searchPageSize,
-				(error, entries: ldapjs.SearchEntry[], { end, next } = { end: false, next: undefined }) => {
+				async (error, entries: ldapjs.SearchEntry[], { end, next } = { end: false, next: undefined }) => {
 					if (error) {
-						endCallback?.(error);
+						await endCallback?.(error);
 						return;
 					}
 
 					count += entries.length;
 					dataCallback?.(entries);
 					if (end) {
-						endCallback?.();
+						await endCallback?.();
 					}
 
 					if (next) {
@@ -269,16 +269,16 @@ export class LDAPConnection {
 	}
 
 	public async search(baseDN: string, searchOptions: ldapjs.SearchOptions): Promise<ILDAPEntry[]> {
-		return this.doCustomSearch<ILDAPEntry>(baseDN, searchOptions, (entry) => this.extractLdapEntryData(entry));
+		return this.doCustomSearch<ILDAPEntry>(baseDN, searchOptions, async (entry) => this.extractLdapEntryData(entry));
 	}
 
 	public async searchRaw(baseDN: string, searchOptions: ldapjs.SearchOptions): Promise<ldapjs.SearchEntry[]> {
-		return this.doCustomSearch<ldapjs.SearchEntry>(baseDN, searchOptions, (entry) => entry);
+		return this.doCustomSearch<ldapjs.SearchEntry>(baseDN, searchOptions, async (entry) => entry);
 	}
 
 	public async searchAndCount(baseDN: string, searchOptions: ldapjs.SearchOptions): Promise<number> {
 		let count = 0;
-		await this.doCustomSearch(baseDN, searchOptions, () => {
+		await this.doCustomSearch(baseDN, searchOptions, async () => {
 			count++;
 		});
 
@@ -351,7 +351,7 @@ export class LDAPConnection {
 
 				res.on('searchEntry', (entry) => {
 					try {
-						const result = entryCallback(entry);
+						const result = Promise.await(entryCallback(entry));
 						if (result) {
 							entries.push(result as T);
 						}
@@ -483,7 +483,7 @@ export class LDAPConnection {
 
 			res.on('searchEntry', (entry) => {
 				try {
-					const result = entryCallback ? entryCallback(entry) : entry;
+					const result = entryCallback ? Promise.await(entryCallback(entry)) : entry;
 					entries.push(result as T);
 				} catch (e) {
 					searchLogger.error(e);
@@ -549,7 +549,7 @@ export class LDAPConnection {
 
 			res.on('searchEntry', (entry) => {
 				try {
-					const result = entryCallback ? entryCallback(entry) : entry;
+					const result = entryCallback ? Promise.await(entryCallback(entry)) : entry;
 					entries.push(result as T);
 
 					if (entries.length >= internalPageSize) {

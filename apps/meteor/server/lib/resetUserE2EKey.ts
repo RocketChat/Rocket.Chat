@@ -4,9 +4,10 @@ import type { IUser } from '@rocket.chat/core-typings';
 
 import { Users, Subscriptions } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
-import * as Mailer from '../../app/mailer';
+import * as Mailer from '../../app/mailer/server/api';
+import { isUserIdFederated } from './isUserIdFederated';
 
-const sendResetNotitification = function (uid: string): void {
+const sendResetNotification = function (uid: string): void {
 	const user: IUser = Users.findOneById(uid, {});
 	if (!user) {
 		throw new Meteor.Error('invalid-user');
@@ -56,9 +57,14 @@ const sendResetNotitification = function (uid: string): void {
 	}
 };
 
-export function resetUserE2EEncriptionKey(uid: string, notifyUser: boolean): boolean {
+export async function resetUserE2EEncriptionKey(uid: string, notifyUser: boolean): Promise<boolean> {
 	if (notifyUser) {
-		sendResetNotitification(uid);
+		sendResetNotification(uid);
+	}
+
+	const isUserFederated = await isUserIdFederated(uid);
+	if (isUserFederated) {
+		throw new Meteor.Error('error-not-allowed', 'Federated Users cant have TOTP', { function: 'resetTOTP' });
 	}
 
 	Users.resetE2EKey(uid);

@@ -3,7 +3,7 @@ import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React, { memo, useCallback, useMemo } from 'react';
 
-import { RoomManager } from '../../../../../../app/ui-utils/client';
+import { LegacyRoomManager } from '../../../../../../app/ui-utils/client';
 import { useReactiveValue } from '../../../../../hooks/useReactiveValue';
 import ComposerSkeleton from '../../../Room/ComposerSkeleton';
 import { useChat } from '../../../contexts/ChatContext';
@@ -41,7 +41,7 @@ const ComposerMessage = ({ rid, tmid, readOnly, onSend, ...props }: ComposerMess
 
 			onSend: async ({ value: text, tshow }: { value: string; tshow?: boolean }): Promise<void> => {
 				try {
-					await chat?.flows.action.stop('typing');
+					await chat?.action.stop('typing');
 					const newMessageSent = await chat?.flows.sendMessage({
 						text,
 						tshow,
@@ -53,10 +53,10 @@ const ComposerMessage = ({ rid, tmid, readOnly, onSend, ...props }: ComposerMess
 			},
 			onTyping: async (): Promise<void> => {
 				if (chat?.composer?.text?.trim() === '') {
-					await chat?.flows.action.stop('typing');
+					await chat?.action.stop('typing');
 					return;
 				}
-				await chat?.flows.action.start('typing');
+				await chat?.action.start('typing');
 			},
 			onNavigateToPreviousMessage: () => chat?.messageEditing.toPreviousMessage(),
 			onNavigateToNextMessage: () => chat?.messageEditing.toNextMessage(),
@@ -64,10 +64,10 @@ const ComposerMessage = ({ rid, tmid, readOnly, onSend, ...props }: ComposerMess
 				return chat?.flows.uploadFiles(files);
 			},
 		}),
-		[chat?.data, chat?.flows, chat?.composer?.text, chat?.messageEditing, dispatchToastMessage, onSend],
+		[chat?.data, chat?.flows, chat?.action, chat?.composer?.text, chat?.messageEditing, dispatchToastMessage, onSend],
 	);
 
-	const publicationReady = useReactiveValue(useCallback(() => RoomManager.getOpenedRoomByRid(rid)?.streamActive ?? false, [rid]));
+	const publicationReady = useReactiveValue(useCallback(() => LegacyRoomManager.getOpenedRoomByRid(rid)?.streamActive ?? false, [rid]));
 
 	if (!publicationReady) {
 		return (

@@ -1,9 +1,10 @@
 import { Field, Box, Button } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRoute, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo, useCallback, useState } from 'react';
 
+import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { useEndpointAction } from '../../../hooks/useEndpointAction';
 import { useForm } from '../../../hooks/useForm';
 import UserForm from './UserForm';
@@ -14,6 +15,8 @@ const AddUser = ({ onReload, ...props }) => {
 	const router = useRoute('admin-users');
 
 	const getRoleData = useEndpoint('GET', '/v1/roles.list');
+
+	const isSmtpEnabled = Boolean(useSetting('SMTP_Host'));
 
 	const { data } = useQuery(['roles'], async () => {
 		const roles = await getRoleData();
@@ -53,9 +56,11 @@ const AddUser = ({ onReload, ...props }) => {
 		validationKeys[key] && validationKeys[key](value, values);
 	};
 
+	const defaultUserRoles = parseCSV(String(useSetting('Accounts_Registration_Users_Default_Roles')));
+
 	const { values, handlers, reset, hasUnsavedChanges } = useForm(
 		{
-			roles: [],
+			roles: defaultUserRoles,
 			name: '',
 			username: '',
 			statusText: '',
@@ -66,7 +71,7 @@ const AddUser = ({ onReload, ...props }) => {
 			verified: false,
 			requirePasswordChange: false,
 			setRandomPassword: false,
-			sendWelcomeEmail: true,
+			sendWelcomeEmail: isSmtpEnabled,
 			joinDefaultChannels: true,
 			customFields: {},
 		},

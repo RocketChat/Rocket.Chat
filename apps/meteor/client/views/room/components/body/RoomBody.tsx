@@ -5,7 +5,6 @@ import {
 	usePermission,
 	useQueryStringParameter,
 	useRole,
-	useSession,
 	useSetting,
 	useTranslation,
 	useUser,
@@ -21,23 +20,23 @@ import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling
 import { callbacks } from '../../../../../lib/callbacks';
 import { isTruthy } from '../../../../../lib/isTruthy';
 import { withDebouncing, withThrottling } from '../../../../../lib/utils/highOrderFunctions';
+import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
 import { useReactiveQuery } from '../../../../hooks/useReactiveQuery';
-import { useUserCard } from '../../../../hooks/useUserCard';
-import { RoomManager as NewRoomManager } from '../../../../lib/RoomManager';
+import { RoomManager } from '../../../../lib/RoomManager';
 import type { Upload } from '../../../../lib/chats/Upload';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
+import { setMessageJumpQueryStringParameter } from '../../../../lib/utils/setMessageJumpQueryStringParameter';
 import Announcement from '../../Announcement';
 import { MessageList } from '../../MessageList/MessageList';
 import MessageListErrorBoundary from '../../MessageList/MessageListErrorBoundary';
 import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription, useRoomMessages } from '../../contexts/RoomContext';
 import { useToolboxContext } from '../../contexts/ToolboxContext';
-import { useLegacyMessageEvents } from '../../hooks/useLegacyMessageEvents';
+import { useScrollMessageList } from '../../hooks/useScrollMessageList';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessagesBar from './JumpToRecentMessagesBar';
 import LeaderBar from './LeaderBar';
-import LegacyMessageTemplateList from './LegacyMessageTemplateList';
 import LoadingMessagesIndicator from './LoadingMessagesIndicator';
 import NewMessagesButton from './NewMessagesButton';
 import RetentionPolicyWarning from './RetentionPolicyWarning';
@@ -58,19 +57,17 @@ const RoomBody = (): ReactElement => {
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
 
-	const [lastMessage, setLastMessage] = useState<Date | undefined>();
+	const [lastMessageDate, setLastMessageDate] = useState<Date | undefined>();
 	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
 	const [hasNewMessages, setHasNewMessages] = useState(false);
 
-	const hideFlexTab = useUserPreference<boolean>('hideFlexTab');
+	const hideFlexTab = useUserPreference<boolean>('hideFlexTab') || undefined;
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
-	const useLegacyMessageTemplate = useUserPreference<boolean>('useLegacyMessageTemplate') ?? false;
-	const viewMode = useUserPreference<number>('messageViewMode');
 
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
 	const messagesBoxRef = useRef<HTMLDivElement | null>(null);
-	const atBottomRef = useRef(!useQueryStringParameter('msg'));
+	const atBottomRef = useRef(true);
 	const lastScrollTopRef = useRef(0);
 
 	const chat = useChat();
@@ -95,12 +92,15 @@ const RoomBody = (): ReactElement => {
 		return false;
 	}, []);
 
-	const sendToBottom = useCallback(() => {
-		const wrapper = wrapperRef.current;
+	const scrollMessageList = useScrollMessageList(wrapperRef);
 
-		wrapper?.scrollTo(30, wrapper.scrollHeight);
+	const sendToBottom = useCallback(() => {
+		scrollMessageList((wrapper) => {
+			return { left: 30, top: wrapper?.scrollHeight };
+		});
+
 		setHasNewMessages(false);
-	}, []);
+	}, [scrollMessageList]);
 
 	const sendToBottomIfNecessary = useCallback(() => {
 		if (atBottomRef.current === true) {
@@ -127,11 +127,6 @@ const RoomBody = (): ReactElement => {
 	const [unread, setUnreadCount] = useUnreadMessages(room);
 
 	const uploads = useSyncExternalStore(chat.uploads.subscribe, chat.uploads.get);
-
-	const messageViewMode = useMemo(() => {
-		const modes = ['', 'cozy', 'compact'] as const;
-		return modes[viewMode ?? 0] ?? modes[0];
-	}, [viewMode]);
 
 	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useRoomMessages();
 
@@ -176,32 +171,35 @@ const RoomBody = (): ReactElement => {
 		};
 	});
 
-	const { open: openUserCard } = useUserCard();
-
 	const handleOpenUserCardButtonClick = useCallback(
 		(event: UIEvent, username: IUser['username']) => {
 			if (!username) {
 				return;
 			}
 
-			openUserCard(username)(event);
+			chat?.userCard.open(username)(event);
 		},
-		[openUserCard],
+		[chat?.userCard],
 	);
 
 	const handleUnreadBarJumpToButtonClick = useCallback(() => {
 		const rid = room._id;
-		const { firstUnread } = RoomHistoryManager.getRoom(rid) ?? {};
+		const { firstUnread } = RoomHistoryManager.getRoom(rid);
 		let message = firstUnread?.get();
 		if (!message) {
-			message = ChatMessage.findOne({ rid, ts: { $gt: subscription?.ls } }, { sort: { ts: 1 }, limit: 1 });
+			message = ChatMessage.findOne({ rid, ts: { $gt: unread?.since } }, { sort: { ts: 1 }, limit: 1 });
 		}
-		RoomHistoryManager.getSurroundingMessages(message, atBottomRef);
-	}, [room._id, subscription?.ls]);
+		if (!message) {
+			return;
+		}
+		setMessageJumpQueryStringParameter(message?._id);
+		setUnreadCount(0);
+	}, [room._id, unread?.since, setUnreadCount]);
 
 	const handleMarkAsReadButtonClick = useCallback(() => {
 		readMessage.readNow(room._id);
-	}, [room._id]);
+		setUnreadCount(0);
+	}, [room._id, setUnreadCount]);
 
 	const handleUploadProgressClose = useCallback(
 		(id: Upload['id']) => {
@@ -216,7 +214,7 @@ const RoomBody = (): ReactElement => {
 		callbacks.add(
 			'streamNewMessage',
 			(msg: IMessage) => {
-				if (room._id !== msg.rid || (isEditedMessage(msg) && msg.editedAt) || msg.tmid) {
+				if (room._id !== msg.rid || isEditedMessage(msg) || msg.tmid) {
 					return;
 				}
 
@@ -282,10 +280,8 @@ const RoomBody = (): ReactElement => {
 		[room._id],
 	);
 
-	const openedRoom = useSession('openedRoom');
-
 	useEffect(() => {
-		if (!routeName || !roomCoordinator.isRouteNameKnown(routeName) || room._id !== openedRoom) {
+		if (!routeName || !roomCoordinator.isRouteNameKnown(routeName)) {
 			return;
 		}
 
@@ -293,7 +289,7 @@ const RoomBody = (): ReactElement => {
 		if (subscribed && (subscription?.alert || subscription?.unread)) {
 			readMessage.refreshUnreadMark(room._id);
 		}
-	}, [debouncedReadMessageRead, openedRoom, room._id, routeName, subscribed, subscription?.alert, subscription?.unread]);
+	}, [debouncedReadMessageRead, room._id, routeName, subscribed, subscription?.alert, subscription?.unread]);
 
 	useEffect(() => {
 		if (!subscribed) {
@@ -303,11 +299,11 @@ const RoomBody = (): ReactElement => {
 
 		const count = ChatMessage.find({
 			rid: room._id,
-			ts: { $lte: lastMessage, $gt: subscription?.ls },
+			ts: { $lte: lastMessageDate, $gt: subscription?.ls },
 		}).count();
 
-		setUnreadCount(count);
-	}, [lastMessage, room._id, setUnreadCount, subscribed, subscription?.ls]);
+		count && setUnreadCount(count);
+	}, [lastMessageDate, room._id, setUnreadCount, subscribed, subscription?.ls]);
 
 	useEffect(() => {
 		if (!unread?.count) {
@@ -315,28 +311,6 @@ const RoomBody = (): ReactElement => {
 		}
 		readMessage.refreshUnreadMark(room._id);
 	}, [debouncedReadMessageRead, room._id, unread?.count]);
-
-	useEffect(() => {
-		const handleReadMessage = (): void => setUnreadCount(0);
-		readMessage.on(room._id, handleReadMessage);
-
-		return () => {
-			readMessage.off(room._id, handleReadMessage);
-		};
-	}, [room._id, setUnreadCount]);
-
-	useLegacyMessageEvents({
-		messageListRef: {
-			get current() {
-				if (!useLegacyMessageTemplate) {
-					return null;
-				}
-
-				return wrapperRef.current?.querySelector('ul') ?? null;
-			},
-		},
-		onRequestScrollToBottom: sendToBottomIfNecessary,
-	});
 
 	useEffect(() => {
 		const wrapper = wrapperRef.current;
@@ -363,7 +337,7 @@ const RoomBody = (): ReactElement => {
 				element = document.elementFromPoint(messagesBoxLeft + 1, messagesBoxTop + topOffset + 1);
 			}
 
-			if (element?.classList.contains('message')) {
+			if (element?.classList.contains('rcx-message') || element?.classList.contains('rcx-message--sequential')) {
 				return element;
 			}
 		};
@@ -372,7 +346,7 @@ const RoomBody = (): ReactElement => {
 			Tracker.afterFlush(() => {
 				const lastInvisibleMessageOnScreen = getElementFromPoint(0) || getElementFromPoint(20) || getElementFromPoint(40);
 
-				if (!lastInvisibleMessageOnScreen || !lastInvisibleMessageOnScreen.id) {
+				if (!lastInvisibleMessageOnScreen) {
 					setUnreadCount(0);
 					return;
 				}
@@ -383,7 +357,7 @@ const RoomBody = (): ReactElement => {
 					return;
 				}
 
-				setLastMessage(lastMessage.ts);
+				setLastMessageDate(lastMessage.ts);
 			});
 		});
 
@@ -427,7 +401,7 @@ const RoomBody = (): ReactElement => {
 			return;
 		}
 
-		const store = NewRoomManager.getStore(room._id);
+		const store = RoomManager.getStore(room._id);
 
 		const handleWrapperScroll = withThrottling({ wait: 30 })(() => {
 			store?.update({ scroll: wrapper.scrollTop, atBottom: isAtBottom(wrapper, 50) });
@@ -476,11 +450,11 @@ const RoomBody = (): ReactElement => {
 			timer2s = setTimeout(() => checkIfScrollIsAtBottom(), 2000);
 		};
 
-		wrapper.addEventListener('mousewheel', handleWheel);
-		wrapper.addEventListener('wheel', handleWheel);
+		// wrapper.addEventListener('mousewheel', handleWheel);
+		// wrapper.addEventListener('wheel', handleWheel);
 		wrapper.addEventListener('scroll', handleWheel);
-		wrapper.addEventListener('touchstart', handleTouchStart);
-		wrapper.addEventListener('touchend', handleTouchEnd);
+		// wrapper.addEventListener('touchstart', handleTouchStart);
+		// wrapper.addEventListener('touchend', handleTouchEnd);
 
 		return (): void => {
 			if (timer1s) clearTimeout(timer1s);
@@ -534,17 +508,34 @@ const RoomBody = (): ReactElement => {
 
 	const handleCloseFlexTab: MouseEventHandler<HTMLElement> = useCallback(
 		(e): void => {
-			if (!hideFlexTab) {
-				return;
-			}
+			/*
+			 * check if the element is a button or anchor
+			 * it considers the role as well
+			 * usually, the flex tab is closed when clicking outside of it
+			 * but if the user clicks on a button or anchor, we don't want to close the flex tab
+			 * because the user could be actually trying to open the flex tab through those elements
+			 */
 
-			if (e.target instanceof HTMLButtonElement) {
+			const checkElement = (element: HTMLElement | null): boolean => {
+				if (!element) {
+					return false;
+				}
+				if (element instanceof HTMLButtonElement || element.getAttribute('role') === 'button') {
+					return true;
+				}
+				if (element instanceof HTMLAnchorElement || element.getAttribute('role') === 'link') {
+					return true;
+				}
+				return checkElement(element.parentElement);
+			};
+
+			if (checkElement(e.target as HTMLElement)) {
 				return;
 			}
 
 			toolbox.close();
 		},
-		[toolbox, hideFlexTab],
+		[toolbox],
 	);
 
 	return (
@@ -555,20 +546,21 @@ const RoomBody = (): ReactElement => {
 					className={`messages-container flex-tab-main-content ${admin ? 'admin' : ''}`}
 					id={`chat-window-${room._id}`}
 					aria-label={t('Channel')}
-					onClick={handleCloseFlexTab}
+					onClick={hideFlexTab && handleCloseFlexTab}
 				>
 					<div className='messages-container-wrapper'>
 						<div className='messages-container-main' {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<div className={['container-bars', (unread || uploads.length) && 'show'].filter(isTruthy).join(' ')}>
-								{unread ? (
+								{unread && (
 									<UnreadMessagesIndicator
 										count={unread.count}
 										since={unread.since}
 										onJumpButtonClick={handleUnreadBarJumpToButtonClick}
 										onMarkAsReadButtonClick={handleMarkAsReadButtonClick}
 									/>
-								) : null}
+								)}
+
 								{uploads.map((upload) => (
 									<UploadProgressIndicator
 										key={upload.id}
@@ -580,10 +572,7 @@ const RoomBody = (): ReactElement => {
 									/>
 								))}
 							</div>
-							<div
-								ref={messagesBoxRef}
-								className={['messages-box', messageViewMode, roomLeader && 'has-leader'].filter(isTruthy).join(' ')}
-							>
+							<div ref={messagesBoxRef} className={['messages-box', roomLeader && 'has-leader'].filter(isTruthy).join(' ')}>
 								<NewMessagesButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} />
 								<JumpToRecentMessagesBar visible={hasMoreNextMessages} onClick={handleJumpToRecentButtonClick} />
 								{!canPreview ? (
@@ -601,7 +590,6 @@ const RoomBody = (): ReactElement => {
 									/>
 								) : null}
 								<div
-									ref={wrapperRef}
 									className={[
 										'wrapper',
 										hasMoreNextMessages && 'has-more-next',
@@ -612,24 +600,26 @@ const RoomBody = (): ReactElement => {
 										.join(' ')}
 								>
 									<MessageListErrorBoundary>
-										<ul className='messages-list' aria-live='polite'>
-											{canPreview ? (
-												<>
-													{hasMorePreviousMessages ? (
-														<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
-													) : (
-														<li className='start color-info-font-color'>
-															{retentionPolicy ? <RetentionPolicyWarning {...retentionPolicy} /> : null}
-															<RoomForeword user={user} room={room} />
-														</li>
-													)}
-												</>
-											) : null}
-											{useLegacyMessageTemplate ? <LegacyMessageTemplateList room={room} /> : <MessageList rid={room._id} />}
-											{hasMoreNextMessages ? (
-												<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
-											) : null}
-										</ul>
+										<ScrollableContentWrapper ref={wrapperRef}>
+											<ul className='messages-list' aria-live='polite'>
+												{canPreview ? (
+													<>
+														{hasMorePreviousMessages ? (
+															<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
+														) : (
+															<li className='start color-info-font-color'>
+																{retentionPolicy ? <RetentionPolicyWarning {...retentionPolicy} /> : null}
+																<RoomForeword user={user} room={room} />
+															</li>
+														)}
+													</>
+												) : null}
+												<MessageList rid={room._id} scrollMessageList={scrollMessageList} />
+												{hasMoreNextMessages ? (
+													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
+												) : null}
+											</ul>
+										</ScrollableContentWrapper>
 									</MessageListErrorBoundary>
 								</div>
 							</div>

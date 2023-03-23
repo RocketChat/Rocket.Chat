@@ -5,7 +5,6 @@ import {
 	useLoginWithPassword,
 	useSettingSetValue,
 	useSettingsDispatch,
-	useRole,
 	useMethod,
 	useEndpoint,
 	useTranslation,
@@ -22,7 +21,6 @@ import { useParameters } from '../hooks/useParameters';
 import { useStepRouting } from '../hooks/useStepRouting';
 
 const initialData: ContextType<typeof SetupWizardContext>['setupWizardData'] = {
-	adminData: { fullname: '', username: '', email: '', password: '' },
 	organizationData: {
 		organizationName: '',
 		organizationType: '',
@@ -43,10 +41,10 @@ type HandleRegisterServer = (params: { email: string; resend?: boolean }) => Pro
 
 const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactElement => {
 	const t = useTranslation();
-	const hasAdminRole = useRole('admin');
 	const [setupWizardData, setSetupWizardData] = useState<ContextType<typeof SetupWizardContext>['setupWizardData']>(initialData);
 	const [currentStep, setCurrentStep] = useStepRouting();
 	const { isSuccess, data } = useParameters();
+	const [offline, setOffline] = useState(false);
 	const dispatchToastMessage = useToastMessageDispatch();
 	const dispatchSettings = useSettingsDispatch();
 
@@ -55,6 +53,7 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	const defineUsername = useMethod('setUsername');
 	const loginWithPassword = useLoginWithPassword();
 	const setForceLogin = useSessionDispatch('forceLogin');
+	const registerPreIntentEndpoint = useEndpoint('POST', '/v1/cloud.registerPreIntent');
 	const createRegistrationIntent = useEndpoint('POST', '/v1/cloud.createRegistrationIntent');
 
 	const goToPreviousStep = useCallback(() => setCurrentStep((currentStep) => currentStep - 1), [setCurrentStep]);
@@ -72,32 +71,32 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 		[t],
 	);
 
-	const registerAdminUser = useCallback(async (): Promise<void> => {
-		const {
-			adminData: { fullname, username, email, password },
-		} = setupWizardData;
-		await registerUser({ name: fullname, username, email, pass: password });
-		callbacks.run('userRegistered', {});
+	const registerAdminUser = useCallback(
+		async ({ fullname, username, email, password }): Promise<void> => {
+			await registerUser({ name: fullname, username, email, pass: password });
+			callbacks.run('userRegistered', {});
 
-		try {
-			await loginWithPassword(email, password);
-		} catch (error) {
-			if (error instanceof Meteor.Error && error.error === 'error-invalid-email') {
-				dispatchToastMessage({ type: 'success', message: t('We_have_sent_registration_email') });
-				return;
+			try {
+				await loginWithPassword(email, password);
+			} catch (error) {
+				if (error instanceof Meteor.Error && error.error === 'error-invalid-email') {
+					dispatchToastMessage({ type: 'success', message: t('We_have_sent_registration_email') });
+					return;
+				}
+				if (error instanceof Error || typeof error === 'string') {
+					dispatchToastMessage({ type: 'error', message: error });
+				}
+				throw error;
 			}
-			if (error instanceof Error || typeof error === 'string') {
-				dispatchToastMessage({ type: 'error', message: error });
-			}
-			throw error;
-		}
 
-		setForceLogin(false);
+			setForceLogin(false);
 
-		await defineUsername(username);
-		await dispatchSettings([{ _id: 'Organization_Email', value: email }]);
-		callbacks.run('usernameSet', {});
-	}, [defineUsername, dispatchToastMessage, loginWithPassword, registerUser, setForceLogin, dispatchSettings, setupWizardData, t]);
+			await defineUsername(username);
+			await dispatchSettings([{ _id: 'Organization_Email', value: email }]);
+			callbacks.run('usernameSet', {});
+		},
+		[registerUser, setForceLogin, defineUsername, dispatchSettings, loginWithPassword, dispatchToastMessage, t],
+	);
 
 	const saveWorkspaceData = useCallback(async (): Promise<void> => {
 		const {
@@ -107,10 +106,6 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 		await dispatchSettings([
 			{
 				_id: 'Statistics_reporting',
-				value: true,
-			},
-			{
-				_id: 'Apps_Framework_enabled',
 				value: true,
 			},
 			{
@@ -158,18 +153,6 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 	}, [dispatchSettings, setupWizardData]);
 
 	const registerServer: HandleRegisterServer = useMutableCallback(async ({ email, resend = false }): Promise<void> => {
-		if (!hasAdminRole) {
-			try {
-				await registerAdminUser();
-			} catch (e) {
-				if (e instanceof Error || typeof e === 'string')
-					return dispatchToastMessage({
-						type: 'error',
-						message: e,
-					});
-			}
-		}
-
 		try {
 			await saveOrganizationData();
 			const { intentData } = await createRegistrationIntent({ resend, email });
@@ -188,10 +171,17 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 		}
 	});
 
-	const completeSetupWizard = useMutableCallback(async (): Promise<void> => {
-		if (!hasAdminRole) {
-			await registerAdminUser();
+	const registerPreIntent = useMutableCallback(async (): Promise<void> => {
+		await saveOrganizationData();
+		try {
+			const { offline } = await registerPreIntentEndpoint();
+			setOffline(offline);
+		} catch (_) {
+			setOffline(true);
 		}
+	});
+
+	const completeSetupWizard = useMutableCallback(async (): Promise<void> => {
 		await saveOrganizationData();
 		dispatchToastMessage({ type: 'success', message: t('Your_workspace_is_ready') });
 		return setShowSetupWizard('completed');
@@ -208,6 +198,8 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 			goToPreviousStep,
 			goToNextStep,
 			goToStep,
+			offline,
+			registerPreIntent,
 			registerAdminUser,
 			validateEmail: _validateEmail,
 			registerServer,
@@ -218,14 +210,16 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 		}),
 		[
 			setupWizardData,
-			setSetupWizardData,
 			currentStep,
 			isSuccess,
-			registerAdminUser,
-			data,
+			data.settings,
+			data.serverAlreadyRegistered,
 			goToPreviousStep,
 			goToNextStep,
 			goToStep,
+			offline,
+			registerAdminUser,
+			registerPreIntent,
 			_validateEmail,
 			registerServer,
 			saveWorkspaceData,

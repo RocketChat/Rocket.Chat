@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import s from 'underscore.string';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RateLimiter } from '../lib';
 
 async function _setStatusTextPromise(userId: string, statusText: string): Promise<boolean> {
@@ -12,7 +11,7 @@ async function _setStatusTextPromise(userId: string, statusText: string): Promis
 		return false;
 	}
 
-	statusText = s.trim(statusText).substr(0, 120);
+	statusText = statusText.trim().substr(0, 120);
 
 	const user = await Users.findOneById<Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'statusText'>>(userId, {
 		projection: { username: 1, name: 1, status: 1, roles: 1, statusText: 1 },
@@ -29,7 +28,7 @@ async function _setStatusTextPromise(userId: string, statusText: string): Promis
 	await Users.updateStatusText(user._id, statusText);
 
 	const { _id, username, status, name, roles } = user;
-	api.broadcast('presence.status', {
+	void api.broadcast('presence.status', {
 		user: { _id, username, status, statusText, name, roles },
 		previousStatus: status,
 	});
@@ -42,9 +41,9 @@ function _setStatusText(userId: any, statusText: string): boolean {
 }
 
 export const setStatusText = RateLimiter.limitFunction(_setStatusText, 5, 60000, {
-	0() {
+	async 0() {
 		// Administrators have permission to change others status, so don't limit those
 		const userId = Meteor.userId();
-		return !userId || !hasPermission(userId, 'edit-other-user-info');
+		return !userId || !(await hasPermissionAsync(userId, 'edit-other-user-info'));
 	},
 });

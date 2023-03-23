@@ -1,7 +1,7 @@
-import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
+import type { AtLeast, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
-import { Session } from 'meteor/session';
+import type { Mongo } from 'meteor/mongo';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { Subscriptions, Users, ChatRoom } from '../../../../app/models/client';
@@ -19,6 +19,9 @@ export const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
 
 roomCoordinator.add(DirectMessageRoomType, {
 	allowRoomSettingChange(_room, setting) {
+		if (isRoomFederated(_room as IRoom)) {
+			return Federation.isRoomSettingAllowed(_room, setting);
+		}
 		switch (setting) {
 			case RoomSettingsEnum.TYPE:
 			case RoomSettingsEnum.NAME:
@@ -36,9 +39,9 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 	},
 
-	allowMemberAction(room, action) {
+	allowMemberAction(room, action, showingUserId, userSubscription) {
 		if (isRoomFederated(room as IRoom)) {
-			return Federation.actionAllowed(room, action);
+			return Federation.actionAllowed(room, action, showingUserId, userSubscription);
 		}
 		switch (action) {
 			case RoomMemberActions.BLOCK:
@@ -114,7 +117,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 
 		const sub = Subscriptions.findOne({ rid: room._id }, { fields: { name: 1 } });
 		if (sub?.name) {
-			const user = Users.findOne({ username: sub.name }, { fields: { username: 1, avatarETag: 1 } });
+			const user = Users.findOne({ username: sub.name }, { fields: { username: 1, avatarETag: 1 } }) as IUser | undefined;
 			return getUserAvatarURL(user?.username || sub.name, user?.avatarETag);
 		}
 
@@ -122,6 +125,10 @@ roomCoordinator.add(DirectMessageRoomType, {
 	},
 
 	getIcon(room) {
+		if (isRoomFederated(room)) {
+			return 'globe';
+		}
+
 		if (this.isGroupChat(room)) {
 			return 'balloon';
 		}
@@ -129,17 +136,8 @@ roomCoordinator.add(DirectMessageRoomType, {
 		return DirectMessageRoomType.icon;
 	},
 
-	getUserStatus(roomId) {
-		const subscription = Subscriptions.findOne({ rid: roomId });
-		if (!subscription) {
-			return;
-		}
-
-		return Session.get(`user_${subscription.name}_status`);
-	},
-
 	findRoom(identifier) {
-		const query = {
+		const query: Mongo.Selector<ISubscription> = {
 			t: 'd',
 			$or: [{ name: identifier }, { rid: identifier }],
 		};

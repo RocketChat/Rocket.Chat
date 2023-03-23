@@ -14,7 +14,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React from 'react';
+import React, { memo } from 'react';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
 import {
@@ -33,10 +33,11 @@ import ThreadMessagePreviewBody from './threadPreview/ThreadMessagePreviewBody';
 
 type ThreadMessagePreviewProps = {
 	message: IThreadMessage;
+	showUserAvatar: boolean;
 	sequential: boolean;
 };
 
-const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePreviewProps): ReactElement => {
+const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }: ThreadMessagePreviewProps): ReactElement => {
 	const parentMessage = useParentMessage(message.tmid);
 
 	const translated = useShowTranslated(message);
@@ -58,7 +59,12 @@ const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePr
 		<ThreadMessage {...props} onClick={isSelecting ? toggleSelected : undefined} isSelected={isSelected} data-qa-selected={isSelected}>
 			{!sequential && (
 				<ThreadMessageRow
-					onClick={!isSelecting && parentMessage.isSuccess ? () => goToThread(message.tmid, parentMessage.data?._id) : undefined}
+					role='link'
+					onClick={
+						!isSelecting && parentMessage.isSuccess
+							? () => goToThread({ rid: message.rid, tmid: message.tmid, msg: parentMessage.data?._id })
+							: undefined
+					}
 				>
 					<ThreadMessageLeftContainer>
 						<ThreadMessageIconThread />
@@ -75,7 +81,7 @@ const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePr
 									{translated && (
 										<>
 											{' '}
-											<MessageStatusIndicatorItem name='language' color='font-on-info' title={t('Translated')} />
+											<MessageStatusIndicatorItem name='language' color='info' title={t('Translated')} />
 										</>
 									)}
 								</>
@@ -87,9 +93,9 @@ const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePr
 					</ThreadMessageContainer>
 				</ThreadMessageRow>
 			)}
-			<ThreadMessageRow onClick={!isSelecting ? () => goToThread(message.tmid, message._id) : undefined}>
+			<ThreadMessageRow onClick={!isSelecting ? () => goToThread({ rid: message.rid, tmid: message.tmid, msg: message._id }) : undefined}>
 				<ThreadMessageLeftContainer>
-					{!isSelecting && <UserAvatar username={message.u.username} size='x18' />}
+					{!isSelecting && showUserAvatar && <UserAvatar username={message.u.username} size='x18' />}
 					{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 				</ThreadMessageLeftContainer>
 				<ThreadMessageContainer>
@@ -114,4 +120,4 @@ const ThreadMessagePreview = ({ message, sequential, ...props }: ThreadMessagePr
 	);
 };
 
-export default ThreadMessagePreview;
+export default memo(ThreadMessagePreview);

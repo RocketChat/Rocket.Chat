@@ -1,18 +1,25 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
-import s from 'underscore.string';
 import type { INewIncomingIntegration, IIncomingIntegration } from '@rocket.chat/core-typings';
 import { Integrations, Roles } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission, hasAllPermission } from '../../../../authorization/server';
+import { hasPermissionAsync, hasAllPermission } from '../../../../authorization/server/functions/hasPermission';
 import { Users, Rooms, Subscriptions } from '../../../../models/server';
 
 const validChannelChars = ['@', '#'];
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		addIncomingIntegration(integration: INewIncomingIntegration): Promise<IIncomingIntegration>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async addIncomingIntegration(integration: INewIncomingIntegration): Promise<IIncomingIntegration> {
 		const { userId } = this;
 
@@ -32,13 +39,17 @@ Meteor.methods({
 			}),
 		);
 
-		if (!userId || (!hasPermission(userId, 'manage-incoming-integrations') && !hasPermission(userId, 'manage-own-incoming-integrations'))) {
+		if (
+			!userId ||
+			(!(await hasPermissionAsync(userId, 'manage-incoming-integrations')) &&
+				!(await hasPermissionAsync(userId, 'manage-own-incoming-integrations')))
+		) {
 			throw new Meteor.Error('not_authorized', 'Unauthorized', {
 				method: 'addIncomingIntegration',
 			});
 		}
 
-		if (!_.isString(integration.channel)) {
+		if (!integration.channel || typeof integration.channel.valueOf() !== 'string') {
 			throw new Meteor.Error('error-invalid-channel', 'Invalid channel', {
 				method: 'addIncomingIntegration',
 			});
@@ -50,7 +61,7 @@ Meteor.methods({
 			});
 		}
 
-		const channels = _.map(integration.channel.split(','), (channel) => s.trim(channel));
+		const channels = integration.channel.split(',').map((channel) => channel.trim());
 
 		for (const channel of channels) {
 			if (!validChannelChars.includes(channel[0])) {
@@ -60,7 +71,7 @@ Meteor.methods({
 			}
 		}
 
-		if (!_.isString(integration.username) || integration.username.trim() === '') {
+		if (!integration.username || typeof integration.username.valueOf() !== 'string' || integration.username.trim() === '') {
 			throw new Meteor.Error('error-invalid-username', 'Invalid username', {
 				method: 'addIncomingIntegration',
 			});

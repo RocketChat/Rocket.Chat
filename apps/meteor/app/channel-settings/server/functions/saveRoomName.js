@@ -1,20 +1,22 @@
 import { Meteor } from 'meteor/meteor';
 import { Integrations } from '@rocket.chat/models';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 
 import { Rooms, Messages, Subscriptions } from '../../../models/server';
 import { getValidRoomName } from '../../../utils/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { checkUsernameAvailability } from '../../../lib/server/functions';
+import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
-const updateRoomName = (rid, displayName, isDiscussion) => {
-	if (isDiscussion) {
-		return Rooms.setFnameById(rid, displayName) && Subscriptions.updateFnameByRoomId(rid, displayName);
-	}
+const updateFName = (rid, displayName) => {
+	return Rooms.setFnameById(rid, displayName) && Subscriptions.updateFnameByRoomId(rid, displayName);
+};
+
+const updateRoomName = async (rid, displayName) => {
 	const slugifiedRoomName = getValidRoomName(displayName, rid);
 
 	// Check if the username is available
-	if (!checkUsernameAvailability(slugifiedRoomName)) {
+	if (!(await checkUsernameAvailability(slugifiedRoomName))) {
 		throw new Meteor.Error('error-duplicate-handle', `A room, team or user with name '${slugifiedRoomName}' already exists`, {
 			function: 'RocketChat.updateRoomName',
 			handle: slugifiedRoomName,
@@ -37,7 +39,14 @@ export async function saveRoomName(rid, displayName, user, sendMessage = true) {
 		return;
 	}
 	const isDiscussion = Boolean(room && room.prid);
-	const update = updateRoomName(rid, displayName, isDiscussion);
+	let update;
+
+	if (isDiscussion || isRoomFederated(room)) {
+		update = updateFName(rid, displayName);
+	} else {
+		update = await updateRoomName(rid, displayName);
+	}
+
 	if (!update) {
 		return;
 	}

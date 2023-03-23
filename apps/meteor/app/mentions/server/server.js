@@ -8,7 +8,7 @@ import { callbacks } from '../../../lib/callbacks';
 import { Users, Subscriptions, Rooms } from '../../models/server';
 
 export class MentionQueries {
-	getUsers(usernames) {
+	async getUsers(usernames) {
 		const users = Meteor.users
 			.find({ username: { $in: [...new Set(usernames)] } }, { fields: { _id: true, username: true, name: 1 } })
 			.fetch();
@@ -28,7 +28,20 @@ export class MentionQueries {
 	}
 
 	getChannels(channels) {
-		return Rooms.find({ name: { $in: [...new Set(channels)] }, t: { $in: ['c', 'p'] } }, { fields: { _id: 1, name: 1 } }).fetch();
+		return Rooms.find(
+			{
+				$and: [
+					{
+						$or: [
+							{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name: { $in: [...new Set(channels)] } }] },
+							{ federated: true, fname: { $in: [...new Set(channels)] } },
+						],
+					},
+				],
+				t: { $in: ['c', 'p'] },
+			},
+			{ fields: { _id: 1, name: 1, fname: 1, federated: 1 } },
+		).fetch();
 	}
 }
 
@@ -37,7 +50,7 @@ const queries = new MentionQueries();
 const mention = new MentionsServer({
 	pattern: () => settings.get('UTF8_User_Names_Validation'),
 	messageMaxAll: () => settings.get('Message_MaxAll'),
-	getUsers: (usernames) => queries.getUsers(usernames),
+	getUsers: async (usernames) => queries.getUsers(usernames),
 	getUser: (userId) => queries.getUser(userId),
 	getTotalChannelMembers: (rid) => queries.getTotalChannelMembers(rid),
 	getChannels: (channels) => queries.getChannels(channels),
@@ -46,7 +59,7 @@ const mention = new MentionsServer({
 		const { language } = this.getUser(sender._id);
 		const msg = TAPi18n.__('Group_mentions_disabled_x_members', { total: this.messageMaxAll }, language);
 
-		api.broadcast('notify.ephemeralMessage', sender._id, rid, {
+		void api.broadcast('notify.ephemeralMessage', sender._id, rid, {
 			msg,
 		});
 
@@ -57,4 +70,4 @@ const mention = new MentionsServer({
 		});
 	},
 });
-callbacks.add('beforeSaveMessage', (message) => mention.execute(message), callbacks.priority.HIGH, 'mentions');
+callbacks.add('beforeSaveMessage', async (message) => mention.execute(message), callbacks.priority.HIGH, 'mentions');

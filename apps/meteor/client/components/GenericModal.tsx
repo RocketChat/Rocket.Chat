@@ -17,10 +17,11 @@ type GenericModalProps = RequiredModalProps & {
 	title?: string | ReactElement;
 	icon?: ComponentProps<typeof Icon>['name'] | ReactElement | null;
 	confirmDisabled?: boolean;
-	onCancel?: () => void;
-	onClose?: () => void;
-	onConfirm: () => void;
-};
+	tagline?: ReactNode;
+	onCancel?: () => Promise<void> | void;
+	onClose?: () => Promise<void> | void;
+	onConfirm: () => Promise<void> | void;
+} & Omit<ComponentProps<typeof Modal>, 'title'>;
 
 const iconMap: Record<string, ComponentProps<typeof Icon>['name']> = {
 	danger: 'modal-warning',
@@ -68,6 +69,7 @@ const GenericModal: FC<GenericModalProps> = ({
 	onConfirm,
 	dontAskAgain,
 	confirmDisabled,
+	tagline,
 	...props
 }) => {
 	const t = useTranslation();
@@ -77,6 +79,7 @@ const GenericModal: FC<GenericModalProps> = ({
 			<Modal.Header>
 				{renderIcon(icon, variant)}
 				<Modal.HeaderText>
+					{tagline && <Modal.Tagline>{tagline}</Modal.Tagline>}
 					<Modal.Title>{title ?? t('Are_you_sure')}</Modal.Title>
 				</Modal.HeaderText>
 				<Modal.Close title={t('Close')} onClick={onClose} />

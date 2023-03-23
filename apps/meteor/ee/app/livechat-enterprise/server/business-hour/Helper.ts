@@ -70,7 +70,7 @@ export const resetDefaultBusinessHourIfNeeded = async (): Promise<void> => {
 		if (!defaultBusinessHour) {
 			return;
 		}
-		LivechatBusinessHours.update(
+		await LivechatBusinessHours.update(
 			{ _id: defaultBusinessHour._id },
 			{
 				$set: {

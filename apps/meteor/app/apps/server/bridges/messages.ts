@@ -10,7 +10,7 @@ import { Messages, Users, Subscriptions } from '../../../models/server';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import notifications from '../../../notifications/server/lib/Notifications';
-import type { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 export class AppMessageBridge extends MessageBridge {
 	// eslint-disable-next-line no-empty-function
@@ -48,7 +48,7 @@ export class AppMessageBridge extends MessageBridge {
 		const msg = this.orch.getConverters()?.get('messages').convertAppMessage(message);
 		const editor = Users.findOneById(message.editor.id);
 
-		updateMessage(msg, editor);
+		await updateMessage(msg, editor);
 	}
 
 	protected async notifyUser(user: IUser, message: IMessage, appId: string): Promise<void> {
@@ -60,7 +60,7 @@ export class AppMessageBridge extends MessageBridge {
 			return;
 		}
 
-		api.broadcast('notify.ephemeralMessage', user.id, msg.rid, {
+		void api.broadcast('notify.ephemeralMessage', user.id, msg.rid, {
 			...msg,
 		});
 	}
@@ -80,10 +80,11 @@ export class AppMessageBridge extends MessageBridge {
 
 		Users.findByIds(users, { fields: { _id: 1 } })
 			.fetch()
-			.forEach(({ _id }: { _id: string }) =>
-				api.broadcast('notify.ephemeralMessage', _id, room.id, {
-					...msg,
-				}),
+			.forEach(
+				({ _id }: { _id: string }) =>
+					void api.broadcast('notify.ephemeralMessage', _id, room.id, {
+						...msg,
+					}),
 			);
 	}
 

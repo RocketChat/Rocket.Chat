@@ -7,22 +7,23 @@ import type { RoomType } from '@rocket.chat/core-typings';
 
 import { appLayout } from '../../../../client/lib/appLayout';
 import { waitUntilFind } from '../../../../client/lib/utils/waitUntilFind';
-import { Messages, ChatSubscription, Rooms, Subscriptions } from '../../../models/client';
+import { ChatSubscription, Rooms, Subscriptions } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { callbacks } from '../../../../lib/callbacks';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { call } from '../../../../client/lib/utils/call';
-import { RoomManager, RoomHistoryManager } from '..';
+import { LegacyRoomManager } from '..';
 import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import MainLayout from '../../../../client/views/root/MainLayout';
 import { omit } from '../../../../lib/utils/omit';
 import { RoomSkeleton, RoomProvider, Room, RoomNotFound } from '../../../../client/views/room';
+import { RoomManager } from '../../../../client/lib/RoomManager';
 
 export async function openRoom(type: RoomType, name: string, render = true) {
 	setTimeout(() => {
-		RoomManager.currentTracker?.stop();
-		RoomManager.currentTracker = Tracker.autorun(async function (c) {
+		LegacyRoomManager.currentTracker?.stop();
+		LegacyRoomManager.currentTracker = Tracker.autorun(async function (c) {
 			const user = Meteor.user();
 			if ((user && user.username == null) || (user == null && settings.get('Accounts_AllowAnonymousRead') === false)) {
 				appLayout.render(<MainLayout />);
@@ -31,18 +32,24 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 
 			try {
 				const room = roomCoordinator.getRoomDirectives(type)?.findRoom(name) || (await call('getRoomByTypeAndName', type, name));
+				if (!room._id) {
+					return;
+				}
+
 				Rooms.upsert({ _id: room._id }, { $set: room });
 
 				if (room._id !== name && type === 'd') {
 					// Redirect old url using username to rid
-					RoomManager.close(type + name);
-					return FlowRouter.go('direct', { rid: room._id }, FlowRouter.current().queryParams);
+					await LegacyRoomManager.close(type + name);
+					FlowRouter.go('direct', { rid: room._id }, FlowRouter.current().queryParams);
+					return;
 				}
 
-				RoomManager.open({ typeName: type + name, rid: room._id });
+				LegacyRoomManager.open({ typeName: type + name, rid: room._id });
 
 				c.stop();
-				if (room._id === Session.get('openedRoom') && !FlowRouter.getQueryParam('msg')) {
+
+				if (room._id === RoomManager.opened) {
 					return;
 				}
 
@@ -58,8 +65,8 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 					);
 				}
 
-				if (RoomManager.currentTracker) {
-					RoomManager.currentTracker = undefined;
+				if (LegacyRoomManager.currentTracker) {
+					LegacyRoomManager.currentTracker = undefined;
 				}
 
 				fireGlobalEvent('room-opened', omit(room, 'usernames'));
@@ -72,31 +79,11 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 					await callWithErrorHandling('openRoom', room._id);
 				}
 
-				if (FlowRouter.getQueryParam('msg')) {
-					const messageId = FlowRouter.getQueryParam('msg');
-					const msg = { _id: messageId, rid: room._id };
-
-					const message = Messages.findOne({ _id: msg._id }) || (await callWithErrorHandling('getMessages', [msg._id]))[0];
-
-					if (message && (message.tmid || message.tcount)) {
-						return FlowRouter.setParams({ tab: 'thread', context: message.tmid || message._id });
-					}
-
-					RoomHistoryManager.getSurroundingMessages(msg);
-					FlowRouter.setQueryParams({
-						msg: null,
-					});
-				}
-
 				return callbacks.run('enter-room', sub);
 			} catch (error) {
 				c.stop();
 
-				if (FlowRouter.getQueryParam('msg')) {
-					FlowRouter.setQueryParams({
-						msg: null,
-					});
-				}
+				FlowRouter.setQueryParams({ msg: null });
 
 				if (type === 'd') {
 					try {
@@ -107,6 +94,7 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 						console.error(error);
 					}
 				}
+
 				appLayout.render(
 					<MainLayout>
 						<RoomNotFound />

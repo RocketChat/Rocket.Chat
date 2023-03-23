@@ -10,15 +10,16 @@ import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Users } from '../../../models/server';
-import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
+import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
 import './settings';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
-import { AppEvents, Apps } from '../../../apps/server/orchestrator';
+import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
+import { safeHtmlDots } from '../../../../lib/utils/safeHtmlDots';
 
 Accounts.config({
 	forbidClientAccountCreation: true,
@@ -91,7 +92,9 @@ Meteor.startup(() => {
 });
 
 Accounts.emailTemplates.verifyEmail.html = function (userModel, url) {
-	return Mailer.replace(verifyEmailTemplate, { Verification_Url: url, name: userModel.name });
+	const name = safeHtmlDots(userModel.name);
+
+	return Mailer.replace(verifyEmailTemplate, { Verification_Url: url, name });
 };
 
 Accounts.emailTemplates.verifyEmail.subject = function () {
@@ -303,7 +306,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc,
 		}
 	}
 
-	addUserRoles(_id, roles);
+	Promise.await(addUserRolesAsync(_id, roles));
 
 	return _id;
 });

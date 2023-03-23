@@ -23,20 +23,26 @@ declare module 'meteor/accounts-base' {
 
 		function _runLoginHandlers<T>(methodInvocation: T, loginRequest: Record<string, any>): Record<string, any> | undefined;
 
+		function _storedLoginToken(): unknown;
+
+		function _unstoreLoginToken(): void;
+
 		function updateOrCreateUserFromExternalService(
 			serviceName: string,
 			serviceData: Record<string, unknown>,
 			options: Record<string, unknown>,
 		): Record<string, unknown>;
 
-		export class ConfigError extends Error {}
+		function _clearAllLoginTokens(userId: string | null): void;
 
-		export class LoginCancelledError extends Error {
+		class ConfigError extends Error {}
+
+		class LoginCancelledError extends Error {
 			public static readonly numericError: number;
 		}
 
-		export const USER_ID_KEY: string;
+		const USER_ID_KEY: string;
 
-		export const LOGIN_TOKEN_KEY: string;
+		const LOGIN_TOKEN_KEY: string;
 	}
 }

@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 import type { IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 
 import { Rooms, Users, Subscriptions } from '../../../models/server';
+import { isObject } from '../../../../lib/utils/isObject';
 
 export const getRoomByNameOrIdWithOptionToJoin = ({
 	currentUserId = '',
@@ -38,14 +38,14 @@ export const getRoomByNameOrIdWithOptionToJoin = ({
 			});
 		}
 
-		const rid = _.isObject(roomUser) ? [currentUserId, roomUser._id].sort().join('') : nameOrId;
+		const rid = isObject(roomUser) ? [currentUserId, roomUser._id].sort().join('') : nameOrId;
 		room = Rooms.findOneById(rid);
 
 		// If the room hasn't been found yet, let's try some more
-		if (!_.isObject(room)) {
+		if (!isObject(room)) {
 			// If the roomUser wasn't found, then there's no destination to point towards
 			// so return out based upon errorOnEmpty
-			if (!_.isObject(roomUser)) {
+			if (!isObject(roomUser)) {
 				if (errorOnEmpty) {
 					throw new Meteor.Error('invalid-channel');
 				} else {
