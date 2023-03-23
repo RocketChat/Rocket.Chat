@@ -13,7 +13,8 @@ callbacks.add(
 		const department = LivechatDepartment.findOneById(room.departmentId, {
 			fields: { ancestors: 1 },
 		});
-		if (!department || !department.ancestors) {
+
+		if (!department?.ancestors) {
 			return room;
 		}
 

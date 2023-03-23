@@ -4,7 +4,7 @@ import { cbLogger } from '../lib/logger';
 
 callbacks.add(
 	'livechat.onLoadForwardDepartmentRestrictions',
-	(options = {}) => {
+	(options) => {
 		const { departmentId } = options;
 		if (!departmentId) {
 			cbLogger.debug('Skipping callback. No departmentId provided');
