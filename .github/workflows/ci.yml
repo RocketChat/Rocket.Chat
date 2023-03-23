@@ -470,12 +470,12 @@ jobs:
           # 'develop' or 'tag'
           DOCKER_TAG=$GITHUB_REF_NAME
 
-          PUBLISHED_TAGS=()
-
           # append the variant name to docker tag
           if [[ '${{ matrix.release }}' = 'alpine' ]]; then
             DOCKER_TAG="${DOCKER_TAG}-${{ matrix.release }}"
           fi;
+
+          PUBLISHED_TAGS=()
 
           # tag and push the specific tag version
           docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$DOCKER_TAG
@@ -509,6 +509,11 @@ jobs:
 
           # commit hash
           TAG_SHA="${{ steps.gh-docker.outputs.gh-docker-tag-sha }}"
+
+          # append the variant name to docker tag
+          if [[ '${{ matrix.release }}' = 'alpine' ]]; then
+            TAG_SHA="${TAG_SHA}-${{ matrix.release }}"
+          fi;
 
           docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$TAG_SHA
           docker push $IMAGE_NAME:$TAG_SHA
