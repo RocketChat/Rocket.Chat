@@ -5,6 +5,7 @@ import { OAuth } from 'meteor/oauth';
 import { HTTP } from 'meteor/http';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
+import { LDAP } from '@rocket.chat/core-services';
 
 import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
 import { Logger } from '../../logger/server';
@@ -12,6 +13,7 @@ import { Users } from '../../models/server';
 import { isURL } from '../../../lib/utils/isURL';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
 import { callbacks } from '../../../lib/callbacks';
+import { settings } from '../../settings/server';
 
 const logger = new Logger('CustomOAuth');
 
@@ -437,11 +439,15 @@ Accounts.updateOrCreateUserFromExternalService = function (...args /* serviceNam
 	const [serviceName, serviceData] = args;
 
 	const user = updateOrCreateUserFromExternalService.apply(this, args);
+	const fullUser = Users.findOneById(user.userId);
+	if (settings.get('LDAP_Update_Data_On_OAuth_Login')) {
+		LDAP.loginRequest(user.username);
+	}
 
 	callbacks.run('afterValidateNewOAuthUser', {
 		identity: serviceData,
 		serviceName,
-		user: Users.findOneById(user.userId),
+		user: fullUser,
 	});
 
 	return user;

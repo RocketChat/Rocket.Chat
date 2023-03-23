@@ -7,8 +7,8 @@ import { LDAPManager } from '../../lib/ldap/Manager';
 export class LDAPService extends ServiceClassInternal implements ILDAPService {
 	protected name = 'ldap';
 
-	async loginRequest(username: string, password: string): Promise<LDAPLoginResult> {
-		return LDAPManager.login(username, password);
+	async loginRequest(username: string, password?: string): Promise<LDAPLoginResult> {
+		return password ? LDAPManager.login(username, password) : LDAPManager.loginAuthenticatedUser(username);
 	}
 
 	async testConnection(): Promise<void> {
