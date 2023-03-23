@@ -1,7 +1,6 @@
-import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
-import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 
 import { CachedChatSubscription } from '../../../app/models/client';
@@ -9,11 +8,13 @@ import { Notifications } from '../../../app/notifications/client';
 import { readMessage } from '../../../app/ui-utils/client';
 import { KonchatNotification } from '../../../app/ui/client';
 import { getUserPreference } from '../../../app/utils/client';
+import { RoomManager } from '../../lib/RoomManager';
 import { fireGlobalEvent } from '../../lib/utils/fireGlobalEvent';
 import { isLayoutEmbedded } from '../../lib/utils/isLayoutEmbedded';
 
 const notifyNewRoom = (sub: ISubscription): void => {
-	if (Session.equals(`user_${Meteor.userId()}_status`, 'busy')) {
+	const user = Meteor.user() as IUser | null;
+	if (!user || user.status === 'busy') {
 		return;
 	}
 
@@ -41,11 +42,9 @@ type NotificationEvent = {
 };
 
 function notifyNewMessageAudio(rid: string): void {
-	const openedRoomId = Session.get('openedRoom');
-
 	// This logic is duplicated in /client/startup/unread.coffee.
 	const hasFocus = readMessage.isEnable();
-	const messageIsInOpenedRoom = openedRoomId === rid;
+	const messageIsInOpenedRoom = RoomManager.opened === rid;
 	const muteFocusedConversations = getUserPreference(Meteor.userId(), 'muteFocusedConversations');
 
 	if (isLayoutEmbedded()) {
@@ -66,10 +65,7 @@ Meteor.startup(() => {
 		}
 
 		Notifications.onUser('notification', (notification: NotificationEvent) => {
-			let openedRoomId = undefined;
-			if (['channel', 'group', 'direct'].includes(FlowRouter.getRouteName())) {
-				openedRoomId = Session.get('openedRoom');
-			}
+			const openedRoomId = ['channel', 'group', 'direct'].includes(FlowRouter.getRouteName()) ? RoomManager.opened : undefined;
 
 			// This logic is duplicated in /client/startup/unread.coffee.
 			const hasFocus = readMessage.isEnable();

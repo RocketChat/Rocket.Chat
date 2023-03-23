@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Session } from 'meteor/session';
 import { Tracker } from 'meteor/tracker';
 import { Blaze } from 'meteor/blaze';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -12,7 +11,7 @@ import { mainReady } from './mainReady';
 import { callbacks } from '../../../../lib/callbacks';
 import { CachedChatRoom, ChatMessage, ChatSubscription, CachedChatSubscription, ChatRoom } from '../../../models/client';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
-import { RoomManager as NewRoomManager } from '../../../../client/lib/RoomManager';
+import { RoomManager } from '../../../../client/lib/RoomManager';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 import { Notifications } from '../../../notifications/client';
 
@@ -95,7 +94,7 @@ function close(typeName: string) {
 		delete openedRooms[typeName];
 
 		if (rid) {
-			NewRoomManager.close(rid);
+			RoomManager.close(rid);
 			return RoomHistoryManager.clear(rid);
 		}
 	}
@@ -115,7 +114,6 @@ async function closeAllRooms() {
 	for await (const openedRoom of Object.values(openedRooms)) {
 		await close(openedRoom.typeName);
 	}
-	Session.set('openedRoom', undefined);
 }
 
 function getOpenedRoomByRid(rid: IRoom['_id']) {
@@ -126,7 +124,7 @@ function getOpenedRoomByRid(rid: IRoom['_id']) {
 }
 
 const handleTrackSettingsChange = (msg: IMessage) => {
-	const openedRoom = Tracker.nonreactive(() => Session.get('openedRoom'));
+	const openedRoom = RoomManager.opened;
 	if (openedRoom !== msg.rid) {
 		return;
 	}
@@ -260,7 +258,7 @@ let openedRoom: string | undefined = undefined;
 
 let currentTracker: Tracker.Computation | undefined = undefined;
 
-export const RoomManager = {
+export const LegacyRoomManager = {
 	get openedRoom() {
 		return openedRoom;
 	},
