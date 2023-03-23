@@ -611,7 +611,7 @@ jobs:
 
           echo "::group::Published tags"
 
-          for TAG in ${LERO[@]}; do
+          for TAG in ${PUBLISHED_TAGS[@]}; do
             echo $TAG
           done
 
