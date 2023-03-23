@@ -421,8 +421,7 @@ API.v1.addRoute(
 				channelsToSearch.push('all_private_groups');
 			}
 
-			const params = this.queryParams as Record<string, any>;
-			const { offset, count } = await getPaginationItems(params);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields: projection, query } = await this.parseJsonQuery();
 
 			const ourQuery = Object.assign(await mountIntegrationQueryBasedOnPermissions(this.userId), query, {

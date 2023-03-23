@@ -258,7 +258,7 @@ API.v1.addRoute(
 					if (settings.get('API_Shield_user_require_auth') && !(await getLoggedInUser(this.request))) {
 						return API.v1.failure('You must be logged in to do this.');
 					}
-					const user = await getUserFromParams(this.queryParams as Record<string, any>);
+					const user = await getUserFromParams(this.queryParams);
 
 					// Respect the server's choice for using their real names or not
 					if (user.name && settings.get('UI_Use_Real_Name')) {

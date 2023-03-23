@@ -521,7 +521,7 @@ API.v1.addRoute(
 		async post() {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			const user = await getUserFromParams(this.bodyParams as Record<string, any>);
+			const user = await getUserFromParams(this.bodyParams);
 
 			await Meteor.call('addRoomModerator', findResult._id, user._id);
 
@@ -537,7 +537,7 @@ API.v1.addRoute(
 		async post() {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			const user = await getUserFromParams(this.bodyParams as Record<string, any>);
+			const user = await getUserFromParams(this.bodyParams);
 
 			await Meteor.call('addRoomOwner', findResult._id, user._id);
 
@@ -1083,7 +1083,7 @@ API.v1.addRoute(
 		async post() {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			const user = await getUserFromParams(this.bodyParams as Record<string, any>);
+			const user = await getUserFromParams(this.bodyParams);
 
 			await Meteor.call('removeRoomModerator', findResult._id, user._id);
 
@@ -1099,7 +1099,7 @@ API.v1.addRoute(
 		async post() {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			const user = await getUserFromParams(this.bodyParams as Record<string, any>);
+			const user = await getUserFromParams(this.bodyParams);
 
 			await Meteor.call('removeRoomOwner', findResult._id, user._id);
 
@@ -1296,7 +1296,7 @@ API.v1.addRoute(
 		async post() {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			const user = await getUserFromParams(this.bodyParams as Record<string, any>);
+			const user = await getUserFromParams(this.bodyParams);
 
 			await Meteor.call('addRoomLeader', findResult._id, user._id);
 
@@ -1312,7 +1312,7 @@ API.v1.addRoute(
 		async post() {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			const user = await getUserFromParams(this.bodyParams as Record<string, any>);
+			const user = await getUserFromParams(this.bodyParams);
 
 			await Meteor.call('removeRoomLeader', findResult._id, user._id);
 

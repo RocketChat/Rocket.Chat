@@ -14,8 +14,7 @@ API.v1.addRoute(
 			if (!room) {
 				throw new Error('invalid-room');
 			}
-			const params = this.queryParams as unknown as Record<string, any>;
-			const { offset, count } = await getPaginationItems(params);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
 
 			const history = await findLivechatTransferHistory({

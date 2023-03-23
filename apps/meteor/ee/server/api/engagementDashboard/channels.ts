@@ -18,11 +18,13 @@ API.v1.addRoute(
 				Match.ObjectIncluding({
 					start: Match.Where(isDateISOString),
 					end: Match.Where(isDateISOString),
+					offset: Match.Maybe(String),
+					count: Match.Maybe(String),
 				}),
 			);
 
 			const { start, end } = this.queryParams;
-			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, any>);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			const { channels, total } = await findAllChannelsWithNumberOfMessages({
 				start: mapDateForAPI(start),

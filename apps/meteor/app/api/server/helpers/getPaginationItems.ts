@@ -5,7 +5,7 @@ import { Settings } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 
-export async function getPaginationItems(params: { offset?: number; count?: number }): Promise<{
+export async function getPaginationItems(params: { offset?: string | number | null; count?: string | number | null }): Promise<{
 	readonly offset: number;
 	readonly count: number;
 }> {
