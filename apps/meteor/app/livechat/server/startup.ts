@@ -19,7 +19,7 @@ import './roomAccessValidator.internalService';
 
 Meteor.startup(async () => {
 	// TODO: remove promise.await when roomCoordinator supports async functions
-	roomCoordinator.setRoomFind('l', (_id) => Promise.await(LivechatRooms.findOneById(_id)));
+	roomCoordinator.setRoomFind('l', (_id) => LivechatRooms.findOneById(_id));
 
 	callbacks.add(
 		'beforeLeaveRoom',
