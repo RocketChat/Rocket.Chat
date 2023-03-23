@@ -857,7 +857,7 @@ export default class SlackAdapter {
 					updatedBySlack: true, // We don't want to notify slack about this change since Slack initiated it
 				};
 
-				updateMessage(rocketMsgObj, rocketUser);
+				await updateMessage(rocketMsgObj, rocketUser);
 				slackLogger.debug('Rocket message updated by Slack');
 			}
 		}
@@ -940,7 +940,7 @@ export default class SlackAdapter {
 				imported: 'slackbridge',
 			});
 		} else {
-			Promise.await(addUserToRoom(rocketChannel._id, rocketUser));
+			await addUserToRoom(rocketChannel._id, rocketUser);
 		}
 	}
 
@@ -957,7 +957,7 @@ export default class SlackAdapter {
 					imported: 'slackbridge',
 				});
 			} else {
-				Promise.await(addUserToRoom(rocketChannel._id, rocketUser, inviter));
+				await addUserToRoom(rocketChannel._id, rocketUser, inviter);
 			}
 		}
 	}

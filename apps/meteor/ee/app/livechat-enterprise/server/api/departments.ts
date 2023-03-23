@@ -28,7 +28,7 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isLivechatAnalyticsDepartmentsAmountOfChatsProps },
 	{
 		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, any>);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { start, end } = this.queryParams;
 			const { answered, departmentId } = this.queryParams;
 
@@ -68,7 +68,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, any>);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { start, end } = this.queryParams;
 			const { departmentId } = this.queryParams;
 
@@ -107,7 +107,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, any>);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { start, end } = this.queryParams;
 			const { departmentId } = this.queryParams;
 
@@ -146,7 +146,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, any>);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { start, end } = this.queryParams;
 			const { departmentId } = this.queryParams;
 
@@ -185,7 +185,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, any>);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { start, end } = this.queryParams;
 			const { departmentId } = this.queryParams;
 
@@ -228,7 +228,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, any>);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { start, end } = this.queryParams;
 			const { departmentId } = this.queryParams;
 
@@ -267,7 +267,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, any>);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { start, end } = this.queryParams;
 			const { departmentId } = this.queryParams;
 
@@ -306,7 +306,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, any>);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { start, end } = this.queryParams;
 			const { departmentId } = this.queryParams;
 

@@ -17,7 +17,7 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isLivechatAnalyticsAgentsAverageServiceTimeProps },
 	{
 		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, any>);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { start, end } = this.queryParams;
 
 			if (isNaN(Date.parse(start))) {
@@ -50,7 +50,7 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isLivechatAnalyticsAgentsTotalServiceTimeProps },
 	{
 		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, any>);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { start, end } = this.queryParams;
 
 			if (isNaN(Date.parse(start))) {
@@ -87,7 +87,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, any>);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { start, end } = this.queryParams;
 			const { fullReport } = this.queryParams;
 

@@ -65,7 +65,7 @@ onLicense('oauth-enterprise', () => {
 		}
 
 		if (settings.mergeRoles) {
-			OAuthEEManager.updateRolesFromSSO(
+			await OAuthEEManager.updateRolesFromSSO(
 				auth.user,
 				auth.serviceData,
 				settings.rolesClaim,
@@ -84,7 +84,7 @@ onLicense('oauth-enterprise', () => {
 		}
 
 		if (settings.mergeRoles) {
-			const rolesFromSSO = OAuthEEManager.mapRolesFromSSO(auth.identity, settings.rolesClaim);
+			const rolesFromSSO = await OAuthEEManager.mapRolesFromSSO(auth.identity, settings.rolesClaim);
 			const mappedRoles = (await Roles.findInIdsOrNames(rolesFromSSO).toArray()).map((role) => role._id);
 
 			auth.user.roles = mappedRoles;

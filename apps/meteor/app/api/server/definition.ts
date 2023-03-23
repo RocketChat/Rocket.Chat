@@ -118,7 +118,7 @@ export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern,
 			? T
 			: TOptions extends { validateParams: { GET: ValidateFunction<infer T> } }
 			? T
-			: Partial<OperationParams<TMethod, TPathPattern>>
+			: Partial<OperationParams<TMethod, TPathPattern>> & { offset?: number; count?: number }
 		: Record<string, string>;
 	// TODO make it unsafe
 	readonly bodyParams: TMethod extends 'GET'
@@ -129,7 +129,12 @@ export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern,
 		? V extends { [key in TMethod]: ValidateFunction<infer T> }
 			? T
 			: Partial<OperationParams<TMethod, TPathPattern>>
-		: Partial<OperationParams<TMethod, TPathPattern>>;
+		: // TODO remove the extra (optionals) params when all the endpoints that use these are typed correctly
+		  Partial<OperationParams<TMethod, TPathPattern>> & {
+				userId?: string;
+				username?: string;
+				user?: string;
+		  };
 	readonly request: Request;
 
 	readonly queryOperations: TOptions extends { queryOperations: infer T } ? T : never;

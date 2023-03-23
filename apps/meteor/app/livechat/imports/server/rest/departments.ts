@@ -253,8 +253,7 @@ API.v1.addRoute(
 			check(this.urlParams, {
 				_id: String,
 			});
-			const params = this.queryParams as Record<string, any>;
-			const { offset, count } = await getPaginationItems(params);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
 
 			const agents = await findDepartmentAgents({

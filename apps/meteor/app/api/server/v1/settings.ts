@@ -45,8 +45,7 @@ API.v1.addRoute(
 	{ authRequired: false },
 	{
 		async get() {
-			const params = this.queryParams as unknown as Record<string, any>;
-			const { offset, count } = await getPaginationItems(params);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 
 			const ourQuery = {
@@ -120,8 +119,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const params = this.queryParams as unknown as Record<string, any>;
-			const { offset, count } = await getPaginationItems(params);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 
 			let ourQuery: Parameters<typeof Settings.find>[0] = {

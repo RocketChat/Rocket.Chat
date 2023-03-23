@@ -7,8 +7,7 @@ API.default.addRoute(
 	{ authRequired: false },
 	{
 		async get() {
-			const request = this.request as Record<string, any>;
-			const user = await getLoggedInUser(request.headers['x-auth-token'] as string, request.headers['x-user-id'] as string);
+			const user = await getLoggedInUser(this.request);
 
 			return API.v1.success(await getServerInfo(user?._id));
 		},

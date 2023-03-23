@@ -24,6 +24,7 @@ import type { FailureResult, NotFoundResult, Operations, Options, PartialThis, S
 import { parseJsonQuery } from './helpers/parseJsonQuery';
 import { Logger } from '../../logger/server';
 import { getUserInfo } from './helpers/getUserInfo';
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 
 const logger = new Logger('API');
 
@@ -291,17 +292,22 @@ export class APIClass<TBasePath extends string = '/'> extends Restivus {
 		return rateLimiterDictionary[route];
 	}
 
-	protected shouldVerifyRateLimit(route: string, userId: string): boolean {
+	protected async shouldVerifyRateLimit(route: string, userId: string): Promise<boolean> {
 		return (
 			rateLimiterDictionary.hasOwnProperty(route) &&
 			settings.get<boolean>('API_Enable_Rate_Limiter') === true &&
 			(process.env.NODE_ENV !== 'development' || settings.get<boolean>('API_Enable_Rate_Limiter_Dev') === true) &&
-			!(userId && hasPermission(userId, 'api-bypass-rate-limit'))
+			!(userId && (await hasPermissionAsync(userId, 'api-bypass-rate-limit')))
 		);
 	}
 
-	protected enforceRateLimit(objectForRateLimitMatch: RateLimiterOptionsToCheck, _: any, response: Response, userId: string): void {
-		if (!this.shouldVerifyRateLimit(objectForRateLimitMatch.route, userId)) {
+	protected async enforceRateLimit(
+		objectForRateLimitMatch: RateLimiterOptionsToCheck,
+		_: any,
+		response: Response,
+		userId: string,
+	): Promise<void> {
+		if (!(await this.shouldVerifyRateLimit(objectForRateLimitMatch.route, userId))) {
 			return;
 		}
 
@@ -563,7 +569,7 @@ export class APIClass<TBasePath extends string = '/'> extends Restivus {
 						};
 
 						try {
-							api.enforceRateLimit(objectForRateLimitMatch, this.request, this.response, this.userId);
+							await api.enforceRateLimit(objectForRateLimitMatch, this.request, this.response, this.userId);
 
 							if (_options.validateParams) {
 								const requestMethod = this.request.method as Method;
@@ -973,7 +979,7 @@ export const API: {
 				members?: { key: string; value?: string[] };
 				customFields?: { key: string; value?: string };
 				teams?: { key: string; value?: string[] };
-			}) => void;
+			}) => Promise<void>;
 			execute: (
 				userId: string,
 				params: {

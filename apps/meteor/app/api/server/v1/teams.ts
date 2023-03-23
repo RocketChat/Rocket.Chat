@@ -27,8 +27,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const params = this.queryParams as unknown as Record<string, any>;
-			const { offset, count } = await getPaginationItems(params);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, query } = await this.parseJsonQuery();
 
 			const { records, total } = await Team.list(this.userId, { offset, count }, { sort, query });
@@ -52,7 +51,7 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const { offset, count } = await getPaginationItems(this.queryParams as unknown as Record<string, any>);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			const { records, total } = await Team.listAll({ offset, count });
 
@@ -276,11 +275,13 @@ API.v1.addRoute(
 				Match.ObjectIncluding({
 					filter: Match.Maybe(String),
 					type: Match.Maybe(String),
+					offset: Match.Maybe(String),
+					count: Match.Maybe(String),
 				}),
 			);
 
 			const { filter, type } = this.queryParams;
-			const { offset, count } = await getPaginationItems(this.queryParams as unknown as Record<string, any>);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			const team = await getTeamByIdOrName(this.queryParams);
 			if (!team) {
@@ -338,10 +339,12 @@ API.v1.addRoute(
 				Match.ObjectIncluding({
 					userId: String,
 					canUserDelete: Match.Maybe(String),
+					offset: Match.Maybe(String),
+					count: Match.Maybe(String),
 				}),
 			);
 
-			const { offset, count } = await getPaginationItems(this.queryParams as unknown as Record<string, any>);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			const team = await getTeamByIdOrName(this.queryParams);
 			if (!team) {
@@ -377,7 +380,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams as unknown as Record<string, any>);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			check(
 				this.queryParams,
