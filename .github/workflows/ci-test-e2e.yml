@@ -55,7 +55,7 @@ on:
       CR_PAT:
         required: true
       QASE_API_TOKEN:
-        required: true
+        required: false
 
 env:
   MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
