@@ -56,3 +56,7 @@ import './UsersSessions';
 import './VideoConference';
 import './VoipRoom';
 import './WebdavAccounts';
+import './FederationRoomEvents';
+import './Imports';
+import './RawImports';
+import './AppsTokens';

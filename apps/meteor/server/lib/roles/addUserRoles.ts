@@ -21,5 +21,3 @@ export const addUserRolesAsync = async (userId: IUser['_id'], roleIds: IRole['_i
 	await Roles.addUserRoles(userId, roleIds, scope);
 	return true;
 };
-
-export const addUserRoles = (...args: Parameters<typeof addUserRolesAsync>): boolean => Promise.await(addUserRolesAsync(...args));

@@ -118,14 +118,14 @@ export class AppRoomBridge extends RoomBridge {
 
 		Rooms.update(rm._id, rm);
 
-		for (const username of members) {
+		for await (const username of members) {
 			const member = Users.findOneByUsername(username, {});
 
 			if (!member) {
 				continue;
 			}
 
-			addUserToRoom(rm._id, member);
+			await addUserToRoom(rm._id, member);
 		}
 	}
 

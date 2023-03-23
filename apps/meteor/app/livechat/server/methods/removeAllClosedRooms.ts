@@ -1,12 +1,20 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { LivechatRooms } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 
-Meteor.methods({
-	async 'livechat:removeAllClosedRooms'(departmentIds: string[]) {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'livechat:removeAllClosedRooms'(departmentIds?: string[]): Promise<number>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async 'livechat:removeAllClosedRooms'(departmentIds) {
 		const user = Meteor.userId();
 
 		if (!user || !(await hasPermissionAsync(user, 'remove-closed-livechat-rooms'))) {
