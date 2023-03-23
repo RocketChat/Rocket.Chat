@@ -69,7 +69,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			message: await this.orch.getConverters()?.get('messages').convertAppMessage(message),
 		};
 
-		Livechat.updateMessage(data);
+		await Livechat.updateMessage(data);
 	}
 
 	protected async createRoom(visitor: IVisitor, agent: IUser, appId: string, extraParams?: IExtraRoomParams): Promise<ILivechatRoom> {

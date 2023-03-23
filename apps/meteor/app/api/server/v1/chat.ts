@@ -4,15 +4,16 @@ import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { canAccessRoomId, roomAccessAttributes, hasPermission } from '../../../authorization/server';
+import { roomAccessAttributes } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
-import { processWebhookMessage } from '../../../lib/server';
+import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { settings } from '../../../settings/server';
 import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
-import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 
 API.v1.addRoute(
 	'chat.delete',
@@ -38,7 +39,11 @@ API.v1.addRoute(
 				return API.v1.failure('The room id provided does not match where the message is from.');
 			}
 
-			if (this.bodyParams.asUser && msg.u._id !== this.userId && !hasPermission(this.userId, 'force-delete-message', msg.rid)) {
+			if (
+				this.bodyParams.asUser &&
+				msg.u._id !== this.userId &&
+				!(await hasPermissionAsync(this.userId, 'force-delete-message', msg.rid))
+			) {
 				return API.v1.failure('Unauthorized. You must have the permission "force-delete-message" to delete other\'s message as them.');
 			}
 
@@ -145,7 +150,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			const messageReturn = await processWebhookMessage(this.bodyParams, this.user)[0];
+			const messageReturn = (await processWebhookMessage(this.bodyParams, this.user))[0];
 
 			if (!messageReturn) {
 				return API.v1.failure('unknown-error');
@@ -447,7 +452,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
 			}
 
-			if (!canAccessRoomId(roomId, this.userId)) {
+			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 

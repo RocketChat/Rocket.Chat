@@ -11,7 +11,7 @@ import {
 import { hasLicense } from '../../../license/server/license';
 import { updateDepartmentAgents } from '../../../../../app/livechat/server/lib/Helper';
 import { Messages } from '../../../../../app/models/server';
-import { addUserRoles } from '../../../../../server/lib/roles/addUserRoles';
+import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../../server/lib/roles/removeUserFromRoles';
 import { processWaitingQueue, updateSLAInquiries } from './Helper';
 import { removeSLAFromRooms } from './SlaHelper';
@@ -35,7 +35,7 @@ export const LivechatEnterprise = {
 			});
 		}
 
-		if (addUserRoles(user._id, ['livechat-monitor'])) {
+		if (await addUserRolesAsync(user._id, ['livechat-monitor'])) {
 			return user;
 		}
 
@@ -64,7 +64,7 @@ export const LivechatEnterprise = {
 		return true;
 	},
 
-	removeUnit(_id) {
+	async removeUnit(_id) {
 		check(_id, String);
 
 		const unit = LivechatUnit.findOneById(_id, { fields: { _id: 1 } });
@@ -177,19 +177,18 @@ export const LivechatEnterprise = {
 		await removeSLAFromRooms(_id);
 	},
 
-	placeRoomOnHold(room, comment, onHoldBy) {
+	async placeRoomOnHold(room, comment, onHoldBy) {
 		logger.debug(`Attempting to place room ${room._id} on hold by user ${onHoldBy?._id}`);
 		const { _id: roomId, onHold } = room;
 		if (!roomId || onHold) {
 			logger.debug(`Room ${roomId} invalid or already on hold. Skipping`);
 			return false;
 		}
-		Promise.await(LivechatRooms.setOnHoldByRoomId(roomId));
+		await LivechatRooms.setOnHoldByRoomId(roomId);
 
 		Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldBy);
-		Meteor.defer(() => {
-			callbacks.run('livechat:afterOnHold', room);
-		});
+
+		await callbacks.run('livechat:afterOnHold', room);
 
 		logger.debug(`Room ${room._id} set on hold succesfully`);
 		return true;

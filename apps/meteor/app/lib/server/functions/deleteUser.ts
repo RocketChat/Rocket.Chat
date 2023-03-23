@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { FileProp } from '@rocket.chat/core-typings';
-import { Integrations, FederationServers, LivechatVisitors, LivechatDepartmentAgents } from '@rocket.chat/models';
+import { Integrations, FederationServers, LivechatVisitors, LivechatDepartmentAgents, Messages as MessagesRaw } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../file-upload/server';
@@ -40,12 +40,12 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 				Messages.findFilesByUserId(userId).forEach(function ({ file }: { file: FileProp }) {
 					store.deleteById(file._id);
 				});
-				Messages.removeByUserId(userId);
+				await MessagesRaw.removeByUserId(userId);
 				break;
 			case 'Unlink':
 				const rocketCat = Users.findOneById('rocket.cat');
 				const nameAlias = TAPi18n.__('Removed_User');
-				Messages.unlinkUserId(userId, rocketCat._id, rocketCat.username, nameAlias);
+				await MessagesRaw.unlinkUserId(userId, rocketCat._id, rocketCat.username, nameAlias);
 				break;
 		}
 

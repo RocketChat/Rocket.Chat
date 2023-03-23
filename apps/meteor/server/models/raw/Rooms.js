@@ -1,6 +1,6 @@
 import { ReadPreference } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Subscriptions, Messages } from '@rocket.chat/models';
+import { Subscriptions } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
@@ -1476,14 +1476,8 @@ export class RoomsRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	/**
-	 * @param {string} _id
-	 * @param {string?} messageId
-	 * @returns {Promise<void>}
-	 */
-	async resetLastMessageById(_id, messageId = undefined) {
+	async resetLastMessageById(_id, lastMessage = undefined) {
 		const query = { _id };
-		const lastMessage = await Messages.getLastVisibleMessageSentWithNoTypeByRoomId(_id, messageId);
 
 		const update = lastMessage
 			? {

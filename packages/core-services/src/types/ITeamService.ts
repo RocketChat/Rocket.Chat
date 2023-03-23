@@ -123,4 +123,5 @@ export interface ITeamService {
 	removeRolesFromMember(teamId: string, userId: string, roles: Array<IRole['_id']>): Promise<boolean>;
 	getStatistics(): Promise<ITeamStats>;
 	findBySubscribedUserIds(userId: string, callerId?: string): Promise<ITeam[]>;
+	addRolesToMember(teamId: string, userId: string, roles: Array<string>): Promise<boolean>;
 }

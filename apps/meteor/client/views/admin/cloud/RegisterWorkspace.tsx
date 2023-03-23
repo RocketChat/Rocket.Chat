@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 import React from 'react';
 
 import Page from '../../../components/Page';
+import ManualWorkspaceRegistrationModal from './ManualWorkspaceRegistrationModal';
 import RegisterWorkspaceCards from './components/RegisterWorkspaceCards';
 import RegisterWorkspaceMenu from './components/RegisterWorkspaceMenu';
 import ConnectWorkspaceModal from './modals/ConnectWorkspaceModal';
@@ -33,6 +34,14 @@ const RegisterWorkspace = (): ReactNode => {
 		if (isWorkspaceRegistered) {
 			setModal(<ConnectWorkspaceModal onClose={handleModalClose} onStatusChange={reload} />);
 		} else setModal(<RegisterWorkspaceModal onClose={handleModalClose} onStatusChange={reload} />);
+	};
+
+	const handleManualWorkspaceRegistrationButton = (): void => {
+		const handleModalClose = (): void => {
+			setModal(null);
+			reload();
+		};
+		setModal(<ManualWorkspaceRegistrationModal onClose={handleModalClose} />);
 	};
 
 	const handleRegistrationTag = () => {
@@ -63,6 +72,7 @@ const RegisterWorkspace = (): ReactNode => {
 					isConnectedToCloud={isConnectedToCloud}
 					onClick={handleRegisterWorkspaceClick}
 					onStatusChange={reload}
+					onClickOfflineRegistration={handleManualWorkspaceRegistrationButton}
 				/>
 			</Page.Header>
 
