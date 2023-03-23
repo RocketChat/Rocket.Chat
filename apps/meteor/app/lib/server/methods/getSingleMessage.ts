@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { IMessage } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { canAccessRoomId } from '../../../authorization/server';
+import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { Messages } from '../../../models/server';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -12,8 +13,8 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
-Meteor.methods({
-	getSingleMessage(mid) {
+Meteor.methods<ServerMethods>({
+	async getSingleMessage(mid) {
 		check(mid, String);
 
 		const uid = Meteor.userId();
@@ -28,7 +29,7 @@ Meteor.methods({
 			return undefined;
 		}
 
-		if (!canAccessRoomId(msg.rid, uid)) {
+		if (!(await canAccessRoomIdAsync(msg.rid, uid))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getSingleMessage' });
 		}
 

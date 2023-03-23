@@ -21,14 +21,16 @@ import {
 import { Integrations, Messages, Rooms, Subscriptions, Uploads } from '@rocket.chat/models';
 import { Team } from '@rocket.chat/core-services';
 
-import { Messages as MessagesSync, Subscriptions as SubscriptionsSync, Users as UsersSync } from '../../../models/server';
-import { canAccessRoom, hasAtLeastOnePermission, hasPermission } from '../../../authorization/server';
+import { Subscriptions as SubscriptionsSync, Users as UsersSync } from '../../../models/server';
+import { canAccessRoomAsync, hasAtLeastOnePermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { settings } from '../../../settings/server';
+import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 
 // Returns the channel IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
 async function findChannelByIdOrName({
@@ -268,12 +270,12 @@ API.v1.addRoute(
 
 			// Special check for the permissions
 			if (
-				(await hasPermission(this.userId, 'view-joined-room')) &&
+				(await hasPermissionAsync(this.userId, 'view-joined-room')) &&
 				!(await Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId, { projection: { _id: 1 } }))
 			) {
 				return API.v1.unauthorized();
 			}
-			if (!(await hasPermission(this.userId, 'view-c-room'))) {
+			if (!(await hasPermissionAsync(this.userId, 'view-c-room'))) {
 				return API.v1.unauthorized();
 			}
 
@@ -461,7 +463,7 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			if (!(await hasPermission(this.userId, 'create-team'))) {
+			if (!(await hasPermissionAsync(this.userId, 'create-team'))) {
 				return API.v1.unauthorized();
 			}
 
@@ -471,7 +473,7 @@ API.v1.addRoute(
 				return API.v1.failure('The parameter "channelId" or "channelName" is required');
 			}
 
-			if (channelId && !(await hasPermission(this.userId, 'edit-room', channelId))) {
+			if (channelId && !(await hasPermissionAsync(this.userId, 'edit-room', channelId))) {
 				return API.v1.unauthorized();
 			}
 
@@ -573,7 +575,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const access = await hasPermission(this.userId, 'view-room-administration');
+			const access = await hasPermissionAsync(this.userId, 'view-room-administration');
 			const { userId } = this.queryParams;
 			let user = this.userId;
 			let unreads = null;
@@ -597,7 +599,7 @@ API.v1.addRoute(
 			const lm = room.lm ? room.lm : room._updatedAt;
 
 			if (subscription?.open) {
-				unreads = await MessagesSync.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls, lm);
+				unreads = await Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls, lm);
 				unreadsFrom = subscription.ls || subscription.ts;
 				userMentions = subscription.userMentions;
 				joined = true;
@@ -622,14 +624,14 @@ API.v1.addRoute(
 	},
 );
 
-function createChannelValidator(params: {
+async function createChannelValidator(params: {
 	user: { value: string };
 	name?: { key: string; value?: string };
 	members?: { key: string; value?: string[] };
 	customFields?: { key: string; value?: string };
 	teams?: { key: string; value?: string[] };
-}): void {
-	if (!hasPermission(params.user.value, 'create-c')) {
+}) {
+	if (!(await hasPermissionAsync(params.user.value, 'create-c'))) {
 		throw new Error('unauthorized');
 	}
 
@@ -686,7 +688,7 @@ API.v1.addRoute(
 			let error;
 
 			try {
-				API.channels.create.validate({
+				await API.channels.create.validate({
 					user: {
 						value: userId,
 					},
@@ -716,7 +718,7 @@ API.v1.addRoute(
 			}
 
 			if (bodyParams.teams) {
-				const canSeeAllTeams = await hasPermission(this.userId, 'view-all-teams');
+				const canSeeAllTeams = await hasPermissionAsync(this.userId, 'view-all-teams');
 				const teams = await Team.listByNames(bodyParams.teams, { projection: { _id: 1 } });
 				const teamMembers = [];
 
@@ -749,7 +751,7 @@ API.v1.addRoute(
 				checkedArchived: false,
 			});
 
-			if (!(await canAccessRoom(findResult, { _id: this.userId }))) {
+			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
 				return API.v1.unauthorized();
 			}
 
@@ -816,7 +818,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields: projection, query } = this.parseJsonQuery();
 
-			ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query, ourQuery);
+			ourQuery = Object.assign(await mountIntegrationQueryBasedOnPermissions(this.userId), query, ourQuery);
 
 			const { cursor, totalCount } = await Integrations.findPaginated(ourQuery, {
 				sort: sort || { _createdAt: 1 },
@@ -882,12 +884,12 @@ API.v1.addRoute(
 		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
-			const hasPermissionToSeeAllPublicChannels = await hasPermission(this.userId, 'view-c-room');
+			const hasPermissionToSeeAllPublicChannels = await hasPermissionAsync(this.userId, 'view-c-room');
 
 			const ourQuery: Record<string, any> = { ...query, t: 'c' };
 
 			if (!hasPermissionToSeeAllPublicChannels) {
-				if (!(await hasPermission(this.userId, 'view-joined-room'))) {
+				if (!(await hasPermissionAsync(this.userId, 'view-joined-room'))) {
 					return API.v1.unauthorized();
 				}
 				const roomIds = await SubscriptionsSync.findByUserIdAndType(this.userId, 'c', {
@@ -929,7 +931,7 @@ API.v1.addRoute(
 			const [channels, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				channels: channels.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
+				channels: await Promise.all(channels.map((room) => composeRoomWithLastMessage(room, this.userId))),
 				count: channels.length,
 				offset,
 				total,
@@ -963,7 +965,7 @@ API.v1.addRoute(
 			const [channels, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				channels: channels.map((room) => this.composeRoomWithLastMessage(room, this.userId)),
+				channels: await Promise.all(channels.map((room) => composeRoomWithLastMessage(room, this.userId))),
 				offset,
 				count: channels.length,
 				total,
@@ -982,7 +984,7 @@ API.v1.addRoute(
 				checkedArchived: false,
 			});
 
-			if (findResult.broadcast && !(await hasPermission(this.userId, 'view-broadcast-member-list', findResult._id))) {
+			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
 				return API.v1.unauthorized();
 			}
 
@@ -1041,7 +1043,7 @@ API.v1.addRoute(
 
 			const user = this.getLoggedInUser();
 
-			if (!room || !user || !(await canAccessRoom(room, user))) {
+			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
 
@@ -1277,7 +1279,7 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success({
-				channel: this.composeRoomWithLastMessage(room, this.userId),
+				channel: await composeRoomWithLastMessage(room, this.userId),
 			});
 		},
 	},

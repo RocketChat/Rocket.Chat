@@ -50,9 +50,6 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			getIcon(_room: Partial<IRoom>): IRoomTypeConfig['icon'] {
 				return this.config.icon;
 			},
-			getUserStatus(_roomId: string): string | undefined {
-				return undefined;
-			},
 			findRoom(_identifier: string): IRoom | undefined {
 				return undefined;
 			},
