@@ -60,6 +60,7 @@ env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
   LOWERCASE_REPOSITORY: ${{ inputs.lowercase-repo }}
   DOCKER_TAG: ${{ inputs.gh-docker-tag }}
+  QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
 
 jobs:
   test:
