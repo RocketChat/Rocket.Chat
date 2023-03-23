@@ -158,6 +158,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 
 	if (room?.closedAt) {
 		logger.debug(`Room ${room?._id} is closed. Reopening`);
+		// @ts-expect-error - QueueManager is in JS, so room is getting wrong types detected ({} instead of IOmnichannelRoom)
 		room = await QueueManager.unarchiveRoom(room);
 	}
 

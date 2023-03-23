@@ -100,7 +100,7 @@ const validators: RoomSettingsValidators = {
 	},
 	async encrypted({ userId, value, room, rid }) {
 		if (value !== room.encrypted) {
-			if (!roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange(room, RoomSettingsEnum.E2E)) {
+			if (!roomCoordinator.getRoomDirectives(room.t).allowRoomSettingChange(room, RoomSettingsEnum.E2E)) {
 				throw new Meteor.Error('error-action-not-allowed', 'Only groups or direct channels can enable encryption', {
 					method: 'saveRoomSettings',
 					action: 'Change_Room_Encrypted',
