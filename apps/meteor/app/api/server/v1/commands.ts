@@ -251,7 +251,7 @@ API.v1.addRoute(
 				return API.v1.failure('The command provided does not exist (or is disabled).');
 			}
 
-			if (!(await canAccessRoomIdAsync(query.roomId, user._id))) {
+			if (!(await canAccessRoomIdAsync(query.roomId, user?._id))) {
 				return API.v1.unauthorized();
 			}
 
