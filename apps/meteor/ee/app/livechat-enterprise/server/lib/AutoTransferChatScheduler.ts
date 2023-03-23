@@ -75,7 +75,7 @@ class AutoTransferChatSchedulerClass {
 		const timeoutDuration = settings.get<number>('Livechat_auto_transfer_chat_timeout').toString();
 
 		if (!RoutingManager.getConfig().autoAssignAgent) {
-			Livechat.returnRoomAsInquiry(room._id, departmentId, {
+			await Livechat.returnRoomAsInquiry(room._id, departmentId, {
 				scope: 'autoTransferUnansweredChatsToQueue',
 				comment: timeoutDuration,
 				transferredBy: schedulerUser,
