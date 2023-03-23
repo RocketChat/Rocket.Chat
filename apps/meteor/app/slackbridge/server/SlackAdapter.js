@@ -1181,7 +1181,7 @@ export default class SlackAdapter {
 							msg._id = details.message_id;
 						}
 
-						return sendMessage(rocketUser, msg, rocketChannel, true);
+						return Promise.await(sendMessage(rocketUser, msg, rocketChannel, true));
 					}
 				});
 			}),
