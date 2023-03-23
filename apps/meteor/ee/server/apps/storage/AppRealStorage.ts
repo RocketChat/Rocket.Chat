@@ -11,49 +11,24 @@ export class AppRealStorage extends AppMetadataStorage {
 		item.createdAt = new Date();
 		item.updatedAt = new Date();
 
-		let doc;
-
-		try {
-			doc = await this.db.findOne({ $or: [{ id: item.id }, { 'info.nameSlug': item.info.nameSlug }] });
-		} catch (e) {
-			throw e;
-		}
+		const doc = await this.db.findOne({ $or: [{ id: item.id }, { 'info.nameSlug': item.info.nameSlug }] });
 
 		if (doc) {
-			new Error('App already exists.');
+			throw new Error('App already exists.');
 		}
 
-		try {
-			const id = (await this.db.insertOne(item)).insertedId as unknown as string;
-			item._id = id;
+		const id = (await this.db.insertOne(item)).insertedId as unknown as string;
+		item._id = id;
 
-			return item;
-		} catch (e) {
-			throw e;
-		}
+		return item;
 	}
 
 	public async retrieveOne(id: string): Promise<IAppStorageItem> {
-		let doc;
-
-		try {
-			doc = await this.db.findOne({ $or: [{ _id: id }, { id }] });
-		} catch (e) {
-			throw e;
-		}
-
-		return doc;
+		return this.db.findOne({ $or: [{ _id: id }, { id }] });
 	}
 
 	public async retrieveAll(): Promise<Map<string, IAppStorageItem>> {
-		let docs: Array<IAppStorageItem>;
-
-		try {
-			docs = await this.db.find({}).toArray();
-		} catch (e) {
-			throw e;
-		}
-
+		const docs = await this.db.find({}).toArray();
 		const items = new Map();
 
 		docs.forEach((i) => items.set(i.id, i));
@@ -62,20 +37,12 @@ export class AppRealStorage extends AppMetadataStorage {
 	}
 
 	public async update(item: IAppStorageItem): Promise<IAppStorageItem> {
-		try {
-			await this.db.updateOne({ id: item.id }, { $set: item });
-			return this.retrieveOne(item.id);
-		} catch (e) {
-			throw e;
-		}
+		await this.db.updateOne({ id: item.id }, { $set: item });
+		return this.retrieveOne(item.id);
 	}
 
 	public async remove(id: string): Promise<{ success: boolean }> {
-		try {
-			await this.db.deleteOne({ id });
-			return { success: true };
-		} catch (e) {
-			throw e;
-		}
+		await this.db.deleteOne({ id });
+		return { success: true };
 	}
 }
