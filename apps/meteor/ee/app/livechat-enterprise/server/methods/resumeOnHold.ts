@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ILivechatVisitor } from '@rocket.chat/core-typings';
-import { LivechatVisitors, Messages } from '@rocket.chat/models';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { Messages, LivechatVisitors, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { LivechatRooms, LivechatInquiry, Users } from '../../../../../app/models/server';
+import { Users } from '../../../../../app/models/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { callbacks } from '../../../../../lib/callbacks';
 import { methodDeprecationLogger } from '../../../../../app/lib/server/lib/deprecationWarningLogger';
@@ -33,7 +34,7 @@ async function resolveOnHoldCommentInfo(options: { clientAction: boolean }, room
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'livechat:resumeOnHold'(roomId: string, options?: { clientAction: boolean }): Promise<unknown>;
+		'livechat:resumeOnHold'(roomId: string, options?: { clientAction: boolean }): void;
 	}
 }
 
@@ -44,7 +45,7 @@ Meteor.methods<ServerMethods>({
 		);
 
 		const room = await LivechatRooms.findOneById(roomId);
-		if (!room || room.t !== 'l') {
+		if (!room || !isOmnichannelRoom(room)) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 				method: 'livechat:resumeOnHold',
 			});
@@ -56,9 +57,15 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const inquiry = LivechatInquiry.findOneByRoomId(roomId, {});
+		const inquiry = await LivechatInquiry.findOneByRoomId(roomId, {});
 		if (!inquiry) {
 			throw new Meteor.Error('inquiry-not-found', 'Error! No inquiry found for this room', {
+				method: 'livechat:resumeOnHold',
+			});
+		}
+
+		if (!room.servedBy) {
+			throw new Meteor.Error('error-unserved-rooms-cannot-be-placed-onhold', 'Error! Un-served rooms cannot be placed OnHold', {
 				method: 'livechat:resumeOnHold',
 			});
 		}

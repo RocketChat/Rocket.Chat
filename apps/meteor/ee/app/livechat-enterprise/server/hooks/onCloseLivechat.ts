@@ -40,7 +40,7 @@ const onCloseLivechat = async (params: LivechatCloseCallbackParams) => {
 
 callbacks.add(
 	'livechat.closeRoom',
-	(params: LivechatCloseCallbackParams) => Promise.await(onCloseLivechat(params)),
+	(params: LivechatCloseCallbackParams) => onCloseLivechat(params),
 	callbacks.priority.HIGH,
 	'livechat-waiting-queue-monitor-close-room',
 );

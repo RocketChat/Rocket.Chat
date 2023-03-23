@@ -4,7 +4,9 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { AutoCloseOnHoldScheduler } from '../lib/AutoCloseOnHoldScheduler';
 import { cbLogger } from '../lib/logger';
 
-const handleAfterOnHoldChatResumed = async (room: Pick<IOmnichannelRoom, '_id'>): Promise<Pick<IOmnichannelRoom, '_id'>> => {
+type IRoom = Pick<IOmnichannelRoom, '_id'>;
+
+const handleAfterOnHoldChatResumed = async (room: IRoom): Promise<IRoom> => {
 	if (!room?._id) {
 		cbLogger.debug('Skipping callback. No room provided');
 		return room;
@@ -20,7 +22,7 @@ const handleAfterOnHoldChatResumed = async (room: Pick<IOmnichannelRoom, '_id'>)
 
 callbacks.add(
 	'livechat:afterOnHoldChatResumed',
-	(room: Pick<IOmnichannelRoom, '_id'>) => Promise.await(handleAfterOnHoldChatResumed(room)),
+	(room: IRoom) => handleAfterOnHoldChatResumed(room),
 	callbacks.priority.HIGH,
 	'livechat-after-on-hold-chat-resumed',
 );

@@ -9,8 +9,8 @@ import {
 
 import { hasLicense } from '../../../license/server/license';
 import { updateDepartmentAgents } from '../../../../../app/livechat/server/lib/Helper';
-import { addUserRoles } from '../../../../../server/lib/roles/addUserRoles';
-import { removeUserFromRoles } from '../../../../../server/lib/roles/removeUserFromRoles';
+import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
+import { removeUserFromRolesAsync } from '../../../../../server/lib/roles/removeUserFromRoles';
 import { processWaitingQueue, updateSLAInquiries } from './Helper';
 import { removeSLAFromRooms } from './SlaHelper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
@@ -31,7 +31,7 @@ export const LivechatEnterprise = {
 			});
 		}
 
-		if (addUserRoles(user._id, ['livechat-monitor'])) {
+		if (await addUserRolesAsync(user._id, ['livechat-monitor'])) {
 			return user;
 		}
 
@@ -49,7 +49,7 @@ export const LivechatEnterprise = {
 			});
 		}
 
-		const removeRoleResult = removeUserFromRoles(user._id, ['livechat-monitor']);
+		const removeRoleResult = await removeUserFromRolesAsync(user._id, ['livechat-monitor']);
 		if (!removeRoleResult) {
 			return false;
 		}
@@ -60,7 +60,7 @@ export const LivechatEnterprise = {
 		return true;
 	},
 
-	removeUnit(_id) {
+	async removeUnit(_id) {
 		check(_id, String);
 
 		const unit = LivechatUnit.findOneById(_id, { fields: { _id: 1 } });
@@ -176,7 +176,7 @@ export const LivechatEnterprise = {
 	/**
 	 * @param {string|null} _id - The department id
 	 * @param {Partial<import('@rocket.chat/core-typings').ILivechatDepartment>} departmentData
-	 * @param {{upsert?: { agentId: string; count?: number; order?: number; }[], remove?: { agentId: string; count?: number; order?: number; }[]}} [departmentAgents] - The department agents
+	 * @param {{upsert?: { agentId: string; count?: number; order?: number; }[], remove?: { agentId: string; count?: number; order?: number; }}} [departmentAgents] - The department agents
 	 */
 	async saveDepartment(_id, departmentData, departmentAgents) {
 		check(_id, Match.Maybe(String));
@@ -255,7 +255,7 @@ export const LivechatEnterprise = {
 
 		const departmentDB = await LivechatDepartmentRaw.createOrUpdateDepartment(_id, departmentData);
 		if (departmentDB && departmentAgents) {
-			updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
+			await updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
 		}
 
 		return departmentDB;

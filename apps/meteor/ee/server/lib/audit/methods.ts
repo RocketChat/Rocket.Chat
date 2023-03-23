@@ -9,8 +9,9 @@ import type { Mongo } from 'meteor/mongo';
 
 import AuditLog from './AuditLog';
 import { LivechatRooms, Rooms, Messages, Users } from '../../../../app/models/server';
-import { hasPermission } from '../../../../app/authorization/server';
+import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
 import { updateCounter } from '../../../../app/statistics/server';
+import type { IAuditLog } from '../../../definition/IAuditLog';
 
 const getValue = (room?: IRoom) => room && { rids: [room._id], name: room.name };
 
@@ -49,13 +50,39 @@ const getRoomInfoByAuditParams = ({
 	}
 };
 
-Meteor.methods({
-	auditGetOmnichannelMessages({ startDate, endDate, users: usernames, msg, type, visitor, agent }) {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		auditGetAuditions: (params: { startDate: Date; endDate: Date }) => IAuditLog[];
+		auditGetMessages: (params: {
+			rid: IRoom['_id'];
+			startDate: Date;
+			endDate: Date;
+			users: IUser['username'][];
+			msg: IMessage['msg'];
+			type: string;
+			visitor: ILivechatVisitor['_id'];
+			agent: ILivechatAgent['_id'];
+		}) => IMessage[];
+		auditGetOmnichannelMessages: (params: {
+			startDate: Date;
+			endDate: Date;
+			users: IUser['username'][];
+			msg: IMessage['msg'];
+			type: 'l';
+			visitor?: ILivechatVisitor['_id'];
+			agent?: ILivechatAgent['_id'];
+		}) => IMessage[];
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async auditGetOmnichannelMessages({ startDate, endDate, users: usernames, msg, type, visitor, agent }) {
 		check(startDate, Date);
 		check(endDate, Date);
 
 		const user = Meteor.user();
-		if (!user || !hasPermission(user._id, 'can-audit')) {
+		if (!user || !(await hasPermissionAsync(user._id, 'can-audit'))) {
 			throw new Meteor.Error('Not allowed');
 		}
 
@@ -90,12 +117,12 @@ Meteor.methods({
 
 		return messages;
 	},
-	auditGetMessages({ rid, startDate, endDate, users: usernames, msg, type, visitor, agent }) {
+	async auditGetMessages({ rid, startDate, endDate, users: usernames, msg, type, visitor, agent }) {
 		check(startDate, Date);
 		check(endDate, Date);
 
 		const user = Meteor.user();
-		if (!user || !hasPermission(user._id, 'can-audit')) {
+		if (!user || !(await hasPermissionAsync(user._id, 'can-audit'))) {
 			throw new Meteor.Error('Not allowed');
 		}
 
@@ -142,11 +169,11 @@ Meteor.methods({
 
 		return messages;
 	},
-	auditGetAuditions({ startDate, endDate }) {
+	async auditGetAuditions({ startDate, endDate }) {
 		check(startDate, Date);
 		check(endDate, Date);
 		const uid = Meteor.userId();
-		if (!uid || !hasPermission(uid, 'can-audit-log')) {
+		if (!uid || !(await hasPermissionAsync(uid, 'can-audit-log'))) {
 			throw new Meteor.Error('Not allowed');
 		}
 		return AuditLog.find({
@@ -157,7 +184,7 @@ Meteor.methods({
 			},
 		}).fetch();
 	},
-} as Pick<ServerMethods, 'auditGetAuditions' | 'auditGetMessages' | 'auditGetOmnichannelMessages'>);
+});
 
 DDPRateLimiter.addRule(
 	{

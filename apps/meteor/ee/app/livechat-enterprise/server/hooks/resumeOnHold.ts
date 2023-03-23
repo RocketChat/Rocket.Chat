@@ -67,7 +67,7 @@ const handleAfterSaveMessage = async (message: IMessage, room: IRoom) => {
 
 callbacks.add(
 	'afterSaveMessage',
-	(message: IMessage, room: IRoom) => Promise.await(handleAfterSaveMessage(message, room)),
+	(message: IMessage, room: IRoom) => handleAfterSaveMessage(message, room),
 	callbacks.priority.HIGH,
 	'livechat-resume-on-hold',
 );

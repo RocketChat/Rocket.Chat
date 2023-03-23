@@ -6,7 +6,7 @@ import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { OmnichannelEEService } from '@rocket.chat/core-services';
 
 import { API } from '../../../../../app/api/server';
-import { hasPermission } from '../../../../../app/authorization/server';
+import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import { Subscriptions } from '../../../../../app/models/server';
 import { removePriorityFromRoom, updateRoomPriority } from './lib/priorities';
 
@@ -47,7 +47,7 @@ API.v1.addRoute(
 			}
 
 			const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, { _id: 1 });
-			if (!subscription && !hasPermission(this.userId, 'on-hold-others-livechat-room')) {
+			if (!subscription && !(await hasPermissionAsync(this.userId, 'on-hold-others-livechat-room'))) {
 				throw new Error('Not_authorized');
 			}
 

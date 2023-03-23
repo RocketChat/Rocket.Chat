@@ -1,9 +1,9 @@
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Messages } from '@rocket.chat/models';
 
 import { FileUpload } from '../../app/file-upload/server';
-import { Messages } from '../../app/models/server';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -16,8 +16,7 @@ Meteor.methods<ServerMethods>({
 	async deleteFileMessage(fileID) {
 		check(fileID, String);
 
-		const msg = Messages.getMessageByFileId(fileID);
-
+		const msg = await Messages.getMessageByFileId(fileID);
 		if (msg) {
 			return Meteor.call('deleteMessage', msg);
 		}

@@ -4,7 +4,8 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Subscriptions, Rooms } from '../../app/models/server';
-import { canAccessRoom, hasPermission, roomAccessAttributes } from '../../app/authorization/server';
+import { canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../app/settings/server';
 import { loadMessageHistory } from '../../app/lib/server';
 
@@ -28,7 +29,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	loadHistory(rid, end, limit = 20, ls, showThreadMessages = true) {
+	async loadHistory(rid, end, limit = 20, ls, showThreadMessages = true) {
 		check(rid, String);
 
 		if (!Meteor.userId() && settings.get('Accounts_AllowAnonymousRead') === false) {
@@ -44,12 +45,12 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		if (!fromId || !canAccessRoom(room, { _id: fromId })) {
+		if (!fromId || !(await canAccessRoomAsync(room, { _id: fromId }))) {
 			return false;
 		}
 
 		const canAnonymous = settings.get('Accounts_AllowAnonymousRead');
-		const canPreview = hasPermission(fromId, 'preview-c-room');
+		const canPreview = await hasPermissionAsync(fromId, 'preview-c-room');
 
 		if (room.t === 'c' && !canAnonymous && !canPreview && !Subscriptions.findOneByRoomIdAndUserId(rid, fromId, { fields: { _id: 1 } })) {
 			return false;
