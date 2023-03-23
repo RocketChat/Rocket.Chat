@@ -269,11 +269,11 @@ export class LDAPConnection {
 	}
 
 	public async search(baseDN: string, searchOptions: ldapjs.SearchOptions): Promise<ILDAPEntry[]> {
-		return this.doCustomSearch<ILDAPEntry>(baseDN, searchOptions, async (entry) => this.extractLdapEntryData(entry));
+		return this.doCustomSearch<ILDAPEntry>(baseDN, searchOptions, (entry) => this.extractLdapEntryData(entry));
 	}
 
 	public async searchRaw(baseDN: string, searchOptions: ldapjs.SearchOptions): Promise<ldapjs.SearchEntry[]> {
-		return this.doCustomSearch<ldapjs.SearchEntry>(baseDN, searchOptions, async (entry) => entry);
+		return this.doCustomSearch<ldapjs.SearchEntry>(baseDN, searchOptions, (entry) => entry);
 	}
 
 	public async searchAndCount(baseDN: string, searchOptions: ldapjs.SearchOptions): Promise<number> {
