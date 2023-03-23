@@ -238,7 +238,6 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 	mentionIds.push(...usersInThread);
 
 	let notificationMessage = callbacks.run('beforeSendMessageNotifications', message.msg);
-
 	if (mentionIds.length > 0 && settings.get('UI_Use_Real_Name')) {
 		notificationMessage = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
 	}

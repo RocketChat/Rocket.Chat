@@ -9,7 +9,6 @@ import { RocketChatAssets } from '../../../assets/server';
 import { replaceMentionedUsernamesWithFullNames, parseMessageTextPerUser } from '../../../lib/server/functions/notifications';
 import { callbacks } from '../../../../lib/callbacks';
 import { getPushData } from '../../../lib/server/functions/notifications/mobile';
-import { shouldUseRealName } from '../../../utils/lib/shouldUseRealName';
 
 type PushNotificationData = {
 	rid: string;
@@ -130,9 +129,7 @@ class PushNotification {
 		}
 
 		let notificationMessage = callbacks.run('beforeSendMessageNotifications', message.msg);
-
-		const defaultMessagesLayout = settings.get<string>('Accounts_Default_User_Preferences_messagesLayout');
-		if (message.mentions && Object.keys(message.mentions).length > 0 && shouldUseRealName(defaultMessagesLayout, receiver)) {
+		if (message.mentions && Object.keys(message.mentions).length > 0 && settings.get('UI_Use_Real_Name')) {
 			notificationMessage = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
 		}
 		notificationMessage = parseMessageTextPerUser(notificationMessage, message, receiver);

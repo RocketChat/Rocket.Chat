@@ -4,7 +4,6 @@ import { debounce } from 'lodash';
 import type { IExtras, IRoomActivity, IActionsObject, IUser } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/client';
-import { shouldUseRealName } from '../../../utils/lib/shouldUseRealName';
 import { Notifications } from '../../../notifications/client';
 
 const TIMEOUT = 15000;
@@ -31,8 +30,7 @@ const shownName = function (user: IUser | null | undefined): string | undefined 
 	if (!user) {
 		return;
 	}
-	const defaultMessagesLayout = settings.get('Accounts_Default_User_Preferences_messagesLayout');
-	if (shouldUseRealName(defaultMessagesLayout, user)) {
+	if (settings.get('UI_Use_Real_Name')) {
 		return user.name;
 	}
 	return user.username;
