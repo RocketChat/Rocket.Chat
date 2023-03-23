@@ -87,7 +87,6 @@ export interface IRoomTypeClientDirectives {
 		room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid' | 'avatarETag' | 'uids' | 'usernames'> & { username?: IRoom['_id'] },
 	) => string;
 	getIcon: (room: Partial<IRoom>) => IRoomTypeConfig['icon'];
-	getUserStatus: (roomId: string) => string | undefined;
 	findRoom: (identifier: string) => IRoom | undefined;
 	showJoinLink: (roomId: string) => boolean;
 	isLivechatRoom: () => boolean;

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 
-import { RoomManager, MessageAction } from '../../ui-utils/client';
+import { LegacyRoomManager, MessageAction } from '../../ui-utils/client';
 import { messageArgs } from '../../../client/lib/utils/messageArgs';
 import { ChatSubscription } from '../../models/client';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
@@ -26,7 +26,7 @@ Meteor.startup(() => {
 				if (subscription == null) {
 					return;
 				}
-				await RoomManager.close(subscription.t + subscription.name);
+				await LegacyRoomManager.close(subscription.t + subscription.name);
 				return FlowRouter.go('home');
 			});
 		},

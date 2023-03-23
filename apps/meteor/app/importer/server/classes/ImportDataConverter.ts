@@ -361,9 +361,9 @@ export class ImportDataConverter {
 				// Deleted users are 'inactive' users in Rocket.Chat
 				// TODO: Check data._id if exists/required or not
 				if (data.deleted && existingUser?.active) {
-					data._id && setUserActiveStatus(data._id, false, true);
+					data._id && (await setUserActiveStatus(data._id, false, true));
 				} else if (data.deleted === false && existingUser?.active === false) {
-					data._id && setUserActiveStatus(data._id, true);
+					data._id && (await setUserActiveStatus(data._id, true));
 				}
 
 				if (afterImportFn) {
