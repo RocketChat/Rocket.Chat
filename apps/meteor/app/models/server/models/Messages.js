@@ -35,10 +35,6 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
 	}
 
-	setReactions(messageId, reactions) {
-		return this.update({ _id: messageId }, { $set: { reactions } });
-	}
-
 	createRoomArchivedByRoomIdAndUser(roomId, user) {
 		return this.createWithTypeRoomIdMessageAndUser('room-archived', roomId, '', user);
 	}
@@ -53,10 +49,6 @@ export class Messages extends Base {
 
 	createRoomDisallowedReactingByRoomIdAndUser(roomId, user) {
 		return this.createWithTypeRoomIdMessageAndUser('room-disallowed-reacting', roomId, '', user);
-	}
-
-	unsetReactions(messageId) {
-		return this.update({ _id: messageId }, { $unset: { reactions: 1 } });
 	}
 
 	updateOTRAck(_id, otrAck) {
