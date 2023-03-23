@@ -741,7 +741,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			comment,
 		};
 		return this.insertOne(msg);
-    }
+	}
 
 	setReactions(messageId: string, reactions: IMessage['reactions']): Promise<UpdateResult> {
 		return this.updateOne({ _id: messageId }, { $set: { reactions } });
