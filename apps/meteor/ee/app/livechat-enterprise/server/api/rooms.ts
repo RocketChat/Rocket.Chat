@@ -92,7 +92,7 @@ API.v1.addRoute(
 			}
 
 			const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, { _id: 1 });
-			if (!subscription && !hasPermission(this.userId, 'on-hold-others-livechat-room')) {
+			if (!subscription && !(await hasPermissionAsync(this.userId, 'on-hold-others-livechat-room'))) {
 				throw new Error('Not_authorized');
 			}
 
