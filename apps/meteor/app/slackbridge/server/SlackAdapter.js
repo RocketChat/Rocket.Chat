@@ -940,7 +940,7 @@ export default class SlackAdapter {
 				imported: 'slackbridge',
 			});
 		} else {
-			Promise.await(addUserToRoom(rocketChannel._id, rocketUser));
+			await addUserToRoom(rocketChannel._id, rocketUser);
 		}
 	}
 
@@ -957,7 +957,7 @@ export default class SlackAdapter {
 					imported: 'slackbridge',
 				});
 			} else {
-				Promise.await(addUserToRoom(rocketChannel._id, rocketUser, inviter));
+				await addUserToRoom(rocketChannel._id, rocketUser, inviter);
 			}
 		}
 	}
