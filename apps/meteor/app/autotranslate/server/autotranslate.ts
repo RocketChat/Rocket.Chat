@@ -10,12 +10,14 @@ import type {
 	ISupportedLanguage,
 	ITranslationResult,
 } from '@rocket.chat/core-typings';
+import { Subscriptions } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
-import { Subscriptions, Messages } from '../../models/server';
+import { Messages } from '../../models/server';
 import { Markdown } from '../../markdown/server';
 import { Logger } from '../../logger/server';
+import { isTruthy } from '../../../lib/isTruthy';
 
 const translationLogger = new Logger('AutoTranslate');
 
@@ -67,7 +69,7 @@ export class TranslationProviderRegistry {
 		return TranslationProviderRegistry.enabled ? TranslationProviderRegistry.getActiveProvider()?.getSupportedLanguages(target) : undefined;
 	}
 
-	static translateMessage(message: IMessage, room: IRoom, targetLanguage?: string): IMessage | undefined {
+	static async translateMessage(message: IMessage, room: IRoom, targetLanguage?: string): Promise<IMessage | undefined> {
 		return TranslationProviderRegistry.enabled
 			? TranslationProviderRegistry.getActiveProvider()?.translateMessage(message, room, targetLanguage)
 			: undefined;
@@ -281,12 +283,12 @@ export abstract class AutoTranslate {
 	 * @param {object} targetLanguage
 	 * @returns {object} unmodified message object.
 	 */
-	translateMessage(message: IMessage, room: IRoom, targetLanguage?: string): IMessage {
+	async translateMessage(message: IMessage, room: IRoom, targetLanguage?: string): Promise<IMessage> {
 		let targetLanguages: string[];
 		if (targetLanguage) {
 			targetLanguages = [targetLanguage];
 		} else {
-			targetLanguages = Subscriptions.getAutoTranslateLanguagesByRoomAndNotUser(room._id, message.u?._id);
+			targetLanguages = (await Subscriptions.getAutoTranslateLanguagesByRoomAndNotUser(room._id, message.u?._id)).filter(isTruthy);
 		}
 		if (message.msg) {
 			Meteor.defer(() => {

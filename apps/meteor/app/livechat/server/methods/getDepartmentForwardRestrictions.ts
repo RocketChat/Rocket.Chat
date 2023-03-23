@@ -21,7 +21,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		const options = callbacks.run('livechat.onLoadForwardDepartmentRestrictions', { departmentId });
-		const { restrictions } = options as { restrictions?: unknown };
+		const { restrictions } = options;
 
 		return restrictions;
 	},
