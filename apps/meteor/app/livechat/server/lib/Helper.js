@@ -87,12 +87,10 @@ export const createLivechatRoom = (rid, name, guest, roomInfo = {}, extraData = 
 
 	const roomId = Rooms.insert(room);
 
-	Meteor.defer(() => {
-		Apps.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
-		callbacks.run('livechat.newRoom', room);
-	});
+	Apps.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
+	callbacks.run('livechat.newRoom', room);
 
-	sendMessage(guest, { t: 'livechat-started', msg: '', groupable: false }, room);
+	Promise.await(sendMessage(guest, { t: 'livechat-started', msg: '', groupable: false }, room));
 
 	return roomId;
 };
