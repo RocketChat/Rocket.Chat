@@ -1,16 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ILivechatVisitor } from '@rocket.chat/core-typings';
-import { LivechatVisitors, LivechatInquiry } from '@rocket.chat/models';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { Messages, LivechatVisitors, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { LivechatRooms, Messages, Users } from '../../../../../app/models/server';
+import { Users } from '../../../../../app/models/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { callbacks } from '../../../../../lib/callbacks';
+import { methodDeprecationLogger } from '../../../../../app/lib/server/lib/deprecationWarningLogger';
 
 async function resolveOnHoldCommentInfo(options: { clientAction: boolean }, room: any, onHoldChatResumedBy: any): Promise<string> {
 	if (options.clientAction) {
-		return TAPi18n.__('Omnichannel_on_hold_chat_manually', {
+		return TAPi18n.__('Omnichannel_on_hold_chat_resumed_manually', {
 			user: onHoldChatResumedBy.name || onHoldChatResumedBy.username,
 		});
 	}
@@ -38,8 +40,12 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async 'livechat:resumeOnHold'(roomId, options = { clientAction: false }) {
+		methodDeprecationLogger.warn(
+			'Method "livechat:resumeOnHold" is deprecated and will be removed in next major version. Please use "livechat/room.resumeOnHold" API instead.',
+		);
+
 		const room = await LivechatRooms.findOneById(roomId);
-		if (!room || room.t !== 'l') {
+		if (!room || !isOmnichannelRoom(room)) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 				method: 'livechat:resumeOnHold',
 			});
@@ -58,6 +64,12 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
+		if (!room.servedBy) {
+			throw new Meteor.Error('error-unserved-rooms-cannot-be-placed-onhold', 'Error! Un-served rooms cannot be placed OnHold', {
+				method: 'livechat:resumeOnHold',
+			});
+		}
+
 		const {
 			servedBy: { _id: agentId, username },
 		} = room;
@@ -66,9 +78,8 @@ Meteor.methods<ServerMethods>({
 		const onHoldChatResumedBy = options.clientAction ? Meteor.user() : Users.findOneById('rocket.cat');
 
 		const comment = await resolveOnHoldCommentInfo(options, room, onHoldChatResumedBy);
-		(Messages as any).createOnHoldResumedHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldChatResumedBy);
+		await Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, onHoldChatResumedBy, comment, 'resume-onHold');
 
-		const updatedRoom = LivechatRooms.findOneById(roomId);
-		updatedRoom && Meteor.defer(() => callbacks.run('livechat:afterOnHoldChatResumed', updatedRoom));
+		Meteor.defer(() => callbacks.run('livechat:afterOnHoldChatResumed', room));
 	},
 });

@@ -41,6 +41,7 @@ import type { IQueueWorkerService, HealthAggResult } from './types/IQueueWorkerS
 import type { ITranslationService } from './types/ITranslationService';
 import type { IMessageService } from './types/IMessageService';
 import type { ISettingsService } from './types/ISettingsService';
+import type { IOmnichannelEEService } from './types/IOmnichannelEEService';
 import type { IOmnichannelIntegrationService } from './types/IOmnichannelIntegrationService';
 
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
@@ -113,6 +114,7 @@ export {
 	ITranslationService,
 	IMessageService,
 	ISettingsService,
+	IOmnichannelEEService,
 	IOmnichannelIntegrationService,
 };
 
@@ -150,3 +152,4 @@ export const FederationEE = proxifyWithWait<IFederationServiceEE>('federation-en
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available
 export const EnterpriseSettings = proxify<IEnterpriseSettings>('ee-settings');
+export const OmnichannelEEService = proxify<IOmnichannelEEService>('omnichannel-ee');

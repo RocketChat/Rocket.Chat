@@ -3,24 +3,19 @@ import { Match, check } from 'meteor/check';
 import {
 	LivechatInquiry,
 	Users,
-	LivechatRooms,
 	LivechatDepartment as LivechatDepartmentRaw,
 	OmnichannelServiceLevelAgreements,
-	Subscriptions,
 } from '@rocket.chat/models';
 
 import { hasLicense } from '../../../license/server/license';
 import { updateDepartmentAgents } from '../../../../../app/livechat/server/lib/Helper';
-import { Messages } from '../../../../../app/models/server';
 import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../../server/lib/roles/removeUserFromRoles';
 import { processWaitingQueue, updateSLAInquiries } from './Helper';
 import { removeSLAFromRooms } from './SlaHelper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
-import { logger, queueLogger } from './logger';
-import { callbacks } from '../../../../../lib/callbacks';
-import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
+import { queueLogger } from './logger';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
 import { LivechatTag, LivechatUnit, LivechatUnitMonitors } from '../../../models/server';
 
@@ -176,38 +171,6 @@ export const LivechatEnterprise = {
 		}
 
 		await removeSLAFromRooms(_id);
-	},
-
-	async placeRoomOnHold(room, comment, onHoldBy) {
-		logger.debug(`Attempting to place room ${room._id} on hold by user ${onHoldBy?._id}`);
-		const { _id: roomId, onHold } = room;
-		if (!roomId || onHold) {
-			logger.debug(`Room ${roomId} invalid or already on hold. Skipping`);
-			return false;
-		}
-
-		await Promise.all([LivechatRooms.setOnHoldByRoomId(roomId), Subscriptions.setOnHoldByRoomId(roomId)]);
-
-		Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldBy);
-		Meteor.defer(() => {
-			callbacks.run('livechat:afterOnHold', room);
-		});
-
-		logger.debug(`Room ${room._id} set on hold succesfully`);
-		return true;
-	},
-
-	async releaseOnHoldChat(room) {
-		const { _id: roomId, onHold } = room;
-		if (!roomId || !onHold) {
-			return;
-		}
-
-		await Promise.all([
-			AutoCloseOnHoldScheduler.unscheduleRoom(roomId),
-			LivechatRooms.unsetOnHoldAndPredictedVisitorAbandonmentByRoomId(roomId),
-			Subscriptions.unsetOnHoldByRoomId(roomId),
-		]);
 	},
 
 	/**

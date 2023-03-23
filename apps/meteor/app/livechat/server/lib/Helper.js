@@ -379,10 +379,6 @@ export const forwardRoomToAgent = async (room, transferData) => {
 		if (oldServedBy && servedBy._id !== oldServedBy._id) {
 			RoutingManager.removeAllRoomSubscriptions(room, servedBy);
 		}
-		Messages.createUserJoinWithRoomIdAndUser(rid, {
-			_id: servedBy._id,
-			username: servedBy.username,
-		});
 
 		Meteor.defer(() => {
 			Apps.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
@@ -505,7 +501,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 		LivechatRooms.removeAgentByRoomId(rid);
 		dispatchAgentDelegated(rid, null);
 		const newInquiry = await LivechatInquiry.findOneById(inquiry._id);
-		await queueInquiry(room, newInquiry);
+		await queueInquiry(newInquiry);
 
 		logger.debug(`Inquiry ${inquiry._id} queued succesfully`);
 	}
