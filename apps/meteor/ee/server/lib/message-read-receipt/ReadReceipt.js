@@ -67,7 +67,7 @@ export const ReadReceipt = {
 			await MessagesRaw.setAsReadById(message._id);
 		}
 
-		const extraData = roomCoordinator.getRoomDirectives(t)?.getReadReceiptsExtraData(message);
+		const extraData = roomCoordinator.getRoomDirectives(t).getReadReceiptsExtraData(message);
 		this.storeReadReceipts([{ _id: message._id }], roomId, userId, extraData);
 	},
 

@@ -25,7 +25,7 @@ Meteor.methods<ServerMethods>({
 
 		const room = Rooms.findOne({ _id: rid });
 
-		if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.BLOCK, userId)) {
+		if (!roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.BLOCK, userId)) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'blockUser' });
 		}
 
