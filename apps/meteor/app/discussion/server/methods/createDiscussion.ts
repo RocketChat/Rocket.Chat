@@ -173,7 +173,7 @@ const create = async ({ prid, pmid, t_name: discussionName, reply, users, user, 
 	callbacks.runAsync('afterSaveMessage', discussionMsg, parentRoom);
 
 	if (reply) {
-		sendMessage(user, { msg: reply }, discussion);
+		await sendMessage(user, { msg: reply }, discussion);
 	}
 	return discussion;
 };

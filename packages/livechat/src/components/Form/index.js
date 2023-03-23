@@ -22,7 +22,7 @@ export class Form extends MemoizedComponent {
 }
 
 export const Validations = {
-	nonEmpty: ({ value }) => (!value ? i18next.t('field_required') : undefined),
+	nonEmpty: ({ value }) => (!value.trim() ? i18next.t('field_required') : undefined),
 	email: ({ value }) => (validateEmail(String(value).toLowerCase(), { style: 'rfc' }) ? null : i18next.t('invalid_email')),
 	custom: ({ value, pattern }) => (new RegExp(pattern, 'i').test(String(value)) ? null : i18next.t('invalid_value')),
 };
