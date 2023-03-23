@@ -54,14 +54,14 @@ on:
         required: true
       CR_PAT:
         required: true
+      QASE_API_TOKEN:
+        required: true
 
 env:
   MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
   LOWERCASE_REPOSITORY: ${{ inputs.lowercase-repo }}
   DOCKER_TAG: ${{ inputs.gh-docker-tag }}
-  QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
-  QASE_REPORT: 'true'
 
 jobs:
   test:
@@ -225,6 +225,8 @@ jobs:
         env:
           E2E_COVERAGE: ${{ inputs.release == 'ee' && 'true' || '' }}
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
+          QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+          QASE_REPORT: 'true'
         working-directory: ./apps/meteor
         run: yarn test:e2e --shard=${{ matrix.shard }}/${{ inputs.total-shard }}
 
