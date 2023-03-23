@@ -20,7 +20,7 @@ const AuditModelList: FC<AuditModelListProps> = ({ showAudit, showAuditLog, onDi
 	return (
 		<>
 			<OptionTitle>{t('Audit')}</OptionTitle>
-			<ul aria-description='auditList'>
+			<ul>
 				{showAudit && (
 					<ListItem
 						role='listitem'

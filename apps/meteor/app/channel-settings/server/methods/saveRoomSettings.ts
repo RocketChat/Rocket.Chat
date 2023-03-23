@@ -6,7 +6,7 @@ import { Team } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Rooms } from '../../../models/server';
 import { saveRoomName } from '../functions/saveRoomName';
 import { saveRoomTopic } from '../functions/saveRoomTopic';
@@ -56,58 +56,58 @@ type RoomSettingsValidators = {
 		value: RoomSettings[TRoomSetting];
 		room: IRoom;
 		rid: IRoom['_id'];
-	}) => void;
+	}) => Promise<void> | void;
 };
 
 const hasRetentionPolicy = (room: IRoom & { retention?: any }): room is IRoomWithRetentionPolicy =>
 	'retention' in room && room.retention !== undefined;
 
 const validators: RoomSettingsValidators = {
-	default({ userId }) {
-		if (!hasPermission(userId, 'view-room-administration')) {
+	async default({ userId }) {
+		if (!(await hasPermissionAsync(userId, 'view-room-administration'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Viewing room administration is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Viewing_room_administration',
 			});
 		}
 	},
-	featured({ userId }) {
-		if (!hasPermission(userId, 'view-room-administration')) {
+	async featured({ userId }) {
+		if (!(await hasPermissionAsync(userId, 'view-room-administration'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Viewing room administration is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Viewing_room_administration',
 			});
 		}
 	},
-	roomType({ userId, room, value }) {
+	async roomType({ userId, room, value }) {
 		if (value === room.t) {
 			return;
 		}
 
-		if (value === 'c' && !hasPermission(userId, 'create-c')) {
+		if (value === 'c' && !(await hasPermissionAsync(userId, 'create-c'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Changing a private group to a public channel is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
 			});
 		}
 
-		if (value === 'p' && !hasPermission(userId, 'create-p')) {
+		if (value === 'p' && !(await hasPermissionAsync(userId, 'create-p'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Changing a public channel to a private room is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
 			});
 		}
 	},
-	encrypted({ userId, value, room, rid }) {
+	async encrypted({ userId, value, room, rid }) {
 		if (value !== room.encrypted) {
-			if (!roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange(room, RoomSettingsEnum.E2E)) {
+			if (!roomCoordinator.getRoomDirectives(room.t).allowRoomSettingChange(room, RoomSettingsEnum.E2E)) {
 				throw new Meteor.Error('error-action-not-allowed', 'Only groups or direct channels can enable encryption', {
 					method: 'saveRoomSettings',
 					action: 'Change_Room_Encrypted',
 				});
 			}
 
-			if (room.t !== 'd' && !hasPermission(userId, 'toggle-room-e2e-encryption', rid)) {
+			if (room.t !== 'd' && !(await hasPermissionAsync(userId, 'toggle-room-e2e-encryption', rid))) {
 				throw new Meteor.Error('error-action-not-allowed', 'You do not have permission to toggle E2E encryption', {
 					method: 'saveRoomSettings',
 					action: 'Change_Room_Encrypted',
@@ -115,7 +115,7 @@ const validators: RoomSettingsValidators = {
 			}
 		}
 	},
-	retentionEnabled({ userId, value, room, rid }) {
+	async retentionEnabled({ userId, value, room, rid }) {
 		if (!hasRetentionPolicy(room)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Room does not have retention policy', {
 				method: 'saveRoomSettings',
@@ -123,14 +123,14 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 
-		if (!hasPermission(userId, 'edit-room-retention-policy', rid) && value !== room.retention.enabled) {
+		if (!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) && value !== room.retention.enabled) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
 			});
 		}
 	},
-	retentionMaxAge({ userId, value, room, rid }) {
+	async retentionMaxAge({ userId, value, room, rid }) {
 		if (!hasRetentionPolicy(room)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Room does not have retention policy', {
 				method: 'saveRoomSettings',
@@ -138,14 +138,14 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 
-		if (!hasPermission(userId, 'edit-room-retention-policy', rid) && value !== room.retention.maxAge) {
+		if (!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) && value !== room.retention.maxAge) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
 			});
 		}
 	},
-	retentionExcludePinned({ userId, value, room, rid }) {
+	async retentionExcludePinned({ userId, value, room, rid }) {
 		if (!hasRetentionPolicy(room)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Room does not have retention policy', {
 				method: 'saveRoomSettings',
@@ -153,14 +153,14 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 
-		if (!hasPermission(userId, 'edit-room-retention-policy', rid) && value !== room.retention.excludePinned) {
+		if (!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) && value !== room.retention.excludePinned) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
 			});
 		}
 	},
-	retentionFilesOnly({ userId, value, room, rid }) {
+	async retentionFilesOnly({ userId, value, room, rid }) {
 		if (!hasRetentionPolicy(room)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Room does not have retention policy', {
 				method: 'saveRoomSettings',
@@ -168,14 +168,14 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 
-		if (!hasPermission(userId, 'edit-room-retention-policy', rid) && value !== room.retention.filesOnly) {
+		if (!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) && value !== room.retention.filesOnly) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
 			});
 		}
 	},
-	retentionIgnoreThreads({ userId, value, room, rid }) {
+	async retentionIgnoreThreads({ userId, value, room, rid }) {
 		if (!hasRetentionPolicy(room)) {
 			throw new Meteor.Error('error-action-not-allowed', 'Room does not have retention policy', {
 				method: 'saveRoomSettings',
@@ -183,15 +183,15 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 
-		if (!hasPermission(userId, 'edit-room-retention-policy', rid) && value !== room.retention.ignoreThreads) {
+		if (!(await hasPermissionAsync(userId, 'edit-room-retention-policy', rid)) && value !== room.retention.ignoreThreads) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing room retention policy is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
 			});
 		}
 	},
-	roomAvatar({ userId, rid }) {
-		if (!hasPermission(userId, 'edit-room-avatar', rid)) {
+	async roomAvatar({ userId, rid }) {
+		if (!(await hasPermissionAsync(userId, 'edit-room-avatar', rid))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing a room avatar is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Editing_room',
@@ -211,8 +211,8 @@ type RoomSettingsSavers = {
 };
 
 const settingSavers: RoomSettingsSavers = {
-	roomName({ value, rid, user, room }) {
-		if (!Promise.await(saveRoomName(rid, value, user))) {
+	async roomName({ value, rid, user, room }) {
+		if (!(await saveRoomName(rid, value, user))) {
 			return;
 		}
 
@@ -370,7 +370,7 @@ const validate = <TRoomSetting extends keyof RoomSettings>(
 	},
 ) => {
 	const validator = validators[setting];
-	validator?.(params);
+	return validator?.(params);
 };
 
 async function save<TRoomSetting extends keyof RoomSettings>(
@@ -431,7 +431,7 @@ async function saveRoomSettings(
 		});
 	}
 
-	if (!hasPermission(uid, 'edit-room', rid)) {
+	if (!(await hasPermissionAsync(uid, 'edit-room', rid))) {
 		if (!(Object.keys(settings).includes('encrypted') && room.t === 'd')) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing room is not allowed', {
 				method: 'saveRoomSettings',
@@ -456,8 +456,8 @@ async function saveRoomSettings(
 	}
 
 	// validations
-	for (const setting of Object.keys(settings) as (keyof RoomSettings)[]) {
-		validate(setting, {
+	for await (const setting of Object.keys(settings) as (keyof RoomSettings)[]) {
+		await validate(setting, {
 			userId: uid,
 			value: settings[setting],
 			room,

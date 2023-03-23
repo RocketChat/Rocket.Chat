@@ -8,10 +8,10 @@ import { slashCommands } from '../../utils/lib/slashCommand';
 
 slashCommands.add({
 	command: 'tableflip',
-	callback: (_command, params, item): void => {
+	callback: async (_command, params, item): Promise<void> => {
 		const msg = item;
 		msg.msg = `${params} (╯°□°）╯︵ ┻━┻`;
-		Meteor.call('sendMessage', msg);
+		await Meteor.callAsync('sendMessage', msg);
 	},
 	options: {
 		description: 'Slash_Tableflip_Description',

@@ -1,4 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { ChatMessage, ChatSubscription } from '../../app/models/client';
@@ -6,8 +6,8 @@ import { settings } from '../../app/settings/client';
 import { t } from '../../app/utils/client';
 import { dispatchToastMessage } from '../lib/toast';
 
-Meteor.methods({
-	starMessage(message: Omit<IMessage, 'starred'> & { starred: boolean }) {
+Meteor.methods<ServerMethods>({
+	starMessage(message) {
 		const uid = Meteor.userId();
 
 		if (!uid) {
@@ -41,17 +41,20 @@ Meteor.methods({
 			);
 
 			dispatchToastMessage({ type: 'success', message: t('Message_has_been_starred') });
-		} else {
-			ChatMessage.update(
-				{ _id: message._id },
-				{
-					$pull: {
-						starred: { _id: uid },
-					},
-				},
-			);
 
-			dispatchToastMessage({ type: 'success', message: t('Message_has_been_unstarred') });
+			return true;
 		}
+
+		ChatMessage.update(
+			{ _id: message._id },
+			{
+				$pull: {
+					starred: { _id: uid },
+				},
+			},
+		);
+
+		dispatchToastMessage({ type: 'success', message: t('Message_has_been_unstarred') });
+		return true;
 	},
 });

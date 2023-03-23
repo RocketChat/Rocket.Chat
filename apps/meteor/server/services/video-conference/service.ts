@@ -419,7 +419,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	private notifyVideoConfUpdate(rid: IRoom['_id'], callId: VideoConference['_id']): void {
+		/* deprecated */
 		Notifications.notifyRoom(rid, callId);
+
+		Notifications.notifyRoom(rid, 'videoconf', callId);
 	}
 
 	private async endCall(callId: VideoConference['_id']): Promise<void> {
@@ -494,7 +497,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const appId = videoConfProviders.getProviderAppId(call.providerName);
 		const user = createdBy || (appId && (await Users.findOneByAppId(appId))) || (await Users.findOneById('rocket.cat'));
 
-		const message = sendMessage(user, record, room, false);
+		const message = await sendMessage(user, record, room, false);
 		return message._id;
 	}
 

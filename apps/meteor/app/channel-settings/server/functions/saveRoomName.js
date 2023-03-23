@@ -5,18 +5,18 @@ import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Rooms, Messages, Subscriptions } from '../../../models/server';
 import { getValidRoomName } from '../../../utils/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { checkUsernameAvailability } from '../../../lib/server/functions';
+import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 const updateFName = (rid, displayName) => {
 	return Rooms.setFnameById(rid, displayName) && Subscriptions.updateFnameByRoomId(rid, displayName);
 };
 
-const updateRoomName = (rid, displayName) => {
+const updateRoomName = async (rid, displayName) => {
 	const slugifiedRoomName = getValidRoomName(displayName, rid);
 
 	// Check if the username is available
-	if (!checkUsernameAvailability(slugifiedRoomName)) {
+	if (!(await checkUsernameAvailability(slugifiedRoomName))) {
 		throw new Meteor.Error('error-duplicate-handle', `A room, team or user with name '${slugifiedRoomName}' already exists`, {
 			function: 'RocketChat.updateRoomName',
 			handle: slugifiedRoomName,
@@ -30,7 +30,7 @@ const updateRoomName = (rid, displayName) => {
 
 export async function saveRoomName(rid, displayName, user, sendMessage = true) {
 	const room = Rooms.findOneById(rid);
-	if (roomCoordinator.getRoomDirectives(room.t)?.preventRenaming()) {
+	if (roomCoordinator.getRoomDirectives(room.t).preventRenaming()) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 			function: 'RocketChat.saveRoomdisplayName',
 		});
@@ -44,7 +44,7 @@ export async function saveRoomName(rid, displayName, user, sendMessage = true) {
 	if (isDiscussion || isRoomFederated(room)) {
 		update = updateFName(rid, displayName);
 	} else {
-		update = updateRoomName(rid, displayName);
+		update = await updateRoomName(rid, displayName);
 	}
 
 	if (!update) {

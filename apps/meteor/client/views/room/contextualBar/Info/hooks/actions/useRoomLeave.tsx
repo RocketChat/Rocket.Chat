@@ -4,7 +4,7 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetModal, useToastMessageDispatch, useRoute, useMethod, useTranslation, usePermission } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { RoomManager } from '../../../../../../../app/ui-utils/client';
+import { LegacyRoomManager } from '../../../../../../../app/ui-utils/client';
 import { UiTextContext } from '../../../../../../../definition/IRoomTypeConfig';
 import WarningModal from '../../../../../../components/WarningModal';
 import { roomCoordinator } from '../../../../../../lib/rooms/roomCoordinator';
@@ -24,14 +24,14 @@ export const useRoomLeave = (room: IRoom, joined = true) => {
 			try {
 				await leaveRoom(room._id);
 				router.push({});
-				RoomManager.close(room._id);
+				LegacyRoomManager.close(room._id);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 			setModal(null);
 		};
 
-		const warnText = roomCoordinator.getRoomDirectives(room.t)?.getUiText(UiTextContext.LEAVE_WARNING);
+		const warnText = roomCoordinator.getRoomDirectives(room.t).getUiText(UiTextContext.LEAVE_WARNING);
 
 		setModal(
 			<WarningModal

@@ -93,22 +93,19 @@ export async function createDirectRoom(
 			_USERNAMES: usernames,
 		};
 
-		const prevent = Promise.await(
-			Apps.triggerEvent('IPreRoomCreatePrevent', tmpRoom).catch((error) => {
-				if (error instanceof AppsEngineException) {
-					throw new Meteor.Error('error-app-prevented', error.message);
-				}
+		const prevent = await Apps.triggerEvent('IPreRoomCreatePrevent', tmpRoom).catch((error) => {
+			if (error.name === AppsEngineException.name) {
+				throw new Meteor.Error('error-app-prevented', error.message);
+			}
 
-				throw error;
-			}),
-		);
+			throw error;
+		});
+
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
 		}
 
-		const result = Promise.await(
-			Apps.triggerEvent('IPreRoomCreateModify', Promise.await(Apps.triggerEvent('IPreRoomCreateExtend', tmpRoom))),
-		);
+		const result = await Apps.triggerEvent('IPreRoomCreateModify', await Apps.triggerEvent('IPreRoomCreateExtend', tmpRoom));
 
 		if (typeof result === 'object') {
 			Object.assign(roomInfo, result);

@@ -6,7 +6,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { FileUpload } from '../lib/FileUpload';
-import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
+import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { omit } from '../../../../lib/utils/omit';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
@@ -140,7 +140,7 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		if (user?.type !== 'app' && !canAccessRoom(room, user)) {
+		if (user?.type !== 'app' && !(await canAccessRoomAsync(room, user))) {
 			return false;
 		}
 
