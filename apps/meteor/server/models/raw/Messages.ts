@@ -771,20 +771,12 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.createWithTypeRoomIdMessageAndUser('room-unarchived', roomId, '', user, readReceiptsEnabled);
 	}
 
-	createRoomSetReadOnlyByRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('room-set-read-only', roomId, '', user, readReceiptsEnabled);
+	createRoomSetReadOnlyByRoomIdAndUser(roomId: string, user: IMessage['u'], readReceiptsEnabled: boolean): Promise<IMessage | null> {
+		return this.createWithTypeRoomIdMessageUserAndUnread('room-set-read-only', roomId, '', user, readReceiptsEnabled);
 	}
 
-	createRoomRemovedReadOnlyByRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('room-removed-read-only', roomId, '', user, readReceiptsEnabled);
+	createRoomRemovedReadOnlyByRoomIdAndUser(roomId: string, user: IMessage['u'], readReceiptsEnabled: boolean): Promise<IMessage | null> {
+		return this.createWithTypeRoomIdMessageUserAndUnread('room-removed-read-only', roomId, '', user, readReceiptsEnabled);
 	}
 
 	createRoomAllowedReactingByRoomIdAndUser(
@@ -1439,6 +1431,36 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 		await Rooms.incMsgCountById(roomId, 1);
 		return { ...record, _id: (await this.updateOne(data, data, { upsert: true })).upsertedId as unknown as string };
+	}
+
+	async createWithTypeRoomIdMessageUserAndUnread(
+		type: MessageTypesValues,
+		roomId: string,
+		message: string,
+		user: Pick<IMessage['u'], '_id' | 'username'>,
+		unread: boolean,
+		extraData?: Record<string, string>,
+	): Promise<IMessage | null> {
+		const record: Omit<IMessage, '_id' | '_updatedAt'> = {
+			t: type,
+			rid: roomId,
+			ts: new Date(),
+			msg: message,
+			u: {
+				_id: user._id,
+				username: user.username,
+			},
+			groupable: false as const,
+			unread,
+		};
+
+		const data = Object.assign(record, extraData);
+
+		await Rooms.incMsgCountById(roomId, 1);
+
+		const result = await this.insertOne(data);
+
+		return this.findOneById(result.insertedId);
 	}
 
 	async createNavigationHistoryWithRoomIdMessageAndUser(

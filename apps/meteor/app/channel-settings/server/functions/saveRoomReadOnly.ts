@@ -3,6 +3,8 @@ import { Match } from 'meteor/check';
 import { Rooms, Messages } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
 
+import { settings } from '../../../settings/server';
+
 export async function saveRoomReadOnly(
 	rid: string,
 	readOnly: boolean,
@@ -19,9 +21,9 @@ export async function saveRoomReadOnly(
 
 	if (result && sendMessage) {
 		if (readOnly) {
-			await Messages.createRoomSetReadOnlyByRoomIdAndUser(rid, user);
+			await Messages.createRoomSetReadOnlyByRoomIdAndUser(rid, user, settings.get('Message_Read_Receipt_Enabled'));
 		} else {
-			await Messages.createRoomRemovedReadOnlyByRoomIdAndUser(rid, user);
+			await Messages.createRoomRemovedReadOnlyByRoomIdAndUser(rid, user, settings.get('Message_Read_Receipt_Enabled'));
 		}
 	}
 	return result;

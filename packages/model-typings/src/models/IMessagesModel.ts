@@ -128,16 +128,16 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		user: IMessage['u'],
 		readReceiptsEnabled?: boolean,
 	): Promise<Omit<IMessage, '_updatedAt'>>;
-	createRoomSetReadOnlyByRoomIdAndUser(
+	createRoomSetReadOnlyByRoomIdAndUser(roomId: string, user: IMessage['u'], readReceiptsEnabled?: boolean): Promise<IMessage | null>;
+	createRoomRemovedReadOnlyByRoomIdAndUser(roomId: string, user: IMessage['u'], readReceiptsEnabled?: boolean): Promise<IMessage | null>;
+	createWithTypeRoomIdMessageUserAndUnread(
+		type: MessageTypesValues,
 		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-	): Promise<Omit<IMessage, '_updatedAt'>>;
-	createRoomRemovedReadOnlyByRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-	): Promise<Omit<IMessage, '_updatedAt'>>;
+		message: string,
+		user: Pick<IMessage['u'], '_id' | 'username'>,
+		unread: boolean,
+		extraData?: Record<string, string>,
+	): Promise<IMessage | null>;
 	createRoomAllowedReactingByRoomIdAndUser(
 		roomId: string,
 		user: IMessage['u'],
