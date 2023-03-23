@@ -22,7 +22,7 @@ export class RocketChatMessageAdapter {
 		externalEventId: string,
 		homeServerDomain: string,
 	): Promise<void> {
-		sendMessage(
+		await sendMessage(
 			user.getInternalReference(),
 			{
 				federation: { eventId: externalEventId },
@@ -47,7 +47,7 @@ export class RocketChatMessageAdapter {
 		homeServerDomain: string,
 	): Promise<void> {
 		const room = federatedRoom.getInternalReference();
-		sendMessage(
+		await sendMessage(
 			user.getInternalReference(),
 			{
 				federation: { eventId: externalEventId },
@@ -150,7 +150,7 @@ export class RocketChatMessageAdapter {
 		attachments: IMessage['attachments'],
 		externalEventId: string,
 	): Promise<void> {
-		sendMessage(
+		await sendMessage(
 			user.getInternalReference(),
 			{
 				federation: { eventId: externalEventId },
@@ -175,7 +175,7 @@ export class RocketChatMessageAdapter {
 	): Promise<void> {
 		const room = federatedRoom.getInternalReference();
 
-		sendMessage(
+		await sendMessage(
 			user.getInternalReference(),
 			{
 				federation: { eventId: externalEventId },

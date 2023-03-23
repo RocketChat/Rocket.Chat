@@ -127,8 +127,8 @@ class LivechatClass {
 			throw new Error('Error: Room not found');
 		}
 
-		this.logger.debug(`Sending closing message to room ${newRoom._id}`);
-		sendMessage(chatCloser, message, newRoom);
+		this.logger.debug(`Sending closing message to room ${room._id}`);
+		await sendMessage(chatCloser, message, newRoom);
 
 		LegacyMessage.createCommandWithRoomIdAndUser('promptTranscript', rid, closeData.closedBy);
 
