@@ -116,5 +116,5 @@ export interface IRoomTypeServerDirectives {
 	includeInRoomSearch: () => boolean;
 	getReadReceiptsExtraData: (message: IMessage) => Partial<ReadReceipt>;
 	includeInDashboard: () => boolean;
-	roomFind?: (rid: string) => Promise<IRoom | undefined | IOmnichannelRoom> | IRoom | undefined;
+	roomFind?: (rid: string) => Promise<IRoom | undefined> | Promise<IOmnichannelRoom | null> | IRoom | undefined;
 }
