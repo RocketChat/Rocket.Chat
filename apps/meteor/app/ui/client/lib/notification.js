@@ -14,6 +14,7 @@ import { CustomSounds } from '../../../custom-sounds/client/lib/CustomSounds';
 import { getAvatarAsPng } from '../../../../client/lib/utils/getAvatarAsPng';
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import { stripTags } from '../../../../lib/utils/stringUtils';
+import { RoomManager } from '../../../../client/lib/RoomManager';
 
 export const KonchatNotification = {
 	notificationStatus: new ReactiveVar(),
@@ -113,7 +114,7 @@ export const KonchatNotification = {
 
 	async showDesktop(notification) {
 		if (
-			notification.payload.rid === Session.get('openedRoom') &&
+			notification.payload.rid === RoomManager.opened &&
 			(typeof window.document.hasFocus === 'function' ? window.document.hasFocus() : undefined)
 		) {
 			return;
@@ -137,7 +138,7 @@ export const KonchatNotification = {
 	},
 
 	newMessage(rid) {
-		if (Session.equals(`user_${Meteor.user().username}_status`, 'busy')) {
+		if (Meteor.user().status === 'busy') {
 			return;
 		}
 
