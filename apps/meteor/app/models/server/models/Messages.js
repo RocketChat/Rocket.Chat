@@ -65,24 +65,6 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('r', roomId, roomName, user, extraData);
 	}
 
-	addTranslations(messageId, translations, providerName) {
-		const updateObj = { translationProvider: providerName };
-		Object.keys(translations).forEach((key) => {
-			const translation = translations[key];
-			updateObj[`translations.${key}`] = translation;
-		});
-		return this.update({ _id: messageId }, { $set: updateObj });
-	}
-
-	addAttachmentTranslations = function (messageId, attachmentIndex, translations) {
-		const updateObj = {};
-		Object.keys(translations).forEach((key) => {
-			const translation = translations[key];
-			updateObj[`attachments.${attachmentIndex}.translations.${key}`] = translation;
-		});
-		return this.update({ _id: messageId }, { $set: updateObj });
-	};
-
 	setImportFileRocketChatAttachment(importFileId, rocketChatUrl, attachment) {
 		const query = {
 			'_importFile.id': importFileId,
