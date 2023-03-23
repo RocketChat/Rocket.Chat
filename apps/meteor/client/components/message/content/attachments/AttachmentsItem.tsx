@@ -18,7 +18,7 @@ const AttachmentsItem = ({ attachment, file }: AttachmentsItemProps): ReactEleme
 	}
 
 	if (isQuoteAttachment(attachment)) {
-		return <QuoteAttachment attachment={attachment} />;
+		return <QuoteAttachment attachment={attachment} file={file} />;
 	}
 
 	return <DefaultAttachment {...(attachment as any)} />;

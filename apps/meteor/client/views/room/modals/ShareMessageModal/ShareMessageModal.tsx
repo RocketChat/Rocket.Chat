@@ -117,7 +117,7 @@ const ShareMessageModal = ({ onClose, permalink, message }: ShareMessageProps): 
 						{!rooms.length && <Field.Hint>{t('Select_atleast_one_channel_to_share_the_messsage')}</Field.Hint>}
 					</Field>
 					<Field>
-						<QuoteAttachment attachment={attachment} />
+						<QuoteAttachment attachment={attachment} file={message?.files && message?.files[0]} />
 					</Field>
 				</FieldGroup>
 			</Modal.Content>

@@ -1,4 +1,4 @@
-import type { MessageQuoteAttachment } from '@rocket.chat/core-typings';
+import type { FileProp, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
@@ -33,9 +33,10 @@ const quoteStyles = css`
 
 type QuoteAttachmentProps = {
 	attachment: MessageQuoteAttachment;
+	file?: FileProp;
 };
 
-export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElement => {
+export const QuoteAttachment = ({ attachment, file }: QuoteAttachmentProps): ReactElement => {
 	const format = useTimeAgo();
 
 	return (
@@ -68,7 +69,7 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElem
 					{attachment.md ? <MessageContentBody md={attachment.md} /> : attachment.text.substring(attachment.text.indexOf('\n') + 1)}
 					{attachment.attachments && (
 						<AttachmentInner>
-							<Attachments attachments={attachment.attachments} />
+							<Attachments attachments={attachment.attachments} file={file} />
 						</AttachmentInner>
 					)}
 				</AttachmentDetails>
