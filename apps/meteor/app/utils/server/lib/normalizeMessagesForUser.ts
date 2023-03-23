@@ -2,6 +2,7 @@ import type { IMessage, IUser } from '@rocket.chat/core-typings';
 
 import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
+import { shouldUseRealName } from '../../lib/shouldUseRealName';
 
 const filterStarred = (message: IMessage, uid: string): IMessage => {
 	// only return starred field if user has it starred
@@ -18,8 +19,10 @@ function getNameOfUsername(users: Map<string, string>, username: string): string
 }
 
 export const normalizeMessagesForUser = (messages: IMessage[], uid: string): IMessage[] => {
+	const defaultMessagesLayout = settings.get<string>('Accounts_Default_User_Preferences_messagesLayout');
+	const user = Users.findOneById(uid, { projection: { settings: 1 } });
 	// if not using real names, there is nothing else to do
-	if (!settings.get('UI_Use_Real_Name')) {
+	if (!shouldUseRealName(defaultMessagesLayout, user)) {
 		return messages.map((message) => filterStarred(message, uid));
 	}
 

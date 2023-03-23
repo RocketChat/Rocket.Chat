@@ -6,6 +6,7 @@ import React, { useMemo, memo } from 'react';
 
 import { EmojiPicker } from '../../../../../app/emoji/client';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
+import { isDisplayRealNamePreference } from '../../../../../app/utils/lib/isDisplayRealNamePreference';
 import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
 import { MessageListContext } from '../../../../components/message/list/MessageListContext';
 import AttachmentProvider from '../../../../providers/AttachmentProvider';
@@ -39,13 +40,15 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children, scrollMe
 
 	const { isMobile } = useLayout();
 
-	const showRealName = Boolean(useSetting('UI_Use_Real_Name'));
 	const showColors = useSetting('HexColorPreview_Enabled') as boolean;
 
 	const displayRolesGlobal = Boolean(useSetting('UI_DisplayRoles'));
 	const hideRolesPreference = Boolean(!useUserPreference<boolean>('hideRoles') && !isMobile);
 	const showRoles = displayRolesGlobal && hideRolesPreference;
-	const showUsername = Boolean(!useUserPreference<boolean>('hideUsernames') && !isMobile);
+
+	const messagesLayout = useUserPreference<string>('messagesLayout');
+	const showUsername = messagesLayout !== 'full_name' && !isMobile;
+	const showRealName = isDisplayRealNamePreference(messagesLayout);
 	const highlights = useUserPreference<string[]>('highlights');
 
 	const { showAutoTranslate, autoTranslateLanguage } = useAutoTranslate(subscription);

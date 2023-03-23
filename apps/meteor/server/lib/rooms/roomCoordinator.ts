@@ -4,6 +4,7 @@ import type { IRoomTypeConfig, IRoomTypeServerDirectives, RoomSettingsEnum, Room
 import { Users } from '../../../app/models/server';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 import { settings } from '../../../app/settings/server';
+import { shouldUseRealName } from '../../../app/utils/lib/shouldUseRealName';
 
 class RoomCoordinatorServer extends RoomCoordinator {
 	add(roomConfig: IRoomTypeConfig, directives: Partial<IRoomTypeServerDirectives>): void {
@@ -42,7 +43,9 @@ class RoomCoordinatorServer extends RoomCoordinator {
 				userId: string,
 			): { title: string | undefined; text: string } {
 				const title = `#${this.roomName(room, userId)}`;
-				const name = settings.get<boolean>('UI_Use_Real_Name') ? sender.name : sender.username;
+				const user = Users.findOneById(userId, { projection: { settings: 1 } });
+				const defaultMessagesLayout = settings.get<string>('Accounts_Default_User_Preferences_messagesLayout');
+				const name = shouldUseRealName(defaultMessagesLayout, user) ? sender.name : sender.username;
 
 				const text = `${name}: ${notificationMessage}`;
 

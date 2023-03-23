@@ -1,5 +1,7 @@
-import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
+
+import { isDisplayRealNamePreference } from '../../../app/utils/lib/isDisplayRealNamePreference';
 
 export const useQueryOptions = (): {
 	sort:
@@ -16,7 +18,7 @@ export const useQueryOptions = (): {
 		  };
 } => {
 	const sortBy = useUserPreference('sidebarSortby');
-	const showRealName = useSetting('UI_Use_Real_Name');
+	const showRealName = isDisplayRealNamePreference(useUserPreference('messagesLayout'));
 
 	return useMemo(
 		() => ({

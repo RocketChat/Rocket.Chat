@@ -44,5 +44,6 @@ export function getUserPreference<TValue>(
 ): TValue {
 	const user =
 		typeof userIdOrUser === 'string' ? Users.findOne(userIdOrUser, { fields: { [`settings.preferences.${key}`]: 1 } }) : userIdOrUser;
-	return user?.settings?.preferences?.[key] ?? defaultValue ?? settings.get(`Accounts_Default_User_Preferences_${key}`);
+	const preferenceValue = user?.settings?.preferences?.[key] !== 'default' ? user?.settings?.preferences?.[key] : defaultValue;
+	return preferenceValue ?? settings.get(`Accounts_Default_User_Preferences_${key}`);
 }

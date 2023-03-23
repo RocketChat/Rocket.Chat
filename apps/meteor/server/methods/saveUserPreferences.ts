@@ -22,7 +22,7 @@ type UserPreferences = {
 	pushNotifications: string;
 	enableAutoAway: boolean;
 	highlights: string[];
-	hideUsernames: boolean;
+	messagesLayout: string;
 	hideRoles: boolean;
 	displayAvatars: boolean;
 	hideFlexTab: boolean;
@@ -66,7 +66,7 @@ Meteor.methods<ServerMethods>({
 			pushNotifications: Match.Optional(String),
 			enableAutoAway: Match.Optional(Boolean),
 			highlights: Match.Optional([String]),
-			hideUsernames: Match.Optional(Boolean),
+			messagesLayout: Match.Optional(String),
 			hideRoles: Match.Optional(Boolean),
 			displayAvatars: Match.Optional(Boolean),
 			hideFlexTab: Match.Optional(Boolean),

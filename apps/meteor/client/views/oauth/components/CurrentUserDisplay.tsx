@@ -1,10 +1,11 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { UserStatus } from '@rocket.chat/ui-client';
-import { useRolesDescription, useSetting } from '@rocket.chat/ui-contexts';
+import { useRolesDescription, useUserPreference } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { isDisplayRealNamePreference } from '../../../../app/utils/lib/isDisplayRealNamePreference';
 import LocalTime from '../../../components/LocalTime';
 import MarkdownText from '../../../components/MarkdownText';
 import UserCard from '../../../components/UserCard';
@@ -24,7 +25,7 @@ type CurrentUserDisplayProps = {
 };
 
 const CurrentUserDisplay = ({ user }: CurrentUserDisplayProps) => {
-	const showRealNames = useSetting<boolean>('UI_Use_Real_Name');
+	const showRealNames = isDisplayRealNamePreference(useUserPreference('messagesLayout'));
 	const getRoles = useRolesDescription();
 
 	const { t } = useTranslation();

@@ -7,6 +7,7 @@ import { Subscriptions, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 import { roomCoordinator } from './rooms/roomCoordinator';
+import { shouldUseRealName } from '../../app/utils/lib/shouldUseRealName';
 import { trim } from '../../lib/utils/stringUtils';
 
 export class Spotlight {
@@ -139,6 +140,9 @@ export class Spotlight {
 
 	async searchUsers({ userId, rid, text, usernames, mentions }) {
 		const users = [];
+		const user = Promise.await(Users.findOneById(userId, { projection: { settings: 1 } }));
+		const defaultMessagesLayout = settings.get('Accounts_Default_User_Preferences_messagesLayout');
+		const key = shouldUseRealName(defaultMessagesLayout, user) ? 'name' : 'username';
 
 		const options = {
 			limit: settings.get('Number_of_users_autocomplete_suggestions'),
@@ -151,7 +155,7 @@ export class Spotlight {
 				avatarETag: 1,
 			},
 			sort: {
-				[settings.get('UI_Use_Real_Name') ? 'name' : 'username']: 1,
+				[key]: 1,
 			},
 			readPreference: readSecondaryPreferred(Users.col.s.db),
 		};

@@ -1,10 +1,11 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Palette } from '@rocket.chat/fuselage';
-import { useMethod, useSetting, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
+import { useMethod, useUserPreference, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactElement } from 'react';
 import React, { useCallback, memo } from 'react';
 
+import { isDisplayRealNamePreference } from '../../../../../../app/utils/lib/isDisplayRealNamePreference';
 import { useDecryptedMessage } from '../../../../../hooks/useDecryptedMessage';
 import { normalizeThreadMessage } from '../../../../../lib/normalizeThreadMessage';
 import ThreadListMessage from './ThreadListMessage';
@@ -51,7 +52,7 @@ const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, onClick }: Th
 		[toggleFollowMessage],
 	);
 
-	const showRealNames = (useSetting('UI_Use_Real_Name') as boolean | undefined) ?? false;
+	const showRealNames = isDisplayRealNamePreference(useUserPreference('messagesLayout'));
 
 	const handleListItemClick = useCallback(
 		(event: MouseEvent<HTMLElement>): void => {

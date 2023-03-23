@@ -1,10 +1,11 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { PositionAnimated, AnimatedVisibility, Menu, Option } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useRolesDescription } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useRolesDescription } from '@rocket.chat/ui-contexts';
 import type { ReactElement, UIEvent } from 'react';
 import React, { useMemo, useRef } from 'react';
 
+import { isDisplayRealNamePreference } from '../../../../app/utils/lib/isDisplayRealNamePreference';
 import { Backdrop } from '../../../components/Backdrop';
 import LocalTime from '../../../components/LocalTime';
 import UserCard from '../../../components/UserCard';
@@ -25,8 +26,8 @@ type UserCardWithDataProps = {
 const UserCardWithData = ({ username, target, rid, open, onClose }: UserCardWithDataProps): ReactElement => {
 	const ref = useRef(target);
 	const getRoles = useRolesDescription();
-	const showRealNames = useSetting('UI_Use_Real_Name');
 
+	const showRealNames = isDisplayRealNamePreference(useUserPreference('messagesLayout'));
 	const query = useMemo(() => ({ username }), [username]);
 	const { value: data, phase: state } = useEndpointData('/v1/users.info', { params: query });
 

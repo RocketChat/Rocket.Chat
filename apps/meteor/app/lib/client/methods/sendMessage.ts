@@ -24,11 +24,12 @@ Meteor.methods<ServerMethods>({
 		if (!user?.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'sendMessage' });
 		}
+
 		message.ts = new Date();
 		message.u = {
 			_id: uid,
 			username: user.username,
-			...(settings.get('UI_Use_Real_Name') && user.name && { name: user.name }),
+			name: user.name,
 		};
 		message.temp = true;
 		if (settings.get('Message_Read_Receipt_Enabled')) {

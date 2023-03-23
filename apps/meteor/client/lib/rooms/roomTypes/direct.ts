@@ -9,6 +9,7 @@ import { settings } from '../../../../app/settings/client';
 import { getUserPreference } from '../../../../app/utils/client';
 import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
 import { getUserAvatarURL } from '../../../../app/utils/lib/getUserAvatarURL';
+import { shouldUseRealName } from '../../../../app/utils/lib/shouldUseRealName';
 import type { IRoomTypeClientDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../../definition/IRoomTypeConfig';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
@@ -71,7 +72,10 @@ roomCoordinator.add(DirectMessageRoomType, {
 			return;
 		}
 
-		if (settings.get('UI_Use_Real_Name') && subscription.fname) {
+		const uid = Meteor.userId();
+		const user = uid ? Users.findOneById(uid, { fields: { settings: 1 } }) : null;
+		const defaultMessagesLayout = settings.get('Accounts_Default_User_Preferences_messagesLayout');
+		if (shouldUseRealName(defaultMessagesLayout, user) && subscription.fname) {
 			return subscription.fname;
 		}
 

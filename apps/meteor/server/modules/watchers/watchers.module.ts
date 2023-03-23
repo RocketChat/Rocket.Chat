@@ -40,6 +40,7 @@ import type { EventSignatures } from '@rocket.chat/core-services';
 
 import { subscriptionFields, roomFields } from './publishFields';
 import type { DatabaseWatcher } from '../../database/DatabaseWatcher';
+import { shouldUseRealName } from '../../../app/utils/lib/shouldUseRealName';
 
 type BroadcastCallback = <T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>) => Promise<void>;
 
@@ -75,6 +76,14 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 		{ maxAge: 10000 },
 	);
 
+	const getUseRealNamePreferenceCached = mem(
+		async (userId: string, defaultMessagesLayout: string): Promise<boolean | undefined> => {
+			const user = await Users.findOne<Pick<IUser, 'settings'>>(userId, { projection: { settings: 1 } });
+			return shouldUseRealName(defaultMessagesLayout, user);
+		},
+		{ maxAge: 10000 },
+	);
+
 	watcher.on<IMessage>(Messages.getCollectionName(), async ({ clientAction, id, data }) => {
 		switch (clientAction) {
 			case 'inserted':
@@ -85,7 +94,8 @@ export function initWatchers(watcher: DatabaseWatcher, broadcast: BroadcastCallb
 				}
 
 				if (message._hidden !== true && message.imported == null) {
-					const UseRealName = (await getSettingCached('UI_Use_Real_Name')) === true;
+					const defaultMessagesLayout = (await getSettingCached('Accounts_Default_User_Preferences_messagesLayout')) as string;
+					const UseRealName = await getUseRealNamePreferenceCached(message.u?._id, defaultMessagesLayout);
 
 					if (UseRealName) {
 						if (message.u?._id) {

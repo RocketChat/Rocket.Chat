@@ -158,7 +158,7 @@ describe('miscellaneous', function () {
 					'enableAutoAway',
 					// 'highlights',
 					'desktopNotificationRequireInteraction',
-					'hideUsernames',
+					'messagesLayout',
 					'hideRoles',
 					'displayAvatars',
 					'hideFlexTab',

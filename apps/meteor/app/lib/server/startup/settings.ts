@@ -350,10 +350,23 @@ void settingsRegistry.addGroup('Accounts', function () {
 			public: true,
 			i18nLabel: 'Collapse_Embedded_Media_By_Default',
 		});
-		this.add('Accounts_Default_User_Preferences_hideUsernames', false, {
-			type: 'boolean',
+		this.add('Accounts_Default_User_Preferences_messagesLayout', 'username', {
+			type: 'select',
+			values: [
+				{
+					key: 'full_name',
+					i18nLabel: 'Show_only_full_name',
+				},
+				{
+					key: 'username',
+					i18nLabel: 'Show_only_username',
+				},
+				{
+					key: 'username_and_full_name',
+					i18nLabel: 'Show_both_full_name_and_username',
+				},
+			],
 			public: true,
-			i18nLabel: 'Hide_usernames',
 		});
 		this.add('Accounts_Default_User_Preferences_hideRoles', false, {
 			type: 'boolean',

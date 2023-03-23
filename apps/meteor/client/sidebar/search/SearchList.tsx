@@ -3,7 +3,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Sidebar, TextInput, Box, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback, useDebouncedValue, useAutoFocus, useUniqueId, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { useUserPreference, useUserSubscriptions, useSetting, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useUserSubscriptions, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import { Meteor } from 'meteor/meteor';
@@ -13,6 +13,7 @@ import type { VirtuosoHandle } from 'react-virtuoso';
 import { Virtuoso } from 'react-virtuoso';
 import tinykeys from 'tinykeys';
 
+import { isDisplayRealNamePreference } from '../../../app/utils/lib/isDisplayRealNamePreference';
 import { getConfig } from '../../lib/utils/getConfig';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { usePreventDefault } from '../hooks/usePreventDefault';
@@ -177,7 +178,7 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 	const itemIndexRef = useRef(0);
 
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
-	const useRealName = useSetting('UI_Use_Real_Name');
+	const useRealName = isDisplayRealNamePreference(useUserPreference('messagesLayout'));
 
 	const sideBarItemTemplate = useTemplateByViewMode();
 	const avatarTemplate = useAvatarTemplate();

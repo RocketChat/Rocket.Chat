@@ -1,9 +1,10 @@
 import { Box, Icon, TextInput, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useAutoFocus } from '@rocket.chat/fuselage-hooks';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import { isDisplayRealNamePreference } from '../../../../../app/utils/lib/isDisplayRealNamePreference';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../components/VerticalBar';
 import { goToRoomById } from '../../../../lib/utils/goToRoomById';
@@ -11,8 +12,7 @@ import Row from './Row';
 import { withData } from './withData';
 
 function DiscussionList({ total = 10, discussions = [], loadMoreItems, loading, onClose, error, userId, text, setText }) {
-	const showRealNames = useSetting('UI_Use_Real_Name');
-
+	const showRealNames = isDisplayRealNamePreference(useUserPreference('messagesLayout'));
 	const t = useTranslation();
 	const inputRef = useAutoFocus(true);
 	const onClick = useCallback((e) => {

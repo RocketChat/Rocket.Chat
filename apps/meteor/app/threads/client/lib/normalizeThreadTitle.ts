@@ -7,6 +7,7 @@ import { Users } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { MentionsParser } from '../../../mentions/lib/MentionsParser';
 import { emojiParser } from '../../../emoji/client/emojiParser.js';
+import { shouldUseRealName } from '../../../utils/lib/shouldUseRealName';
 
 export function normalizeThreadTitle({ ...message }: Readonly<IMessage>) {
 	if (message.msg) {
@@ -14,10 +15,12 @@ export function normalizeThreadTitle({ ...message }: Readonly<IMessage>) {
 		if (!message.channels && !message.mentions) {
 			return filteredMessage;
 		}
+		const defaultMessagesLayout = settings.get('Accounts_Default_User_Preferences_messagesLayout');
 		const uid = Meteor.userId();
-		const me = uid && Users.findOne(uid, { fields: { username: 1 } })?.username;
+		const user = uid ? Users.findOne(uid, { fields: { username: 1, settings: 1 } }) : null;
+		const me = uid && user?.username;
 		const pattern = settings.get('UTF8_User_Names_Validation');
-		const useRealName = settings.get('UI_Use_Real_Name');
+		const useRealName = shouldUseRealName(defaultMessagesLayout, user);
 
 		const instance = new MentionsParser({
 			pattern: () => pattern,

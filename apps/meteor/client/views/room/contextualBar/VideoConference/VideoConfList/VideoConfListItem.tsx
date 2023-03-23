@@ -2,10 +2,11 @@ import type { IGroupVideoConference } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Button, Message, Box, Avatar, Palette } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
+import { isDisplayRealNamePreference } from '../../../../../../app/utils/lib/isDisplayRealNamePreference';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useVideoConfJoinCall } from '../../../../../contexts/VideoConfContext';
 import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
@@ -24,7 +25,7 @@ const VideoConfListItem = ({
 	const t = useTranslation();
 	const formatDate = useTimeAgo();
 	const joinCall = useVideoConfJoinCall();
-	const showRealName = Boolean(useSetting('UI_Use_Real_Name'));
+	const showRealName = isDisplayRealNamePreference(useUserPreference('messagesLayout'));
 
 	const {
 		_id: callId,

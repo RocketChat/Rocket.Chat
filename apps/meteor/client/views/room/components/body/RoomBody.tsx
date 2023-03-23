@@ -17,6 +17,7 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim';
 import { ChatMessage } from '../../../../../app/models/client';
 import { readMessage, RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling';
+import { isDisplayRealNamePreference } from '../../../../../app/utils/lib/isDisplayRealNamePreference';
 import { callbacks } from '../../../../../lib/callbacks';
 import { isTruthy } from '../../../../../lib/isTruthy';
 import { withDebouncing, withThrottling } from '../../../../../lib/utils/highOrderFunctions';
@@ -62,7 +63,10 @@ const RoomBody = (): ReactElement => {
 	const [hasNewMessages, setHasNewMessages] = useState(false);
 
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab') || undefined;
-	const hideUsernames = useUserPreference<boolean>('hideUsernames');
+
+	const messagesLayout = useUserPreference<string>('messagesLayout');
+	const hideUsernames = messagesLayout === 'full_name';
+
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
 
 	const wrapperRef = useRef<HTMLDivElement | null>(null);
@@ -152,7 +156,7 @@ const RoomBody = (): ReactElement => {
 		return subscribed;
 	}, [allowAnonymousRead, canPreviewChannelRoom, room, subscribed]);
 
-	const useRealName = useSetting('UI_Use_Real_Name') as boolean;
+	const useRealName = isDisplayRealNamePreference(messagesLayout);
 
 	const { data: roomLeader } = useReactiveQuery(['rooms', room._id, 'leader', { not: user?._id }], ({ roomRoles }) => {
 		const leaderRoomRole = roomRoles.findOne({
