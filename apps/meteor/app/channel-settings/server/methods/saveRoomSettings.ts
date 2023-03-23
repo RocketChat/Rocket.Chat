@@ -253,12 +253,12 @@ const settingSavers: RoomSettingsSavers = {
 			saveRoomDescription(rid, value, user);
 		}
 	},
-	roomType({ value, room, rid, user }) {
+	async roomType({ value, room, rid, user }) {
 		if (value === room.t) {
 			return;
 		}
 
-		if (!saveRoomType(rid, value, user)) {
+		if (!(await saveRoomType(rid, value, user))) {
 			return;
 		}
 
