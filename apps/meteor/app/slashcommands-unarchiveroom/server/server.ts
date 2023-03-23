@@ -10,7 +10,7 @@ import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 
 slashCommands.add({
 	command: 'unarchive',
-	callback: function Unarchive(_command: 'unarchive', params, item): void {
+	callback: async function Unarchive(_command: 'unarchive', params, item) {
 		let channel = params.trim();
 		let room;
 
@@ -36,7 +36,7 @@ slashCommands.add({
 		}
 
 		// You can not archive direct messages.
-		if (!roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.ARCHIVE, userId)) {
+		if (!(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.ARCHIVE, userId))) {
 			return;
 		}
 
