@@ -160,7 +160,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			'roles': roleId,
 		};
 
-		return !!(await this.findOne(query, { projection: { roles: 1 } }));
+		return !!(await this.findOne(query, { projection: { _id: 1 } }));
 	}
 
 	setAsReadByRoomIdAndUserId(
