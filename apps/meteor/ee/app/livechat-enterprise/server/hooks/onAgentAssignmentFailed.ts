@@ -1,12 +1,6 @@
-import { LivechatInquiry } from '@rocket.chat/models';
-
 import { callbacks } from '../../../../../lib/callbacks';
-import { LivechatRooms } from '../../../../../app/models/server';
-import { queueInquiry } from '../../../../../app/livechat/server/lib/QueueManager';
 import { settings } from '../../../../../app/settings/server';
 import { cbLogger } from '../lib/logger';
-import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
-import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 
 const handleOnAgentAssignmentFailed = async ({
 	inquiry,
@@ -22,24 +16,6 @@ const handleOnAgentAssignmentFailed = async ({
 }): Promise<any> => {
 	if (!inquiry || !room) {
 		cbLogger.debug('Skipping callback. No inquiry or room provided');
-		return;
-	}
-
-	if (room.onHold) {
-		cbLogger.debug('Room is on hold. Removing current assignations before queueing again');
-		const { _id: roomId } = room;
-
-		const { _id: inquiryId } = inquiry;
-		await LivechatInquiry.queueInquiryAndRemoveDefaultAgent(inquiryId);
-		LivechatRooms.removeAgentByRoomId(roomId);
-		RoutingManager.removeAllRoomSubscriptions(room);
-		dispatchAgentDelegated(roomId, null);
-
-		const newInquiry = await LivechatInquiry.findOneById(inquiryId);
-
-		await queueInquiry(room, newInquiry);
-
-		cbLogger.debug('Room queued successfully');
 		return;
 	}
 
