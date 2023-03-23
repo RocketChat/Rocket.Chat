@@ -11,22 +11,22 @@ Meteor.methods<ServerMethods>({
 	unpinMessage(message: IMessage) {
 		if (!Meteor.userId()) {
 			dispatchToastMessage({ type: 'error', message: t('error-not-authorized') });
-			return 0;
+			return false;
 		}
 		if (!settings.get('Message_AllowPinning')) {
 			dispatchToastMessage({ type: 'error', message: t('unpinning-not-allowed') });
-			return 0;
+			return false;
 		}
 		if (!ChatSubscription.findOne({ rid: message.rid })) {
 			dispatchToastMessage({ type: 'error', message: t('error-unpinning-message') });
-			return 0;
+			return false;
 		}
 		if (typeof message._id !== 'string') {
 			dispatchToastMessage({ type: 'error', message: t('error-unpinning-message') });
-			return 0;
+			return false;
 		}
 		dispatchToastMessage({ type: 'success', message: t('Message_has_been_unpinned') });
-		return ChatMessage.update(
+		ChatMessage.update(
 			{
 				_id: message._id,
 				rid: message.rid,
@@ -37,5 +37,7 @@ Meteor.methods<ServerMethods>({
 				},
 			},
 		);
+
+		return true;
 	},
 });

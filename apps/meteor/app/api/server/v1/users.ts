@@ -24,17 +24,17 @@ import type { Filter } from 'mongodb';
 import { Team, api } from '@rocket.chat/core-services';
 
 import { Users, Subscriptions } from '../../../models/server';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import {
 	validateCustomFields,
 	saveUser,
 	saveCustomFieldsWithoutValidation,
-	checkUsernameAvailability,
 	setStatusText,
 	setUserAvatar,
 	saveCustomFields,
 } from '../../../lib/server';
+import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
 import { getFullUserDataByIdOrUsername } from '../../../lib/server/functions/getFullUserData';
 import { API } from '../api';
 import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
@@ -110,7 +110,7 @@ API.v1.addRoute(
 	'users.updateOwnBasicInfo',
 	{ authRequired: true, validateParams: isUsersUpdateOwnBasicInfoParamsPOST },
 	{
-		post() {
+		async post() {
 			const userData = {
 				email: this.bodyParams.data.email,
 				realname: this.bodyParams.data.name,
@@ -142,8 +142,12 @@ API.v1.addRoute(
 	'users.setPreferences',
 	{ authRequired: true, validateParams: isUsersSetPreferencesParamsPOST },
 	{
-		post() {
-			if (this.bodyParams.userId && this.bodyParams.userId !== this.userId && !hasPermission(this.userId, 'edit-other-user-info')) {
+		async post() {
+			if (
+				this.bodyParams.userId &&
+				this.bodyParams.userId !== this.userId &&
+				!(await hasPermissionAsync(this.userId, 'edit-other-user-info'))
+			) {
 				throw new Meteor.Error('error-action-not-allowed', 'Editing user is not allowed');
 			}
 			const userId = this.bodyParams.userId ? this.bodyParams.userId : this.userId;
@@ -178,7 +182,7 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isUsersSetAvatarProps },
 	{
 		async post() {
-			const canEditOtherUserAvatar = hasPermission(this.userId, 'edit-other-user-avatar');
+			const canEditOtherUserAvatar = await hasPermissionAsync(this.userId, 'edit-other-user-avatar');
 
 			if (!settings.get('Accounts_AllowUserAvatarChange') && !canEditOtherUserAvatar) {
 				throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed', {
@@ -230,7 +234,7 @@ API.v1.addRoute(
 				}
 
 				const isAnotherUser = this.userId !== user._id;
-				if (isAnotherUser && !hasPermission(this.userId, 'edit-other-user-avatar')) {
+				if (isAnotherUser && !(await hasPermissionAsync(this.userId, 'edit-other-user-avatar'))) {
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
 			}
@@ -277,8 +281,8 @@ API.v1.addRoute(
 	'users.delete',
 	{ authRequired: true },
 	{
-		post() {
-			if (!hasPermission(this.userId, 'delete-user')) {
+		async post() {
+			if (!(await hasPermissionAsync(this.userId, 'delete-user'))) {
 				return API.v1.unauthorized();
 			}
 
@@ -318,8 +322,8 @@ API.v1.addRoute(
 	'users.setActiveStatus',
 	{ authRequired: true, validateParams: isUserSetActiveStatusParamsPOST },
 	{
-		post() {
-			if (!hasPermission(this.userId, 'edit-other-user-active-status')) {
+		async post() {
+			if (!(await hasPermissionAsync(this.userId, 'edit-other-user-active-status'))) {
 				return API.v1.unauthorized();
 			}
 
@@ -336,8 +340,8 @@ API.v1.addRoute(
 	'users.deactivateIdle',
 	{ authRequired: true, validateParams: isUserDeactivateIdleParamsPOST },
 	{
-		post() {
-			if (!hasPermission(this.userId, 'edit-other-user-active-status')) {
+		async post() {
+			if (!(await hasPermissionAsync(this.userId, 'edit-other-user-active-status'))) {
 				return API.v1.unauthorized();
 			}
 
@@ -371,7 +375,7 @@ API.v1.addRoute(
 				return API.v1.failure('User not found.');
 			}
 			const myself = user._id === this.userId;
-			if (fields.userRooms === 1 && (myself || hasPermission(this.userId, 'view-other-user-channels'))) {
+			if (fields.userRooms === 1 && (myself || (await hasPermissionAsync(this.userId, 'view-other-user-channels')))) {
 				return API.v1.success({
 					user: {
 						...user,
@@ -408,18 +412,21 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			if (!hasPermission(this.userId, 'view-d-room')) {
+			if (!(await hasPermissionAsync(this.userId, 'view-d-room'))) {
 				return API.v1.unauthorized();
 			}
 
-			if (settings.get('API_Apply_permission_view-outside-room_on_users-list') && !hasPermission(this.userId, 'view-outside-room')) {
+			if (
+				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
+				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
+			) {
 				return API.v1.unauthorized();
 			}
 
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields, query } = this.parseJsonQuery();
 
-			const nonEmptyQuery = getNonEmptyQuery(query, hasPermission(this.userId, 'view-full-other-user-info'));
+			const nonEmptyQuery = getNonEmptyQuery(query, await hasPermissionAsync(this.userId, 'view-full-other-user-info'));
 			const nonEmptyFields = getNonEmptyFields(fields);
 
 			const inclusiveFields = getInclusiveFields(nonEmptyFields);
@@ -520,12 +527,12 @@ API.v1.addRoute(
 		validateParams: isUserRegisterParamsPOST,
 	},
 	{
-		post() {
+		async post() {
 			if (this.userId) {
 				return API.v1.failure('Logged in users can not register again.');
 			}
 
-			if (!checkUsernameAvailability(this.bodyParams.username)) {
+			if (!(await checkUsernameAvailability(this.bodyParams.username))) {
 				return API.v1.failure('Username is already in use');
 			}
 
@@ -549,12 +556,12 @@ API.v1.addRoute(
 	'users.resetAvatar',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			const user = this.getUserFromParams();
 
 			if (settings.get('Accounts_AllowUserAvatarChange') && user._id === this.userId) {
 				Meteor.runAsUser(this.userId, () => Meteor.call('resetAvatar'));
-			} else if (hasPermission(this.userId, 'edit-other-user-avatar')) {
+			} else if (await hasPermissionAsync(this.userId, 'edit-other-user-avatar')) {
 				Meteor.runAsUser(this.userId, () => Meteor.call('resetAvatar', user._id));
 			} else {
 				throw new Meteor.Error('error-not-allowed', 'Reset avatar is not allowed', {
@@ -678,8 +685,8 @@ API.v1.addRoute(
 	'users.getPersonalAccessTokens',
 	{ authRequired: true },
 	{
-		get() {
-			if (!hasPermission(this.userId, 'create-personal-access-tokens')) {
+		async get() {
+			if (!(await hasPermissionAsync(this.userId, 'create-personal-access-tokens'))) {
 				throw new Meteor.Error('not-authorized', 'Not Authorized');
 			}
 
@@ -927,7 +934,7 @@ API.v1.addRoute(
 	'users.resetE2EKey',
 	{ authRequired: true, twoFactorRequired: true, twoFactorOptions: { disableRememberMe: true } },
 	{
-		post() {
+		async post() {
 			if ('userId' in this.bodyParams || 'username' in this.bodyParams || 'user' in this.bodyParams) {
 				// reset other user keys
 				const user = this.getUserFromParams();
@@ -939,17 +946,17 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
 
-				if (!hasPermission(this.userId, 'edit-other-user-e2ee')) {
+				if (!(await hasPermissionAsync(this.userId, 'edit-other-user-e2ee'))) {
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
 
-				if (!resetUserE2EEncriptionKey(user._id, true)) {
+				if (!(await resetUserE2EEncriptionKey(user._id, true))) {
 					return API.v1.failure();
 				}
 
 				return API.v1.success();
 			}
-			resetUserE2EEncriptionKey(this.userId, false);
+			await resetUserE2EEncriptionKey(this.userId, false);
 			return API.v1.success();
 		},
 	},
@@ -963,7 +970,7 @@ API.v1.addRoute(
 			// // reset own keys
 			if ('userId' in this.bodyParams || 'username' in this.bodyParams || 'user' in this.bodyParams) {
 				// reset other user keys
-				if (!hasPermission(this.userId, 'edit-other-user-totp')) {
+				if (!(await hasPermissionAsync(this.userId, 'edit-other-user-totp'))) {
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
 
@@ -1001,7 +1008,7 @@ API.v1.addRoute(
 			const { userId } = this.queryParams;
 
 			// If the caller has permission to view all teams, there's no need to filter the teams
-			const adminId = hasPermission(this.userId, 'view-all-teams') ? undefined : this.userId;
+			const adminId = (await hasPermissionAsync(this.userId, 'view-all-teams')) ? undefined : this.userId;
 
 			const teams = await Team.findBySubscribedUserIds(userId, adminId);
 
@@ -1016,10 +1023,10 @@ API.v1.addRoute(
 	'users.logout',
 	{ authRequired: true, validateParams: isUserLogoutParamsPOST },
 	{
-		post() {
+		async post() {
 			const userId = this.bodyParams.userId || this.userId;
 
-			if (userId !== this.userId && !hasPermission(this.userId, 'logout-other-user')) {
+			if (userId !== this.userId && !(await hasPermissionAsync(this.userId, 'logout-other-user'))) {
 				return API.v1.unauthorized();
 			}
 
@@ -1062,7 +1069,7 @@ API.v1.addRoute(
 	'users.setStatus',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			check(
 				this.bodyParams,
 				Match.OneOf(
@@ -1083,11 +1090,11 @@ API.v1.addRoute(
 				});
 			}
 
-			const user = ((): IUser | undefined => {
+			const user = await (async (): Promise<IUser | undefined> => {
 				if (this.isUserFromParams()) {
 					return Meteor.users.findOne(this.userId) as IUser;
 				}
-				if (hasPermission(this.userId, 'edit-other-user-info')) {
+				if (await hasPermissionAsync(this.userId, 'edit-other-user-info')) {
 					return this.getUserFromParams();
 				}
 			})();

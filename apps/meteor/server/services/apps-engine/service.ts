@@ -25,16 +25,27 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		});
 
 		this.onEvent('apps.added', async (appId: string): Promise<void> => {
+			// if the app already exists in this instance, don't load it again
+			const app = Apps.getManager()?.getOneById(appId);
+
+			if (app) {
+				return;
+			}
+
 			await (Apps.getManager() as any)?.loadOne(appId);
 		});
 
 		this.onEvent('apps.removed', async (appId: string): Promise<void> => {
 			const app = Apps.getManager()?.getOneById(appId);
 			if (!app) {
-				return;
+				/* empty */
 			}
 
-			await Apps.getManager()?.removeLocal(appId);
+			// Models removal made this more obvious: this event is getting duplicated (or triplicated)
+			// Commenting it while apps team provides a fix
+			// Apparently, since some things are now "promises", theres bigger change of this event being called while the app is being removed
+			// Triggering the whole remove process again, which fails (cause some data is not there anymore)
+			// await Apps.getManager()?.removeLocal(appId);
 		});
 
 		this.onEvent('apps.updated', async (appId: string): Promise<void> => {
@@ -64,7 +75,16 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 			}
 		});
 
-		this.onEvent('apps.settingUpdated', async (appId: string, setting: ISetting): Promise<void> => {
+		this.onEvent('apps.settingUpdated', async (appId: string, setting: ISetting & { id: string }): Promise<void> => {
+			const app = Apps.getManager()?.getOneById(appId);
+			const oldSetting = app?.getStorageItem().settings[setting.id].value;
+
+			// avoid updating the setting if the value is the same,
+			// which caused an infinite loop
+			if (oldSetting === setting.value) {
+				return;
+			}
+
 			const appManager = Apps.getManager();
 			if (!appManager) {
 				return;

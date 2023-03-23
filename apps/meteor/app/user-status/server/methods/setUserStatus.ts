@@ -14,7 +14,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	setUserStatus: (statusType, statusText) => {
+	setUserStatus: async (statusType, statusText) => {
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setUserStatus' });
@@ -38,7 +38,7 @@ Meteor.methods<ServerMethods>({
 				});
 			}
 
-			setStatusText(userId, statusText);
+			await setStatusText(userId, statusText);
 		}
 	},
 });

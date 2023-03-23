@@ -39,7 +39,7 @@ roomCoordinator.add(LivechatRoomType, {
 	},
 
 	getMsgSender(senderId) {
-		return Promise.await(LivechatVisitors.findOneById(senderId));
+		return LivechatVisitors.findOneById(senderId);
 	},
 
 	getReadReceiptsExtraData(message) {

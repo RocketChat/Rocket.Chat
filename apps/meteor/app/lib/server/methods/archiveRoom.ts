@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Rooms } from '../../../models/server';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { archiveRoom } from '../functions';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
@@ -16,7 +16,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	archiveRoom(rid) {
+	async archiveRoom(rid) {
 		check(rid, String);
 
 		const userId = Meteor.userId();
@@ -35,7 +35,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-direct-message-room', `rooms type: ${room.t} can not be archived`, { method: 'archiveRoom' });
 		}
 
-		if (!hasPermission(userId, 'archive-room', room._id)) {
+		if (!(await hasPermissionAsync(userId, 'archive-room', room._id))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'archiveRoom' });
 		}
 
