@@ -5,18 +5,18 @@ import type { ICreatedRoom, IUser } from '@rocket.chat/core-typings';
 import type { ICreateRoomParams } from '@rocket.chat/core-services';
 
 import { settings } from '../../app/settings/server';
-import { hasPermission } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { Users, Rooms } from '../../app/models/server';
 import { RateLimiterClass as RateLimiter } from '../../app/lib/server/lib/RateLimiter';
 import { createRoom } from '../../app/lib/server/functions/createRoom';
 import { addUser } from '../../app/federation/server/functions/addUser';
 import { callbacks } from '../../lib/callbacks';
 
-export function createDirectMessage(
+export async function createDirectMessage(
 	usernames: IUser['username'][],
 	userId: IUser['_id'] | null,
 	excludeSelf = false,
-): Omit<ICreatedRoom, '_id' | 'inserted'> {
+): Promise<Omit<ICreatedRoom, '_id' | 'inserted'>> {
 	check(usernames, [String]);
 	check(userId, String);
 	check(excludeSelf, Match.Optional(Boolean));
@@ -40,30 +40,32 @@ export function createDirectMessage(
 		});
 	}
 
-	const users = usernames
-		.filter((username) => username !== me.username)
-		.map((username) => {
-			let to = Users.findOneByUsernameIgnoringCase(username);
+	const users = await Promise.all(
+		usernames
+			.filter((username) => username !== me.username)
+			.map(async (username) => {
+				let to = Users.findOneByUsernameIgnoringCase(username);
 
-			// If the username does have an `@`, but does not exist locally, we create it first
-			if (!to && username.includes('@')) {
-				try {
-					to = Promise.await(addUser(username));
-				} catch {
-					// no-op
+				// If the username does have an `@`, but does not exist locally, we create it first
+				if (!to && username.includes('@')) {
+					try {
+						to = await addUser(username);
+					} catch {
+						// no-op
+					}
+					if (!to) {
+						return username;
+					}
 				}
+
 				if (!to) {
-					return username;
+					throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+						method: 'createDirectMessage',
+					});
 				}
-			}
-
-			if (!to) {
-				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-					method: 'createDirectMessage',
-				});
-			}
-			return to;
-		});
+				return to;
+			}),
+	);
 	const roomUsers = excludeSelf ? users : [me, ...users];
 
 	// allow self-DMs
@@ -73,9 +75,9 @@ export function createDirectMessage(
 		});
 	}
 
-	if (!hasPermission(userId, 'create-d')) {
+	if (!(await hasPermissionAsync(userId, 'create-d'))) {
 		// If the user can't create DMs but can access already existing ones
-		if (hasPermission(userId, 'view-d-room')) {
+		if (await hasPermissionAsync(userId, 'view-d-room')) {
 			// Check if the direct room already exists, then return it
 			const uids = roomUsers.map(({ _id }) => _id).sort();
 			const room = Rooms.findOneDirectRoomContainingAllUserIDs(uids, { fields: { _id: 1 } });
@@ -94,7 +96,7 @@ export function createDirectMessage(
 	}
 
 	const options: Exclude<ICreateRoomParams['options'], undefined> = { creator: me._id };
-	if (excludeSelf && hasPermission(userId, 'view-room-administration')) {
+	if (excludeSelf && (await hasPermissionAsync(userId, 'view-room-administration'))) {
 		options.subscriptionExtra = { open: true };
 	}
 	try {
@@ -102,7 +104,7 @@ export function createDirectMessage(
 	} catch (error) {
 		throw new Meteor.Error((error as any)?.message);
 	}
-	const { _id: rid, inserted, ...room } = createRoom('d', undefined, undefined, roomUsers, undefined, {}, options);
+	const { _id: rid, inserted, ...room } = await createRoom('d', undefined, undefined, roomUsers, undefined, {}, options);
 
 	return {
 		// @ts-expect-error - room type is already defined in the `createRoom` return type
@@ -121,13 +123,13 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	createDirectMessage(...usernames) {
+	async createDirectMessage(...usernames) {
 		return createDirectMessage(usernames, Meteor.userId());
 	},
 });
 
 RateLimiter.limitMethod('createDirectMessage', 10, 60000, {
 	userId(userId: IUser['_id']) {
-		return !hasPermission(userId, 'send-many-messages');
+		return !Promise.await(hasPermissionAsync(userId, 'send-many-messages'));
 	},
 });

@@ -81,7 +81,7 @@ async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promi
 
 slashCommands.add({
 	command: 'sendEmailAttachment',
-	callback: (command: any, params: string) => {
+	callback: async (command: any, params: string) => {
 		logger.debug('sendEmailAttachment command: ', command, params);
 		if (command !== 'sendEmailAttachment' || !Match.test(params, String)) {
 			return;
@@ -105,7 +105,7 @@ slashCommands.add({
 			});
 		}
 
-		const file = Promise.await(Uploads.findOneById(message.file._id));
+		const file = await Uploads.findOneById(message.file._id);
 
 		if (!file) {
 			return;

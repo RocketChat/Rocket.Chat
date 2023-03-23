@@ -87,7 +87,6 @@ export interface IRoomTypeClientDirectives {
 		room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid' | 'avatarETag' | 'uids' | 'usernames'> & { username?: IRoom['_id'] },
 	) => string;
 	getIcon: (room: Partial<IRoom>) => IRoomTypeConfig['icon'];
-	getUserStatus: (roomId: string) => string | undefined;
 	findRoom: (identifier: string) => IRoom | undefined;
 	showJoinLink: (roomId: string) => boolean;
 	isLivechatRoom: () => boolean;
@@ -102,9 +101,9 @@ export interface IRoomTypeServerDirectives {
 	allowMemberAction: (room: IRoom, action: ValueOf<typeof RoomMemberActions>, userId?: IUser['_id']) => boolean;
 	roomName: (room: IRoom, userId?: string) => string | undefined;
 	isGroupChat: (room: IRoom) => boolean;
-	canBeDeleted: (hasPermission: (permissionId: string, rid?: string) => boolean, room: IRoom) => boolean;
+	canBeDeleted: (hasPermission: (permissionId: string, rid?: string) => Promise<boolean> | boolean, room: IRoom) => Promise<boolean>;
 	preventRenaming: () => boolean;
-	getDiscussionType: (room?: AtLeast<IRoom, 'teamId'>) => RoomType;
+	getDiscussionType: (room?: AtLeast<IRoom, 'teamId'>) => Promise<RoomType>;
 	canAccessUploadedFile: (params: { rc_uid: string; rc_rid: string; rc_token: string }) => boolean;
 	getNotificationDetails: (
 		room: IRoom,
@@ -112,9 +111,9 @@ export interface IRoomTypeServerDirectives {
 		notificationMessage: string,
 		userId: string,
 	) => { title: string | undefined; text: string };
-	getMsgSender: (senderId: IRocketChatRecord['_id']) => IRocketChatRecord | undefined;
+	getMsgSender: (senderId: IRocketChatRecord['_id']) => Promise<IRocketChatRecord | undefined>;
 	includeInRoomSearch: () => boolean;
 	getReadReceiptsExtraData: (message: IMessage) => Partial<ReadReceipt>;
 	includeInDashboard: () => boolean;
-	roomFind?: (rid: string) => IRoom | undefined;
+	roomFind?: (rid: string) => Promise<IRoom | undefined> | IRoom | undefined;
 }
