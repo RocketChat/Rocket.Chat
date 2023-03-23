@@ -939,7 +939,7 @@ class RocketChatIntegrationHandler {
 			});
 	}
 
-	replay(integration, history) {
+	async replay(integration, history) {
 		if (!integration || integration.type !== 'webhook-outgoing') {
 			throw new Meteor.Error('integration-type-must-be-outgoing', 'The integration type to replay must be an outgoing webhook.');
 		}
@@ -958,7 +958,7 @@ class RocketChatIntegrationHandler {
 			owner = Models.Users.findOneById(history.data.owner._id);
 		}
 
-		Promise.await(this.executeTriggerUrl(history.url, integration, { event, message, room, owner, user }));
+		return this.executeTriggerUrl(history.url, integration, { event, message, room, owner, user });
 	}
 }
 const triggerHandler = new RocketChatIntegrationHandler();
