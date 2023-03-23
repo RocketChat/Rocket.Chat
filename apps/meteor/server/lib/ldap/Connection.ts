@@ -13,7 +13,7 @@ import { logger, connLogger, searchLogger, authLogger, bindLogger, mapLogger } f
 import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
 
 interface ILDAPEntryCallback<T> {
-	(entry: ldapjs.SearchEntry): Promise<T | undefined>;
+	(entry: ldapjs.SearchEntry): T | undefined;
 }
 
 interface ILDAPSearchEndCallback {
@@ -221,16 +221,16 @@ export class LDAPConnection {
 				this.options.baseDN,
 				searchOptions,
 				this.options.searchPageSize,
-				async (error, entries: ldapjs.SearchEntry[], { end, next } = { end: false, next: undefined }) => {
+				(error, entries: ldapjs.SearchEntry[], { end, next } = { end: false, next: undefined }) => {
 					if (error) {
-						await endCallback?.(error);
+						endCallback?.(error);
 						return;
 					}
 
 					count += entries.length;
 					dataCallback?.(entries);
 					if (end) {
-						await endCallback?.();
+						endCallback?.();
 					}
 
 					if (next) {
