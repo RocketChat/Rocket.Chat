@@ -9,7 +9,7 @@ const elapsedTime = (ts: number): number => {
 	return Math.round(dif / 1000 / 60);
 };
 
-const canDeleteMessageAsync = async (uid: string, { u, rid, ts }: { u: IUser; rid: string; ts: number }): Promise<boolean> => {
+export const canDeleteMessageAsync = async (uid: string, { u, rid, ts }: { u: IUser; rid: string; ts: number }): Promise<boolean> => {
 	const forceDelete = await hasPermissionAsync(uid, 'force-delete-message', rid);
 
 	if (forceDelete) {
@@ -52,6 +52,3 @@ const canDeleteMessageAsync = async (uid: string, { u, rid, ts }: { u: IUser; ri
 
 	return true;
 };
-
-export const canDeleteMessage = (uid: string, { u, rid, ts }: { u: IUser; rid: string; ts: number }): boolean =>
-	Promise.await(canDeleteMessageAsync(uid, { u, rid, ts }));

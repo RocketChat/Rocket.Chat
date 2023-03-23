@@ -7,7 +7,7 @@ import { callbackLogger } from '../lib/callbackLogger';
 
 callbacks.add(
 	'afterSaveMessage',
-	function (message, room) {
+	async function (message, room) {
 		callbackLogger.debug(`Calculating Omnichannel metrics for room ${room._id}`);
 		// check if room is livechat
 		if (!isOmnichannelRoom(room)) {
@@ -29,7 +29,7 @@ callbacks.add(
 		}
 
 		if (message.file) {
-			message = Promise.await(normalizeMessageFileUpload(message));
+			message = await normalizeMessageFileUpload(message);
 		}
 
 		const now = new Date();

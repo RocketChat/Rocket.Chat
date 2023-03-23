@@ -1,13 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { Tracker } from 'meteor/tracker';
-import { Session } from 'meteor/session';
 
 import { Messages } from '../../../models/client';
+import { asReactiveSource } from '../../../../client/lib/tracker';
+import { RoomManager } from '../../../../client/lib/RoomManager';
 
 export const usersFromRoomMessages = new Mongo.Collection(null);
 Tracker.autorun(() => {
-	const rid = Session.get('openedRoom');
+	const rid = asReactiveSource(
+		(cb) => RoomManager.on('changed', cb),
+		() => RoomManager.opened,
+	);
 	const user = Meteor.userId() && Meteor.users.findOne(Meteor.userId(), { fields: { username: 1 } });
 	if (!rid || !user) {
 		return;

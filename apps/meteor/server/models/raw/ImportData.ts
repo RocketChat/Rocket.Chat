@@ -77,7 +77,7 @@ export class ImportDataRaw extends BaseRaw<IImportRecord> implements IImportData
 	}
 
 	async findChannelImportIdByNameOrImportId(channelIdentifier: string): Promise<string | undefined> {
-		const channel = await this.findOne(
+		const channel = await this.findOne<IImportChannelRecord>(
 			{
 				dataType: 'channel',
 				$or: [
@@ -96,11 +96,10 @@ export class ImportDataRaw extends BaseRaw<IImportRecord> implements IImportData
 			},
 		);
 
-		// TODO: typings of this model seems to take a ton of shapes
-		return (channel?.data as any)?.importIds?.shift();
+		return channel?.data?.importIds?.shift();
 	}
 
-	findDMForImportedUsers(...users: Array<string>): Promise<IImportRecord | undefined | null> {
+	findDMForImportedUsers(...users: Array<string>): Promise<IImportChannelRecord | null> {
 		const query: Filter<IImportRecord> = {
 			'dataType': 'channel',
 			'data.users': {
@@ -108,6 +107,6 @@ export class ImportDataRaw extends BaseRaw<IImportRecord> implements IImportData
 			},
 		};
 
-		return this.findOne(query);
+		return this.findOne<IImportChannelRecord>(query);
 	}
 }

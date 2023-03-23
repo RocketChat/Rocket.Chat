@@ -6,7 +6,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Messages } from '../../../models/server';
 import { RateLimiter } from '../../../lib/server';
 import { settings } from '../../../settings/server';
-import { canAccessRoomId } from '../../../authorization/server';
+import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { follow } from '../functions';
 import { Apps, AppEvents } from '../../../../ee/server/apps/orchestrator';
 
@@ -18,7 +18,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	followMessage({ mid }) {
+	async followMessage({ mid }) {
 		check(mid, String);
 
 		const uid = Meteor.userId();
@@ -37,14 +37,14 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!canAccessRoomId(message.rid, uid)) {
+		if (!(await canAccessRoomIdAsync(message.rid, uid))) {
 			throw new Meteor.Error('error-not-allowed', 'not-allowed', { method: 'followMessage' });
 		}
 
-		const followResult = follow({ tmid: message.tmid || message._id, uid });
+		const followResult = await follow({ tmid: message.tmid || message._id, uid });
 
 		const isFollowed = true;
-		Promise.await(Apps.triggerEvent(AppEvents.IPostMessageFollowed, message, Meteor.user(), isFollowed));
+		await Apps.triggerEvent(AppEvents.IPostMessageFollowed, message, Meteor.user(), isFollowed);
 
 		return followResult;
 	},

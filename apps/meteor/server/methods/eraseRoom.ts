@@ -5,7 +5,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { deleteRoom } from '../../app/lib/server/functions/deleteRoom';
-import { hasPermission } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { Rooms, Messages } from '../../app/models/server';
 import { Apps } from '../../ee/server/apps';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
@@ -25,14 +25,18 @@ export async function eraseRoom(rid: string, uid: string): Promise<void> {
 		});
 	}
 
-	if (!roomCoordinator.getRoomDirectives(room.t)?.canBeDeleted((permissionId, rid) => hasPermission(uid, permissionId, rid), room)) {
+	if (
+		!(await roomCoordinator
+			.getRoomDirectives(room.t)
+			?.canBeDeleted((permissionId, rid) => hasPermissionAsync(uid, permissionId, rid), room))
+	) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 			method: 'eraseRoom',
 		});
 	}
 
 	if (Apps?.isLoaded()) {
-		const prevent = Promise.await(Apps.getBridges()?.getListenerBridge().roomEvent('IPreRoomDeletePrevent', room));
+		const prevent = await Apps.getBridges()?.getListenerBridge().roomEvent('IPreRoomDeletePrevent', room);
 		if (prevent) {
 			throw new Meteor.Error('error-app-prevented-deleting', 'A Rocket.Chat App prevented the room erasing.');
 		}

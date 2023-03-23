@@ -16,7 +16,7 @@ import {
 	useVideoConfManager,
 	useVideoConfSetPreferences,
 } from '../../../contexts/VideoConfContext';
-import { useVideoConfWarning } from '../../../views/room/contextualBar/VideoConference/useVideoConfWarning';
+import { useVideoConfWarning } from '../../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
 import ParsedText from './uikit/ParsedText';
 
 let patched = false;

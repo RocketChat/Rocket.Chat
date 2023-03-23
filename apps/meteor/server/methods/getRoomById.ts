@@ -5,7 +5,7 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Rooms } from '../../app/models/server';
-import { canAccessRoom } from '../../app/authorization/server';
+import { canAccessRoomAsync } from '../../app/authorization/server';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -15,7 +15,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	getRoomById(rid) {
+	async getRoomById(rid) {
 		check(rid, String);
 		const userId = Meteor.userId();
 		if (!userId) {
@@ -30,7 +30,7 @@ Meteor.methods<ServerMethods>({
 				method: 'getRoomNameById',
 			});
 		}
-		if (!canAccessRoom(room, Meteor.user() as IUser)) {
+		if (!(await canAccessRoomAsync(room, Meteor.user() as IUser))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'getRoomById',
 			});
