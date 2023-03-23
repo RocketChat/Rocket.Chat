@@ -772,7 +772,7 @@ API.v1.addRoute(
 			if (!room) {
 				return API.v1.failure('Group does not exists');
 			}
-			const user = await getLoggedInUser(this.request.headers['x-auth-token'] as string, this.request.headers['x-user-id'] as string);
+			const user = await getLoggedInUser(this.request);
 
 			if (!user) {
 				return API.v1.failure('User does not exists');

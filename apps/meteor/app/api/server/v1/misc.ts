@@ -255,10 +255,7 @@ API.v1.addRoute(
 					text = `#${channel}`;
 					break;
 				case 'user':
-					if (
-						settings.get('API_Shield_user_require_auth') &&
-						!(await getLoggedInUser(this.request.headers['x-auth-token'] as string, this.request.headers['x-user-id'] as string))
-					) {
+					if (settings.get('API_Shield_user_require_auth') && !(await getLoggedInUser(this.request))) {
 						return API.v1.failure('You must be logged in to do this.');
 					}
 					const user = await getUserFromParams(this.queryParams as Record<string, any>);

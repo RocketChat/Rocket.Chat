@@ -232,7 +232,7 @@ API.v1.addRoute(
 		// Expects these query params: command: 'giphy', params: 'mine', roomId: 'value'
 		async get() {
 			const query = this.queryParams;
-			const user = await getLoggedInUser(this.request.headers['x-auth-token'] as string, this.request.headers['x-user-id'] as string);
+			const user = await getLoggedInUser(this.request);
 
 			if (typeof query.command !== 'string') {
 				return API.v1.failure('You must provide a command to get the previews from.');

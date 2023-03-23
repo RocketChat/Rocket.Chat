@@ -9,8 +9,8 @@ export async function getPaginationItems(params: { offset?: number; count?: numb
 	readonly offset: number;
 	readonly count: number;
 }> {
-	const hardUpperLimitTest = ((await Settings.findOneById('API_Upper_Count_Limit'))?.value as number) || 0;
-	const defaultCountTest = ((await Settings.findOneById('API_Default_Count'))?.value as number) || 0;
+	const hardUpperLimitTest = settings.get<number>('API_Upper_Count_Limit');
+	const defaultCountTest = settings.get<number>('API_Default_Count');
 
 	const hardUpperLimit = hardUpperLimitTest && hardUpperLimitTest <= 0 ? 100 : settings.get<number>('API_Upper_Count_Limit');
 	const defaultCount = defaultCountTest && defaultCountTest <= 0 ? 50 : settings.get<number>('API_Default_Count');
