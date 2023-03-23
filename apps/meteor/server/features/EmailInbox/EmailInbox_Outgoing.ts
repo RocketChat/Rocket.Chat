@@ -22,7 +22,7 @@ const language = settings.get<string>('Language') || 'en';
 const t = (s: string): string => TAPi18n.__(s, { lng: language });
 
 // TODO: change these messages with room notifications
-const sendErrorReplyMessage = (error: string, options: any): void => {
+const sendErrorReplyMessage = async (error: string, options: any) => {
 	if (!options?.rid || !options?.msgId) {
 		return;
 	}
@@ -35,10 +35,10 @@ const sendErrorReplyMessage = (error: string, options: any): void => {
 		ts: new Date(),
 	};
 
-	sendMessage(user, message, { _id: options.rid });
+	return sendMessage(user, message, { _id: options.rid });
 };
 
-const sendSuccessReplyMessage = (options: any): void => {
+const sendSuccessReplyMessage = async (options: any) => {
 	if (!options?.rid || !options?.msgId) {
 		return;
 	}
@@ -50,7 +50,7 @@ const sendSuccessReplyMessage = (options: any): void => {
 		ts: new Date(),
 	};
 
-	sendMessage(user, message, { _id: options.rid });
+	return sendMessage(user, message, { _id: options.rid });
 };
 
 async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promise<{ messageId: string }> {
@@ -75,7 +75,7 @@ async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promi
 				return;
 			}
 
-			sendErrorReplyMessage(err.message, options);
+			await sendErrorReplyMessage(err.message, options);
 		});
 }
 
@@ -175,13 +175,13 @@ slashCommands.add({
 
 callbacks.add(
 	'afterSaveMessage',
-	function (message: IMessage, room: any) {
+	async function (message: IMessage, room: any) {
 		if (!room?.email?.inbox) {
 			return message;
 		}
 
 		if (message.files?.length && message.u.username !== 'rocket.cat') {
-			sendMessage(
+			await sendMessage(
 				user,
 				{
 					msg: '',
@@ -216,7 +216,7 @@ callbacks.add(
 		const inbox = inboxes.get(room.email.inbox);
 
 		if (!inbox) {
-			sendErrorReplyMessage(`Email inbox ${room.email.inbox} not found or disabled.`, {
+			await sendErrorReplyMessage(`Email inbox ${room.email.inbox} not found or disabled.`, {
 				msgId: message._id,
 				sender: message.u.username,
 				rid: room._id,
