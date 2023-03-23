@@ -259,7 +259,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		type: MessageTypesValues,
 		roomId: string,
 		message: string,
-		user: IMessage['u'],
+		user: Pick<IMessage['u'], '_id' | 'username'>,
 		readReceiptsEnabled?: boolean,
 		extraData?: Record<string, string>,
 	): Promise<Omit<IMessage, '_updatedAt'>>;

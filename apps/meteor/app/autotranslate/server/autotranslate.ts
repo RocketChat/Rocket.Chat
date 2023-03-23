@@ -303,8 +303,8 @@ export abstract class AutoTranslate {
 				targetMessage = this.tokenize(targetMessage);
 
 				const translations = this._translateMessage(targetMessage, targetLanguages);
-				if (!_.isEmpty(translations) && TranslationProviderRegistry[Provider]) {
-					await Messages.addTranslations(message._id, translations, TranslationProviderRegistry[Provider]);
+				if (!_.isEmpty(translations)) {
+					await Messages.addTranslations(message._id, translations, TranslationProviderRegistry[Provider] || '');
 				}
 			});
 		}

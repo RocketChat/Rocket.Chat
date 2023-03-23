@@ -61,10 +61,6 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData);
 	}
 
-	createRoomRenamedWithRoomIdRoomNameAndUser(roomId, roomName, user, extraData) {
-		return this.createWithTypeRoomIdMessageAndUser('r', roomId, roomName, user, extraData);
-	}
-
 	setImportFileRocketChatAttachment(importFileId, rocketChatUrl, attachment) {
 		const query = {
 			'_importFile.id': importFileId,
