@@ -150,7 +150,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			const messageReturn = await processWebhookMessage(this.bodyParams, this.user)[0];
+			const messageReturn = (await processWebhookMessage(this.bodyParams, this.user))[0];
 
 			if (!messageReturn) {
 				return API.v1.failure('unknown-error');

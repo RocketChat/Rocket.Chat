@@ -11,7 +11,7 @@ export const processWebhookMessage = async function (messageObj, user, defaultVa
 	const sentData = [];
 	const channels = [].concat(messageObj.channel || messageObj.roomId || defaultValues.channel);
 
-	for (const channel of channels) {
+	for await (const channel of channels) {
 		const channelType = channel[0];
 
 		let channelValue = channel.substr(1);
