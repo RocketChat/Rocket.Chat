@@ -13,13 +13,13 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	'autoTranslate.translateMessage'(message, targetLanguage) {
+	async 'autoTranslate.translateMessage'(message, targetLanguage) {
 		if (!TranslationProviderRegistry.enabled) {
 			return;
 		}
 		const room = Rooms.findOneById(message?.rid);
 		if (message && room) {
-			TranslationProviderRegistry.translateMessage(message, room, targetLanguage);
+			await TranslationProviderRegistry.translateMessage(message, room, targetLanguage);
 		}
 	},
 });
