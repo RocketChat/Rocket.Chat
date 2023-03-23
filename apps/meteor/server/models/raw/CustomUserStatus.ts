@@ -1,5 +1,5 @@
 import type { ICustomUserStatus, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { ICustomUserStatusModel } from '@rocket.chat/model-typings';
+import type { ICustomUserStatusModel, InsertionModel } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, FindOptions, IndexDescription, InsertOneResult, UpdateResult, WithId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -22,7 +22,7 @@ export class CustomUserStatusRaw extends BaseRaw<ICustomUserStatus> implements I
 	}
 
 	// find
-	findByName(name: string, options: FindOptions<ICustomUserStatus>): FindCursor<ICustomUserStatus> {
+	findByName(name: string, options?: FindOptions<ICustomUserStatus>): FindCursor<ICustomUserStatus> {
 		const query = {
 			name,
 		};
@@ -30,7 +30,7 @@ export class CustomUserStatusRaw extends BaseRaw<ICustomUserStatus> implements I
 		return this.find(query, options);
 	}
 
-	findByNameExceptId(name: string, except: string, options: FindOptions<ICustomUserStatus>): FindCursor<ICustomUserStatus> {
+	findByNameExceptId(name: string, except: string, options?: FindOptions<ICustomUserStatus>): FindCursor<ICustomUserStatus> {
 		const query = {
 			_id: { $nin: [except] },
 			name,
@@ -61,7 +61,7 @@ export class CustomUserStatusRaw extends BaseRaw<ICustomUserStatus> implements I
 	}
 
 	// INSERT
-	create(data: ICustomUserStatus): Promise<InsertOneResult<WithId<ICustomUserStatus>>> {
+	create(data: InsertionModel<ICustomUserStatus>): Promise<InsertOneResult<WithId<ICustomUserStatus>>> {
 		return this.insertOne(data);
 	}
 }

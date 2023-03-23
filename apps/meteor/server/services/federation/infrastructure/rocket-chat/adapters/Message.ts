@@ -80,7 +80,7 @@ export class RocketChatMessageAdapter {
 				senderExternalId: user.getExternalId(),
 			}),
 		};
-		updateMessage(updatedMessage, user.getInternalReference(), originalMessage);
+		await updateMessage(updatedMessage, user.getInternalReference(), originalMessage);
 	}
 
 	private async getMessageToReplyToWhenQuoting(
@@ -140,7 +140,7 @@ export class RocketChatMessageAdapter {
 				user,
 			),
 		};
-		updateMessage(updatedMessage, user.getInternalReference(), editedMessage);
+		await updateMessage(updatedMessage, user.getInternalReference(), editedMessage);
 	}
 
 	public async sendFileMessage(

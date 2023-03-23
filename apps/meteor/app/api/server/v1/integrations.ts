@@ -55,7 +55,7 @@ API.v1.addRoute(
 			const { id } = queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields: projection, query } = await this.parseJsonQuery();
-			const ourQuery = Object.assign(mountIntegrationHistoryQueryBasedOnPermissions(userId, id), query);
+			const ourQuery = Object.assign(await mountIntegrationHistoryQueryBasedOnPermissions(userId, id), query);
 
 			const { cursor, totalCount } = IntegrationHistory.findPaginated(ourQuery, {
 				sort: sort || { _updatedAt: -1 },

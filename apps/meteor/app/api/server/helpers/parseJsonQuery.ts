@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { EJSON } from 'meteor/ejson';
 
-import { hasPermission } from '../../../authorization/server';
 import { isValidQuery } from '../lib/isValidQuery';
 import { clean } from '../lib/cleanQuery';
 import { API } from '../api';
 import type { Logger } from '../../../logger/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 const pathAllowConf = {
 	'/api/v1/users.list': ['$or', '$regex', '$and'],
@@ -79,13 +79,13 @@ export async function parseJsonQuery(
 	if (typeof fields === 'object') {
 		let nonSelectableFields = Object.keys(API.v1.defaultFieldsToExclude);
 		if (route.includes('/v1/users.')) {
-			const getFields = async (): Promise<string[]> =>
+			nonSelectableFields = nonSelectableFields.concat(
 				Object.keys(
-					(await hasPermission(userId, 'view-full-other-user-info'))
+					(await hasPermissionAsync(userId, 'view-full-other-user-info'))
 						? API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser
 						: API.v1.limitedUserFieldsToExclude,
-				);
-			nonSelectableFields = nonSelectableFields.concat(await getFields());
+				),
+			);
 		}
 
 		Object.keys(fields).forEach((k) => {
@@ -98,7 +98,7 @@ export async function parseJsonQuery(
 	// Limit the fields by default
 	fields = Object.assign({}, fields, API.v1.defaultFieldsToExclude);
 	if (route.includes('/v1/users.')) {
-		if (await hasPermission(userId, 'view-full-other-user-info')) {
+		if (await hasPermissionAsync(userId, 'view-full-other-user-info')) {
 			fields = Object.assign(fields, API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser);
 		} else {
 			fields = Object.assign(fields, API.v1.limitedUserFieldsToExclude);
@@ -125,7 +125,7 @@ export async function parseJsonQuery(
 		let nonQueryableFields = Object.keys(API.v1.defaultFieldsToExclude);
 
 		if (route.includes('/v1/users.')) {
-			if (await hasPermission(userId, 'view-full-other-user-info')) {
+			if (await hasPermissionAsync(userId, 'view-full-other-user-info')) {
 				nonQueryableFields = nonQueryableFields.concat(Object.keys(API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser));
 			} else {
 				nonQueryableFields = nonQueryableFields.concat(Object.keys(API.v1.limitedUserFieldsToExclude));
