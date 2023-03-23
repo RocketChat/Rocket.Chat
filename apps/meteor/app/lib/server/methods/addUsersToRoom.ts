@@ -38,8 +38,7 @@ Meteor.methods<ServerMethods>({
 
 		// Get user and room details
 		const room = Rooms.findOneById(data.rid);
-		const userId = Meteor.userId();
-		const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, userId, {
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, uid, {
 			projection: { _id: 1 },
 		});
 		const userInRoom = subscription != null;
@@ -53,11 +52,11 @@ Meteor.methods<ServerMethods>({
 
 		// Can add to any room you're in, with permission, otherwise need specific room type permission
 		let canAddUser = false;
-		if (userInRoom && (await hasPermissionAsync(userId, 'add-user-to-joined-room', room._id))) {
+		if (userInRoom && (await hasPermissionAsync(uid, 'add-user-to-joined-room', room._id))) {
 			canAddUser = true;
-		} else if (room.t === 'c' && (await hasPermissionAsync(userId, 'add-user-to-any-c-room'))) {
+		} else if (room.t === 'c' && (await hasPermissionAsync(uid, 'add-user-to-any-c-room'))) {
 			canAddUser = true;
-		} else if (room.t === 'p' && (await hasPermissionAsync(userId, 'add-user-to-any-p-room'))) {
+		} else if (room.t === 'p' && (await hasPermissionAsync(uid, 'add-user-to-any-p-room'))) {
 			canAddUser = true;
 		}
 
@@ -94,7 +93,7 @@ Meteor.methods<ServerMethods>({
 				if (!subscription) {
 					await addUserToRoom(data.rid, newUser || username, user);
 				} else {
-					void api.broadcast('notify.ephemeralMessage', userId, data.rid, {
+					void api.broadcast('notify.ephemeralMessage', uid, data.rid, {
 						msg: TAPi18n.__(
 							'Username_is_already_in_here',
 							{
