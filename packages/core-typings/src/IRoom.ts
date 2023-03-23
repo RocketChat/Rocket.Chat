@@ -1,7 +1,7 @@
 import type { ILivechatPriority } from './ILivechatPriority';
 import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
 import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IMessage } from './IMessage';
+import type { IMessage, MessageTypesValues } from './IMessage';
 import type { IUser, Username } from './IUser';
 import type { RoomType } from './RoomType';
 import type { IVisitor } from './IInquiry';
@@ -36,7 +36,7 @@ export interface IRoom extends IRocketChatRecord {
 
 	reactWhenReadOnly?: boolean;
 
-	sysMes?: string[];
+	sysMes?: MessageTypesValues[];
 
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 	uids?: Array<string>;

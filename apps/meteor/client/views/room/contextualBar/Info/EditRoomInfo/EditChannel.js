@@ -245,16 +245,16 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 	const archiveAction = useEndpointAction('POST', '/v1/rooms.changeArchivationState', { successMessage: t(archiveMessage) });
 
 	const handleSave = useMutableCallback(async () => {
-		const { joinCodeRequired, hideSysMes, ...data } = saveData.current;
+		const { joinCodeRequired, hideSysMes, systemMessages: systemMessagesFormData, ...data } = saveData.current;
 		delete data.archived;
+
+		const systemMessages = systemMessagesFormData?.length > 0 && hideSysMes ? systemMessagesFormData : [];
 		const save = () =>
 			saveAction({
 				rid: room._id,
 				...data,
 				...(joinCode && { joinCode: joinCodeRequired ? joinCode : '' }),
-				...((data.systemMessages || !hideSysMes) && {
-					systemMessages: hideSysMes && systemMessages,
-				}),
+				systemMessages,
 			});
 
 		const archive = () => archiveAction({ rid: room._id, action: archiveSelector });
