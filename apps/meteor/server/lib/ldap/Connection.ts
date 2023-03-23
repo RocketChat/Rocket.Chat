@@ -351,7 +351,7 @@ export class LDAPConnection {
 
 				res.on('searchEntry', (entry) => {
 					try {
-						const result = Promise.await(entryCallback(entry));
+						const result = entryCallback(entry);
 						if (result) {
 							entries.push(result as T);
 						}
@@ -483,7 +483,7 @@ export class LDAPConnection {
 
 			res.on('searchEntry', (entry) => {
 				try {
-					const result = entryCallback ? Promise.await(entryCallback(entry)) : entry;
+					const result = entryCallback ? entryCallback(entry) : entry;
 					entries.push(result as T);
 				} catch (e) {
 					searchLogger.error(e);
@@ -549,7 +549,7 @@ export class LDAPConnection {
 
 			res.on('searchEntry', (entry) => {
 				try {
-					const result = entryCallback ? Promise.await(entryCallback(entry)) : entry;
+					const result = entryCallback ? entryCallback(entry) : entry;
 					entries.push(result as T);
 
 					if (entries.length >= internalPageSize) {
