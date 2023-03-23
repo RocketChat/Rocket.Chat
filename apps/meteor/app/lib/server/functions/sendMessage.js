@@ -128,11 +128,11 @@ const validateAttachment = (attachment) => {
 		}),
 	);
 
-	if (attachment.fields && attachment.fields.length) {
+	if (attachment.fields?.length) {
 		attachment.fields.map(validateAttachmentsFields);
 	}
 
-	if (attachment.actions && attachment.actions.length) {
+	if (attachment.actions?.length) {
 		attachment.actions.map(validateAttachmentsActions);
 	}
 };
@@ -217,14 +217,14 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 
 	// For the Rocket.Chat Apps :)
 	if (Apps && Apps.isLoaded()) {
-		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message));
+		const prevent = await Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageSentPrevent', message);
 		if (prevent) {
 			return;
 		}
 
 		let result;
-		result = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentExtend', message));
-		result = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentModify', result));
+		result = await Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageSentExtend', message);
+		result = await Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageSentModify', result);
 
 		if (typeof result === 'object') {
 			message = Object.assign(message, result);
@@ -265,7 +265,7 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 		if (Apps && Apps.isLoaded()) {
 			// This returns a promise, but it won't mutate anything about the message
 			// so, we don't really care if it is successful or fails
-			Apps.getBridges().getListenerBridge().messageEvent('IPostMessageSent', message);
+			void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageSent', message);
 		}
 
 		/*
