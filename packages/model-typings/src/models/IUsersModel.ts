@@ -347,4 +347,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findAllUsersWithPendingAvatar(): FindCursor<IUser>;
 	updateCustomFieldsById(userId: string, customFields: Record<string, unknown>): Promise<UpdateResult>;
 	countRoomMembers(roomId: string): Promise<number>;
+
+	countFederatedExternalUsers(): Promise<number>;
 }

@@ -53,6 +53,10 @@ export class RocketChatSettingsAdapter {
 		return settings.get('Federation_Matrix_bridge_localpart');
 	}
 
+	public getMaximumSizeOfUsersWhenJoiningPublicRooms(): string {
+		return settings.get('Federation_Matrix_max_size_of_public_rooms_users');
+	}
+
 	public async disableFederation(): Promise<void> {
 		await Settings.updateValueById('Federation_Matrix_enabled', false);
 	}
@@ -243,6 +247,19 @@ export class RocketChatSettingsAdapter {
 					alert: 'Federation_Matrix_registration_file_Alert',
 				});
 			});
+		});
+
+		settingsRegistry.add('Federation_Matrix_max_size_of_public_rooms_users', 100, {
+			readonly: false,
+			type: 'int',
+			i18nLabel: 'Federation_Matrix_max_size_of_public_rooms_users',
+			i18nDescription: 'Federation_Matrix_max_size_of_public_rooms_users_desc',
+			alert: 'Federation_Matrix_max_size_of_public_rooms_users_Alert',
+			public: true,
+			enterprise: true,
+			invalidValue: false,
+			group: 'Federation',
+			section: 'Matrix Bridge',
 		});
 	}
 

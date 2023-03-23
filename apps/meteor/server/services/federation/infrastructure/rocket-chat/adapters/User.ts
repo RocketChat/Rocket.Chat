@@ -4,6 +4,7 @@ import { Users, MatrixBridgedUser } from '@rocket.chat/models';
 
 import { FederatedUser } from '../../../domain/FederatedUser';
 import { _setRealName as setRealName, setUserAvatar } from '../../../../../../app/lib/server';
+import { extractServerNameFromExternalIdentifier } from '../../matrix/converters/room/RoomReceiver';
 
 const createFederatedUserInstance = (externalUserId: string, user: IUser, remote = true): FederatedUser => {
 	const federatedUser = FederatedUser.createWithInternalReference(externalUserId, !remote, user);
@@ -99,10 +100,20 @@ export class RocketChatUserAdapter {
 	public async createFederatedUser(federatedUser: FederatedUser): Promise<void> {
 		const existingLocalUser = federatedUser.getUsername() && (await Users.findOneByUsername(federatedUser.getUsername() as string));
 		if (existingLocalUser) {
-			return MatrixBridgedUser.createOrUpdateByLocalId(existingLocalUser._id, federatedUser.getExternalId(), federatedUser.isRemote());
+			return MatrixBridgedUser.createOrUpdateByLocalId(
+				existingLocalUser._id,
+				federatedUser.getExternalId(),
+				federatedUser.isRemote(),
+				extractServerNameFromExternalIdentifier(federatedUser.getExternalId()),
+			);
 		}
 		const { insertedId } = await Users.insertOne(federatedUser.getStorageRepresentation());
-		return MatrixBridgedUser.createOrUpdateByLocalId(insertedId, federatedUser.getExternalId(), federatedUser.isRemote());
+		return MatrixBridgedUser.createOrUpdateByLocalId(
+			insertedId,
+			federatedUser.getExternalId(),
+			federatedUser.isRemote(),
+			extractServerNameFromExternalIdentifier(federatedUser.getExternalId()),
+		);
 	}
 
 	public async setAvatar(federatedUser: FederatedUser, avatarUrl: string): Promise<void> {

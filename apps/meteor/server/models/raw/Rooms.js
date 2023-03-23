@@ -1898,4 +1898,35 @@ export class RoomsRaw extends BaseRaw {
 
 		return this.updateOne(query, update);
 	}
+
+	async findBiggestFederatedRoomInNumberOfUsers(options) {
+		const asc = false;
+
+		return this.findFederatedRoomByAmountOfUsers(options, asc);
+	}
+
+	async findFederatedRoomByAmountOfUsers(options, asc = true) {
+		const query = {
+			federated: true,
+		};
+
+		const room = await (
+			await this.find(query, options)
+				.sort({ usersCount: asc ? 1 : -1 })
+				.limit(1)
+				.toArray()
+		).shift();
+
+		return room;
+	}
+
+	async findSmallestFederatedRoomInNumberOfUsers(options) {
+		const asc = true;
+
+		return this.findFederatedRoomByAmountOfUsers(options, asc);
+	}
+
+	async countFederatedRooms() {
+		return this.col.countDocuments({ federated: true });
+	}
 }

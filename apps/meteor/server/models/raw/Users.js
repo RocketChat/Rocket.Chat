@@ -2762,4 +2762,10 @@ export class UsersRaw extends BaseRaw {
 	countRoomMembers(roomId) {
 		return this.col.countDocuments({ __rooms: roomId, active: true });
 	}
+
+	countFederatedExternalUsers() {
+		return this.col.countDocuments({
+			federated: true,
+		});
+	}
 }
