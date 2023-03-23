@@ -27,7 +27,7 @@ export default {
 			'playwright-qase-reporter',
 			{
 				apiToken: `${process.env.QASE_API_TOKEN}`,
-				rootSuiteTitle: 'Cloud automation',
+				rootSuiteTitle: 'Rocket.chat automation',
 				projectCode: 'RC',
 				runComplete: true,
 				basePath: 'https://api.qase.io/v1',
