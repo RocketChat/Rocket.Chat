@@ -9,11 +9,7 @@ export class AppRealLogsStorage extends AppLogStorage {
 	}
 
 	async find(...args) {
-		try {
-			return this.db.find(...args).toArray();
-		} catch (e) {
-			throw e;
-		}
+		return this.db.find(...args).toArray();
 	}
 
 	async storeEntries(appId, logger) {
@@ -21,32 +17,16 @@ export class AppRealLogsStorage extends AppLogStorage {
 
 		item.instanceId = InstanceStatus.id();
 
-		try {
-			const id = (await this.db.insertOne(item)).insertedId;
+		const id = (await this.db.insertOne(item)).insertedId;
 
-			return this.db.findOneById(id);
-		} catch (e) {
-			throw e;
-		}
+		return this.db.findOneById(id);
 	}
 
 	async getEntriesFor(appId) {
-		let docs;
-
-		try {
-			docs = await this.db.find({ appId }).toArray();
-		} catch (e) {
-			throw e;
-		}
-
-		return docs;
+		return this.db.find({ appId }).toArray();
 	}
 
 	async removeEntriesFor(appId) {
-		try {
-			await this.db.deleteOne({ appId });
-		} catch (e) {
-			throw e;
-		}
+		await this.db.remove({ appId });
 	}
 }

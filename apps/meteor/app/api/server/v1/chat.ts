@@ -8,7 +8,7 @@ import { roomAccessAttributes } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
-import { processWebhookMessage } from '../../../lib/server';
+import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { settings } from '../../../settings/server';
 import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
@@ -150,7 +150,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			const messageReturn = await processWebhookMessage(this.bodyParams, this.user)[0];
+			const messageReturn = (await processWebhookMessage(this.bodyParams, this.user))[0];
 
 			if (!messageReturn) {
 				return API.v1.failure('unknown-error');
