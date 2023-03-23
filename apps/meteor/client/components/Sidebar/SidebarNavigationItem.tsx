@@ -31,7 +31,8 @@ const SidebarNavigationItem: FC<SidebarNavigationItemProps> = ({
 	badge: Badge,
 }) => {
 	const params = useMemo(() => ({ group: pathGroup }), [pathGroup]);
-	const path = useRoutePath(pathSection, params);
+	const routePath = useRoutePath(pathSection, params);
+	const path = externalUrl ? pathSection : routePath;
 	const isActive = !!path && currentPath?.includes(path as string);
 
 	if (permissionGranted === false || (typeof permissionGranted === 'function' && !permissionGranted())) {
