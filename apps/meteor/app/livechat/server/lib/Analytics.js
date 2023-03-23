@@ -9,6 +9,14 @@ import { Logger } from '../../../logger/server';
 const HOURS_IN_DAY = 24;
 const logger = new Logger('OmnichannelAnalytics');
 
+async function* dayIterator(from, to) {
+	const m = moment(from);
+	while (m.diff(to, 'days') <= 0) {
+		yield moment(m);
+		m.add(1, 'days');
+	}
+}
+
 export const Analytics = {
 	async getAgentOverviewData(options) {
 		const { departmentId, utcOffset, daterange: { from: fDate, to: tDate } = {}, chartOptions: { name } = {} } = options;
@@ -66,7 +74,8 @@ export const Analytics = {
 
 		if (isSameDay) {
 			// data for single day
-			for (let m = moment(from), currentHour = 0; currentHour < HOURS_IN_DAY; currentHour++) {
+			const m = moment(from);
+			for await (const currentHour of Array.from({ length: HOURS_IN_DAY }, (_, i) => i)) {
 				const hour = m.add(currentHour ? 1 : 0, 'hour').format('H');
 				const label = {
 					from: moment.utc().set({ hour }).tz(timezone).format('hA'),
@@ -79,11 +88,10 @@ export const Analytics = {
 					lt: moment(m).add(1, 'hours'),
 				};
 
-				// eslint-disable-next-line no-await-in-loop
 				data.dataPoints.push(await this.ChartData[name](date, departmentId));
 			}
 		} else {
-			for (let m = moment(from); m.diff(to, 'days') <= 0; m.add(1, 'days')) {
+			for await (const m of dayIterator(from, to)) {
 				data.dataLabels.push(m.format('M/D'));
 
 				const date = {
@@ -91,7 +99,6 @@ export const Analytics = {
 					lt: moment(m).add(1, 'days'),
 				};
 
-				// eslint-disable-next-line no-await-in-loop
 				data.dataPoints.push(await this.ChartData[name](date, departmentId));
 			}
 		}

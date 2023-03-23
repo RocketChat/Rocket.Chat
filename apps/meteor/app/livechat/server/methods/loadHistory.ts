@@ -35,7 +35,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const room = await LivechatRooms.findOneByIdAndVisitorToken(rid, token, { _id: 1 });
+		const room = await LivechatRooms.findOneByIdAndVisitorToken(rid, token, { projection: { _id: 1 } });
 		if (!room) {
 			throw new Meteor.Error('invalid-room', 'Invalid Room', { method: 'livechat:loadHistory' });
 		}
