@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
 import { readMessage } from '../../app/ui-utils/client';
+import { RoomManager } from '../lib/RoomManager';
 
 Meteor.startup(() => {
 	window.addEventListener('blur', () => {
@@ -20,7 +21,7 @@ Meteor.startup(() => {
 		const key = event.which;
 		if (key === 27) {
 			// ESCAPE KEY
-			const rid = Session.get('openedRoom');
+			const rid = RoomManager.opened;
 			if (!rid) {
 				return;
 			}

@@ -87,7 +87,6 @@ export interface IRoomTypeClientDirectives {
 		room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid' | 'avatarETag' | 'uids' | 'usernames'> & { username?: IRoom['_id'] },
 	) => string;
 	getIcon: (room: Partial<IRoom>) => IRoomTypeConfig['icon'];
-	getUserStatus: (roomId: string) => string | undefined;
 	findRoom: (identifier: string) => IRoom | undefined;
 	showJoinLink: (roomId: string) => boolean;
 	isLivechatRoom: () => boolean;
@@ -112,9 +111,9 @@ export interface IRoomTypeServerDirectives {
 		notificationMessage: string,
 		userId: string,
 	) => { title: string | undefined; text: string };
-	getMsgSender: (senderId: IRocketChatRecord['_id']) => IRocketChatRecord | undefined;
+	getMsgSender: (senderId: IRocketChatRecord['_id']) => Promise<IRocketChatRecord | undefined>;
 	includeInRoomSearch: () => boolean;
 	getReadReceiptsExtraData: (message: IMessage) => Partial<ReadReceipt>;
 	includeInDashboard: () => boolean;
-	roomFind?: (rid: string) => IRoom | undefined;
+	roomFind?: (rid: string) => Promise<IRoom | undefined> | IRoom | undefined;
 }

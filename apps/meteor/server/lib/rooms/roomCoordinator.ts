@@ -48,7 +48,7 @@ class RoomCoordinatorServer extends RoomCoordinator {
 
 				return { title, text };
 			},
-			getMsgSender(senderId: IRocketChatRecord['_id']): IRocketChatRecord | undefined {
+			getMsgSender(senderId: IRocketChatRecord['_id']): Promise<IRocketChatRecord | undefined> {
 				return Users.findOneById(senderId);
 			},
 			includeInRoomSearch(): boolean {
