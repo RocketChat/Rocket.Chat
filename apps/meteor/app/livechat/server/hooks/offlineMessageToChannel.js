@@ -7,7 +7,7 @@ import { LivechatDepartment, Rooms, Users } from '../../../models/server';
 
 callbacks.add(
 	'livechat.offlineMessage',
-	(data) => {
+	async (data) => {
 		if (!settings.get('Livechat_OfflineMessageToChannel_enabled')) {
 			return data;
 		}
@@ -58,7 +58,7 @@ callbacks.add(
 			groupable: false,
 		};
 
-		sendMessage(user, message, room, true);
+		await sendMessage(user, message, room, true);
 	},
 	callbacks.priority.MEDIUM,
 	'livechat-send-email-offline-message-to-channel',
