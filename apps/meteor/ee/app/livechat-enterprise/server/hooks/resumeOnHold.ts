@@ -6,7 +6,7 @@ import { LivechatRooms } from '../../../../../app/models/server';
 
 callbacks.add(
 	'afterSaveMessage',
-	(message, roomParams) => {
+	async (message, roomParams) => {
 		// skips this callback if the message was edited
 		if (isEditedMessage(message)) {
 			return message;
@@ -36,7 +36,7 @@ callbacks.add(
 
 		// if a visitor sends a message in room which is On Hold
 		if (message.token && room.onHold) {
-			Meteor.call('livechat:resumeOnHold', rid, { clientAction: false });
+			await Meteor.callAsync('livechat:resumeOnHold', rid, { clientAction: false });
 		}
 
 		return message;
