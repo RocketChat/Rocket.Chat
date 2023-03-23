@@ -97,7 +97,7 @@ export interface IRoomTypeClientDirectives {
 export interface IRoomTypeServerDirectives {
 	config: IRoomTypeConfig;
 
-	allowRoomSettingChange: (room: IRoom, setting: ValueOf<typeof RoomSettingsEnum>) => boolean;
+	allowRoomSettingChange: (room: IRoom, setting: ValueOf<typeof RoomSettingsEnum>) => Partial<boolean>;
 	allowMemberAction: (room: IRoom, action: ValueOf<typeof RoomMemberActions>, userId?: IUser['_id']) => boolean;
 	roomName: (room: IRoom, userId?: string) => string | undefined;
 	isGroupChat: (room: IRoom) => boolean;

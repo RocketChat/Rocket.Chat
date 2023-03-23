@@ -92,16 +92,14 @@ export class RocketChatSettingsAdapter {
 				'Federation_Matrix_bridge_localpart',
 			],
 			([enabled]) =>
-				Promise.await(
-					callback(
-						enabled === true,
-						this.getApplicationServiceId(),
-						this.getHomeServerUrl(),
-						this.getHomeServerDomain(),
-						this.getBridgeUrl(),
-						this.getBridgePort(),
-						this.generateRegistrationFileObject(),
-					),
+				callback(
+					enabled === true,
+					this.getApplicationServiceId(),
+					this.getHomeServerUrl(),
+					this.getHomeServerDomain(),
+					this.getBridgeUrl(),
+					this.getBridgePort(),
+					this.generateRegistrationFileObject(),
 				),
 		);
 	}
