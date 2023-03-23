@@ -650,13 +650,13 @@ class RocketChatIntegrationHandler {
 		}
 	}
 
-	executeTrigger(trigger, argObject) {
-		for (const url of trigger.urls) {
-			this.executeTriggerUrl(url, trigger, argObject, 0);
+	async executeTrigger(trigger, argObject) {
+		for await (const url of trigger.urls) {
+			await this.executeTriggerUrl(url, trigger, argObject, 0);
 		}
 	}
 
-	executeTriggerUrl(url, trigger, { event, message, room, owner, user }, theHistoryId, tries = 0) {
+	async executeTriggerUrl(url, trigger, { event, message, room, owner, user }, theHistoryId, tries = 0) {
 		if (!this.isTriggerEnabled(trigger)) {
 			outgoingLogger.warn(`The trigger "${trigger.name}" is no longer enabled, stopping execution of it at try: ${tries}`);
 			return;
@@ -735,7 +735,7 @@ class RocketChatIntegrationHandler {
 		}
 
 		if (opts.message) {
-			const prepareMessage = Promise.await(this.sendMessage({ trigger, room, message: opts.message, data }));
+			const prepareMessage = await this.sendMessage({ trigger, room, message: opts.message, data });
 			this.updateHistory({
 				historyId,
 				step: 'after-prepare-send-message',
@@ -821,7 +821,7 @@ class RocketChatIntegrationHandler {
 					const scriptResult = this.executeScript(trigger, 'process_outgoing_response', sandbox, historyId);
 
 					if (scriptResult && scriptResult.content) {
-						const resultMessage = this.sendMessage({
+						const resultMessage = await this.sendMessage({
 							trigger,
 							room,
 							message: scriptResult.content,
@@ -918,7 +918,7 @@ class RocketChatIntegrationHandler {
 				// process outgoing webhook response as a new message
 				if (content && this.successResults.includes(res.status)) {
 					if (data?.text || data?.attachments) {
-						const resultMsg = this.sendMessage({ trigger, room, message: data, data });
+						const resultMsg = await this.sendMessage({ trigger, room, message: data, data });
 						this.updateHistory({
 							historyId,
 							step: 'url-response-sent-message',
@@ -958,7 +958,7 @@ class RocketChatIntegrationHandler {
 			owner = Models.Users.findOneById(history.data.owner._id);
 		}
 
-		this.executeTriggerUrl(history.url, integration, { event, message, room, owner, user });
+		Promise.await(this.executeTriggerUrl(history.url, integration, { event, message, room, owner, user }));
 	}
 }
 const triggerHandler = new RocketChatIntegrationHandler();
