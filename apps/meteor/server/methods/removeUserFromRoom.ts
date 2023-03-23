@@ -44,7 +44,7 @@ Meteor.methods<ServerMethods>({
 
 		const room = Rooms.findOneById(data.rid);
 
-		if (!room || !roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.REMOVE_USER, fromId)) {
+		if (!room || !roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.REMOVE_USER, fromId)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'removeUserFromRoom',
 			});
