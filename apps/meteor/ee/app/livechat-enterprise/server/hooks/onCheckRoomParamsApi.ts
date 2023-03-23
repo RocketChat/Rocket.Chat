@@ -4,7 +4,7 @@ import { callbacks } from '../../../../../lib/callbacks';
 
 callbacks.add(
 	'livechat.onCheckRoomApiParams',
-	(params) => Object.assign({ ...params }, { sla: Match.Maybe(String), priority: Match.Maybe(String) }),
+	(params) => ({ ...params, sla: Match.Maybe(String), priority: Match.Maybe(String) }),
 	callbacks.priority.MEDIUM,
 	'livechat-on-check-room-params-api',
 );
