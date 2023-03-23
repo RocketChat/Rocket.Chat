@@ -11,7 +11,7 @@ class RoomCoordinatorServer extends RoomCoordinator {
 			allowRoomSettingChange(_room: IRoom, _setting: ValueOf<typeof RoomSettingsEnum>) {
 				return true;
 			},
-			async allowMemberAction(_room: IRoom, _action: ValueOf<typeof RoomMemberActions>, _userId?: IUser['_id']): Promise<boolean> {
+			allowMemberAction(_room: IRoom, _action: ValueOf<typeof RoomMemberActions>, _userId?: IUser['_id']): boolean {
 				return false;
 			},
 			roomName(_room: IRoom, _userId?: string): string {

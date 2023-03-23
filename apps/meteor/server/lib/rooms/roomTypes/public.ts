@@ -31,9 +31,9 @@ roomCoordinator.add(PublicRoomType, {
 		}
 	},
 
-	allowMemberAction(_room, action, userId) {
+	allowMemberAction(_room, action, userId): boolean {
 		if (isRoomFederated(_room as IRoom)) {
-			return Federation.actionAllowed(_room, action, userId);
+			return Promise.await(Federation.actionAllowed(_room, action, userId));
 		}
 		switch (action) {
 			case RoomMemberActions.BLOCK:
