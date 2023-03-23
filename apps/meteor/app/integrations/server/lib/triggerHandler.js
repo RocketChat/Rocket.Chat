@@ -11,7 +11,8 @@ import { Integrations, IntegrationHistory } from '@rocket.chat/models';
 import * as Models from '../../../models/server';
 import * as s from '../../../../lib/utils/stringUtils';
 import { settings } from '../../../settings/server';
-import { getRoomByNameOrIdWithOptionToJoin, processWebhookMessage } from '../../../lib/server';
+import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server';
+import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { outgoingLogger } from '../logger';
 import { outgoingEvents } from '../../lib/outgoingEvents';
 import { fetch } from '../../../../server/lib/http/fetch';
@@ -175,7 +176,7 @@ class RocketChatIntegrationHandler {
 	}
 
 	// Trigger is the trigger, nameOrId is a string which is used to try and find a room, room is a room, message is a message, and data contains "user_name" if trigger.impersonateUser is truthful.
-	sendMessage({ trigger, nameOrId = '', room, message, data }) {
+	async sendMessage({ trigger, nameOrId = '', room, message, data }) {
 		let user;
 		// Try to find the user who we are impersonating
 		if (trigger.impersonateUser) {
@@ -224,7 +225,7 @@ class RocketChatIntegrationHandler {
 			message.channel = `#${tmpRoom._id}`;
 		}
 
-		message = processWebhookMessage(message, user, defaultValues);
+		message = await processWebhookMessage(message, user, defaultValues);
 		return message;
 	}
 
@@ -734,7 +735,7 @@ class RocketChatIntegrationHandler {
 		}
 
 		if (opts.message) {
-			const prepareMessage = this.sendMessage({ trigger, room, message: opts.message, data });
+			const prepareMessage = Promise.await(this.sendMessage({ trigger, room, message: opts.message, data }));
 			this.updateHistory({
 				historyId,
 				step: 'after-prepare-send-message',
