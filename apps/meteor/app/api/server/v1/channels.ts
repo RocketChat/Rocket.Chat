@@ -691,11 +691,7 @@ API.v1.addRoute(
 			let error;
 
 			try {
-<<<<<<< HEAD
-				API.channels?.create.validate({
-=======
-				await API.channels.create.validate({
->>>>>>> refactor/api-helpers
+				await API.channels?.create.validate({
 					user: {
 						value: userId,
 					},

@@ -14,7 +14,6 @@ import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
 import { settings } from '../../settings/server';
 import { metrics } from '../../metrics/server';
-import { hasPermission } from '../../authorization/server';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import { checkCodeForUser } from '../../2fa/server/code';
 import type { PermissionsPayload } from './api.helpers';
