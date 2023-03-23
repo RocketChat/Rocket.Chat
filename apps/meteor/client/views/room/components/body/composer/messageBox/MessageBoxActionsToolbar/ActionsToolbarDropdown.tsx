@@ -19,7 +19,7 @@ type ActionsToolbarDropdownProps = {
 	actions?: ReactNode[];
 };
 
-const ActionsToolbarDropdown = ({ chatContext, isRecording, rid, tmid, actions }: ActionsToolbarDropdownProps) => {
+const ActionsToolbarDropdown = ({ chatContext, isRecording, rid, tmid, actions, ...props }: ActionsToolbarDropdownProps) => {
 	const t = useTranslation();
 	const reference = useRef(null);
 	const target = useRef(null);
@@ -46,7 +46,15 @@ const ActionsToolbarDropdown = ({ chatContext, isRecording, rid, tmid, actions }
 
 	return (
 		<>
-			<IconButton data-qa-id='menu-more-actions' disabled={isRecording} small ref={reference} icon='plus' onClick={() => toggle()} />
+			<IconButton
+				data-qa-id='menu-more-actions'
+				disabled={isRecording}
+				small
+				ref={reference}
+				icon='plus'
+				onClick={() => toggle()}
+				{...props}
+			/>
 			{isVisible && (
 				<Dropdown reference={reference} ref={target} placement='bottom-start'>
 					<OptionTitle>{t('Create_new')}</OptionTitle>

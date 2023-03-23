@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ILivechatAgent, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
-import { LivechatVisitors, Users, LivechatRooms as LivechatRoomsRaw, Subscriptions } from '@rocket.chat/models';
+import { LivechatVisitors, Users, LivechatRooms as LivechatRoomsRaw, Subscriptions, Messages } from '@rocket.chat/models';
 import {
 	isLiveChatRoomForwardProps,
 	isPOSTLivechatRoomCloseParams,
@@ -17,20 +17,20 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { settings as rcSettings } from '../../../../settings/server';
-import { Messages, LivechatRooms } from '../../../../models/server';
+import { LivechatRooms } from '../../../../models/server';
 import { API } from '../../../../api/server';
 import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
-import { canAccessRoom, hasPermission } from '../../../../authorization/server';
+import { canAccessRoomAsync } from '../../../../authorization/server';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../../../../lib/server/functions';
 import { apiDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 import { deprecationWarning } from '../../../../api/server/helpers/deprecationWarning';
 import { callbacks } from '../../../../../lib/callbacks';
-import type { CloseRoomParams } from '../../lib/LivechatTyped.d';
+import type { CloseRoomParams } from '../../lib/LivechatTyped';
 
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: true }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
 
@@ -251,7 +251,7 @@ API.v1.addRoute(
 			}
 
 			// update visited page history to not expire
-			Messages.keepHistoryForToken(token);
+			await Messages.keepHistoryForToken(token);
 
 			const { _id, username, name } = guest;
 			const transferredBy = normalizeTransferredByData({ _id, username, name, userType: 'visitor' }, room);
@@ -376,7 +376,7 @@ API.v1.addRoute(
 				throw new Error('invalid-room-visitor');
 			}
 
-			room = Livechat.changeRoomVisitor(this.userId, rid, visitor);
+			room = await Livechat.changeRoomVisitor(this.userId, rid, visitor);
 
 			return API.v1.success(deprecationWarning({ endpoint: 'livechat/room.visitor', versionWillBeRemoved: '6.0', response: { room } }));
 		},
@@ -402,11 +402,11 @@ API.v1.addRoute(
 				throw new Error('error-invalid-room');
 			}
 
-			if (!canAccessRoom(room, user)) {
+			if (!(await canAccessRoomAsync(room, user))) {
 				throw new Error('error-not-allowed');
 			}
 
-			addUserToRoom(roomId, user);
+			await addUserToRoom(roomId, user);
 
 			return API.v1.success();
 		},
@@ -424,7 +424,10 @@ API.v1.addRoute(
 				throw new Error('error-invalid-room');
 			}
 
-			if ((!room.servedBy || room.servedBy._id !== this.userId) && !hasPermission(this.userId, 'save-others-livechat-room-info')) {
+			if (
+				(!room.servedBy || room.servedBy._id !== this.userId) &&
+				!(await hasPermissionAsync(this.userId, 'save-others-livechat-room-info'))
+			) {
 				return API.v1.unauthorized();
 			}
 

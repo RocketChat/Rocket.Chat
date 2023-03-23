@@ -229,7 +229,7 @@ export class SettingsRegistry {
 			(preset: ISettingAddOptions) =>
 			(id: string, value: SettingValue, options: ISettingAddOptions = {}): void => {
 				const mergedOptions = { ...preset, ...options };
-				this.add(id, value, mergedOptions);
+				void this.add(id, value, mergedOptions);
 			};
 		const sectionSetWith =
 			(preset: ISettingAddOptions) =>

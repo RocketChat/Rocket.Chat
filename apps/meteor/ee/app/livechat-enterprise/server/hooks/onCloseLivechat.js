@@ -3,10 +3,10 @@ import { settings } from '../../../../../app/settings/server';
 import { debouncedDispatchWaitingQueueStatus } from '../lib/Helper';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 
-const onCloseLivechat = (params) => {
+const onCloseLivechat = async (params) => {
 	const { room } = params;
 
-	Promise.await(LivechatEnterprise.releaseOnHoldChat(room));
+	await LivechatEnterprise.releaseOnHoldChat(room);
 
 	if (!settings.get('Livechat_waiting_queue')) {
 		return params;

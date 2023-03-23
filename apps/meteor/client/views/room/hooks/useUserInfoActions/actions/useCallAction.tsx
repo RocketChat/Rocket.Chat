@@ -7,7 +7,7 @@ import { closeUserCard } from '../../../../../../app/ui/client/lib/userCard';
 import { useVideoConfDispatchOutgoing, useVideoConfIsCalling, useVideoConfIsRinging } from '../../../../../contexts/VideoConfContext';
 import { VideoConfManager } from '../../../../../lib/VideoConfManager';
 import type { Action } from '../../../../hooks/useActionSpread';
-import { useVideoConfWarning } from '../../../contextualBar/VideoConference/useVideoConfWarning';
+import { useVideoConfWarning } from '../../../contextualBar/VideoConference/hooks/useVideoConfWarning';
 
 export const useCallAction = (user: Pick<IUser, '_id' | 'username'>): Action | undefined => {
 	const t = useTranslation();
@@ -38,7 +38,7 @@ export const useCallAction = (user: Pick<IUser, '_id' | 'username'>): Action | u
 		return room && !isRoomFederated(room) && user._id !== ownUserId
 			? {
 					label: t('Start_call'),
-					icon: 'phone',
+					icon: 'phone' as const,
 					action,
 			  }
 			: undefined;

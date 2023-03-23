@@ -54,7 +54,7 @@ API.v1.addRoute(
 			const { id } = queryParams;
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields: projection, query } = this.parseJsonQuery();
-			const ourQuery = Object.assign(mountIntegrationHistoryQueryBasedOnPermissions(userId, id), query);
+			const ourQuery = Object.assign(await mountIntegrationHistoryQueryBasedOnPermissions(userId, id), query);
 
 			const { cursor, totalCount } = IntegrationHistory.findPaginated(ourQuery, {
 				sort: sort || { _updatedAt: -1 },
@@ -95,7 +95,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields: projection, query } = this.parseJsonQuery();
 
-			const ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query) as Filter<IIntegration>;
+			const ourQuery = Object.assign(await mountIntegrationQueryBasedOnPermissions(this.userId), query) as Filter<IIntegration>;
 
 			const { cursor, totalCount } = Integrations.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },
@@ -121,7 +121,7 @@ API.v1.addRoute(
 	'integrations.remove',
 	{ authRequired: true, validateParams: isIntegrationsRemoveProps },
 	{
-		post() {
+		async post() {
 			if (
 				!hasAtLeastOnePermission(this.userId, [
 					'manage-outgoing-integrations',
@@ -143,9 +143,9 @@ API.v1.addRoute(
 					}
 
 					if (bodyParams.target_url) {
-						integration = Promise.await(Integrations.findOne({ urls: bodyParams.target_url }));
+						integration = await Integrations.findOne({ urls: bodyParams.target_url });
 					} else if (bodyParams.integrationId) {
-						integration = Promise.await(Integrations.findOne({ _id: bodyParams.integrationId }));
+						integration = await Integrations.findOne({ _id: bodyParams.integrationId });
 					}
 
 					if (!integration) {
@@ -169,7 +169,7 @@ API.v1.addRoute(
 						}),
 					);
 
-					integration = Promise.await(Integrations.findOne({ _id: bodyParams.integrationId }));
+					integration = await Integrations.findOne({ _id: bodyParams.integrationId });
 
 					if (!integration) {
 						return API.v1.failure('No integration found.');
@@ -194,20 +194,18 @@ API.v1.addRoute(
 	'integrations.get',
 	{ authRequired: true, validateParams: isIntegrationsGetProps },
 	{
-		get() {
+		async get() {
 			const { integrationId, createdBy } = this.queryParams;
 			if (!integrationId) {
 				return API.v1.failure('The query parameter "integrationId" is required.');
 			}
 
 			return API.v1.success({
-				integration: Promise.await(
-					findOneIntegration({
-						userId: this.userId,
-						integrationId,
-						createdBy,
-					}),
-				),
+				integration: await findOneIntegration({
+					userId: this.userId,
+					integrationId,
+					createdBy,
+				}),
 			});
 		},
 	},
@@ -217,16 +215,16 @@ API.v1.addRoute(
 	'integrations.update',
 	{ authRequired: true, validateParams: isIntegrationsUpdateProps },
 	{
-		put() {
+		async put() {
 			const { bodyParams } = this;
 
 			let integration;
 			switch (bodyParams.type) {
 				case 'webhook-outgoing':
 					if (bodyParams.target_url) {
-						integration = Promise.await(Integrations.findOne({ urls: bodyParams.target_url }));
+						integration = await Integrations.findOne({ urls: bodyParams.target_url });
 					} else if (bodyParams.integrationId) {
-						integration = Promise.await(Integrations.findOne({ _id: bodyParams.integrationId }));
+						integration = await Integrations.findOne({ _id: bodyParams.integrationId });
 					}
 
 					if (!integration) {
@@ -236,10 +234,10 @@ API.v1.addRoute(
 					Meteor.call('updateOutgoingIntegration', integration._id, bodyParams);
 
 					return API.v1.success({
-						integration: Promise.await(Integrations.findOne({ _id: integration._id })),
+						integration: await Integrations.findOne({ _id: integration._id }),
 					});
 				case 'webhook-incoming':
-					integration = Promise.await(Integrations.findOne({ _id: bodyParams.integrationId }));
+					integration = await Integrations.findOne({ _id: bodyParams.integrationId });
 
 					if (!integration) {
 						return API.v1.failure('No integration found.');
@@ -248,7 +246,7 @@ API.v1.addRoute(
 					Meteor.call('updateIncomingIntegration', integration._id, bodyParams);
 
 					return API.v1.success({
-						integration: Promise.await(Integrations.findOne({ _id: integration._id })),
+						integration: await Integrations.findOne({ _id: integration._id }),
 					});
 				default:
 					return API.v1.failure('Invalid integration type.');

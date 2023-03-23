@@ -17,14 +17,15 @@ import type {
 	OEmbedUrlContent,
 	Username,
 	IOmnichannelRoom,
+	ILivechatTag,
 } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 
 import type { Logger } from '../app/logger/server';
 import type { IBusinessHourBehavior } from '../app/livechat/server/business-hour/AbstractBusinessHour';
-import { getRandomId } from './random';
 import type { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
 import { compareByRanking } from './utils/comparisons';
-import type { CloseRoomParams } from '../app/livechat/server/lib/LivechatTyped.d';
+import type { CloseRoomParams } from '../app/livechat/server/lib/LivechatTyped';
 
 enum CallbackPriority {
 	HIGH = -1000,
@@ -49,6 +50,7 @@ type EventLikeCallbackSignatures = {
 	'beforeReadMessages': (rid: IRoom['_id'], uid: IUser['_id']) => void;
 	'afterDeleteUser': (user: IUser) => void;
 	'afterFileUpload': (params: { user: IUser; room: IRoom; message: IMessage }) => void;
+	'afterRoomNameChange': (params: { rid: string; name: string; oldName: string }) => void;
 	'afterSaveMessage': (message: IMessage, room: IRoom, uid?: string) => void;
 	'livechat.removeAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.saveAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
@@ -78,6 +80,12 @@ type EventLikeCallbackSignatures = {
 	'federation.onAddUsersToARoom': (params: { invitees: IUser[] | Username[]; inviter: IUser }, room: IRoom) => void;
 	'onJoinVideoConference': (callId: VideoConference['_id'], userId?: IUser['_id']) => Promise<void>;
 	'usernameSet': () => void;
+	'beforeLeaveRoom': (user: IUser, room: IRoom) => void;
+	'beforeJoinRoom': (user: IUser, room: IRoom) => void;
+	'beforeMuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
+	'afterMuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
+	'beforeUnmuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
+	'afterUnmuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
 };
 
 /**
@@ -147,6 +155,7 @@ type ChainedCallbackSignatures = {
 		parsedUrl: ParsedUrl;
 		content: OEmbedUrlContent;
 	};
+	'livechat.beforeListTags': () => ILivechatTag[];
 };
 
 type Hook =
@@ -158,7 +167,6 @@ type Hook =
 	| 'afterProcessOAuthUser'
 	| 'afterRemoveFromRoom'
 	| 'afterRoomArchived'
-	| 'afterRoomNameChange'
 	| 'afterRoomTopicChange'
 	| 'afterSaveUser'
 	| 'afterValidateLogin'
@@ -168,8 +176,6 @@ type Hook =
 	| 'beforeCreateRoom'
 	| 'beforeCreateUser'
 	| 'beforeGetMentions'
-	| 'beforeJoinRoom'
-	| 'beforeLeaveRoom'
 	| 'beforeReadMessages'
 	| 'beforeRemoveFromRoom'
 	| 'beforeSaveMessage'
@@ -178,7 +184,6 @@ type Hook =
 	| 'enter-room'
 	| 'livechat.beforeForwardRoomToDepartment'
 	| 'livechat.beforeInquiry'
-	| 'livechat.beforeListTags'
 	| 'livechat.beforeRoom'
 	| 'livechat.beforeRouteChat'
 	| 'livechat.chatQueued'
@@ -231,6 +236,9 @@ type CallbackTracker = (callback: Callback) => () => void;
 
 type HookTracker = (params: { hook: Hook; length: number }) => () => void;
 
+// Temporary since we are still using callbacks on client side
+Promise.await = Promise.await || ((promise: Promise<unknown>) => promise);
+
 class Callbacks {
 	private logger: Logger | undefined = undefined;
 
@@ -259,7 +267,7 @@ class Callbacks {
 		const stopTracking = this.trackCallback?.(callback);
 
 		try {
-			return callback(item, constant);
+			return Promise.await(callback(item, constant));
 		} finally {
 			stopTracking?.();
 		}
@@ -349,7 +357,7 @@ class Callbacks {
 		id?: string,
 	): void;
 
-	add(hook: Hook, callback: (item: unknown, constant?: unknown) => unknown, priority = this.priority.MEDIUM, id = getRandomId()): void {
+	add(hook: Hook, callback: (item: unknown, constant?: unknown) => unknown, priority = this.priority.MEDIUM, id = Random.id()): void {
 		const callbacks = this.getCallbacks(hook);
 
 		if (callbacks.some((cb) => cb.id === id)) {

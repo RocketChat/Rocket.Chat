@@ -1,11 +1,19 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Subscriptions } from '../../../models/server';
 
-Meteor.methods({
-	'autoTranslate.saveSettings'(rid, field, value, options) {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'autoTranslate.saveSettings'(rid: string, field: string, value: string, options: { defaultLanguage: string }): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async 'autoTranslate.saveSettings'(rid, field, value, options) {
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -13,7 +21,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!hasPermission(userId, 'auto-translate')) {
+		if (!(await hasPermissionAsync(userId, 'auto-translate'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Auto-Translate is not allowed', {
 				method: 'autoTranslate.saveSettings',
 			});

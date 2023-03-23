@@ -10,7 +10,7 @@ import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Users } from '../../../models/server';
-import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
+import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
@@ -306,7 +306,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc,
 		}
 	}
 
-	addUserRoles(_id, roles);
+	Promise.await(addUserRolesAsync(_id, roles));
 
 	return _id;
 });

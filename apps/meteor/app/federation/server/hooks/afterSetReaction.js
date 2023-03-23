@@ -1,4 +1,6 @@
-import { FederationRoomEvents, Rooms } from '../../../models/server';
+import { FederationRoomEvents } from '@rocket.chat/models';
+
+import { Rooms } from '../../../models/server';
 import { clientLogger } from '../lib/logger';
 import { hasExternalDomain } from '../functions/helpers';
 import { getFederationDomain } from '../lib/getFederationDomain';
@@ -31,6 +33,6 @@ async function afterSetReaction(message, { user, reaction }) {
 
 export const definition = {
 	hook: 'afterSetReaction',
-	callback: (message, extras) => Promise.await(afterSetReaction(message, extras)),
+	callback: afterSetReaction,
 	id: 'federation-after-set-reaction',
 };
