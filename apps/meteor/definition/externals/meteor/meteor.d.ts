@@ -2,6 +2,10 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import 'meteor/meteor';
 import type { IStreamerConstructor, IStreamer } from 'meteor/rocketchat:streamer';
 
+type StringifyBuffers<T extends unknown[]> = {
+	[P in keyof T]: T[P] extends Buffer ? string : T[P];
+};
+
 declare module 'meteor/meteor' {
 	namespace Meteor {
 		const Streamer: IStreamerConstructor & IStreamer;
@@ -98,7 +102,7 @@ declare module 'meteor/meteor' {
 		function methods<TServerMethods extends ServerMethods>(methods: {
 			[TMethodName in keyof TServerMethods]?: (
 				this: MethodThisType,
-				...args: Parameters<TServerMethods[TMethodName]>
+				...args: StringifyBuffers<Parameters<TServerMethods[TMethodName]>>
 			) => ReturnType<TServerMethods[TMethodName]> | Promise<ReturnType<TServerMethods[TMethodName]>>;
 		}): void;
 	}

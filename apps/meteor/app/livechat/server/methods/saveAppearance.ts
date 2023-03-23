@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Settings } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -14,7 +14,7 @@ declare module '@rocket.chat/ui-contexts' {
 Meteor.methods<ServerMethods>({
 	async 'livechat:saveAppearance'(settings) {
 		const uid = Meteor.userId();
-		if (!uid || !hasPermission(uid, 'view-livechat-manager')) {
+		if (!uid || !(await hasPermissionAsync(uid, 'view-livechat-manager'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:saveAppearance',
 			});

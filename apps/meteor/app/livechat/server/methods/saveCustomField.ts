@@ -2,8 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { LivechatCustomField } from '@rocket.chat/models';
 import type { ILivechatCustomField } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -22,10 +23,10 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
-Meteor.methods({
+Meteor.methods<ServerMethods>({
 	async 'livechat:saveCustomField'(_id, customFieldData) {
 		const uid = Meteor.userId();
-		if (!uid || !hasPermission(uid, 'view-livechat-manager')) {
+		if (!uid || !(await hasPermissionAsync(uid, 'view-livechat-manager'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:saveCustomField',
 			});
