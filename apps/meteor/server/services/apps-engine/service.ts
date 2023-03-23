@@ -38,7 +38,7 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		this.onEvent('apps.removed', async (appId: string): Promise<void> => {
 			const app = Apps.getManager()?.getOneById(appId);
 			if (!app) {
-				return
+				return;
 			}
 
 			await Apps.getManager()?.removeLocal(appId);
