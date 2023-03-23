@@ -42,7 +42,7 @@ function hash(str: string): number {
 	return hash;
 }
 
-export class PushNotification {
+class PushNotification {
 	getNotificationId(roomId: string): number {
 		const serverId = settings.get('uniqueID');
 		return hash(`${serverId}|${roomId}`); // hash
@@ -95,7 +95,7 @@ export class PushNotification {
 		return config;
 	}
 
-	send({ rid, uid, mid, roomName, username, message, payload, badge = 1, category }: PushNotificationData): void {
+	async send({ rid, uid, mid, roomName, username, message, payload, badge = 1, category }: PushNotificationData): Promise<void> {
 		const idOnly = settings.get<boolean>('Push_request_content_from_server');
 		const config = this.getNotificationConfig({
 			rid,
@@ -111,7 +111,7 @@ export class PushNotification {
 		});
 
 		metrics.notificationsSent.inc({ notification_type: 'mobile' });
-		Push.send(config);
+		await Push.send(config);
 	}
 
 	async getNotificationForMessageId({

@@ -2,12 +2,12 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
-import { sendMessage } from '../../../lib';
+import { sendMessage } from '../../../lib/server';
 import { LivechatDepartment, Rooms, Users } from '../../../models/server';
 
 callbacks.add(
 	'livechat.offlineMessage',
-	(data) => {
+	async (data) => {
 		if (!settings.get('Livechat_OfflineMessageToChannel_enabled')) {
 			return data;
 		}
@@ -58,7 +58,7 @@ callbacks.add(
 			groupable: false,
 		};
 
-		sendMessage(user, message, room, true);
+		await sendMessage(user, message, room, true);
 	},
 	callbacks.priority.MEDIUM,
 	'livechat-send-email-offline-message-to-channel',

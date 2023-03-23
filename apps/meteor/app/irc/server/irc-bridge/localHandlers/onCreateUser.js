@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Users, Rooms } from '../../../../models/server';
 
-export default function handleOnCreateUser(newUser) {
+export default async function handleOnCreateUser(newUser) {
 	if (!newUser) {
 		return this.log('Invalid handleOnCreateUser call');
 	}

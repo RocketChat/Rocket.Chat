@@ -3,7 +3,7 @@ import { Settings } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { Users, Rooms } from '../../../models/server';
-import { sendMessage } from '../../../lib';
+import { sendMessage } from '../../../lib/server';
 
 class ErrorHandler {
 	constructor() {
@@ -73,7 +73,7 @@ class ErrorHandler {
 			message = `${message}\n\`\`\`\n${stack}\n\`\`\``;
 		}
 
-		sendMessage(user, { msg: message }, { _id: this.rid });
+		Promise.await(sendMessage(user, { msg: message }, { _id: this.rid }));
 	}
 }
 

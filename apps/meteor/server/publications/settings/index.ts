@@ -1,12 +1,27 @@
 import { Meteor } from 'meteor/meteor';
-import type { ISetting } from '@rocket.chat/core-typings';
+import type { ISetting, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { WithId } from 'mongodb';
 
-import { hasPermission, hasAtLeastOnePermission } from '../../../app/authorization/server';
+import { hasAtLeastOnePermission } from '../../../app/authorization/server';
+import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { getSettingPermissionId } from '../../../app/authorization/lib';
 import { SettingsEvents } from '../../../app/settings/server';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'public-settings/get'(
+			updatedSince?: Date,
+		): Promise<ISetting[] | { update: ISetting[]; remove: WithId<RocketChatRecordDeleted<ISetting>>[] }>;
+		'private-settings/get'(
+			updatedSince?: Date,
+		): Promise<ISetting[] | { update: ISetting[]; remove: WithId<RocketChatRecordDeleted<ISetting>>[] }>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async 'public-settings/get'(updatedAt) {
 		if (updatedAt instanceof Date) {
 			const records = await Settings.findNotHiddenPublicUpdatedAfter(updatedAt).toArray();
@@ -45,20 +60,28 @@ Meteor.methods({
 		}
 
 		const privilegedSetting = hasAtLeastOnePermission(uid, ['view-privileged-setting', 'edit-privileged-setting']);
-		const manageSelectedSettings = privilegedSetting || hasPermission(uid, 'manage-selected-settings');
+		const manageSelectedSettings = privilegedSetting || (await hasPermissionAsync(uid, 'manage-selected-settings'));
 
 		if (!manageSelectedSettings) {
 			return [];
 		}
 
-		const bypass = <T>(settings: T): T => settings;
+		const bypass = async <T>(settings: T): Promise<T> => settings;
 
-		const applyFilter = <T extends any[], U>(fn: (args: T) => U, args: T): U => fn(args);
+		const applyFilter = <T extends any[], U>(fn: (args: T) => Promise<U>, args: T): Promise<U> => fn(args);
 
-		const getAuthorizedSettingsFiltered = (settings: ISetting[]): ISetting[] =>
-			settings.filter((record) => hasPermission(uid, getSettingPermissionId(record._id)));
+		const getAuthorizedSettingsFiltered = async (settings: ISetting[]): Promise<ISetting[]> =>
+			(
+				await Promise.all(
+					settings.map(async (record) => {
+						if (await hasPermissionAsync(uid, getSettingPermissionId(record._id))) {
+							return record;
+						}
+					}),
+				)
+			).filter(Boolean) as ISetting[];
 
-		const getAuthorizedSettings = async (updatedAfter: Date, privilegedSetting: boolean): Promise<ISetting[]> =>
+		const getAuthorizedSettings = async (updatedAfter: Date | undefined, privilegedSetting: boolean): Promise<ISetting[]> =>
 			applyFilter(
 				privilegedSetting ? bypass : getAuthorizedSettingsFiltered,
 				await Settings.findNotHidden(updatedAfter && { updatedAfter }).toArray(),

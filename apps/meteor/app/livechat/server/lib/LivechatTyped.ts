@@ -1,4 +1,4 @@
-import type { IOmnichannelRoom, IOmnichannelRoomClosingInfo, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
+import type { IOmnichannelRoom, IOmnichannelRoomClosingInfo, IUser, MessageTypesValues, ILivechatVisitor } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms, Subscriptions, LivechatVisitors, Messages, Users } from '@rocket.chat/models';
 import moment from 'moment-timezone';
@@ -6,13 +6,42 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
-import type { CloseRoomParams, CloseRoomParamsByUser, CloseRoomParamsByVisitor } from './LivechatTyped.d';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { Messages as LegacyMessage } from '../../../models/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 import { settings } from '../../../settings/server';
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../mailer/server/api';
+
+type GenericCloseRoomParams = {
+	room: IOmnichannelRoom;
+	comment?: string;
+	options?: {
+		clientAction?: boolean;
+		tags?: string[];
+		emailTranscript?:
+			| {
+					sendToVisitor: false;
+			  }
+			| {
+					sendToVisitor: true;
+					requestData: NonNullable<IOmnichannelRoom['transcriptRequest']>;
+			  };
+		pdfTranscript?: {
+			requestedBy: string;
+		};
+	};
+};
+
+export type CloseRoomParamsByUser = {
+	user: IUser;
+} & GenericCloseRoomParams;
+
+export type CloseRoomParamsByVisitor = {
+	visitor: ILivechatVisitor;
+} & GenericCloseRoomParams;
+
+export type CloseRoomParams = CloseRoomParamsByUser | CloseRoomParamsByVisitor;
 
 class LivechatClass {
 	logger: Logger;
@@ -95,19 +124,19 @@ class LivechatClass {
 		room = (await LivechatRooms.findOneById(rid)) as IOmnichannelRoom;
 
 		this.logger.debug(`Sending closing message to room ${room._id}`);
-		sendMessage(chatCloser, message, room);
+		await sendMessage(chatCloser, message, room);
 
 		LegacyMessage.createCommandWithRoomIdAndUser('promptTranscript', rid, closeData.closedBy);
 
 		this.logger.debug(`Running callbacks for room ${room._id}`);
 
-		Meteor.defer(() => {
+		process.nextTick(() => {
 			/**
 			 * @deprecated the `AppEvents.ILivechatRoomClosedHandler` event will be removed
 			 * in the next major version of the Apps-Engine
 			 */
-			Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, room);
-			Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, room);
+			void Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, room);
+			void Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, room);
 		});
 		callbacks.runAsync('livechat.closeRoom', {
 			room,

@@ -46,7 +46,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const confirmAction = useCallback<AppInstallationHandlerParams['onSuccess']>(
 		async (action, permissionsGranted) => {
-			if (action !== 'request' && !!permissionsGranted) {
+			if (action !== 'request') {
 				setPurchased(true);
 				await marketplaceActions[action]({ ...app, permissionsGranted });
 			} else {

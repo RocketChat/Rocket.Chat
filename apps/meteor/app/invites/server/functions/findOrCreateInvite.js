@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { Invites } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Subscriptions, Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { getURL } from '../../../utils/lib/getURL';
@@ -37,7 +37,7 @@ export const findOrCreateInvite = async (userId, invite) => {
 		});
 	}
 
-	if (!hasPermission(userId, 'create-invite-links', invite.rid)) {
+	if (!(await hasPermissionAsync(userId, 'create-invite-links', invite.rid))) {
 		throw new Meteor.Error('not_authorized');
 	}
 
@@ -100,7 +100,7 @@ export const findOrCreateInvite = async (userId, invite) => {
 
 	await Invites.insertOne(createInvite);
 
-	api.broadcast('notify.updateInvites', userId, { invite: createInvite });
+	void api.broadcast('notify.updateInvites', userId, { invite: createInvite });
 
 	createInvite.url = getInviteUrl(createInvite);
 	return createInvite;

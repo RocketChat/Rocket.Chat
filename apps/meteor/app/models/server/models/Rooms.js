@@ -2,11 +2,10 @@ import _ from 'underscore';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Base } from './_Base';
-import Messages from './Messages';
 import Subscriptions from './Subscriptions';
 import { trim } from '../../../../lib/utils/stringUtils';
 
-export class Rooms extends Base {
+class Rooms extends Base {
 	constructor(...args) {
 		super(...args);
 
@@ -843,30 +842,6 @@ export class Rooms extends Base {
 				lastMessage,
 			},
 		};
-
-		return this.update(query, update);
-	}
-
-	/**
-	 * @param {string} _id
-	 * @param {string?} messageId
-	 * @returns {Promise<void>}
-	 */
-	resetLastMessageById(_id, messageId = undefined) {
-		const query = { _id };
-		const lastMessage = Messages.getLastVisibleMessageSentWithNoTypeByRoomId(_id, messageId);
-
-		const update = lastMessage
-			? {
-					$set: {
-						lastMessage,
-					},
-			  }
-			: {
-					$unset: {
-						lastMessage: 1,
-					},
-			  };
 
 		return this.update(query, update);
 	}

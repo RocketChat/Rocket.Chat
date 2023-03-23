@@ -50,6 +50,7 @@ export class LocalBroker implements IBroker {
 
 			this.methods.delete(`${namespace}.${method}`);
 		}
+		instance.stopped();
 	}
 
 	createService(instance: IServiceClass): void {
