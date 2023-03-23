@@ -10,7 +10,11 @@ const Steps = {
 	PASTE: 'paste',
 };
 
-function ManualWorkspaceRegistrationModal({ onClose, ...props }) {
+type ManualWorkspaceRegistrationModalProps = {
+	onClose: () => void;
+};
+
+const ManualWorkspaceRegistrationModal = ({ onClose, ...props }: ManualWorkspaceRegistrationModalProps) => {
 	const t = useTranslation();
 
 	const [step, setStep] = useState(Steps.COPY);
@@ -33,6 +37,6 @@ function ManualWorkspaceRegistrationModal({ onClose, ...props }) {
 				(step === Steps.PASTE && <PasteStep onBackButtonClick={handleBackButtonClick} onFinish={onClose} />)}
 		</Modal>
 	);
-}
+};
 
 export default ManualWorkspaceRegistrationModal;

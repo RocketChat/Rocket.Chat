@@ -19,6 +19,10 @@ export class FederationHomeContent {
 		return this.page.locator('[data-qa-type="message"]').last();
 	}
 
+	get lastUserMessageBody(): Locator {
+		return this.lastUserMessage.locator('[data-qa-type="message-body"]');
+	}
+
 	get lastUserMessageNotSequential(): Locator {
 		return this.page.locator('[data-qa-type="message"][data-sequential="false"]').last();
 	}
