@@ -712,11 +712,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		};
 
 		const update: UpdateFilter<ISubscription> = {
-			$set: {
-				// @ts-expect-error - Check types of subscription
-				// If this is "true", update saveNotificationSettings method to reflect that when calling
-				hideUnreadStatus,
-			},
+			...(hideUnreadStatus === true ? { $set: { hideUnreadStatus } } : { $unset: { hideUnreadStatus: 1 } }),
 		};
 
 		return this.updateOne(query, update);
