@@ -149,9 +149,9 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.col.countDocuments(query);
 	}
 
-	async isUserInRole(uid: IUser['_id'], roleId: IRole['_id'], rid?: IRoom['_id']): Promise<ISubscription | null> {
+	async isUserInRole(uid: IUser['_id'], roleId: IRole['_id'], rid?: IRoom['_id']): Promise<boolean> {
 		if (rid == null) {
-			return null;
+			return false;
 		}
 
 		const query = {
@@ -160,7 +160,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			'roles': roleId,
 		};
 
-		return this.findOne(query, { projection: { roles: 1 } });
+		return !!(await this.findOne(query, { projection: { _id: 1 } }));
 	}
 
 	setAsReadByRoomIdAndUserId(
@@ -706,15 +706,13 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateOne(query, update);
 	}
 
-	updateHideUnreadStatusById(_id: string, hideUnreadStatus: true): Promise<UpdateResult> {
+	updateHideUnreadStatusById(_id: string, hideUnreadStatus: boolean): Promise<UpdateResult> {
 		const query = {
 			_id,
 		};
 
 		const update: UpdateFilter<ISubscription> = {
-			$set: {
-				hideUnreadStatus,
-			},
+			...(hideUnreadStatus === true ? { $set: { hideUnreadStatus } } : { $unset: { hideUnreadStatus: 1 } }),
 		};
 
 		return this.updateOne(query, update);

@@ -19,5 +19,5 @@ callbacks.add('afterValidateLogin', (login: ILoginAttempt) => {
 		return;
 	}
 
-	Promise.await(saveSuccessfulLogin(login));
+	return saveSuccessfulLogin(login);
 });

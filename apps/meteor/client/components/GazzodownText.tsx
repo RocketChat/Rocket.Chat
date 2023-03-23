@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { ChannelMention, UserMention } from '@rocket.chat/gazzodown';
-import { Markup, MarkupInteractionContext } from '@rocket.chat/gazzodown';
+import { PreviewMarkup, Markup, MarkupInteractionContext } from '@rocket.chat/gazzodown';
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { RouterContext, useLayout, useUserPreference } from '@rocket.chat/ui-contexts';
@@ -23,9 +23,10 @@ type GazzodownTextProps = {
 	}[];
 	channels?: Pick<IRoom, '_id' | 'name'>[];
 	searchText?: string;
+	preview?: boolean;
 };
 
-const GazzodownText = ({ tokens, mentions, channels, searchText }: GazzodownTextProps) => {
+const GazzodownText = ({ tokens, mentions, channels, searchText, preview }: GazzodownTextProps) => {
 	const highlights = useMessageListHighlights();
 	const highlightRegex = useMemo(() => {
 		if (!highlights?.length) {
@@ -114,7 +115,7 @@ const GazzodownText = ({ tokens, mentions, channels, searchText }: GazzodownText
 				onChannelMentionClick,
 			}}
 		>
-			<Markup tokens={tokens} />
+			{!preview ? <Markup tokens={tokens} /> : <PreviewMarkup tokens={tokens} />}
 		</MarkupInteractionContext.Provider>
 	);
 };

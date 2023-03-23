@@ -63,9 +63,4 @@ const resolveTranscriptData = (
 	return optionsTranscriptRequest.requestData;
 };
 
-callbacks.add(
-	'livechat.closeRoom',
-	(params: LivechatCloseCallbackParams) => Promise.await(sendEmailTranscriptOnClose(params)),
-	callbacks.priority.HIGH,
-	'livechat-send-email-transcript-on-close-room',
-);
+callbacks.add('livechat.closeRoom', sendEmailTranscriptOnClose, callbacks.priority.HIGH, 'livechat-send-email-transcript-on-close-room');

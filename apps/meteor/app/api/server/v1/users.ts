@@ -30,11 +30,11 @@ import {
 	validateCustomFields,
 	saveUser,
 	saveCustomFieldsWithoutValidation,
-	checkUsernameAvailability,
 	setStatusText,
 	setUserAvatar,
 	saveCustomFields,
 } from '../../../lib/server';
+import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
 import { getFullUserDataByIdOrUsername } from '../../../lib/server/functions/getFullUserData';
 import { API } from '../api';
 import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
@@ -527,12 +527,12 @@ API.v1.addRoute(
 		validateParams: isUserRegisterParamsPOST,
 	},
 	{
-		post() {
+		async post() {
 			if (this.userId) {
 				return API.v1.failure('Logged in users can not register again.');
 			}
 
-			if (!checkUsernameAvailability(this.bodyParams.username)) {
+			if (!(await checkUsernameAvailability(this.bodyParams.username))) {
 				return API.v1.failure('Username is already in use');
 			}
 
@@ -950,13 +950,13 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
 
-				if (!resetUserE2EEncriptionKey(user._id, true)) {
+				if (!(await resetUserE2EEncriptionKey(user._id, true))) {
 					return API.v1.failure();
 				}
 
 				return API.v1.success();
 			}
-			resetUserE2EEncriptionKey(this.userId, false);
+			await resetUserE2EEncriptionKey(this.userId, false);
 			return API.v1.success();
 		},
 	},
