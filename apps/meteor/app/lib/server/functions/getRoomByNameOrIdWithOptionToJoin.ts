@@ -21,7 +21,7 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 	tryDirectByUserIdOnly?: boolean;
 	joinChannel?: boolean;
 	errorOnEmpty?: boolean;
-}): Promise<IRoom | undefined> => {
+}): Promise<IRoom | null> => {
 	let room: IRoom | null;
 
 	// If the nameOrId starts with #, then let's try to find a channel or group
