@@ -28,7 +28,7 @@ Meteor.methods<ServerMethods>({
 		message.u = {
 			_id: uid,
 			username: user.username,
-			...(settings.get('UI_Use_Real_Name') && user.name && { name: user.name }),
+			name: user.name || '',
 		};
 		message.temp = true;
 		if (settings.get('Message_Read_Receipt_Enabled')) {

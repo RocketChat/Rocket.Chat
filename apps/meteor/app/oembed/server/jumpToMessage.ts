@@ -83,7 +83,9 @@ callbacks.add(
 				msg.attachments.splice(index, 1);
 			}
 
-			msg.attachments.push(createQuoteAttachment(jumpToMessage, item.url));
+			const useRealName = Boolean(settings.get('UI_Use_Real_Name'));
+
+			msg.attachments.push(createQuoteAttachment(jumpToMessage, item.url, useRealName));
 			item.ignoreParse = true;
 		}
 

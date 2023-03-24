@@ -21,13 +21,13 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { memo } from 'react';
 
+import { getUserDisplayName } from '../../../../../lib/getUserDisplayName';
 import UserAvatar from '../../../../components/avatar/UserAvatar';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
 import StatusIndicators from '../../../../components/message/StatusIndicators';
 import UiKitSurface from '../../../../components/message/content/UiKitSurface';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
-import { getUserDisplayName } from '../../../../lib/getUserDisplayName';
 import { useChat } from '../../../room/contexts/ChatContext';
 
 const ContactHistoryMessage: FC<{

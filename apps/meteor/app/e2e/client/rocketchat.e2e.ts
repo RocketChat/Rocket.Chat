@@ -30,6 +30,7 @@ import {
 import * as banners from '../../../client/lib/banners';
 import type { LegacyBannerPayload } from '../../../client/lib/banners';
 import { Rooms, Subscriptions, Messages } from '../../models/client';
+import { settings } from '../../settings/client';
 import './events.js';
 import './tabbar';
 import { log, logError } from './logger';
@@ -499,7 +500,8 @@ class E2E extends Emitter {
 
 				message.attachments = message.attachments || [];
 
-				const quoteAttachment = createQuoteAttachment(decryptedQuoteMessage, url);
+				const useRealName = settings.get('UI_Use_Real_Name');
+				const quoteAttachment = createQuoteAttachment(decryptedQuoteMessage, url, useRealName);
 
 				message.attachments.push(quoteAttachment);
 			}),
