@@ -131,11 +131,15 @@ export function getEmailData({ message, receiver, sender, subscription, room, em
 		user: username,
 		room: roomCoordinator.getRoomName(room.t, room),
 	});
-	const content = getEmailContent({
+	let content = getEmailContent({
 		message,
 		user: receiver,
 		room,
 	});
+
+	content = emojione.shortnameToUnicode(content);
+	content = filterMarkdown(content);
+
 
 	const room_path = getButtonUrl(room, subscription, message);
 
