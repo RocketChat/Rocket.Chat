@@ -990,23 +990,6 @@ class Rooms extends Base {
 		return room;
 	}
 
-	createWithIdTypeAndName(_id, type, name, extraData) {
-		const room = {
-			_id,
-			ts: new Date(),
-			t: type,
-			name,
-			usernames: [],
-			msgs: 0,
-			usersCount: 0,
-		};
-
-		_.extend(room, extraData);
-
-		this.insert(room);
-		return room;
-	}
-
 	setOTRForDMByRoomID(rid) {
 		const query = { _id: rid, t: 'd' };
 
