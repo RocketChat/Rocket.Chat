@@ -319,7 +319,7 @@ Template.messagePopupSlashCommandPreview.events({
 
 Template.messagePopupSlashCommandPreview.helpers({
 	isOpen() {
-		return Template.instance().open.get(); // && ((Template.instance().hasData.get() || (Template.instance().data.emptyTemplate != null)) || !Template.instance().parentTemplate(1).subscriptionsReady());
+		return Template.instance().open.get();
 	},
 	getArgs() {
 		return Template.instance().commandArgs.get();

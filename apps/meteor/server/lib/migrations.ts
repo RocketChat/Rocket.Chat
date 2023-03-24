@@ -192,7 +192,7 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 		if (currentAttempt <= maxAttempts) {
 			log.warn(`${msg}. Trying again in ${retryInterval} seconds.`);
 
-			(Meteor as unknown as any)._sleepForMs(retryInterval * 1000);
+			(Meteor as any)._sleepForMs(retryInterval * 1000);
 
 			currentAttempt++;
 			return migrateDatabase(targetVersion, subcommands);
