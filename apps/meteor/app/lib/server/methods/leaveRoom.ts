@@ -29,7 +29,7 @@ Meteor.methods<ServerMethods>({
 		const room = Rooms.findOneById(rid);
 		const user = Meteor.user() as unknown as IUser;
 
-		if (!user || !roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.LEAVE, user._id)) {
+		if (!user || !roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.LEAVE, user._id)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'leaveRoom' });
 		}
 

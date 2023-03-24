@@ -31,7 +31,7 @@ export const useRoomLeave = (room: IRoom, joined = true) => {
 			setModal(null);
 		};
 
-		const warnText = roomCoordinator.getRoomDirectives(room.t)?.getUiText(UiTextContext.LEAVE_WARNING);
+		const warnText = roomCoordinator.getRoomDirectives(room.t).getUiText(UiTextContext.LEAVE_WARNING);
 
 		setModal(
 			<WarningModal

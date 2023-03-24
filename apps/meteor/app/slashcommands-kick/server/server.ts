@@ -9,7 +9,7 @@ import { slashCommands } from '../../utils/lib/slashCommand';
 
 slashCommands.add({
 	command: 'kick',
-	callback: (_command: 'kick', params, item): void => {
+	callback: async (_command: 'kick', params, item): Promise<void> => {
 		const username = params.trim().replace('@', '');
 		if (username === '') {
 			return;
@@ -32,7 +32,7 @@ slashCommands.add({
 		}
 
 		const { rid } = item;
-		Meteor.call('removeUserFromRoom', { rid, username });
+		await Meteor.callAsync('removeUserFromRoom', { rid, username });
 	},
 	options: {
 		description: 'Remove_someone_from_room',

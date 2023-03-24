@@ -86,4 +86,5 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 	getBotsForDepartment(departmentId: string): Promise<undefined | FindCursor<ILivechatDepartmentAgents>>;
 	getNextBotForDepartment(departmentId: string, ignoreAgentId?: string): Promise<{ agentId: string; username: string } | undefined>;
 	replaceUsernameOfAgentByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
+	countByDepartmentId(departmentId: string): Promise<number>;
 }

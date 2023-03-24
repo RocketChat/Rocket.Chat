@@ -1,4 +1,4 @@
-import { AbstractFederationApplicationService } from '../../../../../server/services/federation/application/AbstractFederationService';
+import { AbstractFederationApplicationService } from '../../../../../server/services/federation/application/AbstractFederationApplicationService';
 import type { RocketChatFileAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/File';
 import type { RocketChatSettingsAdapter } from '../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Settings';
 import { FederatedUserEE } from '../domain/FederatedUser';
