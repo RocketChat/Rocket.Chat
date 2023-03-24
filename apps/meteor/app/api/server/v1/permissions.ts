@@ -3,7 +3,7 @@ import type { IPermission } from '@rocket.chat/core-typings';
 import { isBodyParamsValidPermissionUpdate } from '@rocket.chat/rest-typings';
 import { Permissions, Roles } from '@rocket.chat/models';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -43,7 +43,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			if (!hasPermission(this.userId, 'access-permissions')) {
+			if (!(await hasPermissionAsync(this.userId, 'access-permissions'))) {
 				return API.v1.failure('Editing permissions is not allowed', 'error-edit-permissions-not-allowed');
 			}
 

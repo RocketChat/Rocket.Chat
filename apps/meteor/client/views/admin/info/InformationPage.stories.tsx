@@ -117,7 +117,7 @@ export default {
 			federatedServers: 0,
 			federatedUsers: 0,
 			lastLogin: '',
-			lastMessageSentAt: '',
+			lastMessageSentAt: new Date(),
 			lastSeenSubscription: '',
 			os: {
 				type: '',
@@ -292,6 +292,7 @@ export default {
 			},
 			totalSubscriptionRoles: 0,
 			totalUserRoles: 0,
+			totalCustomRoles: 0,
 			totalWebRTCCalls: 0,
 			uncaughtExceptionsCount: 0,
 			matrixFederation: {

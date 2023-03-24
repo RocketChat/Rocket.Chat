@@ -30,7 +30,7 @@ API.v1.addRoute(
 				throw new Error('invalid-token');
 			}
 
-			const room = findRoom(token, rid);
+			const room = await findRoom(token, rid);
 			if (!room) {
 				throw new Error('invalid-room');
 			}
@@ -88,7 +88,7 @@ API.v1.addRoute(
 				throw new Error('invalid-token');
 			}
 
-			const room = findRoom(token, rid);
+			const room = await findRoom(token, rid);
 			if (!room) {
 				throw new Error('invalid-room');
 			}
@@ -114,7 +114,7 @@ API.v1.addRoute(
 				throw new Error('invalid-token');
 			}
 
-			const room = findRoom(token, rid);
+			const room = await findRoom(token, rid);
 			if (!room) {
 				throw new Error('invalid-room');
 			}
@@ -124,7 +124,7 @@ API.v1.addRoute(
 				throw new Error('invalid-message');
 			}
 
-			const result = Livechat.updateMessage({
+			const result = await Livechat.updateMessage({
 				guest,
 				message: { _id: msg._id, msg: this.bodyParams.msg },
 			});
@@ -148,7 +148,7 @@ API.v1.addRoute(
 				throw new Error('invalid-token');
 			}
 
-			const room = findRoom(token, rid);
+			const room = await findRoom(token, rid);
 			if (!room) {
 				throw new Error('invalid-room');
 			}
@@ -179,9 +179,8 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset } = this.getPaginationItems();
-			const { searchText: text, token } = this.queryParams;
+			const { token } = this.queryParams;
 			const { rid } = this.urlParams;
-			const { sort } = this.parseJsonQuery();
 
 			if (!token) {
 				throw new Error('error-token-param-not-provided');
@@ -192,7 +191,7 @@ API.v1.addRoute(
 				throw new Error('invalid-token');
 			}
 
-			const room = findRoom(token, rid);
+			const room = await findRoom(token, rid);
 			if (!room) {
 				throw new Error('invalid-room');
 			}
@@ -216,14 +215,10 @@ API.v1.addRoute(
 				loadMessageHistory({
 					userId: guest._id,
 					rid,
-					// @ts-expect-error -- typings on loadMessageHistory are wrong
 					end,
 					limit,
-					// @ts-expect-error -- typings on loadMessageHistory are wrong
 					ls,
-					sort,
 					offset,
-					text,
 				}).messages.map((message) => normalizeMessageFileUpload(message)),
 			);
 			return API.v1.success({ messages });

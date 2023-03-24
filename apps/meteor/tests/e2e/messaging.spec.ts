@@ -29,8 +29,8 @@ test.describe.serial('Messaging', () => {
 
 		await poHomeChannel.content.sendMessage('hello world');
 
-		await expect(auxContext.poHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
-		await expect(poHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
+		await expect(auxContext.poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
 
 		await auxContext.page.close();
 	});
@@ -43,8 +43,8 @@ test.describe.serial('Messaging', () => {
 
 		await poHomeChannel.content.sendMessage('hello world');
 
-		await expect(poHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
-		await expect(auxContext.poHomeChannel.content.lastUserMessage.locator('p')).toHaveText('hello world');
+		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
+		await expect(auxContext.poHomeChannel.content.lastUserMessageBody).toHaveText('hello world');
 
 		await auxContext.page.close();
 	});

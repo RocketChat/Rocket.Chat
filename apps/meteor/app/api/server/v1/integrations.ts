@@ -26,9 +26,9 @@ API.v1.addRoute(
 		async post() {
 			switch (this.bodyParams.type) {
 				case 'webhook-outgoing':
-					return API.v1.success({ integration: await Meteor.call('addOutgoingIntegration', this.bodyParams) });
+					return API.v1.success({ integration: await Meteor.callAsync('addOutgoingIntegration', this.bodyParams) });
 				case 'webhook-incoming':
-					return API.v1.success({ integration: await Meteor.call('addIncomingIntegration', this.bodyParams) });
+					return API.v1.success({ integration: await Meteor.callAsync('addIncomingIntegration', this.bodyParams) });
 			}
 
 			return API.v1.failure('Invalid integration type.');
@@ -54,7 +54,7 @@ API.v1.addRoute(
 			const { id } = queryParams;
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields: projection, query } = this.parseJsonQuery();
-			const ourQuery = Object.assign(mountIntegrationHistoryQueryBasedOnPermissions(userId, id), query);
+			const ourQuery = Object.assign(await mountIntegrationHistoryQueryBasedOnPermissions(userId, id), query);
 
 			const { cursor, totalCount } = IntegrationHistory.findPaginated(ourQuery, {
 				sort: sort || { _updatedAt: -1 },
@@ -95,7 +95,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort, fields: projection, query } = this.parseJsonQuery();
 
-			const ourQuery = Object.assign(mountIntegrationQueryBasedOnPermissions(this.userId), query) as Filter<IIntegration>;
+			const ourQuery = Object.assign(await mountIntegrationQueryBasedOnPermissions(this.userId), query) as Filter<IIntegration>;
 
 			const { cursor, totalCount } = Integrations.findPaginated(ourQuery, {
 				sort: sort || { ts: -1 },
@@ -154,8 +154,8 @@ API.v1.addRoute(
 
 					const outgoingId = integration._id;
 
-					Meteor.runAsUser(this.userId, () => {
-						Meteor.call('deleteOutgoingIntegration', outgoingId);
+					await Meteor.runAsUser(this.userId, async () => {
+						await Meteor.callAsync('deleteOutgoingIntegration', outgoingId);
 					});
 
 					return API.v1.success({
@@ -176,8 +176,8 @@ API.v1.addRoute(
 					}
 
 					const incomingId = integration._id;
-					Meteor.runAsUser(this.userId, () => {
-						Meteor.call('deleteIncomingIntegration', incomingId);
+					await Meteor.runAsUser(this.userId, async () => {
+						await Meteor.callAsync('deleteIncomingIntegration', incomingId);
 					});
 
 					return API.v1.success({
@@ -231,7 +231,7 @@ API.v1.addRoute(
 						return API.v1.failure('No integration found.');
 					}
 
-					Meteor.call('updateOutgoingIntegration', integration._id, bodyParams);
+					await Meteor.callAsync('updateOutgoingIntegration', integration._id, bodyParams);
 
 					return API.v1.success({
 						integration: await Integrations.findOne({ _id: integration._id }),
@@ -243,7 +243,7 @@ API.v1.addRoute(
 						return API.v1.failure('No integration found.');
 					}
 
-					Meteor.call('updateIncomingIntegration', integration._id, bodyParams);
+					await Meteor.callAsync('updateIncomingIntegration', integration._id, bodyParams);
 
 					return API.v1.success({
 						integration: await Integrations.findOne({ _id: integration._id }),

@@ -9,8 +9,8 @@ const EE_FEDERATION_COMMANDS = {
 		FederationEE.createDirectMessageRoom(currentUserId, invitees),
 };
 
-function federation(providedCommand: string, stringParams: string | undefined, item: Record<string, any>): void {
-	Promise.await(executeSlashCommand(providedCommand, stringParams, item, EE_FEDERATION_COMMANDS, Meteor.userId()));
+function federation(providedCommand: string, stringParams: string | undefined, item: Record<string, any>): Promise<void> {
+	return executeSlashCommand(providedCommand, stringParams, item, EE_FEDERATION_COMMANDS, Meteor.userId());
 }
 
 slashCommands.add({

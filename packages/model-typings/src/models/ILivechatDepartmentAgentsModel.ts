@@ -1,5 +1,5 @@
-import type { DeleteResult, FindCursor, FindOptions, Document, UpdateResult } from 'mongodb';
-import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
+import type { DeleteResult, FindCursor, FindOptions, Document, UpdateResult, Filter } from 'mongodb';
+import type { ILivechatDepartmentAgents, IUser } from '@rocket.chat/core-typings';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -57,7 +57,34 @@ export interface ILivechatDepartmentAgentsModel extends IBaseModel<ILivechatDepa
 	): FindCursor<ILivechatDepartmentAgents> | FindCursor<P>;
 
 	findByDepartmentIds(departmentIds: string[], options?: Record<string, any>): FindCursor<ILivechatDepartmentAgents>;
-	findAgentsByAgentIdAndBusinessHourId(_agentId: string, _businessHourId: string): [];
+	findAgentsByAgentIdAndBusinessHourId(_agentId: string, _businessHourId: string): Promise<ILivechatDepartmentAgents[]>;
 	setDepartmentEnabledByDepartmentId(departmentId: string, departmentEnabled: boolean): Promise<Document | UpdateResult>;
 	removeByDepartmentId(departmentId: string): Promise<DeleteResult>;
+	findByDepartmentId(departmentId: string): FindCursor<ILivechatDepartmentAgents>;
+	findOneByAgentIdAndDepartmentId(agentId: string, departmentId: string): Promise<ILivechatDepartmentAgents | null>;
+	saveAgent(agent: {
+		agentId: string;
+		departmentId: string;
+		username: string;
+		departmentEnabled: boolean;
+		count: number;
+		order: number;
+	}): Promise<Document | UpdateResult>;
+	removeByAgentId(agentId: string): Promise<void>;
+	removeByDepartmentIdAndAgentId(departmentId: string, agentId: string): Promise<void>;
+	getNextAgentForDepartment(
+		departmentId: string,
+		isLivechatEnabledWhenAgentIdle?: boolean,
+		ignoreAgentId?: string,
+		extraQuery?: Filter<IUser>,
+	): Promise<{ agentId: string; username: string } | null | undefined>;
+	checkOnlineForDepartment(departmentId: string): Promise<boolean>;
+	getOnlineForDepartment(
+		departmentId: string,
+		isLivechatEnabledWhenAgentIdle?: boolean,
+	): Promise<FindCursor<ILivechatDepartmentAgents> | undefined>;
+	getBotsForDepartment(departmentId: string): Promise<undefined | FindCursor<ILivechatDepartmentAgents>>;
+	getNextBotForDepartment(departmentId: string, ignoreAgentId?: string): Promise<{ agentId: string; username: string } | undefined>;
+	replaceUsernameOfAgentByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
+	countByDepartmentId(departmentId: string): Promise<number>;
 }

@@ -71,12 +71,12 @@ class E2E extends Emitter {
 		this._ready = new ReactiveVar(false);
 		this.instancesByRoomId = {};
 
-		this.on('ready', () => {
+		this.on('ready', async () => {
 			this._ready.set(true);
 			this.log('startClient -> Done');
 			this.log('decryptSubscriptions');
 
-			this.decryptSubscriptions();
+			await this.decryptSubscriptions();
 			this.log('decryptSubscriptions -> Done');
 		});
 	}
@@ -184,8 +184,8 @@ class E2E extends Emitter {
 					modifiers: ['large', 'danger'],
 					closable: true,
 					icon: 'key',
-					action: () => {
-						this.startClient();
+					action: async () => {
+						await this.startClient();
 						this.closeAlert();
 					},
 				});
@@ -200,7 +200,7 @@ class E2E extends Emitter {
 		}
 
 		if (!this.db_public_key || !this.db_private_key) {
-			this.persistKeys(this.getKeysFromLocalStorage(), await this.createRandomPassword());
+			await this.persistKeys(this.getKeysFromLocalStorage(), await this.createRandomPassword());
 		}
 
 		const randomPassword = Meteor._localStorage.getItem('e2e.randomPassword');
@@ -309,11 +309,11 @@ class E2E extends Emitter {
 			return this.error('Error exporting private key: ', error);
 		}
 
-		this.requestSubscriptionKeys();
+		await this.requestSubscriptionKeys();
 	}
 
 	async requestSubscriptionKeys(): Promise<void> {
-		call('e2e.requestSubscriptionKeys');
+		await call('e2e.requestSubscriptionKeys');
 	}
 
 	async createRandomPassword(): Promise<string> {
@@ -450,7 +450,7 @@ class E2E extends Emitter {
 	async decryptSubscription(subscriptionId: ISubscription['_id']): Promise<void> {
 		const e2eRoom = await this.getInstanceByRoomId(subscriptionId);
 		this.log('decryptSubscription ->', subscriptionId);
-		e2eRoom?.decryptSubscription();
+		await e2eRoom?.decryptSubscription();
 	}
 
 	async decryptSubscriptions(): Promise<void> {

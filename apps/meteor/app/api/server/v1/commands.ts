@@ -4,7 +4,7 @@ import objectPath from 'object-path';
 
 import { slashCommands } from '../../../utils/server';
 import { Messages } from '../../../models/server';
-import { canAccessRoomId } from '../../../authorization/server';
+import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -170,7 +170,7 @@ API.v1.addRoute(
 	'commands.run',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			const body = this.bodyParams;
 
 			if (typeof body.command !== 'string') {
@@ -194,7 +194,7 @@ API.v1.addRoute(
 				return API.v1.failure('The command provided does not exist (or is disabled).');
 			}
 
-			if (!canAccessRoomId(body.roomId, this.userId)) {
+			if (!(await canAccessRoomIdAsync(body.roomId, this.userId))) {
 				return API.v1.unauthorized();
 			}
 
@@ -215,7 +215,7 @@ API.v1.addRoute(
 
 			const { triggerId } = body;
 
-			const result = slashCommands.run(cmd, params, message, triggerId);
+			const result = await slashCommands.run(cmd, params, message, triggerId);
 
 			return API.v1.success({ result });
 		},
@@ -248,13 +248,13 @@ API.v1.addRoute(
 				return API.v1.failure('The command provided does not exist (or is disabled).');
 			}
 
-			if (!canAccessRoomId(query.roomId, user._id)) {
+			if (!(await canAccessRoomIdAsync(query.roomId, user._id))) {
 				return API.v1.unauthorized();
 			}
 
 			const params = query.params ? query.params : '';
 
-			const preview = Meteor.call('getSlashCommandPreviews', {
+			const preview = await Meteor.callAsync('getSlashCommandPreviews', {
 				cmd,
 				params,
 				msg: { rid: query.roomId },
@@ -264,7 +264,7 @@ API.v1.addRoute(
 		},
 
 		// Expects a body format of: { command: 'giphy', params: 'mine', roomId: 'value', tmid: 'value', triggerId: 'value', previewItem: { id: 'sadf8' type: 'image', value: 'https://dev.null/gif' } }
-		post() {
+		async post() {
 			const body = this.bodyParams;
 
 			if (typeof body.command !== 'string') {
@@ -300,7 +300,7 @@ API.v1.addRoute(
 				return API.v1.failure('The command provided does not exist (or is disabled).');
 			}
 
-			if (!canAccessRoomId(body.roomId, this.userId)) {
+			if (!(await canAccessRoomIdAsync(body.roomId, this.userId))) {
 				return API.v1.unauthorized();
 			}
 
@@ -317,7 +317,7 @@ API.v1.addRoute(
 				...(body.tmid && { tmid: body.tmid }),
 			};
 
-			Meteor.call(
+			await Meteor.callAsync(
 				'executeSlashCommandPreview',
 				{
 					cmd,

@@ -6,7 +6,7 @@ import { settingsRegistry } from '../../settings/server';
 const omnichannelEnabledQuery = { _id: 'Livechat_enabled', value: true };
 
 Meteor.startup(function () {
-	settingsRegistry.addGroup('Omnichannel', function () {
+	void settingsRegistry.addGroup('Omnichannel', function () {
 		this.add('Livechat_enabled', true, {
 			type: 'boolean',
 			group: 'Omnichannel',
@@ -369,7 +369,7 @@ Meteor.startup(function () {
 			enableQuery: omnichannelEnabledQuery,
 		});
 
-		settingsRegistry.addGroup('Omnichannel', function () {
+		void settingsRegistry.addGroup('Omnichannel', function () {
 			this.section('Business_Hours', function () {
 				this.add('Livechat_enable_business_hours', false, {
 					type: 'boolean',
@@ -616,7 +616,7 @@ Meteor.startup(function () {
 			enableQuery: omnichannelEnabledQuery,
 		});
 	});
-	settingsRegistry.addGroup('SMS', function () {
+	void settingsRegistry.addGroup('SMS', function () {
 		this.add('SMS_Enabled', false, {
 			type: 'boolean',
 			i18nLabel: 'Enabled',

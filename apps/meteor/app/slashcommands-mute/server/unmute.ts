@@ -12,7 +12,7 @@ import { settings } from '../../settings/server';
 
 slashCommands.add({
 	command: 'unmute',
-	callback: function Unmute(_command, params, item): void | Promise<void> {
+	callback: async function Unmute(_command, params, item): Promise<void> {
 		const username = params.trim().replace('@', '');
 		if (username === '') {
 			return;
@@ -20,16 +20,17 @@ slashCommands.add({
 		const userId = Meteor.userId() as string;
 		const unmutedUser = Users.findOneByUsernameIgnoringCase(username);
 		if (unmutedUser == null) {
-			return api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('Username_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [username],
 					lng: settings.get('Language') || 'en',
 				}),
 			});
+			return;
 		}
 
-		Meteor.call('unmuteUserInRoom', {
+		await Meteor.callAsync('unmuteUserInRoom', {
 			rid: item.rid,
 			username,
 		});
