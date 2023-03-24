@@ -1,5 +1,5 @@
 import type { FindCursor, AggregationCursor, Document, FindOptions, UpdateResult, DeleteResult } from 'mongodb';
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
