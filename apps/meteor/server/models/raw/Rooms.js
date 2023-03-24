@@ -1867,18 +1867,6 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	setLinkMessageById(_id, linkMessageId) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				linkMessageId,
-			},
-		};
-
-		return this.updateOne(query, update);
-	}
-
 	countDiscussions() {
 		return this.col.countDocuments({ prid: { $exists: true } });
 	}

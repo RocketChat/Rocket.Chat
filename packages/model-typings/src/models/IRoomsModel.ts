@@ -228,7 +228,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	removeByIds(rids: string[]): Promise<DeleteResult>;
 	removeDirectRoomContainingUsername(username: string): Promise<DeleteResult>;
 	findDiscussionParentByNameStarting(name: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
-	setLinkMessageById(rid: string, linkMessage: string): Promise<UpdateResult>;
 	countDiscussions(): Promise<number>;
 	setOTRForDMByRoomID(rid: string): Promise<UpdateResult>;
 }
