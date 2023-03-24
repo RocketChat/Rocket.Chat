@@ -20,6 +20,7 @@ import {
 	Messages as MessagesRaw,
 	LivechatDepartment as LivechatDepartmentRaw,
 	LivechatDepartmentAgents,
+	Rooms as RoomsRaw,
 } from '@rocket.chat/models';
 import { VideoConf, api } from '@rocket.chat/core-services';
 
@@ -1304,7 +1305,7 @@ export const Livechat = {
 		await LivechatVisitors.updateById(contactId, updateUser);
 	},
 	async updateCallStatus(callId, rid, status, user) {
-		Rooms.setCallStatus(rid, status);
+		await RoomsRaw.setCallStatus(rid, status);
 		if (status === 'ended' || status === 'declined') {
 			if (await VideoConf.declineLivechatCall(callId)) {
 				return;

@@ -116,10 +116,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findOneByIdOrName(_idOrName: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 	setCallStatus(_id: string, callStatus: string): Promise<UpdateResult>;
 	setCallStatusAndCallStartTime(_id: string, callStatus: string): Promise<UpdateResult>;
-	setReactionsInLastMessage(
-		roomId: string,
-		lastMessage: { reactions: NonNullable<IRoom['lastMessage']>['reactions'] },
-	): Promise<UpdateResult>;
+	setReactionsInLastMessage(roomId: string, reactions: NonNullable<IRoom['lastMessage']>['reactions']): Promise<UpdateResult>;
 	unsetReactionsInLastMessage(roomId: string): Promise<UpdateResult>;
 	unsetAllImportIds(): Promise<UpdateResult>;
 	updateLastMessageStar(roomId: string, userId: string, starred?: boolean): Promise<UpdateResult>;
