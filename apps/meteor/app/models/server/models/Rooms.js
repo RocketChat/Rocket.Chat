@@ -1007,13 +1007,6 @@ class Rooms extends Base {
 		return room;
 	}
 
-	createWithFullRoomData(room) {
-		delete room._id;
-
-		room._id = this.insert(room);
-		return room;
-	}
-
 	setOTRForDMByRoomID(rid) {
 		const query = { _id: rid, t: 'd' };
 

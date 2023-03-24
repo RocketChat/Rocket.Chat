@@ -3,11 +3,12 @@ import { Meteor } from 'meteor/meteor';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
+import { Rooms } from '@rocket.chat/models';
 
 import { Apps } from '../../../../ee/server/apps';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { callbacks } from '../../../../lib/callbacks';
-import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
+import { Messages, Subscriptions, Users } from '../../../models/server';
 import { getValidRoomName } from '../../../utils/server';
 import { createDirectRoom } from './createDirectRoom';
 
@@ -113,7 +114,7 @@ export const createRoom = async <T extends RoomType>(
 	if (type === 'c') {
 		callbacks.run('beforeCreateChannel', owner, roomProps);
 	}
-	const room = Rooms.createWithFullRoomData(roomProps);
+	const room = await Rooms.createWithFullRoomData(roomProps);
 	const shouldBeHandledByFederation = room.federated === true || ownerUsername.includes(':');
 	if (shouldBeHandledByFederation) {
 		const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
