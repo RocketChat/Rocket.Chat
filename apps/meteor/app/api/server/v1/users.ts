@@ -312,7 +312,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 
-			const { confirmRelinquish = false } = params;
+			const { confirmRelinquish = false } = this.bodyParams;
 
 			await Meteor.callAsync('deleteUserOwnAccount', password, confirmRelinquish);
 
