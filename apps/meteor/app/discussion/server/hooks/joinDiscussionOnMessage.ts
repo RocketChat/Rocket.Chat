@@ -20,6 +20,7 @@ callbacks.add(
 			return message;
 		}
 
+		// if no subscription, call join
 		await Meteor.runAsUser(message.u._id, () => Meteor.callAsync('joinRoom', room._id));
 
 		return message;

@@ -183,19 +183,19 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 
 		try {
 			const msg = SMSService.response.call(this, await Livechat.sendMessage(sendMessage));
-			Meteor.defer(() => {
+			Meteor.defer(async () => {
 				if (sms.extra) {
 					if (sms.extra.fromCountry) {
-						Meteor.call('livechat:setCustomField', sendMessage.message.token, 'country', sms.extra.fromCountry);
+						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'country', sms.extra.fromCountry);
 					}
 					if (sms.extra.fromState) {
-						Meteor.call('livechat:setCustomField', sendMessage.message.token, 'state', sms.extra.fromState);
+						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'state', sms.extra.fromState);
 					}
 					if (sms.extra.fromCity) {
-						Meteor.call('livechat:setCustomField', sendMessage.message.token, 'city', sms.extra.fromCity);
+						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'city', sms.extra.fromCity);
 					}
 					if (sms.extra.toPhone) {
-						Meteor.call('livechat:setCustomField', sendMessage.message.token, 'phoneNumber', sms.extra.toPhone);
+						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'phoneNumber', sms.extra.toPhone);
 					}
 				}
 			});

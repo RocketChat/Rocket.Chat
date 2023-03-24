@@ -106,7 +106,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-name-param-not-provided', 'The parameter "name" is required');
 			}
 
-			await Meteor.call('addOAuthService', this.bodyParams.name, this.userId);
+			await Meteor.callAsync('addOAuthService', this.bodyParams.name, this.userId);
 
 			return API.v1.success();
 		},
@@ -177,7 +177,7 @@ API.v1.addRoute(
 
 				if (isSettingAction(setting) && isSettingsUpdatePropsActions(this.bodyParams) && this.bodyParams.execute) {
 					// execute the configured method
-					Meteor.call(setting.value);
+					await Meteor.callAsync(setting.value);
 					return API.v1.success();
 				}
 
