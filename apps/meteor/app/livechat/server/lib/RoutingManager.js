@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { LivechatInquiry, LivechatRooms as LivechatRoomsRaw } from '@rocket.chat/models';
+import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
 import {
 	createLivechatSubscription,
@@ -76,7 +76,7 @@ export const RoutingManager = {
 
 		if (!agent) {
 			logger.debug(`No agents available. Unable to delegate inquiry ${inquiry._id}`);
-			return LivechatRoomsRaw.findOneById(rid);
+			return LivechatRooms.findOneById(rid);
 		}
 
 		logger.debug(`Inquiry ${inquiry._id} will be taken by agent ${agent.agentId}`);
@@ -100,11 +100,11 @@ export const RoutingManager = {
 			throw new Meteor.Error('error-creating-subscription', 'Error creating subscription');
 		}
 
-		await LivechatRoomsRaw.changeAgentByRoomId(rid, agent);
+		await LivechatRooms.changeAgentByRoomId(rid, agent);
 		Rooms.incUsersCountById(rid);
 
 		const user = Users.findOneById(agent.agentId);
-		const room = await LivechatRoomsRaw.findOneById(rid);
+		const room = await LivechatRooms.findOneById(rid);
 
 		Messages.createCommandWithRoomIdAndUser('connected', rid, user);
 		dispatchAgentDelegated(rid, agent.agentId);
@@ -116,7 +116,7 @@ export const RoutingManager = {
 
 	async unassignAgent(inquiry, departmentId) {
 		const { rid, department } = inquiry;
-		const room = await LivechatRoomsRaw.findOneById(rid);
+		const room = await LivechatRooms.findOneById(rid);
 
 		logger.debug(`Removing assignations of inquiry ${inquiry._id}`);
 		if (!room || !room.open) {
@@ -139,7 +139,7 @@ export const RoutingManager = {
 
 		if (servedBy) {
 			logger.debug(`Unassigning current agent for inquiry ${inquiry._id}`);
-			await LivechatRoomsRaw.removeAgentByRoomId(rid);
+			await LivechatRooms.removeAgentByRoomId(rid);
 			this.removeAllRoomSubscriptions(room);
 			dispatchAgentDelegated(rid, null);
 		}
@@ -169,7 +169,7 @@ export const RoutingManager = {
 		logger.debug(`Attempting to take Inquiry ${inquiry._id} [Agent ${agent.agentId}] `);
 
 		const { _id, rid } = inquiry;
-		const room = await LivechatRoomsRaw.findOneById(rid);
+		const room = await LivechatRooms.findOneById(rid);
 		if (!room || !room.open) {
 			logger.debug(`Cannot take Inquiry ${inquiry._id}: Room is closed`);
 			return room;
@@ -204,7 +204,7 @@ export const RoutingManager = {
 
 		callbacks.runAsync('livechat.afterTakeInquiry', inq, agent);
 
-		return LivechatRoomsRaw.findOneById(rid);
+		return LivechatRooms.findOneById(rid);
 	},
 
 	async transferRoom(room, guest, transferData) {
