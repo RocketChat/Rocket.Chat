@@ -214,14 +214,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	saveRetentionOverrideGlobalById(rid: string, retentionOverrideGlobal: boolean): Promise<UpdateResult>;
 	saveEncryptedById(rid: string, encrypted: boolean): Promise<UpdateResult>;
 	updateGroupDMsRemovingUsernamesByUsername(username: string, userId: string): Promise<UpdateResult | Document>;
-	createWithTypeNameUserAndUsernames(
-		type: IRoom['t'],
-		name: string,
-		fname: string,
-		user: IUser,
-		usernames: string[],
-		extraData?: Record<string, string>,
-	): Promise<IRoom>;
 	createWithIdTypeAndName(id: string, type: IRoom['t'], name: string, extraData?: Record<string, string>): Promise<IRoom>;
 	createWithFullRoomData(room: Omit<IRoom, '_id'>): Promise<IRoom>;
 	removeById(rid: string): Promise<DeleteResult>;

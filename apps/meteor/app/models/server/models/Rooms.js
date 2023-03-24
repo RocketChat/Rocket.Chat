@@ -969,27 +969,6 @@ class Rooms extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	// INSERT
-	createWithTypeNameUserAndUsernames(type, name, fname, user, usernames, extraData) {
-		const room = {
-			name,
-			fname,
-			t: type,
-			usernames,
-			msgs: 0,
-			usersCount: 0,
-			u: {
-				_id: user._id,
-				username: user.username,
-			},
-		};
-
-		_.extend(room, extraData);
-
-		room._id = this.insert(room);
-		return room;
-	}
-
 	setOTRForDMByRoomID(rid) {
 		const query = { _id: rid, t: 'd' };
 
