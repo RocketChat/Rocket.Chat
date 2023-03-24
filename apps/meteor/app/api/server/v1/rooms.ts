@@ -1,18 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import type { Notifications } from '@rocket.chat/rest-typings';
 import { isGETRoomsNameExists } from '@rocket.chat/rest-typings';
-import { Rooms, Users } from '@rocket.chat/models';
+import { Messages, Rooms, Users } from '@rocket.chat/models';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Media } from '@rocket.chat/core-services';
 
 import { API } from '../api';
-import { canAccessRoomAsync, canAccessRoomId } from '../../../authorization/server';
+import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { settings } from '../../../settings/server';
 import { eraseRoom } from '../../../../server/methods/eraseRoom';
 import { FileUpload } from '../../../file-upload/server';
-import { Messages as MessagesSync, Rooms as RoomsSync } from '../../../models/server';
 import {
 	findAdminRoom,
 	findAdminRooms,
@@ -70,10 +69,10 @@ API.v1.addRoute(
 		validateParams: isGETRoomsNameExists,
 	},
 	{
-		get() {
+		async get() {
 			const { roomName } = this.queryParams;
 
-			return API.v1.success({ exists: Meteor.call('roomNameExists', roomName) });
+			return API.v1.success({ exists: await Meteor.callAsync('roomNameExists', roomName) });
 		},
 	},
 );
@@ -114,7 +113,7 @@ API.v1.addRoute(
 				}
 			}
 
-			let result: { update: IRoom[]; remove: IRoom[] } = await Meteor.call('rooms/get', updatedSinceDate);
+			let result: { update: IRoom[]; remove: IRoom[] } = await Meteor.callAsync('rooms/get', updatedSinceDate);
 
 			if (Array.isArray(result)) {
 				result = {
@@ -136,7 +135,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			if (!(await canAccessRoomId(this.urlParams.rid, this.userId))) {
+			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
 				return API.v1.unauthorized();
 			}
 
@@ -175,10 +174,12 @@ API.v1.addRoute(
 
 			delete fields.description;
 
-			await Meteor.call('sendFileMessage', this.urlParams.rid, null, uploadedFile, fields);
+			await Meteor.callAsync('sendFileMessage', this.urlParams.rid, null, uploadedFile, fields);
+
+			const message = await Messages.getMessageByFileIdAndUsername(uploadedFile._id, this.userId);
 
 			return API.v1.success({
-				message: await MessagesSync.getMessageByFileIdAndUsername(uploadedFile._id, this.userId),
+				message,
 			});
 		},
 	},
@@ -201,7 +202,7 @@ API.v1.addRoute(
 
 			await Promise.all(
 				Object.keys(notifications as Notifications).map(async (notificationKey) =>
-					Meteor.call('saveNotificationSettings', roomId, notificationKey, notifications[notificationKey as keyof Notifications]),
+					Meteor.callAsync('saveNotificationSettings', roomId, notificationKey, notifications[notificationKey as keyof Notifications]),
 				),
 			);
 
@@ -223,7 +224,7 @@ API.v1.addRoute(
 
 			const room = await findRoomByIdOrName({ params: this.bodyParams });
 
-			await Meteor.call('toggleFavorite', room._id, favorite);
+			await Meteor.callAsync('toggleFavorite', room._id, favorite);
 
 			return API.v1.success();
 		},
@@ -257,7 +258,7 @@ API.v1.addRoute(
 				return API.v1.failure('Body parameter "oldest" is required.');
 			}
 
-			const count = await Meteor.call('cleanRoomHistory', {
+			const count = await Meteor.callAsync('cleanRoomHistory', {
 				roomId: _id,
 				latest: new Date(latest),
 				oldest: new Date(oldest),
@@ -287,7 +288,7 @@ API.v1.addRoute(
 				return API.v1.failure('not-allowed', 'Not Allowed');
 			}
 
-			return API.v1.success({ room: await RoomsSync.findOneByIdOrName(room._id, { fields }) });
+			return API.v1.success({ room: (await Rooms.findOneByIdOrName(room._id, { projection: fields })) ?? undefined });
 		},
 	},
 );
@@ -298,7 +299,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			const room = await findRoomByIdOrName({ params: this.bodyParams });
-			await Meteor.call('leaveRoom', room._id);
+			await Meteor.callAsync('leaveRoom', room._id);
 
 			return API.v1.success();
 		},
@@ -326,7 +327,7 @@ API.v1.addRoute(
 				return API.v1.failure('Body parameter "encrypted" must be a boolean when included.');
 			}
 
-			const discussion = await Meteor.call('createDiscussion', {
+			const discussion = await Meteor.callAsync('createDiscussion', {
 				prid,
 				pmid,
 				t_name,
@@ -514,7 +515,7 @@ API.v1.addRoute(
 		async post() {
 			const { rid, ...params } = this.bodyParams;
 
-			const result = await Meteor.call('saveRoomSettings', rid, params);
+			const result = await Meteor.callAsync('saveRoomSettings', rid, params);
 
 			return API.v1.success({ rid: result.rid });
 		},
@@ -530,9 +531,9 @@ API.v1.addRoute(
 
 			let result;
 			if (action === 'archive') {
-				result = await Meteor.call('archiveRoom', rid);
+				result = await Meteor.callAsync('archiveRoom', rid);
 			} else {
-				result = await Meteor.call('unarchiveRoom', rid);
+				result = await Meteor.callAsync('unarchiveRoom', rid);
 			}
 
 			return API.v1.success({ result });
@@ -605,7 +606,7 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-invalid-messages');
 				}
 
-				const result = dataExport.sendViaEmail(
+				const result = await dataExport.sendViaEmail(
 					{
 						rid,
 						toUsers: (toUsers as string[]) || [],

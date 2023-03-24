@@ -14,7 +14,7 @@ import type {
 	IImportData,
 	IImportRecordType,
 } from '@rocket.chat/core-typings';
-import { ImportData } from '@rocket.chat/models';
+import { ImportData, Rooms as RoomsRaw } from '@rocket.chat/models';
 
 import type { IConversionCallbacks } from '../definitions/IConversionCallbacks';
 import { Users, Rooms, Subscriptions } from '../../../models/server';
@@ -294,7 +294,7 @@ export class ImportDataConverter {
 		const user = Users.findOneById(userId, {});
 		await this.updateUser(user, userData);
 
-		addUserToDefaultChannels(user, true);
+		await addUserToDefaultChannels(user, true);
 		return user;
 	}
 
@@ -302,7 +302,7 @@ export class ImportDataConverter {
 		return ImportData.getAllUsers().toArray();
 	}
 
-	findExistingUser(data: IImportUser): IUser | undefined {
+	async findExistingUser(data: IImportUser): Promise<IUser | undefined> {
 		if (data.emails.length) {
 			const emailUser = Users.findOneByEmailAddress(data.emails[0], {});
 
@@ -321,7 +321,7 @@ export class ImportDataConverter {
 		const users = (await this.getUsersToImport()) as IImportUserRecord[];
 		for await (const { data, _id } of users) {
 			try {
-				if (beforeImportFn && !beforeImportFn(data, 'user')) {
+				if (beforeImportFn && !(await beforeImportFn(data, 'user'))) {
 					await this.skipRecord(_id);
 					continue;
 				}
@@ -333,7 +333,7 @@ export class ImportDataConverter {
 					throw new Error('importer-user-missing-email-and-username');
 				}
 
-				let existingUser = this.findExistingUser(data);
+				let existingUser = await this.findExistingUser(data);
 				if (existingUser && this._options.skipExistingUsers) {
 					await this.skipRecord(_id);
 					continue;
@@ -361,13 +361,13 @@ export class ImportDataConverter {
 				// Deleted users are 'inactive' users in Rocket.Chat
 				// TODO: Check data._id if exists/required or not
 				if (data.deleted && existingUser?.active) {
-					data._id && setUserActiveStatus(data._id, false, true);
+					data._id && (await setUserActiveStatus(data._id, false, true));
 				} else if (data.deleted === false && existingUser?.active === false) {
-					data._id && setUserActiveStatus(data._id, true);
+					data._id && (await setUserActiveStatus(data._id, true));
 				}
 
 				if (afterImportFn) {
-					afterImportFn(data, 'user', isNewUser);
+					await afterImportFn(data, 'user', isNewUser);
 				}
 			} catch (e) {
 				this._logger.error(e);
@@ -555,7 +555,7 @@ export class ImportDataConverter {
 
 		for await (const { data, _id } of messages) {
 			try {
-				if (beforeImportFn && !beforeImportFn(data, 'message')) {
+				if (beforeImportFn && !(await beforeImportFn(data, 'message'))) {
 					await this.skipRecord(_id);
 					continue;
 				}
@@ -624,7 +624,7 @@ export class ImportDataConverter {
 				}
 
 				if (afterImportFn) {
-					afterImportFn(data, 'message', true);
+					await afterImportFn(data, 'message', true);
 				}
 			} catch (e) {
 				await this.saveError(_id, e instanceof Error ? e : new Error(String(e)));
@@ -633,7 +633,7 @@ export class ImportDataConverter {
 
 		for await (const rid of rids) {
 			try {
-				await Rooms.resetLastMessageById(rid);
+				await RoomsRaw.resetLastMessageById(rid);
 			} catch (e) {
 				this._logger.warn(`Failed to update last message of room ${rid}`);
 				this._logger.error(e);
@@ -905,7 +905,7 @@ export class ImportDataConverter {
 		const channels = await this.getChannelsToImport();
 		for await (const { data, _id } of channels) {
 			try {
-				if (beforeImportFn && !beforeImportFn(data, 'channel')) {
+				if (beforeImportFn && !(await beforeImportFn(data, 'channel'))) {
 					await this.skipRecord(_id);
 					continue;
 				}
@@ -934,7 +934,7 @@ export class ImportDataConverter {
 				}
 
 				if (afterImportFn) {
-					afterImportFn(data, 'channel', !existingRoom);
+					await afterImportFn(data, 'channel', !existingRoom);
 				}
 			} catch (e) {
 				await this.saveError(_id, e instanceof Error ? e : new Error(String(e)));

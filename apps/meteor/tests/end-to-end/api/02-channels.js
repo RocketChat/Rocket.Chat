@@ -159,7 +159,7 @@ describe('[Channels]', function () {
 				})
 				.end(done);
 		});
-		it('should return channel structure with "lastMessage" object including pin, reaction and star(should be an array) infos', (done) => {
+		it('should return channel structure with "lastMessage" object including pin, reactions and star(should be an array) infos', (done) => {
 			request
 				.get(api('channels.info'))
 				.set(credentials)

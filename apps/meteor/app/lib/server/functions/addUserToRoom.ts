@@ -2,10 +2,11 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { Meteor } from 'meteor/meteor';
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
 import { Team } from '@rocket.chat/core-services';
+import { Subscriptions } from '@rocket.chat/models';
 
 import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
-import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
+import { Messages, Rooms, Users } from '../../../models/server';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
@@ -21,8 +22,8 @@ export const addUserToRoom = async function (
 	const userToBeAdded = typeof user !== 'string' ? user : Users.findOneByUsername(user.replace('@', ''));
 	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
 	if (
-		!roomDirectives?.allowMemberAction(room, RoomMemberActions.JOIN, userToBeAdded._id) &&
-		!roomDirectives?.allowMemberAction(room, RoomMemberActions.INVITE, userToBeAdded._id)
+		!(await roomDirectives.allowMemberAction(room, RoomMemberActions.JOIN, userToBeAdded._id)) &&
+		!(await roomDirectives.allowMemberAction(room, RoomMemberActions.INVITE, userToBeAdded._id))
 	) {
 		return;
 	}
@@ -34,15 +35,15 @@ export const addUserToRoom = async function (
 	}
 
 	// Check if user is already in room
-	const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
 	if (subscription) {
 		return;
 	}
 
 	try {
 		await Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, userToBeAdded, inviter);
-	} catch (error) {
-		if (error instanceof AppsEngineException) {
+	} catch (error: any) {
+		if (error.name === AppsEngineException.name) {
 			throw new Meteor.Error('error-app-prevented', error.message);
 		}
 
@@ -58,14 +59,14 @@ export const addUserToRoom = async function (
 	}
 
 	await Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, userToBeAdded, inviter).catch((error) => {
-		if (error instanceof AppsEngineException) {
+		if (error.name === AppsEngineException.name) {
 			throw new Meteor.Error('error-app-prevented', error.message);
 		}
 
 		throw error;
 	});
 
-	Subscriptions.createWithRoomAndUser(room, userToBeAdded, {
+	await Subscriptions.createWithRoomAndUser(room, userToBeAdded, {
 		ts: now,
 		open: true,
 		alert: true,

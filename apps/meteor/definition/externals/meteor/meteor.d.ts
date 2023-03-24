@@ -2,6 +2,10 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import 'meteor/meteor';
 import type { IStreamerConstructor, IStreamer } from 'meteor/rocketchat:streamer';
 
+type StringifyBuffers<T extends unknown[]> = {
+	[P in keyof T]: T[P] extends Buffer ? string : T[P];
+};
+
 declare module 'meteor/meteor' {
 	namespace Meteor {
 		const Streamer: IStreamerConstructor & IStreamer;
@@ -28,6 +32,8 @@ declare module 'meteor/meteor' {
 		const server: any;
 
 		const runAsUser: <T>(userId: string, scope: () => T) => T;
+		// https://github.com/meteor/meteor/pull/12274 - Function is there on meteor 2.9, but meteor.d.ts doesn't have it registered
+		function userAsync(options?: { fields?: Mongo.FieldSpecifier | undefined }): Promise<Meteor.User | null>;
 
 		interface MethodThisType {
 			twoFactorChecked: boolean | undefined;
@@ -98,7 +104,7 @@ declare module 'meteor/meteor' {
 		function methods<TServerMethods extends ServerMethods>(methods: {
 			[TMethodName in keyof TServerMethods]?: (
 				this: MethodThisType,
-				...args: Parameters<TServerMethods[TMethodName]>
+				...args: StringifyBuffers<Parameters<TServerMethods[TMethodName]>>
 			) => ReturnType<TServerMethods[TMethodName]> | Promise<ReturnType<TServerMethods[TMethodName]>>;
 		}): void;
 	}

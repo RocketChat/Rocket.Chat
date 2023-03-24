@@ -5,7 +5,7 @@ import { Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 
 import { Apps } from '../../../../ee/server/apps';
-import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
+import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { callbacks } from '../../../../lib/callbacks';
 import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
 import { getValidRoomName } from '../../../utils/server';
@@ -22,7 +22,7 @@ export const createRoom = async <T extends RoomType>(
 	ownerUsername: string | undefined,
 	members: T extends 'd' ? IUser[] : string[] = [],
 	readOnly?: boolean,
-	roomExtraData?: Partial<IRoom> & { customFields?: unknown },
+	roomExtraData?: Partial<IRoom>,
 	options?: ICreateRoomParams['options'],
 ): Promise<ICreatedRoom> => {
 	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
@@ -93,7 +93,7 @@ export const createRoom = async <T extends RoomType>(
 	};
 
 	const prevent = await Apps.triggerEvent('IPreRoomCreatePrevent', tmp).catch((error) => {
-		if (error instanceof AppsEngineException) {
+		if (error.name === AppsEngineException.name) {
 			throw new Meteor.Error('error-app-prevented', error.message);
 		}
 
@@ -156,7 +156,7 @@ export const createRoom = async <T extends RoomType>(
 		}
 	}
 
-	addUserRoles(owner._id, ['owner'], room._id);
+	await addUserRolesAsync(owner._id, ['owner'], room._id);
 
 	if (type === 'c') {
 		if (room.teamId) {

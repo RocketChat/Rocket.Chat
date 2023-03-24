@@ -22,7 +22,7 @@ export class RocketChatMessageAdapter {
 		externalEventId: string,
 		homeServerDomain: string,
 	): Promise<void> {
-		sendMessage(
+		await sendMessage(
 			user.getInternalReference(),
 			{
 				federation: { eventId: externalEventId },
@@ -47,7 +47,7 @@ export class RocketChatMessageAdapter {
 		homeServerDomain: string,
 	): Promise<void> {
 		const room = federatedRoom.getInternalReference();
-		sendMessage(
+		await sendMessage(
 			user.getInternalReference(),
 			{
 				federation: { eventId: externalEventId },
@@ -80,7 +80,7 @@ export class RocketChatMessageAdapter {
 				senderExternalId: user.getExternalId(),
 			}),
 		};
-		updateMessage(updatedMessage, user.getInternalReference(), originalMessage);
+		await updateMessage(updatedMessage, user.getInternalReference(), originalMessage);
 	}
 
 	private async getMessageToReplyToWhenQuoting(
@@ -140,7 +140,7 @@ export class RocketChatMessageAdapter {
 				user,
 			),
 		};
-		updateMessage(updatedMessage, user.getInternalReference(), editedMessage);
+		await updateMessage(updatedMessage, user.getInternalReference(), editedMessage);
 	}
 
 	public async sendFileMessage(
@@ -150,7 +150,7 @@ export class RocketChatMessageAdapter {
 		attachments: IMessage['attachments'],
 		externalEventId: string,
 	): Promise<void> {
-		sendMessage(
+		await sendMessage(
 			user.getInternalReference(),
 			{
 				federation: { eventId: externalEventId },
@@ -175,7 +175,7 @@ export class RocketChatMessageAdapter {
 	): Promise<void> {
 		const room = federatedRoom.getInternalReference();
 
-		sendMessage(
+		await sendMessage(
 			user.getInternalReference(),
 			{
 				federation: { eventId: externalEventId },

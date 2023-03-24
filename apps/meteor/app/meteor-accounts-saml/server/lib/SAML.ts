@@ -480,12 +480,12 @@ export class SAML {
 				const privRoom = Rooms.findOneByNameAndType(roomName, 'p', {});
 
 				if (privRoom && includePrivateChannelsInUpdate === true) {
-					Promise.await(addUserToRoom(privRoom._id, user));
+					await addUserToRoom(privRoom._id, user);
 					continue;
 				}
 
 				if (room) {
-					Promise.await(addUserToRoom(room._id, user));
+					await addUserToRoom(room._id, user);
 					continue;
 				}
 

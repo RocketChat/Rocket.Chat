@@ -69,12 +69,12 @@ API.v1.addRoute(
 		},
 		async post() {
 			if (this.urlParams.type === 'agent') {
-				const user = Livechat.addAgent(this.bodyParams.username);
+				const user = await Livechat.addAgent(this.bodyParams.username);
 				if (user) {
 					return API.v1.success({ user });
 				}
 			} else if (this.urlParams.type === 'manager') {
-				const user = Livechat.addManager(this.bodyParams.username);
+				const user = await Livechat.addManager(this.bodyParams.username);
 				if (user) {
 					return API.v1.success({ user });
 				}

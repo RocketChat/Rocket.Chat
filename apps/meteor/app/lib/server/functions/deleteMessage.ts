@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
-import { Messages, Uploads } from '@rocket.chat/models';
+import { Messages, Rooms, Uploads } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
-import { Messages as MessagesSync, Rooms } from '../../../models/server';
+import { Messages as MessagesSync } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Apps } from '../../../../ee/server/apps';
 
@@ -24,7 +24,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 	}
 
 	if (deletedMsg.tmid) {
-		MessagesSync.decreaseReplyCountById(deletedMsg.tmid, -1);
+		await Messages.decreaseReplyCountById(deletedMsg.tmid, -1);
 	}
 
 	const files = (message.files || [message.file]).filter(Boolean); // Keep compatibility with old messages
@@ -50,18 +50,18 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 		});
 	}
 
-	const room = Rooms.findOneById(message.rid, { fields: { lastMessage: 1, prid: 1, mid: 1, federated: 1 } });
+	const room = await Rooms.findOneById(message.rid, { projection: { lastMessage: 1, prid: 1, mid: 1, federated: 1 } });
 	callbacks.run('afterDeleteMessage', deletedMsg, room);
 
 	// update last message
 	if (settings.get('Store_Last_Message')) {
-		if (!room.lastMessage || room.lastMessage._id === message._id) {
-			Rooms.resetLastMessageById(message.rid, message._id);
+		if (!room?.lastMessage || room.lastMessage._id === message._id) {
+			await Rooms.resetLastMessageById(message.rid, deletedMsg);
 		}
 	}
 
 	// decrease message count
-	Rooms.decreaseMessageCountById(message.rid, 1);
+	await Rooms.decreaseMessageCountById(message.rid, 1);
 
 	if (showDeletedStatus) {
 		// TODO is there a better way to tell TS "IUser[username]" is not undefined?

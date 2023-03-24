@@ -160,9 +160,9 @@ export class Uploader {
 		// Assign file to store
 		file.store = store;
 
-		function finish() {
+		async function finish() {
 			// Finish the upload by telling the store the upload is complete
-			Meteor.call('ufsComplete', fileId, store, token, function (err, uploadedFile) {
+			await Meteor.callAsync('ufsComplete', fileId, store, token, function (err, uploadedFile) {
 				if (err) {
 					self.onError(err, file);
 					self.abort();
@@ -178,10 +178,10 @@ export class Uploader {
 		/**
 		 * Aborts the current transfer
 		 */
-		self.abort = function () {
+		self.abort = async function () {
 			// Remove the file from database
 			// eslint-disable-next-line no-unused-vars
-			Meteor.call('ufsDelete', fileId, store, token, function (err, result) {
+			await Meteor.callAsync('ufsDelete', fileId, store, token, function (err, result) {
 				if (err) {
 					self.onError(err, file);
 				}
@@ -417,11 +417,11 @@ export class Uploader {
 		/**
 		 * Starts or resumes the transfer
 		 */
-		self.start = function () {
+		self.start = async function () {
 			if (!fileId) {
 				// Create the file document and get the token
 				// that allows the user to send chunks to the store.
-				Meteor.call('ufsCreate', _.extend({}, file), function (err, result) {
+				await Meteor.callAsync('ufsCreate', _.extend({}, file), function (err, result) {
 					if (err) {
 						self.onError(err, file);
 					} else if (result) {
@@ -448,7 +448,7 @@ export class Uploader {
 		/**
 		 * Stops the transfer
 		 */
-		self.stop = function () {
+		self.stop = async function () {
 			if (uploading) {
 				// Update elapsed time
 				elapsedTime = Date.now() - startTime;
@@ -457,7 +457,7 @@ export class Uploader {
 				self.onStop(file);
 
 				// eslint-disable-next-line no-unused-vars
-				Meteor.call('ufsStop', fileId, store, token, function (err, result) {
+				await Meteor.callAsync('ufsStop', fileId, store, token, function (err, result) {
 					if (err) {
 						self.onError(err, file);
 					}
