@@ -48,7 +48,7 @@ async function findPrivateGroupByIdOrName({
 	}
 
 	const roomOptions = {
-		fields: {
+		projection: {
 			...roomAccessAttributes,
 			t: 1,
 			ro: 1,
