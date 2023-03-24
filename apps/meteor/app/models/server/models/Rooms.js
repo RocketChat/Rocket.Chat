@@ -35,21 +35,6 @@ class Rooms extends Base {
 		);
 	}
 
-	setCallStatusAndCallStartTime(_id, status) {
-		const query = {
-			_id,
-		};
-
-		const update = {
-			$set: {
-				callStatus: status,
-				webRtcCallStartTime: new Date(),
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	setReactionsInLastMessage(roomId, lastMessage) {
 		return this.update({ _id: roomId }, { $set: { 'lastMessage.reactions': lastMessage.reactions } });
 	}
