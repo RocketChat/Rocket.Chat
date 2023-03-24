@@ -83,7 +83,7 @@ API.v1.addRoute(
 			const { activeUsersOnly, ...params } = this.bodyParams;
 			const findResult = await findChannelByIdOrName({ params, userId: this.userId });
 
-			await Meteor.call('addAllUserToRoom', findResult._id, activeUsersOnly);
+			await Meteor.callAsync('addAllUserToRoom', findResult._id, activeUsersOnly);
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
@@ -102,7 +102,7 @@ API.v1.addRoute(
 		async post() {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			await Meteor.call('archiveRoom', findResult._id);
+			await Meteor.callAsync('archiveRoom', findResult._id);
 
 			return API.v1.success();
 		},
@@ -126,7 +126,7 @@ API.v1.addRoute(
 				return API.v1.failure(`The channel, ${findResult.name}, is not archived`);
 			}
 
-			await Meteor.call('unarchiveRoom', findResult._id);
+			await Meteor.callAsync('unarchiveRoom', findResult._id);
 
 			return API.v1.success();
 		},
@@ -149,7 +149,7 @@ API.v1.addRoute(
 
 			const { count = 20, offset = 0 } = this.getPaginationItems();
 
-			const result = await Meteor.call('getChannelHistory', {
+			const result = await Meteor.callAsync('getChannelHistory', {
 				rid: findResult._id,
 				latest: latest ? new Date(latest) : new Date(),
 				oldest: oldest && new Date(oldest),
@@ -179,7 +179,7 @@ API.v1.addRoute(
 		async get() {
 			const findResult = await findChannelByIdOrName({ params: this.queryParams });
 
-			const roles = await Meteor.call('getRoomRoles', findResult._id);
+			const roles = await Meteor.callAsync('getRoomRoles', findResult._id);
 
 			return API.v1.success({
 				roles,
@@ -199,7 +199,7 @@ API.v1.addRoute(
 			const { joinCode, ...params } = this.bodyParams;
 			const findResult = await findChannelByIdOrName({ params });
 
-			await Meteor.call('joinRoom', findResult._id, joinCode);
+			await Meteor.callAsync('joinRoom', findResult._id, joinCode);
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
@@ -221,7 +221,7 @@ API.v1.addRoute(
 
 			const user = this.getUserFromParams();
 
-			await Meteor.call('removeUserFromRoom', { rid: findResult._id, username: user.username });
+			await Meteor.callAsync('removeUserFromRoom', { rid: findResult._id, username: user.username });
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
@@ -241,7 +241,7 @@ API.v1.addRoute(
 			const { ...params } = this.bodyParams;
 			const findResult = await findChannelByIdOrName({ params });
 
-			await Meteor.call('leaveRoom', findResult._id);
+			await Meteor.callAsync('leaveRoom', findResult._id);
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params, userId: this.userId }),
@@ -323,7 +323,7 @@ API.v1.addRoute(
 				return API.v1.failure(`The channel, ${findResult.name}, is already open to the sender`);
 			}
 
-			await Meteor.call('openRoom', findResult._id);
+			await Meteor.callAsync('openRoom', findResult._id);
 
 			return API.v1.success();
 		},
@@ -344,7 +344,7 @@ API.v1.addRoute(
 				return API.v1.failure('The channel read only setting is the same as what it would be changed to.');
 			}
 
-			await Meteor.call('saveRoomSettings', findResult._id, 'readOnly', this.bodyParams.readOnly);
+			await Meteor.callAsync('saveRoomSettings', findResult._id, 'readOnly', this.bodyParams.readOnly);
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
@@ -365,7 +365,7 @@ API.v1.addRoute(
 
 			const findResult = await findChannelByIdOrName({ params });
 
-			await Meteor.call('saveRoomSettings', findResult._id, 'roomAnnouncement', announcement);
+			await Meteor.callAsync('saveRoomSettings', findResult._id, 'roomAnnouncement', announcement);
 
 			return API.v1.success({
 				announcement: this.bodyParams.announcement,
@@ -386,7 +386,7 @@ API.v1.addRoute(
 			const { offset, count } = this.getPaginationItems();
 			const { sort } = this.parseJsonQuery();
 
-			const mentions = await Meteor.call('getUserMentionsByChannel', {
+			const mentions = await Meteor.callAsync('getUserMentionsByChannel', {
 				roomId,
 				options: {
 					sort: sort || { ts: 1 },
@@ -395,7 +395,7 @@ API.v1.addRoute(
 				},
 			});
 
-			const allMentions = await Meteor.call('getUserMentionsByChannel', {
+			const allMentions = await Meteor.callAsync('getUserMentionsByChannel', {
 				roomId,
 				options: {},
 			});
@@ -448,7 +448,7 @@ API.v1.addRoute(
 				checkedArchived: false,
 			});
 
-			await Meteor.call('eraseRoom', room._id);
+			await Meteor.callAsync('eraseRoom', room._id);
 
 			return API.v1.success();
 		},
@@ -520,7 +520,7 @@ API.v1.addRoute(
 
 			const user = this.getUserFromParams();
 
-			await Meteor.call('addRoomModerator', findResult._id, user._id);
+			await Meteor.callAsync('addRoomModerator', findResult._id, user._id);
 
 			return API.v1.success();
 		},
@@ -536,7 +536,7 @@ API.v1.addRoute(
 
 			const user = this.getUserFromParams();
 
-			await Meteor.call('addRoomOwner', findResult._id, user._id);
+			await Meteor.callAsync('addRoomOwner', findResult._id, user._id);
 
 			return API.v1.success();
 		},
@@ -563,7 +563,7 @@ API.v1.addRoute(
 				return API.v1.failure(`The channel, ${findResult.name}, is already closed to the sender`);
 			}
 
-			await Meteor.call('hideRoom', findResult._id);
+			await Meteor.callAsync('hideRoom', findResult._id);
 
 			return API.v1.success();
 		},
@@ -657,7 +657,7 @@ async function createChannel(
 	params: { name?: string; members?: string[]; customFields?: Record<string, any>; extraData?: Record<string, any>; readOnly?: boolean },
 ): Promise<{ channel: IRoom }> {
 	const readOnly = typeof params.readOnly !== 'undefined' ? params.readOnly : false;
-	const id = Meteor.call(
+	const id = await Meteor.callAsync(
 		'createChannel',
 		params.name,
 		params.members ? params.members : [],
@@ -868,7 +868,7 @@ API.v1.addRoute(
 				return API.v1.failure('invalid-user-invite-list', 'Cannot invite if no users are provided');
 			}
 
-			await Meteor.call('addUsersToRoom', { rid: findResult._id, users: users.map((u) => u.username) });
+			await Meteor.callAsync('addUsersToRoom', { rid: findResult._id, users: users.map((u) => u.username) });
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
@@ -1081,7 +1081,7 @@ API.v1.addRoute(
 
 			const user = this.getUserFromParams();
 
-			await Meteor.call('removeRoomModerator', findResult._id, user._id);
+			await Meteor.callAsync('removeRoomModerator', findResult._id, user._id);
 
 			return API.v1.success();
 		},
@@ -1097,7 +1097,7 @@ API.v1.addRoute(
 
 			const user = this.getUserFromParams();
 
-			await Meteor.call('removeRoomOwner', findResult._id, user._id);
+			await Meteor.callAsync('removeRoomOwner', findResult._id, user._id);
 
 			return API.v1.success();
 		},
@@ -1119,7 +1119,7 @@ API.v1.addRoute(
 				return API.v1.failure('The channel name is the same as what it would be renamed to.');
 			}
 
-			await Meteor.call('saveRoomSettings', findResult._id, 'roomName', this.bodyParams.name);
+			await Meteor.callAsync('saveRoomSettings', findResult._id, 'roomName', this.bodyParams.name);
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({
@@ -1142,7 +1142,7 @@ API.v1.addRoute(
 
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			await Meteor.call('saveRoomSettings', findResult._id, 'roomCustomFields', this.bodyParams.customFields);
+			await Meteor.callAsync('saveRoomSettings', findResult._id, 'roomCustomFields', this.bodyParams.customFields);
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
@@ -1169,7 +1169,7 @@ API.v1.addRoute(
 				);
 			}
 
-			await Meteor.call(
+			await Meteor.callAsync(
 				'saveRoomSettings',
 				findResult._id,
 				'default',
@@ -1198,7 +1198,7 @@ API.v1.addRoute(
 				return API.v1.failure('The channel description is the same as what it would be changed to.');
 			}
 
-			await Meteor.call('saveRoomSettings', findResult._id, 'roomDescription', this.bodyParams.description);
+			await Meteor.callAsync('saveRoomSettings', findResult._id, 'roomDescription', this.bodyParams.description);
 
 			return API.v1.success({
 				description: this.bodyParams.description || '',
@@ -1222,7 +1222,7 @@ API.v1.addRoute(
 				return API.v1.failure('The channel purpose (description) is the same as what it would be changed to.');
 			}
 
-			await Meteor.call('saveRoomSettings', findResult._id, 'roomDescription', this.bodyParams.purpose);
+			await Meteor.callAsync('saveRoomSettings', findResult._id, 'roomDescription', this.bodyParams.purpose);
 
 			return API.v1.success({
 				purpose: this.bodyParams.purpose || '',
@@ -1246,7 +1246,7 @@ API.v1.addRoute(
 				return API.v1.failure('The channel topic is the same as what it would be changed to.');
 			}
 
-			await Meteor.call('saveRoomSettings', findResult._id, 'roomTopic', this.bodyParams.topic);
+			await Meteor.callAsync('saveRoomSettings', findResult._id, 'roomTopic', this.bodyParams.topic);
 
 			return API.v1.success({
 				topic: this.bodyParams.topic || '',
@@ -1270,7 +1270,7 @@ API.v1.addRoute(
 				return API.v1.failure('The channel type is the same as what it would be changed to.');
 			}
 
-			await Meteor.call('saveRoomSettings', findResult._id, 'roomType', this.bodyParams.type);
+			await Meteor.callAsync('saveRoomSettings', findResult._id, 'roomType', this.bodyParams.type);
 
 			const room = await Rooms.findOneById(findResult._id, { projection: API.v1.defaultFieldsToExclude });
 
@@ -1294,7 +1294,7 @@ API.v1.addRoute(
 
 			const user = this.getUserFromParams();
 
-			await Meteor.call('addRoomLeader', findResult._id, user._id);
+			await Meteor.callAsync('addRoomLeader', findResult._id, user._id);
 
 			return API.v1.success();
 		},
@@ -1310,7 +1310,7 @@ API.v1.addRoute(
 
 			const user = this.getUserFromParams();
 
-			await Meteor.call('removeRoomLeader', findResult._id, user._id);
+			await Meteor.callAsync('removeRoomLeader', findResult._id, user._id);
 
 			return API.v1.success();
 		},
@@ -1328,7 +1328,7 @@ API.v1.addRoute(
 
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			await Meteor.call('saveRoomSettings', findResult._id, 'joinCode', this.bodyParams.joinCode);
+			await Meteor.callAsync('saveRoomSettings', findResult._id, 'joinCode', this.bodyParams.joinCode);
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),

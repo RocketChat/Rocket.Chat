@@ -1,9 +1,10 @@
+import { LivechatRooms } from '@rocket.chat/models';
+
 import { callbacks } from '../../../../lib/callbacks';
-import { LivechatRooms } from '../../../models/server';
 
 callbacks.add(
 	'afterSaveMessage',
-	function (message, room) {
+	async function (message, room) {
 		// skips this callback if the message was edited
 		if (!message || message.editedAt) {
 			return message;
@@ -19,7 +20,7 @@ callbacks.add(
 			return message;
 		}
 
-		LivechatRooms.setNotResponseByRoomId(room._id);
+		await LivechatRooms.setNotResponseByRoomId(room._id);
 
 		return message;
 	},

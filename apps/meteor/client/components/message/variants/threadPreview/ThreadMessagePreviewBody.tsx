@@ -17,7 +17,12 @@ const ThreadMessagePreviewBody = ({ message }: ThreadMessagePreviewBodyProps): R
 
 	const getMessage = () => {
 		const mdTokens: Root | undefined = message.md && [...message.md];
-		if (message.attachments && isQuoteAttachment(message.attachments[0])) {
+		if (
+			message.attachments &&
+			Array.isArray(message.attachments) &&
+			message.attachments.length > 0 &&
+			isQuoteAttachment(message.attachments[0])
+		) {
 			mdTokens?.shift();
 		}
 		if (!isEncryptedMessage || message.e2e === 'done') {
