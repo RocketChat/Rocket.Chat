@@ -10,6 +10,7 @@ import { LivechatDepartmentAgents, Users as UsersRaw, LivechatInquiry, LivechatR
 import { hasRole } from '../../../authorization/server';
 import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatDepartment } from '../../../models/server';
 import { Livechat } from './Livechat';
+import { Livechat as LivechatTyped } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
@@ -532,7 +533,7 @@ export const normalizeTransferredByData = (transferredBy, room) => {
 
 export const checkServiceStatus = async ({ guest, agent }) => {
 	if (!agent) {
-		return Livechat.online(guest.department);
+		return LivechatTyped.online(guest.department);
 	}
 
 	const { agentId } = agent;

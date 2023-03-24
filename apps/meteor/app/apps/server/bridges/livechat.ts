@@ -26,11 +26,11 @@ export class AppLivechatBridge extends LivechatBridge {
 	}
 
 	protected isOnline(departmentId?: string): boolean {
-		return Promise.await(Livechat.online(departmentId));
+		return LivechatTyped.isOnlineSync(departmentId);
 	}
 
 	protected async isOnlineAsync(departmentId?: string): Promise<boolean> {
-		return Livechat.online(departmentId);
+		return LivechatTyped.online(departmentId);
 	}
 
 	protected async createMessage(message: ILivechatMessage, appId: string): Promise<string> {

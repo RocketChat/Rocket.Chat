@@ -1,6 +1,22 @@
-import type { IOmnichannelRoom, IOmnichannelRoomClosingInfo, IUser, MessageTypesValues, ILivechatVisitor } from '@rocket.chat/core-typings';
+import type {
+	IOmnichannelRoom,
+	IOmnichannelRoomClosingInfo,
+	IUser,
+	MessageTypesValues,
+	ILivechatVisitor,
+	IMessage,
+} from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { LivechatDepartment, LivechatInquiry, LivechatRooms, Subscriptions, LivechatVisitors, Messages, Users } from '@rocket.chat/models';
+import {
+	LivechatDepartment,
+	LivechatInquiry,
+	LivechatRooms,
+	Subscriptions,
+	LivechatVisitors,
+	Messages,
+	Users,
+	LivechatDepartmentAgents,
+} from '@rocket.chat/models';
 import moment from 'moment-timezone';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
@@ -48,6 +64,67 @@ class LivechatClass {
 
 	constructor() {
 		this.logger = new Logger('Livechat');
+	}
+
+	/**
+	 * @deprecated Use only for legacy code. Use Livechat.online() instead.
+	 */
+	isOnlineSync(department?: string, skipNoAgentSetting = false, skipFallbackCheck = false): boolean {
+		return Promise.await(this.online(department, skipNoAgentSetting, skipFallbackCheck));
+	}
+
+	async online(department?: string, skipNoAgentSetting = false, skipFallbackCheck = false) {
+		Livechat.logger.debug(`Checking online agents ${department ? `for department ${department}` : ''}`);
+		if (!skipNoAgentSetting && settings.get('Livechat_accept_chats_with_no_agents')) {
+			Livechat.logger.debug('Can accept without online agents: true');
+			return true;
+		}
+
+		if (settings.get('Livechat_assign_new_conversation_to_bot')) {
+			Livechat.logger.debug(`Fetching online bot agents for department ${department}`);
+			const botAgents = await Livechat.getBotAgents(department);
+			if (botAgents) {
+				const onlineBots = await botAgents.count();
+				Livechat.logger.debug(`Found ${onlineBots} online`);
+				if (onlineBots > 0) {
+					return true;
+				}
+			}
+		}
+
+		const agentsOnline = Livechat.checkOnlineAgents(department, undefined, skipFallbackCheck);
+		Livechat.logger.debug(`Are online agents ${department ? `for department ${department}` : ''}?: ${agentsOnline}`);
+		return agentsOnline;
+	}
+
+	private async getBotAgents(department?: string) {
+		if (department) {
+			return LivechatDepartmentAgents.getBotsForDepartment(department);
+		}
+
+		return Users.findBotAgents();
+	}
+
+	async checkOnlineAgents(department?: string, agent?: { agentId: string }, skipFallbackCheck = false): Promise<boolean> {
+		if (agent?.agentId) {
+			return Users.checkOnlineAgents(agent.agentId);
+		}
+
+		if (department) {
+			const onlineForDep = await LivechatDepartmentAgents.checkOnlineForDepartment(department);
+			if (onlineForDep || skipFallbackCheck) {
+				return onlineForDep;
+			}
+
+			const dep = await LivechatDepartment.findOneById(department);
+			if (!dep?.fallbackForwardDepartment) {
+				return onlineForDep;
+			}
+
+			return this.checkOnlineAgents(dep?.fallbackForwardDepartment);
+		}
+
+		return Users.checkOnlineAgents();
 	}
 
 	async closeRoom(params: CloseRoomParams): Promise<void> {
@@ -130,7 +207,11 @@ class LivechatClass {
 		this.logger.debug(`Sending closing message to room ${room._id}`);
 		await sendMessage(chatCloser, message, newRoom);
 
-		LegacyMessage.createCommandWithRoomIdAndUser('promptTranscript', rid, closeData.closedBy);
+		const promptTranscriptUser: IMessage['u'] = {
+			_id: closeData.closedBy._id,
+			username: closeData.closedBy.username || '',
+		};
+		await Messages.createCommandWithRoomIdAndUser('promptTranscript', rid, promptTranscriptUser);
 
 		this.logger.debug(`Running callbacks for room ${newRoom._id}`);
 

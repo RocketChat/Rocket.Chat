@@ -68,28 +68,6 @@ export const Livechat = {
 		});
 	},
 
-	async online(department, skipNoAgentSetting = false, skipFallbackCheck = false) {
-		Livechat.logger.debug(`Checking online agents ${department ? `for department ${department}` : ''}`);
-		if (!skipNoAgentSetting && settings.get('Livechat_accept_chats_with_no_agents')) {
-			Livechat.logger.debug('Can accept without online agents: true');
-			return true;
-		}
-
-		if (settings.get('Livechat_assign_new_conversation_to_bot')) {
-			Livechat.logger.debug(`Fetching online bot agents for department ${department}`);
-			const botAgents = await Livechat.getBotAgents(department);
-			const onlineBots = botAgents.count();
-			Livechat.logger.debug(`Found ${onlineBots} online`);
-			if (onlineBots > 0) {
-				return true;
-			}
-		}
-
-		const agentsOnline = Livechat.checkOnlineAgents(department, {}, skipFallbackCheck);
-		Livechat.logger.debug(`Are online agents ${department ? `for department ${department}` : ''}?: ${agentsOnline}`);
-		return agentsOnline;
-	},
-
 	getNextAgent(department) {
 		return RoutingManager.getNextAgent(department);
 	},
@@ -111,36 +89,6 @@ export const Livechat = {
 			return LivechatDepartmentAgents.getOnlineForDepartment(department);
 		}
 		return Users.findOnlineAgents();
-	},
-
-	async checkOnlineAgents(department, agent, skipFallbackCheck = false) {
-		if (agent?.agentId) {
-			return Users.checkOnlineAgents(agent.agentId);
-		}
-
-		if (department) {
-			const onlineForDep = await LivechatDepartmentAgents.checkOnlineForDepartment(department);
-			if (onlineForDep || skipFallbackCheck) {
-				return onlineForDep;
-			}
-
-			const dep = LivechatDepartment.findOneById(department);
-			if (!dep?.fallbackForwardDepartment) {
-				return onlineForDep;
-			}
-
-			return this.checkOnlineAgents(dep?.fallbackForwardDepartment);
-		}
-
-		return Users.checkOnlineAgents();
-	},
-
-	async getBotAgents(department) {
-		if (department) {
-			return LivechatDepartmentAgents.getBotsForDepartment(department);
-		}
-
-		return Users.findBotAgents();
 	},
 
 	async getRequiredDepartment(onlineRequired = true) {

@@ -3,6 +3,7 @@ import { isGETLivechatConfigParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
 import { Livechat } from '../../lib/Livechat';
+import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { settings, findOpenRoom, getExtraConfigInfo, findAgent } from '../lib/livechat';
 
 const cachedSettings = mem(settings, { maxAge: 1000, cacheKey: JSON.stringify });
@@ -22,7 +23,7 @@ API.v1.addRoute(
 
 			const config = await cachedSettings({ businessUnit });
 
-			const status = await Livechat.online(department);
+			const status = await LivechatTyped.online(department);
 			const guest = token ? await Livechat.findGuest(token) : null;
 
 			const room = guest ? findOpenRoom(guest.token) : undefined;
