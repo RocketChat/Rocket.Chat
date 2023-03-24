@@ -66,7 +66,6 @@ export const addUserToRoom = async function (
 		throw error;
 	});
 
-	// @ts-expect-error - check on types of this func and why model expects to use a customFields key
 	await Subscriptions.createWithRoomAndUser(room, userToBeAdded, {
 		ts: now,
 		open: true,

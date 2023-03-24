@@ -896,8 +896,8 @@ class RocketChatIntegrationHandler {
 							}
 
 							outgoingLogger.info(`Trying the Integration ${trigger.name} to ${url} again in ${waitTime} milliseconds.`);
-							Meteor.setTimeout(async () => {
-								await this.executeTriggerUrl(url, trigger, { event, message, room, owner, user }, historyId, tries + 1);
+							Meteor.setTimeout(() => {
+								void this.executeTriggerUrl(url, trigger, { event, message, room, owner, user }, historyId, tries + 1);
 							}, waitTime);
 						} else {
 							this.updateHistory({ historyId, step: 'too-many-retries', error: true });

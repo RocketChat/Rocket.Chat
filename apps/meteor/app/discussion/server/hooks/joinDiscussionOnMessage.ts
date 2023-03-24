@@ -5,24 +5,22 @@ import { callbacks } from '../../../../lib/callbacks';
 
 callbacks.add(
 	'beforeSaveMessage',
-	(message, room) => {
+	async (message, room) => {
 		// abort if room is not a discussion
-		if (!room || !room.prid) {
+		if (!room?.prid) {
 			return message;
 		}
 
 		// check if user already joined the discussion
-		const sub = Promise.await(
-			Subscriptions.findOneByRoomIdAndUserId(room._id, message.u._id, {
-				projection: { _id: 1 },
-			}),
-		);
+		const sub = await Subscriptions.findOneByRoomIdAndUserId(room._id, message.u._id, {
+			projection: { _id: 1 },
+		});
+
 		if (sub) {
 			return message;
 		}
 
-		// if no subcription, call join
-		Meteor.runAsUser(message.u._id, () => Meteor.call('joinRoom', room._id));
+		await Meteor.runAsUser(message.u._id, () => Meteor.callAsync('joinRoom', room._id));
 
 		return message;
 	},
