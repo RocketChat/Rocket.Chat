@@ -35,18 +35,6 @@ class Rooms extends Base {
 		);
 	}
 
-	setDescriptionById(_id, description) {
-		const query = {
-			_id,
-		};
-		const update = {
-			$set: {
-				description,
-			},
-		};
-		return this.update(query, update);
-	}
-
 	setStreamingOptionsById(_id, streamingOptions) {
 		const update = {
 			$set: {
