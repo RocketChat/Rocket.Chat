@@ -35,22 +35,6 @@ class Rooms extends Base {
 		);
 	}
 
-	unsetAllImportIds() {
-		const query = {
-			importIds: {
-				$exists: true,
-			},
-		};
-
-		const update = {
-			$unset: {
-				importIds: 1,
-			},
-		};
-
-		return this.update(query, update, { multi: true });
-	}
-
 	updateLastMessageStar(roomId, userId, starred) {
 		let update;
 		const query = { _id: roomId };
