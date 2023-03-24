@@ -1,16 +1,14 @@
-import util from 'util';
 import dns from 'dns';
 
-const dnsResolveSRV = util.promisify(dns.resolveSrv);
-const dnsResolveTXT = util.promisify(dns.resolveTxt);
+const { resolveSrv, resolveTxt } = dns.promises;
 
 export const resolveSRV = async (url: string): Promise<Omit<dns.SrvRecord, 'name'> & { target: dns.SrvRecord['name'] }> => {
-	const [{ name, ...resolved }] = await dnsResolveSRV(url);
+	const [{ name, ...resolved }] = await resolveSrv(url);
 	return { target: name, ...resolved };
 };
 
 export const resolveTXT = async (url: string): Promise<string> => {
-	const [resolved] = await dnsResolveTXT(url);
+	const [resolved] = await resolveTxt(url);
 
 	return Array.isArray(resolved) ? resolved.join('') : resolved;
 };
