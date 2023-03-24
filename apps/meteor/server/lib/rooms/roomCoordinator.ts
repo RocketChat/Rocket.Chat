@@ -8,7 +8,7 @@ import { settings } from '../../../app/settings/server';
 class RoomCoordinatorServer extends RoomCoordinator {
 	add(roomConfig: IRoomTypeConfig, directives: Partial<IRoomTypeServerDirectives>): void {
 		this.addRoomType(roomConfig, {
-			allowRoomSettingChange(_room: IRoom, _setting: ValueOf<typeof RoomSettingsEnum>): boolean {
+			allowRoomSettingChange(_room: IRoom, _setting: ValueOf<typeof RoomSettingsEnum>) {
 				return true;
 			},
 			allowMemberAction(_room: IRoom, _action: ValueOf<typeof RoomMemberActions>, _userId?: IUser['_id']): boolean {
