@@ -26,7 +26,7 @@ export class AppLivechatBridge extends LivechatBridge {
 	}
 
 	protected isOnline(departmentId?: string): boolean {
-		return Livechat.online(departmentId);
+		return Promise.await(Livechat.online(departmentId));
 	}
 
 	protected async isOnlineAsync(departmentId?: string): Promise<boolean> {
