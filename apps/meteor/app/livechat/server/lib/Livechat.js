@@ -20,6 +20,7 @@ import {
 	Messages as MessagesRaw,
 	LivechatDepartment as LivechatDepartmentRaw,
 	LivechatDepartmentAgents,
+	Rooms as RoomsRaw,
 } from '@rocket.chat/models';
 import { VideoConf, api } from '@rocket.chat/core-services';
 
@@ -68,7 +69,7 @@ export const Livechat = {
 		});
 	},
 
-	online(department, skipNoAgentSetting = false, skipFallbackCheck = false) {
+	async online(department, skipNoAgentSetting = false, skipFallbackCheck = false) {
 		Livechat.logger.debug(`Checking online agents ${department ? `for department ${department}` : ''}`);
 		if (!skipNoAgentSetting && settings.get('Livechat_accept_chats_with_no_agents')) {
 			Livechat.logger.debug('Can accept without online agents: true');
@@ -77,7 +78,7 @@ export const Livechat = {
 
 		if (settings.get('Livechat_assign_new_conversation_to_bot')) {
 			Livechat.logger.debug(`Fetching online bot agents for department ${department}`);
-			const botAgents = Livechat.getBotAgents(department);
+			const botAgents = await Livechat.getBotAgents(department);
 			const onlineBots = botAgents.count();
 			Livechat.logger.debug(`Found ${onlineBots} online`);
 			if (onlineBots > 0) {
@@ -85,7 +86,7 @@ export const Livechat = {
 			}
 		}
 
-		const agentsOnline = Livechat.checkOnlineAgents(department, {}, skipFallbackCheck);
+		const agentsOnline = await Livechat.checkOnlineAgents(department, {}, skipFallbackCheck);
 		Livechat.logger.debug(`Are online agents ${department ? `for department ${department}` : ''}?: ${agentsOnline}`);
 		return agentsOnline;
 	},
@@ -1304,7 +1305,7 @@ export const Livechat = {
 		await LivechatVisitors.updateById(contactId, updateUser);
 	},
 	async updateCallStatus(callId, rid, status, user) {
-		Rooms.setCallStatus(rid, status);
+		await RoomsRaw.setCallStatus(rid, status);
 		if (status === 'ended' || status === 'declined') {
 			if (await VideoConf.declineLivechatCall(callId)) {
 				return;

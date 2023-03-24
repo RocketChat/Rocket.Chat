@@ -5,7 +5,7 @@ import { Subscriptions, Rooms, Messages, Users, Uploads, Integrations } from '@r
 import { Team } from '@rocket.chat/core-services';
 import type { Filter } from 'mongodb';
 
-import { Rooms as RoomSync, Users as UsersSync, Subscriptions as SubscriptionsSync } from '../../../models/server';
+import { Users as UsersSync, Subscriptions as SubscriptionsSync } from '../../../models/server';
 import { hasAtLeastOnePermission, canAccessRoomAsync, hasAllPermission, roomAccessAttributes } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
@@ -540,7 +540,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 			}
 
-			const { _id: rid, t: type } = (await RoomSync.findOneByIdOrName(idOrName)) || {};
+			const { _id: rid, t: type } = (await Rooms.findOneByIdOrName(idOrName)) || {};
 
 			if (!rid || type !== 'p') {
 				throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
