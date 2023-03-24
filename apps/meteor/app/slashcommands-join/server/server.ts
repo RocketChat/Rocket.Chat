@@ -36,11 +36,9 @@ slashCommands.add({
 			});
 		}
 
-		const subscription = Promise.await(
-			Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
-				projection: { _id: 1 },
-			}),
-		);
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
+			projection: { _id: 1 },
+		});
 
 		if (subscription) {
 			throw new Meteor.Error('error-user-already-in-room', 'You are already in the channel', {

@@ -12,7 +12,6 @@ import { slashCommands } from '../../utils/server';
  * @param {Object} message - The message object
  */
 
-// TODO: remove promise.await when slashcommands can be async
 slashCommands.add({
 	command: 'hide',
 	callback: async (_command: 'hide', param, item): Promise<void> => {
@@ -53,7 +52,7 @@ slashCommands.add({
 					}),
 				});
 			}
-			if (!Promise.await(Subscriptions.findOneByRoomIdAndUserId(roomObject._id, user._id, { projection: { _id: 1 } }))) {
+			if (!(await Subscriptions.findOneByRoomIdAndUserId(roomObject._id, user._id, { projection: { _id: 1 } }))) {
 				void api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
 					msg: TAPi18n.__('error-logged-user-not-in-room', {
 						postProcess: 'sprintf',

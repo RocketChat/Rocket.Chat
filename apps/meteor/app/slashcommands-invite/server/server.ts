@@ -7,7 +7,6 @@ import { Subscriptions } from '@rocket.chat/models';
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 
-// TODO: remove promise.await when slashcommands can be async
 /*
  * Invite is a named function that will replace /invite commands
  * @param {Object} message - The message object
@@ -40,27 +39,24 @@ slashCommands.add({
 		}
 
 		const usersFiltered: IUser[] = [];
-		Promise.await(
-			(async () => {
-				for await (const user of users.fetch()) {
-					const subscription = await Subscriptions.findOneByRoomIdAndUserId(item.rid, user._id, {
-						projection: { _id: 1 },
-					});
-					if (subscription == null) {
-						usersFiltered.push(user as IUser);
-						continue;
-					}
-					const usernameStr = user.username as string;
-					void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-						msg: TAPi18n.__('Username_is_already_in_here', {
-							postProcess: 'sprintf',
-							sprintf: [usernameStr],
-							lng: settings.get('Language') || 'en',
-						}),
-					});
-				}
-			})(),
-		);
+
+		for await (const user of users.fetch()) {
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(item.rid, user._id, {
+				projection: { _id: 1 },
+			});
+			if (subscription == null) {
+				usersFiltered.push(user as IUser);
+				continue;
+			}
+			const usernameStr = user.username as string;
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+				msg: TAPi18n.__('Username_is_already_in_here', {
+					postProcess: 'sprintf',
+					sprintf: [usernameStr],
+					lng: settings.get('Language') || 'en',
+				}),
+			});
+		}
 
 		await Promise.all(
 			usersFiltered.map(async (user) => {
