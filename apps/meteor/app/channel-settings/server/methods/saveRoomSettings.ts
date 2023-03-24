@@ -267,8 +267,8 @@ const settingSavers: RoomSettingsSavers = {
 			void Team.update(user._id, room.teamId, { type, updateRoom: false });
 		}
 	},
-	streamingOptions({ value, rid }) {
-		saveStreamingOptions(rid, value);
+	async streamingOptions({ value, rid }) {
+		await saveStreamingOptions(rid, value);
 	},
 	async readOnly({ value, room, rid, user }) {
 		if (value !== room.ro) {

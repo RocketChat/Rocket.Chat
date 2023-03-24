@@ -1,9 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { Rooms } from '@rocket.chat/models';
 
-import { Rooms } from '../../../models/server';
-
-export const saveStreamingOptions = function (rid, options) {
+export const saveStreamingOptions = async function (rid, options) {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
 			function: 'RocketChat.saveStreamingOptions',
@@ -19,5 +18,5 @@ export const saveStreamingOptions = function (rid, options) {
 		message: Match.Optional(String),
 	});
 
-	Rooms.setStreamingOptionsById(rid, options);
+	await Rooms.setStreamingOptionsById(rid, options);
 };

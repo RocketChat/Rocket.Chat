@@ -35,15 +35,6 @@ class Rooms extends Base {
 		);
 	}
 
-	setStreamingOptionsById(_id, streamingOptions) {
-		const update = {
-			$set: {
-				streamingOptions,
-			},
-		};
-		return this.update({ _id }, update);
-	}
-
 	setDmReadOnlyByUserId(_id, ids, readOnly, reactWhenReadOnly) {
 		const query = {
 			uids: {
