@@ -370,7 +370,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 		return false;
 	}
 
-	Livechat.saveTransferHistory(room, transferData);
+	await Livechat.saveTransferHistory(room, transferData);
 
 	const { servedBy } = roomTaken;
 	if (servedBy) {
@@ -458,7 +458,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 		logger.debug(
 			`Routing algorithm doesn't support auto assignment (using ${RoutingManager.methodName}). Chat will be on department queue`,
 		);
-		Livechat.saveTransferHistory(room, transferData);
+		await Livechat.saveTransferHistory(room, transferData);
 		return RoutingManager.unassignAgent(inquiry, departmentId);
 	}
 
@@ -485,7 +485,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 		return !!callbacks.run('livechat:onTransferFailure', { room, guest, transferData });
 	}
 
-	Livechat.saveTransferHistory(room, transferData);
+	await Livechat.saveTransferHistory(room, transferData);
 	if (oldServedBy) {
 		// if chat is queued then we don't ignore the new servedBy agent bcs at this
 		// point the chat is not assigned to him/her and it is still in the queue

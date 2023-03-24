@@ -659,7 +659,7 @@ export const Livechat = {
 		return Messages.createNavigationHistoryWithRoomIdMessageAndUser(roomId, `${pageTitle} - ${pageUrl}`, user, extraData);
 	},
 
-	saveTransferHistory(room, transferData) {
+	async saveTransferHistory(room, transferData) {
 		Livechat.logger.debug(`Saving transfer history for room ${room._id}`);
 		const { departmentId: previousDepartment } = room;
 		const { department: nextDepartment, transferredBy, transferredTo, scope, comment } = transferData;
@@ -705,7 +705,7 @@ export const Livechat = {
 
 		Object.assign(transferMessage, transfer);
 
-		sendMessage(transferredBy, transferMessage, room);
+		await sendMessage(transferredBy, transferMessage, room);
 	},
 
 	async transfer(room, guest, transferData) {
@@ -767,7 +767,7 @@ export const Livechat = {
 		Livechat.logger.debug(`Transfering room ${room._id} by user ${transferredBy._id}`);
 		const transferData = { roomId: rid, scope: 'queue', departmentId, transferredBy, ...overrideTransferData };
 		try {
-			this.saveTransferHistory(room, transferData);
+			await this.saveTransferHistory(room, transferData);
 			await RoutingManager.unassignAgent(inquiry, departmentId);
 		} catch (e) {
 			this.logger.error(e);
