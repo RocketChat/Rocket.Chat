@@ -28,6 +28,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-subscription', 'You must be part of a room to favorite it', { method: 'toggleFavorite' });
 		}
 
-		return Subscriptions.setFavoriteByRoomIdAndUserId(rid, userId, f);
+		return (await Subscriptions.setFavoriteByRoomIdAndUserId(rid, userId, f)).modifiedCount;
 	},
 });

@@ -53,7 +53,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (Array.isArray(subscription.roles) === false || subscription.roles.includes('moderator') === false) {
+		if (subscription.roles && (!Array.isArray(subscription.roles) || !subscription.roles.includes('moderator'))) {
 			throw new Meteor.Error('error-user-not-moderator', 'User is not a moderator', {
 				method: 'removeRoomModerator',
 			});

@@ -53,7 +53,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (Array.isArray(subscription.roles) === true && subscription.roles.includes('moderator') === true) {
+		if (subscription.roles && Array.isArray(subscription.roles) === true && subscription.roles.includes('moderator') === true) {
 			throw new Meteor.Error('error-user-already-moderator', 'User is already a moderator', {
 				method: 'addRoomModerator',
 			});
