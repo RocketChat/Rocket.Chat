@@ -37,6 +37,7 @@ Meteor.methods<ServerMethods>({
 			}
 
 			await Subscriptions.setAsUnreadByRoomIdAndUserId(lastMessage.rid, userId, lastMessage.ts);
+			return;
 		}
 
 		if (typeof firstUnreadMessage?._id !== 'string') {
