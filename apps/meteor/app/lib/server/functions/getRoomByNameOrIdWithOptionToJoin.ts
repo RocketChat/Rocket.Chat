@@ -1,19 +1,20 @@
 import { Meteor } from 'meteor/meteor';
 import type { IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
-import { Subscriptions } from '@rocket.chat/models';
 
 import { Rooms, Users } from '../../../models/server';
 import { isObject } from '../../../../lib/utils/isObject';
+import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
+import { addUserToRoom } from './addUserToRoom';
 
 export const getRoomByNameOrIdWithOptionToJoin = async ({
-	currentUserId = '',
+	user,
 	nameOrId = '',
 	type,
 	tryDirectByUserIdOnly = false,
 	joinChannel = true,
 	errorOnEmpty = true,
 }: {
-	currentUserId?: string;
+	user: Pick<IUser, '_id' | 'username'>;
 	nameOrId: string;
 	type?: RoomType;
 	tryDirectByUserIdOnly?: boolean;
@@ -39,7 +40,7 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 			});
 		}
 
-		const rid = isObject(roomUser) ? [currentUserId, roomUser._id].sort().join('') : nameOrId;
+		const rid = isObject(roomUser) ? [user._id, roomUser._id].sort().join('') : nameOrId;
 		room = Rooms.findOneById(rid);
 
 		// If the room hasn't been found yet, let's try some more
@@ -54,10 +55,9 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 				}
 			}
 
-			room = Meteor.runAsUser(currentUserId, function () {
-				const { rid } = Meteor.call('createDirectMessage', roomUser.username);
-				return Rooms.findOneById(rid);
-			});
+			await createDirectMessage([roomUser.username], user._id);
+
+			return Rooms.findOneById(rid);
 		}
 	} else {
 		// Otherwise, we'll treat this as a channel or group.
@@ -85,13 +85,7 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 	// If the room type is channel and joinChannel has been passed, try to join them
 	// if they can't join the room, this will error out!
 	if (room.t === 'c' && joinChannel) {
-		const sub = await Subscriptions.findOneByRoomIdAndUserId(room._id, currentUserId);
-
-		if (!sub) {
-			Meteor.runAsUser(currentUserId, function () {
-				return Meteor.call('joinRoom', room._id);
-			});
-		}
+		await addUserToRoom(room._id, user);
 	}
 
 	return room;

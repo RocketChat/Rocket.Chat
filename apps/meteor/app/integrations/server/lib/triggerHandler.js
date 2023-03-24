@@ -11,7 +11,7 @@ import { Integrations, IntegrationHistory } from '@rocket.chat/models';
 import * as Models from '../../../models/server';
 import * as s from '../../../../lib/utils/stringUtils';
 import { settings } from '../../../settings/server';
-import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server';
+import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { outgoingLogger } from '../logger';
 import { outgoingEvents } from '../../lib/outgoingEvents';
@@ -191,7 +191,7 @@ class RocketChatIntegrationHandler {
 		if (nameOrId || trigger.targetRoom || message.channel) {
 			tmpRoom =
 				(await getRoomByNameOrIdWithOptionToJoin({
-					currentUserId: user._id,
+					user,
 					nameOrId: nameOrId || message.channel || trigger.targetRoom,
 					errorOnEmpty: false,
 				})) || room;
