@@ -86,6 +86,8 @@ export interface IRoom extends IRocketChatRecord {
 
 	/* @deprecated */
 	federated?: boolean;
+	/* @deprecated */
+	customFields?: Record<string, any>;
 
 	channel?: { _id: string };
 }

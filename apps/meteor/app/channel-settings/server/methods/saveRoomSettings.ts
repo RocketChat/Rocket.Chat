@@ -241,7 +241,7 @@ const settingSavers: RoomSettingsSavers = {
 		}
 	},
 	roomCustomFields({ value, room, rid }) {
-		if (value !== (room as { customFields?: unknown }).customFields) {
+		if (value !== room.customFields) {
 			saveRoomCustomFields(rid, value);
 		}
 	},
