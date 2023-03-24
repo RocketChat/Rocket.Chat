@@ -5,7 +5,8 @@ import { useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-context
 import type { AllHTMLAttributes, RefObject } from 'react';
 import React, { useRef, useEffect, useState } from 'react';
 
-import { VideoRecorder, UserAction, USER_ACTIVITIES } from '../../../../app/ui/client';
+import { UserAction, USER_ACTIVITIES } from '../../../../app/ui/client/lib/UserAction';
+import { VideoRecorder } from '../../../../app/ui/client/lib/recorderjs/videoRecorder';
 import type { ChatAPI } from '../../../lib/chats/ChatAPI';
 import { useChat } from '../../room/contexts/ChatContext';
 

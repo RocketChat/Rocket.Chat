@@ -6,7 +6,7 @@ import { Tracker } from 'meteor/tracker';
 import { CachedChatSubscription } from '../../../app/models/client';
 import { Notifications } from '../../../app/notifications/client';
 import { readMessage } from '../../../app/ui-utils/client';
-import { KonchatNotification } from '../../../app/ui/client';
+import { KonchatNotification } from '../../../app/ui/client/lib/KonchatNotification';
 import type { NotificationEvent } from '../../../app/ui/client/lib/KonchatNotification';
 import { getUserPreference } from '../../../app/utils/client';
 import { RoomManager } from '../../lib/RoomManager';
