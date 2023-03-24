@@ -97,7 +97,7 @@ const VideoMessageRecorder = ({ rid, tmid, chatContext, reference }: VideoMessag
 			return dispatchToastMessage({ type: 'error', message: t('Browser_does_not_support_recording_video') });
 		}
 
-		VideoRecorder.start(videoRef.current);
+		VideoRecorder.start(videoRef.current ?? undefined);
 
 		return () => {
 			VideoRecorder.stop();
