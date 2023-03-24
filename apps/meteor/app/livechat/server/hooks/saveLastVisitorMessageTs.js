@@ -5,12 +5,12 @@ import { callbacks } from '../../../../lib/callbacks';
 
 callbacks.add(
 	'afterSaveMessage',
-	function (message, room) {
+	async function (message, room) {
 		if (!(isOmnichannelRoom(room) && room.v.token)) {
 			return message;
 		}
 		if (message.token) {
-			Promise.await(LivechatRooms.setVisitorLastMessageTimestampByRoomId(room._id, message.ts));
+			await LivechatRooms.setVisitorLastMessageTimestampByRoomId(room._id, message.ts);
 		}
 		return message;
 	},
