@@ -925,18 +925,6 @@ class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	saveRetentionOverrideGlobalById(_id, value) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				'retention.overrideGlobal': value === true,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	setOTRForDMByRoomID(rid) {
 		const query = { _id: rid, t: 'd' };
 

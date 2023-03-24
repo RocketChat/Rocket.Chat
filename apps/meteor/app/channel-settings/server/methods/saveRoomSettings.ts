@@ -4,6 +4,7 @@ import type { IRoom, IRoomWithRetentionPolicy, IUser } from '@rocket.chat/core-t
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Team } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Rooms as RoomsAsync } from '@rocket.chat/models';
 
 import { setRoomAvatar } from '../../../lib/server/functions/setRoomAvatar';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -42,7 +43,7 @@ type RoomSettings = {
 	retentionExcludePinned: unknown;
 	retentionFilesOnly: unknown;
 	retentionIgnoreThreads: unknown;
-	retentionOverrideGlobal: unknown;
+	retentionOverrideGlobal: boolean;
 	encrypted: boolean;
 	favorite: {
 		favorite: unknown;
@@ -309,8 +310,8 @@ const settingSavers: RoomSettingsSavers = {
 	retentionIgnoreThreads({ value, rid }) {
 		Rooms.saveRetentionIgnoreThreadsById(rid, value);
 	},
-	retentionOverrideGlobal({ value, rid }) {
-		Rooms.saveRetentionOverrideGlobalById(rid, value);
+	async retentionOverrideGlobal({ value, rid }: { value: boolean; rid: IRoom['_id'] }) {
+		await RoomsAsync.saveRetentionOverrideGlobalById(rid, value);
 	},
 	encrypted({ value, room, rid, user }) {
 		void saveRoomEncrypted(rid, value, user, Boolean(room.encrypted) !== Boolean(value));
