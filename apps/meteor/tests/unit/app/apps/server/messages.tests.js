@@ -41,7 +41,7 @@ describe('The AppMessagesConverter instance', function () {
 			};
 		};
 
-		orchestrator.getConverters().get('rooms').convertById = function convertRoomByIdStub(id) {
+		orchestrator.getConverters().get('rooms').convertById = async function convertRoomByIdStub(id) {
 			return RoomsMock.convertedData[id];
 		};
 

@@ -169,7 +169,7 @@ export class AppCommandsBridge extends CommandBridge {
 		triggerId?: string,
 	): Promise<void> {
 		const user = this.orch.getConverters()?.get('users').convertById(Meteor.userId());
-		const room = this.orch.getConverters()?.get('rooms').convertById(message.rid);
+		const room = await this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
 		const params = parseParameters(parameters);
 
@@ -190,7 +190,7 @@ export class AppCommandsBridge extends CommandBridge {
 		message: RequiredField<Partial<IMessage>, 'rid'>,
 	): Promise<ISlashCommandPreview | undefined> {
 		const user = this.orch.getConverters()?.get('users').convertById(Meteor.userId());
-		const room = this.orch.getConverters()?.get('rooms').convertById(message.rid);
+		const room = await this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
 		const params = parseParameters(parameters);
 
@@ -206,7 +206,7 @@ export class AppCommandsBridge extends CommandBridge {
 		triggerId: string,
 	): Promise<void> {
 		const user = this.orch.getConverters()?.get('users').convertById(Meteor.userId());
-		const room = this.orch.getConverters()?.get('rooms').convertById(message.rid);
+		const room = await this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
 		const params = parseParameters(parameters);
 

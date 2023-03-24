@@ -1,7 +1,7 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatVisitors, Rooms } from '@rocket.chat/models';
 
-import { Rooms, Users, LivechatDepartment } from '../../../models/server';
+import { Users, LivechatDepartment } from '../../../models/server';
 import { transformMappedData } from '../../../../ee/lib/misc/transformMappedData';
 
 export class AppRoomsConverter {
@@ -9,14 +9,14 @@ export class AppRoomsConverter {
 		this.orch = orch;
 	}
 
-	convertById(roomId) {
-		const room = Rooms.findOneById(roomId);
+	async convertById(roomId) {
+		const room = await Rooms.findOneById(roomId);
 
 		return this.convertRoom(room);
 	}
 
-	convertByName(roomName) {
-		const room = Rooms.findOneByName(roomName);
+	async convertByName(roomName) {
+		const room = await Rooms.findOneByName(roomName);
 
 		return this.convertRoom(room);
 	}
@@ -106,7 +106,7 @@ export class AppRoomsConverter {
 		return Object.assign(newRoom, room._unmappedProperties_);
 	}
 
-	convertRoom(room) {
+	async convertRoom(room) {
 		if (!room) {
 			return undefined;
 		}
@@ -165,7 +165,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('users').convertById(u._id);
 			},
-			visitor: (room) => {
+			visitor: async (room) => {
 				const { v } = room;
 
 				if (!v) {
@@ -176,7 +176,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('visitors').convertById(v._id);
 			},
-			department: (room) => {
+			department: async (room) => {
 				const { departmentId } = room;
 
 				if (!departmentId) {
@@ -209,7 +209,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('users').convertById(responseBy._id);
 			},
-			parentRoom: (room) => {
+			parentRoom: async (room) => {
 				const { prid } = room;
 
 				if (!prid) {

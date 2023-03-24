@@ -143,7 +143,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			result = LivechatRooms.findOpenByVisitorToken(visitor.token, {}).fetch();
 		}
 
-		return result.map((room: ILivechatRoom) => this.orch.getConverters()?.get('rooms').convertRoom(room));
+		return Promise.all(result.map((room: ILivechatRoom) => this.orch.getConverters()?.get('rooms').convertRoom(room)));
 	}
 
 	protected async createVisitor(visitor: IVisitor, appId: string): Promise<string> {
@@ -220,8 +220,10 @@ export class AppLivechatBridge extends LivechatBridge {
 			console.warn('The method AppLivechatBridge.findVisitors is deprecated. Please consider using its alternatives');
 		}
 
-		return (await LivechatVisitors.find(query).toArray()).map(
-			(visitor) => visitor && this.orch.getConverters()?.get('visitors').convertVisitor(visitor),
+		return Promise.all(
+			(await LivechatVisitors.find(query).toArray()).map(
+				async (visitor) => visitor && this.orch.getConverters()?.get('visitors').convertVisitor(visitor),
+			),
 		);
 	}
 
@@ -270,7 +272,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		const converter = this.orch.getConverters()?.get('departments');
 		const boundConverter = converter.convertDepartment.bind(converter);
 
-		return LivechatDepartment.findEnabledWithAgents().map(boundConverter);
+		return Promise.all(LivechatDepartment.findEnabledWithAgents().map(boundConverter));
 	}
 
 	protected async _fetchLivechatRoomMessages(appId: string, roomId: string): Promise<Array<IMessage>> {
