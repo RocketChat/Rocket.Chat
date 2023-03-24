@@ -52,7 +52,7 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 				if (errorOnEmpty) {
 					throw new Meteor.Error('invalid-channel');
 				} else {
-					return;
+					return null;
 				}
 			}
 
@@ -71,7 +71,7 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 	}
 
 	if (room === null) {
-		return;
+		return null;
 	}
 
 	// If a room was found and they provided a type to search, then check
@@ -81,7 +81,7 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 		if (errorOnEmpty) {
 			throw new Meteor.Error('invalid-channel');
 		} else {
-			return;
+			return null;
 		}
 	}
 
