@@ -352,6 +352,10 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 
 		return this.updateMany(query, update);
 	}
+
+	countByDepartmentId(departmentId: string): Promise<number> {
+		return this.col.countDocuments({ departmentId });
+	}
 }
 
 const isStringValue = (value: any): value is string => typeof value === 'string';
