@@ -1848,25 +1848,6 @@ export class RoomsRaw extends BaseRaw {
 		return this.deleteMany(query);
 	}
 
-	// ############################
-	// Discussion
-	findDiscussionParentByNameStarting(name, options) {
-		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
-
-		const query = {
-			t: {
-				$in: ['c'],
-			},
-			name: nameRegex,
-			archived: { $ne: true },
-			prid: {
-				$exists: false,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
 	countDiscussions() {
 		return this.col.countDocuments({ prid: { $exists: true } });
 	}
