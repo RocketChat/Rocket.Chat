@@ -7,7 +7,6 @@ import { Rooms } from '../../models/server';
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 
-// TODO: remove promise.await when slashcommands can be async
 slashCommands.add({
 	command: 'join',
 	callback: async (_command: 'join', params, item): Promise<void> => {
