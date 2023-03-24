@@ -17,9 +17,12 @@ const joinHideSysMessages = (
 
 export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
 	const hideSysMesSetting = useSetting<MessageTypesValues[]>('Hide_System_Messages') ?? [];
-	const hideRoomSysMes = useRoom().sysMes || [];
+	const room = useRoom();
+	const hideRoomSysMes: Array<MessageTypesValues> = Array.isArray(room.sysMes) ? room.sysMes : [];
 
 	const hideSysMessages = useStableArray(joinHideSysMessages(hideSysMesSetting, hideRoomSysMes));
+
+	console.log(hideSysMessages);
 
 	const query: Mongo.Query<IMessage> = useMemo(
 		() => ({
