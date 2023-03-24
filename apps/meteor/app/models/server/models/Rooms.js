@@ -35,10 +35,6 @@ class Rooms extends Base {
 		);
 	}
 
-	setReactionsInLastMessage(roomId, lastMessage) {
-		return this.update({ _id: roomId }, { $set: { 'lastMessage.reactions': lastMessage.reactions } });
-	}
-
 	unsetReactionsInLastMessage(roomId) {
 		return this.update({ _id: roomId }, { $unset: { lastMessage: { reactions: 1 } } });
 	}

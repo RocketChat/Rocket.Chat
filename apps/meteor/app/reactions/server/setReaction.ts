@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
-import { Messages, EmojiCustom } from '@rocket.chat/models';
+import { Messages, EmojiCustom, Rooms as RoomsRaw } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
@@ -48,6 +48,10 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 		});
 	}
 
+	if (!('reactions' in message)) {
+		return;
+	}
+
 	const userAlreadyReacted =
 		message.reactions &&
 		Boolean(message.reactions[reaction]) &&
@@ -75,7 +79,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 		} else {
 			await Messages.setReactions(message._id, message.reactions);
 			if (isTheLastMessage(room, message)) {
-				Rooms.setReactionsInLastMessage(room._id, message);
+				await RoomsRaw.setReactionsInLastMessage(room._id, message.reactions);
 			}
 		}
 		callbacks.run('unsetReaction', message._id, reaction);
@@ -94,7 +98,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 		message.reactions[reaction].usernames.push(user.username as string);
 		await Messages.setReactions(message._id, message.reactions);
 		if (isTheLastMessage(room, message)) {
-			Rooms.setReactionsInLastMessage(room._id, message);
+			await RoomsRaw.setReactionsInLastMessage(room._id, message.reactions);
 		}
 		callbacks.run('setReaction', message._id, reaction);
 		callbacks.run('afterSetReaction', message, { user, reaction, shouldReact });
