@@ -35,27 +35,6 @@ class Rooms extends Base {
 		);
 	}
 
-	updateLastMessageStar(roomId, userId, starred) {
-		let update;
-		const query = { _id: roomId };
-
-		if (starred) {
-			update = {
-				$addToSet: {
-					'lastMessage.starred': { _id: userId },
-				},
-			};
-		} else {
-			update = {
-				$pull: {
-					'lastMessage.starred': { _id: userId },
-				},
-			};
-		}
-
-		return this.update(query, update);
-	}
-
 	setLastMessagePinned(roomId, pinnedBy, pinned, pinnedAt) {
 		const query = { _id: roomId };
 
