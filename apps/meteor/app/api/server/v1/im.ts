@@ -98,7 +98,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 
-			Meteor.call('eraseRoom', room._id);
+			await Meteor.callAsync('eraseRoom', room._id);
 
 			return API.v1.success();
 		},
@@ -125,7 +125,7 @@ API.v1.addRoute(
 				return API.v1.failure(`The direct message room, is already closed to the sender`);
 			}
 
-			Meteor.call('hideRoom', room._id);
+			await Meteor.callAsync('hideRoom', room._id);
 
 			return API.v1.success();
 		},
@@ -260,7 +260,7 @@ API.v1.addRoute(
 				showThreadMessages: showThreadMessages === 'true',
 			};
 
-			const result = Meteor.call('getChannelHistory', objectParams);
+			const result = await Meteor.callAsync('getChannelHistory', objectParams);
 
 			if (!result) {
 				return API.v1.unauthorized();
@@ -509,7 +509,7 @@ API.v1.addRoute(
 			const { room, subscription } = await findDirectMessageRoom({ roomId }, this.userId);
 
 			if (!subscription?.open) {
-				Meteor.call('openRoom', room._id);
+				await Meteor.callAsync('openRoom', room._id);
 			}
 
 			return API.v1.success();
@@ -535,7 +535,7 @@ API.v1.addRoute(
 
 			const { room } = await findDirectMessageRoom({ roomId }, this.userId);
 
-			Meteor.call('saveRoomSettings', room._id, 'roomTopic', topic);
+			await Meteor.callAsync('saveRoomSettings', room._id, 'roomTopic', topic);
 
 			return API.v1.success({
 				topic,

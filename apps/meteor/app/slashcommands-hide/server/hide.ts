@@ -13,7 +13,7 @@ import { slashCommands } from '../../utils/server';
 
 slashCommands.add({
 	command: 'hide',
-	callback: (_command: 'hide', param, item): void => {
+	callback: async (_command: 'hide', param, item): Promise<void> => {
 		const room = param.trim();
 		const userId = Meteor.userId();
 		if (!userId) {
@@ -63,7 +63,7 @@ slashCommands.add({
 			}
 			rid = roomObject._id;
 		}
-		Meteor.call('hideRoom', rid, (error: string) => {
+		await Meteor.callAsync('hideRoom', rid, (error: string) => {
 			if (error) {
 				return api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
 					msg: TAPi18n.__(error, { lng }),

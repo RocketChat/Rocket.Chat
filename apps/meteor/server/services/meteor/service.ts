@@ -265,12 +265,12 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		});
 		if (!user) {
 			return {
-				result: Meteor.call(method, ...args),
+				result: Meteor.callAsync(method, ...args),
 			};
 		}
 
 		return {
-			result: Meteor.runAsUser(userId, () => Meteor.call(method, ...args)),
+			result: Meteor.runAsUser(userId, () => Meteor.callAsync(method, ...args)),
 		};
 	}
 

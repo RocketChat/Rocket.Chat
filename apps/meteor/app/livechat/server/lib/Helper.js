@@ -587,7 +587,7 @@ export const updateDepartmentAgents = async (departmentId, agents, departmentEna
 	}
 
 	if (agentsRemoved.length > 0 || agentsAdded.length > 0) {
-		const numAgents = LivechatDepartmentAgents.find({ departmentId }).count();
+		const numAgents = await LivechatDepartmentAgents.countByDepartmentId(departmentId);
 		await LivechatDepartment.updateNumAgentsById(departmentId, numAgents);
 	}
 
