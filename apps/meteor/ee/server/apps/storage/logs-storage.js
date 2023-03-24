@@ -8,59 +8,25 @@ export class AppRealLogsStorage extends AppLogStorage {
 		this.db = model;
 	}
 
-	find(...args) {
-		return new Promise((resolve, reject) => {
-			let docs;
-
-			try {
-				docs = this.db.find(...args).fetch();
-			} catch (e) {
-				return reject(e);
-			}
-
-			resolve(docs);
-		});
+	async find(...args) {
+		return this.db.find(...args).toArray();
 	}
 
-	storeEntries(appId, logger) {
-		return new Promise((resolve, reject) => {
-			const item = AppConsole.toStorageEntry(appId, logger);
+	async storeEntries(appId, logger) {
+		const item = AppConsole.toStorageEntry(appId, logger);
 
-			item.instanceId = InstanceStatus.id();
+		item.instanceId = InstanceStatus.id();
 
-			try {
-				const id = this.db.insert(item);
+		const id = (await this.db.insertOne(item)).insertedId;
 
-				resolve(this.db.findOneById(id));
-			} catch (e) {
-				reject(e);
-			}
-		});
+		return this.db.findOneById(id);
 	}
 
-	getEntriesFor(appId) {
-		return new Promise((resolve, reject) => {
-			let docs;
-
-			try {
-				docs = this.db.find({ appId }).fetch();
-			} catch (e) {
-				return reject(e);
-			}
-
-			resolve(docs);
-		});
+	async getEntriesFor(appId) {
+		return this.db.find({ appId }).toArray();
 	}
 
-	removeEntriesFor(appId) {
-		return new Promise((resolve, reject) => {
-			try {
-				this.db.remove({ appId });
-			} catch (e) {
-				return reject(e);
-			}
-
-			resolve();
-		});
+	async removeEntriesFor(appId) {
+		await this.db.remove({ appId });
 	}
 }

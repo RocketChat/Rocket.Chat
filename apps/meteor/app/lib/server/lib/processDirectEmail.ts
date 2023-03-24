@@ -2,9 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import type { ParsedMail } from 'mailparser';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import { Subscriptions } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
-import { Rooms, Messages, Users, Subscriptions } from '../../../models/server';
+import { Rooms, Messages, Users } from '../../../models/server';
 import { metrics } from '../../../metrics/server';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -80,7 +81,7 @@ export const processDirectEmail = Meteor.bindEnvironment(async function (email: 
 	// // add reply message link
 	// msg = prevMessageLink + msg;
 
-	const subscription = Subscriptions.findOneByRoomIdAndUserId(prevMessage.rid, user._id);
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(prevMessage.rid, user._id);
 	if (subscription && (subscription.blocked || subscription.blocker)) {
 		// room is blocked
 		return;

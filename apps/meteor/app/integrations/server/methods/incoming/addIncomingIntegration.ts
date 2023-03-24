@@ -4,11 +4,11 @@ import { Random } from '@rocket.chat/random';
 import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
 import type { INewIncomingIntegration, IIncomingIntegration } from '@rocket.chat/core-typings';
-import { Integrations, Roles } from '@rocket.chat/models';
+import { Integrations, Roles, Subscriptions } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermissionAsync, hasAllPermission } from '../../../../authorization/server/functions/hasPermission';
-import { Users, Rooms, Subscriptions } from '../../../../models/server';
+import { Users, Rooms } from '../../../../models/server';
 
 const validChannelChars = ['@', '#'];
 
@@ -108,7 +108,7 @@ Meteor.methods<ServerMethods>({
 			}
 		}
 
-		for (let channel of channels) {
+		for await (let channel of channels) {
 			let record;
 			const channelType = channel[0];
 			channel = channel.substr(1);
@@ -134,7 +134,7 @@ Meteor.methods<ServerMethods>({
 
 			if (
 				!hasAllPermission(userId, ['manage-incoming-integrations', 'manage-own-incoming-integrations']) &&
-				!Subscriptions.findOneByRoomIdAndUserId(record._id, userId, { fields: { _id: 1 } })
+				!(await Subscriptions.findOneByRoomIdAndUserId(record._id, userId, { projection: { _id: 1 } }))
 			) {
 				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', {
 					method: 'addIncomingIntegration',
