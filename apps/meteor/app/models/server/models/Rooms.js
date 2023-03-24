@@ -1014,13 +1014,6 @@ class Rooms extends Base {
 		return room;
 	}
 
-	// REMOVE
-	removeById(_id) {
-		const query = { _id };
-
-		return this.remove(query);
-	}
-
 	setOTRForDMByRoomID(rid) {
 		const query = { _id: rid, t: 'd' };
 

@@ -1,4 +1,6 @@
-import { Messages, Subscriptions, Rooms } from '../../../models/server';
+import { Rooms } from '@rocket.chat/models';
+
+import { Messages, Subscriptions } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { FileUpload } from '../../../file-upload/server';
 
@@ -9,5 +11,5 @@ export const deleteRoom = function (rid: string): void {
 	Subscriptions.removeByRoomId(rid);
 	FileUpload.getStore('Avatars').deleteByRoomId(rid);
 	callbacks.run('afterDeleteRoom', rid);
-	Rooms.removeById(rid);
+	Promise.await(Rooms.removeById(rid));
 };
