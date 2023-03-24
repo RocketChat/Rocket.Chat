@@ -12,11 +12,15 @@ import type {
 	Document,
 	AggregateOptions,
 	IndexDescription,
+	UpdateFilter,
+	InsertOneResult,
 } from 'mongodb';
 import { Rooms, Users } from '@rocket.chat/models';
 import { compact } from 'lodash';
+import mem from 'mem';
 
 import { BaseRaw } from './BaseRaw';
+import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
 
 export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscriptionsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISubscription>>) {
@@ -24,7 +28,31 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	}
 
 	protected modelIndexes(): IndexDescription[] {
-		return [{ key: { E2EKey: 1 }, unique: true, sparse: true }];
+		// Add all indexes from constructor to here
+		return [
+			{ key: { E2EKey: 1 }, unique: true, sparse: true },
+			{ key: { 'rid': 1, 'u._id': 1 }, unique: true },
+			{ key: { 'rid': 1, 'u._id': 1, 'open': 1 } },
+			{ key: { 'rid': 1, 'u.username': 1 } },
+			{ key: { 'rid': 1, 'alert': 1, 'u._id': 1 } },
+			{ key: { rid: 1, roles: 1 } },
+			{ key: { 'u._id': 1, 'name': 1, 't': 1 } },
+			{ key: { name: 1, t: 1 } },
+			{ key: { open: 1 } },
+			{ key: { alert: 1 } },
+			{ key: { ts: 1 } },
+			{ key: { ls: 1 } },
+			{ key: { desktopNotifications: 1 }, sparse: true },
+			{ key: { mobilePushNotifications: 1 }, sparse: true },
+			{ key: { emailNotifications: 1 }, sparse: true },
+			{ key: { autoTranslate: 1 }, sparse: true },
+			{ key: { autoTranslateLanguage: 1 }, sparse: true },
+			{ key: { 'userHighlights.0': 1 }, sparse: true },
+			{ key: { prid: 1 } },
+			{ key: { 'u._id': 1, 'open': 1, 'department': 1 } },
+			{ key: { rid: 1 } },
+			{ key: { rid: 1, ls: 1 } },
+		];
 	}
 
 	async getBadgeCount(uid: string): Promise<number> {
@@ -121,9 +149,9 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.col.countDocuments(query);
 	}
 
-	async isUserInRole(uid: IUser['_id'], roleId: IRole['_id'], rid?: IRoom['_id']): Promise<ISubscription | null> {
+	async isUserInRole(uid: IUser['_id'], roleId: IRole['_id'], rid?: IRoom['_id']): Promise<boolean> {
 		if (rid == null) {
-			return null;
+			return false;
 		}
 
 		const query = {
@@ -132,7 +160,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			'roles': roleId,
 		};
 
-		return this.findOne(query, { projection: { roles: 1 } });
+		return !!(await this.findOne(query, { projection: { _id: 1 } }));
 	}
 
 	setAsReadByRoomIdAndUserId(
@@ -277,14 +305,14 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.find(query, options || {});
 	}
 
-	async removeByRoomId(roomId: string): Promise<DeleteResult> {
+	async removeByRoomId(roomId: string): Promise<number> {
 		const query = {
 			rid: roomId,
 		};
 
-		const result = await this.deleteMany(query);
+		const result = (await this.deleteMany(query)).deletedCount;
 
-		if (Match.test(result, Number) && result > 0) {
+		if (typeof result === 'number' && result > 0) {
 			await Rooms.incUsersCountByIds([roomId], -result);
 		}
 
@@ -498,5 +526,1155 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	unsetGroupE2ESuggestedKey(_id: string): Promise<UpdateResult | Document> {
 		const query = { _id };
 		return this.updateOne(query, { $unset: { E2ESuggestedKey: 1 } });
+	}
+
+	findByRoomIds(roomIds: string[]): FindCursor<ISubscription> {
+		const query = {
+			rid: {
+				$in: roomIds,
+			},
+		};
+		const options = {
+			projection: {
+				'u._id': 1,
+				'rid': 1,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+	removeByVisitorToken(token: string): Promise<DeleteResult> {
+		const query = {
+			'v.token': token,
+		};
+
+		return this.deleteMany(query);
+	}
+
+	updateAutoTranslateById(_id: string, autoTranslate: boolean): Promise<UpdateResult> {
+		const query = {
+			_id,
+		};
+
+		let update: UpdateFilter<ISubscription>;
+		if (autoTranslate) {
+			update = {
+				$set: {
+					autoTranslate,
+				},
+			};
+		} else {
+			update = {
+				$unset: {
+					autoTranslate: 1,
+				},
+			};
+		}
+
+		return this.updateOne(query, update);
+	}
+
+	updateAutoTranslateLanguageById(_id: string, autoTranslateLanguage: string): Promise<UpdateResult> {
+		const query = {
+			_id,
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				autoTranslateLanguage,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	getAutoTranslateLanguagesByRoomAndNotUser(rid: string, userId: string): Promise<(string | undefined)[]> {
+		const query = {
+			rid,
+			'u._id': { $ne: userId },
+			'autoTranslate': true,
+		};
+		return this.col.distinct('autoTranslateLanguage', query);
+	}
+
+	/**
+	 * @param {string} userId
+	 * @param {string} scope the value for the role scope (room id)
+	 */
+	roleBaseQuery(userId: string, scope?: string): Filter<ISubscription> | void {
+		if (scope == null) {
+			return;
+		}
+
+		const query = { 'u._id': userId, ...(scope !== undefined && { rid: scope }) };
+		return query;
+	}
+
+	findByRidWithoutE2EKey(rid: string, options: FindOptions<ISubscription>): FindCursor<ISubscription> {
+		const query = {
+			rid,
+			E2EKey: {
+				$exists: false,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+	updateAudioNotificationValueById(_id: string, audioNotificationValue: string): Promise<UpdateResult> {
+		const query = {
+			_id,
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				audioNotificationValue,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	clearAudioNotificationValueById(_id: string): Promise<UpdateResult> {
+		const query = {
+			_id,
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$unset: {
+				audioNotificationValue: 1,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	updateNotificationsPrefById(
+		_id: string,
+		notificationPref: { value: number; origin: string } | null,
+		notificationField: keyof ISubscription,
+		notificationPrefOrigin: keyof ISubscription,
+	): Promise<UpdateResult> {
+		const query = {
+			_id,
+		};
+
+		const update: UpdateFilter<ISubscription> = {};
+
+		if (notificationPref === null) {
+			update.$unset = {
+				[notificationField]: 1,
+				[notificationPrefOrigin]: 1,
+			};
+		} else {
+			// @ts-expect-error TODO: fix this
+			update.$set = {
+				[notificationField]: notificationPref.value,
+				[notificationPrefOrigin]: notificationPref.origin,
+			};
+		}
+
+		return this.updateOne(query, update);
+	}
+
+	updateUnreadAlertById(_id: string, unreadAlert: ISubscription['unreadAlert']): Promise<UpdateResult> {
+		const query = {
+			_id,
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				unreadAlert,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	updateDisableNotificationsById(_id: string, disableNotifications: boolean): Promise<UpdateResult> {
+		const query = {
+			_id,
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				disableNotifications,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	updateHideUnreadStatusById(_id: string, hideUnreadStatus: boolean): Promise<UpdateResult> {
+		const query = {
+			_id,
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			...(hideUnreadStatus === true ? { $set: { hideUnreadStatus } } : { $unset: { hideUnreadStatus: 1 } }),
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	updateHideMentionStatusById(_id: string, hideMentionStatus: boolean): Promise<UpdateResult> {
+		const query = {
+			_id,
+		};
+
+		const update: UpdateFilter<ISubscription> =
+			hideMentionStatus === true
+				? {
+						$set: {
+							hideMentionStatus,
+						},
+				  }
+				: {
+						$unset: {
+							hideMentionStatus: 1,
+						},
+				  };
+
+		return this.updateOne(query, update);
+	}
+
+	updateMuteGroupMentions(_id: string, muteGroupMentions: boolean): Promise<UpdateResult> {
+		const query = {
+			_id,
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				muteGroupMentions,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	changeDepartmentByRoomId(rid: string, department: string): Promise<UpdateResult> {
+		const query = {
+			rid,
+		};
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				department,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	findAlwaysNotifyDesktopUsersByRoomId(roomId: string): FindCursor<ISubscription> {
+		const query: Filter<ISubscription> = {
+			rid: roomId,
+			desktopNotifications: 'all',
+		};
+
+		return this.find(query);
+	}
+
+	findDontNotifyDesktopUsersByRoomId(roomId: string): FindCursor<ISubscription> {
+		const query: Filter<ISubscription> = {
+			rid: roomId,
+			desktopNotifications: 'nothing',
+		};
+
+		return this.find(query);
+	}
+
+	findAlwaysNotifyMobileUsersByRoomId(roomId: string): FindCursor<ISubscription> {
+		const query: Filter<ISubscription> = {
+			rid: roomId,
+			mobilePushNotifications: 'all',
+		};
+
+		return this.find(query);
+	}
+
+	findDontNotifyMobileUsersByRoomId(roomId: string): FindCursor<ISubscription> {
+		const query: Filter<ISubscription> = {
+			rid: roomId,
+			mobilePushNotifications: 'nothing',
+		};
+
+		return this.find(query);
+	}
+
+	findWithSendEmailByRoomId(roomId: string): FindCursor<ISubscription> {
+		const query = {
+			rid: roomId,
+			emailNotifications: {
+				$exists: true,
+			},
+		};
+
+		return this.find(query, { projection: { emailNotifications: 1, u: 1 } });
+	}
+
+	resetUserE2EKey(userId: string): Promise<UpdateResult | Document> {
+		return this.updateMany(
+			{ 'u._id': userId },
+			{
+				$unset: {
+					E2EKey: '',
+				},
+			},
+		);
+	}
+
+	findByUserIdWithoutE2E(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+		const query = {
+			'u._id': userId,
+			'E2EKey': {
+				$exists: false,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+	findOneByRoomIdAndUsername(roomId: string, username: string, options: FindOptions<ISubscription>): Promise<ISubscription | null> {
+		const query = {
+			'rid': roomId,
+			'u.username': username,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findOneByRoomNameAndUserId(roomName: string, userId: string): Promise<ISubscription | null> {
+		const query = {
+			'name': roomName,
+			'u._id': userId,
+		};
+
+		return this.findOne(query);
+	}
+
+	// FIND
+	findByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+		const query = { 'u._id': userId };
+
+		return this.find(query, options);
+	}
+
+	cachedFindByUserId = mem(this.findByUserId.bind(this), { maxAge: 5000 });
+
+	findByUserIdExceptType(
+		userId: string,
+		typeException: ISubscription['t'],
+		options?: FindOptions<ISubscription>,
+	): FindCursor<ISubscription> {
+		const query: Filter<ISubscription> = {
+			'u._id': userId,
+			't': { $ne: typeException },
+		};
+
+		return this.find(query, options);
+	}
+
+	findByUserIdAndType(userId: string, type: ISubscription['t'], options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+		const query: Filter<ISubscription> = {
+			'u._id': userId,
+			't': type,
+		};
+
+		return this.find(query, options);
+	}
+
+	/**
+	 * @param {IUser['_id']} userId
+	 * @param {IRole['_id'][]} roles
+	 * @param {any} options
+	 */
+	findByUserIdAndRoles(userId: string, roles: string[], options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+		const query = {
+			'u._id': userId,
+			'roles': { $in: roles },
+		};
+
+		return this.find(query, options);
+	}
+
+	findByUserIdUpdatedAfter(userId: string, updatedAt: Date, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+		const query = {
+			'u._id': userId,
+			'_updatedAt': {
+				$gt: updatedAt,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+	/**
+	 * @param {string} roomId
+	 * @param {IRole['_id'][]} roles the list of roles
+	 * @param {any} options
+	 */
+	findByRoomIdAndRoles(roomId: string, roles: string[], options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+		roles = ([] as string[]).concat(roles);
+		const query = {
+			rid: roomId,
+			roles: { $in: roles },
+		};
+
+		return this.find(query, options);
+	}
+
+	findByType(types: ISubscription['t'][], options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+		const query: Filter<ISubscription> = {
+			t: {
+				$in: types,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+	findByTypeAndUserId(type: ISubscription['t'], userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+		const query: Filter<ISubscription> = {
+			't': type,
+			'u._id': userId,
+		};
+
+		return this.find(query, options);
+	}
+
+	findByRoomWithUserHighlights(roomId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+		const query = {
+			'rid': roomId,
+			'userHighlights.0': { $exists: true },
+		};
+
+		return this.find(query, options);
+	}
+
+	async getLastSeen(options: FindOptions<ISubscription> = { projection: { _id: 0, ls: 1 } }): Promise<Date | undefined> {
+		options.sort = { ls: -1 };
+		options.limit = 1;
+		const [subscription] = await this.find({}, options).toArray();
+		return subscription?.ls;
+	}
+
+	findByRoomIdAndUserIds(roomId: string, userIds: string[], options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+		const query = {
+			'rid': roomId,
+			'u._id': {
+				$in: userIds,
+			},
+		};
+
+		return this.find(query, options);
+	}
+
+	findByRoomIdAndUserIdsOrAllMessages(roomId: string, userIds: string[]): FindCursor<ISubscription> {
+		const query = {
+			rid: roomId,
+			$or: [{ 'u._id': { $in: userIds } }, { emailNotifications: 'all' }],
+		};
+
+		return this.find(query);
+	}
+
+	findByRoomIdWhenUserIdExists(rid: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+		const query = { rid, 'u._id': { $exists: true } };
+
+		return this.find(query, options);
+	}
+
+	findByRoomIdWhenUsernameExists(rid: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
+		const query = { rid, 'u.username': { $exists: true } };
+
+		return this.find(query, options);
+	}
+
+	findUnreadByUserId(userId: string): FindCursor<ISubscription> {
+		const query = {
+			'u._id': userId,
+			'unread': {
+				$gt: 0,
+			},
+		};
+
+		return this.find(query, { projection: { unread: 1 } });
+	}
+
+	getMinimumLastSeenByRoomId(rid: string): Promise<ISubscription | null> {
+		return this.findOne(
+			{
+				rid,
+			},
+			{
+				sort: {
+					ls: 1,
+				},
+				projection: {
+					ls: 1,
+				},
+			},
+		);
+	}
+
+	// UPDATE
+	archiveByRoomId(roomId: string): Promise<UpdateResult | Document> {
+		const query = { rid: roomId };
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				alert: false,
+				open: false,
+				archived: true,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	unarchiveByRoomId(roomId: string): Promise<UpdateResult | Document> {
+		const query = { rid: roomId };
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				alert: false,
+				open: true,
+				archived: false,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	hideByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult> {
+		const query = {
+			'rid': roomId,
+			'u._id': userId,
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				alert: false,
+				open: false,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	setAsUnreadByRoomIdAndUserId(roomId: string, userId: string, firstMessageUnreadTimestamp: Date): Promise<UpdateResult> {
+		const query = {
+			'rid': roomId,
+			'u._id': userId,
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				open: true,
+				alert: true,
+				ls: firstMessageUnreadTimestamp,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	setCustomFieldsDirectMessagesByUserId(userId: string, fields: Record<string, any>): Promise<UpdateResult | Document> {
+		const query: Filter<ISubscription> = {
+			'u._id': userId,
+			't': 'd',
+		};
+		const update: UpdateFilter<ISubscription> = { $set: { customFields: fields } };
+
+		return this.updateMany(query, update);
+	}
+
+	setFavoriteByRoomIdAndUserId(roomId: string, userId: string, favorite: true | null): Promise<UpdateResult> {
+		if (favorite == null) {
+			favorite = true;
+		}
+		const query = {
+			'rid': roomId,
+			'u._id': userId,
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				f: favorite,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	updateNameAndAlertByRoomId(roomId: string, name: string, fname: string): Promise<UpdateResult | Document> {
+		const query = { rid: roomId };
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				name,
+				fname,
+				alert: true,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	updateDisplayNameByRoomId(roomId: string, fname: string): Promise<UpdateResult | Document> {
+		const query = { rid: roomId };
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				fname,
+				name: fname,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	updateFnameByRoomId(rid: string, fname: string): Promise<UpdateResult | Document> {
+		const query = { rid };
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				fname,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	updateNameAndFnameById(_id: string, name: string, fname: string): Promise<UpdateResult | Document> {
+		const query = { _id };
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				name,
+				fname,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	setUserUsernameByUserId(userId: string, username: string): Promise<UpdateResult | Document> {
+		const query = { 'u._id': userId };
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				'u.username': username,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	setNameForDirectRoomsWithOldName(oldName: string, name: string): Promise<UpdateResult | Document> {
+		const query: Filter<ISubscription> = {
+			name: oldName,
+			t: 'd',
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				name,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	updateDirectNameAndFnameByName(name: string, newName: string, newFname: string): Promise<UpdateResult | Document> {
+		const query: Filter<ISubscription> = {
+			name,
+			t: 'd',
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				...(newName && { name: newName }),
+				...(newFname && { fname: newFname }),
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	incGroupMentionsAndUnreadForRoomIdExcludingUserId(
+		roomId: string,
+		userId: string,
+		incGroup = 1,
+		incUnread = 1,
+	): Promise<UpdateResult | Document> {
+		const query = {
+			'rid': roomId,
+			'u._id': {
+				$ne: userId,
+			},
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				alert: true,
+				open: true,
+			},
+			$inc: {
+				unread: incUnread,
+				groupMentions: incGroup,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	incUserMentionsAndUnreadForRoomIdAndUserIds(
+		roomId: string,
+		userIds: string[],
+		incUser = 1,
+		incUnread = 1,
+	): Promise<UpdateResult | Document> {
+		const query = {
+			'rid': roomId,
+			'u._id': {
+				$in: userIds,
+			},
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				alert: true,
+				open: true,
+			},
+			$inc: {
+				unread: incUnread,
+				userMentions: incUser,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	ignoreUser({ _id, ignoredUser: ignored, ignore = true }: { _id: string; ignoredUser: string; ignore?: boolean }): Promise<UpdateResult> {
+		const query = {
+			_id,
+		};
+		const update: UpdateFilter<ISubscription> = {};
+		if (ignore) {
+			update.$addToSet = { ignored };
+		} else {
+			update.$pull = { ignored };
+		}
+
+		return this.updateOne(query, update);
+	}
+
+	setAlertForRoomIdAndUserIds(roomId: string, uids: string[]): Promise<UpdateResult | Document> {
+		const query = {
+			'rid': roomId,
+			'u._id': { $in: uids },
+			'alert': { $ne: true },
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				alert: true,
+			},
+		};
+		return this.updateMany(query, update);
+	}
+
+	setOpenForRoomIdAndUserIds(roomId: string, uids: string[]): Promise<UpdateResult | Document> {
+		const query = {
+			'rid': roomId,
+			'u._id': { $in: uids },
+			'open': { $ne: true },
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				open: true,
+			},
+		};
+		return this.updateMany(query, update);
+	}
+
+	setLastReplyForRoomIdAndUserIds(roomId: string, uids: string, lr: Date): Promise<UpdateResult | Document> {
+		const query = {
+			'rid': roomId,
+			'u._id': { $in: uids },
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				lr,
+			},
+		};
+		return this.updateMany(query, update);
+	}
+
+	async setBlockedByRoomId(rid: string, blocked: string, blocker: string): Promise<UpdateResult[]> {
+		const query = {
+			rid,
+			'u._id': blocked,
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				blocked: true,
+			},
+		};
+
+		const query2 = {
+			rid,
+			'u._id': blocker,
+		};
+
+		const update2: UpdateFilter<ISubscription> = {
+			$set: {
+				blocker: true,
+			},
+		};
+
+		return Promise.all([this.updateOne(query, update), this.updateOne(query2, update2)]);
+	}
+
+	async unsetBlockedByRoomId(rid: string, blocked: string, blocker: string): Promise<UpdateResult[]> {
+		const query = {
+			rid,
+			'u._id': blocked,
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$unset: {
+				blocked: 1,
+			},
+		};
+
+		const query2 = {
+			rid,
+			'u._id': blocker,
+		};
+
+		const update2: UpdateFilter<ISubscription> = {
+			$unset: {
+				blocker: 1,
+			},
+		};
+		return Promise.all([this.updateOne(query, update), this.updateOne(query2, update2)]);
+	}
+
+	updateCustomFieldsByRoomId(rid: string, cfields: Record<string, any>): Promise<UpdateResult | Document> {
+		const query = { rid };
+		const customFields = cfields || {};
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				customFields,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	updateTypeByRoomId(roomId: string, type: ISubscription['t']): Promise<UpdateResult | Document> {
+		const query = { rid: roomId };
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				t: type,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	/**
+	 * @param {string} _id the subscription id
+	 * @param {IRole['_id']} role the id of the role
+	 */
+	addRoleById(_id: string, role: string): Promise<UpdateResult> {
+		const query = { _id };
+
+		const update: UpdateFilter<ISubscription> = {
+			$addToSet: {
+				roles: role,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	/**
+	 * @param {string} _id the subscription id
+	 * @param {IRole['_id']} role the id of the role
+	 */
+	removeRoleById(_id: string, role: string): Promise<UpdateResult> {
+		const query = { _id };
+
+		const update: UpdateFilter<ISubscription> = {
+			$pull: {
+				roles: role,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	setArchivedByUsername(username: string, archived: boolean): Promise<UpdateResult | Document> {
+		const query: Filter<ISubscription> = {
+			t: 'd',
+			name: username,
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				archived,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	clearNotificationUserPreferences(
+		userId: string,
+		notificationField: string,
+		notificationOriginField: string,
+	): Promise<UpdateResult | Document> {
+		const query = {
+			'u._id': userId,
+			[notificationOriginField]: 'user',
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$unset: {
+				[notificationOriginField]: 1,
+				[notificationField]: 1,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	updateNotificationUserPreferences(
+		userId: string,
+		userPref: string | number | boolean,
+		notificationField: keyof ISubscription,
+		notificationOriginField: keyof ISubscription,
+	): Promise<UpdateResult | Document> {
+		const query: Filter<ISubscription> = {
+			'u._id': userId,
+			[notificationOriginField]: {
+				$ne: 'subscription',
+			},
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			// @ts-expect-error - :(
+			$set: {
+				[notificationField]: userPref,
+				[notificationOriginField]: 'user',
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	updateUserHighlights(userId: string, userHighlights: any): Promise<UpdateResult | Document> {
+		const query: Filter<ISubscription> = {
+			'u._id': userId,
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				userHighlights,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	updateDirectFNameByName(name: string, fname: string): Promise<UpdateResult | Document> {
+		const query: Filter<ISubscription> = {
+			t: 'd' as const,
+			name,
+		};
+
+		let update: UpdateFilter<ISubscription>;
+		if (fname) {
+			update = {
+				$set: {
+					fname,
+				},
+			};
+		} else {
+			update = {
+				$unset: {
+					fname: true,
+				},
+			};
+		}
+
+		return this.updateMany(query, update);
+	}
+
+	// INSERT
+	async createWithRoomAndUser(room: IRoom, user: IUser, extraData: Record<string, any> = {}): Promise<InsertOneResult<ISubscription>> {
+		const subscription = {
+			open: false,
+			alert: false,
+			unread: 0,
+			userMentions: 0,
+			groupMentions: 0,
+			ts: room.ts,
+			rid: room._id,
+			name: room.name,
+			fname: room.fname,
+			...(room.customFields && { customFields: room.customFields }),
+			t: room.t,
+			u: {
+				_id: user._id,
+				username: user.username,
+				name: user.name,
+			},
+			...(room.prid && { prid: room.prid }),
+			...getDefaultSubscriptionPref(user),
+			...extraData,
+		};
+
+		// @ts-expect-error - types not good :(
+		const result = await this.insertOne(subscription);
+
+		await Rooms.incUsersCountById(room._id, 1);
+
+		if (!['d', 'l'].includes(room.t)) {
+			await Users.addRoomByUserId(user._id, room._id);
+		}
+
+		return result;
+	}
+
+	// REMOVE
+	async removeByUserId(userId: string): Promise<number> {
+		const query = {
+			'u._id': userId,
+		};
+
+		const roomIds = (await this.findByUserId(userId).toArray()).map((s) => s.rid);
+
+		const result = (await this.deleteMany(query)).deletedCount;
+
+		if (typeof result === 'number' && result > 0) {
+			await Rooms.incUsersCountNotDMsByIds(roomIds, -1);
+		}
+
+		await Users.removeAllRoomsByUserId(userId);
+
+		return result;
+	}
+
+	async removeByRoomIdAndUserId(roomId: string, userId: string): Promise<number> {
+		const query = {
+			'rid': roomId,
+			'u._id': userId,
+		};
+
+		const result = (await this.deleteMany(query)).deletedCount;
+
+		if (typeof result === 'number' && result > 0) {
+			await Rooms.incUsersCountById(roomId, -result);
+		}
+
+		await Users.removeRoomByUserId(userId, roomId);
+
+		return result;
+	}
+
+	async removeByRoomIds(rids: string[]): Promise<DeleteResult> {
+		const result = await this.deleteMany({ rid: { $in: rids } });
+
+		await Users.removeRoomByRoomIds(rids);
+
+		return result;
+	}
+
+	async removeByRoomIdsAndUserId(rids: string[], userId: string): Promise<number> {
+		const result = (await this.deleteMany({ 'rid': { $in: rids }, 'u._id': userId })).deletedCount;
+
+		if (typeof result === 'number' && result > 0) {
+			await Rooms.incUsersCountByIds(rids, -1);
+		}
+
+		await Users.removeRoomsByRoomIdsAndUserId(rids, userId);
+
+		return result;
+	}
+
+	// //////////////////////////////////////////////////////////////////
+	// threads
+
+	async addUnreadThreadByRoomIdAndUserIds(
+		rid: string,
+		users: string[],
+		tmid: string,
+		{ groupMention = false, userMention = false }: { groupMention?: boolean; userMention?: boolean } = {},
+	): Promise<UpdateResult | Document | void> {
+		if (!users) {
+			return;
+		}
+
+		return this.updateMany(
+			{
+				'u._id': { $in: users },
+				rid,
+			},
+			{
+				$addToSet: {
+					tunread: tmid,
+					...(groupMention && { tunreadGroup: tmid }),
+					...(userMention && { tunreadUser: tmid }),
+				},
+			},
+		);
+	}
+
+	removeUnreadThreadByRoomIdAndUserId(rid: string, userId: string, tmid: string, clearAlert = false): Promise<UpdateResult> {
+		const update: UpdateFilter<ISubscription> = {
+			$pull: {
+				tunread: tmid,
+				tunreadGroup: tmid,
+				tunreadUser: tmid,
+			},
+		};
+
+		if (clearAlert) {
+			update.$set = { alert: false };
+		}
+
+		return this.updateOne(
+			{
+				'u._id': userId,
+				rid,
+			},
+			update,
+		);
+	}
+
+	removeUnreadThreadsByRoomId(rid: string, tunread: string[]): Promise<UpdateResult | Document> {
+		const query = {
+			rid,
+			tunread: { $in: tunread },
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$pullAll: {
+				tunread,
+				tunreadUser: tunread,
+				tunreadGroup: tunread,
+			},
+		};
+
+		return this.updateMany(query, update);
 	}
 }

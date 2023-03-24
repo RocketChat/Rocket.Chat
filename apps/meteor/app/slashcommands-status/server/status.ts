@@ -8,23 +8,23 @@ import { Users } from '../../models/server';
 
 slashCommands.add({
 	command: 'status',
-	callback: function Status(_command: 'status', params, item): void {
+	callback: async function Status(_command: 'status', params, item): Promise<void> {
 		const userId = Meteor.userId() as string;
 
-		Meteor.call('setUserStatus', null, params, (err: Meteor.Error) => {
+		await Meteor.callAsync('setUserStatus', null, params, (err: Meteor.Error) => {
 			const user = userId && Users.findOneById(userId, { fields: { language: 1 } });
 			const lng = user?.language || settings.get('Language') || 'en';
 
 			if (err) {
 				if (err.error === 'error-not-allowed') {
-					api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+					void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 						msg: TAPi18n.__('StatusMessage_Change_Disabled', { lng }),
 					});
 				}
 
 				throw err;
 			} else {
-				api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+				void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 					msg: TAPi18n.__('StatusMessage_Changed_Successfully', { lng }),
 				});
 			}

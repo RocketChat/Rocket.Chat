@@ -12,7 +12,7 @@ import {
 } from '../../../app/meteor-accounts-saml/server/lib/constants';
 
 export const addSettings = function (name: string): void {
-	settingsRegistry.addGroup('SAML', function () {
+	void settingsRegistry.addGroup('SAML', function () {
 		this.with(
 			{
 				tab: 'SAML_Enterprise',

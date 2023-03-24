@@ -1,17 +1,18 @@
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
+import { Subscriptions } from '@rocket.chat/models';
 
-import { Rooms, Subscriptions, Messages } from '../../../models/server';
+import { Rooms, Messages } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 
-export const addUserToDefaultChannels = function (user: IUser, silenced?: boolean): void {
+export const addUserToDefaultChannels = async function (user: IUser, silenced?: boolean): Promise<void> {
 	callbacks.run('beforeJoinDefaultChannels', user);
 	const defaultRooms = Rooms.findByDefaultAndTypes(true, ['c', 'p'], {
 		fields: { usernames: 0 },
 	}).fetch();
-	defaultRooms.forEach((room: IRoom) => {
-		if (!Subscriptions.findOneByRoomIdAndUserId(room._id, user._id)) {
+	for await (const room of defaultRooms) {
+		if (!(await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { projection: { _id: 1 } }))) {
 			// Add a subscription to this user
-			Subscriptions.createWithRoomAndUser(room, user, {
+			await Subscriptions.createWithRoomAndUser(room, user, {
 				ts: new Date(),
 				open: true,
 				alert: true,
@@ -26,5 +27,5 @@ export const addUserToDefaultChannels = function (user: IUser, silenced?: boolea
 				Messages.createUserJoinWithRoomIdAndUser(room._id, user);
 			}
 		}
-	});
+	}
 };

@@ -7,7 +7,7 @@ import type {
 	PathPattern,
 	UrlParams,
 } from '@rocket.chat/rest-typings';
-import type { IUser, IMethodConnection, IRoom } from '@rocket.chat/core-typings';
+import type { IUser, IMethodConnection } from '@rocket.chat/core-typings';
 import type { ValidateFunction } from 'ajv';
 import type { Request, Response } from 'express';
 
@@ -125,6 +125,7 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 		readonly offset: number;
 		readonly count: number;
 	};
+	getUserListFromParams(): IUser[];
 	parseJsonQuery(): {
 		sort: Record<string, 1 | -1>;
 		fields: Record<string, 0 | 1>;
@@ -138,7 +139,6 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 	getUserInfo(
 		me: IUser,
 	): TOptions extends { authRequired: true } ? UserInfo : TOptions extends { authOrAnonRequired: true } ? UserInfo | undefined : undefined;
-	composeRoomWithLastMessage(room: IRoom, userId: string): IRoom;
 	isWidget(): boolean;
 } & (TOptions extends { authRequired: true }
 	? {
@@ -260,6 +260,27 @@ declare const API: {
 	default: APIClass;
 	helperMethods: Map<string, (...args: any[]) => unknown>;
 	ApiClass: APIClass;
+	channels: {
+		create: {
+			validate: (params: {
+				user: { value: string };
+				name?: { key: string; value?: string };
+				members?: { key: string; value?: string[] };
+				customFields?: { key: string; value?: string };
+				teams?: { key: string; value?: string[] };
+			}) => Promise<void>;
+			execute: (
+				userId: string,
+				params: {
+					name?: string;
+					members?: string[];
+					customFields?: Record<string, any>;
+					extraData?: Record<string, any>;
+					readOnly?: boolean;
+				},
+			) => Promise<{ channel: IRoom }>;
+		};
+	};
 };
 
 declare const defaultRateLimiterOptions: {

@@ -69,7 +69,7 @@ const getMessageData = (
 	userData: Pick<IUser, 'username'> | undefined,
 	usersMap: { userNameTable: Record<string, string> },
 ): MessageData => {
-	const username = hideUsers ? hideUserName(msg.u.username || msg.u.name, userData, usersMap) : msg.u.username;
+	const username = hideUsers ? hideUserName(msg.u.username || msg.u.name || '', userData, usersMap) : msg.u.username;
 
 	const messageObject = {
 		msg: msg.msg,

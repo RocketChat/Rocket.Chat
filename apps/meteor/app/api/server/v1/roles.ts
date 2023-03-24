@@ -79,7 +79,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-user-already-in-role', 'User already in role');
 			}
 
-			await Meteor.call('authorization:addUserToRole', role._id, user.username, roomId);
+			await Meteor.callAsync('authorization:addUserToRole', role._id, user.username, roomId);
 
 			return API.v1.success({
 				role,
@@ -227,7 +227,7 @@ API.v1.addRoute(
 			await Roles.removeUserRoles(user._id, [role._id], scope);
 
 			if (settings.get('UI_DisplayRoles')) {
-				api.broadcast('user.roleUpdate', {
+				void api.broadcast('user.roleUpdate', {
 					type: 'removed',
 					_id: role._id,
 					u: {

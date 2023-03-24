@@ -1,13 +1,21 @@
 import { Settings } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { trim } from '../../../../lib/utils/stringUtils';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'livechat:saveIntegration'(values: Record<string, any>): void;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async 'livechat:saveIntegration'(values) {
 		const uid = Meteor.userId();
-		if (!uid || !hasPermission(uid, 'view-livechat-manager')) {
+		if (!uid || !(await hasPermissionAsync(uid, 'view-livechat-manager'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:saveIntegration',
 			});

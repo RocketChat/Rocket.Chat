@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import { Settings } from '@rocket.chat/models';
 
 import * as Mailer from '../../../mailer/server/api';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 
 let html = '';
@@ -20,7 +20,7 @@ export const sendInvitationEmail = async (userId: string, emails: string[]) => {
 			method: 'sendInvitationEmail',
 		});
 	}
-	if (!hasPermission(userId, 'bulk-register-user')) {
+	if (!(await hasPermissionAsync(userId, 'bulk-register-user'))) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 			method: 'sendInvitationEmail',
 		});
@@ -41,9 +41,9 @@ export const sendInvitationEmail = async (userId: string, emails: string[]) => {
 		});
 	}
 
-	return validEmails.filter((email) => {
+	for await (const email of validEmails) {
 		try {
-			const mailerResult = Mailer.send({
+			Mailer.send({
 				to: email,
 				from: settings.get('From_Email'),
 				subject,
@@ -53,13 +53,13 @@ export const sendInvitationEmail = async (userId: string, emails: string[]) => {
 				},
 			});
 
-			Settings.incrementValueById('Invitation_Email_Count');
-			return mailerResult;
+			await Settings.incrementValueById('Invitation_Email_Count');
+			continue;
 		} catch ({ message }) {
 			throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
 				method: 'sendInvitationEmail',
 				message,
 			});
 		}
-	});
+	}
 };

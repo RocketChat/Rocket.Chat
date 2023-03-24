@@ -1,16 +1,24 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import _ from 'underscore';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { checkUsernameAvailability } from '../functions';
+import { checkUsernameAvailability } from '../functions/checkUsernameAvailability';
 import { RateLimiter } from '../lib';
 import { saveUserIdentity } from '../functions/saveUserIdentity';
 
-Meteor.methods({
-	setUsername(username, param = {}) {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		setUsername(username: string, param?: { joinDefaultChannelsSilenced?: boolean }): string;
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async setUsername(username, param = {}) {
 		const { joinDefaultChannelsSilenced } = param;
 		check(username, String);
 
@@ -42,21 +50,21 @@ Meteor.methods({
 			);
 		}
 
-		if (!checkUsernameAvailability(username)) {
+		if (!(await checkUsernameAvailability(username))) {
 			throw new Meteor.Error('error-field-unavailable', `<strong>${_.escape(username)}</strong> is already in use :(`, {
 				method: 'setUsername',
 				field: username,
 			});
 		}
 
-		if (!saveUserIdentity({ _id: user._id, username })) {
+		if (!(await saveUserIdentity({ _id: user._id, username }))) {
 			throw new Meteor.Error('error-could-not-change-username', 'Could not change username', {
 				method: 'setUsername',
 			});
 		}
 
 		if (!user.username) {
-			Meteor.runAsUser(user._id, () => Meteor.call('joinDefaultChannels', joinDefaultChannelsSilenced));
+			await Meteor.runAsUser(user._id, () => Meteor.callAsync('joinDefaultChannels', joinDefaultChannelsSilenced));
 			Meteor.defer(function () {
 				return callbacks.run('afterCreateUser', Users.findOneById(user._id));
 			});

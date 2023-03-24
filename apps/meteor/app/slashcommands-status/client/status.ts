@@ -8,15 +8,15 @@ import { dispatchToastMessage } from '../../../client/lib/toast';
 
 slashCommands.add({
 	command: 'status',
-	callback: function Status(_command, params, item): void {
+	callback: async function Status(_command, params, item): Promise<void> {
 		const userId = Meteor.userId() as string;
 
-		Meteor.call('setUserStatus', null, params, (error: Meteor.Error) => {
+		await Meteor.callAsync('setUserStatus', null, params, (error: Meteor.Error) => {
 			if (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 				return;
 			}
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('StatusMessage_Changed_Successfully', { lng: settings.get('Language') || 'en' }),
 			});
 		});

@@ -15,13 +15,14 @@ import { Match, check } from 'meteor/check';
 import { Subscriptions, Uploads, Messages, Rooms, Users } from '@rocket.chat/models';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { settings } from '../../../settings/server';
+import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 
 // TODO: Refact or remove
 
@@ -41,7 +42,7 @@ const findDirectMessageRoom = async (
 		throw new Meteor.Error('error-room-param-not-provided', 'Query param "roomId" or "username" is required');
 	}
 
-	const room = getRoomByNameOrIdWithOptionToJoin({
+	const room = await getRoomByNameOrIdWithOptionToJoin({
 		currentUserId: uid,
 		nameOrId: 'roomId' in keys ? keys.roomId : keys.username,
 		type: 'd',
@@ -66,13 +67,13 @@ API.v1.addRoute(
 		validateParams: isDmCreateProps,
 	},
 	{
-		post() {
+		async post() {
 			const users =
 				'username' in this.bodyParams
 					? [this.bodyParams.username]
 					: this.bodyParams.usernames.split(',').map((username: string) => username.trim());
 
-			const room = createDirectMessage(users, this.userId, this.bodyParams.excludeSelf);
+			const room = await createDirectMessage(users, this.userId, this.bodyParams.excludeSelf);
 
 			return API.v1.success({
 				room: { ...room, _id: room.rid },
@@ -91,12 +92,13 @@ API.v1.addRoute(
 		async post() {
 			const { room } = await findDirectMessageRoom(this.bodyParams, this.userId);
 
-			const canAccess = (await canAccessRoomIdAsync(room._id, this.userId)) || hasPermission(this.userId, 'view-room-administration');
+			const canAccess =
+				(await canAccessRoomIdAsync(room._id, this.userId)) || (await hasPermissionAsync(this.userId, 'view-room-administration'));
 			if (!canAccess) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 
-			Meteor.call('eraseRoom', room._id);
+			await Meteor.callAsync('eraseRoom', room._id);
 
 			return API.v1.success();
 		},
@@ -123,7 +125,7 @@ API.v1.addRoute(
 				return API.v1.failure(`The direct message room, is already closed to the sender`);
 			}
 
-			Meteor.call('hideRoom', room._id);
+			await Meteor.callAsync('hideRoom', room._id);
 
 			return API.v1.success();
 		},
@@ -136,7 +138,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const access = hasPermission(this.userId, 'view-room-administration');
+			const access = await hasPermissionAsync(this.userId, 'view-room-administration');
 			const { roomId, userId: ruserId } = this.requestParams();
 			if (!roomId) {
 				throw new Meteor.Error('error-room-param-not-provided', 'Query param "roomId" is required');
@@ -258,7 +260,7 @@ API.v1.addRoute(
 				showThreadMessages: showThreadMessages === 'true',
 			};
 
-			const result = Meteor.call('getChannelHistory', objectParams);
+			const result = await Meteor.callAsync('getChannelHistory', objectParams);
 
 			if (!result) {
 				return API.v1.unauthorized();
@@ -302,10 +304,13 @@ API.v1.addRoute(
 			};
 
 			const options = {
-				sort: { username: sort?.username ? sort.username : 1 },
 				projection: { _id: 1, username: 1, name: 1, status: 1, statusText: 1, utcOffset: 1, federated: 1 },
 				skip: offset,
 				limit: count,
+				sort: {
+					_updatedAt: -1,
+					username: sort?.username ? sort.username : 1,
+				},
 			};
 
 			const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
@@ -375,7 +380,7 @@ API.v1.addRoute(
 				});
 			}
 
-			if (!hasPermission(this.userId, 'view-room-administration')) {
+			if (!(await hasPermissionAsync(this.userId, 'view-room-administration'))) {
 				return API.v1.unauthorized();
 			}
 
@@ -443,7 +448,7 @@ API.v1.addRoute(
 			const [ims, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				ims: ims.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId)),
+				ims: await Promise.all(ims.map((room: IRoom) => composeRoomWithLastMessage(room, this.userId))),
 				offset,
 				count: ims.length,
 				total,
@@ -457,7 +462,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			if (!hasPermission(this.userId, 'view-room-administration')) {
+			if (!(await hasPermissionAsync(this.userId, 'view-room-administration'))) {
 				return API.v1.unauthorized();
 			}
 
@@ -477,7 +482,7 @@ API.v1.addRoute(
 			const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				ims: rooms.map((room: IRoom) => this.composeRoomWithLastMessage(room, this.userId)),
+				ims: await Promise.all(rooms.map((room: IRoom) => composeRoomWithLastMessage(room, this.userId))),
 				offset,
 				count: rooms.length,
 				total,
@@ -504,7 +509,7 @@ API.v1.addRoute(
 			const { room, subscription } = await findDirectMessageRoom({ roomId }, this.userId);
 
 			if (!subscription?.open) {
-				Meteor.call('openRoom', room._id);
+				await Meteor.callAsync('openRoom', room._id);
 			}
 
 			return API.v1.success();
@@ -530,7 +535,7 @@ API.v1.addRoute(
 
 			const { room } = await findDirectMessageRoom({ roomId }, this.userId);
 
-			Meteor.call('saveRoomSettings', room._id, 'roomTopic', topic);
+			await Meteor.callAsync('saveRoomSettings', room._id, 'roomTopic', topic);
 
 			return API.v1.success({
 				topic,

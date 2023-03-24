@@ -3,7 +3,7 @@ import { triggerHandler } from './lib/triggerHandler';
 
 const callbackHandler = function _callbackHandler(eventType) {
 	return function _wrapperFunction(...args) {
-		return triggerHandler.executeTriggers(eventType, ...args);
+		return Promise.await(triggerHandler.executeTriggers(eventType, ...args));
 	};
 };
 

@@ -227,7 +227,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	public async setProviderData(callId: VideoConference['_id'], data: VideoConference['providerData'] | undefined): Promise<void> {
-		VideoConferenceModel.setProviderDataById(callId, data);
+		await VideoConferenceModel.setProviderDataById(callId, data);
 	}
 
 	public async setEndedBy(callId: VideoConference['_id'], endedBy: IUser['_id']): Promise<void> {
@@ -238,7 +238,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('Invalid User');
 		}
 
-		VideoConferenceModel.setEndedById(callId, {
+		await VideoConferenceModel.setEndedById(callId, {
 			_id: user._id,
 			username: user.username,
 			name: user.name,
@@ -246,7 +246,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	}
 
 	public async setEndedAt(callId: VideoConference['_id'], endedAt: Date): Promise<void> {
-		VideoConferenceModel.setEndedById(callId, undefined, endedAt);
+		await VideoConferenceModel.setEndedById(callId, undefined, endedAt);
 	}
 
 	public async setStatus(callId: VideoConference['_id'], status: VideoConference['status']): Promise<void> {
@@ -257,7 +257,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				return this.expireCall(callId);
 		}
 
-		VideoConferenceModel.setStatusById(callId, status);
+		await VideoConferenceModel.setStatusById(callId, status);
 	}
 
 	public async addUser(callId: VideoConference['_id'], userId?: IUser['_id'], ts?: Date): Promise<void> {
@@ -281,7 +281,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			throw new Error('Invalid User');
 		}
 
-		this.addUserToCall(call, {
+		await this.addUserToCall(call, {
 			_id: user._id,
 			username: user.username,
 			name: user.name,
@@ -338,7 +338,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			}
 		} catch (error: unknown) {
 			if (error instanceof Error) {
-				this.createEphemeralMessage(uid, rid, error.message);
+				await this.createEphemeralMessage(uid, rid, error.message);
 				return error.message;
 			}
 		}
@@ -415,11 +415,14 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		action: string,
 		params: { uid: IUser['_id']; rid: IRoom['_id']; callId: VideoConference['_id'] },
 	): void {
-		api.broadcast('user.video-conference', { userId, action, params });
+		void api.broadcast('user.video-conference', { userId, action, params });
 	}
 
 	private notifyVideoConfUpdate(rid: IRoom['_id'], callId: VideoConference['_id']): void {
+		/* deprecated */
 		Notifications.notifyRoom(rid, callId);
+
+		Notifications.notifyRoom(rid, 'videoconf', callId);
 	}
 
 	private async endCall(callId: VideoConference['_id']): Promise<void> {
@@ -494,7 +497,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const appId = videoConfProviders.getProviderAppId(call.providerName);
 		const user = createdBy || (appId && (await Users.findOneByAppId(appId))) || (await Users.findOneById('rocket.cat'));
 
-		const message = sendMessage(user, record, room, false);
+		const message = await sendMessage(user, record, room, false);
 		return message._id;
 	}
 
@@ -529,7 +532,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			lng: language,
 		});
 
-		api.broadcast('notify.ephemeralMessage', uid, rid, {
+		void api.broadcast('notify.ephemeralMessage', uid, rid, {
 			msg,
 		});
 	}
@@ -614,11 +617,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.runNewVideoConferenceEvent(callId);
 
 		const url = await this.generateNewUrl(call);
-		VideoConferenceModel.setUrlById(callId, url);
+		await VideoConferenceModel.setUrlById(callId, url);
 
 		const messageId = await this.createMessage(call, user);
 		call.messages.started = messageId;
-		VideoConferenceModel.setMessageById(callId, 'started', messageId);
+		await VideoConferenceModel.setMessageById(callId, 'started', messageId);
 
 		// After 40 seconds if the status is still "calling", we cancel the call automatically.
 		setTimeout(async () => {
@@ -685,13 +688,13 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await this.runNewVideoConferenceEvent(callId);
 
 		const url = await this.generateNewUrl(call);
-		VideoConferenceModel.setUrlById(callId, url);
+		await VideoConferenceModel.setUrlById(callId, url);
 
 		call.url = url;
 
 		const messageId = await this.createMessage(call, useAppUser ? undefined : user);
 		call.messages.started = messageId;
-		VideoConferenceModel.setMessageById(callId, 'started', messageId);
+		await VideoConferenceModel.setMessageById(callId, 'started', messageId);
 
 		if (call.ringing) {
 			await this.notifyUsersOfRoom(rid, user._id, 'ring', { callId, rid, uid: call.createdBy._id });
@@ -835,7 +838,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		if (!call.url) {
 			call.url = await this.generateNewUrl(call);
-			VideoConferenceModel.setUrlById(call._id, call.url);
+			await VideoConferenceModel.setUrlById(call._id, call.url);
 		}
 
 		const callData = {

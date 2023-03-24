@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 import type { IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
+import { Subscriptions } from '@rocket.chat/models';
 
-import { Rooms, Users, Subscriptions } from '../../../models/server';
+import { Rooms, Users } from '../../../models/server';
+import { isObject } from '../../../../lib/utils/isObject';
 
-export const getRoomByNameOrIdWithOptionToJoin = ({
+export const getRoomByNameOrIdWithOptionToJoin = async ({
 	currentUserId = '',
 	nameOrId = '',
 	type,
@@ -18,7 +19,7 @@ export const getRoomByNameOrIdWithOptionToJoin = ({
 	tryDirectByUserIdOnly?: boolean;
 	joinChannel?: boolean;
 	errorOnEmpty?: boolean;
-}): IRoom | undefined => {
+}): Promise<IRoom | undefined> => {
 	let room: IRoom;
 
 	// If the nameOrId starts with #, then let's try to find a channel or group
@@ -38,14 +39,14 @@ export const getRoomByNameOrIdWithOptionToJoin = ({
 			});
 		}
 
-		const rid = _.isObject(roomUser) ? [currentUserId, roomUser._id].sort().join('') : nameOrId;
+		const rid = isObject(roomUser) ? [currentUserId, roomUser._id].sort().join('') : nameOrId;
 		room = Rooms.findOneById(rid);
 
 		// If the room hasn't been found yet, let's try some more
-		if (!_.isObject(room)) {
+		if (!isObject(room)) {
 			// If the roomUser wasn't found, then there's no destination to point towards
 			// so return out based upon errorOnEmpty
-			if (!_.isObject(roomUser)) {
+			if (!isObject(roomUser)) {
 				if (errorOnEmpty) {
 					throw new Meteor.Error('invalid-channel');
 				} else {
@@ -84,7 +85,7 @@ export const getRoomByNameOrIdWithOptionToJoin = ({
 	// If the room type is channel and joinChannel has been passed, try to join them
 	// if they can't join the room, this will error out!
 	if (room.t === 'c' && joinChannel) {
-		const sub = Subscriptions.findOneByRoomIdAndUserId(room._id, currentUserId);
+		const sub = await Subscriptions.findOneByRoomIdAndUserId(room._id, currentUserId);
 
 		if (!sub) {
 			Meteor.runAsUser(currentUserId, function () {
