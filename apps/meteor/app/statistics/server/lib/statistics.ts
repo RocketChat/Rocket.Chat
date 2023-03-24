@@ -118,7 +118,7 @@ export const statistics = {
 		statistics.totalPrivateGroups = Rooms.findByType('p').count();
 		statistics.totalDirect = Rooms.findByType('d').count();
 		statistics.totalLivechat = Rooms.findByType('l').count();
-		statistics.totalDiscussions = Rooms.countDiscussions();
+		statistics.totalDiscussions = await RoomsRaw.countDiscussions();
 		statistics.totalThreads = await Messages.countThreads();
 
 		// livechat visitors

@@ -1066,10 +1066,6 @@ class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	countDiscussions() {
-		return this.find({ prid: { $exists: true } }).count();
-	}
-
 	setOTRForDMByRoomID(rid) {
 		const query = { _id: rid, t: 'd' };
 
