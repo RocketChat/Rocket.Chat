@@ -2,9 +2,10 @@ import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definiti
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { Meteor } from 'meteor/meteor';
+import { AppLogs, Apps as AppsModel } from '@rocket.chat/models';
 
 import { Logger } from '../../../server/lib/logger/Logger';
-import { AppsLogsModel, AppsModel, AppsPersistenceModel } from '../../../app/models/server';
+import { AppsPersistenceModel } from '../../../app/models/server';
 import { settings, settingsRegistry } from '../../../app/settings/server';
 import { RealAppBridges } from '../../../app/apps/server/bridges';
 import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
@@ -47,10 +48,16 @@ export class AppServerOrchestrator {
 		}
 
 		this._model = AppsModel;
-		this._logModel = new AppsLogsModel();
+		this._logModel = AppLogs;
 		this._persistModel = new AppsPersistenceModel();
 		this._storage = new AppRealStorage(this._model);
 		this._logStorage = new AppRealLogsStorage(this._logModel);
+
+		// TODO: Remove it when fixed the race condition
+		// This enforce Fibers for a method not waited on apps-engine preventing a race condition
+		const { storeEntries } = this._logStorage;
+		this._logStorage.storeEntries = (...args) => Promise.await(storeEntries.call(this._logStorage, ...args));
+
 		this._appSourceStorage = new ConfigurableAppSourceStorage(appsSourceStorageType, appsSourceStorageFilesystemPath);
 
 		this._converters = new Map();
@@ -327,5 +334,6 @@ settings.watch('Apps_Logs_TTL', (value) => {
 
 	const model = Apps._logModel;
 
-	model.resetTTLIndex(expireAfterSeconds);
+	// TODO: remove this when we have async support on here
+	Promise.await(model.resetTTLIndex(expireAfterSeconds));
 });
