@@ -1021,10 +1021,6 @@ class Rooms extends Base {
 		return this.remove(query);
 	}
 
-	removeByIds(ids) {
-		return this.remove({ _id: { $in: ids } });
-	}
-
 	setOTRForDMByRoomID(rid) {
 		const query = { _id: rid, t: 'd' };
 
