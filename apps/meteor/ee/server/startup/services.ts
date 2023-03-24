@@ -22,12 +22,15 @@ if (!isRunningMs()) {
 }
 
 let federationService: FederationService;
-if (!isEnterprise()) {
-	federationService = new FederationService();
-	api.registerService(federationService);
-}
 
-onLicense('federation', () => {
+void (async () => {
+	if (!isEnterprise()) {
+		federationService = await FederationService.createFederationService();
+		api.registerService(federationService);
+	}
+})();
+
+onLicense('federation', async () => {
 	const federationServiceEE = new FederationServiceEE();
 	if (federationService) {
 		api.destroyService(federationService);
