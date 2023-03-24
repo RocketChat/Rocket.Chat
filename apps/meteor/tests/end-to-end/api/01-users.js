@@ -747,7 +747,7 @@ describe('[Users]', function () {
 				.end(done);
 		});
 
-		it('should sort for user statuses and check if deactivated user is correctly sorted by name', async () => {
+		it('should sort for user statuses and check if user is correctly sorted by name', async () => {
 			const query = {
 				fields: JSON.stringify({
 					username: 1,
@@ -762,8 +762,8 @@ describe('[Users]', function () {
 			};
 
 			const now = Date.now();
-			const capitalizedUserName = `A_USER_${now}`;
-			const lowercaseUserName = `a_user_${now}`;
+			const capitalizedUserName = `A_b_USER_${now}`;
+			const lowercaseUserName = `a_a_user_${now}`;
 
 			await Promise.all([createUser({ name: capitalizedUserName }), createUser({ name: lowercaseUserName })]);
 
@@ -780,7 +780,6 @@ describe('[Users]', function () {
 					expect(res.body).to.have.property('users');
 					const indexOfCapitalized = res.body.users.findIndex((r) => r.name === capitalizedUserName);
 					const indexOfLowercased = res.body.users.findIndex((r) => r.name === lowercaseUserName);
-
 					expect(indexOfCapitalized).to.be.greaterThan(indexOfLowercased);
 				});
 		});

@@ -1338,8 +1338,8 @@ describe('[Rooms]', function () {
 				.end(done);
 		});
 		it('should return a list of admin rooms correctly sorted', async () => {
-			const lowercaseRoom = 'a_room';
-			const capitalizedRoom = 'A_ROOM';
+			const lowercaseRoom = 'a_a_room';
+			const capitalizedRoom = 'A_b_ROOM';
 
 			await Promise.all([createRoom({ type: 'c', name: capitalizedRoom }), createRoom({ type: 'c', name: lowercaseRoom })]);
 
