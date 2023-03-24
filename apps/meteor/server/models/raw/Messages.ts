@@ -836,10 +836,10 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		roomId: string,
 		roomName: string,
 		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
+		readReceiptsEnabled: boolean,
 		extraData: Record<string, any> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('r', roomId, roomName, user, readReceiptsEnabled, extraData);
+	): Promise<IMessage | null> {
+		return this.createWithTypeRoomIdMessageUserAndUnread('r', roomId, roomName, user, readReceiptsEnabled, extraData);
 	}
 
 	addTranslations(messageId: string, translations: Record<string, string>, providerName: string): Promise<UpdateResult> {

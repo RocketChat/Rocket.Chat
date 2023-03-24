@@ -165,7 +165,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		user: IMessage['u'],
 		readReceiptsEnabled?: boolean,
 		extraData?: Record<string, any>,
-	): Promise<Omit<IMessage, '_updatedAt'>>;
+	): Promise<IMessage | null>;
 	addTranslations(messageId: string, translations: Record<string, string>, providerName: string): Promise<UpdateResult>;
 	addAttachmentTranslations(messageId: string, attachmentIndex: string, translations: Record<string, string>): Promise<UpdateResult>;
 	setImportFileRocketChatAttachment(
