@@ -59,7 +59,7 @@ export const processDirectEmail = Meteor.bindEnvironment(async function (email: 
 
 	const roomInfo: IRoom = Rooms.findOneById(prevMessage.rid);
 
-	const room = Promise.await(canAccessRoomAsync(roomInfo, user));
+	const room = await canAccessRoomAsync(roomInfo, user);
 	if (!room) {
 		return;
 	}
