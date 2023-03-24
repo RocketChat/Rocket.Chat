@@ -42,7 +42,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 	},
 
-	allowMemberAction(room: IRoom, action, userId) {
+	async allowMemberAction(room: IRoom, action, userId) {
 		if (isRoomFederated(room)) {
 			return Promise.await(Federation.actionAllowed(room, action, userId));
 		}

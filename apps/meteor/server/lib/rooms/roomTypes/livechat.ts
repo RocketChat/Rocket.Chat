@@ -19,7 +19,7 @@ roomCoordinator.add(LivechatRoomType, {
 		}
 	},
 
-	allowMemberAction(_room, action) {
+	async allowMemberAction(_room, action) {
 		return ([RoomMemberActions.INVITE, RoomMemberActions.JOIN] as Array<ValueOf<typeof RoomMemberActions>>).includes(action);
 	},
 

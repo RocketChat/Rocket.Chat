@@ -31,7 +31,7 @@ roomCoordinator.add(PrivateRoomType, {
 		}
 	},
 
-	allowMemberAction(_room, action, userId) {
+	async allowMemberAction(_room, action, userId) {
 		if (isRoomFederated(_room as IRoom)) {
 			return Promise.await(Federation.actionAllowed(_room, action, userId));
 		}
