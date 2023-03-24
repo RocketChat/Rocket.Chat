@@ -1,6 +1,3 @@
-import _ from 'underscore';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-
 import { Base } from './_Base';
 import Subscriptions from './Subscriptions';
 import { trim } from '../../../../lib/utils/stringUtils';

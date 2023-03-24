@@ -56,8 +56,8 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 				break;
 		}
 
-		Rooms.updateGroupDMsRemovingUsernamesByUsername(user.username, userId); // Remove direct rooms with the user
-		Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
+		await Rooms.updateGroupDMsRemovingUsernamesByUsername(user.username, userId); // Remove direct rooms with the user
+		await Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
 
 		Subscriptions.removeByUserId(userId); // Remove user subscriptions
 
