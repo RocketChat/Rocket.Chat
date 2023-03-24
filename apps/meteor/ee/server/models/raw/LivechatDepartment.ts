@@ -46,7 +46,7 @@ export class LivechatDepartmentEE extends LivechatDepartmentRaw implements ILive
 		return this.updateMany({ parentId: id }, { $unset: { parentId: 1 }, $pull: { ancestors: id } });
 	}
 
-	async findEnabledWithAgentsAndBusinessUnits(businessUnit: string, projection: FindOptions<ILivechatDepartment>['projection']) {
+	async findEnabledWithAgentsAndBusinessUnit(businessUnit: string, projection: FindOptions<ILivechatDepartment>['projection']) {
 		if (!businessUnit) {
 			return super.findEnabledWithAgents(projection);
 		}

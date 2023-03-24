@@ -36,7 +36,10 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 	updateById(_id: string, update: Partial<ILivechatDepartment>): Promise<Document | UpdateResult>;
 	updateNumAgentsById(_id: string, numAgents: number): Promise<Document | UpdateResult>;
 	findEnabledWithAgents(projection: FindOptions<ILivechatDepartment>['projection']): FindCursor<ILivechatDepartment>;
-	findEnabledWithAgentsAndBusinessUnit(_: any, projection: FindOptions<ILivechatDepartment>['projection']): FindCursor<ILivechatDepartment>;
+	findEnabledWithAgentsAndBusinessUnit(
+		_: any,
+		projection: FindOptions<ILivechatDepartment>['projection'],
+	): Promise<FindCursor<ILivechatDepartment>>;
 	findOneByIdOrName(_idOrName: string, options: FindOptions<ILivechatDepartment>): Promise<ILivechatDepartment | null>;
 	findByUnitIds(unitIds: string[], options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
 	findActiveByUnitIds(unitIds: string[], options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;

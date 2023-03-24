@@ -246,10 +246,10 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.find(query, projection && { projection });
 	}
 
-	findEnabledWithAgentsAndBusinessUnit(
+	async findEnabledWithAgentsAndBusinessUnit(
 		_: any,
 		projection: FindOptions<ILivechatDepartment>['projection'] = {},
-	): FindCursor<ILivechatDepartment> {
+	): Promise<FindCursor<ILivechatDepartment>> {
 		const query = {
 			numAgents: { $gt: 0 },
 			enabled: true,
