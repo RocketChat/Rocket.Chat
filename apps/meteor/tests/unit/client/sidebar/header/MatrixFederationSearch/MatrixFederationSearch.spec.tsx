@@ -5,9 +5,6 @@ import proxyquire from 'proxyquire';
 import type { ReactElement } from 'react';
 import React from 'react';
 
-// import QueryClientProviderMock from '../../../../../../client/stories/contexts/QueryClientProviderMock';
-// import { makeCallEndpoint } from '../../../../../mocks/client/ServerProviderMock';
-
 const fetchRoomList = async ({ serverName, roomName, count }: any): Promise<any> => {
 	return new Promise((resolve) =>
 		resolve({
@@ -46,28 +43,10 @@ const removeMatrixServer: any = async ({ serverName }: any) => {
 };
 const addMatrixServer: any = async ({ serverName }: any) => serverList.push({ name: serverName, default: false, local: false });
 
-// const MatrixFederationSearch = proxyquire
-// 	.noCallThru()
-// 	.load('../../../../../../client/sidebar/header/MatrixFederationSearch', defaultConfig).default;
-
 const COMPONENT_PATH = '../../../../../../client/sidebar/header/MatrixFederationSearch';
 
 const defaultConfig = {
 	'@rocket.chat/ui-contexts': {
-		// useEndpoint: (_: any, path: string) => {
-		// 	switch (path) {
-		// 		case '/v1/federation/listServersByUser':
-		// 			return fetchServerList;
-		// 		case '/v1/federation/searchPublicRooms':
-		// 			return fetchRoomList;
-		// 		case '/v1/federation/joinExternalPublicRoom':
-		// 			return joinExternalPublicRoom;
-		// 		case '/v1/federation/addServerByUser':
-		// 			return addMatrixServer;
-		// 		case '/v1/federation/removeServerByUser':
-		// 			return removeMatrixServer;
-		// 	}
-		// },
 		'useSetModal': () => (modal: ReactElement) => {
 			cleanup();
 			if (!modal) {
@@ -77,10 +56,6 @@ const defaultConfig = {
 		},
 		'@global': true,
 	},
-	// 'meteor/kadira:flow-router': { '@global': true },
-	// 'meteor/meteor': { '@global': true },
-	// 'meteor/check': { '@global': true },
-	// 'meteor/mongo': { '@global': true },
 	'../../../lib/rooms/roomCoordinator': {
 		'@noCallThru': true,
 		'@global': true,
@@ -88,16 +63,6 @@ const defaultConfig = {
 			openRouteLink: () => null,
 		},
 	},
-	// './MatrixFederationSearchModalContent': {
-	// 	'./FederatedRoomList': {
-	// 		'../../../lib/rooms/roomCoordinator': {
-	// 			openRouteLink: () => null,
-	// 			// '@noCallThru': true,
-	// 		},
-	// 		// '@noCallThru': true,
-	// 	},
-	// },
-	// '@noCallThru': true,
 };
 const { makeCallEndpoint } = proxyquire.load('../../../../../mocks/client/ServerProviderMock', defaultConfig);
 
