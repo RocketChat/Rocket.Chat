@@ -16,7 +16,7 @@ export async function getPaginationItems(params: { offset?: string | number | nu
 	let count = defaultCount;
 
 	// Ensure count is an appropriate amount
-	if (params.count) {
+	if (params.count !== undefined && params.count !== null) {
 		count = parseInt(String(params.count || 0));
 	} else {
 		count = defaultCount;
