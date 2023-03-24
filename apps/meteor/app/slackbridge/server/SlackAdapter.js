@@ -8,7 +8,7 @@ import { Messages as MessagesRaw } from '@rocket.chat/models';
 
 import { slackLogger } from './logger';
 import { SlackAPI } from './SlackAPI';
-import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
+import { getUserAvatarURL } from '../../utils/client/lib/getUserAvatarURL';
 import { Messages, Rooms, Users } from '../../models/server';
 import { settings } from '../../settings/server';
 import { deleteMessage, updateMessage, addUserToRoom, removeUserFromRoom, unarchiveRoom, sendMessage } from '../../lib/server';

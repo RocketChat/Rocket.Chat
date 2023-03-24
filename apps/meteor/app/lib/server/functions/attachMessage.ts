@@ -1,6 +1,6 @@
 import type { IMessage, IRoom, MessageAttachment } from '@rocket.chat/core-typings';
 
-import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
+import { getUserAvatarURL } from '../../../utils/client/lib/getUserAvatarURL';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 export const attachMessage = function (

@@ -1,7 +1,7 @@
 import { isTranslatedMessage } from '@rocket.chat/core-typings';
 import type { ITranslatedMessage, IMessage } from '@rocket.chat/core-typings';
 
-import { getUserAvatarURL } from '../app/utils/lib/getUserAvatarURL';
+import { getUserAvatarURL } from '../app/utils/client/lib/getUserAvatarURL';
 
 export function createQuoteAttachment(message: IMessage | ITranslatedMessage, messageLink: string) {
 	return {
