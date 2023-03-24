@@ -278,12 +278,13 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 			return;
 		}
 		// Do not need to await this, this can be done in parallel
-		this.createFederatedUsersForRoomMembers(
+		await this.createFederatedUsersForRoomMembers(
 			federatedRoom,
 			externalRoomData.joinedMembers,
 			externalRoomData.creator.id,
 			federatedInviteeUser.getExternalId(),
 		);
+
 		await this.internalNotificationAdapter.subscribeToUserTypingEventsOnFederatedRoomId(
 			createdInternalRoomId,
 			this.internalNotificationAdapter.broadcastUserTypingOnRoom.bind(this.internalNotificationAdapter),

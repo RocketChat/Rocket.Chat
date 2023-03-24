@@ -173,7 +173,7 @@ export class RocketChatSettingsAdapter {
 		);
 	}
 
-	private addFederationSettings(): void {
+	private async addFederationSettings(): Promise<void> {
 		const preExistingConfiguration = this.getRegistrationFileFromHomeserver();
 
 		void settingsRegistry.addGroup('Federation', function () {
@@ -249,7 +249,7 @@ export class RocketChatSettingsAdapter {
 			});
 		});
 
-		settingsRegistry.add('Federation_Matrix_max_size_of_public_rooms_users', 100, {
+		await settingsRegistry.add('Federation_Matrix_max_size_of_public_rooms_users', 100, {
 			readonly: false,
 			type: 'int',
 			i18nLabel: 'Federation_Matrix_max_size_of_public_rooms_users',
