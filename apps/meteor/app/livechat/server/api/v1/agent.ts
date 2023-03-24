@@ -15,7 +15,7 @@ API.v1.addRoute('livechat/agent.info/:rid/:token', {
 			throw new Error('invalid-token');
 		}
 
-		const room = findRoom(this.urlParams.token, this.urlParams.rid);
+		const room = await findRoom(this.urlParams.token, this.urlParams.rid);
 		if (!room) {
 			throw new Error('invalid-room');
 		}
@@ -42,7 +42,7 @@ API.v1.addRoute(
 
 			let { department } = this.queryParams;
 			if (!department) {
-				const requireDeparment = Livechat.getRequiredDepartment();
+				const requireDeparment = await Livechat.getRequiredDepartment();
 				if (requireDeparment) {
 					department = requireDeparment._id;
 				}

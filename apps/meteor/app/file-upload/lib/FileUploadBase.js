@@ -5,7 +5,7 @@ import { Random } from '@rocket.chat/random';
 import { UploadFS } from 'meteor/jalik:ufs';
 import _ from 'underscore';
 
-import { canAccessRoom, hasPermission } from '../../authorization';
+import { canAccessRoomAsync, hasPermissionAsync } from '../../authorization';
 import { settings } from '../../settings';
 
 // set ufs temp dir to $TMPDIR/ufs instead of /tmp/ufs if the variable is set
@@ -29,17 +29,21 @@ UploadFS.config.defaultStorePermissions = new UploadFS.StorePermissions({
 			return true;
 		}
 
-		if (canAccessRoom(null, null, doc)) {
+		if (Promise.await(canAccessRoomAsync(null, null, doc))) {
 			return true;
 		}
 
 		return false;
 	},
 	update(userId, doc) {
-		return hasPermission(Meteor.userId(), 'delete-message', doc.rid) || (settings.get('Message_AllowDeleting') && userId === doc.userId);
+		return Promise.await(
+			hasPermissionAsync(Meteor.userId(), 'delete-message', doc.rid) || (settings.get('Message_AllowDeleting') && userId === doc.userId),
+		);
 	},
 	remove(userId, doc) {
-		return hasPermission(Meteor.userId(), 'delete-message', doc.rid) || (settings.get('Message_AllowDeleting') && userId === doc.userId);
+		return Promise.await(
+			hasPermissionAsync(Meteor.userId(), 'delete-message', doc.rid) || (settings.get('Message_AllowDeleting') && userId === doc.userId),
+		);
 	},
 });
 

@@ -52,7 +52,7 @@ class LivechatClass {
 
 	async closeRoom(params: CloseRoomParams): Promise<void> {
 		const { comment } = params;
-		let { room } = params;
+		const { room } = params;
 
 		this.logger.debug(`Attempting to close room ${room._id}`);
 		if (!room || !isOmnichannelRoom(room) || !room.open) {
@@ -121,29 +121,33 @@ class LivechatClass {
 		};
 
 		// Retrieve the closed room
-		room = (await LivechatRooms.findOneById(rid)) as IOmnichannelRoom;
+		const newRoom = await LivechatRooms.findOneById(rid);
+
+		if (!newRoom) {
+			throw new Error('Error: Room not found');
+		}
 
 		this.logger.debug(`Sending closing message to room ${room._id}`);
-		sendMessage(chatCloser, message, room);
+		await sendMessage(chatCloser, message, newRoom);
 
 		LegacyMessage.createCommandWithRoomIdAndUser('promptTranscript', rid, closeData.closedBy);
 
-		this.logger.debug(`Running callbacks for room ${room._id}`);
+		this.logger.debug(`Running callbacks for room ${newRoom._id}`);
 
-		Meteor.defer(() => {
+		process.nextTick(() => {
 			/**
 			 * @deprecated the `AppEvents.ILivechatRoomClosedHandler` event will be removed
 			 * in the next major version of the Apps-Engine
 			 */
-			Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, room);
-			Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, room);
+			void Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.ILivechatRoomClosedHandler, newRoom);
+			void Apps.getBridges()?.getListenerBridge().livechatEvent(AppEvents.IPostLivechatRoomClosed, newRoom);
 		});
 		callbacks.runAsync('livechat.closeRoom', {
-			room,
+			room: newRoom,
 			options,
 		});
 
-		this.logger.debug(`Room ${room._id} was closed`);
+		this.logger.debug(`Room ${newRoom._id} was closed`);
 	}
 
 	private async resolveChatTags(

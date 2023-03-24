@@ -42,8 +42,8 @@ export class VisitorInactivityMonitor {
 		SyncedCron.add({
 			name: this._name,
 			schedule: (parser) => parser.cron(everyMinute),
-			job: () => {
-				Promise.await(this.handleAbandonedRooms());
+			job: async () => {
+				return this.handleAbandonedRooms();
 			},
 		});
 		this._started = true;

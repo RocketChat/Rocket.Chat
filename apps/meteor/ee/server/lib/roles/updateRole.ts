@@ -8,7 +8,7 @@ type UpdateRoleOptions = {
 	broadcastUpdate?: boolean;
 };
 
-const updateRoleAsync = async (roleId: IRole['_id'], roleData: Omit<IRole, '_id'>, options: UpdateRoleOptions = {}): Promise<IRole> => {
+export const updateRole = async (roleId: IRole['_id'], roleData: Omit<IRole, '_id'>, options: UpdateRoleOptions = {}): Promise<IRole> => {
 	const role = await Roles.findOneById(roleId);
 
 	if (!role) {
@@ -39,7 +39,7 @@ const updateRoleAsync = async (roleId: IRole['_id'], roleData: Omit<IRole, '_id'
 	await Roles.updateById(roleId, roleData.name, roleData.scope, roleData.description, roleData.mandatory2fa);
 
 	if (options.broadcastUpdate) {
-		api.broadcast('user.roleUpdate', {
+		void api.broadcast('user.roleUpdate', {
 			type: 'changed',
 			_id: roleId,
 		});
@@ -52,5 +52,3 @@ const updateRoleAsync = async (roleId: IRole['_id'], roleData: Omit<IRole, '_id'
 
 	return updatedRole;
 };
-
-export const updateRole = (...args: Parameters<typeof updateRoleAsync>): IRole => Promise.await(updateRoleAsync(...args));
