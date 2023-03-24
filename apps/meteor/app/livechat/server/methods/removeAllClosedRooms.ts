@@ -1,9 +1,9 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
+import { LivechatRooms } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { LivechatRooms } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -27,7 +27,7 @@ Meteor.methods<ServerMethods>({
 		Livechat.logger.info(`User ${Meteor.userId()} is removing all closed rooms`);
 
 		const promises: Promise<void>[] = [];
-		LivechatRooms.findClosedRooms(departmentIds).forEach(({ _id }: IOmnichannelRoom) => {
+		await LivechatRooms.findClosedRooms(departmentIds).forEach(({ _id }: IOmnichannelRoom) => {
 			promises.push(Livechat.removeRoom(_id));
 		});
 		await Promise.all(promises);

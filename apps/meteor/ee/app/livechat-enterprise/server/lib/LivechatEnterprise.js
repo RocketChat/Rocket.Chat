@@ -177,19 +177,18 @@ export const LivechatEnterprise = {
 		await removeSLAFromRooms(_id);
 	},
 
-	placeRoomOnHold(room, comment, onHoldBy) {
+	async placeRoomOnHold(room, comment, onHoldBy) {
 		logger.debug(`Attempting to place room ${room._id} on hold by user ${onHoldBy?._id}`);
 		const { _id: roomId, onHold } = room;
 		if (!roomId || onHold) {
 			logger.debug(`Room ${roomId} invalid or already on hold. Skipping`);
 			return false;
 		}
-		Promise.await(LivechatRooms.setOnHoldByRoomId(roomId));
+		await LivechatRooms.setOnHoldByRoomId(roomId);
 
 		Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldBy);
-		Meteor.defer(() => {
-			callbacks.run('livechat:afterOnHold', room);
-		});
+
+		await callbacks.run('livechat:afterOnHold', room);
 
 		logger.debug(`Room ${room._id} set on hold succesfully`);
 		return true;

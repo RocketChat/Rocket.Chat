@@ -4,10 +4,10 @@ import type { ParsedMail, Attachment } from 'mailparser';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 
 import { Livechat } from '../../../app/livechat/server/lib/Livechat';
-import { LivechatRooms, Messages } from '../../../app/models/server';
+import { Messages } from '../../../app/models/server';
 import { FileUpload } from '../../../app/file-upload/server';
 import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
 import { settings } from '../../../app/settings/server';
@@ -148,7 +148,12 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 
 	logger.debug(`Guest ${guest._id} obtained. Attempting to find or create a room on department ${department}`);
 
-	let room: IOmnichannelRoom = LivechatRooms.findOneByVisitorTokenAndEmailThreadAndDepartment(guest.token, thread, department, {});
+	let room: IOmnichannelRoom | null = await LivechatRooms.findOneByVisitorTokenAndEmailThreadAndDepartment(
+		guest.token,
+		thread,
+		department,
+		{},
+	);
 
 	logger.debug({
 		msg: 'Room found for guest',
@@ -158,6 +163,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 
 	if (room?.closedAt) {
 		logger.debug(`Room ${room?._id} is closed. Reopening`);
+		// @ts-expect-error - QueueManager is not typed
 		room = await QueueManager.unarchiveRoom(room);
 	}
 
@@ -267,7 +273,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 					},
 				},
 			);
-			LivechatRooms.updateEmailThreadByRoomId(room._id, thread);
+			room && (await LivechatRooms.updateEmailThreadByRoomId(room._id, thread));
 		})
 		.catch((err) => {
 			Livechat.logger.error({

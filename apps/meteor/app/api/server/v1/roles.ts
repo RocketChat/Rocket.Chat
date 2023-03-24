@@ -79,7 +79,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-user-already-in-role', 'User already in role');
 			}
 
-			await Meteor.call('authorization:addUserToRole', role._id, user.username, roomId);
+			await Meteor.callAsync('authorization:addUserToRole', role._id, user.username, roomId);
 
 			return API.v1.success({
 				role,
