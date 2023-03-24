@@ -441,7 +441,7 @@ Accounts.updateOrCreateUserFromExternalService = function (...args /* serviceNam
 	const user = updateOrCreateUserFromExternalService.apply(this, args);
 	const fullUser = Users.findOneById(user.userId);
 	if (settings.get('LDAP_Update_Data_On_OAuth_Login')) {
-		LDAP.loginRequest(user.username);
+		LDAP.loginRequest(fullUser.username);
 	}
 
 	callbacks.run('afterValidateNewOAuthUser', {
