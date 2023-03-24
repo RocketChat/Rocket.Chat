@@ -6,7 +6,7 @@ import type { IEditedMessage, IUser } from '@rocket.chat/core-typings';
 
 import { Messages } from '../../../models/server';
 import { settings } from '../../../settings/server';
-import { canSendMessage } from '../../../authorization/server';
+import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { updateMessage } from '../functions';
 
@@ -89,7 +89,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		const user = Meteor.users.findOne(uid) as IUser;
-		canSendMessage(message.rid, { uid: user._id, username: user.username ?? undefined, ...user });
+		await canSendMessageAsync(message.rid, { uid: user._id, username: user.username ?? undefined, ...user });
 
 		// It is possible to have an empty array as the attachments property, so ensure both things exist
 		if (originalMessage.attachments && originalMessage.attachments.length > 0 && originalMessage.attachments[0].description !== undefined) {

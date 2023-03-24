@@ -18,7 +18,7 @@ async function reactivateDirectConversations(userId: string) {
 	// since both users can be deactivated at the same time, we should just reactivate rooms if both users are active
 	// for that, we need to fetch the direct messages, fetch the users involved and then the ids of rooms we can reactivate
 	const directConversations = await RoomsRaw.getDirectConversationsByUserId(userId, {
-		projection: { _id: 1, uids: 1 },
+		projection: { _id: 1, uids: 1, t: 1 },
 	}).toArray();
 
 	const userIds = directConversations.reduce<string[]>((acc: string[], r) => {
