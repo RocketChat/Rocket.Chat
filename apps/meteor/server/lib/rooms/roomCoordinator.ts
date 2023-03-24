@@ -11,7 +11,7 @@ class RoomCoordinatorServer extends RoomCoordinator {
 			allowRoomSettingChange(_room: IRoom, _setting: ValueOf<typeof RoomSettingsEnum>) {
 				return true;
 			},
-			allowMemberAction(_room: IRoom, _action: ValueOf<typeof RoomMemberActions>, _userId?: IUser['_id']): boolean {
+			async allowMemberAction(_room: IRoom, _action: ValueOf<typeof RoomMemberActions>, _userId?: IUser['_id']): Promise<boolean> {
 				return false;
 			},
 			roomName(_room: IRoom, _userId?: string): string {
@@ -67,7 +67,12 @@ class RoomCoordinatorServer extends RoomCoordinator {
 	}
 
 	getRoomDirectives(roomType: string): IRoomTypeServerDirectives {
-		return this.roomTypes[roomType].directives as IRoomTypeServerDirectives;
+		const directives = this.roomTypes[roomType]?.directives;
+
+		if (!directives) {
+			throw new Error(`Room type ${roomType} not found`);
+		}
+		return directives as IRoomTypeServerDirectives;
 	}
 
 	openRoom(_type: string, _name: string, _render = true): void {

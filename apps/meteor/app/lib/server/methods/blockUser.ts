@@ -14,7 +14,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	blockUser({ rid, blocked }) {
+	async blockUser({ rid, blocked }) {
 		check(rid, String);
 		check(blocked, String);
 		const userId = Meteor.userId();
@@ -25,7 +25,7 @@ Meteor.methods<ServerMethods>({
 
 		const room = Rooms.findOne({ _id: rid });
 
-		if (!roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.BLOCK, userId)) {
+		if (!(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.BLOCK, userId))) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'blockUser' });
 		}
 
