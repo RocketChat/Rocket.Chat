@@ -33,7 +33,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-appName-param-not-valid', 'The required "appName" body param is missing or invalid.');
 			}
 
-			await Meteor.callAsync('raix:push-update', {
+			const result = await Meteor.callAsync('raix:push-update', {
 				id: deviceId,
 				token: { [type]: value },
 				authToken: this.request.headers['x-auth-token'],
