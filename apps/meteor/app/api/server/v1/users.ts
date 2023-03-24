@@ -583,7 +583,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			const user = await getUserFromParams(this.bodyParams as unknown as Record<string, any>);
+			const user = await getUserFromParams(this.bodyParams);
 			const data = Meteor.call('createToken', user._id);
 			return data ? API.v1.success({ data }) : API.v1.unauthorized();
 		},
@@ -1093,14 +1093,13 @@ API.v1.addRoute(
 					method: 'users.setStatus',
 				});
 			}
-			const params = this.bodyParams as unknown as Record<string, any>;
 
 			const user = await (async (): Promise<Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'statusText' | 'roles'> | undefined> => {
-				if (isUserFromParams(params, this.userId, this.user)) {
+				if (isUserFromParams(this.bodyParams, this.userId, this.user)) {
 					return Meteor.users.findOne(this.userId) as IUser;
 				}
 				if (await hasPermissionAsync(this.userId, 'edit-other-user-info')) {
-					return getUserFromParams(params);
+					return getUserFromParams(this.bodyParams);
 				}
 			})();
 
@@ -1159,8 +1158,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const params = this.queryParams as unknown as Record<string, any>;
-			if (isUserFromParams(params, this.userId, this.user)) {
+			if (isUserFromParams(this.queryParams, this.userId, this.user)) {
 				const user = Users.findOneById(this.userId);
 				return API.v1.success({
 					_id: user._id,
@@ -1170,7 +1168,7 @@ API.v1.addRoute(
 				});
 			}
 
-			const user = await getUserFromParams(params);
+			const user = await getUserFromParams(this.queryParams);
 
 			return API.v1.success({
 				_id: user._id,
