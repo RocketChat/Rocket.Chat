@@ -33,7 +33,7 @@ API.v1.addRoute(
 			}
 
 			const config = await settings();
-			if (!config.theme || !config.theme.actionLinks || !config.theme.actionLinks.webrtc) {
+			if (!config.theme?.actionLinks?.webrtc) {
 				throw new Error('invalid-livechat-config');
 			}
 
@@ -43,7 +43,7 @@ API.v1.addRoute(
 				await Settings.incrementValueById('WebRTC_Calls_Count');
 				callStatus = 'ringing';
 				await Rooms.setCallStatusAndCallStartTime(room._id, callStatus);
-				await Messages.createWithTypeRoomIdMessageAndUser(
+				Messages.createWithTypeRoomIdMessageAndUser(
 					'livechat_webrtc_video_call',
 					room._id,
 					TAPi18n.__('Join_my_room_to_start_the_video_call'),
@@ -89,7 +89,7 @@ API.v1.addRoute(
 				throw new Error('invalid-callId');
 			}
 
-			Livechat.updateCallStatus(callId, rid, status, this.user);
+			await Livechat.updateCallStatus(callId, rid, status, this.user);
 
 			return API.v1.success({ status });
 		},

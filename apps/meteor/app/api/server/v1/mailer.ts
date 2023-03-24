@@ -1,7 +1,7 @@
 import { isMailerProps, isMailerUnsubscribeProps } from '@rocket.chat/rest-typings';
 
 import { API } from '../api';
-import { hasPermission } from '../../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 API.v1.addRoute(
 	'mailer',
@@ -11,7 +11,7 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			if (!hasPermission(this.userId, 'send-mail')) {
+			if (!(await hasPermissionAsync(this.userId, 'send-mail'))) {
 				throw new Error('error-not-allowed');
 			}
 

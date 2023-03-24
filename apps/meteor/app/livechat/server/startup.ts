@@ -3,15 +3,15 @@ import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatRooms } from '@rocket.chat/models';
 
 import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
-import { LivechatRooms } from '../../models/server';
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
 import { LivechatAgentActivityMonitor } from './statistics/LivechatAgentActivityMonitor';
 import { businessHourManager } from './business-hour';
 import { createDefaultBusinessHourIfNotExists } from './business-hour/Helper';
-import { hasPermission } from '../../authorization/server';
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { Livechat } from './lib/Livechat';
 import { RoutingManager } from './lib/RoutingManager';
 
@@ -38,8 +38,8 @@ Meteor.startup(async () => {
 
 	callbacks.add(
 		'beforeJoinRoom',
-		function (user, room) {
-			if (isOmnichannelRoom(room) && !hasPermission(user._id, 'view-l-room')) {
+		async function (user, room) {
+			if (isOmnichannelRoom(room) && !(await hasPermissionAsync(user._id, 'view-l-room'))) {
 				throw new Meteor.Error('error-user-is-not-agent', 'User is not an Omnichannel Agent', {
 					method: 'beforeJoinRoom',
 				});

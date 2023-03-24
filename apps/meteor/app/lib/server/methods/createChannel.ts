@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { ICreatedRoom } from '@rocket.chat/core-typings';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { createRoom } from '../functions';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -20,7 +20,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	createChannel(name, members, readOnly = false, customFields = {}, extraData = {}) {
+	async createChannel(name, members, readOnly = false, customFields = {}, extraData = {}) {
 		check(name, String);
 		check(members, Match.Optional([String]));
 
@@ -32,7 +32,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'createChannel' });
 		}
 
-		if (!hasPermission(uid, 'create-c')) {
+		if (!(await hasPermissionAsync(uid, 'create-c'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createChannel' });
 		}
 		return createRoom('c', name, user.username, members, readOnly, {

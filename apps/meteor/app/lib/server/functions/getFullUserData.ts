@@ -3,7 +3,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Logger } from '../../../logger/server';
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 const logger = new Logger('getFullUserData');
 
@@ -76,7 +76,7 @@ export async function getFullUserDataByIdOrUsername(
 	const caller = Users.findOneById(userId, { fields: { username: 1 } });
 	const targetUser = filterId || filterUsername;
 	const myself = (filterId && targetUser === userId) || (filterUsername && targetUser === caller.username);
-	const canViewAllInfo = !!myself || hasPermission(userId, 'view-full-other-user-info');
+	const canViewAllInfo = !!myself || (await hasPermissionAsync(userId, 'view-full-other-user-info'));
 
 	const fields = getFields(canViewAllInfo);
 

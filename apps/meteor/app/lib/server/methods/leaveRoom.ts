@@ -4,7 +4,8 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission, hasRole } from '../../../authorization/server';
+import { hasRole } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Subscriptions, Rooms } from '../../../models/server';
 import { removeUserFromRoom } from '../functions';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -28,11 +29,14 @@ Meteor.methods<ServerMethods>({
 		const room = Rooms.findOneById(rid);
 		const user = Meteor.user() as unknown as IUser;
 
-		if (!user || !roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.LEAVE, user._id)) {
+		if (!user || !(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.LEAVE, user._id))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'leaveRoom' });
 		}
 
-		if ((room.t === 'c' && !hasPermission(user._id, 'leave-c')) || (room.t === 'p' && !hasPermission(user._id, 'leave-p'))) {
+		if (
+			(room.t === 'c' && !(await hasPermissionAsync(user._id, 'leave-c'))) ||
+			(room.t === 'p' && !(await hasPermissionAsync(user._id, 'leave-p')))
+		) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'leaveRoom' });
 		}
 

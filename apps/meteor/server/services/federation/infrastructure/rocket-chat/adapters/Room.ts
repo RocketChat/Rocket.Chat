@@ -1,6 +1,6 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
-import { Rooms, Subscriptions, MatrixBridgedRoom } from '@rocket.chat/models';
+import { Messages as MessagesRaw, Rooms, Subscriptions, MatrixBridgedRoom } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
 import { DirectMessageFederatedRoom, FederatedRoom } from '../../../domain/FederatedRoom';
@@ -104,7 +104,7 @@ export class RocketChatRoomAdapter {
 	}
 
 	public async addUserToRoom(federatedRoom: FederatedRoom, inviteeUser: FederatedUser, inviterUser?: FederatedUser): Promise<void> {
-		addUserToRoom(federatedRoom.getInternalId(), inviteeUser.getInternalReference(), inviterUser?.getInternalReference());
+		await addUserToRoom(federatedRoom.getInternalId(), inviteeUser.getInternalReference(), inviterUser?.getInternalReference());
 	}
 
 	public async removeUserFromRoom(federatedRoom: FederatedRoom, affectedUser: FederatedUser, byUser: FederatedUser): Promise<void> {
@@ -131,10 +131,10 @@ export class RocketChatRoomAdapter {
 			federatedRoom.getName() || '',
 			federatedRoom.getDisplayName() || '',
 		);
-		Messages.createRoomRenamedWithRoomIdRoomNameAndUser(
+		await MessagesRaw.createRoomRenamedWithRoomIdRoomNameAndUser(
 			federatedRoom.getInternalId(),
-			federatedRoom.getDisplayName(),
-			federatedUser.getInternalReference(),
+			federatedRoom.getDisplayName() || '',
+			federatedUser.getInternalReference() as unknown as Required<IUser>, // TODO fix type
 		);
 	}
 

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Subscriptions, Users } from '../../../models/server';
@@ -67,7 +67,7 @@ export const sendNotification = async ({
 
 	const roomType = room.t;
 	// If the user doesn't have permission to view direct messages, don't send notification of direct messages.
-	if (roomType === 'd' && !hasPermission(subscription.u._id, 'view-d-room')) {
+	if (roomType === 'd' && !(await hasPermissionAsync(subscription.u._id, 'view-d-room'))) {
 		return;
 	}
 
@@ -217,7 +217,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 		return;
 	}
 
-	const sender = roomCoordinator.getRoomDirectives(room.t)?.getMsgSender(message.u._id);
+	const sender = roomCoordinator.getRoomDirectives(room.t).getMsgSender(message.u._id);
 	if (!sender) {
 		return message;
 	}

@@ -68,6 +68,10 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 		const action = (): Promise<void> | void => {
 			const onConfirm = async (): Promise<void> => {
 				try {
+					if (!user.username) {
+						throw new Error('User without username');
+					}
+
 					await muteUser({ rid, username: user.username });
 
 					return dispatchToastMessage({

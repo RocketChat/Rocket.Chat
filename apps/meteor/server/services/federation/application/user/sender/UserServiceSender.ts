@@ -3,7 +3,7 @@ import type { RocketChatFileAdapter } from '../../../infrastructure/rocket-chat/
 import type { RocketChatRoomAdapter } from '../../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from '../../../infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from '../../../infrastructure/rocket-chat/adapters/User';
-import { AbstractFederationApplicationService } from '../../AbstractFederationService';
+import { AbstractFederationApplicationService } from '../../AbstractFederationApplicationService';
 
 export class FederationUserServiceSender extends AbstractFederationApplicationService {
 	constructor(

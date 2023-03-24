@@ -3,7 +3,8 @@ import { Match, check } from 'meteor/check';
 import { Team } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission, hasRole, getUsersInRole } from '../../app/authorization/server';
+import { hasRole, getUsersInRole } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { removeUserFromRolesAsync } from '../lib/roles/removeUserFromRoles';
 import { Users, Subscriptions, Rooms, Messages } from '../../app/models/server';
 import { callbacks } from '../../lib/callbacks';
@@ -35,7 +36,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!hasPermission(fromId, 'remove-user', data.rid)) {
+		if (!(await hasPermissionAsync(fromId, 'remove-user', data.rid))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'removeUserFromRoom',
 			});
@@ -43,7 +44,7 @@ Meteor.methods<ServerMethods>({
 
 		const room = Rooms.findOneById(data.rid);
 
-		if (!room || !roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.REMOVE_USER, fromId)) {
+		if (!room || !(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.REMOVE_USER, fromId))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'removeUserFromRoom',
 			});
