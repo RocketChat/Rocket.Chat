@@ -1,8 +1,7 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import type { AutoCompleteProps } from '@rocket.chat/fuselage';
 import { AutoComplete, Box, Icon, Option, Options, Chip } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { FC } from 'react';
+import type { FC, ComponentProps } from 'react';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
@@ -19,7 +18,7 @@ const useRoomsAutoComplete = (
 	name: string,
 ): {
 	rooms: Record<IRoom['_id'], Serialized<IRoom>>;
-	options: AutoCompleteProps['options'];
+	options: ComponentProps<typeof AutoComplete>['options'];
 } => {
 	const params = useMemo(
 		() => ({
@@ -29,7 +28,7 @@ const useRoomsAutoComplete = (
 	);
 	const { value: data } = useEndpointData('/v1/rooms.autocomplete.availableForTeams', { params });
 
-	const options = useMemo<AutoCompleteProps['options']>(() => {
+	const options = useMemo<ComponentProps<typeof AutoComplete>['options']>(() => {
 		if (!data) {
 			return [];
 		}
@@ -69,7 +68,7 @@ const RoomsInput: FC<RoomsInputProps> = ({ onChange, ...props }) => {
 		[onChange, rooms],
 	);
 
-	const handleChange = useCallback<AutoCompleteProps['onChange']>(
+	const handleChange = useCallback<ComponentProps<typeof AutoComplete>['onChange']>(
 		(value, action: 'remove' | undefined) => {
 			onChange(rooms[value as string], action);
 		},
