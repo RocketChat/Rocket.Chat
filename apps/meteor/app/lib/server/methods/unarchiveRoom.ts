@@ -9,7 +9,7 @@ import { unarchiveRoom } from '../functions';
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		unarchiveRoom(rid: string): void;
+		unarchiveRoom(rid: string): Promise<void>;
 	}
 }
 

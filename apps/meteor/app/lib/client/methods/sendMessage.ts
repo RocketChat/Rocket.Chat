@@ -20,7 +20,7 @@ Meteor.methods<ServerMethods>({
 		if (messageAlreadyExists) {
 			return dispatchToastMessage({ type: 'error', message: t('Message_Already_Sent') });
 		}
-		const user = Meteor.user() as IUser | null;
+		const user = (await Meteor.userAsync()) as IUser | null;
 		if (!user?.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'sendMessage' });
 		}
