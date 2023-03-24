@@ -1,4 +1,3 @@
-import './lib/iframeCommands';
 import './lib/codeMirror';
 import './views/app/roomSearch.html';
 import './views/app/roomSearch';

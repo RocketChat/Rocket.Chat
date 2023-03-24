@@ -1,17 +1,18 @@
-import { Meteor } from 'meteor/meteor';
-import { FlowRouter } from 'meteor/kadira:flow-router';
-import { ServiceConfiguration } from 'meteor/service-configuration';
+import type { UserStatus } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { Meteor } from 'meteor/meteor';
+import { ServiceConfiguration } from 'meteor/service-configuration';
 
-import { AccountBox } from '../../../ui-utils/client';
-import { settings } from '../../../settings/client';
-import { callbacks } from '../../../../lib/callbacks';
-import { add, remove } from '../../../../client/views/room/lib/Toolbox/IframeButtons';
-import { baseURI } from '../../../../client/lib/baseURI';
-import { capitalize, ltrim, rtrim } from '../../../../lib/utils/stringUtils';
+import { settings } from '../../app/settings/client';
+import { AccountBox } from '../../app/ui-utils/client';
+import { callbacks } from '../../lib/callbacks';
+import { capitalize, ltrim, rtrim } from '../../lib/utils/stringUtils';
+import { baseURI } from '../lib/baseURI';
+import { add, remove } from '../views/room/lib/Toolbox/IframeButtons';
 
 const commands = {
-	'go'(data) {
+	'go'(data: { path: string }) {
 		if (typeof data.path !== 'string' || data.path.trim().length === 0) {
 			return console.error('`path` not defined');
 		}
@@ -20,24 +21,24 @@ const commands = {
 		const newParams = Array.from(newUrl.searchParams.entries()).reduce((ret, [key, value]) => {
 			ret[key] = value;
 			return ret;
-		}, {});
+		}, {} as Record<string, string>);
 
 		const newPath = newUrl.pathname.replace(new RegExp(`^${escapeRegExp(__meteor_runtime_config__.ROOT_URL_PATH_PREFIX)}`), '');
-		FlowRouter.go(newPath, null, { ...FlowRouter.current().queryParams, ...newParams });
+		FlowRouter.go(newPath, undefined, { ...FlowRouter.current().queryParams, ...newParams });
 	},
 
-	'set-user-status'(data) {
+	'set-user-status'(data: { status: UserStatus }) {
 		AccountBox.setStatus(data.status);
 	},
 
-	'call-custom-oauth-login'(data, event) {
-		const customOAuthCallback = (response) => {
-			event.source.postMessage(
+	'call-custom-oauth-login'(data: { service: string; redirectUrl?: string | null }, event: MessageEvent) {
+		const customOAuthCallback = (response: unknown) => {
+			event.source?.postMessage(
 				{
 					event: 'custom-oauth-callback',
 					response,
 				},
-				event.origin,
+				{ targetOrigin: event.origin },
 			);
 		};
 
@@ -50,16 +51,16 @@ const commands = {
 			const customOauth = ServiceConfiguration.configurations.findOne({ service: data.service });
 
 			if (customOauth) {
-				const customLoginWith = Meteor[`loginWith${capitalize(customOauth.service, true)}`];
+				const customLoginWith = (Meteor as any)[`loginWith${capitalize(customOauth.service, true)}`];
 				const customRedirectUri = data.redirectUrl || siteUrl;
 				customLoginWith.call(Meteor, { redirectUrl: customRedirectUri }, customOAuthCallback);
 			}
 		}
 	},
 
-	'login-with-token'(data, ...args) {
+	'login-with-token'(data: { token: string }, ...args: unknown[]) {
 		if (typeof data.token === 'string') {
-			Meteor.loginWithToken(data.token, function () {
+			Meteor.loginWithToken(data.token, () => {
 				console.log('Iframe command [login-with-token]: result', [data, ...args]);
 			});
 		}
@@ -74,15 +75,15 @@ const commands = {
 		});
 	},
 
-	'set-toolbar-button'({ id, icon, label }) {
+	'set-toolbar-button'({ id, icon, label }: { id: string; icon: string; label: string }) {
 		add(id, { id, icon, label });
 	},
-	'remove-toolbar-button'({ id }) {
+	'remove-toolbar-button'({ id }: { id: string }) {
 		remove(id);
 	},
-};
+} as const;
 
-window.addEventListener('message', (e) => {
+window.addEventListener('message', <TCommand extends keyof typeof commands>(e: MessageEvent<{ externalCommand: TCommand }>) => {
 	if (settings.get('Iframe_Integration_receive_enable') !== true) {
 		return;
 	}
@@ -99,6 +100,6 @@ window.addEventListener('message', (e) => {
 
 	const command = commands[e.data.externalCommand];
 	if (command) {
-		command(e.data, e);
+		command(e.data as any, e);
 	}
 });
