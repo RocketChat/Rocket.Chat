@@ -872,23 +872,6 @@ class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	saveRetentionMaxAgeById(_id, value) {
-		const query = { _id };
-
-		value = Number(value);
-		if (!value) {
-			value = 30;
-		}
-
-		const update = {
-			$set: {
-				'retention.maxAge': value,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	setOTRForDMByRoomID(rid) {
 		const query = { _id: rid, t: 'd' };
 
