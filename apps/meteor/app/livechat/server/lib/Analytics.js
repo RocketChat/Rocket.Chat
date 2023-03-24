@@ -1,6 +1,6 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment-timezone';
-import { LivechatRooms as LivechatRoomsRaw } from '@rocket.chat/models';
+import { LivechatRooms } from '@rocket.chat/models';
 
 import { secondsToHHMMSS } from '../../../utils/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
@@ -137,14 +137,14 @@ export const Analytics = {
 		 * @returns {Integer}
 		 */
 		Total_conversations(date, departmentId) {
-			return LivechatRoomsRaw.getTotalConversationsBetweenDate('l', date, { departmentId });
+			return LivechatRooms.getTotalConversationsBetweenDate('l', date, { departmentId });
 		},
 
 		async Avg_chat_duration(date, departmentId) {
 			let total = 0;
 			let count = 0;
 
-			await LivechatRoomsRaw.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics }) => {
+			await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics }) => {
 				if (metrics && metrics.chatDuration) {
 					total += metrics.chatDuration;
 					count++;
@@ -161,7 +161,7 @@ export const Analytics = {
 			// we don't want to count visitor messages
 			const extraFilter = { $lte: ['$token', null] };
 			const allConversations = Promise.await(
-				LivechatRoomsRaw.getAnalyticsMetricsBetweenDateWithMessages('l', date, { departmentId }, extraFilter).toArray(),
+				LivechatRooms.getAnalyticsMetricsBetweenDateWithMessages('l', date, { departmentId }, extraFilter).toArray(),
 			);
 			allConversations.map(({ msgs }) => {
 				if (msgs) {
@@ -182,7 +182,7 @@ export const Analytics = {
 		async Avg_first_response_time(date, departmentId) {
 			let frt = 0;
 			let count = 0;
-			await LivechatRoomsRaw.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics }) => {
+			await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics }) => {
 				if (metrics && metrics.response && metrics.response.ft) {
 					frt += metrics.response.ft;
 					count++;
@@ -202,7 +202,7 @@ export const Analytics = {
 		async Best_first_response_time(date, departmentId) {
 			let maxFrt;
 
-			await LivechatRoomsRaw.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics }) => {
+			await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics }) => {
 				if (metrics && metrics.response && metrics.response.ft) {
 					maxFrt = maxFrt ? Math.min(maxFrt, metrics.response.ft) : metrics.response.ft;
 				}
@@ -224,7 +224,7 @@ export const Analytics = {
 		async Avg_response_time(date, departmentId) {
 			let art = 0;
 			let count = 0;
-			await LivechatRoomsRaw.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics }) => {
+			await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics }) => {
 				if (metrics && metrics.response && metrics.response.avg) {
 					art += metrics.response.avg;
 					count++;
@@ -245,7 +245,7 @@ export const Analytics = {
 		async Avg_reaction_time(date, departmentId) {
 			let arnt = 0;
 			let count = 0;
-			await LivechatRoomsRaw.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics }) => {
+			await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics }) => {
 				if (metrics && metrics.reaction && metrics.reaction.ft) {
 					arnt += metrics.reaction.ft;
 					count++;
@@ -313,7 +313,7 @@ export const Analytics = {
 					gte: clonedDate,
 					lt: m.add(1, 'days'),
 				};
-				const result = Promise.await(LivechatRoomsRaw.getAnalyticsBetweenDate(date, { departmentId }).toArray());
+				const result = Promise.await(LivechatRooms.getAnalyticsBetweenDate(date, { departmentId }).toArray());
 				totalConversations += result.length;
 
 				result.forEach(summarize(clonedDate));
@@ -334,7 +334,7 @@ export const Analytics = {
 						gte: h.clone(),
 						lt: h.add(1, 'hours'),
 					};
-					Promise.await(LivechatRoomsRaw.getAnalyticsBetweenDate(date, { departmentId }).toArray()).forEach(({ msgs }) => {
+					Promise.await(LivechatRooms.getAnalyticsBetweenDate(date, { departmentId }).toArray()).forEach(({ msgs }) => {
 						const dayHour = h.format('H'); // @int : 0, 1, ... 23
 						totalMessagesInHour.set(dayHour, totalMessagesInHour.has(dayHour) ? totalMessagesInHour.get(dayHour) + msgs : msgs);
 					});
@@ -346,7 +346,7 @@ export const Analytics = {
 				to: utcBusiestHour >= 0 ? moment.utc().set({ hour: utcBusiestHour }).tz(timezone).format('hA') : '-',
 				from: utcBusiestHour >= 0 ? moment.utc().set({ hour: utcBusiestHour }).subtract(1, 'hour').tz(timezone).format('hA') : '',
 			};
-			const onHoldConversations = Promise.await(LivechatRoomsRaw.getOnHoldConversationsBetweenDate(from, to, departmentId));
+			const onHoldConversations = Promise.await(LivechatRooms.getOnHoldConversationsBetweenDate(from, to, departmentId));
 
 			return [
 				{
@@ -398,7 +398,7 @@ export const Analytics = {
 				lt: to.add(1, 'days'),
 			};
 
-			await LivechatRoomsRaw.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics }) => {
+			await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics }) => {
 				if (metrics && metrics.response && metrics.reaction) {
 					avgResponseTime += metrics.response.avg;
 					firstResponseTime += metrics.response.ft;
@@ -487,7 +487,7 @@ export const Analytics = {
 			};
 
 			const allConversations = Promise.await(
-				LivechatRoomsRaw.getAnalyticsMetricsBetweenDateWithMessages('l', date, {
+				LivechatRooms.getAnalyticsMetricsBetweenDateWithMessages('l', date, {
 					departmentId,
 				}).toArray(),
 			);
@@ -544,7 +544,7 @@ export const Analytics = {
 				data: [],
 			};
 
-			await LivechatRoomsRaw.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics, servedBy }) => {
+			await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics, servedBy }) => {
 				if (servedBy && metrics && metrics.chatDuration) {
 					if (agentChatDurations.has(servedBy.username)) {
 						agentChatDurations.set(servedBy.username, {
@@ -608,7 +608,7 @@ export const Analytics = {
 			// we don't want to count visitor messages
 			const extraFilter = { $lte: ['$token', null] };
 			const allConversations = Promise.await(
-				LivechatRoomsRaw.getAnalyticsMetricsBetweenDateWithMessages('l', date, { departmentId }, extraFilter).toArray(),
+				LivechatRooms.getAnalyticsMetricsBetweenDateWithMessages('l', date, { departmentId }, extraFilter).toArray(),
 			);
 			allConversations.map(({ servedBy, msgs }) => {
 				if (servedBy) {
@@ -656,7 +656,7 @@ export const Analytics = {
 				data: [],
 			};
 
-			await LivechatRoomsRaw.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics, servedBy }) => {
+			await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics, servedBy }) => {
 				if (servedBy && metrics && metrics.response && metrics.response.ft) {
 					if (agentAvgRespTime.has(servedBy.username)) {
 						agentAvgRespTime.set(servedBy.username, {
@@ -717,7 +717,7 @@ export const Analytics = {
 				data: [],
 			};
 
-			await LivechatRoomsRaw.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics, servedBy }) => {
+			await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics, servedBy }) => {
 				if (servedBy && metrics && metrics.response && metrics.response.ft) {
 					if (agentFirstRespTime.has(servedBy.username)) {
 						agentFirstRespTime.set(servedBy.username, Math.min(agentFirstRespTime.get(servedBy.username), metrics.response.ft));
@@ -770,7 +770,7 @@ export const Analytics = {
 				data: [],
 			};
 
-			await LivechatRoomsRaw.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics, servedBy }) => {
+			await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics, servedBy }) => {
 				if (servedBy && metrics && metrics.response && metrics.response.avg) {
 					if (agentAvgRespTime.has(servedBy.username)) {
 						agentAvgRespTime.set(servedBy.username, {
@@ -831,7 +831,7 @@ export const Analytics = {
 				data: [],
 			};
 
-			await LivechatRoomsRaw.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics, servedBy }) => {
+			await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics, servedBy }) => {
 				if (servedBy && metrics && metrics.reaction && metrics.reaction.ft) {
 					if (agentAvgReactionTime.has(servedBy.username)) {
 						agentAvgReactionTime.set(servedBy.username, {

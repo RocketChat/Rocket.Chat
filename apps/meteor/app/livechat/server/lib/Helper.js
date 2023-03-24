@@ -5,10 +5,10 @@ import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/l
 import { OmnichannelSourceType, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
 import { api } from '@rocket.chat/core-services';
-import { LivechatDepartmentAgents, Users as UsersRaw, LivechatInquiry, LivechatRooms as LivechatRoomsRaw } from '@rocket.chat/models';
+import { LivechatDepartmentAgents, Users as UsersRaw, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
 import { hasRole } from '../../../authorization/server';
-import { Messages, LivechatRooms, Rooms, Subscriptions, Users, LivechatDepartment } from '../../../models/server';
+import { Messages, Rooms, Subscriptions, Users, LivechatDepartment } from '../../../models/server';
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../../lib/callbacks';
@@ -203,7 +203,7 @@ export const createLivechatSubscription = (rid, name, guest, agent, department) 
 };
 
 export const removeAgentFromSubscription = async (rid, { _id, username }) => {
-	const room = await LivechatRoomsRaw.findOneById(rid);
+	const room = await LivechatRooms.findOneById(rid);
 	const user = Users.findOneById(_id);
 
 	Subscriptions.removeByRoomIdAndUserId(rid, _id);
@@ -273,7 +273,7 @@ export const dispatchInquiryQueued = async (inquiry, agent) => {
 	logger.debug(`Notifying agents of new inquiry ${inquiry._id} queued`);
 
 	const { department, rid, v } = inquiry;
-	const room = await LivechatRoomsRaw.findOneById(rid);
+	const room = await LivechatRooms.findOneById(rid);
 	Meteor.defer(() => callbacks.run('livechat.chatQueued', room));
 
 	if (RoutingManager.getConfig().autoAssignAgent) {
@@ -370,7 +370,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 		return false;
 	}
 
-	Livechat.saveTransferHistory(room, transferData);
+	await Livechat.saveTransferHistory(room, transferData);
 
 	const { servedBy } = roomTaken;
 	if (servedBy) {
@@ -398,7 +398,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 };
 
 export const updateChatDepartment = async ({ rid, newDepartmentId, oldDepartmentId }) => {
-	LivechatRooms.changeDepartmentIdByRoomId(rid, newDepartmentId);
+	await LivechatRooms.changeDepartmentIdByRoomId(rid, newDepartmentId);
 	await LivechatInquiry.changeDepartmentIdByRoomId(rid, newDepartmentId);
 	Subscriptions.changeDepartmentByRoomId(rid, newDepartmentId);
 
@@ -458,7 +458,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 		logger.debug(
 			`Routing algorithm doesn't support auto assignment (using ${RoutingManager.methodName}). Chat will be on department queue`,
 		);
-		Livechat.saveTransferHistory(room, transferData);
+		await Livechat.saveTransferHistory(room, transferData);
 		return RoutingManager.unassignAgent(inquiry, departmentId);
 	}
 
@@ -485,7 +485,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 		return !!callbacks.run('livechat:onTransferFailure', { room, guest, transferData });
 	}
 
-	Livechat.saveTransferHistory(room, transferData);
+	await Livechat.saveTransferHistory(room, transferData);
 	if (oldServedBy) {
 		// if chat is queued then we don't ignore the new servedBy agent bcs at this
 		// point the chat is not assigned to him/her and it is still in the queue
@@ -500,7 +500,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	if (chatQueued) {
 		logger.debug(`Forwarding succesful. Marking inquiry ${inquiry._id} as ready`);
 		await LivechatInquiry.readyInquiry(inquiry._id);
-		LivechatRooms.removeAgentByRoomId(rid);
+		await LivechatRooms.removeAgentByRoomId(rid);
 		dispatchAgentDelegated(rid, null);
 		const newInquiry = await LivechatInquiry.findOneById(inquiry._id);
 		await queueInquiry(room, newInquiry);
