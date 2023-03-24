@@ -37,8 +37,6 @@ Meteor.methods({
 			});
 		}
 
-		console.log(room);
-
 		return addUserToRoom(rid, user);
 	},
 });
