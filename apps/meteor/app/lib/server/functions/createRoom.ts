@@ -22,7 +22,7 @@ export const createRoom = async <T extends RoomType>(
 	ownerUsername: string | undefined,
 	members: T extends 'd' ? IUser[] : string[] = [],
 	readOnly?: boolean,
-	roomExtraData?: Partial<IRoom> & { customFields?: unknown },
+	roomExtraData?: Partial<IRoom>,
 	options?: ICreateRoomParams['options'],
 ): Promise<ICreatedRoom> => {
 	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
