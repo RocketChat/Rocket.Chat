@@ -35,21 +35,6 @@ class Rooms extends Base {
 		);
 	}
 
-	findOneByIdOrName(_idOrName, options) {
-		const query = {
-			$or: [
-				{
-					_id: _idOrName,
-				},
-				{
-					name: _idOrName,
-				},
-			],
-		};
-
-		return this.findOne(query, options);
-	}
-
 	setCallStatus(_id, status) {
 		const query = {
 			_id,

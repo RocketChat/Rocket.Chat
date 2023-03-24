@@ -1,3 +1,4 @@
+import type { FindOptions } from 'mongodb';
 import { Meteor } from 'meteor/meteor';
 import type { Notifications } from '@rocket.chat/rest-typings';
 import { isGETRoomsNameExists } from '@rocket.chat/rest-typings';
@@ -12,7 +13,6 @@ import { getUploadFormData } from '../lib/getUploadFormData';
 import { settings } from '../../../settings/server';
 import { eraseRoom } from '../../../../server/methods/eraseRoom';
 import { FileUpload } from '../../../file-upload/server';
-import { Rooms as RoomsSync } from '../../../models/server';
 import {
 	findAdminRoom,
 	findAdminRooms,
@@ -289,7 +289,7 @@ API.v1.addRoute(
 				return API.v1.failure('not-allowed', 'Not Allowed');
 			}
 
-			return API.v1.success({ room: await RoomsSync.findOneByIdOrName(room._id, { fields }) });
+			return API.v1.success({ room: (await Rooms.findOneByIdOrName(room._id, { fields } as FindOptions<IRoom>)) ?? undefined });
 		},
 	},
 );
