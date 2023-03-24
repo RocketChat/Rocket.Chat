@@ -981,7 +981,7 @@ export const Livechat = {
 		const { token } = guest;
 		check(token, String);
 
-		LivechatRooms.findByVisitorToken(token).forEach((room) => {
+		await LivechatRoomsRaw.findByVisitorToken(token).forEach((room) => {
 			FileUpload.removeFilesByRoomId(room._id);
 			Messages.removeByRoomId(room._id);
 		});

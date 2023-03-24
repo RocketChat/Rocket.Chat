@@ -2,12 +2,12 @@ import type Mail from 'nodemailer/lib/mailer';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IEmailInbox, IUser, IMessage } from '@rocket.chat/core-typings';
-import { Uploads } from '@rocket.chat/models';
+import { Uploads, LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../lib/callbacks';
 import { FileUpload } from '../../../app/file-upload/server';
 import { slashCommands } from '../../../app/utils/server';
-import { Messages, Rooms, Users, LivechatRooms } from '../../../app/models/server';
+import { Messages, Rooms, Users } from '../../../app/models/server';
 import type { Inbox } from './EmailInbox';
 import { inboxes } from './EmailInbox';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
@@ -89,7 +89,7 @@ slashCommands.add({
 
 		const message = Messages.findOneById(params.trim());
 
-		if (!message || !message.file) {
+		if (!message?.file) {
 			return;
 		}
 

@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import type { IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
-import { Rooms } from '@rocket.chat/models';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
 
-import { Users, Subscriptions } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { isObject } from '../../../../lib/utils/isObject';
 
 export const getRoomByNameOrIdWithOptionToJoin = async ({
@@ -87,7 +87,7 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 	// If the room type is channel and joinChannel has been passed, try to join them
 	// if they can't join the room, this will error out!
 	if (room.t === 'c' && joinChannel) {
-		const sub = Subscriptions.findOneByRoomIdAndUserId(room._id, currentUserId);
+		const sub = await Subscriptions.findOneByRoomIdAndUserId(room._id, currentUserId);
 
 		if (!sub) {
 			Meteor.runAsUser(currentUserId, function () {
