@@ -17,7 +17,7 @@ type ChannelsTableRowProps = {
 const ChannelsTableRow = ({ onClick, room, mediaQuery }: ChannelsTableRowProps) => {
 	const formatDate = useFormatDate();
 	const { _id, ts, t, name, fname, usersCount, lastMessage, topic, belongsTo } = room;
-	const avatarUrl = roomCoordinator.getRoomDirectives(t)?.getAvatarPath(room);
+	const avatarUrl = roomCoordinator.getRoomDirectives(t).getAvatarPath(room);
 
 	return (
 		<TableRow key={_id} onKeyDown={onClick(name, t)} onClick={onClick(name, t)} tabIndex={0} role='link' action>
