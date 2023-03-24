@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms as LivechatRoomsRaw } from '@rocket.chat/models';
+import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 import type {
 	ILivechatAgent,
 	ILivechatDepartment,
@@ -70,10 +70,10 @@ export async function findRoom(token: string, rid?: string): Promise<IOmnichanne
 	};
 
 	if (!rid) {
-		return LivechatRoomsRaw.findOneByVisitorToken(token, fields);
+		return LivechatRooms.findOneByVisitorToken(token, fields);
 	}
 
-	return LivechatRoomsRaw.findOneByIdAndVisitorToken(rid, token, fields);
+	return LivechatRooms.findOneByIdAndVisitorToken(rid, token, fields);
 }
 
 export async function findOpenRoom(token: string, departmentId?: string): Promise<IOmnichannelRoom | undefined> {
@@ -87,8 +87,8 @@ export async function findOpenRoom(token: string, departmentId?: string): Promis
 	};
 
 	const rooms = departmentId
-		? await LivechatRoomsRaw.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options).toArray()
-		: await LivechatRoomsRaw.findOpenByVisitorToken(token, options).toArray();
+		? await LivechatRooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options).toArray()
+		: await LivechatRooms.findOpenByVisitorToken(token, options).toArray();
 	if (rooms && rooms.length > 0) {
 		return rooms[0];
 	}
