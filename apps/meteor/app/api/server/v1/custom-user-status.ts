@@ -46,7 +46,7 @@ API.v1.addRoute(
 				statusType: this.bodyParams.statusType,
 			};
 
-			Meteor.call('insertOrUpdateUserStatus', userStatusData);
+			await Meteor.callAsync('insertOrUpdateUserStatus', userStatusData);
 
 			const customUserStatus = await CustomUserStatus.findOneByName(userStatusData.name);
 			if (!customUserStatus) {
@@ -64,13 +64,13 @@ API.v1.addRoute(
 	'custom-user-status.delete',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			const { customUserStatusId } = this.bodyParams;
 			if (!customUserStatusId) {
 				return API.v1.failure('The "customUserStatusId" params is required!');
 			}
 
-			Meteor.call('deleteCustomUserStatus', customUserStatusId);
+			await Meteor.callAsync('deleteCustomUserStatus', customUserStatusId);
 
 			return API.v1.success();
 		},
@@ -101,7 +101,7 @@ API.v1.addRoute(
 				return API.v1.failure(`No custom user status found with the id of "${userStatusData._id}".`);
 			}
 
-			Meteor.call('insertOrUpdateUserStatus', userStatusData);
+			await Meteor.callAsync('insertOrUpdateUserStatus', userStatusData);
 
 			const customUserStatus = await CustomUserStatus.findOneById(userStatusData._id);
 

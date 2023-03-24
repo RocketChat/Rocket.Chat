@@ -22,26 +22,26 @@ describe('Federation[Server] - Federation', () => {
 	afterEach(() => findOneByRoomIdAndUserIdStub.reset());
 
 	describe('#actionAllowed()', () => {
-		it('should return false if the room is NOT federated', () => {
-			expect(Federation.actionAllowed({ t: 'c' } as any, RoomMemberActions.INVITE)).to.be.false;
+		it('should return false if the room is NOT federated', async () => {
+			await expect(Federation.actionAllowed({ t: 'c' } as any, RoomMemberActions.INVITE)).to.eventually.be.false;
 		});
 
-		it('should return false if the room is a DM one', () => {
-			expect(Federation.actionAllowed({ t: 'd', federated: true } as any, RoomMemberActions.INVITE)).to.be.false;
+		it('should return false if the room is a DM one', async () => {
+			await expect(Federation.actionAllowed({ t: 'd', federated: true } as any, RoomMemberActions.INVITE)).to.eventually.be.false;
 		});
 
-		it('should return true if an userId was not provided', () => {
-			expect(Federation.actionAllowed({ t: 'c', federated: true } as any, RoomMemberActions.INVITE)).to.be.true;
+		it('should return true if an userId was not provided', async () => {
+			await expect(Federation.actionAllowed({ t: 'c', federated: true } as any, RoomMemberActions.INVITE)).to.eventually.be.true;
 		});
 
-		it('should return true if there is no subscription for the userId', () => {
+		it('should return true if there is no subscription for the userId', async () => {
 			findOneByRoomIdAndUserIdStub.returns(undefined);
-			expect(Federation.actionAllowed({ t: 'c', federated: true } as any, RoomMemberActions.INVITE, 'userId')).to.be.true;
+			await expect(Federation.actionAllowed({ t: 'c', federated: true } as any, RoomMemberActions.INVITE, 'userId')).to.eventually.be.true;
 		});
 
-		it('should return true if the action is equal to Leave (since any user can leave a channel)', () => {
+		it('should return true if the action is equal to Leave (since any user can leave a channel)', async () => {
 			findOneByRoomIdAndUserIdStub.returns({});
-			expect(Federation.actionAllowed({ t: 'c', federated: true } as any, RoomMemberActions.LEAVE, 'userId')).to.be.true;
+			await expect(Federation.actionAllowed({ t: 'c', federated: true } as any, RoomMemberActions.LEAVE, 'userId')).to.eventually.be.true;
 		});
 
 		const allowedActions = [
@@ -56,36 +56,37 @@ describe('Federation[Server] - Federation', () => {
 		Object.values(RoomMemberActions)
 			.filter((action) => !allowedActions.includes(action as any))
 			.forEach((action) => {
-				it('should return false if the action is NOT allowed within the federation context for regular channels', () => {
+				it('should return false if the action is NOT allowed within the federation context for regular channels', async () => {
 					findOneByRoomIdAndUserIdStub.returns({});
-					expect(Federation.actionAllowed({ t: 'c', federated: true } as any, action, 'userId')).to.be.false;
+					await expect(Federation.actionAllowed({ t: 'c', federated: true } as any, action, 'userId')).to.eventually.be.false;
 				});
 			});
 
 		allowedActions.forEach((action) => {
-			it('should return true if the action is allowed within the federation context for regular channels and the user is a room owner', () => {
+			it('should return true if the action is allowed within the federation context for regular channels and the user is a room owner', async () => {
 				findOneByRoomIdAndUserIdStub.returns({ roles: ['owner'] });
-				expect(Federation.actionAllowed({ t: 'c', federated: true } as any, action, 'userId')).to.be.true;
+				await expect(Federation.actionAllowed({ t: 'c', federated: true } as any, action, 'userId')).to.eventually.be.true;
 			});
 		});
 
 		const allowedActionsForModerators = allowedActions.filter((action) => action !== RoomMemberActions.SET_AS_OWNER);
 		allowedActionsForModerators.forEach((action) => {
-			it('should return true if the action is allowed within the federation context for regular channels and the user is a room moderator', () => {
+			it('should return true if the action is allowed within the federation context for regular channels and the user is a room moderator', async () => {
 				findOneByRoomIdAndUserIdStub.returns({ roles: ['moderator'] });
-				expect(Federation.actionAllowed({ t: 'c', federated: true } as any, action, 'userId')).to.be.true;
+				await expect(Federation.actionAllowed({ t: 'c', federated: true } as any, action, 'userId')).to.eventually.be.true;
 			});
 		});
-		it('should return false if the action is equal to set owner and the user is a room moderator', () => {
+		it('should return false if the action is equal to set owner and the user is a room moderator', async () => {
 			findOneByRoomIdAndUserIdStub.returns({ roles: ['moderator'] });
-			expect(Federation.actionAllowed({ t: 'c', federated: true } as any, RoomMemberActions.SET_AS_OWNER, 'userId')).to.be.false;
+			await expect(Federation.actionAllowed({ t: 'c', federated: true } as any, RoomMemberActions.SET_AS_OWNER, 'userId')).to.eventually.be
+				.false;
 		});
 
 		const disallowedActionForRegularUsers = allowedActions.filter((action) => action !== RoomMemberActions.LEAVE);
 		disallowedActionForRegularUsers.forEach((action) => {
-			it('should return false if the for all other actions (excluding LEAVE) for regular users', () => {
+			it('should return false if the for all other actions (excluding LEAVE) for regular users', async () => {
 				findOneByRoomIdAndUserIdStub.returns({});
-				expect(Federation.actionAllowed({ t: 'c', federated: true } as any, action, 'userId')).to.be.false;
+				await expect(Federation.actionAllowed({ t: 'c', federated: true } as any, action, 'userId')).to.eventually.be.false;
 			});
 		});
 	});

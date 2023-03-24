@@ -48,7 +48,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.MUTE, fromId)) {
+		if (!(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.MUTE, fromId))) {
 			throw new Meteor.Error('error-invalid-room-type', `${room.t} is not a valid room type`, {
 				method: 'muteUserInRoom',
 				type: room.t,

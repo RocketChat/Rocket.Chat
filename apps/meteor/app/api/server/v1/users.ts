@@ -673,12 +673,12 @@ API.v1.addRoute(
 	'users.regeneratePersonalAccessToken',
 	{ authRequired: true, twoFactorRequired: true },
 	{
-		post() {
+		async post() {
 			const { tokenName } = this.bodyParams;
 			if (!tokenName) {
 				return API.v1.failure("The 'tokenName' param is required");
 			}
-			const token = Meteor.call('personalAccessTokens:regenerateToken', { tokenName });
+			const token = await Meteor.callAsync('personalAccessTokens:regenerateToken', { tokenName });
 
 			return API.v1.success({ token });
 		},
