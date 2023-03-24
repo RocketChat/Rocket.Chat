@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Messages } from '@rocket.chat/models';
+import { Messages, Rooms } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
 import { isTheLastMessage } from '../../lib/server';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
-import { Subscriptions, Rooms } from '../../models/server';
+import { Subscriptions } from '../../models/server';
 import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -43,14 +43,18 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		const room = Rooms.findOneById(message.rid, { fields: { ...roomAccessAttributes, lastMessage: 1 } });
+		const room = await Rooms.findOneById(message.rid, { fields: { ...roomAccessAttributes, lastMessage: 1 } });
+
+		if (!room) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'starMessage' });
+		}
 
 		if (!(await canAccessRoomAsync(room, { _id: uid }))) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'starMessage' });
 		}
 
 		if (isTheLastMessage(room, message)) {
-			Rooms.updateLastMessageStar(room._id, uid, message.starred);
+			await Rooms.updateLastMessageStar(room._id, uid, message.starred);
 		}
 
 		await Apps.triggerEvent(AppEvents.IPostMessageStarred, message, Meteor.user(), message.starred);
