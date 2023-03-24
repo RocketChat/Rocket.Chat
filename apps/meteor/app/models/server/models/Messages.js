@@ -35,10 +35,6 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
 	}
 
-	setReactions(messageId, reactions) {
-		return this.update({ _id: messageId }, { $set: { reactions } });
-	}
-
 	createRoomArchivedByRoomIdAndUser(roomId, user) {
 		return this.createWithTypeRoomIdMessageAndUser('room-archived', roomId, '', user);
 	}
@@ -47,24 +43,12 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('room-unarchived', roomId, '', user);
 	}
 
-	createRoomSetReadOnlyByRoomIdAndUser(roomId, user) {
-		return this.createWithTypeRoomIdMessageAndUser('room-set-read-only', roomId, '', user);
-	}
-
-	createRoomRemovedReadOnlyByRoomIdAndUser(roomId, user) {
-		return this.createWithTypeRoomIdMessageAndUser('room-removed-read-only', roomId, '', user);
-	}
-
 	createRoomAllowedReactingByRoomIdAndUser(roomId, user) {
 		return this.createWithTypeRoomIdMessageAndUser('room-allowed-reacting', roomId, '', user);
 	}
 
 	createRoomDisallowedReactingByRoomIdAndUser(roomId, user) {
 		return this.createWithTypeRoomIdMessageAndUser('room-disallowed-reacting', roomId, '', user);
-	}
-
-	unsetReactions(messageId) {
-		return this.update({ _id: messageId }, { $unset: { reactions: 1 } });
 	}
 
 	updateOTRAck(_id, otrAck) {
@@ -76,28 +60,6 @@ export class Messages extends Base {
 	createRoomSettingsChangedWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {
 		return this.createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData);
 	}
-
-	createRoomRenamedWithRoomIdRoomNameAndUser(roomId, roomName, user, extraData) {
-		return this.createWithTypeRoomIdMessageAndUser('r', roomId, roomName, user, extraData);
-	}
-
-	addTranslations(messageId, translations, providerName) {
-		const updateObj = { translationProvider: providerName };
-		Object.keys(translations).forEach((key) => {
-			const translation = translations[key];
-			updateObj[`translations.${key}`] = translation;
-		});
-		return this.update({ _id: messageId }, { $set: updateObj });
-	}
-
-	addAttachmentTranslations = function (messageId, attachmentIndex, translations) {
-		const updateObj = {};
-		Object.keys(translations).forEach((key) => {
-			const translation = translations[key];
-			updateObj[`attachments.${attachmentIndex}.translations.${key}`] = translation;
-		});
-		return this.update({ _id: messageId }, { $set: updateObj });
-	};
 
 	setImportFileRocketChatAttachment(importFileId, rocketChatUrl, attachment) {
 		const query = {
@@ -273,17 +235,6 @@ export class Messages extends Base {
 		if (Match.test(types, [String]) && types.length > 0) {
 			query.t = { $nin: types };
 		}
-
-		return this.find(query, options);
-	}
-
-	findByRoomIdAndMessageIds(rid, messageIds, options) {
-		const query = {
-			rid,
-			_id: {
-				$in: messageIds,
-			},
-		};
 
 		return this.find(query, options);
 	}

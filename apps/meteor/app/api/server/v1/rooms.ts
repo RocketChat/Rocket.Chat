@@ -608,7 +608,7 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-invalid-messages');
 				}
 
-				const result = dataExport.sendViaEmail(
+				const result = await dataExport.sendViaEmail(
 					{
 						rid,
 						toUsers: (toUsers as string[]) || [],

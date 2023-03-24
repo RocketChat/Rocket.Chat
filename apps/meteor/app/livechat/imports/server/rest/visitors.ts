@@ -8,7 +8,7 @@ import {
 	isLivechatRidMessagesProps,
 	isGETLivechatVisitorsSearch,
 } from '@rocket.chat/rest-typings';
-import { Messages } from '@rocket.chat/models';
+import { Messages, LivechatRooms } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
 import {
@@ -19,7 +19,6 @@ import {
 	findVisitorsToAutocomplete,
 	findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField,
 } from '../../../server/api/lib/visitors';
-import { LivechatRooms } from '../../../../models/server';
 import { normalizeMessagesForUser } from '../../../../utils/server/lib/normalizeMessagesForUser';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { canAccessRoomAsync } from '../../../../authorization/server';
@@ -167,7 +166,7 @@ API.v1.addRoute(
 			const { sort } = await this.parseJsonQuery();
 			const { searchTerm } = this.queryParams;
 
-			const room = LivechatRooms.findOneById(this.urlParams.rid);
+			const room = await LivechatRooms.findOneById(this.urlParams.rid);
 
 			if (!room) {
 				throw new Error('invalid-room');

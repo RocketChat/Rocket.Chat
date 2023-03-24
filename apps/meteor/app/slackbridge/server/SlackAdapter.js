@@ -1003,10 +1003,16 @@ export default class SlackAdapter {
 
 	async processNameMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
 		if (isImporting) {
-			Messages.createRoomRenamedWithRoomIdRoomNameAndUser(rocketChannel._id, slackMessage.name, rocketUser, {
-				ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
-				imported: 'slackbridge',
-			});
+			await MessagesRaw.createRoomRenamedWithRoomIdRoomNameAndUser(
+				rocketChannel._id,
+				slackMessage.name,
+				rocketUser,
+				settings.get('Message_Read_Receipt_Enabled'),
+				{
+					ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
+					imported: 'slackbridge',
+				},
+			);
 		} else {
 			await saveRoomName(rocketChannel._id, slackMessage.name, rocketUser, false);
 		}
@@ -1181,7 +1187,7 @@ export default class SlackAdapter {
 							msg._id = details.message_id;
 						}
 
-						return sendMessage(rocketUser, msg, rocketChannel, true);
+						return Promise.await(sendMessage(rocketUser, msg, rocketChannel, true));
 					}
 				});
 			}),
