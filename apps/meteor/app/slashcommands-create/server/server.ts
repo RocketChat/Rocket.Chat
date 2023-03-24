@@ -8,7 +8,7 @@ import { slashCommands } from '../../utils/lib/slashCommand';
 
 slashCommands.add({
 	command: 'create',
-	callback: function Create(_command: 'create', params, item): void {
+	callback: async function Create(_command: 'create', params, item): Promise<void> {
 		function getParams(str: string): string[] {
 			const regex = /(--(\w+))+/g;
 			const result = [];
@@ -49,10 +49,10 @@ slashCommands.add({
 		}
 
 		if (getParams(params).indexOf('private') > -1) {
-			return Meteor.call('createPrivateGroup', channelStr, []);
+			return Meteor.callAsync('createPrivateGroup', channelStr, []);
 		}
 
-		Meteor.call('createChannel', channelStr, []);
+		await Meteor.callAsync('createChannel', channelStr, []);
 	},
 	options: {
 		description: 'Create_A_New_Channel',

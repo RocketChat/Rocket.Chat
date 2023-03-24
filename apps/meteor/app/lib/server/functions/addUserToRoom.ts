@@ -21,8 +21,8 @@ export const addUserToRoom = async function (
 	const userToBeAdded = typeof user !== 'string' ? user : Users.findOneByUsername(user.replace('@', ''));
 	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
 	if (
-		!roomDirectives?.allowMemberAction(room, RoomMemberActions.JOIN, userToBeAdded._id) &&
-		!roomDirectives?.allowMemberAction(room, RoomMemberActions.INVITE, userToBeAdded._id)
+		!(await roomDirectives.allowMemberAction(room, RoomMemberActions.JOIN, userToBeAdded._id)) &&
+		!(await roomDirectives.allowMemberAction(room, RoomMemberActions.INVITE, userToBeAdded._id))
 	) {
 		return;
 	}

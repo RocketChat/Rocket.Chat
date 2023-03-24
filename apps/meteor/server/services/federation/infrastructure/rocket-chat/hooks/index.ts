@@ -189,7 +189,7 @@ export class FederationHooks {
 		);
 	}
 
-	public static afterRoomRoleChanged(federationRoomService: FederationRoomServiceSender, data?: Record<string, any>): void {
+	public static async afterRoomRoleChanged(federationRoomService: FederationRoomServiceSender, data?: Record<string, any>) {
 		if (!data || !settings.get('Federation_Matrix_enabled')) {
 			return;
 		}
@@ -218,7 +218,7 @@ export class FederationHooks {
 		if (!handlers[`${role}-${action}`]) {
 			return;
 		}
-		Promise.await(handlers[`${role}-${action}`](internalUserId, internalTargetUserId, internalRoomId));
+		await handlers[`${role}-${action}`](internalUserId, internalTargetUserId, internalRoomId);
 	}
 
 	public static afterRoomNameChanged(callback: (roomId: string, changedRoomName: string) => Promise<void>): void {

@@ -31,7 +31,7 @@ type RoomSettings = {
 	roomCustomFields: unknown;
 	roomDescription: unknown;
 	roomType: unknown;
-	readOnly: unknown;
+	readOnly: boolean;
 	reactWhenReadOnly: unknown;
 	systemMessages: unknown;
 	default: unknown;
@@ -100,7 +100,7 @@ const validators: RoomSettingsValidators = {
 	},
 	async encrypted({ userId, value, room, rid }) {
 		if (value !== room.encrypted) {
-			if (!roomCoordinator.getRoomDirectives(room.t).allowRoomSettingChange(room, RoomSettingsEnum.E2E)) {
+			if (!(await roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange(room, RoomSettingsEnum.E2E))) {
 				throw new Meteor.Error('error-action-not-allowed', 'Only groups or direct channels can enable encryption', {
 					method: 'saveRoomSettings',
 					action: 'Change_Room_Encrypted',
@@ -203,7 +203,7 @@ const validators: RoomSettingsValidators = {
 type RoomSettingsSavers = {
 	[TRoomSetting in keyof RoomSettings]?: (params: {
 		userId: IUser['_id'];
-		user: IUser;
+		user: IUser & Required<Pick<IUser, 'username' | 'name'>>;
 		value: RoomSettings[TRoomSetting];
 		room: IRoom;
 		rid: IRoom['_id'];
@@ -253,12 +253,12 @@ const settingSavers: RoomSettingsSavers = {
 			saveRoomDescription(rid, value, user);
 		}
 	},
-	roomType({ value, room, rid, user }) {
+	async roomType({ value, room, rid, user }) {
 		if (value === room.t) {
 			return;
 		}
 
-		if (!saveRoomType(rid, value, user)) {
+		if (!(await saveRoomType(rid, value, user))) {
 			return;
 		}
 
@@ -270,9 +270,9 @@ const settingSavers: RoomSettingsSavers = {
 	streamingOptions({ value, rid }) {
 		saveStreamingOptions(rid, value);
 	},
-	readOnly({ value, room, rid, user }) {
+	async readOnly({ value, room, rid, user }) {
 		if (value !== room.ro) {
-			saveRoomReadOnly(rid, value, user);
+			await saveRoomReadOnly(rid, value, user);
 		}
 	},
 	reactWhenReadOnly({ value, room, rid, user }) {
@@ -377,7 +377,7 @@ async function save<TRoomSetting extends keyof RoomSettings>(
 	setting: TRoomSetting,
 	params: {
 		userId: IUser['_id'];
-		user: IUser;
+		user: IUser & Required<Pick<IUser, 'username' | 'name'>>;
 		value: RoomSettings[TRoomSetting];
 		room: IRoom;
 		rid: IRoom['_id'];
@@ -448,7 +448,7 @@ async function saveRoomSettings(
 		});
 	}
 
-	const user = Meteor.user() as IUser | null;
+	const user = Meteor.user() as (IUser & Required<Pick<IUser, 'username' | 'name'>>) | null;
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'saveRoomSettings',
