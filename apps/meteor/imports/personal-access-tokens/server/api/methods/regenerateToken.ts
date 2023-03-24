@@ -36,8 +36,8 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		Meteor.call('personalAccessTokens:removeToken', { tokenName });
-		return Meteor.call('personalAccessTokens:generateToken', {
+		await Meteor.callAsync('personalAccessTokens:removeToken', { tokenName });
+		return Meteor.callAsync('personalAccessTokens:generateToken', {
 			tokenName,
 			bypassTwoFactor: tokenExist.bypassTwoFactor,
 		});
