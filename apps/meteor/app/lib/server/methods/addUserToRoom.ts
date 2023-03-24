@@ -9,8 +9,8 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	addUserToRoom(data) {
-		return Meteor.call('addUsersToRoom', {
+	async addUserToRoom(data) {
+		return Meteor.callAsync('addUsersToRoom', {
 			rid: data.rid,
 			users: [data.username],
 		});
