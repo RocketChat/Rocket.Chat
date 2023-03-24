@@ -53,9 +53,9 @@ const UserMessages = ({
 		});
 	});
 
-	useEffect(() => {
-		reload.current = reloadUserMessages;
-	}, [reload, reloadUserMessages]);
+	const handleChange = useMutableCallback(() => {
+		reloadUserMessages();
+	});
 
 	return (
 		<Box display='flex' flexDirection='column' width='full' height='full' overflowY='auto' overflowX='hidden'>
@@ -66,7 +66,14 @@ const UserMessages = ({
 			{isSuccessUserMessages &&
 				userMessages.messages.map((message) => (
 					<Box key={message._id}>
-						<ContextMessage message={message.message} room={message.room} handleClick={handleClick} onRedirect={onRedirect} />
+						<ContextMessage
+							message={message.message}
+							room={message.room}
+							handleClick={handleClick}
+							onRedirect={onRedirect}
+							onChange={handleChange}
+							onReload={reload.current()}
+						/>
 					</Box>
 				))}
 		</Box>

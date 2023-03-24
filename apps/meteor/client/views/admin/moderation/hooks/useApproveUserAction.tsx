@@ -30,14 +30,14 @@ const useApproveUserAction = (userId: string, onChange: () => void, onReload: ()
 
 	const confirmApproveUser = (): void => {
 		setModal(
-			<GenericModal variant='danger' onConfirm={() => onApproveUser()} onCancel={() => setModal()}>
-				By taking this action, all reports against this user will be approved and removed. Are you sure you want to proceed?{' '}
+			<GenericModal title={'Dismiss and Delete'} variant='danger' onConfirm={() => onApproveUser()} onCancel={() => setModal()}>
+				Are you sure you want to dismiss and delete all reports for this user's messages? This action cannot be undone.
 			</GenericModal>,
 		);
 	};
 
 	return {
-		label: { label: 'Approve User', icon: 'check' },
+		label: { label: 'Dismiss Reports', icon: 'circle-check' },
 		action: () => confirmApproveUser(),
 	};
 };

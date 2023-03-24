@@ -15,7 +15,7 @@ const ModerationConsoleActions = ({ report, onClick, onChange, onReload }: Monde
 			<Menu
 				options={{
 					seeReports: {
-						label: { label: 'View Messages', icon: 'document-eye' },
+						label: { label: 'See Messages', icon: 'document-eye' },
 						action: () => onClick(uid),
 					},
 					divider: {

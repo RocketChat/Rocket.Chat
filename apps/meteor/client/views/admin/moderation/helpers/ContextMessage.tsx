@@ -11,21 +11,28 @@ import UiKitSurface from '../../../../components/message/content/UiKitSurface';
 import { formatDate } from '../../../../lib/utils/formatDate';
 import { formatDateAndTime } from '../../../../lib/utils/formatDateAndTime';
 import { formatTime } from '../../../../lib/utils/formatTime';
+import useDeleteMessage from '../hooks/useDeleteMessage';
 
 const ContextMessage = ({
 	message,
 	room,
 	handleClick,
 	onRedirect,
+	onChange,
+	onReload,
 }: {
 	message: IReport['message'];
 	room: IReport['room'];
 	handleClick: (id: IMessage['_id']) => void;
 	onRedirect: (id: IMessage['_id']) => void;
+	onChange: () => void;
+	onReload: () => void;
 }): JSX.Element => {
 	const t = useTranslation();
 
 	const isEncryptedMessage = isE2EEMessage(message);
+
+	const deleteMessage = useDeleteMessage(message._id, message.rid, onChange, onReload);
 
 	return (
 		<>
@@ -62,6 +69,7 @@ const ContextMessage = ({
 					<Message.Toolbox>
 						<MessageToolboxItem icon='document-eye' title='View Reports' onClick={() => handleClick(message._id)} />
 						<MessageToolboxItem icon='arrow-forward' title='Go to Message' onClick={() => onRedirect(message._id)} />
+						<MessageToolboxItem icon='trash' title='Delete Message' onClick={() => deleteMessage()} />
 					</Message.Toolbox>
 				</MessageToolboxWrapper>
 			</Message>
