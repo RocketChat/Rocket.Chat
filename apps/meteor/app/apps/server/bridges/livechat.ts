@@ -143,7 +143,6 @@ export class AppLivechatBridge extends LivechatBridge {
 			result = await LivechatRooms.findOpenByVisitorToken(visitor.token, {}).toArray();
 		}
 
-		// TODO: why types for Omni rooms are different on apps engine and core?
 		return (result as unknown as ILivechatRoom[]).map((room) => this.orch.getConverters()?.get('rooms').convertRoom(room));
 	}
 
