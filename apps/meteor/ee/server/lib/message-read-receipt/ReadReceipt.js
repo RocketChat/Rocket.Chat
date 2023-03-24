@@ -29,7 +29,7 @@ const updateMessages = debounceByRoomId(
 		Messages.setVisibleMessagesAsRead(_id, firstSubscription.ls);
 
 		if (lm <= firstSubscription.ls) {
-			Rooms.setLastMessageAsRead(_id);
+			Promise.await(RoomsRaw.setLastMessageAsRead(_id));
 		}
 	}),
 );

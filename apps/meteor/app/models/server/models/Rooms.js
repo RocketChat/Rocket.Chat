@@ -35,19 +35,6 @@ class Rooms extends Base {
 		);
 	}
 
-	setLastMessageAsRead(roomId) {
-		return this.update(
-			{
-				_id: roomId,
-			},
-			{
-				$unset: {
-					'lastMessage.unread': 1,
-				},
-			},
-		);
-	}
-
 	setSentiment(roomId, sentiment) {
 		return this.update({ _id: roomId }, { $set: { sentiment } });
 	}
