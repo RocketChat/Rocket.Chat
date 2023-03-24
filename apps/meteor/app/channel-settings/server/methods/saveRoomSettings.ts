@@ -40,7 +40,7 @@ type RoomSettings = {
 	streamingOptions: unknown;
 	retentionEnabled: unknown;
 	retentionMaxAge: unknown;
-	retentionExcludePinned: unknown;
+	retentionExcludePinned: boolean;
 	retentionFilesOnly: boolean;
 	retentionIgnoreThreads: boolean;
 	retentionOverrideGlobal: boolean;
@@ -301,8 +301,8 @@ const settingSavers: RoomSettingsSavers = {
 	retentionMaxAge({ value, rid }) {
 		Rooms.saveRetentionMaxAgeById(rid, value);
 	},
-	retentionExcludePinned({ value, rid }) {
-		Rooms.saveRetentionExcludePinnedById(rid, value);
+	async retentionExcludePinned({ value, rid }) {
+		await RoomsAsync.saveRetentionExcludePinnedById(rid, value);
 	},
 	async retentionFilesOnly({ value, rid }) {
 		await RoomsAsync.saveRetentionFilesOnlyById(rid, value);

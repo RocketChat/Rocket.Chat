@@ -889,18 +889,6 @@ class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	saveRetentionExcludePinnedById(_id, value) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				'retention.excludePinned': value === true,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	setOTRForDMByRoomID(rid) {
 		const query = { _id: rid, t: 'd' };
 
