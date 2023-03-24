@@ -136,7 +136,7 @@ export type GroupsEndpoints = {
 	};
 	'/v1/groups.info': {
 		GET: (params: GroupsInfoProps) => {
-			group: IRoom;
+			group: Partial<IRoom>;
 		};
 	};
 	'/v1/groups.invite': {
