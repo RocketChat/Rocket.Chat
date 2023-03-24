@@ -94,7 +94,7 @@ const CreateRoomList = ({ closeList }: CreateRoomListProps): ReactElement => {
 						<ListItem
 							icon='magnifier'
 							text={t('Federation_Search_federated_rooms')}
-							action={(e: MouseEvent<HTMLElement>): void => {
+							onClick={(e: MouseEvent<HTMLElement>): void => {
 								searchFederatedRooms(e);
 								closeList();
 							}}
