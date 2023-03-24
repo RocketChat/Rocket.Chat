@@ -1,4 +1,3 @@
-import type { FindOptions } from 'mongodb';
 import { Meteor } from 'meteor/meteor';
 import type { Notifications } from '@rocket.chat/rest-typings';
 import { isGETRoomsNameExists } from '@rocket.chat/rest-typings';
