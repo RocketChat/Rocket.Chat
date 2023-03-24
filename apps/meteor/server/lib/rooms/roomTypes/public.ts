@@ -43,7 +43,7 @@ roomCoordinator.add(PublicRoomType, {
 		}
 	},
 
-	roomName(room, _userId?) {
+	async roomName(room, _userId?) {
 		if (room.prid || isRoomFederated(room)) {
 			return room.fname;
 		}
