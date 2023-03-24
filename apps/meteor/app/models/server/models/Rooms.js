@@ -35,10 +35,6 @@ class Rooms extends Base {
 		);
 	}
 
-	unsetReactionsInLastMessage(roomId) {
-		return this.update({ _id: roomId }, { $unset: { lastMessage: { reactions: 1 } } });
-	}
-
 	unsetAllImportIds() {
 		const query = {
 			importIds: {
