@@ -20,7 +20,7 @@ export class AppRoomBridge extends RoomBridge {
 	protected async create(room: IRoom, members: Array<string>, appId: string): Promise<string> {
 		this.orch.debugLog(`The App ${appId} is creating a new room.`, room);
 
-		const rcRoom = this.orch.getConverters()?.get('rooms').convertAppRoom(room);
+		const rcRoom = await this.orch.getConverters()?.get('rooms').convertAppRoom(room);
 		let method: string;
 
 		switch (room.type) {
@@ -114,7 +114,7 @@ export class AppRoomBridge extends RoomBridge {
 			throw new Error('A room must exist to update.');
 		}
 
-		const rm = this.orch.getConverters()?.get('rooms').convertAppRoom(room);
+		const rm = await this.orch.getConverters()?.get('rooms').convertAppRoom(room);
 
 		Rooms.update(rm._id, rm);
 
@@ -143,7 +143,7 @@ export class AppRoomBridge extends RoomBridge {
 	): Promise<string> {
 		this.orch.debugLog(`The App ${appId} is creating a new discussion.`, room);
 
-		const rcRoom = this.orch.getConverters()?.get('rooms').convertAppRoom(room);
+		const rcRoom = await this.orch.getConverters()?.get('rooms').convertAppRoom(room);
 
 		let rcMessage;
 		if (parentMessage) {

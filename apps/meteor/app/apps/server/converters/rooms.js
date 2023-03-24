@@ -21,7 +21,7 @@ export class AppRoomsConverter {
 		return this.convertRoom(room);
 	}
 
-	convertAppRoom(room) {
+	async convertAppRoom(room) {
 		if (!room) {
 			return undefined;
 		}
@@ -37,7 +37,7 @@ export class AppRoomsConverter {
 
 		let v;
 		if (room.visitor) {
-			const visitor = Promise.await(LivechatVisitors.findOneById(room.visitor.id));
+			const visitor = await LivechatVisitors.findOneById(room.visitor.id);
 			v = {
 				_id: visitor._id,
 				username: visitor.username,

@@ -117,7 +117,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		const visitor = this.orch.getConverters()?.get('visitors').convertAppVisitor(room.visitor);
 
 		const closeData: any = {
-			room: this.orch.getConverters()?.get('rooms').convertAppRoom(room),
+			room: await this.orch.getConverters()?.get('rooms').convertAppRoom(room),
 			comment,
 			...(user && { user }),
 			...(visitor && { visitor }),
@@ -207,7 +207,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		}
 
 		return Livechat.transfer(
-			this.orch.getConverters()?.get('rooms').convertAppRoom(currentRoom),
+			await this.orch.getConverters()?.get('rooms').convertAppRoom(currentRoom),
 			this.orch.getConverters()?.get('visitors').convertAppVisitor(visitor),
 			{ userId, departmentId, transferredBy, transferredTo },
 		);
