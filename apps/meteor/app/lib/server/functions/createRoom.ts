@@ -25,7 +25,11 @@ export const createRoom = async <T extends RoomType>(
 	readOnly?: boolean,
 	roomExtraData?: Partial<IRoom>,
 	options?: ICreateRoomParams['options'],
-): Promise<ICreatedRoom> => {
+): Promise<
+	ICreatedRoom & {
+		rid: string;
+	}
+> => {
 	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
 	callbacks.run('beforeCreateRoom', { type, name, owner: ownerUsername, members, readOnly, extraData, options });
 
@@ -64,8 +68,9 @@ export const createRoom = async <T extends RoomType>(
 
 	const now = new Date();
 
-	const roomProps: Omit<IRoom, '_id' | '_updatedAt' | 'uids' | 'autoTranslateLanguage'> = {
+	const roomProps: Omit<IRoom, '_id' | '_updatedAt'> = {
 		fname: name,
+		_updatedAt: now,
 		...extraData,
 		name: getValidRoomName(name.trim(), undefined, {
 			...(options?.nameValidationRegex && { nameValidationRegex: options.nameValidationRegex }),
@@ -177,6 +182,7 @@ export const createRoom = async <T extends RoomType>(
 
 	return {
 		rid: room._id, // backwards compatible
+		inserted: true,
 		...room,
 	};
 };
