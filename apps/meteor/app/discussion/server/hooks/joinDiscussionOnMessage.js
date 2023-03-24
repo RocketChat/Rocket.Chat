@@ -5,7 +5,7 @@ import { Subscriptions } from '../../../models/server';
 
 callbacks.add(
 	'beforeSaveMessage',
-	(message, room) => {
+	async (message, room) => {
 		// abort if room is not a discussion
 		if (!room || !room.prid) {
 			return message;
@@ -20,7 +20,7 @@ callbacks.add(
 		}
 
 		// if no subcription, call join
-		Meteor.runAsUser(message.u._id, () => Meteor.call('joinRoom', room._id));
+		await Meteor.runAsUser(message.u._id, () => Meteor.callAsync('joinRoom', room._id));
 
 		return message;
 	},

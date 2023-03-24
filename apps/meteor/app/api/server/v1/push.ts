@@ -12,7 +12,7 @@ API.v1.addRoute(
 	'push.token',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			const { id, type, value, appName } = this.bodyParams;
 
 			if (id && typeof id !== 'string') {
@@ -33,15 +33,13 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-appName-param-not-valid', 'The required "appName" body param is missing or invalid.');
 			}
 
-			const result = Meteor.runAsUser(this.userId, () =>
-				Meteor.call('raix:push-update', {
-					id: deviceId,
-					token: { [type]: value },
-					authToken: this.request.headers['x-auth-token'],
-					appName,
-					userId: this.userId,
-				}),
-			);
+			await Meteor.callAsync('raix:push-update', {
+				id: deviceId,
+				token: { [type]: value },
+				authToken: this.request.headers['x-auth-token'],
+				appName,
+				userId: this.userId,
+			});
 
 			return API.v1.success({ result });
 		},

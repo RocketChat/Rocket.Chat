@@ -102,6 +102,6 @@ Meteor.methods<ServerMethods>({
 			msgData,
 		);
 
-		return Meteor.call('sendMessageLivechat', msg);
+		return Meteor.callAsync('sendMessageLivechat', msg);
 	},
 });

@@ -32,7 +32,7 @@ slashCommands.add({
 		if (type && type.indexOf('d') === -1) {
 			return;
 		}
-		return Meteor.call('createDirectMessage', room, function (err: Meteor.Error) {
+		return Meteor.callAsync('createDirectMessage', room, function (err: Meteor.Error) {
 			if (err) {
 				return;
 			}
