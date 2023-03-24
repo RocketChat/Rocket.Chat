@@ -1025,16 +1025,6 @@ class Rooms extends Base {
 		return this.remove({ _id: { $in: ids } });
 	}
 
-	removeDirectRoomContainingUsername(username) {
-		const query = {
-			t: 'd',
-			usernames: username,
-			usersCount: { $lte: 2 },
-		};
-
-		return this.remove(query);
-	}
-
 	setOTRForDMByRoomID(rid) {
 		const query = { _id: rid, t: 'd' };
 
