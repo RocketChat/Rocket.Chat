@@ -126,7 +126,12 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	setDescriptionById(roomId: string, description: string): Promise<UpdateResult>;
 	setStreamingOptionsById(roomId: string, streamingOptions: IRoom['streamingOptions']): Promise<UpdateResult>;
 	setReadOnlyById(roomId: string, readOnly: boolean): Promise<UpdateResult>;
-	setDmReadOnlyByUserId(roomId: string, ids: string[], readOnly: boolean, reactWhenReadOnly: boolean): Promise<UpdateResult | Document>;
+	setDmReadOnlyByUserId(
+		roomId: string,
+		ids: string[] | undefined,
+		readOnly: boolean,
+		reactWhenReadOnly: boolean,
+	): Promise<UpdateResult | Document>;
 	getDirectConversationsByUserId(userId: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	setAllowReactingWhenReadOnlyById(roomId: string, allowReactingWhenReadOnly: boolean): Promise<UpdateResult>;
 	setAvatarData(roomId: string, origin: string, etag: string): Promise<UpdateResult>;

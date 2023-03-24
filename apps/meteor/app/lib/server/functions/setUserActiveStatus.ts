@@ -3,6 +3,7 @@ import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import type { IUser, IUserEmail, IDirectMessageRoom } from '@rocket.chat/core-typings';
 import { isUserFederated } from '@rocket.chat/core-typings';
+import { Rooms as RoomsRaw } from '@rocket.chat/models';
 
 import * as Mailer from '../../../mailer/server/api';
 import { Users, Subscriptions, Rooms } from '../../../models/server';
@@ -13,7 +14,7 @@ import { closeOmnichannelConversations } from './closeOmnichannelConversations';
 import { shouldRemoveOrChangeOwner, getSubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 
-function reactivateDirectConversations(userId: string): void {
+async function reactivateDirectConversations(userId: string) {
 	// since both users can be deactivated at the same time, we should just reactivate rooms if both users are active
 	// for that, we need to fetch the direct messages, fetch the users involved and then the ids of rooms we can reactivate
 	const directConversations = Rooms.getDirectConversationsByUserId(userId, {
@@ -31,7 +32,7 @@ function reactivateDirectConversations(userId: string): void {
 		return acc;
 	}, []);
 
-	Rooms.setDmReadOnlyByUserId(userId, roomsToReactivate, false, false);
+	await RoomsRaw.setDmReadOnlyByUserId(userId, roomsToReactivate, false, false);
 }
 
 export async function setUserActiveStatus(userId: string, active: boolean, confirmRelinquish = false): Promise<boolean | undefined> {
@@ -98,10 +99,10 @@ export async function setUserActiveStatus(userId: string, active: boolean, confi
 
 	if (active === false) {
 		Users.unsetLoginTokens(userId);
-		Rooms.setDmReadOnlyByUserId(userId, undefined, true, false);
+		await RoomsRaw.setDmReadOnlyByUserId(userId, undefined, true, false);
 	} else {
 		Users.unsetReason(userId);
-		reactivateDirectConversations(userId);
+		await reactivateDirectConversations(userId);
 	}
 	if (active && !settings.get('Accounts_Send_Email_When_Activating')) {
 		return true;
