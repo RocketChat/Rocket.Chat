@@ -17,7 +17,6 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { settings as rcSettings } from '../../../../settings/server';
-import { LivechatRooms } from '../../../../models/server';
 import { API } from '../../../../api/server';
 import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
@@ -52,9 +51,9 @@ API.v1.addRoute('livechat/room', {
 			throw new Error('invalid-token');
 		}
 
-		let room: IOmnichannelRoom;
+		let room: IOmnichannelRoom | null;
 		if (!roomId) {
-			room = LivechatRooms.findOneOpenByVisitorToken(token, {});
+			room = await LivechatRoomsRaw.findOneOpenByVisitorToken(token, {});
 			if (room) {
 				return API.v1.success({ room, newRoom: false });
 			}
@@ -81,12 +80,12 @@ API.v1.addRoute('livechat/room', {
 			return API.v1.success(newRoom);
 		}
 
-		room = LivechatRooms.findOneOpenByRoomIdAndVisitorToken(roomId, token, {});
-		if (!room) {
+		const froom = await LivechatRoomsRaw.findOneOpenByRoomIdAndVisitorToken(roomId, token, {});
+		if (!froom) {
 			throw new Error('invalid-room');
 		}
 
-		return API.v1.success({ room, newRoom: false });
+		return API.v1.success({ room: froom, newRoom: false });
 	},
 });
 
@@ -261,6 +260,10 @@ API.v1.addRoute(
 			}
 
 			room = await findRoom(token, rid);
+			if (!room) {
+				throw new Error('invalid-room');
+			}
+
 			return API.v1.success(
 				deprecationWarning({
 					endpoint: 'livechat/room.transfer',

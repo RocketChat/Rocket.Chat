@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { LivechatRooms } from '@rocket.chat/models';
 
-import { LivechatRooms, Users } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
@@ -18,7 +19,7 @@ Meteor.methods<ServerMethods>({
 		methodDeprecationLogger.warn('livechat:getNextAgent will be deprecated in future versions of Rocket.Chat');
 		check(token, String);
 
-		const room = LivechatRooms.findOpenByVisitorToken(token).fetch();
+		const room = await LivechatRooms.findOpenByVisitorToken(token).toArray();
 
 		if (room && room.length > 0) {
 			return;

@@ -28,7 +28,7 @@ const getProductivityMetricsAsync = async ({ start, end, departmentId = undefine
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
-	const totalizers = Livechat.Analytics.getAnalyticsOverviewData({
+	const totalizers = await Livechat.Analytics.getAnalyticsOverviewData({
 		daterange: {
 			from: start,
 			to: end,
@@ -74,7 +74,7 @@ const getAgentsProductivityMetricsAsync = async ({ start, end, departmentId = un
 		end,
 		departmentId,
 	});
-	const totalizers = Livechat.Analytics.getAnalyticsOverviewData({
+	const totalizers = await Livechat.Analytics.getAnalyticsOverviewData({
 		daterange: {
 			from: start,
 			to: end,
@@ -165,7 +165,7 @@ const getConversationsMetricsAsync = async ({ start, end, departmentId, user = {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
-	const totalizers = Livechat.Analytics.getAnalyticsOverviewData({
+	const totalizers = await Livechat.Analytics.getAnalyticsOverviewData({
 		daterange: {
 			from: start,
 			to: end,
