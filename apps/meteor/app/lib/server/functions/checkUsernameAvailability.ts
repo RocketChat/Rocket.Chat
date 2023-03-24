@@ -37,7 +37,7 @@ export const checkUsernameAvailability = async function (username: string): Prom
 	}
 
 	// Make sure no teams are using this username
-	const existingTeam = Promise.await(Team.getOneByName(toRegExp(username), { projection: { _id: 1 } }));
+	const existingTeam = await Team.getOneByName(toRegExp(username), { projection: { _id: 1 } });
 	if (existingTeam) {
 		return false;
 	}
