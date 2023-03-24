@@ -35,10 +35,6 @@ class Rooms extends Base {
 		);
 	}
 
-	getDirectConversationsByUserId(_id, options) {
-		return this.find({ t: 'd', uids: { $size: 2, $in: [_id] } }, options);
-	}
-
 	setAllowReactingWhenReadOnlyById = function (_id, allowReacting) {
 		const query = {
 			_id,

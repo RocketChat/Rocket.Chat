@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
-import type { IUser, IUserEmail, IDirectMessageRoom } from '@rocket.chat/core-typings';
-import { isUserFederated } from '@rocket.chat/core-typings';
+import type { IUser, IUserEmail } from '@rocket.chat/core-typings';
+import { isUserFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Rooms as RoomsRaw } from '@rocket.chat/models';
 
 import * as Mailer from '../../../mailer/server/api';
-import { Users, Subscriptions, Rooms } from '../../../models/server';
+import { Users, Subscriptions } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
@@ -17,15 +17,21 @@ import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 async function reactivateDirectConversations(userId: string) {
 	// since both users can be deactivated at the same time, we should just reactivate rooms if both users are active
 	// for that, we need to fetch the direct messages, fetch the users involved and then the ids of rooms we can reactivate
-	const directConversations = Rooms.getDirectConversationsByUserId(userId, {
+	const directConversations = await RoomsRaw.getDirectConversationsByUserId(userId, {
 		projection: { _id: 1, uids: 1 },
-	}).fetch();
-	const userIds = directConversations.reduce((acc: string[], r: IDirectMessageRoom) => acc.push(...r.uids) && acc, []);
+	}).toArray();
+
+	const userIds = directConversations.reduce<string[]>((acc: string[], r) => {
+		if (isDirectMessageRoom(r)) {
+			acc.push(...r.uids);
+		}
+		return acc;
+	}, []);
 	const uniqueUserIds = [...new Set(userIds)];
 	const activeUsers = Users.findActiveByUserIds(uniqueUserIds, { projection: { _id: 1 } }).fetch();
 	const activeUserIds = activeUsers.map((u: IUser) => u._id);
-	const roomsToReactivate = directConversations.reduce((acc: string[], room: IDirectMessageRoom) => {
-		const otherUserId = room.uids.find((u: string) => u !== userId);
+	const roomsToReactivate = directConversations.reduce((acc: string[], room) => {
+		const otherUserId = isDirectMessageRoom(room) ? room.uids.find((u: string) => u !== userId) : undefined;
 		if (activeUserIds.includes(otherUserId)) {
 			acc.push(room._id);
 		}
