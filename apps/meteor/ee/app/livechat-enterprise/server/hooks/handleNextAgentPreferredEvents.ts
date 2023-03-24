@@ -1,9 +1,9 @@
-import { LivechatVisitors, LivechatInquiry } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../app/settings/server';
-import { LivechatRooms, Users } from '../../../../../app/models/server';
+import { Users } from '../../../../../app/models/server';
 
 let contactManagerPreferred = false;
 let lastChattedAgentPreferred = false;
@@ -107,8 +107,8 @@ callbacks.add(
 			return guestAgent;
 		}
 
-		const room = LivechatRooms.findOneLastServedAndClosedByVisitorToken(token, {
-			fields: { servedBy: 1 },
+		const room = await LivechatRooms.findOneLastServedAndClosedByVisitorToken(token, {
+			projection: { servedBy: 1 },
 		});
 		if (!room?.servedBy) {
 			return defaultAgent;
