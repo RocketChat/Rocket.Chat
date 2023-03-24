@@ -231,6 +231,10 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 	protected async cleanUpHandlers(): Promise<void> {
 		this.internalQueueInstance.setHandler(this.noop.bind(this), this.PROCESSING_CONCURRENCY);
 	}
+
+	protected async verifyMatrixId(matrixId: string): Promise<string> {
+		return this.bridge.verifyInviteeId(matrixId);
+	}
 }
 
 abstract class AbstractBaseFederationService extends AbstractFederationService {
@@ -319,6 +323,6 @@ export class FederationService extends AbstractBaseFederationService implements 
 	}
 
 	public async verifyMatrixId(matrixId: string): Promise<string> {
-		return this.bridge.verifyInviteeId(matrixId);
+		return super.verifyMatrixId(matrixId);
 	}
 }

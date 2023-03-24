@@ -188,6 +188,6 @@ export class FederationServiceEE extends AbstractBaseFederationServiceEE impleme
 	}
 
 	public async verifyMatrixId(matrixId: string): Promise<string> {
-		return this.bridge.verifyInviteeId(matrixId);
+		return super.verifyMatrixId(matrixId);
 	}
 }
