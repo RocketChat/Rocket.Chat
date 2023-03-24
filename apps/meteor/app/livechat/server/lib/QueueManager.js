@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { LivechatInquiry } from '@rocket.chat/models';
+import { LivechatInquiry, LivechatRooms as LivechatRoomsRaw } from '@rocket.chat/models';
 
 import { LivechatRooms, Users } from '../../../models/server';
 import { checkServiceStatus, createLivechatRoom, createLivechatInquiry } from './Helper';
@@ -55,7 +55,7 @@ export const QueueManager = {
 		const { rid } = message;
 		const name = (roomInfo && roomInfo.fname) || guest.name || guest.username;
 
-		const room = LivechatRooms.findOneById(createLivechatRoom(rid, name, guest, roomInfo, extraData));
+		const room = LivechatRooms.findOneById(await createLivechatRoom(rid, name, guest, roomInfo, extraData));
 		logger.debug(`Room for visitor ${guest._id} created with id ${room._id}`);
 
 		const inquiry = await LivechatInquiry.findOneById(
@@ -74,7 +74,7 @@ export const QueueManager = {
 		await queueInquiry(room, inquiry, agent);
 		logger.debug(`Inquiry ${inquiry._id} queued`);
 
-		return LivechatRooms.findOneById(rid);
+		return LivechatRoomsRaw.findOneById(rid);
 	},
 
 	async unarchiveRoom(archivedRoom = {}) {
@@ -113,7 +113,11 @@ export const QueueManager = {
 		}
 
 		LivechatRooms.unarchiveOneById(rid);
-		const room = LivechatRooms.findOneById(rid);
+		const room = await LivechatRoomsRaw.findOneById(rid);
+		if (!room) {
+			logger.debug(`Room with id ${rid} not found`);
+			throw new Error('room-not-found');
+		}
 		const inquiry = await LivechatInquiry.findOneById(await createLivechatInquiry({ rid, name, guest, message, extraData: { source } }));
 		logger.debug(`Generated inquiry for visitor ${v._id} with id ${inquiry._id} [Not queued]`);
 

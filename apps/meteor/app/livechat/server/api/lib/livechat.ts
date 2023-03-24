@@ -59,7 +59,7 @@ export function findGuest(token: string): Promise<ILivechatVisitor | null> {
 	});
 }
 
-export function findRoom(token: string, rid?: string): IOmnichannelRoom {
+export async function findRoom(token: string, rid?: string): Promise<IOmnichannelRoom> {
 	const fields = {
 		t: 1,
 		departmentId: 1,

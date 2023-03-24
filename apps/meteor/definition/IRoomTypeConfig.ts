@@ -9,6 +9,7 @@ import type {
 	ValueOf,
 	AtLeast,
 	ISubscription,
+	IOmnichannelRoom,
 } from '@rocket.chat/core-typings';
 
 export type RoomIdentification = { rid?: IRoom['_id']; name?: string };
@@ -98,7 +99,7 @@ export interface IRoomTypeServerDirectives {
 	config: IRoomTypeConfig;
 
 	allowRoomSettingChange: (room: IRoom, setting: ValueOf<typeof RoomSettingsEnum>) => boolean;
-	allowMemberAction: (room: IRoom, action: ValueOf<typeof RoomMemberActions>, userId?: IUser['_id']) => boolean;
+	allowMemberAction: (room: IRoom, action: ValueOf<typeof RoomMemberActions>, userId?: IUser['_id']) => Promise<boolean>;
 	roomName: (room: IRoom, userId?: string) => string | undefined;
 	isGroupChat: (room: IRoom) => boolean;
 	canBeDeleted: (hasPermission: (permissionId: string, rid?: string) => Promise<boolean> | boolean, room: IRoom) => Promise<boolean>;
@@ -115,5 +116,5 @@ export interface IRoomTypeServerDirectives {
 	includeInRoomSearch: () => boolean;
 	getReadReceiptsExtraData: (message: IMessage) => Partial<ReadReceipt>;
 	includeInDashboard: () => boolean;
-	roomFind?: (rid: string) => Promise<IRoom | undefined> | IRoom | undefined;
+	roomFind?: (rid: string) => Promise<IRoom | undefined> | Promise<IOmnichannelRoom | null> | IRoom | undefined;
 }
