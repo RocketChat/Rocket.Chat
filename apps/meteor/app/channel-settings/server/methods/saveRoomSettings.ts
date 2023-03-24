@@ -42,7 +42,7 @@ type RoomSettings = {
 	retentionMaxAge: unknown;
 	retentionExcludePinned: unknown;
 	retentionFilesOnly: boolean;
-	retentionIgnoreThreads: unknown;
+	retentionIgnoreThreads: boolean;
 	retentionOverrideGlobal: boolean;
 	encrypted: boolean;
 	favorite: {
@@ -307,8 +307,8 @@ const settingSavers: RoomSettingsSavers = {
 	async retentionFilesOnly({ value, rid }) {
 		await RoomsAsync.saveRetentionFilesOnlyById(rid, value);
 	},
-	retentionIgnoreThreads({ value, rid }) {
-		Rooms.saveRetentionIgnoreThreadsById(rid, value);
+	async retentionIgnoreThreads({ value, rid }) {
+		await RoomsAsync.saveRetentionIgnoreThreadsById(rid, value);
 	},
 	async retentionOverrideGlobal({ value, rid }) {
 		await RoomsAsync.saveRetentionOverrideGlobalById(rid, value);
