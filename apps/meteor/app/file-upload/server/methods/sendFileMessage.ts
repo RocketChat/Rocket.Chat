@@ -155,7 +155,7 @@ Meteor.methods<ServerMethods>({
 
 		const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
 
-		const msg = Meteor.call('sendMessage', {
+		const msg = await Meteor.callAsync('sendMessage', {
 			rid: roomId,
 			ts: new Date(),
 			file: files[0],

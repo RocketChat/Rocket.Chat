@@ -19,14 +19,14 @@ export const processWebhookMessage = async function (messageObj, user, defaultVa
 
 		switch (channelType) {
 			case '#':
-				room = getRoomByNameOrIdWithOptionToJoin({
+				room = await getRoomByNameOrIdWithOptionToJoin({
 					currentUserId: user._id,
 					nameOrId: channelValue,
 					joinChannel: true,
 				});
 				break;
 			case '@':
-				room = getRoomByNameOrIdWithOptionToJoin({
+				room = await getRoomByNameOrIdWithOptionToJoin({
 					currentUserId: user._id,
 					nameOrId: channelValue,
 					type: 'd',
@@ -36,7 +36,7 @@ export const processWebhookMessage = async function (messageObj, user, defaultVa
 				channelValue = channelType + channelValue;
 
 				// Try to find the room by id or name if they didn't include the prefix.
-				room = getRoomByNameOrIdWithOptionToJoin({
+				room = await getRoomByNameOrIdWithOptionToJoin({
 					currentUserId: user._id,
 					nameOrId: channelValue,
 					joinChannel: true,
@@ -47,7 +47,7 @@ export const processWebhookMessage = async function (messageObj, user, defaultVa
 				}
 
 				// We didn't get a room, let's try finding direct messages
-				room = getRoomByNameOrIdWithOptionToJoin({
+				room = await getRoomByNameOrIdWithOptionToJoin({
 					currentUserId: user._id,
 					nameOrId: channelValue,
 					tryDirectByUserIdOnly: true,

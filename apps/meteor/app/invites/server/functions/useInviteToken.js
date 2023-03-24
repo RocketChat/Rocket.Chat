@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import { Invites } from '@rocket.chat/models';
+import { Invites, Subscriptions } from '@rocket.chat/models';
 
-import { Users, Subscriptions } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { validateInviteToken } from './validateInviteToken';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -34,8 +34,8 @@ export const useInviteToken = async (userId, token) => {
 	const user = Users.findOneById(userId);
 	Users.updateInviteToken(user._id, token);
 
-	const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
-		fields: { _id: 1 },
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
+		projection: { _id: 1 },
 	});
 	if (!subscription) {
 		await Invites.increaseUsageById(inviteData._id);

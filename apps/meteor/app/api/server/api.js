@@ -574,7 +574,7 @@ export class APIClass extends Restivus {
 			'login',
 			{ authRequired: false },
 			{
-				post() {
+				async post() {
 					const args = loginCompatibility(this.bodyParams, this.request);
 
 					const invocation = new DDPCommon.MethodInvocation({
@@ -587,7 +587,7 @@ export class APIClass extends Restivus {
 
 					let auth;
 					try {
-						auth = DDP._CurrentInvocation.withValue(invocation, () => Meteor.call('login', args));
+						auth = await DDP._CurrentInvocation.withValue(invocation, () => Meteor.callAsync('login', args));
 					} catch (error) {
 						let e = error;
 						if (error.reason === 'User not found') {
