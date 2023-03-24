@@ -89,7 +89,7 @@ slashCommands.add({
 
 		const message = Messages.findOneById(params.trim());
 
-		if (!message || !message.file) {
+		if (!message?.file) {
 			return;
 		}
 
