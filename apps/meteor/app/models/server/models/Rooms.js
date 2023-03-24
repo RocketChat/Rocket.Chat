@@ -952,23 +952,6 @@ class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	updateGroupDMsRemovingUsernamesByUsername(username, userId) {
-		const query = {
-			t: 'd',
-			usernames: username,
-			usersCount: { $gt: 2 },
-		};
-
-		const update = {
-			$pull: {
-				usernames: username,
-				uids: userId,
-			},
-		};
-
-		return this.update(query, update, { multi: true });
-	}
-
 	setOTRForDMByRoomID(rid) {
 		const query = { _id: rid, t: 'd' };
 
