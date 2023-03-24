@@ -47,7 +47,7 @@ export const QueueManager = {
 			}),
 		);
 
-		if (!checkServiceStatus({ guest, agent })) {
+		if (!(await checkServiceStatus({ guest, agent }))) {
 			logger.debug(`Cannot create room for visitor ${guest._id}. No online agents`);
 			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 		}
