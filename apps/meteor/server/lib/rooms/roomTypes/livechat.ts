@@ -19,7 +19,7 @@ roomCoordinator.add(LivechatRoomType, {
 		}
 	},
 
-	allowMemberAction(_room, action) {
+	async allowMemberAction(_room, action) {
 		return ([RoomMemberActions.INVITE, RoomMemberActions.JOIN] as Array<ValueOf<typeof RoomMemberActions>>).includes(action);
 	},
 
@@ -39,7 +39,7 @@ roomCoordinator.add(LivechatRoomType, {
 	},
 
 	getMsgSender(senderId) {
-		return Promise.await(LivechatVisitors.findOneById(senderId));
+		return LivechatVisitors.findOneById(senderId);
 	},
 
 	getReadReceiptsExtraData(message) {

@@ -1,5 +1,5 @@
 import stripHtml from 'string-strip-html';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import type { ParsedMail, Attachment } from 'mailparser';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
@@ -158,6 +158,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 
 	if (room?.closedAt) {
 		logger.debug(`Room ${room?._id} is closed. Reopening`);
+		// @ts-expect-error - QueueManager is in JS, so room is getting wrong types detected ({} instead of IOmnichannelRoom)
 		room = await QueueManager.unarchiveRoom(room);
 	}
 

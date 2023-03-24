@@ -1,11 +1,12 @@
 import { EJSON } from 'meteor/ejson';
-import { FederationServers } from '@rocket.chat/models';
+import { FederationServers, FederationRoomEvents } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
+import { eventTypes } from '@rocket.chat/core-typings';
 
 import { API } from '../../../api/server';
 import { serverLogger } from '../lib/logger';
-import { contextDefinitions, eventTypes } from '../../../models/server/models/FederationEvents';
-import { FederationRoomEvents, Messages, Rooms, Subscriptions, Users } from '../../../models/server';
+import { contextDefinitions } from '../lib/context';
+import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
 import { FileUpload } from '../../../file-upload/server';
@@ -270,7 +271,7 @@ const eventHandlers = {
 				try {
 					Messages.insert(denormalizedMessage);
 
-					processThreads(denormalizedMessage, room);
+					await processThreads(denormalizedMessage, room);
 
 					// Notify users
 					await notifyUsersOnMessage(denormalizedMessage, room);
@@ -327,7 +328,7 @@ const eventHandlers = {
 			Messages.removeById(messageId);
 
 			// Notify the room
-			api.broadcast('notify.deleteMessage', roomId, { _id: messageId });
+			void api.broadcast('notify.deleteMessage', roomId, { _id: messageId });
 		}
 
 		return eventResult;
@@ -468,7 +469,7 @@ API.v1.addRoute(
 	'federation.events.dispatch',
 	{ authRequired: false, rateLimiterOptions: { numRequestsAllowed: 30, intervalTimeInMS: 1000 } },
 	{
-		post() {
+		async post() {
 			if (!isFederationEnabled()) {
 				return API.v1.failure('Federation not enabled');
 			}
@@ -478,7 +479,7 @@ API.v1.addRoute(
 			let payload;
 
 			try {
-				payload = Promise.await(decryptIfNeeded(this.request, this.bodyParams));
+				payload = await decryptIfNeeded(this.request, this.bodyParams);
 			} catch (err) {
 				return API.v1.failure('Could not decrypt payload');
 			}
@@ -496,7 +497,7 @@ API.v1.addRoute(
 				let eventResult;
 
 				if (eventHandlers[event.type]) {
-					eventResult = Promise.await(eventHandlers[event.type](event));
+					eventResult = await eventHandlers[event.type](event);
 				}
 
 				// If there was an error handling the event, take action
@@ -507,14 +508,12 @@ API.v1.addRoute(
 							event,
 						});
 
-						Promise.await(
-							requestEventsFromLatest(
-								event.origin,
-								getFederationDomain(),
-								contextDefinitions.defineType(event),
-								event.context,
-								eventResult.latestEventIds,
-							),
+						await requestEventsFromLatest(
+							event.origin,
+							getFederationDomain(),
+							contextDefinitions.defineType(event),
+							event.context,
+							eventResult.latestEventIds,
 						);
 
 						// And stop handling the events

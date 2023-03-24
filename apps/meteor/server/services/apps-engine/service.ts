@@ -17,7 +17,7 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		super();
 
 		this.onEvent('presence.status', async ({ user, previousStatus }): Promise<void> => {
-			Apps.triggerEvent(AppEvents.IPostUserStatusChanged, {
+			await Apps.triggerEvent(AppEvents.IPostUserStatusChanged, {
 				user,
 				currentStatus: user.status,
 				previousStatus,
@@ -25,6 +25,13 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		});
 
 		this.onEvent('apps.added', async (appId: string): Promise<void> => {
+			// if the app already exists in this instance, don't load it again
+			const app = Apps.getManager()?.getOneById(appId);
+
+			if (app) {
+				return;
+			}
+
 			await (Apps.getManager() as any)?.loadOne(appId);
 		});
 
@@ -64,7 +71,16 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 			}
 		});
 
-		this.onEvent('apps.settingUpdated', async (appId: string, setting: ISetting): Promise<void> => {
+		this.onEvent('apps.settingUpdated', async (appId: string, setting: ISetting & { id: string }): Promise<void> => {
+			const app = Apps.getManager()?.getOneById(appId);
+			const oldSetting = app?.getStorageItem().settings[setting.id].value;
+
+			// avoid updating the setting if the value is the same,
+			// which caused an infinite loop
+			if (oldSetting === setting.value) {
+				return;
+			}
+
 			const appManager = Apps.getManager();
 			if (!appManager) {
 				return;

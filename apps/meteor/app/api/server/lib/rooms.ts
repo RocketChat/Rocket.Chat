@@ -1,10 +1,10 @@
-import type { IRoom, ISubscription, RoomType } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, RoomAdminFieldsType, RoomType } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 import type { FindOptions, Sort } from 'mongodb';
 
-import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Subscriptions } from '../../../models/server';
 import { adminFields } from '../../../../lib/rooms/adminFields';
+import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { Subscriptions } from '../../../models/server';
 
 export async function findAdminRooms({
 	uid,
@@ -58,7 +58,7 @@ export async function findAdminRooms({
 	};
 }
 
-export async function findAdminRoom({ uid, rid }: { uid: string; rid: string }): Promise<unknown> {
+export async function findAdminRoom({ uid, rid }: { uid: string; rid: string }): Promise<Pick<IRoom, RoomAdminFieldsType> | null> {
 	if (!(await hasPermissionAsync(uid, 'view-room-administration'))) {
 		throw new Error('error-not-authorized');
 	}

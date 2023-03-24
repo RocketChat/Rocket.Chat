@@ -8,7 +8,7 @@ import { slashCommands } from '../../utils/lib/slashCommand';
 
 slashCommands.add({
 	command: 'join',
-	callback: (_command: 'join', params, item): void => {
+	callback: async (_command: 'join', params, item): Promise<void> => {
 		let channel = params.trim();
 		if (channel === '') {
 			return;
@@ -25,7 +25,7 @@ slashCommands.add({
 		}
 
 		if (!room) {
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('Channel_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
@@ -44,7 +44,7 @@ slashCommands.add({
 			});
 		}
 
-		Meteor.call('joinRoom', room._id);
+		await Meteor.callAsync('joinRoom', room._id);
 	},
 	options: {
 		description: 'Join_the_given_channel',

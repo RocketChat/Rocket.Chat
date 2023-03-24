@@ -4,7 +4,7 @@ import type { RocketChatNotificationAdapter } from '../../../infrastructure/rock
 import type { RocketChatRoomAdapter } from '../../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from '../../../infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from '../../../infrastructure/rocket-chat/adapters/User';
-import { AbstractFederationApplicationService } from '../../AbstractFederationService';
+import { AbstractFederationApplicationService } from '../../AbstractFederationApplicationService';
 import type { FederationUserTypingStatusEventDto } from '../../room/input/UserReceiverDto';
 
 export class FederationUserServiceReceiver extends AbstractFederationApplicationService {
@@ -59,7 +59,7 @@ export class FederationUserServiceReceiver extends AbstractFederationApplication
 		this.usersTypingByRoomIdCache.set(
 			externalRoomId,
 			federatedUsers.map((federatedUser) => {
-				this.internalNotificationAdapter.notifyUserTypingOnRoom(
+				void this.internalNotificationAdapter.notifyUserTypingOnRoom(
 					federatedRoom.getInternalId(),
 					federatedUser.getUsername() as string,
 					isTyping,

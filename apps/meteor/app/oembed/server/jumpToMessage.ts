@@ -9,7 +9,7 @@ import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { Messages, Rooms, Users } from '../../models/server';
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
-import { canAccessRoom } from '../../authorization/server/functions/canAccessRoom';
+import { canAccessRoomAsync } from '../../authorization/server/functions/canAccessRoom';
 
 const recursiveRemove = (attachments: MessageAttachment, deep = 1): MessageAttachment => {
 	if (attachments && isQuoteAttachment(attachments)) {
@@ -35,7 +35,7 @@ const validateAttachmentDeepness = (message: ITranslatedMessage): ITranslatedMes
 
 callbacks.add(
 	'beforeSaveMessage',
-	(msg) => {
+	async (msg) => {
 		// if no message is present, or the message doesn't have any URL, skip
 		if (!msg?.urls?.length) {
 			return msg;
@@ -43,37 +43,37 @@ callbacks.add(
 
 		const currentUser = Users.findOneById(msg.u._id);
 
-		msg.urls.forEach((item) => {
-			// if the URL is not internal, skip
+		for await (const item of msg.urls) {
+			// if the URL doesn't belong to the current server, skip
 			if (!item.url.includes(Meteor.absoluteUrl())) {
-				return;
+				continue;
 			}
 
 			const urlObj = URL.parse(item.url);
 
 			// if the URL doesn't have query params (doesn't reference message) skip
 			if (!urlObj.query) {
-				return;
+				continue;
 			}
 
 			const { msg: msgId } = QueryString.parse(urlObj.query);
 
 			if (typeof msgId !== 'string') {
-				return;
+				continue;
 			}
 
 			const jumpToMessage = validateAttachmentDeepness(Messages.findOneById(msgId));
 			if (!jumpToMessage) {
-				return;
+				continue;
 			}
 
 			// validates if user can see the message
 			// user has to belong to the room the message was first wrote in
 			const room = Rooms.findOneById(jumpToMessage.rid);
 			const isLiveChatRoomVisitor = !!msg.token && !!room.v?.token && msg.token === room.v.token;
-			const canAccessRoomForUser = isLiveChatRoomVisitor || canAccessRoom(room, currentUser);
+			const canAccessRoomForUser = isLiveChatRoomVisitor || (await canAccessRoomAsync(room, currentUser));
 			if (!canAccessRoomForUser) {
-				return;
+				continue;
 			}
 
 			msg.attachments = msg.attachments || [];
@@ -85,7 +85,7 @@ callbacks.add(
 
 			msg.attachments.push(createQuoteAttachment(jumpToMessage, item.url));
 			item.ignoreParse = true;
-		});
+		}
 
 		return msg;
 	},

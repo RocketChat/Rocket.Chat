@@ -13,7 +13,7 @@ import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
 
 function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
-	return function inviteAll(command: T, params: string, item): void {
+	return async function inviteAll(command: T, params: string, item): Promise<void> {
 		if (!/invite\-all-(to|from)/.test(command)) {
 			return;
 		}
@@ -40,7 +40,7 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 		const targetChannel = type === 'from' ? Rooms.findOneById(item.rid) : Rooms.findOneByName(channel);
 
 		if (!baseChannel) {
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('Channel_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
@@ -66,8 +66,8 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 			const users = cursor.fetch().map((s: ISubscription) => s.u.username);
 
 			if (!targetChannel && ['c', 'p'].indexOf(baseChannel.t) > -1) {
-				Meteor.call(baseChannel.t === 'c' ? 'createChannel' : 'createPrivateGroup', channel, users);
-				api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+				await Meteor.callAsync(baseChannel.t === 'c' ? 'createChannel' : 'createPrivateGroup', channel, users);
+				void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 					msg: TAPi18n.__('Channel_created', {
 						postProcess: 'sprintf',
 						sprintf: [channel],
@@ -75,18 +75,18 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 					}),
 				});
 			} else {
-				Meteor.call('addUsersToRoom', {
+				await Meteor.callAsync('addUsersToRoom', {
 					rid: targetChannel._id,
 					users,
 				});
 			}
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('Users_added', { lng }),
 			});
 			return;
 		} catch (e: any) {
 			const msg = e.error === 'cant-invite-for-direct-room' ? 'Cannot_invite_users_to_direct_rooms' : e.error;
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__(msg, { lng }),
 			});
 		}

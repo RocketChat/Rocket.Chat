@@ -61,7 +61,6 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 		this.internalQueueInstance = internalQueueInstance;
 		this.internalSettingsAdapter = internalSettingsAdapter;
 		this.bridge = federationBridge;
-		this.initialize();
 		this.internalFileAdapter = FederationFactory.buildInternalFileAdapter();
 		this.internalRoomAdapter = FederationFactory.buildInternalRoomAdapter();
 		this.internalUserAdapter = FederationFactory.buildInternalUserAdapter();
@@ -129,9 +128,9 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 		return this.onDisableFederation();
 	}
 
-	private initialize(): void {
+	public async initialize() {
 		this.internalSettingsAdapter = FederationFactory.buildInternalSettingsAdapter();
-		this.internalSettingsAdapter.initialize();
+		await this.internalSettingsAdapter.initialize();
 		this.cancelSettingsObserver = this.internalSettingsAdapter.onFederationEnabledStatusChanged(
 			this.onFederationEnabledSettingChange.bind(this),
 		);
@@ -152,7 +151,7 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 			this.internalQueueInstance,
 			this.bridge,
 		);
-		const federationMessageServiceReceiver = FederationFactory.buildMessageServiceReceiver(
+		const federationMessageServiceReceiver = await FederationFactory.buildMessageServiceReceiver(
 			this.internalRoomAdapter,
 			this.internalUserAdapter,
 			this.internalMessageAdapter,
@@ -296,7 +295,7 @@ abstract class AbstractBaseFederationService extends AbstractFederationService {
 
 	public async stopped(): Promise<void> {
 		await this.stopFederation();
-		super.cleanUpSettingObserver();
+		await super.cleanUpSettingObserver();
 	}
 
 	public async created(): Promise<void> {
@@ -316,5 +315,11 @@ export class FederationService extends AbstractBaseFederationService implements 
 		return this.getInternalRoomServiceSender().createDirectMessageRoomAndInviteUser(
 			FederationRoomSenderConverter.toCreateDirectMessageRoomDto(internalInviterId, internalRoomId, externalInviteeId),
 		);
+	}
+
+	static async createFederationService(): Promise<FederationService> {
+		const federationService = new FederationService();
+		await federationService.initialize();
+		return federationService;
 	}
 }

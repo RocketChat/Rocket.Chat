@@ -18,7 +18,7 @@ import {
 	LivechatVisitors,
 	EmailInbox,
 	LivechatBusinessHours,
-	Messages as MessagesRaw,
+	Messages,
 	Roles as RolesRaw,
 	InstanceStatus,
 	Settings,
@@ -27,7 +27,7 @@ import {
 } from '@rocket.chat/models';
 import { Analytics, Team, VideoConf } from '@rocket.chat/core-services';
 
-import { Users, Rooms, Subscriptions, Messages } from '../../../models/server';
+import { Users, Rooms, Subscriptions } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { getControl } from '../../../../server/lib/migrations';
@@ -119,7 +119,7 @@ export const statistics = {
 		statistics.totalDirect = Rooms.findByType('d').count();
 		statistics.totalLivechat = Rooms.findByType('l').count();
 		statistics.totalDiscussions = Rooms.countDiscussions();
-		statistics.totalThreads = Messages.countThreads();
+		statistics.totalThreads = await Messages.countThreads();
 
 		// livechat visitors
 		statistics.totalLivechatVisitors = await LivechatVisitors.col.estimatedDocumentCount();
@@ -217,7 +217,7 @@ export const statistics = {
 
 		// Amount of chats placed on hold
 		statsPms.push(
-			MessagesRaw.countRoomsWithMessageType('omnichannel_placed_chat_on_hold', { readPreference }).then((total) => {
+			Messages.countRoomsWithMessageType('omnichannel_placed_chat_on_hold', { readPreference }).then((total) => {
 				statistics.chatsOnHold = total;
 			}),
 		);
@@ -241,20 +241,20 @@ export const statistics = {
 
 		// Amount of Calls that ended properly
 		statsPms.push(
-			MessagesRaw.countByType('voip-call-wrapup', { readPreference }).then((count) => {
+			Messages.countByType('voip-call-wrapup', { readPreference }).then((count) => {
 				statistics.voipSuccessfulCalls = count;
 			}),
 		);
 
 		// Amount of Calls that ended with an error
 		statsPms.push(
-			MessagesRaw.countByType('voip-call-ended-unexpectedly', { readPreference }).then((count) => {
+			Messages.countByType('voip-call-ended-unexpectedly', { readPreference }).then((count) => {
 				statistics.voipErrorCalls = count;
 			}),
 		);
 		// Amount of Calls that were put on hold
 		statsPms.push(
-			MessagesRaw.countRoomsWithMessageType('voip-call-on-hold', { readPreference }).then((count) => {
+			Messages.countRoomsWithMessageType('voip-call-on-hold', { readPreference }).then((count) => {
 				statistics.voipOnHoldCalls = count;
 			}),
 		);
@@ -303,7 +303,7 @@ export const statistics = {
 		);
 
 		statistics.lastLogin = Users.getLastLogin();
-		statistics.lastMessageSentAt = Messages.getLastTimestamp();
+		statistics.lastMessageSentAt = await Messages.getLastTimestamp();
 		statistics.lastSeenSubscription = Subscriptions.getLastSeen();
 
 		statistics.os = {
@@ -362,7 +362,7 @@ export const statistics = {
 			}),
 		);
 
-		const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
+		const { oplogEnabled, mongoVersion, mongoStorageEngine } = await getMongoInfo();
 		statistics.msEnabled = isRunningMs();
 		statistics.oplogEnabled = oplogEnabled;
 		statistics.mongoVersion = mongoVersion;
@@ -491,22 +491,23 @@ export const statistics = {
 		statistics.totalBroadcastRooms = await RoomsRaw.findByBroadcast().count();
 		statistics.totalRoomsWithActiveLivestream = await RoomsRaw.findByActiveLivestream().count();
 		statistics.totalTriggeredEmails = settings.get('Triggered_Emails_Count');
-		statistics.totalRoomsWithStarred = await MessagesRaw.countRoomsWithStarredMessages({ readPreference });
-		statistics.totalRoomsWithPinned = await MessagesRaw.countRoomsWithPinnedMessages({ readPreference });
+		statistics.totalRoomsWithStarred = await Messages.countRoomsWithStarredMessages({ readPreference });
+		statistics.totalRoomsWithPinned = await Messages.countRoomsWithPinnedMessages({ readPreference });
 		statistics.totalUserTOTP = await UsersRaw.findActiveUsersTOTPEnable({ readPreference }).count();
 		statistics.totalUserEmail2fa = await UsersRaw.findActiveUsersEmail2faEnable({ readPreference }).count();
-		statistics.totalPinned = await MessagesRaw.findPinned({ readPreference }).count();
-		statistics.totalStarred = await MessagesRaw.findStarred({ readPreference }).count();
+		statistics.totalPinned = await Messages.findPinned({ readPreference }).count();
+		statistics.totalStarred = await Messages.findStarred({ readPreference }).count();
 		statistics.totalLinkInvitation = await Invites.find().count();
 		statistics.totalLinkInvitationUses = await Invites.countUses();
 		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
 		statistics.totalE2ERooms = await RoomsRaw.findByE2E({ readPreference }).count();
 		statistics.logoChange = Object.keys(settings.get('Assets_logo')).includes('url');
 		statistics.showHomeButton = settings.get('Layout_Show_Home_Button');
-		statistics.totalEncryptedMessages = await MessagesRaw.countByType('e2e', { readPreference });
+		statistics.totalEncryptedMessages = await Messages.countByType('e2e', { readPreference });
 		statistics.totalManuallyAddedUsers = settings.get('Manual_Entry_User_Count');
 		statistics.totalSubscriptionRoles = await RolesRaw.findByScope('Subscriptions').count();
 		statistics.totalUserRoles = await RolesRaw.findByScope('Users').count();
+		statistics.totalCustomRoles = await RolesRaw.findCustomRoles({ readPreference }).count();
 		statistics.totalWebRTCCalls = settings.get('WebRTC_Calls_Count');
 		statistics.uncaughtExceptionsCount = settings.get('Uncaught_Exceptions_Count');
 
