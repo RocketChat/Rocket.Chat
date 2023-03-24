@@ -69,7 +69,7 @@ export const QueueManager = {
 		);
 		logger.debug(`Generated inquiry for visitor ${guest._id} with id ${inquiry._id} [Not queued]`);
 
-		await LivechatRooms.updateRoomCount();
+		await LivechatRoomsRaw.updateRoomCount();
 
 		await queueInquiry(room, inquiry, agent);
 		logger.debug(`Inquiry ${inquiry._id} queued`);

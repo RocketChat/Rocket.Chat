@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage } from '@rocket.chat/core-typings';
 
 import { loadMessageHistory } from '../../../lib/server';
-import { LivechatRooms } from '../../../models/server';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -36,7 +35,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const room = LivechatRooms.findOneByIdAndVisitorToken(rid, token, { _id: 1 });
+		const room = await LivechatRooms.findOneByIdAndVisitorToken(rid, token, { projection: { _id: 1 } });
 		if (!room) {
 			throw new Meteor.Error('invalid-room', 'Invalid Room', { method: 'livechat:loadHistory' });
 		}
