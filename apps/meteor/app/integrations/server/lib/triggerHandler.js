@@ -11,7 +11,7 @@ import { Integrations, IntegrationHistory } from '@rocket.chat/models';
 import * as Models from '../../../models/server';
 import * as s from '../../../../lib/utils/stringUtils';
 import { settings } from '../../../settings/server';
-import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server';
+import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { outgoingLogger } from '../logger';
 import { outgoingEvents } from '../../lib/outgoingEvents';
@@ -190,11 +190,11 @@ class RocketChatIntegrationHandler {
 		let tmpRoom;
 		if (nameOrId || trigger.targetRoom || message.channel) {
 			tmpRoom =
-				getRoomByNameOrIdWithOptionToJoin({
+				(await getRoomByNameOrIdWithOptionToJoin({
 					currentUserId: user._id,
 					nameOrId: nameOrId || message.channel || trigger.targetRoom,
 					errorOnEmpty: false,
-				}) || room;
+				})) || room;
 		} else {
 			tmpRoom = room;
 		}
@@ -612,7 +612,7 @@ class RocketChatIntegrationHandler {
 		return [...triggersToExecute];
 	}
 
-	executeTriggers(...args) {
+	async executeTriggers(...args) {
 		outgoingLogger.debug({ msg: 'Execute Trigger:', arg: args[0] });
 
 		const argObject = this.eventNameArgumentsToObject(...args);
@@ -638,12 +638,12 @@ class RocketChatIntegrationHandler {
 
 		outgoingLogger.debug(`Found ${triggersToExecute.length} to iterate over and see if the match the event.`);
 
-		for (const triggerToExecute of triggersToExecute) {
+		for await (const triggerToExecute of triggersToExecute) {
 			outgoingLogger.debug(
 				`Is "${triggerToExecute.name}" enabled, ${triggerToExecute.enabled}, and what is the event? ${triggerToExecute.event}`,
 			);
 			if (triggerToExecute.enabled === true && triggerToExecute.event === event) {
-				this.executeTrigger(triggerToExecute, argObject);
+				await this.executeTrigger(triggerToExecute, argObject);
 			}
 		}
 	}
@@ -897,7 +897,7 @@ class RocketChatIntegrationHandler {
 
 							outgoingLogger.info(`Trying the Integration ${trigger.name} to ${url} again in ${waitTime} milliseconds.`);
 							Meteor.setTimeout(() => {
-								this.executeTriggerUrl(url, trigger, { event, message, room, owner, user }, historyId, tries + 1);
+								void this.executeTriggerUrl(url, trigger, { event, message, room, owner, user }, historyId, tries + 1);
 							}, waitTime);
 						} else {
 							this.updateHistory({ historyId, step: 'too-many-retries', error: true });

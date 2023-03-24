@@ -294,7 +294,7 @@ export class ImportDataConverter {
 		const user = Users.findOneById(userId, {});
 		await this.updateUser(user, userData);
 
-		addUserToDefaultChannels(user, true);
+		await addUserToDefaultChannels(user, true);
 		return user;
 	}
 
