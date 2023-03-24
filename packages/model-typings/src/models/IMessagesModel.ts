@@ -7,6 +7,7 @@ import type {
 	IOmnichannelServiceLevelAgreements,
 	MessageTypesValues,
 	MessageAttachment,
+	IOmnichannelSystemMessage,
 } from '@rocket.chat/core-typings';
 import type {
 	AggregationCursor,
@@ -321,10 +322,9 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	): Promise<Omit<IMessage, '_updatedAt'>>;
 	createTranscriptHistoryWithRoomIdMessageAndUser(
 		roomId: string,
-		message: string,
 		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData?: Record<string, string>,
+		readReceiptsEnabled: boolean,
+		requestData: Required<IOmnichannelSystemMessage['requestData']>,
 	): Promise<Omit<IMessage, '_updatedAt'>>;
 	createUserRemovedWithRoomIdAndUser(
 		roomId: string,

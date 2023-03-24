@@ -5,6 +5,7 @@ import type {
 	MessageTypesValues,
 	ILivechatVisitor,
 	IMessage,
+	IOmnichannelSystemMessage,
 } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import {
@@ -24,7 +25,6 @@ import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { Apps, AppEvents } from '../../../../ee/server/apps';
-import { Messages as LegacyMessage } from '../../../models/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 import { settings } from '../../../settings/server';
 import * as Mailer from '../../../mailer/server/api';
@@ -395,7 +395,7 @@ class LivechatClass {
 			callbacks.run('livechat.sendTranscript', messages, email);
 		});
 
-		let type = 'user';
+		let type: 'user' | 'visitor' = 'user';
 		if (!user) {
 			const cat = await Users.findOneById('rocket.cat', { projection: { _id: 1, username: 1, name: 1 } });
 			if (!cat) {
@@ -406,9 +406,23 @@ class LivechatClass {
 			type = 'visitor';
 		}
 
-		LegacyMessage.createTranscriptHistoryWithRoomIdMessageAndUser(room._id, '', user, {
-			requestData: { type, visitor, user },
-		});
+		const msgUser: IMessage['u'] = {
+			...user,
+			username: user.username || '',
+		};
+		const readReceiptsEnabled = settings.get<boolean>('Message_Read_Receipt_Enabled');
+		const requestData: Required<IOmnichannelSystemMessage['requestData']> =
+			type === 'user'
+				? {
+						type: 'user',
+						user,
+						visitor,
+				  }
+				: {
+						type: 'visitor',
+						visitor,
+				  };
+		await Messages.createTranscriptHistoryWithRoomIdMessageAndUser(room._id, msgUser, readReceiptsEnabled, requestData);
 		return true;
 	}
 }

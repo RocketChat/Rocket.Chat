@@ -120,6 +120,17 @@ export type TokenExtra = {
 	noHtml?: string;
 };
 
+type LivechatTranscriptRequest =
+	| {
+			type: 'user';
+			user: Pick<IUser, '_id' | 'username' | 'name'>;
+			visitor: Pick<ILivechatVisitor, '_id' | 'name' | 'username'>;
+	  }
+	| {
+			type: 'visitor';
+			visitor: Pick<ILivechatVisitor, '_id' | 'name' | 'username'>;
+	  };
+
 export interface IMessage extends IRocketChatRecord {
 	rid: RoomID;
 	msg: string;
@@ -307,11 +318,7 @@ export interface IOmnichannelSystemMessage extends IMessage {
 		};
 		scope: 'department' | 'agent' | 'queue';
 	};
-	requestData?: {
-		type: 'visitor' | 'user';
-		visitor?: ILivechatVisitor;
-		user?: IUser;
-	};
+	requestData?: LivechatTranscriptRequest;
 	webRtcCallEndTs?: Date;
 	comment?: string;
 }

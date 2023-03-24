@@ -8,6 +8,7 @@ import type {
 	MessageTypesValues,
 	RocketChatRecordDeleted,
 	MessageAttachment,
+	IOmnichannelSystemMessage,
 } from '@rocket.chat/core-typings';
 import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
@@ -1427,10 +1428,21 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			...(readReceiptsEnabled && { unread: true }),
 		};
 
-		const data = Object.assign(record, extraData);
+		const data: Omit<IMessage, '_id' | '_updatedAt'> = Object.assign(record, extraData);
 
 		await Rooms.incMsgCountById(roomId, 1);
-		return { ...record, _id: (await this.updateOne(data, data, { upsert: true })).upsertedId as unknown as string };
+		return {
+			...record,
+			_id: (
+				await this.updateOne(
+					data,
+					{
+						$set: data,
+					},
+					{ upsert: true },
+				)
+			).upsertedId as unknown as string,
+		};
 	}
 
 	async createWithTypeRoomIdMessageUserAndUnread(
@@ -1485,24 +1497,34 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			...(readReceiptsEnabled && { unread: true }),
 		};
 
-		const data = Object.assign(record, extraData);
+		const data: Omit<IMessage, '_id' | '_updatedAt'> = Object.assign(record, extraData);
 
-		return { ...record, _id: (await this.updateOne(data, data, { upsert: true })).upsertedId as unknown as string };
+		return {
+			...record,
+			_id: (
+				await this.updateOne(
+					data,
+					{
+						$set: data,
+					},
+					{ upsert: true },
+				)
+			).upsertedId as unknown as string,
+		};
 	}
 
 	async createTranscriptHistoryWithRoomIdMessageAndUser(
 		roomId: string,
-		message: string,
 		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
+		readReceiptsEnabled: boolean,
+		requestData: Required<IOmnichannelSystemMessage['requestData']>,
+	): Promise<Omit<IOmnichannelSystemMessage, '_updatedAt'>> {
 		const type = 'livechat_transcript_history' as const;
-		const record: Omit<IMessage, '_id' | '_updatedAt'> = {
+		const record: Omit<IOmnichannelSystemMessage, '_id' | '_updatedAt'> = {
 			t: type,
 			rid: roomId,
 			ts: new Date(),
-			msg: message,
+			msg: '',
 			u: {
 				_id: user._id,
 				username: user.username,
@@ -1510,11 +1532,21 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 			groupable: false,
 			...(readReceiptsEnabled && { unread: true }),
+			requestData,
 		};
 
-		const data = Object.assign(record, extraData);
-
-		return { ...record, _id: (await this.updateOne(data, data, { upsert: true })).upsertedId as unknown as string };
+		return {
+			...record,
+			_id: (
+				await this.updateOne(
+					record,
+					{
+						$set: record,
+					},
+					{ upsert: true },
+				)
+			).upsertedId as unknown as string,
+		};
 	}
 
 	createUserJoinWithRoomIdAndUser(

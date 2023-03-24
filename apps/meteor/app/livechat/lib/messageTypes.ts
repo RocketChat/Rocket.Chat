@@ -81,22 +81,31 @@ MessageTypes.registerType({
 			};
 		}
 
-		const { requestData: { type, visitor, user } = { type: 'user' } } = message;
-		const requestTypes = {
-			visitor: (): string =>
-				TAPi18n.__('Livechat_visitor_transcript_request', {
-					guest: visitor?.name || visitor?.username || '',
-				}),
-			user: (): string =>
-				TAPi18n.__('Livechat_user_sent_chat_transcript_to_visitor', {
-					agent: user?.name || user?.username || '',
-					guest: visitor?.name || visitor?.username || '',
-				}),
-		};
+		const { requestData } = message;
 
-		return {
-			transcript: requestTypes[type](),
-		};
+		switch (requestData.type) {
+			case 'visitor': {
+				const { visitor } = requestData;
+				return {
+					transcript: TAPi18n.__('Livechat_visitor_transcript_request', {
+						guest: visitor?.name || visitor?.username || '',
+					}),
+				};
+			}
+			case 'user': {
+				const { user, visitor } = requestData;
+				return {
+					transcript: TAPi18n.__('Livechat_user_sent_chat_transcript_to_visitor', {
+						agent: user?.name || user?.username || '',
+						guest: visitor?.name || visitor?.username || '',
+					}),
+				};
+			}
+			default:
+				return {
+					transcript: '',
+				};
+		}
 	},
 });
 
