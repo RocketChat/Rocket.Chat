@@ -3,8 +3,6 @@ import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { Users as UsersSync } from '../../../models/server';
-
 export async function getUserFromParams(params: {
 	userId?: string;
 	username?: string;
@@ -37,7 +35,6 @@ export async function getUserListFromParams(params: {
 	userIds?: string[];
 	usernames?: string[];
 }): Promise<Pick<IUser, '_id' | 'username'>[]> {
-	let users;
 	// if params.userId is provided, include it as well
 	const soleUser = params.userId || params.username || params.user;
 	let userListParam = params.userIds || params.usernames || [];
@@ -52,10 +49,8 @@ export async function getUserListFromParams(params: {
 	}
 
 	if (params.userIds || params.userId) {
-		users = await Users.findByIds(userListParam, { fields: { username: 1 } });
-		return users.toArray();
+		return Users.findByIds(userListParam, { projection: { username: 1 } }).toArray();
 	}
-	users = await UsersSync.findByUsernamesIgnoringCase(userListParam, { fields: { username: 1 } });
 
-	return users.fetch();
+	return Users.findByUsernamesIgnoringCase(userListParam, { projection: { username: 1 } }).toArray();
 }

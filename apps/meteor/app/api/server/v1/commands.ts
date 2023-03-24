@@ -257,7 +257,7 @@ API.v1.addRoute(
 
 			const params = query.params ? query.params : '';
 
-			const preview = Meteor.call('getSlashCommandPreviews', {
+			const preview = await Meteor.callAsync('getSlashCommandPreviews', {
 				cmd,
 				params,
 				msg: { rid: query.roomId },
@@ -320,7 +320,7 @@ API.v1.addRoute(
 				...(body.tmid && { tmid: body.tmid }),
 			};
 
-			Meteor.call(
+			await Meteor.callAsync(
 				'executeSlashCommandPreview',
 				{
 					cmd,

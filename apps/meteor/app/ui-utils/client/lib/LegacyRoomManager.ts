@@ -169,7 +169,7 @@ const computation = Tracker.autorun(() => {
 			const type = typeName.slice(0, 1);
 			const name = typeName.slice(1);
 
-			const room = roomCoordinator.getRoomDirectives(type)?.findRoom(name);
+			const room = roomCoordinator.getRoomDirectives(type).findRoom(name);
 
 			void RoomHistoryManager.getMoreIfIsEmpty(record.rid);
 

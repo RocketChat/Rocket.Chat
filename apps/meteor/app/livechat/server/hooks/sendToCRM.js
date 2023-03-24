@@ -1,9 +1,8 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Messages } from '@rocket.chat/models';
+import { LivechatRooms, Messages } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { LivechatRooms } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 
@@ -39,12 +38,12 @@ const getAdditionalFieldsByType = (type, room) => {
 			return {};
 	}
 };
-function sendToCRM(type, room, includeMessages = true) {
+async function sendToCRM(type, room, includeMessages = true) {
 	if (!settings.get('Livechat_webhookUrl')) {
 		return room;
 	}
 
-	const postData = Promise.await(Livechat.getLivechatRoomGuestInfo(room));
+	const postData = await Livechat.getLivechatRoomGuestInfo(room);
 
 	postData.type = type;
 
@@ -52,13 +51,13 @@ function sendToCRM(type, room, includeMessages = true) {
 
 	let messages;
 	if (typeof includeMessages === 'boolean' && includeMessages) {
-		messages = Promise.await(Messages.findVisibleByRoomId(room._id, { sort: { ts: 1 } }).toArray());
+		messages = await Messages.findVisibleByRoomId(room._id, { sort: { ts: 1 } }).toArray();
 	} else if (includeMessages instanceof Array) {
 		messages = includeMessages;
 	}
 
 	if (messages) {
-		messages.forEach((message) => {
+		for await (const message of messages) {
 			if (message.t && !sendMessageType(message.t)) {
 				return;
 			}
@@ -89,8 +88,8 @@ function sendToCRM(type, room, includeMessages = true) {
 			}
 
 			const { u } = message;
-			postData.messages.push(Promise.await(normalizeMessageFileUpload({ u, ...msg })));
-		});
+			postData.messages.push(await normalizeMessageFileUpload({ u, ...msg }));
+		}
 	}
 
 	const additionalData = getAdditionalFieldsByType(type, room);
@@ -99,7 +98,7 @@ function sendToCRM(type, room, includeMessages = true) {
 	const response = Livechat.sendRequest(responseData);
 
 	if (response && response.data && response.data.data) {
-		LivechatRooms.saveCRMDataByRoomId(room._id, response.data.data);
+		Promise.await(LivechatRooms.saveCRMDataByRoomId(room._id, response.data.data));
 	}
 
 	return room;
@@ -136,13 +135,13 @@ callbacks.add(
 
 callbacks.add(
 	'livechat.afterTakeInquiry',
-	(inquiry) => {
+	async (inquiry) => {
 		if (!settings.get('Livechat_webhook_on_chat_taken')) {
 			return inquiry;
 		}
 
 		const { rid } = inquiry;
-		const room = LivechatRooms.findOneById(rid);
+		const room = await LivechatRooms.findOneById(rid);
 
 		return sendToCRM('LivechatSessionTaken', room);
 	},
@@ -165,13 +164,13 @@ callbacks.add(
 
 callbacks.add(
 	'livechat.afterForwardChatToAgent',
-	(params) => {
+	async (params) => {
 		const { rid, oldServedBy } = params;
 		if (!settings.get('Livechat_webhook_on_forward')) {
 			return params;
 		}
 
-		const originalRoom = LivechatRooms.findOneById(rid);
+		const originalRoom = await LivechatRooms.findOneById(rid);
 		const room = Object.assign(originalRoom, { oldServedBy });
 		sendToCRM('LivechatSessionForwarded', room);
 		return params;
@@ -182,13 +181,13 @@ callbacks.add(
 
 callbacks.add(
 	'livechat.afterForwardChatToDepartment',
-	(params) => {
+	async (params) => {
 		const { rid, oldDepartmentId } = params;
 		if (!settings.get('Livechat_webhook_on_forward')) {
 			return params;
 		}
 
-		const originalRoom = LivechatRooms.findOneById(rid);
+		const originalRoom = await LivechatRooms.findOneById(rid);
 		const room = Object.assign(originalRoom, { oldDepartmentId });
 		sendToCRM('LivechatSessionForwarded', room);
 		return params;

@@ -754,7 +754,7 @@ export class APIClass<TBasePath extends string = '/'> extends Restivus {
 
 					let auth;
 					try {
-						auth = await DDP._CurrentInvocation.withValue(invocation as any, async () => Meteor.call('login', args));
+						auth = await DDP._CurrentInvocation.withValue(invocation as any, async () => Meteor.callAsync('login', args));
 					} catch (error: any) {
 						let e = error;
 						if (error.reason === 'User not found') {

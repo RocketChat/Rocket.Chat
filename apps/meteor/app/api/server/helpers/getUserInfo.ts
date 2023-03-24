@@ -46,6 +46,6 @@ export async function getUserInfo(me: IUser): Promise<
 				...userPreferences,
 			},
 		},
-		avatarUrl: await getURL(`/avatar/${me.username}`, { cdn: false, full: true }),
+		avatarUrl: getURL(`/avatar/${me.username}`, { cdn: false, full: true }),
 	};
 }

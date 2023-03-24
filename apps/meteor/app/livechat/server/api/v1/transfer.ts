@@ -1,4 +1,5 @@
-import { LivechatRooms } from '../../../../models/server';
+import { LivechatRooms } from '@rocket.chat/models';
+
 import { API } from '../../../../api/server';
 import { findLivechatTransferHistory } from '../lib/transfer';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
@@ -10,7 +11,7 @@ API.v1.addRoute(
 		async get() {
 			const { rid } = this.urlParams;
 
-			const room = LivechatRooms.findOneById(rid, { _id: 1 });
+			const room = await LivechatRooms.findOneById(rid, { projection: { _id: 1 } });
 			if (!room) {
 				throw new Error('invalid-room');
 			}

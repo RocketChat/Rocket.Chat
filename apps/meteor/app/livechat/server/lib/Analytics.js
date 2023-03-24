@@ -1,8 +1,7 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment-timezone';
-import { LivechatRooms as LivechatRoomsRaw } from '@rocket.chat/models';
+import { LivechatRooms } from '@rocket.chat/models';
 
-import { LivechatRooms } from '../../../models/server';
 import { secondsToHHMMSS } from '../../../utils/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 import { Logger } from '../../../logger/server';
@@ -10,8 +9,16 @@ import { Logger } from '../../../logger/server';
 const HOURS_IN_DAY = 24;
 const logger = new Logger('OmnichannelAnalytics');
 
+async function* dayIterator(from, to) {
+	const m = moment(from);
+	while (m.diff(to, 'days') <= 0) {
+		yield moment(m);
+		m.add(1, 'days');
+	}
+}
+
 export const Analytics = {
-	getAgentOverviewData(options) {
+	async getAgentOverviewData(options) {
 		const { departmentId, utcOffset, daterange: { from: fDate, to: tDate } = {}, chartOptions: { name } = {} } = options;
 		const timezone = getTimezone({ utcOffset });
 		const from = moment.tz(fDate, 'YYYY-MM-DD', timezone).startOf('day').utc();
@@ -32,7 +39,7 @@ export const Analytics = {
 		return this.AgentOverviewData[name](from, to, departmentId);
 	},
 
-	getAnalyticsChartData(options) {
+	async getAnalyticsChartData(options) {
 		const {
 			utcOffset,
 			departmentId,
@@ -67,7 +74,8 @@ export const Analytics = {
 
 		if (isSameDay) {
 			// data for single day
-			for (let m = moment(from), currentHour = 0; currentHour < HOURS_IN_DAY; currentHour++) {
+			const m = moment(from);
+			for await (const currentHour of Array.from({ length: HOURS_IN_DAY }, (_, i) => i)) {
 				const hour = m.add(currentHour ? 1 : 0, 'hour').format('H');
 				const label = {
 					from: moment.utc().set({ hour }).tz(timezone).format('hA'),
@@ -80,10 +88,10 @@ export const Analytics = {
 					lt: moment(m).add(1, 'hours'),
 				};
 
-				data.dataPoints.push(this.ChartData[name](date, departmentId));
+				data.dataPoints.push(await this.ChartData[name](date, departmentId));
 			}
 		} else {
-			for (let m = moment(from); m.diff(to, 'days') <= 0; m.add(1, 'days')) {
+			for await (const m of dayIterator(from, to)) {
 				data.dataLabels.push(m.format('M/D'));
 
 				const date = {
@@ -91,14 +99,14 @@ export const Analytics = {
 					lt: moment(m).add(1, 'days'),
 				};
 
-				data.dataPoints.push(this.ChartData[name](date, departmentId));
+				data.dataPoints.push(await this.ChartData[name](date, departmentId));
 			}
 		}
 
 		return data;
 	},
 
-	getAnalyticsOverviewData(options) {
+	async getAnalyticsOverviewData(options) {
 		const { departmentId, utcOffset = 0, language, daterange: { from: fDate, to: tDate } = {}, analyticsOptions: { name } = {} } = options;
 		const timezone = getTimezone({ utcOffset });
 		const from = moment.tz(fDate, 'YYYY-MM-DD', timezone).startOf('day').utc();
@@ -132,11 +140,11 @@ export const Analytics = {
 			return LivechatRooms.getTotalConversationsBetweenDate('l', date, { departmentId });
 		},
 
-		Avg_chat_duration(date, departmentId) {
+		async Avg_chat_duration(date, departmentId) {
 			let total = 0;
 			let count = 0;
 
-			LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics }) => {
+			await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics }) => {
 				if (metrics && metrics.chatDuration) {
 					total += metrics.chatDuration;
 					count++;
@@ -171,10 +179,10 @@ export const Analytics = {
 		 *
 		 * @returns {Double}
 		 */
-		Avg_first_response_time(date, departmentId) {
+		async Avg_first_response_time(date, departmentId) {
 			let frt = 0;
 			let count = 0;
-			LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics }) => {
+			await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics }) => {
 				if (metrics && metrics.response && metrics.response.ft) {
 					frt += metrics.response.ft;
 					count++;
@@ -191,10 +199,10 @@ export const Analytics = {
 		 *
 		 * @returns {Double}
 		 */
-		Best_first_response_time(date, departmentId) {
+		async Best_first_response_time(date, departmentId) {
 			let maxFrt;
 
-			LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics }) => {
+			await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics }) => {
 				if (metrics && metrics.response && metrics.response.ft) {
 					maxFrt = maxFrt ? Math.min(maxFrt, metrics.response.ft) : metrics.response.ft;
 				}
@@ -213,10 +221,10 @@ export const Analytics = {
 		 *
 		 * @returns {Double}
 		 */
-		Avg_response_time(date, departmentId) {
+		async Avg_response_time(date, departmentId) {
 			let art = 0;
 			let count = 0;
-			LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics }) => {
+			await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics }) => {
 				if (metrics && metrics.response && metrics.response.avg) {
 					art += metrics.response.avg;
 					count++;
@@ -234,10 +242,10 @@ export const Analytics = {
 		 *
 		 * @returns {Double}
 		 */
-		Avg_reaction_time(date, departmentId) {
+		async Avg_reaction_time(date, departmentId) {
 			let arnt = 0;
 			let count = 0;
-			LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics }) => {
+			await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics }) => {
 				if (metrics && metrics.reaction && metrics.reaction.ft) {
 					arnt += metrics.reaction.ft;
 					count++;
@@ -338,7 +346,7 @@ export const Analytics = {
 				to: utcBusiestHour >= 0 ? moment.utc().set({ hour: utcBusiestHour }).tz(timezone).format('hA') : '-',
 				from: utcBusiestHour >= 0 ? moment.utc().set({ hour: utcBusiestHour }).subtract(1, 'hour').tz(timezone).format('hA') : '',
 			};
-			const onHoldConversations = Promise.await(LivechatRoomsRaw.getOnHoldConversationsBetweenDate(from, to, departmentId));
+			const onHoldConversations = Promise.await(LivechatRooms.getOnHoldConversationsBetweenDate(from, to, departmentId));
 
 			return [
 				{
@@ -379,7 +387,7 @@ export const Analytics = {
 		 *
 		 * @returns {Array[Object]}
 		 */
-		Productivity(from, to, departmentId) {
+		async Productivity(from, to, departmentId) {
 			let avgResponseTime = 0;
 			let firstResponseTime = 0;
 			let avgReactionTime = 0;
@@ -390,7 +398,7 @@ export const Analytics = {
 				lt: to.add(1, 'days'),
 			};
 
-			LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics }) => {
+			await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics }) => {
 				if (metrics && metrics.response && metrics.reaction) {
 					avgResponseTime += metrics.response.avg;
 					firstResponseTime += metrics.response.ft;
@@ -517,7 +525,7 @@ export const Analytics = {
 		 *
 		 * @returns {Array(Object), Array(Object)}
 		 */
-		Avg_chat_duration(from, to, departmentId) {
+		async Avg_chat_duration(from, to, departmentId) {
 			const agentChatDurations = new Map(); // stores total conversations for each agent
 			const date = {
 				gte: from,
@@ -536,7 +544,7 @@ export const Analytics = {
 				data: [],
 			};
 
-			LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics, servedBy }) => {
+			await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics, servedBy }) => {
 				if (servedBy && metrics && metrics.chatDuration) {
 					if (agentChatDurations.has(servedBy.username)) {
 						agentChatDurations.set(servedBy.username, {
@@ -629,7 +637,7 @@ export const Analytics = {
 		 *
 		 * @returns {Array(Object), Array(Object)}
 		 */
-		Avg_first_response_time(from, to, departmentId) {
+		async Avg_first_response_time(from, to, departmentId) {
 			const agentAvgRespTime = new Map(); // stores avg response time for each agent
 			const date = {
 				gte: from,
@@ -648,7 +656,7 @@ export const Analytics = {
 				data: [],
 			};
 
-			LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics, servedBy }) => {
+			await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics, servedBy }) => {
 				if (servedBy && metrics && metrics.response && metrics.response.ft) {
 					if (agentAvgRespTime.has(servedBy.username)) {
 						agentAvgRespTime.set(servedBy.username, {
@@ -690,7 +698,7 @@ export const Analytics = {
 		 *
 		 * @returns {Array(Object), Array(Object)}
 		 */
-		Best_first_response_time(from, to, departmentId) {
+		async Best_first_response_time(from, to, departmentId) {
 			const agentFirstRespTime = new Map(); // stores avg response time for each agent
 			const date = {
 				gte: from,
@@ -709,7 +717,7 @@ export const Analytics = {
 				data: [],
 			};
 
-			LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics, servedBy }) => {
+			await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics, servedBy }) => {
 				if (servedBy && metrics && metrics.response && metrics.response.ft) {
 					if (agentFirstRespTime.has(servedBy.username)) {
 						agentFirstRespTime.set(servedBy.username, Math.min(agentFirstRespTime.get(servedBy.username), metrics.response.ft));
@@ -743,7 +751,7 @@ export const Analytics = {
 		 *
 		 * @returns {Array(Object), Array(Object)}
 		 */
-		Avg_response_time(from, to, departmentId) {
+		async Avg_response_time(from, to, departmentId) {
 			const agentAvgRespTime = new Map(); // stores avg response time for each agent
 			const date = {
 				gte: from,
@@ -762,7 +770,7 @@ export const Analytics = {
 				data: [],
 			};
 
-			LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics, servedBy }) => {
+			await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics, servedBy }) => {
 				if (servedBy && metrics && metrics.response && metrics.response.avg) {
 					if (agentAvgRespTime.has(servedBy.username)) {
 						agentAvgRespTime.set(servedBy.username, {
@@ -804,7 +812,7 @@ export const Analytics = {
 		 *
 		 * @returns {Array(Object), Array(Object)}
 		 */
-		Avg_reaction_time(from, to, departmentId) {
+		async Avg_reaction_time(from, to, departmentId) {
 			const agentAvgReactionTime = new Map(); // stores avg reaction time for each agent
 			const date = {
 				gte: from,
@@ -823,7 +831,7 @@ export const Analytics = {
 				data: [],
 			};
 
-			LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics, servedBy }) => {
+			await LivechatRooms.getAnalyticsMetricsBetweenDate('l', date, { departmentId }).forEach(({ metrics, servedBy }) => {
 				if (servedBy && metrics && metrics.reaction && metrics.reaction.ft) {
 					if (agentAvgReactionTime.has(servedBy.username)) {
 						agentAvgReactionTime.set(servedBy.username, {
