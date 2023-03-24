@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import type { IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
-import { Subscriptions } from '@rocket.chat/models';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
 
-import { Rooms, Users } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { isObject } from '../../../../lib/utils/isObject';
 
 export const getRoomByNameOrIdWithOptionToJoin = async ({
@@ -20,12 +20,12 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 	joinChannel?: boolean;
 	errorOnEmpty?: boolean;
 }): Promise<IRoom | undefined> => {
-	let room: IRoom;
+	let room: IRoom | null;
 
 	// If the nameOrId starts with #, then let's try to find a channel or group
 	if (nameOrId.startsWith('#')) {
 		nameOrId = nameOrId.substring(1);
-		room = Rooms.findOneByIdOrName(nameOrId);
+		room = await Rooms.findOneByIdOrName(nameOrId);
 	} else if (nameOrId.startsWith('@') || type === 'd') {
 		// If the nameOrId starts with @ OR type is 'd', then let's try just a direct message
 		nameOrId = nameOrId.replace('@', '');
@@ -40,7 +40,7 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 		}
 
 		const rid = isObject(roomUser) ? [currentUserId, roomUser._id].sort().join('') : nameOrId;
-		room = Rooms.findOneById(rid);
+		room = await Rooms.findOneById(rid);
 
 		// If the room hasn't been found yet, let's try some more
 		if (!isObject(room)) {
@@ -54,20 +54,22 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 				}
 			}
 
-			room = Meteor.runAsUser(currentUserId, function () {
+			room = await Meteor.runAsUser(currentUserId, function () {
 				const { rid } = Meteor.call('createDirectMessage', roomUser.username);
 				return Rooms.findOneById(rid);
 			});
 		}
 	} else {
 		// Otherwise, we'll treat this as a channel or group.
-		room = Rooms.findOneByIdOrName(nameOrId);
+		room = await Rooms.findOneByIdOrName(nameOrId);
 	}
 
 	// If no room was found, handle the room return based upon errorOnEmpty
 	if (!room && errorOnEmpty) {
 		throw new Meteor.Error('invalid-channel');
-	} else if (!room) {
+	}
+
+	if (room === null) {
 		return;
 	}
 
@@ -89,7 +91,8 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 
 		if (!sub) {
 			Meteor.runAsUser(currentUserId, function () {
-				return Meteor.call('joinRoom', room._id);
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				return Meteor.call('joinRoom', room!._id);
 			});
 		}
 	}
