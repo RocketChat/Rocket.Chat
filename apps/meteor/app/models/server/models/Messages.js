@@ -304,6 +304,7 @@ export class Messages extends Base {
 			u: {
 				_id: user._id,
 				username: user.username,
+				name: user.name,
 			},
 			groupable: false,
 		};
