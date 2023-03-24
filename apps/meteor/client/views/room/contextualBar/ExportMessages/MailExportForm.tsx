@@ -15,7 +15,7 @@ import { SelectedMessageContext, useCountSelected } from '../../MessageList/cont
 type MailExportFormValues = {
 	dateFrom: string;
 	dateTo: string;
-	toUsers: IUser['username'][];
+	toUsers: string[];
 	additionalEmails: string;
 	subject: string;
 };
@@ -76,10 +76,16 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 	const roomsExport = useEndpoint('POST', '/v1/rooms.export');
 
 	const handleSubmit = async (): Promise<void> => {
-		if (toUsers.length === 0 && additionalEmails === '') {
+		if (!toUsers.length && !additionalEmails) {
 			setErrorMessage(t('Mail_Message_Missing_to'));
 			return;
 		}
+
+		if (!subject.trim()) {
+			setErrorMessage(t('Mail_Message_Missing_subject'));
+			return;
+		}
+
 		if (additionalEmails !== '' && !validateEmail(additionalEmails)) {
 			setErrorMessage(t('Mail_Message_Invalid_emails', additionalEmails));
 			return;

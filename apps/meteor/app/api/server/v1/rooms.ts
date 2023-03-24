@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import type { Notifications } from '@rocket.chat/rest-typings';
-import { isGETRoomsNameExists } from '@rocket.chat/rest-typings';
+import { isRoomsExportProps, isGETRoomsNameExists } from '@rocket.chat/rest-typings';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Media } from '@rocket.chat/core-services';
@@ -543,10 +543,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.export',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isRoomsExportProps },
 	{
 		async post() {
-			const { rid, type } = this.bodyParams;
+			const { rid, type, format, toUsers, toEmails, subject, messages } = this.bodyParams;
 
 			if (!rid || !type || !['email', 'file'].includes(type)) {
 				throw new Meteor.Error('error-invalid-params');
@@ -569,7 +569,6 @@ API.v1.addRoute(
 
 			if (type === 'file') {
 				const { dateFrom, dateTo } = this.bodyParams;
-				const { format } = this.bodyParams;
 
 				if (!['html', 'json'].includes(format || '')) {
 					throw new Meteor.Error('error-invalid-format');
@@ -596,14 +595,8 @@ API.v1.addRoute(
 			}
 
 			if (type === 'email') {
-				const { toUsers, toEmails, subject, messages } = this.bodyParams;
-
-				if ((!toUsers || toUsers.length === 0) && (!toEmails || toEmails.length === 0)) {
-					throw new Meteor.Error('error-invalid-recipient');
-				}
-
-				if (messages?.length === 0) {
-					throw new Meteor.Error('error-invalid-messages');
+				if (!toUsers?.filter(Boolean).length && !toEmails?.filter(Boolean).length) {
+					throw new Meteor.Error('error-invalid-params', 'No recipients specified');
 				}
 
 				const result = await dataExport.sendViaEmail(

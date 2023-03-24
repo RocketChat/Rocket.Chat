@@ -11,19 +11,19 @@ import { getMomentLocale } from '../getMomentLocale';
 export async function sendViaEmail(
 	data: {
 		rid: string;
-		toUsers: string[];
-		toEmails: string[];
+		toUsers?: string[];
+		toEmails?: string[];
 		subject: string;
 		messages: string[];
-		language: string;
+		language?: string;
 	},
 	user: IUser,
 ): Promise<{
 	missing: string[];
 }> {
-	const emails = data.toEmails.map((email) => email.trim()).filter(Boolean);
+	const emails = data.toEmails?.map((email) => email.trim()).filter(Boolean) ?? [];
 
-	const missing = [...data.toUsers].filter(Boolean);
+	const missing = data.toUsers?.filter(Boolean) ?? [];
 
 	Users.findUsersByUsernames(data.toUsers, {
 		fields: { 'username': 1, 'emails.address': 1 },
