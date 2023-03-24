@@ -35,20 +35,6 @@ class Rooms extends Base {
 		);
 	}
 
-	setLastMessagePinned(roomId, pinnedBy, pinned, pinnedAt) {
-		const query = { _id: roomId };
-
-		const update = {
-			$set: {
-				'lastMessage.pinned': pinned,
-				'lastMessage.pinnedAt': pinnedAt || new Date(),
-				'lastMessage.pinnedBy': pinnedBy,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	setLastMessageAsRead(roomId) {
 		return this.update(
 			{
