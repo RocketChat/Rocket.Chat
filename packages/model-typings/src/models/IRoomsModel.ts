@@ -123,8 +123,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	// TODO check types
 	setLastMessagePinned(roomId: string, pinnedBy: unknown, pinned?: boolean, pinnedAt?: Date): Promise<UpdateResult>;
 	setLastMessageAsRead(roomId: string): Promise<UpdateResult>;
-	// TODO check types
-	setSentiment(roomId: string, sentiment: string): Promise<UpdateResult>;
 	setDescriptionById(roomId: string, description: string): Promise<UpdateResult>;
 	setStreamingOptionsById(roomId: string, streamingOptions: IRoom['streamingOptions']): Promise<UpdateResult>;
 	setReadOnlyById(roomId: string, readOnly: boolean): Promise<UpdateResult>;

@@ -895,10 +895,6 @@ export class RoomsRaw extends BaseRaw {
 		);
 	}
 
-	setSentiment(roomId, sentiment) {
-		return this.updateOne({ _id: roomId }, { $set: { sentiment } });
-	}
-
 	setDescriptionById(_id, description) {
 		const query = {
 			_id,

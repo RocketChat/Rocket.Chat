@@ -35,10 +35,6 @@ class Rooms extends Base {
 		);
 	}
 
-	setSentiment(roomId, sentiment) {
-		return this.update({ _id: roomId }, { $set: { sentiment } });
-	}
-
 	setDescriptionById(_id, description) {
 		const query = {
 			_id,
