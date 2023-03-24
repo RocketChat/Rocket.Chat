@@ -8,6 +8,20 @@ import { LivechatDepartmentRaw } from '../../../../server/models/raw/LivechatDep
 declare module '@rocket.chat/model-typings' {
 	interface ILivechatDepartmentModel {
 		removeDepartmentFromForwardListById(departmentId: string): Promise<void>;
+		unfilteredFind(query: Filter<ILivechatDepartment>, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
+		unfilteredFindOne(query: Filter<ILivechatDepartment>, options: FindOptions<ILivechatDepartment>): Promise<ILivechatDepartment | null>;
+		unfilteredUpdate(
+			query: Filter<ILivechatDepartment>,
+			update: UpdateFilter<ILivechatDepartment>,
+			options: FindOptions<ILivechatDepartment>,
+		): Promise<UpdateResult>;
+		unfilteredRemove(query: Filter<ILivechatDepartment>): Promise<DeleteResult>;
+		createOrUpdateDepartment(id: string, data: ILivechatDepartment): Promise<ILivechatDepartment>;
+		removeParentAndAncestorById(id: string): Promise<UpdateResult | Document>;
+		findEnabledWithAgentsAndBusinessUnit(
+			businessUnit: string,
+			projection: FindOptions<ILivechatDepartment>['projection'],
+		): Promise<FindCursor<ILivechatDepartment>>;
 	}
 }
 
@@ -46,7 +60,10 @@ export class LivechatDepartmentEE extends LivechatDepartmentRaw implements ILive
 		return this.updateMany({ parentId: id }, { $unset: { parentId: 1 }, $pull: { ancestors: id } });
 	}
 
-	async findEnabledWithAgentsAndBusinessUnit(businessUnit: string, projection: FindOptions<ILivechatDepartment>['projection']) {
+	async findEnabledWithAgentsAndBusinessUnit(
+		businessUnit: string,
+		projection: FindOptions<ILivechatDepartment>['projection'],
+	): Promise<FindCursor<ILivechatDepartment>> {
 		if (!businessUnit) {
 			return super.findEnabledWithAgents(projection);
 		}

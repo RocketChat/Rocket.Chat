@@ -3,6 +3,41 @@ import type { IUser } from '@rocket.chat/core-typings';
 
 import { MessagesRaw } from '../../../../server/models/raw/Messages';
 
+type ISysMessageResult = {
+	t: string;
+	rid: string;
+	ts: Date;
+	comment: string;
+	u: {
+		_id: string;
+		username: string | undefined;
+	};
+	groupable: boolean;
+} & {
+	_id: string;
+};
+
+declare module '@rocket.chat/model-typings' {
+	interface IMessagesModel {
+		createOnHoldHistoryWithRoomIdMessageAndUser(
+			roomId: string,
+			comment: string,
+			user: Pick<IUser, 'username' | '_id'>,
+		): Promise<ISysMessageResult>;
+		createOnHoldResumedHistoryWithRoomIdMessageAndUser(
+			roomId: string,
+			comment: string,
+			user: Pick<IUser, 'username' | '_id'>,
+		): Promise<ISysMessageResult>;
+		createTransferFailedHistoryMessage(
+			rid: string,
+			comment: string,
+			user: Pick<IUser, '_id' | 'username'>,
+			extraData?: Record<string, any>,
+		): Promise<ISysMessageResult>;
+	}
+}
+
 export class MessagesEE extends MessagesRaw {
 	constructor(db: Db) {
 		super(db);
@@ -12,11 +47,7 @@ export class MessagesEE extends MessagesRaw {
 		roomId: string,
 		comment: string,
 		user: Pick<IUser, 'username' | '_id'>,
-	): Promise<
-		{ t: string; rid: string; ts: Date; comment: string; u: { _id: string; username: string | undefined }; groupable: boolean } & {
-			_id: string;
-		}
-	> {
+	): Promise<ISysMessageResult> {
 		const type = 'omnichannel_placed_chat_on_hold' as const;
 		const record = {
 			t: type,
@@ -38,11 +69,7 @@ export class MessagesEE extends MessagesRaw {
 		roomId: string,
 		comment: string,
 		user: Pick<IUser, 'username' | '_id'>,
-	): Promise<
-		{ t: string; rid: string; ts: Date; comment: string; u: { _id: string; username: string | undefined }; groupable: boolean } & {
-			_id: string;
-		}
-	> {
+	): Promise<ISysMessageResult> {
 		const type = 'omnichannel_on_hold_chat_resumed' as const;
 		const record = {
 			t: type,
@@ -65,11 +92,7 @@ export class MessagesEE extends MessagesRaw {
 		comment: string,
 		user: Pick<IUser, '_id' | 'username'>,
 		extraData: Record<string, any> = {},
-	): Promise<
-		{ t: string; rid: string; ts: Date; comment: string; u: { _id: string; username: string | undefined }; groupable: boolean } & {
-			_id: string;
-		}
-	> {
+	): Promise<ISysMessageResult> {
 		const t = 'livechat_transfer_history_fallback' as const;
 		const record = {
 			t,
