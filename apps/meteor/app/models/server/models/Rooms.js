@@ -166,37 +166,6 @@ class Rooms extends Base {
 		return this._db.find(query, options);
 	}
 
-	findChannelAndPrivateByNameStarting(name, sIds, options) {
-		const nameRegex = new RegExp(`^${trim(escapeRegExp(name))}`, 'i');
-
-		const query = {
-			t: {
-				$in: ['c', 'p'],
-			},
-			name: nameRegex,
-			teamMain: {
-				$exists: false,
-			},
-			$or: [
-				{
-					teamId: {
-						$exists: false,
-					},
-				},
-				{
-					teamId: {
-						$exists: true,
-					},
-					_id: {
-						$in: sIds,
-					},
-				},
-			],
-		};
-
-		return this.find(query, options);
-	}
-
 	findByDefaultAndTypes(defaultValue, types, options) {
 		const query = {
 			default: defaultValue,

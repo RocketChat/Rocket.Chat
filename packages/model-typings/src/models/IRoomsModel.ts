@@ -31,8 +31,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findByTeamIdAndRoomsId(teamId: any, rids: any, options?: any): any;
 
-	findChannelAndPrivateByNameStarting(name: any, sIds: any, options: any): any;
-
 	findRoomsByNameOrFnameStarting(name: any, options: any): any;
 
 	findRoomsWithoutDiscussionsByRoomIds(name: any, roomIds: any, options: any): any;
