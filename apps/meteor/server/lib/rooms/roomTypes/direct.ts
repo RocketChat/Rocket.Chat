@@ -54,30 +54,27 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 	},
 
-	roomName(room, userId?) {
-		// TODO: remove this when roomCoordinator is async
-		const subscription = Promise.await(
-			(async (): Promise<{ fname?: string; name?: string } | null | undefined> => {
-				if (room.fname || room.name) {
-					return {
-						fname: room.fname,
-						name: room.name,
-					};
-				}
+	async roomName(room, userId?) {
+		const subscription = await (async (): Promise<{ fname?: string; name?: string } | null> => {
+			if (room.fname || room.name) {
+				return {
+					fname: room.fname,
+					name: room.name,
+				};
+			}
 
-				if (!room._id) {
-					return undefined;
-				}
+			if (!room._id) {
+				return null;
+			}
 
-				const uid = userId || getCurrentUserId();
-				if (uid) {
-					return Subscriptions.findOneByRoomIdAndUserId(room._id, uid, { projection: { name: 1, fname: 1 } });
-				}
+			const uid = userId || getCurrentUserId();
+			if (uid) {
+				return Subscriptions.findOneByRoomIdAndUserId(room._id, uid, { projection: { name: 1, fname: 1 } });
+			}
 
-				// If we don't know what user is requesting the roomName, then any subscription will do
-				return Subscriptions.findOne({ rid: room._id }, { projection: { name: 1, fname: 1 } });
-			})(),
-		);
+			// If we don't know what user is requesting the roomName, then any subscription will do
+			return Subscriptions.findOne({ rid: room._id }, { projection: { name: 1, fname: 1 } });
+		})();
 
 		if (!subscription) {
 			return;
@@ -94,7 +91,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 		return (room?.uids?.length || 0) > 2;
 	},
 
-	getNotificationDetails(room, sender, notificationMessage, userId) {
+	async getNotificationDetails(room, sender, notificationMessage, userId) {
 		const useRealName = settings.get<boolean>('UI_Use_Real_Name');
 
 		if (this.isGroupChat(room)) {

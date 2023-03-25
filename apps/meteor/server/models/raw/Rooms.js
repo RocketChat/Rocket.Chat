@@ -823,8 +823,8 @@ export class RoomsRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	setReactionsInLastMessage(roomId, lastMessage) {
-		return this.updateOne({ _id: roomId }, { $set: { 'lastMessage.reactions': lastMessage.reactions } });
+	setReactionsInLastMessage(roomId, reactions) {
+		return this.updateOne({ _id: roomId }, { $set: { 'lastMessage.reactions': reactions } });
 	}
 
 	unsetReactionsInLastMessage(roomId) {

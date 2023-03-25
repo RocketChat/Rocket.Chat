@@ -26,7 +26,7 @@ Meteor.methods<ServerMethods>({
 
 		const uid = Meteor.userId();
 
-		const user = Meteor.user();
+		const user = await Meteor.userAsync();
 
 		if (!uid || !user?.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'createChannel' });

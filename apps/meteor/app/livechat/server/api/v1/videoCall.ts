@@ -1,8 +1,8 @@
 import { isGETWebRTCCall, isPUTWebRTCCallId } from '@rocket.chat/rest-typings';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Settings } from '@rocket.chat/models';
+import { Settings, Rooms } from '@rocket.chat/models';
 
-import { Messages, Rooms } from '../../../../models/server';
+import { Messages } from '../../../../models/server';
 import { settings as rcSettings } from '../../../../settings/server';
 import { API } from '../../../../api/server';
 import { settings } from '../lib/livechat';
