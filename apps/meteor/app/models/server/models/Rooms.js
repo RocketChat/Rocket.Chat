@@ -216,18 +216,6 @@ class Rooms extends Base {
 
 	// UPDATE
 
-	archiveById(_id) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				archived: true,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	unarchiveById(_id) {
 		const query = { _id };
 
