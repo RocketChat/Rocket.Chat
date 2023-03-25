@@ -214,18 +214,6 @@ class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
-	findByTypeAndArchivationState(type, archivationstate, options) {
-		const query = { t: type };
-
-		if (archivationstate) {
-			query.archived = true;
-		} else {
-			query.archived = { $ne: true };
-		}
-
-		return this.find(query, options);
-	}
-
 	findByCreatedOTR() {
 		return this.find({ createdOTR: true });
 	}

@@ -1272,18 +1272,6 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findByTypeAndArchivationState(type, archivationstate, options) {
-		const query = { t: type };
-
-		if (archivationstate) {
-			query.archived = true;
-		} else {
-			query.archived = { $ne: true };
-		}
-
-		return this.find(query, options);
-	}
-
 	findGroupDMsByUids(uids, options) {
 		return this.find(
 			{

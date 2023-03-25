@@ -172,7 +172,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findByTypeAndNameOrId(type: IRoom['t'], name: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 	findByTypeAndNameContaining(type: IRoom['t'], name: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findByTypeInIdsAndNameContaining(type: IRoom['t'], ids: string[], name: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
-	findByTypeAndArchivationState(type: IRoom['t'], archived: boolean, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findGroupDMsByUids(uids: string[], options?: FindOptions<IDirectMessageRoom>): FindCursor<IDirectMessageRoom>;
 	find1On1ByUserId(userId: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findByCreatedOTR(): FindCursor<IRoom>;
