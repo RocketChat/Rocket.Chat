@@ -5,9 +5,10 @@ import type { IRoom } from '@rocket.chat/core-typings';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { callbacks } from '../../lib/callbacks';
-import { Rooms, Subscriptions, Users, Messages } from '../../app/models/server';
+import { Subscriptions, Users, Messages } from '../../app/models/server';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
+import { Rooms } from '@rocket.chat/models';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -34,7 +35,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const room = Rooms.findOneById(data.rid);
+		const room = await Rooms.findOneById(data.rid);
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
@@ -64,7 +65,7 @@ Meteor.methods<ServerMethods>({
 
 		callbacks.run('beforeUnmuteUser', { unmutedUser, fromUser }, room);
 
-		Rooms.unmuteUsernameByRoomId(data.rid, unmutedUser.username);
+		await Rooms.unmuteUsernameByRoomId(data.rid, unmutedUser.username);
 
 		Messages.createUserUnmutedWithRoomIdAndUser(data.rid, unmutedUser, {
 			u: {
