@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Avatars } from '@rocket.chat/models';
+import { Avatars, Rooms as RoomsRaw } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
 import { RocketChatFile } from '../../../file/server';
@@ -40,8 +40,8 @@ export const setRoomAvatar = async function (rid: string, dataURI: string, user:
 			throw err;
 		}
 
-		Meteor.setTimeout(function () {
-			Rooms.setAvatarData(rid, 'upload', result.etag);
+		Meteor.setTimeout(async function () {
+			await RoomsRaw.setAvatarData(rid, 'upload', result.etag);
 			Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_avatar', rid, '', user);
 			void api.broadcast('room.avatarUpdate', { _id: rid, avatarETag: result.etag });
 		}, 500);

@@ -34,17 +34,6 @@ class Rooms extends Base {
 		);
 	}
 
-	setAvatarData(_id, origin, etag) {
-		const update = {
-			$set: {
-				avatarOrigin: origin,
-				avatarETag: etag,
-			},
-		};
-
-		return this.update({ _id }, update);
-	}
-
 	unsetAvatarData(_id) {
 		const update = {
 			$set: {
