@@ -743,13 +743,14 @@ API.v1.addRoute(
 				}),
 			);
 
-			const { status } = this.queryParams;
+			const { status, filter: projection } = this.queryParams;
 
 			const { cursor, totalCount } = await findUsersOfRoom({
 				rid: findResult.rid,
 				...(status && { status: { $in: status } }),
 				skip,
 				limit,
+				...(projection && {projection}),
 				sort: {
 					_updatedAt: -1,
 					...(sort?.username && { username: sort.username }),
