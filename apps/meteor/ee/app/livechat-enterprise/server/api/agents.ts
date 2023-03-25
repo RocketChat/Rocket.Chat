@@ -10,14 +10,15 @@ import {
 	findAllServiceTime,
 	findAvailableServiceTimeHistory,
 } from '../../../../../app/livechat/server/lib/analytics/agents';
+import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 
 API.v1.addRoute(
 	'livechat/analytics/agents/average-service-time',
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isLivechatAnalyticsAgentsAverageServiceTimeProps },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { start, end } = this.requestParams();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { start, end } = this.queryParams;
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
@@ -49,8 +50,8 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isLivechatAnalyticsAgentsTotalServiceTimeProps },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { start, end } = this.requestParams();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { start, end } = this.queryParams;
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
@@ -86,9 +87,9 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { start, end } = this.requestParams();
-			const { fullReport } = this.requestParams();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { start, end } = this.queryParams;
+			const { fullReport } = this.queryParams;
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
