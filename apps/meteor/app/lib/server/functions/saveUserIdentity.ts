@@ -56,7 +56,7 @@ export async function saveUserIdentity({ _id, name: rawName, username: rawUserna
 				return Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg);
 			});
 			Rooms.replaceUsername(previousUsername, username);
-			Rooms.replaceMutedUsername(previousUsername, username);
+			await RoomsAsync.replaceMutedUsername(previousUsername, username);
 			await RoomsAsync.replaceUsernameOfUserByUserId(user._id, username);
 			Subscriptions.setUserUsernameByUserId(user._id, username);
 

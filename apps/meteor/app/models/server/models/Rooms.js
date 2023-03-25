@@ -677,18 +677,6 @@ class Rooms extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	replaceMutedUsername(previousUsername, username) {
-		const query = { muted: previousUsername };
-
-		const update = {
-			$set: {
-				'muted.$': username,
-			},
-		};
-
-		return this.update(query, update, { multi: true });
-	}
-
 	setOTRForDMByRoomID(rid) {
 		const query = { _id: rid, t: 'd' };
 
