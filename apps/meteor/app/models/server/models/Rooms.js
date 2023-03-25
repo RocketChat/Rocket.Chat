@@ -741,20 +741,6 @@ class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	setTypeById(_id, type) {
-		const query = { _id };
-		const update = {
-			$set: {
-				t: type,
-			},
-		};
-		if (type === 'p') {
-			update.$unset = { default: '' };
-		}
-
-		return this.update(query, update);
-	}
-
 	setOTRForDMByRoomID(rid) {
 		const query = { _id: rid, t: 'd' };
 
