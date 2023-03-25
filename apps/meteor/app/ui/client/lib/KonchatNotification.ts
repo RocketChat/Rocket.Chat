@@ -6,7 +6,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import { getUserPreference } from '../../../utils/client';
-import { getUserAvatarURL } from '../../../utils/client/lib/getUserAvatarURL';
+import { getUserAvatarURL } from '../../../utils/lib/getUserAvatarURL';
 import { e2e } from '../../../e2e/client';
 import { ChatSubscription } from '../../../models/client';
 import { CustomSounds } from '../../../custom-sounds/client/lib/CustomSounds';

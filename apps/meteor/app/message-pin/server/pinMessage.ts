@@ -8,7 +8,7 @@ import { Messages as MessagesRaw, Rooms, Subscriptions } from '@rocket.chat/mode
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { isTheLastMessage } from '../../lib/server';
-import { getUserAvatarURL } from '../../utils/client/lib/getUserAvatarURL';
+import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { Messages, Users } from '../../models/server';

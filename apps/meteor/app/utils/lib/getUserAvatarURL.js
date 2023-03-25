@@ -1,14 +1,13 @@
-import { getAvatarURL } from '../../lib/getAvatarURL';
-import { settings } from '../../../settings/client';
+import { getAvatarURL } from './getAvatarURL';
+import { settings } from '../../settings';
 
-export const getUserAvatarURL = (username: string | undefined, cache = '') => {
-	if (!username) {
-		return;
-	}
-
+export const getUserAvatarURL = function (username, cache = '') {
 	const externalSource = (settings.get('Accounts_AvatarExternalProviderUrl') || '').trim().replace(/\/$/, '');
 	if (externalSource !== '') {
 		return externalSource.replace('{username}', username);
+	}
+	if (username == null) {
+		return;
 	}
 
 	return getAvatarURL({ username, cache });
