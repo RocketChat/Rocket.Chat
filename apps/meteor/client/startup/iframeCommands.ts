@@ -58,10 +58,10 @@ const commands = {
 		}
 	},
 
-	'login-with-token'(data: { token: string }, ...args: unknown[]) {
+	'login-with-token'(data: { token: string }) {
 		if (typeof data.token === 'string') {
 			Meteor.loginWithToken(data.token, () => {
-				console.log('Iframe command [login-with-token]: result', [data, ...args]);
+				console.log('Iframe command [login-with-token]: result', data);
 			});
 		}
 	},
@@ -83,8 +83,12 @@ const commands = {
 	},
 } as const;
 
-window.addEventListener('message', <TCommand extends keyof typeof commands>(e: MessageEvent<{ externalCommand: TCommand }>) => {
-	if (settings.get('Iframe_Integration_receive_enable') !== true) {
+type CommandMessage<TCommandName extends keyof typeof commands = keyof typeof commands> = {
+	externalCommand: TCommandName;
+} & Parameters<typeof commands[TCommandName]>[0];
+
+window.addEventListener('message', <TCommandMessage extends CommandMessage>(e: MessageEvent<TCommandMessage>) => {
+	if (!settings.get<boolean>('Iframe_Integration_receive_enable')) {
 		return;
 	}
 
@@ -92,14 +96,18 @@ window.addEventListener('message', <TCommand extends keyof typeof commands>(e: M
 		return;
 	}
 
-	const origins = settings.get('Iframe_Integration_receive_origin');
+	const origins = settings.get<string>('Iframe_Integration_receive_origin');
 
 	if (origins !== '*' && origins.split(',').indexOf(e.origin) === -1) {
-		return console.error('Origin not allowed', e.origin);
+		console.error('Origin not allowed', e.origin);
+		return;
 	}
 
-	const command = commands[e.data.externalCommand];
-	if (command) {
-		command(e.data as any, e);
+	if (!(e.data.externalCommand in commands)) {
+		console.error('Command not allowed', e.data.externalCommand);
+		return;
 	}
+
+	const command: (data: any, event: MessageEvent) => void = commands[e.data.externalCommand];
+	command(e.data, e);
 });
