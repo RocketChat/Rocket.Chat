@@ -93,16 +93,6 @@ class Rooms extends Base {
 
 	// FIND
 
-	findByNameAndType(name, type, options) {
-		const query = {
-			t: type,
-			name,
-		};
-
-		// do not use cache
-		return this._db.find(query, options);
-	}
-
 	findByDefaultAndTypes(defaultValue, types, options) {
 		const query = {
 			default: defaultValue,
