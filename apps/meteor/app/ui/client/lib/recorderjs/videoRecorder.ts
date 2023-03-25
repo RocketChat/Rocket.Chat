@@ -1,35 +1,5 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 
-declare global {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface Navigator {
-		getUserMedia?: (
-			this: Navigator,
-			constraints?: MediaStreamConstraints | undefined,
-			onSuccess?: (stream: MediaStream) => void,
-			onError?: (error: any) => void,
-		) => void;
-		webkitGetUserMedia?: (
-			this: Navigator,
-			constraints?: MediaStreamConstraints | undefined,
-			onSuccess?: (stream: MediaStream) => void,
-			onError?: (error: any) => void,
-		) => void;
-		mozGetUserMedia?: (
-			this: Navigator,
-			constraints?: MediaStreamConstraints | undefined,
-			onSuccess?: (stream: MediaStream) => void,
-			onError?: (error: any) => void,
-		) => void;
-		msGetUserMedia?: (
-			this: Navigator,
-			constraints?: MediaStreamConstraints | undefined,
-			onSuccess?: (stream: MediaStream) => void,
-			onError?: (error: any) => void,
-		) => void;
-	}
-}
-
 class VideoRecorder {
 	public cameraStarted = new ReactiveVar(false);
 
