@@ -193,15 +193,6 @@ class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
-	findByTypeAndName(type, name, options) {
-		const query = {
-			name,
-			t: type,
-		};
-
-		return this.findOne(query, options);
-	}
-
 	// UPDATE
 
 	incMsgCountById(_id, inc = 1) {
