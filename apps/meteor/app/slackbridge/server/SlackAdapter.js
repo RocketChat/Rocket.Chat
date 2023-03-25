@@ -1099,7 +1099,7 @@ export default class SlackAdapter {
 			case 'channel_archive':
 			case 'group_archive':
 				if (!isImporting) {
-					archiveRoom(rocketChannel);
+					await archiveRoom(rocketChannel);
 				}
 				return;
 			case 'channel_unarchive':
