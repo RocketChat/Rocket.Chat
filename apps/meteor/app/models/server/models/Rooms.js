@@ -237,16 +237,6 @@ class Rooms extends Base {
 		return this.find(query, options);
 	}
 
-	find1On1ByUserId(userId, options) {
-		return this.find(
-			{
-				uids: userId,
-				usersCount: 2,
-			},
-			options,
-		);
-	}
-
 	findByCreatedOTR() {
 		return this.find({ createdOTR: true });
 	}
