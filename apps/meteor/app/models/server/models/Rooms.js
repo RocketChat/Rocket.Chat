@@ -214,10 +214,6 @@ class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
-	findByCreatedOTR() {
-		return this.find({ createdOTR: true });
-	}
-
 	// UPDATE
 	addImportIds(_id, importIds) {
 		importIds = [].concat(importIds);
