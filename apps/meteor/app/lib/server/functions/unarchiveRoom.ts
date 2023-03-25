@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 
 import { Rooms, Messages, Subscriptions } from '../../../models/server';
 
-export const unarchiveRoom = function (rid: string): void {
+export const unarchiveRoom = async function (rid: string): Promise<void> {
 	Rooms.unarchiveById(rid);
 	Subscriptions.unarchiveByRoomId(rid);
-	Messages.createRoomUnarchivedByRoomIdAndUser(rid, Meteor.user());
+	Messages.createRoomUnarchivedByRoomIdAndUser(rid, await Meteor.userAsync());
 };

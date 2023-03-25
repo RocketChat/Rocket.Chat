@@ -308,7 +308,7 @@ settings.watch('Apps_Framework_Source_Package_Storage_FileSystem_Path', (value) 
 	}
 });
 
-settings.watch('Apps_Logs_TTL', (value) => {
+settings.watch('Apps_Logs_TTL', async (value) => {
 	if (!Apps.isInitialized()) {
 		return;
 	}
@@ -333,6 +333,5 @@ settings.watch('Apps_Logs_TTL', (value) => {
 
 	const model = Apps._logModel;
 
-	// TODO: remove this when we have async support on here
-	Promise.await(model.resetTTLIndex(expireAfterSeconds));
+	await model.resetTTLIndex(expireAfterSeconds);
 });

@@ -98,7 +98,7 @@ async function sendToCRM(type, room, includeMessages = true) {
 	const response = Livechat.sendRequest(responseData);
 
 	if (response && response.data && response.data.data) {
-		Promise.await(LivechatRooms.saveCRMDataByRoomId(room._id, response.data.data));
+		await LivechatRooms.saveCRMDataByRoomId(room._id, response.data.data);
 	}
 
 	return room;
