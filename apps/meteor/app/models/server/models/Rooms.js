@@ -103,26 +103,6 @@ class Rooms extends Base {
 		return this._db.find(query, options);
 	}
 
-	findByNameOrFNameAndType(name, type, options) {
-		const query = {
-			t: type,
-			teamId: {
-				$exists: false,
-			},
-			$or: [
-				{
-					name,
-				},
-				{
-					fname: name,
-				},
-			],
-		};
-
-		// do not use cache
-		return this._db.find(query, options);
-	}
-
 	findByDefaultAndTypes(defaultValue, types, options) {
 		const query = {
 			default: defaultValue,

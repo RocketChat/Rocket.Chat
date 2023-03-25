@@ -152,7 +152,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findBySubscriptionUserId(userId: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findBySubscriptionUserIdUpdatedAfter(userId: string, updatedAfter: Date, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findByNameAndType(name: string, type: IRoom['t'], options?: FindOptions<IRoom>): FindCursor<IRoom>;
-	findByNameOrFNameAndType(name: string, type: IRoom['t'], options?: FindOptions<IRoom>): FindCursor<IRoom>;
+
 	findByNameAndTypeNotDefault(
 		name: string,
 		type: IRoom['t'],

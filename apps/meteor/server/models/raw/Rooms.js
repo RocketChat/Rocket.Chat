@@ -1122,26 +1122,6 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findByNameOrFNameAndType(name, type, options) {
-		const query = {
-			t: type,
-			teamId: {
-				$exists: false,
-			},
-			$or: [
-				{
-					name,
-				},
-				{
-					fname: name,
-				},
-			],
-		};
-
-		// do not use cache
-		return this.find(query, options);
-	}
-
 	findByNameAndTypeNotDefault(name, type, options, includeFederatedRooms = false) {
 		const query = {
 			t: type,
