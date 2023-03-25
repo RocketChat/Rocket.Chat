@@ -241,9 +241,9 @@ const settingSavers: RoomSettingsSavers = {
 			await saveRoomAnnouncement(rid, value, user);
 		}
 	},
-	roomCustomFields({ value, room, rid }) {
+	async roomCustomFields({ value, room, rid }) {
 		if (value !== room.customFields) {
-			saveRoomCustomFields(rid, value);
+			await saveRoomCustomFields(rid, value);
 		}
 	},
 	async roomDescription({ value, room, rid, user }) {
