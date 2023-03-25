@@ -30,6 +30,7 @@ import { apiDeprecationLogger } from '../../../../lib/server/lib/deprecationWarn
 import { deprecationWarning } from '../../../../api/server/helpers/deprecationWarning';
 import { callbacks } from '../../../../../lib/callbacks';
 import type { CloseRoomParams } from '../../lib/LivechatTyped';
+import { isWidget } from '../../../../api/server/helpers/isWidget';
 
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: true }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
 
@@ -72,7 +73,7 @@ API.v1.addRoute('livechat/room', {
 			const rid = Random.id();
 			const roomInfo = {
 				source: {
-					type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
+					type: isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
 				},
 			};
 
