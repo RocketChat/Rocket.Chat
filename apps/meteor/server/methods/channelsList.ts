@@ -3,7 +3,8 @@ import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import type { Mongo } from 'meteor/mongo';
+import { Rooms as RoomsRaw } from '@rocket.chat/models';
+import type { FindOptions } from 'mongodb';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { Rooms, Subscriptions, Users } from '../../app/models/server';
@@ -33,8 +34,8 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const options: Mongo.Options<IRoom> = {
-			fields: {
+		const options: FindOptions<IRoom> = {
+			projection: {
 				name: 1,
 				t: 1,
 			},
@@ -68,7 +69,7 @@ Meteor.methods<ServerMethods>({
 				if (filter) {
 					channels = channels.concat(Rooms.findByTypeAndNameContaining('c', filter, options).fetch());
 				} else {
-					channels = channels.concat(Rooms.findByType('c', options).fetch());
+					channels = channels.concat(await RoomsRaw.findByType('c', options).toArray());
 				}
 			} else if (await hasPermissionAsync(userId, 'view-joined-room')) {
 				const roomIds = Subscriptions.findByTypeAndUserId('c', userId, { fields: { rid: 1 } })

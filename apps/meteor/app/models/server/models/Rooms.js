@@ -96,12 +96,6 @@ class Rooms extends Base {
 
 	// FIND
 
-	findByType(type, options) {
-		const query = { t: type };
-
-		return this.find(query, options);
-	}
-
 	findByTypeInIds(type, ids, options) {
 		const query = {
 			_id: {
