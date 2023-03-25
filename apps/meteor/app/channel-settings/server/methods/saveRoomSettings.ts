@@ -448,7 +448,7 @@ async function saveRoomSettings(
 		});
 	}
 
-	const user = Meteor.user() as (IUser & Required<Pick<IUser, 'username' | 'name'>>) | null;
+	const user = (await Meteor.userAsync()) as (IUser & Required<Pick<IUser, 'username' | 'name'>>) | null;
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'saveRoomSettings',
