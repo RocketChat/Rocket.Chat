@@ -33,7 +33,7 @@ type RoomSettings = {
 	roomDescription: unknown;
 	roomType: unknown;
 	readOnly: boolean;
-	reactWhenReadOnly: unknown;
+	reactWhenReadOnly: boolean;
 	systemMessages: unknown;
 	default: boolean;
 	joinCode: string;
@@ -276,9 +276,9 @@ const settingSavers: RoomSettingsSavers = {
 			await saveRoomReadOnly(rid, value, user);
 		}
 	},
-	reactWhenReadOnly({ value, room, rid, user }) {
+	async reactWhenReadOnly({ value, room, rid, user }) {
 		if (value !== room.reactWhenReadOnly) {
-			saveReactWhenReadOnly(rid, value, user);
+			await saveReactWhenReadOnly(rid, value, user);
 		}
 	},
 	systemMessages({ value, room, rid }) {

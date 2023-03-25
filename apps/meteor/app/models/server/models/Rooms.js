@@ -34,18 +34,6 @@ class Rooms extends Base {
 		);
 	}
 
-	setAllowReactingWhenReadOnlyById = function (_id, allowReacting) {
-		const query = {
-			_id,
-		};
-		const update = {
-			$set: {
-				reactWhenReadOnly: allowReacting,
-			},
-		};
-		return this.update(query, update);
-	};
-
 	setAvatarData(_id, origin, etag) {
 		const update = {
 			$set: {
