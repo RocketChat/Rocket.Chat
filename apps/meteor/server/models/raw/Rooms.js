@@ -1782,27 +1782,6 @@ export class RoomsRaw extends BaseRaw {
 		return this.updateMany(query, update);
 	}
 
-	// INSERT
-	async createWithTypeNameUserAndUsernames(type, name, fname, user, usernames, extraData) {
-		const room = {
-			name,
-			fname,
-			t: type,
-			usernames,
-			msgs: 0,
-			usersCount: 0,
-			u: {
-				_id: user._id,
-				username: user.username,
-			},
-		};
-
-		Object.assign(room, extraData);
-
-		room._id = (await this.insertOne(room)).insertedId;
-		return room;
-	}
-
 	async createWithIdTypeAndName(_id, type, name, extraData) {
 		const room = {
 			_id,

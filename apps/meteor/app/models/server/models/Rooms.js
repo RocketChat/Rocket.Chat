@@ -1,4 +1,3 @@
-import _ from 'underscore';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { Base } from './_Base';
@@ -950,89 +949,6 @@ class Rooms extends Base {
 		};
 
 		return this.update(query, update);
-	}
-
-	updateGroupDMsRemovingUsernamesByUsername(username, userId) {
-		const query = {
-			t: 'd',
-			usernames: username,
-			usersCount: { $gt: 2 },
-		};
-
-		const update = {
-			$pull: {
-				usernames: username,
-				uids: userId,
-			},
-		};
-
-		return this.update(query, update, { multi: true });
-	}
-
-	// INSERT
-	createWithTypeNameUserAndUsernames(type, name, fname, user, usernames, extraData) {
-		const room = {
-			name,
-			fname,
-			t: type,
-			usernames,
-			msgs: 0,
-			usersCount: 0,
-			u: {
-				_id: user._id,
-				username: user.username,
-			},
-		};
-
-		_.extend(room, extraData);
-
-		room._id = this.insert(room);
-		return room;
-	}
-
-	createWithIdTypeAndName(_id, type, name, extraData) {
-		const room = {
-			_id,
-			ts: new Date(),
-			t: type,
-			name,
-			usernames: [],
-			msgs: 0,
-			usersCount: 0,
-		};
-
-		_.extend(room, extraData);
-
-		this.insert(room);
-		return room;
-	}
-
-	createWithFullRoomData(room) {
-		delete room._id;
-
-		room._id = this.insert(room);
-		return room;
-	}
-
-	// REMOVE
-	removeById(_id) {
-		const query = { _id };
-
-		return this.remove(query);
-	}
-
-	removeByIds(ids) {
-		return this.remove({ _id: { $in: ids } });
-	}
-
-	removeDirectRoomContainingUsername(username) {
-		const query = {
-			t: 'd',
-			usernames: username,
-			usersCount: { $lte: 2 },
-		};
-
-		return this.remove(query);
 	}
 
 	setOTRForDMByRoomID(rid) {
