@@ -27,7 +27,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'getJoinCode' });
 		}
 
-		const [room] = await Rooms.findById(rid).toArray();
+		const room = await Rooms.findById(rid);
 
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		return Boolean(room) && (isRoomWithJoinCode(room!) ? room.joinCode : false);
