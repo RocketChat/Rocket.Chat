@@ -261,28 +261,28 @@ export const statistics = {
 
 		// Message statistics
 		statistics.totalChannelMessages = _.reduce(
-			await RoomsRaw.findByType('c', { projection: { msgs: 1 } }).fetch(),
+			await RoomsRaw.findByType('c', { projection: { msgs: 1 } }).toArray(),
 			function _countChannelMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
 		);
 		statistics.totalPrivateGroupMessages = _.reduce(
-			await RoomsRaw.findByType('p', { projection: { msgs: 1 } }).fetch(),
+			await RoomsRaw.findByType('p', { projection: { msgs: 1 } }).toArray(),
 			function _countPrivateGroupMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
 		);
 		statistics.totalDirectMessages = _.reduce(
-			await RoomsRaw.findByType('d', { projection: { msgs: 1 } }).fetch(),
+			await RoomsRaw.findByType('d', { projection: { msgs: 1 } }).toArray(),
 			function _countDirectMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
 		);
 		statistics.totalLivechatMessages = _.reduce(
-			await RoomsRaw.findByType('l', { projection: { msgs: 1 } }).fetch(),
+			await RoomsRaw.findByType('l', { projection: { msgs: 1 } }).toArray(),
 			function _countLivechatMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},

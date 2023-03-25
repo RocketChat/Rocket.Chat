@@ -3,11 +3,11 @@ import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { Rooms as RoomsRaw } from '@rocket.chat/models';
+import { Rooms } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { Rooms, Subscriptions, Users } from '../../app/models/server';
+import { Subscriptions, Users } from '../../app/models/server';
 import { getUserPreference } from '../../app/utils/server';
 import { settings } from '../../app/settings/server';
 import { trim } from '../../lib/utils/stringUtils';
@@ -67,18 +67,18 @@ Meteor.methods<ServerMethods>({
 		if (channelType !== 'private') {
 			if (await hasPermissionAsync(userId, 'view-c-room')) {
 				if (filter) {
-					channels = channels.concat(await RoomsRaw.findByTypeAndNameContaining('c', filter, options).toArray());
+					channels = channels.concat(await Rooms.findByTypeAndNameContaining('c', filter, options).toArray());
 				} else {
-					channels = channels.concat(await RoomsRaw.findByType('c', options).toArray());
+					channels = channels.concat(await Rooms.findByType('c', options).toArray());
 				}
 			} else if (await hasPermissionAsync(userId, 'view-joined-room')) {
 				const roomIds = Subscriptions.findByTypeAndUserId('c', userId, { fields: { rid: 1 } })
 					.fetch()
 					.map((s: ISubscription) => s.rid);
 				if (filter) {
-					channels = channels.concat(await RoomsRaw.findByTypeInIdsAndNameContaining('c', roomIds, filter, options).toArray());
+					channels = channels.concat(await Rooms.findByTypeInIdsAndNameContaining('c', roomIds, filter, options).toArray());
 				} else {
-					channels = channels.concat(await RoomsRaw.findByTypeInIds('c', roomIds, options).toArray());
+					channels = channels.concat(await Rooms.findByTypeInIds('c', roomIds, options).toArray());
 				}
 			}
 		}
@@ -99,9 +99,9 @@ Meteor.methods<ServerMethods>({
 					.fetch()
 					.map((s: ISubscription) => s.rid);
 				if (filter) {
-					channels = channels.concat(await RoomsRaw.findByTypeInIdsAndNameContaining('p', roomIds, filter, options).toArray());
+					channels = channels.concat(await Rooms.findByTypeInIdsAndNameContaining('p', roomIds, filter, options).toArray());
 				} else {
-					channels = channels.concat(await RoomsRaw.findByTypeInIds('p', roomIds, options).toArray());
+					channels = channels.concat(await Rooms.findByTypeInIds('p', roomIds, options).toArray());
 				}
 			}
 		}
