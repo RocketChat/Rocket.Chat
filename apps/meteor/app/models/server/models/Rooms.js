@@ -35,82 +35,6 @@ class Rooms extends Base {
 		);
 	}
 
-	setLastMessagePinned(roomId, pinnedBy, pinned, pinnedAt) {
-		const query = { _id: roomId };
-
-		const update = {
-			$set: {
-				'lastMessage.pinned': pinned,
-				'lastMessage.pinnedAt': pinnedAt || new Date(),
-				'lastMessage.pinnedBy': pinnedBy,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	setLastMessageAsRead(roomId) {
-		return this.update(
-			{
-				_id: roomId,
-			},
-			{
-				$unset: {
-					'lastMessage.unread': 1,
-				},
-			},
-		);
-	}
-
-	setSentiment(roomId, sentiment) {
-		return this.update({ _id: roomId }, { $set: { sentiment } });
-	}
-
-	setDescriptionById(_id, description) {
-		const query = {
-			_id,
-		};
-		const update = {
-			$set: {
-				description,
-			},
-		};
-		return this.update(query, update);
-	}
-
-	setStreamingOptionsById(_id, streamingOptions) {
-		const update = {
-			$set: {
-				streamingOptions,
-			},
-		};
-		return this.update({ _id }, update);
-	}
-
-	setDmReadOnlyByUserId(_id, ids, readOnly, reactWhenReadOnly) {
-		const query = {
-			uids: {
-				$size: 2,
-				$in: [_id],
-			},
-			...(ids && Array.isArray(ids) ? { _id: { $in: ids } } : {}),
-			t: 'd',
-		};
-
-		const update = {
-			$set: {
-				ro: readOnly,
-				reactWhenReadOnly,
-			},
-		};
-
-		return this.update(query, update, { multi: true });
-	}
-
-	getDirectConversationsByUserId(_id, options) {
-		return this.find({ t: 'd', uids: { $size: 2, $in: [_id] } }, options);
-	}
-
 	setAllowReactingWhenReadOnlyById = function (_id, allowReacting) {
 		const query = {
 			_id,
@@ -1109,41 +1033,6 @@ class Rooms extends Base {
 		};
 
 		return this.remove(query);
-	}
-
-	// ############################
-	// Discussion
-	findDiscussionParentByNameStarting(name, options) {
-		const nameRegex = new RegExp(`^${trim(escapeRegExp(name))}`, 'i');
-
-		const query = {
-			t: {
-				$in: ['c'],
-			},
-			name: nameRegex,
-			archived: { $ne: true },
-			prid: {
-				$exists: false,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	setLinkMessageById(_id, linkMessageId) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				linkMessageId,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	countDiscussions() {
-		return this.find({ prid: { $exists: true } }).count();
 	}
 
 	setOTRForDMByRoomID(rid) {

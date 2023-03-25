@@ -245,12 +245,12 @@ const settingSavers: RoomSettingsSavers = {
 			saveRoomCustomFields(rid, value);
 		}
 	},
-	roomDescription({ value, room, rid, user }) {
+	async roomDescription({ value, room, rid, user }) {
 		if (!value && !room.description) {
 			return;
 		}
 		if (value !== room.description) {
-			saveRoomDescription(rid, value, user);
+			await saveRoomDescription(rid, value, user);
 		}
 	},
 	async roomType({ value, room, rid, user }) {
@@ -267,8 +267,8 @@ const settingSavers: RoomSettingsSavers = {
 			void Team.update(user._id, room.teamId, { type, updateRoom: false });
 		}
 	},
-	streamingOptions({ value, rid }) {
-		saveStreamingOptions(rid, value);
+	async streamingOptions({ value, rid }) {
+		await saveStreamingOptions(rid, value);
 	},
 	async readOnly({ value, room, rid, user }) {
 		if (value !== room.ro) {
