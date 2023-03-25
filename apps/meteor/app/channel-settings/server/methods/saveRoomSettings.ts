@@ -34,7 +34,7 @@ type RoomSettings = {
 	roomType: unknown;
 	readOnly: boolean;
 	reactWhenReadOnly: boolean;
-	systemMessages: unknown;
+	systemMessages: string[];
 	default: boolean;
 	joinCode: string;
 	streamingOptions: unknown;
@@ -281,9 +281,9 @@ const settingSavers: RoomSettingsSavers = {
 			await saveReactWhenReadOnly(rid, value, user);
 		}
 	},
-	systemMessages({ value, room, rid }) {
+	async systemMessages({ value, room, rid }) {
 		if (JSON.stringify(value) !== JSON.stringify(room.sysMes)) {
-			saveRoomSystemMessages(rid, value);
+			await saveRoomSystemMessages(rid, value);
 		}
 	},
 	async joinCode({ value, rid }) {

@@ -34,26 +34,6 @@ class Rooms extends Base {
 		);
 	}
 
-	setSystemMessagesById = function (_id, systemMessages) {
-		const query = {
-			_id,
-		};
-		const update =
-			systemMessages && systemMessages.length > 0
-				? {
-						$set: {
-							sysMes: systemMessages,
-						},
-				  }
-				: {
-						$unset: {
-							sysMes: '',
-						},
-				  };
-
-		return this.update(query, update);
-	};
-
 	setE2eKeyId(_id, e2eKeyId, options) {
 		const query = {
 			_id,
