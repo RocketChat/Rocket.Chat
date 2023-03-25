@@ -726,21 +726,6 @@ class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	setUserById(_id, user) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				u: {
-					_id: user._id,
-					username: user.username,
-				},
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	setOTRForDMByRoomID(rid) {
 		const query = { _id: rid, t: 'd' };
 

@@ -1541,21 +1541,6 @@ export class RoomsRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	setUserById(_id, user) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				u: {
-					_id: user._id,
-					username: user.username,
-				},
-			},
-		};
-
-		return this.updateOne(query, update);
-	}
-
 	setTypeById(_id, type) {
 		const query = { _id };
 		const update = {
