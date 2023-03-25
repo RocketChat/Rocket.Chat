@@ -17,6 +17,7 @@ import type { ResultFor } from '../api';
 import { API } from '../api';
 import { SettingsEvents, settings } from '../../../settings/server';
 import { setValue } from '../../../settings/server/raw';
+import { getPaginationItems } from '../helpers/getPaginationItems';
 
 async function fetchSettings(
 	query: Parameters<typeof Settings.find>[0],
@@ -44,8 +45,8 @@ API.v1.addRoute(
 	{ authRequired: false },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields, query } = await this.parseJsonQuery();
 
 			const ourQuery = {
 				...query,
@@ -118,8 +119,8 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields, query } = await this.parseJsonQuery();
 
 			let ourQuery: Parameters<typeof Settings.find>[0] = {
 				hidden: { $ne: true },

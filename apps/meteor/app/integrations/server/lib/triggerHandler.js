@@ -191,7 +191,7 @@ class RocketChatIntegrationHandler {
 		if (nameOrId || trigger.targetRoom || message.channel) {
 			tmpRoom =
 				(await getRoomByNameOrIdWithOptionToJoin({
-					currentUserId: user._id,
+					user,
 					nameOrId: nameOrId || message.channel || trigger.targetRoom,
 					errorOnEmpty: false,
 				})) || room;

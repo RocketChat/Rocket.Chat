@@ -7,6 +7,7 @@ import { Users } from '../../../../models/server';
 import { Livechat } from '../../../server/lib/Livechat';
 import { findAgents, findManagers } from '../../../server/api/lib/users';
 import { hasAtLeastOnePermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 
 API.v1.addRoute(
 	'livechat/users/:type',
@@ -29,8 +30,8 @@ API.v1.addRoute(
 			check(this.urlParams, {
 				type: String,
 			});
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
 			const { text } = this.queryParams;
 
 			if (this.urlParams.type === 'agent') {
