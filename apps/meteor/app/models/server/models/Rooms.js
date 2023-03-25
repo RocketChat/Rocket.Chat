@@ -701,31 +701,6 @@ class Rooms extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	setJoinCodeById(_id, joinCode) {
-		let update;
-		const query = { _id };
-
-		if ((joinCode != null ? joinCode.trim() : undefined) !== '') {
-			update = {
-				$set: {
-					joinCodeRequired: true,
-					joinCode,
-				},
-			};
-		} else {
-			update = {
-				$set: {
-					joinCodeRequired: false,
-				},
-				$unset: {
-					joinCode: 1,
-				},
-			};
-		}
-
-		return this.update(query, update);
-	}
-
 	setOTRForDMByRoomID(rid) {
 		const query = { _id: rid, t: 'd' };
 
