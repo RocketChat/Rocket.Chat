@@ -233,12 +233,12 @@ const settingSavers: RoomSettingsSavers = {
 			saveRoomTopic(rid, value, user);
 		}
 	},
-	roomAnnouncement({ value, room, rid, user }) {
+	async roomAnnouncement({ value, room, rid, user }) {
 		if (!value && !room.announcement) {
 			return;
 		}
 		if (value !== room.announcement) {
-			saveRoomAnnouncement(rid, value, user);
+			await saveRoomAnnouncement(rid, value, user);
 		}
 	},
 	roomCustomFields({ value, room, rid }) {

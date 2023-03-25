@@ -767,19 +767,6 @@ class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	setAnnouncementById(_id, announcement, announcementDetails) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				announcement,
-				announcementDetails,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	setCustomFieldsById(_id, customFields) {
 		const query = { _id };
 
