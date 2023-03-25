@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { Rooms } from '../../../app/models/client';
 import { APIClient } from '../../../app/utils/client';
-import { getUserAvatarURL } from '../../../app/utils/client/lib/getUserAvatarURL';
+import { getUserAvatarURL } from '../../../app/utils/lib/getUserAvatarURL';
 import { RoomManager } from '../../../client/lib/RoomManager';
 import { baseURI } from '../../../client/lib/baseURI';
 

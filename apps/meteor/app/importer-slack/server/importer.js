@@ -5,7 +5,7 @@ import { Base, ProgressStep, ImporterWebsocket } from '../../importer/server';
 import { Messages } from '../../models/server';
 import { settings } from '../../settings/server';
 import { MentionsParser } from '../../mentions/lib/MentionsParser';
-import { getUserAvatarURL } from '../../utils/client/lib/getUserAvatarURL';
+import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 
 export class SlackImporter extends Base {
 	parseData(data) {
