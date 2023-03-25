@@ -545,19 +545,6 @@ class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	setNameById(_id, name, fname) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				name,
-				fname,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	setFnameById(_id, fname) {
 		const query = { _id };
 
