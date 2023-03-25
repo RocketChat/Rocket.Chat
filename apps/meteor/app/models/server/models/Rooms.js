@@ -281,18 +281,6 @@ class Rooms extends Base {
 
 		return this.update(query, update, { multi: true });
 	}
-
-	setOTRForDMByRoomID(rid) {
-		const query = { _id: rid, t: 'd' };
-
-		const update = {
-			$set: {
-				createdOTR: true,
-			},
-		};
-
-		return this.update(query, update);
-	}
 }
 
 export default new Rooms('room', true);
