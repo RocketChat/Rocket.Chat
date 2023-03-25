@@ -45,7 +45,7 @@ Meteor.methods<ServerMethods>({
 			};
 		}
 
-		return Rooms.findBySubscriptionUserId(user, options).fetch();
+		return RoomsRaw.findBySubscriptionUserId(user, options).toArray();
 	},
 
 	async 'getRoomByTypeAndName'(type, name) {
@@ -59,7 +59,7 @@ Meteor.methods<ServerMethods>({
 
 		const roomFind = roomCoordinator.getRoomFind(type);
 
-		const room = roomFind ? await roomFind.call(this, name) : await Rooms.findByTypeAndNameOrId(type, name);
+		const room = roomFind ? await roomFind.call(this, name) : await RoomsRaw.findByTypeAndNameOrId(type, name);
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {

@@ -96,35 +96,6 @@ class Rooms extends Base {
 
 	// FIND
 
-	findBySubscriptionUserId(userId, options) {
-		const data = Subscriptions.cachedFindByUserId(userId, { fields: { rid: 1 } })
-			.fetch()
-			.map((item) => item.rid);
-
-		const query = {
-			_id: {
-				$in: data,
-			},
-			$or: [
-				{
-					teamId: {
-						$exists: false,
-					},
-				},
-				{
-					teamId: {
-						$exists: true,
-					},
-					_id: {
-						$in: data,
-					},
-				},
-			],
-		};
-
-		return this.find(query, options);
-	}
-
 	findByNameAndType(name, type, options) {
 		const query = {
 			t: type,
