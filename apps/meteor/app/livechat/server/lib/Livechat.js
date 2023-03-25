@@ -1120,7 +1120,7 @@ export const Livechat = {
 	getRoomMessages({ rid }) {
 		check(rid, String);
 
-		const isLivechat = Promise.await(Rooms.findByTypeInIds('l', [rid])).count();
+		const isLivechat = Promise.await(RoomsRaw.findByTypeInIds('l', [rid]).count());
 
 		if (!isLivechat) {
 			throw new Meteor.Error('invalid-room');
