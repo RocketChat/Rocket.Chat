@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
+import { Subscriptions as SubscriptionsRaw, Rooms as RoomsRaw } from '@rocket.chat/models';
 
 import { Rooms, Subscriptions } from '../../../models/server';
 import { settings } from '../../../settings/server';
@@ -167,7 +167,7 @@ export async function notifyUsersOnMessage(message, room) {
 			(!message.tmid || message.tshow) &&
 			(!room.lastMessage || room.lastMessage._id === message._id)
 		) {
-			Rooms.setLastMessageById(message.rid, message);
+			await RoomsRaw.setLastMessageById(message.rid, message);
 		}
 
 		return message;

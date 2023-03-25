@@ -653,18 +653,6 @@ class Rooms extends Base {
 		return this.update(query, update, { multi: true });
 	}
 
-	setLastMessageById(_id, lastMessage) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				lastMessage,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	setOTRForDMByRoomID(rid) {
 		const query = { _id: rid, t: 'd' };
 
