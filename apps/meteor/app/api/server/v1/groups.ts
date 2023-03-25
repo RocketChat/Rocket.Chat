@@ -750,7 +750,7 @@ API.v1.addRoute(
 				...(status && { status: { $in: status } }),
 				skip,
 				limit,
-				...(projection && {projection}),
+				...(projection && { projection }),
 				sort: {
 					_updatedAt: -1,
 					...(sort?.username && { username: sort.username }),
