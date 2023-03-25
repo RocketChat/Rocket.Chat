@@ -65,7 +65,7 @@ export class Spotlight {
 
 		return this.fetchRooms(
 			userId,
-			Rooms.findByNameAndTypesNotInIds(regex, searchableRoomTypeIds, roomIds, roomOptions, includeFederatedRooms).fetch(),
+			await RoomsRaw.findByNameAndTypesNotInIds(regex, searchableRoomTypeIds, roomIds, roomOptions, includeFederatedRooms).toArray(),
 		);
 	}
 

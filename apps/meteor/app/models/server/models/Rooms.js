@@ -123,46 +123,6 @@ class Rooms extends Base {
 		return this._db.find(query, options);
 	}
 
-	findByNameAndTypesNotInIds(name, types, ids, options, includeFederatedRooms = false) {
-		const query = {
-			_id: {
-				$nin: ids,
-			},
-			t: {
-				$in: types,
-			},
-			$or: [
-				{
-					teamId: {
-						$exists: false,
-					},
-				},
-				{
-					teamId: {
-						$exists: true,
-					},
-					_id: {
-						$in: ids,
-					},
-				},
-				{
-					// Also return the main room of public teams
-					// this will have no effect if the method is called without the 'c' type, as the type filter is outside the $or group.
-					teamMain: true,
-					t: 'c',
-				},
-			],
-			...(includeFederatedRooms
-				? {
-						$or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }],
-				  }
-				: { $or: [{ federated: { $exists: false } }, { federated: false }], name }),
-		};
-
-		// do not use cache
-		return this._db.find(query, options);
-	}
-
 	findByDefaultAndTypes(defaultValue, types, options) {
 		const query = {
 			default: defaultValue,
