@@ -125,38 +125,6 @@ class Rooms extends Base {
 		return this.find(query, options);
 	}
 
-	findBySubscriptionUserIdUpdatedAfter(userId, _updatedAt, options) {
-		const ids = Subscriptions.findByUserId(userId, { fields: { rid: 1 } })
-			.fetch()
-			.map((item) => item.rid);
-
-		const query = {
-			_id: {
-				$in: ids,
-			},
-			_updatedAt: {
-				$gt: _updatedAt,
-			},
-			$or: [
-				{
-					teamId: {
-						$exists: false,
-					},
-				},
-				{
-					teamId: {
-						$exists: true,
-					},
-					_id: {
-						$in: ids,
-					},
-				},
-			],
-		};
-
-		return this.find(query, options);
-	}
-
 	findByNameAndType(name, type, options) {
 		const query = {
 			t: type,

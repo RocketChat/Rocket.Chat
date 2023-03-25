@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import type { IRoom, RoomType } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Rooms as RoomsRaw } from '@rocket.chat/models';
 
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { canAccessRoomAsync } from '../../../app/authorization/server';
@@ -26,8 +27,8 @@ const roomMap = (record: IRoom) => {
 };
 
 Meteor.methods<ServerMethods>({
-	'rooms/get'(updatedAt) {
-		const options = { fields: roomFields };
+	async 'rooms/get'(updatedAt) {
+		const options = { projection: roomFields };
 		const user = Meteor.userId();
 
 		if (!user) {
@@ -39,7 +40,7 @@ Meteor.methods<ServerMethods>({
 
 		if (updatedAt instanceof Date) {
 			return {
-				update: Rooms.findBySubscriptionUserIdUpdatedAfter(user, updatedAt, options).fetch(),
+				update: await RoomsRaw.findBySubscriptionUserIdUpdatedAfter(user, updatedAt, options).toArray(),
 				remove: Rooms.trashFindDeletedAfter(updatedAt, {}, { fields: { _id: 1, _deletedAt: 1 } }).fetch(),
 			};
 		}
