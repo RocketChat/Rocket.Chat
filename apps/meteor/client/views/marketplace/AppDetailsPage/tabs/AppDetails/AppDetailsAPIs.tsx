@@ -4,7 +4,7 @@ import { useAbsoluteUrl, useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { Fragment } from 'react';
 
-import { apiCurlGetter } from '../../../helpers';
+import { apiCurlGetter } from '../../../helpers/apiCurlGetter';
 
 type AppDetailsAPIsProps = {
 	apis: IApiEndpointMetadata[];

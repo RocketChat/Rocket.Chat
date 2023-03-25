@@ -9,7 +9,7 @@ import { Apps } from '../../../ee/client/apps/orchestrator';
 import type { AsyncState } from '../../lib/asyncState';
 import { AsyncStatePhase } from '../../lib/asyncState';
 import { AppsContext } from './AppsContext';
-import { handleAPIError } from './helpers';
+import { handleAPIError } from './helpers/handleAPIError';
 import { useInvalidateAppsCountQueryCallback } from './hooks/useAppsCountQuery';
 import type { App } from './types';
 

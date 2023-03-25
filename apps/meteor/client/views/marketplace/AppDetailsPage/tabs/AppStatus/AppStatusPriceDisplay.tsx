@@ -5,7 +5,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { FC } from 'react';
 import React, { useMemo } from 'react';
 
-import { formatPriceAndPurchaseType } from '../../../helpers';
+import { formatPriceAndPurchaseType } from '../../../helpers/formatPriceAndPurchaseType';
 
 type AppStatusPriceDisplayProps = {
 	purchaseType: PurchaseType;
