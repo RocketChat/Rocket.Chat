@@ -5,6 +5,7 @@ import { LivechatVoip } from '@rocket.chat/core-services';
 
 import { API } from '../../api';
 import { logger } from './logger';
+import { getPaginationItems } from '../../helpers/getPaginationItems';
 
 function filter(
 	array: IVoipExtensionWithAgentInfo[],
@@ -219,8 +220,8 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['manage-agent-extension-association'] },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { status, agentId, queues, extension } = this.requestParams();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { status, agentId, queues, extension } = this.queryParams;
 
 			check(status, Match.Maybe(String));
 			check(agentId, Match.Maybe(String));
@@ -246,8 +247,8 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['manage-agent-extension-association'] },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
 			const { text, includeExtension = '' } = this.queryParams;
 
 			const { agents, total } = await LivechatVoip.getAvailableAgents(includeExtension, text, count, offset, sort);

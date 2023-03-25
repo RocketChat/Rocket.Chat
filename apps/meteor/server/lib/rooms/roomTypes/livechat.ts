@@ -22,7 +22,7 @@ roomCoordinator.add(LivechatRoomType, {
 		return ([RoomMemberActions.INVITE, RoomMemberActions.JOIN] as Array<ValueOf<typeof RoomMemberActions>>).includes(action);
 	},
 
-	roomName(room, _userId?) {
+	async roomName(room, _userId?) {
 		return room.name || room.fname || (room as any).label;
 	},
 
@@ -30,7 +30,7 @@ roomCoordinator.add(LivechatRoomType, {
 		return token && rid && !!Promise.await(LivechatRooms.findOneOpenByRoomIdAndVisitorToken(rid, token));
 	},
 
-	getNotificationDetails(room, _sender, notificationMessage, userId) {
+	async getNotificationDetails(room, _sender, notificationMessage, userId) {
 		const title = `[Omnichannel] ${this.roomName(room, userId)}`;
 		const text = notificationMessage;
 
