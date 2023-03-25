@@ -225,20 +225,6 @@ class Rooms extends Base {
 		return this.find(query, options);
 	}
 
-	findByTypeInIdsAndNameContaining(type, ids, name, options) {
-		const nameRegex = new RegExp(trim(escapeRegExp(name)), 'i');
-
-		const query = {
-			_id: {
-				$in: ids,
-			},
-			name: nameRegex,
-			t: type,
-		};
-
-		return this.find(query, options);
-	}
-
 	findByTypeAndArchivationState(type, archivationstate, options) {
 		const query = { t: type };
 

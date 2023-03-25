@@ -76,7 +76,7 @@ Meteor.methods<ServerMethods>({
 					.fetch()
 					.map((s: ISubscription) => s.rid);
 				if (filter) {
-					channels = channels.concat(Rooms.findByTypeInIdsAndNameContaining('c', roomIds, filter, options).fetch());
+					channels = channels.concat(await RoomsRaw.findByTypeInIdsAndNameContaining('c', roomIds, filter, options).toArray());
 				} else {
 					channels = channels.concat(await RoomsRaw.findByTypeInIds('c', roomIds, options).toArray());
 				}
@@ -99,7 +99,7 @@ Meteor.methods<ServerMethods>({
 					.fetch()
 					.map((s: ISubscription) => s.rid);
 				if (filter) {
-					channels = channels.concat(Rooms.findByTypeInIdsAndNameContaining('p', roomIds, filter, options).fetch());
+					channels = channels.concat(await RoomsRaw.findByTypeInIdsAndNameContaining('p', roomIds, filter, options).toArray());
 				} else {
 					channels = channels.concat(await RoomsRaw.findByTypeInIds('p', roomIds, options).toArray());
 				}
