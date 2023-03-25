@@ -96,12 +96,6 @@ class Rooms extends Base {
 
 	// FIND
 
-	findByUserId(userId, options) {
-		const query = { 'u._id': userId };
-
-		return this.find(query, options);
-	}
-
 	findBySubscriptionUserId(userId, options) {
 		const data = Subscriptions.cachedFindByUserId(userId, { fields: { rid: 1 } })
 			.fetch()
