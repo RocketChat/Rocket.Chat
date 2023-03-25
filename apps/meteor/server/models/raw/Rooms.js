@@ -1031,7 +1031,7 @@ export class RoomsRaw extends BaseRaw {
 	// FIND
 
 	findById(roomId, options) {
-		return this.find({ _id: roomId }, options);
+		return this.findOne({ _id: roomId }, options);
 	}
 
 	findByIds(roomIds, options) {
