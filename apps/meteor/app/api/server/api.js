@@ -16,6 +16,8 @@ import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUse
 import { checkCodeForUser } from '../../2fa/server/code';
 import { checkPermissionsForInvocation, checkPermissions } from './api.helpers';
 import { isObject } from '../../../lib/utils/isObject';
+import { getUserInfo } from './helpers/getUserInfo';
+import { parseJsonQuery } from './helpers/parseJsonQuery';
 
 const logger = new Logger('API');
 
@@ -98,20 +100,12 @@ export class APIClass extends Restivus {
 		};
 	}
 
-	hasHelperMethods() {
-		return API.helperMethods.size !== 0;
-	}
-
-	getHelperMethods() {
-		return API.helperMethods;
-	}
-
-	getHelperMethod(name) {
-		return API.helperMethods.get(name);
-	}
-
 	addAuthMethod(method) {
 		this.authMethods.push(method);
+	}
+
+	async parseJsonQuery() {
+		return parseJsonQuery(this.request.route, this.userId, this.queryParams, this.logger, this.queryFields, this.queryOperations);
 	}
 
 	shouldAddRateLimitToRoute(options) {
@@ -460,6 +454,7 @@ export class APIClass extends Restivus {
 
 						this.queryOperations = options.queryOperations;
 						this.queryFields = options.queryFields;
+						this.parseJsonQuery = api.parseJsonQuery.bind(this);
 
 						result = (await DDP._CurrentInvocation.withValue(invocation, async () => originalAction.apply(this))) || API.v1.success();
 
@@ -491,12 +486,6 @@ export class APIClass extends Restivus {
 
 					return result;
 				};
-
-				for (const [name, helperMethod] of this.getHelperMethods()) {
-					endpoints[method][name] = function (...args) {
-						return Promise.await(helperMethod.apply(this, args));
-					};
-				}
 
 				// Allow the endpoints to make usage of the logger which respects the user's settings
 				endpoints[method].logger = logger;
@@ -587,7 +576,6 @@ export class APIClass extends Restivus {
 			{
 				async post() {
 					const args = loginCompatibility(this.bodyParams, this.request);
-					const getUserInfo = self.getHelperMethod('getUserInfo');
 
 					const invocation = new DDPCommon.MethodInvocation({
 						connection: {

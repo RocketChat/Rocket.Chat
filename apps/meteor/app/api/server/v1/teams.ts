@@ -20,14 +20,15 @@ import { Rooms, Users } from '../../../models/server';
 import { canAccessRoomAsync, hasAtLeastOnePermission } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
+import { getPaginationItems } from '../helpers/getPaginationItems';
 
 API.v1.addRoute(
 	'teams.list',
 	{ authRequired: true },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, query } = await this.parseJsonQuery();
 
 			const { records, total } = await Team.list(this.userId, { offset, count }, { sort, query });
 
@@ -50,7 +51,7 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			const { records, total } = await Team.listAll({ offset, count });
 
@@ -160,18 +161,13 @@ API.v1.addRoute(
 				Match.OneOf(
 					Match.ObjectIncluding({
 						teamId: String,
+						rooms: [String],
 					}),
 					Match.ObjectIncluding({
 						teamName: String,
+						rooms: [String],
 					}),
 				),
-			);
-
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					rooms: [String],
-				}),
 			);
 
 			const team = await getTeamByIdOrName(this.bodyParams);
@@ -274,11 +270,13 @@ API.v1.addRoute(
 				Match.ObjectIncluding({
 					filter: Match.Maybe(String),
 					type: Match.Maybe(String),
+					offset: Match.Maybe(String),
+					count: Match.Maybe(String),
 				}),
 			);
 
 			const { filter, type } = this.queryParams;
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			const team = await getTeamByIdOrName(this.queryParams);
 			if (!team) {
@@ -336,10 +334,12 @@ API.v1.addRoute(
 				Match.ObjectIncluding({
 					userId: String,
 					canUserDelete: Match.Maybe(String),
+					offset: Match.Maybe(String),
+					count: Match.Maybe(String),
 				}),
 			);
 
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			const team = await getTeamByIdOrName(this.queryParams);
 			if (!team) {
@@ -375,7 +375,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			check(
 				this.queryParams,

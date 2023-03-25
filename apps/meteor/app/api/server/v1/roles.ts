@@ -13,6 +13,8 @@ import { settings } from '../../../settings/server/index';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { getUserFromParams } from '../helpers/getUserFromParams';
+import { getPaginationItems } from '../helpers/getPaginationItems';
 
 API.v1.addRoute(
 	'roles.list',
@@ -59,7 +61,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-role-properties', isRoleAddUserToRoleProps.errors?.map((error) => error.message).join('\n'));
 			}
 
-			const user = this.getUserFromParams();
+			const user = await getUserFromParams(this.bodyParams);
 			const { roleId, roleName, roomId } = this.bodyParams;
 
 			if (!roleId) {
@@ -94,7 +96,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId, role } = this.queryParams;
-			const { offset, count = 50 } = this.getPaginationItems();
+			const { offset, count = 50 } = await getPaginationItems(this.queryParams);
 
 			const projection = {
 				name: 1,
