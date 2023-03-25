@@ -123,12 +123,15 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	// TODO check types
 	setLastMessagePinned(roomId: string, pinnedBy: unknown, pinned?: boolean, pinnedAt?: Date): Promise<UpdateResult>;
 	setLastMessageAsRead(roomId: string): Promise<UpdateResult>;
-	// TODO check types
-	setSentiment(roomId: string, sentiment: string): Promise<UpdateResult>;
 	setDescriptionById(roomId: string, description: string): Promise<UpdateResult>;
 	setStreamingOptionsById(roomId: string, streamingOptions: IRoom['streamingOptions']): Promise<UpdateResult>;
 	setReadOnlyById(roomId: string, readOnly: boolean): Promise<UpdateResult>;
-	setDmReadOnlyByUserId(roomId: string, ids: string[], readOnly: boolean, reactWhenReadOnly: boolean): Promise<UpdateResult | Document>;
+	setDmReadOnlyByUserId(
+		roomId: string,
+		ids: string[] | undefined,
+		readOnly: boolean,
+		reactWhenReadOnly: boolean,
+	): Promise<UpdateResult | Document>;
 	getDirectConversationsByUserId(userId: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	setAllowReactingWhenReadOnlyById(roomId: string, allowReactingWhenReadOnly: boolean): Promise<UpdateResult>;
 	setAvatarData(roomId: string, origin: string, etag: string): Promise<UpdateResult>;
@@ -224,8 +227,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	removeById(rid: string): Promise<DeleteResult>;
 	removeByIds(rids: string[]): Promise<DeleteResult>;
 	removeDirectRoomContainingUsername(username: string): Promise<DeleteResult>;
-	findDiscussionParentByNameStarting(name: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
-	setLinkMessageById(rid: string, linkMessage: string): Promise<UpdateResult>;
-	countDiscussions(rid: string): Promise<number>;
+	countDiscussions(): Promise<number>;
 	setOTRForDMByRoomID(rid: string): Promise<UpdateResult>;
 }

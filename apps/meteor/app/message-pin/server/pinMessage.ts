@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
-import { Messages as MessagesRaw } from '@rocket.chat/models';
+import { Messages as MessagesRaw, Rooms } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
@@ -11,7 +11,7 @@ import { isTheLastMessage } from '../../lib/server';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
-import { Subscriptions, Messages, Users, Rooms } from '../../models/server';
+import { Subscriptions, Messages, Users } from '../../models/server';
 import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
 import { isTruthy } from '../../../lib/isTruthy';
 
@@ -89,7 +89,12 @@ Meteor.methods<ServerMethods>({
 			await MessagesRaw.cloneAndSaveAsHistoryById(message._id, me);
 		}
 
-		const room = Rooms.findOneById(originalMessage.rid);
+		const room = await Rooms.findOneById(originalMessage.rid);
+
+		if (!room) {
+			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'unpinMessage' });
+		}
+
 		if (!(await canAccessRoomAsync(room, { _id: userId }))) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
 		}
@@ -105,7 +110,7 @@ Meteor.methods<ServerMethods>({
 
 		await MessagesRaw.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
 		if (isTheLastMessage(room, message)) {
-			Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
+			await Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
 		}
 
 		const attachments: MessageAttachment[] = [];
@@ -186,13 +191,17 @@ Meteor.methods<ServerMethods>({
 		};
 		originalMessage = callbacks.run('beforeSaveMessage', originalMessage);
 
-		const room = Rooms.findOneById(originalMessage.rid, { fields: { ...roomAccessAttributes, lastMessage: 1 } });
+		const room = await Rooms.findOneById(originalMessage.rid, { fields: { ...roomAccessAttributes, lastMessage: 1 } });
+		if (!room) {
+			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'unpinMessage' });
+		}
+
 		if (!(await canAccessRoomAsync(room, { _id: userId }))) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'unpinMessage' });
 		}
 
 		if (isTheLastMessage(room, message)) {
-			Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
+			await Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
 		}
 
 		// App IPostMessagePinned event hook

@@ -895,10 +895,6 @@ export class RoomsRaw extends BaseRaw {
 		);
 	}
 
-	setSentiment(roomId, sentiment) {
-		return this.updateOne({ _id: roomId }, { $set: { sentiment } });
-	}
-
 	setDescriptionById(_id, description) {
 		const query = {
 			_id,
@@ -1850,37 +1846,6 @@ export class RoomsRaw extends BaseRaw {
 		};
 
 		return this.deleteMany(query);
-	}
-
-	// ############################
-	// Discussion
-	findDiscussionParentByNameStarting(name, options) {
-		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
-
-		const query = {
-			t: {
-				$in: ['c'],
-			},
-			name: nameRegex,
-			archived: { $ne: true },
-			prid: {
-				$exists: false,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	setLinkMessageById(_id, linkMessageId) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				linkMessageId,
-			},
-		};
-
-		return this.updateOne(query, update);
 	}
 
 	countDiscussions() {
