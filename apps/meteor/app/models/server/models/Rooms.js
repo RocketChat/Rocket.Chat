@@ -582,32 +582,6 @@ class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	incMsgCountAndSetLastMessageById(_id, inc, lastMessageTimestamp, lastMessage) {
-		if (inc == null) {
-			inc = 1;
-		}
-		const query = { _id };
-
-		const update = {
-			$set: {
-				lm: lastMessageTimestamp,
-			},
-			$inc: {
-				msgs: inc,
-			},
-		};
-
-		if (lastMessage) {
-			update.$set.lastMessage = lastMessage;
-		}
-
-		return this.update(query, update);
-	}
-
-	decreaseMessageCountById(_id, count = 1) {
-		return this.incMsgCountById(_id, -count);
-	}
-
 	incUsersCountById(_id, inc = 1) {
 		const query = { _id };
 

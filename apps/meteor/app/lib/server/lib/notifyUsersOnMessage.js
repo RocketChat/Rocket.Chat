@@ -185,7 +185,7 @@ export async function notifyUsersOnMessage(message, room) {
 	}
 
 	// Update all the room activity tracker fields
-	Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, settings.get('Store_Last_Message') && message);
+	await RoomsRaw.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, settings.get('Store_Last_Message') && message);
 
 	await updateUsersSubscriptions(message, room);
 
