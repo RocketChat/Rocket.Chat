@@ -147,7 +147,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		options?: FindOptions<IRoom>,
 		includeFederatedRooms?: boolean,
 	): Promise<IRoom | null>;
-	findById(rid: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findById(rid: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 	findByIds(rids: string[], options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findByType(type: IRoom['t'], options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findByTypeInIds(type: IRoom['t'], ids: string[], options?: FindOptions<IRoom>): FindCursor<IRoom>;
