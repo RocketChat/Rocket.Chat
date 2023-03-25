@@ -96,10 +96,6 @@ class Rooms extends Base {
 
 	// FIND
 
-	findByIds(roomIds, options) {
-		return this.find({ _id: { $in: [].concat(roomIds) } }, options);
-	}
-
 	findByType(type, options) {
 		const query = { t: type };
 
