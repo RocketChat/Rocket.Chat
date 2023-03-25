@@ -56,7 +56,7 @@ export const roomAvatar = Meteor.bindEnvironment(async function (req, res /* , n
 		return FileUpload.get(file, req, res);
 	}
 
-	const roomName = roomCoordinator.getRoomName(room.t, room, uid);
+	const roomName = await roomCoordinator.getRoomName(room.t, room, uid);
 
 	setCacheAndDispositionHeaders(req, res);
 

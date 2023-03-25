@@ -10,14 +10,14 @@ function getOplogInfo() {
 	return { oplogEnabled, mongo };
 }
 
-function fallbackMongoInfo() {
+async function fallbackMongoInfo() {
 	let mongoVersion;
 	let mongoStorageEngine;
 
 	const { oplogEnabled, mongo } = getOplogInfo();
 
 	try {
-		const { version } = Promise.await(mongo.db.command({ buildinfo: 1 }));
+		const { version } = await mongo.db.command({ buildinfo: 1 });
 		mongoVersion = version;
 		mongoStorageEngine = 'unknown';
 	} catch (e) {
