@@ -7,7 +7,7 @@ import { callbacks } from '../../../../lib/callbacks';
 
 export const saveRoomTopic = async function (
 	rid: string,
-	roomTopic?: string,
+	roomTopic: string | undefined,
 	user: {
 		username: string;
 		_id: string;

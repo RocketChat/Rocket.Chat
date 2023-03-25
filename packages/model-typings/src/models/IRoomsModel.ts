@@ -193,7 +193,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	replaceUsernameOfUserByUserId(userId: string, newUsername: string): Promise<UpdateResult | Document>;
 	setJoinCodeById(rid: string, joinCode: string): Promise<UpdateResult>;
 	setTypeById(rid: string, type: IRoom['t']): Promise<UpdateResult>;
-	setTopicById(rid: string, topic: string): Promise<UpdateResult>;
+	setTopicById(rid: string, topic?: string | undefined): Promise<UpdateResult>;
 	setAnnouncementById(
 		rid: string,
 		announcement: IRoom['announcement'],
