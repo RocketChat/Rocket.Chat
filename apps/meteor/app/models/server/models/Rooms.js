@@ -215,20 +215,6 @@ class Rooms extends Base {
 	}
 
 	// UPDATE
-	addImportIds(_id, importIds) {
-		importIds = [].concat(importIds);
-		const query = { _id };
-
-		const update = {
-			$addToSet: {
-				importIds: {
-					$each: importIds,
-				},
-			},
-		};
-
-		return this.update(query, update);
-	}
 
 	archiveById(_id) {
 		const query = { _id };
