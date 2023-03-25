@@ -818,7 +818,7 @@ API.v1.addRoute(
 				};
 			}
 
-			const params = this.queryParams as Record<string, any>;
+			const params = this.queryParams;
 			const { offset, count } = await getPaginationItems(params);
 			const { sort, fields: projection, query } = await this.parseJsonQuery();
 
@@ -866,7 +866,7 @@ API.v1.addRoute(
 		async post() {
 			const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-			const users = await getUserListFromParams(this.bodyParams as Record<string, any>);
+			const users = await getUserListFromParams(this.bodyParams);
 
 			if (!users.length) {
 				return API.v1.failure('invalid-user-invite-list', 'Cannot invite if no users are provided');

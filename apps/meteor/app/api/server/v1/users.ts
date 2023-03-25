@@ -1050,7 +1050,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			if (isUserFromParams(this.queryParams as Record<string, any>, this.userId, this.user)) {
+			if (isUserFromParams(this.queryParams, this.userId, this.user)) {
 				const user = Users.findOneById(this.userId);
 				return API.v1.success({
 					presence: user.status || 'offline',
