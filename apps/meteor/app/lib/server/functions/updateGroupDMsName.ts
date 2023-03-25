@@ -16,7 +16,13 @@ async function getUsersWhoAreInTheSameGroupDMsAs(user: IUser) {
 	const userIds = new Set();
 	const users = new Map();
 
-	await rooms.forEach((room) => room.uids.forEach((uid) => uid !== user._id && userIds.add(uid)));
+	await rooms.forEach((room) => {
+		if (!room.uids) {
+			return;
+		}
+
+		room.uids.forEach((uid) => uid !== user._id && userIds.add(uid));
+	});
 
 	Users.findByIds([...userIds], { fields: { username: 1, name: 1 } }).forEach((user: IUser) => users.set(user._id, user));
 
@@ -33,7 +39,7 @@ export const updateGroupDMsName = async (userThatChangedName: IUser) => {
 		return;
 	}
 
-	const users: any = getUsersWhoAreInTheSameGroupDMsAs(userThatChangedName);
+	const users = await getUsersWhoAreInTheSameGroupDMsAs(userThatChangedName);
 	if (!users) {
 		return;
 	}
@@ -47,6 +53,10 @@ export const updateGroupDMsName = async (userThatChangedName: IUser) => {
 
 	// loop rooms to update the subcriptions from them all
 	await rooms.forEach((room) => {
+		if (!room.uids) {
+			return;
+		}
+
 		const members = getMembers(room.uids);
 		const sortedMembers = members.sort(sortUsersAlphabetically);
 

@@ -43,6 +43,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		return Rooms.setE2eKeyId(room._id, keyID);
+		await Rooms.setE2eKeyId(room._id, keyID);
 	},
 });
