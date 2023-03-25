@@ -46,8 +46,8 @@ type RoomSettings = {
 	retentionOverrideGlobal: boolean;
 	encrypted: boolean;
 	favorite: {
-		favorite: unknown;
-		defaultValue: unknown;
+		favorite: boolean;
+		defaultValue: boolean;
 	};
 };
 
@@ -316,8 +316,8 @@ const settingSavers: RoomSettingsSavers = {
 	encrypted({ value, room, rid, user }) {
 		void saveRoomEncrypted(rid, value, user, Boolean(room.encrypted) !== Boolean(value));
 	},
-	favorite({ value, rid }) {
-		Rooms.saveFavoriteById(rid, value.favorite, value.defaultValue);
+	async favorite({ value, rid }) {
+		await RoomsAsync.saveFavoriteById(rid, value.favorite, value.defaultValue);
 	},
 	async roomAvatar({ value, rid, user }) {
 		await setRoomAvatar(rid, value, user);
