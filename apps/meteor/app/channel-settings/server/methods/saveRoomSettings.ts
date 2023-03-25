@@ -25,7 +25,7 @@ import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 
 type RoomSettings = {
 	roomAvatar: string;
-	featured: unknown;
+	featured: boolean;
 	roomName: string | undefined;
 	roomTopic: unknown;
 	roomAnnouncement: unknown;
@@ -292,8 +292,8 @@ const settingSavers: RoomSettingsSavers = {
 	async default({ value, rid }) {
 		await RoomsAsync.saveDefaultById(rid, value);
 	},
-	featured({ value, rid }) {
-		Rooms.saveFeaturedById(rid, value);
+	async featured({ value, rid }) {
+		await RoomsAsync.saveFeaturedById(rid, value);
 	},
 	async retentionEnabled({ value, rid }) {
 		await RoomsAsync.saveRetentionEnabledById(rid, value);

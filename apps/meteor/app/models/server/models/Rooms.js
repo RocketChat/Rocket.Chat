@@ -822,19 +822,6 @@ class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	saveFeaturedById(_id, featured) {
-		const query = { _id };
-		const set = ['true', true].includes(featured);
-
-		const update = {
-			[set ? '$set' : '$unset']: {
-				featured: true,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	setOTRForDMByRoomID(rid) {
 		const query = { _id: rid, t: 'd' };
 
