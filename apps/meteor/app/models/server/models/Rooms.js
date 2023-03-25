@@ -792,21 +792,6 @@ class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	muteUsernameByRoomId(_id, username) {
-		const query = { _id };
-
-		const update = {
-			$addToSet: {
-				muted: username,
-			},
-			$pull: {
-				unmuted: username,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	setOTRForDMByRoomID(rid) {
 		const query = { _id: rid, t: 'd' };
 
