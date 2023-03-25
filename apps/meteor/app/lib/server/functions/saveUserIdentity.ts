@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Messages as MessagesRaw, VideoConference, LivechatDepartmentAgents } from '@rocket.chat/models';
+import { Messages as MessagesRaw, VideoConference, LivechatDepartmentAgents, Rooms as RoomsAsync } from '@rocket.chat/models';
 
 import { _setUsername } from './setUsername';
 import { _setRealName } from './setRealName';
@@ -57,7 +57,7 @@ export async function saveUserIdentity({ _id, name: rawName, username: rawUserna
 			});
 			Rooms.replaceUsername(previousUsername, username);
 			Rooms.replaceMutedUsername(previousUsername, username);
-			Rooms.replaceUsernameOfUserByUserId(user._id, username);
+			await RoomsAsync.replaceUsernameOfUserByUserId(user._id, username);
 			Subscriptions.setUserUsernameByUserId(user._id, username);
 
 			await LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
