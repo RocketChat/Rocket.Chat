@@ -27,7 +27,7 @@ type RoomSettings = {
 	roomAvatar: string;
 	featured: boolean;
 	roomName: string | undefined;
-	roomTopic: unknown;
+	roomTopic: string;
 	roomAnnouncement: unknown;
 	roomCustomFields: unknown;
 	roomDescription: unknown;
@@ -225,12 +225,12 @@ const settingSavers: RoomSettingsSavers = {
 			});
 		}
 	},
-	roomTopic({ value, room, rid, user }) {
+	async roomTopic({ value, room, rid, user }) {
 		if (!value && !room.topic) {
 			return;
 		}
 		if (value !== room.topic) {
-			saveRoomTopic(rid, value, user);
+			await saveRoomTopic(rid, value, user);
 		}
 	},
 	async roomAnnouncement({ value, room, rid, user }) {
