@@ -38,7 +38,7 @@ type RoomSettings = {
 	default: unknown;
 	joinCode: unknown;
 	streamingOptions: unknown;
-	retentionEnabled: unknown;
+	retentionEnabled: boolean;
 	retentionMaxAge: number;
 	retentionExcludePinned: boolean;
 	retentionFilesOnly: boolean;
@@ -295,8 +295,8 @@ const settingSavers: RoomSettingsSavers = {
 	featured({ value, rid }) {
 		Rooms.saveFeaturedById(rid, value);
 	},
-	retentionEnabled({ value, rid }) {
-		Rooms.saveRetentionEnabledById(rid, value);
+	async retentionEnabled({ value, rid }) {
+		await RoomsAsync.saveRetentionEnabledById(rid, value);
 	},
 	async retentionMaxAge({ value, rid }) {
 		await RoomsAsync.saveRetentionMaxAgeById(rid, value);
