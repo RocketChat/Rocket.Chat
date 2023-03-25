@@ -94,20 +94,6 @@ class Rooms extends Base {
 		return this.findOne(query, options);
 	}
 
-	findOneByNameAndType(name, type, options, includeFederatedRooms = false) {
-		const query = {
-			t: type,
-			teamId: {
-				$exists: false,
-			},
-			...(includeFederatedRooms
-				? { $or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }] }
-				: { $or: [{ federated: { $exists: false } }, { federated: false }], name }),
-		};
-
-		return this.findOne(query, options);
-	}
-
 	// FIND
 
 	findById(roomId, options) {
