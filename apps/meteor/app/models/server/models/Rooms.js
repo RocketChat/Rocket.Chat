@@ -835,18 +835,6 @@ class Rooms extends Base {
 		return this.update(query, update);
 	}
 
-	saveDefaultById(_id, defaultValue) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				default: defaultValue,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	setOTRForDMByRoomID(rid) {
 		const query = { _id: rid, t: 'd' };
 

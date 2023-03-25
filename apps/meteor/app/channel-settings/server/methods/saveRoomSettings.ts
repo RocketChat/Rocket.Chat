@@ -35,7 +35,7 @@ type RoomSettings = {
 	readOnly: boolean;
 	reactWhenReadOnly: unknown;
 	systemMessages: unknown;
-	default: unknown;
+	default: boolean;
 	joinCode: unknown;
 	streamingOptions: unknown;
 	retentionEnabled: boolean;
@@ -289,8 +289,8 @@ const settingSavers: RoomSettingsSavers = {
 	joinCode({ value, rid }) {
 		Rooms.setJoinCodeById(rid, String(value));
 	},
-	default({ value, rid }) {
-		Rooms.saveDefaultById(rid, value);
+	async default({ value, rid }) {
+		await RoomsAsync.saveDefaultById(rid, value);
 	},
 	featured({ value, rid }) {
 		Rooms.saveFeaturedById(rid, value);
