@@ -67,7 +67,7 @@ Meteor.methods<ServerMethods>({
 		if (channelType !== 'private') {
 			if (await hasPermissionAsync(userId, 'view-c-room')) {
 				if (filter) {
-					channels = channels.concat(Rooms.findByTypeAndNameContaining('c', filter, options).fetch());
+					channels = channels.concat(await RoomsRaw.findByTypeAndNameContaining('c', filter, options).toArray());
 				} else {
 					channels = channels.concat(await RoomsRaw.findByType('c', options).toArray());
 				}
