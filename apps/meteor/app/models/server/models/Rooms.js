@@ -1,7 +1,4 @@
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-
 import { Base } from './_Base';
-import Subscriptions from './Subscriptions';
 import { trim } from '../../../../lib/utils/stringUtils';
 
 class Rooms extends Base {
@@ -215,18 +212,6 @@ class Rooms extends Base {
 	}
 
 	// UPDATE
-
-	unarchiveById(_id) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				archived: false,
-			},
-		};
-
-		return this.update(query, update);
-	}
 
 	setFnameById(_id, fname) {
 		const query = { _id };
