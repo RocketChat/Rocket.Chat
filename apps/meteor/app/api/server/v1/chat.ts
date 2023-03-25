@@ -13,6 +13,7 @@ import { settings } from '../../../settings/server';
 import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
+import { getPaginationItems } from '../helpers/getPaginationItems';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 
 API.v1.addRoute(
@@ -173,7 +174,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId, searchText } = this.queryParams;
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!roomId) {
 				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
@@ -406,7 +407,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId, since } = this.queryParams;
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!roomId) {
 				throw new Meteor.Error('The required "roomId" query param is missing.');
@@ -446,7 +447,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId } = this.queryParams;
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!roomId) {
 				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
@@ -483,8 +484,8 @@ API.v1.addRoute(
 			check(type, Match.Maybe(String));
 			check(text, Match.Maybe(String));
 
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields, query } = await this.parseJsonQuery();
 
 			if (!settings.get<boolean>('Threads_enabled')) {
 				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
@@ -529,7 +530,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { rid } = this.queryParams;
-			const { query, fields, sort } = this.parseJsonQuery();
+			const { query, fields, sort } = await this.parseJsonQuery();
 			const { updatedSince } = this.queryParams;
 			let updatedSinceDate;
 			if (!settings.get<boolean>('Threads_enabled')) {
@@ -578,8 +579,8 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { tmid } = this.queryParams;
-			const { query, fields, sort } = this.parseJsonQuery();
-			const { offset, count } = this.getPaginationItems();
+			const { query, fields, sort } = await this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!settings.get('Threads_enabled')) {
 				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
@@ -625,7 +626,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { tmid } = this.queryParams;
-			const { query, fields, sort } = this.parseJsonQuery();
+			const { query, fields, sort } = await this.parseJsonQuery();
 			const { updatedSince } = this.queryParams;
 			let updatedSinceDate;
 			if (!settings.get<boolean>('Threads_enabled')) {
@@ -704,8 +705,8 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId } = this.queryParams;
-			const { sort } = this.parseJsonQuery();
-			const { offset, count } = this.getPaginationItems();
+			const { sort } = await this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			if (!roomId) {
 				throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
 			}
@@ -730,8 +731,8 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId } = this.queryParams;
-			const { sort } = this.parseJsonQuery();
-			const { offset, count } = this.getPaginationItems();
+			const { sort } = await this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!roomId) {
 				throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
@@ -759,8 +760,8 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId, text } = this.queryParams;
-			const { sort } = this.parseJsonQuery();
-			const { offset, count } = this.getPaginationItems();
+			const { sort } = await this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!roomId) {
 				throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');

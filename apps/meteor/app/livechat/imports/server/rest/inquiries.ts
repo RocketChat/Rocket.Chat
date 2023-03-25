@@ -13,15 +13,16 @@ import { API } from '../../../../api/server';
 import { Users, LivechatDepartment } from '../../../../models/server';
 import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';
 import { deprecationWarning } from '../../../../api/server/helpers/deprecationWarning';
+import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 
 API.v1.addRoute(
 	'livechat/inquiries.list',
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isGETLivechatInquiriesListParams },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
-			const { department } = this.requestParams();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
+			const { department } = this.queryParams;
 			const ourQuery: { status: string; department?: string } = { status: 'queued' };
 			if (department) {
 				const departmentFromDB = LivechatDepartment.findOneByIdOrName(department);
@@ -77,9 +78,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isGETLivechatInquiriesQueuedParams },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
-			const { department } = this.requestParams();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
+			const { department } = this.queryParams;
 
 			return API.v1.success(
 				deprecationWarning({
@@ -106,9 +107,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isGETLivechatInquiriesQueuedForUserParams },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
-			const { department } = this.requestParams();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
+			const { department } = this.queryParams;
 
 			return API.v1.success(
 				await findInquiries({
