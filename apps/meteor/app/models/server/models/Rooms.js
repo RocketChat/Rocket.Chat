@@ -237,16 +237,6 @@ class Rooms extends Base {
 		return this.find(query, options);
 	}
 
-	findGroupDMsByUids(uids, options) {
-		return this.find(
-			{
-				usersCount: { $gt: 2 },
-				uids,
-			},
-			options,
-		);
-	}
-
 	find1On1ByUserId(userId, options) {
 		return this.find(
 			{

@@ -79,7 +79,7 @@ export async function saveUserIdentity({ _id, name: rawName, username: rawUserna
 			Subscriptions.updateDirectNameAndFnameByName(previousUsername, rawUsername && username, rawName && name);
 
 			// update name and fname of group direct messages
-			updateGroupDMsName(user);
+			await updateGroupDMsName(user);
 
 			// update name and username of users on video conferences
 			await VideoConference.updateUserReferences(user._id, username || previousUsername, name || previousName);

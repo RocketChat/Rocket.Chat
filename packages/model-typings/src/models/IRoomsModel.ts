@@ -1,5 +1,5 @@
 import type { FindCursor, AggregationCursor, Document, FindOptions, UpdateResult, DeleteResult } from 'mongodb';
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IDirectMessageRoom, IMessage, IRoom } from '@rocket.chat/core-typings';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -173,7 +173,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findByTypeAndNameContaining(type: IRoom['t'], name: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findByTypeInIdsAndNameContaining(type: IRoom['t'], ids: string[], name: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findByTypeAndArchivationState(type: IRoom['t'], archived: boolean, options?: FindOptions<IRoom>): FindCursor<IRoom>;
-	findGroupDMsByUids(uids: string[], options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findGroupDMsByUids(uids: string[], options?: FindOptions<IDirectMessageRoom>): FindCursor<IDirectMessageRoom>;
 	find1On1ByUserId(userId: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findByCreatedOTR(): FindCursor<IRoom>;
 	addImportIds(rid: string, importIds: string[]): Promise<UpdateResult>;
