@@ -204,4 +204,8 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		const monitoredUnits = await this.findByMonitorId(monitorId);
 		return LivechatDepartment.findByUnitIds(monitoredUnits, {});
 	}
+
+	countUnits(): Promise<number> {
+		return this.col.countDocuments({ type: 'u' });
+	}
 }

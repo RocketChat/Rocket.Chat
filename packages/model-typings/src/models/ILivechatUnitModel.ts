@@ -36,4 +36,5 @@ export interface ILivechatUnitModel extends IBaseModel<IOmnichannelBusinessUnit>
 	findOneByIdOrName(_idOrName: string, options: FindOptions<IOmnichannelBusinessUnit>): Promise<IOmnichannelBusinessUnit | null>;
 	findByMonitorId(monitorId: string): Promise<string[]>;
 	findMonitoredDepartmentsByMonitorId(monitorId: string): Promise<FindCursor<ILivechatDepartment>>;
+	countUnits(): Promise<number>;
 }
