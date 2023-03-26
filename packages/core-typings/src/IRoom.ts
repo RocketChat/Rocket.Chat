@@ -92,6 +92,14 @@ export interface IRoom extends IRocketChatRecord {
 	channel?: { _id: string };
 }
 
+export const isRoomWithJoinCode = (room: Partial<IRoom>): room is IRoomWithJoinCode =>
+	'joinCodeRequired' in room && (room as any).joinCodeRequired === true;
+
+export interface IRoomWithJoinCode extends IRoom {
+	joinCodeRequired: true;
+	joinCode: string;
+}
+
 export interface IRoomFederated extends IRoom {
 	federated: true;
 }

@@ -3,9 +3,10 @@ import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { Mongo } from 'meteor/mongo';
+import { Subscriptions } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { Users, Rooms, Subscriptions, Messages } from '../../app/models/server';
+import { Users, Rooms, Messages } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { callbacks } from '../../lib/callbacks';
 
@@ -51,13 +52,13 @@ Meteor.methods<ServerMethods>({
 
 		const users = userCursor.fetch();
 		const now = new Date();
-		users.forEach(function (user) {
-			const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
+		for await (const user of users) {
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 			if (subscription != null) {
-				return;
+				continue;
 			}
 			callbacks.run('beforeJoinRoom', user, room);
-			Subscriptions.createWithRoomAndUser(room, user, {
+			await Subscriptions.createWithRoomAndUser(room, user, {
 				ts: now,
 				open: true,
 				alert: true,
@@ -69,7 +70,7 @@ Meteor.methods<ServerMethods>({
 				ts: now,
 			});
 			return callbacks.run('afterJoinRoom', user, room);
-		});
+		}
 		return true;
 	},
 });

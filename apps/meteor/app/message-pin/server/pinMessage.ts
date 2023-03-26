@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
-import { Messages as MessagesRaw, Rooms } from '@rocket.chat/models';
+import { Messages as MessagesRaw, Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
@@ -11,7 +11,7 @@ import { isTheLastMessage } from '../../lib/server';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
-import { Subscriptions, Messages, Users } from '../../models/server';
+import { Messages, Users } from '../../models/server';
 import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
 import { isTruthy } from '../../../lib/isTruthy';
 
@@ -69,7 +69,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(originalMessage.rid, userId, { fields: { _id: 1 } });
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(originalMessage.rid, userId, { projection: { _id: 1 } });
 		if (!subscription) {
 			// If it's a valid message but on a room that the user is not subscribed to, report that the message was not found.
 			throw new Meteor.Error('error-invalid-message', 'Message you are pinning was not found', {
@@ -164,7 +164,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(originalMessage.rid, userId, { fields: { _id: 1 } });
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(originalMessage.rid, userId, { projection: { _id: 1 } });
 		if (!subscription) {
 			// If it's a valid message but on a room that the user is not subscribed to, report that the message was not found.
 			throw new Meteor.Error('error-invalid-message', 'Message you are unpinning was not found', {

@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatRooms, Subscriptions } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IUser } from '@rocket.chat/core-typings';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Subscriptions, Users } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 import { normalizeTransferredByData } from '../lib/Helper';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
@@ -50,8 +50,8 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:transfer' });
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, uid, {
-			fields: { _id: 1 },
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, uid, {
+			projection: { _id: 1 },
 		});
 		if (!subscription && !(await hasPermissionAsync(uid, 'transfer-livechat-guest'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
