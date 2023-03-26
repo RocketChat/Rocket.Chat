@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
+import { Rooms } from '@rocket.chat/models';
 
-import { Rooms, Subscriptions } from '../../models/server';
+import { Subscriptions } from '../../models/server';
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 
@@ -18,7 +19,7 @@ slashCommands.add({
 
 		const userId = Meteor.userId() as string;
 		const user = Meteor.users.findOne(userId);
-		const room = Rooms.findOneByNameAndType(channel, 'c');
+		const room = await Rooms.findOneByNameAndType(channel, 'c');
 
 		if (!user) {
 			return;
@@ -32,6 +33,7 @@ slashCommands.add({
 					lng: settings.get('Language') || 'en',
 				}),
 			});
+			return;
 		}
 
 		const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
