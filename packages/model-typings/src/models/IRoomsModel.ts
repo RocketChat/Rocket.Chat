@@ -1,5 +1,5 @@
 import type { FindCursor, AggregationCursor, Document, FindOptions, UpdateResult, DeleteResult } from 'mongodb';
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -123,12 +123,15 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	// TODO check types
 	setLastMessagePinned(roomId: string, pinnedBy: unknown, pinned?: boolean, pinnedAt?: Date): Promise<UpdateResult>;
 	setLastMessageAsRead(roomId: string): Promise<UpdateResult>;
-	// TODO check types
-	setSentiment(roomId: string, sentiment: string): Promise<UpdateResult>;
 	setDescriptionById(roomId: string, description: string): Promise<UpdateResult>;
 	setStreamingOptionsById(roomId: string, streamingOptions: IRoom['streamingOptions']): Promise<UpdateResult>;
 	setReadOnlyById(roomId: string, readOnly: boolean): Promise<UpdateResult>;
-	setDmReadOnlyByUserId(roomId: string, ids: string[], readOnly: boolean, reactWhenReadOnly: boolean): Promise<UpdateResult | Document>;
+	setDmReadOnlyByUserId(
+		roomId: string,
+		ids: string[] | undefined,
+		readOnly: boolean,
+		reactWhenReadOnly: boolean,
+	): Promise<UpdateResult | Document>;
 	getDirectConversationsByUserId(userId: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	setAllowReactingWhenReadOnlyById(roomId: string, allowReactingWhenReadOnly: boolean): Promise<UpdateResult>;
 	setAvatarData(roomId: string, origin: string, etag: string): Promise<UpdateResult>;
@@ -189,9 +192,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	replaceMutedUsername(username: string, newUsername: string): Promise<UpdateResult | Document>;
 	replaceUsernameOfUserByUserId(userId: string, newUsername: string): Promise<UpdateResult | Document>;
 	setJoinCodeById(rid: string, joinCode: string): Promise<UpdateResult>;
-	setUserById(rid: string, userId: string): Promise<UpdateResult>;
 	setTypeById(rid: string, type: IRoom['t']): Promise<UpdateResult>;
-	setTopicById(rid: string, topic: string): Promise<UpdateResult>;
+	setTopicById(rid: string, topic?: string | undefined): Promise<UpdateResult>;
 	setAnnouncementById(
 		rid: string,
 		announcement: IRoom['announcement'],
@@ -211,21 +213,11 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	saveRetentionOverrideGlobalById(rid: string, retentionOverrideGlobal: boolean): Promise<UpdateResult>;
 	saveEncryptedById(rid: string, encrypted: boolean): Promise<UpdateResult>;
 	updateGroupDMsRemovingUsernamesByUsername(username: string, userId: string): Promise<UpdateResult | Document>;
-	createWithTypeNameUserAndUsernames(
-		type: IRoom['t'],
-		name: string,
-		fname: string,
-		user: IUser,
-		usernames: string[],
-		extraData?: Record<string, string>,
-	): Promise<IRoom>;
 	createWithIdTypeAndName(id: string, type: IRoom['t'], name: string, extraData?: Record<string, string>): Promise<IRoom>;
-	createWithFullRoomData(room: IRoom): Promise<IRoom>;
+	createWithFullRoomData(room: Omit<IRoom, '_id' | '_updatedAt'>): Promise<IRoom>;
 	removeById(rid: string): Promise<DeleteResult>;
 	removeByIds(rids: string[]): Promise<DeleteResult>;
 	removeDirectRoomContainingUsername(username: string): Promise<DeleteResult>;
-	findDiscussionParentByNameStarting(name: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
-	setLinkMessageById(rid: string, linkMessage: string): Promise<UpdateResult>;
-	countDiscussions(rid: string): Promise<number>;
+	countDiscussions(): Promise<number>;
 	setOTRForDMByRoomID(rid: string): Promise<UpdateResult>;
 }

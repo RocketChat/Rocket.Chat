@@ -58,7 +58,7 @@ Meteor.methods<ServerMethods>({
 
 		const roomFind = roomCoordinator.getRoomFind(type);
 
-		const room = roomFind ? await roomFind.call(this, name) : Rooms.findByTypeAndNameOrId(type, name);
+		const room = roomFind ? await roomFind.call(this, name) : await Rooms.findByTypeAndNameOrId(type, name);
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {

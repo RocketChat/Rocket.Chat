@@ -895,10 +895,6 @@ export class RoomsRaw extends BaseRaw {
 		);
 	}
 
-	setSentiment(roomId, sentiment) {
-		return this.updateOne({ _id: roomId }, { $set: { sentiment } });
-	}
-
 	setDescriptionById(_id, description) {
 		const query = {
 			_id,
@@ -1545,21 +1541,6 @@ export class RoomsRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	setUserById(_id, user) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				u: {
-					_id: user._id,
-					username: user.username,
-				},
-			},
-		};
-
-		return this.updateOne(query, update);
-	}
-
 	setTypeById(_id, type) {
 		const query = { _id };
 		const update = {
@@ -1786,27 +1767,6 @@ export class RoomsRaw extends BaseRaw {
 		return this.updateMany(query, update);
 	}
 
-	// INSERT
-	async createWithTypeNameUserAndUsernames(type, name, fname, user, usernames, extraData) {
-		const room = {
-			name,
-			fname,
-			t: type,
-			usernames,
-			msgs: 0,
-			usersCount: 0,
-			u: {
-				_id: user._id,
-				username: user.username,
-			},
-		};
-
-		Object.assign(room, extraData);
-
-		room._id = (await this.insertOne(room)).insertedId;
-		return room;
-	}
-
 	async createWithIdTypeAndName(_id, type, name, extraData) {
 		const room = {
 			_id,
@@ -1850,37 +1810,6 @@ export class RoomsRaw extends BaseRaw {
 		};
 
 		return this.deleteMany(query);
-	}
-
-	// ############################
-	// Discussion
-	findDiscussionParentByNameStarting(name, options) {
-		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
-
-		const query = {
-			t: {
-				$in: ['c'],
-			},
-			name: nameRegex,
-			archived: { $ne: true },
-			prid: {
-				$exists: false,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	setLinkMessageById(_id, linkMessageId) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				linkMessageId,
-			},
-		};
-
-		return this.updateOne(query, update);
 	}
 
 	countDiscussions() {

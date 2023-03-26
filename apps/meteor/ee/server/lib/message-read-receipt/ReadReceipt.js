@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
-import { LivechatVisitors, ReadReceipts, Messages as MessagesRaw, Rooms as RoomsRaw } from '@rocket.chat/models';
+import { LivechatVisitors, ReadReceipts, Messages as MessagesRaw, Rooms } from '@rocket.chat/models';
 
-import { Subscriptions, Messages, Rooms, Users } from '../../../../app/models/server';
+import { Subscriptions, Messages, Users } from '../../../../app/models/server';
 import { settings } from '../../../../app/settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -29,7 +29,7 @@ const updateMessages = debounceByRoomId(
 		Messages.setVisibleMessagesAsRead(_id, firstSubscription.ls);
 
 		if (lm <= firstSubscription.ls) {
-			Rooms.setLastMessageAsRead(_id);
+			Promise.await(Rooms.setLastMessageAsRead(_id));
 		}
 	}),
 );
@@ -40,10 +40,10 @@ export const ReadReceipt = {
 			return;
 		}
 
-		const room = RoomsRaw.findOneById(roomId, { projection: { lm: 1 } });
+		const room = await Rooms.findOneById(roomId, { projection: { lm: 1 } });
 
 		// if users last seen is greater than room's last message, it means the user already have this room marked as read
-		if (userLastSeen > room.lm) {
+		if (!room || userLastSeen > room.lm) {
 			return;
 		}
 
