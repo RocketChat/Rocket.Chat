@@ -71,7 +71,7 @@ Meteor.methods<ServerMethods>({
 			transferredTo?: Pick<IUser, '_id' | 'username' | 'name'>;
 		} = {
 			...transferData,
-			transferredBy: normalizeTransferredByData(Meteor.user() || {}, room),
+			transferredBy: normalizeTransferredByData((await Meteor.userAsync()) || {}, room),
 		};
 
 		if (normalizedTransferData.userId) {
