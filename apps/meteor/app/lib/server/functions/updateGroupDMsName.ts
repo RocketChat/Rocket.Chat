@@ -51,8 +51,8 @@ export const updateGroupDMsName = async (userThatChangedName: IUser) => {
 	// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 	const getMembers = (uids: string[]) => uids.map((uid) => users.get(uid)).filter(Boolean);
 
-	// loop rooms to update the subcriptions from them all
-	await rooms.forEach((room) => {
+	// loop rooms to update the subscriptions from them all
+	for await (const room of rooms) {
 		if (!room.uids) {
 			return;
 		}
@@ -65,5 +65,5 @@ export const updateGroupDMsName = async (userThatChangedName: IUser) => {
 			const otherMembers = sortedMembers.filter(({ _id }) => _id !== sub.u._id);
 			Subscriptions.updateNameAndFnameById(sub._id, getName(otherMembers), getFname(otherMembers));
 		});
-	});
+	}
 };
