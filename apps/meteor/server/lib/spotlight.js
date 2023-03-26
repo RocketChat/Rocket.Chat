@@ -1,5 +1,5 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Users, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
+import { Users, Subscriptions as SubscriptionsRaw, Rooms as RoomsRaw } from '@rocket.chat/models';
 
 import { hasAllPermission, canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
@@ -44,7 +44,7 @@ export class Spotlight {
 				return [];
 			}
 
-			return this.fetchRooms(userId, Rooms.findByNameAndTypeNotDefault(regex, 'c', roomOptions, includeFederatedRooms).fetch());
+			return this.fetchRooms(userId, await RoomsRaw.findByNameAndTypeNotDefault(regex, 'c', roomOptions, includeFederatedRooms).toArray());
 		}
 
 		if (!hasAllPermission(userId, ['view-outside-room', 'view-c-room'])) {
@@ -58,14 +58,14 @@ export class Spotlight {
 		})
 			.fetch()
 			.map((s) => s.rid);
-		const exactRoom = Rooms.findOneByNameAndType(text, searchableRoomTypeIds, roomOptions, includeFederatedRooms);
+		const exactRoom = await RoomsRaw.findOneByNameAndType(text, searchableRoomTypeIds, roomOptions, includeFederatedRooms);
 		if (exactRoom) {
 			roomIds.push(exactRoom.rid);
 		}
 
 		return this.fetchRooms(
 			userId,
-			Rooms.findByNameAndTypesNotInIds(regex, searchableRoomTypeIds, roomIds, roomOptions, includeFederatedRooms).fetch(),
+			await RoomsRaw.findByNameAndTypesNotInIds(regex, searchableRoomTypeIds, roomIds, roomOptions, includeFederatedRooms).toArray(),
 		);
 	}
 

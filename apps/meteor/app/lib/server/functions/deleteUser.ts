@@ -92,7 +92,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 	Users.removeById(userId);
 
 	// update name and fname of group direct messages
-	updateGroupDMsName(user);
+	await updateGroupDMsName(user);
 
 	// Refresh the servers list
 	await FederationServers.refreshServers();

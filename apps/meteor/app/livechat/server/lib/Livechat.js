@@ -20,7 +20,7 @@ import {
 	Messages as MessagesRaw,
 	LivechatDepartment as LivechatDepartmentRaw,
 	LivechatDepartmentAgents,
-	Rooms as RoomsRaw,
+	Rooms,
 } from '@rocket.chat/models';
 import { VideoConf, api } from '@rocket.chat/core-services';
 
@@ -29,7 +29,7 @@ import { RoutingManager } from './RoutingManager';
 import { Analytics } from './Analytics';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Users, Messages, Subscriptions, Rooms, LivechatDepartment } from '../../../models/server';
+import { Users, Messages, Subscriptions, LivechatDepartment } from '../../../models/server';
 import { Logger } from '../../../logger/server';
 import { hasRole, canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -591,7 +591,7 @@ export const Livechat = {
 			const { _id: rid } = roomData;
 			const { name } = guestData;
 			return (
-				Rooms.setFnameById(rid, name) &&
+				(await Rooms.setFnameById(rid, name)) &&
 				(await LivechatInquiry.setNameByRoomId(rid, name)) &&
 				// This one needs to be the last since the agent may not have the subscription
 				// when the conversation is in the queue, then the result will be 0(zero)
@@ -1120,7 +1120,7 @@ export const Livechat = {
 	getRoomMessages({ rid }) {
 		check(rid, String);
 
-		const isLivechat = Promise.await(Rooms.findByTypeInIds('l', [rid])).count();
+		const isLivechat = Promise.await(Rooms.findByTypeInIds('l', [rid]).count());
 
 		if (!isLivechat) {
 			throw new Meteor.Error('invalid-room');
@@ -1305,7 +1305,7 @@ export const Livechat = {
 		await LivechatVisitors.updateById(contactId, updateUser);
 	},
 	async updateCallStatus(callId, rid, status, user) {
-		await RoomsRaw.setCallStatus(rid, status);
+		await Rooms.setCallStatus(rid, status);
 		if (status === 'ended' || status === 'declined') {
 			if (await VideoConf.declineLivechatCall(callId)) {
 				return;
