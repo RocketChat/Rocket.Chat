@@ -10,9 +10,9 @@ type InfoPanelTitleProps = {
 const isValidIcon = (icon: ReactNode): icon is ComponentProps<typeof Icon>['name'] => typeof icon === 'string';
 
 const InfoPanelTitle: FC<InfoPanelTitleProps> = ({ title, icon }) => (
-	<Box display='flex' title={title} flexShrink={0} alignItems='center' fontScale='h4' color='default' withTruncatedText>
+	<Box display='flex' flexShrink={0} alignItems='center' fontScale='h4' color='default' withTruncatedText>
 		{isValidIcon(icon) ? <Icon name={icon} size='x22' /> : icon}
-		<Box mis='x8' flexGrow={1} withTruncatedText>
+		<Box mis='x8' withTruncatedText title={title}>
 			{title}
 		</Box>
 	</Box>
