@@ -1256,7 +1256,7 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(
 			{
 				usersCount: { $gt: 2 },
-				uids,
+				uids: { $in: uids },
 			},
 			options,
 		);
