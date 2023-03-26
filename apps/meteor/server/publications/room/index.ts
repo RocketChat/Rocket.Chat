@@ -40,12 +40,12 @@ Meteor.methods<ServerMethods>({
 
 		if (updatedAt instanceof Date) {
 			return {
-				update: await RoomsRaw.findBySubscriptionUserIdUpdatedAfter(user, updatedAt, options).toArray(),
+				update: await (await RoomsRaw.findBySubscriptionUserIdUpdatedAfter(user, updatedAt, options)).toArray(),
 				remove: Rooms.trashFindDeletedAfter(updatedAt, {}, { fields: { _id: 1, _deletedAt: 1 } }).fetch(),
 			};
 		}
 
-		return RoomsRaw.findBySubscriptionUserId(user, options).toArray();
+		return (await RoomsRaw.findBySubscriptionUserId(user, options)).toArray();
 	},
 
 	async 'getRoomByTypeAndName'(type, name) {
