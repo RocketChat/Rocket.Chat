@@ -1,9 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
-import { Rooms } from '@rocket.chat/models';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
 
-import { Subscriptions } from '../../models/server';
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 
@@ -36,8 +35,8 @@ slashCommands.add({
 			return;
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
-			fields: { _id: 1 },
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
+			projection: { _id: 1 },
 		});
 
 		if (subscription) {
