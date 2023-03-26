@@ -7,10 +7,10 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import fiber from 'fibers';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import type { IUser, IIncomingMessage } from '@rocket.chat/core-typings';
-import { CredentialTokens } from '@rocket.chat/models';
+import { CredentialTokens, Rooms } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
-import { Users, Rooms } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { saveUserIdentity, createRoom, generateUsernameSuggestion, addUserToRoom } from '../../../lib/server/functions';
 import { SAMLServiceProvider } from './ServiceProvider';
 import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
@@ -476,8 +476,8 @@ export class SAML {
 					continue;
 				}
 
-				const room = Rooms.findOneByNameAndType(roomName, 'c', {});
-				const privRoom = Rooms.findOneByNameAndType(roomName, 'p', {});
+				const room = await Rooms.findOneByNameAndType(roomName, 'c', {});
+				const privRoom = await Rooms.findOneByNameAndType(roomName, 'p', {});
 
 				if (privRoom && includePrivateChannelsInUpdate === true) {
 					await addUserToRoom(privRoom._id, user);
