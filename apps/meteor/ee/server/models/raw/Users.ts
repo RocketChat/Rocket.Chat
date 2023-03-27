@@ -1,3 +1,6 @@
+import type { Db, Collection } from 'mongodb';
+import type { RocketChatRecordDeleted, IUser } from '@rocket.chat/core-typings';
+
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
 import { UsersRaw } from '../../../../server/models/raw/Users';
 
@@ -17,6 +20,10 @@ declare module '@rocket.chat/model-typings' {
 }
 
 export class UsersEE extends UsersRaw {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUser>>) {
+		super(db, trash);
+	}
+
 	// @ts-expect-error - typings are good, but JS is not helping
 	getUnavailableAgents(departmentId: string, customFilter: { [k: string]: any }[]): Promise<AgentMetadata[]> {
 		// if department is provided, remove the agents that are not from the selected department

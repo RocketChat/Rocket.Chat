@@ -1,5 +1,5 @@
-import type { Db } from 'mongodb';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { Db, Collection } from 'mongodb';
+import type { IUser, RocketChatRecordDeleted, IMessage } from '@rocket.chat/core-typings';
 
 import { MessagesRaw } from '../../../../server/models/raw/Messages';
 
@@ -39,8 +39,8 @@ declare module '@rocket.chat/model-typings' {
 }
 
 export class MessagesEE extends MessagesRaw {
-	constructor(db: Db) {
-		super(db);
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMessage>>) {
+		super(db, trash);
 	}
 
 	async createOnHoldHistoryWithRoomIdMessageAndUser(

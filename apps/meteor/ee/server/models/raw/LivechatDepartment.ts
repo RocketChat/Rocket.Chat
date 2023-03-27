@@ -1,6 +1,6 @@
-import type { ILivechatDepartment } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
-import type { DeleteResult, Document, Filter, FindCursor, FindOptions, UpdateFilter, UpdateResult } from 'mongodb';
+import type { Collection, DeleteResult, Document, Filter, FindCursor, FindOptions, UpdateFilter, UpdateResult, Db } from 'mongodb';
 import { LivechatUnit } from '@rocket.chat/models';
 
 import { LivechatDepartmentRaw } from '../../../../server/models/raw/LivechatDepartment';
@@ -26,6 +26,10 @@ declare module '@rocket.chat/model-typings' {
 }
 
 export class LivechatDepartmentEE extends LivechatDepartmentRaw implements ILivechatDepartmentModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatDepartment>>) {
+		super(db, trash);
+	}
+
 	async removeDepartmentFromForwardListById(departmentId: string): Promise<void> {
 		await this.updateMany({ departmentsAllowedToForward: departmentId }, { $pull: { departmentsAllowedToForward: departmentId } });
 	}
