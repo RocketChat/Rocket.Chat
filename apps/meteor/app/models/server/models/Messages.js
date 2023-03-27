@@ -1,4 +1,3 @@
-import { Match } from 'meteor/check';
 import _ from 'underscore';
 
 import { Base } from './_Base';
