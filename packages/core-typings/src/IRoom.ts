@@ -63,7 +63,7 @@ export interface IRoom extends IRocketChatRecord {
 	teamDefault?: boolean;
 	open?: boolean;
 
-	autoTranslateLanguage: string;
+	autoTranslateLanguage?: string;
 	autoTranslate?: boolean;
 	unread?: number;
 	alert?: boolean;
@@ -90,6 +90,14 @@ export interface IRoom extends IRocketChatRecord {
 	customFields?: Record<string, any>;
 
 	channel?: { _id: string };
+}
+
+export const isRoomWithJoinCode = (room: Partial<IRoom>): room is IRoomWithJoinCode =>
+	'joinCodeRequired' in room && (room as any).joinCodeRequired === true;
+
+export interface IRoomWithJoinCode extends IRoom {
+	joinCodeRequired: true;
+	joinCode: string;
 }
 
 export interface IRoomFederated extends IRoom {
