@@ -2,8 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Subscriptions } from '@rocket.chat/models';
 
-import { Subscriptions, Rooms } from '../../app/models/server';
+import { Rooms } from '../../app/models/server';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../app/settings/server';
@@ -52,7 +53,12 @@ Meteor.methods<ServerMethods>({
 		const canAnonymous = settings.get('Accounts_AllowAnonymousRead');
 		const canPreview = await hasPermissionAsync(fromId, 'preview-c-room');
 
-		if (room.t === 'c' && !canAnonymous && !canPreview && !Subscriptions.findOneByRoomIdAndUserId(rid, fromId, { fields: { _id: 1 } })) {
+		if (
+			room.t === 'c' &&
+			!canAnonymous &&
+			!canPreview &&
+			!(await Subscriptions.findOneByRoomIdAndUserId(rid, fromId, { projection: { _id: 1 } }))
+		) {
 			return false;
 		}
 
