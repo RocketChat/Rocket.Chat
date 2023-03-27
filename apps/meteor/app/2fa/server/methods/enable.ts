@@ -1,13 +1,13 @@
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
+import { Users } from '@rocket.chat/models';
 
-import { Users } from '../../../models/server';
 import { TOTP } from '../lib/totp';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'2fa:enable': () => { secret: string; url: string };
+		'2fa:enable': () => Promise<{ secret: string; url: string }>;
 	}
 }
 
@@ -36,7 +36,7 @@ Meteor.methods<ServerMethods>({
 
 		const secret = TOTP.generateSecret();
 
-		Users.disable2FAAndSetTempSecretByUserId(userId, secret.base32);
+		await Users.disable2FAAndSetTempSecretByUserId(userId, secret.base32);
 
 		return {
 			secret: secret.base32,

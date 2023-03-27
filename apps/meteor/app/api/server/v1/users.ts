@@ -754,7 +754,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute('users.2fa.sendEmailCode', {
-	post() {
+	async post() {
 		const { emailOrUsername } = this.bodyParams;
 
 		if (!emailOrUsername) {
@@ -764,12 +764,13 @@ API.v1.addRoute('users.2fa.sendEmailCode', {
 		const method = emailOrUsername.includes('@') ? 'findOneByEmailAddress' : 'findOneByUsername';
 		const userId = this.userId || Users[method](emailOrUsername, { fields: { _id: 1 } })?._id;
 
-		if (!userId) {
+		const user = await getUserForCheck(userId);
+		if (!userId || !user) {
 			// this.logger.error('[2fa] User was not found when requesting 2fa email code');
 			return API.v1.success();
 		}
 
-		emailCheck.sendEmailCode(getUserForCheck(userId));
+		await emailCheck.sendEmailCode(user);
 
 		return API.v1.success();
 	},
@@ -1034,7 +1035,7 @@ API.v1.addRoute(
 			}
 
 			// this method logs the user out automatically, if successful returns 1, otherwise 0
-			if (!Users.unsetLoginTokens(userId)) {
+			if (!(await UsersRaw.unsetLoginTokens(userId))) {
 				throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 			}
 
