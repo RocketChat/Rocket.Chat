@@ -8,7 +8,7 @@ import { settings } from '../../settings/server';
 
 slashCommands.add({
 	command: 'archive',
-	callback: function Archive(_command, params, item): void {
+	callback: async function Archive(_command, params, item): Promise<void> {
 		let channel = params.trim();
 
 		let room;
@@ -28,7 +28,7 @@ slashCommands.add({
 		}
 
 		if (!room) {
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('Channel_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
@@ -44,7 +44,7 @@ slashCommands.add({
 		}
 
 		if (room.archived) {
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('Duplicate_archived_channel_name', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
@@ -53,10 +53,10 @@ slashCommands.add({
 			});
 			return;
 		}
-		Meteor.call('archiveRoom', room._id);
+		await Meteor.callAsync('archiveRoom', room._id);
 
 		Messages.createRoomArchivedByRoomIdAndUser(room._id, Meteor.user());
-		api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+		void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 			msg: TAPi18n.__('Channel_Archived', {
 				postProcess: 'sprintf',
 				sprintf: [channel],

@@ -287,7 +287,7 @@ export class LDAPManager {
 		}
 
 		const options = this.getConverterOptions();
-		LDAPDataConverter.convertSingleUser(userData, options);
+		await LDAPDataConverter.convertSingleUser(userData, options);
 
 		return existingUser || this.findExistingLDAPUser(ldapUser);
 	}

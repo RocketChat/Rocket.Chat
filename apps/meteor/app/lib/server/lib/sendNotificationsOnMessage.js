@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Subscriptions, Users } from '../../../models/server';
@@ -67,7 +67,7 @@ export const sendNotification = async ({
 
 	const roomType = room.t;
 	// If the user doesn't have permission to view direct messages, don't send notification of direct messages.
-	if (roomType === 'd' && !hasPermission(subscription.u._id, 'view-d-room')) {
+	if (roomType === 'd' && !(await hasPermissionAsync(subscription.u._id, 'view-d-room'))) {
 		return;
 	}
 
@@ -146,11 +146,11 @@ export const sendNotification = async ({
 			isThread,
 		})
 	) {
-		receiver.emails.some((email) => {
+		for await (const email of receiver.emails) {
 			if (email.verified) {
 				queueItems.push({
 					type: 'email',
-					data: getEmailData({
+					data: await getEmailData({
 						message,
 						receiver,
 						sender,
@@ -161,10 +161,9 @@ export const sendNotification = async ({
 					}),
 				});
 
-				return true;
+				break;
 			}
-			return false;
-		});
+		}
 	}
 
 	if (queueItems.length) {
@@ -217,7 +216,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 		return;
 	}
 
-	const sender = roomCoordinator.getRoomDirectives(room.t)?.getMsgSender(message.u._id);
+	const sender = roomCoordinator.getRoomDirectives(room.t).getMsgSender(message.u._id);
 	if (!sender) {
 		return message;
 	}
@@ -408,7 +407,7 @@ settings.watch('Troubleshoot_Disable_Notifications', (value) => {
 
 	callbacks.add(
 		'afterSaveMessage',
-		(message, room) => Promise.await(sendAllNotifications(message, room)),
+		(message, room) => sendAllNotifications(message, room),
 		callbacks.priority.LOW,
 		'sendNotificationsOnMessage',
 	);

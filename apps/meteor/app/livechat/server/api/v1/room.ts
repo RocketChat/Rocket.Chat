@@ -4,7 +4,7 @@ import { Random } from '@rocket.chat/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ILivechatAgent, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, OmnichannelSourceType } from '@rocket.chat/core-typings';
-import { LivechatVisitors, Users, LivechatRooms as LivechatRoomsRaw, Subscriptions } from '@rocket.chat/models';
+import { LivechatVisitors, Users, LivechatRooms, Subscriptions, Messages } from '@rocket.chat/models';
 import {
 	isLiveChatRoomForwardProps,
 	isPOSTLivechatRoomCloseParams,
@@ -17,20 +17,20 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { settings as rcSettings } from '../../../../settings/server';
-import { Messages, LivechatRooms } from '../../../../models/server';
 import { API } from '../../../../api/server';
 import { findGuest, findRoom, getRoom, settings, findAgent, onCheckRoomParams } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { normalizeTransferredByData } from '../../lib/Helper';
 import { findVisitorInfo } from '../lib/visitors';
-import { canAccessRoom, hasPermission } from '../../../../authorization/server';
+import { canAccessRoomAsync } from '../../../../authorization/server';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../../../../lib/server/functions';
 import { apiDeprecationLogger } from '../../../../lib/server/lib/deprecationWarningLogger';
 import { deprecationWarning } from '../../../../api/server/helpers/deprecationWarning';
 import { callbacks } from '../../../../../lib/callbacks';
 import type { CloseRoomParams } from '../../lib/LivechatTyped';
+import { isWidget } from '../../../../api/server/helpers/isWidget';
 
 const isAgentWithInfo = (agentObj: ILivechatAgent | { hiddenInfo: true }): agentObj is ILivechatAgent => !('hiddenInfo' in agentObj);
 
@@ -52,9 +52,9 @@ API.v1.addRoute('livechat/room', {
 			throw new Error('invalid-token');
 		}
 
-		let room: IOmnichannelRoom;
+		let room: IOmnichannelRoom | null;
 		if (!roomId) {
-			room = LivechatRooms.findOneOpenByVisitorToken(token, {});
+			room = await LivechatRooms.findOneOpenByVisitorToken(token, {});
 			if (room) {
 				return API.v1.success({ room, newRoom: false });
 			}
@@ -73,7 +73,7 @@ API.v1.addRoute('livechat/room', {
 			const rid = Random.id();
 			const roomInfo = {
 				source: {
-					type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
+					type: isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
 				},
 			};
 
@@ -81,12 +81,12 @@ API.v1.addRoute('livechat/room', {
 			return API.v1.success(newRoom);
 		}
 
-		room = LivechatRooms.findOneOpenByRoomIdAndVisitorToken(roomId, token, {});
-		if (!room) {
+		const froom = await LivechatRooms.findOneOpenByRoomIdAndVisitorToken(roomId, token, {});
+		if (!froom) {
 			throw new Error('invalid-room');
 		}
 
-		return API.v1.success({ room, newRoom: false });
+		return API.v1.success({ room: froom, newRoom: false });
 	},
 });
 
@@ -104,7 +104,7 @@ API.v1.addRoute(
 				throw new Error('invalid-token');
 			}
 
-			const room = findRoom(token, rid);
+			const room = await findRoom(token, rid);
 			if (!room) {
 				throw new Error('invalid-room');
 			}
@@ -180,7 +180,7 @@ API.v1.addRoute(
 		async post() {
 			const { rid, comment, tags, generateTranscriptPdf, transcriptEmail } = this.bodyParams;
 
-			const room = await LivechatRoomsRaw.findOneById(rid);
+			const room = await LivechatRooms.findOneById(rid);
 			if (!room || !isOmnichannelRoom(room)) {
 				throw new Error('error-invalid-room');
 			}
@@ -245,13 +245,13 @@ API.v1.addRoute(
 				throw new Error('invalid-token');
 			}
 
-			let room = findRoom(token, rid);
+			let room = await findRoom(token, rid);
 			if (!room) {
 				throw new Error('invalid-room');
 			}
 
 			// update visited page history to not expire
-			Messages.keepHistoryForToken(token);
+			await Messages.keepHistoryForToken(token);
 
 			const { _id, username, name } = guest;
 			const transferredBy = normalizeTransferredByData({ _id, username, name, userType: 'visitor' }, room);
@@ -260,7 +260,11 @@ API.v1.addRoute(
 				return API.v1.failure();
 			}
 
-			room = findRoom(token, rid);
+			room = await findRoom(token, rid);
+			if (!room) {
+				throw new Error('invalid-room');
+			}
+
 			return API.v1.success(
 				deprecationWarning({
 					endpoint: 'livechat/room.transfer',
@@ -284,7 +288,7 @@ API.v1.addRoute(
 				throw new Error('invalid-token');
 			}
 
-			const room = findRoom(token, rid);
+			const room = await findRoom(token, rid);
 			if (!room) {
 				throw new Error('invalid-room');
 			}
@@ -305,7 +309,7 @@ API.v1.addRoute(
 				throw new Error('invalid-data');
 			}
 
-			if (!LivechatRooms.updateSurveyFeedbackById(room._id, updateData)) {
+			if (!(await LivechatRooms.updateSurveyFeedbackById(room._id, updateData))) {
 				return API.v1.failure();
 			}
 
@@ -366,7 +370,7 @@ API.v1.addRoute(
 				throw new Error('invalid-visitor');
 			}
 
-			let room = LivechatRooms.findOneById(rid, { _id: 1, v: 1 }); // TODO: check _id
+			const room = await LivechatRooms.findOneById(rid, { _id: 1, v: 1 }); // TODO: check _id
 			if (!room) {
 				throw new Error('invalid-room');
 			}
@@ -376,9 +380,15 @@ API.v1.addRoute(
 				throw new Error('invalid-room-visitor');
 			}
 
-			room = Livechat.changeRoomVisitor(this.userId, rid, visitor);
+			const roomAfterChange = await Livechat.changeRoomVisitor(this.userId, rid, visitor);
 
-			return API.v1.success(deprecationWarning({ endpoint: 'livechat/room.visitor', versionWillBeRemoved: '6.0', response: { room } }));
+			if (!roomAfterChange) {
+				return API.v1.failure();
+			}
+
+			return API.v1.success(
+				deprecationWarning({ endpoint: 'livechat/room.visitor', versionWillBeRemoved: '6.0', response: { room: roomAfterChange } }),
+			);
 		},
 	},
 );
@@ -396,17 +406,17 @@ API.v1.addRoute(
 				throw new Error('error-invalid-user');
 			}
 
-			const room = LivechatRooms.findOneById(roomId);
+			const room = await LivechatRooms.findOneById(roomId);
 
 			if (!room) {
 				throw new Error('error-invalid-room');
 			}
 
-			if (!canAccessRoom(room, user)) {
+			if (!(await canAccessRoomAsync(room, user))) {
 				throw new Error('error-not-allowed');
 			}
 
-			addUserToRoom(roomId, user);
+			await addUserToRoom(roomId, user);
 
 			return API.v1.success();
 		},
@@ -424,7 +434,10 @@ API.v1.addRoute(
 				throw new Error('error-invalid-room');
 			}
 
-			if ((!room.servedBy || room.servedBy._id !== this.userId) && !hasPermission(this.userId, 'save-others-livechat-room-info')) {
+			if (
+				(!room.servedBy || room.servedBy._id !== this.userId) &&
+				!(await hasPermissionAsync(this.userId, 'save-others-livechat-room-info'))
+			) {
 				return API.v1.unauthorized();
 			}
 
@@ -434,7 +447,7 @@ API.v1.addRoute(
 
 			await Promise.allSettled([Livechat.saveGuest(guestData, this.userId), Livechat.saveRoomInfo(roomData)]);
 
-			callbacks.run('livechat.saveInfo', LivechatRooms.findOneById(roomData._id), {
+			callbacks.run('livechat.saveInfo', await LivechatRooms.findOneById(roomData._id), {
 				user: this.user,
 				oldRoom: room,
 			});

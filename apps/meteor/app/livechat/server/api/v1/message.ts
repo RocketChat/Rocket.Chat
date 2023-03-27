@@ -8,15 +8,17 @@ import {
 	isGETLivechatMessagesHistoryRidParams,
 	isGETLivechatMessagesParams,
 } from '@rocket.chat/rest-typings';
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 
-import { Messages, LivechatRooms } from '../../../../models/server';
+import { Messages } from '../../../../models/server';
 import { API } from '../../../../api/server';
 import { loadMessageHistory } from '../../../../lib/server';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { normalizeMessageFileUpload } from '../../../../utils/server/functions/normalizeMessageFileUpload';
 import { settings } from '../../../../settings/server';
+import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
+import { isWidget } from '../../../../api/server/helpers/isWidget';
 
 API.v1.addRoute(
 	'livechat/message',
@@ -30,7 +32,7 @@ API.v1.addRoute(
 				throw new Error('invalid-token');
 			}
 
-			const room = findRoom(token, rid);
+			const room = await findRoom(token, rid);
 			if (!room) {
 				throw new Error('invalid-room');
 			}
@@ -59,7 +61,7 @@ API.v1.addRoute(
 				agent,
 				roomInfo: {
 					source: {
-						type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
+						type: isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
 					},
 				},
 			};
@@ -88,7 +90,7 @@ API.v1.addRoute(
 				throw new Error('invalid-token');
 			}
 
-			const room = findRoom(token, rid);
+			const room = await findRoom(token, rid);
 			if (!room) {
 				throw new Error('invalid-room');
 			}
@@ -114,7 +116,7 @@ API.v1.addRoute(
 				throw new Error('invalid-token');
 			}
 
-			const room = findRoom(token, rid);
+			const room = await findRoom(token, rid);
 			if (!room) {
 				throw new Error('invalid-room');
 			}
@@ -124,7 +126,7 @@ API.v1.addRoute(
 				throw new Error('invalid-message');
 			}
 
-			const result = Livechat.updateMessage({
+			const result = await Livechat.updateMessage({
 				guest,
 				message: { _id: msg._id, msg: this.bodyParams.msg },
 			});
@@ -148,7 +150,7 @@ API.v1.addRoute(
 				throw new Error('invalid-token');
 			}
 
-			const room = findRoom(token, rid);
+			const room = await findRoom(token, rid);
 			if (!room) {
 				throw new Error('invalid-room');
 			}
@@ -178,10 +180,9 @@ API.v1.addRoute(
 	{ validateParams: isGETLivechatMessagesHistoryRidParams },
 	{
 		async get() {
-			const { offset } = this.getPaginationItems();
-			const { searchText: text, token } = this.queryParams;
+			const { offset } = await getPaginationItems(this.queryParams);
+			const { token } = this.queryParams;
 			const { rid } = this.urlParams;
-			const { sort } = this.parseJsonQuery();
 
 			if (!token) {
 				throw new Error('error-token-param-not-provided');
@@ -192,7 +193,7 @@ API.v1.addRoute(
 				throw new Error('invalid-token');
 			}
 
-			const room = findRoom(token, rid);
+			const room = await findRoom(token, rid);
 			if (!room) {
 				throw new Error('invalid-room');
 			}
@@ -216,14 +217,10 @@ API.v1.addRoute(
 				loadMessageHistory({
 					userId: guest._id,
 					rid,
-					// @ts-expect-error -- typings on loadMessageHistory are wrong
 					end,
 					limit,
-					// @ts-expect-error -- typings on loadMessageHistory are wrong
 					ls,
-					sort,
 					offset,
-					text,
 				}).messages.map((message) => normalizeMessageFileUpload(message)),
 			);
 			return API.v1.success({ messages });
@@ -241,7 +238,7 @@ API.v1.addRoute(
 			let visitor = await LivechatVisitors.getVisitorByToken(visitorToken, {});
 			let rid: string;
 			if (visitor) {
-				const rooms = LivechatRooms.findOpenByVisitorToken(visitorToken).fetch();
+				const rooms = await LivechatRooms.findOpenByVisitorToken(visitorToken).toArray();
 				if (rooms && rooms.length > 0) {
 					rid = rooms[0]._id;
 				} else {
@@ -270,7 +267,7 @@ API.v1.addRoute(
 						},
 						roomInfo: {
 							source: {
-								type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
+								type: isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
 							},
 						},
 					};

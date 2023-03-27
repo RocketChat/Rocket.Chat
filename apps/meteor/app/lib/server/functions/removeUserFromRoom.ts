@@ -3,8 +3,9 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Team } from '@rocket.chat/core-services';
+import { Subscriptions } from '@rocket.chat/models';
 
-import { Rooms, Messages, Subscriptions } from '../../../models/server';
+import { Rooms, Messages } from '../../../models/server';
 import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 
@@ -21,8 +22,8 @@ export const removeUserFromRoom = async function (
 
 	try {
 		await Apps.triggerEvent(AppEvents.IPreRoomUserLeave, room, user);
-	} catch (error) {
-		if (error instanceof AppsEngineException) {
+	} catch (error: any) {
+		if (error.name === AppsEngineException.name) {
 			throw new Meteor.Error('error-app-prevented', error.message);
 		}
 
@@ -31,8 +32,8 @@ export const removeUserFromRoom = async function (
 
 	callbacks.run('beforeLeaveRoom', user, room);
 
-	const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id, {
-		fields: { _id: 1 },
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id, {
+		projection: { _id: 1 },
 	});
 
 	if (subscription) {
@@ -58,7 +59,7 @@ export const removeUserFromRoom = async function (
 		Messages.createCommandWithRoomIdAndUser('survey', rid, user);
 	}
 
-	Subscriptions.removeByRoomIdAndUserId(rid, user._id);
+	await Subscriptions.removeByRoomIdAndUserId(rid, user._id);
 
 	if (room.teamId && room.teamMain) {
 		await Team.removeMember(room.teamId, user._id);

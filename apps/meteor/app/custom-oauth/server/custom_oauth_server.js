@@ -397,7 +397,7 @@ export class CustomOAuth {
 		const self = this;
 		const whitelisted = ['id', 'email', 'username', 'name', this.rolesClaim];
 
-		registerAccessTokenService(name, function (options) {
+		registerAccessTokenService(name, async function (options) {
 			check(
 				options,
 				Match.ObjectIncluding({

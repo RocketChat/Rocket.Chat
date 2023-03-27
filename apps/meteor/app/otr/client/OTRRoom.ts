@@ -85,7 +85,7 @@ export class OTRRoom implements IOTRRoom {
 					refresh,
 				});
 			if (refresh) {
-				Meteor.call('sendSystemMessages', this._roomId, Meteor.user(), otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH);
+				await Meteor.callAsync('sendSystemMessages', this._roomId, Meteor.user(), otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH);
 				this.isFirstOTR = false;
 			}
 		} catch (e) {
@@ -94,7 +94,7 @@ export class OTRRoom implements IOTRRoom {
 	}
 
 	acknowledge(): void {
-		APIClient.post('/v1/statistics.telemetry', { params: [{ eventName: 'otrStats', timestamp: Date.now(), rid: this._roomId }] });
+		void APIClient.post('/v1/statistics.telemetry', { params: [{ eventName: 'otrStats', timestamp: Date.now(), rid: this._roomId }] });
 
 		this.peerId &&
 			Notifications.notifyUser(this.peerId, 'otr', 'acknowledge', {

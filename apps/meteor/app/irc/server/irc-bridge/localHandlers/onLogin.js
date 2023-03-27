@@ -1,8 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import { Rooms } from '@rocket.chat/models';
 
-import { Users, Rooms } from '../../../../models/server';
+import { Users } from '../../../../models/server';
 
-export default function handleOnLogin(login) {
+export default async function handleOnLogin(login) {
 	if (login.user === null) {
 		return this.log('Invalid handleOnLogin call');
 	}
@@ -32,7 +33,7 @@ export default function handleOnLogin(login) {
 	});
 
 	this.sendCommand('registerUser', user);
-	const rooms = Rooms.findBySubscriptionUserId(user._id).fetch();
+	const rooms = await Rooms.findBySubscriptionUserId(user._id).toArray();
 
 	rooms.forEach((room) => {
 		if (room.t === 'd') {

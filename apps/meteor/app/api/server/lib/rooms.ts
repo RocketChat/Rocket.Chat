@@ -1,4 +1,4 @@
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -14,7 +14,7 @@ export async function findAdminRooms({
 	uid: string;
 	filter: string;
 	types: string[];
-	pagination: { offset: number; count: number; sort: [string, number][] };
+	pagination: { offset: number; count: number; sort: Record<string, 1 | -1> };
 }): Promise<{
 	rooms: IRoom[];
 	count: number;
@@ -57,7 +57,7 @@ export async function findAdminRooms({
 	};
 }
 
-export async function findAdminRoom({ uid, rid }: { uid: string; rid: string }): Promise<unknown> {
+export async function findAdminRoom({ uid, rid }: { uid: string; rid: string }): Promise<Pick<IRoom, RoomAdminFieldsType> | null> {
 	if (!(await hasPermissionAsync(uid, 'view-room-administration'))) {
 		throw new Error('error-not-authorized');
 	}
@@ -127,7 +127,7 @@ export async function findChannelAndPrivateAutocompleteWithPagination({
 }: {
 	uid: string;
 	selector: { name: string };
-	pagination: { offset: number; count: number; sort: [string, number][] };
+	pagination: { offset: number; count: number; sort: Record<string, 1 | -1> };
 }): Promise<{
 	items: IRoom[];
 	total: number;

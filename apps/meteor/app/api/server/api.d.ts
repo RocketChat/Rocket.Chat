@@ -7,11 +7,12 @@ import type {
 	PathPattern,
 	UrlParams,
 } from '@rocket.chat/rest-typings';
-import type { IUser, IMethodConnection, IRoom } from '@rocket.chat/core-typings';
+import type { IUser, IMethodConnection } from '@rocket.chat/core-typings';
 import type { ValidateFunction } from 'ajv';
 import type { Request, Response } from 'express';
 
 import type { ITwoFactorOptions } from '../../2fa/server/code';
+import type { Logger } from '../../logger/server';
 
 type SuccessResult<T> = {
 	statusCode: 200;
@@ -102,7 +103,7 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 			? T
 			: TOptions extends { validateParams: { GET: ValidateFunction<infer T> } }
 			? T
-			: Partial<OperationParams<TMethod, TPathPattern>>
+			: Partial<OperationParams<TMethod, TPathPattern>> & { offset?: number; count?: number }
 		: Record<string, string>;
 	// TODO make it unsafe
 	readonly bodyParams: TMethod extends 'GET'
@@ -113,33 +114,22 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 		? V extends { [key in TMethod]: ValidateFunction<infer T> }
 			? T
 			: Partial<OperationParams<TMethod, TPathPattern>>
-		: Partial<OperationParams<TMethod, TPathPattern>>;
+		: // TODO remove the extra (optionals) params when all the endpoints that use these are typed correctly
+		  Partial<OperationParams<TMethod, TPathPattern>> & {
+				userId?: string;
+				username?: string;
+				user?: string;
+		  };
 	readonly request: Request;
 
 	readonly queryOperations: TOptions extends { queryOperations: infer T } ? T : never;
-
-	/* @deprecated */
-	requestParams(): OperationParams<TMethod, TPathPattern>;
-	getLoggedInUser(): TOptions extends { authRequired: true } ? IUser : IUser | undefined;
-	getPaginationItems(): {
-		readonly offset: number;
-		readonly count: number;
-	};
-	parseJsonQuery(): {
+	readonly queryFields: TOptions extends { queryFields: infer T } ? T : never;
+	readonly logger: Logger;
+	parseJsonQuery(): Promise<{
 		sort: Record<string, 1 | -1>;
 		fields: Record<string, 0 | 1>;
 		query: Record<string, unknown>;
-	};
-	/* @deprecated */
-	getUserFromParams(): IUser;
-	/* @deprecated */
-	isUserFromParams(): boolean;
-	/* @deprecated */
-	getUserInfo(
-		me: IUser,
-	): TOptions extends { authRequired: true } ? UserInfo : TOptions extends { authOrAnonRequired: true } ? UserInfo | undefined : undefined;
-	composeRoomWithLastMessage(room: IRoom, userId: string): IRoom;
-	isWidget(): boolean;
+	}>;
 } & (TOptions extends { authRequired: true }
 	? {
 			readonly user: IUser;
@@ -260,6 +250,27 @@ declare const API: {
 	default: APIClass;
 	helperMethods: Map<string, (...args: any[]) => unknown>;
 	ApiClass: APIClass;
+	channels: {
+		create: {
+			validate: (params: {
+				user: { value: string };
+				name?: { key: string; value?: string };
+				members?: { key: string; value?: string[] };
+				customFields?: { key: string; value?: string };
+				teams?: { key: string; value?: string[] };
+			}) => Promise<void>;
+			execute: (
+				userId: string,
+				params: {
+					name?: string;
+					members?: string[];
+					customFields?: Record<string, any>;
+					extraData?: Record<string, any>;
+					readOnly?: boolean;
+				},
+			) => Promise<{ channel: IRoom }>;
+		};
+	};
 };
 
 declare const defaultRateLimiterOptions: {

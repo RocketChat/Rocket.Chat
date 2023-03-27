@@ -1,7 +1,7 @@
 import { SystemLogger } from '../../../../../server/lib/logger/system';
 import { Subscriptions, Users } from '../../../../models/server';
 
-export default function handleOnSaveMessage(message, to) {
+export default async function handleOnSaveMessage(message, to) {
 	let toIdentification = '';
 	// Direct message
 	if (to.t === 'd') {

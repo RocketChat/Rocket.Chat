@@ -5,7 +5,7 @@ import { Roles } from '@rocket.chat/models';
 import { settings } from '../../../app/settings/server';
 import { Subscriptions, Users } from '../../../app/models/server';
 
-export function getRoomRoles(rid: IRoom['_id']): ISubscription[] {
+export async function getRoomRoles(rid: IRoom['_id']): Promise<ISubscription[]> {
 	const options = {
 		sort: {
 			'u.username': 1,
@@ -19,7 +19,7 @@ export function getRoomRoles(rid: IRoom['_id']): ISubscription[] {
 
 	const useRealName = settings.get('UI_Use_Real_Name') === true;
 
-	const roles = Promise.await(Roles.find({ scope: 'Subscriptions', description: { $exists: true, $ne: '' } }).toArray());
+	const roles = await Roles.find({ scope: 'Subscriptions', description: { $exists: true, $ne: '' } }).toArray();
 	const subscriptions = Subscriptions.findByRoomIdAndRoles(rid, _.pluck(roles, '_id'), options).fetch() as ISubscription[];
 
 	if (!useRealName) {

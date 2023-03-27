@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { EmojiCustom, LivechatTrigger, LivechatVisitors } from '@rocket.chat/models';
+import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 import type {
 	ILivechatAgent,
 	ILivechatDepartment,
@@ -11,12 +11,12 @@ import type {
 	OmnichannelSourceType,
 } from '@rocket.chat/core-typings';
 
-import { LivechatRooms, LivechatDepartment } from '../../../../models/server';
+import { LivechatDepartment } from '../../../../models/server';
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../../lib/callbacks';
 import { normalizeAgent } from '../../lib/Helper';
 
-export function online(department: string, skipSettingCheck = false, skipFallbackCheck = false): boolean {
+export function online(department: string, skipSettingCheck = false, skipFallbackCheck = false): Promise<boolean> {
 	return Livechat.online(department, skipSettingCheck, skipFallbackCheck);
 }
 
@@ -59,7 +59,7 @@ export function findGuest(token: string): Promise<ILivechatVisitor | null> {
 	});
 }
 
-export function findRoom(token: string, rid?: string): IOmnichannelRoom {
+export async function findRoom(token: string, rid?: string): Promise<IOmnichannelRoom | null> {
 	const fields = {
 		t: 1,
 		departmentId: 1,
@@ -76,9 +76,9 @@ export function findRoom(token: string, rid?: string): IOmnichannelRoom {
 	return LivechatRooms.findOneByIdAndVisitorToken(rid, token, fields);
 }
 
-export function findOpenRoom(token: string, departmentId?: string): IOmnichannelRoom | undefined {
+export async function findOpenRoom(token: string, departmentId?: string): Promise<IOmnichannelRoom | undefined> {
 	const options = {
-		fields: {
+		projection: {
 			departmentId: 1,
 			servedBy: 1,
 			open: 1,
@@ -87,8 +87,8 @@ export function findOpenRoom(token: string, departmentId?: string): IOmnichannel
 	};
 
 	const rooms = departmentId
-		? LivechatRooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options).fetch()
-		: LivechatRooms.findOpenByVisitorToken(token, options).fetch();
+		? await LivechatRooms.findOpenByVisitorTokenAndDepartmentId(token, departmentId, options).toArray()
+		: await LivechatRooms.findOpenByVisitorToken(token, options).toArray();
 	if (rooms && rooms.length > 0) {
 		return rooms[0];
 	}

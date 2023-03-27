@@ -1,7 +1,8 @@
 import { check } from 'meteor/check';
 
 import { API } from '../api';
-import { hasPermission, hasRole } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasRole } from '../../../authorization/server';
 import { saveRegistrationData } from '../../../cloud/server/functions/saveRegistrationData';
 import { retrieveRegistrationStatus } from '../../../cloud/server/functions/retrieveRegistrationStatus';
 import { startRegisterWorkspaceSetupWizard } from '../../../cloud/server/functions/startRegisterWorkspaceSetupWizard';
@@ -17,7 +18,7 @@ API.v1.addRoute(
 				cloudBlob: String,
 			});
 
-			if (!hasPermission(this.userId, 'register-on-cloud')) {
+			if (!(await hasPermissionAsync(this.userId, 'register-on-cloud'))) {
 				return API.v1.unauthorized();
 			}
 
@@ -46,7 +47,7 @@ API.v1.addRoute(
 				email: String,
 			});
 
-			if (!hasPermission(this.userId, 'manage-cloud')) {
+			if (!(await hasPermissionAsync(this.userId, 'manage-cloud'))) {
 				return API.v1.unauthorized();
 			}
 
@@ -66,7 +67,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			if (!hasPermission(this.userId, 'manage-cloud')) {
+			if (!(await hasPermissionAsync(this.userId, 'manage-cloud'))) {
 				return API.v1.unauthorized();
 			}
 
@@ -85,7 +86,7 @@ API.v1.addRoute(
 				deviceCode: String,
 			});
 
-			if (!hasPermission(this.userId, 'manage-cloud')) {
+			if (!(await hasPermissionAsync(this.userId, 'manage-cloud'))) {
 				return API.v1.unauthorized();
 			}
 

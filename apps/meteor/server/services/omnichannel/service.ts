@@ -14,7 +14,7 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 			const hasRole = user.roles.some((role) => ['livechat-manager', 'livechat-monitor', 'livechat-agent'].includes(role));
 			if (hasRole) {
 				// TODO change `Livechat.notifyAgentStatusChanged` to a service call
-				Livechat.notifyAgentStatusChanged(user._id, user.status);
+				await Livechat.notifyAgentStatusChanged(user._id, user.status);
 			}
 		});
 	}

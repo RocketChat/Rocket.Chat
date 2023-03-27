@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { RateLimiter } from '../lib';
 import { saveCustomFields } from '../functions/saveCustomFields';
@@ -11,7 +12,7 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
-Meteor.methods({
+Meteor.methods<ServerMethods>({
 	saveCustomFields(fields = {}) {
 		const uid = Meteor.userId();
 		if (!uid) {

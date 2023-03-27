@@ -1,15 +1,25 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Team } from '@rocket.chat/core-services';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Subscriptions } from '@rocket.chat/models';
 
-import { hasPermission, hasRole, getUsersInRole } from '../../app/authorization/server';
+import { hasRole, getUsersInRole } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { removeUserFromRolesAsync } from '../lib/roles/removeUserFromRoles';
-import { Users, Subscriptions, Rooms, Messages } from '../../app/models/server';
+import { Users, Rooms, Messages } from '../../app/models/server';
 import { callbacks } from '../../lib/callbacks';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		removeUserFromRoom(data: { rid: string; username: string }): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async removeUserFromRoom(data) {
 		check(
 			data,
@@ -27,7 +37,7 @@ Meteor.methods({
 			});
 		}
 
-		if (!hasPermission(fromId, 'remove-user', data.rid)) {
+		if (!(await hasPermissionAsync(fromId, 'remove-user', data.rid))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'removeUserFromRoom',
 			});
@@ -35,7 +45,7 @@ Meteor.methods({
 
 		const room = Rooms.findOneById(data.rid);
 
-		if (!room || !roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.REMOVE_USER, fromId)) {
+		if (!room || !(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.REMOVE_USER, fromId))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'removeUserFromRoom',
 			});
@@ -45,8 +55,8 @@ Meteor.methods({
 
 		const fromUser = Users.findOneById(fromId);
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(data.rid, removedUser._id, {
-			fields: { _id: 1 },
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, removedUser._id, {
+			projection: { _id: 1 },
 		});
 		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
@@ -66,7 +76,7 @@ Meteor.methods({
 
 		callbacks.run('beforeRemoveFromRoom', { removedUser, userWhoRemoved: fromUser }, room);
 
-		Subscriptions.removeByRoomIdAndUserId(data.rid, removedUser._id);
+		await Subscriptions.removeByRoomIdAndUserId(data.rid, removedUser._id);
 
 		if (['c', 'p'].includes(room.t) === true) {
 			await removeUserFromRolesAsync(removedUser._id, ['moderator', 'owner'], data.rid);

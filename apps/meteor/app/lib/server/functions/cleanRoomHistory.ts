@@ -1,13 +1,13 @@
-import type { FindCursor } from 'mongodb';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { IMessage, IMessageDiscussion } from '@rocket.chat/core-typings';
+import type { IMessage, IMessageDiscussion, IRoom } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
+import { Messages as MessagesRaw, Rooms } from '@rocket.chat/models';
 
 import { deleteRoom } from './deleteRoom';
 import { FileUpload } from '../../../file-upload/server';
-import { Messages, Rooms, Subscriptions } from '../../../models/server';
+import { Messages, Subscriptions } from '../../../models/server';
 
-export const cleanRoomHistory = function ({
+export async function cleanRoomHistory({
 	rid = '',
 	latest = new Date(),
 	oldest = new Date('0001-01-01T00:00:00Z'),
@@ -18,7 +18,18 @@ export const cleanRoomHistory = function ({
 	filesOnly = false,
 	fromUsers = [],
 	ignoreThreads = true,
-}): unknown {
+}: {
+	rid?: IRoom['_id'];
+	latest?: Date;
+	oldest?: Date;
+	inclusive?: boolean;
+	limit?: number;
+	excludePinned?: boolean;
+	ignoreDiscussion?: boolean;
+	filesOnly?: boolean;
+	fromUsers?: string[];
+	ignoreThreads?: boolean;
+}): Promise<number> {
 	const gt = inclusive ? '$gte' : '$gt';
 	const lt = inclusive ? '$lte' : '$lt';
 
@@ -45,14 +56,10 @@ export const cleanRoomHistory = function ({
 	}
 
 	if (!ignoreDiscussion) {
-		Promise.await(
-			(
-				Messages.findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers, {
-					fields: { drid: 1 },
-					...(limit && { limit }),
-				}) as FindCursor<IMessageDiscussion>
-			).forEach(({ drid }) => deleteRoom(drid)),
-		);
+		Messages.findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers, {
+			fields: { drid: 1 },
+			...(limit && { limit }),
+		}).forEach(({ drid }: IMessageDiscussion) => deleteRoom(drid));
 	}
 
 	if (!ignoreThreads) {
@@ -67,10 +74,19 @@ export const cleanRoomHistory = function ({
 		}
 	}
 
-	const count = Messages.removeByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, limit, fromUsers, ignoreThreads);
+	const count = await MessagesRaw.removeByIdPinnedTimestampLimitAndUsers(
+		rid,
+		excludePinned,
+		ignoreDiscussion,
+		ts,
+		limit,
+		fromUsers,
+		ignoreThreads,
+	);
 	if (count) {
-		Rooms.resetLastMessageById(rid);
-		api.broadcast('notify.deleteMessageBulk', rid, {
+		const lastMessage = await MessagesRaw.getLastVisibleMessageSentWithNoTypeByRoomId(rid);
+		await Rooms.resetLastMessageById(rid, lastMessage);
+		void api.broadcast('notify.deleteMessageBulk', rid, {
 			rid,
 			excludePinned,
 			ignoreDiscussion,
@@ -79,4 +95,4 @@ export const cleanRoomHistory = function ({
 		});
 	}
 	return count;
-};
+}

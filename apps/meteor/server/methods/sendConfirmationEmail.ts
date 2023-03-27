@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Users } from '../../app/models/server';
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 
-Meteor.methods({
+Meteor.methods<ServerMethods>({
 	sendConfirmationEmail(to) {
 		check(to, String);
 

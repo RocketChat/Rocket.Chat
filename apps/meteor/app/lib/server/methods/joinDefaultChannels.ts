@@ -1,10 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import type { IUser } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { addUserToDefaultChannels } from '../functions';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		joinDefaultChannels(silenced?: boolean): void;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	joinDefaultChannels(silenced) {
 		check(silenced, Match.Optional(Boolean));
 		const user = Meteor.user();
