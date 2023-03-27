@@ -20,8 +20,7 @@ import CustomSounds from './models/CustomSounds';
 import EmojiCustom from './models/EmojiCustom';
 
 // overwrite Meteor.users collection so records on it don't get erased whenever the client reconnects to websocket
-Meteor.users = Users as typeof Meteor.users;
-Meteor.user = () => {
+const meteorUserOverwrite = () => {
 	const uid = Meteor.userId();
 
 	if (!uid) {
@@ -30,6 +29,8 @@ Meteor.user = () => {
 
 	return (Users.findOne({ _id: uid }) ?? null) as Meteor.User | null;
 };
+Meteor.users = Users as typeof Meteor.users;
+Meteor.user = meteorUserOverwrite;
 
 declare global {
 	// eslint-disable-next-line @typescript-eslint/no-namespace
@@ -39,7 +40,7 @@ declare global {
 }
 
 Meteor.userAsync = async () => {
-	return Meteor.user();
+	return meteorUserOverwrite();
 };
 
 export {

@@ -26,7 +26,7 @@ export const processTooLongMessage = async (chat: ChatAPI, { msg }: Pick<IMessag
 		const onConfirm = async (): Promise<void> => {
 			const contentType = 'text/plain';
 			const messageBlob = new Blob([msg], { type: contentType });
-			const fileName = `${Meteor.user()?.username ?? 'anonymous'} - ${new Date()}.txt`; // TODO: proper naming and formatting
+			const fileName = `${(await Meteor.userAsync())?.username ?? 'anonymous'} - ${new Date()}.txt`; // TODO: proper naming and formatting
 			const file = new File([messageBlob], fileName, {
 				type: contentType,
 				lastModified: Date.now(),

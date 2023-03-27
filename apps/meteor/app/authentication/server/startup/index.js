@@ -221,7 +221,7 @@ Accounts.onCreateUser(function (options, user = {}) {
 	callbacks.run('onCreateUser', options, user);
 
 	// App IPostUserCreated event hook
-	Promise.await(Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: safeGetMeteorUser() }));
+	Promise.await(Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: Promise.await(safeGetMeteorUser()) }));
 
 	return user;
 });
