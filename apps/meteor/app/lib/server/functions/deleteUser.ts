@@ -29,7 +29,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 		return;
 	}
 
-	const subscribedRooms = getSubscribedRoomsForUserWithDetails(userId);
+	const subscribedRooms = await getSubscribedRoomsForUserWithDetails(userId);
 
 	if (shouldRemoveOrChangeOwner(subscribedRooms) && !confirmRelinquish) {
 		const rooms = getUserSingleOwnedRooms(subscribedRooms);

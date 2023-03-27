@@ -5,7 +5,7 @@ import { Subscriptions, Rooms, Messages, Users, Uploads, Integrations } from '@r
 import { Team } from '@rocket.chat/core-services';
 import type { Filter } from 'mongodb';
 
-import { Rooms as RoomSync, Users as UsersSync } from '../../../models/server';
+import { Users as UsersSync } from '../../../models/server';
 import { hasAtLeastOnePermission, canAccessRoomAsync, hasAllPermission, roomAccessAttributes } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
