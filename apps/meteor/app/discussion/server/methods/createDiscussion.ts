@@ -4,7 +4,8 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IMessage, IRoom, IUser, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasAtLeastOnePermission, canSendMessage } from '../../../authorization/server';
+import { hasAtLeastOnePermission } from '../../../authorization/server';
+import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { Messages, Rooms } from '../../../models/server';
 import { createRoom, addUserToRoom, sendMessage, attachMessage } from '../../../lib/server';
 import { settings } from '../../../settings/server';
@@ -85,7 +86,7 @@ const create = async ({ prid, pmid, t_name: discussionName, reply, users, user, 
 
 	let parentRoom;
 	try {
-		parentRoom = canSendMessage(prid, { uid: user._id, username: user.username, type: user.type });
+		parentRoom = await canSendMessageAsync(prid, { uid: user._id, username: user.username, type: user.type });
 	} catch (error) {
 		throw new Meteor.Error((error as Error).message);
 	}
