@@ -3,6 +3,7 @@ import { Match, check } from 'meteor/check';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { IMessage } from '@rocket.chat/core-typings';
+import { isChatDeleteProps } from '@rocket.chat/rest-typings';
 
 import { roomAccessAttributes } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -15,21 +16,13 @@ import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } f
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { deleteMessageAsync } from '../../../lib/server/lib/deleteMessageAsync';
 
 API.v1.addRoute(
 	'chat.delete',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isChatDeleteProps },
 	{
 		async post() {
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					msgId: String,
-					roomId: String,
-					asUser: Match.Maybe(Boolean),
-				}),
-			);
-
 			const msg = await Messages.findOneById(this.bodyParams.msgId, { projection: { u: 1, rid: 1 } });
 
 			if (!msg) {
@@ -48,9 +41,7 @@ API.v1.addRoute(
 				return API.v1.failure('Unauthorized. You must have the permission "force-delete-message" to delete other\'s message as them.');
 			}
 
-			await Meteor.runAsUser(this.bodyParams.asUser ? msg.u._id : this.userId, async () => {
-				await Meteor.callAsync('deleteMessage', { _id: msg._id });
-			});
+			await deleteMessageAsync(msg, this.bodyParams.asUser ? msg.u._id : this.userId);
 
 			return API.v1.success({
 				_id: msg._id,
