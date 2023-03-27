@@ -14,7 +14,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async removeSlackBridgeChannelLinks() {
-		const user = Meteor.user();
+		const user = await Meteor.userAsync();
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'removeSlackBridgeChannelLinks',

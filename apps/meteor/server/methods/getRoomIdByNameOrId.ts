@@ -31,7 +31,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!(await canAccessRoomAsync(room, Meteor.user() ?? undefined))) {
+		if (!(await canAccessRoomAsync(room, (await Meteor.userAsync()) ?? undefined))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'getRoomIdByNameOrId',
 			});

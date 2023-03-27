@@ -48,6 +48,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		return deleteMessage(originalMessage, Meteor.user() as IUser);
+		return deleteMessage(originalMessage, (await Meteor.userAsync()) as IUser);
 	},
 });

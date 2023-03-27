@@ -8,12 +8,12 @@ import { emoji } from '../../../emoji/client';
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
 
 Meteor.methods<ServerMethods>({
-	setReaction(reaction, messageId) {
+	async setReaction(reaction, messageId) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error(203, 'User_logged_out');
 		}
 
-		const user = Meteor.user();
+		const user = await Meteor.userAsync();
 
 		if (!user?.username) {
 			return false;
