@@ -1,7 +1,6 @@
 import { Base } from './_Base';
 import { trim } from '../../../../lib/utils/stringUtils';
 
-// TODO: Promise.awaits will go with the model so..
 class Rooms extends Base {
 	constructor(...args) {
 		super(...args);
