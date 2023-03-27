@@ -20,6 +20,7 @@ import {
 	Messages as MessagesRaw,
 	LivechatDepartment as LivechatDepartmentRaw,
 	LivechatDepartmentAgents,
+	Rooms,
 } from '@rocket.chat/models';
 import { VideoConf, api } from '@rocket.chat/core-services';
 
@@ -28,7 +29,7 @@ import { RoutingManager } from './RoutingManager';
 import { Analytics } from './Analytics';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Users, Messages, Subscriptions, Rooms, LivechatDepartment } from '../../../models/server';
+import { Users, Messages, Subscriptions, LivechatDepartment } from '../../../models/server';
 import { Logger } from '../../../logger/server';
 import { hasRole, canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -68,7 +69,7 @@ export const Livechat = {
 		});
 	},
 
-	online(department, skipNoAgentSetting = false, skipFallbackCheck = false) {
+	async online(department, skipNoAgentSetting = false, skipFallbackCheck = false) {
 		Livechat.logger.debug(`Checking online agents ${department ? `for department ${department}` : ''}`);
 		if (!skipNoAgentSetting && settings.get('Livechat_accept_chats_with_no_agents')) {
 			Livechat.logger.debug('Can accept without online agents: true');
@@ -77,7 +78,7 @@ export const Livechat = {
 
 		if (settings.get('Livechat_assign_new_conversation_to_bot')) {
 			Livechat.logger.debug(`Fetching online bot agents for department ${department}`);
-			const botAgents = Livechat.getBotAgents(department);
+			const botAgents = await Livechat.getBotAgents(department);
 			const onlineBots = botAgents.count();
 			Livechat.logger.debug(`Found ${onlineBots} online`);
 			if (onlineBots > 0) {
@@ -85,7 +86,7 @@ export const Livechat = {
 			}
 		}
 
-		const agentsOnline = Livechat.checkOnlineAgents(department, {}, skipFallbackCheck);
+		const agentsOnline = await Livechat.checkOnlineAgents(department, {}, skipFallbackCheck);
 		Livechat.logger.debug(`Are online agents ${department ? `for department ${department}` : ''}?: ${agentsOnline}`);
 		return agentsOnline;
 	},
@@ -590,7 +591,7 @@ export const Livechat = {
 			const { _id: rid } = roomData;
 			const { name } = guestData;
 			return (
-				Rooms.setFnameById(rid, name) &&
+				(await Rooms.setFnameById(rid, name)) &&
 				(await LivechatInquiry.setNameByRoomId(rid, name)) &&
 				// This one needs to be the last since the agent may not have the subscription
 				// when the conversation is in the queue, then the result will be 0(zero)
@@ -1119,7 +1120,7 @@ export const Livechat = {
 	getRoomMessages({ rid }) {
 		check(rid, String);
 
-		const isLivechat = Promise.await(Rooms.findByTypeInIds('l', [rid])).count();
+		const isLivechat = Promise.await(Rooms.findByTypeInIds('l', [rid]).count());
 
 		if (!isLivechat) {
 			throw new Meteor.Error('invalid-room');
@@ -1304,7 +1305,7 @@ export const Livechat = {
 		await LivechatVisitors.updateById(contactId, updateUser);
 	},
 	async updateCallStatus(callId, rid, status, user) {
-		Rooms.setCallStatus(rid, status);
+		await Rooms.setCallStatus(rid, status);
 		if (status === 'ended' || status === 'declined') {
 			if (await VideoConf.declineLivechatCall(callId)) {
 				return;

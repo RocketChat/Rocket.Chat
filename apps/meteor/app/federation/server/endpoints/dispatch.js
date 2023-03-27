@@ -1,5 +1,5 @@
 import { EJSON } from 'meteor/ejson';
-import { FederationServers, FederationRoomEvents } from '@rocket.chat/models';
+import { FederationServers, FederationRoomEvents, Rooms as RoomsRaw } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 import { eventTypes } from '@rocket.chat/core-typings';
 
@@ -436,7 +436,7 @@ const eventHandlers = {
 			const denormalizedUser = normalizers.denormalizeUser(user);
 
 			// Mute user
-			Rooms.muteUsernameByRoomId(roomId, denormalizedUser.username);
+			await RoomsRaw.muteUsernameByRoomId(roomId, denormalizedUser.username);
 		}
 
 		return eventResult;
@@ -458,7 +458,7 @@ const eventHandlers = {
 			const denormalizedUser = normalizers.denormalizeUser(user);
 
 			// Mute user
-			Rooms.unmuteUsernameByRoomId(roomId, denormalizedUser.username);
+			await RoomsRaw.unmuteUsernameByRoomId(roomId, denormalizedUser.username);
 		}
 
 		return eventResult;

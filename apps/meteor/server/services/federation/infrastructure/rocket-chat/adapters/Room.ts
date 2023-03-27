@@ -12,6 +12,10 @@ import { Messages } from '../../../../../../app/models/server';
 import { saveRoomTopic } from '../../../../../../app/channel-settings/server';
 import { settings } from '../../../../../../app/settings/server';
 
+type WithRequiredProperty<Type, Key extends keyof Type> = Type & {
+	[Property in Key]-?: Type[Property];
+};
+
 export class RocketChatRoomAdapter {
 	public async getFederatedRoomByExternalId(externalRoomId: string): Promise<FederatedRoom | undefined> {
 		const internalBridgedRoomId = await MatrixBridgedRoom.getLocalRoomId(externalRoomId);
@@ -148,7 +152,11 @@ export class RocketChatRoomAdapter {
 	}
 
 	public async updateRoomTopic(federatedRoom: FederatedRoom, federatedUser: FederatedUser): Promise<void> {
-		await saveRoomTopic(federatedRoom.getInternalId(), federatedRoom.getTopic(), federatedUser.getInternalReference());
+		await saveRoomTopic(
+			federatedRoom.getInternalId(),
+			federatedRoom.getTopic(),
+			federatedUser.getInternalReference() as WithRequiredProperty<IUser, 'username'>,
+		);
 	}
 
 	private async createFederatedRoomInstance(externalRoomId: string, room: IRoom): Promise<FederatedRoom> {

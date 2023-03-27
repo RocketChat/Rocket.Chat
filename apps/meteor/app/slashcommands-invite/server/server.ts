@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import type { IUser } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
+import { Subscriptions } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
-import { Subscriptions } from '../../models/server';
 
 /*
  * Invite is a named function that will replace /invite commands
@@ -36,12 +37,16 @@ slashCommands.add({
 			});
 			return;
 		}
-		const usersFiltered = users.fetch().filter(function (user) {
-			const subscription = Subscriptions.findOneByRoomIdAndUserId(item.rid, user._id, {
-				fields: { _id: 1 },
+
+		const usersFiltered: IUser[] = [];
+
+		for await (const user of users.fetch()) {
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(item.rid, user._id, {
+				projection: { _id: 1 },
 			});
 			if (subscription == null) {
-				return true;
+				usersFiltered.push(user as IUser);
+				continue;
 			}
 			const usernameStr = user.username as string;
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
@@ -51,8 +56,7 @@ slashCommands.add({
 					lng: settings.get('Language') || 'en',
 				}),
 			});
-			return false;
-		});
+		}
 
 		await Promise.all(
 			usersFiltered.map(async (user) => {
