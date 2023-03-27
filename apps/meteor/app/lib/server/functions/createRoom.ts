@@ -3,11 +3,12 @@ import { Meteor } from 'meteor/meteor';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
+import { Rooms } from '@rocket.chat/models';
 
 import { Apps } from '../../../../ee/server/apps';
-import { addUserRoles } from '../../../../server/lib/roles/addUserRoles';
+import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { callbacks } from '../../../../lib/callbacks';
-import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
+import { Messages, Subscriptions, Users } from '../../../models/server';
 import { getValidRoomName } from '../../../utils/server';
 import { createDirectRoom } from './createDirectRoom';
 
@@ -22,9 +23,13 @@ export const createRoom = async <T extends RoomType>(
 	ownerUsername: string | undefined,
 	members: T extends 'd' ? IUser[] : string[] = [],
 	readOnly?: boolean,
-	roomExtraData?: Partial<IRoom> & { customFields?: unknown },
+	roomExtraData?: Partial<IRoom>,
 	options?: ICreateRoomParams['options'],
-): Promise<ICreatedRoom> => {
+): Promise<
+	ICreatedRoom & {
+		rid: string;
+	}
+> => {
 	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
 	callbacks.run('beforeCreateRoom', { type, name, owner: ownerUsername, members, readOnly, extraData, options });
 
@@ -63,8 +68,9 @@ export const createRoom = async <T extends RoomType>(
 
 	const now = new Date();
 
-	const roomProps: Omit<IRoom, '_id' | '_updatedAt' | 'uids' | 'autoTranslateLanguage'> = {
+	const roomProps: Omit<IRoom, '_id' | '_updatedAt'> = {
 		fname: name,
+		_updatedAt: now,
 		...extraData,
 		name: getValidRoomName(name.trim(), undefined, {
 			...(options?.nameValidationRegex && { nameValidationRegex: options.nameValidationRegex }),
@@ -93,7 +99,7 @@ export const createRoom = async <T extends RoomType>(
 	};
 
 	const prevent = await Apps.triggerEvent('IPreRoomCreatePrevent', tmp).catch((error) => {
-		if (error instanceof AppsEngineException) {
+		if (error.name === AppsEngineException.name) {
 			throw new Meteor.Error('error-app-prevented', error.message);
 		}
 
@@ -113,7 +119,7 @@ export const createRoom = async <T extends RoomType>(
 	if (type === 'c') {
 		callbacks.run('beforeCreateChannel', owner, roomProps);
 	}
-	const room = Rooms.createWithFullRoomData(roomProps);
+	const room = await Rooms.createWithFullRoomData(roomProps);
 	const shouldBeHandledByFederation = room.federated === true || ownerUsername.includes(':');
 	if (shouldBeHandledByFederation) {
 		const extra: Partial<ISubscriptionExtraData> = options?.subscriptionExtra || {};
@@ -156,7 +162,7 @@ export const createRoom = async <T extends RoomType>(
 		}
 	}
 
-	addUserRoles(owner._id, ['owner'], room._id);
+	await addUserRolesAsync(owner._id, ['owner'], room._id);
 
 	if (type === 'c') {
 		if (room.teamId) {
@@ -176,6 +182,7 @@ export const createRoom = async <T extends RoomType>(
 
 	return {
 		rid: room._id, // backwards compatible
+		inserted: true,
 		...room,
 	};
 };

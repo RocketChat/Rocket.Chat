@@ -154,11 +154,11 @@ export const UploadFS = {
 	 * @param store
 	 * @param callback
 	 */
-	importFromURL(url, file, store, callback) {
+	async importFromURL(url, file, store, callback) {
 		if (typeof store === 'string') {
-			Meteor.call('ufsImportURL', url, file, store, callback);
+			await Meteor.callAsync('ufsImportURL', url, file, store, callback);
 		} else if (typeof store === 'object') {
-			store.importFromURL(url, file, callback);
+			await store.importFromURL(url, file, callback);
 		}
 	},
 

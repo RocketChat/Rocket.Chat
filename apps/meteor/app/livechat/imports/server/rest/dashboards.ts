@@ -23,8 +23,8 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { start, end } = this.requestParams();
-			const { departmentId } = this.requestParams();
+			const { start, end } = this.queryParams;
+			const { departmentId } = this.queryParams;
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
@@ -50,8 +50,8 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isGETDashboardTotalizerParams },
 	{
 		async get() {
-			const { start, end } = this.requestParams();
-			const { departmentId } = this.requestParams();
+			const { start, end } = this.queryParams;
+			const { departmentId } = this.queryParams;
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
@@ -77,8 +77,8 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isGETDashboardTotalizerParams },
 	{
 		async get() {
-			const { start, end } = this.requestParams();
-			const { departmentId } = this.requestParams();
+			const { start, end } = this.queryParams;
+			const { departmentId } = this.queryParams;
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
@@ -102,8 +102,8 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isGETDashboardTotalizerParams },
 	{
 		async get() {
-			const { start, end } = this.requestParams();
-			const { departmentId } = this.requestParams();
+			const { start, end } = this.queryParams;
+			const { departmentId } = this.queryParams;
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
@@ -130,8 +130,8 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isGETDashboardTotalizerParams },
 	{
 		async get() {
-			const { start, end } = this.requestParams();
-			const { departmentId } = this.requestParams();
+			const { start, end } = this.queryParams;
+			const { departmentId } = this.queryParams;
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
@@ -156,8 +156,8 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isGETDashboardTotalizerParams },
 	{
 		async get() {
-			const { start, end } = this.requestParams();
-			const { departmentId } = this.requestParams();
+			const { start, end } = this.queryParams;
+			const { departmentId } = this.queryParams;
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
@@ -183,7 +183,7 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isGETDashboardsAgentStatusParams },
 	{
 		async get() {
-			const { departmentId } = this.requestParams();
+			const { departmentId } = this.queryParams;
 
 			// @ts-expect-error TODO: fix this
 			const result = findAllAgentsStatus({ departmentId });
@@ -198,8 +198,8 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isGETDashboardTotalizerParams },
 	{
 		async get() {
-			const { start, end } = this.requestParams();
-			const { departmentId } = this.requestParams();
+			const { start, end } = this.queryParams;
+			const { departmentId } = this.queryParams;
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');
@@ -226,8 +226,8 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isGETDashboardTotalizerParams },
 	{
 		async get() {
-			const { start, end } = this.requestParams();
-			const { departmentId } = this.requestParams();
+			const { start, end } = this.queryParams;
+			const { departmentId } = this.queryParams;
 
 			if (isNaN(Date.parse(start))) {
 				return API.v1.failure('The "start" query parameter must be a valid date.');

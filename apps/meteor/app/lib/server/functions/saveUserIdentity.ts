@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import type { IMessage } from '@rocket.chat/core-typings';
-import { VideoConference, LivechatDepartmentAgents } from '@rocket.chat/models';
+import { Messages as MessagesRaw, VideoConference, LivechatDepartmentAgents, Rooms } from '@rocket.chat/models';
 
 import { _setUsername } from './setUsername';
 import { _setRealName } from './setRealName';
-import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
+import { Messages, Subscriptions, Users } from '../../../models/server';
 import { FileUpload } from '../../../file-upload/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { validateName } from './validateName';
@@ -34,7 +34,7 @@ export async function saveUserIdentity({ _id, name: rawName, username: rawUserna
 			return false;
 		}
 
-		if (!_setUsername(_id, username, user)) {
+		if (!(await _setUsername(_id, username, user))) {
 			return false;
 		}
 		user.username = username;
@@ -49,15 +49,15 @@ export async function saveUserIdentity({ _id, name: rawName, username: rawUserna
 	// if coming from old username, update all references
 	if (previousUsername) {
 		if (usernameChanged && typeof rawUsername !== 'undefined') {
-			Messages.updateAllUsernamesByUserId(user._id, username);
-			Messages.updateUsernameOfEditByUserId(user._id, username);
+			await MessagesRaw.updateAllUsernamesByUserId(user._id, username);
+			await MessagesRaw.updateUsernameOfEditByUserId(user._id, username);
 			Messages.findByMention(previousUsername).forEach(function (msg: IMessage) {
 				const updatedMsg = msg.msg.replace(new RegExp(`@${previousUsername}`, 'ig'), `@${username}`);
 				return Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg);
 			});
-			Rooms.replaceUsername(previousUsername, username);
-			Rooms.replaceMutedUsername(previousUsername, username);
-			Rooms.replaceUsernameOfUserByUserId(user._id, username);
+			await Rooms.replaceUsername(previousUsername, username);
+			await Rooms.replaceMutedUsername(previousUsername, username);
+			await Rooms.replaceUsernameOfUserByUserId(user._id, username);
 			Subscriptions.setUserUsernameByUserId(user._id, username);
 
 			await LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
@@ -79,7 +79,7 @@ export async function saveUserIdentity({ _id, name: rawName, username: rawUserna
 			Subscriptions.updateDirectNameAndFnameByName(previousUsername, rawUsername && username, rawName && name);
 
 			// update name and fname of group direct messages
-			updateGroupDMsName(user);
+			await updateGroupDMsName(user);
 
 			// update name and username of users on video conferences
 			await VideoConference.updateUserReferences(user._id, username || previousUsername, name || previousName);

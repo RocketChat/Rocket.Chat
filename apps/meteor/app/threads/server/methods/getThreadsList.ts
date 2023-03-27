@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import { Messages, Rooms } from '@rocket.chat/models';
 
-import { Messages, Rooms } from '../../../models/server';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { settings } from '../../../settings/server';
 
@@ -28,12 +28,12 @@ Meteor.methods<ServerMethods>({
 		}
 
 		const user = Meteor.user();
-		const room = Rooms.findOneById(rid);
+		const room = await Rooms.findOneById(rid);
 
-		if (!user || !(await canAccessRoomAsync(room, user))) {
+		if (!user || !room || !(await canAccessRoomAsync(room, user))) {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed', { method: 'getThreadsList' });
 		}
 
-		return Messages.findThreadsByRoomId(rid, skip, limit).fetch();
+		return Messages.findThreadsByRoomId(rid, skip, limit).toArray();
 	},
 });

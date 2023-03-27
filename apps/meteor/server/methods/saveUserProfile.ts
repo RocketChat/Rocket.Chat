@@ -66,11 +66,11 @@ async function saveUserProfile(
 	}
 
 	if (settings.statusText || settings.statusText === '') {
-		Meteor.call('setUserStatus', null, settings.statusText);
+		await Meteor.callAsync('setUserStatus', null, settings.statusText);
 	}
 
 	if (settings.statusType) {
-		Meteor.call('setUserStatus', settings.statusType, null);
+		await Meteor.callAsync('setUserStatus', settings.statusType, null);
 	}
 
 	if (settings.bio) {
@@ -92,7 +92,7 @@ async function saveUserProfile(
 	}
 
 	if (settings.email) {
-		Meteor.call('setEmail', settings.email);
+		await Meteor.callAsync('setEmail', settings.email);
 	}
 
 	const canChangePasswordForOAuth = rcSettings.get<boolean>('Accounts_AllowPasswordChangeForOAuthUsers');
@@ -121,7 +121,7 @@ async function saveUserProfile(
 			Users.addPasswordToHistory(this.userId, user.services?.password.bcrypt);
 
 			try {
-				Meteor.call('removeOtherTokens');
+				await Meteor.callAsync('removeOtherTokens');
 			} catch (e) {
 				Accounts._clearAllLoginTokens(this.userId);
 			}

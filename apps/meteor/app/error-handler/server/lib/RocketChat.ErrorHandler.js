@@ -73,7 +73,7 @@ class ErrorHandler {
 			message = `${message}\n\`\`\`\n${stack}\n\`\`\``;
 		}
 
-		sendMessage(user, { msg: message }, { _id: this.rid });
+		Promise.await(sendMessage(user, { msg: message }, { _id: this.rid }));
 	}
 }
 

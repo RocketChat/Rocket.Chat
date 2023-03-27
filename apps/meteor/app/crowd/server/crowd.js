@@ -172,7 +172,7 @@ export class CROWD {
 			$set: user,
 		});
 
-		setUserActiveStatus(id, crowdUser.active);
+		Promise.await(setUserActiveStatus(id, crowdUser.active));
 	}
 
 	sync() {

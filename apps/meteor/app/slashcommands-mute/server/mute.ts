@@ -12,7 +12,7 @@ import { Users } from '../../models/server';
 
 slashCommands.add({
 	command: 'mute',
-	callback: function Mute(_command: 'mute', params, item): void {
+	callback: async function Mute(_command: 'mute', params, item): Promise<void> {
 		const username = params.trim().replace('@', '');
 		if (username === '') {
 			return;
@@ -30,7 +30,7 @@ slashCommands.add({
 			});
 		}
 
-		Meteor.call('muteUserInRoom', {
+		await Meteor.callAsync('muteUserInRoom', {
 			rid: item.rid,
 			username,
 		});
