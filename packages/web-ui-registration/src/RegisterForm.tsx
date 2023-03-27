@@ -136,7 +136,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 								error={errors.password && (errors.password?.message || t('registration.component.form.requiredField'))}
 								aria-invalid={errors.password ? 'true' : undefined}
 								id='password'
-								placeholder={passwordPlaceholder}
+								placeholder={passwordPlaceholder || t('registration.component.form.password')}
 							/>
 						</Field.Row>
 						{errors.password && <Field.Error>{errors.password.message}</Field.Error>}
@@ -154,7 +154,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 									error={errors.passwordConfirmation?.type === 'validate' ? t('registration.component.form.invalidConfirmPass') : undefined}
 									aria-invalid={errors.passwordConfirmation ? 'true' : false}
 									id='passwordConfirmation'
-									placeholder={passwordConfirmationPlaceholder}
+									placeholder={passwordConfirmationPlaceholder || t('registration.component.form.confirmPassword')}
 								/>
 							</Field.Row>
 							{errors.passwordConfirmation?.type === 'validate' && (
