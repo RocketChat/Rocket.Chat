@@ -21,7 +21,7 @@ Meteor.methods<ServerMethods>({
 	async joinRoom(rid, code) {
 		check(rid, String);
 
-		const user = Meteor.user();
+		const user = await Meteor.userAsync();
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'joinRoom' });

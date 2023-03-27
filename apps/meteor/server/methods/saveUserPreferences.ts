@@ -48,7 +48,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	saveUserPreferences(settings) {
+	async saveUserPreferences(settings) {
 		const keys = {
 			language: Match.Optional(String),
 			newRoomNotification: Match.Optional(String),
@@ -83,7 +83,7 @@ Meteor.methods<ServerMethods>({
 			omnichannelTranscriptPDF: Match.Optional(Boolean),
 		};
 		check(settings, Match.ObjectIncluding(keys));
-		const user = Meteor.user() as IUser | null;
+		const user = (await Meteor.userAsync()) as IUser | null;
 
 		if (!user) {
 			return false;
