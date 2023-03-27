@@ -109,7 +109,7 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		}
 
 		for await (const monitor of monitors) {
-			LivechatUnitMonitors.saveMonitor({
+			await LivechatUnitMonitors.saveMonitor({
 				monitorId: monitor.monitorId,
 				unitId: _id,
 				username: monitor.username,
