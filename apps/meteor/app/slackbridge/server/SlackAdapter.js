@@ -983,7 +983,7 @@ export default class SlackAdapter {
 				{ ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000), imported: 'slackbridge' },
 			);
 		} else {
-			saveRoomTopic(rocketChannel._id, slackMessage.topic, rocketUser, false);
+			await saveRoomTopic(rocketChannel._id, slackMessage.topic, rocketUser, false);
 		}
 	}
 
@@ -997,7 +997,7 @@ export default class SlackAdapter {
 				{ ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000), imported: 'slackbridge' },
 			);
 		} else {
-			saveRoomTopic(rocketChannel._id, slackMessage.purpose, rocketUser, false);
+			await saveRoomTopic(rocketChannel._id, slackMessage.purpose, rocketUser, false);
 		}
 	}
 
@@ -1099,13 +1099,13 @@ export default class SlackAdapter {
 			case 'channel_archive':
 			case 'group_archive':
 				if (!isImporting) {
-					archiveRoom(rocketChannel);
+					await archiveRoom(rocketChannel);
 				}
 				return;
 			case 'channel_unarchive':
 			case 'group_unarchive':
 				if (!isImporting) {
-					unarchiveRoom(rocketChannel);
+					await unarchiveRoom(rocketChannel);
 				}
 				return;
 			case 'file_share':
@@ -1211,17 +1211,17 @@ export default class SlackAdapter {
 		}
 	}
 
-	copyChannelInfo(rid, channelMap) {
+	async copyChannelInfo(rid, channelMap) {
 		slackLogger.debug('Copying users from Slack channel to Rocket.Chat', channelMap.id, rid);
 		const channel = this.slackAPI.getRoomInfo(channelMap.id);
 		if (channel) {
 			const members = this.slackAPI.getMembers(channelMap.id);
 			if (members && Array.isArray(members) && members.length) {
-				for (const member of members) {
+				for await (const member of members) {
 					const user = this.rocket.findUser(member) || this.rocket.addUser(member);
 					if (user) {
 						slackLogger.debug('Adding user to room', user.username, rid);
-						Promise.await(addUserToRoom(rid, user, null, true));
+						await addUserToRoom(rid, user, null, true);
 					}
 				}
 			}
@@ -1250,7 +1250,7 @@ export default class SlackAdapter {
 			if (topic) {
 				const creator = this.rocket.findUser(topic_creator) || this.rocket.addUser(topic_creator);
 				slackLogger.debug('Setting room topic', rid, topic, creator.username);
-				saveRoomTopic(rid, topic, creator, false);
+				await saveRoomTopic(rid, topic, creator, false);
 			}
 		}
 	}
@@ -1297,7 +1297,7 @@ export default class SlackAdapter {
 		const rocketchat_room = Rooms.findOneById(rid);
 		if (rocketchat_room) {
 			if (this.getSlackChannel(rid)) {
-				this.copyChannelInfo(rid, this.getSlackChannel(rid));
+				await this.copyChannelInfo(rid, this.getSlackChannel(rid));
 
 				slackLogger.debug('Importing messages from Slack to Rocket.Chat', this.getSlackChannel(rid), rid);
 				let results = await this.importFromHistory(this.getSlackChannel(rid).family, {

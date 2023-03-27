@@ -30,7 +30,7 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['manage-livechat-units'] },
 	{
 		async get() {
-			const params = this.queryParams as Record<string, any>;
+			const params = this.queryParams;
 			const { offset, count } = await getPaginationItems(params);
 			const { sort } = await this.parseJsonQuery();
 			const { text } = this.queryParams;
