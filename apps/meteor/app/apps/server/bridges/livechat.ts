@@ -283,7 +283,7 @@ export class AppLivechatBridge extends LivechatBridge {
 
 		const boundMessageConverter = messageConverter.convertMessage.bind(messageConverter);
 
-		return Livechat.getRoomMessages({ rid: roomId }).map(boundMessageConverter);
+		return (await Livechat.getRoomMessages({ rid: roomId })).map(boundMessageConverter);
 	}
 
 	protected async setCustomFields(

@@ -3,11 +3,11 @@ import { check } from 'meteor/check';
 import _ from 'underscore';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Subscriptions } from '@rocket.chat/models';
+import { Messages, Subscriptions } from '@rocket.chat/models';
 
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Messages, Rooms } from '../../../models/server';
+import { Rooms } from '../../../models/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
 
@@ -80,15 +80,15 @@ Meteor.methods<ServerMethods>({
 
 		const records =
 			oldest === undefined
-				? Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(
+				? await Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(
 						rid,
 						latest,
 						hiddenMessageTypes,
 						options,
 						showThreadMessages,
 						inclusive,
-				  ).fetch()
-				: Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+				  ).toArray()
+				: await Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
 						rid,
 						oldest,
 						latest,
@@ -96,7 +96,7 @@ Meteor.methods<ServerMethods>({
 						options,
 						showThreadMessages,
 						inclusive,
-				  ).fetch();
+				  ).toArray();
 
 		const messages = normalizeMessagesForUser(records, fromUserId);
 
@@ -121,17 +121,16 @@ Meteor.methods<ServerMethods>({
 						showThreadMessages,
 					);
 
-					const totalCursor = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+					const totalCursor = await Messages.countVisibleByRoomIdBetweenTimestampsNotContainingTypes(
 						rid,
 						oldest,
 						firstMsg.ts,
 						hiddenMessageTypes,
-						{},
 						showThreadMessages,
 					);
 
-					firstUnread = unreadMessages.fetch()[0];
-					unreadNotLoaded = totalCursor.count();
+					firstUnread = (await unreadMessages.toArray())[0];
+					unreadNotLoaded = totalCursor;
 				}
 			}
 

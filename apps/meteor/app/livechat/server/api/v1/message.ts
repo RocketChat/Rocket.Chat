@@ -12,7 +12,7 @@ import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 
 import { Messages } from '../../../../models/server';
 import { API } from '../../../../api/server';
-import { loadMessageHistory } from '../../../../lib/server';
+import { loadMessageHistory } from '../../../../lib/server/functions/loadMessageHistory';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { normalizeMessageFileUpload } from '../../../../utils/server/functions/normalizeMessageFileUpload';
@@ -213,16 +213,17 @@ API.v1.addRoute(
 				limit = parseInt(`${this.queryParams.limit}`, 10);
 			}
 
-			const messages = await Promise.all(
-				loadMessageHistory({
-					userId: guest._id,
-					rid,
-					end,
-					limit,
-					ls,
-					offset,
-				}).messages.map((message) => normalizeMessageFileUpload(message)),
-			);
+			const history = await loadMessageHistory({
+				userId: guest._id,
+				rid,
+				end,
+				limit,
+				ls,
+				offset,
+			});
+
+			const messages = await Promise.all(history.messages.map((message) => normalizeMessageFileUpload(message)));
+
 			return API.v1.success({ messages });
 		},
 	},
