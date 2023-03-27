@@ -118,11 +118,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	setReactions(messageId: string, reactions: IMessage['reactions']): Promise<UpdateResult>;
 	keepHistoryForToken(token: string): Promise<UpdateResult | Document>;
 	setRoomIdByToken(token: string, rid: string): Promise<UpdateResult | Document>;
-	createRoomArchivedByRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-	): Promise<Omit<IMessage, '_updatedAt'>>;
 	createRoomUnarchivedByRoomIdAndUser(
 		roomId: string,
 		user: IMessage['u'],

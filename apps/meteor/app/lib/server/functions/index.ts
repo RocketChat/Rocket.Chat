@@ -1,6 +1,5 @@
 export { addUserToDefaultChannels } from './addUserToDefaultChannels';
 export { addUserToRoom } from './addUserToRoom';
-export { archiveRoom } from './archiveRoom';
 export { attachMessage } from './attachMessage';
 export { checkEmailAvailability } from './checkEmailAvailability';
 export { createRoom } from './createRoom';
