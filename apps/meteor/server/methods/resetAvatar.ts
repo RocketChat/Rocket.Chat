@@ -43,7 +43,7 @@ Meteor.methods<ServerMethods>({
 
 			user = Users.findOneById(userId, { fields: { _id: 1, username: 1 } });
 		} else {
-			user = Meteor.user();
+			user = await Meteor.userAsync();
 		}
 
 		if (user == null) {

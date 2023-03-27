@@ -55,7 +55,7 @@ slashCommands.add({
 		}
 		await Meteor.callAsync('archiveRoom', room._id);
 
-		Messages.createRoomArchivedByRoomIdAndUser(room._id, Meteor.user());
+		Messages.createRoomArchivedByRoomIdAndUser(room._id, await Meteor.userAsync());
 		void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 			msg: TAPi18n.__('Channel_Archived', {
 				postProcess: 'sprintf',
