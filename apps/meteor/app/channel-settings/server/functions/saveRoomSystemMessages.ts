@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
+import { Rooms } from '@rocket.chat/models';
 
-import { Rooms } from '../../../models/server';
 import { MessageTypesValues } from '../../../lib/lib/MessageTypes';
 
-export const saveRoomSystemMessages = function (rid, systemMessages) {
+export const saveRoomSystemMessages = async function (rid: string, systemMessages: string[]) {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
 			function: 'RocketChat.saveRoomSystemMessages',
