@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { Rooms } from '@rocket.chat/models';
+import { Messages, Rooms } from '@rocket.chat/models';
 
-import { Messages } from '../../../models/server';
+import { settings } from '../../../settings/server';
 
 export const saveReactWhenReadOnly = async function (
 	rid: string,
@@ -22,9 +22,8 @@ export const saveReactWhenReadOnly = async function (
 	const result = await Rooms.setAllowReactingWhenReadOnlyById(rid, allowReact);
 
 	if (result && sendMessage) {
-		allowReact
-			? Messages.createRoomAllowedReactingByRoomIdAndUser(rid, user)
-			: Messages.createRoomDisallowedReactingByRoomIdAndUser(rid, user);
+		const type = allowReact ? 'room-allowed-reacting' : 'room-disallowed-reacting';
+		await Messages.createWithTypeRoomIdMessageUserAndUnread(type, rid, '', user, settings.get('ReadReceipt_Enabled'));
 	}
 	return result;
 };

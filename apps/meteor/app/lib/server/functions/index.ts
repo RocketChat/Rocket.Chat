@@ -1,6 +1,5 @@
 export { addUserToDefaultChannels } from './addUserToDefaultChannels';
 export { addUserToRoom } from './addUserToRoom';
-export { archiveRoom } from './archiveRoom';
 export { attachMessage } from './attachMessage';
 export { checkEmailAvailability } from './checkEmailAvailability';
 export { createRoom } from './createRoom';
@@ -13,7 +12,6 @@ export { getUserCreatedByApp } from './getUserCreatedByApp';
 export { generateUsernameSuggestion } from './getUsernameSuggestion';
 export { insertMessage } from './insertMessage';
 export { isTheLastMessage } from './isTheLastMessage';
-export { loadMessageHistory } from './loadMessageHistory';
 export { removeUserFromRoom } from './removeUserFromRoom';
 export { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 export { saveCustomFields } from './saveCustomFields';

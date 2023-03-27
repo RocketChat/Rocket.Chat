@@ -1,4 +1,3 @@
-import { Match } from 'meteor/check';
 import _ from 'underscore';
 
 import { Base } from './_Base';
@@ -33,22 +32,6 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ rid: 1, tcount: 1 }); // used for the List Threads Count
 		// livechat
 		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
-	}
-
-	createRoomArchivedByRoomIdAndUser(roomId, user) {
-		return this.createWithTypeRoomIdMessageAndUser('room-archived', roomId, '', user);
-	}
-
-	createRoomUnarchivedByRoomIdAndUser(roomId, user) {
-		return this.createWithTypeRoomIdMessageAndUser('room-unarchived', roomId, '', user);
-	}
-
-	createRoomAllowedReactingByRoomIdAndUser(roomId, user) {
-		return this.createWithTypeRoomIdMessageAndUser('room-allowed-reacting', roomId, '', user);
-	}
-
-	createRoomDisallowedReactingByRoomIdAndUser(roomId, user) {
-		return this.createWithTypeRoomIdMessageAndUser('room-disallowed-reacting', roomId, '', user);
 	}
 
 	updateOTRAck(_id, otrAck) {
@@ -144,96 +127,6 @@ export class Messages extends Base {
 
 		if (users.length) {
 			query['u.username'] = { $in: users };
-		}
-
-		return this.find(query, options);
-	}
-
-	findVisibleByRoomIdNotContainingTypes(roomId, types, options, showThreadMessages = true) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			...(!showThreadMessages && {
-				$or: [
-					{
-						tmid: { $exists: false },
-					},
-					{
-						tshow: true,
-					},
-				],
-			}),
-		};
-
-		if (Match.test(types, [String]) && types.length > 0) {
-			query.t = { $nin: types };
-		}
-
-		return this.find(query, options);
-	}
-
-	findVisibleByRoomIdBeforeTimestampNotContainingTypes(roomId, timestamp, types, options, showThreadMessages = true, inclusive = false) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			ts: {
-				[inclusive ? '$lte' : '$lt']: timestamp,
-			},
-			...(!showThreadMessages && {
-				$or: [
-					{
-						tmid: { $exists: false },
-					},
-					{
-						tshow: true,
-					},
-				],
-			}),
-		};
-
-		if (Match.test(types, [String]) && types.length > 0) {
-			query.t = { $nin: types };
-		}
-
-		return this.find(query, options);
-	}
-
-	findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
-		roomId,
-		afterTimestamp,
-		beforeTimestamp,
-		types,
-		options,
-		showThreadMessages = true,
-		inclusive = false,
-	) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			ts: {
-				[inclusive ? '$gte' : '$gt']: afterTimestamp,
-				[inclusive ? '$lte' : '$lt']: beforeTimestamp,
-			},
-			...(!showThreadMessages && {
-				$or: [
-					{
-						tmid: { $exists: false },
-					},
-					{
-						tshow: true,
-					},
-				],
-			}),
-		};
-
-		if (Match.test(types, [String]) && types.length > 0) {
-			query.t = { $nin: types };
 		}
 
 		return this.find(query, options);
