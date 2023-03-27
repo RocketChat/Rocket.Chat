@@ -1,9 +1,12 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
+import type { IMessage } from '@rocket.chat/core-typings';
+import { Messages as MessagesRaw } from '@rocket.chat/models';
+import type { FindOptions } from 'mongodb';
+
 import { Messages, Rooms } from '../../../models/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
 
-export function loadMessageHistory({
+export async function loadMessageHistory({
 	userId,
 	rid,
 	end,
@@ -24,18 +27,17 @@ export function loadMessageHistory({
 
 	const hiddenMessageTypes = getHiddenSystemMessages(room);
 
-	const options = {
+	const options: FindOptions<IMessage> = {
 		sort: {
 			ts: -1,
 		},
 		limit,
 		skip: offset,
-		fields: {},
 	};
 
 	const records = end
 		? Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(rid, end, hiddenMessageTypes, options, showThreadMessages).fetch()
-		: Messages.findVisibleByRoomIdNotContainingTypes(rid, hiddenMessageTypes, options, showThreadMessages).fetch();
+		: await MessagesRaw.findVisibleByRoomIdNotContainingTypes(rid, hiddenMessageTypes, options, showThreadMessages).toArray();
 	const messages = normalizeMessagesForUser(records, userId);
 	let unreadNotLoaded = 0;
 	let firstUnread;

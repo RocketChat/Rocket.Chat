@@ -133,31 +133,6 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomIdNotContainingTypes(roomId, types, options, showThreadMessages = true) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			...(!showThreadMessages && {
-				$or: [
-					{
-						tmid: { $exists: false },
-					},
-					{
-						tshow: true,
-					},
-				],
-			}),
-		};
-
-		if (Match.test(types, [String]) && types.length > 0) {
-			query.t = { $nin: types };
-		}
-
-		return this.find(query, options);
-	}
-
 	findVisibleByRoomIdBeforeTimestampNotContainingTypes(roomId, timestamp, types, options, showThreadMessages = true, inclusive = false) {
 		const query = {
 			_hidden: {

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import type { IRoom, IRoomWithRetentionPolicy, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Team } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
@@ -34,7 +34,7 @@ type RoomSettings = {
 	roomType: unknown;
 	readOnly: boolean;
 	reactWhenReadOnly: boolean;
-	systemMessages: string[];
+	systemMessages: MessageTypesValues[];
 	default: boolean;
 	joinCode: string;
 	streamingOptions: unknown;

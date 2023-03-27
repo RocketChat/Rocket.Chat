@@ -12,7 +12,6 @@ export { getUserCreatedByApp } from './getUserCreatedByApp';
 export { generateUsernameSuggestion } from './getUsernameSuggestion';
 export { insertMessage } from './insertMessage';
 export { isTheLastMessage } from './isTheLastMessage';
-export { loadMessageHistory } from './loadMessageHistory';
 export { removeUserFromRoom } from './removeUserFromRoom';
 export { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 export { saveCustomFields } from './saveCustomFields';
