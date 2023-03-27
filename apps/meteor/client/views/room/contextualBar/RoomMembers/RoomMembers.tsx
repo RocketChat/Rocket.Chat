@@ -9,6 +9,7 @@ import { Virtuoso } from 'react-virtuoso';
 
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../components/VerticalBar';
+import RoomMembersListAnchor from './RoomMembersListAnchor';
 import RoomMembersRow from './RoomMembersRow';
 
 type RoomMemberUser = Pick<IUser, 'username' | '_id' | '_updatedAt' | 'name' | 'status'>;
@@ -68,6 +69,14 @@ const RoomMembers = ({
 		],
 		[t],
 	);
+
+	const loadMoreMembers = useMutableCallback(() => {
+		if (members.length >= total) {
+			return;
+		}
+		// TODO: Debounce this call
+		loadMore(members.length);
+	});
 
 	return (
 		<>
@@ -140,7 +149,8 @@ const RoomMembers = ({
 							endReached={loadMore}
 							overscan={50}
 							data={members}
-							components={{ Scroller: ScrollableContentWrapper }}
+							// eslint-disable-next-line react/no-multi-comp
+							components={{ Scroller: ScrollableContentWrapper, Footer: () => <RoomMembersListAnchor loadMoreMembers={loadMoreMembers} /> }}
 							itemContent={(index, data): ReactElement => <RowComponent data={itemData} user={data} index={index} reload={reload} />}
 						/>
 					)}
