@@ -51,5 +51,5 @@ export default async function handleSentMessage(args) {
 		ts: new Date(),
 	};
 
-	sendMessage(user, message, room);
+	await sendMessage(user, message, room);
 }

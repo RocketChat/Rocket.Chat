@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Integrations, IntegrationHistory } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../../../authorization/server';
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -21,9 +21,9 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (hasPermission(this.userId, 'manage-outgoing-integrations')) {
+		if (await hasPermissionAsync(this.userId, 'manage-outgoing-integrations')) {
 			integration = Integrations.findOneById(integrationId);
-		} else if (hasPermission(this.userId, 'manage-own-outgoing-integrations')) {
+		} else if (await hasPermissionAsync(this.userId, 'manage-own-outgoing-integrations')) {
 			integration = Integrations.findOne({
 				'_id': integrationId,
 				'_createdBy._id': this.userId,

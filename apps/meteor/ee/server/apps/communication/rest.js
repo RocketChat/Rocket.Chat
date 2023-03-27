@@ -19,6 +19,7 @@ import { notifyAppInstall } from '../marketplace/appInstall';
 import { canEnableApp } from '../../../app/license/server/license';
 import { appsCountHandler } from './endpoints/appsCountHandler';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
+import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -747,7 +748,7 @@ export class AppsRestApi {
 						licenseValidation: aff.getLicenseValidationResult(),
 					});
 				},
-				delete() {
+				async delete() {
 					const prl = manager.getOneById(this.urlParams.id);
 
 					if (!prl) {
@@ -756,7 +757,7 @@ export class AppsRestApi {
 
 					const user = orchestrator.getConverters().get('users').convertToApp(Meteor.user());
 
-					Promise.await(manager.remove(prl.getID(), { user }));
+					await manager.remove(prl.getID(), { user });
 
 					const info = prl.getInfo();
 					info.status = prl.getStatus();
@@ -948,12 +949,12 @@ export class AppsRestApi {
 			':id/logs',
 			{ authRequired: true, permissionsRequired: ['manage-apps'] },
 			{
-				get() {
+				async get() {
 					const prl = manager.getOneById(this.urlParams.id);
 
 					if (prl) {
-						const { offset, count } = this.getPaginationItems();
-						const { sort, fields, query } = this.parseJsonQuery();
+						const { offset, count } = await getPaginationItems(this.queryParams);
+						const { sort, fields, query } = await this.parseJsonQuery();
 
 						const ourQuery = Object.assign({}, query, { appId: prl.getID() });
 						const options = {
@@ -963,7 +964,7 @@ export class AppsRestApi {
 							fields,
 						};
 
-						const logs = Promise.await(orchestrator.getLogStorage().find(ourQuery, options));
+						const logs = await orchestrator.getLogStorage().find(ourQuery, options);
 
 						return API.v1.success({ logs });
 					}
@@ -992,7 +993,7 @@ export class AppsRestApi {
 					}
 					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 				},
-				post() {
+				async post() {
 					if (!this.bodyParams || !this.bodyParams.settings) {
 						return API.v1.failure('The settings to update must be present.');
 					}
@@ -1006,13 +1007,14 @@ export class AppsRestApi {
 					const { settings } = prl.getStorageItem();
 
 					const updated = [];
-					this.bodyParams.settings.forEach((s) => {
-						if (settings[s.id]) {
-							Promise.await(manager.getSettingsManager().updateAppSetting(this.urlParams.id, s));
+
+					for await (const s of this.bodyParams.settings) {
+						if (settings[s.id] && settings[s.id].value !== s.value) {
+							await manager.getSettingsManager().updateAppSetting(this.urlParams.id, s);
 							// Updating?
 							updated.push(s);
 						}
-					});
+					}
 
 					return API.v1.success({ updated });
 				},
@@ -1038,13 +1040,13 @@ export class AppsRestApi {
 						return API.v1.failure(e.message);
 					}
 				},
-				post() {
+				async post() {
 					if (!this.bodyParams.setting) {
 						return API.v1.failure('Setting to update to must be present on the posted body.');
 					}
 
 					try {
-						Promise.await(manager.getSettingsManager().updateAppSetting(this.urlParams.id, this.bodyParams.setting));
+						await manager.getSettingsManager().updateAppSetting(this.urlParams.id, this.bodyParams.setting);
 
 						return API.v1.success();
 					} catch (e) {
@@ -1106,7 +1108,7 @@ export class AppsRestApi {
 						}
 					}
 
-					const result = Promise.await(manager.changeStatus(prl.getID(), this.bodyParams.status));
+					const result = await manager.changeStatus(prl.getID(), this.bodyParams.status);
 
 					return API.v1.success({ status: result.getStatus() });
 				},

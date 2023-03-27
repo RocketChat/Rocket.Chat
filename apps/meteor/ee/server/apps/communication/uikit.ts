@@ -180,7 +180,7 @@ router.post('/:appId', async (req, res, next) => {
 
 const appsRoutes =
 	(orch: AppServerOrchestrator) =>
-	(req: Request, res: Response): void => {
+	async (req: Request, res: Response): Promise<void> => {
 		const { appId } = req.params;
 
 		const { type } = req.body;
@@ -210,7 +210,7 @@ const appsRoutes =
 				try {
 					const eventInterface = !visitor ? AppInterface.IUIKitInteractionHandler : AppInterface.IUIKitLivechatInteractionHandler;
 
-					const result = Promise.await(orch.triggerEvent(eventInterface, action));
+					const result = await orch.triggerEvent(eventInterface, action);
 
 					res.send(result);
 				} catch (e) {
@@ -241,7 +241,7 @@ const appsRoutes =
 				};
 
 				try {
-					const result = Promise.await(orch.triggerEvent('IUIKitInteractionHandler', action));
+					const result = await orch.triggerEvent('IUIKitInteractionHandler', action);
 
 					res.send(result);
 				} catch (e) {
@@ -266,7 +266,7 @@ const appsRoutes =
 				};
 
 				try {
-					const result = Promise.await(orch.triggerEvent('IUIKitInteractionHandler', action));
+					const result = await orch.triggerEvent('IUIKitInteractionHandler', action);
 
 					res.send(result);
 				} catch (e) {
@@ -304,7 +304,7 @@ const appsRoutes =
 				};
 
 				try {
-					const result = Promise.await(orch.triggerEvent('IUIKitInteractionHandler', action));
+					const result = await orch.triggerEvent('IUIKitInteractionHandler', action);
 
 					res.send(result);
 				} catch (e) {

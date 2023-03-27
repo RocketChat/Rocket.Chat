@@ -15,25 +15,25 @@ export class PendingFileImporter extends Base {
 		this.bots = {};
 	}
 
-	prepareFileCount() {
+	async prepareFileCount() {
 		this.logger.debug('start preparing import operation');
-		super.updateProgress(ProgressStep.PREPARING_STARTED);
+		await super.updateProgress(ProgressStep.PREPARING_STARTED);
 
 		const messages = Messages.findAllImportedMessagesWithFilesToDownload();
 		const fileCount = messages.count();
 
 		if (fileCount === 0) {
-			super.updateProgress(ProgressStep.DONE);
+			await super.updateProgress(ProgressStep.DONE);
 			return 0;
 		}
 
-		this.updateRecord({ 'count.messages': fileCount, 'messagesstatus': null });
-		this.addCountToTotal(fileCount);
+		await this.updateRecord({ 'count.messages': fileCount, 'messagesstatus': null });
+		await this.addCountToTotal(fileCount);
 
 		const fileData = new Selection(this.name, [], [], fileCount);
-		this.updateRecord({ fileData });
+		await this.updateRecord({ fileData });
 
-		super.updateProgress(ProgressStep.IMPORTING_FILES);
+		await super.updateProgress(ProgressStep.IMPORTING_FILES);
 		Meteor.defer(() => {
 			this.startImport(fileData);
 		});
@@ -41,7 +41,7 @@ export class PendingFileImporter extends Base {
 		return fileCount;
 	}
 
-	startImport() {
+	async startImport() {
 		const pendingFileMessageList = Messages.findAllImportedMessagesWithFilesToDownload();
 		const downloadedFileIds = [];
 		const maxFileCount = 10;
@@ -73,7 +73,7 @@ export class PendingFileImporter extends Base {
 		};
 
 		const completeFile = (details) => {
-			this.addCountCompleted(1);
+			Promise.await(this.addCountCompleted(1));
 			count--;
 			currentSize -= details.size;
 		};
@@ -88,13 +88,13 @@ export class PendingFileImporter extends Base {
 					const { _importFile } = message;
 
 					if (!_importFile || _importFile.downloaded || downloadedFileIds.includes(_importFile.id)) {
-						this.addCountCompleted(1);
+						Promise.await(this.addCountCompleted(1));
 						return;
 					}
 
 					const url = _importFile.downloadUrl;
 					if (!url || !url.startsWith('http')) {
-						this.addCountCompleted(1);
+						Promise.await(this.addCountCompleted(1));
 						return;
 					}
 
@@ -200,11 +200,11 @@ export class PendingFileImporter extends Base {
 				return this.startImport();
 			}
 
-			super.updateProgress(ProgressStep.ERROR);
+			await super.updateProgress(ProgressStep.ERROR);
 			throw error;
 		}
 
-		super.updateProgress(ProgressStep.DONE);
+		await super.updateProgress(ProgressStep.DONE);
 		return this.getProgress();
 	}
 }

@@ -31,9 +31,9 @@ roomCoordinator.add(PublicRoomType, {
 		}
 	},
 
-	allowMemberAction(_room, action, userId) {
+	async allowMemberAction(_room, action, userId) {
 		if (isRoomFederated(_room as IRoom)) {
-			return Federation.actionAllowed(_room, action, userId);
+			return Promise.await(Federation.actionAllowed(_room, action, userId));
 		}
 		switch (action) {
 			case RoomMemberActions.BLOCK:
@@ -43,7 +43,7 @@ roomCoordinator.add(PublicRoomType, {
 		}
 	},
 
-	roomName(room, _userId?) {
+	async roomName(room, _userId?) {
 		if (room.prid || isRoomFederated(room)) {
 			return room.fname;
 		}
@@ -61,9 +61,9 @@ roomCoordinator.add(PublicRoomType, {
 		return true;
 	},
 
-	getDiscussionType(room) {
+	async getDiscussionType(room) {
 		if (room?.teamId) {
-			const team = Promise.await(Team.getOneById(room.teamId, { projection: { type: 1 } }));
+			const team = await Team.getOneById(room.teamId, { projection: { type: 1 } });
 			if (team?.type === TEAM_TYPE.PRIVATE) {
 				return 'p';
 			}

@@ -1,8 +1,12 @@
-import { LivechatDepartmentAgentsRaw } from '../../../../../server/models/raw/LivechatDepartmentAgents';
-import { overwriteClassOnLicense } from '../../../license/server';
+import type { ILivechatDepartmentAgents } from '@rocket.chat/core-typings';
+import { registerModel } from '@rocket.chat/models';
 
-overwriteClassOnLicense('livechat-enterprise', LivechatDepartmentAgentsRaw, {
-	findAgentsByAgentIdAndBusinessHourId(agentId: string, businessHourId: string): Promise<Record<string, any>> {
+import { trashCollection } from '../../../../../server/database/trash';
+import { db } from '../../../../../server/database/utils';
+import { LivechatDepartmentAgentsRaw } from '../../../../../server/models/raw/LivechatDepartmentAgents';
+
+class LivechatDepartmentAgents extends LivechatDepartmentAgentsRaw {
+	findAgentsByAgentIdAndBusinessHourId(agentId: string, businessHourId: string): Promise<ILivechatDepartmentAgents[]> {
 		const match = {
 			$match: { agentId },
 		};
@@ -22,7 +26,8 @@ overwriteClassOnLicense('livechat-enterprise', LivechatDepartmentAgentsRaw, {
 		};
 		const withBusinessHourId = { $match: { 'departments.businessHourId': businessHourId } };
 		const project = { $project: { departments: 0 } };
-		const model = this as unknown as LivechatDepartmentAgentsRaw;
-		return model.col.aggregate([match, lookup, unwind, withBusinessHourId, project]).toArray();
-	},
-});
+		return this.col.aggregate<ILivechatDepartmentAgents>([match, lookup, unwind, withBusinessHourId, project]).toArray();
+	}
+}
+
+registerModel('ILivechatDepartmentAgents', new LivechatDepartmentAgents(db, trashCollection));

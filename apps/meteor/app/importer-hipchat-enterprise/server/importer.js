@@ -30,7 +30,7 @@ export class HipChatEnterpriseImporter extends Base {
 	}
 
 	async prepareUsersFile(file) {
-		super.updateProgress(ProgressStep.PREPARING_USERS);
+		await super.updateProgress(ProgressStep.PREPARING_USERS);
 		let count = 0;
 
 		for (const u of file) {
@@ -54,12 +54,12 @@ export class HipChatEnterpriseImporter extends Base {
 		}
 
 		await Settings.incrementValueById('Hipchat_Enterprise_Importer_Count', count);
-		super.updateRecord({ 'count.users': count });
-		super.addCountToTotal(count);
+		await super.updateRecord({ 'count.users': count });
+		await super.addCountToTotal(count);
 	}
 
 	async prepareRoomsFile(file) {
-		super.updateProgress(ProgressStep.PREPARING_CHANNELS);
+		await super.updateProgress(ProgressStep.PREPARING_CHANNELS);
 		let count = 0;
 
 		for await (const r of file) {
@@ -79,8 +79,8 @@ export class HipChatEnterpriseImporter extends Base {
 			count++;
 		}
 
-		super.updateRecord({ 'count.channels': count });
-		super.addCountToTotal(count);
+		await super.updateRecord({ 'count.channels': count });
+		await super.addCountToTotal(count);
 	}
 
 	async prepareUserMessagesFile(file) {
@@ -230,12 +230,12 @@ export class HipChatEnterpriseImporter extends Base {
 	}
 
 	async prepareMessagesFile(file, info) {
-		super.updateProgress(ProgressStep.PREPARING_MESSAGES);
+		await super.updateProgress(ProgressStep.PREPARING_MESSAGES);
 
 		const [type, id] = info.dir.split('/');
 		const roomIdentifier = `${type}/${id}`;
 
-		super.updateRecord({ messagesstatus: roomIdentifier });
+		await super.updateRecord({ messagesstatus: roomIdentifier });
 
 		switch (type) {
 			case 'users':
@@ -313,8 +313,8 @@ export class HipChatEnterpriseImporter extends Base {
 							const newMessageCount = await this.prepareFile(info, data, header.name);
 
 							messageCount += newMessageCount;
-							super.updateRecord({ 'count.messages': messageCount });
-							super.addCountToTotal(newMessageCount);
+							await super.updateRecord({ 'count.messages': messageCount });
+							await super.addCountToTotal(newMessageCount);
 
 							data = undefined;
 

@@ -11,11 +11,11 @@ import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 
 import { getRoom } from '../../../livechat/server/api/lib/livechat';
 import { Livechat } from '../../../livechat/server/lib/Livechat';
-import { Users, LivechatDepartment, LivechatRooms } from '../../../models/server';
+import { Users, LivechatDepartment } from '../../../models/server';
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
 
@@ -26,7 +26,7 @@ export class AppLivechatBridge extends LivechatBridge {
 	}
 
 	protected isOnline(departmentId?: string): boolean {
-		return Livechat.online(departmentId);
+		return Promise.await(Livechat.online(departmentId));
 	}
 
 	protected async isOnlineAsync(departmentId?: string): Promise<boolean> {
@@ -70,7 +70,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			message: this.orch.getConverters()?.get('messages').convertAppMessage(message),
 		};
 
-		Livechat.updateMessage(data);
+		await Livechat.updateMessage(data);
 	}
 
 	protected async createRoom(visitor: IVisitor, agent: IUser, appId: string, extraParams?: IExtraRoomParams): Promise<ILivechatRoom> {
@@ -138,12 +138,12 @@ export class AppLivechatBridge extends LivechatBridge {
 		let result;
 
 		if (departmentId) {
-			result = LivechatRooms.findOpenByVisitorTokenAndDepartmentId(visitor.token, departmentId, {}).fetch();
+			result = await LivechatRooms.findOpenByVisitorTokenAndDepartmentId(visitor.token, departmentId, {}).toArray();
 		} else {
-			result = LivechatRooms.findOpenByVisitorToken(visitor.token, {}).fetch();
+			result = await LivechatRooms.findOpenByVisitorToken(visitor.token, {}).toArray();
 		}
 
-		return result.map((room: ILivechatRoom) => this.orch.getConverters()?.get('rooms').convertRoom(room));
+		return (result as unknown as ILivechatRoom[]).map((room) => this.orch.getConverters()?.get('rooms').convertRoom(room));
 	}
 
 	protected async createVisitor(visitor: IVisitor, appId: string): Promise<string> {

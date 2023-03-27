@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../../../../app/authorization/server';
+import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -12,9 +12,9 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	'livechat:saveUnit'(_id, unitData, unitMonitors, unitDepartments) {
+	async 'livechat:saveUnit'(_id, unitData, unitMonitors, unitDepartments) {
 		const uid = Meteor.userId();
-		if (!uid || !hasPermission(uid, 'manage-livechat-units')) {
+		if (!uid || !(await hasPermissionAsync(uid, 'manage-livechat-units'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveUnit' });
 		}
 

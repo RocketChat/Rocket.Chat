@@ -1,7 +1,7 @@
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../../../app/authorization/server';
+import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -12,9 +12,9 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	'livechat:saveTag'(_id, tagData, tagDepartments) {
+	async 'livechat:saveTag'(_id, tagData, tagDepartments) {
 		const uid = Meteor.userId();
-		if (!uid || !hasPermission(uid, 'manage-livechat-tags')) {
+		if (!uid || !(await hasPermissionAsync(uid, 'manage-livechat-tags'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:saveTags' });
 		}
 

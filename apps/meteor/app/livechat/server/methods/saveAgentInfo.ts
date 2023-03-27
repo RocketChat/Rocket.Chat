@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission, hasRole } from '../../../authorization/server';
+import { hasRole } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Livechat } from '../lib/Livechat';
 import { Users } from '../../../models/server';
 
@@ -13,9 +14,9 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	'livechat:saveAgentInfo'(_id, agentData, agentDepartments) {
+	async 'livechat:saveAgentInfo'(_id, agentData, agentDepartments) {
 		const uid = Meteor.userId();
-		if (!uid || !hasPermission(uid, 'manage-livechat-agents')) {
+		if (!uid || !(await hasPermissionAsync(uid, 'manage-livechat-agents'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:saveAgentInfo',
 			});

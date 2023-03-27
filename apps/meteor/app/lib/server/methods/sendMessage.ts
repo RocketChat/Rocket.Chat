@@ -6,7 +6,8 @@ import { api } from '@rocket.chat/core-services';
 import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission, canSendMessage } from '../../../authorization/server';
+import { canSendMessage } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { Users, Messages } from '../../../models/server';
@@ -122,7 +123,7 @@ Meteor.methods<ServerMethods>({
 });
 // Limit a user, who does not have the "bot" role, to sending 5 msgs/second
 RateLimiter.limitMethod('sendMessage', 5, 1000, {
-	userId(userId: IUser['_id']) {
-		return !hasPermission(userId, 'send-many-messages');
+	async userId(userId: IUser['_id']) {
+		return !(await hasPermissionAsync(userId, 'send-many-messages'));
 	},
 });

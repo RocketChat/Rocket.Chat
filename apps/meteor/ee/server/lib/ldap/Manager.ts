@@ -40,8 +40,8 @@ export class LDAPEEManager extends LDAPManager {
 			}
 
 			await converter.convertUsers({
-				afterImportFn: ((data: IImportUser, _type: string, isNewRecord: boolean): void =>
-					Promise.await(this.advancedSync(ldap, data, converter, isNewRecord))) as ImporterAfterImportCallback,
+				afterImportFn: (async (data: IImportUser, _type: string, isNewRecord: boolean): Promise<void> =>
+					this.advancedSync(ldap, data, converter, isNewRecord)) as ImporterAfterImportCallback,
 			});
 		} catch (error) {
 			logger.error(error);
@@ -126,7 +126,7 @@ export class LDAPEEManager extends LDAPManager {
 		converter: LDAPDataConverter,
 		isNewRecord: boolean,
 	): Promise<void> {
-		const user = converter.findExistingUser(importUser);
+		const user = await converter.findExistingUser(importUser);
 		if (!user?.username) {
 			return;
 		}

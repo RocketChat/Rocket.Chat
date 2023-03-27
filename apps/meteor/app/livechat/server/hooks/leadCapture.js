@@ -30,7 +30,7 @@ function validateMessage(message, room) {
 
 callbacks.add(
 	'afterSaveMessage',
-	function (message, room) {
+	async function (message, room) {
 		if (!isOmnichannelRoom(room)) {
 			return message;
 		}
@@ -46,7 +46,7 @@ callbacks.add(
 		const msgEmails = message.msg.match(emailRegexp);
 
 		if (msgEmails || msgPhones) {
-			Promise.await(LivechatVisitors.saveGuestEmailPhoneById(room.v._id, msgEmails, msgPhones));
+			await LivechatVisitors.saveGuestEmailPhoneById(room.v._id, msgEmails, msgPhones);
 
 			callbacks.run('livechat.leadCapture', room);
 		}

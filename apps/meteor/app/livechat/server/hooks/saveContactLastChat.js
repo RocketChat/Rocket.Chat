@@ -3,7 +3,7 @@ import { Livechat } from '../lib/Livechat';
 
 callbacks.add(
 	'livechat.newRoom',
-	(room) => {
+	async (room) => {
 		const {
 			_id,
 			v: { _id: guestId },
@@ -13,7 +13,7 @@ callbacks.add(
 			_id,
 			ts: new Date(),
 		};
-		Promise.await(Livechat.updateLastChat(guestId, lastChat));
+		await Livechat.updateLastChat(guestId, lastChat);
 	},
 	callbacks.priority.MEDIUM,
 	'livechat-save-last-chat',

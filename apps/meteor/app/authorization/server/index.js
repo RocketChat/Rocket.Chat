@@ -1,4 +1,4 @@
-import { canAccessRoomId, roomAccessAttributes, canAccessRoomAsync } from './functions/canAccessRoom';
+import { roomAccessAttributes, canAccessRoomAsync } from './functions/canAccessRoom';
 import { canSendMessage } from './functions/canSendMessage';
 import { getRoles } from './functions/getRoles';
 import { getUsersInRole } from './functions/getUsersInRole';
@@ -18,7 +18,6 @@ export {
 	subscriptionHasRole,
 	canSendMessage,
 	canAccessRoomAsync,
-	canAccessRoomId,
 	roomAccessAttributes,
 	hasAllPermission,
 	hasAtLeastOnePermission,
