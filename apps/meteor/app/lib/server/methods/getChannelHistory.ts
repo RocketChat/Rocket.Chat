@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import _ from 'underscore';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Subscriptions } from '@rocket.chat/models';
+import { Messages as MessagesRaw, Subscriptions } from '@rocket.chat/models';
 
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -80,14 +80,14 @@ Meteor.methods<ServerMethods>({
 
 		const records =
 			oldest === undefined
-				? Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(
+				? await MessagesRaw.findVisibleByRoomIdBeforeTimestampNotContainingTypes(
 						rid,
 						latest,
 						hiddenMessageTypes,
 						options,
 						showThreadMessages,
 						inclusive,
-				  ).fetch()
+				  ).toArray()
 				: Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
 						rid,
 						oldest,
