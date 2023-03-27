@@ -268,7 +268,7 @@ declare const API: {
 				members?: { key: string; value?: string[] };
 				customFields?: { key: string; value?: string };
 				teams?: { key: string; value?: string[] };
-			}) => void;
+			}) => Promise<void>;
 			execute: (
 				userId: string,
 				params: {

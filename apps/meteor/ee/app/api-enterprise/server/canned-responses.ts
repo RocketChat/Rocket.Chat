@@ -52,22 +52,18 @@ API.v1.addRoute(
 		},
 		async post() {
 			const { _id, shortcut, text, scope, departmentId, tags } = this.bodyParams;
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('saveCannedResponse', _id, {
-					shortcut,
-					text,
-					scope,
-					...(tags && { tags }),
-					...(departmentId && { departmentId }),
-				});
+			await Meteor.callAsync('saveCannedResponse', _id, {
+				shortcut,
+				text,
+				scope,
+				...(tags && { tags }),
+				...(departmentId && { departmentId }),
 			});
 			return API.v1.success();
 		},
 		async delete() {
 			const { _id } = this.requestParams();
-			Meteor.runAsUser(this.userId, () => {
-				Meteor.call('removeCannedResponse', _id);
-			});
+			await Meteor.callAsync('removeCannedResponse', _id);
 			return API.v1.success();
 		},
 	},

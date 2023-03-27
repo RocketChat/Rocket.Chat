@@ -22,7 +22,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	countUnarchivedByRoomId(rid: string): Promise<number>;
 
-	isUserInRole(uid: IUser['_id'], roleId: IRole['_id'], rid?: IRoom['_id']): Promise<ISubscription | null>;
+	isUserInRole(uid: IUser['_id'], roleId: IRole['_id'], rid?: IRoom['_id']): Promise<boolean>;
 
 	setAsReadByRoomIdAndUserId(
 		rid: string,
@@ -100,7 +100,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	updateHideMentionStatusById(_id: string, hideMentionStatus: boolean): Promise<UpdateResult>;
 	updateDisableNotificationsById(_id: string, disableNotifications: boolean): Promise<UpdateResult>;
 	clearAudioNotificationValueById(_id: string): Promise<UpdateResult>;
-	updateHideUnreadStatusById(_id: string, hideUnreadStatus: true): Promise<UpdateResult>;
+	updateHideUnreadStatusById(_id: string, hideUnreadStatus: boolean): Promise<UpdateResult>;
 	updateAudioNotificationValueById(_id: string, audioNotificationValue: string): Promise<UpdateResult>;
 	updateAutoTranslateLanguageById(_id: string, autoTranslateLanguage: string): Promise<UpdateResult>;
 
@@ -212,11 +212,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 		notificationOriginField: string,
 	): Promise<UpdateResult | Document>;
 	removeByUserId(userId: string): Promise<number>;
-	createWithRoomAndUser(
-		room: IRoom & { customFields: Record<string, any> },
-		user: IUser,
-		extraData?: Record<string, any>,
-	): Promise<InsertOneResult<ISubscription>>;
+	createWithRoomAndUser(room: IRoom, user: IUser, extraData?: Record<string, any>): Promise<InsertOneResult<ISubscription>>;
 	removeByRoomIdsAndUserId(rids: string[], userId: string): Promise<number>;
 	removeByRoomIdAndUserId(roomId: string, userId: string): Promise<number>;
 

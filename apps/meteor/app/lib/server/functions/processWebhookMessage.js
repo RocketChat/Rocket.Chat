@@ -7,11 +7,11 @@ import { validateRoomMessagePermissions } from '../../../authorization/server/fu
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { trim } from '../../../../lib/utils/stringUtils';
 
-export const processWebhookMessage = function (messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }) {
+export const processWebhookMessage = async function (messageObj, user, defaultValues = { channel: '', alias: '', avatar: '', emoji: '' }) {
 	const sentData = [];
 	const channels = [].concat(messageObj.channel || messageObj.roomId || defaultValues.channel);
 
-	for (const channel of channels) {
+	for await (const channel of channels) {
 		const channelType = channel[0];
 
 		let channelValue = channel.substr(1);
@@ -19,14 +19,14 @@ export const processWebhookMessage = function (messageObj, user, defaultValues =
 
 		switch (channelType) {
 			case '#':
-				room = getRoomByNameOrIdWithOptionToJoin({
+				room = await getRoomByNameOrIdWithOptionToJoin({
 					currentUserId: user._id,
 					nameOrId: channelValue,
 					joinChannel: true,
 				});
 				break;
 			case '@':
-				room = getRoomByNameOrIdWithOptionToJoin({
+				room = await getRoomByNameOrIdWithOptionToJoin({
 					currentUserId: user._id,
 					nameOrId: channelValue,
 					type: 'd',
@@ -36,7 +36,7 @@ export const processWebhookMessage = function (messageObj, user, defaultValues =
 				channelValue = channelType + channelValue;
 
 				// Try to find the room by id or name if they didn't include the prefix.
-				room = getRoomByNameOrIdWithOptionToJoin({
+				room = await getRoomByNameOrIdWithOptionToJoin({
 					currentUserId: user._id,
 					nameOrId: channelValue,
 					joinChannel: true,
@@ -47,7 +47,7 @@ export const processWebhookMessage = function (messageObj, user, defaultValues =
 				}
 
 				// We didn't get a room, let's try finding direct messages
-				room = getRoomByNameOrIdWithOptionToJoin({
+				room = await getRoomByNameOrIdWithOptionToJoin({
 					currentUserId: user._id,
 					nameOrId: channelValue,
 					tryDirectByUserIdOnly: true,
@@ -101,7 +101,7 @@ export const processWebhookMessage = function (messageObj, user, defaultValues =
 
 		validateRoomMessagePermissions(room, { uid: user._id, ...user });
 
-		const messageReturn = sendMessage(user, message, room);
+		const messageReturn = await sendMessage(user, message, room);
 		sentData.push({ channel, message: messageReturn });
 	}
 

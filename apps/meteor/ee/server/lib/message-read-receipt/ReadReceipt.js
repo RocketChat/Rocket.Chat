@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
-import { LivechatVisitors, ReadReceipts } from '@rocket.chat/models';
+import { LivechatVisitors, ReadReceipts, Messages as MessagesRaw, Rooms as RoomsRaw } from '@rocket.chat/models';
 
 import { Subscriptions, Messages, Rooms, Users } from '../../../../app/models/server';
 import { settings } from '../../../../app/settings/server';
@@ -35,24 +35,24 @@ const updateMessages = debounceByRoomId(
 );
 
 export const ReadReceipt = {
-	markMessagesAsRead(roomId, userId, userLastSeen) {
+	async markMessagesAsRead(roomId, userId, userLastSeen) {
 		if (!settings.get('Message_Read_Receipt_Enabled')) {
 			return;
 		}
 
-		const room = Rooms.findOneById(roomId, { fields: { lm: 1 } });
+		const room = RoomsRaw.findOneById(roomId, { projection: { lm: 1 } });
 
 		// if users last seen is greater than room's last message, it means the user already have this room marked as read
 		if (userLastSeen > room.lm) {
 			return;
 		}
 
-		this.storeReadReceipts(Messages.findVisibleUnreadMessagesByRoomAndDate(roomId, userLastSeen), roomId, userId);
+		this.storeReadReceipts(await MessagesRaw.findVisibleUnreadMessagesByRoomAndDate(roomId, userLastSeen), roomId, userId);
 
 		updateMessages(room);
 	},
 
-	markMessageAsReadBySender(message, { _id: roomId, t }, userId) {
+	async markMessageAsReadBySender(message, { _id: roomId, t }, userId) {
 		if (!settings.get('Message_Read_Receipt_Enabled')) {
 			return;
 		}
@@ -64,26 +64,26 @@ export const ReadReceipt = {
 		// mark message as read if the sender is the only one in the room
 		const isUserAlone = Subscriptions.findByRoomIdAndNotUserId(roomId, userId, { fields: { _id: 1 } }).count() === 0;
 		if (isUserAlone) {
-			Messages.setAsReadById(message._id);
+			await MessagesRaw.setAsReadById(message._id);
 		}
 
-		const extraData = roomCoordinator.getRoomDirectives(t)?.getReadReceiptsExtraData(message);
+		const extraData = roomCoordinator.getRoomDirectives(t).getReadReceiptsExtraData(message);
 		this.storeReadReceipts([{ _id: message._id }], roomId, userId, extraData);
 	},
 
-	storeThreadMessagesReadReceipts(tmid, userId, userLastSeen) {
+	async storeThreadMessagesReadReceipts(tmid, userId, userLastSeen) {
 		if (!settings.get('Message_Read_Receipt_Enabled')) {
 			return;
 		}
 
-		const message = Messages.findOneById(tmid, { fields: { tlm: 1, rid: 1 } });
+		const message = await MessagesRaw.findOneById(tmid, { projection: { tlm: 1, rid: 1 } });
 
 		// if users last seen is greater than thread's last message, it means the user has already marked this thread as read
 		if (!message || userLastSeen > message.tlm) {
 			return;
 		}
 
-		this.storeReadReceipts(Messages.findUnreadThreadMessagesByDate(tmid, userId, userLastSeen), message.rid, userId);
+		this.storeReadReceipts(await MessagesRaw.findUnreadThreadMessagesByDate(tmid, userId, userLastSeen), message.rid, userId);
 	},
 
 	async storeReadReceipts(messages, roomId, userId, extraData = {}) {

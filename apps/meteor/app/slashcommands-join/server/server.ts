@@ -8,7 +8,7 @@ import { slashCommands } from '../../utils/lib/slashCommand';
 
 slashCommands.add({
 	command: 'join',
-	callback: (_command: 'join', params, item): void => {
+	callback: async (_command: 'join', params, item): Promise<void> => {
 		let channel = params.trim();
 		if (channel === '') {
 			return;
@@ -44,7 +44,7 @@ slashCommands.add({
 			});
 		}
 
-		Meteor.call('joinRoom', room._id);
+		await Meteor.callAsync('joinRoom', room._id);
 	},
 	options: {
 		description: 'Join_the_given_channel',

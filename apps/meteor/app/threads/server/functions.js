@@ -1,7 +1,9 @@
-import { Messages, Subscriptions } from '../../models/server';
+import { Messages } from '@rocket.chat/models';
+
+import { Subscriptions } from '../../models/server';
 import { getMentions } from '../../lib/server/lib/notifyUsersOnMessage';
 
-export const reply = ({ tmid }, message, parentMessage, followers) => {
+export async function reply({ tmid }, message, parentMessage, followers) {
 	const { rid, ts, u, editedAt } = message;
 	if (!tmid || editedAt) {
 		return false;
@@ -17,9 +19,9 @@ export const reply = ({ tmid }, message, parentMessage, followers) => {
 		]),
 	];
 
-	Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
+	await Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
 
-	const replies = Messages.getThreadFollowsByThreadId(tmid);
+	const replies = await Messages.getThreadFollowsByThreadId(tmid);
 
 	const repliesFiltered = replies.filter((userId) => userId !== u._id).filter((userId) => !mentionIds.includes(userId));
 
@@ -32,25 +34,25 @@ export const reply = ({ tmid }, message, parentMessage, followers) => {
 	}
 
 	mentionIds.forEach((mentionId) => Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, [mentionId], tmid, { userMention: true }));
-};
+}
 
-export const follow = ({ tmid, uid }) => {
+export async function follow({ tmid, uid }) {
 	if (!tmid || !uid) {
 		return false;
 	}
 
-	Messages.addThreadFollowerByThreadId(tmid, uid);
-};
+	await Messages.addThreadFollowerByThreadId(tmid, uid);
+}
 
-export const unfollow = ({ tmid, rid, uid }) => {
+export async function unfollow({ tmid, rid, uid }) {
 	if (!tmid || !uid) {
 		return false;
 	}
 
 	Subscriptions.removeUnreadThreadByRoomIdAndUserId(rid, uid, tmid);
 
-	return Messages.removeThreadFollowerByThreadId(tmid, uid);
-};
+	await Messages.removeThreadFollowerByThreadId(tmid, uid);
+}
 
 export const readThread = ({ userId, rid, tmid }) => {
 	const fields = { tunread: 1 };

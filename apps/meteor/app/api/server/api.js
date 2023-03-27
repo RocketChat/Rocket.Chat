@@ -11,7 +11,7 @@ import { Logger } from '../../../server/lib/logger/Logger';
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
 import { settings } from '../../settings/server';
 import { metrics } from '../../metrics/server';
-import { hasPermission } from '../../authorization/server';
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import { checkCodeForUser } from '../../2fa/server/code';
 import { checkPermissionsForInvocation, checkPermissions } from './api.helpers';
@@ -218,7 +218,7 @@ export class APIClass extends Restivus {
 			rateLimiterDictionary.hasOwnProperty(route) &&
 			settings.get('API_Enable_Rate_Limiter') === true &&
 			(process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true) &&
-			!(userId && hasPermission(userId, 'api-bypass-rate-limit'))
+			!(userId && Promise.await(hasPermissionAsync(userId, 'api-bypass-rate-limit')))
 		);
 	}
 
@@ -585,7 +585,7 @@ export class APIClass extends Restivus {
 			'login',
 			{ authRequired: false },
 			{
-				post() {
+				async post() {
 					const args = loginCompatibility(this.bodyParams, this.request);
 					const getUserInfo = self.getHelperMethod('getUserInfo');
 
@@ -599,7 +599,7 @@ export class APIClass extends Restivus {
 
 					let auth;
 					try {
-						auth = DDP._CurrentInvocation.withValue(invocation, () => Meteor.call('login', args));
+						auth = await DDP._CurrentInvocation.withValue(invocation, () => Meteor.callAsync('login', args));
 					} catch (error) {
 						let e = error;
 						if (error.reason === 'User not found') {

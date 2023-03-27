@@ -121,7 +121,7 @@ export function getEmailData({ message, receiver, sender, subscription, room, em
 	const username = settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username;
 	let subjectKey = 'Offline_Mention_All_Email';
 
-	if (!roomCoordinator.getRoomDirectives(room.t)?.isGroupChat(room)) {
+	if (!roomCoordinator.getRoomDirectives(room.t).isGroupChat(room)) {
 		subjectKey = 'Offline_DM_Email';
 	} else if (hasMentionToUser) {
 		subjectKey = 'Offline_Mention_Email';

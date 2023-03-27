@@ -7,7 +7,7 @@ import { settings } from '../../../settings/server';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 
-export const saveRoomType = function (rid, roomType, user, sendMessage = true) {
+export const saveRoomType = async function (rid, roomType, user, sendMessage = true) {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
 			function: 'RocketChat.saveRoomType',
@@ -27,7 +27,7 @@ export const saveRoomType = function (rid, roomType, user, sendMessage = true) {
 		});
 	}
 
-	if (!roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange(room, RoomSettingsEnum.TYPE)) {
+	if (!(await roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange(room, RoomSettingsEnum.TYPE))) {
 		throw new Meteor.Error('error-direct-room', "Can't change type of direct rooms", {
 			function: 'RocketChat.saveRoomType',
 		});

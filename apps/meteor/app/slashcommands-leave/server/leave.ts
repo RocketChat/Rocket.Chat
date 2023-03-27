@@ -11,9 +11,9 @@ import { Users } from '../../models/server';
  * Leave is a named function that will replace /leave commands
  * @param {Object} message - The message object
  */
-const Leave: SlashCommand<'leave'>['callback'] = function Leave(_command, _params, item): void {
+const Leave: SlashCommand<'leave'>['callback'] = async function Leave(_command, _params, item): Promise<void> {
 	try {
-		Meteor.call('leaveRoom', item.rid);
+		await Meteor.callAsync('leaveRoom', item.rid);
 	} catch ({ error }) {
 		const userId = Meteor.userId() as string;
 		if (typeof error !== 'string') {

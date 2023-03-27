@@ -31,7 +31,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		setUserActiveStatus(userId, active, confirmRelinquish);
+		await setUserActiveStatus(userId, active, confirmRelinquish);
 
 		return true;
 	},

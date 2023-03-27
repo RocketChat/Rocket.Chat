@@ -1,7 +1,7 @@
-import { Roles } from '@rocket.chat/models';
+import { Messages, Roles } from '@rocket.chat/models';
 
 import { FileUpload } from '../../../file-upload/server';
-import { Subscriptions, Messages, Rooms } from '../../../models/server';
+import { Subscriptions, Rooms } from '../../../models/server';
 import type { SubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 
 const bulkRoomCleanUp = async (rids: string[]): Promise<unknown> => {

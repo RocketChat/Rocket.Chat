@@ -271,7 +271,7 @@ const eventHandlers = {
 				try {
 					Messages.insert(denormalizedMessage);
 
-					processThreads(denormalizedMessage, room);
+					await processThreads(denormalizedMessage, room);
 
 					// Notify users
 					await notifyUsersOnMessage(denormalizedMessage, room);

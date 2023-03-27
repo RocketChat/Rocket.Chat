@@ -17,6 +17,7 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 			custom_name: string;
 		}
 	>;
+
 	findPaginatedVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField(
 		emailOrPhone?: string,
 		nameOrUsername?: RegExp,
@@ -41,4 +42,6 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	removeDepartmentById(_id: string): Promise<Document | UpdateResult>;
 
 	getNextVisitorUsername(): Promise<string>;
+
+	updateLastAgentByToken(token: string, lastAgent: ILivechatVisitor['lastAgent']): Promise<Document | UpdateResult>;
 }

@@ -6,7 +6,7 @@ import { Users } from '../../../models/server';
 
 callbacks.add(
 	'livechat.beforeDelegateAgent',
-	(agent, { department }) => {
+	async (agent, { department }) => {
 		if (agent) {
 			return agent;
 		}
@@ -16,10 +16,10 @@ callbacks.add(
 		}
 
 		if (department) {
-			return Promise.await(LivechatDepartmentAgents.getNextBotForDepartment(department));
+			return LivechatDepartmentAgents.getNextBotForDepartment(department);
 		}
 
-		return Promise.await(Users.getNextBotAgent());
+		return Users.getNextBotAgent();
 	},
 	callbacks.priority.HIGH,
 	'livechat-before-delegate-agent',

@@ -87,12 +87,12 @@ API.v1.addRoute(
 			fields.extension = extension;
 
 			try {
-				Meteor.call('insertOrUpdateEmoji', {
+				await Meteor.callAsync('insertOrUpdateEmoji', {
 					...fields,
 					newFile: true,
 					aliases: fields.aliases || '',
 				});
-				Meteor.call('uploadEmojiCustom', fileBuffer, mimetype, {
+				await Meteor.callAsync('uploadEmojiCustom', fileBuffer, mimetype, {
 					...fields,
 					newFile: true,
 					aliases: fields.aliases || '',
@@ -147,9 +147,9 @@ API.v1.addRoute(
 				fields.extension = emojiToUpdate.extension;
 			}
 
-			Meteor.call('insertOrUpdateEmoji', { ...fields, newFile });
+			await Meteor.callAsync('insertOrUpdateEmoji', { ...fields, newFile });
 			if (fields.newFile) {
-				Meteor.call('uploadEmojiCustom', fileBuffer, mimetype, { ...fields, newFile });
+				await Meteor.callAsync('uploadEmojiCustom', fileBuffer, mimetype, { ...fields, newFile });
 			}
 			return API.v1.success();
 		},
@@ -160,13 +160,13 @@ API.v1.addRoute(
 	'emoji-custom.delete',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			const { emojiId } = this.bodyParams;
 			if (!emojiId) {
 				return API.v1.failure('The "emojiId" params is required!');
 			}
 
-			Meteor.call('deleteEmojiCustom', emojiId);
+			await Meteor.callAsync('deleteEmojiCustom', emojiId);
 
 			return API.v1.success();
 		},

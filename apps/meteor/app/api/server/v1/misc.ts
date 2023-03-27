@@ -334,10 +334,10 @@ API.v1.addRoute(
 		validateParams: isSpotlightProps,
 	},
 	{
-		get() {
+		async get() {
 			const { query } = this.queryParams;
 
-			const result = Meteor.call('spotlight', query);
+			const result = await Meteor.callAsync('spotlight', query);
 
 			return API.v1.success(result);
 		},
@@ -351,7 +351,7 @@ API.v1.addRoute(
 		validateParams: isDirectoryProps,
 	},
 	{
-		get() {
+		async get() {
 			const { offset, count } = this.getPaginationItems();
 			const { sort, query } = this.parseJsonQuery();
 
@@ -363,7 +363,7 @@ API.v1.addRoute(
 			const sortBy = sort ? Object.keys(sort)[0] : undefined;
 			const sortDirection = sort && Object.values(sort)[0] === 1 ? 'asc' : 'desc';
 
-			const result = Meteor.call('browseChannels', {
+			const result = await Meteor.callAsync('browseChannels', {
 				text,
 				type,
 				workspace,
@@ -514,7 +514,7 @@ API.v1.addRoute(
 		validateParams: isMeteorCall,
 	},
 	{
-		post() {
+		async post() {
 			check(this.bodyParams, {
 				message: String,
 			});
@@ -551,7 +551,7 @@ API.v1.addRoute(
 					});
 				}
 
-				const result = Meteor.call(method, ...params);
+				const result = await Meteor.callAsync(method, ...params);
 				return API.v1.success(mountResult({ id, result }));
 			} catch (err) {
 				SystemLogger.error({ msg: `Exception while invoking method ${method}`, err });
@@ -572,7 +572,7 @@ API.v1.addRoute(
 		validateParams: isMeteorCall,
 	},
 	{
-		post() {
+		async post() {
 			check(this.bodyParams, {
 				message: String,
 			});
@@ -609,7 +609,7 @@ API.v1.addRoute(
 					});
 				}
 
-				const result = Meteor.call(method, ...params);
+				const result = await Meteor.callAsync(method, ...params);
 				return API.v1.success(mountResult({ id, result }));
 			} catch (err) {
 				SystemLogger.error({ msg: `Exception while invoking method ${method}`, err });

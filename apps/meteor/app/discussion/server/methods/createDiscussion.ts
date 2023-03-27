@@ -128,7 +128,7 @@ const create = async ({ prid, pmid, t_name: discussionName, reply, users, user, 
 	// auto invite the replied message owner
 	const invitedUsers = message ? [message.u.username, ...users] : users;
 
-	const type = await roomCoordinator.getRoomDirectives(parentRoom.t)?.getDiscussionType(parentRoom);
+	const type = await roomCoordinator.getRoomDirectives(parentRoom.t).getDiscussionType(parentRoom);
 	const description = parentRoom.encrypted ? '' : message?.msg;
 	const topic = parentRoom.name;
 
@@ -173,7 +173,7 @@ const create = async ({ prid, pmid, t_name: discussionName, reply, users, user, 
 	callbacks.runAsync('afterSaveMessage', discussionMsg, parentRoom);
 
 	if (reply) {
-		sendMessage(user, { msg: reply }, discussion);
+		await sendMessage(user, { msg: reply }, discussion);
 	}
 	return discussion;
 };

@@ -1,5 +1,5 @@
 import type { FindCursor, AggregationCursor, Document, FindOptions, UpdateResult, DeleteResult } from 'mongodb';
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -116,10 +116,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findOneByIdOrName(_idOrName: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 	setCallStatus(_id: string, callStatus: string): Promise<UpdateResult>;
 	setCallStatusAndCallStartTime(_id: string, callStatus: string): Promise<UpdateResult>;
-	setReactionsInLastMessage(
-		roomId: string,
-		lastMessage: { reactions: NonNullable<IRoom['lastMessage']>['reactions'] },
-	): Promise<UpdateResult>;
+	setReactionsInLastMessage(roomId: string, reactions: NonNullable<IRoom['lastMessage']>['reactions']): Promise<UpdateResult>;
 	unsetReactionsInLastMessage(roomId: string): Promise<UpdateResult>;
 	unsetAllImportIds(): Promise<UpdateResult>;
 	updateLastMessageStar(roomId: string, userId: string, starred?: boolean): Promise<UpdateResult>;
@@ -187,7 +184,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	incUsersCountById(rid: string, inc: number): Promise<UpdateResult>;
 	incUsersCountNotDMsByIds(rids: string[], inc: number): Promise<UpdateResult>;
 	setLastMessageById(rid: string, lastMessage: IRoom['lastMessage']): Promise<UpdateResult>;
-	resetLastMessageById(rid: string, messageId?: string): Promise<UpdateResult>;
+	resetLastMessageById(rid: string, lastMessage?: IMessage | null): Promise<UpdateResult>;
 	replaceUsername(username: string, newUsername: string): Promise<UpdateResult | Document>;
 	replaceMutedUsername(username: string, newUsername: string): Promise<UpdateResult | Document>;
 	replaceUsernameOfUserByUserId(userId: string, newUsername: string): Promise<UpdateResult | Document>;
