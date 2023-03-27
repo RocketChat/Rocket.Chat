@@ -9,7 +9,7 @@ const FEDERATION_COMMANDS: Record<string, (currentUserId: string, roomId: string
 		Federation.createDirectMessageRoomAndInviteUser(currentUserId, roomId, invitee),
 };
 
-async function federation(providedCommand: string, stringParams: string | undefined, item: Record<string, any>): void {
+async function federation(providedCommand: string, stringParams: string | undefined, item: Record<string, any>): Promise<void> {
 	await executeSlashCommand(providedCommand, stringParams, item, FEDERATION_COMMANDS, Meteor.userId());
 }
 
