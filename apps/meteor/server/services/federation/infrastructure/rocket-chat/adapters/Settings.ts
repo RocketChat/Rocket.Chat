@@ -14,7 +14,7 @@ const LISTEN_RULES = EVERYTHING_REGEX;
 
 export class RocketChatSettingsAdapter {
 	public initialize(): void {
-		this.addFederationSettings();
+		void this.addFederationSettings();
 		this.watchChangesAndUpdateRegistrationFile();
 		this.updateSettingsWithProvidedConfigFileIfNecessary();
 	}
