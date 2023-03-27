@@ -34,7 +34,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const button = appButtonProps({ ...app, isAdminUser, endUserRequested });
 	const isAppRequestsPage = context === 'requested';
-	const shouldShowPriceDisplay = isAppDetailsPage && button;
+	const shouldShowPriceDisplay = isAppDetailsPage && button && !app.isEnterpriseOnly;
 	const canUpdate = installed && app?.version && app?.marketplaceVersion && semver.lt(app?.version, app?.marketplaceVersion);
 
 	const statuses = appMultiStatusProps(app, isAppDetailsPage, context || '');

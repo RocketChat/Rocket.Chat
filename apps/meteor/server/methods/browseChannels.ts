@@ -364,7 +364,7 @@ Meteor.methods<ServerMethods>({
 
 		const canViewAnonymous = !!settings.get('Accounts_AllowAnonymousRead');
 
-		const user = Meteor.user() as IUser | null;
+		const user = (await Meteor.userAsync()) as IUser | null;
 
 		if (!user) {
 			return;

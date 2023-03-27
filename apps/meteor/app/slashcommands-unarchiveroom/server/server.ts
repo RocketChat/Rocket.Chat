@@ -53,7 +53,7 @@ slashCommands.add({
 
 		await Meteor.callAsync('unarchiveRoom', room._id);
 
-		Messages.createRoomUnarchivedByRoomIdAndUser(room._id, Meteor.user());
+		Messages.createRoomUnarchivedByRoomIdAndUser(room._id, await Meteor.userAsync());
 		void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 			msg: TAPi18n.__('Channel_Unarchived', {
 				postProcess: 'sprintf',
