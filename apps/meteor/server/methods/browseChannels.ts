@@ -133,7 +133,7 @@ const getTeams = async (
 		return;
 	}
 
-	const userSubs = await Subscriptions.cachedFindByUserId(user._id).toArray();
+	const userSubs = await Subscriptions.findByUserId(user._id).toArray();
 	const ids = userSubs.map((sub) => sub.rid);
 	const { cursor, totalCount } = Rooms.findPaginatedContainingNameOrFNameInIdsAsTeamMain(
 		searchTerm ? new RegExp(searchTerm, 'i') : null,

@@ -81,7 +81,7 @@ export async function findChannelAndPrivateAutocomplete({ uid, selector }: { uid
 		},
 	};
 
-	const userRoomsIds = (await Subscriptions.cachedFindByUserId(uid, { projection: { rid: 1 } }).toArray()).map(
+	const userRoomsIds = (await Subscriptions.findByUserId(uid, { projection: { rid: 1 } }).toArray()).map(
 		(item: Pick<ISubscription, 'rid'>) => item.rid,
 	);
 
@@ -131,7 +131,7 @@ export async function findChannelAndPrivateAutocompleteWithPagination({
 	items: IRoom[];
 	total: number;
 }> {
-	const userRoomsIds = (await Subscriptions.cachedFindByUserId(uid, { projection: { rid: 1 } }).toArray()).map(
+	const userRoomsIds = (await Subscriptions.findByUserId(uid, { projection: { rid: 1 } }).toArray()).map(
 		(item: Pick<ISubscription, 'rid'>) => item.rid,
 	);
 
