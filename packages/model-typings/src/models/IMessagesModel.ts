@@ -128,16 +128,16 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		user: IMessage['u'],
 		readReceiptsEnabled?: boolean,
 	): Promise<Omit<IMessage, '_updatedAt'>>;
-	createRoomSetReadOnlyByRoomIdAndUser(
+	createRoomSetReadOnlyByRoomIdAndUser(roomId: string, user: IMessage['u'], readReceiptsEnabled?: boolean): Promise<IMessage | null>;
+	createRoomRemovedReadOnlyByRoomIdAndUser(roomId: string, user: IMessage['u'], readReceiptsEnabled?: boolean): Promise<IMessage | null>;
+	createWithTypeRoomIdMessageUserAndUnread(
+		type: MessageTypesValues,
 		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-	): Promise<Omit<IMessage, '_updatedAt'>>;
-	createRoomRemovedReadOnlyByRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-	): Promise<Omit<IMessage, '_updatedAt'>>;
+		message: string,
+		user: Pick<IMessage['u'], '_id' | 'username'>,
+		unread: boolean,
+		extraData?: Record<string, string>,
+	): Promise<IMessage | null>;
 	createRoomAllowedReactingByRoomIdAndUser(
 		roomId: string,
 		user: IMessage['u'],
@@ -165,7 +165,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		user: IMessage['u'],
 		readReceiptsEnabled?: boolean,
 		extraData?: Record<string, any>,
-	): Promise<Omit<IMessage, '_updatedAt'>>;
+	): Promise<IMessage | null>;
 	addTranslations(messageId: string, translations: Record<string, string>, providerName: string): Promise<UpdateResult>;
 	addAttachmentTranslations(messageId: string, attachmentIndex: string, translations: Record<string, string>): Promise<UpdateResult>;
 	setImportFileRocketChatAttachment(
@@ -259,7 +259,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		type: MessageTypesValues,
 		roomId: string,
 		message: string,
-		user: IMessage['u'],
+		user: Pick<IMessage['u'], '_id' | 'username'>,
 		readReceiptsEnabled?: boolean,
 		extraData?: Record<string, string>,
 	): Promise<Omit<IMessage, '_updatedAt'>>;

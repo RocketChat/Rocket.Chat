@@ -7,8 +7,8 @@ import { settings } from '../../app/settings/client';
 import { dispatchToastMessage } from '../lib/toast';
 
 Meteor.startup(() => {
-	Tracker.autorun(() => {
-		const user = Meteor.user();
+	Tracker.autorun(async () => {
+		const user = await Meteor.userAsync();
 		if (
 			user?.emails?.[0] &&
 			user.emails[0].verified !== true &&

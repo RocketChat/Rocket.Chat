@@ -294,7 +294,7 @@ export class ImportDataConverter {
 		const user = Users.findOneById(userId, {});
 		await this.updateUser(user, userData);
 
-		addUserToDefaultChannels(user, true);
+		await addUserToDefaultChannels(user, true);
 		return user;
 	}
 
@@ -943,7 +943,7 @@ export class ImportDataConverter {
 	}
 
 	archiveRoomById(rid: string): void {
-		Rooms.archiveById(rid);
+		Promise.await(RoomsRaw.archiveById(rid));
 		Subscriptions.archiveByRoomId(rid);
 	}
 

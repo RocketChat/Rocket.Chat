@@ -63,13 +63,13 @@ export const onlineAgents = {
 		return this.users.has(userId);
 	},
 
-	runAgentLeaveAction: Meteor.bindEnvironment((userId: string) => {
+	runAgentLeaveAction: Meteor.bindEnvironment(async (userId: string) => {
 		onlineAgents.users.delete(userId);
 		onlineAgents.queue.delete(userId);
 
 		try {
 			if (action === 'close') {
-				return Promise.await(Livechat.closeOpenChats(userId, comment));
+				return Livechat.closeOpenChats(userId, comment);
 			}
 
 			if (action === 'forward') {

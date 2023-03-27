@@ -2,10 +2,9 @@ import { EssentialAppDisabledException } from '@rocket.chat/apps-engine/definiti
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { Meteor } from 'meteor/meteor';
-import { AppLogs, Apps as AppsModel } from '@rocket.chat/models';
+import { AppLogs, Apps as AppsModel, AppsPersistence } from '@rocket.chat/models';
 
 import { Logger } from '../../../server/lib/logger/Logger';
-import { AppsPersistenceModel } from '../../../app/models/server';
 import { settings, settingsRegistry } from '../../../app/settings/server';
 import { RealAppBridges } from '../../../app/apps/server/bridges';
 import { AppServerNotifier, AppsRestApi, AppUIKitInteractionApi } from './communication';
@@ -49,7 +48,7 @@ export class AppServerOrchestrator {
 
 		this._model = AppsModel;
 		this._logModel = AppLogs;
-		this._persistModel = new AppsPersistenceModel();
+		this._persistModel = AppsPersistence;
 		this._storage = new AppRealStorage(this._model);
 		this._logStorage = new AppRealLogsStorage(this._logModel);
 
@@ -309,7 +308,7 @@ settings.watch('Apps_Framework_Source_Package_Storage_FileSystem_Path', (value) 
 	}
 });
 
-settings.watch('Apps_Logs_TTL', (value) => {
+settings.watch('Apps_Logs_TTL', async (value) => {
 	if (!Apps.isInitialized()) {
 		return;
 	}
@@ -334,6 +333,5 @@ settings.watch('Apps_Logs_TTL', (value) => {
 
 	const model = Apps._logModel;
 
-	// TODO: remove this when we have async support on here
-	Promise.await(model.resetTTLIndex(expireAfterSeconds));
+	await model.resetTTLIndex(expireAfterSeconds);
 });
