@@ -18,7 +18,7 @@ Meteor.methods<ServerMethods>({
 
 		const msg = await Messages.getMessageByFileId(fileID);
 		if (msg) {
-			return Meteor.call('deleteMessage', msg);
+			return Meteor.callAsync('deleteMessage', msg);
 		}
 
 		return FileUpload.getStore('Uploads').deleteById(fileID);

@@ -1,8 +1,8 @@
 import { isGETWebRTCCall, isPUTWebRTCCallId } from '@rocket.chat/rest-typings';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Settings } from '@rocket.chat/models';
+import { Settings, Rooms } from '@rocket.chat/models';
 
-import { Messages, Rooms } from '../../../../models/server';
+import { Messages } from '../../../../models/server';
 import { settings as rcSettings } from '../../../../settings/server';
 import { API } from '../../../../api/server';
 import { settings } from '../lib/livechat';
@@ -43,7 +43,7 @@ API.v1.addRoute(
 				await Settings.incrementValueById('WebRTC_Calls_Count');
 				callStatus = 'ringing';
 				await Rooms.setCallStatusAndCallStartTime(room._id, callStatus);
-				await Messages.createWithTypeRoomIdMessageAndUser(
+				Messages.createWithTypeRoomIdMessageAndUser(
 					'livechat_webrtc_video_call',
 					room._id,
 					TAPi18n.__('Join_my_room_to_start_the_video_call'),

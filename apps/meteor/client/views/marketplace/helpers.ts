@@ -61,6 +61,8 @@ type FormattedPriceAndPlan = {
 	price: string;
 };
 
+type appButtonPropsType = App & { isAdminUser: boolean; endUserRequested: boolean };
+
 export const apiCurlGetter =
 	(absoluteUrl: (path: string) => string) =>
 	(method: string, api: IApiEndpointMetadata): string[] => {
@@ -174,10 +176,12 @@ export const appButtonProps = ({
 	isEnterpriseOnly,
 	versionIncompatible,
 	isAdminUser,
+	// TODO: Unify this two variables
 	requestedEndUser,
-}: App & { isAdminUser: boolean }): appButtonResponseProps | undefined => {
+	endUserRequested,
+}: appButtonPropsType): appButtonResponseProps | undefined => {
 	if (!isAdminUser) {
-		if (requestedEndUser) {
+		if (requestedEndUser || endUserRequested) {
 			return {
 				action: 'request',
 				label: 'Requested',

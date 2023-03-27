@@ -63,7 +63,7 @@ const EditRoom = ({ room, onChange, onDelete }: EditRoomProps): ReactElement => 
 
 	const [canViewName, canViewTopic, canViewAnnouncement, canViewArchived, canViewDescription, canViewType, canViewReadOnly] =
 		useMemo(() => {
-			const isAllowed = roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange;
+			const isAllowed = roomCoordinator.getRoomDirectives(room.t).allowRoomSettingChange;
 			return [
 				isAllowed?.(room, RoomSettingsEnum.NAME),
 				isAllowed?.(room, RoomSettingsEnum.TOPIC),

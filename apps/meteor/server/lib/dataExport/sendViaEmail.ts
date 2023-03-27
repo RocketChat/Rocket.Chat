@@ -1,13 +1,14 @@
 import moment from 'moment';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
+import { Messages } from '@rocket.chat/models';
 
 import * as Mailer from '../../../app/mailer/server/api';
-import { Messages, Users } from '../../../app/models/server';
+import { Users } from '../../../app/models/server';
 import { settings } from '../../../app/settings/server';
 import { Message } from '../../../app/ui-utils/server';
 import { getMomentLocale } from '../getMomentLocale';
 
-export function sendViaEmail(
+export async function sendViaEmail(
 	data: {
 		rid: string;
 		toUsers: string[];
@@ -17,9 +18,9 @@ export function sendViaEmail(
 		language: string;
 	},
 	user: IUser,
-): {
+): Promise<{
 	missing: string[];
-} {
+}> {
 	const emails = data.toEmails.map((email) => email.trim()).filter(Boolean);
 
 	const missing = [...data.toUsers].filter(Boolean);
@@ -58,10 +59,11 @@ export function sendViaEmail(
 		}
 	}
 
-	const html = Messages.findByRoomIdAndMessageIds(data.rid, data.messages, {
-		sort: { ts: 1 },
-	})
-		.fetch()
+	const html = (
+		await Messages.findByRoomIdAndMessageIds(data.rid, data.messages, {
+			sort: { ts: 1 },
+		}).toArray()
+	)
 		.map((message: IMessage) => {
 			const dateTime = moment(message.ts).locale(lang).format('L LT');
 			return `<p style='margin-bottom: 5px'><b>${

@@ -15,7 +15,7 @@ API.v1.addRoute(
 				return API.v1.failure('Federation not enabled');
 			}
 
-			const { username, domain } = this.requestParams();
+			const { username, domain } = this.queryParams;
 
 			serverLogger.debug(`federation.users.search => username=${username} domain=${domain}`);
 
@@ -42,7 +42,7 @@ API.v1.addRoute(
 				return API.v1.failure('Federation not enabled');
 			}
 
-			const { username } = this.requestParams();
+			const { username } = this.queryParams;
 
 			serverLogger.debug(`federation.users.getByUsername => username=${username}`);
 

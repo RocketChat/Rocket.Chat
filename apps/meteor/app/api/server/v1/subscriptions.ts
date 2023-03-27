@@ -28,7 +28,7 @@ API.v1.addRoute(
 				updatedSinceDate = new Date(updatedSince as string);
 			}
 
-			const result = await Meteor.call('subscriptions/get', updatedSinceDate);
+			const result = await Meteor.callAsync('subscriptions/get', updatedSinceDate);
 
 			return API.v1.success(
 				Array.isArray(result)
@@ -96,8 +96,8 @@ API.v1.addRoute(
 		validateParams: isSubscriptionsUnreadProps,
 	},
 	{
-		post() {
-			Meteor.call('unreadMessages', (this.bodyParams as any).firstUnreadMessage, (this.bodyParams as any).roomId);
+		async post() {
+			await Meteor.callAsync('unreadMessages', (this.bodyParams as any).firstUnreadMessage, (this.bodyParams as any).roomId);
 
 			return API.v1.success();
 		},

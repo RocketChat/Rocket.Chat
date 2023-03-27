@@ -128,7 +128,7 @@ const create = async ({ prid, pmid, t_name: discussionName, reply, users, user, 
 	// auto invite the replied message owner
 	const invitedUsers = message ? [message.u.username, ...users] : users;
 
-	const type = await roomCoordinator.getRoomDirectives(parentRoom.t)?.getDiscussionType(parentRoom);
+	const type = await roomCoordinator.getRoomDirectives(parentRoom.t).getDiscussionType(parentRoom);
 	const description = parentRoom.encrypted ? '' : message?.msg;
 	const topic = parentRoom.name;
 
@@ -212,6 +212,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
 		}
 
-		return create({ prid, pmid, t_name: discussionName, reply, users, user: Meteor.user() as IUser, encrypted });
+		return create({ prid, pmid, t_name: discussionName, reply, users, user: (await Meteor.userAsync()) as IUser, encrypted });
 	},
 });

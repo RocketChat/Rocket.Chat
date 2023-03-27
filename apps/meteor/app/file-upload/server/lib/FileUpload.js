@@ -12,13 +12,12 @@ import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Avatars, UserDataFiles, Uploads, Settings } from '@rocket.chat/models';
+import { Avatars, UserDataFiles, Uploads, Settings, Subscriptions } from '@rocket.chat/models';
 import { hashLoginToken } from '@rocket.chat/account-utils';
 
 import { settings } from '../../../settings/server';
 import Users from '../../../models/server/models/Users';
 import Rooms from '../../../models/server/models/Rooms';
-import Subscriptions from '../../../models/server/models/Subscriptions';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -450,7 +449,7 @@ export const FileUpload = {
 		}
 
 		const isAuthorizedByRoom = () =>
-			rc_room_type && roomCoordinator.getRoomDirectives(rc_room_type)?.canAccessUploadedFile({ rc_uid, rc_rid, rc_token });
+			rc_room_type && roomCoordinator.getRoomDirectives(rc_room_type).canAccessUploadedFile({ rc_uid, rc_rid, rc_token });
 		const isAuthorizedByJWT = () =>
 			settings.get('FileUpload_Enable_json_web_token_for_files') &&
 			token &&
@@ -473,7 +472,7 @@ export const FileUpload = {
 			return true;
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(file.rid, user._id, { fields: { _id: 1 } });
+		const subscription = Promise.await(Subscriptions.findOneByRoomIdAndUserId(file.rid, user._id, { projection: { _id: 1 } }));
 
 		if (subscription) {
 			return true;

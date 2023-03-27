@@ -1090,7 +1090,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	setFavoriteByRoomIdAndUserId(roomId: string, userId: string, favorite: true | null): Promise<UpdateResult> {
+	setFavoriteByRoomIdAndUserId(roomId: string, userId: string, favorite?: boolean): Promise<UpdateResult> {
 		if (favorite == null) {
 			favorite = true;
 		}
@@ -1520,11 +1520,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	}
 
 	// INSERT
-	async createWithRoomAndUser(
-		room: IRoom & { customFields: Record<string, any> },
-		user: IUser,
-		extraData: Record<string, any> = {},
-	): Promise<InsertOneResult<ISubscription>> {
+	async createWithRoomAndUser(room: IRoom, user: IUser, extraData: Record<string, any> = {}): Promise<InsertOneResult<ISubscription>> {
 		const subscription = {
 			open: false,
 			alert: false,
@@ -1535,7 +1531,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			rid: room._id,
 			name: room.name,
 			fname: room.fname,
-			customFields: room.customFields,
+			...(room.customFields && { customFields: room.customFields }),
 			t: room.t,
 			u: {
 				_id: user._id,

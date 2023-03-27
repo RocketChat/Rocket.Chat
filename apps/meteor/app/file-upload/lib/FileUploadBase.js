@@ -61,7 +61,7 @@ export class FileUploadBase {
 		return this.meta.name;
 	}
 
-	start(callback) {
+	async start(callback) {
 		this.handler = new UploadFS.Uploader({
 			store: this.store,
 			data: this.file,
@@ -84,7 +84,7 @@ export class FileUploadBase {
 
 	onProgress() {}
 
-	stop() {
+	async stop() {
 		return this.handler.stop();
 	}
 }

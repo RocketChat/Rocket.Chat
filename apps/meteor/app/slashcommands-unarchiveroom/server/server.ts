@@ -10,7 +10,7 @@ import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 
 slashCommands.add({
 	command: 'unarchive',
-	callback: function Unarchive(_command: 'unarchive', params, item): void {
+	callback: async function Unarchive(_command: 'unarchive', params, item): Promise<void> {
 		let channel = params.trim();
 		let room;
 
@@ -36,7 +36,7 @@ slashCommands.add({
 		}
 
 		// You can not archive direct messages.
-		if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.ARCHIVE, userId)) {
+		if (!(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.ARCHIVE, userId))) {
 			return;
 		}
 
@@ -51,7 +51,7 @@ slashCommands.add({
 			return;
 		}
 
-		Meteor.call('unarchiveRoom', room._id);
+		await Meteor.callAsync('unarchiveRoom', room._id);
 
 		Messages.createRoomUnarchivedByRoomIdAndUser(room._id, Meteor.user());
 		void api.broadcast('notify.ephemeralMessage', userId, item.rid, {

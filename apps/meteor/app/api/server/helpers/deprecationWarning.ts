@@ -1,4 +1,3 @@
-import { API } from '../api';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 type DeprecationWarningParams<T> = {
@@ -25,5 +24,3 @@ export function deprecationWarning<T>({
 
 	return response;
 }
-
-API.helperMethods.set('deprecationWarning', deprecationWarning);

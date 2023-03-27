@@ -248,7 +248,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	isSupportedRoomType(type) {
-		return roomCoordinator.getRoomDirectives(type)?.allowRoomSettingChange({}, RoomSettingsEnum.E2E);
+		return roomCoordinator.getRoomDirectives(type).allowRoomSettingChange({}, RoomSettingsEnum.E2E);
 	}
 
 	async importGroupKey(groupKey) {
