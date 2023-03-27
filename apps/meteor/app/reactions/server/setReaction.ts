@@ -47,6 +47,10 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 		});
 	}
 
+	// if (!('reactions' in message)) {
+	// 	return;
+	// }
+
 	const userAlreadyReacted =
 		message.reactions &&
 		Boolean(message.reactions[reaction]) &&

@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { Settings } from '@rocket.chat/models';
+import { Settings, Rooms } from '@rocket.chat/models';
 import colors from 'colors/safe';
 
 import { RocketChatFile } from '../../app/file/server';
 import { FileUpload } from '../../app/file-upload/server';
 import { getUsersInRole } from '../../app/authorization/server';
 import { addUserRolesAsync } from '../lib/roles/addUserRoles';
-import { Users, Rooms } from '../../app/models/server';
+import { Users } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { addUserToDefaultChannels } from '../../app/lib/server';
 import { checkUsernameAvailability } from '../../app/lib/server/functions/checkUsernameAvailability';
@@ -15,9 +15,9 @@ import { validateEmail } from '../../lib/emailValidator';
 
 Meteor.startup(async function () {
 	if (!settings.get('Initial_Channel_Created')) {
-		const exists = Rooms.findOneById('GENERAL', { fields: { _id: 1 } });
+		const exists = await Rooms.findOneById('GENERAL', { fields: { _id: 1 } });
 		if (!exists) {
-			Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
+			await Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
 				default: true,
 			});
 		}

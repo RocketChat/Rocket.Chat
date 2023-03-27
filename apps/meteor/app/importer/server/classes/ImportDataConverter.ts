@@ -943,7 +943,7 @@ export class ImportDataConverter {
 	}
 
 	archiveRoomById(rid: string): void {
-		Rooms.archiveById(rid);
+		Promise.await(RoomsRaw.archiveById(rid));
 		Subscriptions.archiveByRoomId(rid);
 	}
 

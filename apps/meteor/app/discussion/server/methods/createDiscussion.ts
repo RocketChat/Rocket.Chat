@@ -212,6 +212,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
 		}
 
-		return create({ prid, pmid, t_name: discussionName, reply, users, user: Meteor.user() as IUser, encrypted });
+		return create({ prid, pmid, t_name: discussionName, reply, users, user: (await Meteor.userAsync()) as IUser, encrypted });
 	},
 });
