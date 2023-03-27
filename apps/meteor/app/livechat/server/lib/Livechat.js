@@ -1117,12 +1117,11 @@ export const Livechat = {
 		});
 	},
 
-	getRoomMessages({ rid }) {
+	async getRoomMessages({ rid }) {
 		check(rid, String);
 
-		const isLivechat = Promise.await(Rooms.findByTypeInIds('l', [rid]).count());
-
-		if (!isLivechat) {
+		const room = await Rooms.findOneById(rid, { projection: { t: 1 } });
+		if (room?.t !== 'l') {
 			throw new Meteor.Error('invalid-room');
 		}
 
@@ -1137,7 +1136,7 @@ export const Livechat = {
 
 		return Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, {
 			sort: { ts: 1 },
-		}).fetch();
+		}).toArray();
 	},
 
 	async requestTranscript({ rid, email, subject, user }) {

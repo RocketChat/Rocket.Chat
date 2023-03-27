@@ -11,7 +11,8 @@ import { SlackAPI } from './SlackAPI';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { Messages, Rooms, Users } from '../../models/server';
 import { settings } from '../../settings/server';
-import { deleteMessage, updateMessage, addUserToRoom, removeUserFromRoom, archiveRoom, unarchiveRoom, sendMessage } from '../../lib/server';
+import { deleteMessage, updateMessage, addUserToRoom, removeUserFromRoom, unarchiveRoom, sendMessage } from '../../lib/server';
+import { archiveRoom } from '../../lib/server/functions/archiveRoom';
 import { saveRoomName, saveRoomTopic } from '../../channel-settings/server';
 import { FileUpload } from '../../file-upload/server';
 
@@ -1099,7 +1100,7 @@ export default class SlackAdapter {
 			case 'channel_archive':
 			case 'group_archive':
 				if (!isImporting) {
-					await archiveRoom(rocketChannel);
+					await archiveRoom(rocketChannel, rocketUser);
 				}
 				return;
 			case 'channel_unarchive':
