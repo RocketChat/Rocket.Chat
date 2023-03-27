@@ -35,10 +35,6 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
 	}
 
-	createRoomUnarchivedByRoomIdAndUser(roomId, user) {
-		return this.createWithTypeRoomIdMessageAndUser('room-unarchived', roomId, '', user);
-	}
-
 	createRoomAllowedReactingByRoomIdAndUser(roomId, user) {
 		return this.createWithTypeRoomIdMessageAndUser('room-allowed-reacting', roomId, '', user);
 	}

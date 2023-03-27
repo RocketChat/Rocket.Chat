@@ -755,14 +755,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
-	createRoomUnarchivedByRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('room-unarchived', roomId, '', user, readReceiptsEnabled);
-	}
-
 	createRoomSetReadOnlyByRoomIdAndUser(roomId: string, user: IMessage['u'], readReceiptsEnabled: boolean): Promise<IMessage | null> {
 		return this.createWithTypeRoomIdMessageUserAndUnread('room-set-read-only', roomId, '', user, readReceiptsEnabled);
 	}
