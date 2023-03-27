@@ -132,7 +132,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 												clearErrors(['username', 'password']);
 											},
 										})}
-										placeholder={passwordPlaceholder}
+										placeholder={passwordPlaceholder || t('registration.component.form.password')}
 										error={
 											errors.password?.message ||
 											(errors.password?.type === 'required' ? t('registration.component.form.requiredField') : undefined)
