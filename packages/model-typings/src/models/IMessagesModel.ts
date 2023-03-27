@@ -125,7 +125,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		roomId: string,
 		message: string,
 		user: Pick<IMessage['u'], '_id' | 'username'>,
-		unread: boolean,
+		unread?: boolean,
 		extraData?: Record<string, string>,
 	): Promise<IMessage | null>;
 	unsetReactions(messageId: string): Promise<UpdateResult>;

@@ -1442,7 +1442,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		roomId: string,
 		message: string,
 		user: Pick<IMessage['u'], '_id' | 'username'>,
-		unread: boolean,
+		unread?: boolean,
 		extraData?: Record<string, string>,
 	): Promise<IMessage | null> {
 		const record: Omit<IMessage, '_id' | '_updatedAt'> = {
@@ -1455,7 +1455,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				username: user.username,
 			},
 			groupable: false as const,
-			unread,
+			...(unread && { unread: true }),
 		};
 
 		const data = Object.assign(record, extraData);
