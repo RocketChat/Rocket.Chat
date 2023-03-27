@@ -624,7 +624,7 @@ export class APIClass<TBasePath extends string = '/'> extends Restivus {
 
 							this.queryOperations = options.queryOperations;
 							this.queryFields = options.queryFields;
-							this.parseJsonQuery = api.parseJsonQuery.bind(this);
+							this.parseJsonQuery = api.parseJsonQuery.bind(this as PartialThis);
 
 							result =
 								(await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) || API.v1.success();
