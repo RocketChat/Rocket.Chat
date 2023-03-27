@@ -78,24 +78,18 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 
 		await Users.removeExpiredEmailCodesOfUserId(user._id);
 
-		const valid = user.services.emailCode.find(({ code, expire }) => {
+		for await (const { code, expire } of user.services.emailCode) {
 			if (expire < new Date()) {
-				return false;
+				continue;
 			}
 
-			if (bcrypt.compareSync(codeFromEmail, code)) {
+			if (await bcrypt.compare(codeFromEmail, code)) {
+				await Users.removeEmailCodeByUserIdAndCode(user._id, code);
 				return true;
 			}
-
-			return false;
-		});
-
-		if (valid) {
-			const { code } = valid;
-			await Users.removeEmailCodeByUserIdAndCode(user._id, code);
 		}
 
-		return !!valid;
+		return false;
 	}
 
 	public async sendEmailCode(user: IUser): Promise<void> {
