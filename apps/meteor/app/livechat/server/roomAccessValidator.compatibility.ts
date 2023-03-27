@@ -1,32 +1,41 @@
 import type { IUser, ILivechatDepartment, IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { LivechatDepartmentAgents } from '@rocket.chat/models';
+import { LivechatDepartmentAgents, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
-import { hasPermission, hasRole } from '../../authorization/server';
-import { LivechatDepartment, LivechatInquiry, LivechatRooms } from '../../models/server';
+import { hasRole } from '../../authorization/server';
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
+import { LivechatDepartment } from '../../models/server';
 import { RoutingManager } from './lib/RoutingManager';
 
-type OmniRoomAccessValidator = (room: IOmnichannelRoom, user?: Pick<IUser, '_id'>, extraData?: Record<string, any>) => boolean;
+type OmnichannelRoomAccessValidator = (
+	room: IOmnichannelRoom,
+	user?: Pick<IUser, '_id'>,
+	extraData?: Record<string, any>,
+) => boolean | Promise<boolean>;
 
-export const validators: OmniRoomAccessValidator[] = [
-	function (_room, user) {
+export const validators: OmnichannelRoomAccessValidator[] = [
+	async function (_room, user) {
 		if (!user?._id) {
 			return false;
 		}
-		return hasPermission(user._id, 'view-livechat-rooms');
+		return hasPermissionAsync(user._id, 'view-livechat-rooms');
 	},
-	function (room, user) {
+	async function (room, user) {
 		if (!user?._id) {
 			return false;
 		}
 
 		const { _id: userId } = user;
 		const { servedBy: { _id: agentId } = {} } = room;
-		return userId === agentId || (!room.open && hasPermission(user._id, 'view-livechat-room-closed-by-another-agent'));
+		return userId === agentId || (!room.open && hasPermissionAsync(user._id, 'view-livechat-room-closed-by-another-agent'));
 	},
-	function (room, _user, extraData) {
+	async function (room, _user, extraData) {
 		if (extraData?.rid) {
-			room = LivechatRooms.findOneById(extraData.rid);
+			const dbRoom = await LivechatRooms.findOneById(extraData.rid);
+			if (dbRoom) {
+				room = dbRoom;
+			}
 		}
+
 		return extraData?.visitorToken && room.v && room.v.token === extraData.visitorToken;
 	},
 	async function (room, user) {
@@ -61,7 +70,7 @@ export const validators: OmniRoomAccessValidator[] = [
 			],
 		};
 
-		const inquiry = LivechatInquiry.findOne(filter, { fields: { status: 1 } });
+		const inquiry = await LivechatInquiry.findOne(filter, { projection: { status: 1 } });
 		return inquiry && inquiry.status === 'queued';
 	},
 	async function (room, user) {
@@ -72,7 +81,7 @@ export const validators: OmniRoomAccessValidator[] = [
 		if (!agentOfDepartment) {
 			return;
 		}
-		return hasPermission(user._id, 'view-livechat-room-closed-same-department');
+		return hasPermissionAsync(user._id, 'view-livechat-room-closed-same-department');
 	},
 	function (_room, user) {
 		// Check if user is rocket.cat

@@ -11,11 +11,13 @@ import { Logger } from '../../../server/lib/logger/Logger';
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
 import { settings } from '../../settings/server';
 import { metrics } from '../../metrics/server';
-import { hasPermission } from '../../authorization/server';
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUserFields';
 import { checkCodeForUser } from '../../2fa/server/code';
 import { checkPermissionsForInvocation, checkPermissions } from './api.helpers';
 import { isObject } from '../../../lib/utils/isObject';
+import { getUserInfo } from './helpers/getUserInfo';
+import { parseJsonQuery } from './helpers/parseJsonQuery';
 
 const logger = new Logger('API');
 
@@ -98,20 +100,12 @@ export class APIClass extends Restivus {
 		};
 	}
 
-	hasHelperMethods() {
-		return API.helperMethods.size !== 0;
-	}
-
-	getHelperMethods() {
-		return API.helperMethods;
-	}
-
-	getHelperMethod(name) {
-		return API.helperMethods.get(name);
-	}
-
 	addAuthMethod(method) {
 		this.authMethods.push(method);
+	}
+
+	async parseJsonQuery() {
+		return parseJsonQuery(this.request.route, this.userId, this.queryParams, this.logger, this.queryFields, this.queryOperations);
 	}
 
 	shouldAddRateLimitToRoute(options) {
@@ -218,7 +212,7 @@ export class APIClass extends Restivus {
 			rateLimiterDictionary.hasOwnProperty(route) &&
 			settings.get('API_Enable_Rate_Limiter') === true &&
 			(process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true) &&
-			!(userId && hasPermission(userId, 'api-bypass-rate-limit'))
+			!(userId && Promise.await(hasPermissionAsync(userId, 'api-bypass-rate-limit')))
 		);
 	}
 
@@ -460,6 +454,7 @@ export class APIClass extends Restivus {
 
 						this.queryOperations = options.queryOperations;
 						this.queryFields = options.queryFields;
+						this.parseJsonQuery = api.parseJsonQuery.bind(this);
 
 						result = (await DDP._CurrentInvocation.withValue(invocation, async () => originalAction.apply(this))) || API.v1.success();
 
@@ -491,12 +486,6 @@ export class APIClass extends Restivus {
 
 					return result;
 				};
-
-				for (const [name, helperMethod] of this.getHelperMethods()) {
-					endpoints[method][name] = function (...args) {
-						return Promise.await(helperMethod.apply(this, args));
-					};
-				}
 
 				// Allow the endpoints to make usage of the logger which respects the user's settings
 				endpoints[method].logger = logger;
@@ -585,9 +574,8 @@ export class APIClass extends Restivus {
 			'login',
 			{ authRequired: false },
 			{
-				post() {
+				async post() {
 					const args = loginCompatibility(this.bodyParams, this.request);
-					const getUserInfo = self.getHelperMethod('getUserInfo');
 
 					const invocation = new DDPCommon.MethodInvocation({
 						connection: {
@@ -599,7 +587,7 @@ export class APIClass extends Restivus {
 
 					let auth;
 					try {
-						auth = DDP._CurrentInvocation.withValue(invocation, () => Meteor.call('login', args));
+						auth = await DDP._CurrentInvocation.withValue(invocation, () => Meteor.callAsync('login', args));
 					} catch (error) {
 						let e = error;
 						if (error.reason === 'User not found') {

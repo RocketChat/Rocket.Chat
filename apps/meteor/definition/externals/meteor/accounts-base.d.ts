@@ -33,6 +33,8 @@ declare module 'meteor/accounts-base' {
 			options: Record<string, unknown>,
 		): Record<string, unknown>;
 
+		function _clearAllLoginTokens(userId: string | null): void;
+
 		class ConfigError extends Error {}
 
 		class LoginCancelledError extends Error {

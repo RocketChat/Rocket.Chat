@@ -3,7 +3,7 @@ import { simpleParser } from 'mailparser';
 
 import { settings } from '../../../settings';
 import { IMAPInterceptor } from '../../../../server/email/IMAPInterceptor';
-import { processDirectEmail } from '.';
+import { processDirectEmail } from './processDirectEmail';
 
 export class DirectReplyIMAPInterceptor extends IMAPInterceptor {
 	constructor(imapConfig, options = {}) {
@@ -21,7 +21,7 @@ export class DirectReplyIMAPInterceptor extends IMAPInterceptor {
 
 		super(imapConfig, options);
 
-		this.on('email', (email) => processDirectEmail(email));
+		this.on('email', (email) => Promise.await(processDirectEmail(email)));
 	}
 }
 
@@ -66,14 +66,14 @@ class POP3Intercepter {
 		});
 
 		// on retrieved email
-		this.pop3.on('retr', (status, msgnumber, data) => {
+		this.pop3.on('retr', async (status, msgnumber, data) => {
 			if (!status) {
 				return console.log('Cannot Retrieve Message ....');
 			}
 
 			// parse raw email data to  JSON object
 			simpleParser(data, (err, mail) => {
-				processDirectEmail(mail);
+				Promise.await(processDirectEmail(mail));
 			});
 
 			this.currentMsgCount += 1;

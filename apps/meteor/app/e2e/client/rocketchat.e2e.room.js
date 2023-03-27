@@ -1,7 +1,6 @@
 import { Base64 } from '@rocket.chat/base64';
 import { EJSON } from 'meteor/ejson';
 import { Random } from '@rocket.chat/random';
-import { Session } from 'meteor/session';
 import { Emitter } from '@rocket.chat/emitter';
 
 import { e2e } from './rocketchat.e2e';
@@ -27,6 +26,7 @@ import { E2ERoomState } from './E2ERoomState';
 import { call } from '../../../client/lib/utils/call';
 import { roomCoordinator } from '../../../client/lib/rooms/roomCoordinator';
 import { RoomSettingsEnum } from '../../../definition/IRoomTypeConfig';
+import { RoomManager } from '../../../client/lib/RoomManager';
 
 const KEY_ID = Symbol('keyID');
 const PAUSED = Symbol('PAUSED');
@@ -76,7 +76,7 @@ export class E2ERoom extends Emitter {
 		this.once(E2ERoomState.READY, () => this.decryptPendingMessages());
 		this.once(E2ERoomState.READY, () => this.decryptSubscription());
 		this.on('STATE_CHANGED', (prev) => {
-			if (this.roomId === Session.get('openedRoom')) {
+			if (this.roomId === RoomManager.opened) {
 				this.log(`[PREV: ${prev}]`, 'State CHANGED');
 			}
 		});
@@ -248,7 +248,7 @@ export class E2ERoom extends Emitter {
 	}
 
 	isSupportedRoomType(type) {
-		return roomCoordinator.getRoomDirectives(type)?.allowRoomSettingChange({}, RoomSettingsEnum.E2E);
+		return roomCoordinator.getRoomDirectives(type).allowRoomSettingChange({}, RoomSettingsEnum.E2E);
 	}
 
 	async importGroupKey(groupKey) {

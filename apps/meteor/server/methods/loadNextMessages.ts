@@ -4,7 +4,7 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Messages } from '@rocket.chat/models';
 
-import { canAccessRoomId } from '../../app/authorization/server';
+import { canAccessRoomIdAsync } from '../../app/authorization/server/functions/canAccessRoom';
 import { normalizeMessagesForUser } from '../../app/utils/server/lib/normalizeMessagesForUser';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -31,7 +31,7 @@ Meteor.methods<ServerMethods>({
 
 		const fromId = Meteor.userId();
 
-		if (!fromId || !canAccessRoomId(rid, fromId)) {
+		if (!fromId || !(await canAccessRoomIdAsync(rid, fromId))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'loadNextMessages' });
 		}
 

@@ -19,7 +19,7 @@ callbacks.add(
 		}
 
 		// mark message as read as well
-		ReadReceipt.markMessageAsReadBySender(message, room, message.u._id);
+		await ReadReceipt.markMessageAsReadBySender(message, room, message.u._id);
 
 		return message;
 	},

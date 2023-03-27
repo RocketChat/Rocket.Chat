@@ -6,7 +6,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { settings } from '../../../settings/server';
 import { Users } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { checkUsernameAvailability } from '../functions';
+import { checkUsernameAvailability } from '../functions/checkUsernameAvailability';
 import { RateLimiter } from '../lib';
 import { saveUserIdentity } from '../functions/saveUserIdentity';
 
@@ -50,7 +50,7 @@ Meteor.methods<ServerMethods>({
 			);
 		}
 
-		if (!checkUsernameAvailability(username)) {
+		if (!(await checkUsernameAvailability(username))) {
 			throw new Meteor.Error('error-field-unavailable', `<strong>${_.escape(username)}</strong> is already in use :(`, {
 				method: 'setUsername',
 				field: username,
@@ -64,7 +64,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		if (!user.username) {
-			Meteor.runAsUser(user._id, () => Meteor.call('joinDefaultChannels', joinDefaultChannelsSilenced));
+			await Meteor.runAsUser(user._id, () => Meteor.callAsync('joinDefaultChannels', joinDefaultChannelsSilenced));
 			Meteor.defer(function () {
 				return callbacks.run('afterCreateUser', Users.findOneById(user._id));
 			});
