@@ -763,22 +763,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.createWithTypeRoomIdMessageUserAndUnread('room-removed-read-only', roomId, '', user, readReceiptsEnabled);
 	}
 
-	createRoomAllowedReactingByRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('room-allowed-reacting', roomId, '', user, readReceiptsEnabled);
-	}
-
-	createRoomDisallowedReactingByRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('room-disallowed-reacting', roomId, '', user, readReceiptsEnabled);
-	}
-
 	unsetReactions(messageId: string): Promise<UpdateResult> {
 		return this.updateOne({ _id: messageId }, { $unset: { reactions: 1 } });
 	}

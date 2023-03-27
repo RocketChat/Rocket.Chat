@@ -35,14 +35,6 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
 	}
 
-	createRoomAllowedReactingByRoomIdAndUser(roomId, user) {
-		return this.createWithTypeRoomIdMessageAndUser('room-allowed-reacting', roomId, '', user);
-	}
-
-	createRoomDisallowedReactingByRoomIdAndUser(roomId, user) {
-		return this.createWithTypeRoomIdMessageAndUser('room-disallowed-reacting', roomId, '', user);
-	}
-
 	updateOTRAck(_id, otrAck) {
 		const query = { _id };
 		const update = { $set: { otrAck } };

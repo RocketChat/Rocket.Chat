@@ -128,16 +128,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		unread: boolean,
 		extraData?: Record<string, string>,
 	): Promise<IMessage | null>;
-	createRoomAllowedReactingByRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-	): Promise<Omit<IMessage, '_updatedAt'>>;
-	createRoomDisallowedReactingByRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-	): Promise<Omit<IMessage, '_updatedAt'>>;
 	unsetReactions(messageId: string): Promise<UpdateResult>;
 	deleteOldOTRMessages(roomId: string, ts: Date): Promise<DeleteResult>;
 	updateOTRAck(_id: string, otrAck: string): Promise<UpdateResult>;
