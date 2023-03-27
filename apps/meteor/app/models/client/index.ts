@@ -31,6 +31,16 @@ Meteor.user = () => {
 	return (Users.findOne({ _id: uid }) ?? null) as Meteor.User | null;
 };
 
+Meteor.userAsync = async () => {
+	const uid = Meteor.userId();
+
+	if (!uid) {
+		return null;
+	}
+
+	return (Users.findOne({ _id: uid }) ?? null) as Meteor.User | null;
+};
+
 export {
 	Base,
 	Avatars,
