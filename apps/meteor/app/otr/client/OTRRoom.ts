@@ -85,7 +85,12 @@ export class OTRRoom implements IOTRRoom {
 					refresh,
 				});
 			if (refresh) {
-				await Meteor.callAsync('sendSystemMessages', this._roomId, Meteor.user(), otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH);
+				await Meteor.callAsync(
+					'sendSystemMessages',
+					this._roomId,
+					await Meteor.userAsync(),
+					otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,
+				);
 				this.isFirstOTR = false;
 			}
 		} catch (e) {
@@ -256,12 +261,17 @@ export class OTRRoom implements IOTRRoom {
 						await this.generateKeyPair();
 						await this.importPublicKey(data.publicKey);
 						await goToRoomById(data.roomId);
-						Meteor.defer(() => {
+						Meteor.defer(async () => {
 							this.setState(OtrRoomState.ESTABLISHED);
 							this.acknowledge();
 
 							if (data.refresh) {
-								Meteor.call('sendSystemMessages', this._roomId, Meteor.user(), otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY);
+								await Meteor.callAsync(
+									'sendSystemMessages',
+									this._roomId,
+									await Meteor.userAsync(),
+									otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
+								);
 							}
 						});
 					} catch (e) {
@@ -325,7 +335,7 @@ export class OTRRoom implements IOTRRoom {
 					this.setState(OtrRoomState.ESTABLISHED);
 
 					if (this.isFirstOTR) {
-						Meteor.call('sendSystemMessages', this._roomId, Meteor.user(), otrSystemMessages.USER_JOINED_OTR);
+						await Meteor.callAsync('sendSystemMessages', this._roomId, await Meteor.userAsync(), otrSystemMessages.USER_JOINED_OTR);
 					}
 					this.isFirstOTR = false;
 				} catch (e) {

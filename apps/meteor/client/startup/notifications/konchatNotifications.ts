@@ -12,8 +12,8 @@ import { RoomManager } from '../../lib/RoomManager';
 import { fireGlobalEvent } from '../../lib/utils/fireGlobalEvent';
 import { isLayoutEmbedded } from '../../lib/utils/isLayoutEmbedded';
 
-const notifyNewRoom = (sub: ISubscription): void => {
-	const user = Meteor.user() as IUser | null;
+const notifyNewRoom = async (sub: ISubscription): Promise<void> => {
+	const user = (await Meteor.userAsync()) as IUser | null;
 	if (!user || user.status === 'busy') {
 		return;
 	}
@@ -50,11 +50,11 @@ function notifyNewMessageAudio(rid: string): void {
 	if (isLayoutEmbedded()) {
 		if (!hasFocus && messageIsInOpenedRoom) {
 			// Play a notification sound
-			KonchatNotification.newMessage(rid);
+			void KonchatNotification.newMessage(rid);
 		}
 	} else if (!hasFocus || !messageIsInOpenedRoom || !muteFocusedConversations) {
 		// Play a notification sound
-		KonchatNotification.newMessage(rid);
+		void KonchatNotification.newMessage(rid);
 	}
 }
 
@@ -91,11 +91,11 @@ Meteor.startup(() => {
 		});
 
 		CachedChatSubscription.on('changed', (sub): void => {
-			notifyNewRoom(sub);
+			void notifyNewRoom(sub);
 		});
 
 		Notifications.onUser('subscriptions-changed', (_action: 'changed' | 'removed', sub: ISubscription) => {
-			notifyNewRoom(sub);
+			void notifyNewRoom(sub);
 		});
 	});
 });
