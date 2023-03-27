@@ -1023,7 +1023,7 @@ export const Livechat = {
 		return updateDepartmentAgents(_id, departmentAgents, department.enabled);
 	},
 
-	saveAgentInfo(_id, agentData, agentDepartments) {
+	async saveAgentInfo(_id, agentData, agentDepartments) {
 		check(_id, Match.Maybe(String));
 		check(agentData, Object);
 		check(agentDepartments, [String]);
@@ -1036,7 +1036,7 @@ export const Livechat = {
 		}
 
 		Users.setLivechatData(_id, agentData);
-		LivechatDepartment.saveDepartmentsByAgent(user, agentDepartments);
+		await LivechatDepartment.saveDepartmentsByAgent(user, agentDepartments);
 
 		return true;
 	},

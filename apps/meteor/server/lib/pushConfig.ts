@@ -146,8 +146,8 @@ settings.watch<boolean>('Push_enable', async function (enabled) {
 		production: settings.get('Push_production'),
 		gateways,
 		uniqueId: settings.get('uniqueID'),
-		getAuthorization() {
-			return `Bearer ${Promise.await(getWorkspaceAccessToken())}`;
+		async getAuthorization() {
+			return `Bearer ${await getWorkspaceAccessToken()}`;
 		},
 	});
 });
