@@ -1,8 +1,7 @@
-import type { IUser, ISubscription } from '@rocket.chat/core-typings';
-import { Subscriptions } from '@rocket.chat/models';
+import type { IUser } from '@rocket.chat/core-typings';
+import { Subscriptions, Users } from '@rocket.chat/models';
 
 import { subscriptionHasRole } from '../../../authorization/server';
-import { Users } from '../../../models/server';
 
 export type SubscribedRoomsForUserWithDetails = {
 	rid: string;
@@ -48,19 +47,21 @@ export async function getSubscribedRoomsForUserWithDetails(
 				const options = { projection: { 'u._id': 1 }, sort: { ts: 1 as const } };
 				const subscribersCursor = Subscriptions.findByRoomId(subscription.rid, options);
 
-				await subscribersCursor.forEach(({ u: { _id: uid } }: ISubscription) => {
+				for await (const {
+					u: { _id: uid },
+				} of subscribersCursor) {
 					// If we already changed the owner or this subscription is for the user we are removing, then don't try to give it ownership
 					if (roomData.shouldChangeOwner || uid === userId) {
-						return;
+						continue;
 					}
-					const newOwner = Users.findOneActiveById(uid, { fields: { _id: 1 } });
+					const newOwner = await Users.findOneActiveById(uid, { projection: { _id: 1 } });
 					if (!newOwner) {
-						return;
+						continue;
 					}
 
 					roomData.newOwner = uid;
 					roomData.shouldChangeOwner = true;
-				});
+				}
 
 				// If there's no subscriber available to be the new owner and it's not a public room, we can remove it.
 				if (!roomData.shouldChangeOwner && roomData.t !== 'c') {
