@@ -133,43 +133,6 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
-		roomId,
-		afterTimestamp,
-		beforeTimestamp,
-		types,
-		options,
-		showThreadMessages = true,
-		inclusive = false,
-	) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			ts: {
-				[inclusive ? '$gte' : '$gt']: afterTimestamp,
-				[inclusive ? '$lte' : '$lt']: beforeTimestamp,
-			},
-			...(!showThreadMessages && {
-				$or: [
-					{
-						tmid: { $exists: false },
-					},
-					{
-						tshow: true,
-					},
-				],
-			}),
-		};
-
-		if (Match.test(types, [String]) && types.length > 0) {
-			query.t = { $nin: types };
-		}
-
-		return this.find(query, options);
-	}
-
 	findOneBySlackBotIdAndSlackTs(slackBotId, slackTs) {
 		const query = {
 			slackBotId,

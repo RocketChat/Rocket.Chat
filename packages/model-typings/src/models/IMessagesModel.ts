@@ -202,6 +202,14 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		showThreadMessages?: boolean,
 		inclusive?: boolean,
 	): FindCursor<IMessage>;
+	countVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+		roomId: string,
+		afterTimestamp: Date,
+		beforeTimestamp: Date,
+		types: MessageTypesValues[],
+		showThreadMessages?: boolean,
+		inclusive?: boolean,
+	): Promise<number>;
 	findVisibleByRoomIdBeforeTimestamp(roomId: string, timestamp: Date, options?: FindOptions<IMessage>): FindCursor<IMessage>;
 	getLastTimestamp(options?: FindOptions<IMessage>): Promise<Date | undefined>;
 	findOneBySlackBotIdAndSlackTs(slackBotId: string, slackTs: Date): Promise<IMessage | null>;

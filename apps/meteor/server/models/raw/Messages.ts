@@ -1096,6 +1096,42 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
+	countVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+		roomId: string,
+		afterTimestamp: Date,
+		beforeTimestamp: Date,
+		types: MessageTypesValues[],
+		showThreadMessages = true,
+		inclusive = false,
+	): Promise<number> {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+			rid: roomId,
+			ts: {
+				[inclusive ? '$gte' : '$gt']: afterTimestamp,
+				[inclusive ? '$lte' : '$lt']: beforeTimestamp,
+			},
+			...(!showThreadMessages && {
+				$or: [
+					{
+						tmid: { $exists: false },
+					},
+					{
+						tshow: true,
+					},
+				],
+			}),
+			...(Array.isArray(types) &&
+				types.length > 0 && {
+					t: { $nin: types },
+				}),
+		};
+
+		return this.col.countDocuments(query);
+	}
+
 	async getLastTimestamp(options: FindOptions<IMessage> = { projection: { _id: 0, ts: 1 } }): Promise<Date | undefined> {
 		options.sort = { ts: -1 };
 		options.limit = 1;

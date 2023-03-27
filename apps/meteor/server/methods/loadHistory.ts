@@ -22,7 +22,7 @@ declare module '@rocket.chat/ui-contexts' {
 		):
 			| {
 					messages: IMessage[];
-					firstUnread: IMessage;
+					firstUnread: IMessage | undefined;
 					unreadNotLoaded: number;
 			  }
 			| false;
