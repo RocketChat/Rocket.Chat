@@ -4,6 +4,7 @@ import type { ValidateFunction } from 'ajv';
 import type { Request, Response } from 'express';
 
 import type { ITwoFactorOptions } from '../../2fa/server/code';
+import type { Logger } from '../../logger/server';
 
 export type SuccessResult<T> = {
 	statusCode: 200;
@@ -32,6 +33,8 @@ export type UnauthorizedResult<T> = {
 		error: T | 'unauthorized';
 	};
 };
+
+export type InternalError<T> = { statusCode: 500; body: { error: T | 'Internal error occured'; success: false } };
 
 export type NotFoundResult = {
 	statusCode: 404;
@@ -66,8 +69,8 @@ export type Options = (
 						intervalTimeInMS?: number;
 				  }
 				| boolean;
-			queryOperations?: Record<string, any>;
-			queryFields?: Record<string, any>;
+			queryOperations?: string[];
+			queryFields?: string[];
 	  }
 	| {
 			permissionsRequired?:
@@ -86,8 +89,8 @@ export type Options = (
 				  }
 				| boolean;
 
-			queryOperations?: Record<string, any>;
-			queryFields?: Record<string, any>;
+			queryOperations?: string[];
+			queryFields?: string[];
 	  }
 ) & {
 	validateParams?: ValidateFunction | { [key in Method]?: ValidateFunction };
@@ -97,6 +100,12 @@ export type Options = (
 export type PartialThis = {
 	readonly request: Request & { query: Record<string, string> };
 	readonly response: Response;
+	readonly userId: string;
+	readonly bodyParams: Record<string, unknown>;
+	readonly queryParams: Record<string, string>;
+	readonly queryOperations?: string[];
+	readonly queryFields?: string[];
+	readonly logger: Logger;
 };
 
 export type UserInfo = IUser & {

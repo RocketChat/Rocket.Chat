@@ -19,7 +19,16 @@ import { checkCodeForUser } from '../../2fa/server/code';
 import type { PermissionsPayload } from './api.helpers';
 import { checkPermissionsForInvocation, checkPermissions } from './api.helpers';
 import { isObject } from '../../../lib/utils/isObject';
-import type { FailureResult, NotFoundResult, Operations, Options, PartialThis, SuccessResult, UnauthorizedResult } from './definition';
+import type {
+	FailureResult,
+	InternalError,
+	NotFoundResult,
+	Operations,
+	Options,
+	PartialThis,
+	SuccessResult,
+	UnauthorizedResult,
+} from './definition';
 import { parseJsonQuery } from './helpers/parseJsonQuery';
 import { Logger } from '../../logger/server';
 import { getUserInfo } from './helpers/getUserInfo';
@@ -164,9 +173,15 @@ export class APIClass<TBasePath extends string = '/'> extends Restivus {
 		};
 	}
 
-	async parseJsonQuery() {
-		const self = this as any;
-		return parseJsonQuery(this.request.route, self.userId, self.queryParams, self.logger, self.queryFields, self.queryOperations);
+	async parseJsonQuery(this: PartialThis) {
+		return parseJsonQuery(
+			this.request.route,
+			this.userId,
+			this.queryParams,
+			this.logger,
+			this.queryFields || [],
+			this.queryOperations || [],
+		);
 	}
 
 	public addAuthMethod(func: (this: PartialThis, ...args: any[]) => any): void {
@@ -185,21 +200,16 @@ export class APIClass<TBasePath extends string = '/'> extends Restivus {
 	}
 
 	public success<T>(result?: T): SuccessResult<T> {
-		const response: { statusCode: 200; body: any & { success?: boolean } } = {
+		const response = {
 			statusCode: 200,
-			body: result,
+			body: result === undefined || result === null ? { success: true } : result,
 		};
 
-		if (result === undefined) {
-			response.body = {
-				success: true,
-			};
-		}
 		if (isObject(result)) {
-			response.body.success = true;
+			(response.body as Record<string, any>).success = true;
 		}
 
-		return response;
+		return response as SuccessResult<T>;
 	}
 
 	public failure<T>(result?: T): FailureResult<T>;
@@ -257,7 +267,7 @@ export class APIClass<TBasePath extends string = '/'> extends Restivus {
 		};
 	}
 
-	public internalError(msg?: string): { statusCode: number; body: Record<string, any> & { success?: boolean } } {
+	public internalError<T>(msg?: T): InternalError<T> {
 		return {
 			statusCode: 500,
 			body: {
@@ -582,9 +592,11 @@ export class APIClass<TBasePath extends string = '/'> extends Restivus {
 							if (
 								shouldVerifyPermissions &&
 								(!this.userId ||
-									!Promise.await(
-										checkPermissionsForInvocation(this.userId, _options.permissionsRequired as PermissionsPayload, this.request.method),
-									))
+									!(await checkPermissionsForInvocation(
+										this.userId,
+										_options.permissionsRequired as PermissionsPayload,
+										this.request.method,
+									)))
 							) {
 								throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {
 									permissions: _options.permissionsRequired,
