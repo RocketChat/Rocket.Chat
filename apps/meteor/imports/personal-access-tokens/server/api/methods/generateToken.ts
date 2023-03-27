@@ -10,7 +10,7 @@ import { twoFactorRequired } from '../../../../../app/2fa/server/twoFactorRequir
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'personalAccessTokens:generateToken'(params: { tokenName: string; bypassTwoFactor: boolean }): string;
+		'personalAccessTokens:generateToken'(params: { tokenName: string; bypassTwoFactor: boolean }): Promise<string>;
 	}
 }
 
