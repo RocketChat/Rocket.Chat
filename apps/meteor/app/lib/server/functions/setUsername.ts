@@ -9,7 +9,8 @@ import { Users } from '../../../models/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RateLimiter } from '../lib';
 import { addUserToRoom } from './addUserToRoom';
-import { checkUsernameAvailability, setUserAvatar } from '.';
+import { setUserAvatar } from '.';
+import { checkUsernameAvailability } from './checkUsernameAvailability';
 import { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
@@ -35,7 +36,7 @@ export const _setUsername = async function (userId: string, u: string, fullUser:
 	const previousUsername = user.username;
 	// Check username availability or if the user already owns a different casing of the name
 	if (!previousUsername || !(username.toLowerCase() === previousUsername.toLowerCase())) {
-		if (!checkUsernameAvailability(username)) {
+		if (!(await checkUsernameAvailability(username))) {
 			return false;
 		}
 	}

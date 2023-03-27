@@ -771,20 +771,12 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.createWithTypeRoomIdMessageAndUser('room-unarchived', roomId, '', user, readReceiptsEnabled);
 	}
 
-	createRoomSetReadOnlyByRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('room-set-read-only', roomId, '', user, readReceiptsEnabled);
+	createRoomSetReadOnlyByRoomIdAndUser(roomId: string, user: IMessage['u'], readReceiptsEnabled: boolean): Promise<IMessage | null> {
+		return this.createWithTypeRoomIdMessageUserAndUnread('room-set-read-only', roomId, '', user, readReceiptsEnabled);
 	}
 
-	createRoomRemovedReadOnlyByRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('room-removed-read-only', roomId, '', user, readReceiptsEnabled);
+	createRoomRemovedReadOnlyByRoomIdAndUser(roomId: string, user: IMessage['u'], readReceiptsEnabled: boolean): Promise<IMessage | null> {
+		return this.createWithTypeRoomIdMessageUserAndUnread('room-removed-read-only', roomId, '', user, readReceiptsEnabled);
 	}
 
 	createRoomAllowedReactingByRoomIdAndUser(
@@ -844,10 +836,10 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		roomId: string,
 		roomName: string,
 		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
+		readReceiptsEnabled: boolean,
 		extraData: Record<string, any> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('r', roomId, roomName, user, readReceiptsEnabled, extraData);
+	): Promise<IMessage | null> {
+		return this.createWithTypeRoomIdMessageUserAndUnread('r', roomId, roomName, user, readReceiptsEnabled, extraData);
 	}
 
 	addTranslations(messageId: string, translations: Record<string, string>, providerName: string): Promise<UpdateResult> {
@@ -1418,7 +1410,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		type: MessageTypesValues,
 		roomId: string,
 		message: string,
-		user: IMessage['u'],
+		user: Pick<IMessage['u'], '_id' | 'username'>,
 		readReceiptsEnabled?: boolean,
 		extraData?: Record<string, string>,
 	): Promise<Omit<IMessage, '_updatedAt'>> {
@@ -1430,7 +1422,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			u: {
 				_id: user._id,
 				username: user.username,
-				name: '',
 			},
 			groupable: false as const,
 			...(readReceiptsEnabled && { unread: true }),
@@ -1440,6 +1431,36 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 		await Rooms.incMsgCountById(roomId, 1);
 		return { ...record, _id: (await this.updateOne(data, data, { upsert: true })).upsertedId as unknown as string };
+	}
+
+	async createWithTypeRoomIdMessageUserAndUnread(
+		type: MessageTypesValues,
+		roomId: string,
+		message: string,
+		user: Pick<IMessage['u'], '_id' | 'username'>,
+		unread: boolean,
+		extraData?: Record<string, string>,
+	): Promise<IMessage | null> {
+		const record: Omit<IMessage, '_id' | '_updatedAt'> = {
+			t: type,
+			rid: roomId,
+			ts: new Date(),
+			msg: message,
+			u: {
+				_id: user._id,
+				username: user.username,
+			},
+			groupable: false as const,
+			unread,
+		};
+
+		const data = Object.assign(record, extraData);
+
+		await Rooms.incMsgCountById(roomId, 1);
+
+		const result = await this.insertOne(data);
+
+		return this.findOneById(result.insertedId);
 	}
 
 	async createNavigationHistoryWithRoomIdMessageAndUser(
@@ -1936,7 +1957,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
-	findVisibleUnreadMessagesByRoomAndDate(rid: string, after: Date): FindCursor<IMessage> {
+	findVisibleUnreadMessagesByRoomAndDate(rid: string, after: Date): FindCursor<Pick<IMessage, '_id'>> {
 		const query = {
 			unread: true,
 			rid,
@@ -1958,7 +1979,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		});
 	}
 
-	findUnreadThreadMessagesByDate(tmid: string, userId: string, after: Date): FindCursor<IMessage> {
+	findUnreadThreadMessagesByDate(tmid: string, userId: string, after: Date): FindCursor<Pick<IMessage, '_id'>> {
 		const query = {
 			'u._id': { $ne: userId },
 			'unread': true,
@@ -2003,16 +2024,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.col.countDocuments({ tcount: { $exists: true } });
 	}
 
-	removeThreadRefByThreadId(tmid: string): Promise<UpdateResult | Document> {
-		const query = { tmid };
-		const update: UpdateFilter<IMessage> = {
-			$unset: {
-				tmid: 1,
-			},
-		};
-		return this.updateMany(query, update);
-	}
-
 	updateRepliesByThreadId(tmid: string, replies: string[], ts: Date): Promise<UpdateResult> {
 		const query = {
 			_id: tmid,
@@ -2038,43 +2049,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	async getThreadFollowsByThreadId(tmid: string): Promise<string[] | undefined> {
 		const msg = await this.findOneById(tmid, { projection: { replies: 1 } });
 		return msg?.replies;
-	}
-
-	getFirstReplyTsByThreadId(tmid: string): Promise<Pick<IMessage, 'ts'> | null> {
-		return this.findOne({ tmid }, { projection: { ts: 1 }, sort: { ts: 1 } });
-	}
-
-	unsetThreadByThreadId(tmid: string): Promise<UpdateResult> {
-		const query = {
-			_id: tmid,
-		};
-
-		const update: UpdateFilter<IMessage> = {
-			$unset: {
-				tcount: 1,
-				tlm: 1,
-				replies: 1,
-			},
-		};
-
-		return this.updateOne(query, update);
-	}
-
-	updateThreadLastMessageAndCountByThreadId(tmid: string, tlm: Date, tcount: number): Promise<UpdateResult> {
-		const query = {
-			_id: tmid,
-		};
-
-		const update: UpdateFilter<IMessage> = {
-			$set: {
-				tlm,
-			},
-			$inc: {
-				tcount,
-			},
-		};
-
-		return this.updateOne(query, update);
 	}
 
 	addThreadFollowerByThreadId(tmid: string, userId: string): Promise<UpdateResult> {

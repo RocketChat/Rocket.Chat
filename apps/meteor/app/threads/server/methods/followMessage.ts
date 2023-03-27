@@ -41,10 +41,10 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-allowed', 'not-allowed', { method: 'followMessage' });
 		}
 
-		const followResult = follow({ tmid: message.tmid || message._id, uid });
+		const followResult = await follow({ tmid: message.tmid || message._id, uid });
 
 		const isFollowed = true;
-		await Apps.triggerEvent(AppEvents.IPostMessageFollowed, message, Meteor.user(), isFollowed);
+		await Apps.triggerEvent(AppEvents.IPostMessageFollowed, message, await Meteor.userAsync(), isFollowed);
 
 		return followResult;
 	},

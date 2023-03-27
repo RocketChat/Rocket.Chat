@@ -11,7 +11,7 @@ import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		archiveRoom(rid: string): void;
+		archiveRoom(rid: string): Promise<void>;
 	}
 }
 
@@ -31,7 +31,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'archiveRoom' });
 		}
 
-		if (!roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.ARCHIVE, userId)) {
+		if (!(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.ARCHIVE, userId))) {
 			throw new Meteor.Error('error-direct-message-room', `rooms type: ${room.t} can not be archived`, { method: 'archiveRoom' });
 		}
 

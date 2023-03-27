@@ -8,7 +8,7 @@ import { settings } from '../../settings/server';
 
 slashCommands.add({
 	command: 'archive',
-	callback: function Archive(_command, params, item): void {
+	callback: async function Archive(_command, params, item): Promise<void> {
 		let channel = params.trim();
 
 		let room;
@@ -53,9 +53,9 @@ slashCommands.add({
 			});
 			return;
 		}
-		Meteor.call('archiveRoom', room._id);
+		await Meteor.callAsync('archiveRoom', room._id);
 
-		Messages.createRoomArchivedByRoomIdAndUser(room._id, Meteor.user());
+		Messages.createRoomArchivedByRoomIdAndUser(room._id, await Meteor.userAsync());
 		void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 			msg: TAPi18n.__('Channel_Archived', {
 				postProcess: 'sprintf',

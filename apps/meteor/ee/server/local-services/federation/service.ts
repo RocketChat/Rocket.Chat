@@ -186,4 +186,10 @@ export class FederationServiceEE extends AbstractBaseFederationServiceEE impleme
 			FederationRoomSenderConverterEE.toJoinExternalPublicRoomDto(internalUserId, externalRoomId),
 		);
 	}
+
+	static async createFederationService(): Promise<FederationServiceEE> {
+		const federationService = new FederationServiceEE();
+		await federationService.initialize();
+		return federationService;
+	}
 }

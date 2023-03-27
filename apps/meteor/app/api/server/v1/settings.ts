@@ -17,6 +17,7 @@ import type { ResultFor } from '../api';
 import { API } from '../api';
 import { SettingsEvents, settings } from '../../../settings/server';
 import { setValue } from '../../../settings/server/raw';
+import { getPaginationItems } from '../helpers/getPaginationItems';
 
 async function fetchSettings(
 	query: Parameters<typeof Settings.find>[0],
@@ -44,8 +45,8 @@ API.v1.addRoute(
 	{ authRequired: false },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields, query } = await this.parseJsonQuery();
 
 			const ourQuery = {
 				...query,
@@ -106,7 +107,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-name-param-not-provided', 'The parameter "name" is required');
 			}
 
-			await Meteor.call('addOAuthService', this.bodyParams.name, this.userId);
+			await Meteor.callAsync('addOAuthService', this.bodyParams.name, this.userId);
 
 			return API.v1.success();
 		},
@@ -118,8 +119,8 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields, query } = await this.parseJsonQuery();
 
 			let ourQuery: Parameters<typeof Settings.find>[0] = {
 				hidden: { $ne: true },
@@ -177,7 +178,7 @@ API.v1.addRoute(
 
 				if (isSettingAction(setting) && isSettingsUpdatePropsActions(this.bodyParams) && this.bodyParams.execute) {
 					// execute the configured method
-					Meteor.call(setting.value);
+					await Meteor.callAsync(setting.value);
 					return API.v1.success();
 				}
 

@@ -1,16 +1,16 @@
 import type { IUser, ILivechatDepartment, IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { LivechatDepartmentAgents, LivechatInquiry } from '@rocket.chat/models';
+import { LivechatDepartmentAgents, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
 import { hasRole } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
-import { LivechatDepartment, LivechatRooms } from '../../models/server';
+import { LivechatDepartment } from '../../models/server';
 import { RoutingManager } from './lib/RoutingManager';
 
 type OmnichannelRoomAccessValidator = (
 	room: IOmnichannelRoom,
 	user?: Pick<IUser, '_id'>,
 	extraData?: Record<string, any>,
-) => Promise<boolean> | boolean;
+) => boolean | Promise<boolean>;
 
 export const validators: OmnichannelRoomAccessValidator[] = [
 	async function (_room, user) {
@@ -28,10 +28,14 @@ export const validators: OmnichannelRoomAccessValidator[] = [
 		const { servedBy: { _id: agentId } = {} } = room;
 		return userId === agentId || (!room.open && hasPermissionAsync(user._id, 'view-livechat-room-closed-by-another-agent'));
 	},
-	function (room, _user, extraData) {
+	async function (room, _user, extraData) {
 		if (extraData?.rid) {
-			room = LivechatRooms.findOneById(extraData.rid);
+			const dbRoom = await LivechatRooms.findOneById(extraData.rid);
+			if (dbRoom) {
+				room = dbRoom;
+			}
 		}
+
 		return extraData?.visitorToken && room.v && room.v.token === extraData.visitorToken;
 	},
 	async function (room, user) {

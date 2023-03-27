@@ -45,7 +45,7 @@ Meteor.methods<ServerMethods>({
 			};
 		}
 
-		const user = (Meteor.user() ?? undefined) as IUser | undefined;
+		const user = (await Meteor.userAsync()) as IUser | undefined;
 
 		const { query, options } = parseMessageSearchQuery(text, {
 			user,

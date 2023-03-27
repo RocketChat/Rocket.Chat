@@ -35,10 +35,6 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
 	}
 
-	setReactions(messageId, reactions) {
-		return this.update({ _id: messageId }, { $set: { reactions } });
-	}
-
 	createRoomArchivedByRoomIdAndUser(roomId, user) {
 		return this.createWithTypeRoomIdMessageAndUser('room-archived', roomId, '', user);
 	}
@@ -47,24 +43,12 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('room-unarchived', roomId, '', user);
 	}
 
-	createRoomSetReadOnlyByRoomIdAndUser(roomId, user) {
-		return this.createWithTypeRoomIdMessageAndUser('room-set-read-only', roomId, '', user);
-	}
-
-	createRoomRemovedReadOnlyByRoomIdAndUser(roomId, user) {
-		return this.createWithTypeRoomIdMessageAndUser('room-removed-read-only', roomId, '', user);
-	}
-
 	createRoomAllowedReactingByRoomIdAndUser(roomId, user) {
 		return this.createWithTypeRoomIdMessageAndUser('room-allowed-reacting', roomId, '', user);
 	}
 
 	createRoomDisallowedReactingByRoomIdAndUser(roomId, user) {
 		return this.createWithTypeRoomIdMessageAndUser('room-disallowed-reacting', roomId, '', user);
-	}
-
-	unsetReactions(messageId) {
-		return this.update({ _id: messageId }, { $unset: { reactions: 1 } });
 	}
 
 	updateOTRAck(_id, otrAck) {
@@ -76,28 +60,6 @@ export class Messages extends Base {
 	createRoomSettingsChangedWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {
 		return this.createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData);
 	}
-
-	createRoomRenamedWithRoomIdRoomNameAndUser(roomId, roomName, user, extraData) {
-		return this.createWithTypeRoomIdMessageAndUser('r', roomId, roomName, user, extraData);
-	}
-
-	addTranslations(messageId, translations, providerName) {
-		const updateObj = { translationProvider: providerName };
-		Object.keys(translations).forEach((key) => {
-			const translation = translations[key];
-			updateObj[`translations.${key}`] = translation;
-		});
-		return this.update({ _id: messageId }, { $set: updateObj });
-	}
-
-	addAttachmentTranslations = function (messageId, attachmentIndex, translations) {
-		const updateObj = {};
-		Object.keys(translations).forEach((key) => {
-			const translation = translations[key];
-			updateObj[`attachments.${attachmentIndex}.translations.${key}`] = translation;
-		});
-		return this.update({ _id: messageId }, { $set: updateObj });
-	};
 
 	setImportFileRocketChatAttachment(importFileId, rocketChatUrl, attachment) {
 		const query = {
@@ -212,19 +174,6 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findForUpdates(roomId, timestamp, options) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			_updatedAt: {
-				$gt: timestamp,
-			},
-		};
-		return this.find(query, options);
-	}
-
 	findVisibleByRoomIdBeforeTimestampNotContainingTypes(roomId, timestamp, types, options, showThreadMessages = true, inclusive = false) {
 		const query = {
 			_hidden: {
@@ -286,17 +235,6 @@ export class Messages extends Base {
 		if (Match.test(types, [String]) && types.length > 0) {
 			query.t = { $nin: types };
 		}
-
-		return this.find(query, options);
-	}
-
-	findByRoomIdAndMessageIds(rid, messageIds, options) {
-		const query = {
-			rid,
-			_id: {
-				$in: messageIds,
-			},
-		};
 
 		return this.find(query, options);
 	}
@@ -565,10 +503,6 @@ export class Messages extends Base {
 		return this.remove(query);
 	}
 
-	removeByRoomIds(rids) {
-		return this.remove({ rid: { $in: rids } });
-	}
-
 	findThreadsByRoomIdPinnedTimestampAndUsers({ rid, pinned, ignoreDiscussion = true, ts, users = [] }, options) {
 		const query = {
 			rid,
@@ -590,16 +524,6 @@ export class Messages extends Base {
 		}
 
 		return this.find(query, options);
-	}
-
-	removeByUserId(userId) {
-		const query = { 'u._id': userId };
-
-		return this.remove(query);
-	}
-
-	getMessageByFileId(fileID) {
-		return this.findOne({ 'file._id': fileID });
 	}
 
 	setVisibleMessagesAsRead(rid, until) {
@@ -628,186 +552,6 @@ export class Messages extends Base {
 		);
 	}
 
-	setAsReadById(_id) {
-		return this.update(
-			{
-				_id,
-			},
-			{
-				$unset: {
-					unread: 1,
-				},
-			},
-		);
-	}
-
-	findVisibleUnreadMessagesByRoomAndDate(rid, after) {
-		const query = {
-			unread: true,
-			rid,
-			$or: [
-				{
-					tmid: { $exists: false },
-				},
-				{
-					tshow: true,
-				},
-			],
-		};
-
-		if (after) {
-			query.ts = { $gt: after };
-		}
-
-		return this.find(query, {
-			fields: {
-				_id: 1,
-			},
-		});
-	}
-
-	findUnreadThreadMessagesByDate(tmid, userId, after) {
-		const query = {
-			'u._id': { $ne: userId },
-			'unread': true,
-			tmid,
-			'tshow': { $exists: false },
-		};
-
-		if (after) {
-			query.ts = { $gt: after };
-		}
-
-		return this.find(query, {
-			fields: {
-				_id: 1,
-			},
-		});
-	}
-
-	// //////////////////////////////////////////////////////////////////
-	// threads
-
-	countThreads() {
-		return this.find({ tcount: { $exists: true } }).count();
-	}
-
-	removeThreadRefByThreadId(tmid) {
-		const query = { tmid };
-		const update = {
-			$unset: {
-				tmid: 1,
-			},
-		};
-		return this.update(query, update, { multi: true });
-	}
-
-	updateRepliesByThreadId(tmid, replies, ts) {
-		const query = {
-			_id: tmid,
-		};
-
-		const update = {
-			$addToSet: {
-				replies: {
-					$each: replies,
-				},
-			},
-			$set: {
-				tlm: ts,
-			},
-			$inc: {
-				tcount: 1,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	getThreadFollowsByThreadId(tmid) {
-		const msg = this.findOneById(tmid, { fields: { replies: 1 } });
-		return msg && msg.replies;
-	}
-
-	getFirstReplyTsByThreadId(tmid) {
-		return this.findOne({ tmid }, { fields: { ts: 1 }, sort: { ts: 1 } });
-	}
-
-	unsetThreadByThreadId(tmid) {
-		const query = {
-			_id: tmid,
-		};
-
-		const update = {
-			$unset: {
-				tcount: 1,
-				tlm: 1,
-				replies: 1,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	updateThreadLastMessageAndCountByThreadId(tmid, tlm, tcount) {
-		const query = {
-			_id: tmid,
-		};
-
-		const update = {
-			$set: {
-				tlm,
-			},
-			$inc: {
-				tcount,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	addThreadFollowerByThreadId(tmid, userId) {
-		const query = {
-			_id: tmid,
-		};
-
-		const update = {
-			$addToSet: {
-				replies: userId,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	removeThreadFollowerByThreadId(tmid, userId) {
-		const query = {
-			_id: tmid,
-		};
-
-		const update = {
-			$pull: {
-				replies: userId,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	findThreadsByRoomId(rid, skip, limit) {
-		return this.find({ rid, tcount: { $exists: true } }, { sort: { tlm: -1 }, skip, limit });
-	}
-
-	findAgentLastMessageByVisitorLastMessageTs(roomId, visitorLastMessageTs) {
-		const query = {
-			rid: roomId,
-			ts: { $gt: visitorLastMessageTs },
-			token: { $exists: false },
-		};
-
-		return this.findOne(query, { sort: { ts: 1 } });
-	}
-
 	findAllImportedMessagesWithFilesToDownload() {
 		const query = {
 			'_importFile.downloadUrl': {
@@ -825,16 +569,6 @@ export class Messages extends Base {
 		};
 
 		return this.find(query);
-	}
-
-	decreaseReplyCountById(_id, inc = -1) {
-		const query = { _id };
-		const update = {
-			$inc: {
-				tcount: inc,
-			},
-		};
-		return this.update(query, update);
 	}
 }
 

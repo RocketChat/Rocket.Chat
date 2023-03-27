@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
-import { Integrations, Roles } from '@rocket.chat/models';
+import { Integrations, Roles, Subscriptions } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IIntegration, INewIncomingIntegration, IUpdateIncomingIntegration } from '@rocket.chat/core-typings';
 
-import { Rooms, Users, Subscriptions } from '../../../../models/server';
+import { Rooms, Users } from '../../../../models/server';
 import { hasAllPermission, hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 
 const validChannelChars = ['@', '#'];
@@ -104,7 +104,7 @@ Meteor.methods<ServerMethods>({
 			}
 		}
 
-		for (let channel of channels) {
+		for await (let channel of channels) {
 			const channelType = channel[0];
 			channel = channel.slice(1);
 			let record;
@@ -130,7 +130,7 @@ Meteor.methods<ServerMethods>({
 
 			if (
 				!hasAllPermission(this.userId, ['manage-incoming-integrations', 'manage-own-incoming-integrations']) &&
-				!Subscriptions.findOneByRoomIdAndUserId(record._id, this.userId, { fields: { _id: 1 } })
+				!(await Subscriptions.findOneByRoomIdAndUserId(record._id, this.userId, { projection: { _id: 1 } }))
 			) {
 				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', {
 					method: 'updateIncomingIntegration',

@@ -26,7 +26,7 @@ Meteor.methods<ServerMethods>({
 					method: 'setUserStatus',
 				});
 			}
-			Meteor.call('UserPresence:setDefaultStatus', statusType);
+			await Meteor.callAsync('UserPresence:setDefaultStatus', statusType);
 		}
 
 		if (statusText || statusText === '') {

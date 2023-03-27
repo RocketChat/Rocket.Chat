@@ -12,13 +12,13 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	'2fa:disable'(code) {
+	async '2fa:disable'(code) {
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('not-authorized');
 		}
 
-		const user = Meteor.user();
+		const user = await Meteor.userAsync();
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

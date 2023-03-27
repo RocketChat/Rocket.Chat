@@ -128,7 +128,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async sendFileMessage(roomId, _store, file, msgData = {}) {
-		const user = Meteor.user() as IUser | undefined;
+		const user = (await Meteor.userAsync()) as IUser | undefined;
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'sendFileMessage',
@@ -155,7 +155,7 @@ Meteor.methods<ServerMethods>({
 
 		const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
 
-		const msg = Meteor.call('sendMessage', {
+		const msg = await Meteor.callAsync('sendMessage', {
 			rid: roomId,
 			ts: new Date(),
 			file: files[0],

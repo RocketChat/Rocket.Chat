@@ -33,6 +33,6 @@ async function afterSetReaction(message, { user, reaction }) {
 
 export const definition = {
 	hook: 'afterSetReaction',
-	callback: (message, extras) => Promise.await(afterSetReaction(message, extras)),
+	callback: afterSetReaction,
 	id: 'federation-after-set-reaction',
 };

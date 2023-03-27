@@ -12,7 +12,8 @@ import { passwordPolicy } from '../lib/passwordPolicy';
 import { validateEmailDomain } from '../lib';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
 import { saveUserIdentity } from './saveUserIdentity';
-import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setStatusText } from '.';
+import { checkEmailAvailability, setUserAvatar, setEmail, setStatusText } from '.';
+import { checkUsernameAvailability } from './checkUsernameAvailability';
 import { Users } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
@@ -61,7 +62,7 @@ function _sendUserEmail(subject, html, userData) {
 }
 
 async function validateUserData(userId, userData) {
-	const existingRoles = _.pluck(getRoles(), '_id');
+	const existingRoles = _.pluck(await getRoles(), '_id');
 
 	if (userData._id && userId !== userData._id && !(await hasPermissionAsync(userId, 'edit-other-user-info'))) {
 		throw new Meteor.Error('error-action-not-allowed', 'Editing user is not allowed', {
@@ -133,7 +134,7 @@ async function validateUserData(userId, userData) {
 	}
 
 	if (!userData._id) {
-		if (!checkUsernameAvailability(userData.username)) {
+		if (!(await checkUsernameAvailability(userData.username))) {
 			throw new Meteor.Error('error-field-unavailable', `${_.escape(userData.username)} is already in use :(`, {
 				method: 'insertOrUpdateUser',
 				field: userData.username,
