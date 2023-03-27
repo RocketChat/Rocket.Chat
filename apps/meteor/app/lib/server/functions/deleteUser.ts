@@ -8,11 +8,12 @@ import {
 	LivechatDepartmentAgents,
 	Messages as MessagesRaw,
 	Rooms,
+	Subscriptions,
 } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../file-upload/server';
-import { Users, Subscriptions, Messages } from '../../../models/server';
+import { Users, Messages } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
@@ -59,7 +60,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 		await Rooms.updateGroupDMsRemovingUsernamesByUsername(user.username, userId); // Remove direct rooms with the user
 		await Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
 
-		Subscriptions.removeByUserId(userId); // Remove user subscriptions
+		await Subscriptions.removeByUserId(userId); // Remove user subscriptions
 
 		if (user.roles.includes('livechat-agent')) {
 			// Remove user as livechat agent
