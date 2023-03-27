@@ -8,7 +8,7 @@ import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		insertOrUpdateUser(userData: Record<string, unknown>): string | boolean;
+		insertOrUpdateUser(userData: Record<string, unknown>): Promise<string | boolean>;
 	}
 }
 
