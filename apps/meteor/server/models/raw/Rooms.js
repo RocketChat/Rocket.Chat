@@ -144,7 +144,7 @@ export class RoomsRaw extends BaseRaw {
 							],
 					  }
 					: {},
-				types
+				(types && types.length) || discussion || teams
 					? {
 							$or: [
 								{
