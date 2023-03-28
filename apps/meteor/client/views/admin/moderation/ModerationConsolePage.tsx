@@ -47,7 +47,7 @@ const ModerationConsolePage = () => {
 						{/* <VerticalBar.Action name={'new-window'} onClick={() => moderationRoute.push({})} title={t('View_full_conversation')} /> */}
 						<VerticalBar.Close onClick={() => moderationRoute.push({})} />
 					</VerticalBar.Header>
-					{context === 'info' && id && <UserMessages userId={id} reload={reloadRef} onRedirect={handleRedirect} />}
+					{context === 'info' && id && <UserMessages userId={id} reload={reloadRef.current} onRedirect={handleRedirect} />}
 
 					{context === 'reports' && id && <MessageReportInfo msgId={id} reload={reloadRef} />}
 				</VerticalBar>

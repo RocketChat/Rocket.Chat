@@ -7,6 +7,7 @@ import GenericModal from '../../../../components/GenericModal';
 const useDeleteMessage = (mid: string, rid: string, onChange: () => void, onReload: () => void) => {
 	const t = useTranslation();
 	const deleteMessage = useEndpoint('POST', '/v1/chat.delete');
+	const dismissMessage = useEndpoint('POST', '/v1/moderation.markChecked');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
 
@@ -20,11 +21,22 @@ const useDeleteMessage = (mid: string, rid: string, onChange: () => void, onRelo
 		},
 	});
 
+	const handleDismissMessage = useMutation({
+		mutationFn: dismissMessage,
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: error });
+		},
+		onSuccess: () => {
+			dispatchToastMessage({ type: 'success', message: t('Approved') });
+		},
+	});
+
 	const onDeleteAll = async () => {
-		handleDeleteMessages.mutateAsync({ msgId: mid, roomId: rid, asUser: true });
-		setModal();
+		await handleDeleteMessages.mutateAsync({ msgId: mid, roomId: rid, asUser: true });
+		await handleDismissMessage.mutateAsync({ msgId: mid });
 		onChange();
 		onReload();
+		setModal();
 	};
 
 	const confirmDeletMessage = (): void => {

@@ -3,7 +3,6 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
-import type { MutableRefObject } from 'react';
 
 import ContextMessage from './helpers/ContextMessage';
 
@@ -13,7 +12,7 @@ const UserMessages = ({
 	onRedirect,
 }: {
 	userId: string;
-	reload: MutableRefObject<() => void>;
+	reload: () => void;
 	onRedirect: (mid: string) => void;
 }): JSX.Element => {
 	const t = useTranslation();
@@ -55,6 +54,7 @@ const UserMessages = ({
 
 	const handleChange = useMutableCallback(() => {
 		reloadUserMessages();
+		reload();
 	});
 
 	return (
@@ -72,7 +72,7 @@ const UserMessages = ({
 							handleClick={handleClick}
 							onRedirect={onRedirect}
 							onChange={handleChange}
-							onReload={reload.current}
+							onReload={reload}
 						/>
 					</Box>
 				))}
