@@ -132,7 +132,7 @@ export class AppRoomBridge extends RoomBridge {
 
 	protected async delete(roomId: string, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is deleting a room.`);
-		deleteRoom(roomId);
+		await deleteRoom(roomId);
 	}
 
 	protected async createDiscussion(
