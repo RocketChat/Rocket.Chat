@@ -506,44 +506,42 @@ export const Livechat = {
 		return settings.get('Livechat_enabled');
 	},
 
-	getInitSettings() {
+	async getInitSettings() {
 		const rcSettings = {};
 
-		Promise.await(
-			Settings.findNotHiddenPublic([
-				'Livechat_title',
-				'Livechat_title_color',
-				'Livechat_enable_message_character_limit',
-				'Livechat_message_character_limit',
-				'Message_MaxAllowedSize',
-				'Livechat_enabled',
-				'Livechat_registration_form',
-				'Livechat_allow_switching_departments',
-				'Livechat_offline_title',
-				'Livechat_offline_title_color',
-				'Livechat_offline_message',
-				'Livechat_offline_success_message',
-				'Livechat_offline_form_unavailable',
-				'Livechat_display_offline_form',
-				'Omnichannel_call_provider',
-				'Language',
-				'Livechat_enable_transcript',
-				'Livechat_transcript_message',
-				'Livechat_fileupload_enabled',
-				'FileUpload_Enabled',
-				'Livechat_conversation_finished_message',
-				'Livechat_conversation_finished_text',
-				'Livechat_name_field_registration_form',
-				'Livechat_email_field_registration_form',
-				'Livechat_registration_form_message',
-				'Livechat_force_accept_data_processing_consent',
-				'Livechat_data_processing_consent_text',
-				'Livechat_show_agent_info',
-				'Livechat_clear_local_storage_when_chat_ended',
-			]).forEach((setting) => {
-				rcSettings[setting._id] = setting.value;
-			}),
-		);
+		await Settings.findNotHiddenPublic([
+			'Livechat_title',
+			'Livechat_title_color',
+			'Livechat_enable_message_character_limit',
+			'Livechat_message_character_limit',
+			'Message_MaxAllowedSize',
+			'Livechat_enabled',
+			'Livechat_registration_form',
+			'Livechat_allow_switching_departments',
+			'Livechat_offline_title',
+			'Livechat_offline_title_color',
+			'Livechat_offline_message',
+			'Livechat_offline_success_message',
+			'Livechat_offline_form_unavailable',
+			'Livechat_display_offline_form',
+			'Omnichannel_call_provider',
+			'Language',
+			'Livechat_enable_transcript',
+			'Livechat_transcript_message',
+			'Livechat_fileupload_enabled',
+			'FileUpload_Enabled',
+			'Livechat_conversation_finished_message',
+			'Livechat_conversation_finished_text',
+			'Livechat_name_field_registration_form',
+			'Livechat_email_field_registration_form',
+			'Livechat_registration_form_message',
+			'Livechat_force_accept_data_processing_consent',
+			'Livechat_data_processing_consent_text',
+			'Livechat_show_agent_info',
+			'Livechat_clear_local_storage_when_chat_ended',
+		]).forEach((setting) => {
+			rcSettings[setting._id] = setting.value;
+		});
 
 		rcSettings.Livechat_history_monitor_type = settings.get('Livechat_history_monitor_type');
 
@@ -615,20 +613,17 @@ export const Livechat = {
 
 	async forwardOpenChats(userId) {
 		Livechat.logger.debug(`Transferring open chats for user ${userId}`);
-		await LivechatRooms.findOpenByAgent(userId).forEach((room) => {
-			// TODO: refactor to use normal await
-			const guest = Promise.await(LivechatVisitors.findOneById(room.v._id));
+		for await (const room of LivechatRooms.findOpenByAgent(userId)) {
+			const guest = await LivechatVisitors.findOneById(room.v._id);
 			const user = Users.findOneById(userId);
 			const { _id, username, name } = user;
 			const transferredBy = normalizeTransferredByData({ _id, username, name }, room);
-			Promise.await(
-				this.transfer(room, guest, {
-					roomId: room._id,
-					transferredBy,
-					departmentId: guest.department,
-				}),
-			);
-		});
+			await this.transfer(room, guest, {
+				roomId: room._id,
+				transferredBy,
+				departmentId: guest.department,
+			});
+		}
 	},
 
 	savePageHistory(token, roomId, pageInfo) {
@@ -965,8 +960,8 @@ export const Livechat = {
 		return user;
 	},
 
-	setUserStatusLivechatIf(userId, status, condition, fields) {
-		const user = Promise.await(UsersRaw.setLivechatStatusIf(userId, status, condition, fields));
+	async setUserStatusLivechatIf(userId, status, condition, fields) {
+		const user = await UsersRaw.setLivechatStatusIf(userId, status, condition, fields);
 		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
 		return user;
 	},
@@ -1023,7 +1018,7 @@ export const Livechat = {
 		return updateDepartmentAgents(_id, departmentAgents, department.enabled);
 	},
 
-	saveAgentInfo(_id, agentData, agentDepartments) {
+	async saveAgentInfo(_id, agentData, agentDepartments) {
 		check(_id, Match.Maybe(String));
 		check(agentData, Object);
 		check(agentDepartments, [String]);
@@ -1036,7 +1031,7 @@ export const Livechat = {
 		}
 
 		Users.setLivechatData(_id, agentData);
-		LivechatDepartment.saveDepartmentsByAgent(user, agentDepartments);
+		await LivechatDepartment.saveDepartmentsByAgent(user, agentDepartments);
 
 		return true;
 	},
@@ -1254,12 +1249,12 @@ export const Livechat = {
 		});
 	},
 
-	allowAgentChangeServiceStatus(statusLivechat, agentId) {
+	async allowAgentChangeServiceStatus(statusLivechat, agentId) {
 		if (statusLivechat !== 'available') {
 			return true;
 		}
 
-		return Promise.await(businessHourManager.allowAgentChangeServiceStatus(agentId));
+		return businessHourManager.allowAgentChangeServiceStatus(agentId);
 	},
 
 	notifyRoomVisitorChange(roomId, visitor) {
