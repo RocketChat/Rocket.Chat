@@ -1,12 +1,20 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import type { IIntegration, IUser, RoomType } from '@rocket.chat/core-typings';
+import type { IIntegration, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
+import { isGroupsInfoProps } from '@rocket.chat/rest-typings';
 import { Subscriptions, Rooms, Messages, Users, Uploads, Integrations } from '@rocket.chat/models';
 import { Team } from '@rocket.chat/core-services';
 import type { Filter } from 'mongodb';
 
 import { Users as UsersSync, Subscriptions as SubscriptionsSync } from '../../../models/server';
-import { hasAtLeastOnePermission, canAccessRoomAsync, hasAllPermission, roomAccessAttributes } from '../../../authorization/server';
+import {
+	hasAtLeastOnePermission,
+	canAccessRoomAsync,
+	hasAllPermission,
+	roomAccessAttributes,
+	hasRole,
+} from '../../../authorization/server';
+import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
@@ -17,11 +25,21 @@ import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
-// Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
+
+/**
+ * Returns the private group subscription IF found otherwise it will return the failure of why it didn't. Check the `statusCode` property
+ * @param {object} params - The params of the request
+ * @param {string} params.roomId - The room id of the private group
+ * @param {string} params.roomName - The room name of the private group
+ * @param {string} userId - The user id of the user to check the private group subscription
+ * @param {boolean} [checkedArchived] - If the private group is archived
+ * @param {boolean} [minimalCheck] - Minimal check is used when we only need to know more about the room, but not the user's subscription
+ */
 async function findPrivateGroupByIdOrName({
 	params,
 	checkedArchived = true,
 	userId,
+	minimalCheck = false,
 }: {
 	params:
 		| {
@@ -32,6 +50,7 @@ async function findPrivateGroupByIdOrName({
 		  };
 	userId: string;
 	checkedArchived?: boolean;
+	minimalCheck?: boolean;
 }): Promise<{
 	rid: string;
 	open: boolean;
@@ -59,7 +78,7 @@ async function findPrivateGroupByIdOrName({
 			broadcast: 1,
 		},
 	};
-	let room;
+	let room: IRoom | null = null;
 	if ('roomId' in params) {
 		room = await Rooms.findOneById(params.roomId || '', roomOptions);
 	} else if ('roomName' in params) {
@@ -72,26 +91,48 @@ async function findPrivateGroupByIdOrName({
 
 	const user = await Users.findOneById(userId, { projections: { username: 1 } });
 
-	if (!room || !user || !(await canAccessRoomAsync(room, user))) {
+	if (!room || !user) {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 	}
+
+	const hasAccess = await canAccessRoomIdAsync(room._id, userId);
 
 	// discussions have their names saved on `fname` property
 	const roomName = room.prid ? room.fname : room.name;
 
-	if (checkedArchived && room.archived) {
-		throw new Meteor.Error('error-room-archived', `The private group, ${roomName}, is archived`);
+	if (!minimalCheck) {
+		if (!hasAccess) {
+			throw new Meteor.Error('error-not-allowed', 'You are not allowed to access this group.');
+		}
+
+		if (checkedArchived && room.archived) {
+			throw new Meteor.Error('error-room-archived', `The private group, ${roomName}, is archived`);
+		}
+		const sub = await Subscriptions.findOneByRoomIdAndUserId(room._id, userId, { projection: { open: 1 } });
+
+		return {
+			rid: room._id,
+			open: Boolean(sub?.open),
+			ro: Boolean(room.ro),
+			t: room.t,
+			name: roomName || '',
+			broadcast: Boolean(room.broadcast),
+		};
 	}
 
-	const sub = await Subscriptions.findOneByRoomIdAndUserId(room._id, userId, { projection: { open: 1 } });
+	const isAdmin = hasRole(userId, 'admin');
+
+	if (!isAdmin && !hasAccess) {
+		throw new Meteor.Error('error-not-allowed', 'You are not allowed to access this group.');
+	}
 
 	return {
 		rid: room._id,
-		open: Boolean(sub?.open),
-		ro: room.ro,
+		open: false,
+		ro: Boolean(room.ro),
 		t: room.t,
-		name: roomName,
-		broadcast: room.broadcast,
+		name: room.name || '',
+		broadcast: Boolean(room.broadcast),
 	};
 }
 
@@ -505,23 +546,31 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'groups.info',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isGroupsInfoProps },
 	{
 		async get() {
 			const findResult = await findPrivateGroupByIdOrName({
 				params: this.queryParams,
 				userId: this.userId,
-				checkedArchived: false,
+				minimalCheck: true,
 			});
 
 			const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
-
 			if (!room) {
-				throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+				return API.v1.notFound('The required "roomId" or "roomName" param provided does not match any group');
 			}
 
+			const hasAccess = await canAccessRoomIdAsync(findResult.rid, this.userId);
+			if (hasAccess) {
+				return API.v1.success({
+					group: await composeRoomWithLastMessage(room, this.userId),
+				});
+			}
+			// remove room object lastMessage if user doesn't have access to it
+			delete room.lastMessage;
+
 			return API.v1.success({
-				group: await composeRoomWithLastMessage(room, this.userId),
+				group: room,
 			});
 		},
 	},
@@ -671,12 +720,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'groups.members',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isGroupsInfoProps },
 	{
 		async get() {
 			const findResult = await findPrivateGroupByIdOrName({
 				params: this.queryParams,
 				userId: this.userId,
+				minimalCheck: true,
 			});
 
 			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult.rid))) {
@@ -694,14 +744,14 @@ API.v1.addRoute(
 				}),
 			);
 
-			const { status, filter } = this.queryParams;
+			const { status, filter: projection } = this.queryParams;
 
-			const { cursor, totalCount } = await findUsersOfRoom({
+			const { cursor, totalCount } = findUsersOfRoom({
 				rid: findResult.rid,
 				...(status && { status: { $in: status } }),
 				skip,
 				limit,
-				filter,
+				...(projection && { projection }),
 				sort: {
 					_updatedAt: -1,
 					...(sort?.username && { username: sort.username }),

@@ -74,6 +74,11 @@ const RoomsAutocompleteAvailableForTeamsSchema = {
 export const isRoomsAutocompleteAvailableForTeamsProps = ajv.compile<RoomsAutocompleteAvailableForTeamsProps>(
 	RoomsAutocompleteAvailableForTeamsSchema,
 );
+type BaseRoomsProps = { roomId: string } | { roomName: string };
+type RoomsLeaveProps = BaseRoomsProps;
+type RoomsInfoProps = BaseRoomsProps & {
+	fields?: string;
+};
 
 type RoomsAutocompleteAdminRoomsPayload = { selector: string };
 
@@ -92,10 +97,6 @@ export const isRoomsAutocompleteAdminRoomsPayload = ajv.compile<RoomsAutocomplet
 	RoomsAutocompleteAdminRoomsPayloadSchema,
 );
 
-type BaseRoomsProps = { roomId: string } | { roomName: string };
-type RoomsInfoProps = BaseRoomsProps;
-type RoomsLeaveProps = BaseRoomsProps;
-
 const RoomsInfoSchema = {
 	oneOf: [
 		{
@@ -103,6 +104,10 @@ const RoomsInfoSchema = {
 			properties: {
 				roomId: {
 					type: 'string',
+				},
+				fields: {
+					type: 'string',
+					nullable: true,
 				},
 			},
 			required: ['roomId'],
@@ -113,6 +118,10 @@ const RoomsInfoSchema = {
 			properties: {
 				roomName: {
 					type: 'string',
+				},
+				fields: {
+					type: 'string',
+					nullable: true,
 				},
 			},
 			required: ['roomName'],

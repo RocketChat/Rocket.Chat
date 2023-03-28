@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import type { Notifications } from '@rocket.chat/rest-typings';
-import { isGETRoomsNameExists } from '@rocket.chat/rest-typings';
+import { isGETRoomsNameExists, isRoomsInfoProps } from '@rocket.chat/rest-typings';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Media } from '@rocket.chat/core-services';
@@ -279,7 +279,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'rooms.info',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isRoomsInfoProps },
 	{
 		async get() {
 			const room = await findRoomByIdOrName({ params: this.queryParams });
