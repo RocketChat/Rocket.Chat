@@ -17,10 +17,9 @@ type AddExistingModalState = {
 type AddExistingModalProps = {
 	onClose: () => void;
 	teamId: string;
-	reload: () => void;
 };
 
-const useAddExistingModalState = (onClose: () => void, teamId: string, reload: () => void): AddExistingModalState => {
+const useAddExistingModalState = (onClose: () => void, teamId: string): AddExistingModalState => {
 	const t = useTranslation();
 	const addRoomEndpoint = useEndpoint('POST', '/v1/teams.addRooms');
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -56,18 +55,17 @@ const useAddExistingModalState = (onClose: () => void, teamId: string, reload: (
 
 			dispatchToastMessage({ type: 'success', message: t('Channels_added') });
 			onClose();
-			reload();
 		} catch (error: unknown) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	}, [addRoomEndpoint, rooms, teamId, onClose, dispatchToastMessage, t, reload]);
+	}, [addRoomEndpoint, rooms, teamId, onClose, dispatchToastMessage, t]);
 
 	return { onAdd, rooms, onChange, hasUnsavedChanges };
 };
 
-const AddExistingModal: FC<AddExistingModalProps> = ({ onClose, teamId, reload }) => {
+const AddExistingModal: FC<AddExistingModalProps> = ({ onClose, teamId }) => {
 	const t = useTranslation();
-	const { rooms, onAdd, onChange, hasUnsavedChanges } = useAddExistingModalState(onClose, teamId, reload);
+	const { rooms, onAdd, onChange, hasUnsavedChanges } = useAddExistingModalState(onClose, teamId);
 
 	const isAddButtonEnabled = hasUnsavedChanges;
 
