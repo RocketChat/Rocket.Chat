@@ -31,7 +31,8 @@ import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Users, Messages, Subscriptions, LivechatDepartment } from '../../../models/server';
 import { Logger } from '../../../logger/server';
-import { hasRole, canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
+import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
+import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import * as Mailer from '../../../mailer/server/api';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
@@ -1024,7 +1025,7 @@ export const Livechat = {
 		check(agentDepartments, [String]);
 
 		const user = Users.findOneById(_id);
-		if (!user || !hasRole(_id, 'livechat-agent')) {
+		if (!user || !(await hasRoleAsync(_id, 'livechat-agent'))) {
 			throw new Meteor.Error('error-user-is-not-agent', 'User is not a livechat agent', {
 				method: 'livechat:saveAgentInfo',
 			});

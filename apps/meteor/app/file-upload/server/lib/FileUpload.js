@@ -449,7 +449,7 @@ export const FileUpload = {
 		}
 
 		const isAuthorizedByRoom = () =>
-			rc_room_type && roomCoordinator.getRoomDirectives(rc_room_type).canAccessUploadedFile({ rc_uid, rc_rid, rc_token });
+			rc_room_type && Promise.await(roomCoordinator.getRoomDirectives(rc_room_type).canAccessUploadedFile({ rc_uid, rc_rid, rc_token }));
 		const isAuthorizedByJWT = () =>
 			settings.get('FileUpload_Enable_json_web_token_for_files') &&
 			token &&
