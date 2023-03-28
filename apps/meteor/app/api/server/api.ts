@@ -198,7 +198,7 @@ export class APIClass<TBasePath extends string = '/'> extends Restivus {
 	public success<T>(result?: T): SuccessResult<T> {
 		const response = {
 			statusCode: 200,
-			body: result === undefined || result === null ? { success: true } : result,
+			body: result,
 		};
 
 		if (isObject(result)) {
