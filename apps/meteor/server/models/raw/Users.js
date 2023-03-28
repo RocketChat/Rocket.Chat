@@ -2100,7 +2100,7 @@ export class UsersRaw extends BaseRaw {
 	/**
 	 * @param {import('mongodb').Filter<import('@rocket.chat/core-typings').IStats>} projection
 	 */
-	getOldest(projection = { _id: 1 }) {
+	getOldest(optionsParams) {
 		const query = {
 			_id: {
 				$ne: 'rocket.cat',
@@ -2108,7 +2108,7 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		const options = {
-			projection,
+			...optionsParams,
 			sort: {
 				createdAt: 1,
 			},

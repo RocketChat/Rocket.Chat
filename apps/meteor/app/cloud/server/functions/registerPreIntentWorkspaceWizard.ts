@@ -1,13 +1,13 @@
 import { HTTP } from 'meteor/http';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { Users } from '../../../models/server';
 
 export async function registerPreIntentWorkspaceWizard(): Promise<boolean> {
-	const firstUser = Users.getOldest({ name: 1, emails: 1 }) as IUser | undefined;
+	const firstUser = (await Users.getOldest({ projection: { name: 1, emails: 1 } })) as IUser | undefined;
 	const email = firstUser?.emails?.find((address) => address)?.address || '';
 
 	const regInfo = await buildWorkspaceRegistrationData(email);

@@ -238,7 +238,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	getAgentInfo(
 		agentId: string,
 		showAgentEmail?: boolean,
-	): Promise<Pick<ILivechatAgent, 'name' | 'username' | 'phone' | 'customFields' | 'status' | 'livechat'> | null>;
+	): Promise<Pick<ILivechatAgent, '_id' | 'name' | 'username' | 'phone' | 'customFields' | 'status' | 'livechat'> | null>;
 	roleBaseQuery(userId: string): { _id: string };
 	setE2EPublicAndPrivateKeysByUserId(userId: string, e2e: { publicKey: string; privateKey: string }): Promise<UpdateResult>;
 	rocketMailUnsubscribe(userId: string, createdAt: string): Promise<number>;

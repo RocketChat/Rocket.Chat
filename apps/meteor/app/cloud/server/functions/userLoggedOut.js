@@ -1,14 +1,14 @@
-import { Users } from '../../../models/server';
+import { Users } from '@rocket.chat/models';
 
-export function userLoggedOut(userId) {
+export async function userLoggedOut(userId) {
 	if (!userId) {
 		return false;
 	}
 
-	const user = Users.findOneById(userId);
+	const user = await Users.findOneById(userId);
 
 	if (user && user.services && user.services.cloud) {
-		Users.update(user._id, {
+		await Users.updateOne(user._id, {
 			$unset: {
 				'services.cloud': 1,
 			},
