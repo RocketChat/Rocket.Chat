@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { FileProp } from '@rocket.chat/core-typings';
 import {
 	Integrations,
 	FederationServers,
