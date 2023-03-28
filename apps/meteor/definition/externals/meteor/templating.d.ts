@@ -1,7 +1,7 @@
 import 'meteor/templating';
 import type { Blaze } from 'meteor/blaze';
 import type { ReactiveVar } from 'meteor/reactive-var';
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, SlashCommandPreviews } from '@rocket.chat/core-typings';
 
 declare module 'meteor/blaze' {
 	namespace Blaze {
@@ -64,11 +64,37 @@ declare module 'meteor/templating' {
 			}
 		>;
 		loading: BlazeTemplate;
-		messagePopupSlashCommandPreview: BlazeTemplate<{
-			tmid?: IMessage['_id'];
-			rid: IRoom['_id'];
-			getInput: () => HTMLTextAreaElement | null;
-		}>;
+		messagePopupSlashCommandPreview: BlazeTemplate<
+			{
+				tmid?: IMessage['_id'];
+				rid: IRoom['_id'];
+				getInput: () => HTMLTextAreaElement | null;
+			},
+			{
+				open: ReactiveVar<boolean>;
+				isLoading: ReactiveVar<boolean>;
+				preview: ReactiveVar<SlashCommandPreviews | undefined>;
+				selectedItem: ReactiveVar<unknown>;
+				commandName: ReactiveVar<string>;
+				commandArgs: ReactiveVar<string>;
+				matchSelectorRegex: RegExp;
+				selectorRegex: RegExp;
+				replaceRegex: RegExp;
+				dragging: boolean;
+				fetchPreviews: (cmd: string, args: string) => void;
+				enterKeyAction: () => void;
+				selectionLogic: () => void;
+				verifySelection: () => void;
+				onInputKeyup: (event: JQuery.TriggeredEvent) => void;
+				onInputKeydown: (event: JQuery.TriggeredEvent) => void;
+				inputBox: HTMLTextAreaElement | null;
+				up(): void;
+				down(): void;
+				onFocus(): void;
+				onBlur(): void;
+				clickingItem?: boolean;
+			}
+		>;
 	};
 
 	interface TemplateStatic extends BlazeTemplates {

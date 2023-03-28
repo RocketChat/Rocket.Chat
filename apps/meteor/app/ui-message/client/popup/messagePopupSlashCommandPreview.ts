@@ -1,10 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
+import type { SlashCommandPreviews } from '@rocket.chat/core-typings';
 
 import { slashCommands } from '../../../utils/client';
 import { hasAtLeastOnePermission } from '../../../authorization/client';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
+
 import './messagePopupSlashCommandPreview.html';
 
 const keys = {
@@ -17,28 +19,15 @@ const keys = {
 	ARROW_DOWN: 40,
 };
 
-function getCursorPosition(input) {
-	if (!input) {
-		return;
-	}
-
-	if (input.selectionStart) {
-		return input.selectionStart;
-	}
-	if (document.selection) {
-		input.focus();
-		const sel = document.selection.createRange();
-		const selLen = document.selection.createRange().text.length;
-		sel.moveStart('character', -input.value.length);
-		return sel.text.length - selLen;
-	}
-}
+const getCursorPosition = (input: HTMLInputElement | HTMLTextAreaElement | null | undefined): number | undefined => {
+	return input?.selectionStart ?? undefined;
+};
 
 Template.messagePopupSlashCommandPreview.onCreated(function () {
 	this.open = new ReactiveVar(false);
 	this.isLoading = new ReactiveVar(true);
-	this.preview = new ReactiveVar();
-	this.selectedItem = new ReactiveVar();
+	this.preview = new ReactiveVar<SlashCommandPreviews | undefined>(undefined);
+	this.selectedItem = new ReactiveVar(undefined);
 	this.commandName = new ReactiveVar('');
 	this.commandArgs = new ReactiveVar('');
 
@@ -50,37 +39,40 @@ Template.messagePopupSlashCommandPreview.onCreated(function () {
 
 	this.dragging = false;
 
-	const template = this;
-	template.fetchPreviews = withDebouncing({ wait: 500 })(function _previewFetcher(cmd, args) {
+	this.fetchPreviews = withDebouncing({ wait: 500 })((cmd, args) => {
 		const command = cmd;
 		const params = args;
-		const { rid, tmid } = template.data;
-		Meteor.call('getSlashCommandPreviews', { cmd, params, msg: { rid, tmid } }, function (err, preview) {
-			if (err) {
-				return;
-			}
+		const { rid, tmid } = this.data;
+		Meteor.call(
+			'getSlashCommandPreviews',
+			{ cmd, params, msg: { rid, tmid } },
+			(err: Meteor.Error | Meteor.TypedError | Error | null | undefined, preview?: SlashCommandPreviews) => {
+				if (err) {
+					return;
+				}
 
-			if (!preview || !Array.isArray(preview.items)) {
-				template.preview.set({
-					i18nTitle: 'No_results_found_for',
-					items: [],
+				if (!preview || !Array.isArray(preview.items)) {
+					this.preview.set({
+						i18nTitle: 'No_results_found_for',
+						items: [],
+					});
+				} else {
+					this.preview.set(preview);
+				}
+
+				this.commandName.set(command);
+				this.commandArgs.set(params);
+				this.isLoading.set(false);
+
+				Meteor.defer(() => {
+					this.verifySelection();
 				});
-			} else {
-				template.preview.set(preview);
-			}
-
-			template.commandName.set(command);
-			template.commandArgs.set(params);
-			template.isLoading.set(false);
-
-			Meteor.defer(function () {
-				template.verifySelection();
-			});
-		});
+			},
+		);
 	});
 
-	template.enterKeyAction = () => {
-		const current = template.find('.popup-item.selected');
+	this.enterKeyAction = () => {
+		const current = this.find('.popup-item.selected');
 
 		if (!current) {
 			return;
@@ -92,51 +84,62 @@ Template.messagePopupSlashCommandPreview.onCreated(function () {
 			return;
 		}
 
-		const cmd = template.commandName.curValue;
-		const params = template.commandArgs.curValue;
+		const cmd = Tracker.nonreactive(() => this.commandName.get());
+		const params = Tracker.nonreactive(() => this.commandArgs.get());
 
 		if (!cmd || !params) {
 			return;
 		}
 
-		const item = template.preview.curValue.items.find((i) => i.id === selectedId);
+		const item = Tracker.nonreactive(() => this.preview.get())?.items.find((i) => i.id === selectedId);
 
 		if (!item) {
 			return;
 		}
 
-		const { rid, tmid } = template.data;
-		Meteor.call('executeSlashCommandPreview', { cmd, params, msg: { rid, tmid } }, item, function (err) {
-			if (err) {
-				console.warn(err);
-			}
-		});
+		const { rid, tmid } = this.data;
+		Meteor.call(
+			'executeSlashCommandPreview',
+			{ cmd, params, msg: { rid, tmid } },
+			item,
+			(err: Meteor.Error | Meteor.TypedError | Error | null | undefined) => {
+				if (err) {
+					console.warn(err);
+				}
+			},
+		);
 
-		template.open.set(false);
-		template.inputBox.value = '';
-		template.preview.set();
-		template.commandName.set('');
-		template.commandArgs.set('');
+		this.open.set(false);
+		if (this.inputBox) this.inputBox.value = '';
+		this.preview.set(undefined);
+		this.commandName.set('');
+		this.commandArgs.set('');
 	};
 
-	template.selectionLogic = () => {
-		const inputValueAtCursor = template.inputBox.value.substr(0, getCursorPosition(template.inputBox));
+	this.selectionLogic = () => {
+		const inputValueAtCursor = this.inputBox?.value.slice(0, getCursorPosition(this.inputBox)) ?? '';
 
-		if (!template.matchSelectorRegex.test(inputValueAtCursor)) {
-			template.open.set(false);
+		if (!this.matchSelectorRegex.test(inputValueAtCursor)) {
+			this.open.set(false);
 			return;
 		}
 
-		const matches = inputValueAtCursor.match(template.selectorRegex);
+		const matches = inputValueAtCursor.match(this.selectorRegex);
+
+		if (!matches) {
+			this.open.set(false);
+			return;
+		}
+
 		const cmd = matches[1].replace('/', '').trim().toLowerCase();
 		const command = slashCommands.commands[cmd];
 
 		// Ensure the command they're typing actually exists
 		// And it provides a command preview
 		// And if it provides a permission to check, they have permission to run the command
-		const { rid } = template.data;
-		if (!command || !command.providesPreview || (command.permission && !hasAtLeastOnePermission(command.permission, rid))) {
-			template.open.set(false);
+		const { rid } = this.data;
+		if (!command?.providesPreview || (command.permission && !hasAtLeastOnePermission(command.permission, rid))) {
+			this.open.set(false);
 			return;
 		}
 
@@ -145,29 +148,33 @@ Template.messagePopupSlashCommandPreview.onCreated(function () {
 		// Check to verify there are no additional arguments passed,
 		// Because we we don't care about what it if there isn't
 		if (!args) {
-			template.open.set(false);
+			this.open.set(false);
 			return;
 		}
 
 		// If they haven't changed a thing, show what we already got
-		if (template.commandName.curValue === cmd && template.commandArgs.curValue === args && template.preview.curValue) {
-			template.isLoading.set(false);
-			template.open.set(true);
+		if (
+			Tracker.nonreactive(() => this.commandName.get()) === cmd &&
+			Tracker.nonreactive(() => this.commandArgs.get()) === args &&
+			Tracker.nonreactive(() => this.preview.get())
+		) {
+			this.isLoading.set(false);
+			this.open.set(true);
 			return;
 		}
 
-		template.isLoading.set(true);
-		template.open.set(true);
+		this.isLoading.set(true);
+		this.open.set(true);
 
 		// Fetch and display them
-		template.fetchPreviews(cmd, args);
+		this.fetchPreviews(cmd, args);
 	};
 
-	template.verifySelection = () => {
-		const current = template.find('.popup-item.selected');
+	this.verifySelection = () => {
+		const current = this.find('.popup-item.selected');
 
 		if (!current) {
-			const first = template.find('.popup-item');
+			const first = this.find('.popup-item');
 
 			if (first) {
 				first.className += ' selected sidebar-item__popup-active';
@@ -176,9 +183,9 @@ Template.messagePopupSlashCommandPreview.onCreated(function () {
 	};
 
 	// Typing data
-	template.onInputKeyup = (event) => {
-		if (template.open.curValue === true && event.which === keys.ESC) {
-			template.open.set(false);
+	this.onInputKeyup = (event) => {
+		if (Tracker.nonreactive(() => this.open.get()) === true && event.which === keys.ESC) {
+			this.open.set(false);
 			event.preventDefault();
 			event.stopPropagation();
 			return;
@@ -189,72 +196,72 @@ Template.messagePopupSlashCommandPreview.onCreated(function () {
 			return;
 		}
 
-		template.selectionLogic();
+		this.selectionLogic();
 	};
 
 	// Using the keyboard to navigate the options
-	template.onInputKeydown = (event) => {
-		if (!template.open.curValue || template.isLoading.curValue) {
+	this.onInputKeydown = (event) => {
+		if (!Tracker.nonreactive(() => this.open.get()) || Tracker.nonreactive(() => this.isLoading.get())) {
 			return;
 		}
 
 		if (event.which === keys.ENTER) {
 			// || event.which === keys.TAB) { <-- does using tab to select make sense?
-			template.enterKeyAction();
+			this.enterKeyAction();
 			event.preventDefault();
 			event.stopPropagation();
 			return;
 		}
 
 		if (event.which === keys.ARROW_UP) {
-			template.up();
+			this.up();
 			event.preventDefault();
 			event.stopPropagation();
 			return;
 		}
 
 		if (event.which === keys.ARROW_DOWN) {
-			template.down();
+			this.down();
 			event.preventDefault();
 			event.stopPropagation();
 		}
 	};
 
-	template.up = () => {
-		const current = template.find('.popup-item.selected');
-		const previous = $(current).prev('.popup-item')[0] || template.find('.popup-item:last-child');
+	this.up = () => {
+		const current = this.find('.popup-item.selected');
+		const previous = $(current).prev('.popup-item')[0] || this.find('.popup-item:last-child');
 
-		if (previous != null) {
+		if (previous) {
 			current.className = current.className.replace(/\sselected/, '').replace('sidebar-item__popup-active', '');
 			previous.className += ' selected sidebar-item__popup-active';
 		}
 	};
 
-	template.down = () => {
-		const current = template.find('.popup-item.selected');
-		const next = $(current).next('.popup-item')[0] || template.find('.popup-item');
+	this.down = () => {
+		const current = this.find('.popup-item.selected');
+		const next = $(current).next('.popup-item')[0] || this.find('.popup-item');
 
-		if (next && next.classList.contains('popup-item')) {
+		if (next?.classList.contains('popup-item')) {
 			current.className = current.className.replace(/\sselected/, '').replace('sidebar-item__popup-active', '');
 			next.className += ' selected sidebar-item__popup-active';
 		}
 	};
 
-	template.onFocus = () => {
-		template.clickingItem = false;
-		if (template.open.curValue) {
+	this.onFocus = () => {
+		this.clickingItem = false;
+		if (Tracker.nonreactive(() => this.open.get())) {
 			return;
 		}
 
-		template.selectionLogic();
+		this.selectionLogic();
 	};
 
-	template.onBlur = () => {
-		if (template.clickingItem) {
+	this.onBlur = () => {
+		if (this.clickingItem) {
 			return;
 		}
 
-		return template.open.set(false);
+		return this.open.set(false);
 	};
 });
 
@@ -264,18 +271,26 @@ Template.messagePopupSlashCommandPreview.onRendered(function _messagePopupSlashC
 	}
 
 	this.inputBox = this.data.getInput();
+
+	if (!this.inputBox) {
+		throw Error('Somethign wrong happened.');
+	}
+
 	$(this.inputBox).on('keyup', this.onInputKeyup);
 	$(this.inputBox).on('keydown', this.onInputKeydown);
 	$(this.inputBox).on('focus', this.onFocus);
 	$(this.inputBox).on('blur', this.onBlur);
 
-	const self = this;
-	self.autorun(() => {
-		setTimeout(self.selectionLogic, 500);
+	this.autorun(() => {
+		setTimeout(this.selectionLogic, 500);
 	});
 });
 
 Template.messagePopupSlashCommandPreview.onDestroyed(function () {
+	if (!this.inputBox) {
+		throw Error('Somethign wrong happened.');
+	}
+
 	$(this.inputBox).off('keyup', this.onInputKeyup);
 	$(this.inputBox).off('keydown', this.onInputKeydown);
 	$(this.inputBox).off('focus', this.onFocus);
@@ -288,7 +303,7 @@ Template.messagePopupSlashCommandPreview.events({
 			return;
 		}
 
-		const template = Template.instance();
+		const template = Template.instance<'messagePopupSlashCommandPreview'>();
 		const current = template.find('.popup-item.selected');
 		if (current) {
 			current.className = current.className.replace(/\sselected/, '').replace('sidebar-item__popup-active', '');
@@ -297,11 +312,11 @@ Template.messagePopupSlashCommandPreview.events({
 		e.currentTarget.className += ' selected sidebar-item__popup-active';
 	},
 	'mousedown .popup-item, touchstart .popup-item'() {
-		const template = Template.instance();
+		const template = Template.instance<'messagePopupSlashCommandPreview'>();
 		template.clickingItem = true;
 	},
 	'mouseup .popup-item, touchend .popup-item'() {
-		const template = Template.instance();
+		const template = Template.instance<'messagePopupSlashCommandPreview'>();
 		if (template.dragging) {
 			template.dragging = false;
 			return;
@@ -312,25 +327,25 @@ Template.messagePopupSlashCommandPreview.events({
 	},
 	'touchmove .popup-item'(e) {
 		e.stopPropagation();
-		const template = Template.instance();
+		const template = Template.instance<'messagePopupSlashCommandPreview'>();
 		template.dragging = true;
 	},
 });
 
 Template.messagePopupSlashCommandPreview.helpers({
 	isOpen() {
-		return Template.instance().open.get(); // && ((Template.instance().hasData.get() || (Template.instance().data.emptyTemplate != null)) || !Template.instance().parentTemplate(1).subscriptionsReady());
+		return Template.instance<'messagePopupSlashCommandPreview'>().open.get();
 	},
 	getArgs() {
-		return Template.instance().commandArgs.get();
+		return Template.instance<'messagePopupSlashCommandPreview'>().commandArgs.get();
 	},
 	isLoading() {
-		return Template.instance().isLoading.get();
+		return Template.instance<'messagePopupSlashCommandPreview'>().isLoading.get();
 	},
-	isType(actual, expected) {
+	isType(actual: unknown, expected: unknown) {
 		return actual === expected;
 	},
 	preview() {
-		return Template.instance().preview.get();
+		return Template.instance<'messagePopupSlashCommandPreview'>().preview.get();
 	},
 });

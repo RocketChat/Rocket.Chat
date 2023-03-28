@@ -13,7 +13,7 @@ import { processMessageEditing } from '../../../../client/lib/chats/flows/proces
 import { processTooLongMessage } from '../../../../client/lib/chats/flows/processTooLongMessage';
 import { processSetReaction } from '../../../../client/lib/chats/flows/processSetReaction';
 import { sendMessage } from '../../../../client/lib/chats/flows/sendMessage';
-import { UserAction } from '..';
+import { UserAction } from './UserAction';
 import { replyBroadcast } from '../../../../client/lib/chats/flows/replyBroadcast';
 import { createDataAPI } from '../../../../client/lib/chats/data';
 import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
