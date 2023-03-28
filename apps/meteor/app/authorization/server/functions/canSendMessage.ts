@@ -13,7 +13,7 @@ const subscriptionOptions = {
 	},
 };
 
-async function validateRoomMessagePermissionsAsync(
+export async function validateRoomMessagePermissionsAsync(
 	room: IRoom | null,
 	{ uid, username, type }: { uid: IUser['_id']; username: IUser['username']; type: IUser['type'] },
 	extraData?: Record<string, any>,
