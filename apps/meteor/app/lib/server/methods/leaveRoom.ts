@@ -4,7 +4,8 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Roles, Subscriptions } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermissionAsync, hasRoleAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { Rooms } from '../../../models/server';
 import { removeUserFromRoom } from '../functions';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
