@@ -1,12 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import mem from 'mem';
 
 import { Base } from './_Base';
 import Rooms from './Rooms';
 import Users from './Users';
 import { getDefaultSubscriptionPref } from '../../../utils/lib/getDefaultSubscriptionPref';
-import { isTruthy } from '../../../../lib/isTruthy';
 
 class Subscriptions extends Base {
 	constructor(...args) {
@@ -59,37 +57,6 @@ class Subscriptions extends Base {
 		this.update(query, update);
 	}
 
-	/**
-	 * @param {IRole['_id'][]} roles
-	 * @param {string} scope the value for the role scope (room id)
-	 * @param {any} options
-	 */
-	findUsersInRoles(roles, scope, options) {
-		roles = [].concat(roles);
-
-		const query = {
-			roles: { $in: roles },
-		};
-
-		if (scope) {
-			query.rid = scope;
-		}
-
-		const subscriptions = this.find(query).fetch();
-
-		const users = subscriptions
-			.map((subscription) => {
-				if (typeof subscription.u !== 'undefined' && typeof subscription.u._id !== 'undefined') {
-					return subscription.u._id;
-				}
-
-				return undefined;
-			})
-			.filter(isTruthy);
-
-		return Users.find({ _id: { $in: users } }, options);
-	}
-
 	// FIND ONE
 	findOneByRoomIdAndUserId(roomId, userId, options = {}) {
 		const query = {
@@ -100,135 +67,7 @@ class Subscriptions extends Base {
 		return this.findOne(query, options);
 	}
 
-	findOneByRoomIdAndUsername(roomId, username, options) {
-		const query = {
-			'rid': roomId,
-			'u.username': username,
-		};
-
-		return this.findOne(query, options);
-	}
-
-	findOneByRoomNameAndUserId(roomName, userId) {
-		const query = {
-			'name': roomName,
-			'u._id': userId,
-		};
-
-		return this.findOne(query);
-	}
-
 	// FIND
-	findByUserId(userId, options) {
-		const query = { 'u._id': userId };
-
-		return this.find(query, options);
-	}
-
-	cachedFindByUserId = mem(this.findByUserId.bind(this), { maxAge: 5000 });
-
-	findByUserIdExceptType(userId, typeException, options) {
-		const query = {
-			'u._id': userId,
-			't': { $ne: typeException },
-		};
-
-		return this.find(query, options);
-	}
-
-	findByUserIdAndRoomIds(userId, roomIds, options) {
-		const query = {
-			'u._id': userId,
-			'rid': { $in: roomIds },
-		};
-
-		return this.find(query, options);
-	}
-
-	findByUserIdAndType(userId, type, options) {
-		const query = {
-			'u._id': userId,
-			't': type,
-		};
-
-		return this.find(query, options);
-	}
-
-	findByUserIdAndTypes(userId, types, options) {
-		const query = {
-			'u._id': userId,
-			't': {
-				$in: types,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	/**
-	 * @param {IUser['_id']} userId
-	 * @param {IRole['_id'][]} roles
-	 * @param {any} options
-	 */
-	findByUserIdAndRoles(userId, roles, options) {
-		const query = {
-			'u._id': userId,
-			'roles': { $in: roles },
-		};
-
-		return this.find(query, options);
-	}
-
-	findByUserIdUpdatedAfter(userId, updatedAt, options) {
-		const query = {
-			'u._id': userId,
-			'_updatedAt': {
-				$gt: updatedAt,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	/**
-	 * @param {string} roomId
-	 * @param {IRole['_id'][]} roles the list of roles
-	 * @param {any} options
-	 */
-	findByRoomIdAndRoles(roomId, roles, options = undefined) {
-		roles = [].concat(roles);
-		const query = {
-			rid: roomId,
-			roles: { $in: roles },
-		};
-
-		return this.find(query, options);
-	}
-
-	findByType(types, options) {
-		const query = {
-			t: {
-				$in: types,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	findByTypeAndUserId(type, userId, options) {
-		const query = {
-			't': type,
-			'u._id': userId,
-		};
-
-		return this.find(query, options);
-	}
-
-	findByRoomId(roomId, options) {
-		const query = { rid: roomId };
-		return this.find(query, options);
-	}
-
 	findByRoomIdAndNotUserId(roomId, userId, options = {}) {
 		const query = {
 			'rid': roomId,
@@ -401,24 +240,6 @@ class Subscriptions extends Base {
 		const options = { multi: true };
 
 		return this.update(query, update, options);
-	}
-
-	setFavoriteByRoomIdAndUserId(roomId, userId, favorite) {
-		if (favorite == null) {
-			favorite = true;
-		}
-		const query = {
-			'rid': roomId,
-			'u._id': userId,
-		};
-
-		const update = {
-			$set: {
-				f: favorite,
-			},
-		};
-
-		return this.update(query, update);
 	}
 
 	updateNameAndAlertByRoomId(roomId, name, fname) {
@@ -750,38 +571,6 @@ class Subscriptions extends Base {
 		};
 
 		return this.update(query, update, { multi: true });
-	}
-
-	/**
-	 * @param {string} _id the subscription id
-	 * @param {IRole['_id']} role the id of the role
-	 */
-	addRoleById(_id, role) {
-		const query = { _id };
-
-		const update = {
-			$addToSet: {
-				roles: role,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
-	/**
-	 * @param {string} _id the subscription id
-	 * @param {IRole['_id']} role the id of the role
-	 */
-	removeRoleById(_id, role) {
-		const query = { _id };
-
-		const update = {
-			$pull: {
-				roles: role,
-			},
-		};
-
-		return this.update(query, update);
 	}
 
 	setArchivedByUsername(username, archived) {

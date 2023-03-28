@@ -55,7 +55,7 @@ export async function getPushData({
 		},
 		roomName:
 			settings.get('Push_show_username_room') && roomCoordinator.getRoomDirectives(room.t).isGroupChat(room)
-				? `#${roomCoordinator.getRoomName(room.t, room, userId)}`
+				? `#${await roomCoordinator.getRoomName(room.t, room, userId)}`
 				: '',
 		username,
 		message: messageText,

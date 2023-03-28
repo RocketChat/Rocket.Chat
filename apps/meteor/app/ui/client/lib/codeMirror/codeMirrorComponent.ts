@@ -3,16 +3,16 @@ import { Session } from 'meteor/session';
 import { Template } from 'meteor/templating';
 import './codeMirrorComponent.html';
 
-const CodeMirrors = {};
+const CodeMirrors: Record<string, unknown> = {};
 
 Template.CodeMirror.onRendered(async function () {
-	const CodeMirror = await import('codemirror/lib/codemirror.js');
+	const CodeMirror = await import('codemirror');
 
 	await import('./codeMirror');
 	await import('codemirror/lib/codemirror.css');
 
 	const options = this.data.options || { lineNumbers: true };
-	const textarea = this.find('textarea');
+	const textarea = this.find('textarea') as HTMLTextAreaElement;
 	const editor = CodeMirror.fromTextArea(textarea, options);
 
 	this.autorun((c) => {
@@ -25,22 +25,21 @@ Template.CodeMirror.onRendered(async function () {
 	});
 
 	CodeMirrors[this.data.id || 'code-mirror-textarea'] = editor;
-	if (this.data && this.data.editorOnBlur) {
+	if (this.data?.editorOnBlur) {
 		this.data.editorOnBlur(this.data.name);
 	}
 
-	const self = this;
-	editor.on('change', function (doc) {
+	editor.on('change', (doc) => {
 		const val = doc.getValue();
 		textarea.value = val;
-		if (self.data.reactiveVar) {
-			Session.set(self.data.reactiveVar, val);
+		if (this.data.reactiveVar) {
+			Session.set(this.data.reactiveVar, val);
 		}
 	});
 
 	if (this.data.reactiveVar) {
-		this.autorun(function () {
-			const val = Session.get(self.data.reactiveVar) || '';
+		this.autorun(() => {
+			const val = Session.get(this.data.reactiveVar) || '';
 			if (val !== editor.getValue()) {
 				editor.setValue(val);
 			}
@@ -52,12 +51,12 @@ Template.CodeMirror.onRendered(async function () {
 	});
 });
 
-Template.CodeMirror.destroyed = function () {
+Template.CodeMirror.onDestroyed(function () {
 	delete CodeMirrors[this.data.id || 'code-mirror-textarea'];
 	this.$(`#${this.data.id || 'code-mirror-textarea'}`)
 		.next('.CodeMirror')
 		.remove();
-};
+});
 
 Template.CodeMirror.helpers({
 	editorId() {

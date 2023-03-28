@@ -13,7 +13,7 @@ API.v1.addRoute(
 				return API.v1.failure('Federation not enabled');
 			}
 
-			const { upload_id } = this.requestParams();
+			const { upload_id } = this.queryParams;
 
 			const upload = await Uploads.findOneById(upload_id);
 

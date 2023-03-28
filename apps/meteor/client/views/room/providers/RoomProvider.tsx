@@ -4,7 +4,7 @@ import type { ReactNode, ContextType, ReactElement } from 'react';
 import React, { useMemo, memo, useEffect, useCallback } from 'react';
 
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
-import { UserAction } from '../../../../app/ui/client';
+import { UserAction } from '../../../../app/ui/client/lib/UserAction';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { RoomManager } from '../../../lib/RoomManager';
