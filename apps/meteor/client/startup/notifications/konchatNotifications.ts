@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { ISubscription, IUser } from '@rocket.chat/core-typings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
@@ -6,7 +6,8 @@ import { Tracker } from 'meteor/tracker';
 import { CachedChatSubscription } from '../../../app/models/client';
 import { Notifications } from '../../../app/notifications/client';
 import { readMessage } from '../../../app/ui-utils/client';
-import { KonchatNotification } from '../../../app/ui/client';
+import { KonchatNotification } from '../../../app/ui/client/lib/KonchatNotification';
+import type { NotificationEvent } from '../../../app/ui/client/lib/KonchatNotification';
 import { getUserPreference } from '../../../app/utils/client';
 import { RoomManager } from '../../lib/RoomManager';
 import { fireGlobalEvent } from '../../lib/utils/fireGlobalEvent';
@@ -23,25 +24,7 @@ const notifyNewRoom = async (sub: ISubscription): Promise<void> => {
 	}
 };
 
-type NotificationEvent = {
-	title: string;
-	text: string;
-	duration: number;
-	payload: {
-		_id: IMessage['_id'];
-		rid: IMessage['rid'];
-		tmid: IMessage['_id'];
-		sender: IMessage['u'];
-		type: IRoom['t'];
-		name: IRoom['name'];
-		message: {
-			msg: IMessage['msg'];
-			t: string;
-		};
-	};
-};
-
-function notifyNewMessageAudio(rid: string): void {
+function notifyNewMessageAudio(rid?: string): void {
 	// This logic is duplicated in /client/startup/unread.coffee.
 	const hasFocus = readMessage.isEnable();
 	const messageIsInOpenedRoom = RoomManager.opened === rid;
