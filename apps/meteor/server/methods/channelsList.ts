@@ -2,12 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import _ from 'underscore';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { Rooms } from '@rocket.chat/models';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { Subscriptions, Users } from '../../app/models/server';
+import { Users } from '../../app/models/server';
 import { getUserPreference } from '../../app/utils/server';
 import { settings } from '../../app/settings/server';
 import { trim } from '../../lib/utils/stringUtils';
@@ -72,9 +72,7 @@ Meteor.methods<ServerMethods>({
 					channels = channels.concat(await Rooms.findByType('c', options).toArray());
 				}
 			} else if (await hasPermissionAsync(userId, 'view-joined-room')) {
-				const roomIds = Subscriptions.findByTypeAndUserId('c', userId, { fields: { rid: 1 } })
-					.fetch()
-					.map((s: ISubscription) => s.rid);
+				const roomIds = (await Subscriptions.findByTypeAndUserId('c', userId, { projection: { rid: 1 } }).toArray()).map((s) => s.rid);
 				if (filter) {
 					channels = channels.concat(await Rooms.findByTypeInIdsAndNameContaining('c', roomIds, filter, options).toArray());
 				} else {
@@ -95,9 +93,7 @@ Meteor.methods<ServerMethods>({
 			const groupByType = userPref !== undefined ? userPref : settings.get('UI_Group_Channels_By_Type');
 
 			if (!groupByType) {
-				const roomIds = Subscriptions.findByTypeAndUserId('p', userId, { fields: { rid: 1 } })
-					.fetch()
-					.map((s: ISubscription) => s.rid);
+				const roomIds = (await Subscriptions.findByTypeAndUserId('p', userId, { projection: { rid: 1 } }).toArray()).map((s) => s.rid);
 				if (filter) {
 					channels = channels.concat(await Rooms.findByTypeInIdsAndNameContaining('p', roomIds, filter, options).toArray());
 				} else {

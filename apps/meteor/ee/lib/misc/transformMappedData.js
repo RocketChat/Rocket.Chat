@@ -62,13 +62,13 @@ import cloneDeep from 'lodash.clonedeep';
  * @returns Object The data after transformations have been applied
  */
 
-export const transformMappedData = (data, map) => {
+export const transformMappedData = async (data, map) => {
 	const originalData = cloneDeep(data);
 	const transformedData = {};
 
-	Object.entries(map).forEach(([to, from]) => {
+	for await (const [to, from] of Object.entries(map)) {
 		if (typeof from === 'function') {
-			const result = from(originalData);
+			const result = await from(originalData);
 
 			if (typeof result !== 'undefined') {
 				transformedData[to] = result;
@@ -79,7 +79,7 @@ export const transformMappedData = (data, map) => {
 			}
 			delete originalData[from];
 		}
-	});
+	}
 
 	transformedData._unmappedProperties_ = originalData;
 
