@@ -27,21 +27,6 @@ export class LivechatDepartment extends Base {
 		return this.find(query, fields && { fields });
 	}
 
-	findOneByIdOrName(_idOrName, options) {
-		const query = {
-			$or: [
-				{
-					_id: _idOrName,
-				},
-				{
-					name: _idOrName,
-				},
-			],
-		};
-
-		return this.findOne(query, options);
-	}
-
 	findByUnitIds(unitIds, options) {
 		const query = {
 			parentId: {
