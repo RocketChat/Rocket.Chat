@@ -3,7 +3,7 @@ import { Users, Subscriptions as SubscriptionsRaw, Rooms as RoomsRaw } from '@ro
 
 import { hasAllPermission, canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { Subscriptions, Rooms } from '../../app/models/server';
+import { Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 import { roomCoordinator } from './rooms/roomCoordinator';
@@ -53,11 +53,11 @@ export class Spotlight {
 
 		const searchableRoomTypeIds = roomCoordinator.searchableRoomTypes();
 
-		const roomIds = Subscriptions.findByUserIdAndTypes(userId, searchableRoomTypeIds, {
-			fields: { rid: 1 },
-		})
-			.fetch()
-			.map((s) => s.rid);
+		const roomIds = (
+			await SubscriptionsRaw.findByUserIdAndTypes(userId, searchableRoomTypeIds, {
+				projection: { rid: 1 },
+			}).toArray()
+		).map((s) => s.rid);
 		const exactRoom = await RoomsRaw.findOneByNameAndType(text, searchableRoomTypeIds, roomOptions, includeFederatedRooms);
 		if (exactRoom) {
 			roomIds.push(exactRoom.rid);
@@ -177,10 +177,7 @@ export class Spotlight {
 				case 'l':
 					insiderExtraQuery.push({
 						_id: {
-							$in: Subscriptions.findByRoomId(room._id)
-								.fetch()
-								.map((s) => s.u?._id)
-								.filter((id) => id && id !== userId),
+							$in: (await SubscriptionsRaw.findByRoomId(room._id).toArray()).map((s) => s.u?._id).filter((id) => id && id !== userId),
 						},
 					});
 					break;
