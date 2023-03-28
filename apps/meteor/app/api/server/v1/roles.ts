@@ -7,11 +7,10 @@ import { api } from '@rocket.chat/core-services';
 
 import { Users } from '../../../models/server';
 import { API } from '../api';
-import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
+import { hasRoleAsync, hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { getUsersInRolePaginated } from '../../../authorization/server/functions/getUsersInRole';
 import { settings } from '../../../settings/server/index';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
-import { hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { getPaginationItems } from '../helpers/getPaginationItems';
