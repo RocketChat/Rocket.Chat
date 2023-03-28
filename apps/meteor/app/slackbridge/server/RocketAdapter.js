@@ -478,7 +478,7 @@ export default class RocketAdapter {
 			}
 			rocketMsgObj.slackTs = slackMessage.ts;
 			if (slackMessage.thread_ts) {
-				const tmessage = Messages.findOneBySlackTs(slackMessage.thread_ts);
+				const tmessage = await MessagesRaw.findOneBySlackTs(slackMessage.thread_ts);
 				if (tmessage) {
 					rocketMsgObj.tmid = tmessage._id;
 				}
