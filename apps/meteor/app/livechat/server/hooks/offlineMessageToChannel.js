@@ -1,9 +1,10 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { LivechatDepartment } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
 import { sendMessage } from '../../../lib/server';
-import { LivechatDepartment, Rooms, Users } from '../../../models/server';
+import { Rooms, Users } from '../../../models/server';
 
 callbacks.add(
 	'livechat.offlineMessage',
@@ -16,8 +17,8 @@ callbacks.add(
 		let departmentName;
 		const { name, email, department, message: text, host } = data;
 		if (department && department !== '') {
-			const dept = LivechatDepartment.findOneById(department, {
-				fields: { name: 1, offlineMessageChannelName: 1 },
+			const dept = await LivechatDepartment.findOneById(department, {
+				projection: { name: 1, offlineMessageChannelName: 1 },
 			});
 			departmentName = dept?.name;
 			if (dept?.offlineMessageChannelName) {
