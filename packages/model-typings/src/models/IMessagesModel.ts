@@ -170,7 +170,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		rid: string,
 		excludePinned: boolean,
 		ignoreDiscussion: boolean,
-		ts: Date,
+		ts: Filter<IMessage>['ts'],
 		users: string[],
 		ignoreThreads: boolean,
 		options?: FindOptions<IMessage>,

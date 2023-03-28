@@ -79,41 +79,6 @@ export class Messages extends Base {
 		return this.find(query, { fields: { 'file._id': 1 }, ...options });
 	}
 
-	findFilesByRoomIdPinnedTimestampAndUsers(
-		rid,
-		excludePinned,
-		ignoreDiscussion = true,
-		ts,
-		users = [],
-		ignoreThreads = true,
-		options = {},
-	) {
-		const query = {
-			rid,
-			ts,
-			'file._id': { $exists: true },
-		};
-
-		if (excludePinned) {
-			query.pinned = { $ne: true };
-		}
-
-		if (ignoreThreads) {
-			query.tmid = { $exists: 0 };
-			query.tcount = { $exists: 0 };
-		}
-
-		if (ignoreDiscussion) {
-			query.drid = { $exists: 0 };
-		}
-
-		if (users.length) {
-			query['u.username'] = { $in: users };
-		}
-
-		return this.find(query, { fields: { 'file._id': 1 }, ...options });
-	}
-
 	findByRoomId(roomId, options) {
 		const query = {
 			rid: roomId,

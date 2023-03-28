@@ -882,7 +882,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		rid: string,
 		excludePinned: boolean,
 		ignoreDiscussion = true,
-		ts: Date,
+		ts: Filter<IMessage>['ts'],
 		users: string[] = [],
 		ignoreThreads = true,
 		options: FindOptions<IMessage> = {},
