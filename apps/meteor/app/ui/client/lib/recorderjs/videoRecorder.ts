@@ -1,47 +1,57 @@
 import { ReactiveVar } from 'meteor/reactive-var';
 
-export const VideoRecorder = new (class VideoRecorder {
-	constructor() {
-		this.started = false;
-		this.cameraStarted = new ReactiveVar(false);
-		this.recording = new ReactiveVar(false);
-		this.recordingAvailable = new ReactiveVar(false);
-	}
+class VideoRecorder {
+	public cameraStarted = new ReactiveVar(false);
 
-	start(videoel, cb) {
+	private started = false;
+
+	private recording = new ReactiveVar(false);
+
+	private recordingAvailable = new ReactiveVar(false);
+
+	private videoel: HTMLVideoElement | undefined;
+
+	private chunks: Blob[] = [];
+
+	private stream: MediaStream | undefined;
+
+	private mediaRecorder: MediaRecorder | undefined;
+
+	public start(videoel?: HTMLVideoElement, cb?: (this: this, success: boolean) => void) {
 		this.videoel = videoel;
 
-		const handleSuccess = (stream) => {
+		const handleSuccess = (stream: MediaStream) => {
 			this.startUserMedia(stream);
-			cb && cb.call(this, true);
+			cb?.call(this, true);
 		};
 
-		const handleError = (error) => {
+		const handleError = (error: any) => {
 			console.error(error);
-			cb && cb.call(this, false);
+			cb?.call(this, false);
 		};
-
-		const oldGetUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 
 		if (navigator.mediaDevices) {
 			navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then(handleSuccess, handleError);
 			return;
 		}
+
+		const oldGetUserMedia = navigator.getUserMedia ?? navigator.webkitGetUserMedia ?? navigator.mozGetUserMedia ?? navigator.msGetUserMedia;
+
 		if (oldGetUserMedia) {
 			oldGetUserMedia.call(navigator, { audio: true, video: true }, handleSuccess, handleError);
 			return;
 		}
 
-		cb && cb.call(this, false);
+		cb?.call(this, false);
 	}
 
-	record() {
+	public record() {
 		this.chunks = [];
-		if (this.stream == null) {
+		if (!this.stream) {
 			return;
 		}
 
-		this.mediaRecorder = new window.MediaRecorder(this.stream, { mimeType: 'video/webm; codecs=vp8,opus' });
+		this.mediaRecorder = new MediaRecorder(this.stream, { mimeType: 'video/webm; codecs=vp8,opus' });
 		this.mediaRecorder.ondataavailable = (blobev) => {
 			this.chunks.push(blobev.data);
 			if (!this.recordingAvailable.get()) {
@@ -52,26 +62,30 @@ export const VideoRecorder = new (class VideoRecorder {
 		return this.recording.set(true);
 	}
 
-	startUserMedia(stream) {
+	private startUserMedia(stream: MediaStream) {
+		if (!this.videoel) {
+			return;
+		}
+
 		this.stream = stream;
 
 		try {
 			this.videoel.srcObject = stream;
 		} catch (error) {
 			const URL = window.URL || window.webkitURL;
-			this.videoel.src = URL.createObjectURL(stream);
+			this.videoel.src = URL.createObjectURL(stream as unknown as MediaSource | Blob);
 		}
 
 		this.videoel.muted = true;
 		this.videoel.onloadedmetadata = () => {
-			this.videoel && this.videoel.play();
+			void this.videoel?.play();
 		};
 
 		this.started = true;
 		return this.cameraStarted.set(true);
 	}
 
-	stop(cb) {
+	public stop(cb?: (blob: Blob) => void) {
 		if (!this.started) {
 			return;
 		}
@@ -104,12 +118,11 @@ export const VideoRecorder = new (class VideoRecorder {
 			cb(blob);
 		}
 
-		delete this.recorder;
 		delete this.stream;
 		delete this.videoel;
 	}
 
-	stopRecording() {
+	public stopRecording() {
 		if (!this.started || !this.recording || !this.mediaRecorder) {
 			return;
 		}
@@ -118,4 +131,8 @@ export const VideoRecorder = new (class VideoRecorder {
 		this.recording.set(false);
 		delete this.mediaRecorder;
 	}
-})();
+}
+
+const instance = new VideoRecorder();
+
+export { instance as VideoRecorder };

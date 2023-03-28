@@ -11,7 +11,7 @@ import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		saveSetting(_id: string, value: SettingValue, editor: string): boolean;
+		saveSetting(_id: string, value: SettingValue, editor: string): Promise<boolean>;
 	}
 }
 

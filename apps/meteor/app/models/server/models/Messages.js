@@ -1,4 +1,3 @@
-import { Match } from 'meteor/check';
 import _ from 'underscore';
 
 import { Base } from './_Base';
@@ -35,22 +34,6 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
 	}
 
-	createRoomArchivedByRoomIdAndUser(roomId, user) {
-		return this.createWithTypeRoomIdMessageAndUser('room-archived', roomId, '', user);
-	}
-
-	createRoomUnarchivedByRoomIdAndUser(roomId, user) {
-		return this.createWithTypeRoomIdMessageAndUser('room-unarchived', roomId, '', user);
-	}
-
-	createRoomAllowedReactingByRoomIdAndUser(roomId, user) {
-		return this.createWithTypeRoomIdMessageAndUser('room-allowed-reacting', roomId, '', user);
-	}
-
-	createRoomDisallowedReactingByRoomIdAndUser(roomId, user) {
-		return this.createWithTypeRoomIdMessageAndUser('room-disallowed-reacting', roomId, '', user);
-	}
-
 	updateOTRAck(_id, otrAck) {
 		const query = { _id };
 		const update = { $set: { otrAck } };
@@ -61,198 +44,7 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData);
 	}
 
-	setImportFileRocketChatAttachment(importFileId, rocketChatUrl, attachment) {
-		const query = {
-			'_importFile.id': importFileId,
-		};
-
-		return this.update(
-			query,
-			{
-				$set: {
-					'_importFile.rocketChatUrl': rocketChatUrl,
-					'_importFile.downloaded': true,
-				},
-				$addToSet: {
-					attachments: attachment,
-				},
-			},
-			{ multi: true },
-		);
-	}
-
 	// FIND
-	findByMention(username, options) {
-		const query = { 'mentions.username': username };
-
-		return this.find(query, options);
-	}
-
-	findFilesByUserId(userId, options = {}) {
-		const query = {
-			'u._id': userId,
-			'file._id': { $exists: true },
-		};
-		return this.find(query, { fields: { 'file._id': 1 }, ...options });
-	}
-
-	findFilesByRoomIdPinnedTimestampAndUsers(
-		rid,
-		excludePinned,
-		ignoreDiscussion = true,
-		ts,
-		users = [],
-		ignoreThreads = true,
-		options = {},
-	) {
-		const query = {
-			rid,
-			ts,
-			'file._id': { $exists: true },
-		};
-
-		if (excludePinned) {
-			query.pinned = { $ne: true };
-		}
-
-		if (ignoreThreads) {
-			query.tmid = { $exists: 0 };
-			query.tcount = { $exists: 0 };
-		}
-
-		if (ignoreDiscussion) {
-			query.drid = { $exists: 0 };
-		}
-
-		if (users.length) {
-			query['u.username'] = { $in: users };
-		}
-
-		return this.find(query, { fields: { 'file._id': 1 }, ...options });
-	}
-
-	findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, users = [], options = {}) {
-		const query = {
-			rid,
-			ts,
-			drid: { $exists: 1 },
-		};
-
-		if (excludePinned) {
-			query.pinned = { $ne: true };
-		}
-
-		if (users.length) {
-			query['u.username'] = { $in: users };
-		}
-
-		return this.find(query, options);
-	}
-
-	findVisibleByRoomIdNotContainingTypes(roomId, types, options, showThreadMessages = true) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			...(!showThreadMessages && {
-				$or: [
-					{
-						tmid: { $exists: false },
-					},
-					{
-						tshow: true,
-					},
-				],
-			}),
-		};
-
-		if (Match.test(types, [String]) && types.length > 0) {
-			query.t = { $nin: types };
-		}
-
-		return this.find(query, options);
-	}
-
-	findVisibleByRoomIdBeforeTimestampNotContainingTypes(roomId, timestamp, types, options, showThreadMessages = true, inclusive = false) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			ts: {
-				[inclusive ? '$lte' : '$lt']: timestamp,
-			},
-			...(!showThreadMessages && {
-				$or: [
-					{
-						tmid: { $exists: false },
-					},
-					{
-						tshow: true,
-					},
-				],
-			}),
-		};
-
-		if (Match.test(types, [String]) && types.length > 0) {
-			query.t = { $nin: types };
-		}
-
-		return this.find(query, options);
-	}
-
-	findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
-		roomId,
-		afterTimestamp,
-		beforeTimestamp,
-		types,
-		options,
-		showThreadMessages = true,
-		inclusive = false,
-	) {
-		const query = {
-			_hidden: {
-				$ne: true,
-			},
-			rid: roomId,
-			ts: {
-				[inclusive ? '$gte' : '$gt']: afterTimestamp,
-				[inclusive ? '$lte' : '$lt']: beforeTimestamp,
-			},
-			...(!showThreadMessages && {
-				$or: [
-					{
-						tmid: { $exists: false },
-					},
-					{
-						tshow: true,
-					},
-				],
-			}),
-		};
-
-		if (Match.test(types, [String]) && types.length > 0) {
-			query.t = { $nin: types };
-		}
-
-		return this.find(query, options);
-	}
-
-	findOneBySlackBotIdAndSlackTs(slackBotId, slackTs) {
-		const query = {
-			slackBotId,
-			slackTs,
-		};
-
-		return this.findOne(query);
-	}
-
-	findOneBySlackTs(slackTs) {
-		const query = { slackTs };
-
-		return this.findOne(query);
-	}
 
 	findByRoomId(roomId, options) {
 		const query = {
@@ -260,22 +52,6 @@ export class Messages extends Base {
 		};
 
 		return this.find(query, options);
-	}
-
-	updateUsernameAndMessageOfMentionByIdAndOldUsername(_id, oldUsername, newUsername, newMessage) {
-		const query = {
-			_id,
-			'mentions.username': oldUsername,
-		};
-
-		const update = {
-			$set: {
-				'mentions.$.username': newUsername,
-				'msg': newMessage,
-			},
-		};
-
-		return this.update(query, update);
 	}
 
 	setSlackBotIdAndSlackTs(_id, slackBotId, slackTs) {
@@ -501,74 +277,6 @@ export class Messages extends Base {
 		const query = { rid: roomId };
 
 		return this.remove(query);
-	}
-
-	findThreadsByRoomIdPinnedTimestampAndUsers({ rid, pinned, ignoreDiscussion = true, ts, users = [] }, options) {
-		const query = {
-			rid,
-			ts,
-			tlm: { $exists: 1 },
-			tcount: { $exists: 1 },
-		};
-
-		if (pinned) {
-			query.pinned = { $ne: true };
-		}
-
-		if (ignoreDiscussion) {
-			query.drid = { $exists: 0 };
-		}
-
-		if (users.length > 0) {
-			query['u.username'] = { $in: users };
-		}
-
-		return this.find(query, options);
-	}
-
-	setVisibleMessagesAsRead(rid, until) {
-		return this.update(
-			{
-				rid,
-				unread: true,
-				ts: { $lt: until },
-				$or: [
-					{
-						tmid: { $exists: false },
-					},
-					{
-						tshow: true,
-					},
-				],
-			},
-			{
-				$unset: {
-					unread: 1,
-				},
-			},
-			{
-				multi: true,
-			},
-		);
-	}
-
-	findAllImportedMessagesWithFilesToDownload() {
-		const query = {
-			'_importFile.downloadUrl': {
-				$exists: true,
-			},
-			'_importFile.rocketChatUrl': {
-				$exists: false,
-			},
-			'_importFile.downloaded': {
-				$ne: true,
-			},
-			'_importFile.external': {
-				$ne: true,
-			},
-		};
-
-		return this.find(query);
 	}
 }
 
