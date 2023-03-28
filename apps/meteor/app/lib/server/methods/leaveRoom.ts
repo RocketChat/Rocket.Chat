@@ -4,12 +4,12 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Roles, Subscriptions } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasRole } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Rooms } from '../../../models/server';
 import { removeUserFromRoom } from '../functions';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
+import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -50,7 +50,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		// If user is room owner, check if there are other owners. If there isn't anyone else, warn user to set a new owner.
-		if (hasRole(user._id, 'owner', room._id)) {
+		if (await hasRoleAsync(user._id, 'owner', room._id)) {
 			const cursor = await Roles.findUsersInRole('owner', room._id);
 			const numOwners = await cursor.count();
 			if (numOwners === 1) {
