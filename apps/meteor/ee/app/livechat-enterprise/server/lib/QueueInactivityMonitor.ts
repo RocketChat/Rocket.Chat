@@ -125,6 +125,6 @@ class OmnichannelQueueInactivityMonitorClass {
 
 export const OmnichannelQueueInactivityMonitor = new OmnichannelQueueInactivityMonitorClass();
 
-Meteor.startup(() => {
-	OmnichannelQueueInactivityMonitor.start();
+Meteor.startup(async () => {
+	void OmnichannelQueueInactivityMonitor.start();
 });

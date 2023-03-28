@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { settings } from '../../../settings/client';
-import { CachedChatRoom, CachedChatSubscription } from '../../../models/client';
+import { CachedChatRoom, CachedChatSubscription } from '../../app/models/client';
+import { settings } from '../../app/settings/client';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {

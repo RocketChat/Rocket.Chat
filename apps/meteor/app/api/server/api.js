@@ -281,14 +281,14 @@ export class APIClass extends Restivus {
 		routes.map((route) => this.namedRoutes(route, endpoints, apiVersion)).map(addRateLimitRuleToEveryRoute);
 	}
 
-	processTwoFactor({ userId, request, invocation, options, connection }) {
+	async processTwoFactor({ userId, request, invocation, options, connection }) {
 		if (!options.twoFactorRequired) {
 			return;
 		}
 		const code = request.headers['x-2fa-code'];
 		const method = request.headers['x-2fa-method'];
 
-		checkCodeForUser({ user: userId, code, method, options: options.twoFactorOptions, connection });
+		await checkCodeForUser({ user: userId, code, method, options: options.twoFactorOptions, connection });
 
 		invocation.twoFactorChecked = true;
 	}
@@ -444,7 +444,7 @@ export class APIClass extends Restivus {
 						};
 						Accounts._setAccountData(connection.id, 'loginToken', this.token);
 
-						api.processTwoFactor({
+						await api.processTwoFactor({
 							userId: this.userId,
 							request: this.request,
 							invocation,
@@ -624,7 +624,7 @@ export class APIClass extends Restivus {
 						data: {
 							userId: this.userId,
 							authToken: auth.token,
-							me: getUserInfo(this.user),
+							me: await getUserInfo(this.user),
 						},
 					};
 

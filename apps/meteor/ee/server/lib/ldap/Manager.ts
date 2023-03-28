@@ -603,7 +603,7 @@ export class LDAPEEManager extends LDAPManager {
 			}
 
 			if (this.isUserDeactivated(ldapUser)) {
-				UsersRaw.unsetLoginTokens(user._id);
+				await UsersRaw.unsetLoginTokens(user._id);
 			}
 		}
 	}

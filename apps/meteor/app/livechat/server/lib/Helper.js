@@ -7,7 +7,7 @@ import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatP
 import { api } from '@rocket.chat/core-services';
 import { LivechatDepartmentAgents, Users as UsersRaw, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
-import { hasRole } from '../../../authorization/server';
+import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { Messages, Rooms, Subscriptions, Users, LivechatDepartment } from '../../../models/server';
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
@@ -30,7 +30,7 @@ export const allowAgentSkipQueue = (agent) => {
 		}),
 	);
 
-	return hasRole(agent.agentId, 'bot');
+	return hasRoleAsync(agent.agentId, 'bot');
 };
 
 export const createLivechatRoom = async (rid, name, guest, roomInfo = {}, extraData = {}) => {
@@ -280,7 +280,7 @@ export const dispatchInquiryQueued = async (inquiry, agent) => {
 		return;
 	}
 
-	if (!agent || !allowAgentSkipQueue(agent)) {
+	if (!agent || !(await allowAgentSkipQueue(agent))) {
 		await saveQueueInquiry(inquiry);
 	}
 

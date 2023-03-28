@@ -3,7 +3,7 @@ import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import type { IUser, IUserEmail } from '@rocket.chat/core-typings';
 import { isUserFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
-import { Rooms as RoomsRaw } from '@rocket.chat/models';
+import { Rooms as RoomsRaw, Users as UsersRaw } from '@rocket.chat/models';
 
 import * as Mailer from '../../../mailer/server/api';
 import { Users, Subscriptions } from '../../../models/server';
@@ -74,7 +74,7 @@ export async function setUserActiveStatus(userId: string, active: boolean, confi
 		const livechatSubscribedRooms = subscribedRooms.filter(({ t }) => t === 'l');
 
 		if (shouldRemoveOrChangeOwner(chatSubscribedRooms) && !confirmRelinquish) {
-			const rooms = getUserSingleOwnedRooms(chatSubscribedRooms as []);
+			const rooms = await getUserSingleOwnedRooms(chatSubscribedRooms as []);
 			throw new Meteor.Error('user-last-owner', '', rooms);
 		}
 
@@ -104,7 +104,7 @@ export async function setUserActiveStatus(userId: string, active: boolean, confi
 	}
 
 	if (active === false) {
-		Users.unsetLoginTokens(userId);
+		await UsersRaw.unsetLoginTokens(userId);
 		await RoomsRaw.setDmReadOnlyByUserId(userId, undefined, true, false);
 	} else {
 		Users.unsetReason(userId);

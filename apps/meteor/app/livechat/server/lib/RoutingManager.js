@@ -68,7 +68,7 @@ export const RoutingManager = {
 	async delegateInquiry(inquiry, agent, options = {}) {
 		const { department, rid } = inquiry;
 		logger.debug(`Attempting to delegate inquiry ${inquiry._id}`);
-		if (!agent || (agent.username && !Users.findOneOnlineAgentByUserList(agent.username) && !allowAgentSkipQueue(agent))) {
+		if (!agent || (agent.username && !Users.findOneOnlineAgentByUserList(agent.username) && !(await allowAgentSkipQueue(agent)))) {
 			logger.debug(`Agent offline or invalid. Using routing method to get next agent for inquiry ${inquiry._id}`);
 			agent = await this.getNextAgent(department);
 			logger.debug(`Routing method returned agent ${agent && agent.agentId} for inquiry ${inquiry._id}`);

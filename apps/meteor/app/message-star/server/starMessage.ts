@@ -56,7 +56,7 @@ Meteor.methods<ServerMethods>({
 			await Rooms.updateLastMessageStar(room._id, uid, message.starred);
 		}
 
-		await Apps.triggerEvent(AppEvents.IPostMessageStarred, message, Meteor.user(), message.starred);
+		await Apps.triggerEvent(AppEvents.IPostMessageStarred, message, await Meteor.userAsync(), message.starred);
 
 		await Messages.updateUserStarById(message._id, uid, message.starred);
 

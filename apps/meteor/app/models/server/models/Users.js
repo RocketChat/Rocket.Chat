@@ -379,55 +379,6 @@ export class Users extends Base {
 		};
 	}
 
-	disable2FAAndSetTempSecretByUserId(userId, tempToken) {
-		return this.update(
-			{
-				_id: userId,
-			},
-			{
-				$set: {
-					'services.totp': {
-						enabled: false,
-						tempSecret: tempToken,
-					},
-				},
-			},
-		);
-	}
-
-	enable2FAAndSetSecretAndCodesByUserId(userId, secret, backupCodes) {
-		return this.update(
-			{
-				_id: userId,
-			},
-			{
-				$set: {
-					'services.totp.enabled': true,
-					'services.totp.secret': secret,
-					'services.totp.hashedBackup': backupCodes,
-				},
-				$unset: {
-					'services.totp.tempSecret': 1,
-				},
-			},
-		);
-	}
-
-	disable2FAByUserId(userId) {
-		return this.update(
-			{
-				_id: userId,
-			},
-			{
-				$set: {
-					'services.totp': {
-						enabled: false,
-					},
-				},
-			},
-		);
-	}
-
 	addRoomByUserId(_id, rid) {
 		return this.update(
 			{
@@ -500,19 +451,6 @@ export class Users extends Base {
 		);
 	}
 
-	update2FABackupCodesByUserId(userId, backupCodes) {
-		return this.update(
-			{
-				_id: userId,
-			},
-			{
-				$set: {
-					'services.totp.hashedBackup': backupCodes,
-				},
-			},
-		);
-	}
-
 	enableEmail2FAByUserId(userId) {
 		return this.update(
 			{
@@ -564,51 +502,6 @@ export class Users extends Base {
 			{
 				$unset: {
 					e2e: '',
-				},
-			},
-		);
-	}
-
-	removeExpiredEmailCodesOfUserId(userId) {
-		this.update(
-			{ _id: userId },
-			{
-				$pull: {
-					'services.emailCode': {
-						expire: { $lt: new Date() },
-					},
-				},
-			},
-		);
-	}
-
-	removeEmailCodeByUserIdAndCode(userId, code) {
-		this.update(
-			{ _id: userId },
-			{
-				$pull: {
-					'services.emailCode': {
-						code,
-					},
-				},
-			},
-		);
-	}
-
-	addEmailCodeByUserId(userId, code, expire) {
-		this.update(
-			{ _id: userId },
-			{
-				$push: {
-					'services.emailCode': {
-						$each: [
-							{
-								code,
-								expire,
-							},
-						],
-						$slice: -5,
-					},
 				},
 			},
 		);
@@ -1358,21 +1251,6 @@ export class Users extends Base {
 		}
 
 		return this.update(_id, update);
-	}
-
-	setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(_id, token, hash, until) {
-		return this.update(
-			{
-				_id,
-				'services.resume.loginTokens.hashedToken': token,
-			},
-			{
-				$set: {
-					'services.resume.loginTokens.$.twoFactorAuthorizedHash': hash,
-					'services.resume.loginTokens.$.twoFactorAuthorizedUntil': until,
-				},
-			},
-		);
 	}
 
 	setUtcOffset(_id, utcOffset) {
