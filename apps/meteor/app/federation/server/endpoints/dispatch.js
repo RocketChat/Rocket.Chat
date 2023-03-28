@@ -1,12 +1,12 @@
 import { EJSON } from 'meteor/ejson';
-import { FederationServers, FederationRoomEvents, Rooms as RoomsRaw } from '@rocket.chat/models';
+import { FederationServers, FederationRoomEvents, Rooms as RoomsRaw, Subscriptions } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 import { eventTypes } from '@rocket.chat/core-typings';
 
 import { API } from '../../../api/server';
 import { serverLogger } from '../lib/logger';
 import { contextDefinitions } from '../lib/context';
-import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
+import { Messages, Rooms, Users } from '../../../models/server';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
 import { FileUpload } from '../../../file-upload/server';
@@ -118,13 +118,13 @@ const eventHandlers = {
 			}
 
 			// Check if subscription exists
-			const persistedSubscription = Subscriptions.findOne({ _id: subscription._id });
+			const persistedSubscription = await Subscriptions.findOne({ _id: subscription._id });
 
 			try {
 				if (persistedSubscription) {
 					// Update the federation, if its not already set (if it's set, this is likely an event being reprocessed
 					if (!persistedSubscription.federation) {
-						Subscriptions.update({ _id: persistedSubscription._id }, { $set: { federation: subscription.federation } });
+						await Subscriptions.updateOne({ _id: persistedSubscription._id }, { $set: { federation: subscription.federation } });
 						federationAltered = true;
 					}
 				} else {
@@ -132,7 +132,7 @@ const eventHandlers = {
 					const denormalizedSubscription = normalizers.denormalizeSubscription(subscription);
 
 					// Create the subscription
-					Subscriptions.insert(denormalizedSubscription);
+					await Subscriptions.insertOne(denormalizedSubscription);
 					federationAltered = true;
 				}
 			} catch (ex) {
@@ -164,7 +164,7 @@ const eventHandlers = {
 			} = event;
 
 			// Remove the user's subscription
-			Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+			await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
 
 			// Refresh the servers list
 			await FederationServers.refreshServers();
@@ -189,7 +189,7 @@ const eventHandlers = {
 			} = event;
 
 			// Remove the user's subscription
-			Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+			await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
 
 			// Refresh the servers list
 			await FederationServers.refreshServers();

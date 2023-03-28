@@ -594,7 +594,7 @@ export const Livechat = {
 				(await LivechatInquiry.setNameByRoomId(rid, name)) &&
 				// This one needs to be the last since the agent may not have the subscription
 				// when the conversation is in the queue, then the result will be 0(zero)
-				Subscriptions.updateDisplayNameByRoomId(rid, name)
+				SubscriptionsRaw.updateDisplayNameByRoomId(rid, name)
 			);
 		}
 	},
