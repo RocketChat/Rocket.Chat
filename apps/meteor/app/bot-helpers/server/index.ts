@@ -187,7 +187,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	botRequest: (...args) => {
+	async botRequest(...args) {
 		const userID = Meteor.userId();
 		if (userID && (await hasRoleAsync(userID, 'bot'))) {
 			return botHelpers.request(...args);

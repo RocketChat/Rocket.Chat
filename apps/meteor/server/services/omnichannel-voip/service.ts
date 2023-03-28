@@ -306,7 +306,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 		return true;
 	}
 
-	getRoomClosingData(
+	async getRoomClosingData(
 		closeInfo: IVoipRoomClosingInfo,
 		closeSystemMsgData: IOmniRoomClosingMessage,
 		_room: IVoipRoom,
