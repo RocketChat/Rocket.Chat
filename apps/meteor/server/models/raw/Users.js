@@ -1694,23 +1694,6 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	// 3
-	enableEmail2FAByUserId(userId) {
-		return this.updateOne(
-			{
-				_id: userId,
-			},
-			{
-				$set: {
-					'services.email2fa': {
-						enabled: true,
-						changedAt: new Date(),
-					},
-				},
-			},
-		);
-	}
-
 	disableEmail2FAByUserId(userId) {
 		return this.updateOne(
 			{
@@ -1907,7 +1890,20 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.find(query, options);
+		return this.count(query, options);
+	}
+
+	countUsersNotOffline(options) {
+		const query = {
+			username: {
+				$exists: 1,
+			},
+			status: {
+				$in: ['online', 'away', 'busy'],
+			},
+		};
+
+		return this.col.countDocuments(query, options);
 	}
 
 	findNotIdUpdatedFrom(uid, from, options) {

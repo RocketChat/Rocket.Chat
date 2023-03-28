@@ -14,9 +14,10 @@ import {
 import type { ITeam } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Team } from '@rocket.chat/core-services';
+import { Users } from '@rocket.chat/models';
 
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
-import { Rooms, Users } from '../../../models/server';
+import { Rooms } from '../../../models/server';
 import { canAccessRoomAsync, hasAtLeastOnePermission } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
@@ -499,7 +500,7 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const user = Users.findOneActiveById(userId, {});
+			const user = await Users.findOneActiveById(userId, {});
 			if (!user) {
 				return API.v1.failure('invalid-user');
 			}
