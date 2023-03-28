@@ -22,16 +22,17 @@
  * SOFTWARE.
  *
  */
+import fs from 'fs';
+
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { _ } from 'meteor/underscore';
 
-import { UploadFS } from './ufs';
+import { UploadFS } from '.';
 import { Filter } from './ufs-filter';
 import { StorePermissions } from './ufs-store-permissions';
 import { Tokens } from './ufs-tokens';
-
 /**
  * File store
  */
@@ -122,272 +123,266 @@ export class Store {
 			}
 		}
 
-		if (Meteor.isServer) {
-			/**
-			 * Checks token validity
-			 * @param token
-			 * @param fileId
-			 * @returns {boolean}
-			 */
-			self.checkToken = function (token, fileId) {
-				check(token, String);
-				check(fileId, String);
-				return Tokens.find({ value: token, fileId }).count() === 1;
-			};
+		/**
+		 * Checks token validity
+		 * @param token
+		 * @param fileId
+		 * @returns {boolean}
+		 */
+		self.checkToken = function (token, fileId) {
+			check(token, String);
+			check(fileId, String);
+			return Tokens.find({ value: token, fileId }).count() === 1;
+		};
 
-			/**
-			 * Copies the file to a store
-			 * @param fileId
-			 * @param store
-			 * @param callback
-			 */
-			self.copy = function (fileId, store, callback) {
-				check(fileId, String);
+		/**
+		 * Copies the file to a store
+		 * @param fileId
+		 * @param store
+		 * @param callback
+		 */
+		self.copy = function (fileId, store, callback) {
+			check(fileId, String);
 
-				if (!(store instanceof Store)) {
-					throw new TypeError('store is not an instance of UploadFS.Store');
-				}
-				// Get original file
-				const file = self.getCollection().findOne({ _id: fileId });
-				if (!file) {
-					throw new Meteor.Error('file-not-found', 'File not found');
-				}
-				// Silently ignore the file if it does not match filter
-				const filter = store.getFilter();
-				if (filter instanceof Filter && !filter.isValid(file)) {
-					return;
-				}
+			if (!(store instanceof Store)) {
+				throw new TypeError('store is not an instance of UploadFS.Store');
+			}
+			// Get original file
+			const file = self.getCollection().findOne({ _id: fileId });
+			if (!file) {
+				throw new Meteor.Error('file-not-found', 'File not found');
+			}
+			// Silently ignore the file if it does not match filter
+			const filter = store.getFilter();
+			if (filter instanceof Filter && !filter.isValid(file)) {
+				return;
+			}
 
-				// Prepare copy
-				const { _id, url, ...copy } = file;
-				copy.originalStore = self.getName();
-				copy.originalId = fileId;
+			// Prepare copy
+			const { _id, url, ...copy } = file;
+			copy.originalStore = self.getName();
+			copy.originalId = fileId;
 
-				// Create the copy
-				const copyId = store.create(copy);
+			// Create the copy
+			const copyId = store.create(copy);
 
-				// Get original stream
-				const rs = self.getReadStream(fileId, file);
+			// Get original stream
+			const rs = self.getReadStream(fileId, file);
 
-				// Catch errors to avoid app crashing
-				rs.on(
-					'error',
-					Meteor.bindEnvironment(function (err) {
-						callback.call(self, err, null);
-					}),
-				);
+			// Catch errors to avoid app crashing
+			rs.on(
+				'error',
+				Meteor.bindEnvironment(function (err) {
+					callback.call(self, err, null);
+				}),
+			);
 
-				// Copy file data
-				store.write(
-					rs,
-					copyId,
-					Meteor.bindEnvironment(function (err) {
-						if (err) {
-							self.getCollection().remove({ _id: copyId });
-							self.onCopyError.call(self, err, fileId, file);
-						}
-						if (typeof callback === 'function') {
-							callback.call(self, err, copyId, copy, store);
-						}
-					}),
-				);
-			};
+			// Copy file data
+			store.write(
+				rs,
+				copyId,
+				Meteor.bindEnvironment(function (err) {
+					if (err) {
+						self.getCollection().remove({ _id: copyId });
+						self.onCopyError.call(self, err, fileId, file);
+					}
+					if (typeof callback === 'function') {
+						callback.call(self, err, copyId, copy, store);
+					}
+				}),
+			);
+		};
 
-			/**
-			 * Creates the file in the collection
-			 * @param file
-			 * @param callback
-			 * @return {string}
-			 */
-			self.create = function (file, callback) {
-				check(file, Object);
-				file.store = self.options.name; // assign store to file
-				return self.getCollection().insert(file, callback);
-			};
+		/**
+		 * Creates the file in the collection
+		 * @param file
+		 * @param callback
+		 * @return {string}
+		 */
+		self.create = function (file, callback) {
+			check(file, Object);
+			file.store = self.options.name; // assign store to file
+			return self.getCollection().insert(file, callback);
+		};
 
-			/**
-			 * Creates a token for the file (only needed for client side upload)
-			 * @param fileId
-			 * @returns {*}
-			 */
-			self.createToken = function (fileId) {
-				const token = self.generateToken();
+		/**
+		 * Creates a token for the file (only needed for client side upload)
+		 * @param fileId
+		 * @returns {*}
+		 */
+		self.createToken = function (fileId) {
+			const token = self.generateToken();
 
-				// Check if token exists
-				if (Tokens.find({ fileId }).count()) {
-					Tokens.update(
-						{ fileId },
-						{
-							$set: {
-								createdAt: new Date(),
-								value: token,
-							},
+			// Check if token exists
+			if (Tokens.find({ fileId }).count()) {
+				Tokens.update(
+					{ fileId },
+					{
+						$set: {
+							createdAt: new Date(),
+							value: token,
 						},
-					);
-				} else {
-					Tokens.insert({
-						createdAt: new Date(),
-						fileId,
-						value: token,
-					});
-				}
-				return token;
-			};
-
-			/**
-			 * Writes the file to the store
-			 * @param rs
-			 * @param fileId
-			 * @param callback
-			 */
-			self.write = function (rs, fileId, callback) {
-				const file = self.getCollection().findOne({ _id: fileId });
-
-				const errorHandler = Meteor.bindEnvironment(function (err) {
-					self.onWriteError.call(self, err, fileId, file);
-					callback.call(self, err);
+					},
+				);
+			} else {
+				Tokens.insert({
+					createdAt: new Date(),
+					fileId,
+					value: token,
 				});
+			}
+			return token;
+		};
 
-				const finishHandler = Meteor.bindEnvironment(function () {
-					let size = 0;
-					const readStream = self.getReadStream(fileId, file);
+		/**
+		 * Writes the file to the store
+		 * @param rs
+		 * @param fileId
+		 * @param callback
+		 */
+		self.write = function (rs, fileId, callback) {
+			const file = self.getCollection().findOne({ _id: fileId });
 
-					readStream.on(
-						'error',
-						Meteor.bindEnvironment(function (error) {
-							callback.call(self, error, null);
-						}),
-					);
-					readStream.on(
-						'data',
-						Meteor.bindEnvironment(function (data) {
-							size += data.length;
-						}),
-					);
-					readStream.on(
-						'end',
-						Meteor.bindEnvironment(function () {
-							if (file.complete) {
-								return;
-							}
-							// Set file attribute
-							file.complete = true;
-							file.etag = UploadFS.generateEtag();
-							file.path = self.getFileRelativeURL(fileId);
-							file.progress = 1;
-							file.size = size;
-							file.token = self.generateToken();
-							file.uploading = false;
-							file.uploadedAt = new Date();
-							file.url = self.getFileURL(fileId);
+			const errorHandler = Meteor.bindEnvironment(function (err) {
+				self.onWriteError.call(self, err, fileId, file);
+				callback.call(self, err);
+			});
 
-							// Execute callback
-							if (typeof self.onFinishUpload === 'function') {
-								self.onFinishUpload.call(self, file);
-							}
+			const finishHandler = Meteor.bindEnvironment(function () {
+				let size = 0;
+				const readStream = self.getReadStream(fileId, file);
 
-							// Sets the file URL when file transfer is complete,
-							// this way, the image will loads entirely.
-							self.getCollection().direct.update(
-								{ _id: fileId },
-								{
-									$set: {
-										complete: file.complete,
-										etag: file.etag,
-										path: file.path,
-										progress: file.progress,
-										size: file.size,
-										token: file.token,
-										uploading: file.uploading,
-										uploadedAt: file.uploadedAt,
-										url: file.url,
-									},
+				readStream.on(
+					'error',
+					Meteor.bindEnvironment(function (error) {
+						callback.call(self, error, null);
+					}),
+				);
+				readStream.on(
+					'data',
+					Meteor.bindEnvironment(function (data) {
+						size += data.length;
+					}),
+				);
+				readStream.on(
+					'end',
+					Meteor.bindEnvironment(function () {
+						if (file.complete) {
+							return;
+						}
+						// Set file attribute
+						file.complete = true;
+						file.etag = UploadFS.generateEtag();
+						file.path = self.getFileRelativeURL(fileId);
+						file.progress = 1;
+						file.size = size;
+						file.token = self.generateToken();
+						file.uploading = false;
+						file.uploadedAt = new Date();
+						file.url = self.getFileURL(fileId);
+
+						// Execute callback
+						if (typeof self.onFinishUpload === 'function') {
+							self.onFinishUpload.call(self, file);
+						}
+
+						// Sets the file URL when file transfer is complete,
+						// this way, the image will loads entirely.
+						self.getCollection().direct.update(
+							{ _id: fileId },
+							{
+								$set: {
+									complete: file.complete,
+									etag: file.etag,
+									path: file.path,
+									progress: file.progress,
+									size: file.size,
+									token: file.token,
+									uploading: file.uploading,
+									uploadedAt: file.uploadedAt,
+									url: file.url,
 								},
-							);
+							},
+						);
 
-							// Return file info
-							callback.call(self, null, file);
+						// Return file info
+						callback.call(self, null, file);
 
-							// Simulate write speed
-							if (UploadFS.config.simulateWriteDelay) {
-								Meteor._sleepForMs(UploadFS.config.simulateWriteDelay);
-							}
+						// Simulate write speed
+						if (UploadFS.config.simulateWriteDelay) {
+							Meteor._sleepForMs(UploadFS.config.simulateWriteDelay);
+						}
 
-							// Copy file to other stores
-							if (self.options.copyTo instanceof Array) {
-								for (let i = 0; i < self.options.copyTo.length; i += 1) {
-									const store = self.options.copyTo[i];
+						// Copy file to other stores
+						if (self.options.copyTo instanceof Array) {
+							for (let i = 0; i < self.options.copyTo.length; i += 1) {
+								const store = self.options.copyTo[i];
 
-									if (!store.getFilter() || store.getFilter().isValid(file)) {
-										self.copy(fileId, store);
-									}
+								if (!store.getFilter() || store.getFilter().isValid(file)) {
+									self.copy(fileId, store);
 								}
 							}
-						}),
-					);
-				});
-
-				const ws = self.getWriteStream(fileId, file);
-				ws.on('error', errorHandler);
-				ws.once('finish', finishHandler);
-
-				// Execute transformation
-				self.transformWrite(rs, ws, fileId, file);
-			};
-		}
-
-		if (Meteor.isServer) {
-			// eslint-disable-next-line no-undef
-			const fs = Npm.require('fs');
-			const collection = self.getCollection();
-
-			// Code executed after removing file
-			collection.after.remove(function (userId, file) {
-				// Remove associated tokens
-				Tokens.remove({ fileId: file._id });
-
-				if (self.options.copyTo instanceof Array) {
-					for (let i = 0; i < self.options.copyTo.length; i += 1) {
-						// Remove copies in stores
-						self.options.copyTo[i].getCollection().remove({ originalId: file._id });
-					}
-				}
+						}
+					}),
+				);
 			});
 
-			// Code executed before inserting file
-			collection.before.insert(function (userId, file) {
-				if (!self.permissions.checkInsert(userId, file)) {
-					throw new Meteor.Error('forbidden', 'Forbidden');
+			const ws = self.getWriteStream(fileId, file);
+			ws.on('error', errorHandler);
+			ws.once('finish', finishHandler);
+
+			// Execute transformation
+			self.transformWrite(rs, ws, fileId, file);
+		};
+
+		const collection = self.getCollection();
+
+		// Code executed after removing file
+		collection.after.remove(function (userId, file) {
+			// Remove associated tokens
+			Tokens.remove({ fileId: file._id });
+
+			if (self.options.copyTo instanceof Array) {
+				for (let i = 0; i < self.options.copyTo.length; i += 1) {
+					// Remove copies in stores
+					self.options.copyTo[i].getCollection().remove({ originalId: file._id });
 				}
+			}
+		});
+
+		// Code executed before inserting file
+		collection.before.insert(function (userId, file) {
+			if (!self.permissions.checkInsert(userId, file)) {
+				throw new Meteor.Error('forbidden', 'Forbidden');
+			}
+		});
+
+		// Code executed before updating file
+		collection.before.update(function (userId, file, fields, modifiers) {
+			if (!self.permissions.checkUpdate(userId, file, fields, modifiers)) {
+				throw new Meteor.Error('forbidden', 'Forbidden');
+			}
+		});
+
+		// Code executed before removing file
+		collection.before.remove(function (userId, file) {
+			if (!self.permissions.checkRemove(userId, file)) {
+				throw new Meteor.Error('forbidden', 'Forbidden');
+			}
+
+			// Delete the physical file in the store
+			self.delete(file._id);
+
+			const tmpFile = UploadFS.getTempFilePath(file._id);
+
+			// Delete the temp file
+			fs.stat(tmpFile, (err) => {
+				!err &&
+					fs.unlink(tmpFile, (err2) => {
+						err2 && console.error(`ufs: cannot delete temp file at ${tmpFile} (${err2.message})`);
+					});
 			});
-
-			// Code executed before updating file
-			collection.before.update(function (userId, file, fields, modifiers) {
-				if (!self.permissions.checkUpdate(userId, file, fields, modifiers)) {
-					throw new Meteor.Error('forbidden', 'Forbidden');
-				}
-			});
-
-			// Code executed before removing file
-			collection.before.remove(function (userId, file) {
-				if (!self.permissions.checkRemove(userId, file)) {
-					throw new Meteor.Error('forbidden', 'Forbidden');
-				}
-
-				// Delete the physical file in the store
-				self.delete(file._id);
-
-				const tmpFile = UploadFS.getTempFilePath(file._id);
-
-				// Delete the temp file
-				fs.stat(tmpFile, (err) => {
-					!err &&
-						fs.unlink(tmpFile, (err2) => {
-							err2 && console.error(`ufs: cannot delete temp file at ${tmpFile} (${err2.message})`);
-						});
-				});
-			});
-		}
+		});
 	}
 
 	/**

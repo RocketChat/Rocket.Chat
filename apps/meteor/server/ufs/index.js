@@ -220,10 +220,8 @@ export const UploadFS = {
 	},
 };
 
-if (Meteor.isServer) {
-	require('./ufs-methods');
-	require('./ufs-server');
-}
+await import('./ufs-methods');
+await import('./ufs-server');
 
 /**
  * UploadFS Configuration
@@ -238,14 +236,10 @@ UploadFS.Store = Store;
 UploadFS.StorePermissions = StorePermissions;
 UploadFS.Uploader = Uploader;
 
-if (Meteor.isServer) {
-	// Expose the module globally
-	if (typeof global !== 'undefined') {
-		global.UploadFS = UploadFS;
-	}
-} else if (Meteor.isClient) {
-	// Expose the module globally
-	if (typeof window !== 'undefined') {
-		window.UploadFS = UploadFS;
-	}
+// Expose the module globally
+if (typeof global !== 'undefined') {
+	global.UploadFS = UploadFS;
 }
+
+await import('./ufs-gridfs');
+await import('./ufs-local');

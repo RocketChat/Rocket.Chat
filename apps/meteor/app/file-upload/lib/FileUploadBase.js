@@ -2,9 +2,9 @@ import path from 'path';
 
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
-import { UploadFS } from 'meteor/jalik:ufs';
 import _ from 'underscore';
 
+import { UploadFS } from '../../../server/ufs';
 import { canAccessRoomAsync, hasPermissionAsync } from '../../authorization';
 import { settings } from '../../settings';
 
