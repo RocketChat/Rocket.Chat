@@ -28,8 +28,8 @@ export async function parseJsonQuery(
 		fields?: string;
 	},
 	logger: Logger,
-	queryFields: string[],
-	queryOperations: string[],
+	queryFields?: string[],
+	queryOperations?: string[],
 ): Promise<{
 	sort: Record<string, 1 | -1>;
 	fields: Record<string, 0 | 1>;
