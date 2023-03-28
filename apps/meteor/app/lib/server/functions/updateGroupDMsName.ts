@@ -1,7 +1,7 @@
-import type { IUser, ISubscription } from '@rocket.chat/core-typings';
-import { Rooms } from '@rocket.chat/models';
+import type { IUser } from '@rocket.chat/core-typings';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
 
-import { Subscriptions, Users } from '../../../models/server';
+import { Users } from '../../../models/server';
 
 const getFname = (members: IUser[]): string => members.map(({ name, username }) => name || username).join(', ');
 const getName = (members: IUser[]): string => members.map(({ username }) => username).join(',');
@@ -34,7 +34,7 @@ function sortUsersAlphabetically(u1: IUser, u2: IUser): number {
 	return (u1.name! || u1.username!).localeCompare(u2.name! || u2.username!);
 }
 
-export const updateGroupDMsName = async (userThatChangedName: IUser) => {
+export const updateGroupDMsName = async (userThatChangedName: IUser): Promise<void> => {
 	if (!userThatChangedName.username) {
 		return;
 	}
@@ -60,10 +60,10 @@ export const updateGroupDMsName = async (userThatChangedName: IUser) => {
 		const members = getMembers(room.uids);
 		const sortedMembers = members.sort(sortUsersAlphabetically);
 
-		const subs = Subscriptions.findByRoomId(room._id, { fields: { '_id': 1, 'u._id': 1 } });
-		subs.forEach((sub: ISubscription) => {
+		const subs = Subscriptions.findByRoomId(room._id, { projection: { '_id': 1, 'u._id': 1 } });
+		for await (const sub of subs) {
 			const otherMembers = sortedMembers.filter(({ _id }) => _id !== sub.u._id);
-			Subscriptions.updateNameAndFnameById(sub._id, getName(otherMembers), getFname(otherMembers));
-		});
+			await Subscriptions.updateNameAndFnameById(sub._id, getName(otherMembers), getFname(otherMembers));
+		}
 	}
 };

@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
+import { Subscriptions } from '@rocket.chat/models';
 
 import MentionsServer from './Mentions';
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
-import { Users, Subscriptions, Rooms } from '../../models/server';
+import { Users, Rooms } from '../../models/server';
 
 export class MentionQueries {
 	async getUsers(usernames) {
@@ -24,7 +25,7 @@ export class MentionQueries {
 	}
 
 	getTotalChannelMembers(rid) {
-		return Subscriptions.findByRoomId(rid).count();
+		return Subscriptions.countByRoomId(rid);
 	}
 
 	getChannels(channels) {
