@@ -2,7 +2,7 @@ import http from 'http';
 import fs from 'fs';
 import https from 'https';
 
-import { Settings } from '@rocket.chat/models';
+import { Settings, ImportData, Imports, RawImports } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import AdmZip from 'adm-zip';
 import getFileType from 'file-type';
@@ -11,8 +11,6 @@ import { Progress } from './ImporterProgress';
 import { ImporterWebsocket } from './ImporterWebsocket';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { ImporterInfo } from '../../lib/ImporterInfo';
-import { RawImports } from '../models/RawImports';
-import { Imports, ImportData } from '../../../models/server';
 import { Logger } from '../../../logger/server';
 import { ImportDataConverter } from './ImportDataConverter';
 import { t } from '../../../utils/server';
@@ -55,32 +53,34 @@ export class Base {
 
 		this.progress = new Progress(this.info.key, this.info.name);
 		this.collection = RawImports;
-
-		const userId = Meteor.userId();
-
-		if (importRecord) {
-			this.logger.debug('Found existing import operation');
-			this.importRecord = importRecord;
-			this.progress.step = this.importRecord.status;
-		} else {
-			this.logger.debug('Starting new import operation');
-			const importId = Imports.insert({
-				type: this.info.name,
-				importerKey: this.info.key,
-				ts: Date.now(),
-				status: this.progress.step,
-				valid: true,
-				user: userId,
-			});
-			this.importRecord = Imports.findOne(importId);
-		}
-
+		this.importRecordParam = importRecord;
 		this.users = {};
 		this.channels = {};
 		this.messages = {};
 		this.oldSettings = {};
+	}
 
-		this.logger.debug(`Constructed a new ${info.name} Importer.`);
+	async build() {
+		const userId = Meteor.userId();
+		if (this.importRecordParam) {
+			this.logger.debug('Found existing import operation');
+			this.importRecord = this.importRecordParam;
+			this.progress.step = this.importRecord.status;
+		} else {
+			this.logger.debug('Starting new import operation');
+			const importId = (
+				await Imports.insertOne({
+					type: this.info.name,
+					importerKey: this.info.key,
+					ts: Date.now(),
+					status: this.progress.step,
+					valid: true,
+					user: userId,
+				})
+			).insertedId;
+			this.importRecord = await Imports.findOne(importId);
+		}
+		this.logger.debug(`Constructed a new ${this.info.name} Importer.`);
 	}
 
 	/**
@@ -90,8 +90,8 @@ export class Base {
 	 * @param {string} contentType The sent file type.
 	 * @returns {Progress} The progress record of the import.
 	 */
-	startFileUpload(fileName, contentType) {
-		this.updateProgress(ProgressStep.UPLOADING);
+	async startFileUpload(fileName, contentType) {
+		await this.updateProgress(ProgressStep.UPLOADING);
 		return this.updateRecord({ file: fileName, contentType });
 	}
 
@@ -123,8 +123,8 @@ export class Base {
 	 * @param {boolean} skipTypeCheck Optional property that says to not check the type provided.
 	 * @returns {Progress} The progress record of the import.
 	 */
-	prepare(dataURI, sentContentType, fileName, skipTypeCheck) {
-		this.collection.remove({});
+	async prepare(dataURI, sentContentType, fileName, skipTypeCheck) {
+		await this.collection.deleteMany({});
 		if (!skipTypeCheck) {
 			const fileType = this.getFileType(Buffer.from(dataURI.split(',')[1], 'base64'));
 			this.logger.debug('Uploaded file information is:', fileType);
@@ -132,14 +132,14 @@ export class Base {
 
 			if (!fileType || fileType.mime !== this.info.mimeType) {
 				this.logger.warn(`Invalid file uploaded for the ${this.info.name} importer.`);
-				this.updateProgress(ProgressStep.ERROR);
+				await this.updateProgress(ProgressStep.ERROR);
 				throw new Meteor.Error('error-invalid-file-uploaded', `Invalid file uploaded to import ${this.info.name} data from.`, {
 					step: 'prepare',
 				});
 			}
 		}
 
-		this.updateProgress(ProgressStep.PREPARING_STARTED);
+		await this.updateProgress(ProgressStep.PREPARING_STARTED);
 		return this.updateRecord({ file: fileName });
 	}
 
@@ -152,7 +152,7 @@ export class Base {
 	 * @param {Selection} importSelection The selection data.
 	 * @returns {Progress} The progress record of the import.
 	 */
-	startImport(importSelection) {
+	async startImport(importSelection) {
 		if (!(importSelection instanceof Selection)) {
 			throw new Error(`Invalid Selection data provided to the ${this.info.name} importer.`);
 		} else if (importSelection.users === undefined) {
@@ -163,12 +163,12 @@ export class Base {
 			);
 		}
 
-		this.updateProgress(ProgressStep.IMPORTING_STARTED);
+		await this.updateProgress(ProgressStep.IMPORTING_STARTED);
 		this.reloadCount();
 		const started = Date.now();
 		const startedByUserId = Meteor.userId();
 
-		const beforeImportFn = (data, type) => {
+		const beforeImportFn = async (data, type) => {
 			switch (type) {
 				case 'channel': {
 					const id = data.t === 'd' ? '__directMessages__' : data.importIds[0];
@@ -195,8 +195,8 @@ export class Base {
 			return true;
 		};
 
-		const afterImportFn = () => {
-			this.addCountCompleted(1);
+		const afterImportFn = async () => {
+			return this.addCountCompleted(1);
 		};
 
 		process.nextTick(async () => {
@@ -205,25 +205,25 @@ export class Base {
 			try {
 				await this.applySettingValues({});
 
-				this.updateProgress(ProgressStep.IMPORTING_USERS);
+				await this.updateProgress(ProgressStep.IMPORTING_USERS);
 				await this.converter.convertUsers({ beforeImportFn, afterImportFn });
 
-				this.updateProgress(ProgressStep.IMPORTING_CHANNELS);
+				await this.updateProgress(ProgressStep.IMPORTING_CHANNELS);
 				await this.converter.convertChannels(startedByUserId, { beforeImportFn, afterImportFn });
 
-				this.updateProgress(ProgressStep.IMPORTING_MESSAGES);
+				await this.updateProgress(ProgressStep.IMPORTING_MESSAGES);
 				await this.converter.convertMessages({ afterImportFn });
 
-				this.updateProgress(ProgressStep.FINISHING);
+				await this.updateProgress(ProgressStep.FINISHING);
 
-				process.nextTick(() => {
-					this.converter.clearSuccessfullyImportedData();
+				process.nextTick(async () => {
+					await this.converter.clearSuccessfullyImportedData();
 				});
 
-				this.updateProgress(ProgressStep.DONE);
+				await this.updateProgress(ProgressStep.DONE);
 			} catch (e) {
 				this.logger.error(e);
-				this.updateProgress(ProgressStep.ERROR);
+				await this.updateProgress(ProgressStep.ERROR);
 			} finally {
 				await this.applySettingValues(this.oldSettings);
 			}
@@ -276,11 +276,11 @@ export class Base {
 	 * @param {ProgressStep} step The progress step which this import is currently at.
 	 * @returns {Progress} The progress record of the import.
 	 */
-	updateProgress(step) {
+	async updateProgress(step) {
 		this.progress.step = step;
 
 		this.logger.debug(`${this.info.name} is now at ${step}.`);
-		this.updateRecord({ status: this.progress.step });
+		await this.updateRecord({ status: this.progress.step });
 
 		this.reportProgress();
 
@@ -303,9 +303,9 @@ export class Base {
 	 * @param {number} count The amount to add to the total count of items.
 	 * @returns {Progress} The progress record of the import.
 	 */
-	addCountToTotal(count) {
+	async addCountToTotal(count) {
 		this.progress.count.total += count;
-		this.updateRecord({ 'count.total': this.progress.count.total });
+		await this.updateRecord({ 'count.total': this.progress.count.total });
 
 		return this.progress;
 	}
@@ -316,13 +316,13 @@ export class Base {
 	 * @param {number} count The amount to add to the total count of finished items.
 	 * @returns {Progress} The progress record of the import.
 	 */
-	addCountCompleted(count) {
+	async addCountCompleted(count) {
 		this.progress.count.completed += count;
 
 		// Only update the database every 500 records
 		// Or the completed is greater than or equal to the total amount
 		if (this.progress.count.completed % 500 === 0 || this.progress.count.completed >= this.progress.count.total) {
-			this.updateRecord({ 'count.completed': this.progress.count.completed });
+			await this.updateRecord({ 'count.completed': this.progress.count.completed });
 			this.reportProgress();
 		} else if (!this._reportProgressHandler) {
 			this._reportProgressHandler = setTimeout(() => {
@@ -352,8 +352,8 @@ export class Base {
 	 * @param {int} the user id
 	 * @param {object} an exception object
 	 */
-	addUserError(userId, error) {
-		Imports.model.update(
+	async addUserError(userId, error) {
+		await Imports.updateOne(
 			{
 				'_id': this.importRecord._id,
 				'fileData.users.user_id': userId,
@@ -367,8 +367,8 @@ export class Base {
 		);
 	}
 
-	addMessageError(error, msg) {
-		Imports.model.update(
+	async addMessageError(error, msg) {
+		await Imports.updateOne(
 			{
 				_id: this.importRecord._id,
 			},
@@ -392,19 +392,19 @@ export class Base {
 	 * @param {any} fields The fields to set, it should be an object with key/values.
 	 * @returns {Imports} The import record.
 	 */
-	updateRecord(fields) {
-		Imports.update({ _id: this.importRecord._id }, { $set: fields });
-		this.importRecord = Imports.findOne(this.importRecord._id);
+	async updateRecord(fields) {
+		await Imports.update({ _id: this.importRecord._id }, { $set: fields });
+		this.importRecord = await Imports.findOne(this.importRecord._id);
 
 		return this.importRecord;
 	}
 
-	buildSelection() {
-		this.updateProgress(ProgressStep.USER_SELECTION);
+	async buildSelection() {
+		await this.updateProgress(ProgressStep.USER_SELECTION);
 
-		const users = ImportData.getAllUsersForSelection();
-		const channels = ImportData.getAllChannelsForSelection();
-		const hasDM = ImportData.checkIfDirectMessagesExists();
+		const users = await ImportData.getAllUsersForSelection();
+		const channels = await ImportData.getAllChannelsForSelection();
+		const hasDM = await ImportData.checkIfDirectMessagesExists();
 
 		const selectionUsers = users.map(
 			(u) =>
@@ -422,7 +422,7 @@ export class Base {
 					c.data.t === 'd',
 				),
 		);
-		const selectionMessages = ImportData.countMessages();
+		const selectionMessages = await ImportData.countMessages();
 
 		if (hasDM) {
 			selectionChannels.push(new SelectionChannel('__directMessages__', t('Direct_Messages'), false, true, true, undefined, true));

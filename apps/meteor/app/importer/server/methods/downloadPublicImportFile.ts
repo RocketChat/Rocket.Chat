@@ -4,10 +4,11 @@ import fs from 'fs';
 
 import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { RocketChatImportFileInstance } from '../startup/store';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Importers } from '..';
 
 function downloadHttpFile(fileUrl: string, writeStream: fs.WriteStream): void {
@@ -22,7 +23,7 @@ function copyLocalFile(filePath: fs.PathLike, writeStream: fs.WriteStream): void
 	readStream.pipe(writeStream);
 }
 
-export const executeDownloadPublicImportFile = (userId: IUser['_id'], fileUrl: string, importerKey: string): void => {
+export const executeDownloadPublicImportFile = async (userId: IUser['_id'], fileUrl: string, importerKey: string): Promise<void> => {
 	const importer = Importers.get(importerKey);
 	const isUrl = fileUrl.startsWith('http');
 	if (!importer) {
@@ -40,6 +41,7 @@ export const executeDownloadPublicImportFile = (userId: IUser['_id'], fileUrl: s
 	}
 
 	importer.instance = new importer.importer(importer); // eslint-disable-line new-cap
+	await importer.instance.build();
 
 	const oldFileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1).split('?')[0];
 	const date = new Date();
@@ -47,22 +49,22 @@ export const executeDownloadPublicImportFile = (userId: IUser['_id'], fileUrl: s
 	const newFileName = `${dateStr}_${userId}_${oldFileName}`;
 
 	// Store the file name on the imports collection
-	importer.instance.startFileUpload(newFileName);
-	importer.instance.updateProgress(ProgressStep.DOWNLOADING_FILE);
+	await importer.instance.startFileUpload(newFileName);
+	await importer.instance.updateProgress(ProgressStep.DOWNLOADING_FILE);
 
 	const writeStream = RocketChatImportFileInstance.createWriteStream(newFileName);
 
 	writeStream.on(
 		'error',
 		Meteor.bindEnvironment(() => {
-			importer.instance.updateProgress(ProgressStep.ERROR);
+			void importer.instance.updateProgress(ProgressStep.ERROR);
 		}),
 	);
 
 	writeStream.on(
 		'end',
 		Meteor.bindEnvironment(() => {
-			importer.instance.updateProgress(ProgressStep.FILE_LOADED);
+			void importer.instance.updateProgress(ProgressStep.FILE_LOADED);
 		}),
 	);
 
@@ -71,8 +73,8 @@ export const executeDownloadPublicImportFile = (userId: IUser['_id'], fileUrl: s
 	} else {
 		// If the url is actually a folder path on the current machine, skip moving it to the file store
 		if (fs.statSync(fileUrl).isDirectory()) {
-			importer.instance.updateRecord({ file: fileUrl });
-			importer.instance.updateProgress(ProgressStep.FILE_LOADED);
+			await importer.instance.updateRecord({ file: fileUrl });
+			await importer.instance.updateProgress(ProgressStep.FILE_LOADED);
 			return;
 		}
 
@@ -80,18 +82,25 @@ export const executeDownloadPublicImportFile = (userId: IUser['_id'], fileUrl: s
 	}
 };
 
-Meteor.methods({
-	downloadPublicImportFile(fileUrl: string, importerKey: string) {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		downloadPublicImportFile(fileUrl: string, importerKey: string): void;
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async downloadPublicImportFile(fileUrl: string, importerKey: string) {
 		const userId = Meteor.userId();
 
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', 'downloadPublicImportFile');
 		}
 
-		if (!hasPermission(userId, 'run-import')) {
+		if (!(await hasPermissionAsync(userId, 'run-import'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', 'downloadPublicImportFile');
 		}
 
-		executeDownloadPublicImportFile(userId, fileUrl, importerKey);
+		await executeDownloadPublicImportFile(userId, fileUrl, importerKey);
 	},
 });

@@ -88,12 +88,12 @@ Meteor.startup(() =>
 
 		callbacks.add(
 			'onLDAPLogin',
-			({ user, ldapUser, isNewUser }: { user: IUser; ldapUser: ILDAPEntry; isNewUser: boolean }, ldap?: LDAPConnection) => {
+			async ({ user, ldapUser, isNewUser }: { user: IUser; ldapUser: ILDAPEntry; isNewUser: boolean }, ldap?: LDAPConnection) => {
 				if (!ldap) {
 					return;
 				}
 
-				Promise.await(LDAPEEManager.advancedSyncForUser(ldap, user, isNewUser, ldapUser.dn));
+				await LDAPEEManager.advancedSyncForUser(ldap, user, isNewUser, ldapUser.dn);
 			},
 			callbacks.priority.MEDIUM,
 			'advancedLDAPSync',

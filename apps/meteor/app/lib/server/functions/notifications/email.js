@@ -21,10 +21,10 @@ Meteor.startup(() => {
 	});
 });
 
-function getEmailContent({ message, user, room }) {
+async function getEmailContent({ message, user, room }) {
 	const lng = (user && user.language) || settings.get('Language') || 'en';
 
-	const roomName = escapeHTML(`#${roomCoordinator.getRoomName(room.t, room)}`);
+	const roomName = escapeHTML(`#${await roomCoordinator.getRoomName(room.t, room)}`);
 	const userName = escapeHTML(settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username);
 
 	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
@@ -117,11 +117,11 @@ function generateNameEmail(name, email) {
 	return `${String(name).replace(/@/g, '%40').replace(/[<>,]/g, '')} <${email}>`;
 }
 
-export function getEmailData({ message, receiver, sender, subscription, room, emailAddress, hasMentionToUser }) {
+export async function getEmailData({ message, receiver, sender, subscription, room, emailAddress, hasMentionToUser }) {
 	const username = settings.get('UI_Use_Real_Name') ? message.u.name || message.u.username : message.u.username;
 	let subjectKey = 'Offline_Mention_All_Email';
 
-	if (!roomCoordinator.getRoomDirectives(room.t)?.isGroupChat(room)) {
+	if (!roomCoordinator.getRoomDirectives(room.t).isGroupChat(room)) {
 		subjectKey = 'Offline_DM_Email';
 	} else if (hasMentionToUser) {
 		subjectKey = 'Offline_Mention_Email';
@@ -129,9 +129,9 @@ export function getEmailData({ message, receiver, sender, subscription, room, em
 
 	const emailSubject = Mailer.replace(settings.get(subjectKey), {
 		user: username,
-		room: roomCoordinator.getRoomName(room.t, room),
+		room: await roomCoordinator.getRoomName(room.t, room),
 	});
-	const content = getEmailContent({
+	const content = await getEmailContent({
 		message,
 		user: receiver,
 		room,

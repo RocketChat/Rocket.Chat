@@ -3,10 +3,10 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Accounts } from 'meteor/accounts-base';
 import bcrypt from 'bcrypt';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import * as Mailer from '../../../mailer/server/api';
-import { Users } from '../../../models/server';
 import type { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 
 export class EmailCheck implements ICodeCheck {
@@ -64,7 +64,7 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 		});
 	}
 
-	public verify(user: IUser, codeFromEmail: string): boolean {
+	public async verify(user: IUser, codeFromEmail: string): Promise<boolean> {
 		if (!this.isEnabled(user)) {
 			return false;
 		}
@@ -76,42 +76,40 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 		// Remove non digits
 		codeFromEmail = codeFromEmail.replace(/([^\d])/g, '');
 
-		Users.removeExpiredEmailCodesOfUserId(user._id);
+		await Users.removeExpiredEmailCodesOfUserId(user._id);
 
-		const valid = user.services.emailCode.find(({ code, expire }) => {
+		for await (const { code, expire } of user.services.emailCode) {
 			if (expire < new Date()) {
-				return false;
+				continue;
 			}
 
-			if (bcrypt.compareSync(codeFromEmail, code)) {
-				Users.removeEmailCodeByUserIdAndCode(user._id, code);
+			if (await bcrypt.compare(codeFromEmail, code)) {
+				await Users.removeEmailCodeByUserIdAndCode(user._id, code);
 				return true;
 			}
+		}
 
-			return false;
-		});
-
-		return !!valid;
+		return false;
 	}
 
-	public sendEmailCode(user: IUser): void {
+	public async sendEmailCode(user: IUser): Promise<void> {
 		const emails = this.getUserVerifiedEmails(user);
 		const random = Random._randomString(6, '0123456789');
-		const encryptedRandom = bcrypt.hashSync(random, Accounts._bcryptRounds());
+		const encryptedRandom = await bcrypt.hash(random, Accounts._bcryptRounds());
 		const expire = new Date();
 		const expirationInSeconds = parseInt(settings.get('Accounts_TwoFactorAuthentication_By_Email_Code_Expiration') as string, 10);
 
 		expire.setSeconds(expire.getSeconds() + expirationInSeconds);
 
-		Users.addEmailCodeByUserId(user._id, encryptedRandom, expire);
+		await Users.addEmailCodeByUserId(user._id, encryptedRandom, expire);
 
 		for (const address of emails) {
 			this.send2FAEmail(address, random, user);
 		}
 	}
 
-	public processInvalidCode(user: IUser): IProcessInvalidCodeResult {
-		Users.removeExpiredEmailCodesOfUserId(user._id);
+	public async processInvalidCode(user: IUser): Promise<IProcessInvalidCodeResult> {
+		await Users.removeExpiredEmailCodesOfUserId(user._id);
 
 		// Generate new code if the there isn't any code with more than 5 minutes to expire
 		const expireWithDelta = new Date();
@@ -131,7 +129,7 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 			};
 		}
 
-		this.sendEmailCode(user);
+		await this.sendEmailCode(user);
 
 		return {
 			codeGenerated: true,

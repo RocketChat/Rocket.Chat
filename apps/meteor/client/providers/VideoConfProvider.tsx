@@ -1,5 +1,4 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
 import React, { useState, useMemo, useEffect } from 'react';
 import type { Unsubscribe } from 'use-subscription';
@@ -8,39 +7,19 @@ import type { VideoConfPopupPayload } from '../contexts/VideoConfContext';
 import { VideoConfContext } from '../contexts/VideoConfContext';
 import type { DirectCallParams, ProviderCapabilities, CallPreferences } from '../lib/VideoConfManager';
 import { VideoConfManager } from '../lib/VideoConfManager';
-import VideoConfBlockModal from '../views/room/contextualBar/VideoConference/VideoConfBlockModal';
 import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoConfPopups';
-
-type WindowMaybeDesktop = typeof window & {
-	RocketChatDesktop?: {
-		openInternalVideoChatWindow?: (url: string, options: undefined) => void;
-	};
-};
+import { useVideoOpenCall } from '../views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
 
 const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactElement => {
 	const [outgoing, setOutgoing] = useState<VideoConfPopupPayload | undefined>();
-	const setModal = useSetModal();
+	const handleOpenCall = useVideoOpenCall();
 
 	useEffect(
 		() =>
 			VideoConfManager.on('call/join', (props) => {
-				const windowMaybeDesktop = window as WindowMaybeDesktop;
-				if (windowMaybeDesktop.RocketChatDesktop?.openInternalVideoChatWindow) {
-					windowMaybeDesktop.RocketChatDesktop.openInternalVideoChatWindow(props.url, undefined);
-				} else {
-					const open = (): void => {
-						const popup = window.open(props.url);
-
-						if (popup !== null) {
-							return;
-						}
-
-						setModal(<VideoConfBlockModal onClose={(): void => setModal(null)} onConfirm={open} />);
-					};
-					open();
-				}
+				handleOpenCall(props.url);
 			}),
-		[setModal],
+		[handleOpenCall],
 	);
 
 	useEffect(() => {

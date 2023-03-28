@@ -48,7 +48,12 @@ export const slashCommands = {
 			appId,
 		} as SlashCommand;
 	},
-	run(command: string, params: string, message: RequiredField<Partial<IMessage>, 'rid'>, triggerId?: string | undefined): void {
+	async run(
+		command: string,
+		params: string,
+		message: RequiredField<Partial<IMessage>, 'rid'>,
+		triggerId?: string | undefined,
+	): Promise<unknown> {
 		const cmd = this.commands[command];
 		if (typeof cmd?.callback !== 'function') {
 			return;
@@ -70,7 +75,7 @@ export const slashCommands = {
 			throw new Meteor.Error('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
 
-		const previewInfo = cmd.previewer(command, params, message);
+		const previewInfo = Promise.await(cmd.previewer(command, params, message));
 
 		if (!previewInfo?.items?.length) {
 			return;
@@ -104,7 +109,7 @@ export const slashCommands = {
 			throw new Meteor.Error('error-invalid-preview', 'Preview Item must have an id, type, and value.');
 		}
 
-		return cmd.previewCallback(command, params, message, preview, triggerId);
+		return Promise.await(cmd.previewCallback(command, params, message, preview, triggerId));
 	},
 };
 
@@ -116,7 +121,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	slashCommand(command) {
+	async slashCommand(command) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'slashCommand',

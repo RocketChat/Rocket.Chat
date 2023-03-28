@@ -1,20 +1,21 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Messages } from '@rocket.chat/models';
 
-import { canAccessRoomId } from '../../app/authorization/server';
-import { Messages } from '../../app/models/server';
+import { canAccessRoomIdAsync } from '../../app/authorization/server/functions/canAccessRoom';
 import { normalizeMessagesForUser } from '../../app/utils/server/lib/normalizeMessagesForUser';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		loadNextMessages(rid: IRoom['_id'], end?: Date, limit?: number): { messages: IMessage[] };
+		loadNextMessages(rid: IRoom['_id'], end?: Date, limit?: number): Promise<{ messages: IMessage[] }>;
 	}
 }
 
-Meteor.methods({
-	loadNextMessages(rid, end, limit = 20) {
+Meteor.methods<ServerMethods>({
+	async loadNextMessages(rid, end, limit = 20) {
 		check(rid, String);
 		check(limit, Number);
 
@@ -30,22 +31,25 @@ Meteor.methods({
 
 		const fromId = Meteor.userId();
 
-		if (!fromId || !canAccessRoomId(rid, fromId)) {
-			return false;
+		if (!fromId || !(await canAccessRoomIdAsync(rid, fromId))) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'loadNextMessages' });
 		}
-
-		const options = {
-			sort: {
-				ts: 1,
-			},
-			limit,
-		};
 
 		let records;
 		if (end) {
-			records = Messages.findVisibleByRoomIdAfterTimestamp(rid, end, options).fetch();
+			records = await Messages.findVisibleByRoomIdAfterTimestamp(rid, end, {
+				sort: {
+					ts: 1,
+				},
+				limit,
+			}).toArray();
 		} else {
-			records = Messages.findVisibleByRoomId(rid, options).fetch();
+			records = await Messages.findVisibleByRoomId(rid, {
+				sort: {
+					ts: 1,
+				},
+				limit,
+			}).toArray();
 		}
 
 		return {

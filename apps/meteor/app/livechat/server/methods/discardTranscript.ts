@@ -1,10 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { LivechatRooms } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'livechat:discardTranscript'(rid: string): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async 'livechat:discardTranscript'(rid: string) {
 		check(rid, String);
 
@@ -17,7 +25,7 @@ Meteor.methods({
 		}
 
 		const room = await LivechatRooms.findOneById(rid);
-		if (!room || !room.open) {
+		if (!room?.open) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 				method: 'livechat:discardTranscript',
 			});

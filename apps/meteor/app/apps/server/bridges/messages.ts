@@ -23,7 +23,7 @@ export class AppMessageBridge extends MessageBridge {
 
 		const convertedMessage = this.orch.getConverters()?.get('messages').convertAppMessage(message);
 
-		const sentMessage = executeSendMessage(convertedMessage.u._id, convertedMessage);
+		const sentMessage = await executeSendMessage(convertedMessage.u._id, convertedMessage);
 
 		return sentMessage._id;
 	}
@@ -48,7 +48,7 @@ export class AppMessageBridge extends MessageBridge {
 		const msg = this.orch.getConverters()?.get('messages').convertAppMessage(message);
 		const editor = Users.findOneById(message.editor.id);
 
-		updateMessage(msg, editor);
+		await updateMessage(msg, editor);
 	}
 
 	protected async notifyUser(user: IUser, message: IMessage, appId: string): Promise<void> {

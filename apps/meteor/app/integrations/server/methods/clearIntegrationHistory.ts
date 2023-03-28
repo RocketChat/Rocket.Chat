@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Integrations, IntegrationHistory } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import notifications from '../../../notifications/server/lib/Notifications';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -11,7 +12,7 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
-Meteor.methods({
+Meteor.methods<ServerMethods>({
 	async clearIntegrationHistory(integrationId) {
 		let integration;
 
@@ -21,9 +22,9 @@ Meteor.methods({
 			});
 		}
 
-		if (hasPermission(this.userId, 'manage-outgoing-integrations')) {
+		if (await hasPermissionAsync(this.userId, 'manage-outgoing-integrations')) {
 			integration = await Integrations.findOneById(integrationId);
-		} else if (hasPermission(this.userId, 'manage-own-outgoing-integrations')) {
+		} else if (await hasPermissionAsync(this.userId, 'manage-own-outgoing-integrations')) {
 			integration = await Integrations.findOne({
 				'_id': integrationId,
 				'_createdBy._id': this.userId,
