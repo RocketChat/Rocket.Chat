@@ -63,11 +63,13 @@ export async function cleanRoomHistory({
 	}
 
 	if (!ignoreThreads) {
-		const threads = new Set();
-		Messages.findThreadsByRoomIdPinnedTimestampAndUsers(
+		const threads = new Set<string>();
+		await MessagesRaw.findThreadsByRoomIdPinnedTimestampAndUsers(
 			{ rid, pinned: excludePinned, ignoreDiscussion, ts, users: fromUsers },
-			{ fields: { _id: 1 } },
-		).forEach(({ _id }: { _id: string }) => threads.add(_id));
+			{ projection: { _id: 1 } },
+		).forEach(({ _id }) => {
+			threads.add(_id);
+		});
 
 		if (threads.size > 0) {
 			Subscriptions.removeUnreadThreadsByRoomId(rid, [...threads]);

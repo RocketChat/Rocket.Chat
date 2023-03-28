@@ -1800,7 +1800,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			ignoreDiscussion = true,
 			ts,
 			users = [],
-		}: { rid: string; pinned: boolean; ignoreDiscussion?: boolean; ts: Date; users: string[] },
+		}: { rid: string; pinned: boolean; ignoreDiscussion?: boolean; ts: Filter<IMessage>['ts']; users: string[] },
 		options?: FindOptions<IMessage>,
 	): FindCursor<IMessage> {
 		const query: Filter<IMessage> = {

@@ -380,29 +380,6 @@ export class Messages extends Base {
 
 		return this.remove(query);
 	}
-
-	findThreadsByRoomIdPinnedTimestampAndUsers({ rid, pinned, ignoreDiscussion = true, ts, users = [] }, options) {
-		const query = {
-			rid,
-			ts,
-			tlm: { $exists: 1 },
-			tcount: { $exists: 1 },
-		};
-
-		if (pinned) {
-			query.pinned = { $ne: true };
-		}
-
-		if (ignoreDiscussion) {
-			query.drid = { $exists: 0 };
-		}
-
-		if (users.length > 0) {
-			query['u.username'] = { $in: users };
-		}
-
-		return this.find(query, options);
-	}
 }
 
 export default new Messages();
