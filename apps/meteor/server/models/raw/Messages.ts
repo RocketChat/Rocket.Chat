@@ -903,7 +903,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	findDiscussionByRoomIdPinnedTimestampAndUsers(
 		rid: string,
 		excludePinned: boolean,
-		ts: Date,
+		ts: Filter<IMessage>['ts'],
 		users: string[] = [],
 		options: FindOptions<IMessage> = {},
 	): FindCursor<IMessage> {

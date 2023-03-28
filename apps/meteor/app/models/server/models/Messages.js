@@ -114,24 +114,6 @@ export class Messages extends Base {
 		return this.find(query, { fields: { 'file._id': 1 }, ...options });
 	}
 
-	findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, users = [], options = {}) {
-		const query = {
-			rid,
-			ts,
-			drid: { $exists: 1 },
-		};
-
-		if (excludePinned) {
-			query.pinned = { $ne: true };
-		}
-
-		if (users.length) {
-			query['u.username'] = { $in: users };
-		}
-
-		return this.find(query, options);
-	}
-
 	findByRoomId(roomId, options) {
 		const query = {
 			rid: roomId,

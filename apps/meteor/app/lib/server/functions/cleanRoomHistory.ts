@@ -1,5 +1,5 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { IMessage, IMessageDiscussion, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
 import { Messages as MessagesRaw, Rooms } from '@rocket.chat/models';
 
@@ -56,10 +56,17 @@ export async function cleanRoomHistory({
 	}
 
 	if (!ignoreDiscussion) {
-		Messages.findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers, {
-			fields: { drid: 1 },
+		const discussionsCursor = MessagesRaw.findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers, {
+			projection: { drid: 1 },
 			...(limit && { limit }),
-		}).forEach(({ drid }: IMessageDiscussion) => deleteRoom(drid));
+		});
+
+		for await (const { drid } of discussionsCursor) {
+			if (!drid) {
+				continue;
+			}
+			await deleteRoom(drid);
+		}
 	}
 
 	if (!ignoreThreads) {

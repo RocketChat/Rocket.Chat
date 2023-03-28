@@ -179,7 +179,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	findDiscussionByRoomIdPinnedTimestampAndUsers(
 		rid: string,
 		excludePinned: boolean,
-		ts: Date,
+		ts: Filter<IMessage>['ts'],
 		users: string[],
 		options?: FindOptions<IMessage>,
 	): FindCursor<IMessage>;
