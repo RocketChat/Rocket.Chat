@@ -1890,7 +1890,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.count(query, options);
+		return this.find(query, options);
 	}
 
 	countUsersNotOffline(options) {
