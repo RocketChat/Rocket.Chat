@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import { Users } from '@rocket.chat/models';
+import { isRegisterUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -23,6 +25,11 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'unarchiveRoom' });
 		}
 
+		const user = await Users.findOneById(userId, { projection: { username: 1, name: 1 } });
+		if (!user || !isRegisterUser(user)) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'archiveRoom' });
+		}
+
 		const room = Rooms.findOneById(rid);
 
 		if (!room) {
@@ -33,6 +40,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', { method: 'unarchiveRoom' });
 		}
 
-		return unarchiveRoom(rid);
+		return unarchiveRoom(rid, user);
 	},
 });
