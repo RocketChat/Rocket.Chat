@@ -104,7 +104,7 @@ class PushClass {
 		}
 	}
 
-	sendGatewayPush(gateway, service, token, notification, tries = 0) {
+	async sendGatewayPush(gateway, service, token, notification, tries = 0) {
 		notification.uniqueId = this.options.uniqueId;
 
 		const data = {
@@ -116,7 +116,7 @@ class PushClass {
 		};
 
 		if (token && this.options.getAuthorization) {
-			data.headers.Authorization = this.options.getAuthorization();
+			data.headers.Authorization = await this.options.getAuthorization();
 		}
 
 		return HTTP.post(`${gateway}/push/${service}/send`, data, (error, response) => {
@@ -164,7 +164,7 @@ class PushClass {
 		});
 	}
 
-	sendNotificationGateway(app, notification, countApn, countGcm) {
+	async sendNotificationGateway(app, notification, countApn, countGcm) {
 		for (const gateway of this.options.gateways) {
 			logger.debug('send to token', app.token);
 

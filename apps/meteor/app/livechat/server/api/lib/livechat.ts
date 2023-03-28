@@ -134,7 +134,7 @@ export function normalizeHttpHeaderData(headers: Record<string, string | string[
 
 export async function settings({ businessUnit = '' }: { businessUnit?: string } = {}): Promise<Record<string, string | number | any>> {
 	// Putting this ugly conversion while we type the livechat service
-	const initSettings = Livechat.getInitSettings() as unknown as Record<string, string | number | any>;
+	const initSettings = (await Livechat.getInitSettings()) as unknown as Record<string, string | number | any>;
 	const triggers = await findTriggers();
 	const departments = findDepartments(businessUnit);
 	const sound = `${Meteor.absoluteUrl()}sounds/chime.mp3`;
