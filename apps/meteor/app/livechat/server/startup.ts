@@ -73,10 +73,11 @@ Meteor.startup(async () => {
 		RoutingManager.setMethodNameAndStartQueue(value);
 	});
 
+	// Remove when accounts.onLogout is async
 	Accounts.onLogout(
 		({ user }: { user: IUser }) =>
 			user?.roles?.includes('livechat-agent') &&
 			!user?.roles?.includes('bot') &&
-			Livechat.setUserStatusLivechatIf(user._id, 'not-available', {}, { livechatStatusSystemModified: true }),
+			Promise.await(Livechat.setUserStatusLivechatIf(user._id, 'not-available', {}, { livechatStatusSystemModified: true })),
 	);
 });

@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Users } from '@rocket.chat/models';
 
-import { Users } from '../../../models/server';
 import { TOTP } from '../lib/totp';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -29,7 +29,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('invalid-totp');
 		}
 
-		const verified = TOTP.verify({
+		const verified = await TOTP.verify({
 			secret: user.services.totp.secret,
 			token: userToken,
 			userId,
@@ -39,7 +39,7 @@ Meteor.methods<ServerMethods>({
 		if (verified) {
 			const { codes, hashedCodes } = TOTP.generateCodes();
 
-			Users.update2FABackupCodesByUserId(Meteor.userId(), hashedCodes);
+			await Users.update2FABackupCodesByUserId(userId, hashedCodes);
 			return { codes };
 		}
 	},

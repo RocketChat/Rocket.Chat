@@ -389,7 +389,7 @@ export class APIClass<TBasePath extends string = '/'> extends Restivus {
 		routes.map((route) => this.namedRoutes(route, endpoints, apiVersion)).map(addRateLimitRuleToEveryRoute);
 	}
 
-	public processTwoFactor({
+	public async processTwoFactor({
 		userId,
 		request,
 		invocation,
@@ -401,14 +401,14 @@ export class APIClass<TBasePath extends string = '/'> extends Restivus {
 		invocation: { twoFactorChecked?: boolean };
 		options?: Options;
 		connection: IMethodConnection;
-	}): void {
+	}): Promise<void> {
 		if (options && (!('twoFactorRequired' in options) || !options.twoFactorRequired)) {
 			return;
 		}
 		const code = request.headers['x-2fa-code'];
 		const method = request.headers['x-2fa-method'];
 
-		checkCodeForUser({
+		await checkCodeForUser({
 			user: userId,
 			code,
 			method,
@@ -610,7 +610,7 @@ export class APIClass<TBasePath extends string = '/'> extends Restivus {
 							};
 							Accounts._setAccountData(connection.id, 'loginToken', this.token);
 
-							api.processTwoFactor({
+							await api.processTwoFactor({
 								userId: this.userId,
 								request: this.request,
 								invocation: invocation as unknown as Record<string, any>,

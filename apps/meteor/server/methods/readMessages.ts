@@ -25,7 +25,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const user = (Meteor.user() as IUser | null) ?? undefined;
+		const user = ((await Meteor.userAsync()) as IUser | null) ?? undefined;
 		const room = Rooms.findOneById(rid);
 		if (!room) {
 			throw new Meteor.Error('error-room-does-not-exist', 'This room does not exist', { method: 'readMessages' });

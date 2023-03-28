@@ -120,7 +120,7 @@ export const KonchatNotification = {
 			return;
 		}
 
-		if (Meteor.user().status === 'busy') {
+		if ((await Meteor.userAsync().status) === 'busy') {
 			return;
 		}
 
@@ -137,8 +137,8 @@ export const KonchatNotification = {
 		});
 	},
 
-	newMessage(rid) {
-		if (Meteor.user().status === 'busy') {
+	async newMessage(rid) {
+		if ((await Meteor.userAsync().status) === 'busy') {
 			return;
 		}
 
