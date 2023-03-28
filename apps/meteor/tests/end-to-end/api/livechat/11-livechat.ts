@@ -8,6 +8,7 @@ import { addOrRemoveAgentFromDepartment, createDepartmentWithAnOnlineAgent } fro
 import { createVisitor, createLivechatRoom, makeAgentUnavailable } from '../../../data/livechat/rooms';
 import { createBotAgent, getRandomVisitorToken } from '../../../data/livechat/users';
 import { updateSetting } from '../../../data/permissions.helper';
+import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - Utils', function () {
 	this.retries(0);
@@ -104,14 +105,14 @@ describe('LIVECHAT - Utils', function () {
 
 			await deleteCustomField(customFieldName);
 		});
-		it('should return online as true if there is at least one agent online', async () => {
+		(IS_EE ? it : it.skip)('should return online as true if there is at least one agent online', async () => {
 			const { department } = await createDepartmentWithAnOnlineAgent();
 
 			const { body } = await request.get(api(`livechat/config?department=${department._id}`)).set(credentials);
 			expect(body).to.have.property('config');
 			expect(body.config).to.have.property('online', true);
 		});
-		it('should return online as false if there is no agent online', async () => {
+		(IS_EE ? it : it.skip)('should return online as false if there is no agent online', async () => {
 			const { department, agent } = await createDepartmentWithAnOnlineAgent();
 			await makeAgentUnavailable(agent.credentials);
 
@@ -119,7 +120,7 @@ describe('LIVECHAT - Utils', function () {
 			expect(body).to.have.property('config');
 			expect(body.config).to.have.property('online', false);
 		});
-		it('should return online as true if bot is online and there is no agent online', async () => {
+		(IS_EE ? it : it.skip)('should return online as true if bot is online and there is no agent online', async () => {
 			await updateSetting('Livechat_assign_new_conversation_to_bot', true);
 
 			const { department, agent } = await createDepartmentWithAnOnlineAgent();
