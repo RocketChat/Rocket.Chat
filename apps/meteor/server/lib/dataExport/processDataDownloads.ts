@@ -4,11 +4,10 @@ import { access, mkdir, rm, writeFile } from 'fs/promises';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
-import { Avatars, ExportOperations, UserDataFiles } from '@rocket.chat/models';
+import { Avatars, ExportOperations, UserDataFiles, Subscriptions } from '@rocket.chat/models';
 import type { IExportOperation, ISubscription, IUser, RoomType } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../app/settings/server';
-import { Subscriptions } from '../../../app/models/server';
 import { FileUpload } from '../../../app/file-upload/server';
 import { getPath } from './getPath';
 import { joinPath } from '../fileUtils';
@@ -20,7 +19,7 @@ import { copyFileUpload } from './copyFileUpload';
 import { uploadZipFile } from './uploadZipFile';
 import { exportRoomMessagesToFile } from './exportRoomMessagesToFile';
 
-const loadUserSubscriptions = (_exportOperation: IExportOperation, fileType: 'json' | 'html', userId: IUser['_id']) => {
+const loadUserSubscriptions = async (_exportOperation: IExportOperation, fileType: 'json' | 'html', userId: IUser['_id']) => {
 	const roomList: (
 		| {
 				roomId: string;
@@ -35,7 +34,7 @@ const loadUserSubscriptions = (_exportOperation: IExportOperation, fileType: 'js
 	)[] = [];
 
 	const cursor = Subscriptions.findByUserId(userId);
-	cursor.forEach((subscription: ISubscription) => {
+	await cursor.forEach((subscription: ISubscription) => {
 		const roomData = getRoomData(subscription.rid, userId);
 		roomData.targetFile = `${(fileType === 'json' && roomData.roomName) || subscription.rid}.${fileType}`;
 
@@ -147,7 +146,7 @@ const continueExportOperation = async function (exportOperation: IExportOperatio
 	const exportType = exportOperation.fullExport ? 'json' : 'html';
 
 	if (!exportOperation.roomList) {
-		exportOperation.roomList = loadUserSubscriptions(exportOperation, exportType, exportOperation.userId);
+		exportOperation.roomList = await loadUserSubscriptions(exportOperation, exportType, exportOperation.userId);
 
 		if (exportOperation.fullExport) {
 			exportOperation.status = 'exporting-rooms';

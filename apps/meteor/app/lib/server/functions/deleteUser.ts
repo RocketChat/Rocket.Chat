@@ -1,10 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Integrations, FederationServers, LivechatVisitors, LivechatDepartmentAgents, Messages, Rooms } from '@rocket.chat/models';
+import {
+	Integrations,
+	FederationServers,
+	LivechatVisitors,
+	LivechatDepartmentAgents,
+	Messages,
+	Rooms,
+	Subscriptions,
+} from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../file-upload/server';
-import { Users, Subscriptions } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
@@ -21,7 +29,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 		return;
 	}
 
-	const subscribedRooms = getSubscribedRoomsForUserWithDetails(userId);
+	const subscribedRooms = await getSubscribedRoomsForUserWithDetails(userId);
 
 	if (shouldRemoveOrChangeOwner(subscribedRooms) && !confirmRelinquish) {
 		const rooms = await getUserSingleOwnedRooms(subscribedRooms);
@@ -57,7 +65,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 		await Rooms.updateGroupDMsRemovingUsernamesByUsername(user.username, userId); // Remove direct rooms with the user
 		await Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
 
-		Subscriptions.removeByUserId(userId); // Remove user subscriptions
+		await Subscriptions.removeByUserId(userId); // Remove user subscriptions
 
 		if (user.roles.includes('livechat-agent')) {
 			// Remove user as livechat agent
