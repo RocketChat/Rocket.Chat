@@ -19,11 +19,10 @@ import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
+import { Users, Subscriptions } from '@rocket.chat/models';
 import type { Filter } from 'mongodb';
 import { Team, api } from '@rocket.chat/core-services';
 
-import { Subscriptions } from '../../../models/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { validateCustomFields, saveUser, saveCustomFieldsWithoutValidation, setUserAvatar, saveCustomFields } from '../../../lib/server';
@@ -398,7 +397,7 @@ API.v1.addRoute(
 				return API.v1.success({
 					user: {
 						...user,
-						rooms: Subscriptions.findByUserId(user._id, {
+						rooms: await Subscriptions.findByUserId(user._id, {
 							projection: {
 								rid: 1,
 								name: 1,
@@ -411,7 +410,7 @@ API.v1.addRoute(
 								t: 1,
 								name: 1,
 							},
-						}).fetch(),
+						}).toArray(),
 					},
 				});
 			}
