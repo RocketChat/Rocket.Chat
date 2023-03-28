@@ -48,12 +48,12 @@ const RegisterWorkspaceMenu = ({
 				</Button>
 			)}
 			{!isWorkspaceRegistered && (
-				<ButtonGroup>
+				<>
 					<Button onClick={onClickOfflineRegistration}>{t('Cloud_Register_manually')}</Button>
 					<Button primary onClick={onClick}>
 						{t('RegisterWorkspace_Button')}
 					</Button>
-				</ButtonGroup>
+				</>
 			)}
 		</ButtonGroup>
 	);
