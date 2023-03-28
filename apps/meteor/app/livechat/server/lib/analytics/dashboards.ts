@@ -92,9 +92,10 @@ export const getAgentsProductivityMetricsAsync = async ({
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
+	// TODO: check type of date
 	const averageOfAvailableServiceTime = (
 		await LivechatAgentActivity.findAllAverageAvailableServiceTime({
-			date: parseInt(moment(start).format('YYYYMMDD')),
+			date: parseInt(moment(start).format('YYYYMMDD')) as any,
 			departmentId,
 		})
 	)[0];
