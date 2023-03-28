@@ -403,25 +403,6 @@ export class Messages extends Base {
 
 		return this.find(query, options);
 	}
-
-	findAllImportedMessagesWithFilesToDownload() {
-		const query = {
-			'_importFile.downloadUrl': {
-				$exists: true,
-			},
-			'_importFile.rocketChatUrl': {
-				$exists: false,
-			},
-			'_importFile.downloaded': {
-				$ne: true,
-			},
-			'_importFile.external': {
-				$ne: true,
-			},
-		};
-
-		return this.find(query);
-	}
 }
 
 export default new Messages();

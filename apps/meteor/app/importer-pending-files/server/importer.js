@@ -19,9 +19,7 @@ export class PendingFileImporter extends Base {
 		this.logger.debug('start preparing import operation');
 		await super.updateProgress(ProgressStep.PREPARING_STARTED);
 
-		const messages = Messages.findAllImportedMessagesWithFilesToDownload();
-		const fileCount = messages.count();
-
+		const fileCount = await Messages.countAllImportedMessagesWithFilesToDownload();
 		if (fileCount === 0) {
 			await super.updateProgress(ProgressStep.DONE);
 			return 0;
@@ -42,7 +40,6 @@ export class PendingFileImporter extends Base {
 	}
 
 	async startImport() {
-		const pendingFileMessageList = Messages.findAllImportedMessagesWithFilesToDownload();
 		const downloadedFileIds = [];
 		const maxFileCount = 10;
 		const maxFileSize = 1024 * 1024 * 500;
@@ -83,18 +80,19 @@ export class PendingFileImporter extends Base {
 		};
 
 		try {
-			pendingFileMessageList.forEach((message) => {
+			const pendingFileMessageList = Messages.findAllImportedMessagesWithFilesToDownload();
+			for await (const message of pendingFileMessageList) {
 				try {
 					const { _importFile } = message;
 
 					if (!_importFile || _importFile.downloaded || downloadedFileIds.includes(_importFile.id)) {
-						Promise.await(this.addCountCompleted(1));
+						await this.addCountCompleted(1);
 						return;
 					}
 
 					const url = _importFile.downloadUrl;
 					if (!url || !url.startsWith('http')) {
-						Promise.await(this.addCountCompleted(1));
+						await this.addCountCompleted(1);
 						return;
 					}
 
@@ -193,7 +191,7 @@ export class PendingFileImporter extends Base {
 				} catch (error) {
 					this.logger.error(error);
 				}
-			});
+			}
 		} catch (error) {
 			// If the cursor expired, restart the method
 			if (error && error.codeName === 'CursorNotFound') {
