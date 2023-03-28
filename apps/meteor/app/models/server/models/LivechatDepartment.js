@@ -27,14 +27,6 @@ export class LivechatDepartment extends Base {
 		return this.find(query, fields && { fields });
 	}
 
-	findEnabledWithAgentsAndBusinessUnit(_, fields) {
-		const query = {
-			numAgents: { $gt: 0 },
-			enabled: true,
-		};
-		return this.find(query, fields && { fields });
-	}
-
 	findOneByIdOrName(_idOrName, options) {
 		const query = {
 			$or: [
