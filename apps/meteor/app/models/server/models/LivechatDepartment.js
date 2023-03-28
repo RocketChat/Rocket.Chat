@@ -1,6 +1,3 @@
-import _ from 'underscore';
-import { LivechatDepartmentAgents } from '@rocket.chat/models';
-
 import { Base } from './_Base';
 /**
  * Livechat Department model
@@ -19,71 +16,6 @@ export class LivechatDepartment extends Base {
 		});
 		this.tryEnsureIndex({ parentId: 1 }, { sparse: true });
 		this.tryEnsureIndex({ ancestors: 1 }, { sparse: true });
-	}
-
-	// FIND
-	findOneById(_id, options) {
-		const query = { _id };
-
-		return this.findOne(query, options);
-	}
-
-	// This is the same as the above :)
-	findByDepartmentId(_id, options) {
-		const query = { _id };
-
-		return this.find(query, options);
-	}
-
-	// migrated
-	createOrUpdateDepartment(_id, data = {}) {
-		const oldData = _id && this.findOneById(_id);
-
-		const record = {
-			...data,
-		};
-
-		if (_id) {
-			this.update({ _id }, { $set: record });
-		} else {
-			_id = this.insert(record);
-		}
-		if (oldData && oldData.enabled !== data.enabled) {
-			Promise.await(LivechatDepartmentAgents.setDepartmentEnabledByDepartmentId(_id, data.enabled));
-		}
-		return _.extend(record, { _id });
-	}
-
-	saveDepartmentsByAgent(agent, departments = []) {
-		const { _id: agentId, username } = agent;
-		const savedDepartments = Promise.await(LivechatDepartmentAgents.findByAgentId(agentId).toArray()).map((d) => d.departmentId);
-
-		const incNumAgents = (_id, numAgents) => this.update(_id, { $inc: { numAgents } });
-		// remove other departments
-		_.difference(savedDepartments, departments).forEach((departmentId) => {
-			Promise.await(LivechatDepartmentAgents.removeByDepartmentIdAndAgentId(departmentId, agentId));
-			incNumAgents(departmentId, -1);
-		});
-
-		departments.forEach((departmentId) => {
-			const { enabled: departmentEnabled } = this.findOneById(departmentId, {
-				fields: { enabled: 1 },
-			});
-			const saveResult = Promise.await(
-				LivechatDepartmentAgents.saveAgent({
-					agentId,
-					departmentId,
-					username,
-					departmentEnabled,
-					count: 0,
-					order: 0,
-				}),
-			);
-
-			if (saveResult.insertedId) {
-				incNumAgents(departmentId, 1);
-			}
-		});
 	}
 
 	updateById(_id, update) {

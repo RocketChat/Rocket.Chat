@@ -1032,7 +1032,7 @@ export const Livechat = {
 		}
 
 		Users.setLivechatData(_id, agentData);
-		await LivechatDepartment.saveDepartmentsByAgent(user, agentDepartments);
+		await LivechatDepartmentRaw.saveDepartmentsByAgent(user, agentDepartments);
 
 		return true;
 	},
