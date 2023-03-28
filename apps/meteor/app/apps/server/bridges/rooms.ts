@@ -8,7 +8,6 @@ import type { ISubscription, IUser as ICoreUser } from '@rocket.chat/core-typing
 import { Subscriptions, Users } from '@rocket.chat/models';
 
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
-
 import { Rooms } from '../../../models/server';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
@@ -189,9 +188,13 @@ export class AppRoomBridge extends RoomBridge {
 	}
 
 	private async getUsersByRoomIdAndSubscriptionRole(roomId: string, role: string): Promise<IUser[]> {
-		const subs = await Subscriptions.findByRoomIdAndRoles(roomId, [role], { projection: { uid: '$u._id', _id: 0 } });
+		const subs = (await Subscriptions.findByRoomIdAndRoles(roomId, [role], {
+			projection: { uid: '$u._id', _id: 0 },
+		}).toArray()) as unknown as {
+			uid: string;
+		}[];
 		// Was this a bug?
-		const users = await Users.findByIds(subs.map((user: { uid: string }) => user.uid));
+		const users = await Users.findByIds(subs.map((user: { uid: string }) => user.uid)).toArray();
 		const userConverter = this.orch.getConverters()!.get('users');
 		return users.map((user: ICoreUser) => userConverter!.convertToApp(user));
 	}
