@@ -65,11 +65,6 @@ export class Messages extends Base {
 	}
 
 	// FIND
-	findByMention(username, options) {
-		const query = { 'mentions.username': username };
-
-		return this.find(query, options);
-	}
 
 	findByRoomId(roomId, options) {
 		const query = {
@@ -77,22 +72,6 @@ export class Messages extends Base {
 		};
 
 		return this.find(query, options);
-	}
-
-	updateUsernameAndMessageOfMentionByIdAndOldUsername(_id, oldUsername, newUsername, newMessage) {
-		const query = {
-			_id,
-			'mentions.username': oldUsername,
-		};
-
-		const update = {
-			$set: {
-				'mentions.$.username': newUsername,
-				'msg': newMessage,
-			},
-		};
-
-		return this.update(query, update);
 	}
 
 	setSlackBotIdAndSlackTs(_id, slackBotId, slackTs) {
