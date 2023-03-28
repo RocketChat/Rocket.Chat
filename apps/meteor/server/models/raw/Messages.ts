@@ -870,7 +870,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findFilesByUserId(userId: string, options: FindOptions<IMessage> = {}): FindCursor<IMessage> {
+	findFilesByUserId(userId: string, options: FindOptions<IMessage> = {}): FindCursor<Pick<IMessage, 'file'>> {
 		const query = {
 			'u._id': userId,
 			'file._id': { $exists: true },
@@ -882,7 +882,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		rid: string,
 		excludePinned: boolean,
 		ignoreDiscussion = true,
-		ts: Date,
+		ts: Filter<IMessage>['ts'],
 		users: string[] = [],
 		ignoreThreads = true,
 		options: FindOptions<IMessage> = {},
@@ -903,7 +903,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	findDiscussionByRoomIdPinnedTimestampAndUsers(
 		rid: string,
 		excludePinned: boolean,
-		ts: Date,
+		ts: Filter<IMessage>['ts'],
 		users: string[] = [],
 		options: FindOptions<IMessage> = {},
 	): FindCursor<IMessage> {
@@ -1800,7 +1800,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			ignoreDiscussion = true,
 			ts,
 			users = [],
-		}: { rid: string; pinned: boolean; ignoreDiscussion?: boolean; ts: Date; users: string[] },
+		}: { rid: string; pinned: boolean; ignoreDiscussion?: boolean; ts: Filter<IMessage>['ts']; users: string[] },
 		options?: FindOptions<IMessage>,
 	): FindCursor<IMessage> {
 		const query: Filter<IMessage> = {
@@ -2114,6 +2114,25 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		};
 
 		return this.find(query);
+	}
+
+	countAllImportedMessagesWithFilesToDownload(): Promise<number> {
+		const query = {
+			'_importFile.downloadUrl': {
+				$exists: true,
+			},
+			'_importFile.rocketChatUrl': {
+				$exists: false,
+			},
+			'_importFile.downloaded': {
+				$ne: true,
+			},
+			'_importFile.external': {
+				$ne: true,
+			},
+		};
+
+		return this.col.countDocuments(query);
 	}
 
 	decreaseReplyCountById(_id: string, inc = -1): Promise<UpdateResult> {
