@@ -404,32 +404,6 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	setVisibleMessagesAsRead(rid, until) {
-		return this.update(
-			{
-				rid,
-				unread: true,
-				ts: { $lt: until },
-				$or: [
-					{
-						tmid: { $exists: false },
-					},
-					{
-						tshow: true,
-					},
-				],
-			},
-			{
-				$unset: {
-					unread: 1,
-				},
-			},
-			{
-				multi: true,
-			},
-		);
-	}
-
 	findAllImportedMessagesWithFilesToDownload() {
 		const query = {
 			'_importFile.downloadUrl': {
