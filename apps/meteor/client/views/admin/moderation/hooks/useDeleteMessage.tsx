@@ -20,11 +20,11 @@ const useDeleteMessage = (mid: string, rid: string, onChange: () => void, onRelo
 		},
 	});
 
-	const onDeleteAll = () => {
-		handleDeleteMessages.mutate({ msgId: mid, roomId: rid, asUser: true });
+	const onDeleteAll = async () => {
+		handleDeleteMessages.mutateAsync({ msgId: mid, roomId: rid, asUser: true });
+		setModal();
 		onChange();
 		onReload();
-		setModal();
 	};
 
 	const confirmDeletMessage = (): void => {
