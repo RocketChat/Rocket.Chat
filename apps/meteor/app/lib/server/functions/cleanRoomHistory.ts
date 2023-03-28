@@ -1,11 +1,11 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { IMessage, IMessageDiscussion, IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
-import { Messages as MessagesRaw, Rooms } from '@rocket.chat/models';
+import { Messages, Rooms } from '@rocket.chat/models';
 
 import { deleteRoom } from './deleteRoom';
 import { FileUpload } from '../../../file-upload/server';
-import { Messages, Subscriptions } from '../../../models/server';
+import { Subscriptions } from '../../../models/server';
 
 export async function cleanRoomHistory({
 	rid = '',
@@ -38,43 +38,56 @@ export async function cleanRoomHistory({
 	const text = `_${TAPi18n.__('File_removed_by_prune')}_`;
 
 	let fileCount = 0;
-	Messages.findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreDiscussion, ts, fromUsers, ignoreThreads, {
-		fields: { pinned: 1, files: 1 },
+
+	const cursor = Messages.findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreDiscussion, ts, fromUsers, ignoreThreads, {
+		projection: { pinned: 1, files: 1 },
 		limit,
-	}).forEach((document: IMessage) => {
+	});
+
+	for await (const document of cursor) {
 		const uploadsStore = FileUpload.getStore('Uploads');
 
-		document.files?.forEach((file) => uploadsStore.deleteById(file._id));
+		await document.files?.map((file) => uploadsStore.deleteById(file._id));
+
 		fileCount++;
 		if (filesOnly) {
-			Messages.update({ _id: document._id }, { $unset: { file: 1 }, $set: { attachments: [{ color: '#FD745E', text }] } });
+			await Messages.updateOne({ _id: document._id }, { $unset: { file: 1 }, $set: { attachments: [{ color: '#FD745E', text }] } });
 		}
-	});
+	}
 
 	if (filesOnly) {
 		return fileCount;
 	}
 
 	if (!ignoreDiscussion) {
-		Messages.findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers, {
-			fields: { drid: 1 },
+		const discussionsCursor = Messages.findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers, {
+			projection: { drid: 1 },
 			...(limit && { limit }),
-		}).forEach(({ drid }: IMessageDiscussion) => deleteRoom(drid));
+		});
+
+		for await (const { drid } of discussionsCursor) {
+			if (!drid) {
+				continue;
+			}
+			await deleteRoom(drid);
+		}
 	}
 
 	if (!ignoreThreads) {
-		const threads = new Set();
-		Messages.findThreadsByRoomIdPinnedTimestampAndUsers(
+		const threads = new Set<string>();
+		await Messages.findThreadsByRoomIdPinnedTimestampAndUsers(
 			{ rid, pinned: excludePinned, ignoreDiscussion, ts, users: fromUsers },
-			{ fields: { _id: 1 } },
-		).forEach(({ _id }: { _id: string }) => threads.add(_id));
+			{ projection: { _id: 1 } },
+		).forEach(({ _id }) => {
+			threads.add(_id);
+		});
 
 		if (threads.size > 0) {
 			Subscriptions.removeUnreadThreadsByRoomId(rid, [...threads]);
 		}
 	}
 
-	const count = await MessagesRaw.removeByIdPinnedTimestampLimitAndUsers(
+	const count = await Messages.removeByIdPinnedTimestampLimitAndUsers(
 		rid,
 		excludePinned,
 		ignoreDiscussion,
@@ -84,7 +97,7 @@ export async function cleanRoomHistory({
 		ignoreThreads,
 	);
 	if (count) {
-		const lastMessage = await MessagesRaw.getLastVisibleMessageSentWithNoTypeByRoomId(rid);
+		const lastMessage = await Messages.getLastVisibleMessageSentWithNoTypeByRoomId(rid);
 		await Rooms.resetLastMessageById(rid, lastMessage);
 		void api.broadcast('notify.deleteMessageBulk', rid, {
 			rid,

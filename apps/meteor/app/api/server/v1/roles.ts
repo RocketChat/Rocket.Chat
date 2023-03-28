@@ -7,11 +7,10 @@ import { api } from '@rocket.chat/core-services';
 
 import { Users } from '../../../models/server';
 import { API } from '../api';
-import { hasRole } from '../../../authorization/server';
+import { hasRoleAsync, hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { getUsersInRolePaginated } from '../../../authorization/server/functions/getUsersInRole';
 import { settings } from '../../../settings/server/index';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
-import { hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { getPaginationItems } from '../helpers/getPaginationItems';
@@ -77,7 +76,7 @@ API.v1.addRoute(
 				return API.v1.failure('error-role-not-found', 'Role not found');
 			}
 
-			if (hasRole(user._id, role._id, roomId)) {
+			if (await hasRoleAsync(user._id, role._id, roomId)) {
 				throw new Meteor.Error('error-user-already-in-role', 'User already in role');
 			}
 
