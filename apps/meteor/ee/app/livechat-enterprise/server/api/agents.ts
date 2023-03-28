@@ -6,9 +6,9 @@ import {
 
 import { API } from '../../../../../app/api/server';
 import {
-	findAllAverageServiceTime,
-	findAllServiceTime,
-	findAvailableServiceTimeHistory,
+	findAllAverageServiceTimeAsync,
+	findAllServiceTimeAsync,
+	findAvailableServiceTimeHistoryAsync,
 } from '../../../../../app/livechat/server/lib/analytics/agents';
 import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 
@@ -30,7 +30,7 @@ API.v1.addRoute(
 			}
 			const endDate = new Date(end);
 
-			const { agents, total } = findAllAverageServiceTime({
+			const { agents, total } = await findAllAverageServiceTimeAsync({
 				start: startDate,
 				end: endDate,
 				options: { offset, count },
@@ -63,7 +63,7 @@ API.v1.addRoute(
 			}
 			const endDate = new Date(end);
 
-			const { agents, total } = findAllServiceTime({
+			const { agents, total } = await findAllServiceTimeAsync({
 				start: startDate,
 				end: endDate,
 				options: { offset, count },
@@ -101,7 +101,7 @@ API.v1.addRoute(
 			}
 			const endDate = new Date(end);
 
-			const { agents, total } = findAvailableServiceTimeHistory({
+			const { agents, total } = await findAvailableServiceTimeHistoryAsync({
 				start: startDate,
 				end: endDate,
 				fullReport: fullReport && fullReport === 'true',

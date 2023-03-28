@@ -596,7 +596,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
 
-		const roomData = getSubscribedRoomsForUserWithDetails(userId, false, teamRoomIds);
+		const roomData = await getSubscribedRoomsForUserWithDetails(userId, false, teamRoomIds);
 		const records = [];
 
 		for (const room of rooms) {

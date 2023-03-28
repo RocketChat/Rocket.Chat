@@ -3,13 +3,13 @@ import crypto from 'crypto';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import type { IUser, IMethodConnection } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { TOTPCheck } from './TOTPCheck';
 import { EmailCheck } from './EmailCheck';
 import { PasswordCheckFallback } from './PasswordCheckFallback';
 import type { ICodeCheck } from './ICodeCheck';
-import { Users } from '../../../models/server';
 
 export interface ITwoFactorOptions {
 	disablePasswordFallback?: boolean;
@@ -42,9 +42,9 @@ function getAvailableMethodNames(user: IUser): string[] | [] {
 	);
 }
 
-export function getUserForCheck(userId: string): IUser {
+export async function getUserForCheck(userId: string): Promise<IUser | null> {
 	return Users.findOneById(userId, {
-		fields: {
+		projection: {
 			'emails': 1,
 			'language': 1,
 			'createdAt': 1,
@@ -121,7 +121,7 @@ function isAuthorizedForToken(connection: IMethodConnection, user: IUser, option
 	return true;
 }
 
-function rememberAuthorization(connection: IMethodConnection, user: IUser): void {
+async function rememberAuthorization(connection: IMethodConnection, user: IUser): Promise<void> {
 	const currentToken = Accounts._getLoginToken(connection.id);
 
 	const expires = getRememberDate();
@@ -129,7 +129,16 @@ function rememberAuthorization(connection: IMethodConnection, user: IUser): void
 		return;
 	}
 
-	Users.setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(user._id, currentToken, getFingerprintFromConnection(connection), expires);
+	if (!currentToken) {
+		return;
+	}
+
+	await Users.setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(
+		user._id,
+		currentToken,
+		getFingerprintFromConnection(connection),
+		expires,
+	);
 }
 
 interface ICheckCodeForUser {
@@ -158,7 +167,7 @@ const getSecondFactorMethod = (user: IUser, method: string | undefined, options:
 	}
 };
 
-export function checkCodeForUser({ user, code, method, options = {}, connection }: ICheckCodeForUser): boolean {
+export async function checkCodeForUser({ user, code, method, options = {}, connection }: ICheckCodeForUser): Promise<boolean> {
 	if (process.env.TEST_MODE && !options.requireSecondFactor) {
 		return true;
 	}
@@ -167,8 +176,16 @@ export function checkCodeForUser({ user, code, method, options = {}, connection 
 		return true;
 	}
 
+	let existingUser: IUser | null;
+
 	if (typeof user === 'string') {
-		user = getUserForCheck(user);
+		existingUser = await getUserForCheck(user);
+	} else {
+		existingUser = user;
+	}
+
+	if (!existingUser) {
+		throw new Meteor.Error('totp-user-not-found', 'TOTP User not found');
 	}
 
 	if (!code && !method && connection?.httpHeaders?.['x-2fa-code'] && connection.httpHeaders['x-2fa-method']) {
@@ -176,20 +193,20 @@ export function checkCodeForUser({ user, code, method, options = {}, connection 
 		method = connection.httpHeaders['x-2fa-method'];
 	}
 
-	if (connection && isAuthorizedForToken(connection, user, options)) {
+	if (connection && isAuthorizedForToken(connection, existingUser, options)) {
 		return true;
 	}
 
 	// select a second factor method or return if none is found/available
-	const selectedMethod = getSecondFactorMethod(user, method, options);
+	const selectedMethod = getSecondFactorMethod(existingUser, method, options);
 	if (!selectedMethod) {
 		return true;
 	}
 
-	const data = selectedMethod.processInvalidCode(user);
+	const data = await selectedMethod.processInvalidCode(existingUser);
 
 	if (!code) {
-		const availableMethods = getAvailableMethodNames(user);
+		const availableMethods = getAvailableMethodNames(existingUser);
 
 		throw new Meteor.Error('totp-required', 'TOTP Required', {
 			method: selectedMethod.name,
@@ -198,7 +215,7 @@ export function checkCodeForUser({ user, code, method, options = {}, connection 
 		});
 	}
 
-	const valid = selectedMethod.verify(user, code, options.requireSecondFactor);
+	const valid = await selectedMethod.verify(existingUser, code, options.requireSecondFactor);
 	if (!valid) {
 		throw new Meteor.Error('totp-invalid', 'TOTP Invalid', {
 			method: selectedMethod.name,
@@ -207,7 +224,7 @@ export function checkCodeForUser({ user, code, method, options = {}, connection 
 	}
 
 	if (options.disableRememberMe !== true && connection) {
-		rememberAuthorization(connection, user);
+		await rememberAuthorization(connection, existingUser);
 	}
 
 	return true;

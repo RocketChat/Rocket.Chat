@@ -4,13 +4,14 @@ import { Team } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Subscriptions } from '@rocket.chat/models';
 
-import { hasRole, getUsersInRole } from '../../app/authorization/server';
+import { hasRoleAsync } from '../../app/authorization/server/functions/hasRole';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { removeUserFromRolesAsync } from '../lib/roles/removeUserFromRoles';
 import { Users, Rooms, Messages } from '../../app/models/server';
 import { callbacks } from '../../lib/callbacks';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
+import { getUsersInRole } from '../../app/authorization/server';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -64,7 +65,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (hasRole(removedUser._id, 'owner', room._id)) {
+		if (await hasRoleAsync(removedUser._id, 'owner', room._id)) {
 			const numOwners = await (await getUsersInRole('owner', room._id)).count();
 
 			if (numOwners === 1) {

@@ -21,7 +21,7 @@ import {
 import { Integrations, Messages, Rooms, Subscriptions, Uploads } from '@rocket.chat/models';
 import { Team } from '@rocket.chat/core-services';
 
-import { Subscriptions as SubscriptionsSync, Users as UsersSync } from '../../../models/server';
+import { Users as UsersSync } from '../../../models/server';
 import { canAccessRoomAsync, hasAtLeastOnePermission } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
@@ -425,11 +425,11 @@ API.v1.addRoute(
 
 			const findResult = await findChannelByIdOrName({ params });
 
-			const moderators = await SubscriptionsSync.findByRoomIdAndRoles(findResult._id, ['moderator'], {
-				fields: { u: 1 },
-			})
-				.fetch()
-				.map((sub: ISubscription) => sub.u);
+			const moderators = (
+				await Subscriptions.findByRoomIdAndRoles(findResult._id, ['moderator'], {
+					projection: { u: 1 },
+				}).toArray()
+			).map((sub: ISubscription) => sub.u);
 
 			return API.v1.success({
 				moderators,
@@ -691,7 +691,7 @@ API.v1.addRoute(
 			let error;
 
 			try {
-				await API.channels.create.validate({
+				await API.channels?.create.validate({
 					user: {
 						value: userId,
 					},
@@ -739,7 +739,7 @@ API.v1.addRoute(
 				bodyParams.members = [...membersToAdd].filter(Boolean) as string[];
 			}
 
-			return API.v1.success(await API.channels.create.execute(userId, bodyParams));
+			return API.v1.success(await API.channels?.create.execute(userId, bodyParams));
 		},
 	},
 );
@@ -896,18 +896,18 @@ API.v1.addRoute(
 				if (!(await hasPermissionAsync(this.userId, 'view-joined-room'))) {
 					return API.v1.unauthorized();
 				}
-				const roomIds = await SubscriptionsSync.findByUserIdAndType(this.userId, 'c', {
-					fields: { rid: 1 },
-				})
-					.fetch()
-					.map((s: Record<string, any>) => s.rid);
+				const roomIds = (
+					await Subscriptions.findByUserIdAndType(this.userId, 'c', {
+						projection: { rid: 1 },
+					}).toArray()
+				).map((s) => s.rid);
 				ourQuery._id = { $in: roomIds };
 			}
 
 			// teams filter - I would love to have a way to apply this filter @ db level :(
-			const ids = await SubscriptionsSync.cachedFindByUserId(this.userId, { fields: { rid: 1 } })
-				.fetch()
-				.map((item: Record<string, any>) => item.rid);
+			const ids = (await Subscriptions.findByUserId(this.userId, { projection: { rid: 1 } }).toArray()).map(
+				(item: Record<string, any>) => item.rid,
+			);
 
 			ourQuery.$or = [
 				{

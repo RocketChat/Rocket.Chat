@@ -25,7 +25,7 @@ Accounts.registerLoginHandler('totp', function (options) {
 
 callbacks.add(
 	'onValidateLogin',
-	(login) => {
+	async (login) => {
 		if (login.methodName === 'verifyEmail') {
 			throw new Meteor.Error('verify-email', 'E-mail verified');
 		}
@@ -45,7 +45,7 @@ callbacks.add(
 		const [loginArgs] = login.methodArguments;
 		const { totp } = loginArgs;
 
-		checkCodeForUser({
+		await checkCodeForUser({
 			user: login.user,
 			code: totp?.code,
 			options: { disablePasswordFallback: true },

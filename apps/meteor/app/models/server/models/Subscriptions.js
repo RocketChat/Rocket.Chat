@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import mem from 'mem';
 
 import { Base } from './_Base';
 import Rooms from './Rooms';
@@ -68,126 +67,7 @@ class Subscriptions extends Base {
 		return this.findOne(query, options);
 	}
 
-	findOneByRoomNameAndUserId(roomName, userId) {
-		const query = {
-			'name': roomName,
-			'u._id': userId,
-		};
-
-		return this.findOne(query);
-	}
-
 	// FIND
-	findByUserId(userId, options) {
-		const query = { 'u._id': userId };
-
-		return this.find(query, options);
-	}
-
-	cachedFindByUserId = mem(this.findByUserId.bind(this), { maxAge: 5000 });
-
-	findByUserIdExceptType(userId, typeException, options) {
-		const query = {
-			'u._id': userId,
-			't': { $ne: typeException },
-		};
-
-		return this.find(query, options);
-	}
-
-	findByUserIdAndRoomIds(userId, roomIds, options) {
-		const query = {
-			'u._id': userId,
-			'rid': { $in: roomIds },
-		};
-
-		return this.find(query, options);
-	}
-
-	findByUserIdAndType(userId, type, options) {
-		const query = {
-			'u._id': userId,
-			't': type,
-		};
-
-		return this.find(query, options);
-	}
-
-	findByUserIdAndTypes(userId, types, options) {
-		const query = {
-			'u._id': userId,
-			't': {
-				$in: types,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	/**
-	 * @param {IUser['_id']} userId
-	 * @param {IRole['_id'][]} roles
-	 * @param {any} options
-	 */
-	findByUserIdAndRoles(userId, roles, options) {
-		const query = {
-			'u._id': userId,
-			'roles': { $in: roles },
-		};
-
-		return this.find(query, options);
-	}
-
-	findByUserIdUpdatedAfter(userId, updatedAt, options) {
-		const query = {
-			'u._id': userId,
-			'_updatedAt': {
-				$gt: updatedAt,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	/**
-	 * @param {string} roomId
-	 * @param {IRole['_id'][]} roles the list of roles
-	 * @param {any} options
-	 */
-	findByRoomIdAndRoles(roomId, roles, options = undefined) {
-		roles = [].concat(roles);
-		const query = {
-			rid: roomId,
-			roles: { $in: roles },
-		};
-
-		return this.find(query, options);
-	}
-
-	findByType(types, options) {
-		const query = {
-			t: {
-				$in: types,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	findByTypeAndUserId(type, userId, options) {
-		const query = {
-			't': type,
-			'u._id': userId,
-		};
-
-		return this.find(query, options);
-	}
-
-	findByRoomId(roomId, options) {
-		const query = { rid: roomId };
-		return this.find(query, options);
-	}
-
 	findByRoomIdAndNotUserId(roomId, userId, options = {}) {
 		const query = {
 			'rid': roomId,

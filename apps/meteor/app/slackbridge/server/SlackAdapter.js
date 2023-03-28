@@ -11,7 +11,8 @@ import { SlackAPI } from './SlackAPI';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { Messages, Rooms, Users } from '../../models/server';
 import { settings } from '../../settings/server';
-import { deleteMessage, updateMessage, addUserToRoom, removeUserFromRoom, archiveRoom, unarchiveRoom, sendMessage } from '../../lib/server';
+import { deleteMessage, updateMessage, addUserToRoom, removeUserFromRoom, unarchiveRoom, sendMessage } from '../../lib/server';
+import { archiveRoom } from '../../lib/server/functions/archiveRoom';
 import { saveRoomName, saveRoomTopic } from '../../channel-settings/server';
 import { FileUpload } from '../../file-upload/server';
 
@@ -123,11 +124,11 @@ export default class SlackAdapter {
 
 		this.rtm.on(
 			'reaction_added',
-			Meteor.bindEnvironment((reactionMsg) => {
+			Meteor.bindEnvironment(async (reactionMsg) => {
 				slackLogger.debug('OnSlackEvent-REACTION_ADDED: ', reactionMsg);
 				if (reactionMsg) {
 					try {
-						this.onReactionAdded(reactionMsg);
+						await this.onReactionAdded(reactionMsg);
 					} catch (err) {
 						slackLogger.error({ msg: 'Unhandled error onReactionAdded', err });
 					}
@@ -137,11 +138,11 @@ export default class SlackAdapter {
 
 		this.rtm.on(
 			'reaction_removed',
-			Meteor.bindEnvironment((reactionMsg) => {
+			Meteor.bindEnvironment(async (reactionMsg) => {
 				slackLogger.debug('OnSlackEvent-REACTION_REMOVED: ', reactionMsg);
 				if (reactionMsg) {
 					try {
-						this.onReactionRemoved(reactionMsg);
+						await this.onReactionRemoved(reactionMsg);
 					} catch (err) {
 						slackLogger.error({ msg: 'Unhandled error onReactionRemoved', err });
 					}
@@ -374,19 +375,19 @@ export default class SlackAdapter {
 	/*
 	 https://api.slack.com/events/reaction_removed
 	 */
-	onReactionRemoved(slackReactionMsg) {
+	async onReactionRemoved(slackReactionMsg) {
 		if (slackReactionMsg) {
 			if (!this.slackBridge.isReactionsEnabled) {
 				return;
 			}
 			const rocketUser = this.rocket.getUser(slackReactionMsg.user);
 			// Lets find our Rocket originated message
-			let rocketMsg = Messages.findOneBySlackTs(slackReactionMsg.item.ts);
+			let rocketMsg = await MessagesRaw.findOneBySlackTs(slackReactionMsg.item.ts);
 
 			if (!rocketMsg) {
 				// Must have originated from Slack
 				const rocketID = this.rocket.createRocketID(slackReactionMsg.item.channel, slackReactionMsg.item.ts);
-				rocketMsg = Messages.findOneById(rocketID);
+				rocketMsg = await MessagesRaw.findOneById(rocketID);
 			}
 
 			if (rocketMsg && rocketUser) {
@@ -418,7 +419,7 @@ export default class SlackAdapter {
 	/*
 	 https://api.slack.com/events/reaction_added
 	 */
-	onReactionAdded(slackReactionMsg) {
+	async onReactionAdded(slackReactionMsg) {
 		if (slackReactionMsg) {
 			if (!this.slackBridge.isReactionsEnabled) {
 				return;
@@ -430,7 +431,7 @@ export default class SlackAdapter {
 			}
 
 			// Lets find our Rocket originated message
-			let rocketMsg = Messages.findOneBySlackTs(slackReactionMsg.item.ts);
+			let rocketMsg = await MessagesRaw.findOneBySlackTs(slackReactionMsg.item.ts);
 
 			if (!rocketMsg) {
 				// Must have originated from Slack
@@ -819,16 +820,19 @@ export default class SlackAdapter {
 
 			if (rocketChannel && rocketUser) {
 				// Find the Rocket message to delete
-				let rocketMsgObj = Messages.findOneBySlackBotIdAndSlackTs(slackMessage.previous_message.bot_id, slackMessage.previous_message.ts);
+				let rocketMsgObj = await MessagesRaw.findOneBySlackBotIdAndSlackTs(
+					slackMessage.previous_message.bot_id,
+					slackMessage.previous_message.ts,
+				);
 
 				if (!rocketMsgObj) {
 					// Must have been a Slack originated msg
 					const _id = this.rocket.createRocketID(slackMessage.channel, slackMessage.previous_message.ts);
-					rocketMsgObj = Messages.findOneById(_id);
+					rocketMsgObj = await MessagesRaw.findOneById(_id);
 				}
 
 				if (rocketMsgObj) {
-					deleteMessage(rocketMsgObj, rocketUser);
+					await deleteMessage(rocketMsgObj, rocketUser);
 					slackLogger.debug('Rocket message deleted by Slack');
 				}
 			}
@@ -1099,7 +1103,7 @@ export default class SlackAdapter {
 			case 'channel_archive':
 			case 'group_archive':
 				if (!isImporting) {
-					await archiveRoom(rocketChannel);
+					await archiveRoom(rocketChannel, rocketUser);
 				}
 				return;
 			case 'channel_unarchive':

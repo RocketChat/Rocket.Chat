@@ -4,7 +4,7 @@ import { Random } from '@rocket.chat/random';
 
 import { settings } from '../../settings/client';
 
-const openCenteredPopup = function (url, width, height) {
+const openCenteredPopup = (url: string, width: number, height: number) => {
 	const screenX = typeof window.screenX !== 'undefined' ? window.screenX : window.screenLeft;
 	const screenY = typeof window.screenY !== 'undefined' ? window.screenY : window.screenTop;
 	const outerWidth = typeof window.outerWidth !== 'undefined' ? window.outerWidth : document.body.clientWidth;
@@ -18,31 +18,27 @@ const openCenteredPopup = function (url, width, height) {
 	const features = `width=${width},height=${height},left=${left},top=${top},scrollbars=yes`;
 
 	const newwindow = window.open(url, 'Login', features);
-	if (newwindow.focus) {
-		newwindow.focus();
-	}
+	newwindow?.focus();
 
 	return newwindow;
 };
 
-Meteor.loginWithCas = function (options, callback) {
-	options = options || {};
-
+(Meteor as any).loginWithCas = (_?: unknown, callback?: () => void) => {
 	const credentialToken = Random.id();
-	const login_url = settings.get('CAS_login_url');
-	const popup_width = settings.get('CAS_popup_width');
-	const popup_height = settings.get('CAS_popup_height');
+	const loginUrl = settings.get('CAS_login_url');
+	const popupWidth = settings.get('CAS_popup_width') || 800;
+	const popupHeight = settings.get('CAS_popup_height') || 600;
 
-	if (!login_url) {
+	if (!loginUrl) {
 		return;
 	}
 
 	const appUrl = Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
 	// check if the provided CAS URL already has some parameters
-	const delim = login_url.split('?').length > 1 ? '&' : '?';
-	const loginUrl = `${login_url}${delim}service=${appUrl}/_cas/${credentialToken}`;
+	const delim = loginUrl.split('?').length > 1 ? '&' : '?';
+	const popupUrl = `${loginUrl}${delim}service=${appUrl}/_cas/${credentialToken}`;
 
-	const popup = openCenteredPopup(loginUrl, popup_width || 800, popup_height || 600);
+	const popup = openCenteredPopup(popupUrl, popupWidth, popupHeight);
 
 	const checkPopupOpen = setInterval(function () {
 		let popupClosed;
@@ -50,7 +46,7 @@ Meteor.loginWithCas = function (options, callback) {
 			// Fix for #328 - added a second test criteria (popup.closed === undefined)
 			// to humour this Android quirk:
 			// http://code.google.com/p/android/issues/detail?id=21061
-			popupClosed = popup.closed || popup.closed === undefined;
+			popupClosed = popup?.closed === undefined;
 		} catch (e) {
 			// For some unknown reason, IE9 (and others?) sometimes (when
 			// the popup closes too quickly?) throws "SCRIPT16386: No such

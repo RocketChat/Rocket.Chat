@@ -7,7 +7,7 @@ import { Rooms } from '@rocket.chat/models';
 
 import { Users } from '../../models/server';
 import { settings } from '../../settings/server';
-import { hasRole } from '../../authorization/server';
+import { hasRoleAsync } from '../../authorization/server/functions/hasRole';
 
 import './settings';
 
@@ -187,9 +187,9 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	botRequest: (...args) => {
+	async botRequest(...args) {
 		const userID = Meteor.userId();
-		if (userID && hasRole(userID, 'bot')) {
+		if (userID && (await hasRoleAsync(userID, 'bot'))) {
 			return botHelpers.request(...args);
 		}
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'botRequest' });
