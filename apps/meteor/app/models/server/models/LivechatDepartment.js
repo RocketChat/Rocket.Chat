@@ -18,21 +18,6 @@ export class LivechatDepartment extends Base {
 		this.tryEnsureIndex({ ancestors: 1 }, { sparse: true });
 	}
 
-	updateById(_id, update) {
-		return this.update({ _id }, update);
-	}
-
-	updateNumAgentsById(_id, numAgents) {
-		return this.update({ _id }, { $set: { numAgents } });
-	}
-
-	// REMOVE
-	removeById(_id) {
-		const query = { _id };
-
-		return this.remove(query);
-	}
-
 	findEnabledWithAgents(fields = undefined) {
 		const query = {
 			numAgents: { $gt: 0 },

@@ -1058,7 +1058,7 @@ export const Livechat = {
 				method: 'livechat:removeDepartment',
 			});
 		}
-		const ret = LivechatDepartment.removeById(_id);
+		const ret = (await LivechatDepartmentRaw.removeById(_id)).deletedCount;
 		const agentsIds = (await LivechatDepartmentAgents.findByDepartmentId(_id).toArray()).map((agent) => agent.agentId);
 		await LivechatDepartmentAgents.removeByDepartmentId(_id);
 		LivechatDepartment.unsetFallbackDepartmentByDepartmentId(_id);
