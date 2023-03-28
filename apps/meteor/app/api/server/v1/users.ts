@@ -19,23 +19,17 @@ import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser } from '@rocket.chat/core-typings';
-import { Users as UsersRaw } from '@rocket.chat/models';
+import { Users as UsersRaw, Subscriptions } from '@rocket.chat/models';
 import type { Filter } from 'mongodb';
 import { Team, api } from '@rocket.chat/core-services';
 
-import { Users, Subscriptions } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
-import {
-	validateCustomFields,
-	saveUser,
-	saveCustomFieldsWithoutValidation,
-	setStatusText,
-	setUserAvatar,
-	saveCustomFields,
-} from '../../../lib/server';
+import { validateCustomFields, saveUser, saveCustomFieldsWithoutValidation, setUserAvatar, saveCustomFields } from '../../../lib/server';
 import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
 import { getFullUserDataByIdOrUsername } from '../../../lib/server/functions/getFullUserData';
+import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { API } from '../api';
 import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
@@ -382,7 +376,7 @@ API.v1.addRoute(
 				return API.v1.success({
 					user: {
 						...user,
-						rooms: Subscriptions.findByUserId(user._id, {
+						rooms: await Subscriptions.findByUserId(user._id, {
 							projection: {
 								rid: 1,
 								name: 1,
@@ -395,7 +389,7 @@ API.v1.addRoute(
 								t: 1,
 								name: 1,
 							},
-						}).fetch(),
+						}).toArray(),
 					},
 				});
 			}
@@ -754,7 +748,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute('users.2fa.sendEmailCode', {
-	post() {
+	async post() {
 		const { emailOrUsername } = this.bodyParams;
 
 		if (!emailOrUsername) {
@@ -764,12 +758,13 @@ API.v1.addRoute('users.2fa.sendEmailCode', {
 		const method = emailOrUsername.includes('@') ? 'findOneByEmailAddress' : 'findOneByUsername';
 		const userId = this.userId || Users[method](emailOrUsername, { fields: { _id: 1 } })?._id;
 
-		if (!userId) {
+		const user = await getUserForCheck(userId);
+		if (!userId || !user) {
 			// this.logger.error('[2fa] User was not found when requesting 2fa email code');
 			return API.v1.success();
 		}
 
-		emailCheck.sendEmailCode(getUserForCheck(userId));
+		await emailCheck.sendEmailCode(user);
 
 		return API.v1.success();
 	},
@@ -1034,7 +1029,7 @@ API.v1.addRoute(
 			}
 
 			// this method logs the user out automatically, if successful returns 1, otherwise 0
-			if (!Users.unsetLoginTokens(userId)) {
+			if (!(await UsersRaw.unsetLoginTokens(userId))) {
 				throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 			}
 
@@ -1106,40 +1101,38 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			Meteor.runAsUser(user._id, () => {
-				if (this.bodyParams.message || this.bodyParams.message === '') {
-					setStatusText(user._id, this.bodyParams.message);
-				}
-				if (this.bodyParams.status) {
-					const validStatus = ['online', 'away', 'offline', 'busy'];
-					if (validStatus.includes(this.bodyParams.status)) {
-						const { status } = this.bodyParams;
+			if (this.bodyParams.message || this.bodyParams.message === '') {
+				await setStatusText(user._id, this.bodyParams.message);
+			}
+			if (this.bodyParams.status) {
+				const validStatus = ['online', 'away', 'offline', 'busy'];
+				if (validStatus.includes(this.bodyParams.status)) {
+					const { status } = this.bodyParams;
 
-						if (status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
-							throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
-								method: 'users.setStatus',
-							});
-						}
-
-						Meteor.users.update(user._id, {
-							$set: {
-								status,
-								statusDefault: status,
-							},
-						});
-
-						const { _id, username, statusText, roles, name } = user;
-						void api.broadcast('presence.status', {
-							user: { status, _id, username, statusText, roles, name },
-							previousStatus: user.status,
-						});
-					} else {
-						throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
+					if (status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
+						throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
 							method: 'users.setStatus',
 						});
 					}
+
+					Meteor.users.update(user._id, {
+						$set: {
+							status,
+							statusDefault: status,
+						},
+					});
+
+					const { _id, username, statusText, roles, name } = user;
+					void api.broadcast('presence.status', {
+						user: { status, _id, username, statusText, roles, name },
+						previousStatus: user.status,
+					});
+				} else {
+					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
+						method: 'users.setStatus',
+					});
 				}
-			});
+			}
 
 			return API.v1.success();
 		},

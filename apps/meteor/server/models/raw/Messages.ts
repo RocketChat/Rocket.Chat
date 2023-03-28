@@ -755,44 +755,12 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
-	createRoomArchivedByRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('room-archived', roomId, '', user, readReceiptsEnabled);
-	}
-
-	createRoomUnarchivedByRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('room-unarchived', roomId, '', user, readReceiptsEnabled);
-	}
-
 	createRoomSetReadOnlyByRoomIdAndUser(roomId: string, user: IMessage['u'], readReceiptsEnabled: boolean): Promise<IMessage | null> {
 		return this.createWithTypeRoomIdMessageUserAndUnread('room-set-read-only', roomId, '', user, readReceiptsEnabled);
 	}
 
 	createRoomRemovedReadOnlyByRoomIdAndUser(roomId: string, user: IMessage['u'], readReceiptsEnabled: boolean): Promise<IMessage | null> {
 		return this.createWithTypeRoomIdMessageUserAndUnread('room-removed-read-only', roomId, '', user, readReceiptsEnabled);
-	}
-
-	createRoomAllowedReactingByRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('room-allowed-reacting', roomId, '', user, readReceiptsEnabled);
-	}
-
-	createRoomDisallowedReactingByRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('room-disallowed-reacting', roomId, '', user, readReceiptsEnabled);
 	}
 
 	unsetReactions(messageId: string): Promise<UpdateResult> {
@@ -902,7 +870,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findFilesByUserId(userId: string, options: FindOptions<IMessage> = {}): FindCursor<IMessage> {
+	findFilesByUserId(userId: string, options: FindOptions<IMessage> = {}): FindCursor<Pick<IMessage, 'file'>> {
 		const query = {
 			'u._id': userId,
 			'file._id': { $exists: true },
@@ -914,7 +882,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		rid: string,
 		excludePinned: boolean,
 		ignoreDiscussion = true,
-		ts: Date,
+		ts: Filter<IMessage>['ts'],
 		users: string[] = [],
 		ignoreThreads = true,
 		options: FindOptions<IMessage> = {},
@@ -935,7 +903,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	findDiscussionByRoomIdPinnedTimestampAndUsers(
 		rid: string,
 		excludePinned: boolean,
-		ts: Date,
+		ts: Filter<IMessage>['ts'],
 		users: string[] = [],
 		options: FindOptions<IMessage> = {},
 	): FindCursor<IMessage> {
@@ -1126,6 +1094,42 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		};
 
 		return this.find(query, options);
+	}
+
+	countVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+		roomId: string,
+		afterTimestamp: Date,
+		beforeTimestamp: Date,
+		types: MessageTypesValues[],
+		showThreadMessages = true,
+		inclusive = false,
+	): Promise<number> {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+			rid: roomId,
+			ts: {
+				[inclusive ? '$gte' : '$gt']: afterTimestamp,
+				[inclusive ? '$lte' : '$lt']: beforeTimestamp,
+			},
+			...(!showThreadMessages && {
+				$or: [
+					{
+						tmid: { $exists: false },
+					},
+					{
+						tshow: true,
+					},
+				],
+			}),
+			...(Array.isArray(types) &&
+				types.length > 0 && {
+					t: { $nin: types },
+				}),
+		};
+
+		return this.col.countDocuments(query);
 	}
 
 	async getLastTimestamp(options: FindOptions<IMessage> = { projection: { _id: 0, ts: 1 } }): Promise<Date | undefined> {
@@ -1438,7 +1442,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		roomId: string,
 		message: string,
 		user: Pick<IMessage['u'], '_id' | 'username'>,
-		unread: boolean,
+		unread?: boolean,
 		extraData?: Record<string, string>,
 	): Promise<IMessage | null> {
 		const record: Omit<IMessage, '_id' | '_updatedAt'> = {
@@ -1451,7 +1455,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				username: user.username,
 			},
 			groupable: false as const,
-			unread,
+			...(unread && { unread: true }),
 		};
 
 		const data = Object.assign(record, extraData);
@@ -1796,7 +1800,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			ignoreDiscussion = true,
 			ts,
 			users = [],
-		}: { rid: string; pinned: boolean; ignoreDiscussion?: boolean; ts: Date; users: string[] },
+		}: { rid: string; pinned: boolean; ignoreDiscussion?: boolean; ts: Filter<IMessage>['ts']; users: string[] },
 		options?: FindOptions<IMessage>,
 	): FindCursor<IMessage> {
 		const query: Filter<IMessage> = {
@@ -2110,6 +2114,25 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		};
 
 		return this.find(query);
+	}
+
+	countAllImportedMessagesWithFilesToDownload(): Promise<number> {
+		const query = {
+			'_importFile.downloadUrl': {
+				$exists: true,
+			},
+			'_importFile.rocketChatUrl': {
+				$exists: false,
+			},
+			'_importFile.downloaded': {
+				$ne: true,
+			},
+			'_importFile.external': {
+				$ne: true,
+			},
+		};
+
+		return this.col.countDocuments(query);
 	}
 
 	decreaseReplyCountById(_id: string, inc = -1): Promise<UpdateResult> {
