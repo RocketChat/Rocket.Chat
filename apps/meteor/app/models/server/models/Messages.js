@@ -44,26 +44,6 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData);
 	}
 
-	setImportFileRocketChatAttachment(importFileId, rocketChatUrl, attachment) {
-		const query = {
-			'_importFile.id': importFileId,
-		};
-
-		return this.update(
-			query,
-			{
-				$set: {
-					'_importFile.rocketChatUrl': rocketChatUrl,
-					'_importFile.downloaded': true,
-				},
-				$addToSet: {
-					attachments: attachment,
-				},
-			},
-			{ multi: true },
-		);
-	}
-
 	// FIND
 
 	findByRoomId(roomId, options) {

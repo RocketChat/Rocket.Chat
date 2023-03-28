@@ -3,9 +3,9 @@ import http from 'http';
 
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
+import { Messages } from '@rocket.chat/models';
 
 import { Base, ProgressStep, Selection } from '../../importer/server';
-import { Messages } from '../../models/server';
 import { FileUpload } from '../../file-upload/server';
 
 export class PendingFileImporter extends Base {
@@ -177,7 +177,7 @@ export class PendingFileImporter extends Base {
 												attachment.video_size = file.size;
 											}
 
-											Messages.setImportFileRocketChatAttachment(_importFile.id, url, attachment);
+											Promise.await(Messages.setImportFileRocketChatAttachment(_importFile.id, url, attachment));
 											completeFile(details);
 										});
 									} catch (error) {
