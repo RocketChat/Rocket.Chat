@@ -1,6 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
+import { Random } from '@rocket.chat/random';
 import type { Blaze } from 'meteor/blaze';
-import { Random } from 'meteor/random';
 import type { ReactNode } from 'react';
 import { createElement, Fragment, useState } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';

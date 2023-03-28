@@ -1,15 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
-export const mountIntegrationQueryBasedOnPermissions = (userId) => {
+export const mountIntegrationQueryBasedOnPermissions = async (userId) => {
 	if (!userId) {
 		throw new Meteor.Error('You must provide the userId to the "mountIntegrationQueryBasedOnPermissions" fucntion.');
 	}
-	const canViewAllOutgoingIntegrations = hasPermission(userId, 'manage-outgoing-integrations');
-	const canViewAllIncomingIntegrations = hasPermission(userId, 'manage-incoming-integrations');
-	const canViewOnlyOwnOutgoingIntegrations = hasPermission(userId, 'manage-own-outgoing-integrations');
-	const canViewOnlyOwnIncomingIntegrations = hasPermission(userId, 'manage-own-incoming-integrations');
+	const canViewAllOutgoingIntegrations = await hasPermissionAsync(userId, 'manage-outgoing-integrations');
+	const canViewAllIncomingIntegrations = await hasPermissionAsync(userId, 'manage-incoming-integrations');
+	const canViewOnlyOwnOutgoingIntegrations = await hasPermissionAsync(userId, 'manage-own-outgoing-integrations');
+	const canViewOnlyOwnIncomingIntegrations = await hasPermissionAsync(userId, 'manage-own-incoming-integrations');
 
 	const query = {};
 
@@ -36,7 +36,7 @@ export const mountIntegrationQueryBasedOnPermissions = (userId) => {
 	return query;
 };
 
-export const mountIntegrationHistoryQueryBasedOnPermissions = (userId, integrationId) => {
+export const mountIntegrationHistoryQueryBasedOnPermissions = async (userId, integrationId) => {
 	if (!userId) {
 		throw new Meteor.Error('You must provide the userId to the "mountIntegrationHistoryQueryBasedOnPermissions" fucntion.');
 	}
@@ -44,8 +44,8 @@ export const mountIntegrationHistoryQueryBasedOnPermissions = (userId, integrati
 		throw new Meteor.Error('You must provide the integrationId to the "mountIntegrationHistoryQueryBasedOnPermissions" fucntion.');
 	}
 
-	const canViewOnlyOwnOutgoingIntegrations = hasPermission(userId, 'manage-own-outgoing-integrations');
-	const canViewAllOutgoingIntegrations = hasPermission(userId, 'manage-outgoing-integrations');
+	const canViewOnlyOwnOutgoingIntegrations = await hasPermissionAsync(userId, 'manage-own-outgoing-integrations');
+	const canViewAllOutgoingIntegrations = await (userId, 'manage-outgoing-integrations');
 	if (!canViewAllOutgoingIntegrations && canViewOnlyOwnOutgoingIntegrations) {
 		return { 'integration._id': integrationId, 'integration._createdBy._id': userId };
 	}

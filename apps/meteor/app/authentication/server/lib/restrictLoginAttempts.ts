@@ -11,7 +11,7 @@ import type { ILoginAttempt } from '../ILoginAttempt';
 
 const logger = new Logger('LoginProtection');
 
-export const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date, failedAttempts: number): Promise<void> => {
+const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date, failedAttempts: number): Promise<void> => {
 	const channelToNotify = settings.get('Block_Multiple_Failed_Logins_Notify_Failed_Channel');
 	if (!channelToNotify) {
 		logger.error('Cannot notify failed logins: channel provided is invalid');
@@ -71,7 +71,7 @@ export const isValidLoginAttemptByIp = async (login: ILoginAttempt): Promise<boo
 		failedAttemptsSinceLastLoginOrBlock = await ServerEvents.countFailedAttemptsByIpSince(ip, new Date(lastTs));
 	}
 
-	const attemptsUntilBlock = settings.get('Block_Multiple_Failed_Logins_Attempts_Until_Block_By_Ip');
+	const attemptsUntilBlock = settings.get<number>('Block_Multiple_Failed_Logins_Attempts_Until_Block_By_Ip');
 
 	if (attemptsUntilBlock && failedAttemptsSinceLastLoginOrBlock < attemptsUntilBlock) {
 		return true;
@@ -88,7 +88,7 @@ export const isValidLoginAttemptByIp = async (login: ILoginAttempt): Promise<boo
 	await saveBlockedLogin(login, willBeBlockedUntil, ServerEventType.BLOCKED_AT_BY_IP);
 
 	if (settings.get('Block_Multiple_Failed_Logins_Notify_Failed')) {
-		notifyFailedLogin(ip, willBeBlockedUntil, failedAttemptsSinceLastLoginOrBlock);
+		await notifyFailedLogin(ip, willBeBlockedUntil, failedAttemptsSinceLastLoginOrBlock);
 	}
 
 	return false;
@@ -122,7 +122,7 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 		failedAttemptsSinceLastLoginOrBlock = await ServerEvents.countFailedAttemptsByUsernameSince(user.username, new Date(lastTs));
 	}
 
-	const attemptsUntilBlock = settings.get('Block_Multiple_Failed_Logins_Attempts_Until_Block_by_User');
+	const attemptsUntilBlock = settings.get<number>('Block_Multiple_Failed_Logins_Attempts_Until_Block_by_User');
 
 	if (attemptsUntilBlock && failedAttemptsSinceLastLoginOrBlock < attemptsUntilBlock) {
 		return true;
@@ -139,7 +139,7 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 	await saveBlockedLogin(login, willBeBlockedUntil, ServerEventType.BLOCKED_AT_BY_USERNAME);
 
 	if (settings.get('Block_Multiple_Failed_Logins_Notify_Failed')) {
-		notifyFailedLogin(user.username, willBeBlockedUntil, failedAttemptsSinceLastLoginOrBlock);
+		await notifyFailedLogin(user.username, willBeBlockedUntil, failedAttemptsSinceLastLoginOrBlock);
 	}
 
 	return false;

@@ -92,8 +92,8 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
 				await poFederationChannelServer1.content.sendMessage('hello world from server A');
 
-				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('hello world from server A');
-				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('hello world from server A');
+				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('hello world from server A');
+				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('hello world from server A');
 			});
 
 			test('expect to send a message from Server B to Server A', async ({ page }) => {
@@ -104,8 +104,8 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
 				await poFederationChannelServer2.content.sendMessage('hello world from server B');
 
-				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('hello world from server B');
-				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('hello world from server B');
+				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('hello world from server B');
+				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('hello world from server B');
 			});
 
 			test.describe('With multiple users', () => {
@@ -140,9 +140,9 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 					await poFederationChannelServer1.content.sendMessage('hello world from server A (creator)');
 
-					await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('hello world from server A (creator)');
-					await expect(poFederationChannel1ForUser2.content.lastUserMessage.locator('p')).toHaveText('hello world from server A (creator)');
-					await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('hello world from server A (creator)');
+					await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('hello world from server A (creator)');
+					await expect(poFederationChannel1ForUser2.content.lastUserMessageBody).toHaveText('hello world from server A (creator)');
+					await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('hello world from server A (creator)');
 					await pageForServer2.close();
 					await page2.close();
 				});
@@ -171,13 +171,13 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 					await poFederationChannel1ForUser2.content.sendMessage('hello world from server A (user 2)');
 					await poFederationChannel1ForUser2.content.sendMessage('hello world from server A (user 2) message 2');
 
-					await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText(
+					await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText(
 						'hello world from server A (user 2) message 2',
 					);
-					await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText(
+					await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText(
 						'hello world from server A (user 2) message 2',
 					);
-					await expect(poFederationChannel1ForUser2.content.lastUserMessage.locator('p')).toHaveText(
+					await expect(poFederationChannel1ForUser2.content.lastUserMessageBody).toHaveText(
 						'hello world from server A (user 2) message 2',
 					);
 
@@ -209,9 +209,9 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 					await poFederationChannelServer2.content.sendMessage('hello world from server B');
 
-					await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('hello world from server B');
-					await expect(poFederationChannel1ForUser2.content.lastUserMessage.locator('p')).toHaveText('hello world from server B');
-					await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('hello world from server B');
+					await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('hello world from server B');
+					await expect(poFederationChannel1ForUser2.content.lastUserMessageBody).toHaveText('hello world from server B');
+					await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('hello world from server B');
 					await pageForServer2.close();
 					await page2.close();
 				});
@@ -228,10 +228,10 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.content.sendMessage('😀 😀 hello world 🌎 from server A with emojis 😀 😀');
 
-				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText(
+				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText(
 					'😀 😀 hello world 🌎 from server A with emojis 😀 😀',
 				);
-				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText(
+				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText(
 					'😀 😀 hello world 🌎 from server A with emojis 😀 😀',
 				);
 			});
@@ -245,10 +245,10 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer2.content.sendMessage('😀 😀 hello world 🌎 from server B with emojis 😀 😀');
 
-				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText(
+				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText(
 					'😀 😀 hello world 🌎 from server B with emojis 😀 😀',
 				);
-				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText(
+				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText(
 					'😀 😀 hello world 🌎 from server B with emojis 😀 😀',
 				);
 			});
@@ -342,11 +342,8 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 				await poFederationChannelServer1.content.sendFileMessage('test_image.jpeg');
 				await poFederationChannelServer1.content.btnModalConfirm.click();
 
-				await expect(poFederationChannelServer1.content.getLastFileName).toContainText('test_image.jpeg');
-				await expect(poFederationChannelServer2.content.getLastFileName).toContainText('test_image.jpeg');
-
-				await expect(poFederationChannelServer1.content.getLastFileAttachmentContent.locator('img')).toBeVisible();
-				await expect(poFederationChannelServer2.content.getLastFileAttachmentContent.locator('img')).toBeVisible();
+				await expect(poFederationChannelServer1.content.lastMessageFileName).toContainText('test_image.jpeg');
+				await expect(poFederationChannelServer2.content.lastMessageFileName).toContainText('test_image.jpeg');
 			});
 
 			test('expect to send a file message (image) from Server B to Server A', async ({ page }) => {
@@ -358,11 +355,8 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 				await poFederationChannelServer2.content.sendFileMessage('test_image.jpeg');
 				await poFederationChannelServer2.content.btnModalConfirm.click();
 
-				await expect(poFederationChannelServer2.content.getLastFileName).toContainText('test_image.jpeg');
-				await expect(poFederationChannelServer1.content.getLastFileName).toContainText('test_image.jpeg');
-
-				await expect(poFederationChannelServer2.content.getLastFileAttachmentContent.locator('img')).toBeVisible();
-				await expect(poFederationChannelServer1.content.getLastFileAttachmentContent.locator('img')).toBeVisible();
+				await expect(poFederationChannelServer2.content.lastMessageFileName).toContainText('test_image.jpeg');
+				await expect(poFederationChannelServer1.content.lastMessageFileName).toContainText('test_image.jpeg');
 			});
 
 			test('expect to send a file message (video) from Server A to Server B', async ({ page }) => {
@@ -442,15 +436,13 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
 
-				await poFederationChannelServer1.content.inputMessage.type(`@${userFromServer2UsernameOnly}`);
+				await poFederationChannelServer1.content.inputMessage.type(`@${userFromServer2UsernameOnly}`, { delay: 100 });
+				await poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`).waitFor();
+				await expect(poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`)).toBeVisible();
 
-				await expect(poFederationChannelServer1.content.messagePopUpItems.locator(`text=${usernameWithDomainFromServer2}`)).toBeVisible();
-
-				await poFederationChannelServer2.content.inputMessage.type(`@${constants.RC_SERVER_1.username}`);
-
-				await expect(
-					poFederationChannelServer2.content.messagePopUpItems.locator(`text=${adminUsernameWithDomainFromServer1}`),
-				).toBeVisible();
+				await poFederationChannelServer2.content.inputMessage.type(`@${constants.RC_SERVER_1.username}`, { delay: 100 });
+				await poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`).waitFor();
+				await expect(poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`)).toBeVisible();
 
 				await poFederationChannelServer1.content.inputMessage.fill('');
 				await poFederationChannelServer2.content.inputMessage.fill('');
@@ -459,10 +451,10 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 					`hello @${usernameWithDomainFromServer2}, here's @${constants.RC_SERVER_1.username} from Server A`,
 				);
 
-				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText(
+				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText(
 					`hello ${usernameWithDomainFromServer2}, here's ${constants.RC_SERVER_1.username} from Server A`,
 				);
-				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText(
+				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText(
 					`hello ${userFromServer2UsernameOnly}, here's ${adminUsernameWithDomainFromServer1} from Server A`,
 				);
 			});
@@ -474,15 +466,13 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 				await poFederationChannelServer1.sidenav.openChat(createdChannelName);
 				await poFederationChannelServer2.sidenav.openChat(createdChannelName);
 
-				await poFederationChannelServer2.content.inputMessage.type(`@${constants.RC_SERVER_1.username}`);
+				await poFederationChannelServer2.content.inputMessage.type(`@${constants.RC_SERVER_1.username}`, { delay: 100 });
+				await poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`).waitFor();
+				await expect(poFederationChannelServer2.content.messagePopUpItems.locator(`role=listitem >> text="${adminUsernameWithDomainFromServer1}"`)).toBeVisible();
 
-				await expect(
-					poFederationChannelServer2.content.messagePopUpItems.locator(`text=${adminUsernameWithDomainFromServer1}`),
-				).toBeVisible();
-
-				await poFederationChannelServer1.content.inputMessage.type(`@${userFromServer2UsernameOnly}`);
-
-				await expect(poFederationChannelServer1.content.messagePopUpItems.locator(`text=${usernameWithDomainFromServer2}`)).toBeVisible();
+				await poFederationChannelServer1.content.inputMessage.type(`@${userFromServer2UsernameOnly}`, { delay: 100 });
+				await poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`).waitFor();
+				await expect(poFederationChannelServer1.content.messagePopUpItems.locator(`role=listitem >> text="${usernameWithDomainFromServer2}"`)).toBeVisible();
 
 				await poFederationChannelServer1.content.inputMessage.fill('');
 				await poFederationChannelServer2.content.inputMessage.fill('');
@@ -491,10 +481,10 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 					`hello @${adminUsernameWithDomainFromServer1}, here's @${userFromServer2UsernameOnly} from Server B`,
 				);
 
-				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText(
+				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText(
 					`hello ${constants.RC_SERVER_1.username}, here's ${usernameWithDomainFromServer2} from Server B`,
 				);
-				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText(
+				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText(
 					`hello ${adminUsernameWithDomainFromServer1}, here's ${userFromServer2UsernameOnly} from Server B`,
 				);
 			});
@@ -509,10 +499,10 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 					`hello @${usernameWithDomainFromServer2}, here's @${constants.RC_SERVER_1.username} from Server A, @all, @${usernameWithDomainFromServer2}`,
 				);
 
-				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText(
+				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText(
 					`hello ${usernameWithDomainFromServer2}, here's ${constants.RC_SERVER_1.username} from Server A, all, ${usernameWithDomainFromServer2}`,
 				);
-				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText(
+				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText(
 					`hello ${userFromServer2UsernameOnly}, here's ${adminUsernameWithDomainFromServer1} from Server A, all, ${userFromServer2UsernameOnly}`,
 				);
 			});
@@ -761,13 +751,13 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
 
-				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
-				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
+				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('message from Server A');
+				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('message from Server A');
 
 				await poFederationChannelServer1.content.editLastMessage('message from Server A - Edited');
 
-				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('message from Server A - Edited');
-				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('message from Server A - Edited');
+				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('message from Server A - Edited');
+				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('message from Server A - Edited');
 			});
 
 			test('expect to edit a message from Server B to Server A', async ({ page }) => {
@@ -782,13 +772,13 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer2.content.sendMessageUsingEnter('message from Server B');
 
-				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('message from Server B');
-				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('message from Server B');
+				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('message from Server B');
+				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('message from Server B');
 
 				await poFederationChannelServer2.content.editLastMessage('message from Server B - Edited');
 
-				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('message from Server B - Edited');
-				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('message from Server B - Edited');
+				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('message from Server B - Edited');
+				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('message from Server B - Edited');
 			});
 
 			test('expect to delete a message from Server A to Server B', async ({ page }) => {
@@ -803,8 +793,8 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
 
-				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
-				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
+				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('message from Server A');
+				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('message from Server A');
 
 				await poFederationChannelServer1.content.deleteLastMessage();
 				await expect(poFederationChannelServer1.toastSuccess).toBeVisible();
@@ -825,8 +815,8 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer2.content.sendMessageUsingEnter('message from Server A');
 
-				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
-				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
+				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('message from Server A');
+				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('message from Server A');
 
 				await poFederationChannelServer2.content.deleteLastMessage();
 				await expect(poFederationChannelServer2.toastSuccess).toBeVisible();
@@ -848,8 +838,8 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 				const message = 'message from Server B';
 				await poFederationChannelServer2.content.sendMessageUsingEnter(message);
 
-				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText(message);
-				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText(message);
+				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText(message);
+				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText(message);
 
 				await poFederationChannelServer1.content.replyInDm('reply directly in DM from server A');
 
@@ -872,8 +862,8 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 				const message = 'message from Server A';
 				await poFederationChannelServer1.content.sendMessageUsingEnter(message);
 
-				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText(message);
-				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText(message);
+				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText(message);
+				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText(message);
 
 				await poFederationChannelServer2.content.replyInDm('reply directly in DM from server B');
 
@@ -895,8 +885,8 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
 
-				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
-				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
+				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('message from Server A');
+				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('message from Server A');
 
 				await poFederationChannelServer1.content.starLastMessage();
 				await expect(
@@ -918,8 +908,8 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer2.content.sendMessageUsingEnter('message from Server A');
 
-				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
-				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
+				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('message from Server A');
+				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('message from Server A');
 
 				await poFederationChannelServer2.content.starLastMessage();
 				await expect(
@@ -941,8 +931,8 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
 
-				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
-				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
+				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('message from Server A');
+				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('message from Server A');
 
 				await poFederationChannelServer1.content.openLastMessageMenu();
 				await expect(poFederationChannelServer1.content.btnOptionReplyInThread).not.toBeVisible();
@@ -960,8 +950,8 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer2.content.sendMessageUsingEnter('message from Server A');
 
-				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
-				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
+				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('message from Server A');
+				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('message from Server A');
 
 				await poFederationChannelServer2.content.openLastMessageMenu();
 				await expect(poFederationChannelServer2.content.btnOptionReplyInThread).not.toBeVisible();
@@ -979,8 +969,8 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer1.content.sendMessageUsingEnter('message from Server A');
 
-				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
-				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
+				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('message from Server A');
+				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('message from Server A');
 
 				await poFederationChannelServer1.content.openLastMessageMenu();
 				await expect(poFederationChannelServer1.content.btnOptionStartDiscussion).not.toBeVisible();
@@ -998,8 +988,8 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer2.content.sendMessageUsingEnter('message from Server A');
 
-				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
-				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
+				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('message from Server A');
+				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('message from Server A');
 
 				await poFederationChannelServer2.content.openLastMessageMenu();
 				await expect(poFederationChannelServer2.content.btnOptionStartDiscussion).not.toBeVisible();
@@ -1017,8 +1007,8 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer2.content.sendMessageUsingEnter('message from Server A');
 
-				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
-				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
+				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('message from Server A');
+				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('message from Server A');
 
 				await poFederationChannelServer1.content.openLastMessageMenu();
 				await expect(poFederationChannelServer1.content.btnOptionPinMessage).not.toBeVisible();
@@ -1036,8 +1026,8 @@ test.describe.parallel('Federation - Channel Messaging', () => {
 
 				await poFederationChannelServer2.content.sendMessageUsingEnter('message from Server A');
 
-				await expect(poFederationChannelServer1.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
-				await expect(poFederationChannelServer2.content.lastUserMessage.locator('p')).toHaveText('message from Server A');
+				await expect(poFederationChannelServer1.content.lastUserMessageBody).toHaveText('message from Server A');
+				await expect(poFederationChannelServer2.content.lastUserMessageBody).toHaveText('message from Server A');
 
 				await poFederationChannelServer2.content.openLastMessageMenu();
 				await expect(poFederationChannelServer2.content.btnOptionPinMessage).not.toBeVisible();

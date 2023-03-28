@@ -1,0 +1,29 @@
+{
+	"name": "@rocket.chat/random",
+	"description": "Random number generator and utilities; Fork of Meteor's Random package",
+	"version": "1.2.1",
+	"main": "./dist/main.server.js",
+	"browser": "./dist/main.client.js",
+	"types": "./dist/main.server.d.ts",
+	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
+		"test": "jest"
+	},
+	"devDependencies": {
+		"@babel/core": "~7.20.5",
+		"@babel/preset-env": "~7.20.2",
+		"@rocket.chat/eslint-config": "workspace:^",
+		"@typescript-eslint/eslint-plugin": "^5.30.7",
+		"@typescript-eslint/parser": "^5.30.7",
+		"eslint": "^8.29.0",
+		"jest": "^27.5.1",
+		"ts-jest": "^27.1.5",
+		"typescript": "~4.6.4"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}

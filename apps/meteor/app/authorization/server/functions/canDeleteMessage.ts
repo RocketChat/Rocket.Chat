@@ -52,6 +52,3 @@ export const canDeleteMessageAsync = async (uid: string, { u, rid, ts }: { u: IU
 
 	return true;
 };
-
-export const canDeleteMessage = (uid: string, { u, rid, ts }: { u: IUser; rid: string; ts: number }): boolean =>
-	Promise.await(canDeleteMessageAsync(uid, { u, rid, ts }));

@@ -20,7 +20,7 @@ export const onAdded = (button: IUIActionButton): void =>
 					// Filters were applied in the applyButtonFilters function
 					// if the code made it this far, the button should be shown
 					groups: ['group', 'channel', 'live', 'team', 'direct', 'direct_multiple'],
-					action: (): Promise<any> =>
+					action: (): any =>
 						triggerActionButtonAction({
 							rid: room._id,
 							actionId: button.actionId,

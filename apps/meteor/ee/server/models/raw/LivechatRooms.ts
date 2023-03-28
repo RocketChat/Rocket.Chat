@@ -8,7 +8,7 @@ import { queriesLogger } from '../../../app/livechat-enterprise/server/lib/logge
 import { addQueryRestrictionsToRoomsModel } from '../../../app/livechat-enterprise/server/lib/query.helper';
 
 declare module '@rocket.chat/model-typings' {
-	export interface ILivechatRoomsModel {
+	interface ILivechatRoomsModel {
 		associateRoomsWithDepartmentToUnit: (departments: string[], unit: string) => Promise<void>;
 		removeUnitAssociationFromRooms: (unit: string) => Promise<void>;
 		updateDepartmentAncestorsById: (rid: string, ancestors: string[]) => Promise<UpdateResult>;
@@ -32,6 +32,7 @@ declare module '@rocket.chat/model-typings' {
 	}
 }
 
+// @ts-expect-error - Model is in JS, and types are getting weird :)
 export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoomsModel {
 	async unsetAllPredictedVisitorAbandonment(): Promise<void> {
 		return this.updateMany(

@@ -7,7 +7,7 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
 import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
-import { Logger } from '../../logger';
+import { Logger } from '../../logger/server';
 import { Users } from '../../models/server';
 import { isURL } from '../../../lib/utils/isURL';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
@@ -397,7 +397,7 @@ export class CustomOAuth {
 		const self = this;
 		const whitelisted = ['id', 'email', 'username', 'name', this.rolesClaim];
 
-		registerAccessTokenService(name, function (options) {
+		registerAccessTokenService(name, async function (options) {
 			check(
 				options,
 				Match.ObjectIncluding({

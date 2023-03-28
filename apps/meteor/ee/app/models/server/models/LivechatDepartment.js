@@ -51,5 +51,3 @@ overwriteClassOnLicense('livechat-enterprise', LivechatDepartment, {
 		return LivechatDepartmentModel.findActiveByUnitIds([businessUnit], { fields });
 	},
 });
-
-export default LivechatDepartment;

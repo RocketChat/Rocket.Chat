@@ -9,7 +9,7 @@ import { Notifications } from '../../../notifications/client';
 const TIMEOUT = 15000;
 const RENEW = TIMEOUT / 3;
 
-export const USER_ACTIVITY = 'user-activity';
+const USER_ACTIVITY = 'user-activity';
 
 export const USER_ACTIVITIES = {
 	USER_RECORDING: 'user-recording',
@@ -17,8 +17,6 @@ export const USER_ACTIVITIES = {
 	USER_UPLOADING: 'user-uploading',
 	USER_PLAYING: 'user-playing',
 };
-
-export type USER_ACTIVITIES_TYPES = 'user-recording' | 'user-typing' | 'user-uploading' | 'user-playing';
 
 const activityTimeouts = new Map();
 const activityRenews = new Map();

@@ -1,5 +1,7 @@
+import { FederationRoomEvents } from '@rocket.chat/models';
+
 import { clientLogger } from '../lib/logger';
-import { FederationRoomEvents, Subscriptions, Users } from '../../../models/server';
+import { Subscriptions, Users } from '../../../models/server';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
 import { getFederationDomain } from '../lib/getFederationDomain';
@@ -103,6 +105,6 @@ async function afterCreateRoom(roomOwner, room) {
 
 export const definition = {
 	hook: 'afterCreateRoom',
-	callback: (roomOwner, room) => Promise.await(afterCreateRoom(roomOwner, room)),
+	callback: afterCreateRoom,
 	id: 'federation-after-create-room',
 };

@@ -4,7 +4,7 @@ import { LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/LivechatTyped';
-import type { CloseRoomParams } from '../lib/LivechatTyped.d';
+import type { CloseRoomParams } from '../lib/LivechatTyped';
 
 type LivechatCloseCallbackParams = {
 	room: IOmnichannelRoom;
@@ -63,9 +63,4 @@ const resolveTranscriptData = (
 	return optionsTranscriptRequest.requestData;
 };
 
-callbacks.add(
-	'livechat.closeRoom',
-	(params: LivechatCloseCallbackParams) => Promise.await(sendEmailTranscriptOnClose(params)),
-	callbacks.priority.HIGH,
-	'livechat-send-email-transcript-on-close-room',
-);
+callbacks.add('livechat.closeRoom', sendEmailTranscriptOnClose, callbacks.priority.HIGH, 'livechat-send-email-transcript-on-close-room');

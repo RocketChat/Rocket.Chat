@@ -95,7 +95,7 @@ export interface IUserEmail {
 
 export interface IUserSettings {
 	profile: any;
-	preferences: {
+	preferences?: {
 		[key: string]: any;
 	};
 }
@@ -157,6 +157,18 @@ export interface IUser extends IRocketChatRecord {
 	federation?: {
 		avatarUrl?: string;
 		searchedServerNames?: string[];
+	};
+	banners?: {
+		[key: string]: {
+			id: string;
+			priority: number;
+			title: string;
+			text: string;
+			textArguments?: string[];
+			modifiers: ('large' | 'danger')[];
+			link: string;
+			read?: boolean;
+		};
 	};
 }
 

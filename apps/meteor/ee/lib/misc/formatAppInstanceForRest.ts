@@ -4,7 +4,7 @@ import type { AppLicenseValidationResult } from '@rocket.chat/apps-engine/server
 import type { ProxiedApp } from '@rocket.chat/apps-engine/server/ProxiedApp';
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 
-export interface IAppInfoRest extends IAppInfo {
+interface IAppInfoRest extends IAppInfo {
 	status: AppStatus;
 	languages: IAppStorageItem['languageContent'];
 	licenseValidation?: AppLicenseValidationResult;

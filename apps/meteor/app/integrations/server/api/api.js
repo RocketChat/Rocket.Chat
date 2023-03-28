@@ -1,7 +1,7 @@
 import { VM, VMScript } from 'vm2';
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { Livechat } from 'meteor/rocketchat:livechat';
 import Fiber from 'fibers';
 import Future from 'fibers/future';
@@ -11,7 +11,7 @@ import { Integrations } from '@rocket.chat/models';
 
 import * as s from '../../../../lib/utils/stringUtils';
 import { incomingLogger } from '../logger';
-import { processWebhookMessage } from '../../../lib/server';
+import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
 import * as Models from '../../../models/server';
 import { settings } from '../../../settings/server';
@@ -151,7 +151,7 @@ function removeIntegration(options, user) {
 	return API.v1.success();
 }
 
-function executeIntegrationRest() {
+async function executeIntegrationRest() {
 	incomingLogger.info({ msg: 'Post integration:', integration: this.integration.name });
 	incomingLogger.debug({ urlParams: this.urlParams, bodyParams: this.bodyParams });
 
@@ -270,7 +270,7 @@ function executeIntegrationRest() {
 	this.bodyParams.bot = { i: this.integration._id };
 
 	try {
-		const message = processWebhookMessage(this.bodyParams, this.user, defaultValues);
+		const message = await processWebhookMessage(this.bodyParams, this.user, defaultValues);
 		if (_.isEmpty(message)) {
 			return API.v1.failure('unknown-error');
 		}
@@ -353,7 +353,7 @@ class WebHookAPI extends APIClass {
 		);
 	}
 
-	shouldVerifyRateLimit(/* route */) {
+	async shouldVerifyRateLimit(/* route */) {
 		return (
 			settings.get('API_Enable_Rate_Limiter') === true &&
 			(process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true)
@@ -364,7 +364,7 @@ class WebHookAPI extends APIClass {
 	There is only one generic route propagated to Restivus which has URL-path-parameters for the integration and the token.
 	Since the rate-limiter operates on absolute routes, we need to add a limiter to the absolute url before we can validate it
 	*/
-	enforceRateLimit(objectForRateLimitMatch, request, response, userId) {
+	async enforceRateLimit(objectForRateLimitMatch, request, response, userId) {
 		const { method, url } = request;
 		const route = url.replace(`/${this.apiPath}`, '');
 		const nameRoute = this.getFullRouteName(route, [method.toLowerCase()]);

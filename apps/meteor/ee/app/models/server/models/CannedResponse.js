@@ -4,7 +4,7 @@ import { Base } from '../../../../../app/models/server';
 /**
  * Livechat Department model
  */
-export class CannedResponse extends Base {
+class CannedResponse extends Base {
 	constructor() {
 		super('canned_response');
 
@@ -16,6 +16,19 @@ export class CannedResponse extends Base {
 		);
 	}
 
+	/**
+	 * Create or update a canned response
+	 * @param {string} [_id]
+	 * @param {object} cannedResponseData
+	 * @param {string} cannedResponseData.shortcut
+	 * @param {string} cannedResponseData.text
+	 * @param {any} cannedResponseData.tags
+	 * @param {string} cannedResponseData.scope
+	 * @param {string} [cannedResponseData.userId]
+	 * @param {string} [cannedResponseData.departmentId]
+	 * @param {{ _id: string; username: string; }} [cannedResponseData.createdBy]
+	 * @param {Date} [cannedResponseData._createdAt]
+	 */
 	createOrUpdateCannedResponse(_id, { shortcut, text, tags, scope, userId, departmentId, createdBy, _createdAt }) {
 		const record = {
 			shortcut,

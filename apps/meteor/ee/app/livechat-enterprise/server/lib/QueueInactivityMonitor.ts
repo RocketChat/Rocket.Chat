@@ -4,7 +4,7 @@ import { MongoInternals } from 'meteor/mongo';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser, IOmnichannelRoom } from '@rocket.chat/core-typings';
-import { LivechatRooms as LivechatRoomsRaw, LivechatInquiry as LivechatInquiryRaw } from '@rocket.chat/models';
+import { LivechatRooms, LivechatInquiry as LivechatInquiryRaw } from '@rocket.chat/models';
 
 import { settings } from '../../../../../app/settings/server';
 import { Logger } from '../../../../../app/logger/server';
@@ -13,7 +13,7 @@ import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 
 const SCHEDULER_NAME = 'omnichannel_queue_inactivity_monitor';
 
-export class OmnichannelQueueInactivityMonitorClass {
+class OmnichannelQueueInactivityMonitorClass {
 	scheduler: Agenda;
 
 	running: boolean;
@@ -52,7 +52,7 @@ export class OmnichannelQueueInactivityMonitorClass {
 	}
 
 	createIndex(): void {
-		this._db.collection(SCHEDULER_NAME).createIndex(
+		void this._db.collection(SCHEDULER_NAME).createIndex(
 			{
 				'data.inquiryId': 1,
 			},
@@ -111,7 +111,7 @@ export class OmnichannelQueueInactivityMonitorClass {
 			return;
 		}
 
-		const room = Promise.await(LivechatRoomsRaw.findOneById(inquiry.rid));
+		const room = Promise.await(LivechatRooms.findOneById(inquiry.rid));
 		if (!room) {
 			this.logger.error(`Error: unable to find room ${inquiry.rid} for inquiry ${inquiryId} to close in queue inactivity monitor`);
 			return;
@@ -125,6 +125,6 @@ export class OmnichannelQueueInactivityMonitorClass {
 
 export const OmnichannelQueueInactivityMonitor = new OmnichannelQueueInactivityMonitorClass();
 
-Meteor.startup(() => {
-	OmnichannelQueueInactivityMonitor.start();
+Meteor.startup(async () => {
+	void OmnichannelQueueInactivityMonitor.start();
 });

@@ -1,12 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import _ from 'underscore';
 import moment from 'moment';
 import { SmarshHistory } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { Rooms, Messages, Users } from '../../../models/server';
-import { MessageTypes } from '../../../ui-utils';
+import { MessageTypes } from '../../../ui-utils/server';
 import { smarsh } from '../lib/rocketchat';
 import 'moment-timezone';
 
@@ -89,7 +88,7 @@ smarsh.generateEml = () => {
 					rows.push(`${message.attachments[0].title} (${_getLink(message.attachments[0])})`);
 				} else if (message.attachments) {
 					const attaches = [];
-					_.each(message.attachments, function _loopThroughMessageAttachments(a) {
+					message.attachments.forEach((a) => {
 						if (a.image_url) {
 							attaches.push(a.image_url);
 						}

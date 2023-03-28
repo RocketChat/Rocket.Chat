@@ -5,7 +5,7 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type OauthAppsGetParams = { clientId: string } | { appId: string };
+export type OauthAppsGetParams = { clientId: string } | { appId: string } | { _id: string };
 
 const oauthAppsGetParamsSchema = {
 	oneOf: [
@@ -27,6 +27,16 @@ const oauthAppsGetParamsSchema = {
 				},
 			},
 			required: ['appId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				appId: {
+					type: 'string',
+				},
+			},
+			required: ['_id'],
 			additionalProperties: false,
 		},
 	],

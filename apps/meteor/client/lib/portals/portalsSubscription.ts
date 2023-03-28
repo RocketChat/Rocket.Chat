@@ -1,5 +1,5 @@
 import { Emitter } from '@rocket.chat/emitter';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import type { ReactElement } from 'react';
 
 type SubscribedPortal = {

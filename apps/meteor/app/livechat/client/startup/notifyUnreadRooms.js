@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { settings } from '../../../settings';
-import { getUserPreference } from '../../../utils';
+import { settings } from '../../../settings/client';
+import { getUserPreference } from '../../../utils/client';
 import { Subscriptions, Users } from '../../../models/client';
 import { CustomSounds } from '../../../custom-sounds/client';
 

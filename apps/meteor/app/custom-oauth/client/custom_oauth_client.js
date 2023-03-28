@@ -2,7 +2,7 @@ import { capitalize } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import { OAuth } from 'meteor/oauth';
 

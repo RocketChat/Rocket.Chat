@@ -23,7 +23,7 @@ export class AppMessageBridge extends MessageBridge {
 
 		const convertedMessage = this.orch.getConverters()?.get('messages').convertAppMessage(message);
 
-		const sentMessage = executeSendMessage(convertedMessage.u._id, convertedMessage);
+		const sentMessage = await executeSendMessage(convertedMessage.u._id, convertedMessage);
 
 		return sentMessage._id;
 	}
@@ -48,7 +48,7 @@ export class AppMessageBridge extends MessageBridge {
 		const msg = this.orch.getConverters()?.get('messages').convertAppMessage(message);
 		const editor = Users.findOneById(message.editor.id);
 
-		updateMessage(msg, editor);
+		await updateMessage(msg, editor);
 	}
 
 	protected async notifyUser(user: IUser, message: IMessage, appId: string): Promise<void> {
@@ -60,7 +60,7 @@ export class AppMessageBridge extends MessageBridge {
 			return;
 		}
 
-		api.broadcast('notify.ephemeralMessage', user.id, msg.rid, {
+		void api.broadcast('notify.ephemeralMessage', user.id, msg.rid, {
 			...msg,
 		});
 	}
@@ -80,10 +80,11 @@ export class AppMessageBridge extends MessageBridge {
 
 		Users.findByIds(users, { fields: { _id: 1 } })
 			.fetch()
-			.forEach(({ _id }: { _id: string }) =>
-				api.broadcast('notify.ephemeralMessage', _id, room.id, {
-					...msg,
-				}),
+			.forEach(
+				({ _id }: { _id: string }) =>
+					void api.broadcast('notify.ephemeralMessage', _id, room.id, {
+						...msg,
+					}),
 			);
 	}
 

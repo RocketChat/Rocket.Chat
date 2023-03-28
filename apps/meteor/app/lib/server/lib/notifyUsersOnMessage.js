@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
+import { Subscriptions as SubscriptionsRaw, Rooms as RoomsRaw } from '@rocket.chat/models';
 
 import { Rooms, Subscriptions } from '../../../models/server';
 import { settings } from '../../../settings/server';
@@ -14,8 +14,7 @@ import { callbacks } from '../../../../lib/callbacks';
  *
  * @returns {boolean}
  */
-
-export function messageContainsHighlight(message, highlights) {
+function messageContainsHighlight(message, highlights) {
 	if (!highlights || highlights.length === 0) {
 		return false;
 	}
@@ -106,7 +105,7 @@ const getUnreadSettingCount = (roomType) => {
 	return settings.get(unreadSetting);
 };
 
-export async function updateUsersSubscriptions(message, room) {
+async function updateUsersSubscriptions(message, room) {
 	// Don't increase unread counter on thread messages
 	if (room != null && !message.tmid) {
 		const { toAll, toHere, mentionIds } = getMentions(message);
@@ -168,7 +167,7 @@ export async function notifyUsersOnMessage(message, room) {
 			(!message.tmid || message.tshow) &&
 			(!room.lastMessage || room.lastMessage._id === message._id)
 		) {
-			Rooms.setLastMessageById(message.rid, message);
+			await RoomsRaw.setLastMessageById(message.rid, message);
 		}
 
 		return message;
@@ -186,16 +185,11 @@ export async function notifyUsersOnMessage(message, room) {
 	}
 
 	// Update all the room activity tracker fields
-	Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, settings.get('Store_Last_Message') && message);
+	await RoomsRaw.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, settings.get('Store_Last_Message') && message);
 
 	await updateUsersSubscriptions(message, room);
 
 	return message;
 }
 
-callbacks.add(
-	'afterSaveMessage',
-	(message, room) => Promise.await(notifyUsersOnMessage(message, room)),
-	callbacks.priority.LOW,
-	'notifyUsersOnMessage',
-);
+callbacks.add('afterSaveMessage', (message, room) => notifyUsersOnMessage(message, room), callbacks.priority.LOW, 'notifyUsersOnMessage');

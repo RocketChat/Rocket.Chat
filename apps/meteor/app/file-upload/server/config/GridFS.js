@@ -4,7 +4,7 @@ import util from 'util';
 
 import { UploadFS } from 'meteor/jalik:ufs';
 
-import { Logger } from '../../../logger';
+import { Logger } from '../../../logger/server';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { getFileRange, setRangeHeaders } from '../lib/ranges';
 

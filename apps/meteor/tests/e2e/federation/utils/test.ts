@@ -54,9 +54,15 @@ export const { expect } = test;
 
 export const setupTesting = async (api: API) => {
 	await api.post('/settings/Message_AudioRecorderEnabled', { value: true });
-	await api.post('/settings/Message_AudioRecorderEnabled', { value: true });
 	await api.post('/settings/Accounts_ManuallyApproveNewUsers', { value: false });
 	await api.post('/settings/API_Enable_Rate_Limiter', { value: false });
+	await api.post('/settings/DDP_Rate_Limit_IP_Enabled', { value: false });
+	await api.post('/settings/DDP_Rate_Limit_User_Enabled', { value: false });
+	await api.post('/settings/DDP_Rate_Limit_Connection_Enabled', { value: false });
+	await api.post('/settings/DDP_Rate_Limit_Connection_Interval_Time', { value: false });
+	await api.post('/settings/DDP_Rate_Limit_User_By_Method_Enabled', { value: false });
+	await api.post('/settings/DDP_Rate_Limit_Connection_By_Method_Enabled', { value: false });
+	await api.post('/settings/UI_Use_Real_Name', { value: false });
 	await api.post('/settings/Rate_Limiter_Limit_RegisterUser', { value: 10 });
 	await api.post('/settings/Accounts_RegistrationForm', { value: 'Public' });
 	await api.post('/permissions.update', { permissions: [{ _id: 'force-delete-message', roles: ['admin', 'user'] }] });
@@ -65,6 +71,12 @@ export const setupTesting = async (api: API) => {
 export const tearDownTesting = async (api: API) => {
 	await api.post('/settings/Accounts_ManuallyApproveNewUsers', { value: true });
 	await api.post('/settings/API_Enable_Rate_Limiter', { value: true });
+	await api.post('/settings/DDP_Rate_Limit_IP_Enabled', { value: true });
+	await api.post('/settings/DDP_Rate_Limit_User_Enabled', { value: true });
+	await api.post('/settings/DDP_Rate_Limit_Connection_Enabled', { value: true });
+	await api.post('/settings/DDP_Rate_Limit_Connection_Interval_Time', { value: true });
+	await api.post('/settings/DDP_Rate_Limit_User_By_Method_Enabled', { value: true });
+	await api.post('/settings/DDP_Rate_Limit_Connection_By_Method_Enabled', { value: true });
 	await api.post('/settings/Rate_Limiter_Limit_RegisterUser', { value: 1 });
 	await api.post('/settings/Accounts_RegistrationForm', { value: 'Disabled' });
 };

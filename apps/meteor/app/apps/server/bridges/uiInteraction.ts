@@ -20,6 +20,6 @@ export class UiInteractionBridge extends UiIntBridge {
 			throw new Error('Invalid app provided');
 		}
 
-		api.broadcast('notify.uiInteraction', user.id, interaction);
+		void api.broadcast('notify.uiInteraction', user.id, interaction);
 	}
 }

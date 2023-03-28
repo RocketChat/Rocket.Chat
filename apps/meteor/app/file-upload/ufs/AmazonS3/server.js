@@ -2,7 +2,7 @@ import stream from 'stream';
 
 import { check } from 'meteor/check';
 import { UploadFS } from 'meteor/jalik:ufs';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import _ from 'underscore';
 import S3 from 'aws-sdk/clients/s3';
 
@@ -13,7 +13,7 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
  * @param options
  * @constructor
  */
-export class AmazonS3Store extends UploadFS.Store {
+class AmazonS3Store extends UploadFS.Store {
 	constructor(options) {
 		// Default options
 		// options.secretAccessKey,

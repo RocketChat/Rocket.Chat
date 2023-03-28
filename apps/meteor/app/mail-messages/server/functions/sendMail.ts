@@ -7,7 +7,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 
 import { placeholders } from '../../../utils/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../mailer/server/api';
 
 export const sendMail = function ({
 	from,
