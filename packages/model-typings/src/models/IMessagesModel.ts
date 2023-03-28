@@ -158,7 +158,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	findByMention(username: string, options?: FindOptions<IMessage>): FindCursor<IMessage>;
 	findVisibleThreadByThreadId(tmid: string, options?: FindOptions<IMessage>): FindCursor<IMessage>;
 
-	findFilesByUserId(userId: string, options?: FindOptions<IMessage>): FindCursor<IMessage>;
+	findFilesByUserId(userId: string, options?: FindOptions<IMessage>): FindCursor<Pick<IMessage, 'file'>>;
 	findVisibleByIds(ids: string[], options?: FindOptions<IMessage>): FindCursor<IMessage>;
 	findVisibleByRoomIdNotContainingTypes(
 		roomId: string,
@@ -170,7 +170,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		rid: string,
 		excludePinned: boolean,
 		ignoreDiscussion: boolean,
-		ts: Date,
+		ts: Filter<IMessage>['ts'],
 		users: string[],
 		ignoreThreads: boolean,
 		options?: FindOptions<IMessage>,
@@ -179,7 +179,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	findDiscussionByRoomIdPinnedTimestampAndUsers(
 		rid: string,
 		excludePinned: boolean,
-		ts: Date,
+		ts: Filter<IMessage>['ts'],
 		users: string[],
 		options?: FindOptions<IMessage>,
 	): FindCursor<IMessage>;
@@ -441,7 +441,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	): Promise<Omit<IMessage, '_updatedAt'>>;
 
 	findThreadsByRoomIdPinnedTimestampAndUsers(
-		data: { rid: string; pinned: boolean; ignoreDiscussion?: boolean; ts: Date; users: string[] },
+		data: { rid: string; pinned: boolean; ignoreDiscussion?: boolean; ts: Filter<IMessage>['ts']; users: string[] },
 		options?: FindOptions<IMessage>,
 	): FindCursor<IMessage>;
 
@@ -468,6 +468,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	countThreads(): Promise<number>;
 	addThreadFollowerByThreadId(tmid: string, userId: string): Promise<UpdateResult>;
 	findAllImportedMessagesWithFilesToDownload(): FindCursor<IMessage>;
+	countAllImportedMessagesWithFilesToDownload(): Promise<number>;
 	findAgentLastMessageByVisitorLastMessageTs(roomId: string, visitorLastMessageTs: Date): Promise<IMessage | null>;
 	removeThreadFollowerByThreadId(tmid: string, userId: string): Promise<UpdateResult>;
 
