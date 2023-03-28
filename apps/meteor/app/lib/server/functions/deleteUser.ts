@@ -24,7 +24,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 	const subscribedRooms = getSubscribedRoomsForUserWithDetails(userId);
 
 	if (shouldRemoveOrChangeOwner(subscribedRooms) && !confirmRelinquish) {
-		const rooms = getUserSingleOwnedRooms(subscribedRooms);
+		const rooms = await getUserSingleOwnedRooms(subscribedRooms);
 		throw new Meteor.Error('user-last-owner', '', rooms);
 	}
 

@@ -26,16 +26,10 @@ import { Team, api } from '@rocket.chat/core-services';
 import { Users, Subscriptions } from '../../../models/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
-import {
-	validateCustomFields,
-	saveUser,
-	saveCustomFieldsWithoutValidation,
-	setStatusText,
-	setUserAvatar,
-	saveCustomFields,
-} from '../../../lib/server';
+import { validateCustomFields, saveUser, saveCustomFieldsWithoutValidation, setUserAvatar, saveCustomFields } from '../../../lib/server';
 import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
 import { getFullUserDataByIdOrUsername } from '../../../lib/server/functions/getFullUserData';
+import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { API } from '../api';
 import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
@@ -1107,40 +1101,38 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			Meteor.runAsUser(user._id, () => {
-				if (this.bodyParams.message || this.bodyParams.message === '') {
-					setStatusText(user._id, this.bodyParams.message);
-				}
-				if (this.bodyParams.status) {
-					const validStatus = ['online', 'away', 'offline', 'busy'];
-					if (validStatus.includes(this.bodyParams.status)) {
-						const { status } = this.bodyParams;
+			if (this.bodyParams.message || this.bodyParams.message === '') {
+				await setStatusText(user._id, this.bodyParams.message);
+			}
+			if (this.bodyParams.status) {
+				const validStatus = ['online', 'away', 'offline', 'busy'];
+				if (validStatus.includes(this.bodyParams.status)) {
+					const { status } = this.bodyParams;
 
-						if (status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
-							throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
-								method: 'users.setStatus',
-							});
-						}
-
-						Meteor.users.update(user._id, {
-							$set: {
-								status,
-								statusDefault: status,
-							},
-						});
-
-						const { _id, username, statusText, roles, name } = user;
-						void api.broadcast('presence.status', {
-							user: { status, _id, username, statusText, roles, name },
-							previousStatus: user.status,
-						});
-					} else {
-						throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
+					if (status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
+						throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
 							method: 'users.setStatus',
 						});
 					}
+
+					Meteor.users.update(user._id, {
+						$set: {
+							status,
+							statusDefault: status,
+						},
+					});
+
+					const { _id, username, statusText, roles, name } = user;
+					void api.broadcast('presence.status', {
+						user: { status, _id, username, statusText, roles, name },
+						previousStatus: user.status,
+					});
+				} else {
+					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
+						method: 'users.setStatus',
+					});
 				}
-			});
+			}
 
 			return API.v1.success();
 		},
