@@ -870,7 +870,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findFilesByUserId(userId: string, options: FindOptions<IMessage> = {}): FindCursor<IMessage> {
+	findFilesByUserId(userId: string, options: FindOptions<IMessage> = {}): FindCursor<Pick<IMessage, 'file'>> {
 		const query = {
 			'u._id': userId,
 			'file._id': { $exists: true },

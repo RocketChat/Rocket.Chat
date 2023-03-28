@@ -158,7 +158,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	findByMention(username: string, options?: FindOptions<IMessage>): FindCursor<IMessage>;
 	findVisibleThreadByThreadId(tmid: string, options?: FindOptions<IMessage>): FindCursor<IMessage>;
 
-	findFilesByUserId(userId: string, options?: FindOptions<IMessage>): FindCursor<IMessage>;
+	findFilesByUserId(userId: string, options?: FindOptions<IMessage>): FindCursor<Pick<IMessage, 'file'>>;
 	findVisibleByIds(ids: string[], options?: FindOptions<IMessage>): FindCursor<IMessage>;
 	findVisibleByRoomIdNotContainingTypes(
 		roomId: string,
