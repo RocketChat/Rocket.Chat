@@ -624,7 +624,7 @@ export class APIClass extends Restivus {
 						data: {
 							userId: this.userId,
 							authToken: auth.token,
-							me: getUserInfo(this.user),
+							me: await getUserInfo(this.user),
 						},
 					};
 
