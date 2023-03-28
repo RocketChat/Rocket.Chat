@@ -132,15 +132,6 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	findOneBySlackBotIdAndSlackTs(slackBotId, slackTs) {
-		const query = {
-			slackBotId,
-			slackTs,
-		};
-
-		return this.findOne(query);
-	}
-
 	findOneBySlackTs(slackTs) {
 		const query = { slackTs };
 

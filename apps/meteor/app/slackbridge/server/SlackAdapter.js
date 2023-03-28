@@ -820,16 +820,19 @@ export default class SlackAdapter {
 
 			if (rocketChannel && rocketUser) {
 				// Find the Rocket message to delete
-				let rocketMsgObj = Messages.findOneBySlackBotIdAndSlackTs(slackMessage.previous_message.bot_id, slackMessage.previous_message.ts);
+				let rocketMsgObj = await MessagesRaw.findOneBySlackBotIdAndSlackTs(
+					slackMessage.previous_message.bot_id,
+					slackMessage.previous_message.ts,
+				);
 
 				if (!rocketMsgObj) {
 					// Must have been a Slack originated msg
 					const _id = this.rocket.createRocketID(slackMessage.channel, slackMessage.previous_message.ts);
-					rocketMsgObj = Messages.findOneById(_id);
+					rocketMsgObj = await MessagesRaw.findOneById(_id);
 				}
 
 				if (rocketMsgObj) {
-					deleteMessage(rocketMsgObj, rocketUser);
+					await deleteMessage(rocketMsgObj, rocketUser);
 					slackLogger.debug('Rocket message deleted by Slack');
 				}
 			}

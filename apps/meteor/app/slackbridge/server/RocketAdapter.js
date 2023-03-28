@@ -4,7 +4,7 @@ import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Random } from '@rocket.chat/random';
-import { Rooms as RoomsRaw } from '@rocket.chat/models';
+import { Messages as MessagesRaw, Rooms as RoomsRaw } from '@rocket.chat/models';
 
 import { rocketLogger } from './logger';
 import { callbacks } from '../../../lib/callbacks';
@@ -493,10 +493,11 @@ export default class RocketAdapter {
 				rocketMsgObj.pinnedBy = _.pick(rocketUser, '_id', 'username');
 			}
 			if (slackMessage.subtype === 'bot_message') {
-				Meteor.setTimeout(() => {
+				Meteor.setTimeout(async () => {
 					if (slackMessage.bot_id && slackMessage.ts) {
 						// Make sure that a message with the same bot_id and timestamp doesn't already exists
-						if (!Messages.findOneBySlackBotIdAndSlackTs(slackMessage.bot_id, slackMessage.ts)) {
+						const msg = await MessagesRaw.findOneBySlackBotIdAndSlackTs(slackMessage.bot_id, slackMessage.ts);
+						if (!msg) {
 							void sendMessage(rocketUser, rocketMsgObj, rocketChannel, true);
 						}
 					}
