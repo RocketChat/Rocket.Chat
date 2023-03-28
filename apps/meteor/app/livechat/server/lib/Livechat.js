@@ -126,7 +126,7 @@ export const Livechat = {
 				return onlineForDep;
 			}
 
-			const dep = LivechatDepartment.findOneById(department);
+			const dep = await LivechatDepartmentRaw.findOneById(department);
 			if (!dep?.fallbackForwardDepartment) {
 				return onlineForDep;
 			}
@@ -177,7 +177,7 @@ export const Livechat = {
 			room = null;
 		}
 
-		if (guest.department && !LivechatDepartment.findOneById(guest.department)) {
+		if (guest.department && !(await LivechatDepartmentRaw.findOneById(guest.department))) {
 			await LivechatVisitors.removeDepartmentById(guest._id);
 			guest = await LivechatVisitors.findOneById(guest._id);
 		}
@@ -1009,7 +1009,7 @@ export const Livechat = {
 			]),
 		});
 
-		const department = LivechatDepartment.findOneById(_id);
+		const department = await LivechatDepartmentRaw.findOneById(_id);
 		if (!department) {
 			throw new Meteor.Error('error-department-not-found', 'Department not found', {
 				method: 'livechat:saveDepartmentAgents',
@@ -1051,7 +1051,7 @@ export const Livechat = {
 			});
 		}
 
-		const department = LivechatDepartment.findOneById(_id, { projection: { _id: 1 } });
+		const department = await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1 } });
 
 		if (!department) {
 			throw new Meteor.Error('department-not-found', 'Department not found', {

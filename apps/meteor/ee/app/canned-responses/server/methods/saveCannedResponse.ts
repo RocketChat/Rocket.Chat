@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { LivechatDepartment } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
 import CannedResponse from '../../../models/server/models/CannedResponse';
-import LivechatDepartment from '../../../../../app/models/server/models/LivechatDepartment';
 import { Users } from '../../../../../app/models/server';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
 
@@ -77,7 +77,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (responseData.departmentId && !LivechatDepartment.findOneById(responseData.departmentId)) {
+		if (responseData.departmentId && !(await LivechatDepartment.findOneById(responseData.departmentId))) {
 			throw new Meteor.Error('error-invalid-department', 'Invalid department', {
 				method: 'saveCannedResponse',
 			});

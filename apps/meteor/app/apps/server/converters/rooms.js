@@ -1,7 +1,7 @@
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatDepartment } from '@rocket.chat/models';
 
-import { Rooms, Users, LivechatDepartment } from '../../../models/server';
+import { Rooms, Users } from '../../../models/server';
 import { transformMappedData } from '../../../../ee/lib/misc/transformMappedData';
 
 export class AppRoomsConverter {
@@ -48,7 +48,7 @@ export class AppRoomsConverter {
 
 		let departmentId;
 		if (room.department) {
-			const department = LivechatDepartment.findOneById(room.department.id);
+			const department = Promise.await(LivechatDepartment.findOneById(room.department.id));
 			departmentId = department._id;
 		}
 
