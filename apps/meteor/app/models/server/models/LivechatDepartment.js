@@ -18,6 +18,7 @@ export class LivechatDepartment extends Base {
 		this.tryEnsureIndex({ ancestors: 1 }, { sparse: true });
 	}
 
+	// Still in use by EE model
 	findEnabledWithAgents(fields = undefined) {
 		const query = {
 			numAgents: { $gt: 0 },

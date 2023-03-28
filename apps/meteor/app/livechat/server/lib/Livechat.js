@@ -146,7 +146,7 @@ export const Livechat = {
 	},
 
 	async getRequiredDepartment(onlineRequired = true) {
-		const departments = LivechatDepartment.findEnabledWithAgents();
+		const departments = await LivechatDepartmentRaw.findEnabledWithAgents();
 
 		for await (const dept of departments.fetch()) {
 			if (!dept.showOnRegistration) {
