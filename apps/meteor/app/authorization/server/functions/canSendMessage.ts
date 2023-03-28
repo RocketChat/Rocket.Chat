@@ -13,7 +13,7 @@ const subscriptionOptions = {
 	},
 };
 
-async function validateRoomMessagePermissionsAsync(
+export async function validateRoomMessagePermissionsAsync(
 	room: IRoom | null,
 	{ uid, username, type }: { uid: IUser['_id']; username: IUser['username']; type: IUser['type'] },
 	extraData?: Record<string, any>,
@@ -57,22 +57,4 @@ export async function canSendMessageAsync(
 
 	await validateRoomMessagePermissionsAsync(room, { uid, username, type }, extraData);
 	return room;
-}
-
-/* deprecated */
-export function canSendMessage(
-	rid: IRoom['_id'],
-	{ uid, username, type }: { uid: IUser['_id']; username: IUser['username']; type: IUser['type'] },
-	extraData?: Record<string, any>,
-): IRoom {
-	return Promise.await(canSendMessageAsync(rid, { uid, username, type }, extraData));
-}
-
-/* deprecated */
-export function validateRoomMessagePermissions(
-	room: IRoom,
-	{ uid, username, type }: { uid: IUser['_id']; username: IUser['username']; type: IUser['type'] },
-	extraData?: Record<string, any>,
-): void {
-	return Promise.await(validateRoomMessagePermissionsAsync(room, { uid, username, type }, extraData));
 }
