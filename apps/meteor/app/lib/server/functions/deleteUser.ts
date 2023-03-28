@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { FileProp } from '@rocket.chat/core-typings';
-import { Integrations, FederationServers, LivechatVisitors, LivechatDepartmentAgents, Messages as MessagesRaw } from '@rocket.chat/models';
+import { Integrations, FederationServers, LivechatVisitors, LivechatDepartmentAgents, Messages, Rooms } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../file-upload/server';
-import { Users, Subscriptions, Messages, Rooms } from '../../../models/server';
+import { Users, Subscriptions } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
@@ -37,20 +36,26 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 		switch (messageErasureType) {
 			case 'Delete':
 				const store = FileUpload.getStore('Uploads');
-				Messages.findFilesByUserId(userId).forEach(function ({ file }: { file: FileProp }) {
-					store.deleteById(file._id);
-				});
-				await MessagesRaw.removeByUserId(userId);
+				const cursor = Messages.findFilesByUserId(userId);
+
+				for await (const { file } of cursor) {
+					if (!file) {
+						continue;
+					}
+					await store.deleteById(file._id);
+				}
+
+				await Messages.removeByUserId(userId);
 				break;
 			case 'Unlink':
 				const rocketCat = Users.findOneById('rocket.cat');
 				const nameAlias = TAPi18n.__('Removed_User');
-				await MessagesRaw.unlinkUserId(userId, rocketCat._id, rocketCat.username, nameAlias);
+				await Messages.unlinkUserId(userId, rocketCat._id, rocketCat.username, nameAlias);
 				break;
 		}
 
-		Rooms.updateGroupDMsRemovingUsernamesByUsername(user.username, userId); // Remove direct rooms with the user
-		Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
+		await Rooms.updateGroupDMsRemovingUsernamesByUsername(user.username, userId); // Remove direct rooms with the user
+		await Rooms.removeDirectRoomContainingUsername(user.username); // Remove direct rooms with the user
 
 		Subscriptions.removeByUserId(userId); // Remove user subscriptions
 
@@ -85,7 +90,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 	Users.removeById(userId);
 
 	// update name and fname of group direct messages
-	updateGroupDMsName(user);
+	await updateGroupDMsName(user);
 
 	// Refresh the servers list
 	await FederationServers.refreshServers();

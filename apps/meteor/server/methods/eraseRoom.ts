@@ -47,7 +47,7 @@ export async function eraseRoom(rid: string, uid: string): Promise<void> {
 	const team = room.teamId && (await Team.getOneById(room.teamId));
 
 	if (team) {
-		const user = Meteor.user();
+		const user = await Meteor.userAsync();
 		Messages.createUserDeleteRoomFromTeamWithRoomIdAndUser(team.roomId, room.name, user);
 	}
 

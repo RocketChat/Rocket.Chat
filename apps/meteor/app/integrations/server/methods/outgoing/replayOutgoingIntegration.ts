@@ -45,7 +45,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		triggerHandler.replay(integration, history);
+		await triggerHandler.replay(integration, history);
 
 		return true;
 	},

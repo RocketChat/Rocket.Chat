@@ -16,6 +16,8 @@ import { getDefaultUserFields } from '../../utils/server/functions/getDefaultUse
 import { checkCodeForUser } from '../../2fa/server/code';
 import { checkPermissionsForInvocation, checkPermissions } from './api.helpers';
 import { isObject } from '../../../lib/utils/isObject';
+import { getUserInfo } from './helpers/getUserInfo';
+import { parseJsonQuery } from './helpers/parseJsonQuery';
 
 const logger = new Logger('API');
 
@@ -98,20 +100,12 @@ export class APIClass extends Restivus {
 		};
 	}
 
-	hasHelperMethods() {
-		return API.helperMethods.size !== 0;
-	}
-
-	getHelperMethods() {
-		return API.helperMethods;
-	}
-
-	getHelperMethod(name) {
-		return API.helperMethods.get(name);
-	}
-
 	addAuthMethod(method) {
 		this.authMethods.push(method);
+	}
+
+	async parseJsonQuery() {
+		return parseJsonQuery(this.request.route, this.userId, this.queryParams, this.logger, this.queryFields, this.queryOperations);
 	}
 
 	shouldAddRateLimitToRoute(options) {
@@ -287,14 +281,14 @@ export class APIClass extends Restivus {
 		routes.map((route) => this.namedRoutes(route, endpoints, apiVersion)).map(addRateLimitRuleToEveryRoute);
 	}
 
-	processTwoFactor({ userId, request, invocation, options, connection }) {
+	async processTwoFactor({ userId, request, invocation, options, connection }) {
 		if (!options.twoFactorRequired) {
 			return;
 		}
 		const code = request.headers['x-2fa-code'];
 		const method = request.headers['x-2fa-method'];
 
-		checkCodeForUser({ user: userId, code, method, options: options.twoFactorOptions, connection });
+		await checkCodeForUser({ user: userId, code, method, options: options.twoFactorOptions, connection });
 
 		invocation.twoFactorChecked = true;
 	}
@@ -450,7 +444,7 @@ export class APIClass extends Restivus {
 						};
 						Accounts._setAccountData(connection.id, 'loginToken', this.token);
 
-						api.processTwoFactor({
+						await api.processTwoFactor({
 							userId: this.userId,
 							request: this.request,
 							invocation,
@@ -460,6 +454,7 @@ export class APIClass extends Restivus {
 
 						this.queryOperations = options.queryOperations;
 						this.queryFields = options.queryFields;
+						this.parseJsonQuery = api.parseJsonQuery.bind(this);
 
 						result = (await DDP._CurrentInvocation.withValue(invocation, async () => originalAction.apply(this))) || API.v1.success();
 
@@ -491,12 +486,6 @@ export class APIClass extends Restivus {
 
 					return result;
 				};
-
-				for (const [name, helperMethod] of this.getHelperMethods()) {
-					endpoints[method][name] = function (...args) {
-						return Promise.await(helperMethod.apply(this, args));
-					};
-				}
 
 				// Allow the endpoints to make usage of the logger which respects the user's settings
 				endpoints[method].logger = logger;
@@ -585,9 +574,8 @@ export class APIClass extends Restivus {
 			'login',
 			{ authRequired: false },
 			{
-				post() {
+				async post() {
 					const args = loginCompatibility(this.bodyParams, this.request);
-					const getUserInfo = self.getHelperMethod('getUserInfo');
 
 					const invocation = new DDPCommon.MethodInvocation({
 						connection: {
@@ -599,7 +587,7 @@ export class APIClass extends Restivus {
 
 					let auth;
 					try {
-						auth = DDP._CurrentInvocation.withValue(invocation, () => Meteor.call('login', args));
+						auth = await DDP._CurrentInvocation.withValue(invocation, () => Meteor.callAsync('login', args));
 					} catch (error) {
 						let e = error;
 						if (error.reason === 'User not found') {
@@ -636,7 +624,7 @@ export class APIClass extends Restivus {
 						data: {
 							userId: this.userId,
 							authToken: auth.token,
-							me: getUserInfo(this.user),
+							me: await getUserInfo(this.user),
 						},
 					};
 

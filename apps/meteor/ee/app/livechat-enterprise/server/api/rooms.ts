@@ -46,7 +46,7 @@ API.v1.addRoute(
 				throw new Error('error-unserved-rooms-cannot-be-placed-onhold');
 			}
 
-			const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, { _id: 1 });
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, { projection: { _id: 1 } });
 			if (!subscription && !(await hasPermissionAsync(this.userId, 'on-hold-others-livechat-room'))) {
 				throw new Error('Not_authorized');
 			}
@@ -91,7 +91,7 @@ API.v1.addRoute(
 				throw new Error('This_conversation_is_already_closed');
 			}
 
-			const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, { _id: 1 });
+			const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId, { projection: { _id: 1 } });
 			if (!subscription && !(await hasPermissionAsync(this.userId, 'on-hold-others-livechat-room'))) {
 				throw new Error('Not_authorized');
 			}

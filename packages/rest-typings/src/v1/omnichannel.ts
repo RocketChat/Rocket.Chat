@@ -1194,10 +1194,10 @@ export const isGETOmnichannelContactProps = ajv.compile<GETOmnichannelContactPro
 
 type GETOmnichannelContactSearchProps = { email: string } | { phone: string };
 
-type LivechatAnalyticsAgentsAverageServiceTimeProps = {
+type LivechatAnalyticsAgentsAverageServiceTimeProps = PaginatedRequest<{
 	start: string;
 	end: string;
-};
+}>;
 
 const LivechatAnalyticsAgentsAverageServiceTimeSchema = {
 	type: 'object',
@@ -1264,10 +1264,10 @@ const POSTLivechatAgentStatusPropsSchema = {
 
 export const isPOSTLivechatAgentStatusProps = ajv.compile<POSTLivechatAgentStatusProps>(POSTLivechatAgentStatusPropsSchema);
 
-type LivechatAnalyticsAgentsTotalServiceTimeProps = {
+type LivechatAnalyticsAgentsTotalServiceTimeProps = PaginatedRequest<{
 	start: string;
 	end: string;
-};
+}>;
 
 const LivechatAnalyticsAgentsTotalServiceTimeSchema = {
 	type: 'object',
@@ -1287,11 +1287,11 @@ export const isLivechatAnalyticsAgentsTotalServiceTimeProps = ajv.compile<Livech
 	LivechatAnalyticsAgentsTotalServiceTimeSchema,
 );
 
-type LivechatAnalyticsAgentsAvailableForServiceHistoryProps = {
+type LivechatAnalyticsAgentsAvailableForServiceHistoryProps = PaginatedRequest<{
 	start: string;
 	end: string;
 	fullReport?: string;
-};
+}>;
 
 const LivechatAnalyticsAgentsAvailableForServiceHistorySchema = {
 	type: 'object',
@@ -1315,12 +1315,12 @@ export const isLivechatAnalyticsAgentsAvailableForServiceHistoryProps = ajv.comp
 	LivechatAnalyticsAgentsAvailableForServiceHistorySchema,
 );
 
-type LivechatAnalyticsDepartmentsAmountOfChatsProps = {
+type LivechatAnalyticsDepartmentsAmountOfChatsProps = PaginatedRequest<{
 	start: string;
 	end: string;
 	answered?: string;
 	departmentId?: string;
-};
+}>;
 
 const LivechatAnalyticsDepartmentsAmountOfChatsSchema = {
 	type: 'object',
@@ -1348,11 +1348,11 @@ export const isLivechatAnalyticsDepartmentsAmountOfChatsProps = ajv.compile<Live
 	LivechatAnalyticsDepartmentsAmountOfChatsSchema,
 );
 
-type LivechatAnalyticsDepartmentsAverageServiceTimeProps = {
+type LivechatAnalyticsDepartmentsAverageServiceTimeProps = PaginatedRequest<{
 	start: string;
 	end: string;
 	departmentId?: string;
-};
+}>;
 
 const LivechatAnalyticsDepartmentsAverageServiceTimeSchema = {
 	type: 'object',
@@ -1376,11 +1376,11 @@ export const isLivechatAnalyticsDepartmentsAverageServiceTimeProps = ajv.compile
 	LivechatAnalyticsDepartmentsAverageServiceTimeSchema,
 );
 
-type LivechatAnalyticsDepartmentsAverageChatDurationTimeProps = {
+type LivechatAnalyticsDepartmentsAverageChatDurationTimeProps = PaginatedRequest<{
 	start: string;
 	end: string;
 	departmentId?: string;
-};
+}>;
 
 const LivechatAnalyticsDepartmentsAverageChatDurationTimeSchema = {
 	type: 'object',
@@ -1403,11 +1403,11 @@ const LivechatAnalyticsDepartmentsAverageChatDurationTimeSchema = {
 export const isLivechatAnalyticsDepartmentsAverageChatDurationTimeProps =
 	ajv.compile<LivechatAnalyticsDepartmentsAverageChatDurationTimeProps>(LivechatAnalyticsDepartmentsAverageChatDurationTimeSchema);
 
-type LivechatAnalyticsDepartmentsTotalServiceTimeProps = {
+type LivechatAnalyticsDepartmentsTotalServiceTimeProps = PaginatedRequest<{
 	start: string;
 	end: string;
 	departmentId?: string;
-};
+}>;
 
 const LivechatAnalyticsDepartmentsTotalServiceTimeSchema = {
 	type: 'object',
@@ -1431,11 +1431,11 @@ export const isLivechatAnalyticsDepartmentsTotalServiceTimeProps = ajv.compile<L
 	LivechatAnalyticsDepartmentsTotalServiceTimeSchema,
 );
 
-type LivechatAnalyticsDepartmentsAverageWaitingTimeProps = {
+type LivechatAnalyticsDepartmentsAverageWaitingTimeProps = PaginatedRequest<{
 	start: string;
 	end: string;
 	departmentId?: string;
-};
+}>;
 
 const LivechatAnalyticsDepartmentsAverageWaitingTimeSchema = {
 	type: 'object',
@@ -1459,11 +1459,11 @@ export const isLivechatAnalyticsDepartmentsAverageWaitingTimeProps = ajv.compile
 	LivechatAnalyticsDepartmentsAverageWaitingTimeSchema,
 );
 
-type LivechatAnalyticsDepartmentsTotalTransferredChatsProps = {
+type LivechatAnalyticsDepartmentsTotalTransferredChatsProps = PaginatedRequest<{
 	start: string;
 	end: string;
 	departmentId?: string;
-};
+}>;
 
 const LivechatAnalyticsDepartmentsTotalTransferredChatsSchema = {
 	type: 'object',
@@ -1487,11 +1487,11 @@ export const isLivechatAnalyticsDepartmentsTotalTransferredChatsProps = ajv.comp
 	LivechatAnalyticsDepartmentsTotalTransferredChatsSchema,
 );
 
-type LivechatAnalyticsDepartmentsTotalAbandonedChatsProps = {
+type LivechatAnalyticsDepartmentsTotalAbandonedChatsProps = PaginatedRequest<{
 	start: string;
 	end: string;
 	departmentId?: string;
-};
+}>;
 
 const LivechatAnalyticsDepartmentsTotalAbandonedChatsSchema = {
 	type: 'object',
@@ -1515,11 +1515,11 @@ export const isLivechatAnalyticsDepartmentsTotalAbandonedChatsProps = ajv.compil
 	LivechatAnalyticsDepartmentsTotalAbandonedChatsSchema,
 );
 
-type LivechatAnalyticsDepartmentsPercentageAbandonedChatsProps = {
+type LivechatAnalyticsDepartmentsPercentageAbandonedChatsProps = PaginatedRequest<{
 	start: string;
 	end: string;
 	departmentId?: string;
-};
+}>;
 
 const LivechatAnalyticsDepartmentsPercentageAbandonedChatsSchema = {
 	type: 'object',

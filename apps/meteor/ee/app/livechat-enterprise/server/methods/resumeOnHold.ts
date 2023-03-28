@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { ILivechatVisitor } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, IMessage } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Messages, LivechatVisitors, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
+import { Messages, LivechatVisitors, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { Users } from '../../../../../app/models/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { callbacks } from '../../../../../lib/callbacks';
 import { methodDeprecationLogger } from '../../../../../app/lib/server/lib/deprecationWarningLogger';
@@ -75,10 +74,20 @@ Meteor.methods<ServerMethods>({
 		} = room;
 		await RoutingManager.takeInquiry(inquiry, { agentId, username }, options);
 
-		const onHoldChatResumedBy = options.clientAction ? Meteor.user() : Users.findOneById('rocket.cat');
+		const onHoldChatResumedBy = options.clientAction ? await Meteor.userAsync() : await Users.findOneById('rocket.cat');
+		if (!onHoldChatResumedBy) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'livechat:resumeOnHold',
+			});
+		}
 
 		const comment = await resolveOnHoldCommentInfo(options, room, onHoldChatResumedBy);
-		await Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, onHoldChatResumedBy, comment, 'resume-onHold');
+
+		const systemMsgUser: IMessage['u'] = {
+			_id: onHoldChatResumedBy._id,
+			username: onHoldChatResumedBy.username || '',
+		};
+		await Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, systemMsgUser, comment, 'resume-onHold');
 
 		Meteor.defer(() => callbacks.run('livechat:afterOnHoldChatResumed', room));
 	},

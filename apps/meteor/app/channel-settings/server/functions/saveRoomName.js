@@ -1,14 +1,15 @@
 import { Meteor } from 'meteor/meteor';
-import { Integrations } from '@rocket.chat/models';
+import { Integrations, Messages, Rooms } from '@rocket.chat/models';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 
-import { Rooms, Messages, Subscriptions } from '../../../models/server';
+import { Subscriptions } from '../../../models/server';
+import { settings } from '../../../settings/server';
 import { getValidRoomName } from '../../../utils/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
-const updateFName = (rid, displayName) => {
+const updateFName = async (rid, displayName) => {
 	return Rooms.setFnameById(rid, displayName) && Subscriptions.updateFnameByRoomId(rid, displayName);
 };
 
@@ -29,8 +30,8 @@ const updateRoomName = async (rid, displayName) => {
 };
 
 export async function saveRoomName(rid, displayName, user, sendMessage = true) {
-	const room = Rooms.findOneById(rid);
-	if (roomCoordinator.getRoomDirectives(room.t)?.preventRenaming()) {
+	const room = await Rooms.findOneById(rid);
+	if (roomCoordinator.getRoomDirectives(room.t).preventRenaming()) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 			function: 'RocketChat.saveRoomdisplayName',
 		});
@@ -42,7 +43,7 @@ export async function saveRoomName(rid, displayName, user, sendMessage = true) {
 	let update;
 
 	if (isDiscussion || isRoomFederated(room)) {
-		update = updateFName(rid, displayName);
+		update = await updateFName(rid, displayName);
 	} else {
 		update = await updateRoomName(rid, displayName);
 	}
@@ -53,7 +54,7 @@ export async function saveRoomName(rid, displayName, user, sendMessage = true) {
 
 	await Integrations.updateRoomName(room.name, displayName);
 	if (sendMessage) {
-		Messages.createRoomRenamedWithRoomIdRoomNameAndUser(rid, displayName, user);
+		await Messages.createRoomRenamedWithRoomIdRoomNameAndUser(rid, displayName, user, settings.get('Message_Read_Receipt_Enabled'));
 	}
 	callbacks.run('afterRoomNameChange', { rid, name: displayName, oldName: room.name });
 	return displayName;

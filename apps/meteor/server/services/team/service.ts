@@ -158,7 +158,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		if (updateRoom && typeof type !== 'undefined') {
-			saveRoomType(team.roomId, type === TEAM_TYPE.PRIVATE ? 'p' : 'c', user);
+			await saveRoomType(team.roomId, type === TEAM_TYPE.PRIVATE ? 'p' : 'c', user);
 		}
 
 		await Team.updateNameAndType(teamId, updateData);
