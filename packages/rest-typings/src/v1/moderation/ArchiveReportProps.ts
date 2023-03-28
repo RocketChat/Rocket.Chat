@@ -6,9 +6,9 @@ const ajv = new Ajv({ coerceTypes: true });
 // Define the type of the request body of call to hide the reported message
 
 export type ArchiveReportProps = {
-	userId: IUser['_id'];
-	actionTaken?: string;
+	userId?: IUser['_id'];
 	msgId?: IReport['message']['_id'];
+	actionTaken?: string;
 	reasonForHiding?: string;
 };
 
