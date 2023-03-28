@@ -47,7 +47,7 @@ export const ReadReceipt = {
 			return;
 		}
 
-		this.storeReadReceipts(await Messages.findVisibleUnreadMessagesByRoomAndDate(roomId, userLastSeen), roomId, userId);
+		this.storeReadReceipts(await Messages.findVisibleUnreadMessagesByRoomAndDate(roomId, userLastSeen).toArray(), roomId, userId);
 
 		updateMessages(room);
 	},
@@ -83,7 +83,7 @@ export const ReadReceipt = {
 			return;
 		}
 
-		this.storeReadReceipts(await Messages.findUnreadThreadMessagesByDate(tmid, userId, userLastSeen), message.rid, userId);
+		this.storeReadReceipts(await Messages.findUnreadThreadMessagesByDate(tmid, userId, userLastSeen).toArray(), message.rid, userId);
 	},
 
 	async storeReadReceipts(messages, roomId, userId, extraData = {}) {

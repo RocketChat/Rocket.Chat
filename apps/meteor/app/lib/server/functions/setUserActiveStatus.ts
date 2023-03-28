@@ -68,7 +68,7 @@ export async function setUserActiveStatus(userId: string, active: boolean, confi
 			});
 		}
 
-		const subscribedRooms = getSubscribedRoomsForUserWithDetails(userId);
+		const subscribedRooms = await getSubscribedRoomsForUserWithDetails(userId);
 		// give omnichannel rooms a special treatment :)
 		const chatSubscribedRooms = subscribedRooms.filter(({ t }) => t !== 'l');
 		const livechatSubscribedRooms = subscribedRooms.filter(({ t }) => t === 'l');

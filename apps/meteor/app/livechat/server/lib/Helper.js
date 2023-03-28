@@ -5,10 +5,10 @@ import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/l
 import { OmnichannelSourceType, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
 import { api } from '@rocket.chat/core-services';
-import { LivechatDepartmentAgents, Users as UsersRaw, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
+import { LivechatDepartmentAgents, Users as UsersRaw, LivechatInquiry, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
-import { Messages, Rooms, Subscriptions, Users, LivechatDepartment } from '../../../models/server';
+import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../../lib/callbacks';
@@ -375,7 +375,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 	const { servedBy } = roomTaken;
 	if (servedBy) {
 		if (oldServedBy && servedBy._id !== oldServedBy._id) {
-			RoutingManager.removeAllRoomSubscriptions(room, servedBy);
+			await RoutingManager.removeAllRoomSubscriptions(room, servedBy);
 		}
 		Messages.createUserJoinWithRoomIdAndUser(rid, {
 			_id: servedBy._id,
@@ -476,7 +476,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 
 	const { servedBy, chatQueued } = roomTaken;
 	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
-		const department = LivechatDepartment.findOneById(departmentId);
+		const department = await LivechatDepartment.findOneById(departmentId);
 		if (!department?.fallbackForwardDepartment) {
 			logger.debug(`Cannot forward room ${room._id}. Chat assigned to agent ${servedBy._id} (Previous was ${oldServedBy._id})`);
 			return false;
@@ -489,7 +489,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	if (oldServedBy) {
 		// if chat is queued then we don't ignore the new servedBy agent bcs at this
 		// point the chat is not assigned to him/her and it is still in the queue
-		RoutingManager.removeAllRoomSubscriptions(room, !chatQueued && servedBy);
+		await RoutingManager.removeAllRoomSubscriptions(room, !chatQueued && servedBy);
 	}
 	if (!chatQueued && servedBy) {
 		Messages.createUserJoinWithRoomIdAndUser(rid, servedBy);

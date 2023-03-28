@@ -17,7 +17,7 @@ const NotFoundState = ({ title, subtitle }: NotFoundProps): ReactElement => {
 	};
 
 	return (
-		<Box display='flex' justifyContent='center' height='full' backgroundColor='surface'>
+		<Box display='flex' justifyContent='center' height='full'>
 			<States>
 				<StatesIcon name='magnifier' />
 				<StatesTitle>{title}</StatesTitle>
