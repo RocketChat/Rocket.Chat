@@ -145,7 +145,7 @@ class PasswordPolicy {
 
 	generatePassword() {
 		if (this.enabled) {
-			for (let i = 0; i < 10; i++) {
+			for (let i = 0; i < 20; i++) {
 				const password = this._generatePassword();
 				if (this.validate(password)) {
 					return password;

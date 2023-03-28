@@ -179,12 +179,13 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 									onChange={handlePassword}
 									addon={<Icon name='key' size='x20' />}
 									autoComplete='new-password'
+									disabled={setRandomPassword}
 								/>
 							</Field.Row>
 							{errors && errors.password && <Field.Error>{errors.password}</Field.Error>}
 						</Field>
 					),
-					[t, password, handlePassword, errors],
+					[t, password, handlePassword, errors, setRandomPassword],
 				)}
 				{useMemo(
 					() => (
