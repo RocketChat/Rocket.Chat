@@ -7,10 +7,10 @@ import {
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
-import { LivechatInquiry } from '@rocket.chat/models';
+import { LivechatInquiry, LivechatDepartment } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
-import { Users, LivechatDepartment } from '../../../../models/server';
+import { Users } from '../../../../models/server';
 import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';
 import { deprecationWarning } from '../../../../api/server/helpers/deprecationWarning';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
@@ -25,7 +25,7 @@ API.v1.addRoute(
 			const { department } = this.queryParams;
 			const ourQuery: { status: string; department?: string } = { status: 'queued' };
 			if (department) {
-				const departmentFromDB = LivechatDepartment.findOneByIdOrName(department);
+				const departmentFromDB = await LivechatDepartment.findOneByIdOrName(department);
 				if (departmentFromDB) {
 					ourQuery.department = departmentFromDB._id;
 				}
