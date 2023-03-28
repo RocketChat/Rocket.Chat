@@ -1,10 +1,8 @@
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
-import { LivechatVisitors, Users, LivechatRooms, LivechatCustomField, LivechatInquiry, Rooms } from '@rocket.chat/models';
+import { LivechatVisitors, Users, LivechatRooms, LivechatCustomField, LivechatInquiry, Rooms, Subscriptions } from '@rocket.chat/models';
 import type { ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
-
-import { Subscriptions } from '../../../models/server';
 
 type RegisterContactProps = {
 	_id?: string;
@@ -102,7 +100,7 @@ export const Contacts = {
 				const { _id: rid } = room;
 				(await Rooms.setFnameById(rid, name)) &&
 					(await LivechatInquiry.setNameByRoomId(rid, name)) &&
-					Subscriptions.updateDisplayNameByRoomId(rid, name);
+					(await Subscriptions.updateDisplayNameByRoomId(rid, name));
 			}
 		}
 

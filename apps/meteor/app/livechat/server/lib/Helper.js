@@ -5,7 +5,14 @@ import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/l
 import { OmnichannelSourceType, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
 import { api } from '@rocket.chat/core-services';
-import { LivechatDepartmentAgents, Users as UsersRaw, LivechatInquiry, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
+import {
+	LivechatDepartmentAgents,
+	Users as UsersRaw,
+	LivechatInquiry,
+	LivechatRooms,
+	LivechatDepartment,
+	Subscriptions as SubscriptionsRaw,
+} from '@rocket.chat/models';
 
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
@@ -206,7 +213,7 @@ export const removeAgentFromSubscription = async (rid, { _id, username }) => {
 	const room = await LivechatRooms.findOneById(rid);
 	const user = Users.findOneById(_id);
 
-	Subscriptions.removeByRoomIdAndUserId(rid, _id);
+	await SubscriptionsRaw.removeByRoomIdAndUserId(rid, _id);
 	Messages.createUserLeaveWithRoomIdAndUser(rid, { _id, username });
 
 	Meteor.defer(() => {
