@@ -195,17 +195,17 @@ export class APIClass<TBasePath extends string = '/'> extends Restivus {
 		);
 	}
 
-	public success<T>(result?: T): SuccessResult<T> {
-		const response = {
-			statusCode: 200,
-			body: result,
-		};
-
+	public success<T>(result: T = {} as T): SuccessResult<T> {
 		if (isObject(result)) {
-			(response.body as Record<string, any>).success = true;
+			(result as Record<string, any>).success = true;
 		}
 
-		return response as SuccessResult<T>;
+		const finalResult = {
+			statusCode: 200,
+			body: result,
+		} as SuccessResult<T>;
+
+		return finalResult as SuccessResult<T>;
 	}
 
 	public failure<T>(result?: T): FailureResult<T>;
