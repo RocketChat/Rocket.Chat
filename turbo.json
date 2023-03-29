@@ -39,11 +39,11 @@
 		"ms": {
 			"dependsOn": ["^build"]
 		},
-		"@rocket.chat/ui-contexts#build": {
+		"@rocket.chat/meteor#build:ci": {
 			"dependsOn": ["^build"],
 			"cache": false
 		},
-		"@rocket.chat/meteor#build:ci": {
+		"publish": {
 			"dependsOn": ["^build"],
 			"cache": false
 		}

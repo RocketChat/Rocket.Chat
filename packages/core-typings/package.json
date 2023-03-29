@@ -25,7 +25,7 @@
 		"@rocket.chat/apps-engine": "^1.32.0",
 		"@rocket.chat/icons": "next",
 		"@rocket.chat/message-parser": "next",
-		"@rocket.chat/ui-kit": "next"
+		"@rocket.chat/ui-kit": "workspace:~"
 	},
 	"volta": {
 		"extends": "../../package.json"

@@ -1,0 +1,41 @@
+{
+  "name": "@rocket.chat/ui-kit",
+  "version": "0.32.0",
+  "description": "Interactive UI elements for Rocket.Chat Apps",
+  "author": {
+    "name": "Rocket.Chat",
+    "url": "https://rocket.chat/"
+  },
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "jest",
+    "publish": "yarn npm publish"
+  },
+  "devDependencies": {
+    "@rocket.chat/eslint-config": "workspace:~",
+    "@rocket.chat/prettier-config": "next",
+    "@types/eslint": "^8.4.10",
+    "@types/jest": "~27.4.1",
+    "eslint": "^8.29.0",
+    "eslint-plugin-anti-trojan-source": "^1.1.0",
+    "jest": "~27.5.1",
+    "ts-jest": "^27.1.4",
+    "typescript": "~4.6.4"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  }
+}

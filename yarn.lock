@@ -6659,7 +6659,7 @@ __metadata:
     "@rocket.chat/message-parser": next
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
-    "@rocket.chat/ui-kit": next
+    "@rocket.chat/ui-kit": "workspace:~"
     "@types/fibers": ^3.1.1
     eslint: ^8.29.0
     fibers: ^5.0.3
@@ -6677,7 +6677,7 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/icons": next
     "@rocket.chat/message-parser": next
-    "@rocket.chat/ui-kit": next
+    "@rocket.chat/ui-kit": "workspace:~"
     eslint: ^8.29.0
     mongodb: ^4.12.1
     prettier: ^2.7.1
@@ -6815,7 +6815,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/eslint-config@workspace:^, @rocket.chat/eslint-config@workspace:packages/eslint-config":
+"@rocket.chat/eslint-config@workspace:^, @rocket.chat/eslint-config@workspace:packages/eslint-config, @rocket.chat/eslint-config@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/eslint-config@workspace:packages/eslint-config"
   dependencies:
@@ -6969,7 +6969,7 @@ __metadata:
     "@rocket.chat/prettier-config": next
     "@rocket.chat/styled": next
     "@rocket.chat/ui-contexts": "workspace:^"
-    "@rocket.chat/ui-kit": next
+    "@rocket.chat/ui-kit": "workspace:~"
     "@rocket.chat/ui-video-conf": "workspace:^"
     "@storybook/addon-essentials": ~6.5.15
     "@storybook/addons": ~6.5.15
@@ -7138,7 +7138,7 @@ __metadata:
     "@rocket.chat/fuselage-tokens": next
     "@rocket.chat/logo": next
     "@rocket.chat/sdk": ^1.0.0-alpha.42
-    "@rocket.chat/ui-kit": next
+    "@rocket.chat/ui-kit": "workspace:~"
     "@storybook/addon-actions": ~6.5.15
     "@storybook/addon-backgrounds": ~6.5.15
     "@storybook/addon-essentials": ~6.5.15
@@ -7337,7 +7337,7 @@ __metadata:
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-composer": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
-    "@rocket.chat/ui-kit": next
+    "@rocket.chat/ui-kit": "workspace:~"
     "@rocket.chat/ui-theming": "workspace:^"
     "@rocket.chat/ui-video-conf": "workspace:^"
     "@rocket.chat/web-ui-registration": "workspace:^"
@@ -7913,7 +7913,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/eslint-config": "workspace:^"
     "@rocket.chat/message-parser": next
-    "@rocket.chat/ui-kit": next
+    "@rocket.chat/ui-kit": "workspace:~"
     "@types/jest": ^27.4.1
     ajv: ^8.11.0
     eslint: ^8.29.0
@@ -8184,12 +8184,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/ui-kit@npm:next":
-  version: 0.32.0-dev.219
-  resolution: "@rocket.chat/ui-kit@npm:0.32.0-dev.219"
-  checksum: f5dc504062b1c6cade95b63f3b8e433e89b0979a569996d95d4fbd2e6659ab57b64a8f8074f997d36c5ee7a8fe801cf18c9a210ee2e56f698b96c0985f3c1bae
-  languageName: node
-  linkType: hard
+"@rocket.chat/ui-kit@workspace:packages/ui-kit, @rocket.chat/ui-kit@workspace:~":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/ui-kit@workspace:packages/ui-kit"
+  dependencies:
+    "@rocket.chat/eslint-config": "workspace:~"
+    "@rocket.chat/prettier-config": next
+    "@types/eslint": ^8.4.10
+    "@types/jest": ~27.4.1
+    eslint: ^8.29.0
+    eslint-plugin-anti-trojan-source: ^1.1.0
+    jest: ~27.5.1
+    ts-jest: ^27.1.4
+    typescript: ~4.6.4
+  languageName: unknown
+  linkType: soft
 
 "@rocket.chat/ui-theming@workspace:^, @rocket.chat/ui-theming@workspace:ee/packages/ui-theming":
   version: 0.0.0-use.local
@@ -11862,7 +11871,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jest@npm:^27.4.1":
+"@types/jest@npm:^27.4.1, @types/jest@npm:~27.4.1":
   version: 27.4.1
   resolution: "@types/jest@npm:27.4.1"
   dependencies:
@@ -25868,7 +25877,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest@npm:^27.5.1":
+"jest@npm:^27.5.1, jest@npm:~27.5.1":
   version: 27.5.1
   resolution: "jest@npm:27.5.1"
   dependencies:
@@ -26485,7 +26494,7 @@ __metadata:
   resolution: "lamejs@https://github.com/zhuker/lamejs.git#commit=582bbba6a12f981b984d8fb9e1874499fed85675"
   dependencies:
     use-strict: 1.0.1
-  checksum: ed7f6f1c9629b53c17023eb04b4fc5a222e9c34fcb4a2f61214488fc64e5cfea825e4588d959c5fb20f3a91f0120103fa60307dd43df995d498ff5ddb6200cd9
+  checksum: fa829e0c170a65573e653b4d908a44aaf06a50e1bbade3b1217a300a03ccd59a537e294e2d924a584f9d70c7726a12d4c3af9c675436d48d08be5fb94b5eb400
   languageName: node
   linkType: hard
 
@@ -34072,7 +34081,7 @@ __metadata:
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/string-helpers": next
-    "@rocket.chat/ui-kit": next
+    "@rocket.chat/ui-kit": "workspace:~"
     "@types/cookie": ^0.5.1
     "@types/cookie-parser": ^1.4.3
     "@types/ejson": ^2.2.0
