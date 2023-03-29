@@ -46,7 +46,7 @@ export const removeUserFromRoom = async function (
 			if (room.teamMain) {
 				Messages.createUserRemovedFromTeamWithRoomIdAndUser(rid, user, extraData);
 			} else {
-				Messages.createUserRemovedWithRoomIdAndUser(rid, user, extraData);
+				await Message.saveSystemMessage('ru', rid, user.username || '', user, extraData);
 			}
 		} else if (room.teamMain) {
 			await Message.saveSystemMessage('ult', rid, removedUser.username || '', removedUser);
