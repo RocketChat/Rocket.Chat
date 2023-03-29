@@ -114,7 +114,7 @@ async function updateUsersSubscriptions(message, room) {
 
 		const unreadCount = getUnreadSettingCount(room.t);
 
-		await getUserIdsFromHighlights(room._id, message).forEach((uid) => userIds.add(uid));
+		(await getUserIdsFromHighlights(room._id, message)).forEach((uid) => userIds.add(uid));
 
 		// give priority to user mentions over group mentions
 		if (userIds.size > 0) {
