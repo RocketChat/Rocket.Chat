@@ -124,7 +124,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		message: string,
 		user: Pick<IMessage['u'], '_id' | 'username'>,
 		unread?: boolean,
-		extraData?: Record<string, string>,
+		extraData?: Partial<IMessage>,
 	): Promise<InsertOneResult<IMessage>>;
 	unsetReactions(messageId: string): Promise<UpdateResult>;
 	deleteOldOTRMessages(roomId: string, ts: Date): Promise<DeleteResult>;
@@ -294,13 +294,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	createUserJoinWithRoomIdAndUser(
 		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData?: Record<string, string>,
-	): Promise<Omit<IMessage, '_updatedAt'>>;
-	createTranscriptHistoryWithRoomIdMessageAndUser(
-		roomId: string,
-		message: string,
 		user: IMessage['u'],
 		readReceiptsEnabled?: boolean,
 		extraData?: Record<string, string>,

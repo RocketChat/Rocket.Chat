@@ -1429,7 +1429,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		message: string,
 		user: Pick<IMessage['u'], '_id' | 'username'>,
 		unread?: boolean,
-		extraData?: Record<string, string>,
+		extraData?: Partial<IMessage>,
 	): Promise<InsertOneResult<IMessage>> {
 		const record: Omit<IMessage, '_id' | '_updatedAt'> = {
 			t: type,
@@ -1459,33 +1459,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		extraData: Record<string, string> = {},
 	): Promise<Omit<IMessage, '_updatedAt'>> {
 		const type = 'livechat_navigation_history' as const;
-		const record: Omit<IMessage, '_id' | '_updatedAt'> = {
-			t: type,
-			rid: roomId,
-			ts: new Date(),
-			msg: message,
-			u: {
-				_id: user._id,
-				username: user.username,
-				name: '',
-			},
-			groupable: false,
-			...(readReceiptsEnabled && { unread: true }),
-		};
-
-		const data = Object.assign(record, extraData);
-
-		return { ...record, _id: (await this.updateOne(data, data, { upsert: true })).upsertedId as unknown as string };
-	}
-
-	async createTranscriptHistoryWithRoomIdMessageAndUser(
-		roomId: string,
-		message: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const type = 'livechat_transcript_history' as const;
 		const record: Omit<IMessage, '_id' | '_updatedAt'> = {
 			t: type,
 			rid: roomId,
