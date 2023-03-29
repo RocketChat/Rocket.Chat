@@ -16,7 +16,7 @@ declare module '@rocket.chat/model-typings' {
 	interface ILivechatRoomsModel {
 		associateRoomsWithDepartmentToUnit: (departments: string[], unit: string) => Promise<void>;
 		removeUnitAssociationFromRooms: (unit: string) => Promise<void>;
-		updateDepartmentAncestorsById: (rid: string, ancestors: string[]) => Promise<UpdateResult>;
+		updateDepartmentAncestorsById: (rid: string, ancestors?: string[]) => Promise<UpdateResult>;
 		unsetPredictedVisitorAbandonmentByRoomId(rid: string): Promise<UpdateResult>;
 		findAbandonedOpenRooms(date: Date): FindCursor<IOmnichannelRoom>;
 		setPredictedVisitorAbandonmentByRoomId(roomId: string, date: Date): Promise<UpdateResult>;
@@ -259,7 +259,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		queriesLogger.debug({ msg: `LivechatRoomsRawEE.removeUnitAssociationFromRooms`, result });
 	}
 
-	async updateDepartmentAncestorsById(rid: string, departmentAncestors: string[]) {
+	async updateDepartmentAncestorsById(rid: string, departmentAncestors?: string[]) {
 		const query = {
 			_id: rid,
 		};
