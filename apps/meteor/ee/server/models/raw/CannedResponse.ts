@@ -23,7 +23,7 @@ export class CannedResponseRaw extends BaseRaw<IOmnichannelCannedResponse> imple
 
 	async createOrUpdateCannedResponse(
 		_id: string,
-		{ shortcut, text, tags, scope, userId, departmentId, createdBy, _createdAt }: IOmnichannelCannedResponse,
+		{ shortcut, text, tags, scope, userId, departmentId, createdBy, _createdAt }: Omit<IOmnichannelCannedResponse, '_id' | '_updatedAt'>,
 	): Promise<Omit<IOmnichannelCannedResponse, '_updatedAt'>> {
 		const record = {
 			shortcut,

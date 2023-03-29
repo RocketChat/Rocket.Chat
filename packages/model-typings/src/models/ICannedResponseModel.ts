@@ -6,7 +6,7 @@ import type { IBaseModel } from './IBaseModel';
 export interface ICannedResponseModel extends IBaseModel<IOmnichannelCannedResponse> {
 	createOrUpdateCannedResponse(
 		_id: string,
-		{ shortcut, text, tags, scope, userId, departmentId, createdBy, _createdAt }: IOmnichannelCannedResponse,
+		{ shortcut, text, tags, scope, userId, departmentId, createdBy, _createdAt }: Omit<IOmnichannelCannedResponse, '_id' | '_updatedAt'>,
 	): Promise<Omit<IOmnichannelCannedResponse, '_updatedAt'>>;
 
 	findOneById(_id: string, options?: FindOptions<IOmnichannelCannedResponse>): Promise<IOmnichannelCannedResponse | null>;
