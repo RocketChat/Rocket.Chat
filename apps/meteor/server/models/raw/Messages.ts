@@ -812,12 +812,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.deleteMany(query);
 	}
 
-	updateOTRAck(_id: string, otrAck: string): Promise<UpdateResult> {
-		const query = { _id };
-		const update: UpdateFilter<IMessage> = { $set: { otrAck } };
-		return this.updateOne(query, update);
-	}
-
 	addTranslations(messageId: string, translations: Record<string, string>, providerName: string): Promise<UpdateResult> {
 		const updateObj: DeepWritable<UpdateFilter<IMessage>['$set']> = { translationProvider: providerName };
 		Object.keys(translations).forEach((key) => {

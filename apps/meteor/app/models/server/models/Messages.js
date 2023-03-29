@@ -34,12 +34,6 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
 	}
 
-	updateOTRAck(_id, otrAck) {
-		const query = { _id };
-		const update = { $set: { otrAck } };
-		return this.update(query, update);
-	}
-
 	// FIND
 
 	findByRoomId(roomId, options) {
