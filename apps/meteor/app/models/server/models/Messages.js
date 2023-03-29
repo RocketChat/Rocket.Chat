@@ -91,30 +91,6 @@ export class Messages extends Base {
 		return record;
 	}
 
-	createNavigationHistoryWithRoomIdMessageAndUser(roomId, message, user, extraData) {
-		const type = 'livechat_navigation_history';
-		const record = {
-			t: type,
-			rid: roomId,
-			ts: new Date(),
-			msg: message,
-			u: {
-				_id: user._id,
-				username: user.username,
-			},
-			groupable: false,
-		};
-
-		if (settings.get('Message_Read_Receipt_Enabled')) {
-			record.unread = true;
-		}
-
-		_.extend(record, extraData);
-
-		record._id = this.insertOrUpsert(record);
-		return record;
-	}
-
 	createOtrSystemMessagesWithRoomIdAndUser(roomId, user, id, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser(id, roomId, message, user, extraData);

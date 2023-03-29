@@ -129,14 +129,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	unsetReactions(messageId: string): Promise<UpdateResult>;
 	deleteOldOTRMessages(roomId: string, ts: Date): Promise<DeleteResult>;
 	updateOTRAck(_id: string, otrAck: string): Promise<UpdateResult>;
-	createRoomSettingsChangedWithTypeRoomIdMessageAndUser(
-		type: MessageTypesValues,
-		roomId: string,
-		message: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData?: Record<string, any>,
-	): Promise<Omit<IMessage, '_updatedAt'>>;
 	addTranslations(messageId: string, translations: Record<string, string>, providerName: string): Promise<UpdateResult>;
 	addAttachmentTranslations(messageId: string, attachmentIndex: string, translations: Record<string, string>): Promise<UpdateResult>;
 	setImportFileRocketChatAttachment(
@@ -245,14 +237,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	unlinkUserId(userId: string, newUserId: string, newUsername: string, newNameAlias: string): Promise<UpdateResult | Document>;
 	setSlackBotIdAndSlackTs(_id: string, slackBotId: string, slackTs: Date): Promise<UpdateResult>;
 	setMessageAttachments(_id: string, attachments: IMessage['attachments']): Promise<UpdateResult>;
-
-	createNavigationHistoryWithRoomIdMessageAndUser(
-		roomId: string,
-		message: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData?: Record<string, string>,
-	): Promise<Omit<IMessage, '_updatedAt'>>;
 
 	createOtrSystemMessagesWithRoomIdAndUser(
 		roomId: string,

@@ -22,7 +22,7 @@ import {
 	LivechatDepartmentAgents,
 	Rooms,
 } from '@rocket.chat/models';
-import { VideoConf, api } from '@rocket.chat/core-services';
+import { Message, VideoConf, api } from '@rocket.chat/core-services';
 
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -627,7 +627,7 @@ export const Livechat = {
 		}
 	},
 
-	savePageHistory(token, roomId, pageInfo) {
+	async savePageHistory(token, roomId, pageInfo) {
 		Livechat.logger.debug(`Saving page movement history for visitor with token ${token}`);
 		if (pageInfo.change !== Livechat.historyMonitorType) {
 			return;
@@ -653,7 +653,7 @@ export const Livechat = {
 			extraData._hidden = true;
 		}
 
-		return Messages.createNavigationHistoryWithRoomIdMessageAndUser(roomId, `${pageTitle} - ${pageUrl}`, user, extraData);
+		await Message.saveSystemMessage('livechat_navigation_history', roomId, `${pageTitle} - ${pageUrl}`, user, extraData);
 	},
 
 	async saveTransferHistory(room, transferData) {
@@ -1131,7 +1131,7 @@ export const Livechat = {
 			'livechat_video_call',
 		];
 
-		return Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, {
+		return MessagesRaw.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, {
 			sort: { ts: 1 },
 		}).toArray();
 	},

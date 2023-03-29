@@ -818,17 +818,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.updateOne(query, update);
 	}
 
-	createRoomSettingsChangedWithTypeRoomIdMessageAndUser(
-		type: MessageTypesValues,
-		roomId: string,
-		message: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, any> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser(type, roomId, message, user, readReceiptsEnabled, extraData);
-	}
-
 	addTranslations(messageId: string, translations: Record<string, string>, providerName: string): Promise<UpdateResult> {
 		const updateObj: DeepWritable<UpdateFilter<IMessage>['$set']> = { translationProvider: providerName };
 		Object.keys(translations).forEach((key) => {
@@ -1486,33 +1475,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		await Rooms.incMsgCountById(rid, 1);
 
 		return this.insertOne(data);
-	}
-
-	async createNavigationHistoryWithRoomIdMessageAndUser(
-		roomId: string,
-		message: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const type = 'livechat_navigation_history' as const;
-		const record: Omit<IMessage, '_id' | '_updatedAt'> = {
-			t: type,
-			rid: roomId,
-			ts: new Date(),
-			msg: message,
-			u: {
-				_id: user._id,
-				username: user.username,
-				name: '',
-			},
-			groupable: false,
-			...(readReceiptsEnabled && { unread: true }),
-		};
-
-		const data = Object.assign(record, extraData);
-
-		return { ...record, _id: (await this.updateOne(data, data, { upsert: true })).upsertedId as unknown as string };
 	}
 
 	createOtrSystemMessagesWithRoomIdAndUser(

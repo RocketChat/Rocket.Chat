@@ -9,7 +9,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			const { token, rid, pageInfo } = this.bodyParams;
-			const obj = Livechat.savePageHistory(token, rid, pageInfo);
+			const obj = await Livechat.savePageHistory(token, rid, pageInfo);
 			if (obj) {
 				// @ts-expect-error -- typings on savePageHistory are wrong
 				const { msg, navigation } = obj;
