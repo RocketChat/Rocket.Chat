@@ -39,15 +39,4 @@ overwriteClassOnLicense('livechat-enterprise', LivechatDepartment, {
 
 		return this.update(query, update, { multi: true });
 	},
-	findEnabledWithAgentsAndBusinessUnit(originalFn, businessUnit, fields = undefined) {
-		if (!businessUnit) {
-			return LivechatDepartmentModel.findEnabledWithAgents(fields);
-		}
-		const unit = LivechatUnit.findOneById(businessUnit, { fields: { _id: 1 } });
-		if (!unit) {
-			throw new Meteor.Error('error-unit-not-found', `Error! No Active Business Unit found with id: ${businessUnit}`);
-		}
-
-		return LivechatDepartmentModel.findActiveByUnitIds([businessUnit], { fields });
-	},
 });
