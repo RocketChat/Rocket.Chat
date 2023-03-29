@@ -410,7 +410,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		Rooms.unsetTeamById(room._id);
 
 		if (room.t === 'c') {
-			Messages.createUserRemoveRoomFromTeamWithRoomIdAndUser(team.roomId, room.name, user);
+			await Message.saveSystemMessage('user-removed-room-from-team', team.roomId, room.name || '', user);
 		}
 
 		return {

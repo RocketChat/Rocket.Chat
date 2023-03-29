@@ -260,13 +260,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		readReceiptsEnabled?: boolean,
 		extraData?: Record<string, string>,
 	): Promise<Omit<IMessage, '_updatedAt'>>;
-	createUserRemoveRoomFromTeamWithRoomIdAndUser(
-		roomId: string,
-		roomName: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData?: Record<string, string>,
-	): Promise<Omit<IMessage, '_updatedAt'>>;
 	createUserAddRoomToTeamWithRoomIdAndUser(
 		roomId: string,
 		roomName: string,

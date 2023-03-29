@@ -115,10 +115,6 @@ export class Messages extends Base {
 		return record;
 	}
 
-	createUserRemoveRoomFromTeamWithRoomIdAndUser(roomId, roomName, user, extraData) {
-		return this.createWithTypeRoomIdMessageAndUser('user-removed-room-from-team', roomId, roomName, user, extraData);
-	}
-
 	createUserDeleteRoomFromTeamWithRoomIdAndUser(roomId, roomName, user, extraData) {
 		return this.createWithTypeRoomIdMessageAndUser('user-deleted-room-from-team', roomId, roomName, user, extraData);
 	}
