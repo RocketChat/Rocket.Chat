@@ -41,7 +41,7 @@ interface IAPIProperties {
 	useDefaultAuth: boolean;
 	prettyJson: boolean;
 	defaultOptionsEndpoint: () => Promise<void>;
-	auth: { token: string; user: () => { userId: string; token: string } };
+	auth: { token: string; user: () => Promise<{ userId: string; token: string }> };
 }
 
 interface IAPIDefaultFieldsToExclude {
@@ -874,11 +874,14 @@ export class APIClass<TBasePath extends string = '/'> extends Restivus {
 	}
 }
 
-const getUserAuth = function _getUserAuth(...args: any[]): { token: string; user: (this: Restivus) => { userId: string; token: string } } {
+const getUserAuth = function _getUserAuth(...args: any[]): {
+	token: string;
+	user: (this: Restivus) => Promise<{ userId: string; token: string }>;
+} {
 	const invalidResults = [undefined, null, false];
 	return {
 		token: 'services.resume.loginTokens.hashedToken',
-		user() {
+		async user() {
 			if (this.bodyParams?.payload) {
 				this.bodyParams = JSON.parse(this.bodyParams.payload);
 			}
@@ -909,7 +912,7 @@ const getUserAuth = function _getUserAuth(...args: any[]): { token: string; user
 	};
 };
 
-const defaultOptionsEndpoint = function _defaultOptionsEndpoint(this: Restivus) {
+const defaultOptionsEndpoint = async function _defaultOptionsEndpoint(this: Restivus): Promise<void> {
 	// check if a pre-flight request
 	if (!this.request.headers['access-control-request-method'] && !this.request.headers.origin) {
 		this.done();
@@ -976,7 +979,7 @@ const createApi = function _createApi(options: { version?: string } = {}): APICl
 export const API: {
 	v1: APIClass<'/v1'>;
 	default: APIClass;
-	getUserAuth?: () => { token: string; user: (this: Restivus) => { userId: string; token: string } };
+	getUserAuth?: () => { token: string; user: (this: Restivus) => Promise<{ userId: string; token: string }> };
 	ApiClass?: typeof APIClass;
 	channels?: {
 		create: {

@@ -3,12 +3,12 @@ import { Meteor } from 'meteor/meteor';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
-import { Rooms, Subscriptions } from '@rocket.chat/models';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { Apps } from '../../../../ee/server/apps';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { callbacks } from '../../../../lib/callbacks';
-import { Messages, Users } from '../../../models/server';
+import { Messages } from '../../../models/server';
 import { getValidRoomName } from '../../../utils/server';
 import { createDirectRoom } from './createDirectRoom';
 
@@ -49,7 +49,7 @@ export const createRoom = async <T extends RoomType>(
 		});
 	}
 
-	const owner = Users.findOneByUsernameIgnoringCase(ownerUsername, { fields: { username: 1 } });
+	const owner = await Users.findOneByUsernameIgnoringCase(ownerUsername, { projection: { username: 1 } });
 
 	if (!ownerUsername || !owner) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -57,8 +57,8 @@ export const createRoom = async <T extends RoomType>(
 		});
 	}
 
-	if (!members.includes(owner)) {
-		members.push(owner.username);
+	if (owner.username && !(members as string[]).includes(owner.username)) {
+		(members as string[]).push(owner.username);
 	}
 
 	if (extraData.broadcast) {
@@ -133,8 +133,8 @@ export const createRoom = async <T extends RoomType>(
 		await Subscriptions.createWithRoomAndUser(room, owner, extra);
 	} else {
 		for await (const username of [...new Set(members as string[])]) {
-			const member = Users.findOneByUsername(username, {
-				fields: { 'username': 1, 'settings.preferences': 1, 'federated': 1 },
+			const member = await Users.findOneByUsername(username, {
+				projection: { 'username': 1, 'settings.preferences': 1, 'federated': 1 },
 			});
 			if (!member) {
 				continue;
