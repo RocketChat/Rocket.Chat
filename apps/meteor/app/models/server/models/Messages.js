@@ -130,12 +130,6 @@ export class Messages extends Base {
 
 		return this.remove(query);
 	}
-
-	removeByRoomId(roomId) {
-		const query = { rid: roomId };
-
-		return this.remove(query);
-	}
 }
 
 export default new Messages();
