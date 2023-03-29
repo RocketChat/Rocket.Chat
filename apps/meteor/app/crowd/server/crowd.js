@@ -165,7 +165,7 @@ export class CROWD {
 		}
 
 		if (crowdUser.displayname) {
-			_setRealName(id, crowdUser.displayname);
+			Promise.await(_setRealName(id, crowdUser.displayname));
 		}
 
 		Meteor.users.update(id, {

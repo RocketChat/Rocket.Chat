@@ -601,12 +601,6 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
-	findOneAdmin(admin, options) {
-		const query = { admin };
-
-		return this.findOne(query, options);
-	}
-
 	findOneByIdAndLoginToken(_id, token, options) {
 		const query = {
 			_id,

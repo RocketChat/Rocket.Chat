@@ -340,7 +340,7 @@ export class ImportDataConverter {
 				}
 
 				if (!data.username) {
-					data.username = generateUsernameSuggestion({
+					data.username = await generateUsernameSuggestion({
 						name: data.name,
 						emails,
 					});
