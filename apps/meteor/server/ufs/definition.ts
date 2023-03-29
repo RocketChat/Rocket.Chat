@@ -12,6 +12,7 @@ export type IFile = {
 	token: string;
 	uploading: boolean;
 	uploadedAt: Date;
+	modifiedAt?: Date;
 	url?: string;
 	originalStore?: string;
 	originalId?: string;

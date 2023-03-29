@@ -17,7 +17,7 @@ import { Filter } from './ufs-filter';
 import { StorePermissions } from './ufs-store-permissions';
 import { Tokens } from './ufs-tokens';
 
-type StoreOptions = {
+export type StoreOptions = {
 	collection?: Mongo.Collection<IFile>;
 	copyTo?: Store[];
 	filter?: Filter;
@@ -45,7 +45,7 @@ export class Store {
 
 	private permissions?: StorePermissions;
 
-	public checkToken: (token: string, fileId: string) => void;
+	public checkToken: (token: string, fileId: string) => boolean;
 
 	public copy: (
 		fileId: string,
@@ -401,7 +401,7 @@ export class Store {
 	 * @param fileId
 	 * @param callback
 	 */
-	delete(_fileId: string, _callback?: () => void) {
+	delete(_fileId: string, _callback?: (err?: Error) => void) {
 		throw new Error('delete is not implemented');
 	}
 
@@ -470,7 +470,7 @@ export class Store {
 	 * @param fileId
 	 * @param file
 	 */
-	getReadStream(_fileId: string, _file: IFile): stream.Readable {
+	getReadStream(_fileId: string, _file: IFile, _options?: { start?: number; end?: number }): stream.Readable {
 		throw new Error('Store.getReadStream is not implemented');
 	}
 

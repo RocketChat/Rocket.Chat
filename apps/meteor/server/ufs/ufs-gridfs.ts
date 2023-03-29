@@ -1,38 +1,21 @@
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2017 Karl STEIN
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
 import { MongoInternals } from 'meteor/mongo';
+import { GridFSBucket, ObjectId } from 'mongodb';
 
 import { UploadFS } from '.';
+import type { StoreOptions } from './ufs-store';
+import type { IFile } from './definition';
 
-/**
- * GridFS store
- * @param options
- * @constructor
- */
+type GridFSStoreOptions = StoreOptions & {
+	chunkSize: number;
+	collectionName: string;
+};
+
 export class GridFSStore extends UploadFS.Store {
-	constructor(options) {
+	protected chunkSize: number;
+
+	protected collectionName: string;
+
+	constructor(options: GridFSStoreOptions) {
 		// Default options
 		options = Object.assign(
 			{
@@ -52,21 +35,16 @@ export class GridFSStore extends UploadFS.Store {
 
 		super(options);
 
-		this.chunkSize = parseInt(options.chunkSize);
+		this.chunkSize = options.chunkSize;
 		this.collectionName = options.collectionName;
 
-		const mongo = MongoInternals.NpmModule;
+		// const mongo = MongoInternals.NpmModule;
 		const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
-		const mongoStore = new mongo.GridFSBucket(db, {
+		const mongoStore = new GridFSBucket(db, {
 			bucketName: options.collectionName,
 			chunkSizeBytes: this.chunkSize,
 		});
 
-		/**
-		 * Removes the file
-		 * @param fileId
-		 * @param callback
-		 */
 		this.delete = function (fileId, callback) {
 			if (typeof callback !== 'function') {
 				callback = function (err) {
@@ -77,23 +55,25 @@ export class GridFSStore extends UploadFS.Store {
 			}
 
 			const collectionName = `${options.collectionName}.files`;
-			db.collection(collectionName)
+			void db
+				.collection(collectionName)
 				.findOne({ _id: fileId })
 				.then((file) => {
 					if (file) {
-						mongoStore.delete(fileId, callback);
+						const id = new ObjectId(fileId);
+						void mongoStore
+							.delete(id)
+							.then(() => {
+								callback?.();
+							})
+							.catch((err) => {
+								callback?.(err);
+							});
 					}
 				});
 		};
 
-		/**
-		 * Returns the file read stream
-		 * @param fileId
-		 * @param file
-		 * @param options
-		 * @return {*}
-		 */
-		this.getReadStream = function (fileId, file, options) {
+		this.getReadStream = function (fileId: string, _file: IFile, options?: { end?: number }) {
 			options = Object.assign({}, options);
 			// https://mongodb.github.io/node-mongodb-native/4.4/interfaces/GridFSBucketReadStreamOptionsWithRevision.html#end
 			// according to the mongodb doc, the end is 0-based offset in bytes to stop streaming before -<< BEFORE
@@ -104,19 +84,13 @@ export class GridFSStore extends UploadFS.Store {
 			if (options?.end) {
 				options.end += 1;
 			}
-			return mongoStore.openDownloadStream(fileId, options);
+			const id = new ObjectId(fileId);
+			return mongoStore.openDownloadStream(id, options);
 		};
 
-		/**
-		 * Returns the file write stream
-		 * @param fileId
-		 * @param file
-		 * @param options
-		 * @return {*}
-		 */
-		// eslint-disable-next-line no-unused-vars
-		this.getWriteStream = function (fileId, file, options) {
-			const writeStream = mongoStore.openUploadStreamWithId(fileId, fileId, {
+		this.getWriteStream = function (fileId: string, file: IFile, _options?: any) {
+			const id = new ObjectId(fileId);
+			const writeStream = mongoStore.openUploadStreamWithId(id, fileId, {
 				chunkSizeBytes: this.chunkSize,
 				contentType: file.type,
 			});

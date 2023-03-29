@@ -1,28 +1,3 @@
-/* eslint-disable no-undef */
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2017 Karl STEIN
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
 import { createHash } from 'node:crypto';
 import domain from 'domain';
 import fs from 'fs';
@@ -45,13 +20,13 @@ Meteor.startup(() => {
 	fs.stat(path, (err) => {
 		if (err) {
 			// Create the temp directory
-			mkdirp(path, { mode }, (err) => {
-				if (err) {
-					console.error(`ufs: cannot create temp directory at "${path}" (${err.message})`);
-				} else {
+			mkdirp(path, { mode })
+				.then(() => {
 					console.log(`ufs: temp directory created at "${path}"`);
-				}
-			});
+				})
+				.catch((err) => {
+					console.error(`ufs: cannot create temp directory at "${path}" (${err.message})`);
+				});
 		} else {
 			// Set directory permissions
 			fs.chmod(path, mode, (err) => {
@@ -72,14 +47,20 @@ d.on('error', (err) => {
 // Listen HTTP requests to serve files
 WebApp.connectHandlers.use((req, res, next) => {
 	// Quick check to see if request should be caught
-	if (!req.url.includes(`/${UploadFS.config.storesPath}/`)) {
+	if (!req.url?.includes(`/${UploadFS.config.storesPath}/`)) {
 		next();
 		return;
 	}
 
 	// Remove store path
-	const parsedUrl = URL.parse(req.url);
-	const path = parsedUrl.pathname.substr(UploadFS.config.storesPath.length + 1);
+	const parsedUrl = URL.parse(req.url, true);
+	const path = parsedUrl.pathname?.substr(UploadFS.config.storesPath.length + 1);
+	const { query } = parsedUrl;
+
+	if (!path) {
+		next();
+		return;
+	}
 
 	const allowCORS = () => {
 		// res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
@@ -143,14 +124,14 @@ WebApp.connectHandlers.use((req, res, next) => {
 		}
 
 		// Check upload token
-		if (!store.checkToken(req.query.token, fileId)) {
+		if (!store.checkToken(typeof query.token === 'string' ? query.token : '', fileId)) {
 			res.writeHead(403);
 			res.end();
 			return;
 		}
 
 		// Check if duplicate
-		const unique = function (hash) {
+		const unique = function (hash: string) {
 			const originalId = store.getCollection().findOne({ hash, _id: { $ne: fileId } });
 			return originalId ? originalId._id : false;
 		};
@@ -158,8 +139,13 @@ WebApp.connectHandlers.use((req, res, next) => {
 		const spark = createHash('md5');
 		const tmpFile = UploadFS.getTempFilePath(fileId);
 		const ws = fs.createWriteStream(tmpFile, { flags: 'a' });
-		const fields = { uploading: true };
-		const progress = parseFloat(req.query.progress);
+		const fields: {
+			uploading: boolean;
+			progress?: number;
+			hash?: string;
+			originalId?: string | false;
+		} = { uploading: true };
+		const progress = parseFloat(typeof query.progress === 'string' ? query.progress : '0');
 		if (!isNaN(progress) && progress > 0) {
 			fields.progress = Math.min(progress, 1);
 		}
@@ -169,7 +155,7 @@ WebApp.connectHandlers.use((req, res, next) => {
 			spark.update(chunk);
 		});
 		// eslint-disable-next-line no-unused-vars
-		req.on('error', (err) => {
+		req.on('error', (_err) => {
 			res.writeHead(500);
 			res.end();
 		});
@@ -239,19 +225,17 @@ WebApp.connectHandlers.use((req, res, next) => {
 			return;
 		}
 
-		// Simulate read speed
-		if (UploadFS.config.simulateReadDelay) {
-			Meteor._sleepForMs(UploadFS.config.simulateReadDelay);
-		}
-
 		d.run(() => {
 			// Check if the file can be accessed
 			if (store.onRead.call(store, fileId, file, req, res) !== false) {
-				const options = {};
+				const options: {
+					start?: number;
+					end?: number;
+				} = {};
 				let status = 200;
 
 				// Prepare response headers
-				const headers = {
+				const headers: Record<string, any> = {
 					'Content-Type': file.type,
 					'Content-Length': file.size,
 				};

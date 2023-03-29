@@ -3,7 +3,6 @@ import { StorePermissions } from './ufs-store-permissions';
 type ConfigOptions = {
 	defaultStorePermissions?: StorePermissions;
 	https?: boolean;
-	simulateReadDelay?: number;
 	simulateUploadSpeed?: number;
 	storesPath?: string;
 	tmpDir?: string;
@@ -17,8 +16,6 @@ export class Config {
 
 	public https: RequiredConfigOptions['https'];
 
-	public simulateReadDelay: RequiredConfigOptions['simulateReadDelay'];
-
 	public simulateUploadSpeed: RequiredConfigOptions['simulateUploadSpeed'];
 
 	public storesPath: RequiredConfigOptions['storesPath'];
@@ -31,7 +28,6 @@ export class Config {
 		// Default options
 		options = {
 			https: false,
-			simulateReadDelay: 0,
 			simulateUploadSpeed: 0,
 			storesPath: 'ufs',
 			tmpDir: '/tmp/ufs',
@@ -45,9 +41,6 @@ export class Config {
 		}
 		if (typeof options.https !== 'boolean') {
 			throw new TypeError('Config: https is not a function');
-		}
-		if (typeof options.simulateReadDelay !== 'number') {
-			throw new TypeError('Config: simulateReadDelay is not a number');
 		}
 		if (typeof options.simulateUploadSpeed !== 'number') {
 			throw new TypeError('Config: simulateUploadSpeed is not a number');
@@ -64,7 +57,6 @@ export class Config {
 
 		this.defaultStorePermissions = options.defaultStorePermissions;
 		this.https = options.https;
-		this.simulateReadDelay = options.simulateReadDelay;
 		this.simulateUploadSpeed = options.simulateUploadSpeed;
 		this.storesPath = options.storesPath;
 		this.tmpDir = options.tmpDir;

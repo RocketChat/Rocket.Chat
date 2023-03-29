@@ -8,11 +8,12 @@ import { StorePermissions } from './ufs-store-permissions';
 import { Tokens } from './ufs-tokens';
 
 const stores: Record<string, Store> = {};
+const store: Record<string, typeof Store> = {};
 
 export const UploadFS = {
 	config: new Config(),
 
-	store: {},
+	store,
 
 	tokens: Tokens,
 
