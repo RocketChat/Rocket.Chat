@@ -5,7 +5,7 @@ import React from 'react';
 import GenericModal from '../../../../../components/GenericModal';
 import ChannelDeletionTable from './ChannelDeletionTable';
 
-export const StepTwo = ({
+const StepOne = ({
 	rooms,
 	// params,
 	// onChangeParams,
@@ -47,4 +47,4 @@ export const StepTwo = ({
 	);
 };
 
-export default StepTwo;
+export default StepOne;

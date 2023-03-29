@@ -19,6 +19,7 @@ import { notifyAppInstall } from '../marketplace/appInstall';
 import { canEnableApp } from '../../../app/license/server/license';
 import { appsCountHandler } from './endpoints/appsCountHandler';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
+import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -381,7 +382,10 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 					}
 
-					const user = orchestrator.getConverters().get('users').convertToApp(Meteor.user());
+					const user = orchestrator
+						.getConverters()
+						.get('users')
+						.convertToApp(await Meteor.userAsync());
 
 					const aff = await manager.add(buff, { marketplaceInfo, permissionsGranted, enable: false, user });
 					const info = aff.getAppInfo();
@@ -754,7 +758,10 @@ export class AppsRestApi {
 						return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 					}
 
-					const user = orchestrator.getConverters().get('users').convertToApp(Meteor.user());
+					const user = orchestrator
+						.getConverters()
+						.get('users')
+						.convertToApp(await Meteor.userAsync());
 
 					await manager.remove(prl.getID(), { user });
 
@@ -952,8 +959,8 @@ export class AppsRestApi {
 					const prl = manager.getOneById(this.urlParams.id);
 
 					if (prl) {
-						const { offset, count } = this.getPaginationItems();
-						const { sort, fields, query } = this.parseJsonQuery();
+						const { offset, count } = await getPaginationItems(this.queryParams);
+						const { sort, fields, query } = await this.parseJsonQuery();
 
 						const ourQuery = Object.assign({}, query, { appId: prl.getID() });
 						const options = {

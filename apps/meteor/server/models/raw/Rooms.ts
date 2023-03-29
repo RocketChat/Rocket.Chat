@@ -298,41 +298,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(query, options);
 	}
 
-	findChannelAndPrivateByNameStarting(
-		name: NonNullable<IRoom['name']>,
-		sIds: Array<IRoom['_id']>,
-		options: FindOptions<IRoom> = {},
-	): FindCursor<IRoom> {
-		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
-
-		const query: Filter<IRoom> = {
-			t: {
-				$in: ['c', 'p'],
-			},
-			name: nameRegex,
-			teamMain: {
-				$exists: false,
-			},
-			$or: [
-				{
-					teamId: {
-						$exists: false,
-					},
-				},
-				{
-					teamId: {
-						$exists: true,
-					},
-					_id: {
-						$in: sIds,
-					},
-				},
-			],
-		};
-
-		return this.find(query, options);
-	}
-
 	findRoomsByNameOrFnameStarting(name: NonNullable<IRoom['name'] | IRoom['fname']>, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
 
@@ -958,7 +923,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	setReactionsInLastMessage(roomId: IRoom['_id'], lastMessage): Promise<UpdateResult> {
-		return this.updateOne({ _id: roomId }, { $set: { 'lastMessage.reactions': lastMessage.reactions } });
+		return this.updateOne({ _id: roomId }, { $set: { 'lastMessage.reactions': reactions } });
 	}
 
 	unsetReactionsInLastMessage(roomId: IRoom['_id']): Promise<UpdateResult> {
@@ -1027,10 +992,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				},
 			},
 		);
-	}
-
-	setSentiment(roomId: IRoom['_id'], sentiment): Promise<UpdateResult> {
-		return this.updateOne({ _id: roomId }, { $set: { sentiment } });
 	}
 
 	setDescriptionById(_id: IRoom['_id'], description): Promise<UpdateResult> {
@@ -1198,9 +1159,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	// FIND
-
-	findById(roomId: IRoom['_id'], options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
-		return this.find({ _id: roomId }, options);
+	findById(roomId: IRoom['_id'], options: FindOptions<IRoom> = {}) {
+		return this.findOne({ _id: roomId }, options);
 	}
 
 	findByIds(roomIds: Array<IRoom['_id']>, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
@@ -1222,16 +1182,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		};
 
 		return this.find(query, options);
-	}
-
-	findByUserId(userId, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
-		const query: Filter<IRoom> = { 'u._id': userId };
-
-		return this.find(query, options);
-	}
+    }
 
 	async findBySubscriptionUserId(userId, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
-		const data = (await Subscriptions.cachedFindByUserId(userId, { projection: { rid: 1 } }).toArray()).map((item) => item.rid);
+		const data = (await Subscriptions.findByUserId(userId, { projection: { rid: 1 } }).toArray()).map((item) => item.rid);
 
 		const query: Filter<IRoom> = {
 			_id: {
@@ -1291,26 +1245,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		const query: Filter<IRoom> = {
 			t: type,
 			name,
-		};
-
-		// do not use cache
-		return this.find(query, options);
-	}
-
-	findByNameOrFNameAndType(name, type, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
-		const query: Filter<IRoom> = {
-			t: type,
-			teamId: {
-				$exists: false,
-			},
-			$or: [
-				{
-					name,
-				},
-				{
-					fname: name,
-				},
-			],
 		};
 
 		// do not use cache
@@ -1447,23 +1381,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(query, options);
 	}
 
-	findByTypeAndArchivationState(type, archivationstate, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
-		const query: Filter<IRoom> = { t: type };
-
-		if (archivationstate) {
-			query.archived = true;
-		} else {
-			query.archived = { $ne: true };
-		}
-
-		return this.find(query, options);
-	}
-
 	findGroupDMsByUids(uids: IRoom['uids'], options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		return this.find(
 			{
 				usersCount: { $gt: 2 },
-				uids,
+				uids: { $in: uids },
 			},
 			options,
 		);
@@ -1655,18 +1577,18 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	setJoinCodeById(_id: IRoom['_id'], joinCode): Promise<UpdateResult> {
-		let update;
+		let update : UpdateFilter<IRoom>;
 		const query: Filter<IRoom> = { _id };
 
 		if ((joinCode != null ? joinCode.trim() : undefined) !== '') {
-			update: UpdateFilter<IRoom> = {
+			update = {
 				$set: {
 					joinCodeRequired: true,
 					joinCode,
 				},
 			};
 		} else {
-			update: UpdateFilter<IRoom> = {
+			update = {
 				$set: {
 					joinCodeRequired: false,
 				},
@@ -1675,21 +1597,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				},
 			};
 		}
-
-		return this.updateOne(query, update);
-	}
-
-	setUserById(_id: IRoom['_id'], user): Promise<UpdateResult> {
-		const query: Filter<IRoom> = { _id };
-
-		const update: UpdateFilter<IRoom> = {
-			$set: {
-				u: {
-					_id: user._id,
-					username: user.username,
-				},
-			},
-		};
 
 		return this.updateOne(query, update);
 	}
@@ -1920,27 +1827,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateMany(query, update);
 	}
 
-	// INSERT
-	async createWithTypeNameUserAndUsernames(type, name, fname, user, usernames, extraData) {
-		const room = {
-			name,
-			fname,
-			t: type,
-			usernames,
-			msgs: 0,
-			usersCount: 0,
-			u: {
-				_id: user._id,
-				username: user.username,
-			},
-		};
-
-		Object.assign(room, extraData);
-
-		room._id = (await this.insertOne(room)).insertedId;
-		return room;
-	}
-
 	async createWithIdTypeAndName(_id: IRoom['_id'], type, name, extraData) {
 		const room = {
 			_id,
@@ -1984,37 +1870,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		};
 
 		return this.deleteMany(query);
-	}
-
-	// ############################
-	// Discussion
-	findDiscussionParentByNameStarting(name, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
-		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
-
-		const query: Filter<IRoom> = {
-			t: {
-				$in: ['c'],
-			},
-			name: nameRegex,
-			archived: { $ne: true },
-			prid: {
-				$exists: false,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	setLinkMessageById(_id: IRoom['_id'], linkMessageId): Promise<UpdateResult> {
-		const query: Filter<IRoom> = { _id };
-
-		const update: UpdateFilter<IRoom> = {
-			$set: {
-				linkMessageId,
-			},
-		};
-
-		return this.updateOne(query, update);
 	}
 
 	countDiscussions(): Promise<number> {

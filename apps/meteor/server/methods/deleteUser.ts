@@ -55,7 +55,7 @@ Meteor.methods<ServerMethods>({
 		callbacks.run('afterDeleteUser', user);
 
 		// App IPostUserDeleted event hook
-		await Apps.triggerEvent(AppEvents.IPostUserDeleted, { user, performedBy: Meteor.user() });
+		await Apps.triggerEvent(AppEvents.IPostUserDeleted, { user, performedBy: await Meteor.userAsync() });
 
 		return true;
 	},

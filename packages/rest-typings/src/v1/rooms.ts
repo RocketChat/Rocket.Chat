@@ -462,7 +462,7 @@ export type RoomsEndpoints = {
 
 	'/v1/rooms.info': {
 		GET: (params: RoomsInfoProps) => {
-			room: IRoom;
+			room: IRoom | undefined;
 		};
 	};
 

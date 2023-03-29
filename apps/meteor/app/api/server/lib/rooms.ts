@@ -1,10 +1,9 @@
 import type { IRoom, ISubscription, RoomAdminFieldsType, RoomType } from '@rocket.chat/core-typings';
-import { Rooms } from '@rocket.chat/models';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
 import type { FindOptions, Sort } from 'mongodb';
 
 import { adminFields } from '../../../../lib/rooms/adminFields';
 import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Subscriptions } from '../../../models/server';
 
 export async function findAdminRooms({
 	uid,
@@ -83,9 +82,9 @@ export async function findChannelAndPrivateAutocomplete({ uid, selector }: { uid
 		},
 	};
 
-	const userRoomsIds = Subscriptions.cachedFindByUserId(uid, { fields: { rid: 1 } })
-		.fetch()
-		.map((item: Pick<ISubscription, 'rid'>) => item.rid);
+	const userRoomsIds = (await Subscriptions.findByUserId(uid, { projection: { rid: 1 } }).toArray()).map(
+		(item: Pick<ISubscription, 'rid'>) => item.rid,
+	);
 
 	const rooms = await Rooms.findRoomsWithoutDiscussionsByRoomIds(selector.name, userRoomsIds, options).toArray();
 
@@ -133,9 +132,9 @@ export async function findChannelAndPrivateAutocompleteWithPagination({
 	items: IRoom[];
 	total: number;
 }> {
-	const userRoomsIds = Subscriptions.cachedFindByUserId(uid, { fields: { rid: 1 } })
-		.fetch()
-		.map((item: Pick<ISubscription, 'rid'>) => item.rid);
+	const userRoomsIds = (await Subscriptions.findByUserId(uid, { projection: { rid: 1 } }).toArray()).map(
+		(item: Pick<ISubscription, 'rid'>) => item.rid,
+	);
 
 	const options: FindOptions<IRoom> = {
 		projection: {
@@ -178,7 +177,7 @@ export async function findRoomsAvailableForTeams({ uid, name }: { uid: string; n
 	};
 
 	const userRooms = (
-		Subscriptions.findByUserIdAndRoles(uid, ['owner'], { fields: { rid: 1 } }).fetch() as Pick<ISubscription, 'rid'>[]
+		(await Subscriptions.findByUserIdAndRoles(uid, ['owner'], { projection: { rid: 1 } }).toArray()) as Pick<ISubscription, 'rid'>[]
 	).map((item) => item.rid);
 
 	const rooms = await Rooms.findChannelAndGroupListWithoutTeamsByNameStartingByOwner(name, userRooms, options).toArray();
