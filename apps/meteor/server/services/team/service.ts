@@ -30,7 +30,6 @@ import { checkUsernameAvailability } from '../../../app/lib/server/functions/che
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
-import { Messages } from '../../../app/models/server';
 import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomType } from '../../../app/channel-settings/server/functions/saveRoomType';
 
@@ -359,7 +358,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			}
 
 			if (room.t === 'c') {
-				Messages.createUserAddRoomToTeamWithRoomIdAndUser(team.roomId, room.name, user);
+				await Message.saveSystemMessage('user-added-room-to-team', team.roomId, room.name || '', owner);
 			}
 
 			room.teamId = teamId;
