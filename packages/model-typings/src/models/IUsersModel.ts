@@ -240,7 +240,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		showAgentEmail?: boolean,
 	): Promise<Pick<ILivechatAgent, 'name' | 'username' | 'phone' | 'customFields' | 'status' | 'livechat'> | null>;
 	roleBaseQuery(userId: string): { _id: string };
-	setE2EPublicAndPrivateKeysByUserId(userId: string, e2e: { publicKey: string; privateKey: string }): Promise<UpdateResult>;
+	setE2EPublicAndPrivateKeysByUserId(userId: string, e2e: { public_key: string; private_key: string }): Promise<UpdateResult>;
 	rocketMailUnsubscribe(userId: string, createdAt: string): Promise<number>;
 	fetchKeysByUserId(userId: string): Promise<{ public_key: string; private_key: string } | Record<string, never>>;
 	disable2FAAndSetTempSecretByUserId(userId: string, tempSecret: string): Promise<UpdateResult>;

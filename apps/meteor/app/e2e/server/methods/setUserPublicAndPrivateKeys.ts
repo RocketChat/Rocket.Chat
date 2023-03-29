@@ -20,8 +20,8 @@ Meteor.methods<ServerMethods>({
 		}
 
 		await Users.setE2EPublicAndPrivateKeysByUserId(userId, {
-			privateKey: keyPair.private_key,
-			publicKey: keyPair.public_key,
+			private_key: keyPair.private_key,
+			public_key: keyPair.public_key,
 		});
 	},
 });
