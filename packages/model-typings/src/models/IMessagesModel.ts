@@ -262,12 +262,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		extraData?: Record<string, string>,
 	): Promise<Omit<IMessage, '_updatedAt'>>;
 
-	createNewOwnerWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData?: Record<string, string>,
-	): Promise<Omit<IMessage, '_updatedAt'>>;
 	createOtrSystemMessagesWithRoomIdAndUser(
 		roomId: string,
 		user: IMessage['u'],
@@ -283,12 +277,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	): Promise<Omit<IMessage, '_updatedAt'>>;
 	removeByRoomIds(rids: string[]): Promise<DeleteResult>;
 	removeById(_id: string): Promise<DeleteResult>;
-	createOwnerRemovedWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData?: Record<string, string>,
-	): Promise<Omit<IMessage, '_updatedAt'>>;
 	createSubscriptionRoleAddedWithRoomIdAndUser(
 		roomId: string,
 		user: IMessage['u'],
