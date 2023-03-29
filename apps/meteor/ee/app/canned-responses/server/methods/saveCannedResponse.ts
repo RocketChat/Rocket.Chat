@@ -20,7 +20,7 @@ declare module '@rocket.chat/ui-contexts' {
 				tags?: string[];
 				departmentId?: string;
 			},
-		): Promise<Omit<IOmnichannelCannedResponse, '_updatedAt'>>;
+		): Promise<Omit<IOmnichannelCannedResponse, '_updatedAt' | '_createdAt'> & { _createdAt?: Date }>;
 	}
 }
 
@@ -39,7 +39,6 @@ Meteor.methods<ServerMethods>({
 			scope: String,
 			tags: Match.Maybe([String]),
 			departmentId: Match.Maybe(String),
-			userId: Match.Maybe(String),
 		});
 
 		const canSaveAll = await hasPermissionAsync(userId, 'save-all-canned-responses');
@@ -84,19 +83,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const data: {
-			shortcut: string;
-			text: string;
-			scope: string;
-			tags: string[];
-			departmentId?: string;
-			createdBy?: {
-				_id: string;
-				username: string;
-			};
-			_createdAt?: Date;
-			userId: string;
-		} = { ...responseData, departmentId: responseData.departmentId ?? undefined, userId: responseData.userId ?? '' };
+		let result: Omit<IOmnichannelCannedResponse, '_updatedAt' | '_createdAt'> & { _createdAt?: Date };
 
 		if (_id) {
 			const cannedResponse = await CannedResponse.findOneById(_id);
@@ -106,22 +93,25 @@ Meteor.methods<ServerMethods>({
 				});
 			}
 
-			data.createdBy = cannedResponse.createdBy;
+			result = await CannedResponse.updateCannedResponse(_id, { ...responseData, createdBy: cannedResponse.createdBy });
 		} else {
 			const user = Users.findOneById(Meteor.userId());
 
-			if (data.scope === 'user') {
-				data.userId = user._id;
-			}
-			data.createdBy = { _id: user._id, username: user.username };
-			data._createdAt = new Date();
+			const data = {
+				...responseData,
+				...(responseData.scope === 'user' && { userId: user._id }),
+				createdBy: { _id: user._id, username: user.username },
+				_createdAt: new Date(),
+			};
+
+			result = await CannedResponse.createCannedResponse(data);
 		}
-		const createdCannedResponse = await CannedResponse.createOrUpdateCannedResponse(_id, data);
+
 		notifications.streamCannedResponses.emit('canned-responses', {
 			type: 'changed',
-			...createdCannedResponse,
+			...result,
 		});
 
-		return createdCannedResponse;
+		return result;
 	},
 });
