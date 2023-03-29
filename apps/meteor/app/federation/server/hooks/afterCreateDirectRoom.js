@@ -36,8 +36,8 @@ async function afterCreateDirectRoom(room, extras) {
 		const genesisEvent = await FederationRoomEvents.createGenesisEvent(getFederationDomain(), normalizedRoom);
 
 		const events = await Promise.all(
-			extras.members.map((member) => {
-				const normalizedMember = normalizers.normalizeUser(member);
+			extras.members.map(async (member) => {
+				const normalizedMember = await normalizers.normalizeUser(member);
 
 				const sourceSubscription = Subscriptions.findOne({
 					'rid': normalizedRoom._id,

@@ -1,8 +1,8 @@
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
-import type { ISubscription, IRegisterUser, IUser, IRoom } from '@rocket.chat/core-typings';
-import { Settings } from '@rocket.chat/models';
+import type { ISubscription, IUser, IRoom } from '@rocket.chat/core-typings';
+import { Settings, Users } from '@rocket.chat/models';
 
-import { Subscriptions, Users } from '../../../models/server';
+import { Subscriptions } from '../../../models/server';
 import { STATUS_ENABLED, STATUS_REGISTERING } from '../constants';
 
 export const getNameAndDomain = (fullyQualifiedName: string): string[] => fullyQualifiedName.split('@');
@@ -37,13 +37,13 @@ export const hasExternalDomain = ({ federation }: { federation: { origin: string
 export const isLocalUser = ({ federation }: { federation: { origin: string } }, localDomain: string): boolean =>
 	!federation || federation.origin === localDomain;
 
-export const getFederatedRoomData = (
+export const getFederatedRoomData = async (
 	room: IRoom,
-): {
+): Promise<{
 	hasFederatedUser: boolean;
 	users: IUser[];
 	subscriptions: { [k: string]: ISubscription } | undefined;
-} => {
+}> => {
 	if (isDirectMessageRoom(room)) {
 		// Check if there is a federated user on this room
 
@@ -65,10 +65,10 @@ export const getFederatedRoomData = (
 	const userIds = Object.keys(subscriptions);
 
 	// Load all the users
-	const users: IRegisterUser[] = Users.findUsersWithUsernameByIds(userIds).fetch();
+	const users = await Users.findUsersWithUsernameByIds(userIds).toArray();
 
 	// Check if there is a federated user on this room
-	const hasFederatedUser = users.some((u) => isFullyQualified(u.username));
+	const hasFederatedUser = users.some((u) => isFullyQualified(u.username || ''));
 
 	return {
 		hasFederatedUser,

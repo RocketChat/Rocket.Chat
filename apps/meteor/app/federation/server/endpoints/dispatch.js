@@ -1,12 +1,12 @@
 import { EJSON } from 'meteor/ejson';
-import { FederationServers, FederationRoomEvents, Rooms as RoomsRaw, Subscriptions } from '@rocket.chat/models';
+import { FederationServers, FederationRoomEvents, Rooms as RoomsRaw, Subscriptions, Users } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 import { eventTypes } from '@rocket.chat/core-typings';
 
 import { API } from '../../../api/server';
 import { serverLogger } from '../lib/logger';
 import { contextDefinitions } from '../lib/context';
-import { Messages, Rooms, Users } from '../../../models/server';
+import { Messages, Rooms } from '../../../models/server';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
 import { FileUpload } from '../../../file-upload/server';
@@ -100,12 +100,12 @@ const eventHandlers = {
 			} = event;
 
 			// Check if user exists
-			const persistedUser = Users.findOne({ _id: user._id });
+			const persistedUser = await Users.findOne({ _id: user._id });
 
 			if (persistedUser) {
 				// Update the federation, if its not already set (if it's set, this is likely an event being reprocessed)
 				if (!persistedUser.federation) {
-					Users.update({ _id: persistedUser._id }, { $set: { federation: user.federation } });
+					await Users.updateOne({ _id: persistedUser._id }, { $set: { federation: user.federation } });
 					federationAltered = true;
 				}
 			} else {
@@ -113,7 +113,7 @@ const eventHandlers = {
 				const denormalizedUser = normalizers.denormalizeUser(user);
 
 				// Create the user
-				Users.insert(denormalizedUser);
+				await Users.insertOne(denormalizedUser);
 				federationAltered = true;
 			}
 

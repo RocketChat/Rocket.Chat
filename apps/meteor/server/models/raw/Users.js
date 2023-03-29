@@ -2117,8 +2117,8 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findRemote(options = {}) {
-		return this.find({ isRemote: true }, options);
+	countRemote(options = {}) {
+		return this.col.countDocuments({ isRemote: true }, options);
 	}
 
 	findActiveRemote(options = {}) {

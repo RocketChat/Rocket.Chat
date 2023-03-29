@@ -291,7 +291,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findUsersWithUsernameByIds(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
 	findUsersWithUsernameByIdsNotOffline(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
 	getOldest(options?: FindOptions<IUser>): Promise<IUser | null>;
-	findRemoteUsers(options?: FindOptions<IUser>): FindCursor<IUser>;
 	findActiveRemoteUsers(options?: FindOptions<IUser>): FindCursor<IUser>;
 	findActiveFederated(options?: FindOptions<IUser>): FindCursor<IUser>;
 	getSAMLByIdAndSAMLProvider(userId: string, samlProvider: string): Promise<IUser | null>;
@@ -347,4 +346,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findAllUsersWithPendingAvatar(): FindCursor<IUser>;
 	updateCustomFieldsById(userId: string, customFields: Record<string, unknown>): Promise<UpdateResult>;
 	countRoomMembers(roomId: string): Promise<number>;
+	countRemote(options?: FindOptions<IUser>): Promise<number>;
+	findOneByImportId(importId: string, options?: FindOptions<IUser>): Promise<IUser | null>;
 }
