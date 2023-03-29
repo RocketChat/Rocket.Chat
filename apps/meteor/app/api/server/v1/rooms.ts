@@ -12,7 +12,6 @@ import { getUploadFormData } from '../lib/getUploadFormData';
 import { settings } from '../../../settings/server';
 import { eraseRoom } from '../../../../server/methods/eraseRoom';
 import { FileUpload } from '../../../file-upload/server';
-import { Rooms as RoomsSync } from '../../../models/server';
 import {
 	findAdminRoom,
 	findAdminRooms,
@@ -23,6 +22,7 @@ import {
 } from '../lib/rooms';
 import * as dataExport from '../../../../server/lib/dataExport';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
+import { getPaginationItems } from '../helpers/getPaginationItems';
 
 async function findRoomByIdOrName({
 	params,
@@ -283,13 +283,13 @@ API.v1.addRoute(
 	{
 		async get() {
 			const room = await findRoomByIdOrName({ params: this.queryParams });
-			const { fields } = this.parseJsonQuery();
+			const { fields } = await this.parseJsonQuery();
 
 			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
 				return API.v1.failure('not-allowed', 'Not Allowed');
 			}
 
-			return API.v1.success({ room: await RoomsSync.findOneByIdOrName(room._id, { fields }) });
+			return API.v1.success({ room: (await Rooms.findOneByIdOrName(room._id, { projection: fields })) ?? undefined });
 		},
 	},
 );
@@ -348,8 +348,8 @@ API.v1.addRoute(
 	{
 		async get() {
 			const room = await findRoomByIdOrName({ params: this.queryParams });
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields, query } = await this.parseJsonQuery();
 
 			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
 				return API.v1.failure('not-allowed', 'Not Allowed');
@@ -381,9 +381,9 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
-			const { types, filter } = this.requestParams();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
+			const { types, filter } = this.queryParams;
 
 			return API.v1.success(
 				await findAdminRooms({
@@ -426,7 +426,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const { rid } = this.requestParams();
+			const { rid } = this.queryParams;
 			const room = await findAdminRoom({
 				uid: this.userId,
 				rid: rid || '',
@@ -466,8 +466,8 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { selector } = this.queryParams;
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
 
 			if (!selector) {
 				return API.v1.failure("The 'selector' param is required");

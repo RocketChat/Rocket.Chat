@@ -9,12 +9,12 @@ import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarn
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'livechat:sendOfflineMessage'(data: { name: string; email: string; message: string }): boolean;
+		'livechat:sendOfflineMessage'(data: { name: string; email: string; message: string }): Promise<boolean>;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	'livechat:sendOfflineMessage'(data) {
+	async 'livechat:sendOfflineMessage'(data) {
 		methodDeprecationLogger.warn('livechat:sendOfflineMessage will be deprecated in future versions of Rocket.Chat');
 
 		check(data, {

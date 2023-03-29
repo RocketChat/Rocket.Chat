@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import type { Mongo } from 'meteor/mongo';
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Rooms } from '@rocket.chat/models';
 
-import { Users, Rooms } from '../../models/server';
+import { Users } from '../../models/server';
 import { settings } from '../../settings/server';
-import { hasRole } from '../../authorization/server';
+import { hasRoleAsync } from '../../authorization/server/functions/hasRole';
 
 import './settings';
 
@@ -69,8 +70,8 @@ class BotHelpers {
 		Meteor.call('authorization:removeUserFromRole', roleId, userName);
 	}
 
-	addUserToRoom(userName: string, room: string) {
-		const foundRoom: IRoom = Rooms.findOneByIdOrName(room);
+	async addUserToRoom(userName: string, room: string) {
+		const foundRoom = await Rooms.findOneByIdOrName(room);
 
 		if (!foundRoom) {
 			throw new Meteor.Error('invalid-channel');
@@ -82,8 +83,8 @@ class BotHelpers {
 		});
 	}
 
-	removeUserFromRoom(userName: string, room: string) {
-		const foundRoom: IRoom = Rooms.findOneByIdOrName(room);
+	async removeUserFromRoom(userName: string, room: string) {
+		const foundRoom = await Rooms.findOneByIdOrName(room);
 
 		if (!foundRoom) {
 			throw new Meteor.Error('invalid-channel');
@@ -186,9 +187,9 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	botRequest: (...args) => {
+	async botRequest(...args) {
 		const userID = Meteor.userId();
-		if (userID && hasRole(userID, 'bot')) {
+		if (userID && (await hasRoleAsync(userID, 'bot'))) {
 			return botHelpers.request(...args);
 		}
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'botRequest' });

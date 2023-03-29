@@ -19,12 +19,12 @@ window.addEventListener('message', (e) => {
 		case 'try-iframe-login':
 			iframeLogin.tryLogin((error) => {
 				if (error) {
-					e.source.postMessage(
+					e.source?.postMessage(
 						{
 							event: 'login-error',
 							response: error.message,
 						},
-						e.origin,
+						{ targetOrigin: e.origin },
 					);
 				}
 			});
@@ -33,12 +33,12 @@ window.addEventListener('message', (e) => {
 		case 'login-with-token':
 			iframeLogin.loginWithToken(e.data, (error) => {
 				if (error) {
-					e.source.postMessage(
+					e.source?.postMessage(
 						{
 							event: 'login-error',
 							response: error.message,
 						},
-						e.origin,
+						{ targetOrigin: e.origin },
 					);
 				}
 			});

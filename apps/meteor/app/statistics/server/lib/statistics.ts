@@ -114,11 +114,11 @@ export const statistics = {
 
 		// Room statistics
 		statistics.totalRooms = Rooms.find().count();
-		statistics.totalChannels = Rooms.findByType('c').count();
-		statistics.totalPrivateGroups = Rooms.findByType('p').count();
-		statistics.totalDirect = Rooms.findByType('d').count();
-		statistics.totalLivechat = Rooms.findByType('l').count();
-		statistics.totalDiscussions = Rooms.countDiscussions();
+		statistics.totalChannels = await RoomsRaw.findByType('c').count();
+		statistics.totalPrivateGroups = await RoomsRaw.findByType('p').count();
+		statistics.totalDirect = await RoomsRaw.findByType('d').count();
+		statistics.totalLivechat = await RoomsRaw.findByType('l').count();
+		statistics.totalDiscussions = await RoomsRaw.countDiscussions();
 		statistics.totalThreads = await Messages.countThreads();
 
 		// livechat visitors
@@ -261,28 +261,28 @@ export const statistics = {
 
 		// Message statistics
 		statistics.totalChannelMessages = _.reduce(
-			Rooms.findByType('c', { fields: { msgs: 1 } }).fetch(),
+			await RoomsRaw.findByType('c', { projection: { msgs: 1 } }).toArray(),
 			function _countChannelMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
 		);
 		statistics.totalPrivateGroupMessages = _.reduce(
-			Rooms.findByType('p', { fields: { msgs: 1 } }).fetch(),
+			await RoomsRaw.findByType('p', { projection: { msgs: 1 } }).toArray(),
 			function _countPrivateGroupMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
 		);
 		statistics.totalDirectMessages = _.reduce(
-			Rooms.findByType('d', { fields: { msgs: 1 } }).fetch(),
+			await RoomsRaw.findByType('d', { projection: { msgs: 1 } }).toArray(),
 			function _countDirectMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
 		);
 		statistics.totalLivechatMessages = _.reduce(
-			Rooms.findByType('l', { fields: { msgs: 1 } }).fetch(),
+			await RoomsRaw.findByType('l', { projection: { msgs: 1 } }).toArray(),
 			function _countLivechatMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
@@ -486,7 +486,7 @@ export const statistics = {
 		statistics.messageAuditLoad = settings.get('Message_Auditing_Panel_Load_Count');
 		statistics.joinJitsiButton = settings.get('Jitsi_Click_To_Join_Count');
 		statistics.slashCommandsJitsi = settings.get('Jitsi_Start_SlashCommands_Count');
-		statistics.totalOTRRooms = Rooms.findByCreatedOTR().count();
+		statistics.totalOTRRooms = await RoomsRaw.findByCreatedOTR().count();
 		statistics.totalOTR = settings.get('OTR_Count');
 		statistics.totalBroadcastRooms = await RoomsRaw.findByBroadcast().count();
 		statistics.totalRoomsWithActiveLivestream = await RoomsRaw.findByActiveLivestream().count();

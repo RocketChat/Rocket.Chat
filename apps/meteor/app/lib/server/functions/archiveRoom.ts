@@ -1,12 +1,14 @@
-import { Meteor } from 'meteor/meteor';
+import { Messages, Rooms } from '@rocket.chat/models';
+import type { IMessage } from '@rocket.chat/core-typings';
 
-import { Rooms, Messages, Subscriptions } from '../../../models/server';
+import { Subscriptions } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
+import { settings } from '../../../settings/server';
 
-export const archiveRoom = function (rid: string): void {
-	Rooms.archiveById(rid);
+export const archiveRoom = async function (rid: string, user: IMessage['u']): Promise<void> {
+	await Rooms.archiveById(rid);
 	Subscriptions.archiveByRoomId(rid);
-	Messages.createRoomArchivedByRoomIdAndUser(rid, Meteor.user());
+	await Messages.createWithTypeRoomIdMessageUserAndUnread('room-archived', rid, '', user, settings.get('ReadReceipt_Enabled'));
 
-	callbacks.run('afterRoomArchived', Rooms.findOneById(rid), Meteor.user());
+	callbacks.run('afterRoomArchived', await Rooms.findOneById(rid), user);
 };

@@ -160,7 +160,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	updateNameAndAlertByRoomId(roomId: string, name: string, fname: string): Promise<UpdateResult | Document>;
 	findByRoomIdWhenUsernameExists(rid: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	setCustomFieldsDirectMessagesByUserId(userId: string, fields: Record<string, any>): Promise<UpdateResult | Document>;
-	setFavoriteByRoomIdAndUserId(roomId: string, userId: string, favorite: true | null): Promise<UpdateResult>;
+	setFavoriteByRoomIdAndUserId(roomId: string, userId: string, favorite?: boolean): Promise<UpdateResult>;
 	hideByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
 	findByRoomIdWhenUserIdExists(rid: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	updateNameAndFnameById(_id: string, name: string, fname: string): Promise<UpdateResult | Document>;
@@ -169,7 +169,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	updateDisplayNameByRoomId(roomId: string, fname: string): Promise<UpdateResult | Document>;
 	setNameForDirectRoomsWithOldName(oldName: string, name: string): Promise<UpdateResult | Document>;
 
-	updateDirectNameAndFnameByName(name: string, newName: string, newFname: string): Promise<UpdateResult | Document>;
+	updateDirectNameAndFnameByName(name: string, newName?: string, newFname?: string): Promise<UpdateResult | Document>;
 
 	incGroupMentionsAndUnreadForRoomIdExcludingUserId(
 		roomId: string,
@@ -227,4 +227,6 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	removeUnreadThreadByRoomIdAndUserId(rid: string, userId: string, tmid: string, clearAlert?: boolean): Promise<UpdateResult>;
 
 	removeUnreadThreadsByRoomId(rid: string, tunread: string[]): Promise<UpdateResult | Document>;
+	countByRoomIdAndRoles(roomId: string, roles: string[]): Promise<number>;
+	countByRoomId(roomId: string): Promise<number>;
 }

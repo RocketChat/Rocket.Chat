@@ -1,3 +1,4 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
@@ -9,7 +10,11 @@ import { useEndpointData } from '../../../../hooks/useEndpointData';
 import EditChannelWithData from '../../../room/contextualBar/Info/EditRoomInfo';
 import TeamsInfoWithData from './TeamsInfoWithData';
 
-export default function TeamsInfoWithRooms({ rid }) {
+type TeamsInfoWithRoomsProps = {
+	rid: IRoom['_id'];
+};
+
+const TeamsInfoWithRooms = ({ rid }: TeamsInfoWithRoomsProps) => {
 	const [editing, setEditing] = useState(false);
 	const onClickBack = useMutableCallback(() => setEditing(false));
 	const t = useTranslation();
@@ -41,4 +46,6 @@ export default function TeamsInfoWithRooms({ rid }) {
 	) : (
 		<TeamsInfoWithData openEditing={setEditing} room={value.room} />
 	);
-}
+};
+
+export default TeamsInfoWithRooms;

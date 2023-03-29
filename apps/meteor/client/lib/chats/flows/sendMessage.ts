@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { KonchatNotification } from '../../../../app/ui/client';
+import { KonchatNotification } from '../../../../app/ui/client/lib/KonchatNotification';
 import { t } from '../../../../app/utils/client';
 import { dispatchToastMessage } from '../../toast';
 import { call } from '../../utils/call';

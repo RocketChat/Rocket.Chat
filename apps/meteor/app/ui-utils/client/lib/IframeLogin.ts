@@ -8,14 +8,19 @@ import { HTTP } from 'meteor/http';
 import { settings } from '../../../settings/client';
 
 export class IframeLogin {
-	constructor() {
-		this.enabled = false;
-		this.reactiveIframeUrl = new ReactiveVar();
-		this.reactiveEnabled = new ReactiveVar();
-		this.iframeUrl = undefined;
-		this.apiUrl = undefined;
-		this.apiMethod = undefined;
+	private enabled = false;
 
+	public reactiveEnabled = new ReactiveVar<boolean>(false);
+
+	public reactiveIframeUrl = new ReactiveVar<string | undefined>(undefined);
+
+	private iframeUrl: string | undefined;
+
+	private apiUrl: string | undefined;
+
+	private apiMethod: string | undefined;
+
+	constructor() {
 		Tracker.autorun((c) => {
 			this.enabled = settings.get('Accounts_iframe_enabled');
 			this.reactiveEnabled.set(this.enabled);
@@ -31,13 +36,13 @@ export class IframeLogin {
 			if (this.enabled === true && this.iframeUrl && this.apiUrl && this.apiMethod) {
 				c.stop();
 				if (!Accounts._storedLoginToken()) {
-					this.tryLogin(() => {});
+					this.tryLogin();
 				}
 			}
 		});
 	}
 
-	tryLogin(callback) {
+	tryLogin(callback?: (error: Meteor.Error | Meteor.TypedError | Error | null | undefined, result: unknown) => void) {
 		if (!this.enabled) {
 			return;
 		}
@@ -48,7 +53,7 @@ export class IframeLogin {
 
 		console.log('tryLogin');
 		const options = {
-			beforeSend: (xhr) => {
+			beforeSend: (xhr: XMLHttpRequest) => {
 				xhr.withCredentials = true;
 			},
 		};
@@ -65,23 +70,26 @@ export class IframeLogin {
 
 		HTTP.call(this.apiMethod, this.apiUrl, options, (error, result) => {
 			console.log(error, result);
-			if (result && result.data && (result.data.token || result.data.loginToken)) {
-				this.loginWithToken(result.data, (error, result) => {
+			if (result?.data && (result.data.token || result.data.loginToken)) {
+				this.loginWithToken(result.data, (error: Meteor.Error | Meteor.TypedError | Error | null | undefined) => {
 					if (error) {
 						this.reactiveIframeUrl.set(iframeUrl);
 					} else {
-						this.reactiveIframeUrl.set();
+						this.reactiveIframeUrl.set(undefined);
 					}
-					callback(error, result);
+					callback?.(error, result);
 				});
 			} else {
 				this.reactiveIframeUrl.set(iframeUrl);
-				callback(error, result);
+				callback?.(error, result);
 			}
 		});
 	}
 
-	loginWithToken(tokenData, callback) {
+	loginWithToken(
+		tokenData: string | { loginToken: string } | { token: string },
+		callback?: (error: Meteor.Error | Meteor.TypedError | Error | null | undefined) => void,
+	) {
 		if (!this.enabled) {
 			return;
 		}
@@ -94,7 +102,7 @@ export class IframeLogin {
 
 		console.log('loginWithToken');
 
-		if (tokenData.loginToken) {
+		if ('loginToken' in tokenData) {
 			return Meteor.loginWithToken(tokenData.loginToken, callback);
 		}
 
