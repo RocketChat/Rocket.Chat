@@ -1,5 +1,5 @@
 import { Pagination, Field } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useMediaQuery, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useToastMessageDispatch, useRoute, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { FC, MutableRefObject } from 'react';
@@ -22,6 +22,7 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReloa
 	const [text, setText] = useState('');
 	const moderationRoute = useRoute('moderation-console');
 	const t = useTranslation();
+	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
 	const { sortBy, sortDirection, setSort } = useSort<'reports.ts' | 'reports.message.u.username' | 'reports.description' | 'count'>(
 		'reports.ts',
@@ -98,6 +99,18 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReloa
 			>
 				{t('Name')}
 			</GenericTableHeaderCell>,
+			mediaQuery && (
+				<GenericTableHeaderCell
+					w='x140'
+					key='username'
+					direction={sortDirection}
+					active={sortBy === 'reports.message.u.username'}
+					onClick={setSort}
+					sort='reports.message.u.username'
+				>
+					{t('Username')}
+				</GenericTableHeaderCell>
+			),
 			<GenericTableHeaderCell
 				key={'reportedMessage'}
 				direction={sortDirection}
@@ -124,7 +137,7 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReloa
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell key={'actions'} width={'5%'} />,
 		],
-		[sortDirection, sortBy, setSort, t],
+		[sortDirection, sortBy, setSort, t, mediaQuery],
 	);
 
 	return (
@@ -154,6 +167,7 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReloa
 									onClick={handleClick}
 									onChange={onChange}
 									onReload={onReload}
+									mediaQuery={mediaQuery}
 								/>
 							))}
 						</GenericTableBody>

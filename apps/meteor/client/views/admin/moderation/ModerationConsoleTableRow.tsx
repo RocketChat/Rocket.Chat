@@ -11,10 +11,11 @@ export type MonderationConsoleRowProps = {
 	onClick: (id: IUser['_id']) => void;
 	onChange: () => void;
 	onReload: () => void;
+	mediaQuery: boolean;
 };
 
-const ModerationConsoleTableRow = ({ report, onClick, onChange, onReload }: MonderationConsoleRowProps): JSX.Element => {
-	const { userId: _id, rooms, count, message, username, ts } = report;
+const ModerationConsoleTableRow = ({ report, onClick, onChange, onReload, mediaQuery }: MonderationConsoleRowProps): JSX.Element => {
+	const { userId: _id, rooms, name, count, message, username, ts } = report;
 
 	const roomNames = rooms.map((room) => {
 		if (room.t === 'd') {
@@ -33,12 +34,26 @@ const ModerationConsoleTableRow = ({ report, onClick, onChange, onReload }: Mond
 					<Box display='flex' mi='x8' withTruncatedText>
 						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 							<Box fontScale='p2m' color='default' withTruncatedText>
-								{username}
+								{name || username}
 							</Box>
+							{!mediaQuery && name && (
+								<Box fontScale='p2' color='hint' withTruncatedText>
+									{' '}
+									{`@${username}`}{' '}
+								</Box>
+							)}
 						</Box>
 					</Box>
 				</Box>
 			</TableCell>
+			{mediaQuery && (
+				<TableCell>
+					<Box fontScale='p2m' color='hint' withTruncatedText>
+						{username}
+					</Box>{' '}
+					<Box mi='x4' />
+				</TableCell>
+			)}
 			<TableCell withTruncatedText>{message}</TableCell>
 			<TableCell withTruncatedText>{concatenatedRoomNames}</TableCell>
 			<TableCell withTruncatedText>{formatDateAndTime(ts)}</TableCell>
