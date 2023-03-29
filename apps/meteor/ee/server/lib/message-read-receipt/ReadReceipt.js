@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { LivechatVisitors, ReadReceipts, Messages, Rooms, Subscriptions } from '@rocket.chat/models';
 
@@ -18,21 +17,19 @@ const debounceByRoomId = function (fn) {
 	};
 };
 
-const updateMessages = debounceByRoomId(
-	Meteor.bindEnvironment(({ _id, lm }) => {
-		// @TODO maybe store firstSubscription in room object so we don't need to call the above update method
-		const firstSubscription = Promise.await(Subscriptions.getMinimumLastSeenByRoomId(_id));
-		if (!firstSubscription || !firstSubscription.ls) {
-			return;
-		}
+const updateMessages = debounceByRoomId(async ({ _id, lm }) => {
+	// @TODO maybe store firstSubscription in room object so we don't need to call the above update method
+	const firstSubscription = await Subscriptions.getMinimumLastSeenByRoomId(_id);
+	if (!firstSubscription || !firstSubscription.ls) {
+		return;
+	}
 
-		Promise.await(Messages.setVisibleMessagesAsRead(_id, firstSubscription.ls));
+	await Messages.setVisibleMessagesAsRead(_id, firstSubscription.ls);
 
-		if (lm <= firstSubscription.ls) {
-			Promise.await(Rooms.setLastMessageAsRead(_id));
-		}
-	}),
-);
+	if (lm <= firstSubscription.ls) {
+		await Rooms.setLastMessageAsRead(_id);
+	}
+});
 
 export const ReadReceipt = {
 	async markMessagesAsRead(roomId, userId, userLastSeen) {
@@ -49,7 +46,7 @@ export const ReadReceipt = {
 
 		this.storeReadReceipts(await Messages.findVisibleUnreadMessagesByRoomAndDate(roomId, userLastSeen).toArray(), roomId, userId);
 
-		updateMessages(room);
+		await updateMessages(room);
 	},
 
 	async markMessageAsReadBySender(message, { _id: roomId, t }, userId) {
