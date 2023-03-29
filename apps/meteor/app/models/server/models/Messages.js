@@ -119,11 +119,6 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('command', roomId, command, user, extraData);
 	}
 
-	createSubscriptionRoleRemovedWithRoomIdAndUser(roomId, user, extraData) {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('subscription-role-removed', roomId, message, user, extraData);
-	}
-
 	createOtrSystemMessagesWithRoomIdAndUser(roomId, user, id, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser(id, roomId, message, user, extraData);

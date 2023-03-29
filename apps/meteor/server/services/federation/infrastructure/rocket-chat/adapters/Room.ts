@@ -8,7 +8,6 @@ import type { FederatedUser } from '../../../domain/FederatedUser';
 import { getFederatedUserByInternalUsername } from './User';
 import type { ROCKET_CHAT_FEDERATION_ROLES } from '../definitions/FederatedRoomInternalRoles';
 import { addUserToRoom, createRoom, removeUserFromRoom } from '../../../../../../app/lib/server';
-import { Messages } from '../../../../../../app/models/server';
 import { saveRoomTopic } from '../../../../../../app/channel-settings/server';
 import { settings } from '../../../../../../app/settings/server';
 
@@ -233,13 +232,12 @@ export class RocketChatRoomAdapter {
 			if (notifyChannel) {
 				await Promise.all(
 					toRemove.map((role) =>
-						Messages.createSubscriptionRoleRemovedWithRoomIdAndUser(
+						Message.saveSystemMessage(
+							'subscription-role-removed',
 							federatedRoom.getInternalId(),
-							targetFederatedUser.getInternalReference(),
-							{
-								u: whoDidTheChange,
-								role,
-							},
+							targetFederatedUser.getInternalReference().username || '',
+							whoDidTheChange,
+							{ role },
 						),
 					),
 				);

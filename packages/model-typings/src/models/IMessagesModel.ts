@@ -269,12 +269,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		readReceiptsEnabled?: boolean,
 		extraData?: Record<string, string>,
 	): Promise<Omit<IMessage, '_updatedAt'>>;
-	createSubscriptionRoleRemovedWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData?: Record<string, string>,
-	): Promise<Omit<IMessage, '_updatedAt'>>;
 	removeByRoomIds(rids: string[]): Promise<DeleteResult>;
 	removeById(_id: string): Promise<DeleteResult>;
 
