@@ -226,25 +226,10 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		newUsername: string,
 		newMessage: string,
 	): Promise<UpdateResult>;
-	createWithTypeRoomIdMessageAndUser(
-		type: MessageTypesValues,
-		roomId: string,
-		message: string,
-		user: Pick<IMessage['u'], '_id' | 'username'>,
-		readReceiptsEnabled?: boolean,
-		extraData?: Record<string, string>,
-	): Promise<Omit<IMessage, '_updatedAt'>>;
 	unlinkUserId(userId: string, newUserId: string, newUsername: string, newNameAlias: string): Promise<UpdateResult | Document>;
 	setSlackBotIdAndSlackTs(_id: string, slackBotId: string, slackTs: Date): Promise<UpdateResult>;
 	setMessageAttachments(_id: string, attachments: IMessage['attachments']): Promise<UpdateResult>;
 
-	createOtrSystemMessagesWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		id: MessageTypesValues,
-		readReceiptsEnabled?: boolean,
-		extraData?: Record<string, string>,
-	): Promise<Omit<IMessage, '_updatedAt'>>;
 	removeByRoomIds(rids: string[]): Promise<DeleteResult>;
 
 	findThreadsByRoomIdPinnedTimestampAndUsers(

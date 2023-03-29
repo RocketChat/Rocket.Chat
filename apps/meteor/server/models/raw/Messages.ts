@@ -1419,36 +1419,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 	// INSERT
 
-	/**
-	 * @deprecated Use the `createWithTypeRoomIdMessageUserAndUnread` method instead.
-	 */
-	async createWithTypeRoomIdMessageAndUser(
-		type: MessageTypesValues,
-		roomId: string,
-		message: string,
-		user: Pick<IMessage['u'], '_id' | 'username'>,
-		readReceiptsEnabled?: boolean,
-		extraData?: Record<string, string>,
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const record: Omit<IMessage, '_id' | '_updatedAt'> = {
-			t: type,
-			rid: roomId,
-			ts: new Date(),
-			msg: message,
-			u: {
-				_id: user._id,
-				username: user.username,
-			},
-			groupable: false as const,
-			...(readReceiptsEnabled && { unread: true }),
-		};
-
-		const data = Object.assign(record, extraData);
-
-		await Rooms.incMsgCountById(roomId, 1);
-		return { ...record, _id: (await this.updateOne(data, data, { upsert: true })).upsertedId as unknown as string };
-	}
-
 	async createWithTypeRoomIdMessageUserAndUnread(
 		type: MessageTypesValues,
 		rid: string,
@@ -1475,17 +1445,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		await Rooms.incMsgCountById(rid, 1);
 
 		return this.insertOne(data);
-	}
-
-	createOtrSystemMessagesWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		id: MessageTypesValues,
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser(id, roomId, message, user, readReceiptsEnabled, extraData);
 	}
 
 	// REMOVE

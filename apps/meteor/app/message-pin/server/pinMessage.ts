@@ -3,6 +3,7 @@ import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
+import { Message } from '@rocket.chat/core-services';
 import { Messages as MessagesRaw, Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
@@ -126,7 +127,7 @@ Meteor.methods<ServerMethods>({
 		// App IPostMessagePinned event hook
 		await Apps.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, await Meteor.userAsync(), originalMessage.pinned);
 
-		return Messages.createWithTypeRoomIdMessageAndUser('message_pinned', originalMessage.rid, '', me, {
+		const msgId = await Message.saveSystemMessage('message_pinned', originalMessage.rid, '', me, {
 			attachments: [
 				{
 					text: originalMessage.msg,
@@ -137,6 +138,8 @@ Meteor.methods<ServerMethods>({
 				},
 			],
 		});
+
+		return MessagesRaw.findOneById(msgId);
 	},
 	async unpinMessage(message) {
 		check(message._id, String);
