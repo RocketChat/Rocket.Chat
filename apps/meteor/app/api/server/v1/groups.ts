@@ -6,8 +6,12 @@ import { Team } from '@rocket.chat/core-services';
 import type { Filter } from 'mongodb';
 
 import { Users as UsersSync } from '../../../models/server';
-import { hasAtLeastOnePermission, canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
-import { hasPermissionAsync, hasAllPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
+import {
+	hasPermissionAsync,
+	hasAllPermissionAsync,
+	hasAtLeastOnePermissionAsync,
+} from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
@@ -395,7 +399,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			if (
-				!(await hasAtLeastOnePermission(this.userId, [
+				!(await hasAtLeastOnePermissionAsync(this.userId, [
 					'manage-outgoing-integrations',
 					'manage-own-outgoing-integrations',
 					'manage-incoming-integrations',

@@ -17,8 +17,8 @@ import { Team } from '@rocket.chat/core-services';
 
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
 import { Rooms, Users } from '../../../models/server';
-import { canAccessRoomAsync, hasAtLeastOnePermission } from '../../../authorization/server';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { canAccessRoomAsync } from '../../../authorization/server';
+import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
@@ -441,7 +441,7 @@ API.v1.addRoute(
 				return API.v1.failure('team-does-not-exist');
 			}
 
-			if (!hasAtLeastOnePermission(this.userId, ['add-team-member', 'edit-team-member'], team.roomId)) {
+			if (!(await hasAtLeastOnePermissionAsync(this.userId, ['add-team-member', 'edit-team-member'], team.roomId))) {
 				return API.v1.unauthorized();
 			}
 
@@ -468,7 +468,7 @@ API.v1.addRoute(
 				return API.v1.failure('team-does-not-exist');
 			}
 
-			if (!hasAtLeastOnePermission(this.userId, ['edit-team-member'], team.roomId)) {
+			if (!(await hasAtLeastOnePermissionAsync(this.userId, ['edit-team-member'], team.roomId))) {
 				return API.v1.unauthorized();
 			}
 
@@ -495,7 +495,7 @@ API.v1.addRoute(
 				return API.v1.failure('team-does-not-exist');
 			}
 
-			if (!hasAtLeastOnePermission(this.userId, ['edit-team-member'], team.roomId)) {
+			if (!(await hasAtLeastOnePermissionAsync(this.userId, ['edit-team-member'], team.roomId))) {
 				return API.v1.unauthorized();
 			}
 
