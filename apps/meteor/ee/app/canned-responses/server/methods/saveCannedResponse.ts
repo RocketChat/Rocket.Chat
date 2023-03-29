@@ -20,7 +20,7 @@ declare module '@rocket.chat/ui-contexts' {
 				tags?: string[];
 				departmentId?: string;
 			},
-		): Promise<IOmnichannelCannedResponse>;
+		): Promise<Omit<IOmnichannelCannedResponse, '_updatedAt'>>;
 	}
 }
 
@@ -39,6 +39,7 @@ Meteor.methods<ServerMethods>({
 			scope: String,
 			tags: Match.Maybe([String]),
 			departmentId: Match.Maybe(String),
+			userId: Match.Maybe(String),
 		});
 
 		const canSaveAll = await hasPermissionAsync(userId, 'save-all-canned-responses');
@@ -94,8 +95,8 @@ Meteor.methods<ServerMethods>({
 				username: string;
 			};
 			_createdAt?: Date;
-			userId?: string;
-		} = { ...responseData, departmentId: responseData.departmentId ?? undefined };
+			userId: string;
+		} = { ...responseData, departmentId: responseData.departmentId ?? undefined, userId: responseData.userId ?? '' };
 
 		if (_id) {
 			const cannedResponse = await CannedResponse.findOneById(_id);
