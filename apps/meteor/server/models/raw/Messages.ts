@@ -46,6 +46,43 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		super(db, 'message', trash);
 	}
 
+	createOnHoldHistoryWithRoomIdMessageAndUser(
+		_roomId: string,
+		_comment: string,
+		_user: Pick<IUser, '_id' | 'username'>,
+	): Promise<
+		{ t: string; rid: string; ts: Date; comment: string; u: { _id: string; username: string | undefined }; groupable: boolean } & {
+			_id: string;
+		}
+	> {
+		throw new Error('Method not implemented.');
+	}
+
+	createOnHoldResumedHistoryWithRoomIdMessageAndUser(
+		_roomId: string,
+		_comment: string,
+		_user: Pick<IUser, '_id' | 'username'>,
+	): Promise<
+		{ t: string; rid: string; ts: Date; comment: string; u: { _id: string; username: string | undefined }; groupable: boolean } & {
+			_id: string;
+		}
+	> {
+		throw new Error('Method not implemented.');
+	}
+
+	createTransferFailedHistoryMessage(
+		_rid: string,
+		_comment: string,
+		_user: Pick<IUser, '_id' | 'username'>,
+		_extraData?: Record<string, any>,
+	): Promise<
+		{ t: string; rid: string; ts: Date; comment: string; u: { _id: string; username: string | undefined }; groupable: boolean } & {
+			_id: string;
+		}
+	> {
+		throw new Error('Method not implemented.');
+	}
+
 	protected modelIndexes(): IndexDescription[] {
 		// add the indexes from the constructor in here
 		return [
