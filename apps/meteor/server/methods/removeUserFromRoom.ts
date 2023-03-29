@@ -83,12 +83,7 @@ Meteor.methods<ServerMethods>({
 			await removeUserFromRolesAsync(removedUser._id, ['moderator', 'owner'], data.rid);
 		}
 
-		await Message.saveSystemMessage('ru', data.rid, removedUser.username || '', removedUser, {
-			u: {
-				_id: fromUser._id,
-				username: fromUser.username,
-			},
-		});
+		await Message.saveSystemMessage('ru', data.rid, removedUser.username || '', fromUser);
 
 		if (room.teamId && room.teamMain) {
 			// if a user is kicked from the main team room, delete the team membership

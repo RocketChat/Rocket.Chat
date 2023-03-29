@@ -953,12 +953,8 @@ export default class SlackAdapter {
 		if (slackMessage.inviter) {
 			const inviter = slackMessage.inviter ? this.rocket.findUser(slackMessage.inviter) || this.rocket.addUser(slackMessage.inviter) : null;
 			if (isImporting) {
-				await Message.saveSystemMessage('au', rocketChannel._id, rocketUser.username, rocketUser, {
+				await Message.saveSystemMessage('au', rocketChannel._id, rocketUser.username, inviter, {
 					ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
-					u: {
-						_id: inviter._id,
-						username: inviter.username,
-					},
 					imported: 'slackbridge',
 				});
 			} else {

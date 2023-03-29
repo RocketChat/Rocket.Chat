@@ -74,12 +74,7 @@ Meteor.methods<ServerMethods>({
 
 		await Rooms.muteUsernameByRoomId(data.rid, mutedUser.username);
 
-		await Message.saveSystemMessage('user-muted', data.rid, mutedUser.username, mutedUser, {
-			u: {
-				_id: fromUser._id,
-				username: fromUser.username,
-			},
-		});
+		await Message.saveSystemMessage('user-muted', data.rid, mutedUser.username, fromUser);
 
 		callbacks.run('afterMuteUser', { mutedUser, fromUser }, room);
 
