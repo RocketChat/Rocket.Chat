@@ -28,7 +28,7 @@ import { RoutingManager } from './RoutingManager';
 import { Analytics } from './Analytics';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Users, Messages, Subscriptions, LivechatDepartment } from '../../../models/server';
+import { Users, Messages, Subscriptions } from '../../../models/server';
 import { Logger } from '../../../logger/server';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
@@ -124,7 +124,7 @@ export const Livechat = {
 				return onlineForDep;
 			}
 
-			const dep = LivechatDepartment.findOneById(department);
+			const dep = await LivechatDepartmentRaw.findOneById(department);
 			if (!dep?.fallbackForwardDepartment) {
 				return onlineForDep;
 			}
@@ -144,9 +144,9 @@ export const Livechat = {
 	},
 
 	async getRequiredDepartment(onlineRequired = true) {
-		const departments = LivechatDepartment.findEnabledWithAgents();
+		const departments = await LivechatDepartmentRaw.findEnabledWithAgents();
 
-		for await (const dept of departments.fetch()) {
+		for await (const dept of departments) {
 			if (!dept.showOnRegistration) {
 				continue;
 			}
@@ -175,7 +175,7 @@ export const Livechat = {
 			room = null;
 		}
 
-		if (guest.department && !LivechatDepartment.findOneById(guest.department)) {
+		if (guest.department && !(await LivechatDepartmentRaw.findOneById(guest.department))) {
 			await LivechatVisitors.removeDepartmentById(guest._id);
 			guest = await LivechatVisitors.findOneById(guest._id);
 		}
@@ -313,7 +313,7 @@ export const Livechat = {
 
 		if (department) {
 			Livechat.logger.debug(`Attempt to find a department with id/name ${department}`);
-			const dep = LivechatDepartment.findOneByIdOrName(department);
+			const dep = await LivechatDepartmentRaw.findOneByIdOrName(department);
 			if (!dep) {
 				Livechat.logger.debug('Invalid department provided');
 				throw new Meteor.Error('error-invalid-department', 'The provided department is invalid', {
@@ -381,7 +381,7 @@ export const Livechat = {
 			},
 		};
 
-		const dep = LivechatDepartment.findOneById(department);
+		const dep = await LivechatDepartmentRaw.findOneById(department);
 		if (!dep) {
 			throw new Meteor.Error('invalid-department', 'Provided department does not exists', {
 				method: 'setDepartmentForGuest',
@@ -592,7 +592,7 @@ export const Livechat = {
 				(await LivechatInquiry.setNameByRoomId(rid, name)) &&
 				// This one needs to be the last since the agent may not have the subscription
 				// when the conversation is in the queue, then the result will be 0(zero)
-				Subscriptions.updateDisplayNameByRoomId(rid, name)
+				SubscriptionsRaw.updateDisplayNameByRoomId(rid, name)
 			);
 		}
 	},
@@ -711,8 +711,8 @@ export const Livechat = {
 		}
 
 		if (transferData.departmentId) {
-			transferData.department = LivechatDepartment.findOneById(transferData.departmentId, {
-				fields: { name: 1 },
+			transferData.department = await LivechatDepartmentRaw.findOneById(transferData.departmentId, {
+				projection: { name: 1 },
 			});
 			Livechat.logger.debug(`Transfering room ${room._id} to department ${transferData.department?._id}`);
 		}
@@ -982,7 +982,7 @@ export const Livechat = {
 			]),
 		});
 
-		const department = LivechatDepartment.findOneById(_id);
+		const department = await LivechatDepartmentRaw.findOneById(_id);
 		if (!department) {
 			throw new Meteor.Error('error-department-not-found', 'Department not found', {
 				method: 'livechat:saveDepartmentAgents',
@@ -1005,7 +1005,7 @@ export const Livechat = {
 		}
 
 		Users.setLivechatData(_id, agentData);
-		await LivechatDepartment.saveDepartmentsByAgent(user, agentDepartments);
+		await LivechatDepartmentRaw.saveDepartmentsByAgent(user, agentDepartments);
 
 		return true;
 	},
@@ -1024,17 +1024,17 @@ export const Livechat = {
 			});
 		}
 
-		const department = LivechatDepartment.findOneById(_id, { projection: { _id: 1 } });
+		const department = await LivechatDepartmentRaw.findOneById(_id, { projection: { _id: 1 } });
 
 		if (!department) {
 			throw new Meteor.Error('department-not-found', 'Department not found', {
 				method: 'livechat:removeDepartment',
 			});
 		}
-		const ret = LivechatDepartment.removeById(_id);
+		const ret = (await LivechatDepartmentRaw.removeById(_id)).deletedCount;
 		const agentsIds = (await LivechatDepartmentAgents.findByDepartmentId(_id).toArray()).map((agent) => agent.agentId);
 		await LivechatDepartmentAgents.removeByDepartmentId(_id);
-		LivechatDepartment.unsetFallbackDepartmentByDepartmentId(_id);
+		await LivechatDepartmentRaw.unsetFallbackDepartmentByDepartmentId(_id);
 		if (ret) {
 			Meteor.defer(() => {
 				callbacks.run('livechat.afterRemoveDepartment', { department, agentsIds });
@@ -1154,7 +1154,7 @@ export const Livechat = {
 		await LivechatRooms.updateVisitorStatus(token, status);
 	},
 
-	sendOfflineMessage(data = {}) {
+	async sendOfflineMessage(data = {}) {
 		if (!settings.get('Livechat_display_offline_form')) {
 			return false;
 		}
@@ -1193,7 +1193,7 @@ export const Livechat = {
 
 		let emailTo = settings.get('Livechat_offline_email');
 		if (department && department !== '') {
-			const dep = LivechatDepartment.findOneByIdOrName(department);
+			const dep = await LivechatDepartmentRaw.findOneByIdOrName(department);
 			emailTo = dep.email || emailTo;
 		}
 

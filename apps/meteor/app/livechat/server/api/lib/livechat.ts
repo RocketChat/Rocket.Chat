@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
+import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import type {
 	ILivechatAgent,
 	ILivechatDepartment,
@@ -11,7 +11,6 @@ import type {
 	OmnichannelSourceType,
 } from '@rocket.chat/core-typings';
 
-import { LivechatDepartment } from '../../../../models/server';
 import { Livechat } from '../../lib/Livechat';
 import { callbacks } from '../../../../../lib/callbacks';
 import { normalizeAgent } from '../../lib/Helper';
@@ -30,21 +29,25 @@ async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' 
 	}));
 }
 
-function findDepartments(businessUnit?: string): Promise<ILivechatDepartment[]> {
+async function findDepartments(
+	businessUnit?: string,
+): Promise<Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm'>[]> {
 	// TODO: check this function usage
-	return LivechatDepartment.findEnabledWithAgentsAndBusinessUnit(businessUnit, {
-		_id: 1,
-		name: 1,
-		showOnRegistration: 1,
-		showOnOfflineForm: 1,
-	})
-		.fetch()
-		.map(({ _id, name, showOnRegistration, showOnOfflineForm }: ILivechatDepartment) => ({
-			_id,
-			name,
-			showOnRegistration,
-			showOnOfflineForm,
-		}));
+	return (
+		await (
+			await LivechatDepartment.findEnabledWithAgentsAndBusinessUnit(businessUnit, {
+				_id: 1,
+				name: 1,
+				showOnRegistration: 1,
+				showOnOfflineForm: 1,
+			})
+		).toArray()
+	).map(({ _id, name, showOnRegistration, showOnOfflineForm }) => ({
+		_id,
+		name,
+		showOnRegistration,
+		showOnOfflineForm,
+	}));
 }
 
 export function findGuest(token: string): Promise<ILivechatVisitor | null> {
@@ -136,7 +139,7 @@ export async function settings({ businessUnit = '' }: { businessUnit?: string } 
 	// Putting this ugly conversion while we type the livechat service
 	const initSettings = (await Livechat.getInitSettings()) as unknown as Record<string, string | number | any>;
 	const triggers = await findTriggers();
-	const departments = findDepartments(businessUnit);
+	const departments = await findDepartments(businessUnit);
 	const sound = `${Meteor.absoluteUrl()}sounds/chime.mp3`;
 	const emojis = await EmojiCustom.find().toArray();
 	return {

@@ -131,7 +131,7 @@ async function saveUserProfile(
 	Users.setProfile(this.userId, {});
 
 	if (customFields && Object.keys(customFields).length) {
-		saveCustomFields(this.userId, customFields);
+		await saveCustomFields(this.userId, customFields);
 	}
 
 	// App IPostUserUpdated event hook
