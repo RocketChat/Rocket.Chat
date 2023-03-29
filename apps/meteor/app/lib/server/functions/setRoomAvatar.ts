@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Avatars } from '@rocket.chat/models';
+import { Avatars, Rooms } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
 import { RocketChatFile } from '../../../file/server';
 import { FileUpload } from '../../../file-upload/server';
-import { Rooms, Messages } from '../../../models/server';
+import { Messages } from '../../../models/server';
 
 export const setRoomAvatar = async function (rid: string, dataURI: string, user: IUser): Promise<void> {
 	const fileStore = FileUpload.getStore('Avatars');
@@ -16,8 +16,8 @@ export const setRoomAvatar = async function (rid: string, dataURI: string, user:
 		fileStore.deleteByRoomId(rid);
 		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_avatar', rid, '', user);
 		void api.broadcast('room.avatarUpdate', { _id: rid });
-
-		return Rooms.unsetAvatarData(rid);
+		await Rooms.unsetAvatarData(rid);
+		return;
 	}
 
 	const fileData = RocketChatFile.dataURIParse(dataURI);
@@ -40,8 +40,8 @@ export const setRoomAvatar = async function (rid: string, dataURI: string, user:
 			throw err;
 		}
 
-		Meteor.setTimeout(function () {
-			Rooms.setAvatarData(rid, 'upload', result.etag);
+		Meteor.setTimeout(async function () {
+			await Rooms.setAvatarData(rid, 'upload', result.etag);
 			Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_avatar', rid, '', user);
 			void api.broadcast('room.avatarUpdate', { _id: rid, avatarETag: result.etag });
 		}, 500);

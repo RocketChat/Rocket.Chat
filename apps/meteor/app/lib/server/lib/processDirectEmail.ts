@@ -2,16 +2,18 @@ import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import type { ParsedMail } from 'mailparser';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import { Subscriptions } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
-import { Rooms, Messages, Users, Subscriptions } from '../../../models/server';
+import { Rooms, Messages, Users } from '../../../models/server';
 import { metrics } from '../../../metrics/server';
-import { canAccessRoom, hasPermission } from '../../../authorization/server';
+import { canAccessRoomAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { sendMessage } from '../functions/sendMessage';
 
 const isParsedEmail = (email: ParsedMail): email is Required<ParsedMail> => 'date' in email && 'html' in email;
 
-export const processDirectEmail = Meteor.bindEnvironment(function (email: ParsedMail): void {
+export const processDirectEmail = Meteor.bindEnvironment(async function (email: ParsedMail): Promise<void> {
 	if (!isParsedEmail(email)) {
 		return;
 	}
@@ -57,7 +59,7 @@ export const processDirectEmail = Meteor.bindEnvironment(function (email: Parsed
 
 	const roomInfo: IRoom = Rooms.findOneById(prevMessage.rid);
 
-	const room = canAccessRoom(roomInfo, user);
+	const room = await canAccessRoomAsync(roomInfo, user);
 	if (!room) {
 		return;
 	}
@@ -79,7 +81,7 @@ export const processDirectEmail = Meteor.bindEnvironment(function (email: Parsed
 	// // add reply message link
 	// msg = prevMessageLink + msg;
 
-	const subscription = Subscriptions.findOneByRoomIdAndUserId(prevMessage.rid, user._id);
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(prevMessage.rid, user._id);
 	if (subscription && (subscription.blocked || subscription.blocker)) {
 		// room is blocked
 		return;
@@ -92,7 +94,7 @@ export const processDirectEmail = Meteor.bindEnvironment(function (email: Parsed
 
 	// room is readonly
 	if (roomInfo.ro === true) {
-		if (!hasPermission(user._id, 'post-readonly', roomInfo._id)) {
+		if (!(await hasPermissionAsync(user._id, 'post-readonly', roomInfo._id))) {
 			// Check if the user was manually unmuted
 			if (!(roomInfo.unmuted || []).includes(user.username)) {
 				return;

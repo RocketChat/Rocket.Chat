@@ -1,5 +1,7 @@
+import { FederationRoomEvents } from '@rocket.chat/models';
+
 import { clientLogger } from '../lib/logger';
-import { FederationRoomEvents, Rooms } from '../../../models/server';
+import { Rooms } from '../../../models/server';
 import { hasExternalDomain } from '../functions/helpers';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { dispatchEvent } from '../handler';
@@ -36,6 +38,6 @@ async function beforeDeleteRoom(roomId) {
 
 export const definition = {
 	hook: 'beforeDeleteRoom',
-	callback: (roomId) => Promise.await(beforeDeleteRoom(roomId)),
+	callback: beforeDeleteRoom,
 	id: 'federation-before-delete-room',
 };

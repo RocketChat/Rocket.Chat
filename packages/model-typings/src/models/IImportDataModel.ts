@@ -12,5 +12,5 @@ export interface IImportDataModel extends IBaseModel<IImportRecord> {
 	checkIfDirectMessagesExists(): Promise<boolean>;
 	countMessages(): Promise<number>;
 	findChannelImportIdByNameOrImportId(channelIdentifier: string): Promise<string | undefined>;
-	findDMForImportedUsers(...users: Array<string>): Promise<IImportRecord | undefined | null>;
+	findDMForImportedUsers(...users: Array<string>): Promise<IImportChannelRecord | null>;
 }

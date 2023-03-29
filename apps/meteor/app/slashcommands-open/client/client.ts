@@ -9,7 +9,7 @@ import { Subscriptions, ChatSubscription } from '../../models/client';
 
 slashCommands.add({
 	command: 'open',
-	callback: function Open(_command, params): void {
+	callback: async function Open(_command, params): Promise<void> {
 		const dict: Record<string, RoomType[]> = {
 			'#': ['c', 'p'],
 			'@': ['d'],
@@ -32,7 +32,7 @@ slashCommands.add({
 		if (type && type.indexOf('d') === -1) {
 			return;
 		}
-		return Meteor.call('createDirectMessage', room, function (err: Meteor.Error) {
+		return Meteor.callAsync('createDirectMessage', room, function (err: Meteor.Error) {
 			if (err) {
 				return;
 			}

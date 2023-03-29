@@ -2,14 +2,15 @@ import { isGETLivechatTriggersParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
 import { findTriggers, findTriggerById } from '../../../server/api/lib/triggers';
+import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 
 API.v1.addRoute(
 	'livechat/triggers',
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'], validateParams: isGETLivechatTriggersParams },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
 
 			const triggers = await findTriggers({
 				pagination: {

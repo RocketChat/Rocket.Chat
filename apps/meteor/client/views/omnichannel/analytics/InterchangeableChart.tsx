@@ -73,7 +73,7 @@ const InterchangeableChart = ({
 					context.current,
 					[result.chartLabel],
 					result.dataLabels,
-					[result.dataPoints],
+					[result.dataPoints as unknown as number], // TODO fix this
 					{
 						tooltipCallbacks,
 					},

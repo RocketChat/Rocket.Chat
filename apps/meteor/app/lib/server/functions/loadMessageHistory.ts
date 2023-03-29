@@ -1,9 +1,12 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { Messages, Rooms } from '../../../models/server';
+import type { IMessage } from '@rocket.chat/core-typings';
+import { Messages } from '@rocket.chat/models';
+import type { FindOptions } from 'mongodb';
+
+import { Rooms } from '../../../models/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
 
-export function loadMessageHistory({
+export async function loadMessageHistory({
 	userId,
 	rid,
 	end,
@@ -24,18 +27,23 @@ export function loadMessageHistory({
 
 	const hiddenMessageTypes = getHiddenSystemMessages(room);
 
-	const options = {
+	const options: FindOptions<IMessage> = {
 		sort: {
 			ts: -1,
 		},
 		limit,
 		skip: offset,
-		fields: {},
 	};
 
 	const records = end
-		? Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(rid, end, hiddenMessageTypes, options, showThreadMessages).fetch()
-		: Messages.findVisibleByRoomIdNotContainingTypes(rid, hiddenMessageTypes, options, showThreadMessages).fetch();
+		? await Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(
+				rid,
+				end,
+				hiddenMessageTypes,
+				options,
+				showThreadMessages,
+		  ).toArray()
+		: await Messages.findVisibleByRoomIdNotContainingTypes(rid, hiddenMessageTypes, options, showThreadMessages).toArray();
 	const messages = normalizeMessagesForUser(records, userId);
 	let unreadNotLoaded = 0;
 	let firstUnread;
@@ -43,10 +51,12 @@ export function loadMessageHistory({
 	if (ls) {
 		const firstMessage = messages[messages.length - 1];
 
-		if (firstMessage && new Date(firstMessage.ts) > new Date(ls)) {
+		const lastSeen = new Date(ls);
+
+		if (firstMessage && new Date(firstMessage.ts) > lastSeen) {
 			const unreadMessages = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
 				rid,
-				ls,
+				lastSeen,
 				firstMessage.ts,
 				hiddenMessageTypes,
 				{
@@ -58,17 +68,16 @@ export function loadMessageHistory({
 				showThreadMessages,
 			);
 
-			const totalCursor = Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+			const totalCursor = await Messages.countVisibleByRoomIdBetweenTimestampsNotContainingTypes(
 				rid,
-				ls,
+				lastSeen,
 				firstMessage.ts,
 				hiddenMessageTypes,
-				{},
 				showThreadMessages,
 			);
 
-			firstUnread = unreadMessages.fetch()[0];
-			unreadNotLoaded = totalCursor.count();
+			firstUnread = (await unreadMessages.toArray())[0];
+			unreadNotLoaded = totalCursor;
 		}
 	}
 
