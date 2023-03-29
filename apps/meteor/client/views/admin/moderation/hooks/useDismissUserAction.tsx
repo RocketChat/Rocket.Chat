@@ -4,33 +4,33 @@ import React from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 
-const useApproveUserAction = (userId: string, onChange: () => void, onReload: () => void) => {
+const useDismissUserAction = (userId: string, onChange: () => void, onReload: () => void) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const approveUser = useEndpoint('POST', '/v1/moderation.markChecked');
+	const dismissUser = useEndpoint('POST', '/v1/moderation.markChecked');
 
-	const handleApproveUser = useMutation({
-		mutationFn: approveUser,
+	const handleDismissUser = useMutation({
+		mutationFn: dismissUser,
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('Approved') });
+			dispatchToastMessage({ type: 'success', message: t('Reports_dismissed') });
 		},
 	});
 
-	const onApproveUser = () => {
-		handleApproveUser.mutate({ userId });
+	const onDismissUser = async () => {
+		await handleDismissUser.mutateAsync({ userId });
 		onChange();
 		onReload();
 		setModal();
 	};
 
-	const confirmApproveUser = (): void => {
+	const confirmDismissUser = (): void => {
 		setModal(
-			<GenericModal title={'Dismiss and Delete'} variant='danger' onConfirm={() => onApproveUser()} onCancel={() => setModal()}>
+			<GenericModal title={'Dismiss and Delete'} variant='danger' onConfirm={() => onDismissUser()} onCancel={() => setModal()}>
 				Are you sure you want to dismiss and delete all reports for this user's messages? This action cannot be undone.
 			</GenericModal>,
 		);
@@ -38,8 +38,8 @@ const useApproveUserAction = (userId: string, onChange: () => void, onReload: ()
 
 	return {
 		label: { label: 'Dismiss Reports', icon: 'circle-check' },
-		action: () => confirmApproveUser(),
+		action: () => confirmDismissUser(),
 	};
 };
 
-export default useApproveUserAction;
+export default useDismissUserAction;

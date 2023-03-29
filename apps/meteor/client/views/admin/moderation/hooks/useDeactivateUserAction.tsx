@@ -49,7 +49,7 @@ const useDeactivateUserAction = (userId: string, onChange: () => void, onReload:
 	};
 
 	return {
-		label: { label: t('Deactivate'), icon: 'ban' },
+		label: { label: t('Deactivate_User'), icon: 'ban' },
 		action: () => confirmDeactivateUser(),
 	};
 };

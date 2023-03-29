@@ -29,9 +29,15 @@ const useDeleteMessagesAction = (userId: string, onChange: () => void, onReload:
 
 	const confirmDeletMessages = (): void => {
 		setModal(
-			<GenericModal variant='danger' onConfirm={() => onDeleteAll()} onCancel={() => setModal()}>
-				This action will delete all reported messages from this user, and remove the report from this console. Are you sure you want to
-				continue?
+			<GenericModal
+				confirmText={t('Yes_delete_it')}
+				title={t('delete-message')}
+				variant='danger'
+				onConfirm={() => onDeleteAll()}
+				onCancel={() => setModal()}
+			>
+				Are you sure you want to delete all reported messages from this user? The messages will be deleted from the message history and no
+				one will be able to see it. This action cannot be undone.
 			</GenericModal>,
 		);
 	};

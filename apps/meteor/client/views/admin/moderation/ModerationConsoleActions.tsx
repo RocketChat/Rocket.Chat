@@ -2,9 +2,9 @@ import { Menu, Option } from '@rocket.chat/fuselage';
 import React from 'react';
 
 import type { MonderationConsoleRowProps } from './ModerationConsoleTableRow';
-import useApproveUserAction from './hooks/useApproveUserAction';
 import useDeactivateUserAction from './hooks/useDeactivateUserAction';
 import useDeleteMessagesAction from './hooks/useDeleteMessagesAction';
+import useDismissUserAction from './hooks/useDismissUserAction';
 import useResetAvatarAction from './hooks/useResetAvatarAction';
 
 const ModerationConsoleActions = ({ report, onClick, onChange, onReload }: MonderationConsoleRowProps): JSX.Element => {
@@ -21,7 +21,7 @@ const ModerationConsoleActions = ({ report, onClick, onChange, onReload }: Monde
 					divider: {
 						type: 'divider',
 					},
-					approve: useApproveUserAction(uid, onChange, onReload),
+					approve: useDismissUserAction(uid, onChange, onReload),
 					deleteAll: useDeleteMessagesAction(uid, onChange, onReload),
 					deactiveUser: useDeactivateUserAction(uid, onChange, onReload),
 					resetAvatar: useResetAvatarAction(uid, onChange, onReload),

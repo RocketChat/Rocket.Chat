@@ -4,6 +4,8 @@ import { useEndpoint, useRoute, useToastMessageDispatch, useTranslation } from '
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo } from 'react';
 
+import VerticalBar from '../../../components/VerticalBar';
+import MessageContextFooter from './MessageContextFooter';
 import ContextMessage from './helpers/ContextMessage';
 
 const UserMessages = ({
@@ -58,25 +60,30 @@ const UserMessages = ({
 	});
 
 	return (
-		<Box display='flex' flexDirection='column' width='full' height='full' overflowY='auto' overflowX='hidden'>
-			<Callout margin={15} title='Duplicate messages' type='warning' icon='lightning'>
-				Following may contain duplicated messages sent across channels
-			</Callout>{' '}
-			{isLoadingUserMessages && <Message>{t('Loading')}</Message>}
-			{isSuccessUserMessages &&
-				userMessages.messages.map((message) => (
-					<Box key={message._id}>
-						<ContextMessage
-							message={message.message}
-							room={message.room}
-							handleClick={handleClick}
-							onRedirect={onRedirect}
-							onChange={handleChange}
-							onReload={reload}
-						/>
-					</Box>
-				))}
-		</Box>
+		<>
+			<Box display='flex' flexDirection='column' width='full' height='full' overflowY='auto' overflowX='hidden'>
+				<Callout margin={15} title='Duplicate messages' type='warning' icon='lightning'>
+					Following may contain same messages sent by user in multiple rooms
+				</Callout>{' '}
+				{isLoadingUserMessages && <Message>{t('Loading')}</Message>}
+				{isSuccessUserMessages &&
+					userMessages.messages.map((message) => (
+						<Box key={message._id}>
+							<ContextMessage
+								message={message.message}
+								room={message.room}
+								handleClick={handleClick}
+								onRedirect={onRedirect}
+								onChange={handleChange}
+								onReload={reload}
+							/>
+						</Box>
+					))}
+			</Box>
+			<VerticalBar.Footer display='flex'>
+				<MessageContextFooter userId={userId} onChange={handleChange} onReload={reload} />
+			</VerticalBar.Footer>
+		</>
 	);
 };
 

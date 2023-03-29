@@ -27,7 +27,7 @@ const useDeleteMessage = (mid: string, rid: string, onChange: () => void, onRelo
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('Approved') });
+			dispatchToastMessage({ type: 'success', message: t('Reports_Dismissed') });
 		},
 	});
 
@@ -41,8 +41,14 @@ const useDeleteMessage = (mid: string, rid: string, onChange: () => void, onRelo
 
 	const confirmDeletMessage = (): void => {
 		setModal(
-			<GenericModal title={t('Delete_message')} variant='danger' onConfirm={() => onDeleteAll()} onCancel={() => setModal()}>
-				Are you sure you want to delete this message? The message will be deleted from the message history and no onw will be able to see
+			<GenericModal
+				confirmText={t('Yes_delete_it')}
+				title={t('Delete_message')}
+				variant='danger'
+				onConfirm={() => onDeleteAll()}
+				onCancel={() => setModal()}
+			>
+				Are you sure you want to delete this message? The message will be deleted from the message history and no one will be able to see
 				it. This action cannot be undone.
 			</GenericModal>,
 		);

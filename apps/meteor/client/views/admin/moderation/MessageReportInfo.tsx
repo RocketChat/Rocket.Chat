@@ -1,22 +1,20 @@
 import { Box, Message } from '@rocket.chat/fuselage';
 import { useEndpoint, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { MutableRefObject } from 'react';
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import UserAvatar from '../../../components/avatar/UserAvatar';
 import { formatDate } from '../../../lib/utils/formatDate';
 import { formatDateAndTime } from '../../../lib/utils/formatDateAndTime';
 import { formatTime } from '../../../lib/utils/formatTime';
 
-const MessageReportInfo = ({ msgId, reload }: { msgId: string; reload: MutableRefObject<() => void> }): JSX.Element => {
+const MessageReportInfo = ({ msgId }: { msgId: string }): JSX.Element => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const getReportsByMessage = useEndpoint('GET', `/v1/moderation.reportsByMessage`);
 
 	const {
 		data: reportsByMessage,
-		refetch: reloadReportsByMessage,
 		isLoading: isLoadingReportsByMessage,
 		isSuccess: isSuccessReportsByMessage,
 		isError: isErrorReportsByMessage,
@@ -32,10 +30,6 @@ const MessageReportInfo = ({ msgId, reload }: { msgId: string; reload: MutableRe
 			},
 		},
 	);
-
-	useEffect(() => {
-		reload.current = reloadReportsByMessage;
-	}, [reload, reloadReportsByMessage]);
 
 	if (isLoadingReportsByMessage) {
 		return (

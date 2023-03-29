@@ -48,8 +48,7 @@ const ModerationConsolePage = () => {
 						<VerticalBar.Close onClick={() => moderationRoute.push({})} />
 					</VerticalBar.Header>
 					{context === 'info' && id && <UserMessages userId={id} reload={reloadRef.current} onRedirect={handleRedirect} />}
-
-					{context === 'reports' && id && <MessageReportInfo msgId={id} reload={reloadRef} />}
+					{context === 'reports' && id && <MessageReportInfo msgId={id} />}
 				</VerticalBar>
 			)}
 		</Page>

@@ -10,7 +10,6 @@ const useResetAvatarAction = (userId: string, onChange: () => void, onReload: ()
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const resetAvatar = useEndpoint('POST', '/v1/users.resetAvatar');
-	const markAsChecked = useEndpoint('POST', '/v1/moderation.markChecked');
 
 	const handleResetAvatar = useMutation({
 		mutationFn: resetAvatar,
@@ -22,27 +21,16 @@ const useResetAvatarAction = (userId: string, onChange: () => void, onReload: ()
 		},
 	});
 
-	const handleMarkAsChecked = useMutation({
-		mutationFn: markAsChecked,
-		onError: (error) => {
-			dispatchToastMessage({ type: 'error', message: error });
-		},
-		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: 'Reports Approved!' });
-		},
-	});
-
 	const onResetAvatar = async () => {
 		setModal();
 		await handleResetAvatar.mutateAsync({ userId });
-		await handleMarkAsChecked.mutateAsync({ userId });
 		onChange();
 		onReload();
 	};
 
 	const confirmResetAvatar = (): void => {
 		setModal(
-			<GenericModal variant='danger' onConfirm={() => onResetAvatar()} onCancel={() => setModal()}>
+			<GenericModal confirmText={t('Reset')} variant='danger' onConfirm={() => onResetAvatar()} onCancel={() => setModal()}>
 				This action will reset this user's avatar. Are you sure you want to continue?
 			</GenericModal>,
 		);
