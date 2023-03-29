@@ -2,15 +2,15 @@ import { isGETDashboardTotalizerParams, isGETDashboardsAgentStatusParams } from 
 
 import { API } from '../../../../api/server';
 import {
-	findAllChatsStatus,
-	getProductivityMetrics,
-	getConversationsMetrics,
-	findAllChatMetricsByAgent,
-	findAllAgentsStatus,
-	findAllChatMetricsByDepartment,
-	findAllResponseTimeMetrics,
-	getAgentsProductivityMetrics,
-	getChatsMetrics,
+	findAllChatsStatusAsync,
+	getProductivityMetricsAsync,
+	getConversationsMetricsAsync,
+	findAllChatMetricsByAgentAsync,
+	findAllAgentsStatusAsync,
+	findAllChatMetricsByDepartmentAsync,
+	findAllResponseTimeMetricsAsync,
+	getAgentsProductivityMetricsAsync,
+	getChatsMetricsAsync,
 } from '../../../server/lib/analytics/dashboards';
 import { Users } from '../../../../models/server';
 
@@ -38,8 +38,7 @@ API.v1.addRoute(
 
 			const user = Users.findOneById(this.userId, { fields: { utcOffset: 1, language: 1 } });
 
-			// @ts-expect-error TODO: fix this
-			const totalizers = getConversationsMetrics({ start: startDate, end: endDate, departmentId, user });
+			const totalizers = await getConversationsMetricsAsync({ start: startDate, end: endDate, departmentId, user });
 			return API.v1.success(totalizers);
 		},
 	},
@@ -65,8 +64,7 @@ API.v1.addRoute(
 
 			const user = Users.findOneById(this.userId, { fields: { utcOffset: 1, language: 1 } });
 
-			// @ts-expect-error TODO: fix this
-			const totalizers = getAgentsProductivityMetrics({ start: startDate, end: endDate, departmentId, user });
+			const totalizers = await getAgentsProductivityMetricsAsync({ start: startDate, end: endDate, departmentId, user });
 			return API.v1.success(totalizers);
 		},
 	},
@@ -90,8 +88,7 @@ API.v1.addRoute(
 			}
 			const endDate = new Date(end);
 
-			// @ts-expect-error TODO: fix this
-			const totalizers = getChatsMetrics({ start: startDate, end: endDate, departmentId });
+			const totalizers = await getChatsMetricsAsync({ start: startDate, end: endDate, departmentId });
 			return API.v1.success(totalizers);
 		},
 	},
@@ -117,8 +114,7 @@ API.v1.addRoute(
 
 			const user = Users.findOneById(this.userId, { fields: { utcOffset: 1, language: 1 } });
 
-			// @ts-expect-error TODO: fix this
-			const totalizers = getProductivityMetrics({ start: startDate, end: endDate, departmentId, user });
+			const totalizers = await getProductivityMetricsAsync({ start: startDate, end: endDate, departmentId, user });
 
 			return API.v1.success(totalizers);
 		},
@@ -143,8 +139,7 @@ API.v1.addRoute(
 			}
 			const endDate = new Date(end);
 
-			// @ts-expect-error TODO: fix this
-			const result = findAllChatsStatus({ start: startDate, end: endDate, departmentId });
+			const result = await findAllChatsStatusAsync({ start: startDate, end: endDate, departmentId });
 
 			return API.v1.success(result);
 		},
@@ -168,8 +163,7 @@ API.v1.addRoute(
 				return API.v1.failure('The "end" query parameter must be a valid date.');
 			}
 			const endDate = new Date(end);
-			// @ts-expect-error TODO: fix this
-			const result = findAllChatMetricsByAgent({ start: startDate, end: endDate, departmentId }) as {
+			const result = (await findAllChatMetricsByAgentAsync({ start: startDate, end: endDate, departmentId })) as {
 				[k: string]: { open: number; closed: number; onhold: number };
 			};
 
@@ -185,8 +179,7 @@ API.v1.addRoute(
 		async get() {
 			const { departmentId } = this.queryParams;
 
-			// @ts-expect-error TODO: fix this
-			const result = findAllAgentsStatus({ departmentId });
+			const result = await findAllAgentsStatusAsync({ departmentId });
 
 			return API.v1.success(result);
 		},
@@ -211,8 +204,7 @@ API.v1.addRoute(
 			}
 			const endDate = new Date(end);
 
-			// @ts-expect-error TODO: fix this
-			const result = findAllChatMetricsByDepartment({ start: startDate, end: endDate, departmentId }) as {
+			const result = (await findAllChatMetricsByDepartmentAsync({ start: startDate, end: endDate, departmentId })) as {
 				[k: string]: { open: number; closed: number };
 			};
 
@@ -239,8 +231,7 @@ API.v1.addRoute(
 			}
 			const endDate = new Date(end);
 
-			// @ts-expect-error TODO: fix this
-			const result = findAllResponseTimeMetrics({ start: startDate, end: endDate, departmentId });
+			const result = await findAllResponseTimeMetricsAsync({ start: startDate, end: endDate, departmentId });
 
 			return API.v1.success(result);
 		},

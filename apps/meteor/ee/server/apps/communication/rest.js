@@ -382,7 +382,10 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 					}
 
-					const user = orchestrator.getConverters().get('users').convertToApp(Meteor.user());
+					const user = orchestrator
+						.getConverters()
+						.get('users')
+						.convertToApp(await Meteor.userAsync());
 
 					const aff = await manager.add(buff, { marketplaceInfo, permissionsGranted, enable: false, user });
 					const info = aff.getAppInfo();
@@ -755,7 +758,10 @@ export class AppsRestApi {
 						return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 					}
 
-					const user = orchestrator.getConverters().get('users').convertToApp(Meteor.user());
+					const user = orchestrator
+						.getConverters()
+						.get('users')
+						.convertToApp(await Meteor.userAsync());
 
 					await manager.remove(prl.getID(), { user });
 

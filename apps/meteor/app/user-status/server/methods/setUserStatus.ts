@@ -4,7 +4,8 @@ import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { settings } from '../../../settings/server';
-import { RateLimiter, setStatusText } from '../../../lib/server';
+import { RateLimiter } from '../../../lib/server';
+import { setStatusText } from '../../../lib/server/functions/setStatusText';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

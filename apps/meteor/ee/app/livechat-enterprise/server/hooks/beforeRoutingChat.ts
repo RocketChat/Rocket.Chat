@@ -58,7 +58,7 @@ callbacks.add(
 			return inquiry;
 		}
 
-		if (agent && allowAgentSkipQueue(agent)) {
+		if (agent && (await allowAgentSkipQueue(agent))) {
 			cbLogger.debug(`Skipping callback. Agent ${agent.agentId} can skip queue`);
 			return inquiry;
 		}

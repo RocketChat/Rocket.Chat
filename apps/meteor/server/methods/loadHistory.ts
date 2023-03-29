@@ -8,7 +8,7 @@ import { Rooms } from '../../app/models/server';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../app/settings/server';
-import { loadMessageHistory } from '../../app/lib/server';
+import { loadMessageHistory } from '../../app/lib/server/functions/loadMessageHistory';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -22,7 +22,7 @@ declare module '@rocket.chat/ui-contexts' {
 		):
 			| {
 					messages: IMessage[];
-					firstUnread: IMessage;
+					firstUnread: IMessage | undefined;
 					unreadNotLoaded: number;
 			  }
 			| false;

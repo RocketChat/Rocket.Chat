@@ -129,7 +129,7 @@ Meteor.methods<ServerMethods>({
 });
 
 RateLimiter.limitMethod('createDirectMessage', 10, 60000, {
-	userId(userId: IUser['_id']) {
-		return !Promise.await(hasPermissionAsync(userId, 'send-many-messages'));
+	async userId(userId: IUser['_id']) {
+		return !(await hasPermissionAsync(userId, 'send-many-messages'));
 	},
 });
