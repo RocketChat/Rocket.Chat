@@ -1,9 +1,10 @@
 import { AutoComplete, Box, OptionAvatar, Option, OptionContent, Chip, OptionDescription } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useMemo, useState } from 'react';
 
-import { useEndpointData } from '../../hooks/useEndpointData';
 import UserAvatar from '../avatar/UserAvatar';
 
 const query = (
@@ -14,11 +15,12 @@ const query = (
 
 type UserAutoCompleteMultipleProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
 
-// TODO: use useQuery & useDisplayUsername
+// TODO: useDisplayUsername
 const UserAutoCompleteMultiple = ({ onChange, ...props }: UserAutoCompleteMultipleProps): ReactElement => {
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
-	const { value: data } = useEndpointData('/v1/users.autocomplete', { params: useMemo(() => query(debouncedFilter), [debouncedFilter]) });
+	const usersAutoCompleteEndpoint = useEndpoint('GET', '/v1/users.autocomplete');
+	const { data } = useQuery(['usersAutoComplete', debouncedFilter], async () => usersAutoCompleteEndpoint(query(debouncedFilter)));
 
 	const options = useMemo(() => data?.items.map((user) => ({ value: user.username, label: user.name })) || [], [data]);
 

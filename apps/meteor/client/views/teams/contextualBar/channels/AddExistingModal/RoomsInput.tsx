@@ -1,4 +1,3 @@
-import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { AutoComplete, Box, Icon, Option, Options, Chip } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps } from 'react';
@@ -7,9 +6,7 @@ import React, { memo, useState } from 'react';
 import RoomAvatar from '../../../../../components/avatar/RoomAvatar';
 import { useRoomsAutoComplete } from './useRoomsAutoComplete';
 
-type RoomsInputProps = ComponentProps<typeof AutoComplete> & {
-	value: Serialized<IRoom>[];
-};
+type RoomsInputProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
 
 const RoomsInput = ({ value, onChange, ...props }: RoomsInputProps) => {
 	const [filter, setFilter] = useState('');

@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useMemo, useState } from 'react';
 
-type VisitorAutoCompleteProps = ComponentProps<typeof AutoComplete>;
+type VisitorAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
 
 const VisitorAutoComplete = ({ value, onChange, ...props }: VisitorAutoCompleteProps): ReactElement => {
 	const [filter, setFilter] = useState('');

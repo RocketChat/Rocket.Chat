@@ -1,9 +1,10 @@
 import { AutoComplete, Option, Box, Chip, Options } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps, ReactElement } from 'react';
 import React, { memo, useMemo, useState } from 'react';
 
-import { useEndpointData } from '../../hooks/useEndpointData';
 import UserAvatar from '../avatar/UserAvatar';
 
 const query = (
@@ -13,19 +14,18 @@ const query = (
 	selector: string;
 } => ({ selector: JSON.stringify({ term, conditions }) });
 
-type UserAutoCompleteProps = ComponentProps<typeof AutoComplete> & {
+type UserAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'> & {
 	conditions?: { [key: string]: unknown };
 };
 
-// TODO: use useQuery
 const UserAutoComplete = ({ value, onChange, ...props }: UserAutoCompleteProps): ReactElement => {
 	const { conditions = {} } = props;
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
-	const { value: data } = useEndpointData(
-		'/v1/users.autocomplete',
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		{ params: useMemo(() => query(debouncedFilter, conditions), [filter]) },
+	const usersAutoCompleteEndpoint = useEndpoint('GET', '/v1/users.autocomplete');
+
+	const { data } = useQuery(['usersAutoComplete', debouncedFilter, conditions], async () =>
+		usersAutoCompleteEndpoint(query(debouncedFilter, conditions)),
 	);
 
 	const options = useMemo(() => data?.items.map((user) => ({ value: user.username, label: user.name || user.username })) || [], [data]);
