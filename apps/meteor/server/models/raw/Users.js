@@ -2653,7 +2653,7 @@ export class UsersRaw extends BaseRaw {
 
 	// REMOVE
 	removeById(_id) {
-		return this.deleteOne(_id);
+		return this.deleteOne({ _id });
 	}
 
 	removeLivechatData(userId) {
