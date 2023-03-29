@@ -433,9 +433,12 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('invalid-room');
 		}
 
-		const user = await Users.findOneById(uid);
+		const user = await Users.findOneById<Pick<IUser, '_id' | 'username' | 'name'>>(uid, { projection: { username: 1, name: 1 } });
+		if (!user) {
+			throw new Error('invalid-user');
+		}
 
-		Messages.createUserConvertTeamToChannelWithRoomIdAndUser(team.roomId, room.name, user);
+		await Message.saveSystemMessage('user-converted-to-channel', team.roomId, room.name || '', user);
 
 		await Rooms.unsetTeamId(teamId);
 	}
