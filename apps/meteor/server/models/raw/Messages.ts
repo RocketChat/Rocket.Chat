@@ -1176,14 +1176,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findOne(query, options);
 	}
 
-	findByRoomId(roomId: string, options?: FindOptions<IMessage>): FindCursor<IMessage> {
-		const query = {
-			rid: roomId,
-		};
-
-		return this.find(query, options);
-	}
-
 	getLastVisibleMessageSentWithNoTypeByRoomId(rid: string, messageId?: string): Promise<IMessage | null> {
 		const query = {
 			rid,

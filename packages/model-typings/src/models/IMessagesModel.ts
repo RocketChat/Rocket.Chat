@@ -203,7 +203,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	setUrlsById(_id: string, urls: NonNullable<IMessage['urls']>): Promise<UpdateResult>;
 	getLastVisibleMessageSentWithNoTypeByRoomId(rid: string, messageId?: string): Promise<IMessage | null>;
 
-	findByRoomId(roomId: string, options?: FindOptions<IMessage>): FindCursor<IMessage>;
 	findOneBySlackTs(slackTs: Date): Promise<IMessage | null>;
 
 	cloneAndSaveAsHistoryById(_id: string, user: IMessage['u']): Promise<InsertOneResult<IMessage>>;

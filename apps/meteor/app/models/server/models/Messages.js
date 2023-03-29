@@ -34,16 +34,6 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
 	}
 
-	// FIND
-
-	findByRoomId(roomId, options) {
-		const query = {
-			rid: roomId,
-		};
-
-		return this.find(query, options);
-	}
-
 	// INSERT
 	/**
 	 * @returns {Pick<IMessage, '_id' | 't' | 'rid' | 'ts' | 'msg' | 'u' | 'groupable' | 'unread'>}
