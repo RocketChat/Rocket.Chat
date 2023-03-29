@@ -1010,7 +1010,7 @@ export class RoomsRaw extends BaseRaw {
 	}
 
 	async findBySubscriptionUserId(userId, options) {
-		const data = (await Subscriptions.cachedFindByUserId(userId, { projection: { rid: 1 } }).toArray()).map((item) => item.rid);
+		const data = (await Subscriptions.findByUserId(userId, { projection: { rid: 1 } }).toArray()).map((item) => item.rid);
 
 		const query = {
 			_id: {

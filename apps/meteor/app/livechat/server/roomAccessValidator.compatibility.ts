@@ -1,7 +1,7 @@
 import type { IUser, ILivechatDepartment, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatDepartmentAgents, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 
-import { hasRole } from '../../authorization/server';
+import { hasRoleAsync } from '../../authorization/server/functions/hasRole';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { LivechatDepartment } from '../../models/server';
 import { RoutingManager } from './lib/RoutingManager';
@@ -48,7 +48,7 @@ export const validators: OmnichannelRoomAccessValidator[] = [
 		}
 
 		let departmentIds;
-		if (!hasRole(user._id, 'livechat-manager')) {
+		if (!(await hasRoleAsync(user._id, 'livechat-manager'))) {
 			const departmentAgents = (await LivechatDepartmentAgents.findByAgentId(user._id).toArray()).map((d) => d.departmentId);
 			departmentIds = LivechatDepartment.find({ _id: { $in: departmentAgents }, enabled: true })
 				.fetch()

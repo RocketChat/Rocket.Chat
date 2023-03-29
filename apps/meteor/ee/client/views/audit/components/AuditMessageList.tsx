@@ -14,7 +14,7 @@ type AuditMessageListProps = {
 	messages: IMessage[];
 };
 
-export const AuditMessageList = ({ messages }: AuditMessageListProps): ReactElement => {
+const AuditMessageList = ({ messages }: AuditMessageListProps): ReactElement => {
 	const formatDate = useFormatDate();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 

@@ -32,7 +32,7 @@ class RoomCoordinatorServer extends RoomCoordinator {
 			async getDiscussionType(): Promise<RoomType> {
 				return 'p';
 			},
-			canAccessUploadedFile(_params: { rc_uid: string; rc_rid: string; rc_token: string }): boolean {
+			async canAccessUploadedFile(_params: { rc_uid: string; rc_rid: string; rc_token: string }): Promise<boolean> {
 				return false;
 			},
 			async getNotificationDetails(
