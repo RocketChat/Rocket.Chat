@@ -1,4 +1,11 @@
-import type { IOmnichannelRoom, IOmnichannelRoomClosingInfo, IUser, MessageTypesValues, ILivechatVisitor, IRegisterUser } from '@rocket.chat/core-typings';
+import type {
+	IOmnichannelRoom,
+	IOmnichannelRoomClosingInfo,
+	IUser,
+	MessageTypesValues,
+	ILivechatVisitor,
+	IRegisterUser,
+} from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms, Subscriptions, LivechatVisitors, Messages, Users } from '@rocket.chat/models';
 import moment from 'moment-timezone';
