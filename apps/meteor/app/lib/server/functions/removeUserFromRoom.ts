@@ -2,7 +2,7 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Team } from '@rocket.chat/core-services';
+import { Message, Team } from '@rocket.chat/core-services';
 import { Subscriptions } from '@rocket.chat/models';
 
 import { Rooms, Messages } from '../../../models/server';
@@ -51,7 +51,7 @@ export const removeUserFromRoom = async function (
 		} else if (room.teamMain) {
 			Messages.createUserLeaveTeamWithRoomIdAndUser(rid, removedUser);
 		} else {
-			Messages.createUserLeaveWithRoomIdAndUser(rid, removedUser);
+			await Message.saveSystemMessage('ul', rid, removedUser.username || '', removedUser);
 		}
 	}
 

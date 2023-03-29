@@ -67,7 +67,7 @@ Meteor.methods<ServerMethods>({
 				userMentions: 1,
 				groupMentions: 0,
 			});
-			await Message.saveSystemMessage('uj', rid, user.username, user, {
+			await Message.saveSystemMessage('uj', rid, user.username || '', user, {
 				ts: now,
 			});
 			return callbacks.run('afterJoinRoom', user, room);

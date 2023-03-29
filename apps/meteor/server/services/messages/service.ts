@@ -1,4 +1,4 @@
-import type { IMessage, MessageTypesValues } from '@rocket.chat/core-typings';
+import type { IMessage, MessageTypesValues, IUser } from '@rocket.chat/core-typings';
 import type { IMessageService } from '@rocket.chat/core-services';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import { Messages } from '@rocket.chat/models';
@@ -17,14 +17,18 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		type: MessageTypesValues,
 		rid: string,
 		message: string,
-		user: Pick<IMessage['u'], '_id' | 'username'>,
+		user: Pick<IUser, '_id' | 'username'>,
 		extraData?: Partial<T>,
 	): Promise<IMessage['_id']> {
+		const { _id: userId, username } = user;
+		if (!username) {
+			throw new Error('The username cannot be empty.');
+		}
 		const result = await Messages.createWithTypeRoomIdMessageUserAndUnread(
 			type,
 			rid,
 			message,
-			user,
+			{ _id: userId, username },
 			settings.get('Message_Read_Receipt_Enabled'),
 			extraData,
 		);

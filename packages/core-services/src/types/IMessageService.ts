@@ -1,4 +1,4 @@
-import type { IMessage, MessageTypesValues } from '@rocket.chat/core-typings';
+import type { IMessage, MessageTypesValues, IUser } from '@rocket.chat/core-typings';
 
 export interface IMessageService {
 	sendMessage({ fromId, rid, msg }: { fromId: string; rid: string; msg: string }): Promise<IMessage>;
@@ -6,7 +6,7 @@ export interface IMessageService {
 		type: MessageTypesValues,
 		rid: string,
 		message: string,
-		user: Pick<IMessage['u'], '_id' | 'username'>,
+		user: Pick<IUser, '_id' | 'username'>,
 		extraData?: Partial<T>,
 	): Promise<IMessage['_id']>;
 }

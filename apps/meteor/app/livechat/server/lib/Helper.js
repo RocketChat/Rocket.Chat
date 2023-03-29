@@ -15,7 +15,7 @@ import {
 } from '@rocket.chat/models';
 
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
-import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
+import { Rooms, Subscriptions, Users } from '../../../models/server';
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../../lib/callbacks';
@@ -214,7 +214,7 @@ export const removeAgentFromSubscription = async (rid, { _id, username }) => {
 	const user = Users.findOneById(_id);
 
 	await SubscriptionsRaw.removeByRoomIdAndUserId(rid, _id);
-	Messages.createUserLeaveWithRoomIdAndUser(rid, { _id, username });
+	await Message.saveSystemMessage('ul', rid, username, { _id: user._id, username: user.username, name: user.name });
 
 	Meteor.defer(() => {
 		Apps.triggerEvent(AppEvents.IPostLivechatAgentUnassigned, { room, user });
