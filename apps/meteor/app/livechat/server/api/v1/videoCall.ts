@@ -6,7 +6,7 @@ import { Messages } from '../../../../models/server';
 import { settings as rcSettings } from '../../../../settings/server';
 import { API } from '../../../../api/server';
 import { settings } from '../lib/livechat';
-import { canSendMessage } from '../../../../authorization/server';
+import { canSendMessageAsync } from '../../../../authorization/server/functions/canSendMessage';
 import { Livechat } from '../../lib/Livechat';
 
 API.v1.addRoute(
@@ -14,7 +14,7 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isGETWebRTCCall },
 	{
 		async get() {
-			const room = canSendMessage(
+			const room = await canSendMessageAsync(
 				this.queryParams.rid,
 				{
 					uid: this.userId,
@@ -71,7 +71,7 @@ API.v1.addRoute(
 			const { callId } = this.urlParams;
 			const { rid, status } = this.bodyParams;
 
-			const room = canSendMessage(
+			const room = await canSendMessageAsync(
 				rid,
 				{
 					uid: this.userId,

@@ -6,7 +6,7 @@ import PageSkeleton from '../../components/PageSkeleton';
 import NotAuthorizedPage from '../notAuthorized/NotAuthorizedPage';
 import AppDetailsPage from './AppDetailsPage';
 import AppInstallPage from './AppInstallPage';
-import AppsPage from './AppsPage/AppsPage';
+import AppsPage from './AppsPage';
 import AppsProvider from './AppsProvider';
 import BannerEnterpriseTrialEnded from './components/BannerEnterpriseTrialEnded';
 

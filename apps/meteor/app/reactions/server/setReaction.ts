@@ -111,7 +111,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 }
 
 export async function executeSetReaction(reaction: string, messageId: IMessage['_id'], shouldReact?: boolean) {
-	const user = Meteor.user() as IUser | null;
+	const user = (await Meteor.userAsync()) as IUser | null;
 
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setReaction' });

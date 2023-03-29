@@ -37,7 +37,7 @@ const AppDetailsPageHeader = ({ app }: { app: App }): ReactElement => {
 
 	return (
 		<Box color='default' display='flex' flexDirection='row' mbe='x20' w='full'>
-			<AppAvatar size='x124' mie='x20' iconFileContent={iconFileContent} iconFileData={iconFileData} />
+			<AppAvatar size='x124' mie='x32' iconFileContent={iconFileContent} iconFileData={iconFileData} />
 			<Box display='flex' flexDirection='column'>
 				<Box display='flex' flexDirection='row' alignItems='center' mbe='x8'>
 					<Box fontScale='h1' mie='x8'>
