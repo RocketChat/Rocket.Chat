@@ -1515,16 +1515,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return { ...record, _id: (await this.updateOne(data, data, { upsert: true })).upsertedId as unknown as string };
 	}
 
-	createUserDeleteRoomFromTeamWithRoomIdAndUser(
-		roomId: string,
-		roomName: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('user-deleted-room-from-team', roomId, roomName, user, readReceiptsEnabled, extraData);
-	}
-
 	createUserAddRoomToTeamWithRoomIdAndUser(
 		roomId: string,
 		roomName: string,
