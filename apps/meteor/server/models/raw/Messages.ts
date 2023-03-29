@@ -1525,16 +1525,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.createWithTypeRoomIdMessageAndUser('command', roomId, command, user, readReceiptsEnabled, extraData);
 	}
 
-	createUserMutedWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('user-muted', roomId, message, user, readReceiptsEnabled, extraData);
-	}
-
 	createUserUnmutedWithRoomIdAndUser(
 		roomId: string,
 		user: IMessage['u'],
