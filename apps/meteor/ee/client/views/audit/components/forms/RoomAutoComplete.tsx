@@ -6,7 +6,7 @@ import React, { memo, useMemo, useState } from 'react';
 
 import RoomAvatar from '../../../../../../client/components/avatar/RoomAvatar';
 
-type RoomAutoCompleteProps = ComponentProps<typeof AutoComplete>;
+type RoomAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
 
 const RoomAutoComplete = ({ value, onChange, ...props }: RoomAutoCompleteProps) => {
 	const [filter, setFilter] = useState('');

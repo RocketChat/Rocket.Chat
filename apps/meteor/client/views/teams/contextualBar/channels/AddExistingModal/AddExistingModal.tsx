@@ -4,7 +4,7 @@ import { useToastMessageDispatch, useEndpoint, useTranslation } from '@rocket.ch
 import React, { memo, useCallback } from 'react';
 
 import { useForm } from '../../../../../hooks/useForm';
-import RoomsInput from './RoomsInput';
+import RoomsAvailableForTeamsAutoComplete from './RoomsAvailableForTeamsAutoComplete';
 
 type AddExistingModalProps = {
 	teamId: string;
@@ -50,7 +50,7 @@ const AddExistingModal = ({ onClose, teamId, reload }: AddExistingModalProps) =>
 			<Modal.Content>
 				<Field mbe='x24'>
 					<Field.Label>{t('Channels')}</Field.Label>
-					<RoomsInput value={rooms} onChange={handleRooms} />
+					<RoomsAvailableForTeamsAutoComplete value={rooms} onChange={handleRooms} />
 				</Field>
 			</Modal.Content>
 			<Modal.Footer>

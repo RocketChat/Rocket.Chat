@@ -1,24 +1,28 @@
 import { AutoComplete, Option, Box } from '@rocket.chat/fuselage';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
 import React, { memo, useMemo, useState } from 'react';
 
-import { useEndpointData } from '../../../../hooks/useEndpointData';
 import Avatar from './Avatar';
 
-type TeamAutocompleteProps = ComponentProps<typeof AutoComplete>;
+type TeamAutocompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
 
 const TeamAutocomplete = ({ value, onChange, ...props }: TeamAutocompleteProps) => {
 	const [filter, setFilter] = useState('');
 
-	const { value: data } = useEndpointData('/v1/teams.autocomplete', { params: useMemo(() => ({ name: filter }), [filter]) });
+	const teamsAutoCompleteEndpoint = useEndpoint('GET', '/v1/teams.autocomplete');
+	const { data, isSuccess } = useQuery(['teamsAutoComplete', filter], async () => teamsAutoCompleteEndpoint({ name: filter }));
 
 	const options = useMemo(
 		() =>
-			data?.teams.map(({ name, teamId, _id, avatarETag, t }) => ({
-				value: teamId,
-				label: { name, avatarETag, type: t, _id },
-			})) || [],
-		[data],
+			isSuccess
+				? data?.teams.map(({ name, teamId, _id, avatarETag, t }) => ({
+						value: teamId as string,
+						label: { name, avatarETag, type: t, _id },
+				  }))
+				: [],
+		[data, isSuccess],
 	);
 
 	return (
