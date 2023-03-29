@@ -112,7 +112,7 @@ export class AppPersistenceBridge extends PersistenceBridge {
 	protected async updateByAssociations(
 		associations: Array<RocketChatAssociationRecord>,
 		data: object,
-		upsert: boolean,
+		upsert = true,
 		appId: string,
 	): Promise<string> {
 		this.orch.debugLog(`The App ${appId} is updating the record with association to data as follows:`, associations, data);
