@@ -6,7 +6,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IIntegration, INewIncomingIntegration, IUpdateIncomingIntegration } from '@rocket.chat/core-typings';
 
 import { Rooms, Users } from '../../../../models/server';
-import { hasAllPermission, hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { hasAllPermissionAsync, hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 
 const validChannelChars = ['@', '#'];
 
@@ -129,7 +129,7 @@ Meteor.methods<ServerMethods>({
 			}
 
 			if (
-				!hasAllPermission(this.userId, ['manage-incoming-integrations', 'manage-own-incoming-integrations']) &&
+				!(await hasAllPermissionAsync(this.userId, ['manage-incoming-integrations', 'manage-own-incoming-integrations'])) &&
 				!(await Subscriptions.findOneByRoomIdAndUserId(record._id, this.userId, { projection: { _id: 1 } }))
 			) {
 				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', {
