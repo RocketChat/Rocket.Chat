@@ -1,7 +1,6 @@
 import { Button, Throbber } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
-import React from 'react';
 
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';

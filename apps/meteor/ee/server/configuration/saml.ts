@@ -1,3 +1,5 @@
+import { Roles } from '@rocket.chat/models';
+
 import { onLicense } from '../../app/license/server';
 import type { ISAMLUser } from '../../../app/meteor-accounts-saml/server/definition/ISAMLUser';
 import { SAMLUtils } from '../../../app/meteor-accounts-saml/server/lib/Utils';
@@ -7,7 +9,7 @@ import { Users } from '../../../app/models/server';
 import { ensureArray } from '../../../lib/utils/arrayUtils';
 
 onLicense('saml-enterprise', () => {
-	SAMLUtils.events.on('mapUser', ({ profile, userObject }: { profile: Record<string, any>; userObject: ISAMLUser }) => {
+	SAMLUtils.events.on('mapUser', async ({ profile, userObject }: { profile: Record<string, any>; userObject: ISAMLUser }) => {
 		const roleAttributeName = settings.get('SAML_Custom_Default_role_attribute_name') as string;
 		const roleAttributeSync = settings.get('SAML_Custom_Default_role_attribute_sync');
 
@@ -21,7 +23,9 @@ onLicense('saml-enterprise', () => {
 				value = value.split(',');
 			}
 
-			userObject.roles = ensureArray<string>(value);
+			const savedRoles = await Roles.findInIdsOrNames(ensureArray<string>(value)).toArray();
+
+			userObject.roles = savedRoles.map((role) => role.name);
 		}
 	});
 

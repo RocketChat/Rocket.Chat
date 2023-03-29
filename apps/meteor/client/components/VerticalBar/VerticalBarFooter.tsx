@@ -1,5 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { forwardRef, ComponentProps, memo } from 'react';
+import type { ComponentProps } from 'react';
+import React, { forwardRef, memo } from 'react';
 
 const VerticalBarFooter = forwardRef<HTMLElement, ComponentProps<typeof Box>>(function VerticalBarFooter({ children, ...props }, ref) {
 	return (

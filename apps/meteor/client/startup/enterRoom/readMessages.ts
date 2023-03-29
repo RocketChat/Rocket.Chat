@@ -1,4 +1,4 @@
-import { ISubscription } from '@rocket.chat/core-typings';
+import type { ISubscription } from '@rocket.chat/core-typings';
 
 import { readMessage } from '../../../app/ui-utils/client';
 import { callbacks } from '../../../lib/callbacks';

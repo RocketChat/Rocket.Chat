@@ -1,8 +1,8 @@
-import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
-import { Serialized } from '@rocket.chat/core-typings';
+import type { IOmnichannelCannedResponse, Serialized } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, FC } from 'react';
+import type { FC } from 'react';
+import React, { useMemo } from 'react';
 
 import { FormSkeleton } from '../../../../client/components/Skeleton';
 import { AsyncStatePhase } from '../../../../client/hooks/useAsyncState';
@@ -19,7 +19,7 @@ const CannedResponseEditWithData: FC<{
 	totalDataReload: () => void;
 }> = ({ data, reload, totalDataReload }) => {
 	const departmentId = useMemo(() => data?.cannedResponse?.departmentId, [data]) as string;
-	const { value: departmentData, phase: state, error } = useEndpointData(`/v1/livechat/department/${departmentId}`);
+	const { value: departmentData, phase: state, error } = useEndpointData('/v1/livechat/department/:_id', { keys: { _id: departmentId } });
 
 	const t = useTranslation();
 

@@ -29,8 +29,7 @@ function EditIncomingWebhook({ data, onChange, ...props }) {
 	const { values: formValues, handlers: formHandlers, reset } = useForm(getInitialValue(data));
 	const setModal = useSetModal();
 
-	const deleteQuery = useMemo(() => ({ type: 'webhook-incoming', integrationId: data._id }), [data._id]);
-	const deleteIntegration = useEndpointAction('POST', '/v1/integrations.remove', deleteQuery);
+	const deleteIntegration = useEndpointAction('POST', '/v1/integrations.remove');
 	const saveIntegration = useMethod('updateIncomingIntegration');
 
 	const router = useRoute('admin-integrations');
@@ -44,7 +43,7 @@ function EditIncomingWebhook({ data, onChange, ...props }) {
 		};
 
 		const onDelete = async () => {
-			const result = await deleteIntegration();
+			const result = await deleteIntegration({ type: 'webhook-incoming', integrationId: data._id });
 			if (result.success) {
 				setModal(
 					<GenericModal variant='success' onClose={handleClose} onConfirm={handleClose}>
@@ -59,7 +58,7 @@ function EditIncomingWebhook({ data, onChange, ...props }) {
 				{t('Integration_Delete_Warning')}
 			</GenericModal>,
 		);
-	}, [deleteIntegration, router, setModal, t]);
+	}, [data._id, deleteIntegration, router, setModal, t]);
 
 	const handleSave = useCallback(async () => {
 		try {

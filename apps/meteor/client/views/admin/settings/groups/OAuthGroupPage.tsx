@@ -1,9 +1,10 @@
-import { ISetting } from '@rocket.chat/core-typings';
+import type { ISetting } from '@rocket.chat/core-typings';
 import { Button } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch, useAbsoluteUrl, useMethod, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement } from 'react';
-import s from 'underscore.string';
+import type { ReactElement } from 'react';
+import React, { memo } from 'react';
 
+import { strRight } from '../../../../../lib/utils/stringUtils';
 import GenericModal from '../../../../components/GenericModal';
 import { useEditableSettingsGroupSections } from '../../EditableSettingsContext';
 import GroupPage from '../GroupPage';
@@ -22,7 +23,7 @@ function OAuthGroupPage({ _id, ...group }: OAuthGroupPageProps): ReactElement {
 	const getAbsoluteUrl = useAbsoluteUrl();
 
 	const callbackURL = (sectionName: string): string => {
-		const id = s.strRight(sectionName, 'Custom OAuth: ').toLowerCase();
+		const id = strRight(sectionName, 'Custom OAuth: ').toLowerCase();
 		return getAbsoluteUrl(`_oauth/${id}`);
 	};
 
@@ -94,7 +95,7 @@ function OAuthGroupPage({ _id, ...group }: OAuthGroupPageProps): ReactElement {
 		>
 			{sections.map((sectionName) => {
 				if (sectionIsCustomOAuth(sectionName)) {
-					const id = s.strRight(sectionName, 'Custom OAuth: ').toLowerCase();
+					const id = strRight(sectionName, 'Custom OAuth: ').toLowerCase();
 
 					const handleRemoveCustomOAuthButtonClick = removeCustomOauthFactory(id);
 

@@ -21,7 +21,7 @@ $ yarn test:e2e
 
 We can also provide some env vars to `test:e2e` script:
 - `BASE_URL=<any_url>` Run the tests to the given url
-- `PWDEBUG=1` Controll the test execution
+- `PWDEBUG=1` Control the test execution
 
 ## Page Objects
 - Any locator name must start with of one the following prefixes: `btn`, `link`, `input`, `select`, `checkbox`, `text`

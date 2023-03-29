@@ -1,13 +1,20 @@
-import type { IRoom, RoomType, IUser, AtLeast, ValueOf } from '@rocket.chat/core-typings';
+import type { IRoom, RoomType, IUser, AtLeast, ValueOf, ISubscription } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { RouteOptions } from 'meteor/kadira:flow-router';
-import _ from 'underscore';
 
 import { hasPermission } from '../../../app/authorization/client';
 import { ChatRoom, ChatSubscription } from '../../../app/models/client';
+import { settings } from '../../../app/settings/client';
 import { openRoom } from '../../../app/ui-utils/client/lib/openRoom';
-import { RoomSettingsEnum, RoomMemberActions, UiTextContext } from '../../../definition/IRoomTypeConfig';
-import type { IRoomTypeConfig, IRoomTypeClientDirectives, RoomIdentification } from '../../../definition/IRoomTypeConfig';
+import type {
+	RoomSettingsEnum,
+	RoomMemberActions,
+	UiTextContext,
+	IRoomTypeConfig,
+	IRoomTypeClientDirectives,
+	RoomIdentification,
+} from '../../../definition/IRoomTypeConfig';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 import { roomExit } from './roomExit';
 
@@ -17,7 +24,12 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			allowRoomSettingChange(_room: Partial<IRoom>, _setting: ValueOf<typeof RoomSettingsEnum>): boolean {
 				return true;
 			},
-			allowMemberAction(_room: Partial<IRoom>, _action: ValueOf<typeof RoomMemberActions>): boolean {
+			allowMemberAction(
+				_room: Partial<IRoom>,
+				_action: ValueOf<typeof RoomMemberActions>,
+				_showingUserId: IUser['_id'],
+				_userSubscription?: ISubscription,
+			): boolean {
 				return false;
 			},
 			roomName(_room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid'>): string {
@@ -37,9 +49,6 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			},
 			getIcon(_room: Partial<IRoom>): IRoomTypeConfig['icon'] {
 				return this.config.icon;
-			},
-			getUserStatus(_roomId: string): string | undefined {
-				return undefined;
 			},
 			findRoom(_identifier: string): IRoom | undefined {
 				return undefined;
@@ -62,12 +71,12 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		super.addRoute(path, { ...routeConfig, triggersExit: [roomExit] });
 	}
 
-	getRoomDirectives(roomType: string): IRoomTypeClientDirectives | undefined {
-		return this.roomTypes[roomType]?.directives as IRoomTypeClientDirectives;
+	getRoomDirectives(roomType: string): IRoomTypeClientDirectives {
+		return this.roomTypes[roomType].directives as IRoomTypeClientDirectives;
 	}
 
 	getRoomTypeById(rid: string): RoomType | undefined {
-		const room = ChatRoom.findOne({ _id: rid, t: { $exists: true, $ne: null } }, { fields: { t: 1 } });
+		const room = ChatRoom.findOne({ _id: rid, t: { $exists: true, $ne: null as any } }, { fields: { t: 1 } });
 		return room?.t;
 	}
 
@@ -90,7 +99,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 	}
 
 	getIcon(room: Partial<IRoom>): IRoomTypeConfig['icon'] {
-		return room?.t && this.getRoomDirectives(room.t)?.getIcon(room);
+		return room?.t && this.getRoomDirectives(room.t).getIcon(room);
 	}
 
 	openRouteLink(roomType: RoomType, subData: RoomIdentification, queryParams?: Record<string, string>): void {
@@ -114,11 +123,11 @@ class RoomCoordinatorClient extends RoomCoordinator {
 	}
 
 	isLivechatRoom(roomType: string): boolean {
-		return Boolean(this.getRoomDirectives(roomType)?.isLivechatRoom());
+		return Boolean(this.getRoomDirectives(roomType).isLivechatRoom());
 	}
 
 	getRoomName(roomType: string, roomData: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid'>): string {
-		return this.getRoomDirectives(roomType)?.roomName(roomData) ?? '';
+		return this.getRoomDirectives(roomType).roomName(roomData) ?? '';
 	}
 
 	readOnly(rid: string, user: AtLeast<IUser, 'username'>): boolean {
@@ -171,16 +180,22 @@ class RoomCoordinatorClient extends RoomCoordinator {
 	}
 
 	verifyCanSendMessage(rid: string): boolean {
-		const room = ChatRoom.findOne({ _id: rid }, { fields: { t: 1 } });
+		const room = ChatRoom.findOne({ _id: rid }, { fields: { t: 1, federated: 1 } });
 		if (!room?.t) {
 			return false;
 		}
-
-		return Boolean(this.getRoomDirectives(room.t)?.canSendMessage(rid));
+		if (!this.getRoomDirectives(room.t).canSendMessage(rid)) {
+			return false;
+		}
+		if (isRoomFederated(room)) {
+			return settings.get('Federation_Matrix_enabled');
+		}
+		return true;
 	}
 
 	getSortedTypes(): Array<{ config: IRoomTypeConfig; directives: IRoomTypeClientDirectives }> {
-		return _.sortBy(this.roomTypesOrder, 'order')
+		return this.roomTypesOrder
+			.sort((a, b) => a.order - b.order)
 			.map((type) => this.roomTypes[type.identifier] as { config: IRoomTypeConfig; directives: IRoomTypeClientDirectives })
 			.filter((type) => type.directives.condition());
 	}

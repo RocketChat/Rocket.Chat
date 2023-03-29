@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { settingsRegistry } from '../../settings/server';
 
 Meteor.startup(function () {
-	settingsRegistry.addGroup('Bots', function () {
+	void settingsRegistry.addGroup('Bots', function () {
 		this.add('BotHelpers_userFields', '_id, name, username, emails, language, utcOffset', {
 			type: 'string',
 			section: 'Helpers',

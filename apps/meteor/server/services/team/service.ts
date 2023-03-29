@@ -14,13 +14,7 @@ import type {
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Team, Rooms, Subscriptions, Users, TeamMember } from '@rocket.chat/models';
 import type { InsertionModel } from '@rocket.chat/model-typings';
-
-import { checkUsernameAvailability } from '../../../app/lib/server/functions';
-import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
-import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
-import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
-import { Messages } from '../../../app/models/server';
-import { Room, Authorization } from '../../sdk';
+import { Room, Authorization, ServiceClassInternal } from '@rocket.chat/core-services';
 import type {
 	IListRoomsFilter,
 	ITeamAutocompleteResult,
@@ -30,8 +24,13 @@ import type {
 	ITeamMemberParams,
 	ITeamService,
 	ITeamUpdateData,
-} from '../../sdk/types/ITeamService';
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
+} from '@rocket.chat/core-services';
+
+import { checkUsernameAvailability } from '../../../app/lib/server/functions/checkUsernameAvailability';
+import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
+import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
+import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
+import { Messages } from '../../../app/models/server';
 import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomType } from '../../../app/channel-settings/server/functions/saveRoomType';
 
@@ -39,7 +38,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 	protected name = 'team';
 
 	async create(uid: string, { team, room = { name: team.name, extraData: {} }, members, owner }: ITeamCreateParams): Promise<ITeam> {
-		if (!checkUsernameAvailability(team.name)) {
+		if (!(await checkUsernameAvailability(team.name))) {
 			throw new Error('team-name-already-exists');
 		}
 
@@ -159,7 +158,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		if (updateRoom && typeof type !== 'undefined') {
-			saveRoomType(team.roomId, type === TEAM_TYPE.PRIVATE ? 'p' : 'c', user);
+			await saveRoomType(team.roomId, type === TEAM_TYPE.PRIVATE ? 'p' : 'c', user);
 		}
 
 		await Team.updateNameAndType(teamId, updateData);
@@ -493,7 +492,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		options?: undefined | FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
 	): Promise<P[] | ITeamMember[]> {
 		if (options) {
-			TeamMember.findByUserId(uid, options).toArray();
+			return TeamMember.findByUserId(uid, options).toArray();
 		}
 		return TeamMember.findByUserId(uid).toArray();
 	}
@@ -597,7 +596,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
 
-		const roomData = getSubscribedRoomsForUserWithDetails(userId, false, teamRoomIds);
+		const roomData = await getSubscribedRoomsForUserWithDetails(userId, false, teamRoomIds);
 		const records = [];
 
 		for (const room of rooms) {
@@ -780,7 +779,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 					}
 				}
 
-				TeamMember.removeById(existingMember._id);
+				await TeamMember.removeById(existingMember._id);
 			}
 
 			const removedUser = usersToRemove.find((u) => u._id === (existingMember || member).userId);
@@ -963,7 +962,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			// at this point, users are already part of the team so we won't check for membership
 			for await (const user of users) {
 				// add each user to the default room
-				addUserToRoom(room._id, user, inviter, false);
+				await addUserToRoom(room._id, user, inviter, false);
 			}
 		});
 	}

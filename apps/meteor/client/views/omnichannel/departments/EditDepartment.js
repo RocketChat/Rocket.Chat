@@ -30,7 +30,7 @@ function withDefault(key, defaultValue) {
 	return key || defaultValue;
 }
 
-function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
+function EditDepartment({ data, id, title, allowedToForwardData }) {
 	const t = useTranslation();
 	const departmentsRoute = useRoute('omnichannel-departments');
 
@@ -43,7 +43,9 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 		useSelectForwardDepartment = () => {},
 	} = useFormsSubscription();
 
-	const initialAgents = useRef((data && data.agents) || []);
+	const { agents } = data || { agents: [] };
+
+	const initialAgents = useRef(agents);
 
 	const MaxChats = useEeNumberInput();
 	const VisitorInactivity = useEeNumberInput();
@@ -198,8 +200,8 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 			visitorInactivityTimeoutInSeconds,
 			abandonedRoomsCloseCustomMessage,
 			waitingQueueMessage,
-			departmentsAllowedToForward: departmentsAllowedToForward?.map((dep) => dep.value).join(),
-			fallbackForwardDepartment: fallbackForwardDepartment.value,
+			departmentsAllowedToForward: departmentsAllowedToForward?.map((dep) => dep.value),
+			fallbackForwardDepartment,
 		};
 
 		const agentListPayload = {
@@ -222,7 +224,6 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 				await saveDepartmentInfo(id, payload, agentList);
 			}
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			reload();
 			departmentsRoute.push({});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -242,7 +243,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 
 	const formId = useUniqueId();
 
-	const hasNewAgent = useMemo(() => data.agents.length === agentList.length, [data.agents, agentList]);
+	const hasNewAgent = useMemo(() => agents.length === agentList.length, [agents, agentList]);
 
 	const agentsHaveChanged = () => {
 		let hasChanges = false;
@@ -420,6 +421,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 									placeholder={t('Fallback_forward_department')}
 									label={t('Fallback_forward_department')}
 									onlyMyDepartments
+									showArchived
 								/>
 							</Field>
 						)}
@@ -479,7 +481,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 							<Field.Label mb='x4'>{t('Agents')}:</Field.Label>
 							<Box display='flex' flexDirection='column' height='50vh'>
 								<DepartmentsAgentsTable
-									agents={data && data.agents}
+									agents={agents}
 									setAgentListFinal={setAgentList}
 									setAgentsAdded={setAgentsAdded}
 									setAgentsRemoved={setAgentsRemoved}

@@ -5,7 +5,7 @@ const models = new Map<string, IBaseModel<any>>();
 
 function handler<T extends object>(namespace: string): ProxyHandler<T> {
 	return {
-		get: (_target: T, prop: string): any => {
+		get: (_target: T, prop: keyof IBaseModel<any>): any => {
 			if (!models.has(namespace) && lazyModels.has(namespace)) {
 				const getModel = lazyModels.get(namespace);
 				if (getModel) {
@@ -13,13 +13,18 @@ function handler<T extends object>(namespace: string): ProxyHandler<T> {
 				}
 			}
 
-			// @ts-ignore
-			return models.get(namespace)[prop];
+			const model = models.get(namespace);
+
+			if (!model) {
+				throw new Error(`Model ${namespace} not found`);
+			}
+
+			return model[prop];
 		},
 	};
 }
 
-export function registerModel(name: string, instance: IBaseModel<any> | (() => IBaseModel<any>)): void {
+export function registerModel<TModel extends IBaseModel<any, any, any>>(name: string, instance: TModel | (() => TModel)): void {
 	if (typeof instance === 'function') {
 		lazyModels.set(name, instance);
 	} else {

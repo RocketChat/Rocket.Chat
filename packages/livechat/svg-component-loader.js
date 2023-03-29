@@ -1,7 +1,7 @@
 module.exports = (content) => `
 var preact = require('preact');
 var hooks = require('preact/hooks');
-${ content }
+${content}
 var attributes = module.exports.attributes;
 var content = module.exports.content;
 

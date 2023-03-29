@@ -1,4 +1,4 @@
-import { PaginatedRequest } from '@rocket.chat/rest-typings';
+import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import { useMemo } from 'react';
 
 const sortDir = (sortDir: 'asc' | 'desc'): 1 | -1 => (sortDir === 'asc' ? 1 : -1);

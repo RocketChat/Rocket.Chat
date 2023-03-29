@@ -1,12 +1,14 @@
-import { SystemLogger } from '../../../../../server/lib/logger/system';
-import { Subscriptions, Users } from '../../../../models/server';
+import { Subscriptions } from '@rocket.chat/models';
 
-export default function handleOnSaveMessage(message, to) {
+import { SystemLogger } from '../../../../../server/lib/logger/system';
+import { Users } from '../../../../models/server';
+
+export default async function handleOnSaveMessage(message, to) {
 	let toIdentification = '';
 	// Direct message
 	if (to.t === 'd') {
 		const subscriptions = Subscriptions.findByRoomId(to._id);
-		subscriptions.forEach((subscription) => {
+		await subscriptions.forEach((subscription) => {
 			if (subscription.u._id !== message.u._id) {
 				const userData = Users.findOne({ username: subscription.u.username });
 				if (userData) {

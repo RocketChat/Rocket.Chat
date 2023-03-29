@@ -1,10 +1,11 @@
 import { OptionTitle } from '@rocket.chat/fuselage';
 import { useSetting, useAtLeastOnePermission, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, MouseEvent } from 'react';
+import type { ReactElement, MouseEvent } from 'react';
+import React from 'react';
 
 import CreateDiscussion from '../../../components/CreateDiscussion';
 import ListItem from '../../../components/Sidebar/ListItem';
-import CreateChannelWithData from '../CreateChannelWithData';
+import CreateChannelWithData from '../CreateChannel';
 import CreateDirectMessage from '../CreateDirectMessage';
 import CreateTeam from '../CreateTeam';
 import { useCreateRoomModal } from '../hooks/useCreateRoomModal';
@@ -38,9 +39,10 @@ const CreateRoomList = ({ closeList }: CreateRoomListProps): ReactElement => {
 			<ul>
 				{canCreateChannel && (
 					<ListItem
+						role='listitem'
 						icon='hashtag'
 						text={t('Channel')}
-						action={(e: MouseEvent<HTMLElement>): void => {
+						onClick={(e: MouseEvent<HTMLElement>): void => {
 							createChannel(e);
 							closeList();
 						}}
@@ -48,9 +50,10 @@ const CreateRoomList = ({ closeList }: CreateRoomListProps): ReactElement => {
 				)}
 				{canCreateTeam && (
 					<ListItem
+						role='listitem'
 						icon='team'
 						text={t('Team')}
-						action={(e: MouseEvent<HTMLElement>): void => {
+						onClick={(e: MouseEvent<HTMLElement>): void => {
 							createTeam(e);
 							closeList();
 						}}
@@ -58,9 +61,10 @@ const CreateRoomList = ({ closeList }: CreateRoomListProps): ReactElement => {
 				)}
 				{canCreateDirectMessages && (
 					<ListItem
+						role='listitem'
 						icon='balloon'
 						text={t('Direct_Messages')}
-						action={(e: MouseEvent<HTMLElement>): void => {
+						onClick={(e: MouseEvent<HTMLElement>): void => {
 							createDirectMessage(e);
 							closeList();
 						}}
@@ -68,9 +72,10 @@ const CreateRoomList = ({ closeList }: CreateRoomListProps): ReactElement => {
 				)}
 				{discussionEnabled && canCreateDiscussion && (
 					<ListItem
+						role='listitem'
 						icon='discussion'
 						text={t('Discussion')}
-						action={(e: MouseEvent<HTMLElement>): void => {
+						onClick={(e: MouseEvent<HTMLElement>): void => {
 							createDiscussion(e);
 							closeList();
 						}}

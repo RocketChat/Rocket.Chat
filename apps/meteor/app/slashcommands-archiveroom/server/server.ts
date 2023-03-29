@@ -1,14 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { isRegisterUser } from '@rocket.chat/core-typings';
+import { api } from '@rocket.chat/core-services';
+import { Users } from '@rocket.chat/models';
 
-import { Rooms, Messages } from '../../models/server';
+import { Rooms } from '../../models/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
-import { api } from '../../../server/sdk/api';
 import { settings } from '../../settings/server';
+import { archiveRoom } from '../../lib/server/functions/archiveRoom';
 
 slashCommands.add({
 	command: 'archive',
-	callback: function Archive(_command, params, item): void {
+	callback: async function Archive(_command, params, item): Promise<void> {
 		let channel = params.trim();
 
 		let room;
@@ -22,13 +25,17 @@ slashCommands.add({
 		}
 
 		const userId = Meteor.userId();
-
 		if (!userId) {
 			return;
 		}
 
+		const user = await Users.findOneById(userId, { projection: { username: 1, name: 1 } });
+		if (!user || !isRegisterUser(user)) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'archiveRoom' });
+		}
+
 		if (!room) {
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('Channel_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
@@ -44,7 +51,7 @@ slashCommands.add({
 		}
 
 		if (room.archived) {
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('Duplicate_archived_channel_name', {
 					postProcess: 'sprintf',
 					sprintf: [channel],
@@ -53,10 +60,10 @@ slashCommands.add({
 			});
 			return;
 		}
-		Meteor.call('archiveRoom', room._id);
 
-		Messages.createRoomArchivedByRoomIdAndUser(room._id, Meteor.user());
-		api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+		await archiveRoom(room._id, user);
+
+		void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 			msg: TAPi18n.__('Channel_Archived', {
 				postProcess: 'sprintf',
 				sprintf: [channel],

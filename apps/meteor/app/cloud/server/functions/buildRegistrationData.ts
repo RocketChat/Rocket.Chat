@@ -30,6 +30,7 @@ type WorkspaceRegistrationData<T> = {
 	licenseVersion: number;
 	enterpriseReady: boolean;
 	setupComplete: boolean;
+	connectionDisable: boolean;
 	npsEnabled: SettingValue;
 };
 
@@ -49,7 +50,7 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 	const firstUser = Users.getOldest({ name: 1, emails: 1 });
 	const contactName = firstUser?.name;
 
-	const { organizationType, industry, size: orgSize, country, language, serverType: workspaceType } = stats.wizard;
+	const { organizationType, industry, size: orgSize, country, language, serverType: workspaceType, registerServer } = stats.wizard;
 	const seats = Users.getActiveLocalUserCount();
 
 	return {
@@ -76,6 +77,7 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 		licenseVersion: LICENSE_VERSION,
 		enterpriseReady: true,
 		setupComplete: setupWizardState === 'completed',
+		connectionDisable: !registerServer,
 		npsEnabled,
 	};
 }

@@ -44,6 +44,4 @@ export const ImportingStartedStates = [
 	ProgressStep.FINISHING,
 ];
 
-export const ImportingDoneStates = [ProgressStep.DONE, ProgressStep.ERROR, ProgressStep.CANCELLED];
-
 export const ImportingErrorStates = [ProgressStep.ERROR, ProgressStep.CANCELLED];

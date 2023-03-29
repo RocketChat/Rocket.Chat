@@ -2,14 +2,13 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Blaze } from 'meteor/blaze';
 import { Deps } from 'meteor/deps';
-import _ from 'underscore';
-import { getCaretCoordinates } from 'meteor/dandv:caret-position';
+import getCaretCoordinates from 'textarea-caret';
 
 import AutoCompleteRecords from './collection';
 import { APIClient } from '../../utils/client';
 
 const isServerSearch = function (rule) {
-	return _.isString(rule.collection);
+	return Object.prototype.toString.call(rule.collection) === '[object String]';
 };
 
 const validateRule = function (rule) {
@@ -39,7 +38,7 @@ const getRegExp = function (rule) {
 const getFindParams = function (rule, filter, limit) {
 	// This is a different 'filter' - the selector from the settings
 	// We need to extend so that we don't copy over rule.filter
-	const selector = _.extend({}, rule.filter || {});
+	const selector = Object.assign({}, rule.filter || {});
 	const options = {
 		limit,
 	};
@@ -53,9 +52,9 @@ const getFindParams = function (rule, filter, limit) {
 		sortspec[rule.field] = 1;
 		options.sort = sortspec;
 	}
-	if (_.isFunction(rule.selector)) {
+	if (Object.prototype.toString.call(rule.selector) === '[object Function]') {
 		// Custom selector
-		_.extend(selector, rule.selector(filter));
+		Object.assign(selector, rule.selector(filter));
 	} else {
 		selector[rule.field] = {
 			$regex: rule.matchAll ? filter : `^${filter}`,

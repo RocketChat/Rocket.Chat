@@ -25,6 +25,7 @@ type EnableQuery = string | { _id: string; value: any } | { _id: string; value: 
 
 export interface ISettingBase {
 	_id: SettingId;
+	_updatedAt: Date;
 	type:
 		| 'boolean'
 		| 'timezone'
@@ -70,7 +71,6 @@ export interface ISettingBase {
 	meteorSettingsValue?: SettingValue;
 	ts: Date;
 	createdAt: Date;
-	_updatedAt?: Date;
 	multiline?: boolean;
 	values?: Array<ISettingSelectOption>;
 	placeholder?: string;
@@ -131,6 +131,17 @@ export interface ISettingDate extends ISettingBase {
 	type: 'date';
 	value: Date;
 }
+
+// Checks if setting has at least the required properties
+export const isSetting = (setting: any): setting is ISetting =>
+	'_id' in setting &&
+	'type' in setting &&
+	'public' in setting &&
+	'value' in setting &&
+	'packageValue' in setting &&
+	'blocked' in setting &&
+	'sorter' in setting &&
+	'i18nLabel' in setting;
 
 export const isDateSetting = (setting: ISetting): setting is ISettingDate => setting.type === 'date';
 

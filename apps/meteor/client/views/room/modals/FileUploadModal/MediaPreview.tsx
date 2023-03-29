@@ -1,6 +1,7 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useEffect, useState, memo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 
 import { userAgentMIMETypeFallback } from '../../../../lib/utils/userAgentMIMETypeFallback';
 import { FilePreviewType } from './FilePreview';

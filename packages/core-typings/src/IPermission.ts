@@ -1,6 +1,6 @@
 export interface IPermission {
 	_id: string;
-	_updatedAt?: Date;
+	_updatedAt: Date;
 	roles: string[];
 	group?: string;
 	groupPermissionId?: string;

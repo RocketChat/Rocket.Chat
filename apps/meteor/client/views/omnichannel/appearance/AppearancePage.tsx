@@ -1,9 +1,9 @@
-import type { ISetting } from '@rocket.chat/core-typings';
-import { Serialized } from '@rocket.chat/core-typings';
+import type { ISetting, Serialized } from '@rocket.chat/core-typings';
 import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 import Page from '../../../components/Page';
 import { useForm } from '../../../hooks/useForm';
@@ -47,7 +47,7 @@ const AppearancePage: FC<AppearancePageProps> = ({ settings }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const save: (settings: Pick<ISetting, '_id'>[] & { value: unknown }[]) => Promise<void> = useMethod('livechat:saveAppearance');
+	const save = useMethod('livechat:saveAppearance');
 
 	const { values, handlers, commit, reset, hasUnsavedChanges } = useForm(reduceAppearance(settings));
 

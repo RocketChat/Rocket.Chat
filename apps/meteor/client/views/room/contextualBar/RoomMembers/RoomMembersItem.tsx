@@ -1,4 +1,4 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import {
 	Option,
 	OptionAvatar,
@@ -11,7 +11,8 @@ import {
 	OptionSkeleton,
 } from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
-import React, { ReactElement, useState, MouseEvent } from 'react';
+import type { ReactElement, MouseEvent } from 'react';
+import React, { useState } from 'react';
 
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import UserAvatar from '../../../../components/avatar/UserAvatar';

@@ -1,4 +1,5 @@
-import React, { Dispatch, Key, ReactElement, ReactNode, SetStateAction } from 'react';
+import type { Dispatch, Key, ReactElement, ReactNode, SetStateAction } from 'react';
+import React from 'react';
 
 import GenericTable from '../../../components/GenericTable';
 import Page from '../../../components/Page';

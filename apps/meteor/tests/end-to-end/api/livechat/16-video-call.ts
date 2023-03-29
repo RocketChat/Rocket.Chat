@@ -11,10 +11,9 @@ describe('LIVECHAT - WebRTC video call', function () {
 
 	before((done) => getCredentials(done));
 
-	before((done) => {
-		updateSetting('Livechat_enabled', true)
-			.then(() => updateSetting('Livechat_accept_chats_with_no_agents', true))
-			.then(() => done());
+	before(async () => {
+		await updateSetting('Livechat_enabled', true);
+		await updateSetting('Livechat_accept_chats_with_no_agents', true);
 	});
 
 	describe('livechat/webrtc.call', () => {
@@ -43,7 +42,7 @@ describe('LIVECHAT - WebRTC video call', function () {
 			await updateSetting('WebRTC_Enabled', true);
 		});
 		it('should fail if WebRTC_Enabled is true but Omnichannel_call_provider setting is not WebRTC', async () => {
-			await updateSetting('Omnichannel_call_provider', 'Jitsi');
+			await updateSetting('Omnichannel_call_provider', 'default-provider');
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
 			const response = await request.get(api('livechat/webrtc.call')).set(credentials).query({

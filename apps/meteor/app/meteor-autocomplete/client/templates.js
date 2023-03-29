@@ -4,8 +4,7 @@ import { Template } from 'meteor/templating';
 import { omit } from '../../../lib/utils/omit';
 import AutoComplete from './autocomplete-client';
 
-//  Events on template instances, sent to the autocomplete class
-const acEvents = {
+Template.inputAutocomplete.events({
 	keydown(e, t) {
 		t.ac.onKeyDown(e);
 	},
@@ -18,18 +17,12 @@ const acEvents = {
 	blur(e, t) {
 		t.ac.onBlur(e);
 	},
-};
+});
 
-Template.inputAutocomplete.events(acEvents);
-
-Template.textareaAutocomplete.events(acEvents);
-
-const attributes = function () {
-	return omit(this, 'settings'); // Render all but the settings parameter
-};
-
-const autocompleteHelpers = {
-	attributes,
+Template.inputAutocomplete.helpers({
+	attributes() {
+		return omit(this, 'settings'); // Render all but the settings parameter
+	},
 	autocompleteContainer: new Template('AutocompleteContainer', function () {
 		const ac = new AutoComplete(Blaze.getData().settings);
 		// Set the autocomplete object on the parent template instance
@@ -40,15 +33,13 @@ const autocompleteHelpers = {
 			ac.element = this.parentView.firstNode();
 			ac.$element = $(ac.element);
 		});
-		return Blaze.With(ac, function() { //eslint-disable-line
+		// eslint-disable-next-line new-cap
+		return Blaze.With(ac, function () {
+			//eslint-disable-line
 			return Template._autocompleteContainer;
 		});
 	}),
-};
-
-Template.inputAutocomplete.helpers(autocompleteHelpers);
-
-Template.textareaAutocomplete.helpers(autocompleteHelpers);
+});
 
 Template._autocompleteContainer.rendered = function () {
 	this.data.tmplInst = this;
@@ -81,4 +72,3 @@ Template._autocompleteContainer.helpers({
 		return this.matchedRule().noMatchTemplate || Template._noMatch;
 	},
 });
-export { acEvents, attributes, autocompleteHelpers };

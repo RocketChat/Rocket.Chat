@@ -1,6 +1,7 @@
 import { Button, ButtonGroup, Icon } from '@rocket.chat/fuselage';
 import { usePermission, useRoute, useRouteParameter, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useEffect, ReactElement, useRef } from 'react';
+import type { ReactElement } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 import UserPageHeaderContentWithSeatsCap from '../../../../ee/client/views/admin/users/UserPageHeaderContentWithSeatsCap';
 import { useSeatsCap } from '../../../../ee/client/views/admin/users/useSeatsCap';

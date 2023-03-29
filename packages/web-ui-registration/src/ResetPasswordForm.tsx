@@ -15,7 +15,7 @@ export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 	const {
 		register,
 		handleSubmit,
-		formState: { errors },
+		formState: { errors, isSubmitting },
 	} = useForm<{
 		email: string;
 	}>();
@@ -42,7 +42,7 @@ export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 									required: true,
 									pattern: {
 										value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-										message: t('error-invalid-email-address'),
+										message: t('registration.page.resetPassword.errors.invalidEmail'),
 									},
 								})}
 								error={errors.email && (errors.email?.message || t('registration.component.form.requiredField'))}
@@ -53,12 +53,11 @@ export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 							/>
 						</Field.Row>
 						{errors.email && <Field.Error>{errors.email.message || t('registration.component.form.requiredField')}</Field.Error>}
-						<Field.Hint>{t('registration.component.form.emailHint')}</Field.Hint>
 					</Field>
 				</FieldGroup>
 				{sent && (
 					<FieldGroup>
-						<Callout role='status' type='warning'>
+						<Callout role='status' mbs='x24' icon='mail'>
 							{t('registration.page.resetPassword.sent')}
 						</Callout>
 					</FieldGroup>
@@ -66,8 +65,8 @@ export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 			</Form.Container>
 			<Form.Footer>
 				<ButtonGroup>
-					<Button type='submit' primary>
-						{t('registration.component.form.submit')}
+					<Button type='submit' disabled={isSubmitting} primary>
+						{t('registration.page.resetPassword.sendInstructions')}
 					</Button>
 				</ButtonGroup>
 

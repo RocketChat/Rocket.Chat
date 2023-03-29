@@ -7,7 +7,7 @@ import type { IApiRequest, IApiEndpoint, IApi } from '@rocket.chat/apps-engine/d
 import type { AppApi } from '@rocket.chat/apps-engine/server/managers/AppApi';
 import type { RequestMethod } from '@rocket.chat/apps-engine/definition/accessors';
 
-import type { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { authenticationMiddleware } from '../../../api/server/middlewares/authentication';
 
 const apiServer = express();
@@ -55,7 +55,7 @@ export class AppApisBridge extends ApiBridge {
 		});
 	}
 
-	public registerApi({ api, computedPath, endpoint }: AppApi, appId: string): void {
+	public async registerApi({ api, computedPath, endpoint }: AppApi, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is registering the api: "${endpoint.path}" (${computedPath})`);
 
 		this._verifyApi(api, endpoint);
@@ -79,7 +79,7 @@ export class AppApisBridge extends ApiBridge {
 		}
 	}
 
-	public unregisterApis(appId: string): void {
+	public async unregisterApis(appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is unregistering all apis`);
 
 		if (this.appRouters.get(appId)) {

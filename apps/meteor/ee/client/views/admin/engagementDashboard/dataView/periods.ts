@@ -1,4 +1,4 @@
-import { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
 
 const label = (
@@ -23,7 +23,7 @@ const lastNDays =
 		end: utc ? moment.utc().endOf('day').subtract(1, 'days').toDate() : moment().endOf('day').toDate(),
 	});
 
-export const periods = [
+const periods = [
 	{
 		key: 'last 7 days',
 		label: label('Last_7_days'),

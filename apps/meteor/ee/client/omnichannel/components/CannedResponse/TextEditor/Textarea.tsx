@@ -1,5 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { ComponentProps, forwardRef } from 'react';
+import type { ComponentProps } from 'react';
+import React, { forwardRef } from 'react';
 
 type TextareaProps = ComponentProps<typeof Box>;
 

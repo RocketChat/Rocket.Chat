@@ -1,8 +1,8 @@
 import { EventEmitter } from 'eventemitter3';
 import type { IPublication, Rule, Connection, DDPSubscription, IStreamer, IRules, TransformMessage } from 'meteor/rocketchat:streamer';
+import { MeteorError } from '@rocket.chat/core-services';
 
 import { SystemLogger } from '../../lib/logger/system';
-import { MeteorError } from '../../sdk/errors';
 
 class StreamerCentralClass extends EventEmitter {
 	public instances: Record<string, Streamer> = {};
@@ -258,12 +258,12 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 		}
 
 		const subscriptions = this.subscriptionsByEventName.get(eventName);
-		if (!subscriptions || !subscriptions.size) {
+		if (!subscriptions?.size) {
 			return false;
 		}
 
 		if (transform) {
-			this.sendToManySubscriptions(subscriptions, origin, eventName, args, transform);
+			void this.sendToManySubscriptions(subscriptions, origin, eventName, args, transform);
 
 			return true;
 		}
@@ -277,7 +277,7 @@ export abstract class Streamer extends EventEmitter implements IStreamer {
 			return false;
 		}
 
-		this.sendToManySubscriptions(subscriptions, origin, eventName, args, msg);
+		void this.sendToManySubscriptions(subscriptions, origin, eventName, args, msg);
 
 		return true;
 	}

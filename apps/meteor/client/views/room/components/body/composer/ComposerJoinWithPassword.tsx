@@ -1,11 +1,12 @@
 import { TextInput } from '@rocket.chat/fuselage';
 import { MessageFooterCallout, MessageFooterCalloutAction, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import React, { ChangeEvent, ReactElement, useCallback, useState, FormEventHandler } from 'react';
+import type { ChangeEvent, ReactElement, FormEventHandler } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { useRoom } from '../../../contexts/RoomContext';
 
-export const ComposerJoinWithPassword = (): ReactElement => {
+const ComposerJoinWithPassword = (): ReactElement => {
 	const room = useRoom();
 	const [joinCode, setJoinPassword] = useState<string>('');
 
@@ -52,3 +53,5 @@ export const ComposerJoinWithPassword = (): ReactElement => {
 		</MessageFooterCallout>
 	);
 };
+
+export default ComposerJoinWithPassword;

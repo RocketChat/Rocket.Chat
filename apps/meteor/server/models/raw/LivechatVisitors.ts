@@ -79,7 +79,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findOne(query, options);
 	}
 
-	getVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department: string }): FindCursor<ILivechatVisitor> {
+	getVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department?: string }): FindCursor<ILivechatVisitor> {
 		const query = {
 			_updatedAt: {
 				$gte: new Date(start),
@@ -236,11 +236,12 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			}
 		}
 
-		const update = {
+		const update: UpdateFilter<ILivechatVisitor> = {
 			$set: {
 				[`livechatData.${key}`]: value,
 			},
-		};
+		} as UpdateFilter<ILivechatVisitor>; // TODO: Remove this cast when TypeScript is updated
+		// TypeScript is not smart enough to infer that `messages.${string}` matches keys of `ILivechatVisitor`;
 
 		return this.updateOne(query, update);
 	}

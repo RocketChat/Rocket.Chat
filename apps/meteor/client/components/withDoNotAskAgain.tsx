@@ -1,8 +1,9 @@
 import { Box, CheckBox } from '@rocket.chat/fuselage';
-import { useUserPreference, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, FC, ReactElement, ComponentType } from 'react';
+import { useUserPreference, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { FC, ReactElement, ComponentType } from 'react';
+import React, { useState } from 'react';
 
-import { DontAskAgainList } from '../hooks/useDontAskAgain';
+import type { DontAskAgainList } from '../hooks/useDontAskAgain';
 
 type DoNotAskAgainProps = {
 	onConfirm: (...args: any) => any;
@@ -25,13 +26,13 @@ function withDoNotAskAgain<T extends RequiredModalProps>(
 		const dontAskAgainList = useUserPreference<DontAskAgainList>('dontAskAgainList');
 		const { action, label } = dontAskAgain;
 
-		const saveFn = useMethod('saveUserPreferences');
+		const saveFn = useEndpoint('POST', '/v1/users.setPreferences');
 		const [state, setState] = useState<boolean>(false);
 
 		const handleConfirm = async (): Promise<void> => {
 			try {
 				if (state) {
-					await saveFn({ dontAskAgainList: [...(dontAskAgainList || []), { action, label }] });
+					await saveFn({ data: { dontAskAgainList: [...(dontAskAgainList || []), { action, label }] } });
 				}
 				await onConfirm();
 			} catch (e) {

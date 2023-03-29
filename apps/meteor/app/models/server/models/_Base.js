@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import _ from 'underscore';
 
 import { BaseDb } from './_BaseDb';
 
@@ -38,7 +37,7 @@ export class Base {
 		}
 
 		query.roles = roleId;
-		return !_.isUndefined(this.findOne(query, { fields: { roles: 1 } }));
+		return this.findOne(query, { fields: { roles: 1 } }) !== undefined;
 	}
 
 	/**

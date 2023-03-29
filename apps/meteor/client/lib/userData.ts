@@ -1,5 +1,4 @@
-import type { ILivechatAgent, IUser, IUserDataEvent } from '@rocket.chat/core-typings';
-import { Serialized } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IUser, IUserDataEvent, Serialized } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 
@@ -37,7 +36,7 @@ type RawUserData = Serialized<
 >;
 
 const updateUser = (userData: IUser): void => {
-	const user: IUser = Users.findOne({ _id: userData._id });
+	const user = Users.findOne({ _id: userData._id }) as IUser | undefined;
 
 	if (!user || !user._updatedAt || user._updatedAt.getTime() < userData._updatedAt.getTime()) {
 		Meteor.users.upsert({ _id: userData._id }, userData as Meteor.User);
@@ -105,8 +104,8 @@ export const synchronizeUserData = async (uid: Meteor.User['_id']): Promise<RawU
 									...(resume.loginTokens && {
 										loginTokens: resume.loginTokens.map((token) => ({
 											...token,
-											when: new Date(token.when),
-											createdAt: (token.createdAt ? new Date(token.createdAt) : undefined) as Date,
+											when: new Date('when' in token ? token.when : ''),
+											createdAt: ('createdAt' in token ? new Date(token.createdAt) : undefined) as Date,
 											twoFactorAuthorizedUntil: token.twoFactorAuthorizedUntil ? new Date(token.twoFactorAuthorizedUntil) : undefined,
 										})),
 									}),

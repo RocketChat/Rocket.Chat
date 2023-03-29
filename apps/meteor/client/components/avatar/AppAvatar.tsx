@@ -1,21 +1,14 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { ReactElement } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import React from 'react';
 
 import BaseAvatar from './BaseAvatar';
 
-// TODO: frontend chapter day - Remove inline Styling
-
 type AppAvatarProps = {
-	/* @deprecated */
-	size: 'x36' | 'x28' | 'x16' | 'x40' | 'x124';
-	/* @deprecated */
-	mie?: 'x80' | 'x20' | 'x16' | 'x8';
-	/* @deprecated */
-	alignSelf?: 'center';
-
 	iconFileContent: string;
 	iconFileData: string;
-};
+	size: ComponentProps<typeof BaseAvatar>['size'];
+} & ComponentProps<typeof Box>;
 
 export default function AppAvatar({ iconFileContent, size, iconFileData, ...props }: AppAvatarProps): ReactElement {
 	return (

@@ -1,4 +1,4 @@
-import { IEmailInboxPayload } from '@rocket.chat/core-typings';
+import type { IEmailInboxPayload } from '@rocket.chat/core-typings';
 import {
 	Accordion,
 	Button,
@@ -15,7 +15,8 @@ import {
 } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useCallback, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { validateEmail } from '../../../../lib/emailValidator';
@@ -32,7 +33,7 @@ const EmailInboxForm = ({ inboxData }: { inboxData?: IEmailInboxPayload }): Reac
 	const handleBack = useCallback(() => router.push({}), [router]);
 
 	const saveEmailInbox = useEndpoint('POST', '/v1/email-inbox');
-	const deleteInboxAction = useEndpoint('DELETE', `/v1/email-inbox/${inboxData?._id}`);
+	const deleteInboxAction = useEndpoint('DELETE', '/v1/email-inbox/:_id', { _id: inboxData?._id ?? '' });
 	const emailAlreadyExistsAction = useEndpoint('GET', '/v1/email-inbox.search');
 
 	const {

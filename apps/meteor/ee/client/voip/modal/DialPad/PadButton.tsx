@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Button } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors';
-import React, { ReactElement } from 'react';
+import { Box, Button, Palette } from '@rocket.chat/fuselage';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import type { PadDigit } from './Pad';
 import { useLongPress } from './hooks/useLongPress';
@@ -18,7 +18,7 @@ const padButtonStyle = css`
 	align-items: center;
 
 	&:hover {
-		background-color: ${colors.n400};
+		background-color: ${Palette.surface['surface-neutral']};
 	}
 `;
 

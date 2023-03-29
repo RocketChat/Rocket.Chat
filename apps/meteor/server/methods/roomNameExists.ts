@@ -1,10 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Rooms } from '../../app/models/server';
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		roomNameExists(roomName: string): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	roomNameExists(roomName) {
 		check(roomName, String);
 

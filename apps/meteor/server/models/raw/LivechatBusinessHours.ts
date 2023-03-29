@@ -5,7 +5,7 @@ import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 
 import { BaseRaw } from './BaseRaw';
 
-export interface IWorkHoursCronJobsItem {
+interface IWorkHoursCronJobsItem {
 	day: string;
 	times: string[];
 }

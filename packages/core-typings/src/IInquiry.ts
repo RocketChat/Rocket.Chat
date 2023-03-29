@@ -1,3 +1,6 @@
+import type { ILivechatPriority } from './ILivechatPriority';
+import type { IOmnichannelRoom } from './IRoom';
+import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
 import type { IUser } from './IUser';
 import type { IMessage } from './IMessage';
 import type { IRocketChatRecord } from './IRocketChatRecord';
@@ -12,6 +15,7 @@ export enum LivechatInquiryStatus {
 	QUEUED = 'queued',
 	TAKEN = 'taken',
 	READY = 'ready',
+	OPEN = 'open',
 }
 
 export interface IVisitor {
@@ -30,9 +34,7 @@ export interface ILivechatInquiryRecord extends IRocketChatRecord {
 	status: LivechatInquiryStatus;
 	v: IVisitor;
 	t: 'l';
-	queueOrder: number;
-	estimatedWaitingTimeQueue: number;
-	estimatedServiceTimeAt: string;
+
 	department: string;
 	estimatedInactivityCloseTimeAt: Date;
 	locked?: boolean;
@@ -42,4 +44,11 @@ export interface ILivechatInquiryRecord extends IRocketChatRecord {
 		agentId: IUser['_id'];
 		username?: IUser['username'];
 	};
+
+	// Note: for the sort order to be maintained, we're making priorityWeight and estimatedWaitingTimeQueue required
+	priorityId?: IOmnichannelRoom['priorityId'];
+	priorityWeight: ILivechatPriority['sortItem'];
+
+	slaId?: string;
+	estimatedWaitingTimeQueue: IOmnichannelServiceLevelAgreements['dueTimeInMinutes'];
 }

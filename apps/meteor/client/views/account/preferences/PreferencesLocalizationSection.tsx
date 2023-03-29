@@ -1,6 +1,8 @@
-import { Accordion, Field, Select, FieldGroup, SelectOption } from '@rocket.chat/fuselage';
+import type { SelectOption } from '@rocket.chat/fuselage';
+import { Accordion, Field, Select, FieldGroup } from '@rocket.chat/fuselage';
 import { useUserPreference, useLanguages, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useEffect, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useEffect, useMemo } from 'react';
 
 import { useForm } from '../../../hooks/useForm';
 import type { FormSectionProps } from './AccountPreferencesPage';

@@ -1,14 +1,14 @@
-/packages/* @RocketChat/chat-engine
-/packages/core-typings/ @RocketChat/chat-engine
-/packages/rest-typings/ @RocketChat/chat-engine
+/packages/* @RocketChat/Architecture
+/packages/core-typings/ @RocketChat/Architecture
+/packages/rest-typings/ @RocketChat/Architecture
 /packages/ui-contexts/ @RocketChat/frontend
-/packages/eslint-config/ @RocketChat/chat-engine
-/packages/livechat/ @RocketChat/frontend @RocketChat/chat-engine
-/.vscode/ @RocketChat/chat-engine
-/.github/ @RocketChat/chat-engine
-/_templates/ @RocketChat/chat-engine
+/packages/eslint-config/ @RocketChat/Architecture
+/packages/livechat/ @RocketChat/frontend @RocketChat/Architecture
+/.vscode/ @RocketChat/Architecture
+/.github/ @RocketChat/Architecture
+/_templates/ @RocketChat/Architecture
 /apps/meteor/client/ @RocketChat/frontend
-/apps/meteor/tests/ @RocketChat/chat-engine
+/apps/meteor/tests/ @RocketChat/Architecture
 /apps/meteor/app/apps/ @RocketChat/apps
 /apps/meteor/app/livechat @RocketChat/omnichannel
 /apps/meteor/app/voip @RocketChat/omnichannel

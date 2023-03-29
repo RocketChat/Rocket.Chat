@@ -1,16 +1,16 @@
-import { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Field, TextInput, ButtonGroup, Button, Box, Icon, Callout, FieldGroup } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useUserRoom, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useState, useEffect, useContext, FC, MouseEventHandler } from 'react';
+import type { FC, MouseEventHandler } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 
 import { validateEmail } from '../../../../../lib/emailValidator';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import { useForm } from '../../../../hooks/useForm';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { SelectedMessageContext, useCountSelected } from '../../MessageList/contexts/SelectedMessagesContext';
-import { useMessages } from '../../MessageList/hooks/useMessages';
 
 type MailExportFormValues = {
 	dateFrom: string;
@@ -38,8 +38,6 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 	const messages = selectedMessageStore.getSelectedMessages();
 	const count = useCountSelected();
 
-	const messageList = useMessages({ rid });
-
 	const { values, handlers } = useForm({
 		dateFrom: '',
 		dateTo: '',
@@ -62,25 +60,6 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 			selectedMessageStore.reset();
 		};
 	}, [selectedMessageStore]);
-
-	// TODO: chapter day frontend -  after 5.0 remove
-	useEffect(() => {
-		const $root = $(`#chat-window-${rid}`);
-
-		$('.messages-box', $root).addClass('selectable');
-
-		const handler = function (this: any): void {
-			selectedMessageStore.toggle(this.id);
-			this.classList.toggle('selected');
-		};
-
-		$('.messages-box .message', $root).on('click', handler);
-
-		return (): void => {
-			$('.messages-box', $root).removeClass('selectable');
-			$('.messages-box .message', $root).off('click', handler).filter('.selected').removeClass('selected');
-		};
-	}, [rid, messageList, selectedMessageStore]);
 
 	const { handleToUsers, handleAdditionalEmails, handleSubject } = handlers;
 

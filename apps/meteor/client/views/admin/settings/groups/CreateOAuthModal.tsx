@@ -1,6 +1,7 @@
 import { TextInput, Field } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useState, FormEvent } from 'react';
+import type { ReactElement, FormEvent } from 'react';
+import React, { useState } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 

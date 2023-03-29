@@ -64,7 +64,7 @@ import './methods/sendForgotPasswordEmail';
 import './methods/setAvatarFromService';
 import './methods/setUserActiveStatus';
 import './methods/setUserPassword';
-import './methods/toogleFavorite';
+import './methods/toggleFavorite';
 import './methods/unmuteUserInRoom';
 import './methods/userPresence';
 import './methods/userSetUtcOffset';
@@ -77,8 +77,8 @@ import './routes/avatar';
 import './routes/health';
 import './routes/i18n';
 import './routes/timesync';
+import './routes/userDataDownload';
 import './stream/stdout';
-import './stream/streamBroadcast';
 import './settings/index';
 
 import './features/EmailInbox/index';

@@ -4,6 +4,7 @@ import { API } from '../../../../api/server';
 import { findGuest } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { findLivechatCustomFields, findCustomFieldById } from '../lib/customFields';
+import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 
 API.v1.addRoute(
 	'livechat/custom.field',
@@ -58,8 +59,8 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isLivechatCustomFieldsProps },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
 			const { text } = this.queryParams;
 
 			const customFields = await findLivechatCustomFields({

@@ -1,12 +1,14 @@
-import { IRoom, IUser, isDirectMessageRoom } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useUserRoom, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import moment from 'moment';
-import React, { useCallback, useEffect, useState, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import GenericModal from '../../../../components/GenericModal';
 import { useForm } from '../../../../hooks/useForm';
-import { ToolboxContextValue } from '../../contexts/ToolboxContext';
+import type { ToolboxContextValue } from '../../contexts/ToolboxContext';
 import PruneMessages from './PruneMessages';
 
 const getTimeZoneOffset = (): string => {

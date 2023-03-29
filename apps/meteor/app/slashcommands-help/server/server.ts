@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { api } from '@rocket.chat/core-services';
 
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
-import { api } from '../../../server/sdk/api';
 import { Users } from '../../models/server';
 
 /*
@@ -57,7 +57,7 @@ slashCommands.add({
 			},
 		];
 		keys.forEach((key) => {
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__(key.key, {
 					postProcess: 'sprintf',
 					sprintf: [key.command],

@@ -1,5 +1,6 @@
-import { Meta, Story } from '@storybook/react';
-import React, { ReactElement } from 'react';
+import type { Meta, Story } from '@storybook/react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import EngagementDashboardPage from './EngagementDashboardPage';
 

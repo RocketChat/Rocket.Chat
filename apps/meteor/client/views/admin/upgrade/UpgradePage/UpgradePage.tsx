@@ -1,6 +1,7 @@
 import { Throbber, Box } from '@rocket.chat/fuselage';
 import { useLayout, useRouteParameter, useQueryStringParameter, useAbsoluteUrl, useLanguage } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useEffect, useRef, useState } from 'react';
+import type { ReactElement } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import type { UpgradeTabVariant } from '../../../../../lib/upgradeTab';
 import Page from '../../../../components/Page';

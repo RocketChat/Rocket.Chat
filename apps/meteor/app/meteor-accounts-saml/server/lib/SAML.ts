@@ -1,16 +1,16 @@
 import type { ServerResponse } from 'http';
 
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import fiber from 'fibers';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
 import type { IUser, IIncomingMessage } from '@rocket.chat/core-typings';
-import { CredentialTokens } from '@rocket.chat/models';
+import { CredentialTokens, Rooms } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
-import { Users, Rooms } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { saveUserIdentity, createRoom, generateUsernameSuggestion, addUserToRoom } from '../../../lib/server/functions';
 import { SAMLServiceProvider } from './ServiceProvider';
 import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
@@ -77,7 +77,7 @@ export class SAML {
 		await CredentialTokens.create(credentialToken, loginResult);
 	}
 
-	public static insertOrUpdateSAMLUser(userObject: ISAMLUser): { userId: string; token: string } {
+	public static async insertOrUpdateSAMLUser(userObject: ISAMLUser): Promise<{ userId: string; token: string }> {
 		const {
 			generateUsername,
 			immutableProperty,
@@ -166,7 +166,7 @@ export class SAML {
 			user = Users.findOne(userId);
 
 			if (userObject.channels && channelsAttributeUpdate !== true) {
-				SAML.subscribeToSAMLChannels(userObject.channels, user);
+				await SAML.subscribeToSAMLChannels(userObject.channels, user);
 			}
 		}
 
@@ -205,7 +205,7 @@ export class SAML {
 		}
 
 		if (userObject.channels && channelsAttributeUpdate === true) {
-			SAML.subscribeToSAMLChannels(userObject.channels, user);
+			await SAML.subscribeToSAMLChannels(userObject.channels, user);
 		}
 
 		Users.update(
@@ -218,7 +218,7 @@ export class SAML {
 		);
 
 		if (username && username !== user.username) {
-			saveUserIdentity({ _id: user._id, username } as Parameters<typeof saveUserIdentity>[0]);
+			await saveUserIdentity({ _id: user._id, username });
 		}
 
 		// sending token along with the userId
@@ -467,32 +467,32 @@ export class SAML {
 			.replace(/^\w/, (u) => u.toUpperCase());
 	}
 
-	private static subscribeToSAMLChannels(channels: Array<string>, user: IUser): void {
+	private static async subscribeToSAMLChannels(channels: Array<string>, user: IUser): Promise<void> {
 		const { includePrivateChannelsInUpdate } = SAMLUtils.globalSettings;
 		try {
-			for (let roomName of channels) {
+			for await (let roomName of channels) {
 				roomName = roomName.trim();
 				if (!roomName) {
 					continue;
 				}
 
-				const room = Rooms.findOneByNameAndType(roomName, 'c', {});
-				const privRoom = Rooms.findOneByNameAndType(roomName, 'p', {});
+				const room = await Rooms.findOneByNameAndType(roomName, 'c', {});
+				const privRoom = await Rooms.findOneByNameAndType(roomName, 'p', {});
 
 				if (privRoom && includePrivateChannelsInUpdate === true) {
-					addUserToRoom(privRoom._id, user);
+					await addUserToRoom(privRoom._id, user);
 					continue;
 				}
 
 				if (room) {
-					addUserToRoom(room._id, user);
+					await addUserToRoom(room._id, user);
 					continue;
 				}
 
 				if (!room && !privRoom) {
 					// If the user doesn't have an username yet, we can't create new rooms for them
 					if (user.username) {
-						createRoom('c', roomName, user.username);
+						await createRoom('c', roomName, user.username);
 					}
 				}
 			}

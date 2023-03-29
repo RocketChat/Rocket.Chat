@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import type { MessageTypesValues as MessageTypesValuesType } from '@rocket.chat/core-typings';
 
 import { MessageTypes } from '../../ui-utils/lib/MessageTypes';
 // import { callbacks } from '../../../lib/callbacks';
@@ -259,9 +260,14 @@ Meteor.startup(function () {
 			};
 		},
 	});
+	MessageTypes.registerType({
+		id: 'videoconf',
+		system: false,
+		message: 'Video_Conference',
+	});
 });
 
-export const MessageTypesValues = [
+export const MessageTypesValues: Array<{ key: MessageTypesValuesType; i18nLabel: string }> = [
 	{
 		key: 'uj', // user joined
 		i18nLabel: 'Message_HideType_uj',

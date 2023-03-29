@@ -84,6 +84,7 @@ export async function searchChats({
 	searchText,
 	closedChatsOnly,
 	servedChatsOnly: served,
+	source,
 	pagination: { offset, count, sort },
 }: {
 	userId: IUser['_id'];
@@ -92,6 +93,7 @@ export async function searchChats({
 	searchText?: string;
 	closedChatsOnly?: string;
 	servedChatsOnly?: string;
+	source?: string;
 	pagination: { offset: number; count: number; sort: FindOptions<IOmnichannelRoom>['sort'] };
 }) {
 	const room = await LivechatRooms.findOneById(roomId);
@@ -115,6 +117,7 @@ export async function searchChats({
 		served: served === 'true',
 		searchText,
 		onlyCount: true,
+		source,
 	}).toArray();
 	const cursor = await LivechatRooms.findRoomsByVisitorIdAndMessageWithCriteria({
 		visitorId,
@@ -122,6 +125,7 @@ export async function searchChats({
 		served: served === 'true',
 		searchText,
 		options,
+		source,
 	});
 
 	const history = await cursor.toArray();

@@ -1,6 +1,7 @@
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import { DarkModeProvider } from '@rocket.chat/layout';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 import { useTranslation, I18nextProvider } from 'react-i18next';
 
 import SetupWizardPage from './SetupWizardPage';

@@ -1,1 +1,3 @@
-interface Window {SERVER_URL: string;}
+interface Window {
+	SERVER_URL: string;
+}

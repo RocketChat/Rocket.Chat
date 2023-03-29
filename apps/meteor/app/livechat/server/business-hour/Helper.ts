@@ -3,7 +3,7 @@ import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 
-import { createDefaultBusinessHourRow } from '../../../models/server/models/LivechatBusinessHours';
+import { createDefaultBusinessHourRow } from './LivechatBusinessHours';
 
 export const filterBusinessHoursThatMustBeOpened = async (
 	businessHours: ILivechatBusinessHour[],
@@ -57,7 +57,7 @@ export const openBusinessHourDefault = async (): Promise<void> => {
 };
 
 export const createDefaultBusinessHourIfNotExists = async (): Promise<void> => {
-	if ((await LivechatBusinessHours.find({ type: LivechatBusinessHourTypes.DEFAULT }).count()) === 0) {
+	if ((await LivechatBusinessHours.col.countDocuments({ type: LivechatBusinessHourTypes.DEFAULT })) === 0) {
 		await LivechatBusinessHours.insertOne(createDefaultBusinessHourRow());
 	}
 };

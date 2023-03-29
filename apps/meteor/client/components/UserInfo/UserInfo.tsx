@@ -1,7 +1,9 @@
-import { IUser, Serialized } from '@rocket.chat/core-typings';
+import type { IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag } from '@rocket.chat/fuselage';
-import { TranslationKey, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { memo, ReactElement, ReactNode } from 'react';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement, ReactNode } from 'react';
+import React, { memo } from 'react';
 
 import { useTimeAgo } from '../../hooks/useTimeAgo';
 import { useUserCustomFields } from '../../hooks/useUserCustomFields';

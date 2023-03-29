@@ -2,12 +2,12 @@ import type Mail from 'nodemailer/lib/mailer';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IEmailInbox, IUser, IMessage } from '@rocket.chat/core-typings';
-import { Uploads } from '@rocket.chat/models';
+import { Uploads, LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../lib/callbacks';
 import { FileUpload } from '../../../app/file-upload/server';
 import { slashCommands } from '../../../app/utils/server';
-import { Messages, Rooms, Users, LivechatRooms } from '../../../app/models/server';
+import { Messages, Rooms, Users } from '../../../app/models/server';
 import type { Inbox } from './EmailInbox';
 import { inboxes } from './EmailInbox';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
@@ -22,7 +22,7 @@ const language = settings.get<string>('Language') || 'en';
 const t = (s: string): string => TAPi18n.__(s, { lng: language });
 
 // TODO: change these messages with room notifications
-const sendErrorReplyMessage = (error: string, options: any): void => {
+const sendErrorReplyMessage = async (error: string, options: any) => {
 	if (!options?.rid || !options?.msgId) {
 		return;
 	}
@@ -35,10 +35,10 @@ const sendErrorReplyMessage = (error: string, options: any): void => {
 		ts: new Date(),
 	};
 
-	sendMessage(user, message, { _id: options.rid });
+	return sendMessage(user, message, { _id: options.rid });
 };
 
-const sendSuccessReplyMessage = (options: any): void => {
+const sendSuccessReplyMessage = async (options: any) => {
 	if (!options?.rid || !options?.msgId) {
 		return;
 	}
@@ -50,7 +50,7 @@ const sendSuccessReplyMessage = (options: any): void => {
 		ts: new Date(),
 	};
 
-	sendMessage(user, message, { _id: options.rid });
+	return sendMessage(user, message, { _id: options.rid });
 };
 
 async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promise<{ messageId: string }> {
@@ -68,20 +68,20 @@ async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promi
 			logger.info('Message sent: %s', info.messageId);
 			return info;
 		})
-		.catch((err) => {
+		.catch(async (err) => {
 			logger.error({ msg: 'Error sending Email reply', err });
 
 			if (!options?.msgId) {
 				return;
 			}
 
-			sendErrorReplyMessage(err.message, options);
+			await sendErrorReplyMessage(err.message, options);
 		});
 }
 
 slashCommands.add({
 	command: 'sendEmailAttachment',
-	callback: (command: any, params: string) => {
+	callback: async (command: any, params: string) => {
 		logger.debug('sendEmailAttachment command: ', command, params);
 		if (command !== 'sendEmailAttachment' || !Match.test(params, String)) {
 			return;
@@ -89,7 +89,7 @@ slashCommands.add({
 
 		const message = Messages.findOneById(params.trim());
 
-		if (!message || !message.file) {
+		if (!message?.file) {
 			return;
 		}
 
@@ -105,7 +105,7 @@ slashCommands.add({
 			});
 		}
 
-		const file = Promise.await(Uploads.findOneById(message.file._id));
+		const file = await Uploads.findOneById(message.file._id);
 
 		if (!file) {
 			return;
@@ -114,7 +114,7 @@ slashCommands.add({
 		FileUpload.getBuffer(file, (_err?: Error, buffer?: Buffer) => {
 			!_err &&
 				buffer &&
-				sendEmail(
+				void sendEmail(
 					inbox,
 					{
 						to: room.email.replyTo,
@@ -175,13 +175,13 @@ slashCommands.add({
 
 callbacks.add(
 	'afterSaveMessage',
-	function (message: IMessage, room: any) {
+	async function (message: IMessage, room: any) {
 		if (!room?.email?.inbox) {
 			return message;
 		}
 
 		if (message.files?.length && message.u.username !== 'rocket.cat') {
-			sendMessage(
+			await sendMessage(
 				user,
 				{
 					msg: '',
@@ -216,7 +216,7 @@ callbacks.add(
 		const inbox = inboxes.get(room.email.inbox);
 
 		if (!inbox) {
-			sendErrorReplyMessage(`Email inbox ${room.email.inbox} not found or disabled.`, {
+			await sendErrorReplyMessage(`Email inbox ${room.email.inbox} not found or disabled.`, {
 				msgId: message._id,
 				sender: message.u.username,
 				rid: room._id,
@@ -235,7 +235,7 @@ callbacks.add(
 			return message;
 		}
 
-		sendEmail(
+		void sendEmail(
 			inbox,
 			{
 				text: match.groups.text,
@@ -303,7 +303,7 @@ export async function sendTestEmailToInbox(emailInboxRecord: IEmailInbox, user: 
 	}
 
 	logger.info(`Sending testing email to ${address}`);
-	sendEmail(inbox, {
+	void sendEmail(inbox, {
 		to: address,
 		subject: 'Test of inbox configuration',
 		text: 'Test of inbox configuration successful',

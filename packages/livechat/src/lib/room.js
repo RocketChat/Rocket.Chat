@@ -17,6 +17,8 @@ import { handleTranscript } from './transcript';
 const commands = new Commands();
 
 export const closeChat = async ({ transcriptRequested } = {}) => {
+	Livechat.unsubscribeAll();
+
 	if (!transcriptRequested) {
 		await handleTranscript();
 	}
@@ -35,7 +37,9 @@ export const closeChat = async ({ transcriptRequested } = {}) => {
 };
 
 const getVideoConfMessageData = (message) =>
-	message.blocks?.find(({ appId }) => appId === 'videoconf-core')?.elements?.find(({ actionId }) => actionId === 'joinLivechat');
+	message.blocks
+		?.find(({ appId, type }) => appId === 'videoconf-core' && type === 'actions')
+		?.elements?.find(({ actionId }) => actionId === 'joinLivechat');
 
 const isVideoCallMessage = (message) => {
 	if (message.t === constants.webRTCCallStartedMessageType) {

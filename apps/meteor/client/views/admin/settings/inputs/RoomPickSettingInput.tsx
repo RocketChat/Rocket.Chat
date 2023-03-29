@@ -1,7 +1,8 @@
 import { Box, Field, Flex, Icon } from '@rocket.chat/fuselage';
 import { Blaze } from 'meteor/blaze';
 import { Template } from 'meteor/templating';
-import React, { useRef, useEffect, useLayoutEffect, ReactElement, MutableRefObject } from 'react';
+import type { ReactElement, MutableRefObject } from 'react';
+import React, { useRef, useEffect, useLayoutEffect } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 

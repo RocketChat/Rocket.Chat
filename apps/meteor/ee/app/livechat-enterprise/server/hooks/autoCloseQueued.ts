@@ -6,7 +6,7 @@ const removeScheduledQueueCloseTime = (inquiry: any): void => {
 	if (!inquiry?._id) {
 		return;
 	}
-	OmnichannelQueueInactivityMonitor.stopInquiry(inquiry._id);
+	void OmnichannelQueueInactivityMonitor.stopInquiry(inquiry._id);
 };
 
 settings.watch('Livechat_max_queue_wait_time', function (value: number) {

@@ -2,7 +2,7 @@ import { expect } from 'chai';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data.js';
 import { password } from '../../data/user.js';
-import { createUser, login as doLogin } from '../../data/users.helper';
+import { createUser, login } from '../../data/users.helper';
 
 describe('licenses', function () {
 	this.retries(0);
@@ -12,7 +12,7 @@ describe('licenses', function () {
 
 	before(async () => {
 		const createdUser = await createUser();
-		unauthorizedUserCredentials = await doLogin(createdUser.username, password);
+		unauthorizedUserCredentials = await login(createdUser.username, password);
 	});
 
 	describe('[/licenses.add]', () => {

@@ -1,5 +1,7 @@
-import { Avatar, AvatarProps, Skeleton } from '@rocket.chat/fuselage';
-import React, { FC, useState } from 'react';
+import type { AvatarProps } from '@rocket.chat/fuselage';
+import { Avatar, Skeleton } from '@rocket.chat/fuselage';
+import type { FC } from 'react';
+import React, { useState } from 'react';
 
 export type BaseAvatarProps = Omit<AvatarProps, 'is'>;
 

@@ -11,8 +11,8 @@ type NPSResultPayload = {
 	votes: Pick<INpsVote, 'identifier' | 'roles' | 'score' | 'comment'>[];
 };
 
-export const sendNpsResults = Meteor.bindEnvironment(function sendNpsResults(npsId: string, data: NPSResultPayload) {
-	const token = Promise.await(getWorkspaceAccessToken());
+export const sendNpsResults = Meteor.bindEnvironment(async function sendNpsResults(npsId: string, data: NPSResultPayload) {
+	const token = await getWorkspaceAccessToken();
 	if (!token) {
 		return false;
 	}

@@ -7,8 +7,8 @@ export class Registration {
 		this.page = page;
 	}
 
-	get btnSubmit(): Locator {
-		return this.page.locator('role=button[name="Submit"]');
+	get btnSendInstructions(): Locator {
+		return this.page.locator('role=button[name="Send instructions"]');
 	}
 
 	get btnLogin(): Locator {
@@ -16,7 +16,7 @@ export class Registration {
 	}
 
 	get goToRegister(): Locator {
-		return this.page.locator('role=link[name="Register"]');
+		return this.page.locator('role=link[name="Create an account"]');
 	}
 
 	get main(): Locator {
@@ -28,11 +28,11 @@ export class Registration {
 	}
 
 	get btnRegister(): Locator {
-		return this.page.locator('role=button[name="Register"]');
+		return this.page.locator('role=button[name="Join your team"]');
 	}
 
 	get btnRegisterConfirmUsername(): Locator {
-		return this.page.locator('button[data-loading-text=" Please_wait ..."]');
+		return this.page.locator('role=button[name="Use this username"]');
 	}
 
 	get btnForgotPassword(): Locator {

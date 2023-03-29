@@ -13,4 +13,8 @@ export interface ILicense {
 		trialEnd: string;
 		workspaceId: string;
 	};
+	apps?: {
+		maxPrivateApps: number;
+		maxMarketplaceApps: number;
+	};
 }

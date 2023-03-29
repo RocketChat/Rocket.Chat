@@ -1,5 +1,6 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, UIEvent } from 'react';
+import type { ReactElement, UIEvent } from 'react';
+import React from 'react';
 
 import { isTruthy } from '../../../../../lib/isTruthy';
 

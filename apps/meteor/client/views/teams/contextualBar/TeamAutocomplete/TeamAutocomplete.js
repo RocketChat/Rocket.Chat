@@ -7,10 +7,7 @@ import Avatar from './Avatar';
 const TeamAutocomplete = (props) => {
 	const [filter, setFilter] = useState('');
 
-	const { value: data } = useEndpointData(
-		'/v1/teams.autocomplete',
-		useMemo(() => ({ name: filter }), [filter]),
-	);
+	const { value: data } = useEndpointData('/v1/teams.autocomplete', { params: useMemo(() => ({ name: filter }), [filter]) });
 
 	const options = useMemo(
 		() =>

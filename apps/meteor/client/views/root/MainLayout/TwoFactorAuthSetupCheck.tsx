@@ -1,6 +1,6 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import { useLayout, useUser, useSetting } from '@rocket.chat/ui-contexts';
-import React, { lazy, ReactElement, ReactNode, useCallback } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import React, { lazy, useCallback } from 'react';
 
 import { Roles } from '../../../../app/models/client';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
@@ -10,7 +10,7 @@ const AccountSecurityPage = lazy(() => import('../../account/security/AccountSec
 
 const TwoFactorAuthSetupCheck = ({ children }: { children: ReactNode }): ReactElement => {
 	const { isEmbedded: embeddedLayout } = useLayout();
-	const user = useUser() as IUser | null;
+	const user = useUser();
 	const tfaEnabled = useSetting('Accounts_TwoFactorAuthentication_Enabled');
 	const require2faSetup = useReactiveValue(
 		useCallback(() => {

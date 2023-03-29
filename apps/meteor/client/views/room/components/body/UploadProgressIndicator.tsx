@@ -1,15 +1,16 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useCallback } from 'react';
+import type { ReactElement } from 'react';
+import React, { useCallback } from 'react';
 
-import { Uploading } from '../../../../../app/ui/client/lib/fileUpload';
+import type { Upload } from '../../../../lib/chats/Upload';
 import ErroredUploadProgressIndicator from './ErroredUploadProgressIndicator';
 
 type UploadProgressIndicatorProps = {
-	id: Uploading['id'];
+	id: Upload['id'];
 	name: string;
 	percentage: number;
 	error?: string;
-	onClose?: (id: Uploading['id']) => void;
+	onClose?: (id: Upload['id']) => void;
 };
 
 const UploadProgressIndicator = ({ id, name, percentage, error, onClose }: UploadProgressIndicatorProps): ReactElement => {

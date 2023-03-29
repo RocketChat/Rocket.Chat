@@ -22,6 +22,8 @@ export class MessageList extends MemoizedComponent {
 
 	static SCROLL_FREE = 'free';
 
+	static SCROLL_AT_BOTTOM_AREA = 128;
+
 	// eslint-disable-next-line no-use-before-define
 	scrollPosition = MessageList.SCROLL_AT_BOTTOM;
 
@@ -33,11 +35,15 @@ export class MessageList extends MemoizedComponent {
 		}
 
 		let scrollPosition;
+		const scrollBottom = this.base.scrollHeight - (this.base.clientHeight + this.base.scrollTop);
+
 		if (this.base.scrollHeight <= this.base.clientHeight) {
 			scrollPosition = MessageList.SCROLL_AT_BOTTOM;
 		} else if (this.base.scrollTop === 0) {
 			scrollPosition = MessageList.SCROLL_AT_TOP;
-		} else if (this.base.scrollHeight === this.base.scrollTop + this.base.clientHeight) {
+		} else if (scrollBottom <= MessageList.SCROLL_AT_BOTTOM_AREA) {
+			// TODO: Once we convert these classes to functional components we should use refs to check if the last message is within the viewport
+			// For now we are using a fixed value to check if the last message is within the bottom of the scroll area
 			scrollPosition = MessageList.SCROLL_AT_BOTTOM;
 		} else {
 			scrollPosition = MessageList.SCROLL_FREE;
@@ -101,7 +107,9 @@ export class MessageList extends MemoizedComponent {
 
 	isVideoConfMessage(message) {
 		return Boolean(
-			message.blocks?.find(({ appId }) => appId === 'videoconf-core')?.elements?.find(({ actionId }) => actionId === 'joinLivechat'),
+			message.blocks
+				?.find(({ appId, type }) => appId === 'videoconf-core' && type === 'actions')
+				?.elements?.find(({ actionId }) => actionId === 'joinLivechat'),
 		);
 	}
 
@@ -137,7 +145,7 @@ export class MessageList extends MemoizedComponent {
 			}
 
 			const videoConfJoinBlock = message.blocks
-				?.find(({ appId }) => appId === 'videoconf-core')
+				?.find(({ appId, type }) => appId === 'videoconf-core' && type === 'actions')
 				?.elements?.find(({ actionId }) => actionId === 'joinLivechat');
 			if (videoConfJoinBlock) {
 				// If the call is not accepted yet, don't render the message.

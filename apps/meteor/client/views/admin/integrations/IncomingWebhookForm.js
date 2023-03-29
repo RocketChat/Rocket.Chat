@@ -4,7 +4,7 @@ import React, { useMemo, useCallback } from 'react';
 
 import Page from '../../../components/Page';
 import { useHighlightedCode } from '../../../hooks/useHighlightedCode';
-import { useExampleData } from './exampleIncomingData';
+import { useExampleData } from './useExampleIncomingData';
 
 export default function IncomingWebhookForm({ formValues, formHandlers, extraData = {}, append, ...props }) {
 	const t = useTranslation();

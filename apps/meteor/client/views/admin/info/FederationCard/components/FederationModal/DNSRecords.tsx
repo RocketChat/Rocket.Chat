@@ -1,12 +1,14 @@
 import { Box } from '@rocket.chat/fuselage';
+import { capitalize } from '@rocket.chat/string-helpers';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import _ from 'lodash';
-import React, { FC } from 'react';
+import type { FC } from 'react';
+import React from 'react';
 
 import { SectionStatus } from '../Section';
 import { DNSRecordItem } from './DNSRecordItem';
 import { DNSText } from './DNSText';
-import { DNSRecord, DNSRecordName, DNSRecordType, ResolvedDNS, TXTRecordValue } from './Types';
+import type { DNSRecord, ResolvedDNS } from './Types';
+import { DNSRecordName, DNSRecordType, TXTRecordValue } from './Types';
 
 export const DNSRecords: FC<{
 	federationSubdomain: string;
@@ -40,7 +42,7 @@ export const DNSRecords: FC<{
 
 		const dnsRecord: DNSRecord = {
 			status: SectionStatus.UNKNOWN,
-			title: title || _.capitalize(name.toString()),
+			title: title || capitalize(name.toString()),
 			expectedValue,
 		};
 

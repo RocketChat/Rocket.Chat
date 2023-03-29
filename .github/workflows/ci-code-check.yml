@@ -1,0 +1,53 @@
+name: Code Checks
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        required: true
+        type: string
+
+env:
+  TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
+
+jobs:
+  code-check:
+    runs-on: ubuntu-20.04
+
+    name: ${{ matrix.check == 'ts' && 'TypeScript' || 'Code Lint' }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        check: ['ts', 'lint']
+
+    steps:
+      # - name: Set Swap Space
+      #   uses: pierotofy/set-swap-space@master
+      #   with:
+      #     swap-size-gb: 4
+
+      - uses: actions/checkout@v3
+
+      - name: Setup NodeJS
+        uses: ./.github/actions/setup-node
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache-modules: true
+          install: true
+
+      # - name: Free disk space
+      #   run: |
+      #     sudo apt clean
+      #     docker rmi $(docker image ls -aq)
+      #     df -h
+
+      - uses: dtinth/setup-github-actions-caching-for-turbo@v1
+
+      - name: TS TypeCheck
+        if: matrix.check == 'ts'
+        run: yarn turbo run typecheck
+
+      - name: Lint
+        if: matrix.check == 'lint'
+        run: yarn lint

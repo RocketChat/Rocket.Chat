@@ -1,4 +1,6 @@
-import React, { DragEvent, useCallback, useMemo, useState } from 'react';
+import type { DragEvent } from 'react';
+import type React from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 const hasFilesToUpload = (dataTransfer: DataTransfer): boolean => dataTransfer.types.includes('Files');
 

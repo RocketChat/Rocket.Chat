@@ -3,11 +3,10 @@ import { Match, check } from 'meteor/check';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Messages } from '../../../models/server';
-import { Apps } from '../../../apps/server';
+import { Apps } from '../../../../ee/server/apps';
 import { isURL } from '../../../../lib/utils/isURL';
 import { FileUpload } from '../../../file-upload/server';
-import { hasPermission } from '../../../authorization/server';
-import { SystemLogger } from '../../../../server/lib/logger/system';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
 import notifications from '../../../notifications/server/lib/Notifications';
@@ -129,11 +128,11 @@ const validateAttachment = (attachment) => {
 		}),
 	);
 
-	if (attachment.fields && attachment.fields.length) {
+	if (attachment.fields?.length) {
 		attachment.fields.map(validateAttachmentsFields);
 	}
 
-	if (attachment.actions && attachment.actions.length) {
+	if (attachment.actions?.length) {
 		attachment.actions.map(validateAttachmentsActions);
 	}
 };
@@ -160,7 +159,7 @@ export const validateMessage = (message, room, user) => {
 	if (message.alias || message.avatar) {
 		const isLiveChatGuest = !message.avatar && user.token && user.token === room.v?.token;
 
-		if (!isLiveChatGuest && !hasPermission(user._id, 'message-impersonate', room._id)) {
+		if (!isLiveChatGuest && !Promise.await(hasPermissionAsync(user._id, 'message-impersonate', room._id))) {
 			throw new Error('Not enough permission');
 		}
 	}
@@ -204,7 +203,7 @@ function cleanupMessageObject(message) {
 	['customClass'].forEach((field) => delete message[field]);
 }
 
-export const sendMessage = function (user, message, room, upsert = false) {
+export const sendMessage = async function (user, message, room, upsert = false) {
 	if (!user || !message || !room._id) {
 		return false;
 	}
@@ -218,18 +217,14 @@ export const sendMessage = function (user, message, room, upsert = false) {
 
 	// For the Rocket.Chat Apps :)
 	if (Apps && Apps.isLoaded()) {
-		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message));
+		const prevent = await Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageSentPrevent', message);
 		if (prevent) {
-			if (settings.get('Apps_Framework_Development_Mode')) {
-				SystemLogger.info({ msg: 'A Rocket.Chat App prevented the message sending.', message });
-			}
-
 			return;
 		}
 
 		let result;
-		result = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentExtend', message));
-		result = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentModify', result));
+		result = await Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageSentExtend', message);
+		result = await Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageSentModify', result);
 
 		if (typeof result === 'object') {
 			message = Object.assign(message, result);
@@ -270,7 +265,7 @@ export const sendMessage = function (user, message, room, upsert = false) {
 		if (Apps && Apps.isLoaded()) {
 			// This returns a promise, but it won't mutate anything about the message
 			// so, we don't really care if it is successful or fails
-			Apps.getBridges().getListenerBridge().messageEvent('IPostMessageSent', message);
+			void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageSent', message);
 		}
 
 		/*

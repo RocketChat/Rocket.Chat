@@ -1,4 +1,5 @@
-import { isErrorType, UIKitUserInteractionResult, UiKitPayload } from '@rocket.chat/core-typings';
+import type { UIKitUserInteractionResult, UiKitPayload } from '@rocket.chat/core-typings';
+import { isErrorType } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useEffect, useState } from 'react';
 
