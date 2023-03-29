@@ -1,8 +1,4 @@
-import { Meteor } from 'meteor/meteor';
-
 import { LivechatDepartment } from '../../../../../app/models/server/models/LivechatDepartment';
-import { LivechatDepartment as LivechatDepartmentModel } from '../../../../../app/models/server';
-import { LivechatUnit } from '../index';
 import { overwriteClassOnLicense } from '../../../license/server';
 
 const { find, findOne, update, remove } = LivechatDepartment.prototype;
