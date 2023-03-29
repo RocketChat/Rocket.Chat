@@ -4,7 +4,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Messages } from '@rocket.chat/models';
 
-import { canAccessRoomId } from '../../../authorization/server';
+import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -23,9 +23,9 @@ Meteor.methods<ServerMethods>({
 		}
 
 		const msgs = await Messages.findVisibleByIds(messages).toArray();
-		const rids = [...new Set(msgs.map((m) => m.rid))];
+		const rids = await Promise.all([...new Set(msgs.map((m) => m.rid))].map((_id) => canAccessRoomIdAsync(_id, uid)));
 
-		if (!rids.every((_id) => canAccessRoomId(_id, uid))) {
+		if (!rids.every(Boolean)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getSingleMessage' });
 		}
 

@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Random } from '@rocket.chat/random';
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { MessageAttachment, ImageAttachmentProps, AudioAttachmentProps, VideoAttachmentProps } from '@rocket.chat/core-typings';
 
-import { LivechatRooms } from '../../../models/server';
 import { FileUpload } from '../../../file-upload/server';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -35,7 +34,7 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		const room = LivechatRooms.findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken);
+		const room = await LivechatRooms.findOneOpenByRoomIdAndVisitorToken(roomId, visitorToken);
 
 		if (!room) {
 			return false;
@@ -102,6 +101,6 @@ Meteor.methods<ServerMethods>({
 			msgData,
 		);
 
-		return Meteor.call('sendMessageLivechat', msg);
+		return Meteor.callAsync('sendMessageLivechat', msg);
 	},
 });

@@ -20,4 +20,4 @@ settingsRegistry.addGroup = use(settingsRegistry.addGroup, (context, next) => {
 	return Promise.await(next(...context)) as any;
 });
 
-Promise.await(initializeSettings({ model: Settings, settings }));
+await initializeSettings({ model: Settings, settings });

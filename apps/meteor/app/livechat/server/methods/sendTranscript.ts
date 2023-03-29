@@ -4,7 +4,7 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Users } from '../../../models/server';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Livechat } from '../lib/LivechatTyped';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -15,12 +15,12 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	'livechat:sendTranscript'(token, rid, email, subject) {
+	async 'livechat:sendTranscript'(token, rid, email, subject) {
 		check(rid, String);
 		check(email, String);
 
 		const uid = Meteor.userId();
-		if (!uid || !hasPermission(uid, 'send-omnichannel-chat-transcript')) {
+		if (!uid || !(await hasPermissionAsync(uid, 'send-omnichannel-chat-transcript'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:sendTranscript',
 			});

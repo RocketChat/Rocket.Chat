@@ -1,22 +1,23 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { Settings } from '@rocket.chat/models';
+import { Settings, Rooms } from '@rocket.chat/models';
 import colors from 'colors/safe';
 
 import { RocketChatFile } from '../../app/file/server';
 import { FileUpload } from '../../app/file-upload/server';
 import { getUsersInRole } from '../../app/authorization/server';
 import { addUserRolesAsync } from '../lib/roles/addUserRoles';
-import { Users, Rooms } from '../../app/models/server';
+import { Users } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
-import { checkUsernameAvailability, addUserToDefaultChannels } from '../../app/lib/server';
+import { addUserToDefaultChannels } from '../../app/lib/server';
+import { checkUsernameAvailability } from '../../app/lib/server/functions/checkUsernameAvailability';
 import { validateEmail } from '../../lib/emailValidator';
 
 Meteor.startup(async function () {
 	if (!settings.get('Initial_Channel_Created')) {
-		const exists = Rooms.findOneById('GENERAL', { fields: { _id: 1 } });
+		const exists = await Rooms.findOneById('GENERAL', { fields: { _id: 1 } });
 		if (!exists) {
-			Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
+			await Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
 				default: true,
 			});
 		}
@@ -102,7 +103,7 @@ Meteor.startup(async function () {
 				}
 
 				if (nameValidation.test(process.env.ADMIN_USERNAME)) {
-					if (checkUsernameAvailability(process.env.ADMIN_USERNAME)) {
+					if (await checkUsernameAvailability(process.env.ADMIN_USERNAME)) {
 						adminUser.username = process.env.ADMIN_USERNAME;
 					} else {
 						console.log(colors.red('Username provided already exists; Ignoring environment variables ADMIN_USERNAME'));
@@ -191,7 +192,7 @@ Meteor.startup(async function () {
 			throw new Meteor.Error(`Email ${adminUser.emails[0].address} already exists`, "Rocket.Chat can't run in test mode");
 		}
 
-		if (!checkUsernameAvailability(adminUser.username)) {
+		if (!(await checkUsernameAvailability(adminUser.username))) {
 			throw new Meteor.Error(`Username ${adminUser.username} already exists`, "Rocket.Chat can't run in test mode");
 		}
 

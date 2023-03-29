@@ -105,6 +105,6 @@ async function afterCreateRoom(roomOwner, room) {
 
 export const definition = {
 	hook: 'afterCreateRoom',
-	callback: (roomOwner, room) => Promise.await(afterCreateRoom(roomOwner, room)),
+	callback: afterCreateRoom,
 	id: 'federation-after-create-room',
 };

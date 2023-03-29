@@ -10,7 +10,7 @@ type BlazePortalEntry = {
 	node: ReactNode;
 };
 
-export class BlazePortalsSubscription extends Emitter<{ update: void }> {
+class BlazePortalsSubscription extends Emitter<{ update: void }> {
 	private map = new Map<Blaze.TemplateInstance, BlazePortalEntry>();
 
 	private cache = Array.from(this.map.values());

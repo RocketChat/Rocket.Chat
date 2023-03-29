@@ -13,7 +13,7 @@ import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
 
 function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
-	return function inviteAll(command: T, params: string, item): void {
+	return async function inviteAll(command: T, params: string, item): Promise<void> {
 		if (!/invite\-all-(to|from)/.test(command)) {
 			return;
 		}
@@ -66,7 +66,7 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 			const users = cursor.fetch().map((s: ISubscription) => s.u.username);
 
 			if (!targetChannel && ['c', 'p'].indexOf(baseChannel.t) > -1) {
-				Meteor.call(baseChannel.t === 'c' ? 'createChannel' : 'createPrivateGroup', channel, users);
+				await Meteor.callAsync(baseChannel.t === 'c' ? 'createChannel' : 'createPrivateGroup', channel, users);
 				void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 					msg: TAPi18n.__('Channel_created', {
 						postProcess: 'sprintf',
@@ -75,7 +75,7 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 					}),
 				});
 			} else {
-				Meteor.call('addUsersToRoom', {
+				await Meteor.callAsync('addUsersToRoom', {
 					rid: targetChannel._id,
 					users,
 				});

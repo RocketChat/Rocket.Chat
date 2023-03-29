@@ -4,6 +4,7 @@ import { API } from '../../../../../app/api/server';
 import { findUnits, findUnitById, findUnitMonitors } from './lib/units';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 import { findAllDepartmentsAvailable, findAllDepartmentsByUnit } from '../lib/Department';
+import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 
 API.v1.addRoute(
 	'livechat/units/:unitId/monitors',
@@ -29,8 +30,9 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['manage-livechat-units'] },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const params = this.queryParams;
+			const { offset, count } = await getPaginationItems(params);
+			const { sort } = await this.parseJsonQuery();
 			const { text } = this.queryParams;
 
 			return API.v1.success(
@@ -82,7 +84,7 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['manage-livechat-units'] },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { unitId } = this.urlParams;
 
 			const { departments, total } = await findAllDepartmentsByUnit(unitId, offset, count);
@@ -102,7 +104,7 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['manage-livechat-units'] },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { unitId } = this.urlParams;
 			const { text, onlyMyDepartments } = this.queryParams;
 

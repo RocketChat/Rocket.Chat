@@ -12,9 +12,9 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	'livechat:saveBusinessHour'(businessHourData) {
+	async 'livechat:saveBusinessHour'(businessHourData) {
 		try {
-			Promise.await(businessHourManager.saveBusinessHour(businessHourData));
+			await businessHourManager.saveBusinessHour(businessHourData);
 		} catch (e) {
 			throw new Meteor.Error(e instanceof Error ? e.message : String(e));
 		}

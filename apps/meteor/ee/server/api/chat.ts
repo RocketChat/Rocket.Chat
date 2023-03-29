@@ -20,7 +20,7 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success({
-				receipts: await Meteor.call('getReadReceipts', { messageId }),
+				receipts: await Meteor.callAsync('getReadReceipts', { messageId }),
 			});
 		},
 	},
