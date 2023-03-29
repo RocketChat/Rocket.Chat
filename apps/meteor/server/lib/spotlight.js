@@ -1,8 +1,8 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Users, Subscriptions as SubscriptionsRaw, Rooms as RoomsRaw } from '@rocket.chat/models';
 
-import { hasAllPermission, canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
-import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
+import { hasPermissionAsync, hasAllPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
@@ -47,7 +47,7 @@ export class Spotlight {
 			return this.fetchRooms(userId, await RoomsRaw.findByNameAndTypeNotDefault(regex, 'c', roomOptions, includeFederatedRooms).toArray());
 		}
 
-		if (!hasAllPermission(userId, ['view-outside-room', 'view-c-room'])) {
+		if (!(await hasAllPermissionAsync(userId, ['view-outside-room', 'view-c-room']))) {
 			return [];
 		}
 
@@ -162,7 +162,7 @@ export class Spotlight {
 			return users;
 		}
 
-		const canListOutsiders = hasAllPermission(userId, ['view-outside-room', 'view-d-room']);
+		const canListOutsiders = await hasAllPermissionAsync(userId, ['view-outside-room', 'view-d-room']);
 		const canListInsiders = canListOutsiders || (rid && (await canAccessRoomAsync(room, { _id: userId })));
 
 		const insiderExtraQuery = [];
