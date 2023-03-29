@@ -453,11 +453,11 @@ const RoomBody = (): ReactElement => {
 			timer2s = setTimeout(() => checkIfScrollIsAtBottom(), 2000);
 		};
 
-		wrapper.addEventListener('mousewheel', handleWheel);
-		wrapper.addEventListener('wheel', handleWheel);
+		// wrapper.addEventListener('mousewheel', handleWheel);
+		// wrapper.addEventListener('wheel', handleWheel);
 		wrapper.addEventListener('scroll', handleWheel);
-		wrapper.addEventListener('touchstart', handleTouchStart);
-		wrapper.addEventListener('touchend', handleTouchEnd);
+		// wrapper.addEventListener('touchstart', handleTouchStart);
+		// wrapper.addEventListener('touchend', handleTouchEnd);
 
 		return (): void => {
 			if (timer1s) clearTimeout(timer1s);
