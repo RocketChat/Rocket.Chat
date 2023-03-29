@@ -1,7 +1,7 @@
 import { registerModel } from '@rocket.chat/models';
 
+import { MessagesEE } from './raw/Messages';
 import { db } from '../../../server/database/utils';
-import { LivechatRoomsRawEE } from './raw/LivechatRooms';
 import { trashCollection } from '../../../server/database/trash';
 
-registerModel('ILivechatRoomsModel', new LivechatRoomsRawEE(db, trashCollection));
+registerModel('IMessagesModel', new MessagesEE(db, trashCollection));
