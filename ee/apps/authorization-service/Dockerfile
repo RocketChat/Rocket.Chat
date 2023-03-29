@@ -19,6 +19,9 @@ COPY ./packages/model-typings/dist packages/model-typings/dist
 COPY ./packages/models/package.json packages/models/package.json
 COPY ./packages/models/dist packages/models/dist
 
+COPY ./packages/ui-kit/package.json packages/ui-kit/package.json
+COPY ./packages/ui-kit/dist packages/ui-kit/dist
+
 COPY ./ee/apps/${SERVICE}/dist .
 
 COPY ./package.json .
