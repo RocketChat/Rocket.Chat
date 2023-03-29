@@ -1,4 +1,11 @@
-import type { IOmnichannelRoom, IOmnichannelRoomClosingInfo, IUser, MessageTypesValues, ILivechatVisitor } from '@rocket.chat/core-typings';
+import type {
+	IOmnichannelRoom,
+	IOmnichannelRoomClosingInfo,
+	IUser,
+	MessageTypesValues,
+	ILivechatVisitor,
+	IRegisterUser,
+} from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms, Subscriptions, LivechatVisitors, Messages, Users } from '@rocket.chat/models';
 import moment from 'moment-timezone';
@@ -315,7 +322,7 @@ class LivechatClass {
 		});
 
 		let type = 'user';
-		if (!user) {
+		if (!user?.username) {
 			const cat = await Users.findOneById('rocket.cat', { projection: { _id: 1, username: 1, name: 1 } });
 			if (!cat) {
 				this.logger.error('rocket.cat user not found');
@@ -325,9 +332,16 @@ class LivechatClass {
 			type = 'visitor';
 		}
 
-		LegacyMessage.createTranscriptHistoryWithRoomIdMessageAndUser(room._id, '', user, {
-			requestData: { type, visitor, user },
-		});
+		await Messages.createWithTypeRoomIdMessageUserAndUnread(
+			'livechat_transcript_history',
+			room._id,
+			'',
+			user as IRegisterUser,
+			settings.get('Message_Read_Receipt_Enabled'),
+			{
+				requestData: { type, visitor, user },
+			} as any, // TODO should a message really have "requestData"? if so, it should be on IMessage
+		);
 		return true;
 	}
 }
