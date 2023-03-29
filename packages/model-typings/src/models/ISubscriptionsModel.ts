@@ -229,4 +229,5 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	removeUnreadThreadsByRoomId(rid: string, tunread: string[]): Promise<UpdateResult | Document>;
 	countByRoomIdAndRoles(roomId: string, roles: string[]): Promise<number>;
 	countByRoomId(roomId: string): Promise<number>;
+	countByUserId(userId: string): Promise<number>;
 }
