@@ -115,10 +115,6 @@ export class Messages extends Base {
 		return record;
 	}
 
-	createUserConvertChannelToTeamWithRoomIdAndUser(roomId, roomName, user, extraData) {
-		return this.createWithTypeRoomIdMessageAndUser('user-converted-to-team', roomId, roomName, user, extraData);
-	}
-
 	createUserConvertTeamToChannelWithRoomIdAndUser(roomId, roomName, user, extraData) {
 		return this.createWithTypeRoomIdMessageAndUser('user-converted-to-channel', roomId, roomName, user, extraData);
 	}

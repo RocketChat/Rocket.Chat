@@ -14,7 +14,7 @@ import type {
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Team, Rooms, Subscriptions, Users, TeamMember } from '@rocket.chat/models';
 import type { InsertionModel } from '@rocket.chat/model-typings';
-import { Room, Authorization, ServiceClassInternal } from '@rocket.chat/core-services';
+import { Room, Authorization, Message, ServiceClassInternal } from '@rocket.chat/core-services';
 import type {
 	IListRoomsFilter,
 	ITeamAutocompleteResult,
@@ -106,7 +106,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			let roomId = room.id;
 			if (roomId) {
 				await Rooms.setTeamMainById(roomId, teamId);
-				Messages.createUserConvertChannelToTeamWithRoomIdAndUser(roomId, team.name, createdBy);
+				await Message.saveSystemMessage('user-converted-to-team', roomId, team.name, createdBy);
 			} else {
 				const roomType: IRoom['t'] = team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c';
 
