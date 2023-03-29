@@ -5,16 +5,6 @@ import { SystemLogger } from './logger/system';
 import { executeSendMessage } from '../../app/lib/server/methods/sendMessage';
 import { createDirectMessage } from '../methods/createDirectMessage';
 
-type Banner = {
-	id: string;
-	priority: number;
-	title: string;
-	text: string;
-	textArguments?: string[];
-	modifiers: string[];
-	link: string;
-};
-
 const getData = <T>(param: T[] | ((params: { adminUser: IUser }) => T[]), adminUser: IUser): T[] => {
 	const result = typeof param === 'function' ? param({ adminUser }) : param;
 
@@ -24,6 +14,8 @@ const getData = <T>(param: T[] | ((params: { adminUser: IUser }) => T[]), adminU
 
 	return result;
 };
+
+type Banner = Exclude<IUser['banners'], undefined>[string];
 
 export async function sendMessagesToAdmins({
 	fromId = 'rocket.cat',

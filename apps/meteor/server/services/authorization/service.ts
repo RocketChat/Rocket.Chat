@@ -119,7 +119,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		async (roleIds: string[]) => {
 			const options = {
 				sort: {
-					username: 1,
+					username: 1 as const,
 				},
 				projection: {
 					username: 1,

@@ -22,7 +22,7 @@ import type {
 } from 'mongodb';
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 
-export type DefaultFields<Base> = Record<keyof Base, 1> | Record<keyof Base, 0> | void;
+export type DefaultFields<Base> = Partial<Record<keyof Base, 1 | 0>> | void;
 export type ResultFields<Base, Defaults> = Defaults extends void
 	? Base
 	: Defaults[keyof Defaults] extends 1

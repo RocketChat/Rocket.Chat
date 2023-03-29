@@ -41,7 +41,7 @@ type MessageData = Pick<IMessage, '_id' | 'ts' | 'u' | 'msg' | 'md'> & {
 type WorkerData = {
 	siteName: string;
 	visitor: ILivechatVisitor | null;
-	agent: ILivechatAgent | undefined;
+	agent: ILivechatAgent | null | undefined;
 	closedAt?: Date;
 	messages: MessageData[];
 	timezone: string;
@@ -84,7 +84,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		}
 	}
 
-	async getTimezone(user?: { utcOffset?: string | number }): Promise<string> {
+	async getTimezone(user?: { utcOffset?: string | number } | null): Promise<string> {
 		const reportingTimezone = await settingsService.get('Default_Timezone_For_Reporting');
 
 		switch (reportingTimezone) {

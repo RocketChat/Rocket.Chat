@@ -170,6 +170,7 @@ export interface IUser extends IRocketChatRecord {
 			read?: boolean;
 		};
 	};
+	__rooms?: string[]; // TODO only on server
 }
 
 export interface IRegisterUser extends IUser {
