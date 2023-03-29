@@ -1,5 +1,5 @@
-import type { FindCursor, DeleteResult, UpdateResult, Document } from 'mongodb';
-import type { ReadReceipt, IUser } from '@rocket.chat/core-typings';
+import type { FindCursor, DeleteResult, UpdateResult, Document, Filter } from 'mongodb';
+import type { ReadReceipt, IUser, IMessage } from '@rocket.chat/core-typings';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -15,11 +15,11 @@ export interface IReadReceiptsModel extends IBaseModel<ReadReceipt> {
 		roomId: string,
 		ignorePinned: boolean,
 		ignoreDiscussion: boolean,
-		ts: Date,
+		ts: Filter<IMessage>['ts'],
 		users: IUser['username'][],
 		ignoreThreads: boolean,
 	): Promise<DeleteResult>;
 	setPinnedByMessageId(messageId: string, pinned: boolean): Promise<Document | UpdateResult>;
-	incrementThreadMessagesCountById(messageId: string, inc: number): Promise<Document | UpdateResult>;
+	incrementThreadMessagesCountById(messageId: string, inc?: number): Promise<Document | UpdateResult>;
 	unsetThreadMessagesCountById(messageId: string): Promise<Document | UpdateResult>;
 }

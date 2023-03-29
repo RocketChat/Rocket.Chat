@@ -83,7 +83,7 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 	const isValid = moment(new Date()).isSameOrAfter(willBeBlockedUntil);
 
 	if (settings.get('Block_Multiple_Failed_Logins_Notify_Failed') && !isValid) {
-		notifyFailedLogin(ip, willBeBlockedUntil, failedAttemptsSinceLastLogin);
+		await notifyFailedLogin(ip, willBeBlockedUntil, failedAttemptsSinceLastLogin);
 	}
 
 	return isValid;
@@ -126,7 +126,7 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 	const isValid = moment(new Date()).isSameOrAfter(willBeBlockedUntil);
 
 	if (settings.get('Block_Multiple_Failed_Logins_Notify_Failed') && !isValid) {
-		notifyFailedLogin(user.username, willBeBlockedUntil, failedAttemptsSinceLastLogin);
+		await notifyFailedLogin(user.username, willBeBlockedUntil, failedAttemptsSinceLastLogin);
 	}
 
 	return isValid;

@@ -1,4 +1,4 @@
-import type { IUser, ReadReceipt, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IUser, IMessage, ReadReceipt, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import type { IReadReceiptsModel } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, IndexDescription, DeleteResult, Filter, UpdateResult, Document } from 'mongodb';
@@ -53,11 +53,11 @@ export class ReadReceiptsRaw extends BaseRaw<ReadReceipt> implements IReadReceip
 		roomId: string,
 		ignorePinned: boolean,
 		ignoreDiscussion: boolean,
-		ts: Date,
+		ts: Filter<IMessage>['ts'],
 		users: IUser['username'][],
 		ignoreThreads: boolean,
 	): Promise<DeleteResult> {
-		const query: Filter<any> = {
+		const query: Filter<ReadReceipt> = {
 			roomId,
 			ts,
 		};
@@ -67,12 +67,12 @@ export class ReadReceiptsRaw extends BaseRaw<ReadReceipt> implements IReadReceip
 		}
 
 		if (ignoreDiscussion) {
-			query.drid = { $exists: 0 };
+			query.drid = { $exists: false };
 		}
 
 		if (ignoreThreads) {
-			query.tmid = { $exists: 0 };
-			query.tcount = { $exists: 0 };
+			query.tmid = { $exists: false };
+			query.tcount = { $exists: false };
 		}
 
 		if (users.length) {

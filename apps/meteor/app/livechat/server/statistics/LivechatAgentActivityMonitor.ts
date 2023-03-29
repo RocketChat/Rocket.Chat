@@ -50,7 +50,9 @@ export class LivechatAgentActivityMonitor {
 		// TODO use service event socket.connected instead
 		Meteor.onConnection((connection: unknown) => this._handleMeteorConnection(connection as ISocketConnection));
 		callbacks.add('livechat.agentStatusChanged', this._handleAgentStatusChanged);
-		callbacks.add('livechat.setUserStatusLivechat', this._handleUserStatusLivechatChanged);
+		callbacks.add('livechat.setUserStatusLivechat', (...args) => {
+			return Promise.await(this._handleUserStatusLivechatChanged(...args));
+		});
 		this._started = true;
 	}
 
@@ -104,7 +106,7 @@ export class LivechatAgentActivityMonitor {
 		}
 		connection.onClose(() => {
 			if (session) {
-				this._updateSessionWhenAgentStop(session.userId);
+				Promise.await(this._updateSessionWhenAgentStop(session.userId));
 			}
 		});
 	}
@@ -120,9 +122,9 @@ export class LivechatAgentActivityMonitor {
 		}
 
 		if (status !== 'offline') {
-			this._createOrUpdateSession(userId);
+			Promise.await(this._createOrUpdateSession(userId));
 		} else {
-			this._updateSessionWhenAgentStop(userId);
+			Promise.await(this._updateSessionWhenAgentStop(userId));
 		}
 	}
 
@@ -140,7 +142,7 @@ export class LivechatAgentActivityMonitor {
 			await this._createOrUpdateSession(userId);
 		}
 		if (status === 'not-available') {
-			this._updateSessionWhenAgentStop(userId);
+			await this._updateSessionWhenAgentStop(userId);
 		}
 	}
 

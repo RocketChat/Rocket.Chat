@@ -93,12 +93,10 @@ async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
 
 	// Number of business units
 	statsPms.push(
-		LivechatUnit.find({ type: 'u' })
-			.count()
-			.then((count) => {
-				statistics.businessUnits = count;
-				return true;
-			}),
+		LivechatUnit.countUnits().then((count) => {
+			statistics.businessUnits = count;
+			return true;
+		}),
 	);
 
 	statsPms.push(

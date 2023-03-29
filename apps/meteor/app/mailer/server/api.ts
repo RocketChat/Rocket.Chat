@@ -165,7 +165,8 @@ export const sendNoWrap = ({
 		html = undefined;
 	}
 
-	Settings.incrementValueById('Triggered_Emails_Count');
+	// TODO change to await once Email.send is converted to Email.sendAsync
+	void Settings.incrementValueById('Triggered_Emails_Count');
 
 	const email = { to, from, replyTo, subject, html, text, headers };
 

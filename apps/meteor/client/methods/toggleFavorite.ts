@@ -1,14 +1,15 @@
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { ChatSubscription } from '../../app/models/client';
 
-Meteor.methods({
-	toggleFavorite(rid, f) {
+Meteor.methods<ServerMethods>({
+	async toggleFavorite(rid, f) {
 		if (!Meteor.userId()) {
-			return false;
+			return 0;
 		}
 
-		ChatSubscription.update(
+		return ChatSubscription.update(
 			{
 				rid,
 				'u._id': Meteor.userId(),

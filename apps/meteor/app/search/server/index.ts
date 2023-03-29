@@ -1,6 +1,7 @@
-import './model/provider';
-import './service/providerService.js';
-import './service/validationService.js';
-import './events/events.js';
-import './provider/defaultProvider.js';
+import './model/SearchProvider';
+import './events';
 import './search.internalService';
+import './register';
+import './startup';
+import './service';
+import './methods';

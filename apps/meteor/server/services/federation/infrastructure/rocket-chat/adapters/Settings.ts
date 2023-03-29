@@ -13,10 +13,10 @@ const EVERYTHING_REGEX = '.*';
 const LISTEN_RULES = EVERYTHING_REGEX;
 
 export class RocketChatSettingsAdapter {
-	public initialize(): void {
+	public async initialize() {
 		this.addFederationSettings();
 		this.watchChangesAndUpdateRegistrationFile();
-		this.updateSettingsWithProvidedConfigFileIfNecessary();
+		await this.updateSettingsWithProvidedConfigFileIfNecessary();
 	}
 
 	public getApplicationServiceId(): string {
@@ -92,16 +92,14 @@ export class RocketChatSettingsAdapter {
 				'Federation_Matrix_bridge_localpart',
 			],
 			([enabled]) =>
-				Promise.await(
-					callback(
-						enabled === true,
-						this.getApplicationServiceId(),
-						this.getHomeServerUrl(),
-						this.getHomeServerDomain(),
-						this.getBridgeUrl(),
-						this.getBridgePort(),
-						this.generateRegistrationFileObject(),
-					),
+				callback(
+					enabled === true,
+					this.getApplicationServiceId(),
+					this.getHomeServerUrl(),
+					this.getHomeServerDomain(),
+					this.getBridgeUrl(),
+					this.getBridgePort(),
+					this.generateRegistrationFileObject(),
 				),
 		);
 	}
@@ -172,7 +170,7 @@ export class RocketChatSettingsAdapter {
 	private addFederationSettings(): void {
 		const preExistingConfiguration = this.getRegistrationFileFromHomeserver();
 
-		settingsRegistry.addGroup('Federation', function () {
+		void settingsRegistry.addGroup('Federation', function () {
 			this.section('Matrix Bridge', function () {
 				this.add('Federation_Matrix_enabled', Boolean(preExistingConfiguration), {
 					readonly: false,
@@ -272,20 +270,22 @@ export class RocketChatSettingsAdapter {
 			: resolve(process.cwd(), '../../../matrix-federation-config/registration.yaml');
 	}
 
-	private updateSettingsWithProvidedConfigFileIfNecessary(): void {
+	private async updateSettingsWithProvidedConfigFileIfNecessary() {
 		const existingConfiguration = this.getRegistrationFileFromHomeserver();
 		if (!existingConfiguration) {
 			return;
 		}
 
-		Promise.await(Settings.updateValueById('Federation_Matrix_enabled', true));
-		Promise.await(Settings.updateValueById('Federation_Matrix_id', existingConfiguration.id));
-		Promise.await(Settings.updateValueById('Federation_Matrix_hs_token', existingConfiguration.homeserverToken));
-		Promise.await(Settings.updateValueById('Federation_Matrix_as_token', existingConfiguration.applicationServiceToken));
-		Promise.await(Settings.updateValueById('Federation_Matrix_homeserver_url', existingConfiguration.rocketchat?.homeServerUrl));
-		Promise.await(Settings.updateValueById('Federation_Matrix_homeserver_domain', existingConfiguration.rocketchat?.domainName));
-		Promise.await(Settings.updateValueById('Federation_Matrix_bridge_url', existingConfiguration.bridgeUrl));
-		Promise.await(Settings.updateValueById('Federation_Matrix_bridge_localpart', existingConfiguration.botName));
-		Promise.await(Settings.update({ _id: 'Federation_Matrix_registration_file' }, { $set: { hidden: Boolean(existingConfiguration) } }));
+		await Promise.all([
+			Settings.updateValueById('Federation_Matrix_enabled', true),
+			Settings.updateValueById('Federation_Matrix_id', existingConfiguration.id),
+			Settings.updateValueById('Federation_Matrix_hs_token', existingConfiguration.homeserverToken),
+			Settings.updateValueById('Federation_Matrix_as_token', existingConfiguration.applicationServiceToken),
+			Settings.updateValueById('Federation_Matrix_homeserver_url', existingConfiguration.rocketchat?.homeServerUrl),
+			Settings.updateValueById('Federation_Matrix_homeserver_domain', existingConfiguration.rocketchat?.domainName),
+			Settings.updateValueById('Federation_Matrix_bridge_url', existingConfiguration.bridgeUrl),
+			Settings.updateValueById('Federation_Matrix_bridge_localpart', existingConfiguration.botName),
+			Settings.update({ _id: 'Federation_Matrix_registration_file' }, { $set: { hidden: Boolean(existingConfiguration) } }),
+		]);
 	}
 }

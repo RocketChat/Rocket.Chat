@@ -11,10 +11,10 @@ function hasUnits(): boolean {
 // Units should't change really often, so we can cache the result
 const memoizedHasUnits = mem(hasUnits, { maxAge: 5000 });
 
-export function getUnitsFromUser(): { [k: string]: any }[] | undefined {
+export async function getUnitsFromUser(): Promise<{ [k: string]: any }[] | undefined> {
 	if (!memoizedHasUnits()) {
 		return;
 	}
 
-	return Meteor.call('livechat:getUnitsFromUser');
+	return Meteor.callAsync('livechat:getUnitsFromUser');
 }

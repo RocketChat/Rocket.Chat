@@ -68,7 +68,7 @@ Meteor.methods<ServerMethods>({
 			await client.stat('/');
 			await WebdavAccounts.insertOne(accountData);
 
-			api.broadcast('notify.webdav', userId, {
+			void api.broadcast('notify.webdav', userId, {
 				type: 'changed',
 				account: accountData,
 			});
@@ -130,7 +130,7 @@ Meteor.methods<ServerMethods>({
 					upsert: true,
 				},
 			);
-			api.broadcast('notify.webdav', userId, {
+			void api.broadcast('notify.webdav', userId, {
 				type: 'changed',
 				account: accountData,
 			});

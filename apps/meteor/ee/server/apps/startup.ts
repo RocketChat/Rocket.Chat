@@ -5,5 +5,5 @@ import { Apps } from './orchestrator';
 Meteor.startup(function _appServerOrchestrator() {
 	Apps.initialize();
 
-	Apps.load();
+	void Apps.load();
 });

@@ -9,33 +9,33 @@ import { syncUserRoles } from '../syncUserRoles';
 const logger = new Logger('OAuth');
 
 export class OAuthEEManager {
-	static mapSSOGroupsToChannels(
+	static async mapSSOGroupsToChannels(
 		user: IUser,
 		identity: Record<string, any>,
 		groupClaimName: string,
 		channelsMap: Record<string, any> | undefined,
 		channelsAdmin: string,
-	): void {
-		if (user && identity && groupClaimName) {
+	): Promise<void> {
+		if (channelsMap && user && identity && groupClaimName) {
 			const groupsFromSSO = identity[groupClaimName] || [];
 
-			for (const ssoGroup in channelsMap) {
+			for await (const ssoGroup of Object.keys(channelsMap)) {
 				if (typeof ssoGroup === 'string') {
 					let channels = channelsMap[ssoGroup];
 					if (!Array.isArray(channels)) {
 						channels = [channels];
 					}
-					for (const channel of channels) {
+					for await (const channel of channels) {
 						let room = Rooms.findOneByNonValidatedName(channel);
 						if (!room) {
-							room = createRoom('c', channel, channelsAdmin, [], false);
+							room = await createRoom('c', channel, channelsAdmin, [], false);
 							if (!room?.rid) {
 								logger.error(`could not create channel ${channel}`);
 								return;
 							}
 						}
 						if (Array.isArray(groupsFromSSO) && groupsFromSSO.includes(ssoGroup)) {
-							addUserToRoom(room._id, user);
+							await addUserToRoom(room._id, user);
 						}
 					}
 				}
@@ -43,37 +43,44 @@ export class OAuthEEManager {
 		}
 	}
 
-	static updateRolesFromSSO(user: Record<string, any>, identity: Record<string, any>, roleClaimName: string, rolesToSync: string[]): void {
+	static async updateRolesFromSSO(
+		user: Record<string, any>,
+		identity: Record<string, any>,
+		roleClaimName: string,
+		rolesToSync: string[],
+	): Promise<void> {
 		if (user && identity && roleClaimName) {
-			const rolesFromSSO = this.mapRolesFromSSO(identity, roleClaimName);
+			const rolesFromSSO = await this.mapRolesFromSSO(identity, roleClaimName);
 
 			if (!Array.isArray(user.roles)) {
 				user.roles = [];
 			}
 
-			const rolesIdsFromSSO = Promise.await(Roles.findInIdsOrNames(rolesFromSSO).toArray()).map((role) => role._id);
-			const allowedRoles = Promise.await(Roles.findInIdsOrNames(rolesToSync).toArray()).map((role) => role._id);
+			const rolesIdsFromSSO = (await Roles.findInIdsOrNames(rolesFromSSO).toArray()).map((role) => role._id);
+			const allowedRoles = (await Roles.findInIdsOrNames(rolesToSync).toArray()).map((role) => role._id);
 
-			Promise.await(
-				syncUserRoles(user._id, rolesIdsFromSSO, {
-					allowedRoles,
-				}),
-			);
+			await syncUserRoles(user._id, rolesIdsFromSSO, {
+				allowedRoles,
+			});
 		}
 	}
 
 	// Returns list of roles from SSO identity
-	static mapRolesFromSSO(identity: Record<string, any>, roleClaimName: string): string[] {
-		let roles: string[] = [];
-		if (identity && roleClaimName) {
-			// Adding roles
-			if (identity[roleClaimName] && Array.isArray(identity[roleClaimName])) {
-				roles = identity[roleClaimName].filter(
-					(val: string) => val !== 'offline_access' && val !== 'uma_authorization' && Promise.await(Roles.findOneByIdOrName(val)),
-				);
+	static async mapRolesFromSSO(identity: Record<string, any>, roleClaimName: string): Promise<string[]> {
+		if (!identity || !roleClaimName || !identity[roleClaimName] || !Array.isArray(identity[roleClaimName])) {
+			return [];
+		}
+
+		const baseRoles = identity[roleClaimName] as string[];
+
+		const filteredRoles = baseRoles.filter((val) => val !== 'offline_access' && val !== 'uma_authorization');
+		const validRoleList = [];
+		for await (const role of filteredRoles) {
+			if (await Roles.findOneByIdOrName(role)) {
+				validRoleList.push(role);
 			}
 		}
 
-		return roles;
+		return validRoleList;
 	}
 }

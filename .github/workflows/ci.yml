@@ -201,7 +201,7 @@ jobs:
 
   test-unit:
     name: 🔨 Test Unit
-    needs: [build, checks, release-versions]
+    needs: [checks, build, release-versions]
 
     uses: ./.github/workflows/ci-test-unit.yml
     with:
@@ -209,7 +209,7 @@ jobs:
 
   test-api:
     name: 🔨 Test API (CE)
-    needs: [build, checks, release-versions]
+    needs: [checks, build, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -229,7 +229,7 @@ jobs:
 
   test-ui:
     name: 🔨 Test UI (CE)
-    needs: [build, checks, release-versions]
+    needs: [checks, build, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -252,7 +252,7 @@ jobs:
 
   test-api-ee:
     name: 🔨 Test API (EE)
-    needs: [build, checks, release-versions]
+    needs: [checks, build, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -275,7 +275,7 @@ jobs:
 
   test-ui-ee:
     name: 🔨 Test UI (EE)
-    needs: [build, checks, release-versions]
+    needs: [checks, build, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -300,7 +300,7 @@ jobs:
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-20.04
-    needs: [test-unit, test-api, test-ui, test-api-ee, test-ui-ee]
+    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee]
 
     steps:
       - name: Test finish aggregation
@@ -453,6 +453,11 @@ jobs:
 
           echo "gh-image-name=${GH_IMAGE_NAME}" >> $GITHUB_OUTPUT
 
+          DOCKER_TAG_SHA="sha-${GITHUB_SHA:0:7}"
+
+          echo "DOCKER_TAG_SHA: ${DOCKER_TAG_SHA}"
+          echo "gh-docker-tag-sha=${DOCKER_TAG_SHA}" >> $GITHUB_OUTPUT
+
       - name: Pull Docker image
         run: docker pull ${{ steps.gh-docker.outputs.gh-image-name }}
 
@@ -470,12 +475,13 @@ jobs:
             DOCKER_TAG="${DOCKER_TAG}-${{ matrix.release }}"
           fi;
 
-          echo "IMAGE_NAME: $IMAGE_NAME"
-          echo "DOCKER_TAG: $DOCKER_TAG"
+          PUBLISHED_TAGS=()
 
           # tag and push the specific tag version
           docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$DOCKER_TAG
           docker push $IMAGE_NAME:$DOCKER_TAG
+
+          PUBLISHED_TAGS+=("$IMAGE_NAME:$DOCKER_TAG")
 
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             RELEASE="${{ needs.release-versions.outputs.release }}"
@@ -490,12 +496,37 @@ jobs:
               if [[ '${{ needs.release-versions.outputs.latest-release }}' == $GITHUB_REF_NAME ]]; then
                 docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$RELEASE
                 docker push $IMAGE_NAME:$RELEASE
+
+                PUBLISHED_TAGS+=("$IMAGE_NAME:$RELEASE")
               fi
             else
               docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$RELEASE
               docker push $IMAGE_NAME:$RELEASE
+
+              PUBLISHED_TAGS+=("$IMAGE_NAME:$RELEASE")
             fi
           fi
+
+          # commit hash
+          TAG_SHA="${{ steps.gh-docker.outputs.gh-docker-tag-sha }}"
+
+          # append the variant name to docker tag
+          if [[ '${{ matrix.release }}' = 'alpine' ]]; then
+            TAG_SHA="${TAG_SHA}-${{ matrix.release }}"
+          fi;
+
+          docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $IMAGE_NAME:$TAG_SHA
+          docker push $IMAGE_NAME:$TAG_SHA
+
+          PUBLISHED_TAGS+=("$IMAGE_NAME:$TAG_SHA")
+
+          echo "::group::Published tags"
+
+          for TAG in ${PUBLISHED_TAGS[@]}; do
+            echo $TAG
+          done
+
+          echo "::endgroup::"
 
   services-docker-image-publish:
     name: 🚀 Publish Docker Image (services)
@@ -529,6 +560,11 @@ jobs:
 
           echo "gh-image-name=${GH_IMAGE_NAME}" >> $GITHUB_OUTPUT
 
+          DOCKER_TAG_SHA="sha-${GITHUB_SHA:0:7}"
+
+          echo "DOCKER_TAG_SHA: ${DOCKER_TAG_SHA}"
+          echo "gh-docker-tag-sha=${DOCKER_TAG_SHA}" >> $GITHUB_OUTPUT
+
       - name: Pull Docker image
         run: docker pull ${{ steps.gh-docker.outputs.gh-image-name }}
 
@@ -539,24 +575,44 @@ jobs:
           # 'develop' or 'tag'
           DOCKER_TAG=$GITHUB_REF_NAME
 
-          echo "DH_IMAGE_NAME: $DH_IMAGE_NAME"
-          echo "DOCKER_TAG: $DOCKER_TAG"
+          PUBLISHED_TAGS=()
 
           # tag and push the specific tag version
           docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$DOCKER_TAG
           docker push $DH_IMAGE_NAME:$DOCKER_TAG
 
+          PUBLISHED_TAGS+=("$DH_IMAGE_NAME:$DOCKER_TAG")
+
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             RELEASE="${{ needs.release-versions.outputs.release }}"
-            echo "RELEASE: $RELEASE"
 
             if [[ $RELEASE == 'latest' ]]; then
               if [[ '${{ needs.release-versions.outputs.latest-release }}' == $GITHUB_REF_NAME ]]; then
                 docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$RELEASE
                 docker push $DH_IMAGE_NAME:$RELEASE
+
+                PUBLISHED_TAGS+=("$DH_IMAGE_NAME:$RELEASE")
               fi
             else
               docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$RELEASE
               docker push $DH_IMAGE_NAME:$RELEASE
+
+              PUBLISHED_TAGS+=("$DH_IMAGE_NAME:$RELEASE")
             fi
           fi
+
+          # commit hash
+          TAG_SHA="${{ steps.gh-docker.outputs.gh-docker-tag-sha }}"
+
+          docker tag ${{ steps.gh-docker.outputs.gh-image-name }} $DH_IMAGE_NAME:$TAG_SHA
+          docker push $DH_IMAGE_NAME:$TAG_SHA
+
+          PUBLISHED_TAGS+=("$DH_IMAGE_NAME:$TAG_SHA")
+
+          echo "::group::Published tags"
+
+          for TAG in ${PUBLISHED_TAGS[@]}; do
+            echo $TAG
+          done
+
+          echo "::endgroup::"

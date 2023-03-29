@@ -36,7 +36,7 @@ const CreateRoomList = ({ closeList }: CreateRoomListProps): ReactElement => {
 	return (
 		<>
 			<OptionTitle>{t('Create_new')}</OptionTitle>
-			<ul aria-description='createRoomList'>
+			<ul>
 				{canCreateChannel && (
 					<ListItem
 						role='listitem'

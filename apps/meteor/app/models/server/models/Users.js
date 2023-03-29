@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
 import _ from 'underscore';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { Subscriptions } from '@rocket.chat/models';
 
 import { Base } from './_Base';
-import Subscriptions from './Subscriptions';
 import { settings } from '../../../settings/server';
 import { trim } from '../../../../lib/utils/stringUtils';
 
@@ -32,6 +31,7 @@ const queryStatusAgentOnline = (extraFilters = {}) => ({
 		statusConnection: { $ne: 'away' },
 	}),
 });
+// The promise.await will die with the model :)
 export class Users extends Base {
 	constructor(...args) {
 		super(...args);
@@ -379,55 +379,6 @@ export class Users extends Base {
 		};
 	}
 
-	disable2FAAndSetTempSecretByUserId(userId, tempToken) {
-		return this.update(
-			{
-				_id: userId,
-			},
-			{
-				$set: {
-					'services.totp': {
-						enabled: false,
-						tempSecret: tempToken,
-					},
-				},
-			},
-		);
-	}
-
-	enable2FAAndSetSecretAndCodesByUserId(userId, secret, backupCodes) {
-		return this.update(
-			{
-				_id: userId,
-			},
-			{
-				$set: {
-					'services.totp.enabled': true,
-					'services.totp.secret': secret,
-					'services.totp.hashedBackup': backupCodes,
-				},
-				$unset: {
-					'services.totp.tempSecret': 1,
-				},
-			},
-		);
-	}
-
-	disable2FAByUserId(userId) {
-		return this.update(
-			{
-				_id: userId,
-			},
-			{
-				$set: {
-					'services.totp': {
-						enabled: false,
-					},
-				},
-			},
-		);
-	}
-
 	addRoomByUserId(_id, rid) {
 		return this.update(
 			{
@@ -500,19 +451,6 @@ export class Users extends Base {
 		);
 	}
 
-	update2FABackupCodesByUserId(userId, backupCodes) {
-		return this.update(
-			{
-				_id: userId,
-			},
-			{
-				$set: {
-					'services.totp.hashedBackup': backupCodes,
-				},
-			},
-		);
-	}
-
 	enableEmail2FAByUserId(userId) {
 		return this.update(
 			{
@@ -564,51 +502,6 @@ export class Users extends Base {
 			{
 				$unset: {
 					e2e: '',
-				},
-			},
-		);
-	}
-
-	removeExpiredEmailCodesOfUserId(userId) {
-		this.update(
-			{ _id: userId },
-			{
-				$pull: {
-					'services.emailCode': {
-						expire: { $lt: new Date() },
-					},
-				},
-			},
-		);
-	}
-
-	removeEmailCodeByUserIdAndCode(userId, code) {
-		this.update(
-			{ _id: userId },
-			{
-				$pull: {
-					'services.emailCode': {
-						code,
-					},
-				},
-			},
-		);
-	}
-
-	addEmailCodeByUserId(userId, code, expire) {
-		this.update(
-			{ _id: userId },
-			{
-				$push: {
-					'services.emailCode': {
-						$each: [
-							{
-								code,
-								expire,
-							},
-						],
-						$slice: -5,
-					},
 				},
 			},
 		);
@@ -717,7 +610,7 @@ export class Users extends Base {
 	findOneByIdAndLoginToken(_id, token, options) {
 		const query = {
 			_id,
-			'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(token),
+			'services.resume.loginTokens.hashedToken': token,
 		};
 
 		return this.findOne(query, options);
@@ -801,9 +694,7 @@ export class Users extends Base {
 	}
 
 	findByRoomId(rid, options) {
-		const data = Subscriptions.findByRoomId(rid)
-			.fetch()
-			.map((item) => item.u._id);
+		const data = Promise.await(Subscriptions.findByRoomId(rid).toArray()).map((item) => item.u._id);
 		const query = {
 			_id: {
 				$in: data,
@@ -1360,21 +1251,6 @@ export class Users extends Base {
 		}
 
 		return this.update(_id, update);
-	}
-
-	setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(_id, token, hash, until) {
-		return this.update(
-			{
-				_id,
-				'services.resume.loginTokens.hashedToken': token,
-			},
-			{
-				$set: {
-					'services.resume.loginTokens.$.twoFactorAuthorizedHash': hash,
-					'services.resume.loginTokens.$.twoFactorAuthorizedUntil': until,
-				},
-			},
-		);
 	}
 
 	setUtcOffset(_id, utcOffset) {

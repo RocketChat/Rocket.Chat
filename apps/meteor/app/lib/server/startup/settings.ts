@@ -5,11 +5,11 @@ import './email';
 import { MessageTypesValues } from '../../lib/MessageTypes';
 
 // Insert server unique id if it doesn't exist
-settingsRegistry.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
+void settingsRegistry.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
 	public: true,
 });
 
-settingsRegistry.add('Initial_Channel_Created', false, {
+void settingsRegistry.add('Initial_Channel_Created', false, {
 	type: 'boolean',
 	hidden: true,
 });
@@ -17,7 +17,7 @@ settingsRegistry.add('Initial_Channel_Created', false, {
 // When you define a setting and want to add a description, you don't need to automatically define the i18nDescription
 // if you add a node to the i18n.json with the same setting name but with `_Description` it will automatically work.
 
-settingsRegistry.addGroup('Accounts', function () {
+void settingsRegistry.addGroup('Accounts', function () {
 	this.add('Accounts_AllowAnonymousRead', false, {
 		type: 'boolean',
 		public: true,
@@ -660,7 +660,7 @@ settingsRegistry.addGroup('Accounts', function () {
 	});
 });
 
-settingsRegistry.addGroup('OAuth', function () {
+void settingsRegistry.addGroup('OAuth', function () {
 	this.section('Facebook', function () {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Facebook',
@@ -817,7 +817,7 @@ settingsRegistry.addGroup('OAuth', function () {
 	});
 });
 
-settingsRegistry.addGroup('General', function () {
+void settingsRegistry.addGroup('General', function () {
 	this.add('Show_Setup_Wizard', 'pending', {
 		type: 'select',
 		public: true,
@@ -1151,7 +1151,7 @@ settingsRegistry.addGroup('General', function () {
 	});
 });
 
-settingsRegistry.addGroup('Message', function () {
+void settingsRegistry.addGroup('Message', function () {
 	this.section('Message_Attachments', function () {
 		this.add('Message_Attachments_Thumbnails_Enabled', true, {
 			type: 'boolean',
@@ -1379,7 +1379,7 @@ settingsRegistry.addGroup('Message', function () {
 	});
 });
 
-settingsRegistry.addGroup('Meta', function () {
+void settingsRegistry.addGroup('Meta', function () {
 	this.add('Meta_language', '', {
 		type: 'string',
 	});
@@ -1405,7 +1405,7 @@ settingsRegistry.addGroup('Meta', function () {
 	});
 });
 
-settingsRegistry.addGroup('Mobile', function () {
+void settingsRegistry.addGroup('Mobile', function () {
 	this.add('Allow_Save_Media_to_Gallery', true, {
 		type: 'boolean',
 		public: true,
@@ -1436,7 +1436,7 @@ const pushEnabledWithoutGateway = [
 	},
 ];
 
-settingsRegistry.addGroup('Push', function () {
+void settingsRegistry.addGroup('Push', function () {
 	this.add('Push_enable', true, {
 		type: 'boolean',
 		public: true,
@@ -1556,7 +1556,7 @@ settingsRegistry.addGroup('Push', function () {
 	});
 });
 
-settingsRegistry.addGroup('Layout', function () {
+void settingsRegistry.addGroup('Layout', function () {
 	this.section('Login', function () {
 		this.add('Layout_Login_Hide_Logo', false, {
 			type: 'boolean',
@@ -1766,7 +1766,7 @@ settingsRegistry.addGroup('Layout', function () {
 	});
 });
 
-settingsRegistry.addGroup('Logs', function () {
+void settingsRegistry.addGroup('Logs', function () {
 	this.add('Log_Level', '0', {
 		type: 'select',
 		values: [
@@ -1841,7 +1841,7 @@ settingsRegistry.addGroup('Logs', function () {
 	});
 });
 
-settingsRegistry.addGroup('Setup_Wizard', function () {
+void settingsRegistry.addGroup('Setup_Wizard', function () {
 	this.section('Organization_Info', function () {
 		this.add('Organization_Type', '', {
 			type: 'select',
@@ -3190,7 +3190,7 @@ settingsRegistry.addGroup('Setup_Wizard', function () {
 	});
 });
 
-settingsRegistry.addGroup('Rate Limiter', function () {
+void settingsRegistry.addGroup('Rate Limiter', function () {
 	this.section('DDP_Rate_Limiter', function () {
 		this.add('DDP_Rate_Limit_IP_Enabled', true, { type: 'boolean' });
 		this.add('DDP_Rate_Limit_IP_Requests_Allowed', 120000, {
@@ -3267,7 +3267,7 @@ settingsRegistry.addGroup('Rate Limiter', function () {
 	});
 });
 
-settingsRegistry.addGroup('Troubleshoot', function () {
+void settingsRegistry.addGroup('Troubleshoot', function () {
 	this.add('Troubleshoot_Disable_Notifications', false, {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Notifications_Alert',
@@ -3312,7 +3312,7 @@ settingsRegistry.addGroup('Troubleshoot', function () {
 	});
 });
 
-settingsRegistry.addGroup('Call_Center', function () {
+void settingsRegistry.addGroup('Call_Center', function () {
 	// TODO: Check with the backend team if an i18nPlaceholder is possible
 	this.with({ tab: 'Settings' }, function () {
 		this.section('General_Settings', function () {

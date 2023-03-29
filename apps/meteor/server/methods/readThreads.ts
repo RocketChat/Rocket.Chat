@@ -5,7 +5,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { settings } from '../../app/settings/server';
 import { Messages, Rooms } from '../../app/models/server';
-import { canAccessRoom } from '../../app/authorization/server';
+import { canAccessRoomAsync } from '../../app/authorization/server';
 import { readThread } from '../../app/threads/server/functions';
 import { callbacks } from '../../lib/callbacks';
 
@@ -17,7 +17,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	readThreads(tmid) {
+	async readThreads(tmid) {
 		check(tmid, String);
 
 		if (!Meteor.userId() || !settings.get('Threads_enabled')) {
@@ -31,16 +31,16 @@ Meteor.methods<ServerMethods>({
 			return;
 		}
 
-		const user = Meteor.user() ?? undefined;
+		const user = (await Meteor.userAsync()) ?? undefined;
 
 		const room = Rooms.findOneById(thread.rid);
 
-		if (!canAccessRoom(room, user)) {
+		if (!(await canAccessRoomAsync(room, user))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getThreadMessages' });
 		}
 
 		callbacks.run('beforeReadMessages', thread.rid, user?._id);
-		readThread({ userId: user?._id, rid: thread.rid, tmid });
+		await readThread({ userId: user?._id, rid: thread.rid, tmid });
 		if (user?._id) {
 			callbacks.runAsync('afterReadMessages', room._id, { uid: user._id, tmid });
 		}

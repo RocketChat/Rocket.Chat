@@ -41,7 +41,7 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 		}
 		// Init from constructor if we already have
 		// voip enabled by default while starting the server
-		this.init();
+		void this.init();
 	}
 
 	async init(): Promise<void> {
@@ -54,7 +54,7 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 		try {
 			await this.commandHandler.initConnection(CommandType.AMI);
 			this.active = true;
-			api.broadcast('connector.statuschanged', true);
+			void api.broadcast('connector.statuschanged', true);
 			this.logger.info('VoIP service started');
 		} catch (err) {
 			this.logger.error({ msg: 'Error initializing VOIP service', err });
@@ -71,7 +71,7 @@ export class VoipService extends ServiceClassInternal implements IVoipService {
 		try {
 			this.commandHandler.stop();
 			this.active = false;
-			api.broadcast('connector.statuschanged', false);
+			void api.broadcast('connector.statuschanged', false);
 			this.logger.info('VoIP service stopped');
 		} catch (err) {
 			this.logger.error({ msg: 'Error stopping VoIP service', err });

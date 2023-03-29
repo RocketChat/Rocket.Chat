@@ -24,7 +24,7 @@ const GroupingList = function GroupingList(): ReactElement {
 	return (
 		<>
 			<OptionTitle>{t('Group_by')}</OptionTitle>
-			<ul aria-description='groupByList'>
+			<ul>
 				<ListItem
 					is='label'
 					role='listitem'
