@@ -87,7 +87,7 @@ export const addUserToRoom = async function (
 			if (room.teamMain) {
 				Messages.createUserAddedToTeamWithRoomIdAndUser(rid, userToBeAdded, extraData);
 			} else {
-				Messages.createUserAddedWithRoomIdAndUser(rid, userToBeAdded, extraData);
+				await Message.saveSystemMessage('au', rid, userToBeAdded.username, userToBeAdded, extraData);
 			}
 		} else if (room.prid) {
 			await Message.saveSystemMessage('ut', rid, userToBeAdded.username, userToBeAdded, { ts: now });

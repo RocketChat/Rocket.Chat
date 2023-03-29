@@ -953,7 +953,7 @@ export default class SlackAdapter {
 		if (slackMessage.inviter) {
 			const inviter = slackMessage.inviter ? this.rocket.findUser(slackMessage.inviter) || this.rocket.addUser(slackMessage.inviter) : null;
 			if (isImporting) {
-				Messages.createUserAddedWithRoomIdAndUser(rocketChannel._id, rocketUser, {
+				await Message.saveSystemMessage('au', rocketChannel._id, rocketUser.username, rocketUser, {
 					ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
 					u: {
 						_id: inviter._id,
