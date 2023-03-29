@@ -6,8 +6,8 @@ import { Team } from '@rocket.chat/core-services';
 import type { Filter } from 'mongodb';
 
 import { Users as UsersSync } from '../../../models/server';
-import { hasAtLeastOnePermission, canAccessRoomAsync, hasAllPermission, roomAccessAttributes } from '../../../authorization/server';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasAtLeastOnePermission, canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
+import { hasPermissionAsync, hasAllPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
@@ -1211,7 +1211,7 @@ API.v1.addRoute(
 				return API.v1.failure('Private group not found');
 			}
 
-			if (!(await hasAllPermission(this.userId, ['create-team', 'edit-room'], room.rid))) {
+			if (!(await hasAllPermissionAsync(this.userId, ['create-team', 'edit-room'], room.rid))) {
 				return API.v1.unauthorized();
 			}
 
