@@ -1685,6 +1685,7 @@
   "Markdown_Marked_SmartLists": "Enable Marked Smart Lists",
   "Duplicate_private_group_name": "A Private Group with name '%s' exists",
   "Markdown_Marked_Smartypants": "Enable Marked Smartypants",
+  "Duplicate_messages": "Duplicate Messages",
   "Duplicate_messages_warning": "Following may contain same messages sent by user in multiple rooms.",
   "Duplicated_Email_address_will_be_ignored": "Duplicated email address will be ignored.",
   "Markdown_Marked_Tables": "Enable Marked Tables",
