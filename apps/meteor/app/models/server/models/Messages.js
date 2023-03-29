@@ -50,19 +50,6 @@ export class Messages extends Base {
 		return this.find(query, options);
 	}
 
-	setSlackBotIdAndSlackTs(_id, slackBotId, slackTs) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				slackBotId,
-				slackTs,
-			},
-		};
-
-		return this.update(query, update);
-	}
-
 	// INSERT
 	/**
 	 * @returns {Pick<IMessage, '_id' | 't' | 'rid' | 'ts' | 'msg' | 'u' | 'groupable' | 'unread'>}

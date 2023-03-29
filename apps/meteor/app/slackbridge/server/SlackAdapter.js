@@ -744,7 +744,7 @@ export default class SlackAdapter {
 				postResult.data.message.ts
 			) {
 				this.slackBotId = postResult.data.message.bot_id;
-				Messages.setSlackBotIdAndSlackTs(rocketMessage._id, postResult.data.message.bot_id, postResult.data.message.ts);
+				Promise.await(MessagesRaw.setSlackBotIdAndSlackTs(rocketMessage._id, postResult.data.message.bot_id, postResult.data.message.ts));
 				slackLogger.debug(
 					`RocketMsgID=${rocketMessage._id} SlackMsgID=${postResult.data.message.ts} SlackBotID=${postResult.data.message.bot_id}`,
 				);
