@@ -5244,7 +5244,7 @@
   "Verified": "Verified",
   "Verify": "Verify",
   "Verify_your_email": "Verify your email",
-  "Verify_your_email_for_the_code_we_sent": "Verify your email for the code we sent",
+  "Verify_your_email_with_the_code_we_sent": "Verify your email with the code we sent",
   "Version": "Version",
   "Version_version": "Version __version__",
   "App_Request_Admin_Message": "Hi __admin_name__, __user_name__ submitted a request to install __app_name__ app on this workspace. \n \n This is the message they included: \n>__message__ \n \n To learn more and install the __app_name__ app, [click here](__learn_more__).",
