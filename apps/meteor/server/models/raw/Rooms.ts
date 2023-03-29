@@ -98,7 +98,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	findOneByRoomIdAndUserId(rid: IRoom['_id'], uid: IUser['_id'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
-		const query = {
+		const query: Filter<IRoom> = {
 			'_id': rid,
 			'u._id': uid,
 		};
@@ -107,7 +107,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	findManyByRoomIds(roomIds: Array<IRoom['_id']>, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
-		const query = {
+		const query: Filter<IRoom> = {
 			_id: {
 				$in: roomIds,
 			},
@@ -163,7 +163,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	): FindPaginated<FindCursor<IRoom>> {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
-		const onlyTeamsQuery = showOnlyTeams ? { teamMain: { $exists: true } } : {};
+		const onlyTeamsQuery: Filter<IRoom> = showOnlyTeams ? { teamMain: { $exists: true } } : {};
 
 		const teamCondition = teams
 			? {}
@@ -288,7 +288,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	findByTeamIdAndRoomsId(teamId: ITeam['_id'], rids: Array<IRoom['_id']>, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
-		const query = {
+		const query: Filter<IRoom> = {
 			teamId,
 			_id: {
 				$in: rids,
@@ -888,8 +888,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find<IRoomFederated>(query, options);
 	}
 
-	findCountOfRoomsWithActiveCalls() {
-		const query = {
+	findCountOfRoomsWithActiveCalls(): Promise<number> {
+		const query: Filter<IRoom> = {
 			// No matter the actual "status" of the call, if the room has a callStatus, it means there is/was a call
 			callStatus: { $exists: true },
 		};
@@ -897,10 +897,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.col.countDocuments(query);
 	}
 
-	incMsgCountById(_id, inc = 1) {
-		const query = { _id };
+	incMsgCountById(_id: IRoom['_id'], inc = 1): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$inc: {
 				msgs: inc,
 			},
@@ -909,12 +909,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	decreaseMessageCountById(_id, count = 1) {
+	decreaseMessageCountById(_id: IRoom['_id'], count = 1) {
 		return this.incMsgCountById(_id, -count);
 	}
 
-	findOneByIdOrName(_idOrName, options) {
-		const query = {
+	findOneByIdOrName(_idOrName: IRoom['_id'] | IRoom['name'], options: FindOptions<IRoom> = {}) {
+		const query: Filter<IRoom> = {
 			$or: [
 				{
 					_id: _idOrName,
@@ -928,12 +928,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne(query, options);
 	}
 
-	setCallStatus(_id, status) {
-		const query = {
+	setCallStatus(_id: IRoom['_id'], status): Promise<UpdateResult> {
+		const query: Filter<IRoom> = {
 			_id,
 		};
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				callStatus: status,
 			},
@@ -942,12 +942,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	setCallStatusAndCallStartTime(_id, status) {
-		const query = {
+	setCallStatusAndCallStartTime(_id: IRoom['_id'], status): Promise<UpdateResult> {
+		const query: Filter<IRoom> = {
 			_id,
 		};
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				callStatus: status,
 				webRtcCallStartTime: new Date(),
@@ -957,22 +957,22 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	setReactionsInLastMessage(roomId, lastMessage) {
+	setReactionsInLastMessage(roomId: IRoom['_id'], lastMessage): Promise<UpdateResult> {
 		return this.updateOne({ _id: roomId }, { $set: { 'lastMessage.reactions': lastMessage.reactions } });
 	}
 
-	unsetReactionsInLastMessage(roomId) {
+	unsetReactionsInLastMessage(roomId: IRoom['_id']): Promise<UpdateResult> {
 		return this.updateOne({ _id: roomId }, { $unset: { lastMessage: { reactions: 1 } } });
 	}
 
 	unsetAllImportIds() {
-		const query = {
+		const query: Filter<IRoom> = {
 			importIds: {
 				$exists: true,
 			},
 		};
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$unset: {
 				importIds: 1,
 			},
@@ -981,18 +981,18 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateMany(query, update);
 	}
 
-	updateLastMessageStar(roomId, userId, starred) {
+	updateLastMessageStar(roomId: IRoom['_id'], userId, starred): Promise<UpdateResult> {
 		let update;
-		const query = { _id: roomId };
+		const query: Filter<IRoom> = { _id: roomId };
 
 		if (starred) {
-			update = {
+			update: UpdateFilter<IRoom> = {
 				$addToSet: {
 					'lastMessage.starred': { _id: userId },
 				},
 			};
 		} else {
-			update = {
+			update: UpdateFilter<IRoom> = {
 				$pull: {
 					'lastMessage.starred': { _id: userId },
 				},
@@ -1002,10 +1002,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	setLastMessagePinned(roomId, pinnedBy, pinned, pinnedAt) {
-		const query = { _id: roomId };
+	setLastMessagePinned(roomId: IRoom['_id'], pinnedBy, pinned, pinnedAt): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id: roomId };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				'lastMessage.pinned': pinned,
 				'lastMessage.pinnedAt': pinnedAt || new Date(),
@@ -1016,7 +1016,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	setLastMessageAsRead(roomId) {
+	setLastMessageAsRead(roomId: IRoom['_id']): Promise<UpdateResult> {
 		return this.updateOne(
 			{
 				_id: roomId,
@@ -1029,15 +1029,15 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
-	setSentiment(roomId, sentiment) {
+	setSentiment(roomId: IRoom['_id'], sentiment): Promise<UpdateResult> {
 		return this.updateOne({ _id: roomId }, { $set: { sentiment } });
 	}
 
-	setDescriptionById(_id, description) {
-		const query = {
+	setDescriptionById(_id: IRoom['_id'], description): Promise<UpdateResult> {
+		const query: Filter<IRoom> = {
 			_id,
 		};
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				description,
 			},
@@ -1045,8 +1045,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	setStreamingOptionsById(_id, streamingOptions) {
-		const update = {
+	setStreamingOptionsById(_id: IRoom['_id'], streamingOptions): Promise<UpdateResult> {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				streamingOptions,
 			},
@@ -1054,11 +1054,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne({ _id }, update);
 	}
 
-	setReadOnlyById(_id, readOnly) {
-		const query = {
+	setReadOnlyById(_id: IRoom['_id'], readOnly): Promise<UpdateResult> {
+		const query: Filter<IRoom> = {
 			_id,
 		};
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				ro: readOnly,
 			},
@@ -1067,8 +1067,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	setDmReadOnlyByUserId(_id, ids, readOnly, reactWhenReadOnly) {
-		const query = {
+	setDmReadOnlyByUserId(_id: IRoom['_id'], ids, readOnly, reactWhenReadOnly) {
+		const query: Filter<IRoom> = {
 			uids: {
 				$size: 2,
 				$in: [_id],
@@ -1077,7 +1077,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			t: 'd',
 		};
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				ro: readOnly,
 				reactWhenReadOnly,
@@ -1087,16 +1087,16 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateMany(query, update);
 	}
 
-	getDirectConversationsByUserId(_id, options) {
+	getDirectConversationsByUserId(_id: IRoom['_id'], options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		return this.find({ t: 'd', uids: { $size: 2, $in: [_id] } }, options);
 	}
 
 	// 2
-	setAllowReactingWhenReadOnlyById(_id, allowReacting) {
-		const query = {
+	setAllowReactingWhenReadOnlyById(_id: IRoom['_id'], allowReacting): Promise<UpdateResult> {
+		const query: Filter<IRoom> = {
 			_id,
 		};
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				reactWhenReadOnly: allowReacting,
 			},
@@ -1104,8 +1104,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	setAvatarData(_id, origin, etag) {
-		const update = {
+	setAvatarData(_id: IRoom['_id'], origin, etag): Promise<UpdateResult> {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				avatarOrigin: origin,
 				avatarETag: etag,
@@ -1115,8 +1115,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne({ _id }, update);
 	}
 
-	unsetAvatarData(_id) {
-		const update = {
+	unsetAvatarData(_id: IRoom['_id']): Promise<UpdateResult> {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				avatarETag: Date.now(),
 			},
@@ -1128,11 +1128,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne({ _id }, update);
 	}
 
-	setSystemMessagesById(_id, systemMessages) {
-		const query = {
+	setSystemMessagesById(_id: IRoom['_id'], systemMessages): Promise<UpdateResult> {
+		const query: Filter<IRoom> = {
 			_id,
 		};
-		const update =
+		const update: UpdateFilter<IRoom> =
 			systemMessages && systemMessages.length > 0
 				? {
 						$set: {
@@ -1148,12 +1148,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	setE2eKeyId(_id, e2eKeyId, options) {
-		const query = {
+	setE2eKeyId(_id: IRoom['_id'], e2eKeyId, options: UpdateOptions = {}): Promise<UpdateResult> {
+		const query: Filter<IRoom> = {
 			_id,
 		};
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				e2eKeyId,
 			},
@@ -1162,14 +1162,14 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update, options);
 	}
 
-	findOneByImportId(_id, options) {
-		const query = { importIds: _id };
+	findOneByImportId(_id: IRoom['_id'], options: FindOptions<IRoom> = {}) {
+		const query: Filter<IRoom> = { importIds: _id };
 
 		return this.findOne(query, options);
 	}
 
-	findOneByNameAndNotId(name, rid) {
-		const query = {
+	findOneByNameAndNotId(name, rid: IRoom['_id']) {
+		const query: Filter<IRoom> = {
 			_id: { $ne: rid },
 			name,
 		};
@@ -1177,14 +1177,14 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne(query);
 	}
 
-	findOneByDisplayName(fname, options) {
-		const query = { fname };
+	findOneByDisplayName(fname, options: FindOptions<IRoom> = {}) {
+		const query: Filter<IRoom> = { fname };
 
 		return this.findOne(query, options);
 	}
 
-	findOneByNameAndType(name, type, options, includeFederatedRooms = false) {
-		const query = {
+	findOneByNameAndType(name, type, options: FindOptions<IRoom> = {}, includeFederatedRooms = false) {
+		const query: Filter<IRoom> = {
 			t: type,
 			teamId: {
 				$exists: false,
@@ -1199,22 +1199,22 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	// FIND
 
-	findById(roomId, options) {
+	findById(roomId: IRoom['_id'], options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		return this.find({ _id: roomId }, options);
 	}
 
-	findByIds(roomIds, options) {
+	findByIds(roomIds: Array<IRoom['_id']>, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		return this.find({ _id: { $in: [].concat(roomIds) } }, options);
 	}
 
-	findByType(type, options) {
-		const query = { t: type };
+	findByType(type, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
+		const query: Filter<IRoom> = { t: type };
 
 		return this.find(query, options);
 	}
 
-	findByTypeInIds(type, ids, options) {
-		const query = {
+	findByTypeInIds(type, ids: Array<IRoom['_id']>, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
+		const query: Filter<IRoom> = {
 			_id: {
 				$in: ids,
 			},
@@ -1224,16 +1224,16 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(query, options);
 	}
 
-	findByUserId(userId, options) {
-		const query = { 'u._id': userId };
+	findByUserId(userId, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
+		const query: Filter<IRoom> = { 'u._id': userId };
 
 		return this.find(query, options);
 	}
 
-	async findBySubscriptionUserId(userId, options) {
+	async findBySubscriptionUserId(userId, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		const data = (await Subscriptions.cachedFindByUserId(userId, { projection: { rid: 1 } }).toArray()).map((item) => item.rid);
 
-		const query = {
+		const query: Filter<IRoom> = {
 			_id: {
 				$in: data,
 			},
@@ -1257,10 +1257,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(query, options);
 	}
 
-	async findBySubscriptionUserIdUpdatedAfter(userId, _updatedAt, options) {
+	async findBySubscriptionUserIdUpdatedAfter(userId, _updatedAt, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		const ids = (await Subscriptions.findByUserId(userId, { projection: { rid: 1 } }).toArray()).map((item) => item.rid);
 
-		const query = {
+		const query: Filter<IRoom> = {
 			_id: {
 				$in: ids,
 			},
@@ -1287,8 +1287,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(query, options);
 	}
 
-	findByNameAndType(name, type, options) {
-		const query = {
+	findByNameAndType(name, type, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
+		const query: Filter<IRoom> = {
 			t: type,
 			name,
 		};
@@ -1297,8 +1297,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(query, options);
 	}
 
-	findByNameOrFNameAndType(name, type, options) {
-		const query = {
+	findByNameOrFNameAndType(name, type, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
+		const query: Filter<IRoom> = {
 			t: type,
 			teamId: {
 				$exists: false,
@@ -1317,8 +1317,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(query, options);
 	}
 
-	findByNameAndTypeNotDefault(name, type, options, includeFederatedRooms = false) {
-		const query = {
+	findByNameAndTypeNotDefault(name, type, options, includeFederatedRooms = false): FindCursor<IRoom> {
+		const query: Filter<IRoom> = {
 			t: type,
 			default: {
 				$ne: true,
@@ -1343,8 +1343,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	// 3
-	findByNameAndTypesNotInIds(name, types, ids, options, includeFederatedRooms = false) {
-		const query = {
+	findByNameAndTypesNotInIds(name, types, ids: Array<IRoom['_id']>, options: FindOptions<IRoom> = {}, includeFederatedRooms = false): FindCursor<IRoom> {
+		const query: Filter<IRoom> = {
 			_id: {
 				$nin: ids,
 			},
@@ -1383,8 +1383,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(query, options);
 	}
 
-	findByDefaultAndTypes(defaultValue, types, options) {
-		const query = {
+	findByDefaultAndTypes(defaultValue, types, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
+		const query: Filter<IRoom> = {
 			default: defaultValue,
 			t: {
 				$in: types,
@@ -1394,8 +1394,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(query, options);
 	}
 
-	findDirectRoomContainingAllUsernames(usernames, options) {
-		const query = {
+	findDirectRoomContainingAllUsernames(usernames, options: FindOptions<IRoom> = {}) {
+		const query: Filter<IRoom> = {
 			t: 'd',
 			usernames: { $size: usernames.length, $all: usernames },
 			usersCount: usernames.length,
@@ -1404,8 +1404,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne(query, options);
 	}
 
-	findByTypeAndName(type, name, options) {
-		const query = {
+	findByTypeAndName(type, name, options: FindOptions<IRoom> = {}) {
+		const query: Filter<IRoom> = {
 			name,
 			t: type,
 		};
@@ -1413,8 +1413,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne(query, options);
 	}
 
-	findByTypeAndNameOrId(type, identifier, options) {
-		const query = {
+	findByTypeAndNameOrId(type, identifier, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
+		const query: Filter<IRoom> = {
 			t: type,
 			$or: [{ name: identifier }, { _id: identifier }],
 		};
@@ -1422,10 +1422,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne(query, options);
 	}
 
-	findByTypeAndNameContaining(type, name, options) {
+	findByTypeAndNameContaining(type, name, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
-		const query = {
+		const query: Filter<IRoom> = {
 			name: nameRegex,
 			t: type,
 		};
@@ -1433,10 +1433,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(query, options);
 	}
 
-	findByTypeInIdsAndNameContaining(type, ids, name, options) {
+	findByTypeInIdsAndNameContaining(type, ids: Array<IRoom['_id']>, name, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
-		const query = {
+		const query: Filter<IRoom> = {
 			_id: {
 				$in: ids,
 			},
@@ -1447,8 +1447,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(query, options);
 	}
 
-	findByTypeAndArchivationState(type, archivationstate, options) {
-		const query = { t: type };
+	findByTypeAndArchivationState(type, archivationstate, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
+		const query: Filter<IRoom> = { t: type };
 
 		if (archivationstate) {
 			query.archived = true;
@@ -1459,7 +1459,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(query, options);
 	}
 
-	findGroupDMsByUids(uids, options) {
+	findGroupDMsByUids(uids: IRoom['uids'], options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		return this.find(
 			{
 				usersCount: { $gt: 2 },
@@ -1469,7 +1469,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
-	find1On1ByUserId(userId, options) {
+	find1On1ByUserId(userId, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		return this.find(
 			{
 				uids: userId,
@@ -1479,16 +1479,16 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
-	findByCreatedOTR() {
+	findByCreatedOTR(): FindCursor<IRoom> {
 		return this.find({ createdOTR: true });
 	}
 
 	// UPDATE
-	addImportIds(_id, importIds) {
+	addImportIds(_id: IRoom['_id'], importIds): Promise<UpdateResult> {
 		importIds = [].concat(importIds);
-		const query = { _id };
+		const query: Filter<IRoom> = { _id };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$addToSet: {
 				importIds: {
 					$each: importIds,
@@ -1499,10 +1499,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	archiveById(_id) {
-		const query = { _id };
+	archiveById(_id: IRoom['_id']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				archived: true,
 			},
@@ -1511,10 +1511,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	unarchiveById(_id) {
-		const query = { _id };
+	unarchiveById(_id: IRoom['_id']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				archived: false,
 			},
@@ -1523,10 +1523,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	setNameById(_id, name, fname) {
-		const query = { _id };
+	setNameById(_id: IRoom['_id'], name, fname): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				name,
 				fname,
@@ -1536,13 +1536,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	incMsgCountAndSetLastMessageById(_id, inc, lastMessageTimestamp, lastMessage) {
+	incMsgCountAndSetLastMessageById(_id: IRoom['_id'], inc, lastMessageTimestamp, lastMessage): : Promise<UpdateResult> {
 		if (inc == null) {
 			inc = 1;
 		}
-		const query = { _id };
+		const query: Filter<IRoom> = { _id };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				lm: lastMessageTimestamp,
 			},
@@ -1558,10 +1558,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	incUsersCountById(_id, inc = 1) {
-		const query = { _id };
+	incUsersCountById(_id: IRoom['_id'], inc = 1): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$inc: {
 				usersCount: inc,
 			},
@@ -1571,15 +1571,15 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	// 4
-	incUsersCountNotDMsByIds(ids, inc = 1) {
-		const query = {
+	incUsersCountNotDMsByIds(ids: Array<IRoom['_id']>, inc = 1) {
+		const query: Filter<IRoom> = {
 			_id: {
 				$in: ids,
 			},
 			t: { $ne: 'd' },
 		};
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$inc: {
 				usersCount: inc,
 			},
@@ -1588,10 +1588,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateMany(query, update);
 	}
 
-	setLastMessageById(_id, lastMessage) {
-		const query = { _id };
+	setLastMessageById(_id: IRoom['_id'], lastMessage): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				lastMessage,
 			},
@@ -1600,10 +1600,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	async resetLastMessageById(_id, lastMessage = undefined) {
-		const query = { _id };
+	async resetLastMessageById(_id: IRoom['_id'], lastMessage = undefined): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
 
-		const update = lastMessage
+		const update: UpdateFilter<IRoom> = lastMessage
 			? {
 					$set: {
 						lastMessage,
@@ -1619,9 +1619,9 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	replaceUsername(previousUsername, username) {
-		const query = { usernames: previousUsername };
+		const query: Filter<IRoom> = { usernames: previousUsername };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				'usernames.$': username,
 			},
@@ -1631,9 +1631,9 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	replaceMutedUsername(previousUsername, username) {
-		const query = { muted: previousUsername };
+		const query: Filter<IRoom> = { muted: previousUsername };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				'muted.$': username,
 			},
@@ -1643,9 +1643,9 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	replaceUsernameOfUserByUserId(userId, username) {
-		const query = { 'u._id': userId };
+		const query: Filter<IRoom> = { 'u._id': userId };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				'u.username': username,
 			},
@@ -1654,19 +1654,19 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateMany(query, update);
 	}
 
-	setJoinCodeById(_id, joinCode) {
+	setJoinCodeById(_id: IRoom['_id'], joinCode): Promise<UpdateResult> {
 		let update;
-		const query = { _id };
+		const query: Filter<IRoom> = { _id };
 
 		if ((joinCode != null ? joinCode.trim() : undefined) !== '') {
-			update = {
+			update: UpdateFilter<IRoom> = {
 				$set: {
 					joinCodeRequired: true,
 					joinCode,
 				},
 			};
 		} else {
-			update = {
+			update: UpdateFilter<IRoom> = {
 				$set: {
 					joinCodeRequired: false,
 				},
@@ -1679,10 +1679,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	setUserById(_id, user) {
-		const query = { _id };
+	setUserById(_id: IRoom['_id'], user): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				u: {
 					_id: user._id,
@@ -1694,9 +1694,9 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	setTypeById(_id, type) {
-		const query = { _id };
-		const update = {
+	setTypeById(_id: IRoom['_id'], type): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				t: type,
 			},
@@ -1708,10 +1708,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	setTopicById(_id, topic) {
-		const query = { _id };
+	setTopicById(_id: IRoom['_id'], topic): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				topic,
 			},
@@ -1720,10 +1720,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	setAnnouncementById(_id, announcement, announcementDetails) {
-		const query = { _id };
+	setAnnouncementById(_id: IRoom['_id'], announcement, announcementDetails): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				announcement,
 				announcementDetails,
@@ -1733,10 +1733,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	setCustomFieldsById(_id, customFields) {
-		const query = { _id };
+	setCustomFieldsById(_id: IRoom['_id'], customFields): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				customFields,
 			},
@@ -1745,10 +1745,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	muteUsernameByRoomId(_id, username) {
-		const query = { _id };
+	muteUsernameByRoomId(_id: IRoom['_id'], username): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$addToSet: {
 				muted: username,
 			},
@@ -1760,10 +1760,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	unmuteUsernameByRoomId(_id, username) {
-		const query = { _id };
+	unmuteUsernameByRoomId(_id: IRoom['_id'], username): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$pull: {
 				muted: username,
 			},
@@ -1775,11 +1775,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	saveFeaturedById(_id, featured) {
-		const query = { _id };
+	saveFeaturedById(_id: IRoom['_id'], featured): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
 		const set = ['true', true].includes(featured);
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			[set ? '$set' : '$unset']: {
 				featured: true,
 			},
@@ -1788,10 +1788,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	saveDefaultById(_id, defaultValue) {
-		const query = { _id };
+	saveDefaultById(_id: IRoom['_id'], defaultValue): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				default: defaultValue,
 			},
@@ -1800,10 +1800,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	saveFavoriteById(_id, favorite, defaultValue) {
-		const query = { _id };
+	saveFavoriteById(_id: IRoom['_id'], favorite, defaultValue): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			...(favorite && defaultValue && { $set: { favorite } }),
 			...((!favorite || !defaultValue) && { $unset: { favorite: 1 } }),
 		};
@@ -1811,10 +1811,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	saveRetentionEnabledById(_id, value) {
-		const query = { _id };
+	saveRetentionEnabledById(_id: IRoom['_id'], value): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
 
-		const update = {};
+		const update: UpdateFilter<IRoom> = {};
 
 		if (value == null) {
 			update.$unset = { 'retention.enabled': true };
@@ -1825,15 +1825,15 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	saveRetentionMaxAgeById(_id, value) {
-		const query = { _id };
+	saveRetentionMaxAgeById(_id: IRoom['_id'], value): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
 
 		value = Number(value);
 		if (!value) {
 			value = 30;
 		}
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				'retention.maxAge': value,
 			},
@@ -1842,10 +1842,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	saveRetentionExcludePinnedById(_id, value) {
-		const query = { _id };
+	saveRetentionExcludePinnedById(_id: IRoom['_id'], value): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				'retention.excludePinned': value === true,
 			},
@@ -1855,10 +1855,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	// 5
-	saveRetentionIgnoreThreadsById(_id, value) {
-		const query = { _id };
+	saveRetentionIgnoreThreadsById(_id: IRoom['_id'], value): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			[value === true ? '$set' : '$unset']: {
 				'retention.ignoreThreads': true,
 			},
@@ -1867,10 +1867,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	saveRetentionFilesOnlyById(_id, value) {
-		const query = { _id };
+	saveRetentionFilesOnlyById(_id: IRoom['_id'], value): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				'retention.filesOnly': value === true,
 			},
@@ -1879,10 +1879,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	saveRetentionOverrideGlobalById(_id, value) {
-		const query = { _id };
+	saveRetentionOverrideGlobalById(_id: IRoom['_id'], value): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				'retention.overrideGlobal': value === true,
 			},
@@ -1891,10 +1891,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	saveEncryptedById(_id, value) {
-		const query = { _id };
+	saveEncryptedById(_id: IRoom['_id'], value): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				encrypted: value === true,
 			},
@@ -1904,13 +1904,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	updateGroupDMsRemovingUsernamesByUsername(username, userId) {
-		const query = {
+		const query: Filter<IRoom> = {
 			t: 'd',
 			usernames: username,
 			usersCount: { $gt: 2 },
 		};
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$pull: {
 				usernames: username,
 				uids: userId,
@@ -1941,7 +1941,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return room;
 	}
 
-	async createWithIdTypeAndName(_id, type, name, extraData) {
+	async createWithIdTypeAndName(_id: IRoom['_id'], type, name, extraData) {
 		const room = {
 			_id,
 			ts: new Date(),
@@ -1966,18 +1966,18 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	// REMOVE
-	removeById(_id) {
-		const query = { _id };
+	removeById(_id: IRoom['_id']) {
+		const query: Filter<IRoom> = { _id };
 
 		return this.deleteOne(query);
 	}
 
-	removeByIds(ids) {
+	removeByIds(ids: Array<IRoom['_id']>) {
 		return this.deleteMany({ _id: { $in: ids } });
 	}
 
 	removeDirectRoomContainingUsername(username) {
-		const query = {
+		const query: Filter<IRoom> = {
 			t: 'd',
 			usernames: username,
 			usersCount: { $lte: 2 },
@@ -1988,10 +1988,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	// ############################
 	// Discussion
-	findDiscussionParentByNameStarting(name, options) {
+	findDiscussionParentByNameStarting(name, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
 
-		const query = {
+		const query: Filter<IRoom> = {
 			t: {
 				$in: ['c'],
 			},
@@ -2005,10 +2005,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(query, options);
 	}
 
-	setLinkMessageById(_id, linkMessageId) {
-		const query = { _id };
+	setLinkMessageById(_id: IRoom['_id'], linkMessageId): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				linkMessageId,
 			},
@@ -2017,14 +2017,14 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
-	countDiscussions() {
+	countDiscussions(): Promise<number> {
 		return this.col.countDocuments({ prid: { $exists: true } });
 	}
 
-	setOTRForDMByRoomID(rid) {
-		const query = { _id: rid, t: 'd' };
+	setOTRForDMByRoomID(rid: IRoom['_id']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id: rid, t: 'd' };
 
-		const update = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				createdOTR: true,
 			},
