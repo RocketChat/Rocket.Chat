@@ -1,7 +1,12 @@
-import type { ILivechatPriority, IOmnichannelRoom, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
+import type {
+	ILivechatPriority,
+	IOmnichannelRoom,
+	IOmnichannelServiceLevelAgreements,
+	RocketChatRecordDeleted,
+} from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
-import type { FindCursor, UpdateResult, Document, FindOptions } from 'mongodb';
+import type { FindCursor, UpdateResult, Document, FindOptions, Db, Collection } from 'mongodb';
 
 import { LivechatRoomsRaw } from '../../../../server/models/raw/LivechatRooms';
 import { queriesLogger } from '../../../app/livechat-enterprise/server/lib/logger';
@@ -11,7 +16,7 @@ declare module '@rocket.chat/model-typings' {
 	interface ILivechatRoomsModel {
 		associateRoomsWithDepartmentToUnit: (departments: string[], unit: string) => Promise<void>;
 		removeUnitAssociationFromRooms: (unit: string) => Promise<void>;
-		updateDepartmentAncestorsById: (rid: string, ancestors: string[]) => Promise<UpdateResult>;
+		updateDepartmentAncestorsById: (rid: string, ancestors?: string[]) => Promise<UpdateResult>;
 		unsetPredictedVisitorAbandonmentByRoomId(rid: string): Promise<UpdateResult>;
 		findAbandonedOpenRooms(date: Date): FindCursor<IOmnichannelRoom>;
 		setPredictedVisitorAbandonmentByRoomId(roomId: string, date: Date): Promise<UpdateResult>;
@@ -34,6 +39,10 @@ declare module '@rocket.chat/model-typings' {
 
 // @ts-expect-error - Model is in JS, and types are getting weird :)
 export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoomsModel {
+	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IOmnichannelRoom>>) {
+		super(db, trash);
+	}
+
 	async unsetAllPredictedVisitorAbandonment(): Promise<void> {
 		return this.updateMany(
 			{
@@ -250,7 +259,7 @@ export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoo
 		queriesLogger.debug({ msg: `LivechatRoomsRawEE.removeUnitAssociationFromRooms`, result });
 	}
 
-	async updateDepartmentAncestorsById(rid: string, departmentAncestors: string[]) {
+	async updateDepartmentAncestorsById(rid: string, departmentAncestors?: string[]) {
 		const query = {
 			_id: rid,
 		};

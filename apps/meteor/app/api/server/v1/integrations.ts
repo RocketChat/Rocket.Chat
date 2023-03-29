@@ -11,7 +11,7 @@ import {
 import { Integrations, IntegrationHistory } from '@rocket.chat/models';
 import type { Filter } from 'mongodb';
 
-import { hasAtLeastOnePermission } from '../../../authorization/server';
+import { hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
 import {
 	mountIntegrationHistoryQueryBasedOnPermissions,
@@ -44,7 +44,7 @@ API.v1.addRoute(
 		async get() {
 			const { userId, queryParams } = this;
 
-			if (!hasAtLeastOnePermission(userId, ['manage-outgoing-integrations', 'manage-own-outgoing-integrations'])) {
+			if (!(await hasAtLeastOnePermissionAsync(userId, ['manage-outgoing-integrations', 'manage-own-outgoing-integrations']))) {
 				return API.v1.unauthorized();
 			}
 
@@ -83,12 +83,12 @@ API.v1.addRoute(
 	{
 		async get() {
 			if (
-				!hasAtLeastOnePermission(this.userId, [
+				!(await hasAtLeastOnePermissionAsync(this.userId, [
 					'manage-outgoing-integrations',
 					'manage-own-outgoing-integrations',
 					'manage-incoming-integrations',
 					'manage-own-incoming-integrations',
-				])
+				]))
 			) {
 				return API.v1.unauthorized();
 			}
@@ -124,12 +124,12 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (
-				!hasAtLeastOnePermission(this.userId, [
+				!(await hasAtLeastOnePermissionAsync(this.userId, [
 					'manage-outgoing-integrations',
 					'manage-own-outgoing-integrations',
 					'manage-incoming-integrations',
 					'manage-own-incoming-integrations',
-				])
+				]))
 			) {
 				return API.v1.unauthorized();
 			}

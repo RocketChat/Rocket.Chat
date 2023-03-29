@@ -38,8 +38,8 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 	findEnabledWithAgents(projection?: FindOptions<ILivechatDepartment>['projection']): FindCursor<ILivechatDepartment>;
 	findEnabledWithAgentsAndBusinessUnit(
 		_: any,
-		projection?: FindOptions<ILivechatDepartment>['projection'],
-	): FindCursor<ILivechatDepartment>;
+		projection: FindOptions<ILivechatDepartment>['projection'],
+	): Promise<FindCursor<ILivechatDepartment>>;
 	findOneByIdOrName(_idOrName: string, options?: FindOptions<ILivechatDepartment>): Promise<ILivechatDepartment | null>;
 	findByUnitIds(unitIds: string[], options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
 	findActiveByUnitIds(unitIds: string[], options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
