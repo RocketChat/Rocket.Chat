@@ -53,7 +53,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername }: TwoFactorE
 			icon='info'
 			confirmDisabled={!code}
 		>
-			<Box mbe='x16'>{t('Verify_your_email_for_the_code_we_sent')}</Box>
+			<Box mbe='x16'>{t('Verify_your_email_with_the_code_we_sent')}</Box>
 			<Box mbe='x4' display='flex' justifyContent='stretch'>
 				<TextInput ref={ref} value={code} onChange={onChange} placeholder={t('Enter_authentication_code')} />
 			</Box>
