@@ -18,7 +18,7 @@ const useDeactivateUserAction = (userId: string, onChange: () => void, onReload:
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('Deactivate') });
+			dispatchToastMessage({ type: 'success', message: t('User_has_been_deactivated') });
 		},
 	});
 
@@ -43,7 +43,7 @@ const useDeactivateUserAction = (userId: string, onChange: () => void, onReload:
 	const confirmDeactivateUser = (): void => {
 		setModal(
 			<GenericModal variant='danger' onConfirm={() => onDeactivateUser()} onCancel={() => setModal()}>
-				This action will deactivate this user and delete all the reported messages. Are you sure you want to continue?
+				{t('Are_you_sure_you_want_to_deactivate_this_user')}
 			</GenericModal>,
 		);
 	};

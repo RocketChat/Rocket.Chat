@@ -44,7 +44,6 @@ const ModerationConsolePage = () => {
 						<VerticalBar.Icon name='info-circled' />
 						{context === 'info' && <VerticalBar.Text>{t('Messages')}</VerticalBar.Text>}
 						{context === 'reports' && <VerticalBar.Text>{t('Report')}</VerticalBar.Text>}
-						{/* <VerticalBar.Action name={'new-window'} onClick={() => moderationRoute.push({})} title={t('View_full_conversation')} /> */}
 						<VerticalBar.Close onClick={() => moderationRoute.push({})} />
 					</VerticalBar.Header>
 					{context === 'info' && id && <UserMessages userId={id} reload={reloadRef.current} onRedirect={handleRedirect} />}

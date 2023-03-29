@@ -31,13 +31,13 @@ const useDismissUserAction = (userId: string, onChange: () => void, onReload: ()
 	const confirmDismissUser = (): void => {
 		setModal(
 			<GenericModal title={'Dismiss and Delete'} variant='danger' onConfirm={() => onDismissUser()} onCancel={() => setModal()}>
-				Are you sure you want to dismiss and delete all reports for this user's messages? This action cannot be undone.
+				{t('Are_you_sure_dismiss_and_delete_reports')}
 			</GenericModal>,
 		);
 	};
 
 	return {
-		label: { label: 'Dismiss Reports', icon: 'circle-check' },
+		label: { label: t('Dismiss_reports'), icon: 'circle-check' },
 		action: () => confirmDismissUser(),
 	};
 };

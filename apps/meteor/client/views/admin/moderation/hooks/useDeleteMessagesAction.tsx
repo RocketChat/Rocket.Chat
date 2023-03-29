@@ -36,14 +36,13 @@ const useDeleteMessagesAction = (userId: string, onChange: () => void, onReload:
 				onConfirm={() => onDeleteAll()}
 				onCancel={() => setModal()}
 			>
-				Are you sure you want to delete all reported messages from this user? The messages will be deleted from the message history and no
-				one will be able to see it. This action cannot be undone.
+				{t('Are_you_sure_you_want_to_delete_all_reported_messages_from_this_user')}
 			</GenericModal>,
 		);
 	};
 
 	return {
-		label: { label: 'Delete Messages', icon: 'trash' },
+		label: { label: t('Delete_all_messages'), icon: 'trash' },
 		action: () => confirmDeletMessages(),
 	};
 };

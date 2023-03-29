@@ -1,4 +1,5 @@
 import { Menu, Option } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
 import type { MonderationConsoleRowProps } from './ModerationConsoleTableRow';
@@ -8,6 +9,7 @@ import useDismissUserAction from './hooks/useDismissUserAction';
 import useResetAvatarAction from './hooks/useResetAvatarAction';
 
 const ModerationConsoleActions = ({ report, onClick, onChange, onReload }: MonderationConsoleRowProps): JSX.Element => {
+	const t = useTranslation();
 	const { userId: uid } = report;
 
 	return (
@@ -15,7 +17,7 @@ const ModerationConsoleActions = ({ report, onClick, onChange, onReload }: Monde
 			<Menu
 				options={{
 					seeReports: {
-						label: { label: 'See Messages', icon: 'document-eye' },
+						label: { label: t('See_messages'), icon: 'document-eye' },
 						action: () => onClick(uid),
 					},
 					divider: {

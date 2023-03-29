@@ -63,7 +63,7 @@ const UserMessages = ({
 		<>
 			<Box display='flex' flexDirection='column' width='full' height='full' overflowY='auto' overflowX='hidden'>
 				<Callout margin={15} title='Duplicate messages' type='warning' icon='lightning'>
-					Following may contain same messages sent by user in multiple rooms
+					{t('Duplicate_messages_warning')}
 				</Callout>{' '}
 				{isLoadingUserMessages && <Message>{t('Loading')}</Message>}
 				{isSuccessUserMessages &&

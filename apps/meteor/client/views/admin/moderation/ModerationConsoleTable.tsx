@@ -33,7 +33,6 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReloa
 		end: '',
 	});
 	const { start, end } = dateRange;
-	// write a custom query to get the reports data from the database
 
 	const query = useDebouncedValue(
 		useMemo(
@@ -97,7 +96,7 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReloa
 				onClick={setSort}
 				sort='reports.message.u.username'
 			>
-				Name
+				{t('Name')}
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell
 				key={'reportedMessage'}
@@ -106,10 +105,10 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReloa
 				onClick={setSort}
 				sort='reports.description'
 			>
-				Reported Message
+				{t('Reported_message')}
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell key={'room'} direction={sortDirection}>
-				Room
+				{t('Room')}
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell
 				key={'postdate'}
@@ -118,26 +117,25 @@ const ModerationConsoleTable: FC<{ reload: MutableRefObject<() => void>; onReloa
 				onClick={setSort}
 				sort='reports.ts'
 			>
-				Post Date
+				{t('Post_date')}
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell key={'reports'} direction={sortDirection} active={sortBy === 'count'} onClick={setSort} sort='count'>
-				Reports
+				{t('Report_plural')}
 			</GenericTableHeaderCell>,
 			<GenericTableHeaderCell key={'actions'} width={'5%'} />,
 		],
-		[sortDirection, setSort, sortBy],
+		[sortDirection, sortBy, setSort, t],
 	);
 
 	return (
 		<>
+			<FilterByText autoFocus placeholder={'Search'} onChange={({ text }): void => setText(text)} />
 			<Field alignSelf='stretch'>
 				<Field.Label>{t('Date')}</Field.Label>
 				<Field.Row>
 					<DateRangePicker display='flex' flexGrow={1} onChange={setDateRange} />
 				</Field.Row>
 			</Field>
-			<FilterByText autoFocus placeholder={'Search'} onChange={({ text }): void => setText(text)} />
-
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
