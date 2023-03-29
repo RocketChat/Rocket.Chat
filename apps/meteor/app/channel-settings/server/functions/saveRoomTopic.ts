@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { Rooms } from '@rocket.chat/models';
+import { Messages, Rooms } from '@rocket.chat/models';
 
-import { Messages } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
+import { settings } from '../../../settings/server';
 
 export const saveRoomTopic = async function (
 	rid: string,
@@ -22,7 +22,13 @@ export const saveRoomTopic = async function (
 
 	const update = await Rooms.setTopicById(rid, roomTopic);
 	if (update && sendMessage) {
-		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_topic', rid, roomTopic, user);
+		await Messages.createWithTypeRoomIdMessageUserAndUnread(
+			'room_changed_topic',
+			rid,
+			roomTopic || '',
+			user,
+			settings.get('Message_Read_Receipt_Enabled'),
+		);
 	}
 	callbacks.run('afterRoomTopicChange', { rid, topic: roomTopic });
 	return update;
