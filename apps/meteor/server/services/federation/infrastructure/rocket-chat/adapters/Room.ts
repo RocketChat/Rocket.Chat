@@ -135,7 +135,8 @@ export class RocketChatRoomAdapter {
 			federatedRoom.getName() || '',
 			federatedRoom.getDisplayName() || '',
 		);
-		await MessagesRaw.createRoomRenamedWithRoomIdRoomNameAndUser(
+		await MessagesRaw.createWithTypeRoomIdMessageUserAndUnread(
+			'r',
 			federatedRoom.getInternalId(),
 			federatedRoom.getDisplayName() || '',
 			federatedUser.getInternalReference() as unknown as Required<IUser>, // TODO fix type

@@ -17,7 +17,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async push_test() {
-		const user = Meteor.user();
+		const user = await Meteor.userAsync();
 
 		if (!user) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
@@ -146,8 +146,8 @@ settings.watch<boolean>('Push_enable', async function (enabled) {
 		production: settings.get('Push_production'),
 		gateways,
 		uniqueId: settings.get('uniqueID'),
-		getAuthorization() {
-			return `Bearer ${Promise.await(getWorkspaceAccessToken())}`;
+		async getAuthorization() {
+			return `Bearer ${await getWorkspaceAccessToken()}`;
 		},
 	});
 });

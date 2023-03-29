@@ -3,7 +3,7 @@ import { Rooms } from '@rocket.chat/models';
 
 import type { SubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 
-export const getUserSingleOwnedRooms = function (subscribedRooms: SubscribedRoomsForUserWithDetails[]): unknown {
+export const getUserSingleOwnedRooms = async function (subscribedRooms: SubscribedRoomsForUserWithDetails[]) {
 	const roomsThatWillChangeOwner = subscribedRooms
 		.filter(({ shouldChangeOwner }) => shouldChangeOwner)
 		.map(({ rid }: { rid: string }) => rid);
@@ -17,18 +17,16 @@ export const getUserSingleOwnedRooms = function (subscribedRooms: SubscribedRoom
 		shouldChangeOwner: [] as string[],
 	};
 
-	Promise.await(
-		rooms.forEach((room: IRoom) => {
-			const name = room.fname || room.name;
-			if (roomsThatWillBeRemoved.includes(room._id)) {
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				result.shouldBeRemoved.push(name!);
-			} else {
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-				result.shouldChangeOwner.push(name!);
-			}
-		}),
-	);
+	await rooms.forEach((room: IRoom) => {
+		const name = room.fname || room.name;
+		if (roomsThatWillBeRemoved.includes(room._id)) {
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			result.shouldBeRemoved.push(name!);
+		} else {
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			result.shouldChangeOwner.push(name!);
+		}
+	});
 
 	return result;
 };

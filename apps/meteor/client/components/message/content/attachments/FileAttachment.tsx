@@ -21,5 +21,3 @@ export const FileAttachment: FC<FileAttachmentProps> = (attachment) => {
 
 	return <GenericFileAttachment {...attachment} />;
 };
-
-export { GenericFileAttachment, ImageAttachment, VideoAttachment };
