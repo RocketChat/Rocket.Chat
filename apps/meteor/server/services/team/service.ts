@@ -14,7 +14,7 @@ import type {
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Team, Rooms, Subscriptions, Users, TeamMember } from '@rocket.chat/models';
 import type { InsertionModel } from '@rocket.chat/model-typings';
-import { Room, Authorization, ServiceClassInternal } from '@rocket.chat/core-services';
+import { Room, Authorization, Message, ServiceClassInternal } from '@rocket.chat/core-services';
 import type {
 	IListRoomsFilter,
 	ITeamAutocompleteResult,
@@ -30,7 +30,6 @@ import { checkUsernameAvailability } from '../../../app/lib/server/functions/che
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { removeUserFromRoom } from '../../../app/lib/server/functions/removeUserFromRoom';
 import { getSubscribedRoomsForUserWithDetails } from '../../../app/lib/server/functions/getRoomsWithSingleOwner';
-import { Messages } from '../../../app/models/server';
 import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomType } from '../../../app/channel-settings/server/functions/saveRoomType';
 
@@ -106,7 +105,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			let roomId = room.id;
 			if (roomId) {
 				await Rooms.setTeamMainById(roomId, teamId);
-				Messages.createUserConvertChannelToTeamWithRoomIdAndUser(roomId, team.name, createdBy);
+				await Message.saveSystemMessage('user-converted-to-team', roomId, team.name, createdBy);
 			} else {
 				const roomType: IRoom['t'] = team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c';
 
@@ -359,7 +358,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			}
 
 			if (room.t === 'c') {
-				Messages.createUserAddRoomToTeamWithRoomIdAndUser(team.roomId, room.name, user);
+				await Message.saveSystemMessage('user-added-room-to-team', team.roomId, room.name || '', user);
 			}
 
 			room.teamId = teamId;
@@ -410,7 +409,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		Rooms.unsetTeamById(room._id);
 
 		if (room.t === 'c') {
-			Messages.createUserRemoveRoomFromTeamWithRoomIdAndUser(team.roomId, room.name, user);
+			await Message.saveSystemMessage('user-removed-room-from-team', team.roomId, room.name || '', user);
 		}
 
 		return {
@@ -433,9 +432,12 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('invalid-room');
 		}
 
-		const user = await Users.findOneById(uid);
+		const user = await Users.findOneById<Pick<IUser, '_id' | 'username' | 'name'>>(uid, { projection: { username: 1, name: 1 } });
+		if (!user) {
+			throw new Error('invalid-user');
+		}
 
-		Messages.createUserConvertTeamToChannelWithRoomIdAndUser(team.roomId, room.name, user);
+		await Message.saveSystemMessage('user-converted-to-channel', team.roomId, room.name || '', user);
 
 		await Rooms.unsetTeamId(teamId);
 	}
