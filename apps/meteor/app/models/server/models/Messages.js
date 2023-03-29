@@ -123,13 +123,6 @@ export class Messages extends Base {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser(id, roomId, message, user, extraData);
 	}
-
-	// REMOVE
-	removeById(_id) {
-		const query = { _id };
-
-		return this.remove(query);
-	}
 }
 
 export default new Messages();

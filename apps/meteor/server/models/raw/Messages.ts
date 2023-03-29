@@ -1537,11 +1537,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	// REMOVE
-	removeById(_id: string): Promise<DeleteResult> {
-		const query = { _id };
-
-		return this.deleteOne(query);
-	}
 
 	removeByRoomIds(rids: string[]): Promise<DeleteResult> {
 		return this.deleteMany({ rid: { $in: rids } });

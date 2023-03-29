@@ -270,7 +270,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		extraData?: Record<string, string>,
 	): Promise<Omit<IMessage, '_updatedAt'>>;
 	removeByRoomIds(rids: string[]): Promise<DeleteResult>;
-	removeById(_id: string): Promise<DeleteResult>;
 
 	findThreadsByRoomIdPinnedTimestampAndUsers(
 		data: { rid: string; pinned: boolean; ignoreDiscussion?: boolean; ts: Filter<IMessage>['ts']; users: string[] },
