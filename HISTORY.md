@@ -1,4 +1,95 @@
 
+# 6.1.0
+`2023-03-29  ·  1 🎉  ·  1 🚀  ·  4 🐛  ·  4 🔍  ·  11 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.2`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+- Apps-Engine: `1.38.0`
+
+### 🎉 New features
+
+
+- VideoConference Guest mode and Conference Router ([#28186](https://github.com/RocketChat/Rocket.Chat/pull/28186))
+
+  Jira Issue: [VC-79]
+
+### 🚀 Improvements
+
+
+- Adding input type=password to AWS secrets fields ([#28159](https://github.com/RocketChat/Rocket.Chat/pull/28159))
+
+  Some fields that store secrets for AWS were exposing sensitive data because they didn't have the input type as `password`. 
+
+  The change includes adding the password type and also changing the autocomplete value from `<PasswordInput />` component to add the value `new-password` to avoid the browser autocompleting with the existing password. (This does not prevent the browser to show the hint to add the password)
+
+### 🐛 Bug fixes
+
+
+- Engagement dashboard crash on Users tab ([#28131](https://github.com/RocketChat/Rocket.Chat/pull/28131))
+
+- Gallery opening other image after closing ([#27957](https://github.com/RocketChat/Rocket.Chat/pull/27957))
+
+  How to reproduce:
+  1   - Upload MANY images to a channel (they have to be images and the bigger and more images the easier to reproduce)
+  2   - Click on one of the images
+  3   - Try to close the glalery as QUICK as possible
+
+  If done correctly, another image will open after closing the gallery. You could also try opening different images or throttling the network thru the devtools in order to help reproduce it.
+
+  I also took some time to make part of the code more readable.
+
+- hide offline registration option for disconnected workspaces ([#28662](https://github.com/RocketChat/Rocket.Chat/pull/28662))
+
+- Livechat MessageList not auto scrolling on new message ([#28547](https://github.com/RocketChat/Rocket.Chat/pull/28547))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Change price filters for Enterprise apps ([#27553](https://github.com/RocketChat/Rocket.Chat/pull/27553))
+
+  * Currently, Enterprise apps are classified as “Free apps”. Now, they have been moved to a new “Enterprise” category in the _Apps_ page of the Marketplace.  
+  * Created a new "Enterprise" pricing filter in the _Apps_ page.  
+  * Removed the "Free" tag next to the _install_ button for enterprise apps, on the _App Info_ page.
+
+  ![New-version](https://user-images.githubusercontent.com/84182706/208493531-11fc0153-2c94-4fab-baac-e359ba89ed72.gif)
+
+- regression: removed css for unread and upload indicators ([#28645](https://github.com/RocketChat/Rocket.Chat/pull/28645))
+
+  I had to revert a css deletion to rollback the styles form Upload and Unread indicators
+
+  **Current (problem):** 
+  ![image](https://user-images.githubusercontent.com/20212776/228034906-57f9a818-e071-4102-9410-b9e03afbb777.png)
+
+  **Expected: (current changes)**
+  ![image](https://user-images.githubusercontent.com/20212776/228035090-1ef28ce8-2ab1-46a0-aeff-b9aa76c79e5f.png)
+  ![image](https://user-images.githubusercontent.com/20212776/228035150-fc259b37-83c5-458c-8e4f-8a6a822af641.png)
+
+- Remove old css ([#28140](https://github.com/RocketChat/Rocket.Chat/pull/28140))
+
+- Update Apps-Engine to latest ([#28646](https://github.com/RocketChat/Rocket.Chat/pull/28646))
+
+  Update the Apps-Engine version to v1.38.0
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@csuadev](https://github.com/csuadev)
+- [@d-gubert](https://github.com/d-gubert)
+- [@dougfabris](https://github.com/dougfabris)
+- [@felipe-rod123](https://github.com/felipe-rod123)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@rique223](https://github.com/rique223)
+- [@totoi690](https://github.com/totoi690)
+
+
 # 6.0.1
 `2023-03-22  ·  5 🔍  ·  7 👩‍💻👨‍💻`
 
