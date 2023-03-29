@@ -558,7 +558,9 @@ API.v1.addRoute(
 				const result = await Meteor.callAsync(method, ...params);
 				return API.v1.success(mountResult({ id, result }));
 			} catch (err) {
-				SystemLogger.error({ msg: `Exception while invoking method ${method}`, err });
+				if (!(err as any).isClientSafe && !(err as any).meteorError) {
+					SystemLogger.error({ msg: `Exception while invoking method ${method}`, err });
+				}
 
 				if (settings.get('Log_Level') === '2') {
 					Meteor._debug(`Exception while invoking method ${method}`, err);
