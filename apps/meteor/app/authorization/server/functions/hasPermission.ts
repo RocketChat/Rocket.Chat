@@ -13,6 +13,3 @@ export const hasAtLeastOnePermissionAsync = async (
 	permissions: IPermission['_id'][],
 	scope?: IRoom['_id'],
 ): Promise<boolean> => Authorization.hasAtLeastOnePermission(userId, permissions, scope);
-
-export const hasAtLeastOnePermission = (...args: Parameters<typeof hasAtLeastOnePermissionAsync>): boolean =>
-	Promise.await(hasAtLeastOnePermissionAsync(...args));
