@@ -58,7 +58,7 @@ function DepartmentsTable({ data, removeButton, pagination, sort, loading, ...pr
 				<GenericTableBody>
 					{departments && !loading ? (
 						departments.map((department: Omit<ILivechatDepartment, '_updatedAt'>) => (
-							<GenericTableRow key={department._id} tabIndex={0} role='link' action width='full'>
+							<GenericTableRow key={department._id} tabIndex={0} width='full'>
 								<GenericTableCell withTruncatedText>{department.name}</GenericTableCell>
 								<GenericTableCell withTruncatedText>{department.description}</GenericTableCell>
 								<GenericTableCell withTruncatedText>{department.numAgents || '0'}</GenericTableCell>

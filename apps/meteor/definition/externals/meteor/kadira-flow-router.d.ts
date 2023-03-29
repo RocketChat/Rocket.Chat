@@ -9,7 +9,7 @@ declare module 'meteor/kadira:flow-router' {
 		route: Route;
 	};
 
-	export type RouteOptions = {
+	type RouteOptions = {
 		name?: string;
 		action?: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string>) => void;
 		subscriptions?: (this: Route, params?: Record<string, string>, queryParams?: Record<string, string>) => void;
@@ -146,7 +146,7 @@ declare module 'meteor/kadira:flow-router' {
 		_updateCallbacks(): void;
 	}
 
-	export const FlowRouter: Router & {
+	const FlowRouter: Router & {
 		Route: typeof Route;
 		Router: typeof Router;
 	};

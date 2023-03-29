@@ -44,7 +44,7 @@ export const useDepartmentsByUnitsList = (
 						_id,
 						name: department.archived ? `${name} [${t('Archived')}]` : name,
 						label: name,
-						value: { value: _id, label: name },
+						value: _id,
 						...(_updatedAt && { _updatedAt: new Date(_updatedAt) }),
 					};
 				}),

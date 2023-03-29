@@ -6,10 +6,10 @@ import React from 'react';
 import { AsyncStatePhase } from '../../../lib/asyncState/AsyncStatePhase';
 import { useOmnichannelRoomIcon } from './context/OmnichannelRoomIconContext';
 
-export const colors = {
-	busy: 'on-danger',
-	away: 'on-warning',
-	online: 'on-success',
+const colors = {
+	busy: 'status-font-on-danger',
+	away: 'status-font-on-warning',
+	online: 'status-font-on-success',
 	offline: 'annotation',
 };
 

@@ -1,10 +1,11 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useRoute, useRouteParameter, usePermission, useTranslation } from '@rocket.chat/ui-contexts';
+import { useRoute, useRouteParameter, usePermission, useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useEffect } from 'react';
 
 import Page from '../../../components/Page';
 import VerticalBar from '../../../components/VerticalBar';
+import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import CustomUserActiveConnections from './CustomUserActiveConnections';
 import CustomUserStatusFormWithData from './CustomUserStatusFormWithData';
@@ -17,6 +18,12 @@ const CustomUserStatusRoute = (): ReactElement => {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 	const canManageUserStatus = usePermission('manage-user-status');
+	const { data: license } = useIsEnterprise();
+	const presenceDisabled = useSetting<boolean>('Presence_broadcast_disabled');
+
+	useEffect(() => {
+		presenceDisabled && route.push({ context: 'presence-service' });
+	}, [presenceDisabled, route]);
 
 	const handleItemClick = (id: string): void => {
 		route.push({
@@ -51,7 +58,7 @@ const CustomUserStatusRoute = (): ReactElement => {
 		<Page flexDirection='row'>
 			<Page name='admin-user-status'>
 				<Page.Header title={t('User_Status')}>
-					<CustomUserActiveConnections />
+					{!license?.isEnterprise && <CustomUserActiveConnections />}
 					<ButtonGroup>
 						<Button onClick={handlePresenceServiceClick}>{t('Presence_service')}</Button>
 						<Button onClick={handleNewButtonClick}>{t('New_custom_status')}</Button>

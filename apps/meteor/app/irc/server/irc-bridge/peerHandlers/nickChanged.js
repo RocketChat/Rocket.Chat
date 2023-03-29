@@ -1,6 +1,6 @@
 import { Users } from '../../../../models/server';
 
-export default function handleNickChanged(args) {
+export default async function handleNickChanged(args) {
 	const user = Users.findOne({
 		'profile.irc.nick': args.nick,
 	});

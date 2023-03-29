@@ -50,9 +50,23 @@ export class AppWebsocketReceiver extends Emitter {
 	}
 
 	onCommandAddedOrUpdated = (command) => {
-		APIClient.get('/v1/commands.get', { command }).then((result) => {
-			slashCommands.add(result.command);
-		});
+		const retryOnFailure = (retries) => {
+			APIClient.get('/v1/commands.get', { command })
+				.then((result) => {
+					slashCommands.add(result.command);
+				})
+				.catch((error) => {
+					if (retries - 1 === 0) {
+						throw error;
+					}
+
+					setTimeout(() => {
+						retryOnFailure(retries - 1);
+					}, 3000);
+				});
+		};
+
+		retryOnFailure(3);
 	};
 
 	onCommandRemovedOrDisabled = (command) => {

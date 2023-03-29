@@ -14,6 +14,7 @@ const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null =>
 	const route = useRoute('marketplace');
 	const setModal = useSetModal();
 	const result = useAppsCountQuery(context);
+	const handleModalClose = useCallback(() => setModal(null), [setModal]);
 
 	const handleUploadButtonClick = useCallback((): void => {
 		route.push({ context, page: 'install' });
@@ -42,7 +43,7 @@ const MarketplaceHeader = ({ title }: { title: string }): ReactElement | null =>
 						{!result.data.hasUnlimitedApps && (
 							<Button
 								onClick={() => {
-									setModal(<UnlimitedAppsUpsellModal />);
+									setModal(<UnlimitedAppsUpsellModal onClose={handleModalClose} />);
 								}}
 							>
 								{t('Enable_unlimited_apps')}

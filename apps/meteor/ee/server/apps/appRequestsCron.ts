@@ -7,7 +7,7 @@ import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { appRequestNotififyForUsers } from './marketplace/appRequestNotifyUsers';
 
-export const appsNotifyAppRequests = Meteor.bindEnvironment(function _appsNotifyAppRequests() {
+const appsNotifyAppRequests = Meteor.bindEnvironment(function _appsNotifyAppRequests() {
 	try {
 		const installedApps = Promise.await(Apps.installedApps({ enabled: true }));
 		if (!installedApps || installedApps.length === 0) {

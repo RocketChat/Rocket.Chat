@@ -21,7 +21,7 @@ export const onAdded = (button: IUIActionButton): void =>
 		},
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
-			triggerActionButtonAction({
+			void triggerActionButtonAction({
 				rid: message.rid,
 				mid: message._id,
 				actionId: button.actionId,

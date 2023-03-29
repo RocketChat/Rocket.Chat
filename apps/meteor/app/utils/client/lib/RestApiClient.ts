@@ -5,7 +5,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { baseURI } from '../../../../client/lib/baseURI';
 import { process2faReturn } from '../../../../client/lib/2fa/process2faReturn';
 
-export class RestApiClient extends RestClient {
+class RestApiClient extends RestClient {
 	getCredentials():
 		| {
 				'X-User-Id': string;

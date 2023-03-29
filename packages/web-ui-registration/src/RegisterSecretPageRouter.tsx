@@ -2,7 +2,7 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
-import LoginRegisterForm from './RegisterForm';
+import RegisterForm from './RegisterForm';
 import RegisterFormDisabled from './RegisterFormDisabled';
 import RegisterTemplate from './RegisterTemplate';
 import SecretRegisterForm from './SecretRegisterForm';
@@ -29,7 +29,7 @@ export const RegisterSecretPageRouter = ({
 	if (isPublicRegistration) {
 		return (
 			<RegisterTemplate>
-				<LoginRegisterForm setLoginRoute={setLoginRoute} />
+				<RegisterForm setLoginRoute={setLoginRoute} />
 			</RegisterTemplate>
 		);
 	}

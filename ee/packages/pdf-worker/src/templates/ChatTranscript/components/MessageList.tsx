@@ -6,6 +6,7 @@ import { MessageHeader } from './MessageHeader';
 import { Files } from './Files';
 import type { ChatTranscriptData } from '..';
 import { Markup } from '../markup';
+import { Quotes } from './Quotes';
 
 const styles = StyleSheet.create({
 	wrapper: {
@@ -15,7 +16,6 @@ const styles = StyleSheet.create({
 	message: {
 		marginTop: 1,
 		fontSize: fontScales.p2.fontSize,
-		textAlign: 'justify',
 	},
 });
 
@@ -26,6 +26,7 @@ export const MessageList = ({ messages, invalidFileMessage }: { messages: ChatTr
 				{message.divider && <Divider divider={message.divider} />}
 				<MessageHeader name={message.u.name || message.u.username} time={message.ts} />
 				<View style={styles.message}>{message.md ? <Markup tokens={message.md} /> : <Text>{message.msg}</Text>}</View>
+				{message.quotes && <Quotes quotes={message.quotes} />}
 				{message.files && <Files files={message.files} invalidMessage={invalidFileMessage} />}
 			</View>
 		))}

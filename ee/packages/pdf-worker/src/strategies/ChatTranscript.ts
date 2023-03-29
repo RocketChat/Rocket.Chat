@@ -16,18 +16,28 @@ export class ChatTranscript implements IStrategy {
 			const { ts, ...rest } = message;
 			const formattedTs = moment(ts).tz(timezone).format(timeAndDateFormat);
 			const isDivider = this.isNewDay(message, previousMessage, timezone);
+			const formattedQuotes = message.quotes?.length
+				? message.quotes.map((quote) => {
+						return {
+							...quote,
+							ts: moment(quote.ts).tz(timezone).format(timeAndDateFormat),
+						};
+				  })
+				: undefined;
 
 			if (isDivider) {
 				return {
 					...rest,
 					ts: formattedTs,
 					divider: moment(ts).tz(timezone).format(dateFormat),
+					quotes: formattedQuotes,
 				};
 			}
 
 			return {
 				...rest,
 				ts: formattedTs,
+				quotes: formattedQuotes,
 			};
 		});
 	}

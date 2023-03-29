@@ -145,7 +145,7 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 					const { rooms = [] } = await userSpotlight(filter, [], { rooms: true, mentions: true }, rid);
 					return rooms as unknown as ComposerBoxPopupRoomProps[];
 				},
-				getValue: (item) => `${item.fname || item.name}`,
+				getValue: (item) => `${item.name || item.fname}`,
 				renderItem: ({ item }) => <ComposerBoxPopupRoom {...item} />,
 			}) as any,
 			createMessageBoxPopupConfig<ComposerBoxPopupEmojiProps>({
@@ -335,12 +335,14 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 				matchSelectorRegex: /(?:^)(\/[\w\d\S]+ )[^]*$/,
 				preview: true,
 				getItemsFromLocal: async ({ cmd, params, tmid }: { cmd: string; params: string; tmid: string }) => {
-					const { items } = await call({ cmd, params, msg: { rid, tmid } });
-					return items.map((item) => ({
-						_id: item.id,
-						value: item.value,
-						type: item.type,
-					}));
+					const result = await call({ cmd, params, msg: { rid, tmid } });
+					return (
+						result?.items.map((item) => ({
+							_id: item.id,
+							value: item.value,
+							type: item.type,
+						})) ?? []
+					);
 				},
 			}),
 		].filter(Boolean);

@@ -67,6 +67,8 @@ const subscriptions: ISubscription[] = [
 		ls: new Date(),
 		lr: new Date(),
 		tunread: [],
+		lowerCaseName: 'general',
+		lowerCaseFName: 'general',
 	},
 ];
 

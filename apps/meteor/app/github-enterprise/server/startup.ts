@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../settings/server';
 
-settingsRegistry.addGroup('OAuth', function () {
+void settingsRegistry.addGroup('OAuth', function () {
 	this.section('GitHub Enterprise', function () {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_GitHub_Enterprise',

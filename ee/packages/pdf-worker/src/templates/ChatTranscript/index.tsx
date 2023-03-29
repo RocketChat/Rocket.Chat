@@ -2,6 +2,8 @@ import * as path from 'path';
 
 import ReactPDF, { Font, Document, Page, StyleSheet } from '@react-pdf/renderer';
 import type { ILivechatAgent, ILivechatVisitor, IMessage, Serialized } from '@rocket.chat/core-typings';
+import colors from '@rocket.chat/fuselage-tokens/colors.json';
+import type { Root } from '@rocket.chat/message-parser';
 
 import { Header } from './components/Header';
 import { MessageList } from './components/MessageList';
@@ -10,9 +12,11 @@ const FONT_PATH = path.resolve(__dirname, '../../public');
 
 export type PDFFile = { name?: string; buffer: Buffer | null; extension?: 'png' | 'jpg' };
 
+export type Quote = { md: Root; name: string; ts: string };
+
 export type PDFMessage = Serialized<Omit<Pick<IMessage, 'msg' | 'u' | 'ts' | 'md'>, 'files'>> & {
 	files?: PDFFile[];
-} & { divider?: string };
+} & { divider?: string } & { quotes?: Quote[] };
 
 export type ChatTranscriptData = {
 	header: {
@@ -30,6 +34,7 @@ const styles = StyleSheet.create({
 	page: {
 		fontFamily: 'Inter',
 		lineHeight: 1.25,
+		color: colors.n800,
 	},
 	wrapper: {
 		paddingHorizontal: 32,
@@ -43,7 +48,7 @@ const styles = StyleSheet.create({
 });
 
 export const ChatTranscriptPDF = ({ header, messages, t }: ChatTranscriptData) => {
-	const agentValue = header.agent?.name || header.agent?.username || t('Omnichannel_Agent');
+	const agentValue = header.agent?.name || header.agent?.username || t('Not_assigned');
 	const customerValue = header.visitor?.name || header.visitor?.username;
 	const dateValue = header.date;
 	const timeValue = header.time;

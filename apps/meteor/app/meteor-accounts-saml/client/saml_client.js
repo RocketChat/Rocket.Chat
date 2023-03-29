@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 
 if (!Accounts.saml) {

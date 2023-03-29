@@ -1,4 +1,4 @@
-import type { ILivechatDepartmentRecord, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { ILivechatDepartment, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 
@@ -59,7 +59,7 @@ export async function findRooms({
 			projection: { name: 1 },
 		}).toArray();
 
-		rooms.forEach((room: IOmnichannelRoom & { department?: ILivechatDepartmentRecord }) => {
+		rooms.forEach((room: IOmnichannelRoom & { department?: ILivechatDepartment }) => {
 			if (!room.departmentId) {
 				return;
 			}

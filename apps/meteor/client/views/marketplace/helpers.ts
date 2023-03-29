@@ -7,7 +7,7 @@ import { t } from '../../../app/utils/client';
 import { Utilities } from '../../../ee/lib/misc/Utilities';
 import { dispatchToastMessage } from '../../lib/toast';
 
-export const appEnabledStatuses = [AppStatus.AUTO_ENABLED, AppStatus.MANUALLY_ENABLED, AppStatus.INITIALIZED];
+export const appEnabledStatuses = [AppStatus.AUTO_ENABLED, AppStatus.MANUALLY_ENABLED];
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 interface ApiError {
@@ -60,6 +60,8 @@ type FormattedPriceAndPlan = {
 	type: PlanType;
 	price: string;
 };
+
+type appButtonPropsType = App & { isAdminUser: boolean; endUserRequested: boolean };
 
 export const apiCurlGetter =
 	(absoluteUrl: (path: string) => string) =>
@@ -174,10 +176,12 @@ export const appButtonProps = ({
 	isEnterpriseOnly,
 	versionIncompatible,
 	isAdminUser,
+	// TODO: Unify this two variables
 	requestedEndUser,
-}: App & { isAdminUser: boolean }): appButtonResponseProps | undefined => {
+	endUserRequested,
+}: appButtonPropsType): appButtonResponseProps | undefined => {
 	if (!isAdminUser) {
-		if (requestedEndUser) {
+		if (requestedEndUser || endUserRequested) {
 			return {
 				action: 'request',
 				label: 'Requested',
@@ -376,9 +380,9 @@ export const appMultiStatusProps = (app: App, isAppDetailsPage: boolean, context
 	return statuses;
 };
 
-export const formatPrice = (price: number): string => `\$${price.toFixed(2)}`;
+const formatPrice = (price: number): string => `\$${price.toFixed(2)}`;
 
-export const formatPricingPlan = ({ strategy, price, tiers = [], trialDays }: AppPricingPlan): string => {
+const formatPricingPlan = ({ strategy, price, tiers = [], trialDays }: AppPricingPlan): string => {
 	const { perUnit = false } = (Array.isArray(tiers) && tiers.find((tier) => tier.price === price)) || {};
 
 	const pricingPlanTranslationString = [

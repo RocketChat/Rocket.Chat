@@ -121,3 +121,6 @@ export * from './VideoConferenceOptions';
 export * from './SpotlightUser';
 
 export * from './search';
+export * from './omnichannel';
+export * from './AppsTokens';
+export * from './ILivechatUnitMonitor';

@@ -26,6 +26,15 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 		const { page } = await createAuxContext(browser, Users.user1);
 		agent = { page, poHomeChannel: new HomeChannel(page) };
 	});
+	test.afterAll(async ({ api }) => {
+		await Promise.all([
+			api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
+			api.post('/settings/Livechat_auto_close_on_hold_chats_timeout', { value: 3600 }).then((res) => expect(res.status()).toBe(200)),
+			api.post('/settings/Livechat_allow_manual_on_hold', { value: false }).then((res) => expect(res.status()).toBe(200)),
+		]);
+
+		await agent.page.close();
+	});
 
 	test.beforeEach(async ({ page }) => {
 		// make "user-1" online
@@ -70,15 +79,5 @@ test.describe('omnichannel-auto-onhold-chat-closing', () => {
 		expect(await agent.poHomeChannel.content.lastSystemMessageBody.innerText()).toBe(
 			'Conversation closed: Closed automatically because chat was On Hold for 5 seconds.',
 		);
-	});
-
-	test.afterAll(async ({ api }) => {
-		await Promise.all([
-			api.delete('/livechat/users/agent/user1').then((res) => expect(res.status()).toBe(200)),
-			api.post('/settings/Livechat_auto_close_on_hold_chats_timeout', { value: 3600 }).then((res) => expect(res.status()).toBe(200)),
-			api.post('/settings/Livechat_allow_manual_on_hold', { value: false }).then((res) => expect(res.status()).toBe(200)),
-		]);
-
-		await agent.page.close();
 	});
 });

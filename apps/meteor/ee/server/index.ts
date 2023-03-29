@@ -10,7 +10,6 @@ import '../app/message-read-receipt/server/index';
 import '../app/voip-enterprise/server/index';
 import '../app/settings/server/index';
 import '../app/teams-mention/server/index';
-import '../app/federation-v2/server';
 import './api';
 import './requestSeatsRoute';
 import './configuration/index';

@@ -48,7 +48,7 @@ describe('ThreadMessagePreview', () => {
 	it('should render the message when exists', () => {
 		const ThreadMessagePreview = loadMock();
 
-		render(<ThreadMessagePreview message={fakeMessage} sequential={true} />, { wrapper: ProvidersMock });
+		render(<ThreadMessagePreview message={fakeMessage} sequential={true} showUserAvatar={true} />, { wrapper: ProvidersMock });
 
 		expect(screen.getByText(fakeMessage.msg)).to.exist;
 	});
@@ -57,7 +57,7 @@ describe('ThreadMessagePreview', () => {
 		const ThreadMessagePreview = loadMock();
 
 		const message = { ...fakeMessage, ignored: true };
-		render(<ThreadMessagePreview message={message} sequential={true} />, { wrapper: ProvidersMock });
+		render(<ThreadMessagePreview message={message} sequential={true} showUserAvatar={true} />, { wrapper: ProvidersMock });
 
 		expect(screen.getByText('Message_Ignored')).to.exist;
 	});
@@ -71,7 +71,7 @@ describe('ThreadMessagePreview', () => {
 			},
 		});
 
-		render(<ThreadMessagePreview message={fakeMessage} sequential={false} />, { wrapper: ProvidersMock });
+		render(<ThreadMessagePreview message={fakeMessage} sequential={false} showUserAvatar={true} />, { wrapper: ProvidersMock });
 
 		expect(screen.getByText('Parent Message')).to.exist;
 	});
@@ -92,7 +92,7 @@ describe('ThreadMessagePreview', () => {
 			},
 		});
 
-		render(<ThreadMessagePreview message={fakeMessage} sequential={false} />, { wrapper: ProvidersMock });
+		render(<ThreadMessagePreview message={fakeMessage} sequential={false} showUserAvatar={true} />, { wrapper: ProvidersMock });
 
 		expect(screen.getByText('System Message')).to.exist;
 	});

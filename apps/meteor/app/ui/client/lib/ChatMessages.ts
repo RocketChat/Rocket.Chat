@@ -13,7 +13,7 @@ import { processMessageEditing } from '../../../../client/lib/chats/flows/proces
 import { processTooLongMessage } from '../../../../client/lib/chats/flows/processTooLongMessage';
 import { processSetReaction } from '../../../../client/lib/chats/flows/processSetReaction';
 import { sendMessage } from '../../../../client/lib/chats/flows/sendMessage';
-import { UserAction } from '..';
+import { UserAction } from './UserAction';
 import { replyBroadcast } from '../../../../client/lib/chats/flows/replyBroadcast';
 import { createDataAPI } from '../../../../client/lib/chats/data';
 import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
@@ -39,9 +39,9 @@ export class ChatMessages implements ChatAPI {
 	public userCard: { open(username: string): (event: UIEvent) => void; close(): void };
 
 	public action: {
-		start(action: 'typing'): void;
-		stop(action: 'typing' | 'recording' | 'uploading' | 'playing'): void;
-		performContinuously(action: 'recording' | 'uploading' | 'playing'): void;
+		start(action: 'typing'): Promise<void> | void;
+		stop(action: 'typing' | 'recording' | 'uploading' | 'playing'): Promise<void> | void;
+		performContinuously(action: 'recording' | 'uploading' | 'playing'): Promise<void> | void;
 	};
 
 	private currentEditingMID?: string;

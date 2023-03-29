@@ -70,7 +70,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 		callbacks.add(
 			'streamNewMessage',
 			(msg: IMessage) => {
-				if (room._id !== msg.rid || (isEditedMessage(msg) && msg.editedAt) || msg.tmid !== mainMessage._id) {
+				if (room._id !== msg.rid || isEditedMessage(msg) || msg.tmid !== mainMessage._id) {
 					return;
 				}
 

@@ -7,19 +7,19 @@ import { callbacks } from '../../../../../lib/callbacks';
 
 callbacks.add(
 	'afterSaveMessage',
-	(message: IMessage, room: IRoom) => {
+	async (message: IMessage, room: IRoom) => {
 		// skips this callback if the message was edited
-		if (isEditedMessage(message) && message.editedAt) {
+		if (isEditedMessage(message)) {
 			return message;
 		}
 
 		if (!isOmnichannelRoom(room) || !room.closedAt) {
 			// set subscription as read right after message was sent
-			Promise.await(Subscriptions.setAsReadByRoomIdAndUserId(room._id, message.u._id));
+			await Subscriptions.setAsReadByRoomIdAndUserId(room._id, message.u._id);
 		}
 
 		// mark message as read as well
-		ReadReceipt.markMessageAsReadBySender(message, room, message.u._id);
+		await ReadReceipt.markMessageAsReadBySender(message, room, message.u._id);
 
 		return message;
 	},

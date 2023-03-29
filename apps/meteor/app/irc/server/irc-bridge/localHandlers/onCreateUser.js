@@ -1,8 +1,9 @@
+import { Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { Users, Rooms } from '../../../../models/server';
+import { Users } from '../../../../models/server';
 
-export default function handleOnCreateUser(newUser) {
+export default async function handleOnCreateUser(newUser) {
 	if (!newUser) {
 		return this.log('Invalid handleOnCreateUser call');
 	}
@@ -33,7 +34,7 @@ export default function handleOnCreateUser(newUser) {
 
 	this.sendCommand('registerUser', user);
 
-	const rooms = Rooms.findBySubscriptionUserId(user._id).fetch();
+	const rooms = await Rooms.findBySubscriptionUserId(user._id).toArray();
 
 	rooms.forEach((room) => this.sendCommand('joinedChannel', { room, user }));
 }

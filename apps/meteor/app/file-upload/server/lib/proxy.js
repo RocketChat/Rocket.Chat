@@ -7,8 +7,8 @@ import { UploadFS } from 'meteor/jalik:ufs';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { InstanceStatus as InstanceStatusModel } from '@rocket.chat/models';
 
-import { Logger } from '../../../logger';
-import { isDocker } from '../../../utils';
+import { Logger } from '../../../logger/server';
+import { isDocker } from '../../../utils/server';
 
 const logger = new Logger('UploadProxy');
 

@@ -1062,11 +1062,13 @@ test.describe.parallel('Federation - Channel Creation', () => {
 				await expect(poFederationChannelServer1.tabs.btnTabMembers).toBeVisible();
 				await poFederationChannelServer1.tabs.btnTabMembers.click();
 				await (await poFederationChannelServer1.tabs.members.getUserInList(usernameWithDomainFromServer2)).click();
+				await poFederationChannelServer1.tabs.members.btnMenuUserInfo.click();
 				await expect(poFederationChannelServer1.tabs.members.btnRemoveUserFromRoom).toBeVisible();
 
 				await expect(poFederationChannelServer2.tabs.btnTabMembers).toBeVisible();
 				await poFederationChannelServer2.tabs.btnTabMembers.click();
 				await (await poFederationChannelServer2.tabs.members.getUserInList(usernameWithDomainFromServer1)).click();
+				await expect(poFederationChannelServer2.tabs.members.btnMenuUserInfo).not.toBeVisible();
 				await expect(poFederationChannelServer2.tabs.members.btnRemoveUserFromRoom).not.toBeVisible();
 
 				await pageForServer2.close();

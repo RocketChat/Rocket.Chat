@@ -73,10 +73,7 @@ export const useFilesList = (
 	const { loadMoreItems, initialItemCount } = useScrollableRecordList(
 		filesList,
 		fetchMessages,
-		useMemo(() => {
-			const filesListSize = getConfig('discussionListSize');
-			return filesListSize ? parseInt(filesListSize, 10) : undefined;
-		}, []),
+		useMemo(() => parseInt(`${getConfig('discussionListSize', 10)}`), []),
 	);
 
 	// TODO: chapter day : frontend create useStreamUpdatesForUploadList

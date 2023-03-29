@@ -7,7 +7,7 @@ import { useChat } from '../../../../../client/views/room/contexts/ChatContext';
 import type { ComposerPopupOption } from '../../../../../client/views/room/contexts/ComposerPopupContext';
 import { useComposerBoxPopupQueries } from './useComposerBoxPopupQueries';
 
-export type ComposerBoxPopupImperativeCommands<T> = MutableRefObject<
+type ComposerBoxPopupImperativeCommands<T> = MutableRefObject<
 	| {
 			getFilter?: () => unknown;
 			select?: (s: T) => void;
@@ -168,7 +168,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>({
 	});
 
 	const keydown = useMutableCallback((event: KeyboardEvent) => {
-		if (!popup || popup.preview) {
+		if (!popup) {
 			return;
 		}
 

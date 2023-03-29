@@ -1,18 +1,19 @@
+import type { App } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { FC } from 'react';
 import React from 'react';
 
 import GenericModal from '../../components/GenericModal';
 import AppPermissionsList from './components/AppPermissionsList';
 
-type AppPermissionsReviewModalProps = {
-	appPermissions: Array<{ name: string; required?: boolean }>;
+export type AppPermissionsReviewModalProps = {
+	appPermissions: App['permissions'];
 	onCancel: () => void;
-	onConfirm: (permissionsGranted: any) => void;
+	onConfirm: (permissionsGranted: AppPermissionsReviewModalProps['appPermissions']) => void;
 };
 
-const AppPermissionsReviewModal = ({ appPermissions, onCancel, onConfirm }: AppPermissionsReviewModalProps): ReactElement => {
+const AppPermissionsReviewModal: FC<AppPermissionsReviewModalProps> = ({ appPermissions, onCancel, onConfirm }) => {
 	const t = useTranslation();
 
 	return (

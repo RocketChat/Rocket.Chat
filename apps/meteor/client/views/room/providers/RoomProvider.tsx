@@ -4,7 +4,7 @@ import type { ReactNode, ContextType, ReactElement } from 'react';
 import React, { useMemo, memo, useEffect, useCallback } from 'react';
 
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
-import { UserAction } from '../../../../app/ui/client';
+import { UserAction } from '../../../../app/ui/client/lib/UserAction';
 import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
 import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { RoomManager } from '../../../lib/RoomManager';
@@ -25,7 +25,7 @@ type RoomProviderProps = {
 const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	useRoomRolesManagement(rid);
 
-	const roomQuery = useReactiveQuery(['rooms', rid], ({ rooms }) => rooms.findOne({ _id: rid }) ?? null);
+	const roomQuery = useReactiveQuery(['rooms', rid], ({ rooms }) => rooms.findOne({ _id: rid }));
 
 	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
 	const homeRoute = useRoute('home');

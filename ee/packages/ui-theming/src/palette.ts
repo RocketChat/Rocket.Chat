@@ -28,6 +28,7 @@ export const palette = [
 			{ name: 'surface-dark', token: 'N900', color: '#1F2329' },
 			{ name: 'surface-featured', token: '', color: '#5F1477' },
 			{ name: 'surface-featured-hover', token: '', color: '#4A105D' },
+			{ name: 'surface-overlay', token: '', color: 'rgba(47, 52, 61, 0.5)' },
 		],
 	},
 	{

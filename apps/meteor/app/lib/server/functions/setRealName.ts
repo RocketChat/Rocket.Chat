@@ -4,7 +4,7 @@ import { api } from '@rocket.chat/core-services';
 
 import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RateLimiter } from '../lib';
 
 export const _setRealName = function (userId: string, name: string, fullUser: IUser): IUser | undefined {
@@ -34,13 +34,13 @@ export const _setRealName = function (userId: string, name: string, fullUser: IU
 	user.name = name;
 
 	if (settings.get('UI_Use_Real_Name') === true) {
-		api.broadcast('user.nameChanged', {
+		void api.broadcast('user.nameChanged', {
 			_id: user._id,
 			name: user.name,
 			username: user.username,
 		});
 	}
-	api.broadcast('user.realNameChanged', {
+	void api.broadcast('user.realNameChanged', {
 		_id: user._id,
 		name,
 		username: user.username,
@@ -50,8 +50,8 @@ export const _setRealName = function (userId: string, name: string, fullUser: IU
 };
 
 export const setRealName = RateLimiter.limitFunction(_setRealName, 1, 60000, {
-	0() {
+	async 0() {
 		const userId = Meteor.userId();
-		return !userId || !hasPermission(userId, 'edit-other-user-info');
+		return !userId || !(await hasPermissionAsync(userId, 'edit-other-user-info'));
 	}, // Administrators have permission to change others names, so don't limit those
 });

@@ -1,8 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 import { MessageDivider } from '@rocket.chat/fuselage';
-import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import { useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
+import type { ReactElement, ComponentProps } from 'react';
 import React, { Fragment, memo } from 'react';
 
 import { MessageTypes } from '../../../../app/ui-utils/client';
@@ -20,17 +20,19 @@ import MessageListProvider from './providers/MessageListProvider';
 
 type MessageListProps = {
 	rid: IRoom['_id'];
+	scrollMessageList: ComponentProps<typeof MessageListProvider>['scrollMessageList'];
 };
 
-export const MessageList = ({ rid }: MessageListProps): ReactElement => {
+export const MessageList = ({ rid, scrollMessageList }: MessageListProps): ReactElement => {
 	const t = useTranslation();
 	const messages = useMessages({ rid });
 	const subscription = useRoomSubscription();
+	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 	const messageGroupingPeriod = Number(useSetting('Message_GroupingPeriod'));
 	const formatDate = useFormatDate();
 
 	return (
-		<MessageListProvider>
+		<MessageListProvider scrollMessageList={scrollMessageList}>
 			<SelectedMessagesProvider>
 				{messages.map((message, index, { [index - 1]: previous }) => {
 					const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
@@ -60,6 +62,7 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 							{visible && (
 								<RoomMessage
 									message={message}
+									showUserAvatar={showUserAvatar}
 									sequential={shouldShowAsSequential}
 									unread={unread}
 									mention={mention}
@@ -76,10 +79,11 @@ export const MessageList = ({ rid }: MessageListProps): ReactElement => {
 									data-sequential={sequential}
 									sequential={shouldShowAsSequential}
 									message={message}
+									showUserAvatar={showUserAvatar}
 								/>
 							)}
 
-							{system && <SystemMessage message={message} />}
+							{system && <SystemMessage showUserAvatar={showUserAvatar} message={message} />}
 						</Fragment>
 					);
 				})}

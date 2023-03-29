@@ -1,18 +1,17 @@
 import { Option, OptionColumn, OptionContent, OptionIcon } from '@rocket.chat/fuselage';
-import type { ComponentProps, MouseEventHandler, ReactElement, ReactNode } from 'react';
+import type { ComponentProps, ReactElement, ReactNode } from 'react';
 import React from 'react';
 
 type ListItemProps = {
-	text: ReactNode;
 	icon?: ComponentProps<typeof OptionIcon>['name'];
-	input?: any;
+	text: ReactNode;
+	input?: ReactNode;
 	loading?: boolean;
-	action?: MouseEventHandler<HTMLOrSVGElement>;
 	children?: ReactNode;
-};
+} & ComponentProps<typeof Option>;
 
-const ListItem = ({ text, icon, input, action, children }: ListItemProps): ReactElement => (
-	<Option onClick={action}>
+const ListItem = ({ icon, text, input, children, ...props }: ListItemProps): ReactElement => (
+	<Option {...props}>
 		{icon && <OptionIcon name={icon} />}
 		<OptionContent>{text}</OptionContent>
 		{input && <OptionColumn>{input}</OptionColumn>}

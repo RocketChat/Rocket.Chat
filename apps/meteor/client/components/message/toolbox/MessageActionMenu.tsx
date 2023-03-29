@@ -15,7 +15,7 @@ type MessageActionMenuProps = {
 	options: MessageActionConfigOption[];
 };
 
-export const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps): ReactElement => {
+const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps): ReactElement => {
 	const ref = useRef(null);
 
 	const t = useTranslation();
@@ -41,8 +41,7 @@ export const MessageActionMenu = ({ options, ...props }: MessageActionMenuProps)
 		<MessageToolboxItem
 			ref={ref}
 			icon='kebab'
-			onClick={(e): void => {
-				e.stopPropagation();
+			onClick={(): void => {
 				setVisible(!visible);
 			}}
 			data-qa-id='menu'

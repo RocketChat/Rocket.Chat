@@ -18,7 +18,7 @@ const LinkSpan = ({ label }: LinkSpanProps): ReactElement => {
 		const labelElements = labelArray.map((child, index) => {
 			switch (child.type) {
 				case 'PLAIN_TEXT':
-					return <Text key={index}>{child.value}</Text>;
+					return <Text key={index}>{child.value.trim()}</Text>;
 
 				case 'STRIKE':
 					return <StrikeSpan key={index} children={child.value} />;

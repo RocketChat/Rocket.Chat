@@ -24,6 +24,7 @@ describe('RoomMessageContent', () => {
 		'../../MessageContentBody': () => fakeMessage.msg,
 		'../../content/DiscussionMetrics': () => null,
 		'../../content/MessageActions': () => null,
+		'../../hooks/useNormalizedMessage': { useNormalizedMessage: (args: any) => ({ md: fakeMessage.md, ...args }) },
 	});
 
 	const ProvidersMock = ({ children }: { children: ReactNode }) => {

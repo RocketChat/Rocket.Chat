@@ -97,5 +97,3 @@ const getUnavailableAgents = function (_: any, departmentId: string, customFilte
 overwriteClassOnLicense('livechat-enterprise', Users, {
 	getUnavailableAgents,
 });
-
-export default Users;

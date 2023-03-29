@@ -34,7 +34,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }): ReactElement => {
 
 	const isTeam = room && isTeamRoom(room);
 	const isDirect = room && isDirectMessageRoom(room);
-	const hasPermissionToCreateInviteLinks = usePermission('create-invite-links');
+	const hasPermissionToCreateInviteLinks = usePermission('create-invite-links', rid);
 	const isFederated = room && isRoomFederated(room);
 
 	const canCreateInviteLinks = isFederated ? false : hasPermissionToCreateInviteLinks;

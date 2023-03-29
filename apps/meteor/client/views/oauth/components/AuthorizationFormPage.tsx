@@ -42,11 +42,13 @@ const AuthorizationFormPage = ({ oauthApp, redirectUri, user }: AuthorizationFor
 
 	const submitRef = useRef<HTMLButtonElement>(null);
 
+	const hasAuthorized = user.oauth?.authorizedClients?.includes(oauthApp.clientId);
+
 	useEffect(() => {
-		if (user.oauth?.authorizedClients?.includes(oauthApp.clientId)) {
+		if (hasAuthorized) {
 			submitRef.current?.click();
 		}
-	}, [oauthApp.clientId, user]);
+	}, [oauthApp.clientId, hasAuthorized]);
 
 	return (
 		<Layout>

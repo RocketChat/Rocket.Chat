@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { VerticalWizardLayout } from '@rocket.chat/layout';
-import { useAssetPath, useSetting } from '@rocket.chat/ui-contexts';
+import { useAssetWithDarkModePath, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import React from 'react';
 
@@ -10,8 +10,8 @@ type LayoutProps = {
 
 const Layout = ({ children }: LayoutProps) => {
 	const hideLogo = useSetting<boolean>('Layout_Login_Hide_Logo');
-	const customLogo = useAssetPath('Assets_logo');
-	const customBackground = useAssetPath('Assets_background');
+	const customLogo = useAssetWithDarkModePath('logo');
+	const customBackground = useAssetWithDarkModePath('background');
 
 	return (
 		<VerticalWizardLayout

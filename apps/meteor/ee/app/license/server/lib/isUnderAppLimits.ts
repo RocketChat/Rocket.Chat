@@ -1,13 +1,17 @@
-import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
+import { Apps } from '@rocket.chat/core-services';
 
 import type { ILicense, LicenseAppSources } from '../../definition/ILicense';
 
-export async function isUnderAppLimits(
-	{ appManager }: { appManager: AppManager },
-	licenseAppsConfig: NonNullable<ILicense['apps']>,
-	source: LicenseAppSources,
-): Promise<boolean> {
-	const apps = appManager.get({ enabled: true }).filter((app) => app.getStorageItem().installationSource === source);
+export async function isUnderAppLimits(licenseAppsConfig: NonNullable<ILicense['apps']>, source: LicenseAppSources): Promise<boolean> {
+	const apps = await Apps.getApps({ enabled: true });
+
+	if (!apps || !Array.isArray(apps)) {
+		return true;
+	}
+
+	const storageItems = await Promise.all(apps.map((app) => Apps.getAppStorageItemById(app.id)));
+	const activeAppsFromSameSource = storageItems.filter((item) => item?.installationSource === source);
+
 	const configKey = `max${source.charAt(0).toUpperCase()}${source.slice(1)}Apps` as keyof typeof licenseAppsConfig;
 	const configLimit = licenseAppsConfig[configKey];
 
@@ -17,5 +21,5 @@ export async function isUnderAppLimits(
 		return true;
 	}
 
-	return apps.length < configLimit;
+	return activeAppsFromSameSource.length < configLimit;
 }

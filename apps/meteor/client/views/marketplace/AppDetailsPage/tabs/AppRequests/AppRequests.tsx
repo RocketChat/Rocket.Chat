@@ -17,7 +17,7 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 	const [limit, setLimit] = useState<itemsPerPage>(25);
 	const [offset, setOffset] = useState<number>(0);
 
-	const { data: paginatedAppRequests, isSuccess, isLoading } = useAppRequests(id, limit, offset);
+	const paginatedAppRequests = useAppRequests(id, limit, offset);
 	const t = useTranslation();
 
 	const onSetItemsPerPage = (itemsPerPageOption: SetStateAction<itemsPerPage>) => setLimit(itemsPerPageOption);
@@ -32,8 +32,8 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 	});
 	useEffect(() => {
 		return () => {
-			if (isAdminUser && isSuccess) {
-				const unseenRequests = paginatedAppRequests.data?.filter(({ seen }) => !seen).map(({ id }) => id);
+			if (isAdminUser && paginatedAppRequests.isSuccess) {
+				const unseenRequests = paginatedAppRequests.data.data.filter(({ seen }) => !seen).map(({ id }) => id);
 
 				if (unseenRequests.length) {
 					markAppRequestsAsSeen.mutate(unseenRequests, {
@@ -46,9 +46,9 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 			}
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [isAdminUser, isSuccess, paginatedAppRequests?.data, reloadApps]);
+	}, [isAdminUser, paginatedAppRequests.isSuccess, paginatedAppRequests?.data, reloadApps]);
 
-	if (isLoading) {
+	if (paginatedAppRequests.isLoading) {
 		return (
 			<Box w='full' maxWidth='x608' marginInline='auto' pbs='x36'>
 				<AppRequestsLoading />
@@ -59,8 +59,8 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 	return (
 		<Box h='full' display='flex' flexDirection='column'>
 			<Box w='full' maxWidth='x608' marginInline='auto' pbs='x36' flexGrow='1'>
-				{paginatedAppRequests?.data?.length ? (
-					paginatedAppRequests?.data.map((request) => (
+				{paginatedAppRequests.isSuccess && paginatedAppRequests.data.data.length ? (
+					paginatedAppRequests.data.data.map((request) => (
 						<AppRequestItem
 							key={request.id}
 							seen={request.seen}
@@ -77,12 +77,12 @@ const AppRequests = ({ id, isAdminUser }: { id: App['id']; isAdminUser: boolean 
 					</States>
 				)}
 			</Box>
-			{isSuccess && paginatedAppRequests?.data?.length && (
+			{paginatedAppRequests.isSuccess && paginatedAppRequests.data.data.length && (
 				<Pagination
 					divider
-					count={paginatedAppRequests.meta.total}
-					itemsPerPage={paginatedAppRequests.meta.limit}
-					current={paginatedAppRequests.meta.offset}
+					count={paginatedAppRequests.data.meta.total}
+					itemsPerPage={paginatedAppRequests.data.meta.limit}
+					current={paginatedAppRequests.data.meta.offset}
 					onSetItemsPerPage={onSetItemsPerPage}
 					onSetCurrent={onSetCurrent}
 				/>

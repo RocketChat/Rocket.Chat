@@ -6,7 +6,7 @@ import { overwriteClassOnLicense } from '../../../license/server';
 import { calculateOnHoldTimeForRoom } from '../lib/calculateOnHoldTimeForRoom';
 
 overwriteClassOnLicense('voip-enterprise', OmnichannelVoipService, {
-	getRoomClosingData(
+	async getRoomClosingData(
 		_originalFn: (
 			closer: ILivechatVisitor | ILivechatAgent,
 			room: IVoipRoom,
@@ -19,7 +19,7 @@ overwriteClassOnLicense('voip-enterprise', OmnichannelVoipService, {
 		room: IVoipRoom,
 		sysMessageId: 'voip-call-wrapup' | 'voip-call-ended-unexpectedly',
 		options?: { comment?: string; tags?: string[] },
-	): { closeInfo: IVoipRoomClosingInfo; closeSystemMsgData: IOmniRoomClosingMessage } {
+	): Promise<{ closeInfo: IVoipRoomClosingInfo; closeSystemMsgData: IOmniRoomClosingMessage }> {
 		const { comment, tags } = options || {};
 		if (comment) {
 			closeSystemMsgData.msg = comment;
@@ -33,7 +33,7 @@ overwriteClassOnLicense('voip-enterprise', OmnichannelVoipService, {
 		}
 
 		const now = new Date();
-		const callTotalHoldTime = Promise.await(calculateOnHoldTimeForRoom(room, now));
+		const callTotalHoldTime = await calculateOnHoldTimeForRoom(room, now);
 		closeInfo.callTotalHoldTime = callTotalHoldTime;
 
 		return { closeInfo, closeSystemMsgData };

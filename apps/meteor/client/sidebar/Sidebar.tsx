@@ -37,7 +37,7 @@ const Sidebar = () => {
 			transform: translate3d(0px, 0px, 0px);
 		}
 
-		@media (width < 768px) {
+		@media (max-width: 767px) {
 			position: absolute;
 			user-select: none;
 			transform: translate3d(-100%, 0, 0);
