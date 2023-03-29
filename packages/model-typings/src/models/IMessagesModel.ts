@@ -277,12 +277,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	): Promise<Omit<IMessage, '_updatedAt'>>;
 	removeByRoomIds(rids: string[]): Promise<DeleteResult>;
 	removeById(_id: string): Promise<DeleteResult>;
-	createSubscriptionRoleAddedWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData?: Record<string, string>,
-	): Promise<Omit<IMessage, '_updatedAt'>>;
 
 	findThreadsByRoomIdPinnedTimestampAndUsers(
 		data: { rid: string; pinned: boolean; ignoreDiscussion?: boolean; ts: Filter<IMessage>['ts']; users: string[] },

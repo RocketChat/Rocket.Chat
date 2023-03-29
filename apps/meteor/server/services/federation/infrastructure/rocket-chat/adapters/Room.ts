@@ -1,7 +1,7 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Messages as MessagesRaw, Rooms, Subscriptions, MatrixBridgedRoom } from '@rocket.chat/models';
-import { api } from '@rocket.chat/core-services';
+import { Message, api } from '@rocket.chat/core-services';
 
 import { DirectMessageFederatedRoom, FederatedRoom } from '../../../domain/FederatedRoom';
 import type { FederatedUser } from '../../../domain/FederatedUser';
@@ -217,13 +217,12 @@ export class RocketChatRoomAdapter {
 			if (notifyChannel) {
 				await Promise.all(
 					toAdd.map((role) =>
-						Messages.createSubscriptionRoleAddedWithRoomIdAndUser(
+						Message.saveSystemMessage(
+							'subscription-role-added',
 							federatedRoom.getInternalId(),
-							targetFederatedUser.getInternalReference(),
-							{
-								u: whoDidTheChange,
-								role,
-							},
+							targetFederatedUser.getInternalReference().username || '',
+							whoDidTheChange,
+							{ role },
 						),
 					),
 				);
