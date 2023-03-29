@@ -4,7 +4,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, Dispatch, SetStateAction } from 'react';
 import React, { useCallback, useState, useEffect } from 'react';
 
-export const DEFAULT_TYPES = ['d', 'p', 'c', 'teams'];
+export const DEFAULT_TYPES = ['d', 'p', 'c', 'discussions', 'teams'];
 
 export const roomTypeI18nMap = {
 	l: 'Omnichannel',

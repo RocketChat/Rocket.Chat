@@ -130,20 +130,20 @@ export class RoomsRaw extends BaseRaw {
 	findByNameOrFnameContainingAndTypes(name, types, discussion = false, teams = false, options = {}) {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
+		const nameCondition = {
+			$or: [
+				{ name: nameRegex, federated: { $ne: true } },
+				{ fname: nameRegex },
+				{
+					t: 'd',
+					usernames: nameRegex,
+				},
+			],
+		};
+
 		const query = {
 			$and: [
-				name
-					? {
-							$or: [
-								{ name: nameRegex, federated: { $ne: true } },
-								{ fname: nameRegex },
-								{
-									t: 'd',
-									usernames: nameRegex,
-								},
-							],
-					  }
-					: {},
+				name ? nameCondition : {},
 				(types && types.length) || discussion || teams
 					? {
 							$or: [
@@ -153,15 +153,7 @@ export class RoomsRaw extends BaseRaw {
 									},
 								},
 								...(discussion ? [{ prid: { $exists: true } }] : []),
-								...(teams
-									? [
-											{
-												teamMain: {
-													$exists: true,
-												},
-											},
-									  ]
-									: []),
+								...(teams ? [{ teamMain: { $exists: true } }] : []),
 							],
 					  }
 					: {},
