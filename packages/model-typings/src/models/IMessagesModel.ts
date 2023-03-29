@@ -118,16 +118,14 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	setReactions(messageId: string, reactions: IMessage['reactions']): Promise<UpdateResult>;
 	keepHistoryForToken(token: string): Promise<UpdateResult | Document>;
 	setRoomIdByToken(token: string, rid: string): Promise<UpdateResult | Document>;
-	createRoomSetReadOnlyByRoomIdAndUser(roomId: string, user: IMessage['u'], readReceiptsEnabled?: boolean): Promise<IMessage | null>;
-	createRoomRemovedReadOnlyByRoomIdAndUser(roomId: string, user: IMessage['u'], readReceiptsEnabled?: boolean): Promise<IMessage | null>;
 	createWithTypeRoomIdMessageUserAndUnread(
 		type: MessageTypesValues,
-		roomId: string,
+		rid: string,
 		message: string,
 		user: Pick<IMessage['u'], '_id' | 'username'>,
 		unread?: boolean,
-		extraData?: Record<string, string>,
-	): Promise<IMessage | null>;
+		extraData?: Partial<IMessage>,
+	): Promise<InsertOneResult<IMessage>>;
 	unsetReactions(messageId: string): Promise<UpdateResult>;
 	deleteOldOTRMessages(roomId: string, ts: Date): Promise<DeleteResult>;
 	updateOTRAck(_id: string, otrAck: string): Promise<UpdateResult>;
@@ -139,13 +137,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		readReceiptsEnabled?: boolean,
 		extraData?: Record<string, any>,
 	): Promise<Omit<IMessage, '_updatedAt'>>;
-	createRoomRenamedWithRoomIdRoomNameAndUser(
-		roomId: string,
-		roomName: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData?: Record<string, any>,
-	): Promise<IMessage | null>;
 	addTranslations(messageId: string, translations: Record<string, string>, providerName: string): Promise<UpdateResult>;
 	addAttachmentTranslations(messageId: string, attachmentIndex: string, translations: Record<string, string>): Promise<UpdateResult>;
 	setImportFileRocketChatAttachment(
@@ -303,13 +294,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	createUserJoinWithRoomIdAndUser(
 		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData?: Record<string, string>,
-	): Promise<Omit<IMessage, '_updatedAt'>>;
-	createTranscriptHistoryWithRoomIdMessageAndUser(
-		roomId: string,
-		message: string,
 		user: IMessage['u'],
 		readReceiptsEnabled?: boolean,
 		extraData?: Record<string, string>,
