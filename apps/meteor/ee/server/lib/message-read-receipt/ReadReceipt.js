@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
-import { LivechatVisitors, ReadReceipts, Messages, Rooms } from '@rocket.chat/models';
+import { LivechatVisitors, ReadReceipts, Messages, Rooms, Subscriptions } from '@rocket.chat/models';
 
-import { Subscriptions, Users } from '../../../../app/models/server';
+import { Users } from '../../../../app/models/server';
 import { settings } from '../../../../app/settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -21,7 +21,7 @@ const debounceByRoomId = function (fn) {
 const updateMessages = debounceByRoomId(
 	Meteor.bindEnvironment(({ _id, lm }) => {
 		// @TODO maybe store firstSubscription in room object so we don't need to call the above update method
-		const firstSubscription = Subscriptions.getMinimumLastSeenByRoomId(_id);
+		const firstSubscription = Promise.await(Subscriptions.getMinimumLastSeenByRoomId(_id));
 		if (!firstSubscription || !firstSubscription.ls) {
 			return;
 		}
@@ -62,7 +62,7 @@ export const ReadReceipt = {
 		}
 
 		// mark message as read if the sender is the only one in the room
-		const isUserAlone = Subscriptions.findByRoomIdAndNotUserId(roomId, userId, { fields: { _id: 1 } }).count() === 0;
+		const isUserAlone = (await Subscriptions.countByRoomIdAndNotUserId(roomId, userId)) === 0;
 		if (isUserAlone) {
 			await Messages.setAsReadById(message._id);
 		}

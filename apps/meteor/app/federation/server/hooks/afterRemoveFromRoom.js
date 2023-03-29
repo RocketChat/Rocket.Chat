@@ -18,7 +18,7 @@ async function afterRemoveFromRoom(involvedUsers, room) {
 
 	clientLogger.debug({ msg: 'afterRemoveFromRoom', involvedUsers, room });
 
-	const { users } = getFederatedRoomData(room);
+	const { users } = await getFederatedRoomData(room);
 
 	try {
 		// Get the domains after removal
