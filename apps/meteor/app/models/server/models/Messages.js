@@ -119,11 +119,6 @@ export class Messages extends Base {
 		return this.createWithTypeRoomIdMessageAndUser('command', roomId, command, user, extraData);
 	}
 
-	createModeratorRemovedWithRoomIdAndUser(roomId, user, extraData) {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('moderator-removed', roomId, message, user, extraData);
-	}
-
 	createNewOwnerWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('new-owner', roomId, message, user, extraData);
