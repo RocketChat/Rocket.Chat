@@ -40,10 +40,6 @@ export class Messages extends Base {
 		return this.update(query, update);
 	}
 
-	createRoomSettingsChangedWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {
-		return this.createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData);
-	}
-
 	// FIND
 
 	findByRoomId(roomId, options) {

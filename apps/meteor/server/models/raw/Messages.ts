@@ -755,14 +755,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
-	createRoomSetReadOnlyByRoomIdAndUser(roomId: string, user: IMessage['u'], readReceiptsEnabled: boolean): Promise<IMessage | null> {
-		return this.createWithTypeRoomIdMessageUserAndUnread('room-set-read-only', roomId, '', user, readReceiptsEnabled);
-	}
-
-	createRoomRemovedReadOnlyByRoomIdAndUser(roomId: string, user: IMessage['u'], readReceiptsEnabled: boolean): Promise<IMessage | null> {
-		return this.createWithTypeRoomIdMessageUserAndUnread('room-removed-read-only', roomId, '', user, readReceiptsEnabled);
-	}
-
 	unsetReactions(messageId: string): Promise<UpdateResult> {
 		return this.updateOne({ _id: messageId }, { $unset: { reactions: 1 } });
 	}
@@ -798,16 +790,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		extraData: Record<string, any> = {},
 	): Promise<Omit<IMessage, '_updatedAt'>> {
 		return this.createWithTypeRoomIdMessageAndUser(type, roomId, message, user, readReceiptsEnabled, extraData);
-	}
-
-	createRoomRenamedWithRoomIdRoomNameAndUser(
-		roomId: string,
-		roomName: string,
-		user: IMessage['u'],
-		readReceiptsEnabled: boolean,
-		extraData: Record<string, any> = {},
-	): Promise<IMessage | null> {
-		return this.createWithTypeRoomIdMessageUserAndUnread('r', roomId, roomName, user, readReceiptsEnabled, extraData);
 	}
 
 	addTranslations(messageId: string, translations: Record<string, string>, providerName: string): Promise<UpdateResult> {
@@ -1410,6 +1392,10 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	// INSERT
+
+	/**
+	 * @deprecated Use the `createWithTypeRoomIdMessageUserAndUnread` method instead.
+	 */
 	async createWithTypeRoomIdMessageAndUser(
 		type: MessageTypesValues,
 		roomId: string,
@@ -1439,15 +1425,15 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 	async createWithTypeRoomIdMessageUserAndUnread(
 		type: MessageTypesValues,
-		roomId: string,
+		rid: string,
 		message: string,
 		user: Pick<IMessage['u'], '_id' | 'username'>,
 		unread?: boolean,
 		extraData?: Record<string, string>,
-	): Promise<IMessage | null> {
+	): Promise<InsertOneResult<IMessage>> {
 		const record: Omit<IMessage, '_id' | '_updatedAt'> = {
 			t: type,
-			rid: roomId,
+			rid,
 			ts: new Date(),
 			msg: message,
 			u: {
@@ -1460,11 +1446,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 		const data = Object.assign(record, extraData);
 
-		await Rooms.incMsgCountById(roomId, 1);
+		await Rooms.incMsgCountById(rid, 1);
 
-		const result = await this.insertOne(data);
-
-		return this.findOneById(result.insertedId);
+		return this.insertOne(data);
 	}
 
 	async createNavigationHistoryWithRoomIdMessageAndUser(
