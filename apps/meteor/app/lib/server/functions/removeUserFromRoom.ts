@@ -5,7 +5,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Message, Team } from '@rocket.chat/core-services';
 import { Subscriptions } from '@rocket.chat/models';
 
-import { Rooms, Messages } from '../../../models/server';
+import { Rooms } from '../../../models/server';
 import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 
@@ -56,7 +56,7 @@ export const removeUserFromRoom = async function (
 	}
 
 	if (room.t === 'l') {
-		Messages.createCommandWithRoomIdAndUser('survey', rid, user);
+		await Message.saveSystemMessage('command', rid, 'survey', user);
 	}
 
 	await Subscriptions.removeByRoomIdAndUserId(rid, user._id);

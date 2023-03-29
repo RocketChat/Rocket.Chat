@@ -115,10 +115,6 @@ export class Messages extends Base {
 		return record;
 	}
 
-	createCommandWithRoomIdAndUser(command, roomId, user, extraData) {
-		return this.createWithTypeRoomIdMessageAndUser('command', roomId, command, user, extraData);
-	}
-
 	createOtrSystemMessagesWithRoomIdAndUser(roomId, user, id, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser(id, roomId, message, user, extraData);

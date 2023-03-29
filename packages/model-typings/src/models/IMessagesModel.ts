@@ -254,14 +254,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		extraData?: Record<string, string>,
 	): Promise<Omit<IMessage, '_updatedAt'>>;
 
-	createCommandWithRoomIdAndUser(
-		command: string,
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData?: Record<string, string>,
-	): Promise<Omit<IMessage, '_updatedAt'>>;
-
 	createOtrSystemMessagesWithRoomIdAndUser(
 		roomId: string,
 		user: IMessage['u'],
