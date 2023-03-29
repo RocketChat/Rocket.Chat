@@ -5,10 +5,17 @@ import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/l
 import { OmnichannelSourceType, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
 import { api } from '@rocket.chat/core-services';
-import { LivechatDepartmentAgents, Users as UsersRaw, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
+import {
+	LivechatDepartmentAgents,
+	Users as UsersRaw,
+	LivechatInquiry,
+	LivechatRooms,
+	LivechatDepartment,
+	Subscriptions as SubscriptionsRaw,
+} from '@rocket.chat/models';
 
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
-import { Messages, Rooms, Subscriptions, Users, LivechatDepartment } from '../../../models/server';
+import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../../lib/callbacks';
@@ -206,7 +213,7 @@ export const removeAgentFromSubscription = async (rid, { _id, username }) => {
 	const room = await LivechatRooms.findOneById(rid);
 	const user = Users.findOneById(_id);
 
-	Subscriptions.removeByRoomIdAndUserId(rid, _id);
+	await SubscriptionsRaw.removeByRoomIdAndUserId(rid, _id);
 	Messages.createUserLeaveWithRoomIdAndUser(rid, { _id, username });
 
 	Meteor.defer(() => {
@@ -476,7 +483,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 
 	const { servedBy, chatQueued } = roomTaken;
 	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
-		const department = LivechatDepartment.findOneById(departmentId);
+		const department = await LivechatDepartment.findOneById(departmentId);
 		if (!department?.fallbackForwardDepartment) {
 			logger.debug(`Cannot forward room ${room._id}. Chat assigned to agent ${servedBy._id} (Previous was ${oldServedBy._id})`);
 			return false;

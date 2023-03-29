@@ -979,11 +979,12 @@ export default class SlackAdapter {
 
 	async processTopicMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
 		if (isImporting) {
-			Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser(
+			await MessagesRaw.createWithTypeRoomIdMessageUserAndUnread(
 				'room_changed_topic',
 				rocketChannel._id,
 				slackMessage.topic,
 				rocketUser,
+				settings.get('Message_Read_Receipt_Enabled'),
 				{ ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000), imported: 'slackbridge' },
 			);
 		} else {
@@ -993,11 +994,12 @@ export default class SlackAdapter {
 
 	async processPurposeMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
 		if (isImporting) {
-			Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser(
+			await MessagesRaw.createWithTypeRoomIdMessageUserAndUnread(
 				'room_changed_topic',
 				rocketChannel._id,
 				slackMessage.purpose,
 				rocketUser,
+				settings.get('Message_Read_Receipt_Enabled'),
 				{ ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000), imported: 'slackbridge' },
 			);
 		} else {
@@ -1007,7 +1009,8 @@ export default class SlackAdapter {
 
 	async processNameMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
 		if (isImporting) {
-			await MessagesRaw.createRoomRenamedWithRoomIdRoomNameAndUser(
+			await MessagesRaw.createWithTypeRoomIdMessageUserAndUnread(
+				'r',
 				rocketChannel._id,
 				slackMessage.name,
 				rocketUser,

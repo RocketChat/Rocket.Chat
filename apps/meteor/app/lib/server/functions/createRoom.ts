@@ -3,12 +3,12 @@ import { Meteor } from 'meteor/meteor';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
-import { Rooms } from '@rocket.chat/models';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { Apps } from '../../../../ee/server/apps';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { callbacks } from '../../../../lib/callbacks';
-import { Messages, Subscriptions, Users } from '../../../models/server';
+import { Messages, Users } from '../../../models/server';
 import { getValidRoomName } from '../../../utils/server';
 import { createDirectRoom } from './createDirectRoom';
 
@@ -130,9 +130,9 @@ export const createRoom = async <T extends RoomType>(
 			extra.prid = room.prid;
 		}
 
-		Subscriptions.createWithRoomAndUser(room, owner, extra);
+		await Subscriptions.createWithRoomAndUser(room, owner, extra);
 	} else {
-		for (const username of [...new Set(members as string[])]) {
+		for await (const username of [...new Set(members as string[])]) {
 			const member = Users.findOneByUsername(username, {
 				fields: { 'username': 1, 'settings.preferences': 1, 'federated': 1 },
 			});
@@ -158,7 +158,7 @@ export const createRoom = async <T extends RoomType>(
 				extra.ls = now;
 			}
 
-			Subscriptions.createWithRoomAndUser(room, member, extra);
+			await Subscriptions.createWithRoomAndUser(room, member, extra);
 		}
 	}
 
