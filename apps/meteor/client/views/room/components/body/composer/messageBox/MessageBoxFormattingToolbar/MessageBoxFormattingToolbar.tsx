@@ -13,7 +13,7 @@ type MessageBoxFormattingToolbarProps = {
 	variant?: 'small' | 'large';
 };
 
-export const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, ...props }: MessageBoxFormattingToolbarProps) => {
+const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, ...props }: MessageBoxFormattingToolbarProps) => {
 	const t = useTranslation();
 
 	if (variant === 'small') {
