@@ -22,7 +22,7 @@ export const saveRoomTopic = async function (
 
 	const update = await Rooms.setTopicById(rid, roomTopic);
 	if (update && sendMessage) {
-		await Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser(
+		await Messages.createWithTypeRoomIdMessageUserAndUnread(
 			'room_changed_topic',
 			rid,
 			roomTopic || '',
