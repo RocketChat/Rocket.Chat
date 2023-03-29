@@ -115,11 +115,6 @@ export class Messages extends Base {
 		return record;
 	}
 
-	createUserJoinWithRoomIdAndUser(roomId, user, extraData) {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('uj', roomId, message, user, extraData);
-	}
-
 	createUserJoinTeamWithRoomIdAndUser(roomId, user, extraData) {
 		const message = user.username;
 		return this.createWithTypeRoomIdMessageAndUser('ujt', roomId, message, user, extraData);

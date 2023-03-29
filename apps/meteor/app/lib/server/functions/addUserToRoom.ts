@@ -1,7 +1,7 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
-import { Team } from '@rocket.chat/core-services';
+import { Message, Team } from '@rocket.chat/core-services';
 import { Subscriptions } from '@rocket.chat/models';
 
 import { AppEvents, Apps } from '../../../../ee/server/apps';
@@ -94,7 +94,7 @@ export const addUserToRoom = async function (
 		} else if (room.teamMain) {
 			Messages.createUserJoinTeamWithRoomIdAndUser(rid, userToBeAdded, { ts: now });
 		} else {
-			Messages.createUserJoinWithRoomIdAndUser(rid, userToBeAdded, { ts: now });
+			await Message.saveSystemMessage('uj', rid, userToBeAdded.username, userToBeAdded, { ts: now });
 		}
 	}
 

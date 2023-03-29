@@ -5,6 +5,7 @@ import https from 'https';
 import { RTMClient } from '@slack/rtm-api';
 import { Meteor } from 'meteor/meteor';
 import { Messages as MessagesRaw } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 
 import { slackLogger } from './logger';
 import { SlackAPI } from './SlackAPI';
@@ -939,7 +940,7 @@ export default class SlackAdapter {
 
 	async processChannelJoinMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
 		if (isImporting) {
-			Messages.createUserJoinWithRoomIdAndUser(rocketChannel._id, rocketUser, {
+			await Message.saveSystemMessage('uj', rocketChannel._id, rocketUser.username, rocketUser, {
 				ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
 				imported: 'slackbridge',
 			});

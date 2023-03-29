@@ -4,7 +4,7 @@ import { Match, check } from 'meteor/check';
 import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/livechat';
 import { OmnichannelSourceType, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
-import { api } from '@rocket.chat/core-services';
+import { api, Message } from '@rocket.chat/core-services';
 import {
 	LivechatDepartmentAgents,
 	Users as UsersRaw,
@@ -384,10 +384,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 		if (oldServedBy && servedBy._id !== oldServedBy._id) {
 			await RoutingManager.removeAllRoomSubscriptions(room, servedBy);
 		}
-		Messages.createUserJoinWithRoomIdAndUser(rid, {
-			_id: servedBy._id,
-			username: servedBy.username,
-		});
+		await Message.saveSystemMessage('uj', rid, servedBy.username, servedBy);
 
 		Meteor.defer(() => {
 			Apps.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
@@ -499,7 +496,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 		await RoutingManager.removeAllRoomSubscriptions(room, !chatQueued && servedBy);
 	}
 	if (!chatQueued && servedBy) {
-		Messages.createUserJoinWithRoomIdAndUser(rid, servedBy);
+		await Message.saveSystemMessage('uj', rid, servedBy.username, servedBy);
 	}
 
 	await updateChatDepartment({ rid, newDepartmentId: departmentId, oldDepartmentId });

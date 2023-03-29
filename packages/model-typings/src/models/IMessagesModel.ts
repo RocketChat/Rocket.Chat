@@ -292,12 +292,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		extraData?: Record<string, string>,
 	): Promise<Omit<IMessage, '_updatedAt'>>;
 
-	createUserJoinWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData?: Record<string, string>,
-	): Promise<Omit<IMessage, '_updatedAt'>>;
 	createUserRemovedWithRoomIdAndUser(
 		roomId: string,
 		user: IMessage['u'],
