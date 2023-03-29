@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
+import type { FindOptions } from 'mongodb';
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Messages } from '@rocket.chat/models';
 
-import { canAccessRoomId } from '../../app/authorization/server';
-import { Messages } from '../../app/models/server';
+import { canAccessRoomIdAsync } from '../../app/authorization/server/functions/canAccessRoom';
 import { normalizeMessagesForUser } from '../../app/utils/server/lib/normalizeMessagesForUser';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -24,7 +25,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	loadSurroundingMessages(message, limit = 50) {
+	async loadSurroundingMessages(message, limit = 50) {
 		check(message, Object);
 		check(limit, Number);
 
@@ -40,30 +41,30 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		message = Messages.findOneById(message._id);
+		const mainMessage = await Messages.findOneById(message._id);
 
-		if (!message?.rid) {
+		if (!mainMessage?.rid) {
 			return false;
 		}
 
-		if (!canAccessRoomId(message.rid, fromId)) {
+		if (!(await canAccessRoomIdAsync(mainMessage.rid, fromId))) {
 			return false;
 		}
 
 		limit -= 1;
 
-		const options = {
+		const options: FindOptions<IMessage> = {
 			sort: {
 				ts: -1,
 			},
 			limit: Math.ceil(limit / 2),
 		};
 
-		const messages = Messages.findVisibleByRoomIdBeforeTimestamp(message.rid, message.ts, options).fetch();
+		const messages = await Messages.findVisibleByRoomIdBeforeTimestamp(mainMessage.rid, mainMessage.ts, options).toArray();
 
 		const moreBefore = messages.length === options.limit;
 
-		messages.push(message);
+		messages.push(mainMessage);
 
 		options.sort = {
 			ts: 1,
@@ -71,7 +72,7 @@ Meteor.methods<ServerMethods>({
 
 		options.limit = Math.floor(limit / 2);
 
-		const afterMessages = Messages.findVisibleByRoomIdAfterTimestamp(message.rid, message.ts, options).fetch();
+		const afterMessages = await Messages.findVisibleByRoomIdAfterTimestamp(mainMessage.rid, mainMessage.ts, options).toArray();
 
 		const moreAfter = afterMessages.length === options.limit;
 

@@ -4,6 +4,7 @@ import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Random } from '@rocket.chat/random';
+import { Messages as MessagesRaw, Rooms as RoomsRaw } from '@rocket.chat/models';
 
 import { rocketLogger } from './logger';
 import { callbacks } from '../../../lib/callbacks';
@@ -282,7 +283,7 @@ export default class RocketAdapter {
 
 				if (rocketRoom || slackChannel.is_general) {
 					slackChannel.rocketId = slackChannel.is_general ? 'GENERAL' : rocketRoom._id;
-					Rooms.addImportIds(slackChannel.rocketId, slackChannel.id);
+					await RoomsRaw.addImportIds(slackChannel.rocketId, slackChannel.id);
 				} else {
 					const rocketUsers = this.getRocketUsers(members, slackChannel);
 					const rocketUserCreator = this.getRocketUserCreator(slackChannel);
@@ -320,7 +321,7 @@ export default class RocketAdapter {
 						roomUpdate.topic = slackChannel.purpose.value;
 					}
 
-					Rooms.addImportIds(slackChannel.rocketId, slackChannel.id);
+					await RoomsRaw.addImportIds(slackChannel.rocketId, slackChannel.id);
 					slack.addSlackChannel(slackChannel.rocketId, slackChannelID);
 				}
 
@@ -479,7 +480,7 @@ export default class RocketAdapter {
 			}
 			rocketMsgObj.slackTs = slackMessage.ts;
 			if (slackMessage.thread_ts) {
-				const tmessage = Messages.findOneBySlackTs(slackMessage.thread_ts);
+				const tmessage = await MessagesRaw.findOneBySlackTs(slackMessage.thread_ts);
 				if (tmessage) {
 					rocketMsgObj.tmid = tmessage._id;
 				}
@@ -494,17 +495,18 @@ export default class RocketAdapter {
 				rocketMsgObj.pinnedBy = _.pick(rocketUser, '_id', 'username');
 			}
 			if (slackMessage.subtype === 'bot_message') {
-				Meteor.setTimeout(() => {
+				Meteor.setTimeout(async () => {
 					if (slackMessage.bot_id && slackMessage.ts) {
 						// Make sure that a message with the same bot_id and timestamp doesn't already exists
-						if (!Messages.findOneBySlackBotIdAndSlackTs(slackMessage.bot_id, slackMessage.ts)) {
-							sendMessage(rocketUser, rocketMsgObj, rocketChannel, true);
+						const msg = await MessagesRaw.findOneBySlackBotIdAndSlackTs(slackMessage.bot_id, slackMessage.ts);
+						if (!msg) {
+							void sendMessage(rocketUser, rocketMsgObj, rocketChannel, true);
 						}
 					}
 				}, 500);
 			} else {
 				rocketLogger.debug('Send message to Rocket.Chat');
-				sendMessage(rocketUser, rocketMsgObj, rocketChannel, true);
+				await sendMessage(rocketUser, rocketMsgObj, rocketChannel, true);
 			}
 		}
 	}

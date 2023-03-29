@@ -1,16 +1,23 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
+import { Messages, Rooms } from '@rocket.chat/models';
 
-import { Rooms, Messages } from '../../../models/server';
+import { settings } from '../../../settings/server';
 
-export const saveRoomDescription = function (rid, roomDescription, user) {
+export const saveRoomDescription = async function (rid, roomDescription, user) {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
 			function: 'RocketChat.saveRoomDescription',
 		});
 	}
 
-	const update = Rooms.setDescriptionById(rid, roomDescription);
-	Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_description', rid, roomDescription, user);
+	const update = await Rooms.setDescriptionById(rid, roomDescription);
+	await Messages.createWithTypeRoomIdMessageUserAndUnread(
+		'room_changed_description',
+		rid,
+		roomDescription,
+		user,
+		settings.get('Message_Read_Receipt_Enabled'),
+	);
 	return update;
 };

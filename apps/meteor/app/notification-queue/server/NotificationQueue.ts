@@ -68,10 +68,10 @@ class NotificationClass {
 		}
 
 		try {
-			for (const item of notification.items) {
+			for await (const item of notification.items) {
 				switch (item.type) {
 					case 'push':
-						this.push(notification, item);
+						await this.push(notification, item);
 						break;
 					case 'email':
 						this.email(item);
@@ -98,8 +98,8 @@ class NotificationClass {
 		return NotificationQueue.findNextInQueueOrExpired(expired);
 	}
 
-	push({ uid, rid, mid }: INotification, item: INotificationItemPush): void {
-		PushNotification.send({
+	async push({ uid, rid, mid }: INotification, item: INotificationItemPush): Promise<void> {
+		await PushNotification.send({
 			rid,
 			uid,
 			mid,

@@ -18,4 +18,12 @@ export interface ILivechatCustomFieldModel extends IBaseModel<ILivechatCustomFie
 		searchable: boolean,
 		options?: FindOptions<ILivechatCustomField>,
 	): FindCursor<ILivechatCustomField>;
+	createOrUpdateCustomField(
+		_id: string,
+		field: string,
+		label: ILivechatCustomField['label'],
+		scope: ILivechatCustomField['scope'],
+		visibility: ILivechatCustomField['visibility'],
+		extraData: any,
+	): Promise<ILivechatCustomField>;
 }

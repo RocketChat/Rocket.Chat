@@ -6,7 +6,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
-import { hasPermission } from '../functions/hasPermission';
+import { hasPermissionAsync } from '../functions/hasPermission';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -20,7 +20,7 @@ Meteor.methods<ServerMethods>({
 	async 'authorization:removeUserFromRole'(roleId, username, scope) {
 		const userId = Meteor.userId();
 
-		if (!userId || !hasPermission(userId, 'access-permissions')) {
+		if (!userId || !(await hasPermissionAsync(userId, 'access-permissions'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Access permissions is not allowed', {
 				method: 'authorization:removeUserFromRole',
 				action: 'Accessing_permissions',

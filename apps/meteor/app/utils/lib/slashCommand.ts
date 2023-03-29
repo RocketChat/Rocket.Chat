@@ -53,7 +53,7 @@ export const slashCommands = {
 		params: string,
 		message: RequiredField<Partial<IMessage>, 'rid'>,
 		triggerId?: string | undefined,
-	): Promise<void> {
+	): Promise<unknown> {
 		const cmd = this.commands[command];
 		if (typeof cmd?.callback !== 'function') {
 			return;
@@ -63,13 +63,13 @@ export const slashCommands = {
 			throw new Meteor.Error('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
 
-		const result = cmd.callback(command, params, message, triggerId) as any;
-
-		if (result && result instanceof Promise) {
-			await result;
-		}
+		return cmd.callback(command, params, message, triggerId);
 	},
-	getPreviews(command: string, params: string, message: RequiredField<Partial<IMessage>, 'rid'>): SlashCommandPreviews | undefined {
+	async getPreviews(
+		command: string,
+		params: string,
+		message: RequiredField<Partial<IMessage>, 'rid'>,
+	): Promise<SlashCommandPreviews | undefined> {
 		const cmd = this.commands[command];
 		if (typeof cmd?.previewer !== 'function') {
 			return;
@@ -79,7 +79,7 @@ export const slashCommands = {
 			throw new Meteor.Error('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
 
-		const previewInfo = Promise.await(cmd.previewer(command, params, message));
+		const previewInfo = await cmd.previewer(command, params, message);
 
 		if (!previewInfo?.items?.length) {
 			return;

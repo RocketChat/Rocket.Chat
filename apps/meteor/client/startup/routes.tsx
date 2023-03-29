@@ -6,7 +6,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { Tracker } from 'meteor/tracker';
 import React, { lazy } from 'react';
 
-import { KonchatNotification } from '../../app/ui/client';
+import { KonchatNotification } from '../../app/ui/client/lib/KonchatNotification';
 import { APIClient } from '../../app/utils/client';
 import { appLayout } from '../lib/appLayout';
 import { dispatchToastMessage } from '../lib/toast';
@@ -15,6 +15,8 @@ import MainLayout from '../views/root/MainLayout';
 const PageLoading = lazy(() => import('../views/root/PageLoading'));
 const HomePage = lazy(() => import('../views/home/HomePage'));
 const InvitePage = lazy(() => import('../views/invite/InvitePage'));
+const ConferenceRoute = lazy(() => import('../views/conference/ConferenceRoute'));
+
 const SecretURLPage = lazy(() => import('../views/invite/SecretURLPage'));
 const CMSPage = lazy(() => import('@rocket.chat/web-ui-registration').then(({ CMSPage }) => ({ default: CMSPage })));
 const ResetPasswordPage = lazy(() =>
@@ -50,8 +52,8 @@ FlowRouter.route('/', {
 
 		Tracker.autorun((c) => {
 			if (FlowRouter.subsReady() === true) {
-				Meteor.defer(() => {
-					const user = Meteor.user() as IUser | null;
+				Meteor.defer(async () => {
+					const user = (await Meteor.userAsync()) as IUser | null;
 					if (user?.defaultRoom) {
 						const room = user.defaultRoom.split('/');
 						FlowRouter.go(room[0], { name: room[1] }, FlowRouter.current().queryParams);
@@ -196,6 +198,13 @@ FlowRouter.route('/invite/:hash', {
 	name: 'invite',
 	action: () => {
 		appLayout.render(<InvitePage />);
+	},
+});
+
+FlowRouter.route('/conference/:id', {
+	name: 'conference',
+	action: () => {
+		appLayout.render(<ConferenceRoute />);
 	},
 });
 
