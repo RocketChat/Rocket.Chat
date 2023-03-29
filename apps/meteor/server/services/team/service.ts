@@ -358,7 +358,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			}
 
 			if (room.t === 'c') {
-				await Message.saveSystemMessage('user-added-room-to-team', team.roomId, room.name || '', owner);
+				await Message.saveSystemMessage('user-added-room-to-team', team.roomId, room.name || '', user);
 			}
 
 			room.teamId = teamId;

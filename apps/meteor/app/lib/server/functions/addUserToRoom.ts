@@ -6,7 +6,7 @@ import { Subscriptions } from '@rocket.chat/models';
 
 import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
-import { Messages, Rooms, Users } from '../../../models/server';
+import { Rooms, Users } from '../../../models/server';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
