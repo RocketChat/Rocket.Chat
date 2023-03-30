@@ -83,7 +83,7 @@ export class AppMessageBridge extends MessageBridge {
 			.fetch()
 			.map((s: ISubscription) => s.u._id);
 
-		await Users.findByIds(users, { fields: { _id: 1 } }).forEach(
+		await Users.findByIds(users, { projection: { _id: 1 } }).forEach(
 			({ _id }: { _id: string }) =>
 				void api.broadcast('notify.ephemeralMessage', _id, room.id, {
 					...msg,

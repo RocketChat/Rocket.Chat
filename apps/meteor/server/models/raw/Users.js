@@ -2724,13 +2724,16 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	removeOlderResumeTokensByUserId(userId, fromDate) {
-		this.updateOne(userId, {
-			$pull: {
-				'services.resume.loginTokens': {
-					when: { $lt: fromDate },
+		this.updateOne(
+			{ _id: userId },
+			{
+				$pull: {
+					'services.resume.loginTokens': {
+						when: { $lt: fromDate },
+					},
 				},
 			},
-		});
+		);
 	}
 
 	findAllUsersWithPendingAvatar() {

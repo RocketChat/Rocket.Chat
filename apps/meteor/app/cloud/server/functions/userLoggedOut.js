@@ -8,11 +8,14 @@ export async function userLoggedOut(userId) {
 	const user = await Users.findOneById(userId);
 
 	if (user && user.services && user.services.cloud) {
-		await Users.updateOne(user._id, {
-			$unset: {
-				'services.cloud': 1,
+		await Users.updateOne(
+			{ _id: user._id },
+			{
+				$unset: {
+					'services.cloud': 1,
+				},
 			},
-		});
+		);
 	}
 
 	return true;
