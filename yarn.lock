@@ -7394,6 +7394,7 @@ __metadata:
     "@types/mailparser": ^3.4.0
     "@types/marked": ^4.0.8
     "@types/meteor": 2.8.1
+    "@types/meteor-collection-hooks": ^0.8.6
     "@types/mkdirp": ^1.0.2
     "@types/mocha": ^8.2.3
     "@types/moment-timezone": ^0.5.30
@@ -12016,6 +12017,15 @@ __metadata:
   dependencies:
     "@types/unist": "*"
   checksum: 3f587bfc0a9a2403ecadc220e61031b01734fedaf82e27eb4d5ba039c0eb54db8c85681ccc070ab4df3f7ec711b736a82b990e69caa14c74bf7ac0ccf2ac7313
+  languageName: node
+  linkType: hard
+
+"@types/meteor-collection-hooks@npm:^0.8.6":
+  version: 0.8.6
+  resolution: "@types/meteor-collection-hooks@npm:0.8.6"
+  dependencies:
+    meteor-typings: ^1.3.1
+  checksum: 620f6315dba4457dcacb0656ebdabfe2997b39be8757b87cd883e11aa77a573c27abbb0682b75c5d284ccc2be372b377d17c22a09d465ba2d59e3e62ca298ccf
   languageName: node
   linkType: hard
 
@@ -27836,6 +27846,13 @@ __metadata:
     meteor-html-tools: ^1.2.0
     meteor-htmljs: ^1.2.0
   checksum: 921a91c1a02dc47cdde9b6caa6779001cbcbd0c28f1859c721d0cf23fd5cdea41540501b10aa537f8c12741ea2a0ec05b8c9bd99d92f9b94b8446e65c6fdd985
+  languageName: node
+  linkType: hard
+
+"meteor-typings@npm:^1.3.1":
+  version: 1.4.1
+  resolution: "meteor-typings@npm:1.4.1"
+  checksum: 236aa932a2f863c14b440270ee85f6093cd57f8087107c44a8a1108c1ffc9cf4837ae065c96796062c9912a64d9ccee51b90263f7bd5362e6984c7ca9b909d27
   languageName: node
   linkType: hard
 

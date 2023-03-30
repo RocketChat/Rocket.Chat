@@ -7,7 +7,6 @@ import streamBuffers from 'stream-buffers';
 import Future from 'fibers/future';
 import sharp from 'sharp';
 import { Cookies } from 'meteor/ostrio:cookies';
-import { UploadFS } from 'meteor/jalik:ufs';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
@@ -15,6 +14,7 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { Avatars, Messages, UserDataFiles, Uploads, Settings, Subscriptions } from '@rocket.chat/models';
 import { hashLoginToken } from '@rocket.chat/account-utils';
 
+import { UploadFS } from '../../../../server/ufs';
 import { settings } from '../../../settings/server';
 import Users from '../../../models/server/models/Users';
 import Rooms from '../../../models/server/models/Rooms';
