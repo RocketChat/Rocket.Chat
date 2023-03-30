@@ -200,10 +200,16 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 	public success<T>(result: T): SuccessResult<T>;
 
 	public success<T>(result: T = {} as T): SuccessResult<T> {
-		return {
+		if (isObject(result)) {
+			(result as Record<string, any>).success = true;
+		}
+
+		const finalResult = {
 			statusCode: 200,
-			body: isObject(result) ? { success: true, ...result } : result,
+			body: result,
 		} as SuccessResult<T>;
+
+		return finalResult as SuccessResult<T>;
 	}
 
 	public failure<T>(result?: T): FailureResult<T>;
