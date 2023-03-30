@@ -9,10 +9,10 @@ export const findAllDepartmentsAvailable = async (
 	unitId: string,
 	offset: number,
 	count: number,
-	text: string,
+	text?: string,
 	onlyMyDepartments = false,
 ): Promise<{ departments: ILivechatDepartment[]; total: number }> => {
-	const filterReg = new RegExp(escapeRegExp(text), 'i');
+	const filterReg = new RegExp(escapeRegExp(text || ''), 'i');
 
 	let query = {
 		type: { $ne: 'u' },
