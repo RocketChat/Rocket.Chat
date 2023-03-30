@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { api, Team } from '@rocket.chat/core-services';
+import { api, Message, Team } from '@rocket.chat/core-services';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Subscriptions } from '@rocket.chat/models';
 
 import { getUsersInRole } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { Users, Messages, Rooms } from '../../app/models/server';
+import { Users, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -70,13 +70,7 @@ Meteor.methods<ServerMethods>({
 
 		const fromUser = Users.findOneById(uid);
 
-		Messages.createSubscriptionRoleRemovedWithRoomIdAndUser(rid, user, {
-			u: {
-				_id: fromUser._id,
-				username: fromUser.username,
-			},
-			role: 'owner',
-		});
+		await Message.saveSystemMessage('subscription-role-removed', rid, user.username, fromUser, { role: 'owner' });
 
 		const team = await Team.getOneByMainRoomId(rid);
 		if (team) {

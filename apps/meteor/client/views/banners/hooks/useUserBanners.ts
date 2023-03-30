@@ -8,7 +8,7 @@ import { useDismissUserBannerMutation } from './useDismissUserBannerMutation';
 export const useUserBanners = () => {
 	const user = useUser();
 
-	const dismissBannerMutation = useDismissUserBannerMutation();
+	const { mutate: dismissUserBanner } = useDismissUserBannerMutation();
 
 	useEffect(() => {
 		if (!user?.banners || Object.keys(user.banners).length === 0) {
@@ -37,8 +37,8 @@ export const useUserBanners = () => {
 				}
 			},
 			onClose() {
-				dismissBannerMutation.mutate({ id: firstBanner.id });
+				dismissUserBanner({ id: firstBanner.id });
 			},
 		});
-	}, [dismissBannerMutation, user]);
+	}, [dismissUserBanner, user?.banners]);
 };
