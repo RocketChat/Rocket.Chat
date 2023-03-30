@@ -19,13 +19,13 @@
 		"@storybook/react": "~6.5.15",
 		"@storybook/testing-library": "~0.0.13",
 		"@types/babel__core": "^7.1.20",
-		"@types/jest": "^27.4.1",
+		"@types/jest": "^29.5.0",
 		"eslint": "^8.29.0",
 		"eslint-plugin-react": "^7.31.11",
 		"eslint-plugin-react-hooks": "^4.6.0",
 		"eslint-plugin-storybook": "^0.6.7",
-		"jest": "^27.5.1",
-		"ts-jest": "^27.1.4",
+		"jest": "~29.5.0",
+		"ts-jest": "~29.0.5",
 		"typescript": "~5.0.2"
 	},
 	"peerDependencies": {

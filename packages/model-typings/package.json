@@ -3,12 +3,12 @@
 	"version": "0.0.1",
 	"private": true,
 	"devDependencies": {
-		"@types/jest": "^27.4.1",
+		"@types/jest": "^29.5.0",
 		"@types/node-rsa": "^1.1.1",
 		"eslint": "^8.29.0",
-		"jest": "^27.5.1",
+		"jest": "~29.5.0",
 		"mongodb": "^4.12.1",
-		"ts-jest": "^27.1.5",
+		"ts-jest": "~29.0.5",
 		"typescript": "~5.0.2"
 	},
 	"scripts": {
