@@ -6,6 +6,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
 import { Messages } from '../../../models/server';
 import { deleteMessage } from '../functions';
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -16,6 +17,9 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async deleteMessage(message) {
+		methodDeprecationLogger.warn(
+			'deleteMessage method is deprecated, instead use the `deleteMessage` function under the `apps/meteor/app/lib/server/lib/deleteMessageAsync`',
+		);
 		check(
 			message,
 			Match.ObjectIncluding({
