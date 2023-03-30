@@ -2,7 +2,7 @@ import type { IRole, IRoom, IUser } from '@rocket.chat/core-typings';
 import { useMethod, useStream } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { RoomRoles, ChatMessage } from '../../../../../app/models/client';
+import { RoomRoles, ChatMessage } from '../../../../../../app/models/client';
 
 // const roomRoles = RoomRoles as Mongo.Collection<Pick<ISubscription, 'rid' | 'u' | 'roles'>>;
 
