@@ -42,7 +42,7 @@ class LivechatUnit extends LivechatDepartment {
 		return this.unfilteredUpdate(...args);
 	}
 
-	createOrUpdateUnit(_id, { name, visibility }, ancestors, monitors, departments) {
+	async createOrUpdateUnit(_id, { name, visibility }, ancestors, monitors, departments) {
 		monitors = [].concat(monitors || []);
 		ancestors = [].concat(ancestors || []);
 
@@ -106,7 +106,7 @@ class LivechatUnit extends LivechatDepartment {
 			);
 		});
 
-		Promise.await(LivechatRooms.associateRoomsWithDepartmentToUnit(departmentsToSave, _id));
+		await LivechatRooms.associateRoomsWithDepartmentToUnit(departmentsToSave, _id);
 
 		return {
 			...record,
