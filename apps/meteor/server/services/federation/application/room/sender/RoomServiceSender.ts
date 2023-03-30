@@ -10,7 +10,7 @@ import type { RocketChatNotificationAdapter } from '../../../infrastructure/rock
 import type { RocketChatRoomAdapter } from '../../../infrastructure/rocket-chat/adapters/Room';
 import type { RocketChatSettingsAdapter } from '../../../infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatUserAdapter } from '../../../infrastructure/rocket-chat/adapters/User';
-import { AbstractFederationApplicationService } from '../../AbstractFederationService';
+import { AbstractFederationApplicationService } from '../../AbstractFederationApplicationService';
 import { getExternalMessageSender } from '../message/sender/message-sender-helper';
 import { MATRIX_POWER_LEVELS } from '../../../infrastructure/matrix/definitions/MatrixPowerLevels';
 import { ROCKET_CHAT_FEDERATION_ROLES } from '../../../infrastructure/rocket-chat/definitions/FederatedRoomInternalRoles';

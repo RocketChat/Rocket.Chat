@@ -1,9 +1,9 @@
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
+import { Rooms } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
-import { Rooms } from '../../models/server';
-import { cleanRoomHistory } from '../../lib/server';
+import { cleanRoomHistory } from '../../lib/server/functions/cleanRoomHistory';
 
 const maxTimes = {
 	c: 0,
@@ -17,7 +17,7 @@ const oldest = new Date('0001-01-01T00:00:00Z');
 
 const toDays = (d: number): number => d * 1000 * 60 * 60 * 24;
 
-function job(): void {
+async function job(): Promise<void> {
 	const now = new Date();
 	const filesOnly = settings.get<boolean>('RetentionPolicy_FilesOnly');
 	const excludePinned = settings.get<boolean>('RetentionPolicy_DoNotPrunePinned');
@@ -25,19 +25,21 @@ function job(): void {
 	const ignoreThreads = settings.get<boolean>('RetentionPolicy_DoNotPruneThreads');
 
 	// get all rooms with default values
-	types.forEach((type) => {
+	for await (const type of types) {
 		const maxAge = maxTimes[type] || 0;
 		const latest = new Date(now.getTime() - toDays(maxAge));
 
-		Rooms.find(
+		const rooms = await Rooms.find(
 			{
 				't': type,
 				'$or': [{ 'retention.enabled': { $eq: true } }, { 'retention.enabled': { $exists: false } }],
 				'retention.overrideGlobal': { $ne: true },
 			},
-			{ fields: { _id: 1 } },
-		).forEach(({ _id: rid }: IRoomWithRetentionPolicy) => {
-			cleanRoomHistory({
+			{ projection: { _id: 1 } },
+		).toArray();
+
+		for await (const { _id: rid } of rooms) {
+			await cleanRoomHistory({
 				rid,
 				latest,
 				oldest,
@@ -46,18 +48,23 @@ function job(): void {
 				ignoreDiscussion,
 				ignoreThreads,
 			});
-		});
-	});
+		}
+	}
 
-	Rooms.find({
-		'retention.enabled': { $eq: true },
-		'retention.overrideGlobal': { $eq: true },
-		'retention.maxAge': { $gte: 0 },
-	}).forEach((room: IRoomWithRetentionPolicy) => {
-		const { maxAge = 30, filesOnly, excludePinned, ignoreThreads } = room.retention;
+	const rooms = await Rooms.find<IRoomWithRetentionPolicy>(
+		{
+			'retention.enabled': { $eq: true },
+			'retention.overrideGlobal': { $eq: true },
+			'retention.maxAge': { $gte: 0 },
+		},
+		{ projection: { _id: 1, retention: 1 } },
+	).toArray();
+
+	for await (const { _id: rid, retention } of rooms) {
+		const { maxAge = 30, filesOnly, excludePinned, ignoreThreads } = retention;
 		const latest = new Date(now.getTime() - toDays(maxAge));
-		cleanRoomHistory({
-			rid: room._id,
+		await cleanRoomHistory({
+			rid,
 			latest,
 			oldest,
 			filesOnly,
@@ -65,7 +72,7 @@ function job(): void {
 			ignoreDiscussion,
 			ignoreThreads,
 		});
-	});
+	}
 }
 
 function getSchedule(precision: '0' | '1' | '2' | '3'): string {

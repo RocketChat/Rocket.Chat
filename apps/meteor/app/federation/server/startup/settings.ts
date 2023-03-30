@@ -9,7 +9,7 @@ import { enableCallbacks, disableCallbacks } from '../lib/callbacks';
 import { setupLogger } from '../lib/logger';
 import { STATUS_ENABLED, STATUS_REGISTERING, STATUS_ERROR_REGISTERING, STATUS_DISABLED } from '../constants';
 
-settingsRegistry.addGroup('Federation', function () {
+void settingsRegistry.addGroup('Federation', function () {
 	this.section('Rocket.Chat Federation', async function () {
 		this.add('FEDERATION_Enabled', false, {
 			type: 'boolean',

@@ -41,8 +41,8 @@ onLicense('livechat-enterprise', async () => {
 	const { createSettings } = await import('./settings');
 
 	Meteor.startup(function () {
-		createSettings();
-		createPermissions();
-		createDefaultPriorities();
+		void createSettings();
+		void createPermissions();
+		void createDefaultPriorities();
 	});
 });

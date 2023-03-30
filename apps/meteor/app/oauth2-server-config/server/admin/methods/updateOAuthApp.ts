@@ -1,25 +1,26 @@
 import { Meteor } from 'meteor/meteor';
 import { OAuthApps } from '@rocket.chat/models';
 import type { IOAuthApps } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../../../authorization/server';
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { Users } from '../../../../models/server';
 import { parseUriList } from '../functions/parseUriList';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		updateOAuthApp: (applicationId: IOAuthApps['_id'], application: { name: string; redirectUri: string; active: boolean }) => void;
+		updateOAuthApp(applicationId: IOAuthApps['_id'], application: Pick<IOAuthApps, 'name' | 'redirectUri' | 'active'>): IOAuthApps | null;
 	}
 }
 
-Meteor.methods({
-	async updateOAuthApp(applicationId: IOAuthApps['_id'], application: Pick<IOAuthApps, 'name' | 'redirectUri' | 'active'>) {
+Meteor.methods<ServerMethods>({
+	async updateOAuthApp(applicationId, application) {
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'updateOAuthApp' });
 		}
 
-		if (!hasPermission(this.userId, 'manage-oauth-apps')) {
+		if (!(await hasPermissionAsync(this.userId, 'manage-oauth-apps'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'updateOAuthApp' });
 		}
 

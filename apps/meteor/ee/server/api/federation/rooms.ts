@@ -7,6 +7,7 @@ import {
 import { FederationEE } from '@rocket.chat/core-services';
 
 import { API } from '../../../../app/api/server';
+import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
 
 API.v1.addRoute(
 	'federation/searchPublicRooms',
@@ -16,7 +17,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { count } = this.getPaginationItems();
+			const { count } = await getPaginationItems(this.queryParams);
 			const { serverName, roomName, pageToken } = this.queryParams;
 
 			const result = await FederationEE.searchPublicRooms(serverName, roomName, pageToken, count);

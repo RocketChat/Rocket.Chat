@@ -2,10 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import type { MessageAttachment, FileAttachmentProps, IUser, IUpload, AtLeast } from '@rocket.chat/core-typings';
 import { Rooms, Uploads } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { FileUpload } from '../lib/FileUpload';
-import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
+import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { omit } from '../../../../lib/utils/omit';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
@@ -118,9 +119,16 @@ export const parseFileIntoMessageAttachments = async (
 	return { files, attachments };
 };
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		sendFileMessage: (roomId: string, _store: string, file: Partial<IUpload>, msgData?: Record<string, any>) => boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async sendFileMessage(roomId, _store, file, msgData = {}) {
-		const user = Meteor.user() as IUser | undefined;
+		const user = (await Meteor.userAsync()) as IUser | undefined;
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'sendFileMessage',
@@ -132,7 +140,7 @@ Meteor.methods({
 			return false;
 		}
 
-		if (user?.type !== 'app' && !canAccessRoom(room, user)) {
+		if (user?.type !== 'app' && !(await canAccessRoomAsync(room, user))) {
 			return false;
 		}
 
@@ -147,7 +155,7 @@ Meteor.methods({
 
 		const { files, attachments } = await parseFileIntoMessageAttachments(file, roomId, user);
 
-		const msg = Meteor.call('sendMessage', {
+		const msg = await Meteor.callAsync('sendMessage', {
 			rid: roomId,
 			ts: new Date(),
 			file: files[0],

@@ -18,9 +18,9 @@ type GenericModalProps = RequiredModalProps & {
 	icon?: ComponentProps<typeof Icon>['name'] | ReactElement | null;
 	confirmDisabled?: boolean;
 	tagline?: ReactNode;
-	onCancel?: () => void;
-	onClose?: () => void;
-	onConfirm: () => void;
+	onCancel?: () => Promise<void> | void;
+	onClose?: () => Promise<void> | void;
+	onConfirm: () => Promise<void> | void;
 } & Omit<ComponentProps<typeof Modal>, 'title'>;
 
 const iconMap: Record<string, ComponentProps<typeof Icon>['name']> = {

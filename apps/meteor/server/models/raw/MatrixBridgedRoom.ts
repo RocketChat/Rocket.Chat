@@ -30,7 +30,7 @@ export class MatrixBridgedRoomRaw extends BaseRaw<IMatrixBridgedRoom> implements
 	}
 
 	async removeByLocalRoomId(localRoomId: string): Promise<void> {
-		this.deleteOne({ rid: localRoomId });
+		await this.deleteOne({ rid: localRoomId });
 	}
 
 	async createOrUpdateByLocalRoomId(localRoomId: string, externalRoomId: string, fromServer: string): Promise<void> {

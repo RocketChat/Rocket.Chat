@@ -58,7 +58,7 @@ const ComposerBoxPopupPreview = forwardRef<
 
 					const params = matches[2];
 					// TODO: Fix this solve the typing issue
-					executeSlashCommandPreviewMethod({ cmd, params, msg: { rid, tmid } }, { id: item._id, type: item.type, value: item.value });
+					void executeSlashCommandPreviewMethod({ cmd, params, msg: { rid, tmid } }, { id: item._id, type: item.type, value: item.value });
 					chat?.composer?.setText('');
 				},
 			}),

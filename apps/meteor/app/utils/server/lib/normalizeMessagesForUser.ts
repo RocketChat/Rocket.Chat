@@ -28,7 +28,7 @@ export const normalizeMessagesForUser = (messages: IMessage[], uid: string): IMe
 	messages.forEach((message) => {
 		message = filterStarred(message, uid);
 
-		if (!message.u || !message.u.username) {
+		if (!message.u?.username) {
 			return;
 		}
 		usernames.add(message.u.username);

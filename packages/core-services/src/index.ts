@@ -41,6 +41,7 @@ import type { IQueueWorkerService, HealthAggResult } from './types/IQueueWorkerS
 import type { ITranslationService } from './types/ITranslationService';
 import type { IMessageService } from './types/IMessageService';
 import type { ISettingsService } from './types/ISettingsService';
+import type { IOmnichannelIntegrationService } from './types/IOmnichannelIntegrationService';
 
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
@@ -112,6 +113,7 @@ export {
 	ITranslationService,
 	IMessageService,
 	ISettingsService,
+	IOmnichannelIntegrationService,
 };
 
 // TODO think in a way to not have to pass the service name to proxify here as well
@@ -141,6 +143,7 @@ export const OmnichannelTranscript = proxifyWithWait<IOmnichannelTranscriptServi
 export const Message = proxifyWithWait<IMessageService>('message');
 export const Translation = proxifyWithWait<ITranslationService>('translation');
 export const Settings = proxifyWithWait<ISettingsService>('settings');
+export const OmnichannelIntegration = proxifyWithWait<IOmnichannelIntegrationService>('omnichannel-integration');
 export const Federation = proxifyWithWait<IFederationService>('federation');
 export const FederationEE = proxifyWithWait<IFederationServiceEE>('federation-enterprise');
 

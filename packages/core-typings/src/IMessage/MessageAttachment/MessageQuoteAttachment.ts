@@ -8,7 +8,7 @@ export type MessageQuoteAttachment = {
 	author_icon: string;
 	message_link?: string;
 	text: string;
-	md: Root;
+	md?: Root;
 	attachments?: Array<MessageQuoteAttachment>; // TODO this is cauising issues to define a model, see @ts-expect-error at apps/meteor/app/api/server/v1/channels.ts:274
 } & MessageAttachmentBase;
 

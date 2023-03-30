@@ -37,8 +37,8 @@ describe('Federation - Infrastructure - Matrix - MatrixBaseEventHandler', () => 
 			}
 		}
 		const myHandler = new MyHandler();
-		it('should call the handler fn in the implementated class', () => {
-			myHandler.handle();
+		it('should call the handler fn in the implementated class', async () => {
+			await myHandler.handle();
 			expect(spyFn).to.be.called;
 		});
 	});

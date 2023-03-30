@@ -18,7 +18,7 @@ addAction('e2e', ({ room }) => {
 	const toggleE2E = useEndpoint('POST', '/v1/rooms.saveRoomSettings');
 
 	const action = useMutableCallback(() => {
-		toggleE2E({ rid: room._id, encrypted: !room.encrypted });
+		void toggleE2E({ rid: room._id, encrypted: !room.encrypted });
 	});
 
 	const enabledOnRoom = !!room.encrypted;

@@ -12,7 +12,7 @@ import type {
 	FederationSetupRoomDto,
 	IFederationInviteeDto,
 } from './input/RoomSenderDto';
-import { AbstractFederationApplicationServiceEE } from '../../AbstractFederationService';
+import { AbstractFederationApplicationServiceEE } from '../../AbstractFederationApplicationServiceEE';
 import type { RocketChatFileAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/File';
 import type { RocketChatSettingsAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Settings';
 import type { RocketChatMessageAdapter } from '../../../../../../../server/services/federation/infrastructure/rocket-chat/adapters/Message';

@@ -51,12 +51,12 @@ class Bridge {
 		this.queueTimeout = 5;
 	}
 
-	init() {
+	async init() {
 		this.initTime = new Date();
 		removed = false;
 		this.loggedInUsers = [];
 
-		const lastPing = Promise.await(Settings.findOneById('IRC_Bridge_Last_Ping'));
+		const lastPing = await Settings.findOneById('IRC_Bridge_Last_Ping');
 		if (lastPing) {
 			if (Math.abs(moment(lastPing.value).diff()) < 1000 * 30) {
 				this.log('Not trying to connect.');

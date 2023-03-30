@@ -7,12 +7,13 @@ import { api } from '@rocket.chat/core-services';
 
 import { Users } from '../../../models/server';
 import { API } from '../api';
-import { hasRole } from '../../../authorization/server';
+import { hasRoleAsync, hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { getUsersInRolePaginated } from '../../../authorization/server/functions/getUsersInRole';
 import { settings } from '../../../settings/server/index';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
-import { hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { getUserFromParams } from '../helpers/getUserFromParams';
+import { getPaginationItems } from '../helpers/getPaginationItems';
 
 API.v1.addRoute(
 	'roles.list',
@@ -59,7 +60,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-role-properties', isRoleAddUserToRoleProps.errors?.map((error) => error.message).join('\n'));
 			}
 
-			const user = this.getUserFromParams();
+			const user = await getUserFromParams(this.bodyParams);
 			const { roleId, roleName, roomId } = this.bodyParams;
 
 			if (!roleId) {
@@ -75,11 +76,11 @@ API.v1.addRoute(
 				return API.v1.failure('error-role-not-found', 'Role not found');
 			}
 
-			if (hasRole(user._id, role._id, roomId)) {
+			if (await hasRoleAsync(user._id, role._id, roomId)) {
 				throw new Meteor.Error('error-user-already-in-role', 'User already in role');
 			}
 
-			await Meteor.call('authorization:addUserToRole', role._id, user.username, roomId);
+			await Meteor.callAsync('authorization:addUserToRole', role._id, user.username, roomId);
 
 			return API.v1.success({
 				role,
@@ -94,7 +95,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId, role } = this.queryParams;
-			const { offset, count = 50 } = this.getPaginationItems();
+			const { offset, count = 50 } = await getPaginationItems(this.queryParams);
 
 			const projection = {
 				name: 1,
@@ -227,7 +228,7 @@ API.v1.addRoute(
 			await Roles.removeUserRoles(user._id, [role._id], scope);
 
 			if (settings.get('UI_DisplayRoles')) {
-				api.broadcast('user.roleUpdate', {
+				void api.broadcast('user.roleUpdate', {
 					type: 'removed',
 					_id: role._id,
 					u: {
