@@ -1,8 +1,8 @@
-import { ServiceClassInternal } from '@rocket.chat/core-services';
+import { ServiceClassInternal, Message } from '@rocket.chat/core-services';
 import type { IOmnichannelEEService } from '@rocket.chat/core-services';
-import type { IOmnichannelRoom, IUser, IMessage, ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { LivechatRooms, Subscriptions, Messages, LivechatInquiry } from '@rocket.chat/models';
+import type { IOmnichannelRoom, IUser, ILivechatInquiryRecord, IOmnichannelSystemMessage } from '@rocket.chat/core-typings';
+import { LivechatRooms, Subscriptions, LivechatInquiry } from '@rocket.chat/models';
 
 import { Logger } from '../../../../../app/logger/server';
 import { callbacks } from '../../../../../lib/callbacks';
@@ -41,16 +41,10 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 			throw new Error('error-room-is-already-onHold');
 		}
 
-		const onHoldByUser: IMessage['u'] = {
-			_id: onHoldBy._id,
-			username: onHoldBy.username || '',
-			name: onHoldBy.name || '',
-		};
-
 		await Promise.all([
 			LivechatRooms.setOnHoldByRoomId(roomId),
 			Subscriptions.setOnHoldByRoomId(roomId),
-			Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, onHoldByUser, comment, 'on-hold'),
+			Message.saveSystemMessage<IOmnichannelSystemMessage>('omnichannel_placed_chat_on_hold', roomId, '', onHoldBy, { comment }),
 		]);
 
 		callbacks.run('livechat:afterOnHold', room);
@@ -94,16 +88,10 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 			clientAction,
 		});
 
-		const resumeByUser: IMessage['u'] = {
-			_id: resumeBy._id,
-			username: resumeBy.username || '',
-			name: resumeBy.name || '',
-		};
-
 		await Promise.all([
 			LivechatRooms.unsetOnHoldByRoomId(roomId),
 			Subscriptions.unsetOnHoldByRoomId(roomId),
-			Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, resumeByUser, comment, 'resume-onHold'),
+			Message.saveSystemMessage<IOmnichannelSystemMessage>('omnichannel_on_hold_chat_resumed', roomId, '', resumeBy, { comment }),
 		]);
 
 		callbacks.run('livechat:afterOnHoldChatResumed', room);
@@ -169,9 +157,11 @@ export class OmnichannelEE extends ServiceClassInternal implements IOmnichannelE
 
 		const { _id: inquiryId } = inquiry;
 
-		await Promise.all([LivechatRooms.removeAgentByRoomId(roomId), LivechatInquiry.queueInquiryAndRemoveDefaultAgent(inquiryId)]);
-
-		RoutingManager.removeAllRoomSubscriptions(room);
+		await Promise.all([
+			LivechatRooms.removeAgentByRoomId(roomId),
+			LivechatInquiry.queueInquiryAndRemoveDefaultAgent(inquiryId),
+			RoutingManager.removeAllRoomSubscriptions(room),
+		]);
 
 		dispatchAgentDelegated(roomId, null);
 

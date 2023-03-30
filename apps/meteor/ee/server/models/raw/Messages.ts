@@ -19,16 +19,6 @@ type ISysMessageResult = {
 
 declare module '@rocket.chat/model-typings' {
 	interface IMessagesModel {
-		createOnHoldHistoryWithRoomIdMessageAndUser(
-			roomId: string,
-			comment: string,
-			user: Pick<IUser, 'username' | '_id'>,
-		): Promise<ISysMessageResult>;
-		createOnHoldResumedHistoryWithRoomIdMessageAndUser(
-			roomId: string,
-			comment: string,
-			user: Pick<IUser, 'username' | '_id'>,
-		): Promise<ISysMessageResult>;
 		createTransferFailedHistoryMessage(
 			rid: string,
 			comment: string,
@@ -41,50 +31,6 @@ declare module '@rocket.chat/model-typings' {
 export class MessagesEE extends MessagesRaw {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMessage>>) {
 		super(db, trash);
-	}
-
-	async createOnHoldHistoryWithRoomIdMessageAndUser(
-		roomId: string,
-		comment: string,
-		user: Pick<IUser, 'username' | '_id'>,
-	): Promise<ISysMessageResult> {
-		const type = 'omnichannel_placed_chat_on_hold' as const;
-		const record = {
-			t: type,
-			rid: roomId,
-			ts: new Date(),
-			comment,
-			u: {
-				_id: user._id,
-				username: user.username || '',
-			},
-			groupable: false as const,
-		};
-
-		const _id = (await this.updateOne(record, { $set: record }, { upsert: true })).upsertedId as unknown as string;
-		return Object.assign(record, { _id });
-	}
-
-	async createOnHoldResumedHistoryWithRoomIdMessageAndUser(
-		roomId: string,
-		comment: string,
-		user: Pick<IUser, 'username' | '_id'>,
-	): Promise<ISysMessageResult> {
-		const type = 'omnichannel_on_hold_chat_resumed' as const;
-		const record = {
-			t: type,
-			rid: roomId,
-			ts: new Date(),
-			comment,
-			u: {
-				_id: user._id,
-				username: user.username || '',
-			},
-			groupable: false as const,
-		};
-
-		const _id = (await this.updateOne(record, { $set: record }, { upsert: true })).upsertedId as unknown as string;
-		return Object.assign(record, { _id });
 	}
 
 	async createTransferFailedHistoryMessage(

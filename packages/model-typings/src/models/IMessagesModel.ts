@@ -116,13 +116,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	findLivechatClosingMessage(rid: IRoom['_id'], options?: FindOptions<IMessage>): Promise<IMessage | null>;
 
-	createOnHoldHistoryWithRoomIdMessageAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		comment: string,
-		action: 'on-hold' | 'resume-onHold',
-	): Promise<InsertOneResult<IMessage>>;
-
 	setReactions(messageId: string, reactions: IMessage['reactions']): Promise<UpdateResult>;
 	keepHistoryForToken(token: string): Promise<UpdateResult | Document>;
 	setRoomIdByToken(token: string, rid: string): Promise<UpdateResult | Document>;

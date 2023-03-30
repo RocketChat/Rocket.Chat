@@ -3,14 +3,13 @@ import type {
 	ILivechatPriority,
 	IMessage,
 	IOmnichannelServiceLevelAgreements,
-	IOmnichannelSystemMessage,
 	IRoom,
 	IUser,
 	MessageTypesValues,
 	RocketChatRecordDeleted,
 	MessageAttachment,
 } from '@rocket.chat/core-typings';
-import type { FindPaginated, IMessagesModel, InsertionModel } from '@rocket.chat/model-typings';
+import type { FindPaginated, IMessagesModel } from '@rocket.chat/model-typings';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import type {
 	AggregationCursor,
@@ -45,30 +44,6 @@ type DeepWritable<T> = T extends (...args: any) => any
 export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMessage>>) {
 		super(db, 'message', trash);
-	}
-
-	createOnHoldHistoryWithRoomIdMessageAndUser(
-		_roomId: string,
-		_comment: string,
-		_user: Pick<IUser, '_id' | 'username'>,
-	): Promise<
-		{ t: string; rid: string; ts: Date; comment: string; u: { _id: string; username: string | undefined }; groupable: boolean } & {
-			_id: string;
-		}
-	> {
-		throw new Error('Method not implemented.');
-	}
-
-	createOnHoldResumedHistoryWithRoomIdMessageAndUser(
-		_roomId: string,
-		_comment: string,
-		_user: Pick<IUser, '_id' | 'username'>,
-	): Promise<
-		{ t: string; rid: string; ts: Date; comment: string; u: { _id: string; username: string | undefined }; groupable: boolean } & {
-			_id: string;
-		}
-	> {
-		throw new Error('Method not implemented.');
 	}
 
 	createTransferFailedHistoryMessage(
@@ -756,28 +731,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 	removeByRoomId(roomId: string): Promise<DeleteResult> {
 		return this.deleteMany({ rid: roomId });
-	}
-
-	createOnHoldHistoryWithRoomIdMessageAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		comment: string,
-		action: 'on-hold' | 'resume-onHold',
-	): Promise<InsertOneResult<IMessage>> {
-		const msg: InsertionModel<IOmnichannelSystemMessage> = {
-			t: action === 'on-hold' ? 'omnichannel_placed_chat_on_hold' : 'omnichannel_on_hold_chat_resumed',
-			rid: roomId,
-			msg: '',
-			ts: new Date(),
-			groupable: false,
-			u: {
-				_id: user._id,
-				username: user.username,
-				name: user.name,
-			},
-			comment,
-		};
-		return this.insertOne(msg);
 	}
 
 	setReactions(messageId: string, reactions: IMessage['reactions']): Promise<UpdateResult> {
