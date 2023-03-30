@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IRoom } from '@rocket.chat/core-typings';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { callbacks } from '../../lib/callbacks';
-import { Users, Messages } from '../../app/models/server';
+import { Users } from '../../app/models/server';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 
@@ -68,12 +69,7 @@ Meteor.methods<ServerMethods>({
 
 		await Rooms.unmuteUsernameByRoomId(data.rid, unmutedUser.username);
 
-		Messages.createUserUnmutedWithRoomIdAndUser(data.rid, unmutedUser, {
-			u: {
-				_id: fromUser._id,
-				username: fromUser.username,
-			},
-		});
+		await Message.saveSystemMessage('user-unmuted', data.rid, unmutedUser.username, fromUser);
 
 		Meteor.defer(function () {
 			callbacks.run('afterUnmuteUser', { unmutedUser, fromUser }, room);
