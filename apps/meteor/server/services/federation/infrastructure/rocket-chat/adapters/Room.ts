@@ -127,6 +127,10 @@ export class RocketChatRoomAdapter {
 	}
 
 	public async addUsersToRoomWhenJoinExternalPublicRoom(federatedUsers: FederatedUser[], federatedRoom: FederatedRoom): Promise<void> {
+		const room = await Rooms.findOneById(federatedRoom.getInternalId());
+		if (!room) {
+			throw new Error('Room not found - addUsersToRoomWhenJoinExternalPublicRoom');
+		}
 		await Promise.all(
 			federatedUsers
 				.map(async (federatedUser) => {
@@ -138,7 +142,7 @@ export class RocketChatRoomAdapter {
 					if (subscription) {
 						return;
 					}
-					return Subscriptions.createWithRoomAndUser(federatedRoom.getInternalReference(), federatedUser.getInternalReference(), {
+					return Subscriptions.createWithRoomAndUser(room, federatedUser.getInternalReference(), {
 						ts: new Date(),
 					});
 				})
