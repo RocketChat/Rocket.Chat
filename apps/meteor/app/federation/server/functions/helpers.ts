@@ -68,7 +68,7 @@ export const getFederatedRoomData = async (
 	const users = await Users.findUsersWithUsernameByIds(userIds).toArray();
 
 	// Check if there is a federated user on this room
-	const hasFederatedUser = users.some((u) => isFullyQualified(u.username || ''));
+	const hasFederatedUser = users.some((u) => u.username && isFullyQualified(u.username));
 
 	return {
 		hasFederatedUser,
