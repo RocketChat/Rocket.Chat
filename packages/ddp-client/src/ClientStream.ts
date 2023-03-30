@@ -1,6 +1,5 @@
 import type { DDPMethods } from './ClassMinimalDDPClient';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 interface ClientStream {
 	call(method: string, ...params: any[]): string;
 	callAsync(method: string, ...params: any[]): Promise<any> & { id: string };

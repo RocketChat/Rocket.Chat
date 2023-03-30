@@ -19,7 +19,6 @@ import type { ClientPublicationPayloads, ServerPublicationPayloads, SubscribePay
  * ddp.sendSerialized({ msg: 'connect', version: '1', support: ['pre1'] });
  */
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface DDPMethods {
 	// Returns a string representation of an RPC method call
 	// Parameters
