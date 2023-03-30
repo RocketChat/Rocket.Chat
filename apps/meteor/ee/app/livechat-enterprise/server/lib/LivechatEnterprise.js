@@ -7,6 +7,7 @@ import {
 	LivechatDepartment as LivechatDepartmentRaw,
 	OmnichannelServiceLevelAgreements,
 	LivechatTag,
+	LivechatUnitMonitors,
 } from '@rocket.chat/models';
 
 import { hasLicense } from '../../../license/server/license';
@@ -22,7 +23,7 @@ import { logger, queueLogger } from './logger';
 import { callbacks } from '../../../../../lib/callbacks';
 import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
-import { LivechatUnit, LivechatUnitMonitors } from '../../../models/server';
+import { LivechatUnit } from '../../../models/server';
 
 export const LivechatEnterprise = {
 	async addMonitor(username) {
@@ -60,7 +61,7 @@ export const LivechatEnterprise = {
 		}
 
 		// remove this monitor from any unit it is assigned to
-		LivechatUnitMonitors.removeByMonitorId(user._id);
+		await LivechatUnitMonitors.removeByMonitorId(user._id);
 
 		return true;
 	},
