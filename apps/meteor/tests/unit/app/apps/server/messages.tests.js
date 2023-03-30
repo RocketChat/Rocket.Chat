@@ -116,14 +116,14 @@ describe('The AppMessagesConverter instance', function () {
 	});
 
 	describe('when converting a message from the Engine schema back to Rocket.Chat', function () {
-		it('should return `undefined` when `message` is falsy', function () {
-			const rocketchatMessage = messagesConverter.convertAppMessage(undefined);
+		it('should return `undefined` when `message` is falsy', async function () {
+			const rocketchatMessage = await messagesConverter.convertAppMessage(undefined);
 
 			expect(rocketchatMessage).to.be.undefined;
 		});
 
-		it('should return a proper schema', function () {
-			const rocketchatMessage = messagesConverter.convertAppMessage(appMessageMock);
+		it('should return a proper schema', async function () {
+			const rocketchatMessage = await messagesConverter.convertAppMessage(appMessageMock);
 
 			expect(rocketchatMessage).to.have.property('_id', 'appMessageMock');
 			expect(rocketchatMessage).to.have.property('rid', 'GENERAL');
@@ -137,15 +137,16 @@ describe('The AppMessagesConverter instance', function () {
 			});
 		});
 
-		it('should merge `_unmappedProperties_` into the returned message', function () {
-			const rocketchatMessage = messagesConverter.convertAppMessage(appMessageMock);
+		it('should merge `_unmappedProperties_` into the returned message', async function () {
+			const rocketchatMessage = await messagesConverter.convertAppMessage(appMessageMock);
 
 			expect(rocketchatMessage).not.to.have.property('_unmappedProperties_');
 			expect(rocketchatMessage).to.have.property('t', 'uj');
 		});
 
-		it('should throw if message has an invalid room', function () {
-			expect(() => messagesConverter.convertAppMessage(appMessageInvalidRoomMock)).to.throw(Error, 'Invalid room provided on the message.');
+		it('should throw if message has an invalid room', async function () {
+			const result = await messagesConverter.convertAppMessage(appMessageInvalidRoomMock);
+			expect(result).to.throw(Error, 'Invalid room provided on the message.');
 		});
 	});
 });

@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage } from '@rocket.chat/core-typings';
+import { Rooms } from '@rocket.chat/models';
 
-import { Rooms } from '../../../models/server';
 import { TranslationProviderRegistry } from '..';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -17,7 +17,7 @@ Meteor.methods<ServerMethods>({
 		if (!TranslationProviderRegistry.enabled) {
 			return;
 		}
-		const room = Rooms.findOneById(message?.rid);
+		const room = await Rooms.findOneById(message?.rid);
 		if (message && room) {
 			await TranslationProviderRegistry.translateMessage(message, room, targetLanguage);
 		}
