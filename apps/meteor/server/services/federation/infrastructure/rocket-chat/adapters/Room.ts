@@ -1,11 +1,10 @@
-import { api } from '@rocket.chat/core-services';
+import { api, Message } from '@rocket.chat/core-services';
 import type { IDirectMessageRoom, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { MatrixBridgedRoom, Messages as MessagesRaw, Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { saveRoomTopic } from '../../../../../../app/channel-settings/server';
 import { addUserToRoom, createRoom, removeUserFromRoom } from '../../../../../../app/lib/server';
-import { Messages } from '../../../../../../app/models/server';
 import { settings } from '../../../../../../app/settings/server';
 import { DirectMessageFederatedRoom, FederatedRoom } from '../../../domain/FederatedRoom';
 import type { FederatedUser } from '../../../domain/FederatedUser';
@@ -135,7 +134,8 @@ export class RocketChatRoomAdapter {
 			federatedRoom.getName() || '',
 			federatedRoom.getDisplayName() || '',
 		);
-		await MessagesRaw.createRoomRenamedWithRoomIdRoomNameAndUser(
+		await MessagesRaw.createWithTypeRoomIdMessageUserAndUnread(
+			'r',
 			federatedRoom.getInternalId(),
 			federatedRoom.getDisplayName() || '',
 			federatedUser.getInternalReference() as unknown as Required<IUser>, // TODO fix type
@@ -216,13 +216,12 @@ export class RocketChatRoomAdapter {
 			if (notifyChannel) {
 				await Promise.all(
 					toAdd.map((role) =>
-						Messages.createSubscriptionRoleAddedWithRoomIdAndUser(
+						Message.saveSystemMessage(
+							'subscription-role-added',
 							federatedRoom.getInternalId(),
-							targetFederatedUser.getInternalReference(),
-							{
-								u: whoDidTheChange,
-								role,
-							},
+							targetFederatedUser.getInternalReference().username || '',
+							whoDidTheChange,
+							{ role },
 						),
 					),
 				);
@@ -233,13 +232,12 @@ export class RocketChatRoomAdapter {
 			if (notifyChannel) {
 				await Promise.all(
 					toRemove.map((role) =>
-						Messages.createSubscriptionRoleRemovedWithRoomIdAndUser(
+						Message.saveSystemMessage(
+							'subscription-role-removed',
 							federatedRoom.getInternalId(),
-							targetFederatedUser.getInternalReference(),
-							{
-								u: whoDidTheChange,
-								role,
-							},
+							targetFederatedUser.getInternalReference().username || '',
+							whoDidTheChange,
+							{ role },
 						),
 					),
 				);

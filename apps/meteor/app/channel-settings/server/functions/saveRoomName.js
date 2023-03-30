@@ -54,7 +54,7 @@ export async function saveRoomName(rid, displayName, user, sendMessage = true) {
 
 	await Integrations.updateRoomName(room.name, displayName);
 	if (sendMessage) {
-		await Messages.createRoomRenamedWithRoomIdRoomNameAndUser(rid, displayName, user, settings.get('Message_Read_Receipt_Enabled'));
+		await Messages.createWithTypeRoomIdMessageUserAndUnread('r', rid, displayName, user, settings.get('Message_Read_Receipt_Enabled'));
 	}
 	callbacks.run('afterRoomNameChange', { rid, name: displayName, oldName: room.name });
 	return displayName;
