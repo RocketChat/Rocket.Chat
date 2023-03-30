@@ -439,22 +439,6 @@ export class Users extends Base {
 		);
 	}
 
-	enableEmail2FAByUserId(userId) {
-		return this.update(
-			{
-				_id: userId,
-			},
-			{
-				$set: {
-					'services.email2fa': {
-						enabled: true,
-						changedAt: new Date(),
-					},
-				},
-			},
-		);
-	}
-
 	findByIdsWithPublicE2EKey(ids, options) {
 		const query = {
 			'_id': {

@@ -45,7 +45,7 @@ export const insertOneEmailInbox = async (
 		...emailInboxParams,
 		_createdAt: new Date(),
 		_updatedAt: new Date(),
-		_createdBy: await Users.findOne(userId, { projection: { username: 1 } }),
+		_createdBy: await Users.findOneById(userId, { projection: { username: 1 } }),
 	};
 	return EmailInbox.insertOne(obj);
 };

@@ -1694,6 +1694,22 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
+	enableEmail2FAByUserId(userId) {
+		return this.updateOne(
+			{
+				_id: userId,
+			},
+			{
+				$set: {
+					'services.email2fa': {
+						enabled: true,
+						changedAt: new Date(),
+					},
+				},
+			},
+		);
+	}
+
 	disableEmail2FAByUserId(userId) {
 		return this.updateOne(
 			{
