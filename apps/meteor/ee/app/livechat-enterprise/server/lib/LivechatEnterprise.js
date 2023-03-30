@@ -9,11 +9,11 @@ import {
 	LivechatTag,
 	LivechatUnitMonitors,
 	LivechatUnit,
+	Messages,
 } from '@rocket.chat/models';
 
 import { hasLicense } from '../../../license/server/license';
 import { updateDepartmentAgents } from '../../../../../app/livechat/server/lib/Helper';
-import { Messages } from '../../../../../app/models/server';
 import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../../server/lib/roles/removeUserFromRoles';
 import { processWaitingQueue, updateSLAInquiries } from './Helper';
@@ -188,7 +188,7 @@ export const LivechatEnterprise = {
 		}
 		await LivechatRooms.setOnHoldByRoomId(roomId);
 
-		Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldBy);
+		await Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldBy);
 
 		await callbacks.run('livechat:afterOnHold', room);
 
