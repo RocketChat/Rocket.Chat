@@ -16,7 +16,7 @@ const isValidName = (name: unknown): name is string => {
 };
 
 const onlyUsernames = (members: unknown): members is string[] =>
-	Array.isArray(members) && !members.every((member) => typeof member === 'string');
+	Array.isArray(members) && members.every((member) => typeof member === 'string');
 
 // eslint-disable-next-line complexity
 export const createRoom = async <T extends RoomType>(
@@ -34,7 +34,6 @@ export const createRoom = async <T extends RoomType>(
 > => {
 	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
 	callbacks.run('beforeCreateRoom', { type, name, owner: ownerUsername, members, readOnly, extraData, options });
-
 	if (type === 'd') {
 		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || ownerUsername });
 	}
