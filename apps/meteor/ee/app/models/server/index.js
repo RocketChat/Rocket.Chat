@@ -1,7 +1,6 @@
 import LivechatTag from './models/LivechatTag';
 import LivechatUnit from './models/LivechatUnit';
 import LivechatUnitMonitors from './models/LivechatUnitMonitors';
-import './models/CannedResponse';
 import './models/LivechatDepartment';
 import './models/LivechatPriority';
 import './models/Messages';

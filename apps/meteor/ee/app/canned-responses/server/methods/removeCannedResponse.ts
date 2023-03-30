@@ -1,15 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { CannedResponse } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
-import CannedResponse from '../../../models/server/models/CannedResponse';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		removeCannedResponse(_id: string): void;
+		removeCannedResponse(_id: string): Promise<void>;
 	}
 }
 
@@ -25,7 +25,7 @@ Meteor.methods<ServerMethods>({
 
 		check(_id, String);
 
-		const cannedResponse = CannedResponse.findOneById(_id);
+		const cannedResponse = await CannedResponse.findOneById(_id);
 		if (!cannedResponse) {
 			throw new Meteor.Error('error-canned-response-not-found', 'Canned Response not found', {
 				method: 'removeCannedResponse',
@@ -34,6 +34,6 @@ Meteor.methods<ServerMethods>({
 
 		notifications.streamCannedResponses.emit('canned-responses', { type: 'removed', _id });
 
-		return CannedResponse.removeById(_id);
+		await CannedResponse.removeById(_id);
 	},
 });
