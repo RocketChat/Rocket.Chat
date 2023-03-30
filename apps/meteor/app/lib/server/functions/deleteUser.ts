@@ -58,7 +58,10 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 			case 'Unlink':
 				const rocketCat = await Users.findOneById('rocket.cat');
 				const nameAlias = TAPi18n.__('Removed_User');
-				await Messages.unlinkUserId(userId, rocketCat?._id || '', rocketCat?.username || '', nameAlias);
+				if (!rocketCat?._id || !rocketCat?.username) {
+					break;
+				}
+				await Messages.unlinkUserId(userId, rocketCat?._id, rocketCat?.username, nameAlias);
 				break;
 		}
 
