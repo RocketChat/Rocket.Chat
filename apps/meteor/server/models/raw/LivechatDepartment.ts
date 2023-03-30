@@ -1,6 +1,17 @@
 import type { ILivechatDepartment, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, Filter, FindOptions, UpdateResult, Document, IndexDescription } from 'mongodb';
+import type {
+	Collection,
+	FindCursor,
+	Db,
+	Filter,
+	FindOptions,
+	UpdateResult,
+	Document,
+	IndexDescription,
+	DeleteResult,
+	UpdateFilter,
+} from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { LivechatDepartmentAgents } from '@rocket.chat/models';
 
@@ -9,6 +20,30 @@ import { BaseRaw } from './BaseRaw';
 export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implements ILivechatDepartmentModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ILivechatDepartment>>) {
 		super(db, 'livechat_department', trash);
+	}
+
+	unfilteredFind(_query: Filter<ILivechatDepartment>, _options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
+		throw new Error('Method not implemented.');
+	}
+
+	unfilteredFindOne(_query: Filter<ILivechatDepartment>, _options: FindOptions<ILivechatDepartment>): Promise<ILivechatDepartment | null> {
+		throw new Error('Method not implemented.');
+	}
+
+	unfilteredUpdate(
+		_query: Filter<ILivechatDepartment>,
+		_update: UpdateFilter<ILivechatDepartment>,
+		_options: FindOptions<ILivechatDepartment>,
+	): Promise<UpdateResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	unfilteredRemove(_query: Filter<ILivechatDepartment>): Promise<DeleteResult> {
+		throw new Error('Method not implemented.');
+	}
+
+	removeParentAndAncestorById(_id: string): Promise<Document | UpdateResult> {
+		throw new Error('Method not implemented.');
 	}
 
 	protected modelIndexes(): Array<IndexDescription> {
@@ -246,10 +281,10 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 		return this.find(query, projection && { projection });
 	}
 
-	findEnabledWithAgentsAndBusinessUnit(
+	async findEnabledWithAgentsAndBusinessUnit(
 		_: any,
 		projection: FindOptions<ILivechatDepartment>['projection'] = {},
-	): FindCursor<ILivechatDepartment> {
+	): Promise<FindCursor<ILivechatDepartment>> {
 		const query = {
 			numAgents: { $gt: 0 },
 			enabled: true,

@@ -42,7 +42,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 		}
 	} else {
 		if (!showDeletedStatus) {
-			MessagesSync.removeById(message._id);
+			await Messages.removeById(message._id);
 		}
 
 		files.forEach((file) => {

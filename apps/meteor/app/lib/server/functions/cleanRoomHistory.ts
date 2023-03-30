@@ -1,11 +1,10 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
-import { Messages, Rooms } from '@rocket.chat/models';
+import { Messages, Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { deleteRoom } from './deleteRoom';
 import { FileUpload } from '../../../file-upload/server';
-import { Subscriptions } from '../../../models/server';
 
 export async function cleanRoomHistory({
 	rid = '',
@@ -83,7 +82,7 @@ export async function cleanRoomHistory({
 		});
 
 		if (threads.size > 0) {
-			Subscriptions.removeUnreadThreadsByRoomId(rid, [...threads]);
+			await Subscriptions.removeUnreadThreadsByRoomId(rid, [...threads]);
 		}
 	}
 

@@ -172,7 +172,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	updateDisplayNameByRoomId(roomId: string, fname: string): Promise<UpdateResult | Document>;
 	setNameForDirectRoomsWithOldName(oldName: string, name: string): Promise<UpdateResult | Document>;
 
-	updateDirectNameAndFnameByName(name: string, newName: string, newFname: string): Promise<UpdateResult | Document>;
+	updateDirectNameAndFnameByName(name: string, newName?: string, newFname?: string): Promise<UpdateResult | Document>;
 
 	incGroupMentionsAndUnreadForRoomIdExcludingUserId(
 		roomId: string,
@@ -230,4 +230,6 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	removeUnreadThreadByRoomIdAndUserId(rid: string, userId: string, tmid: string, clearAlert?: boolean): Promise<UpdateResult>;
 
 	removeUnreadThreadsByRoomId(rid: string, tunread: string[]): Promise<UpdateResult | Document>;
+	countByRoomIdAndRoles(roomId: string, roles: string[]): Promise<number>;
+	countByRoomId(roomId: string): Promise<number>;
 }

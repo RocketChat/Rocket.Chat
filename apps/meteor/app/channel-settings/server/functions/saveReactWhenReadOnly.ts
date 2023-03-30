@@ -23,7 +23,7 @@ export const saveReactWhenReadOnly = async function (
 
 	if (result && sendMessage) {
 		const type = allowReact ? 'room-allowed-reacting' : 'room-disallowed-reacting';
-		await Messages.createWithTypeRoomIdMessageUserAndUnread(type, rid, '', user, settings.get('ReadReceipt_Enabled'));
+		await Messages.createWithTypeRoomIdMessageUserAndUnread(type, rid, '', user, settings.get('Message_Read_Receipt_Enabled'));
 	}
 	return result;
 };

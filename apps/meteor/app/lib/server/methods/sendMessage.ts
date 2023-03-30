@@ -6,7 +6,7 @@ import { api } from '@rocket.chat/core-services';
 import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { canSendMessage } from '../../../authorization/server';
+import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
@@ -15,7 +15,7 @@ import { sendMessage } from '../functions';
 import { RateLimiter } from '../lib';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage, 'rid'>) {
+export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage, 'rid'>) {
 	if (message.tshow && !message.tmid) {
 		throw new Meteor.Error('invalid-params', 'tshow provided but missing tmid', {
 			method: 'sendMessage',
@@ -72,7 +72,7 @@ export function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage,
 	}
 
 	try {
-		const room = canSendMessage(rid, { uid, username: user.username, type: user.type });
+		const room = await canSendMessageAsync(rid, { uid, username: user.username, type: user.type });
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 		return sendMessage(user, message, room, false);

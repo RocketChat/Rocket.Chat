@@ -17,7 +17,7 @@ type ActionRendererProps = Omit<ToolboxActionConfig, 'renderAction' | 'groups' |
 	key: string;
 };
 
-export type ActionRenderer = (props: ActionRendererProps) => ReactNode;
+type ActionRenderer = (props: ActionRendererProps) => ReactNode;
 
 type OptionRendererProps = ComponentProps<typeof Option>;
 

@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
+import { LivechatInquiry, LivechatRooms, Subscriptions } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 
 import {
 	createLivechatSubscription,
@@ -14,7 +15,7 @@ import {
 } from './Helper';
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../../server/lib/logger/Logger';
-import { Rooms, Messages, Users, Subscriptions } from '../../../models/server';
+import { Rooms, Users } from '../../../models/server';
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 
 const logger = new Logger('RoutingManager');
@@ -106,8 +107,8 @@ export const RoutingManager = {
 		const user = Users.findOneById(agent.agentId);
 		const room = await LivechatRooms.findOneById(rid);
 
-		Messages.createCommandWithRoomIdAndUser('connected', rid, user);
-		Messages.createUserJoinWithRoomIdAndUser(rid, user);
+		await Promise.all([Message.saveSystemMessage('command', rid, 'connected', user), Message.saveSystemMessage('uj', rid, '', user)]);
+
 		dispatchAgentDelegated(rid, agent.agentId);
 		logger.debug(`Agent ${agent.agentId} assigned to inquriy ${inquiry._id}. Instances notified`);
 
@@ -141,7 +142,7 @@ export const RoutingManager = {
 		if (servedBy) {
 			logger.debug(`Unassigning current agent for inquiry ${inquiry._id}`);
 			await LivechatRooms.removeAgentByRoomId(rid);
-			this.removeAllRoomSubscriptions(room);
+			await this.removeAllRoomSubscriptions(room);
 			dispatchAgentDelegated(rid, null);
 		}
 
@@ -240,10 +241,10 @@ export const RoutingManager = {
 		return defaultAgent;
 	},
 
-	removeAllRoomSubscriptions(room, ignoreUser) {
+	async removeAllRoomSubscriptions(room, ignoreUser) {
 		const { _id: roomId } = room;
 
-		const subscriptions = Subscriptions.findByRoomId(roomId).fetch();
+		const subscriptions = await Subscriptions.findByRoomId(roomId).toArray();
 		subscriptions?.forEach(({ u }) => {
 			if (ignoreUser && ignoreUser._id === u._id) {
 				return;

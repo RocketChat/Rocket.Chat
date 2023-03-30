@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Messages } from '@rocket.chat/models';
+import { Messages, Subscriptions } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { ISubscription, IUser } from '@rocket.chat/core-typings';
 
 import { canAccessRoomIdAsync } from '../../app/authorization/server/functions/canAccessRoom';
-import { Subscriptions } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 import { parseMessageSearchQuery } from '../lib/parseMessageSearchQuery';
@@ -73,11 +72,7 @@ Meteor.methods<ServerMethods>({
 			query.rid = rid;
 		} else {
 			query.rid = {
-				$in: user?._id
-					? Subscriptions.findByUserId(user._id)
-							.fetch()
-							.map((subscription: ISubscription) => subscription.rid)
-					: [],
+				$in: user?._id ? (await Subscriptions.findByUserId(user._id).toArray()).map((subscription: ISubscription) => subscription.rid) : [],
 			};
 		}
 
