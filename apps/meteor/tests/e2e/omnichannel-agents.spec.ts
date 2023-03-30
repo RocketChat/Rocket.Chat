@@ -15,7 +15,8 @@ test.describe.serial('omnichannel-agents', () => {
 	});
 
 	test('expect add "user1" as agent', async ({ page }) => {
-		await poOmnichannelAgents.inputUsername.type('user1', { delay: 1000 });
+		await poOmnichannelAgents.inputUsername.type('user1');
+		await expect(page.locator('role=option[name="user1"]')).toBeVisible();
 		await page.keyboard.press('Enter');
 		await poOmnichannelAgents.btnAdd.click();
 
