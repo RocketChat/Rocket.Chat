@@ -3,7 +3,8 @@ import path from 'path';
 import { Meteor } from 'meteor/meteor';
 
 import { UploadFS } from '../../../server/ufs';
-import { canAccessRoomAsync, hasPermissionAsync } from '../../authorization';
+import { canAccessRoomAsync } from '../../authorization/server';
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { settings } from '../../settings';
 
 // set ufs temp dir to $TMPDIR/ufs instead of /tmp/ufs if the variable is set

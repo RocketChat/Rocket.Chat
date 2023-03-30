@@ -9,9 +9,9 @@ import { Store } from './ufs-store';
 import type { IFile } from './definition';
 
 type LocalStoreOptions = StoreOptions & {
-	mode: string;
-	path: string;
-	writeMode: number;
+	mode?: string;
+	path?: string;
+	writeMode?: number;
 };
 
 export class LocalStore extends Store {
@@ -19,14 +19,12 @@ export class LocalStore extends Store {
 
 	constructor(options: LocalStoreOptions) {
 		// Default options
-		options = Object.assign(
-			{
-				mode: '0744',
-				path: 'ufs/uploads',
-				writeMode: '0744',
-			},
-			options,
-		);
+		options = {
+			mode: '0744',
+			path: 'ufs/uploads',
+			writeMode: 0o744,
+			...options,
+		};
 
 		// Check options
 		if (typeof options.mode !== 'string') {

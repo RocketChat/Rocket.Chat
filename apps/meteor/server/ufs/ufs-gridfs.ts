@@ -1,5 +1,6 @@
 import { MongoInternals } from 'meteor/mongo';
-import { GridFSBucket, ObjectId } from 'mongodb';
+import type { ObjectId } from 'mongodb';
+import { GridFSBucket } from 'mongodb';
 
 import { UploadFS } from '.';
 import type { StoreOptions } from './ufs-store';
@@ -60,9 +61,8 @@ export class GridFSStore extends UploadFS.Store {
 				.findOne({ _id: fileId })
 				.then((file) => {
 					if (file) {
-						const id = new ObjectId(fileId);
 						void mongoStore
-							.delete(id)
+							.delete(fileId as unknown as ObjectId)
 							.then(() => {
 								callback?.();
 							})
@@ -84,13 +84,11 @@ export class GridFSStore extends UploadFS.Store {
 			if (options?.end) {
 				options.end += 1;
 			}
-			const id = new ObjectId(fileId);
-			return mongoStore.openDownloadStream(id, options);
+			return mongoStore.openDownloadStream(fileId as unknown as ObjectId, options);
 		};
 
 		this.getWriteStream = function (fileId: string, file: IFile, _options?: any) {
-			const id = new ObjectId(fileId);
-			const writeStream = mongoStore.openUploadStreamWithId(id, fileId, {
+			const writeStream = mongoStore.openUploadStreamWithId(fileId as unknown as ObjectId, fileId, {
 				chunkSizeBytes: this.chunkSize,
 				contentType: file.type,
 			});
