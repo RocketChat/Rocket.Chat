@@ -15,7 +15,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async getMessages(messages) {
-		check(messages, [String] as [typeof String]);
+		check(messages, [String]);
 		const uid = Meteor.userId();
 
 		if (!uid) {

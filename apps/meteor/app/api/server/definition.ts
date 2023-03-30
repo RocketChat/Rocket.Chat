@@ -143,11 +143,11 @@ export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern,
 	readonly request: Request;
 
 	readonly queryOperations: TOptions extends { queryOperations: infer T } ? T : never;
-	parseJsonQuery(): {
+	parseJsonQuery(): Promise<{
 		sort: Record<string, 1 | -1>;
 		fields: Record<string, 0 | 1>;
 		query: Record<string, unknown>;
-	};
+	}>;
 } & (TOptions extends { authRequired: true }
 	? {
 			user: IUser;

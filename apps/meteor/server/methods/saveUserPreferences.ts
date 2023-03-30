@@ -66,7 +66,7 @@ Meteor.methods<ServerMethods>({
 			desktopNotifications: Match.Optional(String),
 			pushNotifications: Match.Optional(String),
 			enableAutoAway: Match.Optional(Boolean),
-			highlights: Match.Optional([String] as [typeof String]),
+			highlights: Match.Optional([String]),
 			hideUsernames: Match.Optional(Boolean),
 			hideRoles: Match.Optional(Boolean),
 			displayAvatars: Match.Optional(Boolean),

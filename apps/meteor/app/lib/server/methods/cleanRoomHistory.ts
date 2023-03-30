@@ -44,7 +44,7 @@ Meteor.methods<ServerMethods>({
 		check(excludePinned, Match.Maybe(Boolean));
 		check(filesOnly, Match.Maybe(Boolean));
 		check(ignoreThreads, Match.Maybe(Boolean));
-		check(fromUsers, Match.Maybe([String] as [typeof String]));
+		check(fromUsers, Match.Maybe([String]));
 
 		const userId = Meteor.userId();
 

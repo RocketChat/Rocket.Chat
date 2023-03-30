@@ -225,7 +225,7 @@ API.v1.addRoute(
 
 			check(status, Match.Maybe(String));
 			check(agentId, Match.Maybe(String));
-			check(queues, Match.Maybe([String] as [typeof String]));
+			check(queues, Match.Maybe([String]));
 			check(extension, Match.Maybe(String));
 
 			const extensions = await LivechatVoip.getExtensionListWithAgentData();

@@ -59,7 +59,7 @@ Meteor.methods<ServerMethods>({
 			Match.ObjectIncluding({
 				_id: String,
 				topic: Match.Optional(String),
-				tags: Match.Optional([String] as [typeof String]),
+				tags: Match.Optional([String]),
 				livechatData: Match.Optional(Object),
 				priorityId: Match.Optional(String),
 				slaId: Match.Optional(String),

@@ -693,7 +693,7 @@ API.v1.addRoute(
 			check(
 				this.queryParams,
 				Match.ObjectIncluding({
-					status: Match.Maybe([String] as [typeof String]),
+					status: Match.Maybe([String]),
 					filter: Match.Maybe(String),
 				}),
 			);

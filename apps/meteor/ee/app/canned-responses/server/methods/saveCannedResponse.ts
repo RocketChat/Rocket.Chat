@@ -37,7 +37,7 @@ Meteor.methods<ServerMethods>({
 			shortcut: String,
 			text: String,
 			scope: String,
-			tags: Match.Maybe([String] as [typeof String]),
+			tags: Match.Maybe([String]),
 			departmentId: Match.Maybe(String),
 		});
 

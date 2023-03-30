@@ -37,7 +37,7 @@ function _verifyRequiredFields(integration: INewOutgoingIntegration | IUpdateOut
 		});
 	}
 
-	if (!Match.test(integration.urls, [String] as [typeof String])) {
+	if (!Match.test(integration.urls, [String])) {
 		throw new Meteor.Error('error-invalid-urls', 'Invalid URLs', {
 			function: 'validateOutgoing._verifyRequiredFields',
 		});
@@ -159,7 +159,7 @@ export const validateOutgoingIntegration = async function (
 	};
 
 	if (outgoingEvents[integration.event].use.triggerWords && integration.triggerWords) {
-		if (!Match.test(integration.triggerWords, [String] as [typeof String])) {
+		if (!Match.test(integration.triggerWords, [String])) {
 			throw new Meteor.Error('error-invalid-triggerWords', 'Invalid triggerWords', {
 				function: 'validateOutgoing',
 			});

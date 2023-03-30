@@ -79,7 +79,7 @@ API.v1.addRoute(
 				Match.ObjectIncluding({
 					name: String,
 					type: Match.OneOf(TEAM_TYPE.PRIVATE, TEAM_TYPE.PUBLIC),
-					members: Match.Maybe([String] as [typeof String]),
+					members: Match.Maybe([String]),
 					room: Match.Maybe(Match.Any),
 					owner: Match.Maybe(String),
 				}),
@@ -87,7 +87,7 @@ API.v1.addRoute(
 
 			const { name, type, members, room, owner } = this.bodyParams;
 
-			const team = await Team.create(this.userId, {
+			const team: ITeam = await Team.create(this.userId, {
 				team: {
 					name,
 					type,
@@ -161,11 +161,11 @@ API.v1.addRoute(
 				Match.OneOf(
 					Match.ObjectIncluding({
 						teamId: String,
-						rooms: [String] as [typeof String],
+						rooms: [String] as [StringConstructor],
 					}),
 					Match.ObjectIncluding({
 						teamName: String,
-						rooms: [String] as [typeof String],
+						rooms: [String] as [StringConstructor],
 					}),
 				),
 			);
@@ -392,7 +392,7 @@ API.v1.addRoute(
 			check(
 				this.queryParams,
 				Match.ObjectIncluding({
-					status: Match.Maybe([String] as [typeof String]),
+					status: Match.Maybe([String]),
 					username: Match.Maybe(String),
 					name: Match.Maybe(String),
 				}),

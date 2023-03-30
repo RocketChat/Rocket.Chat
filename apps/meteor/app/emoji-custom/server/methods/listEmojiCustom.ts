@@ -27,7 +27,7 @@ Meteor.methods<ServerMethods>({
 
 		check(options, {
 			name: Match.Optional(String),
-			aliases: Match.Optional([String] as [typeof String]),
+			aliases: Match.Optional([String]),
 		});
 
 		return EmojiCustom.find(options).toArray();

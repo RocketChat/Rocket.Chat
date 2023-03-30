@@ -22,7 +22,7 @@ declare module '@rocket.chat/ui-contexts' {
 Meteor.methods<ServerMethods>({
 	async createPrivateGroup(name, members, readOnly = false, customFields = {}, extraData = {}) {
 		check(name, String);
-		check(members, Match.Optional([String] as [typeof String]));
+		check(members, Match.Optional([String]));
 
 		const uid = Meteor.userId();
 

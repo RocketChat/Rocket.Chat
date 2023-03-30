@@ -13,8 +13,7 @@ export const saveRoomSystemMessages = async function (rid: string, systemMessage
 	}
 	if (
 		systemMessages &&
-		(!Match.test(systemMessages, [String] as [typeof String]) ||
-			systemMessages.some((value) => !messageTypesValues.map(({ key }) => key).includes(value)))
+		(!Match.test(systemMessages, [String]) || systemMessages.some((value) => !messageTypesValues.map(({ key }) => key).includes(value)))
 	) {
 		throw new Meteor.Error('invalid-room', 'Invalid option', {
 			function: 'RocketChat.saveRoomSystemMessages',
