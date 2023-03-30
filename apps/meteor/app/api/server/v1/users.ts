@@ -793,7 +793,6 @@ API.v1.addRoute('users.2fa.sendEmailCode', {
 			// this.logger.error('[2fa] User was not found when requesting 2fa email code');
 			return API.v1.success();
 		}
-		
 
 		await emailCheck.sendEmailCode(user);
 
