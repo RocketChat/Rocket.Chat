@@ -57,7 +57,6 @@ export const addUserToRoom = async function (
 		// Keep the current event
 		callbacks.run('beforeJoinRoom', userToBeAdded, room);
 	}
-
 	await Apps.triggerEvent(AppEvents.IPreRoomUserJoined, room, userToBeAdded, inviter).catch((error) => {
 		if (error.name === AppsEngineException.name) {
 			throw new Meteor.Error('error-app-prevented', error.message);
