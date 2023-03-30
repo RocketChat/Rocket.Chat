@@ -14,7 +14,7 @@ import { Users } from '../../models/server';
 const Leave: SlashCommand<'leave'>['callback'] = async function Leave(_command, _params, item): Promise<void> {
 	try {
 		await Meteor.callAsync('leaveRoom', item.rid);
-	} catch ({ error }) {
+	} catch ({ error }: any) {
 		const userId = Meteor.userId() as string;
 		if (typeof error !== 'string') {
 			return;

@@ -23,7 +23,7 @@ export async function updateEnabled(enabled: boolean): Promise<void> {
 }
 
 export const checkRoomType = (room: IRoom): boolean => room.t === 'p' || room.t === 'd';
-export const checkRoomDomainsLength = (domains: unknown[]): boolean => domains.length <= (process.env.FEDERATED_DOMAINS_LENGTH || 10);
+export const checkRoomDomainsLength = (domains: unknown[]): boolean => domains.length <= Number(process.env.FEDERATED_DOMAINS_LENGTH ?? 10);
 
 export const hasExternalDomain = ({ federation }: { federation: { origin: string; domains: string[] } }): boolean => {
 	// same test as isFederated(room)
