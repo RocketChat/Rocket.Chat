@@ -2,11 +2,12 @@ import URL from 'url';
 import QueryString from 'querystring';
 
 import { Meteor } from 'meteor/meteor';
-import type { ITranslatedMessage, MessageAttachment } from '@rocket.chat/core-typings';
+import type { IMessage, MessageAttachment } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
+import { Messages } from '@rocket.chat/models';
 
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
-import { Messages, Rooms, Users } from '../../models/server';
+import { Rooms, Users } from '../../models/server';
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { canAccessRoomAsync } from '../../authorization/server/functions/canAccessRoom';
@@ -23,7 +24,7 @@ const recursiveRemove = (attachments: MessageAttachment, deep = 1): MessageAttac
 	return attachments;
 };
 
-const validateAttachmentDeepness = (message: ITranslatedMessage): ITranslatedMessage => {
+const validateAttachmentDeepness = (message: IMessage): IMessage => {
 	if (!message?.attachments) {
 		return message;
 	}
@@ -62,7 +63,9 @@ callbacks.add(
 				continue;
 			}
 
-			const jumpToMessage = validateAttachmentDeepness(Messages.findOneById(msgId));
+			const message = await Messages.findOneById(msgId);
+
+			const jumpToMessage = message && validateAttachmentDeepness(message);
 			if (!jumpToMessage) {
 				continue;
 			}
