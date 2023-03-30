@@ -3,9 +3,8 @@ import { Match } from 'meteor/check';
 import type { UpdateResult } from 'mongodb';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isRegisterUser } from '@rocket.chat/core-typings';
-import { Messages, Rooms } from '@rocket.chat/models';
-
-import { settings } from '../../../settings/server';
+import { Rooms } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 
 export const saveRoomEncrypted = async function (rid: string, encrypted: boolean, user: IUser, sendMessage = true): Promise<UpdateResult> {
 	if (!Match.test(rid, String)) {
@@ -24,7 +23,7 @@ export const saveRoomEncrypted = async function (rid: string, encrypted: boolean
 	if (update && sendMessage) {
 		const type = encrypted ? 'room_e2e_enabled' : 'room_e2e_disabled';
 
-		await Messages.createWithTypeRoomIdMessageUserAndUnread(type, rid, user.username, user, settings.get('Message_Read_Receipt_Enabled'));
+		await Message.saveSystemMessage(type, rid, user.username, user);
 	}
 	return update;
 };
