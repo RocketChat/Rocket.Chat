@@ -7,7 +7,9 @@ export const getSettingDefaults = (
 	hiddenSettings: Set<string> = new Set(),
 	wizardRequiredSettings: Set<string> = new Set(),
 ): ISetting => {
-	const { _id, value, sorter, ...options } = setting;
+	const { _id, value, sorter, ...data } = setting;
+
+	const options = Object.fromEntries(Object.entries(data).filter(([, value]) => value !== undefined)) as Partial<typeof data>;
 
 	return {
 		_id,
