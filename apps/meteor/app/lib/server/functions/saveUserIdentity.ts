@@ -1,8 +1,8 @@
-import { Messages, VideoConference, LivechatDepartmentAgents, Rooms } from '@rocket.chat/models';
+import { Messages, VideoConference, LivechatDepartmentAgents, Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { _setUsername } from './setUsername';
 import { _setRealName } from './setRealName';
-import { Subscriptions, Users } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { FileUpload } from '../../../file-upload/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { validateName } from './validateName';
@@ -59,7 +59,7 @@ export async function saveUserIdentity({ _id, name: rawName, username: rawUserna
 			await Rooms.replaceUsername(previousUsername, username);
 			await Rooms.replaceMutedUsername(previousUsername, username);
 			await Rooms.replaceUsernameOfUserByUserId(user._id, username);
-			Subscriptions.setUserUsernameByUserId(user._id, username);
+			await Subscriptions.setUserUsernameByUserId(user._id, username);
 
 			await LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username);
 
@@ -77,7 +77,7 @@ export async function saveUserIdentity({ _id, name: rawName, username: rawUserna
 		// update other references if either the name or username has changed
 		if (usernameChanged || nameChanged) {
 			// update name and fname of 1-on-1 direct messages
-			Subscriptions.updateDirectNameAndFnameByName(previousUsername, rawUsername && username, rawName && name);
+			await Subscriptions.updateDirectNameAndFnameByName(previousUsername, rawUsername && username, rawName && name);
 
 			// update name and fname of group direct messages
 			await updateGroupDMsName(user);

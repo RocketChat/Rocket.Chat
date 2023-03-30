@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { LivechatDepartment, CannedResponse } from '@rocket.chat/models';
+import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
-import CannedResponse from '../../../models/server/models/CannedResponse';
-import LivechatDepartment from '../../../../../app/models/server/models/LivechatDepartment';
 import { Users } from '../../../../../app/models/server';
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
 
@@ -20,7 +20,7 @@ declare module '@rocket.chat/ui-contexts' {
 				tags?: string[];
 				departmentId?: string;
 			},
-		): void;
+		): Promise<Omit<IOmnichannelCannedResponse, '_updatedAt' | '_createdAt'> & { _createdAt?: Date }>;
 	}
 }
 
@@ -62,8 +62,8 @@ Meteor.methods<ServerMethods>({
 		// TODO: check if the department i'm trying to save is a department i can interact with
 
 		// check if the response already exists and we're not updating one
-		const duplicateShortcut = CannedResponse.findOneByShortcut(responseData.shortcut, {
-			fields: { _id: 1 },
+		const duplicateShortcut = await CannedResponse.findOneByShortcut(responseData.shortcut, {
+			projection: { _id: 1 },
 		});
 		if ((!_id && duplicateShortcut) || (_id && duplicateShortcut && duplicateShortcut._id !== _id)) {
 			throw new Meteor.Error('error-invalid-shortcut', 'Shortcut provided already exists', {
@@ -77,50 +77,41 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (responseData.departmentId && !LivechatDepartment.findOneById(responseData.departmentId)) {
+		if (responseData.departmentId && !(await LivechatDepartment.findOneById(responseData.departmentId))) {
 			throw new Meteor.Error('error-invalid-department', 'Invalid department', {
 				method: 'saveCannedResponse',
 			});
 		}
 
-		const data: {
-			shortcut: string;
-			text: string;
-			scope: string;
-			tags: string[];
-			departmentId?: string;
-			createdBy?: {
-				_id: string;
-				username: string;
-			};
-			_createdAt?: Date;
-			userId?: string;
-		} = { ...responseData, departmentId: responseData.departmentId ?? undefined };
+		let result: Omit<IOmnichannelCannedResponse, '_updatedAt' | '_createdAt'> & { _createdAt?: Date };
 
 		if (_id) {
-			const cannedResponse = CannedResponse.findOneById(_id);
+			const cannedResponse = await CannedResponse.findOneById(_id);
 			if (!cannedResponse) {
 				throw new Meteor.Error('error-canned-response-not-found', 'Canned Response not found', {
 					method: 'saveCannedResponse',
 				});
 			}
 
-			data.createdBy = cannedResponse.createdBy;
+			result = await CannedResponse.updateCannedResponse(_id, { ...responseData, createdBy: cannedResponse.createdBy });
 		} else {
 			const user = Users.findOneById(Meteor.userId());
 
-			if (data.scope === 'user') {
-				data.userId = user._id;
-			}
-			data.createdBy = { _id: user._id, username: user.username };
-			data._createdAt = new Date();
+			const data = {
+				...responseData,
+				...(responseData.scope === 'user' && { userId: user._id }),
+				createdBy: { _id: user._id, username: user.username },
+				_createdAt: new Date(),
+			};
+
+			result = await CannedResponse.createCannedResponse(data);
 		}
-		const createdCannedResponse = CannedResponse.createOrUpdateCannedResponse(_id, data);
+
 		notifications.streamCannedResponses.emit('canned-responses', {
 			type: 'changed',
-			...createdCannedResponse,
+			...result,
 		});
 
-		return createdCannedResponse;
+		return result;
 	},
 });

@@ -4,7 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IMessage, IRoom, IUser, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasAtLeastOnePermission } from '../../../authorization/server';
+import { hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { Messages, Rooms } from '../../../models/server';
 import { createRoom, addUserToRoom, sendMessage, attachMessage } from '../../../lib/server';
@@ -209,7 +209,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!hasAtLeastOnePermission(uid, ['start-discussion', 'start-discussion-other-user'])) {
+		if (!(await hasAtLeastOnePermissionAsync(uid, ['start-discussion', 'start-discussion-other-user']))) {
 			throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
 		}
 
