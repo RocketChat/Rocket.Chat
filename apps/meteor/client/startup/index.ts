@@ -24,7 +24,6 @@ import './messageTypes';
 import './notifications';
 import './oauth';
 import './otr';
-import './readMessage';
 import './reloadRoomAfterLogin';
 import './renderMessage';
 import './renderNotification';

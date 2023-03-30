@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
-import { HTTP } from 'meteor/http';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
 import { settings } from '../../../app/settings/server';
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { appRequestNotififyForUsers } from './marketplace/appRequestNotifyUsers';
+import { fetch } from '../../../server/lib/http/fetch';
 
-const appsNotifyAppRequests = Meteor.bindEnvironment(function _appsNotifyAppRequests() {
+const appsNotifyAppRequests = Meteor.bindEnvironment(async function _appsNotifyAppRequests() {
 	try {
 		const installedApps = Promise.await(Apps.installedApps({ enabled: true }));
 		if (!installedApps || installedApps.length === 0) {
@@ -35,8 +35,8 @@ const appsNotifyAppRequests = Meteor.bindEnvironment(function _appsNotifyAppRequ
 		};
 
 		const pendingSentUrl = `${baseUrl}/v1/app-request/sent/pending`;
-		const result = HTTP.get(pendingSentUrl, options);
-		const data = result.data?.data;
+		const result = await fetch(pendingSentUrl, options);
+		const data = (await result.json()).data?.data;
 		const filtered = installedApps.filter((app) => data.indexOf(app.getID()) !== -1);
 
 		filtered.forEach((app) => {
@@ -45,9 +45,9 @@ const appsNotifyAppRequests = Meteor.bindEnvironment(function _appsNotifyAppRequ
 
 			const usersNotified = Promise.await<(string | Error)[]>(
 				appRequestNotififyForUsers(baseUrl, workspaceUrl, appId, appName)
-					.then((response) => {
+					.then(async (response) => {
 						// Mark all app requests as sent
-						HTTP.post(`${baseUrl}/v1/app-request/markAsSent/${appId}`, options);
+						await fetch(`${baseUrl}/v1/app-request/markAsSent/${appId}`, { ...options, method: 'POST' });
 						return response;
 					})
 					.catch((err) => {
@@ -70,7 +70,7 @@ const appsNotifyAppRequests = Meteor.bindEnvironment(function _appsNotifyAppRequ
 SyncedCron.add({
 	name: 'Apps-Request-End-Users:notify',
 	schedule: (parser) => parser.text('every 12 hours'),
-	job() {
-		appsNotifyAppRequests();
+	async job() {
+		await appsNotifyAppRequests();
 	},
 });

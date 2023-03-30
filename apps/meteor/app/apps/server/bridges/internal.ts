@@ -1,10 +1,10 @@
 import { InternalBridge } from '@rocket.chat/apps-engine/server/bridges/InternalBridge';
 import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { ISubscription } from '@rocket.chat/core-typings';
-import { Settings } from '@rocket.chat/models';
+import { Settings, Subscriptions } from '@rocket.chat/models';
 
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
-import { Subscriptions } from '../../../models/server';
+import { isTruthy } from '../../../../lib/isTruthy';
 
 export class AppInternalBridge extends InternalBridge {
 	// eslint-disable-next-line no-empty-function
@@ -17,17 +17,19 @@ export class AppInternalBridge extends InternalBridge {
 			return [];
 		}
 
-		const records = Subscriptions.findByRoomIdWhenUsernameExists(roomId, {
-			fields: {
-				'u.username': 1,
-			},
-		}).fetch();
+		const records = Promise.await(
+			Subscriptions.findByRoomIdWhenUsernameExists(roomId, {
+				projection: {
+					'u.username': 1,
+				},
+			}).toArray(),
+		);
 
 		if (!records || records.length === 0) {
 			return [];
 		}
 
-		return records.map((s: ISubscription) => s.u.username);
+		return records.map((s: ISubscription) => s.u.username).filter(isTruthy);
 	}
 
 	protected async getWorkspacePublicKey(): Promise<ISetting> {

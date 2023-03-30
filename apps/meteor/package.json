@@ -120,6 +120,7 @@
 		"@types/mailparser": "^3.4.0",
 		"@types/marked": "^4.0.8",
 		"@types/meteor": "2.8.1",
+		"@types/meteor-collection-hooks": "^0.8.6",
 		"@types/mkdirp": "^1.0.2",
 		"@types/mocha": "^8.2.3",
 		"@types/moment-timezone": "^0.5.30",

@@ -4,9 +4,9 @@
 // 	subject: 'Rocket.Chat, 17 Users, 24 Messages, 1 File, 799504 Minutes, in #random',
 //  files: ['i3nc9l3mn']
 // }
-import { UploadFS } from 'meteor/jalik:ufs';
 import { Uploads } from '@rocket.chat/models';
 
+import { UploadFS } from '../../../../server/ufs';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { smarsh } from '../lib/rocketchat';
