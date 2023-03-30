@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import type { ParsedMail } from 'mailparser';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import { Subscriptions } from '@rocket.chat/models';
+import { Messages, Subscriptions } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
-import { Rooms, Messages, Users } from '../../../models/server';
+import { Rooms, Users } from '../../../models/server';
 import { metrics } from '../../../metrics/server';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -47,7 +47,7 @@ export const processDirectEmail = Meteor.bindEnvironment(async function (email: 
 		return;
 	}
 
-	const prevMessage = Messages.findOneById(mid, {
+	const prevMessage = await Messages.findOneById(mid, {
 		rid: 1,
 		u: 1,
 	});

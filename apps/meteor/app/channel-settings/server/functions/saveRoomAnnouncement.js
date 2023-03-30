@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { Messages, Rooms } from '@rocket.chat/models';
-
-import { settings } from '../../../settings/server';
+import { Rooms } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 
 export const saveRoomAnnouncement = async function (rid, roomAnnouncement, user, sendMessage = true) {
 	if (!Match.test(rid, String)) {
@@ -21,13 +20,7 @@ export const saveRoomAnnouncement = async function (rid, roomAnnouncement, user,
 
 	const updated = await Rooms.setAnnouncementById(rid, message, announcementDetails);
 	if (updated && sendMessage) {
-		await Messages.createWithTypeRoomIdMessageUserAndUnread(
-			'room_changed_announcement',
-			rid,
-			message,
-			user,
-			settings.get('Message_Read_Receipt_Enabled'),
-		);
+		await Message.saveSystemMessage('room_changed_announcement', rid, message, user);
 	}
 
 	return updated;

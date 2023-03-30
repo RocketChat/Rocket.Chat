@@ -5,11 +5,11 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { ILivechatAgent, ILivechatVisitor, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { Mongo } from 'meteor/mongo';
-import { LivechatRooms, Rooms } from '@rocket.chat/models';
+import type { Filter } from 'mongodb';
+import { LivechatRooms, Messages, Rooms } from '@rocket.chat/models';
 
 import AuditLog from './AuditLog';
-import { Messages, Users } from '../../../../app/models/server';
+import { Users } from '../../../../app/models/server';
 import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
 import { updateCounter } from '../../../../app/statistics/server';
 import type { IAuditLog } from '../../../definition/IAuditLog';
@@ -93,7 +93,7 @@ Meteor.methods<ServerMethods>({
 		const rids = rooms?.length ? rooms.map(({ _id }) => _id) : undefined;
 		const name = TAPi18n.__('Omnichannel');
 
-		const query: Mongo.Selector<IMessage> = {
+		const query: Filter<IMessage> = {
 			rid: { $in: rids },
 			ts: {
 				$gt: startDate,
@@ -105,7 +105,7 @@ Meteor.methods<ServerMethods>({
 			const regex = new RegExp(escapeRegExp(msg).trim(), 'i');
 			query.msg = regex;
 		}
-		const messages = Messages.find(query).fetch();
+		const messages = await Messages.find(query).toArray();
 
 		// Once the filter is applied, messages will be shown and a log containing all filters will be saved for further auditing.
 
@@ -130,7 +130,7 @@ Meteor.methods<ServerMethods>({
 		let rids;
 		let name;
 
-		const query: Mongo.Selector<IMessage> = {
+		const query: Filter<IMessage> = {
 			ts: {
 				$gt: startDate,
 				$lt: endDate,
@@ -156,7 +156,7 @@ Meteor.methods<ServerMethods>({
 			query.msg = regex;
 		}
 
-		const messages = Messages.find(query).fetch();
+		const messages = await Messages.find(query).toArray();
 
 		// Once the filter is applied, messages will be shown and a log containing all filters will be saved for further auditing.
 
