@@ -39,7 +39,7 @@ const shouldAdd = (attachments: MessageAttachment[], attachment: MessageQuoteAtt
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		pinMessage(message: IMessage, pinnedAt?: Date): Pick<IMessage, '_id' | 't' | 'rid' | 'ts' | 'msg' | 'u' | 'groupable'>;
+		pinMessage(message: IMessage, pinnedAt?: Date): IMessage | null;
 		unpinMessage(message: IMessage): boolean;
 	}
 }
@@ -91,7 +91,6 @@ Meteor.methods<ServerMethods>({
 		}
 
 		const room = await Rooms.findOneById(originalMessage.rid);
-
 		if (!room) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'unpinMessage' });
 		}

@@ -653,7 +653,7 @@ export const Livechat = {
 			extraData._hidden = true;
 		}
 
-		await Message.saveSystemMessage('livechat_navigation_history', roomId, `${pageTitle} - ${pageUrl}`, user, extraData);
+		return Message.saveSystemMessage('livechat_navigation_history', roomId, `${pageTitle} - ${pageUrl}`, user, extraData);
 	},
 
 	async saveTransferHistory(room, transferData) {
