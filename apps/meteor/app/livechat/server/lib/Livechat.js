@@ -978,10 +978,11 @@ export const Livechat = {
 		const { token } = guest;
 		check(token, String);
 
-		await LivechatRooms.findByVisitorToken(token).forEach((room) => {
+		const cursor = LivechatRooms.findByVisitorToken(token);
+		for await (const room of cursor) {
 			FileUpload.removeFilesByRoomId(room._id);
-			Messages.removeByRoomId(room._id);
-		});
+			await MessagesRaw.removeByRoomId(room._id);
+		}
 
 		Subscriptions.removeByVisitorToken(token);
 		await LivechatRooms.removeByVisitorToken(token);
