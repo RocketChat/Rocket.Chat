@@ -12,6 +12,7 @@ import {
 	useUser,
 	useUserPreference,
 } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import type { MouseEventHandler, ReactElement, UIEvent } from 'react';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
@@ -60,6 +61,7 @@ const RoomBody = (): ReactElement => {
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
 	const homeRouter = useRoute('home');
+	const queryClient = useQueryClient();
 
 	const [lastMessageDate, setLastMessageDate] = useState<Date | undefined>();
 	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
@@ -217,7 +219,7 @@ const RoomBody = (): ReactElement => {
 	const retentionPolicy = useRetentionPolicy(room);
 
 	useEffect(() => {
-		if (!user) {
+		if (!user?._id) {
 			return;
 		}
 
@@ -225,13 +227,14 @@ const RoomBody = (): ReactElement => {
 			`${user._id}/subscriptions-changed`,
 			(event: string, subscription: ISubscription) => {
 				if (event === 'removed' && subscription.rid === room._id) {
+					queryClient.invalidateQueries(['rooms', room._id]);
 					homeRouter.push({});
 				}
 			},
 		);
 
 		return unSubscribeFromNotifyUser;
-	}, [user, homeRouter, subscribeToNotifyUser, room]);
+	}, [user?._id, homeRouter, subscribeToNotifyUser, room, queryClient]);
 
 	useEffect(() => {
 		callbacks.add(
