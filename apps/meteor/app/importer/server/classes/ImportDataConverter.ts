@@ -765,6 +765,10 @@ export class ImportDataConverter {
 				this.addUserToCache(importId, user._id, user.username);
 			}
 
+			if (!user.name) {
+				return;
+			}
+
 			return this.addUserDisplayNameToCache(importId, user.name);
 		}
 	}
