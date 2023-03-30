@@ -96,7 +96,7 @@ export const RoutingManager = {
 		logger.debug(`Assigning agent ${agent.agentId} to inquiry ${inquiry._id}`);
 
 		const { rid, name, v, department } = inquiry;
-		if (!createLivechatSubscription(rid, name, v, agent, department)) {
+		if (!(await createLivechatSubscription(rid, name, v, agent, department))) {
 			logger.debug(`Cannot assign agent to inquiry ${inquiry._id}: Cannot create subscription`);
 			throw new Meteor.Error('error-creating-subscription', 'Error creating subscription');
 		}
