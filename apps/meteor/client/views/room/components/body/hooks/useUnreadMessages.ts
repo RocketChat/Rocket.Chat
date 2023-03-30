@@ -2,8 +2,8 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import type { Dispatch, SetStateAction } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
-import { LegacyRoomManager, RoomHistoryManager } from '../../../../../app/ui-utils/client';
-import { useReactiveValue } from '../../../../hooks/useReactiveValue';
+import { LegacyRoomManager, RoomHistoryManager } from '../../../../../../app/ui-utils/client';
+import { useReactiveValue } from '../../../../../hooks/useReactiveValue';
 
 interface IUnreadMessages {
 	count: number;
