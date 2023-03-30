@@ -239,7 +239,7 @@ export default class RocketAdapter {
 	}
 
 	async findChannel(slackChannelId) {
-		return RoomsRaw.findOneByImportId(slackChannelId);
+		return Rooms.findOneByImportId(slackChannelId);
 	}
 
 	async getRocketUsers(members, slackChannel) {

@@ -6,7 +6,7 @@ import _ from 'underscore';
 import moment from 'moment';
 import Fiber from 'fibers';
 import Future from 'fibers/future';
-import { Integrations, IntegrationHistory } from '@rocket.chat/models';
+import { Messages, Integrations, IntegrationHistory } from '@rocket.chat/models';
 
 import * as Models from '../../../models/server';
 import * as s from '../../../../lib/utils/stringUtils';
@@ -947,7 +947,7 @@ class RocketChatIntegrationHandler {
 		}
 
 		const { event } = history;
-		const message = Models.Messages.findOneById(history.data.message_id);
+		const message = await Messages.findOneById(history.data.message_id);
 		const room = Models.Rooms.findOneById(history.data.channel_id);
 		const user = Models.Users.findOneById(history.data.user_id);
 		let owner;

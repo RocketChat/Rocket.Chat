@@ -4,7 +4,7 @@ import { callbacks } from '../../../../lib/callbacks';
 import { FileUpload } from '../../../file-upload/server';
 
 export const deleteRoom = function (rid: string): void {
-	FileUpload.removeFilesByRoomId(rid);
+	Promise.await(FileUpload.removeFilesByRoomId(rid));
 	Promise.await(Messages.removeByRoomId(rid));
 	callbacks.run('beforeDeleteRoom', rid);
 	Promise.await(Subscriptions.removeByRoomId(rid));

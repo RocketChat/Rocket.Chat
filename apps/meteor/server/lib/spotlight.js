@@ -26,7 +26,7 @@ export class Spotlight {
 
 		const roomOptions = {
 			limit: 5,
-			fields: {
+			projection: {
 				t: 1,
 				name: 1,
 				fname: 1,

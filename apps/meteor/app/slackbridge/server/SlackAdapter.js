@@ -982,14 +982,10 @@ export default class SlackAdapter {
 
 	async processTopicMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
 		if (isImporting) {
-			await Messages.createWithTypeRoomIdMessageUserAndUnread(
-				'room_changed_topic',
-				rocketChannel._id,
-				slackMessage.topic,
-				rocketUser,
-				settings.get('Message_Read_Receipt_Enabled'),
-				{ ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000), imported: 'slackbridge' },
-			);
+			await Message.saveSystemMessage('room_changed_topic', rocketChannel._id, slackMessage.topic, rocketUser, {
+				ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
+				imported: 'slackbridge',
+			});
 		} else {
 			await saveRoomTopic(rocketChannel._id, slackMessage.topic, rocketUser, false);
 		}
@@ -997,14 +993,10 @@ export default class SlackAdapter {
 
 	async processPurposeMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
 		if (isImporting) {
-			await Messages.createWithTypeRoomIdMessageUserAndUnread(
-				'room_changed_topic',
-				rocketChannel._id,
-				slackMessage.purpose,
-				rocketUser,
-				settings.get('Message_Read_Receipt_Enabled'),
-				{ ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000), imported: 'slackbridge' },
-			);
+			await Message.saveSystemMessage('room_changed_topic', rocketChannel._id, slackMessage.purpose, rocketUser, {
+				ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
+				imported: 'slackbridge',
+			});
 		} else {
 			await saveRoomTopic(rocketChannel._id, slackMessage.purpose, rocketUser, false);
 		}
@@ -1012,17 +1004,10 @@ export default class SlackAdapter {
 
 	async processNameMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
 		if (isImporting) {
-			await Messages.createWithTypeRoomIdMessageUserAndUnread(
-				'r',
-				rocketChannel._id,
-				slackMessage.name,
-				rocketUser,
-				settings.get('Message_Read_Receipt_Enabled'),
-				{
-					ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
-					imported: 'slackbridge',
-				},
-			);
+			await Message.saveSystemMessage('r', rocketChannel._id, slackMessage.name, rocketUser, {
+				ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
+				imported: 'slackbridge',
+			});
 		} else {
 			await saveRoomName(rocketChannel._id, slackMessage.name, rocketUser, false);
 		}
