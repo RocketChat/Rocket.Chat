@@ -17,7 +17,7 @@ export async function createDirectMessage(
 	userId: IUser['_id'] | null,
 	excludeSelf = false,
 ): Promise<Omit<ICreatedRoom, '_id' | 'inserted'>> {
-	check(usernames, [String]);
+	check(usernames, [String] as [typeof String]);
 	check(userId, String);
 	check(excludeSelf, Match.Optional(Boolean));
 

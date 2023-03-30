@@ -52,7 +52,7 @@ API.v1.addRoute(
 
 			await LivechatEnterprise.placeRoomOnHold(room, comment, onHoldBy);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -86,7 +86,7 @@ API.v1.addRoute(
 				priorityId,
 			);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 		async delete() {
 			const { rid } = this.urlParams;
@@ -101,7 +101,7 @@ API.v1.addRoute(
 				username: this.user.username,
 			});
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );

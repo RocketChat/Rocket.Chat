@@ -107,7 +107,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('eraseRoom', room._id);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -134,7 +134,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('hideRoom', room._id);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -299,7 +299,7 @@ API.v1.addRoute(
 			check(
 				this.queryParams,
 				Match.ObjectIncluding({
-					status: Match.Maybe([String]),
+					status: Match.Maybe([String] as [typeof String]),
 					filter: Match.Maybe(String),
 				}),
 			);
@@ -519,7 +519,7 @@ API.v1.addRoute(
 				await Meteor.callAsync('openRoom', room._id);
 			}
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );

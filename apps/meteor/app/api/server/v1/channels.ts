@@ -107,7 +107,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('archiveRoom', findResult._id);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -131,7 +131,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('unarchiveRoom', findResult._id);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -328,7 +328,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('openRoom', findResult._id);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -453,7 +453,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('eraseRoom', room._id);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -525,7 +525,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('addRoomModerator', findResult._id, user._id);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -541,7 +541,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('addRoomOwner', findResult._id, user._id);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -568,7 +568,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('hideRoom', findResult._id);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -998,7 +998,7 @@ API.v1.addRoute(
 			check(
 				this.queryParams,
 				Match.ObjectIncluding({
-					status: Match.Maybe([String]),
+					status: Match.Maybe([String] as [typeof String]),
 					filter: Match.Maybe(String),
 				}),
 			);
@@ -1087,7 +1087,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('removeRoomModerator', findResult._id, user._id);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -1103,7 +1103,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('removeRoomOwner', findResult._id, user._id);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -1300,7 +1300,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('addRoomLeader', findResult._id, user._id);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -1316,7 +1316,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('removeRoomLeader', findResult._id, user._id);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );

@@ -36,7 +36,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('Mailer:unsubscribe', _id, createdAt);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );

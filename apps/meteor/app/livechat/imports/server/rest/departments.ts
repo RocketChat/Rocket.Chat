@@ -145,7 +145,7 @@ API.v1.addRoute(
 
 			await DepartmentHelper.removeDepartment(this.urlParams._id);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -192,7 +192,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (await Livechat.archiveDepartment(this.urlParams._id)) {
-				return API.v1.success();
+				return API.v1.success<void>();
 			}
 
 			return API.v1.failure();
@@ -209,7 +209,7 @@ API.v1.addRoute(
 	{
 		async post() {
 			if (await Livechat.unarchiveDepartment(this.urlParams._id)) {
-				return API.v1.success();
+				return API.v1.success<void>();
 			}
 
 			return API.v1.failure();
@@ -282,7 +282,7 @@ API.v1.addRoute(
 			);
 			await Livechat.saveDepartmentAgents(this.urlParams._id, this.bodyParams);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );

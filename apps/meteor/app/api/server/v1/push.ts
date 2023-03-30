@@ -68,7 +68,7 @@ API.v1.addRoute(
 				return API.v1.notFound();
 			}
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );

@@ -80,7 +80,7 @@ API.v1.addRoute(
 			try {
 				logger.debug(`Setting extension ${extension} for agent with id ${user._id}`);
 				await Users.setExtension(user._id, extension);
-				return API.v1.success();
+				return API.v1.success<void>();
 			} catch (e) {
 				logger.error({ msg: 'Extension already in use' });
 				return API.v1.failure(`extension already in use ${extension}`);
@@ -147,12 +147,12 @@ API.v1.addRoute(
 			}
 			if (!user.extension) {
 				logger.debug(`User ${user._id} is not associated with any extension. Skipping`);
-				return API.v1.success();
+				return API.v1.success<void>();
 			}
 
 			logger.debug(`Removing extension association for user ${user._id} (extension was ${user.extension})`);
 			await Users.unsetExtension(user._id);
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -176,8 +176,8 @@ API.v1.addRoute(
 					}),
 				),
 			);
-			const { type } = this.queryParams;
-			switch ((type as string).toLowerCase()) {
+
+			switch (this.queryParams.type.toLowerCase()) {
 				case 'free': {
 					const extensions = await LivechatVoip.getFreeExtensions();
 					if (!extensions) {
@@ -209,7 +209,7 @@ API.v1.addRoute(
 					return API.v1.success({ extensions });
 				}
 				default:
-					return API.v1.notFound(`${type} not found `);
+					return API.v1.notFound(`${this.queryParams.type} not found `);
 			}
 		},
 	},
@@ -225,11 +225,16 @@ API.v1.addRoute(
 
 			check(status, Match.Maybe(String));
 			check(agentId, Match.Maybe(String));
-			check(queues, Match.Maybe([String]));
+			check(queues, Match.Maybe([String] as [typeof String]));
 			check(extension, Match.Maybe(String));
 
 			const extensions = await LivechatVoip.getExtensionListWithAgentData();
-			const filteredExts = filter(extensions, { status, agentId, queues, extension });
+			const filteredExts = filter(extensions, {
+				status: status ?? undefined,
+				agentId: agentId ?? undefined,
+				queues: queues ?? undefined,
+				extension: extension ?? undefined,
+			});
 
 			// paginating in memory as Asterisk doesn't provide pagination for commands
 			return API.v1.success({

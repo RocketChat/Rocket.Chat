@@ -47,7 +47,7 @@ export async function createDirectRoom(
 		subscriptionExtra?: ISubscriptionExtraData;
 	},
 ): Promise<ICreatedRoom> {
-	if (members.length > (settings.get('DirectMesssage_maxUsers') || 1)) {
+	if (members.length > (settings.get<number>('DirectMesssage_maxUsers') || 1)) {
 		throw new Error('error-direct-message-max-user-exceeded');
 	}
 	callbacks.run('beforeCreateDirectRoom', members);

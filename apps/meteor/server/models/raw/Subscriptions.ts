@@ -215,13 +215,13 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 
 	findUsersInRoles(roles: IRole['_id'][], rid: string | undefined, options: FindOptions<IUser>): Promise<FindCursor<IUser>>;
 
-	findUsersInRoles<P = IUser>(
+	findUsersInRoles<P extends Document = IUser>(
 		roles: IRole['_id'][],
 		rid: string | undefined,
 		options: FindOptions<P extends IUser ? IUser : P>,
 	): Promise<FindCursor<P>>;
 
-	async findUsersInRoles<P = IUser>(
+	async findUsersInRoles<P extends Document = IUser>(
 		roles: IRole['_id'][],
 		rid: IRoom['_id'] | undefined,
 		options?: FindOptions<P extends IUser ? IUser : P>,

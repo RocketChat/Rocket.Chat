@@ -55,7 +55,7 @@ export const getNewUpdates = async () => {
 							title: String,
 							text: String,
 							textArguments: [Match.Any],
-							modifiers: [String],
+							modifiers: [String] as [typeof String],
 							infoUrl: String,
 						}),
 					]),

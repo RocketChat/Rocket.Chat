@@ -93,7 +93,7 @@ API.v1.addRoute(
 
 			await eraseRoom(roomId, this.userId);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -207,7 +207,7 @@ API.v1.addRoute(
 				),
 			);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -227,7 +227,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('toggleFavorite', room._id, favorite);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -302,7 +302,7 @@ API.v1.addRoute(
 			const room = await findRoomByIdOrName({ params: this.bodyParams });
 			await Meteor.callAsync('leaveRoom', room._id);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -593,7 +593,7 @@ API.v1.addRoute(
 					},
 					user,
 				);
-				return API.v1.success();
+				return API.v1.success<void>();
 			}
 
 			if (type === 'email') {

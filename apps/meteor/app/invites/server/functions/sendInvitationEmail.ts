@@ -14,7 +14,7 @@ Meteor.startup(() => {
 });
 
 export const sendInvitationEmail = async (userId: string, emails: string[]) => {
-	check(emails, [String]);
+	check(emails, [String] as [typeof String]);
 	if (!userId) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'sendInvitationEmail',
@@ -55,7 +55,7 @@ export const sendInvitationEmail = async (userId: string, emails: string[]) => {
 
 			await Settings.incrementValueById('Invitation_Email_Count');
 			continue;
-		} catch ({ message }) {
+		} catch ({ message }: any) {
 			throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
 				method: 'sendInvitationEmail',
 				message,

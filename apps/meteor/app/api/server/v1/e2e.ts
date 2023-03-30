@@ -90,7 +90,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('e2e.setRoomKeyID', rid, keyID);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -142,7 +142,7 @@ API.v1.addRoute(
 				private_key,
 			});
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -192,7 +192,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('e2e.updateGroupKey', rid, uid, key);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -209,7 +209,7 @@ API.v1.addRoute(
 
 			await handleSuggestedGroupKey('accept', rid, this.userId, 'e2e.acceptSuggestedGroupKey');
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -226,7 +226,7 @@ API.v1.addRoute(
 
 			await handleSuggestedGroupKey('reject', rid, this.userId, 'e2e.rejectSuggestedGroupKey');
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );

@@ -331,7 +331,7 @@ API.v1.addRoute(
 				body.triggerId,
 			);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );

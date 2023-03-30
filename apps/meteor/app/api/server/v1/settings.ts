@@ -109,7 +109,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('addOAuthService', this.bodyParams.name, this.userId);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -179,7 +179,7 @@ API.v1.addRoute(
 				if (isSettingAction(setting) && isSettingsUpdatePropsActions(this.bodyParams) && this.bodyParams.execute) {
 					// execute the configured method
 					await Meteor.callAsync(setting.value);
-					return API.v1.success();
+					return API.v1.success<void>();
 				}
 
 				if (isSettingColor(setting) && isSettingsUpdatePropsColor(this.bodyParams)) {
@@ -187,7 +187,7 @@ API.v1.addRoute(
 						editor: this.bodyParams.editor,
 					});
 					await Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
-					return API.v1.success();
+					return API.v1.success<void>();
 				}
 
 				if (
@@ -200,7 +200,7 @@ API.v1.addRoute(
 					}
 					settings.set(s);
 					setValue(this.urlParams._id, this.bodyParams.value);
-					return API.v1.success();
+					return API.v1.success<void>();
 				}
 
 				return API.v1.failure();

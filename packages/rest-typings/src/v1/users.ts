@@ -344,6 +344,31 @@ export type UsersEndpoints = {
 	'/v1/users.delete': {
 		POST: (params: { userId: IUser['_id']; confirmRelinquish?: boolean }) => void;
 	};
+
+	'/v1/users.getAvatar': {
+		GET: (params: { userId?: string; username?: string; user?: string }) => void;
+	};
+
+	'/v1/users.updateOwnBasicInfo': {
+		POST: (params: {
+			data: {
+				email?: string;
+				name?: string;
+				username?: string;
+				nickname?: string;
+				statusText?: string;
+				newPassword?: string;
+				currentPassword?: string;
+			};
+			customFields?: Record<string, unknown>;
+		}) => {
+			user: IUser;
+		};
+	};
+
+	'/v1/users.deleteOwnAccount': {
+		POST: (params: { password: string; confirmRelinquish?: boolean }) => void;
+	};
 };
 
 export * from './users/UserCreateParamsPOST';

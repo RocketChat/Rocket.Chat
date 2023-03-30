@@ -37,7 +37,7 @@ API.v1.addRoute(
 			const { token } = this.urlParams;
 			const room = await findOpenRoom(token);
 			if (room) {
-				return API.v1.success();
+				return API.v1.success<void>();
 			}
 
 			let { department } = this.queryParams;

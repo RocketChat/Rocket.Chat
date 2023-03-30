@@ -52,7 +52,7 @@ API.v1.addRoute(
 
 			await Settings.updateValueById('Enterprise_License', license);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );

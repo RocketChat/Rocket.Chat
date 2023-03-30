@@ -106,7 +106,7 @@ const getRequestIP = (req: Request): string | null => {
 
 let prometheusAPIUserAgent = false;
 
-export class APIClass<TBasePath extends string = '/'> extends Restivus {
+export class APIClass<TBasePath extends string = ''> extends Restivus {
 	protected apiPath: string;
 
 	public authMethods: ((...args: any[]) => any)[];
@@ -623,7 +623,8 @@ export class APIClass<TBasePath extends string = '/'> extends Restivus {
 							this.parseJsonQuery = api.parseJsonQuery.bind(this as PartialThis);
 
 							result =
-								(await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) || API.v1.success();
+								(await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) ||
+								API.v1.success<void>();
 
 							log.http({
 								status: result.statusCode,

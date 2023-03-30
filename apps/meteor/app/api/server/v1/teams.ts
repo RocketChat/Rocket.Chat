@@ -11,7 +11,7 @@ import {
 	isTeamsLeaveProps,
 	isTeamsUpdateProps,
 } from '@rocket.chat/rest-typings';
-import type { ITeam } from '@rocket.chat/core-typings';
+import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Team } from '@rocket.chat/core-services';
 
@@ -79,7 +79,7 @@ API.v1.addRoute(
 				Match.ObjectIncluding({
 					name: String,
 					type: Match.OneOf(TEAM_TYPE.PRIVATE, TEAM_TYPE.PUBLIC),
-					members: Match.Maybe([String]),
+					members: Match.Maybe([String] as [typeof String]),
 					room: Match.Maybe(Match.Any),
 					owner: Match.Maybe(String),
 				}),
@@ -146,7 +146,7 @@ API.v1.addRoute(
 
 			await Team.deleteById(team._id);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -161,11 +161,11 @@ API.v1.addRoute(
 				Match.OneOf(
 					Match.ObjectIncluding({
 						teamId: String,
-						rooms: [String],
+						rooms: [String] as [typeof String],
 					}),
 					Match.ObjectIncluding({
 						teamName: String,
-						rooms: [String],
+						rooms: [String] as [typeof String],
 					}),
 				),
 			);
@@ -392,7 +392,7 @@ API.v1.addRoute(
 			check(
 				this.queryParams,
 				Match.ObjectIncluding({
-					status: Match.Maybe([String]),
+					status: Match.Maybe([String] as [typeof String]),
 					username: Match.Maybe(String),
 					name: Match.Maybe(String),
 				}),
@@ -410,7 +410,7 @@ API.v1.addRoute(
 			const query = {
 				username: username ? new RegExp(escapeRegExp(username), 'i') : undefined,
 				name: name ? new RegExp(escapeRegExp(name), 'i') : undefined,
-				status: status ? { $in: status } : undefined,
+				status: status ? { $in: status as UserStatus[] } : undefined,
 			};
 
 			const { records, total } = await Team.members(this.userId, team._id, canSeeAllMembers, { offset, count }, query);
@@ -447,7 +447,7 @@ API.v1.addRoute(
 
 			await Team.addMembers(this.userId, team._id, members);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -474,7 +474,7 @@ API.v1.addRoute(
 
 			await Team.updateMember(team._id, member);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -519,7 +519,7 @@ API.v1.addRoute(
 					),
 				);
 			}
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -550,7 +550,7 @@ API.v1.addRoute(
 				await Promise.all(roomsFromTeam.map((rid) => removeUserFromRoom(rid, this.user)));
 			}
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -635,7 +635,7 @@ API.v1.addRoute(
 			// And finally delete the team itself
 			await Team.deleteById(team._id);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -682,7 +682,7 @@ API.v1.addRoute(
 
 			await Team.update(this.userId, team._id, data);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );

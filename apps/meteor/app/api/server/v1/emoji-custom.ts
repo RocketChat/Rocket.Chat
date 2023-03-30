@@ -103,7 +103,7 @@ API.v1.addRoute(
 				return API.v1.failure();
 			}
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -152,7 +152,7 @@ API.v1.addRoute(
 			if (fields.newFile) {
 				await Meteor.callAsync('uploadEmojiCustom', fileBuffer, mimetype, { ...fields, newFile });
 			}
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -169,7 +169,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('deleteEmojiCustom', emojiId);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );

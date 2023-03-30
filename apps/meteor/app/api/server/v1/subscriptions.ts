@@ -84,7 +84,7 @@ API.v1.addRoute(
 			const roomId = 'rid' in this.bodyParams ? this.bodyParams.rid : this.bodyParams.roomId;
 			await readMessages(roomId, this.userId, readThreads);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -99,7 +99,7 @@ API.v1.addRoute(
 		async post() {
 			await Meteor.callAsync('unreadMessages', (this.bodyParams as any).firstUnreadMessage, (this.bodyParams as any).roomId);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );

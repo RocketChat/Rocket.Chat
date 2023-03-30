@@ -73,7 +73,7 @@ API.v1.addRoute(
 
 				Livechat.logger.debug({ response });
 				if (response?.statusCode === 200) {
-					return API.v1.success();
+					return API.v1.success<void>();
 				}
 
 				throw new Error('Invalid status code');

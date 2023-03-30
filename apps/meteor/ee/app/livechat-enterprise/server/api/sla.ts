@@ -79,7 +79,7 @@ API.v1.addRoute(
 
 			await LivechatEnterprise.removeSLA(slaId);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 		async put() {
 			const { name, description, dueTimeInMinutes } = this.bodyParams;

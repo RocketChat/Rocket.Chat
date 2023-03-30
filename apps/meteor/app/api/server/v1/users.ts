@@ -202,7 +202,7 @@ API.v1.addRoute(
 
 			if (this.bodyParams.avatarUrl) {
 				setUserAvatar(user, this.bodyParams.avatarUrl, '', 'url');
-				return API.v1.success();
+				return API.v1.success<void>();
 			}
 
 			const image = await getUploadFormData(
@@ -238,7 +238,7 @@ API.v1.addRoute(
 
 			setUserAvatar(user, fileBuffer, mimetype, 'rest');
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -288,7 +288,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('deleteUser', user._id, confirmRelinquish);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -310,7 +310,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('deleteUserOwnAccount', password, confirmRelinquish);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -566,7 +566,7 @@ API.v1.addRoute(
 				});
 			}
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -613,7 +613,7 @@ API.v1.addRoute(
 			}
 
 			await Meteor.callAsync('sendForgotPasswordEmail', email);
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -718,7 +718,7 @@ API.v1.addRoute(
 				tokenName,
 			});
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -730,7 +730,7 @@ API.v1.addRoute(
 		post() {
 			Users.enableEmail2FAByUserId(this.userId);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -742,7 +742,7 @@ API.v1.addRoute(
 		post() {
 			Users.disableEmail2FAByUserId(this.userId);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -761,12 +761,12 @@ API.v1.addRoute('users.2fa.sendEmailCode', {
 		const user = await getUserForCheck(userId);
 		if (!userId || !user) {
 			// this.logger.error('[2fa] User was not found when requesting 2fa email code');
-			return API.v1.success();
+			return API.v1.success<void>();
 		}
 
 		await emailCheck.sendEmailCode(user);
 
-		return API.v1.success();
+		return API.v1.success<void>();
 	},
 });
 
@@ -781,7 +781,7 @@ API.v1.addRoute(
 			const { email } = this.bodyParams;
 
 			if (await Meteor.callAsync('sendConfirmationEmail', email)) {
-				return API.v1.success();
+				return API.v1.success<void>();
 			}
 			return API.v1.failure();
 		},
@@ -952,10 +952,10 @@ API.v1.addRoute(
 					return API.v1.failure();
 				}
 
-				return API.v1.success();
+				return API.v1.success<void>();
 			}
 			await resetUserE2EEncriptionKey(this.userId, false);
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -983,10 +983,10 @@ API.v1.addRoute(
 
 				await resetTOTP(user._id, true);
 
-				return API.v1.success();
+				return API.v1.success<void>();
 			}
 			await resetTOTP(this.userId, false);
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -1134,7 +1134,7 @@ API.v1.addRoute(
 				}
 			}
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );

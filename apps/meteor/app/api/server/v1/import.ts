@@ -50,7 +50,7 @@ API.v1.addRoute(
 			const { fileUrl, importerKey } = this.bodyParams;
 			await executeDownloadPublicImportFile(this.userId, fileUrl, importerKey);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -68,7 +68,7 @@ API.v1.addRoute(
 
 			await executeStartImport({ input });
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );

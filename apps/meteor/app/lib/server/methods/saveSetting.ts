@@ -43,7 +43,7 @@ Meteor.methods<ServerMethods>({
 		// Verify the value is what it should be
 		switch (setting?.type) {
 			case 'roomPick':
-				check(value, Match.OneOf([Object], ''));
+				check(value, Match.OneOf([Object] as [typeof Object], ''));
 				break;
 			case 'boolean':
 				check(value, Boolean);

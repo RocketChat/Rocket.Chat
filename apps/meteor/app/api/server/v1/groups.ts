@@ -139,7 +139,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('addRoomModerator', findResult.rid, user._id);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -158,7 +158,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('addRoomOwner', findResult.rid, user._id);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -176,7 +176,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('addRoomLeader', findResult.rid, user._id);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -194,7 +194,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('archiveRoom', findResult.rid);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -216,7 +216,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('hideRoom', findResult.rid);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -353,7 +353,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('eraseRoom', findResult.rid);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -585,7 +585,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('removeUserFromRoom', { rid: findResult.rid, username: user.username });
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -602,7 +602,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('leaveRoom', findResult.rid);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -693,7 +693,7 @@ API.v1.addRoute(
 			check(
 				this.queryParams,
 				Match.ObjectIncluding({
-					status: Match.Maybe([String]),
+					status: Match.Maybe([String] as [typeof String]),
 					filter: Match.Maybe(String),
 				}),
 			);
@@ -829,7 +829,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('openRoom', findResult.rid);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -848,7 +848,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('removeRoomModerator', findResult.rid, user._id);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -867,7 +867,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('removeRoomOwner', findResult.rid, user._id);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -886,7 +886,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('removeRoomLeader', findResult.rid, user._id);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
@@ -1120,7 +1120,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('unarchiveRoom', findResult.rid);
 
-			return API.v1.success();
+			return API.v1.success<void>();
 		},
 	},
 );
