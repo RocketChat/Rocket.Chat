@@ -16,7 +16,8 @@ const EmojiComponent = styled('span', ({ fillContainer: _fillContainer, ...props
 			? `
 				display: inline-block;
 				width: 100%;
-				height: 100%;`
+				height: 100%;
+				margin: 0;`
 			: ''}
 `;
 

@@ -14,7 +14,7 @@ type MessageAvatarProps = {
 	style?: CSSProperties;
 } & Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
-const MessageAvatar: VFC<MessageAvatarProps> = ({ emoji = ':rocket:', avatarUrl, username, size = 'x36', className, ...props }) => {
+const MessageAvatar: VFC<MessageAvatarProps> = ({ emoji, avatarUrl, username, size = 'x36', className, ...props }) => {
 	if (emoji) {
 		return (
 			<AvatarContainer size={size} {...props}>
