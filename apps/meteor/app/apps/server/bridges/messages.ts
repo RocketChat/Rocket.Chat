@@ -4,9 +4,9 @@ import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import { api } from '@rocket.chat/core-services';
-import { Subscriptions } from '@rocket.chat/models';
+import { Messages, Subscriptions } from '@rocket.chat/models';
 
-import { Messages, Users } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import notifications from '../../../notifications/server/lib/Notifications';
@@ -41,7 +41,7 @@ export class AppMessageBridge extends MessageBridge {
 			throw new Error('Invalid editor assigned to the message for the update.');
 		}
 
-		if (!message.id || !Messages.findOneById(message.id)) {
+		if (!message.id || !(await Messages.findOneById(message.id))) {
 			throw new Error('A message must exist to update.');
 		}
 

@@ -1,17 +1,15 @@
 import type { IEditedMessage, IMessage, IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
-import { Messages as MessagesRaw } from '@rocket.chat/models';
+import { Messages } from '@rocket.chat/models';
 
-import { Messages, Rooms } from '../../../models/server';
+import { Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Apps } from '../../../../ee/server/apps';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
-export const updateMessage = async function (message: IMessage, user: IUser, originalMessage?: IMessage): Promise<void> {
-	if (!originalMessage) {
-		originalMessage = Messages.findOneById(message._id);
-	}
+export const updateMessage = async function (message: IMessage, user: IUser, originalMsg?: IMessage): Promise<void> {
+	const originalMessage = originalMsg || (await Messages.findOneById(message._id));
 
 	// For the Rocket.Chat Apps :)
 	if (message && Apps && Apps.isLoaded()) {
@@ -33,7 +31,7 @@ export const updateMessage = async function (message: IMessage, user: IUser, ori
 
 	// If we keep history of edits, insert a new message to store history information
 	if (settings.get('Message_KeepHistory')) {
-		await MessagesRaw.cloneAndSaveAsHistoryById(message._id, user as Required<Pick<IUser, '_id' | 'username' | 'name'>>);
+		await Messages.cloneAndSaveAsHistoryById(message._id, user as Required<Pick<IUser, '_id' | 'username' | 'name'>>);
 	}
 
 	Object.assign<IMessage, Omit<IEditedMessage, keyof IMessage>>(message, {
@@ -55,7 +53,15 @@ export const updateMessage = async function (message: IMessage, user: IUser, ori
 	}
 
 	// do not send $unset if not defined. Can cause exceptions in certain mongo versions.
-	Messages.update({ _id }, { $set: editedMessage, ...(!editedMessage.md && { $unset: { md: 1 } }) });
+	await Messages.updateOne(
+		{ _id },
+		{
+			$set: {
+				...editedMessage,
+			},
+			...(!editedMessage.md && { $unset: { md: 1 } }),
+		},
+	);
 
 	const room = Rooms.findOneById(message.rid);
 
@@ -65,7 +71,10 @@ export const updateMessage = async function (message: IMessage, user: IUser, ori
 		void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageUpdated', message);
 	}
 
-	Meteor.defer(function () {
-		callbacks.run('afterSaveMessage', Messages.findOneById(_id), room, user._id);
+	Meteor.defer(async function () {
+		const msg = await Messages.findOneById(_id);
+		if (msg) {
+			callbacks.run('afterSaveMessage', msg, room, user._id);
+		}
 	});
 };
