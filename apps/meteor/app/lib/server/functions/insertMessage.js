@@ -1,6 +1,5 @@
-import { Messages } from '@rocket.chat/models';
+import { Messages, Rooms } from '@rocket.chat/models';
 
-import { Rooms } from '../../../models/server';
 import { validateMessage, prepareMessageObject } from './sendMessage';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
@@ -32,13 +31,13 @@ export const insertMessage = async function (user, message, rid, upsert = false)
 			...message,
 		});
 		if (!existingMessage) {
-			Rooms.incMsgCountById(rid, 1);
+			await Rooms.incMsgCountById(rid, 1);
 		}
 		message._id = _id;
 	} else {
 		const result = await Messages.insertOne(message);
 		message._id = result.insertedId;
-		Rooms.incMsgCountById(rid, 1);
+		await Rooms.incMsgCountById(rid, 1);
 	}
 
 	return message;

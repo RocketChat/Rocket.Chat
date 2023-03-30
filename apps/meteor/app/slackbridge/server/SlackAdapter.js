@@ -4,7 +4,7 @@ import https from 'https';
 
 import { RTMClient } from '@slack/rtm-api';
 import { Meteor } from 'meteor/meteor';
-import { Messages } from '@rocket.chat/models';
+import { Messages, Rooms as RoomsRaw } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
 
 import { slackLogger } from './logger';
@@ -58,9 +58,9 @@ export default class SlackAdapter {
 
 		this.registerForEvents();
 
-		Meteor.startup(() => {
+		Meteor.startup(async () => {
 			try {
-				this.populateMembershipChannelMap(); // If run outside of Meteor.startup, HTTP is not defined
+				await this.populateMembershipChannelMap(); // If run outside of Meteor.startup, HTTP is not defined
 			} catch (err) {
 				slackLogger.error({ msg: 'Error attempting to connect to Slack', err });
 				this.slackBridge.disconnect();
@@ -576,40 +576,42 @@ export default class SlackAdapter {
 		return this.slackChannelRocketBotMembershipMap.get(rocketChID);
 	}
 
-	populateMembershipChannelMapByChannels() {
+	async populateMembershipChannelMapByChannels() {
 		const channels = this.slackAPI.getChannels();
 		if (!channels || channels.length <= 0) {
 			return;
 		}
 
-		for (const slackChannel of channels) {
+		for await (const slackChannel of channels) {
 			const rocketchat_room =
-				Rooms.findOneByName(slackChannel.name, { fields: { _id: 1 } }) || Rooms.findOneByImportId(slackChannel.id, { fields: { _id: 1 } });
+				Rooms.findOneByName(slackChannel.name, { fields: { _id: 1 } }) ||
+				(await RoomsRaw.findOneByImportId(slackChannel.id, { projection: { _id: 1 } }));
 			if (rocketchat_room && slackChannel.is_member) {
 				this.addSlackChannel(rocketchat_room._id, slackChannel.id);
 			}
 		}
 	}
 
-	populateMembershipChannelMapByGroups() {
+	async populateMembershipChannelMapByGroups() {
 		const groups = this.slackAPI.getGroups();
 		if (!groups || groups.length <= 0) {
 			return;
 		}
 
-		for (const slackGroup of groups) {
+		for await (const slackGroup of groups) {
 			const rocketchat_room =
-				Rooms.findOneByName(slackGroup.name, { fields: { _id: 1 } }) || Rooms.findOneByImportId(slackGroup.id, { fields: { _id: 1 } });
+				Rooms.findOneByName(slackGroup.name, { fields: { _id: 1 } }) ||
+				(await RoomsRaw.findOneByImportId(slackGroup.id, { projection: { _id: 1 } }));
 			if (rocketchat_room && slackGroup.is_member) {
 				this.addSlackChannel(rocketchat_room._id, slackGroup.id);
 			}
 		}
 	}
 
-	populateMembershipChannelMap() {
+	async populateMembershipChannelMap() {
 		slackLogger.debug('Populating channel map');
-		this.populateMembershipChannelMapByChannels();
-		this.populateMembershipChannelMapByGroups();
+		await this.populateMembershipChannelMapByChannels();
+		await this.populateMembershipChannelMapByGroups();
 	}
 
 	/*

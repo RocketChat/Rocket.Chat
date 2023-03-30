@@ -72,7 +72,7 @@ export const createRoom = async <T extends RoomType>(
 		fname: name,
 		_updatedAt: now,
 		...extraData,
-		name: getValidRoomName(name.trim(), undefined, {
+		name: await getValidRoomName(name.trim(), undefined, {
 			...(options?.nameValidationRegex && { nameValidationRegex: options.nameValidationRegex }),
 		}),
 		t: type,

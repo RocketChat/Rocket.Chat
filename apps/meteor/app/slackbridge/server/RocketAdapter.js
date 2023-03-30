@@ -239,8 +239,8 @@ export default class RocketAdapter {
 		return `slack-${slackChannel}-${ts.replace(/\./g, '-')}`;
 	}
 
-	findChannel(slackChannelId) {
-		return Rooms.findOneByImportId(slackChannelId);
+	async findChannel(slackChannelId) {
+		return RoomsRaw.findOneByImportId(slackChannelId);
 	}
 
 	getRocketUsers(members, slackChannel) {
