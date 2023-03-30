@@ -1,8 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { Rooms } from '@rocket.chat/models';
-
-import { Subscriptions } from '../../../models/server';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
 
 export const saveRoomCustomFields = async function (rid, roomCustomFields) {
 	if (!Match.test(rid, String)) {
@@ -18,7 +16,7 @@ export const saveRoomCustomFields = async function (rid, roomCustomFields) {
 	const ret = await Rooms.setCustomFieldsById(rid, roomCustomFields);
 
 	// Update customFields of any user's Subscription related with this rid
-	Subscriptions.updateCustomFieldsByRoomId(rid, roomCustomFields);
+	await Subscriptions.updateCustomFieldsByRoomId(rid, roomCustomFields);
 
 	return ret;
 };
