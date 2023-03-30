@@ -63,6 +63,8 @@ export const useFilesList = (
 				items: files.map((file) => ({
 					...file,
 					_updatedAt: new Date(file._updatedAt),
+					uploadedAt: new Date(file.uploadedAt),
+					modifiedAt: file.modifiedAt ? new Date(file.modifiedAt) : undefined,
 				})),
 				itemCount: total,
 			};

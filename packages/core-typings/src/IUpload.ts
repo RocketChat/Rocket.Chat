@@ -20,4 +20,27 @@ export interface IUpload extends IRocketChatRecord {
 			height: number;
 		};
 	};
+	store?: string;
+	path?: string;
+	token?: string;
+	uploadedAt: Date;
+	modifiedAt?: Date;
+	url?: string;
+	originalStore?: string;
+	originalId?: string;
+	AmazonS3?: {
+		path: string;
+	};
+	s3?: {
+		path: string;
+	};
+	GoogleStorage?: {
+		path: string;
+	};
+	googleCloudStorage?: {
+		path: string;
+	};
+	Webdav?: {
+		path: string;
+	};
 }

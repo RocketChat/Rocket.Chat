@@ -41,7 +41,7 @@ export type StoreOptions = {
 };
 
 export class Store {
-	private options: StoreOptions;
+	protected options: StoreOptions;
 
 	private permissions?: StorePermissions;
 
@@ -401,7 +401,7 @@ export class Store {
 	 * @param fileId
 	 * @param callback
 	 */
-	delete(_fileId: string, _callback?: (err?: Error) => void) {
+	delete(_fileId: string, _callback?: (err?: Error, data?: any) => void) {
 		throw new Error('delete is not implemented');
 	}
 
@@ -499,7 +499,7 @@ export class Store {
 		return encodeURI(`${rootUrl}/${UploadFS.config.storesPath}/${storeName}/${path}`);
 	}
 
-	getRedirectURL(_file: IUpload, _forceDownload = false, _callback?: (err: Error, url: string) => void) {
+	getRedirectURL(_file: IUpload, _forceDownload = false, _callback?: (err?: Error, url?: string) => void) {
 		throw new Error('getRedirectURL is not implemented');
 	}
 

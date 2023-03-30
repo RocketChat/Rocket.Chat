@@ -5,7 +5,7 @@ import _ from 'underscore';
 
 import { settings } from '../../../settings/server';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
-import '../../ufs/AmazonS3/server.js';
+import '../../ufs/AmazonS3/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const get = function (file, req, res) {
