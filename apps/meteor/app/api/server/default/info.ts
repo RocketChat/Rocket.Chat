@@ -19,14 +19,13 @@ API.default.addRoute(
 	{ authRequired: false },
 	{
 		post() {
-			// TODO ...wat?
 			return {
 				statusCode: 200,
 				body: {
 					success: false,
 					error: 'Not Acceptable',
 				},
-			} as any;
+			};
 		},
 	},
 );
