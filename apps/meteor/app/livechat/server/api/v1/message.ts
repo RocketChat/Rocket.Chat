@@ -12,11 +12,13 @@ import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 
 import { Messages } from '../../../../models/server';
 import { API } from '../../../../api/server';
-import { loadMessageHistory } from '../../../../lib/server';
+import { loadMessageHistory } from '../../../../lib/server/functions/loadMessageHistory';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
 import { normalizeMessageFileUpload } from '../../../../utils/server/functions/normalizeMessageFileUpload';
 import { settings } from '../../../../settings/server';
+import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
+import { isWidget } from '../../../../api/server/helpers/isWidget';
 
 API.v1.addRoute(
 	'livechat/message',
@@ -59,7 +61,7 @@ API.v1.addRoute(
 				agent,
 				roomInfo: {
 					source: {
-						type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
+						type: isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
 					},
 				},
 			};
@@ -178,7 +180,7 @@ API.v1.addRoute(
 	{ validateParams: isGETLivechatMessagesHistoryRidParams },
 	{
 		async get() {
-			const { offset } = this.getPaginationItems();
+			const { offset } = await getPaginationItems(this.queryParams);
 			const { token } = this.queryParams;
 			const { rid } = this.urlParams;
 
@@ -211,16 +213,17 @@ API.v1.addRoute(
 				limit = parseInt(`${this.queryParams.limit}`, 10);
 			}
 
-			const messages = await Promise.all(
-				loadMessageHistory({
-					userId: guest._id,
-					rid,
-					end,
-					limit,
-					ls,
-					offset,
-				}).messages.map((message) => normalizeMessageFileUpload(message)),
-			);
+			const history = await loadMessageHistory({
+				userId: guest._id,
+				rid,
+				end,
+				limit,
+				ls,
+				offset,
+			});
+
+			const messages = await Promise.all(history.messages.map((message) => normalizeMessageFileUpload(message)));
+
 			return API.v1.success({ messages });
 		},
 	},
@@ -265,7 +268,7 @@ API.v1.addRoute(
 						},
 						roomInfo: {
 							source: {
-								type: this.isWidget() ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
+								type: isWidget(this.request.headers) ? OmnichannelSourceType.WIDGET : OmnichannelSourceType.API,
 							},
 						},
 					};

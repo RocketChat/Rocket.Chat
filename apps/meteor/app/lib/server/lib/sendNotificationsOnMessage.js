@@ -95,7 +95,7 @@ export const sendNotification = async ({
 			isThread,
 		})
 	) {
-		notifyDesktopUser({
+		await notifyDesktopUser({
 			notificationMessage,
 			userId: subscription.u._id,
 			user: sender,
@@ -146,11 +146,11 @@ export const sendNotification = async ({
 			isThread,
 		})
 	) {
-		receiver.emails.some((email) => {
+		for await (const email of receiver.emails) {
 			if (email.verified) {
 				queueItems.push({
 					type: 'email',
-					data: getEmailData({
+					data: await getEmailData({
 						message,
 						receiver,
 						sender,
@@ -161,10 +161,9 @@ export const sendNotification = async ({
 					}),
 				});
 
-				return true;
+				break;
 			}
-			return false;
-		});
+		}
 	}
 
 	if (queueItems.length) {

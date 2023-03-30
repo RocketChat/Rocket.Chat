@@ -4,7 +4,7 @@ import { tmpdir } from 'os';
 
 import { Meteor } from 'meteor/meteor';
 import { ExportOperations, UserDataFiles } from '@rocket.chat/models';
-import type { IExportOperation, IUser } from '@rocket.chat/core-typings';
+import type { IExportOperation } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { settings } from '../../app/settings/server';
@@ -24,7 +24,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async requestDataDownload({ fullExport = false }) {
-		const currentUserData = Meteor.user() as IUser | null;
+		const currentUserData = await Meteor.userAsync();
 
 		if (!currentUserData) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user');
