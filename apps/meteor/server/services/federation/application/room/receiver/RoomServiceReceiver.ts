@@ -278,7 +278,7 @@ export class FederationRoomServiceReceiver extends AbstractFederationApplication
 			return;
 		}
 		// Do not need to await this, this can be done in parallel
-		this.createFederatedUsersForRoomMembers(
+		void this.createFederatedUsersForRoomMembers(
 			federatedRoom,
 			externalRoomData.joinedMembers,
 			externalRoomData.creator.id,

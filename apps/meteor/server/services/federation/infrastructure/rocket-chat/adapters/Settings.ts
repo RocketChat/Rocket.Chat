@@ -247,7 +247,7 @@ export class RocketChatSettingsAdapter {
 			});
 		});
 
-		settingsRegistry.add('Federation_Matrix_max_size_of_public_rooms_users', 100, {
+		void settingsRegistry.add('Federation_Matrix_max_size_of_public_rooms_users', 100, {
 			readonly: false,
 			type: 'int',
 			i18nLabel: 'Federation_Matrix_max_size_of_public_rooms_users',
