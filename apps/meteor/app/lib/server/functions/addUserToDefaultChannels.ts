@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 
-import { Messages } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 
 export const addUserToDefaultChannels = async function (user: IUser, silenced?: boolean): Promise<void> {
@@ -24,7 +24,7 @@ export const addUserToDefaultChannels = async function (user: IUser, silenced?: 
 
 			// Insert user joined message
 			if (!silenced) {
-				Messages.createUserJoinWithRoomIdAndUser(room._id, user);
+				await Message.saveSystemMessage('uj', room._id, user.username || '', user);
 			}
 		}
 	}

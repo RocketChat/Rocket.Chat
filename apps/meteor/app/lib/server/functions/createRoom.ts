@@ -1,14 +1,14 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
 import type { ICreatedRoom, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
-import { Team } from '@rocket.chat/core-services';
+import { Message, Team } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { Apps } from '../../../../ee/server/apps';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { callbacks } from '../../../../lib/callbacks';
-import { Messages, Users } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { getValidRoomName } from '../../../utils/server';
 import { createDirectRoom } from './createDirectRoom';
 
@@ -167,7 +167,9 @@ export const createRoom = async <T extends RoomType>(
 	if (type === 'c') {
 		if (room.teamId) {
 			const team = await Team.getOneById(room.teamId);
-			team && Messages.createUserAddRoomToTeamWithRoomIdAndUser(team.roomId, room.name, owner);
+			if (team) {
+				await Message.saveSystemMessage('user-added-room-to-team', team.roomId, room.name || '', owner);
+			}
 		}
 		callbacks.run('afterCreateChannel', owner, room);
 	} else if (type === 'p') {

@@ -5,6 +5,7 @@ import https from 'https';
 import { RTMClient } from '@slack/rtm-api';
 import { Meteor } from 'meteor/meteor';
 import { Messages as MessagesRaw, Rooms as RoomsRaw } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 
 import { slackLogger } from './logger';
 import { SlackAPI } from './SlackAPI';
@@ -941,7 +942,7 @@ export default class SlackAdapter {
 
 	async processChannelJoinMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
 		if (isImporting) {
-			Messages.createUserJoinWithRoomIdAndUser(rocketChannel._id, rocketUser, {
+			await Message.saveSystemMessage('uj', rocketChannel._id, rocketUser.username, rocketUser, {
 				ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
 				imported: 'slackbridge',
 			});
@@ -954,12 +955,8 @@ export default class SlackAdapter {
 		if (slackMessage.inviter) {
 			const inviter = slackMessage.inviter ? this.rocket.findUser(slackMessage.inviter) || this.rocket.addUser(slackMessage.inviter) : null;
 			if (isImporting) {
-				Messages.createUserAddedWithRoomIdAndUser(rocketChannel._id, rocketUser, {
+				await Message.saveSystemMessage('au', rocketChannel._id, rocketUser.username, inviter, {
 					ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
-					u: {
-						_id: inviter._id,
-						username: inviter.username,
-					},
 					imported: 'slackbridge',
 				});
 			} else {
@@ -970,7 +967,7 @@ export default class SlackAdapter {
 
 	async processLeaveMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
 		if (isImporting) {
-			Messages.createUserLeaveWithRoomIdAndUser(rocketChannel._id, rocketUser, {
+			await Message.saveSystemMessage('ul', rocketChannel._id, rocketUser.username, rocketUser, {
 				ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
 				imported: 'slackbridge',
 			});
