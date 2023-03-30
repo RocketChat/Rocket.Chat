@@ -6,8 +6,7 @@ import type { IUser, INewOutgoingIntegration, IOutgoingIntegration, IUpdateOutgo
 import { Subscriptions } from '@rocket.chat/models';
 
 import { Rooms, Users } from '../../../models/server';
-import { hasAllPermission } from '../../../authorization/server';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync, hasAllPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { outgoingEvents } from '../../lib/outgoingEvents';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 
@@ -88,7 +87,7 @@ async function _verifyUserHasPermissionForChannels(userId: IUser['_id'], channel
 			}
 
 			if (
-				!hasAllPermission(userId, ['manage-outgoing-integrations', 'manage-own-outgoing-integrations']) &&
+				!(await hasAllPermissionAsync(userId, ['manage-outgoing-integrations', 'manage-own-outgoing-integrations'])) &&
 				!(await Subscriptions.findOneByRoomIdAndUserId(record._id, userId, { projection: { _id: 1 } }))
 			) {
 				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', {

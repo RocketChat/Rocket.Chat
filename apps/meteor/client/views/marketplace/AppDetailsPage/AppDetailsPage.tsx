@@ -99,6 +99,7 @@ const AppDetailsPage = ({ id }: { id: App['id'] }): ReactElement => {
 								marketplace={marketplace}
 								settings={settings}
 								tab={tab}
+								context={context || ''}
 							/>
 							{Boolean(!tab || tab === 'details') && <AppDetails app={appData} />}
 							{tab === 'requests' && <AppRequests id={id} isAdminUser={isAdminUser} />}

@@ -6,7 +6,7 @@ import React from 'react';
 import { AsyncStatePhase } from '../../../lib/asyncState/AsyncStatePhase';
 import { useOmnichannelRoomIcon } from './context/OmnichannelRoomIconContext';
 
-export const colors = {
+const colors = {
 	busy: 'status-font-on-danger',
 	away: 'status-font-on-warning',
 	online: 'status-font-on-success',
