@@ -49,7 +49,7 @@ export interface StreamerEvents {
 		StreamerKeyArgs<'public-settings-changed', ['inserted' | 'updated' | 'removed' | 'changed', ISetting]>;
 
 	'notify-user': StreamerKeyArgs<`${string}/rooms-changed`, [IRoom]> &
-		StreamerKeyArgs<`${string}/subscriptions-changed`, [ISubscription]> &
+		StreamerKeyArgs<`${string}/subscriptions-changed`, [string, ISubscription]> &
 		StreamerKeyArgs<`${string}/message`, [IMessage]> &
 		StreamerKeyArgs<`${string}/force_logout`, []> &
 		StreamerKeyArgs<

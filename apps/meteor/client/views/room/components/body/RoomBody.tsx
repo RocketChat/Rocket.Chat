@@ -1,11 +1,13 @@
-import type { IMessage, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import {
 	useCurrentRoute,
 	usePermission,
 	useQueryStringParameter,
 	useRole,
+	useRoute,
 	useSetting,
+	useStream,
 	useTranslation,
 	useUser,
 	useUserPreference,
@@ -57,6 +59,7 @@ const RoomBody = (): ReactElement => {
 	const toolbox = useToolboxContext();
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
+	const homeRouter = useRoute('home');
 
 	const [lastMessageDate, setLastMessageDate] = useState<Date | undefined>();
 	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
@@ -70,6 +73,8 @@ const RoomBody = (): ReactElement => {
 	const messagesBoxRef = useRef<HTMLDivElement | null>(null);
 	const atBottomRef = useRef(true);
 	const lastScrollTopRef = useRef(0);
+
+	const subscribeToNotifyUser = useStream('notify-user');
 
 	const chat = useChat();
 
@@ -210,6 +215,23 @@ const RoomBody = (): ReactElement => {
 	);
 
 	const retentionPolicy = useRetentionPolicy(room);
+
+	useEffect(() => {
+		if (!user) {
+			return;
+		}
+
+		const unSubscribeFromNotifyUser = subscribeToNotifyUser(
+			`${user._id}/subscriptions-changed`,
+			(event: string, subscription: ISubscription) => {
+				if (event === 'removed' && subscription.rid === room._id) {
+					homeRouter.push({});
+				}
+			},
+		);
+
+		return unSubscribeFromNotifyUser;
+	}, [user, homeRouter, subscribeToNotifyUser, room]);
 
 	useEffect(() => {
 		callbacks.add(
