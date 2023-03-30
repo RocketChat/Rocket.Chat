@@ -22,7 +22,7 @@ import {
 	decryptAES,
 	generateRSAKey,
 	exportJWKKey,
-	importRSAKey,
+	// importRSAKey,
 	importRawKey,
 	deriveKey,
 	generateMnemonicPhrase,
@@ -62,7 +62,7 @@ class E2E extends Emitter {
 
 	private db_private_key: string | null;
 
-	private privateKey: CryptoKey | undefined;
+	// private privateKey: CryptoKey | undefined;
 
 	constructor() {
 		super();
@@ -246,7 +246,7 @@ class E2E extends Emitter {
 		Meteor._localStorage.removeItem('public_key');
 		Meteor._localStorage.removeItem('private_key');
 		this.instancesByRoomId = {};
-		this.privateKey = undefined;
+		// this.privateKey = undefined;
 		this.enabled.set(false);
 		this._ready.set(false);
 		this.started = false;
@@ -275,7 +275,7 @@ class E2E extends Emitter {
 		Meteor._localStorage.setItem('public_key', public_key);
 
 		try {
-			this.privateKey = await importRSAKey(EJSON.parse(private_key), ['decrypt']);
+			// this.privateKey = await importRSAKey(EJSON.parse(private_key), ['decrypt']);
 
 			Meteor._localStorage.setItem('private_key', private_key);
 		} catch (error) {
@@ -288,7 +288,7 @@ class E2E extends Emitter {
 		let key;
 		try {
 			key = await generateRSAKey();
-			this.privateKey = key.privateKey;
+			// this.privateKey = key.privateKey;
 		} catch (error) {
 			return this.error('Error generating key: ', error);
 		}

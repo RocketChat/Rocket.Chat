@@ -32,7 +32,7 @@ const placeholderFields = {
 
 const replaceAll = (text: string, old: string, replace: string): string => text.replace(new RegExp(old, 'g'), replace);
 
-const handleBeforeSaveMessage = (message: IMessage, room?: IOmnichannelRoom): IMessage => {
+const handleBeforeSaveMessage = async (message: IMessage, room?: IOmnichannelRoom): Promise<IMessage> => {
 	if (!message.msg || message.msg === '') {
 		return message;
 	}
@@ -46,7 +46,7 @@ const handleBeforeSaveMessage = (message: IMessage, room?: IOmnichannelRoom): IM
 	const agentId = room?.servedBy?._id;
 	const visitorId = room?.v?._id;
 	const agent = Users.findOneById(agentId, { fields: { name: 1, _id: 1, emails: 1 } }) || {};
-	const visitor = visitorId && (Promise.await(LivechatVisitors.findOneById(visitorId, {})) || {});
+	const visitor = visitorId && ((await LivechatVisitors.findOneById(visitorId, {})) || {});
 
 	Object.keys(placeholderFields).map((field) => {
 		const templateKey = `{{${field}}}`;

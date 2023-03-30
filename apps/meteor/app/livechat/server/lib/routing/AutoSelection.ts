@@ -1,8 +1,10 @@
 import type { IRoutingMethod, RoutingMethodConfig, SelectedAgent } from '@rocket.chat/core-typings';
+import { LivechatDepartmentAgents } from '@rocket.chat/models';
 
 import { RoutingManager } from '../RoutingManager';
-import { LivechatDepartmentAgents, Users } from '../../../../models/server';
+import { Users } from '../../../../models/server';
 import { callbacks } from '../../../../../lib/callbacks';
+import { settings } from '../../../../settings/server';
 
 /* Auto Selection Queuing method:
  *
@@ -24,12 +26,17 @@ class AutoSelection implements IRoutingMethod {
 		};
 	}
 
-	getNextAgent(department?: string, ignoreAgentId?: string): Promise<SelectedAgent | null | undefined> {
+	async getNextAgent(department?: string, ignoreAgentId?: string): Promise<SelectedAgent | null | undefined> {
 		const extraQuery = callbacks.run('livechat.applySimultaneousChatRestrictions', undefined, {
 			...(department ? { departmentId: department } : {}),
 		});
 		if (department) {
-			return Promise.resolve(LivechatDepartmentAgents.getNextAgentForDepartment(department, ignoreAgentId, extraQuery));
+			return LivechatDepartmentAgents.getNextAgentForDepartment(
+				department,
+				settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+				ignoreAgentId,
+				extraQuery,
+			);
 		}
 
 		return Users.getNextAgent(ignoreAgentId, extraQuery);

@@ -6,8 +6,8 @@ import type { FindPaginated, IBaseModel } from './IBaseModel';
 export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	findById(_id: string, options?: FindOptions<ILivechatVisitor>): FindCursor<ILivechatVisitor>;
 	getVisitorByToken(token: string, options?: FindOptions<ILivechatVisitor>): Promise<ILivechatVisitor | null>;
-	getVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department: string }): FindCursor<ILivechatVisitor>;
-	findByNameRegexWithExceptionsAndConditions<P = ILivechatVisitor>(
+	getVisitorsBetweenDate({ start, end, department }: { start: Date; end: Date; department?: string }): FindCursor<ILivechatVisitor>;
+	findByNameRegexWithExceptionsAndConditions<P extends Document = ILivechatVisitor>(
 		searchTerm: string,
 		exceptions: string[],
 		conditions: Filter<ILivechatVisitor>,
@@ -17,6 +17,7 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 			custom_name: string;
 		}
 	>;
+
 	findPaginatedVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField(
 		emailOrPhone?: string,
 		nameOrUsername?: RegExp,
@@ -41,4 +42,6 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	removeDepartmentById(_id: string): Promise<Document | UpdateResult>;
 
 	getNextVisitorUsername(): Promise<string>;
+
+	updateLastAgentByToken(token: string, lastAgent: ILivechatVisitor['lastAgent']): Promise<Document | UpdateResult>;
 }

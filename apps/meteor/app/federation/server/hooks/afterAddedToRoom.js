@@ -1,8 +1,7 @@
-import { FederationRoomEvents } from '@rocket.chat/models';
+import { FederationRoomEvents, Subscriptions } from '@rocket.chat/models';
 
 import { clientLogger } from '../lib/logger';
 import { getFederatedRoomData, hasExternalDomain, isLocalUser, checkRoomType, checkRoomDomainsLength } from '../functions/helpers';
-import { Subscriptions } from '../../../models/server';
 import { normalizers } from '../normalizers';
 import { doAfterCreateRoom } from './afterCreateRoom';
 import { getFederationDomain } from '../lib/getFederationDomain';
@@ -20,10 +19,10 @@ async function afterAddedToRoom(involvedUsers, room) {
 	clientLogger.debug({ msg: 'afterAddedToRoom', involvedUsers, room });
 
 	// If there are not federated users on this room, ignore it
-	const { users, subscriptions } = getFederatedRoomData(room);
+	const { users, subscriptions } = await getFederatedRoomData(room);
 
 	// Load the subscription
-	const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, addedUser._id);
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, addedUser._id);
 
 	try {
 		// If the room is not on the allowed types, ignore
@@ -88,6 +87,6 @@ async function afterAddedToRoom(involvedUsers, room) {
 
 export const definition = {
 	hook: 'afterAddedToRoom',
-	callback: (roomOwner, room) => Promise.await(afterAddedToRoom(roomOwner, room)),
+	callback: afterAddedToRoom,
 	id: 'federation-after-added-to-room',
 };

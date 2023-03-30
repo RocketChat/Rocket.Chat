@@ -6,21 +6,22 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { ILivechatAgent, ILivechatVisitor, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { Mongo } from 'meteor/mongo';
+import { LivechatRooms, Rooms } from '@rocket.chat/models';
 
 import AuditLog from './AuditLog';
-import { LivechatRooms, Rooms, Messages, Users } from '../../../../app/models/server';
-import { hasPermission } from '../../../../app/authorization/server';
+import { Messages, Users } from '../../../../app/models/server';
+import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
 import { updateCounter } from '../../../../app/statistics/server';
 import type { IAuditLog } from '../../../definition/IAuditLog';
 
-const getValue = (room?: IRoom) => room && { rids: [room._id], name: room.name };
+const getValue = (room: IRoom | null) => room && { rids: [room._id], name: room.name };
 
 const getUsersIdFromUserName = (usernames: IUser['username'][]) => {
 	const user: IUser[] = usernames ? Users.findByUsername({ $in: usernames }) : undefined;
 	return user.map((userId) => userId._id);
 };
 
-const getRoomInfoByAuditParams = ({
+const getRoomInfoByAuditParams = async ({
 	type,
 	roomId: rid,
 	users: usernames,
@@ -29,23 +30,23 @@ const getRoomInfoByAuditParams = ({
 }: {
 	type: string;
 	roomId: IRoom['_id'];
-	users: IUser['username'][];
+	users: NonNullable<IUser['username']>[];
 	visitor: ILivechatVisitor['_id'];
 	agent: ILivechatAgent['_id'];
 }) => {
 	if (rid) {
-		return getValue(Rooms.findOne({ _id: rid }));
+		return getValue(await Rooms.findOne({ _id: rid }));
 	}
 
 	if (type === 'd') {
-		return getValue(Rooms.findDirectRoomContainingAllUsernames(usernames));
+		return getValue(await Rooms.findDirectRoomContainingAllUsernames(usernames));
 	}
 
 	if (type === 'l') {
 		console.warn('Deprecation Warning! This method will be removed in the next version (4.0.0)');
-		const rooms: IRoom[] = LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, {
-			fields: { _id: 1 },
-		}).fetch();
+		const rooms: IRoom[] = await LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, {
+			projection: { _id: 1 },
+		}).toArray();
 		return rooms?.length ? { rids: rooms.map(({ _id }) => _id), name: TAPi18n.__('Omnichannel') } : undefined;
 	}
 };
@@ -58,7 +59,7 @@ declare module '@rocket.chat/ui-contexts' {
 			rid: IRoom['_id'];
 			startDate: Date;
 			endDate: Date;
-			users: IUser['username'][];
+			users: NonNullable<IUser['username']>[];
 			msg: IMessage['msg'];
 			type: string;
 			visitor: ILivechatVisitor['_id'];
@@ -67,7 +68,7 @@ declare module '@rocket.chat/ui-contexts' {
 		auditGetOmnichannelMessages: (params: {
 			startDate: Date;
 			endDate: Date;
-			users: IUser['username'][];
+			users: NonNullable<IUser['username']>[];
 			msg: IMessage['msg'];
 			type: 'l';
 			visitor?: ILivechatVisitor['_id'];
@@ -77,18 +78,18 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	auditGetOmnichannelMessages({ startDate, endDate, users: usernames, msg, type, visitor, agent }) {
+	async auditGetOmnichannelMessages({ startDate, endDate, users: usernames, msg, type, visitor, agent }) {
 		check(startDate, Date);
 		check(endDate, Date);
 
-		const user = Meteor.user();
-		if (!user || !hasPermission(user._id, 'can-audit')) {
+		const user = await Meteor.userAsync();
+		if (!user || !(await hasPermissionAsync(user._id, 'can-audit'))) {
 			throw new Meteor.Error('Not allowed');
 		}
 
-		const rooms: IRoom[] = LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, {
-			fields: { _id: 1 },
-		}).fetch();
+		const rooms: IRoom[] = await LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, {
+			projection: { _id: 1 },
+		}).toArray();
 		const rids = rooms?.length ? rooms.map(({ _id }) => _id) : undefined;
 		const name = TAPi18n.__('Omnichannel');
 
@@ -117,12 +118,12 @@ Meteor.methods<ServerMethods>({
 
 		return messages;
 	},
-	auditGetMessages({ rid, startDate, endDate, users: usernames, msg, type, visitor, agent }) {
+	async auditGetMessages({ rid, startDate, endDate, users: usernames, msg, type, visitor, agent }) {
 		check(startDate, Date);
 		check(endDate, Date);
 
-		const user = Meteor.user();
-		if (!user || !hasPermission(user._id, 'can-audit')) {
+		const user = await Meteor.userAsync();
+		if (!user || !(await hasPermissionAsync(user._id, 'can-audit'))) {
 			throw new Meteor.Error('Not allowed');
 		}
 
@@ -140,7 +141,7 @@ Meteor.methods<ServerMethods>({
 			const usersId = getUsersIdFromUserName(usernames);
 			query['u._id'] = { $in: usersId };
 		} else {
-			const roomInfo = getRoomInfoByAuditParams({ type, roomId: rid, users: usernames, visitor, agent });
+			const roomInfo = await getRoomInfoByAuditParams({ type, roomId: rid, users: usernames, visitor, agent });
 			if (!roomInfo) {
 				throw new Meteor.Error('Room doesn`t exist');
 			}
@@ -169,11 +170,11 @@ Meteor.methods<ServerMethods>({
 
 		return messages;
 	},
-	auditGetAuditions({ startDate, endDate }) {
+	async auditGetAuditions({ startDate, endDate }) {
 		check(startDate, Date);
 		check(endDate, Date);
 		const uid = Meteor.userId();
-		if (!uid || !hasPermission(uid, 'can-audit-log')) {
+		if (!uid || !(await hasPermissionAsync(uid, 'can-audit-log'))) {
 			throw new Meteor.Error('Not allowed');
 		}
 		return AuditLog.find({

@@ -1,11 +1,10 @@
 import type ldapjs from 'ldapjs';
 import type { ILDAPEntry, IUser, IRoom, IRole, IImportUser } from '@rocket.chat/core-typings';
-import { Users as UsersRaw, Roles, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
+import { Users as UsersRaw, Roles, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
 import { Team } from '@rocket.chat/core-services';
 
 import type { ImporterAfterImportCallback } from '../../../../app/importer/server/definitions/IConversionCallbacks';
 import { settings } from '../../../../app/settings/server';
-import { Rooms } from '../../../../app/models/server';
 import { LDAPDataConverter } from '../../../../server/lib/ldap/DataConverter';
 import { LDAPConnection } from '../../../../server/lib/ldap/Connection';
 import { LDAPManager } from '../../../../server/lib/ldap/Manager';
@@ -14,6 +13,7 @@ import { addUserToRoom, removeUserFromRoom, createRoom, deleteUser } from '../..
 import { syncUserRoles } from '../syncUserRoles';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
 import { copyCustomFieldsLDAP } from './copyCustomFieldsLDAP';
+import { getValidRoomName } from '../../../../app/utils/server';
 
 export class LDAPEEManager extends LDAPManager {
 	public static async sync(): Promise<void> {
@@ -42,8 +42,8 @@ export class LDAPEEManager extends LDAPManager {
 			}
 
 			await converter.convertUsers({
-				afterImportFn: ((data: IImportUser, _type: string, isNewRecord: boolean): void =>
-					Promise.await(this.advancedSync(ldap, data, converter, isNewRecord))) as ImporterAfterImportCallback,
+				afterImportFn: (async (data: IImportUser, _type: string, isNewRecord: boolean): Promise<void> =>
+					this.advancedSync(ldap, data, converter, isNewRecord)) as ImporterAfterImportCallback,
 			});
 		} catch (error) {
 			logger.error(error);
@@ -128,7 +128,7 @@ export class LDAPEEManager extends LDAPManager {
 		converter: LDAPDataConverter,
 		isNewRecord: boolean,
 	): Promise<void> {
-		const user = converter.findExistingUser(importUser);
+		const user = await converter.findExistingUser(importUser);
 		if (!user?.username) {
 			return;
 		}
@@ -304,7 +304,8 @@ export class LDAPEEManager extends LDAPManager {
 			const channels: Array<string> = [].concat(fieldMap[ldapField]);
 			for await (const channel of channels) {
 				try {
-					const room: IRoom | undefined = Rooms.findOneByNonValidatedName(channel) || (await this.createRoomForSync(channel));
+					const name = await getValidRoomName(channel.trim(), undefined, { allowDuplicates: true });
+					const room = (await Rooms.findOneByNonValidatedName(name)) || (await this.createRoomForSync(channel));
 					if (!room) {
 						return;
 					}
@@ -624,7 +625,7 @@ export class LDAPEEManager extends LDAPManager {
 			}
 
 			if (this.isUserDeactivated(ldapUser)) {
-				UsersRaw.unsetLoginTokens(user._id);
+				await UsersRaw.unsetLoginTokens(user._id);
 			}
 		}
 	}

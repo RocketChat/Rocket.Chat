@@ -33,7 +33,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	spotlight(text, usernames = [], type = { users: true, rooms: true, mentions: false, includeFederatedRooms: false }, rid) {
+	async spotlight(text, usernames = [], type = { users: true, rooms: true, mentions: false, includeFederatedRooms: false }, rid) {
 		const spotlight = new Spotlight();
 		const { mentions, includeFederatedRooms } = type;
 
@@ -50,8 +50,8 @@ Meteor.methods<ServerMethods>({
 		const { userId } = this;
 
 		return {
-			users: type.users ? spotlight.searchUsers({ userId, rid, text, usernames, mentions }) : [],
-			rooms: type.rooms ? spotlight.searchRooms({ userId, text, includeFederatedRooms }) : [],
+			users: type.users ? await spotlight.searchUsers({ userId, rid, text, usernames, mentions }) : [],
+			rooms: type.rooms ? await spotlight.searchRooms({ userId, text, includeFederatedRooms }) : [],
 		};
 	},
 });

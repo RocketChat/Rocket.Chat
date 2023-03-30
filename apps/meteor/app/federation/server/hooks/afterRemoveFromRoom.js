@@ -18,7 +18,7 @@ async function afterRemoveFromRoom(involvedUsers, room) {
 
 	clientLogger.debug({ msg: 'afterRemoveFromRoom', involvedUsers, room });
 
-	const { users } = getFederatedRoomData(room);
+	const { users } = await getFederatedRoomData(room);
 
 	try {
 		// Get the domains after removal
@@ -56,6 +56,6 @@ async function afterRemoveFromRoom(involvedUsers, room) {
 
 export const definition = {
 	hook: 'afterRemoveFromRoom',
-	callback: (roomOwner, room) => Promise.await(afterRemoveFromRoom(roomOwner, room)),
+	callback: afterRemoveFromRoom,
 	id: 'federation-after-remove-from-room',
 };

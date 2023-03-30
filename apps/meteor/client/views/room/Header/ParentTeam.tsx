@@ -1,19 +1,16 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Header } from '@rocket.chat/ui-client';
-import { useUserId } from '@rocket.chat/ui-contexts';
+import { useUserId, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
-import React, { useMemo } from 'react';
+import React from 'react';
 
-import { AsyncStatePhase } from '../../../hooks/useAsyncState';
-import { useEndpointData } from '../../../hooks/useEndpointData';
 import { goToRoomById } from '../../../lib/utils/goToRoomById';
 
-type ParentTeamProps = {
-	room: IRoom;
-};
+type APIErrorResult = { success: boolean; error: string };
 
-const ParentTeam = ({ room }: ParentTeamProps): ReactElement | null => {
+const ParentTeam = ({ room }: { room: IRoom }): ReactElement | null => {
 	const { teamId } = room;
 	const userId = useUserId();
 
@@ -25,16 +22,26 @@ const ParentTeam = ({ room }: ParentTeamProps): ReactElement | null => {
 		throw new Error('invalid uid');
 	}
 
-	const { value, phase } = useEndpointData('/v1/teams.info', { params: useMemo(() => ({ teamId }), [teamId]) });
+	const teamsInfoEndpoint = useEndpoint('GET', '/v1/teams.info');
+	const userTeamsListEndpoint = useEndpoint('GET', '/v1/users.listTeams');
 
-	const { value: userTeams, phase: userTeamsPhase } = useEndpointData('/v1/users.listTeams', {
-		params: useMemo(() => ({ userId }), [userId]),
+	const {
+		data: teamInfoData,
+		isLoading: teamInfoLoading,
+		isError: teamInfoError,
+	} = useQuery(['teamId', teamId], async () => teamsInfoEndpoint({ teamId }), {
+		refetchOnWindowFocus: false,
+		keepPreviousData: true,
+		retry: (_, error) => (error as APIErrorResult)?.error === 'unauthorized' && false,
 	});
 
-	const belongsToTeam = userTeams?.teams?.find((team) => team._id === teamId) || false;
-	const isTeamPublic = value?.teamInfo.type === TEAM_TYPE.PUBLIC;
+	const { data: userTeams, isLoading: userTeamsLoading } = useQuery(['userId', userId], async () => userTeamsListEndpoint({ userId }));
+
+	const userBelongsToTeam = userTeams?.teams?.find((team) => team._id === teamId) || false;
+	const isTeamPublic = teamInfoData?.teamInfo.type === TEAM_TYPE.PUBLIC;
+
 	const teamMainRoomHref = (): void => {
-		const rid = value?.teamInfo.roomId;
+		const rid = teamInfoData?.teamInfo.roomId;
 
 		if (!rid) {
 			return;
@@ -43,27 +50,29 @@ const ParentTeam = ({ room }: ParentTeamProps): ReactElement | null => {
 		goToRoomById(rid);
 	};
 
-	if (phase === AsyncStatePhase.LOADING || userTeamsPhase === AsyncStatePhase.LOADING) {
+	if (teamInfoLoading || userTeamsLoading) {
 		return <Header.Tag.Skeleton />;
 	}
 
-	if (phase === AsyncStatePhase.REJECTED || !value?.teamInfo) {
+	if (teamInfoError) {
 		return null;
+	}
+
+	if (isTeamPublic || userBelongsToTeam) {
+		return (
+			<Header.Tag>
+				<Header.Link onClick={teamMainRoomHref}>
+					<Header.Tag.Icon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
+					{teamInfoData?.teamInfo.name}
+				</Header.Link>
+			</Header.Tag>
+		);
 	}
 
 	return (
 		<Header.Tag>
-			{isTeamPublic || belongsToTeam ? (
-				<Header.Link onClick={teamMainRoomHref}>
-					<Header.Tag.Icon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
-					{value.teamInfo.name}
-				</Header.Link>
-			) : (
-				<>
-					<Header.Tag.Icon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
-					{value.teamInfo.name}
-				</>
-			)}
+			<Header.Tag.Icon icon={{ name: isTeamPublic ? 'team' : 'team-lock' }} />
+			{teamInfoData?.teamInfo.name}
 		</Header.Tag>
 	);
 };

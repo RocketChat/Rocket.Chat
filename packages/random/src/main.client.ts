@@ -10,7 +10,7 @@ import { createAleaGeneratorWithGeneratedSeed } from './createAleaGenerator';
 import type { RandomGenerator } from './RandomGenerator';
 
 let generator: RandomGenerator;
-if (typeof window !== 'undefined' && window.crypto?.getRandomValues) {
+if (typeof window !== 'undefined' && !!window.crypto?.getRandomValues) {
 	generator = new BrowserRandomGenerator();
 } else {
 	generator = createAleaGeneratorWithGeneratedSeed();

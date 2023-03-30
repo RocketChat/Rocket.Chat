@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Livechat } from '../lib/Livechat';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
@@ -13,10 +13,10 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	'livechat:addManager'(username) {
+	async 'livechat:addManager'(username) {
 		const uid = Meteor.userId();
 		methodDeprecationLogger.warn('livechat:addManager will be deprecated in future versions of Rocket.Chat');
-		if (!uid || !hasPermission(uid, 'manage-livechat-managers')) {
+		if (!uid || !(await hasPermissionAsync(uid, 'manage-livechat-managers'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:addManager' });
 		}
 

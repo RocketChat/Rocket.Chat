@@ -1,8 +1,9 @@
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
+import { LivechatInquiry } from '@rocket.chat/models';
 
-import { hasPermission } from '../../../authorization/server';
-import { Users, LivechatInquiry } from '../../../models/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { Users } from '../../../models/server';
 import { RoutingManager } from '../lib/RoutingManager';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -15,13 +16,13 @@ declare module '@rocket.chat/ui-contexts' {
 Meteor.methods<ServerMethods>({
 	async 'livechat:takeInquiry'(inquiryId, options) {
 		const uid = Meteor.userId();
-		if (!uid || !hasPermission(uid, 'view-l-room')) {
+		if (!uid || !(await hasPermissionAsync(uid, 'view-l-room'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:takeInquiry',
 			});
 		}
 
-		const inquiry = LivechatInquiry.findOneById(inquiryId);
+		const inquiry = await LivechatInquiry.findOneById(inquiryId);
 
 		if (!inquiry) {
 			throw new Meteor.Error('error-not-found', 'Inquiry not found', {

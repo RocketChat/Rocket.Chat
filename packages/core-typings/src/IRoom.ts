@@ -1,7 +1,7 @@
 import type { ILivechatPriority } from './ILivechatPriority';
 import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
 import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IMessage } from './IMessage';
+import type { IMessage, MessageTypesValues } from './IMessage';
 import type { IUser, Username } from './IUser';
 import type { RoomType } from './RoomType';
 import type { IVisitor } from './IInquiry';
@@ -36,7 +36,7 @@ export interface IRoom extends IRocketChatRecord {
 
 	reactWhenReadOnly?: boolean;
 
-	sysMes?: string[];
+	sysMes?: MessageTypesValues[];
 
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 	uids?: Array<string>;
@@ -63,7 +63,7 @@ export interface IRoom extends IRocketChatRecord {
 	teamDefault?: boolean;
 	open?: boolean;
 
-	autoTranslateLanguage: string;
+	autoTranslateLanguage?: string;
 	autoTranslate?: boolean;
 	unread?: number;
 	alert?: boolean;
@@ -86,8 +86,18 @@ export interface IRoom extends IRocketChatRecord {
 
 	/* @deprecated */
 	federated?: boolean;
+	/* @deprecated */
+	customFields?: Record<string, any>;
 
 	channel?: { _id: string };
+}
+
+export const isRoomWithJoinCode = (room: Partial<IRoom>): room is IRoomWithJoinCode =>
+	'joinCodeRequired' in room && (room as any).joinCodeRequired === true;
+
+export interface IRoomWithJoinCode extends IRoom {
+	joinCodeRequired: true;
+	joinCode: string;
 }
 
 export interface IRoomFederated extends IRoom {
