@@ -51,7 +51,7 @@ callbacks.add(
 			}
 		}
 		if (message.drid) {
-			deleteRoom(message.drid);
+			await deleteRoom(message.drid);
 		}
 		return message;
 	},
@@ -61,7 +61,7 @@ callbacks.add(
 
 callbacks.add(
 	'afterDeleteRoom',
-	(rid) => {
+	async (rid) => {
 		RoomsSync.find({ prid: rid }, { fields: { _id: 1 } }).forEach(({ _id }: Pick<IRoom, '_id'>) => deleteRoom(_id));
 		return rid;
 	},

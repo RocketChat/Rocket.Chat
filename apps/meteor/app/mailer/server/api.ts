@@ -136,7 +136,7 @@ settings.watchMultiple(['Email_Header', 'Email_Footer'], () => {
 export const checkAddressFormat = (adresses: string | string[]): boolean =>
 	([] as string[]).concat(adresses).every((address) => validateEmail(address));
 
-export const sendNoWrap = ({
+export const sendNoWrap = async ({
 	to,
 	from,
 	replyTo,
@@ -152,7 +152,7 @@ export const sendNoWrap = ({
 	html?: string;
 	text?: string;
 	headers?: string;
-}): void => {
+}) => {
 	if (!checkAddressFormat(to)) {
 		throw new Meteor.Error('invalid email');
 	}
@@ -170,7 +170,7 @@ export const sendNoWrap = ({
 
 	const email = { to, from, replyTo, subject, html, text, headers };
 
-	const eventResult = Promise.await(Apps.triggerEvent('IPreEmailSent', { email }));
+	const eventResult = await Apps.triggerEvent('IPreEmailSent', { email });
 
 	Meteor.defer(() => Email.send(eventResult || email));
 };
@@ -194,15 +194,17 @@ export const send = ({
 	headers?: string;
 	data?: { [key: string]: unknown };
 }): void =>
-	sendNoWrap({
-		to,
-		from,
-		replyTo,
-		subject: replace(subject, data),
-		text: (text && replace(text, data)) || (html && stripHtml(replace(html, data)).result) || undefined,
-		html: html ? wrap(html, data) : undefined,
-		headers,
-	});
+	Promise.await(
+		sendNoWrap({
+			to,
+			from,
+			replyTo,
+			subject: replace(subject, data),
+			text: (text && replace(text, data)) || (html && stripHtml(replace(html, data)).result) || undefined,
+			html: html ? wrap(html, data) : undefined,
+			headers,
+		}),
+	);
 
 // Needed because of https://github.com/microsoft/TypeScript/issues/36931
 type Assert = (input: string, func: string) => asserts input;

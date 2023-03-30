@@ -76,7 +76,7 @@ export const LivechatEnterprise = {
 		return LivechatUnit.removeById(_id);
 	},
 
-	saveUnit(_id, unitData, unitMonitors, unitDepartments) {
+	async saveUnit(_id, unitData, unitMonitors, unitDepartments) {
 		check(_id, Match.Maybe(String));
 
 		check(unitData, {

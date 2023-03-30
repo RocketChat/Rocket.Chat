@@ -930,7 +930,7 @@ export class ImportDataConverter {
 				}
 
 				if (data.archived && data._id) {
-					this.archiveRoomById(data._id);
+					await this.archiveRoomById(data._id);
 				}
 
 				if (afterImportFn) {
@@ -942,8 +942,8 @@ export class ImportDataConverter {
 		}
 	}
 
-	archiveRoomById(rid: string): void {
-		Promise.await(RoomsRaw.archiveById(rid));
+	async archiveRoomById(rid: string) {
+		await RoomsRaw.archiveById(rid);
 		Subscriptions.archiveByRoomId(rid);
 	}
 
