@@ -40,7 +40,7 @@ callbacks.add(
 			return data;
 		}
 
-		const lng = settings.get('Language') || 'en';
+		const lng = settings.get<string>('Language') || 'en';
 
 		let msg = `${TAPi18n.__('New_Livechat_offline_message_has_been_sent', { lng })}: \n`;
 		if (host && host !== '') {
