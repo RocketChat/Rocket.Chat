@@ -271,7 +271,7 @@ class Callbacks {
 
 	private callbacks = new Map<Hook, Callback[]>();
 
-	private sequentialRunners = new Map<Hook, (item: unknown, constant?: unknown) => unknown>();
+	private sequentialRunners = new Map<Hook, (item: unknown, constant?: unknown) => Promise<unknown>>();
 
 	private asyncRunners = new Map<Hook, (item: unknown, constant?: unknown) => unknown>();
 
@@ -286,40 +286,47 @@ class Callbacks {
 		this.trackHook = trackHook;
 	}
 
-	private runOne(callback: Callback, item: unknown, constant: unknown): unknown {
-		const stopTracking = this.trackCallback?.(callback);
-
-		try {
-			const result = callback(item, constant);
-			if (result && result instanceof Promise) {
-				return Promise.await(result);
+	private async runOne(callback: Callback, item: unknown, constant: unknown): Promise<unknown> {
+		return new Promise<unknown>((resolve, reject) => {
+			const stopTracking = this.trackCallback?.(callback);
+			try {
+				const result = callback(item, constant);
+				if (result && result instanceof Promise) {
+					// if the callback returns a promise, then we need to wait for it to complete before continuing
+					Promise.resolve(result).then(resolve).catch(reject);
+				} else {
+					// if the callback does not return a promise, then we can continue immediately
+					resolve(result);
+				}
+			} catch (error) {
+				// if the callback throws an error, then we need to reject the promise
+				reject(error);
+			} finally {
+				// we are done running the callback, so we can stop tracking it
+				stopTracking?.();
 			}
-
-			return result;
-		} finally {
-			stopTracking?.();
-		}
+		});
 	}
 
-	private createSequentialRunner(hook: Hook, callbacks: Callback[]): (item: unknown, constant?: unknown) => unknown {
+	private createSequentialRunner(hook: Hook, callbacks: Callback[]): (item: unknown, constant?: unknown) => Promise<unknown> {
 		const wrapCallback =
 			(callback: Callback) =>
-			(item: unknown, constant?: unknown): unknown => {
+			(item: unknown, constant?: unknown): Promise<unknown> => {
 				this.logger?.debug(`Executing callback with id ${callback.id} for hook ${callback.hook}`);
 
-				return this.runOne(callback, item, constant) ?? item;
+				return this.runOne(callback, item, constant).then((result) => result ?? item);
 			};
 
-		const identity = <TItem>(item: TItem): TItem => item;
+		const identity = <TItem>(item: TItem): Promise<TItem> => Promise.resolve(item);
 
 		const pipe =
-			(curr: (item: unknown, constant?: unknown) => unknown, next: (item: unknown, constant?: unknown) => unknown) =>
-			(item: unknown, constant?: unknown): unknown =>
-				next(curr(item, constant), constant);
+			(curr: (item: unknown, constant?: unknown) => Promise<unknown>, next: (item: unknown, constant?: unknown) => Promise<unknown>) =>
+			(item: unknown, constant?: unknown): Promise<unknown> =>
+				curr(item, constant).then((result) => next(result, constant));
 
 		const fn = callbacks.map(wrapCallback).reduce(pipe, identity);
 
-		return (item: unknown, constant?: unknown): unknown => {
+		return (item: unknown, constant?: unknown): Promise<unknown> => {
 			const stopTracking = this.trackHook?.({ hook, length: callbacks.length });
 
 			try {
@@ -337,9 +344,7 @@ class Callbacks {
 			}
 
 			for (const callback of callbacks) {
-				Meteor.defer(() => {
-					this.runOne(callback, item, constant);
-				});
+				void this.runOne(callback, item, constant);
 			}
 
 			return item;
@@ -416,14 +421,14 @@ class Callbacks {
 		this.setCallbacks(hook, hooks);
 	}
 
-	run<THook extends keyof EventLikeCallbackSignatures>(hook: THook, ...args: Parameters<EventLikeCallbackSignatures[THook]>): void;
+	run<THook extends keyof EventLikeCallbackSignatures>(hook: THook, ...args: Parameters<EventLikeCallbackSignatures[THook]>): Promise<void>;
 
 	run<THook extends keyof ChainedCallbackSignatures>(
 		hook: THook,
 		...args: Parameters<ChainedCallbackSignatures[THook]>
 	): ReturnType<ChainedCallbackSignatures[THook]>;
 
-	run<TItem, TConstant, TNextItem = TItem>(hook: Hook, item: TItem, constant?: TConstant): TNextItem;
+	run<TItem, TConstant, TNextItem = TItem>(hook: Hook, item: TItem, constant?: TConstant): Promise<TNextItem>;
 
 	/**
 	 * Successively run all of a hook's callbacks on an item
@@ -433,8 +438,8 @@ class Callbacks {
 	 * @param constant an optional constant that will be passed along to each callback
 	 * @returns returns the item after it's been through all the callbacks for this hook
 	 */
-	run(hook: Hook, item: unknown, constant?: unknown): unknown {
-		const runner = this.sequentialRunners.get(hook) ?? ((item: unknown, _constant?: unknown): unknown => item);
+	run(hook: Hook, item: unknown, constant?: unknown): Promise<unknown> {
+		const runner = this.sequentialRunners.get(hook) ?? (async (item: unknown, _constant?: unknown) => item);
 		return runner(item, constant);
 	}
 

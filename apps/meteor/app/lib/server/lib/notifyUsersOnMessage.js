@@ -47,11 +47,13 @@ export function getMentions(message) {
 
 	const filteredMentions = userMentions.filter(({ _id }) => _id !== senderId && !['all', 'here'].includes(_id)).map(({ _id }) => _id);
 
-	const mentionIds = callbacks.run('beforeGetMentions', filteredMentions, {
-		userMentions,
-		otherMentions,
-		message,
-	});
+	const mentionIds = Promise.await(
+		callbacks.run('beforeGetMentions', filteredMentions, {
+			userMentions,
+			otherMentions,
+			message,
+		}),
+	);
 
 	return {
 		toAll,

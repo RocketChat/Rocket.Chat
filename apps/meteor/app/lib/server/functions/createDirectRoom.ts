@@ -50,7 +50,7 @@ export async function createDirectRoom(
 	if (members.length > (settings.get('DirectMesssage_maxUsers') || 1)) {
 		throw new Error('error-direct-message-max-user-exceeded');
 	}
-	callbacks.run('beforeCreateDirectRoom', members);
+	await callbacks.run('beforeCreateDirectRoom', members);
 
 	const membersUsernames = members.map((member) => {
 		if (typeof member === 'string') {

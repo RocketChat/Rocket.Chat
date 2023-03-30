@@ -71,9 +71,7 @@ Meteor.methods<ServerMethods>({
 
 		await Message.saveSystemMessage('user-unmuted', data.rid, unmutedUser.username, fromUser);
 
-		Meteor.defer(function () {
-			callbacks.run('afterUnmuteUser', { unmutedUser, fromUser }, room);
-		});
+		void callbacks.run('afterUnmuteUser', { unmutedUser, fromUser }, room);
 
 		return true;
 	},

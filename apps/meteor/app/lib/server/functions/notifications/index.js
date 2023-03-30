@@ -22,7 +22,7 @@ export function parseMessageTextPerUser(messageText, message, receiver) {
 	}
 
 	// perform processing required before sending message as notification such as markdown filtering
-	return callbacks.run('renderNotification', messageText);
+	return Promise.await(callbacks.run('renderNotification', messageText));
 }
 
 /**

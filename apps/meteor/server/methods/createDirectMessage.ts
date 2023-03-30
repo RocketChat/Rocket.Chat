@@ -100,7 +100,7 @@ export async function createDirectMessage(
 		options.subscriptionExtra = { open: true };
 	}
 	try {
-		callbacks.run('federation.beforeCreateDirectMessage', roomUsers);
+		await callbacks.run('federation.beforeCreateDirectMessage', roomUsers);
 	} catch (error) {
 		throw new Meteor.Error((error as any)?.message);
 	}

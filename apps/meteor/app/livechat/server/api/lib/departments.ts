@@ -55,7 +55,7 @@ export async function findDepartments({
 	};
 
 	if (onlyMyDepartments) {
-		query = callbacks.run('livechat.applyDepartmentRestrictions', query, { userId });
+		query = await callbacks.run('livechat.applyDepartmentRestrictions', query, { userId });
 	}
 
 	const { cursor, totalCount } = LivechatDepartment.findPaginated(query, {
@@ -89,7 +89,7 @@ export async function findArchivedDepartments({
 	};
 
 	if (onlyMyDepartments) {
-		query = callbacks.run('livechat.applyDepartmentRestrictions', query, { userId });
+		query = await callbacks.run('livechat.applyDepartmentRestrictions', query, { userId });
 	}
 
 	const { cursor, totalCount } = LivechatDepartment.findPaginated(query, {
@@ -122,7 +122,7 @@ export async function findDepartmentById({
 	let query = { _id: departmentId };
 
 	if (onlyMyDepartments) {
-		query = callbacks.run('livechat.applyDepartmentRestrictions', query, { userId });
+		query = await callbacks.run('livechat.applyDepartmentRestrictions', query, { userId });
 	}
 
 	const result = {
@@ -146,7 +146,7 @@ export async function findDepartmentsToAutocomplete({
 	let { conditions = {} } = selector;
 
 	if (onlyMyDepartments) {
-		conditions = callbacks.run('livechat.applyDepartmentRestrictions', conditions, { userId: uid });
+		conditions = await callbacks.run('livechat.applyDepartmentRestrictions', conditions, { userId: uid });
 	}
 
 	const conditionsWithArchived = { archived: { $ne: !showArchived }, ...conditions };

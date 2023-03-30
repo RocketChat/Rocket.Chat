@@ -10,5 +10,5 @@ export const archiveRoom = async function (rid: string, user: IMessage['u']): Pr
 	Subscriptions.archiveByRoomId(rid);
 	await Messages.createWithTypeRoomIdMessageUserAndUnread('room-archived', rid, '', user, settings.get('Message_Read_Receipt_Enabled'));
 
-	callbacks.run('afterRoomArchived', await Rooms.findOneById(rid), user);
+	await callbacks.run('afterRoomArchived', await Rooms.findOneById(rid), user);
 };

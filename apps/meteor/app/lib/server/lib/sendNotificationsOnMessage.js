@@ -236,7 +236,7 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 	// add users in thread to mentions array because they follow the same rules
 	mentionIds.push(...usersInThread);
 
-	let notificationMessage = callbacks.run('beforeSendMessageNotifications', message.msg);
+	let notificationMessage = await callbacks.run('beforeSendMessageNotifications', message.msg);
 	if (mentionIds.length > 0 && settings.get('UI_Use_Real_Name')) {
 		notificationMessage = replaceMentionedUsernamesWithFullNames(message.msg, message.mentions);
 	}

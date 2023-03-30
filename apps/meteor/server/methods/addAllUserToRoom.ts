@@ -58,7 +58,7 @@ Meteor.methods<ServerMethods>({
 			if (subscription != null) {
 				continue;
 			}
-			callbacks.run('beforeJoinRoom', user, room);
+			await callbacks.run('beforeJoinRoom', user, room);
 			await Subscriptions.createWithRoomAndUser(room, user, {
 				ts: now,
 				open: true,

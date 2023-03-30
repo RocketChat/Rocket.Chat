@@ -46,7 +46,7 @@ export const updateMessage = async function (message: IMessage, user: IUser, ori
 
 	parseUrlsInMessage(message);
 
-	message = callbacks.run('beforeSaveMessage', message);
+	message = await callbacks.run('beforeSaveMessage', message);
 
 	const { _id, ...editedMessage } = message;
 
@@ -66,6 +66,6 @@ export const updateMessage = async function (message: IMessage, user: IUser, ori
 	}
 
 	Meteor.defer(function () {
-		callbacks.run('afterSaveMessage', Messages.findOneById(_id), room, user._id);
+		void callbacks.run('afterSaveMessage', Messages.findOneById(_id), room, user._id);
 	});
 };

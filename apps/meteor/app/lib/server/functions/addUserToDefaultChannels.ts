@@ -6,7 +6,7 @@ import { Rooms } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 
 export const addUserToDefaultChannels = async function (user: IUser, silenced?: boolean): Promise<void> {
-	callbacks.run('beforeJoinDefaultChannels', user);
+	await callbacks.run('beforeJoinDefaultChannels', user);
 	const defaultRooms = Rooms.findByDefaultAndTypes(true, ['c', 'p'], {
 		fields: { usernames: 0 },
 	}).fetch();

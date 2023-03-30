@@ -30,6 +30,6 @@ export const saveRoomTopic = async function (
 			settings.get('Message_Read_Receipt_Enabled'),
 		);
 	}
-	callbacks.run('afterRoomTopicChange', { rid, topic: roomTopic });
+	await callbacks.run('afterRoomTopicChange', { rid, topic: roomTopic });
 	return update;
 };

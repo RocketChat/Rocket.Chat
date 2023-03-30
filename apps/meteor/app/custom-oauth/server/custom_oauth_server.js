@@ -342,7 +342,7 @@ export class CustomOAuth {
 					return;
 				}
 
-				callbacks.run('afterProcessOAuthUser', { serviceName, serviceData, user });
+				Promise.await(callbacks.run('afterProcessOAuthUser', { serviceName, serviceData, user }));
 
 				// User already created or merged and has identical name as before
 				if (
@@ -438,11 +438,13 @@ Accounts.updateOrCreateUserFromExternalService = function (...args /* serviceNam
 
 	const user = updateOrCreateUserFromExternalService.apply(this, args);
 
-	callbacks.run('afterValidateNewOAuthUser', {
-		identity: serviceData,
-		serviceName,
-		user: Users.findOneById(user.userId),
-	});
+	Promise.await(
+		callbacks.run('afterValidateNewOAuthUser', {
+			identity: serviceData,
+			serviceName,
+			user: Users.findOneById(user.userId),
+		}),
+	);
 
 	return user;
 };

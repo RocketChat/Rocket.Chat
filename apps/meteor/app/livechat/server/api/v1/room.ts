@@ -447,7 +447,7 @@ API.v1.addRoute(
 
 			await Promise.allSettled([Livechat.saveGuest(guestData, this.userId), Livechat.saveRoomInfo(roomData)]);
 
-			callbacks.run('livechat.saveInfo', await LivechatRooms.findOneById(roomData._id), {
+			await callbacks.run('livechat.saveInfo', await LivechatRooms.findOneById(roomData._id), {
 				user: this.user,
 				oldRoom: room,
 			});
