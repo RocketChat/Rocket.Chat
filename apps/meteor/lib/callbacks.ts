@@ -195,6 +195,7 @@ type ChainedCallbackSignatures = {
 		content: OEmbedUrlContent;
 	};
 	'livechat.beforeListTags': () => ILivechatTag[];
+	'livechat.offlineMessage': (data: { name: string; email: string; message: string }) => void;
 };
 
 type Hook =
