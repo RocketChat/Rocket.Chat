@@ -312,7 +312,7 @@ export type UsersEndpoints = {
 		GET: () => {
 			status: 'online' | 'offline' | 'away' | 'busy';
 			message?: string;
-			_id: string;
+			_id?: string;
 			connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
 		};
 	};

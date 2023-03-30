@@ -784,11 +784,16 @@ API.v1.addRoute('users.2fa.sendEmailCode', {
 		const method = emailOrUsername.includes('@') ? 'findOneByEmailAddress' : 'findOneByUsername';
 		const userId = this.userId || (await Users[method](emailOrUsername, { projection: { _id: 1 } }))?._id;
 
-		const user = await getUserForCheck(userId || '');
-		if (!userId || !user) {
+		if (!userId) {
 			// this.logger.error('[2fa] User was not found when requesting 2fa email code');
 			return API.v1.success();
 		}
+		const user = await getUserForCheck(userId);
+		if (!user) {
+			// this.logger.error('[2fa] User was not found when requesting 2fa email code');
+			return API.v1.success();
+		}
+		
 
 		await emailCheck.sendEmailCode(user);
 
@@ -1179,7 +1184,7 @@ API.v1.addRoute(
 			if (isUserFromParams(this.queryParams, this.userId, this.user)) {
 				const user: IUser | null = await Users.findOneById(this.userId);
 				return API.v1.success({
-					_id: user?._id || '',
+					_id: user?._id,
 					// message: user.statusText,
 					connectionStatus: (user?.statusConnection || 'offline') as 'online' | 'offline' | 'away' | 'busy',
 					status: (user?.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
