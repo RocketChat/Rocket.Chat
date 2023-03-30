@@ -1,7 +1,7 @@
-import { FederationRoomEvents } from '@rocket.chat/models';
+import { FederationRoomEvents, Subscriptions } from '@rocket.chat/models';
 
 import { clientLogger } from '../lib/logger';
-import { Subscriptions, Users } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
 import { getFederationDomain } from '../lib/getFederationDomain';
@@ -64,7 +64,7 @@ async function afterCreateRoom(roomOwner, room) {
 	}
 
 	// Find all subscriptions of this room
-	let subscriptions = Subscriptions.findByRoomIdWhenUsernameExists(room._id).fetch();
+	let subscriptions = await Subscriptions.findByRoomIdWhenUsernameExists(room._id).toArray();
 	subscriptions = subscriptions.reduce((acc, s) => {
 		acc[s.u._id] = s;
 
@@ -105,6 +105,6 @@ async function afterCreateRoom(roomOwner, room) {
 
 export const definition = {
 	hook: 'afterCreateRoom',
-	callback: (roomOwner, room) => Promise.await(afterCreateRoom(roomOwner, room)),
+	callback: afterCreateRoom,
 	id: 'federation-after-create-room',
 };

@@ -20,7 +20,7 @@ import type {
 	FederationRoomEditExternalMessageDto,
 	FederationRoomRoomChangePowerLevelsEventDto,
 } from '../input/RoomReceiverDto';
-import { AbstractFederationApplicationService } from '../../AbstractFederationService';
+import { AbstractFederationApplicationService } from '../../AbstractFederationApplicationService';
 import type { RocketChatFileAdapter } from '../../../infrastructure/rocket-chat/adapters/File';
 import type { RocketChatNotificationAdapter } from '../../../infrastructure/rocket-chat/adapters/Notification';
 import type { InMemoryQueue } from '../../../infrastructure/queue/InMemoryQueue';

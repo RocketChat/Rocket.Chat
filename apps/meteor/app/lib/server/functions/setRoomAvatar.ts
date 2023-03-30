@@ -1,23 +1,36 @@
 import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Avatars } from '@rocket.chat/models';
+import { isRegisterUser } from '@rocket.chat/core-typings';
+import { Avatars, Messages, Rooms } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
 import { RocketChatFile } from '../../../file/server';
+import { settings } from '../../../settings/server';
 import { FileUpload } from '../../../file-upload/server';
-import { Rooms, Messages } from '../../../models/server';
 
 export const setRoomAvatar = async function (rid: string, dataURI: string, user: IUser): Promise<void> {
+	if (!isRegisterUser(user)) {
+		throw new Meteor.Error('invalid-user', 'Invalid user', {
+			function: 'RocketChat.setRoomAvatar',
+		});
+	}
+
 	const fileStore = FileUpload.getStore('Avatars');
 
 	const current = await Avatars.findOneByRoomId(rid);
 
 	if (!dataURI) {
 		fileStore.deleteByRoomId(rid);
-		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_avatar', rid, '', user);
+		await Messages.createWithTypeRoomIdMessageUserAndUnread(
+			'room_changed_avatar',
+			rid,
+			'',
+			user,
+			settings.get('Message_Read_Receipt_Enabled'),
+		);
 		void api.broadcast('room.avatarUpdate', { _id: rid });
-
-		return Rooms.unsetAvatarData(rid);
+		await Rooms.unsetAvatarData(rid);
+		return;
 	}
 
 	const fileData = RocketChatFile.dataURIParse(dataURI);
@@ -40,9 +53,15 @@ export const setRoomAvatar = async function (rid: string, dataURI: string, user:
 			throw err;
 		}
 
-		Meteor.setTimeout(function () {
-			Rooms.setAvatarData(rid, 'upload', result.etag);
-			Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_avatar', rid, '', user);
+		Meteor.setTimeout(async function () {
+			await Rooms.setAvatarData(rid, 'upload', result.etag);
+			await Messages.createWithTypeRoomIdMessageUserAndUnread(
+				'room_changed_avatar',
+				rid,
+				'',
+				user,
+				settings.get('Message_Read_Receipt_Enabled'),
+			);
 			void api.broadcast('room.avatarUpdate', { _id: rid, avatarETag: result.etag });
 		}, 500);
 	});

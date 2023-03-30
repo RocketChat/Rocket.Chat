@@ -1,6 +1,6 @@
 import { LivechatRooms, LivechatAgentActivity } from '@rocket.chat/models';
 
-const findAllAverageServiceTimeAsync = async ({ start, end, options = {} }) => {
+export const findAllAverageServiceTimeAsync = async ({ start, end, options = {} }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -19,7 +19,7 @@ const findAllAverageServiceTimeAsync = async ({ start, end, options = {} }) => {
 	};
 };
 
-const findAllServiceTimeAsync = async ({ start, end, options = {} }) => {
+export const findAllServiceTimeAsync = async ({ start, end, options = {} }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -34,7 +34,7 @@ const findAllServiceTimeAsync = async ({ start, end, options = {} }) => {
 	};
 };
 
-const findAvailableServiceTimeHistoryAsync = async ({ start, end, fullReport, options = {} }) => {
+export const findAvailableServiceTimeHistoryAsync = async ({ start, end, fullReport, options = {} }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
 	}
@@ -54,9 +54,3 @@ const findAvailableServiceTimeHistoryAsync = async ({ start, end, fullReport, op
 		total: total.length ? total[0].total : 0,
 	};
 };
-
-export const findAllAverageServiceTime = ({ start, end, options }) =>
-	Promise.await(findAllAverageServiceTimeAsync({ start, end, options }));
-export const findAllServiceTime = ({ start, end, options }) => Promise.await(findAllServiceTimeAsync({ start, end, options }));
-export const findAvailableServiceTimeHistory = ({ start, end, fullReport, options }) =>
-	Promise.await(findAvailableServiceTimeHistoryAsync({ start, end, fullReport, options }));

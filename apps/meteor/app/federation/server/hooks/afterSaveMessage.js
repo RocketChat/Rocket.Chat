@@ -33,6 +33,6 @@ async function afterSaveMessage(message, room) {
 
 export const definition = {
 	hook: 'afterSaveMessage',
-	callback: (message, room) => Promise.await(afterSaveMessage(message, room)),
+	callback: afterSaveMessage,
 	id: 'federation-after-save-message',
 };

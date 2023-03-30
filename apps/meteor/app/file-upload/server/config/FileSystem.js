@@ -1,8 +1,8 @@
 import fs from 'fs';
 
 import { Meteor } from 'meteor/meteor';
-import { UploadFS } from 'meteor/jalik:ufs';
 
+import { UploadFS } from '../../../../server/ufs';
 import { settings } from '../../../settings/server';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { getFileRange, setRangeHeaders } from '../lib/ranges';

@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-
-import { Subscriptions } from '../../app/models/server';
+import { Subscriptions } from '@rocket.chat/models';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -12,7 +11,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	ignoreUser({ rid, userId: ignoredUser, ignore = true }) {
+	async ignoreUser({ rid, userId: ignoredUser, ignore = true }) {
 		check(ignoredUser, String);
 		check(rid, String);
 		check(ignore, Boolean);
@@ -24,7 +23,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, userId);
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userId);
 
 		if (!subscription) {
 			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', {
@@ -32,7 +31,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const subscriptionIgnoredUser = Subscriptions.findOneByRoomIdAndUserId(rid, ignoredUser);
+		const subscriptionIgnoredUser = await Subscriptions.findOneByRoomIdAndUserId(rid, ignoredUser);
 
 		if (!subscriptionIgnoredUser) {
 			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', {
@@ -40,6 +39,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		return !!Subscriptions.ignoreUser({ _id: subscription._id, ignoredUser, ignore });
+		return !!(await Subscriptions.ignoreUser({ _id: subscription._id, ignoredUser, ignore }));
 	},
 });

@@ -7,12 +7,12 @@ import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKe
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'e2e.resetOwnE2EKey'(): boolean;
+		'e2e.resetOwnE2EKey'(): Promise<boolean>;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	'e2e.resetOwnE2EKey': twoFactorRequired(() => {
+	'e2e.resetOwnE2EKey': twoFactorRequired(async () => {
 		const userId = Meteor.userId();
 
 		if (!userId) {
@@ -21,7 +21,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (!resetUserE2EEncriptionKey(userId, false)) {
+		if (!(await resetUserE2EEncriptionKey(userId, false))) {
 			return false;
 		}
 		return true;

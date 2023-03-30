@@ -19,23 +19,17 @@ import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser } from '@rocket.chat/core-typings';
-import { Users as UsersRaw } from '@rocket.chat/models';
+import { Users as UsersRaw, Subscriptions } from '@rocket.chat/models';
 import type { Filter } from 'mongodb';
 import { Team, api } from '@rocket.chat/core-services';
 
-import { Users, Subscriptions } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
-import {
-	validateCustomFields,
-	saveUser,
-	saveCustomFieldsWithoutValidation,
-	checkUsernameAvailability,
-	setStatusText,
-	setUserAvatar,
-	saveCustomFields,
-} from '../../../lib/server';
+import { validateCustomFields, saveUser, saveCustomFieldsWithoutValidation, setUserAvatar, saveCustomFields } from '../../../lib/server';
+import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
 import { getFullUserDataByIdOrUsername } from '../../../lib/server/functions/getFullUserData';
+import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { API } from '../api';
 import { findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
@@ -44,13 +38,16 @@ import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
 import { isValidQuery } from '../lib/isValidQuery';
 import { getURL } from '../../../utils/server';
 import { getUploadFormData } from '../lib/getUploadFormData';
+import { getPaginationItems } from '../helpers/getPaginationItems';
+import { getUserFromParams } from '../helpers/getUserFromParams';
+import { isUserFromParams } from '../helpers/isUserFromParams';
 
 API.v1.addRoute(
 	'users.getAvatar',
 	{ authRequired: false },
 	{
-		get() {
-			const user = this.getUserFromParams();
+		async get() {
+			const user = await getUserFromParams(this.queryParams);
 
 			const url = getURL(`/avatar/${user.username}`, { cdn: false, full: true });
 			this.response.setHeader('Location', url);
@@ -70,7 +67,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const suggestions = Meteor.call('getAvatarSuggestion');
+			const suggestions = await Meteor.callAsync('getAvatarSuggestion');
 
 			return API.v1.success({ suggestions });
 		},
@@ -87,7 +84,7 @@ API.v1.addRoute(
 			await saveUser(this.userId, userData);
 
 			if (this.bodyParams.data.customFields) {
-				saveCustomFields(this.bodyParams.userId, this.bodyParams.data.customFields);
+				await saveCustomFields(this.bodyParams.userId, this.bodyParams.data.customFields);
 			}
 
 			if (typeof this.bodyParams.data.active !== 'undefined') {
@@ -97,9 +94,9 @@ API.v1.addRoute(
 					confirmRelinquish,
 				} = this.bodyParams;
 
-				Meteor.call('setUserActiveStatus', userId, active, Boolean(confirmRelinquish));
+				await Meteor.callAsync('setUserActiveStatus', userId, active, Boolean(confirmRelinquish));
 			}
-			const { fields } = this.parseJsonQuery();
+			const { fields } = await this.parseJsonQuery();
 
 			return API.v1.success({ user: Users.findOneById(this.bodyParams.userId, { fields }) });
 		},
@@ -129,7 +126,7 @@ API.v1.addRoute(
 						twoFactorMethod: 'password',
 				  };
 
-			Meteor.call('saveUserProfile', userData, this.bodyParams.customFields, twoFactorOptions);
+			await Meteor.callAsync('saveUserProfile', userData, this.bodyParams.customFields, twoFactorOptions);
 
 			return API.v1.success({
 				user: Users.findOneById(this.userId, { fields: API.v1.defaultFieldsToExclude }),
@@ -155,7 +152,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-invalid-user', 'The optional "userId" param provided does not match any users');
 			}
 
-			Meteor.runAsUser(userId, () => Meteor.call('saveUserPreferences', this.bodyParams.data));
+			await Meteor.runAsUser(userId, () => Meteor.callAsync('saveUserPreferences', this.bodyParams.data));
 			const user = Users.findOneById(userId, {
 				fields: {
 					'settings.preferences': 1,
@@ -190,12 +187,12 @@ API.v1.addRoute(
 				});
 			}
 
-			let user = ((): IUser | undefined => {
-				if (this.isUserFromParams()) {
+			let user = await (async (): Promise<Pick<IUser, '_id' | 'roles' | 'username' | 'name' | 'status' | 'statusText'> | undefined> => {
+				if (isUserFromParams(this.bodyParams, this.userId, this.user)) {
 					return Meteor.users.findOne(this.userId) as IUser | undefined;
 				}
 				if (canEditOtherUserAvatar) {
-					return this.getUserFromParams();
+					return getUserFromParams(this.bodyParams);
 				}
 			})();
 
@@ -263,14 +260,14 @@ API.v1.addRoute(
 			const newUserId = await saveUser(this.userId, this.bodyParams);
 
 			if (this.bodyParams.customFields) {
-				saveCustomFieldsWithoutValidation(newUserId, this.bodyParams.customFields);
+				await saveCustomFieldsWithoutValidation(newUserId, this.bodyParams.customFields);
 			}
 
 			if (typeof this.bodyParams.active !== 'undefined') {
-				Meteor.call('setUserActiveStatus', newUserId, this.bodyParams.active);
+				await Meteor.callAsync('setUserActiveStatus', newUserId, this.bodyParams.active);
 			}
 
-			const { fields } = this.parseJsonQuery();
+			const { fields } = await this.parseJsonQuery();
 
 			return API.v1.success({ user: Users.findOneById(newUserId, { fields }) });
 		},
@@ -286,10 +283,10 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const user = this.getUserFromParams();
-			const { confirmRelinquish = false } = this.requestParams();
+			const user = await getUserFromParams(this.bodyParams);
+			const { confirmRelinquish = false } = this.bodyParams;
 
-			Meteor.call('deleteUser', user._id, confirmRelinquish);
+			await Meteor.callAsync('deleteUser', user._id, confirmRelinquish);
 
 			return API.v1.success();
 		},
@@ -300,7 +297,7 @@ API.v1.addRoute(
 	'users.deleteOwnAccount',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			const { password } = this.bodyParams;
 			if (!password) {
 				return API.v1.failure('Body parameter "password" is required.');
@@ -309,9 +306,9 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 
-			const { confirmRelinquish = false } = this.requestParams();
+			const { confirmRelinquish = false } = this.bodyParams;
 
-			Meteor.call('deleteUserOwnAccount', password, confirmRelinquish);
+			await Meteor.callAsync('deleteUserOwnAccount', password, confirmRelinquish);
 
 			return API.v1.success();
 		},
@@ -328,7 +325,7 @@ API.v1.addRoute(
 			}
 
 			const { userId, activeStatus, confirmRelinquish = false } = this.bodyParams;
-			Meteor.call('setUserActiveStatus', userId, activeStatus, confirmRelinquish);
+			await Meteor.callAsync('setUserActiveStatus', userId, activeStatus, confirmRelinquish);
 			return API.v1.success({
 				user: Users.findOneById(this.bodyParams.userId, { fields: { active: 1 } }),
 			});
@@ -364,7 +361,7 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isUsersInfoParamsGetProps },
 	{
 		async get() {
-			const { fields } = this.parseJsonQuery();
+			const { fields } = await this.parseJsonQuery();
 
 			const user = await getFullUserDataByIdOrUsername(this.userId, {
 				filterId: (this.queryParams as any).userId,
@@ -379,7 +376,7 @@ API.v1.addRoute(
 				return API.v1.success({
 					user: {
 						...user,
-						rooms: Subscriptions.findByUserId(user._id, {
+						rooms: await Subscriptions.findByUserId(user._id, {
 							projection: {
 								rid: 1,
 								name: 1,
@@ -392,7 +389,7 @@ API.v1.addRoute(
 								t: 1,
 								name: 1,
 							},
-						}).fetch(),
+						}).toArray(),
 					},
 				});
 			}
@@ -423,8 +420,8 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields, query } = await this.parseJsonQuery();
 
 			const nonEmptyQuery = getNonEmptyQuery(query, await hasPermissionAsync(this.userId, 'view-full-other-user-info'));
 			const nonEmptyFields = getNonEmptyFields(fields);
@@ -527,25 +524,25 @@ API.v1.addRoute(
 		validateParams: isUserRegisterParamsPOST,
 	},
 	{
-		post() {
+		async post() {
 			if (this.userId) {
 				return API.v1.failure('Logged in users can not register again.');
 			}
 
-			if (!checkUsernameAvailability(this.bodyParams.username)) {
+			if (!(await checkUsernameAvailability(this.bodyParams.username))) {
 				return API.v1.failure('Username is already in use');
 			}
 
 			const { secret: secretURL, ...params } = this.bodyParams;
 			// Register the user
-			const userId = Meteor.call('registerUser', {
+			const userId = await Meteor.callAsync('registerUser', {
 				...params,
 				...(secretURL && { secretURL }),
 			});
 
 			// Now set their username
-			Meteor.runAsUser(userId, () => Meteor.call('setUsername', this.bodyParams.username));
-			const { fields } = this.parseJsonQuery();
+			const { fields } = await this.parseJsonQuery();
+			await Meteor.runAsUser(userId, () => Meteor.callAsync('setUsername', this.bodyParams.username));
 
 			return API.v1.success({ user: Users.findOneById(userId, { fields }) });
 		},
@@ -557,12 +554,12 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			const user = this.getUserFromParams();
+			const user = await getUserFromParams(this.bodyParams);
 
 			if (settings.get('Accounts_AllowUserAvatarChange') && user._id === this.userId) {
-				Meteor.runAsUser(this.userId, () => Meteor.call('resetAvatar'));
+				await Meteor.callAsync('resetAvatar');
 			} else if (await hasPermissionAsync(this.userId, 'edit-other-user-avatar')) {
-				Meteor.runAsUser(this.userId, () => Meteor.call('resetAvatar', user._id));
+				await Meteor.callAsync('resetAvatar', user._id);
 			} else {
 				throw new Meteor.Error('error-not-allowed', 'Reset avatar is not allowed', {
 					method: 'users.resetAvatar',
@@ -578,9 +575,9 @@ API.v1.addRoute(
 	'users.createToken',
 	{ authRequired: true },
 	{
-		post() {
-			const user = this.getUserFromParams();
-			const data = Meteor.call('createToken', user._id);
+		async post() {
+			const user = await getUserFromParams(this.bodyParams);
+			const data = await Meteor.callAsync('createToken', user._id);
 			return data ? API.v1.success({ data }) : API.v1.unauthorized();
 		},
 	},
@@ -609,13 +606,13 @@ API.v1.addRoute(
 	'users.forgotPassword',
 	{ authRequired: false },
 	{
-		post() {
+		async post() {
 			const { email } = this.bodyParams;
 			if (!email) {
 				return API.v1.failure("The 'email' param is required");
 			}
 
-			Meteor.call('sendForgotPasswordEmail', email);
+			await Meteor.callAsync('sendForgotPasswordEmail', email);
 			return API.v1.success();
 		},
 	},
@@ -625,8 +622,8 @@ API.v1.addRoute(
 	'users.getUsernameSuggestion',
 	{ authRequired: true },
 	{
-		get() {
-			const result = Meteor.call('getUsernameSuggestion');
+		async get() {
+			const result = await Meteor.callAsync('getUsernameSuggestion');
 
 			return API.v1.success({ result });
 		},
@@ -653,12 +650,12 @@ API.v1.addRoute(
 	'users.generatePersonalAccessToken',
 	{ authRequired: true, twoFactorRequired: true },
 	{
-		post() {
+		async post() {
 			const { tokenName, bypassTwoFactor } = this.bodyParams;
 			if (!tokenName) {
 				return API.v1.failure("The 'tokenName' param is required");
 			}
-			const token = Meteor.call('personalAccessTokens:generateToken', { tokenName, bypassTwoFactor });
+			const token = await Meteor.callAsync('personalAccessTokens:generateToken', { tokenName, bypassTwoFactor });
 
 			return API.v1.success({ token });
 		},
@@ -669,12 +666,12 @@ API.v1.addRoute(
 	'users.regeneratePersonalAccessToken',
 	{ authRequired: true, twoFactorRequired: true },
 	{
-		post() {
+		async post() {
 			const { tokenName } = this.bodyParams;
 			if (!tokenName) {
 				return API.v1.failure("The 'tokenName' param is required");
 			}
-			const token = Meteor.call('personalAccessTokens:regenerateToken', { tokenName });
+			const token = await Meteor.callAsync('personalAccessTokens:regenerateToken', { tokenName });
 
 			return API.v1.success({ token });
 		},
@@ -712,12 +709,12 @@ API.v1.addRoute(
 	'users.removePersonalAccessToken',
 	{ authRequired: true, twoFactorRequired: true },
 	{
-		post() {
+		async post() {
 			const { tokenName } = this.bodyParams;
 			if (!tokenName) {
 				return API.v1.failure("The 'tokenName' param is required");
 			}
-			Meteor.call('personalAccessTokens:removeToken', {
+			await Meteor.callAsync('personalAccessTokens:removeToken', {
 				tokenName,
 			});
 
@@ -751,7 +748,7 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute('users.2fa.sendEmailCode', {
-	post() {
+	async post() {
 		const { emailOrUsername } = this.bodyParams;
 
 		if (!emailOrUsername) {
@@ -761,12 +758,13 @@ API.v1.addRoute('users.2fa.sendEmailCode', {
 		const method = emailOrUsername.includes('@') ? 'findOneByEmailAddress' : 'findOneByUsername';
 		const userId = this.userId || Users[method](emailOrUsername, { fields: { _id: 1 } })?._id;
 
-		if (!userId) {
+		const user = await getUserForCheck(userId);
+		if (!userId || !user) {
 			// this.logger.error('[2fa] User was not found when requesting 2fa email code');
 			return API.v1.success();
 		}
 
-		emailCheck.sendEmailCode(getUserForCheck(userId));
+		await emailCheck.sendEmailCode(user);
 
 		return API.v1.success();
 	},
@@ -779,10 +777,10 @@ API.v1.addRoute(
 		validateParams: isUsersSendConfirmationEmailParamsPOST,
 	},
 	{
-		post() {
+		async post() {
 			const { email } = this.bodyParams;
 
-			if (Meteor.call('sendConfirmationEmail', email)) {
+			if (await Meteor.callAsync('sendConfirmationEmail', email)) {
 				return API.v1.success();
 			}
 			return API.v1.failure();
@@ -847,9 +845,9 @@ API.v1.addRoute(
 	'users.requestDataDownload',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const { fullExport = false } = this.queryParams;
-			const result = Meteor.call('requestDataDownload', { fullExport: fullExport === 'true' }) as {
+			const result = (await Meteor.callAsync('requestDataDownload', { fullExport: fullExport === 'true' })) as {
 				requested: boolean;
 				exportOperation: IExportOperation;
 			};
@@ -924,8 +922,8 @@ API.v1.addRoute(
 	'users.removeOtherTokens',
 	{ authRequired: true },
 	{
-		post() {
-			return API.v1.success(Meteor.call('removeOtherTokens'));
+		async post() {
+			return API.v1.success(await Meteor.callAsync('removeOtherTokens'));
 		},
 	},
 );
@@ -937,7 +935,7 @@ API.v1.addRoute(
 		async post() {
 			if ('userId' in this.bodyParams || 'username' in this.bodyParams || 'user' in this.bodyParams) {
 				// reset other user keys
-				const user = this.getUserFromParams();
+				const user = await getUserFromParams(this.bodyParams);
 				if (!user) {
 					throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 				}
@@ -950,13 +948,13 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
 
-				if (!resetUserE2EEncriptionKey(user._id, true)) {
+				if (!(await resetUserE2EEncriptionKey(user._id, true))) {
 					return API.v1.failure();
 				}
 
 				return API.v1.success();
 			}
-			resetUserE2EEncriptionKey(this.userId, false);
+			await resetUserE2EEncriptionKey(this.userId, false);
 			return API.v1.success();
 		},
 	},
@@ -978,7 +976,7 @@ API.v1.addRoute(
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
 
-				const user = this.getUserFromParams();
+				const user = await getUserFromParams(this.bodyParams);
 				if (!user) {
 					throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 				}
@@ -1031,7 +1029,7 @@ API.v1.addRoute(
 			}
 
 			// this method logs the user out automatically, if successful returns 1, otherwise 0
-			if (!Users.unsetLoginTokens(userId)) {
+			if (!(await UsersRaw.unsetLoginTokens(userId))) {
 				throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 			}
 
@@ -1046,8 +1044,8 @@ API.v1.addRoute(
 	'users.getPresence',
 	{ authRequired: true },
 	{
-		get() {
-			if (this.isUserFromParams()) {
+		async get() {
+			if (isUserFromParams(this.queryParams, this.userId, this.user)) {
 				const user = Users.findOneById(this.userId);
 				return API.v1.success({
 					presence: user.status || 'offline',
@@ -1056,7 +1054,7 @@ API.v1.addRoute(
 				});
 			}
 
-			const user = this.getUserFromParams();
+			const user = await getUserFromParams(this.queryParams);
 
 			return API.v1.success({
 				presence: user.status || 'offline',
@@ -1090,12 +1088,12 @@ API.v1.addRoute(
 				});
 			}
 
-			const user = await (async (): Promise<IUser | undefined> => {
-				if (this.isUserFromParams()) {
+			const user = await (async (): Promise<Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'statusText' | 'roles'> | undefined> => {
+				if (isUserFromParams(this.bodyParams, this.userId, this.user)) {
 					return Meteor.users.findOne(this.userId) as IUser;
 				}
 				if (await hasPermissionAsync(this.userId, 'edit-other-user-info')) {
-					return this.getUserFromParams();
+					return getUserFromParams(this.bodyParams);
 				}
 			})();
 
@@ -1103,40 +1101,38 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			Meteor.runAsUser(user._id, () => {
-				if (this.bodyParams.message || this.bodyParams.message === '') {
-					setStatusText(user._id, this.bodyParams.message);
-				}
-				if (this.bodyParams.status) {
-					const validStatus = ['online', 'away', 'offline', 'busy'];
-					if (validStatus.includes(this.bodyParams.status)) {
-						const { status } = this.bodyParams;
+			if (this.bodyParams.message || this.bodyParams.message === '') {
+				await setStatusText(user._id, this.bodyParams.message);
+			}
+			if (this.bodyParams.status) {
+				const validStatus = ['online', 'away', 'offline', 'busy'];
+				if (validStatus.includes(this.bodyParams.status)) {
+					const { status } = this.bodyParams;
 
-						if (status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
-							throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
-								method: 'users.setStatus',
-							});
-						}
-
-						Meteor.users.update(user._id, {
-							$set: {
-								status,
-								statusDefault: status,
-							},
-						});
-
-						const { _id, username, statusText, roles, name } = user;
-						void api.broadcast('presence.status', {
-							user: { status, _id, username, statusText, roles, name },
-							previousStatus: user.status,
-						});
-					} else {
-						throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
+					if (status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
+						throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
 							method: 'users.setStatus',
 						});
 					}
+
+					Meteor.users.update(user._id, {
+						$set: {
+							status,
+							statusDefault: status,
+						},
+					});
+
+					const { _id, username, statusText, roles, name } = user;
+					void api.broadcast('presence.status', {
+						user: { status, _id, username, statusText, roles, name },
+						previousStatus: user.status,
+					});
+				} else {
+					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
+						method: 'users.setStatus',
+					});
 				}
-			});
+			}
 
 			return API.v1.success();
 		},
@@ -1153,8 +1149,8 @@ API.v1.addRoute(
 	'users.getStatus',
 	{ authRequired: true },
 	{
-		get() {
-			if (this.isUserFromParams()) {
+		async get() {
+			if (isUserFromParams(this.queryParams, this.userId, this.user)) {
 				const user = Users.findOneById(this.userId);
 				return API.v1.success({
 					_id: user._id,
@@ -1164,7 +1160,7 @@ API.v1.addRoute(
 				});
 			}
 
-			const user = this.getUserFromParams();
+			const user = await getUserFromParams(this.queryParams);
 
 			return API.v1.success({
 				_id: user._id,

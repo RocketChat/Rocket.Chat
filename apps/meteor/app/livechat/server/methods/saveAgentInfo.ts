@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasRole } from '../../../authorization/server';
+import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Livechat } from '../lib/Livechat';
 import { Users } from '../../../models/server';
@@ -23,7 +23,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		const user = Users.findOneById(_id);
-		if (!user || !hasRole(_id, 'livechat-agent')) {
+		if (!user || !(await hasRoleAsync(_id, 'livechat-agent'))) {
 			throw new Meteor.Error('error-user-is-not-agent', 'User is not a livechat agent', {
 				method: 'livechat:saveAgentInfo',
 			});

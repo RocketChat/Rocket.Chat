@@ -27,7 +27,7 @@ Meteor.methods<ServerMethods>({
 	async getAvatarSuggestion() {
 		methodDeprecationLogger.warn('getAvatarSuggestion will be deprecated in future versions of Rocket.Chat');
 
-		const user = Meteor.user() as IUser | undefined;
+		const user = (await Meteor.userAsync()) as IUser | undefined;
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'getAvatarSuggestion',

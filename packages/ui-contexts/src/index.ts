@@ -91,6 +91,4 @@ export { UploadResult } from './ServerContext';
 export { TranslationKey, TranslationLanguage } from './TranslationContext';
 export { Fields } from './UserContext';
 
-export interface ITest {
-	test: string;
-}
+export { SubscriptionWithRoom } from './types/SubscriptionWithRoom';
