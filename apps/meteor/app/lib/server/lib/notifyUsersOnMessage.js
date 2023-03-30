@@ -1,8 +1,8 @@
 import moment from 'moment';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Subscriptions as SubscriptionsRaw, Rooms as RoomsRaw } from '@rocket.chat/models';
+import { Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
 
-import { Rooms, Subscriptions } from '../../../models/server';
+import { Subscriptions } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 
@@ -157,7 +157,7 @@ export async function notifyUsersOnMessage(message, room) {
 	if (message.editedAt) {
 		if (Math.abs(moment(message.editedAt).diff()) > 60000) {
 			// TODO: Review as I am not sure how else to get around this as the incrementing of the msgs count shouldn't be in this callback
-			Rooms.incMsgCountById(message.rid, 1);
+			await Rooms.incMsgCountById(message.rid, 1);
 			return message;
 		}
 
@@ -167,25 +167,25 @@ export async function notifyUsersOnMessage(message, room) {
 			(!message.tmid || message.tshow) &&
 			(!room.lastMessage || room.lastMessage._id === message._id)
 		) {
-			await RoomsRaw.setLastMessageById(message.rid, message);
+			await Rooms.setLastMessageById(message.rid, message);
 		}
 
 		return message;
 	}
 
 	if (message.ts && Math.abs(moment(message.ts).diff()) > 60000) {
-		Rooms.incMsgCountById(message.rid, 1);
+		await Rooms.incMsgCountById(message.rid, 1);
 		return message;
 	}
 
 	// if message sent ONLY on a thread, skips the rest as it is done on a callback specific to threads
 	if (message.tmid && !message.tshow) {
-		Rooms.incMsgCountById(message.rid, 1);
+		await Rooms.incMsgCountById(message.rid, 1);
 		return message;
 	}
 
 	// Update all the room activity tracker fields
-	await RoomsRaw.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, settings.get('Store_Last_Message') && message);
+	await Rooms.incMsgCountAndSetLastMessageById(message.rid, 1, message.ts, settings.get('Store_Last_Message') && message);
 
 	await updateUsersSubscriptions(message, room);
 

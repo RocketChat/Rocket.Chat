@@ -2,11 +2,11 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import type { ICreatedRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Rooms } from '@rocket.chat/models';
 import type { MatchKeysAndValues } from 'mongodb';
 import type { ISubscriptionExtraData } from '@rocket.chat/core-services';
 
-import { Users, Rooms } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
@@ -71,8 +71,8 @@ export async function createDirectRoom(
 	// Deprecated: using users' _id to compose the room _id is deprecated
 	const room =
 		uids.length === 2
-			? Rooms.findOneById(uids.join(''), { fields: { _id: 1 } })
-			: Rooms.findOneDirectRoomContainingAllUserIDs(uids, { fields: { _id: 1 } });
+			? await Rooms.findOneById(uids.join(''), { projection: { _id: 1 } })
+			: await Rooms.findOneDirectRoomContainingAllUserIDs(uids, { projection: { _id: 1 } });
 
 	const isNewRoom = !room;
 
@@ -114,7 +114,8 @@ export async function createDirectRoom(
 		delete tmpRoom._USERNAMES;
 	}
 
-	const rid = room?._id || Rooms.insert(roomInfo);
+	// @ts-expect-error - TODO: room expects `u` to be passed, but it's not part of the original object in here
+	const rid = room?._id || (await Rooms.insertOne(roomInfo)).insertedId;
 
 	if (roomMembers.length === 1) {
 		// dm to yourself
@@ -154,7 +155,7 @@ export async function createDirectRoom(
 
 	// If the room is new, run a callback
 	if (isNewRoom) {
-		const insertedRoom = Rooms.findOneById(rid);
+		const insertedRoom = await Rooms.findOneById(rid);
 
 		callbacks.run('afterCreateDirectRoom', insertedRoom, { members: roomMembers, creatorId: options?.creator });
 
@@ -162,10 +163,12 @@ export async function createDirectRoom(
 	}
 
 	return {
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		...room!,
 		_id: String(rid),
 		usernames,
 		t: 'd',
+		rid,
 		inserted: isNewRoom,
-		...room,
 	};
 }

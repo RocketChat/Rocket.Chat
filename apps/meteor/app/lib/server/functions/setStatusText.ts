@@ -37,8 +37,8 @@ async function _setStatusTextPromise(userId: string, statusText: string): Promis
 }
 
 export const setStatusText = RateLimiter.limitFunction(
-	function _setStatusText(userId: any, statusText: string): boolean {
-		return Promise.await(_setStatusTextPromise(userId, statusText));
+	async function _setStatusText(userId: any, statusText: string) {
+		return _setStatusTextPromise(userId, statusText);
 	},
 	5,
 	60000,

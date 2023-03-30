@@ -13,7 +13,7 @@ const updateFName = async (rid, displayName) => {
 };
 
 const updateRoomName = async (rid, displayName) => {
-	const slugifiedRoomName = getValidRoomName(displayName, rid);
+	const slugifiedRoomName = await getValidRoomName(displayName, rid);
 
 	// Check if the username is available
 	if (!(await checkUsernameAvailability(slugifiedRoomName))) {

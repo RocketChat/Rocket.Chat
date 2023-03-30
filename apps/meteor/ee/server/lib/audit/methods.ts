@@ -6,15 +6,15 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { ILivechatAgent, ILivechatVisitor, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { Mongo } from 'meteor/mongo';
-import { LivechatRooms } from '@rocket.chat/models';
+import { LivechatRooms, Rooms } from '@rocket.chat/models';
 
 import AuditLog from './AuditLog';
-import { Rooms, Messages, Users } from '../../../../app/models/server';
+import { Messages, Users } from '../../../../app/models/server';
 import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
 import { updateCounter } from '../../../../app/statistics/server';
 import type { IAuditLog } from '../../../definition/IAuditLog';
 
-const getValue = (room?: IRoom) => room && { rids: [room._id], name: room.name };
+const getValue = (room: IRoom | null) => room && { rids: [room._id], name: room.name };
 
 const getUsersIdFromUserName = (usernames: IUser['username'][]) => {
 	const user: IUser[] = usernames ? Users.findByUsername({ $in: usernames }) : undefined;
@@ -30,16 +30,16 @@ const getRoomInfoByAuditParams = async ({
 }: {
 	type: string;
 	roomId: IRoom['_id'];
-	users: IUser['username'][];
+	users: NonNullable<IUser['username']>[];
 	visitor: ILivechatVisitor['_id'];
 	agent: ILivechatAgent['_id'];
 }) => {
 	if (rid) {
-		return getValue(Rooms.findOne({ _id: rid }));
+		return getValue(await Rooms.findOne({ _id: rid }));
 	}
 
 	if (type === 'd') {
-		return getValue(Rooms.findDirectRoomContainingAllUsernames(usernames));
+		return getValue(await Rooms.findDirectRoomContainingAllUsernames(usernames));
 	}
 
 	if (type === 'l') {
@@ -59,7 +59,7 @@ declare module '@rocket.chat/ui-contexts' {
 			rid: IRoom['_id'];
 			startDate: Date;
 			endDate: Date;
-			users: IUser['username'][];
+			users: NonNullable<IUser['username']>[];
 			msg: IMessage['msg'];
 			type: string;
 			visitor: ILivechatVisitor['_id'];
@@ -68,7 +68,7 @@ declare module '@rocket.chat/ui-contexts' {
 		auditGetOmnichannelMessages: (params: {
 			startDate: Date;
 			endDate: Date;
-			users: IUser['username'][];
+			users: NonNullable<IUser['username']>[];
 			msg: IMessage['msg'];
 			type: 'l';
 			visitor?: ILivechatVisitor['_id'];
