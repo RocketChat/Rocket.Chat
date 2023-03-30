@@ -123,7 +123,7 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 
 		const { _id, ...banner } = result;
 
-		Banners.updateOne({ _id }, { $set: { ...banner, ...doc, active: true } }); // reenable the banner
+		await Banners.updateOne({ _id }, { $set: { ...banner, ...doc, active: true } }); // reenable the banner
 
 		void api.broadcast('banner.enabled', bannerId);
 		return true;

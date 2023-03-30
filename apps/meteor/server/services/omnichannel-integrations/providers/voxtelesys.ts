@@ -124,7 +124,7 @@ export class Voxtelesys implements ISMSProvider {
 			}
 
 			if (reason) {
-				rid && userId && notifyAgent(userId, rid, reason);
+				rid && userId && (await notifyAgent(userId, rid, reason));
 				return SystemLogger.error(`(Voxtelesys) -> ${reason}`);
 			}
 

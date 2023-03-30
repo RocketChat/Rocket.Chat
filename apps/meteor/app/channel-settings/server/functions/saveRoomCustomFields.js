@@ -1,9 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
 
-import { Rooms, Subscriptions } from '../../../models/server';
-
-export const saveRoomCustomFields = function (rid, roomCustomFields) {
+export const saveRoomCustomFields = async function (rid, roomCustomFields) {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
 			function: 'RocketChat.saveRoomCustomFields',
@@ -14,10 +13,10 @@ export const saveRoomCustomFields = function (rid, roomCustomFields) {
 			function: 'RocketChat.saveRoomCustomFields',
 		});
 	}
-	const ret = Rooms.setCustomFieldsById(rid, roomCustomFields);
+	const ret = await Rooms.setCustomFieldsById(rid, roomCustomFields);
 
 	// Update customFields of any user's Subscription related with this rid
-	Subscriptions.updateCustomFieldsByRoomId(rid, roomCustomFields);
+	await Subscriptions.updateCustomFieldsByRoomId(rid, roomCustomFields);
 
 	return ret;
 };

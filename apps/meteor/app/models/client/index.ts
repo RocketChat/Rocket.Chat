@@ -31,6 +31,17 @@ Meteor.user = () => {
 	return (Users.findOne({ _id: uid }) ?? null) as Meteor.User | null;
 };
 
+declare global {
+	// eslint-disable-next-line @typescript-eslint/no-namespace
+	namespace Meteor {
+		function userAsync(options?: { fields?: Mongo.FieldSpecifier | undefined }): Promise<Meteor.User | null>;
+	}
+}
+
+Meteor.userAsync = async () => {
+	return Meteor.user();
+};
+
 export {
 	Base,
 	Avatars,

@@ -1,11 +1,12 @@
 import { EJSON } from 'meteor/ejson';
-import { FederationServers } from '@rocket.chat/models';
+import { FederationServers, FederationRoomEvents, Rooms as RoomsRaw, Messages as MessagesRaw, Subscriptions } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
+import { eventTypes } from '@rocket.chat/core-typings';
 
 import { API } from '../../../api/server';
 import { serverLogger } from '../lib/logger';
-import { contextDefinitions, eventTypes } from '../../../models/server/models/FederationEvents';
-import { FederationRoomEvents, Messages, Rooms, Subscriptions, Users } from '../../../models/server';
+import { contextDefinitions } from '../lib/context';
+import { Messages, Rooms, Users } from '../../../models/server';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
 import { FileUpload } from '../../../file-upload/server';
@@ -117,13 +118,13 @@ const eventHandlers = {
 			}
 
 			// Check if subscription exists
-			const persistedSubscription = Subscriptions.findOne({ _id: subscription._id });
+			const persistedSubscription = await Subscriptions.findOne({ _id: subscription._id });
 
 			try {
 				if (persistedSubscription) {
 					// Update the federation, if its not already set (if it's set, this is likely an event being reprocessed
 					if (!persistedSubscription.federation) {
-						Subscriptions.update({ _id: persistedSubscription._id }, { $set: { federation: subscription.federation } });
+						await Subscriptions.updateOne({ _id: persistedSubscription._id }, { $set: { federation: subscription.federation } });
 						federationAltered = true;
 					}
 				} else {
@@ -131,7 +132,7 @@ const eventHandlers = {
 					const denormalizedSubscription = normalizers.denormalizeSubscription(subscription);
 
 					// Create the subscription
-					Subscriptions.insert(denormalizedSubscription);
+					await Subscriptions.insertOne(denormalizedSubscription);
 					federationAltered = true;
 				}
 			} catch (ex) {
@@ -163,7 +164,7 @@ const eventHandlers = {
 			} = event;
 
 			// Remove the user's subscription
-			Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+			await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
 
 			// Refresh the servers list
 			await FederationServers.refreshServers();
@@ -188,7 +189,7 @@ const eventHandlers = {
 			} = event;
 
 			// Remove the user's subscription
-			Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+			await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
 
 			// Refresh the servers list
 			await FederationServers.refreshServers();
@@ -270,7 +271,7 @@ const eventHandlers = {
 				try {
 					Messages.insert(denormalizedMessage);
 
-					processThreads(denormalizedMessage, room);
+					await processThreads(denormalizedMessage, room);
 
 					// Notify users
 					await notifyUsersOnMessage(denormalizedMessage, room);
@@ -324,7 +325,7 @@ const eventHandlers = {
 			} = event;
 
 			// Remove the message
-			Messages.removeById(messageId);
+			await MessagesRaw.removeById(messageId);
 
 			// Notify the room
 			void api.broadcast('notify.deleteMessage', roomId, { _id: messageId });
@@ -435,7 +436,7 @@ const eventHandlers = {
 			const denormalizedUser = normalizers.denormalizeUser(user);
 
 			// Mute user
-			Rooms.muteUsernameByRoomId(roomId, denormalizedUser.username);
+			await RoomsRaw.muteUsernameByRoomId(roomId, denormalizedUser.username);
 		}
 
 		return eventResult;
@@ -457,7 +458,7 @@ const eventHandlers = {
 			const denormalizedUser = normalizers.denormalizeUser(user);
 
 			// Mute user
-			Rooms.unmuteUsernameByRoomId(roomId, denormalizedUser.username);
+			await RoomsRaw.unmuteUsernameByRoomId(roomId, denormalizedUser.username);
 		}
 
 		return eventResult;
@@ -468,7 +469,7 @@ API.v1.addRoute(
 	'federation.events.dispatch',
 	{ authRequired: false, rateLimiterOptions: { numRequestsAllowed: 30, intervalTimeInMS: 1000 } },
 	{
-		post() {
+		async post() {
 			if (!isFederationEnabled()) {
 				return API.v1.failure('Federation not enabled');
 			}
@@ -478,7 +479,7 @@ API.v1.addRoute(
 			let payload;
 
 			try {
-				payload = Promise.await(decryptIfNeeded(this.request, this.bodyParams));
+				payload = await decryptIfNeeded(this.request, this.bodyParams);
 			} catch (err) {
 				return API.v1.failure('Could not decrypt payload');
 			}
@@ -496,7 +497,7 @@ API.v1.addRoute(
 				let eventResult;
 
 				if (eventHandlers[event.type]) {
-					eventResult = Promise.await(eventHandlers[event.type](event));
+					eventResult = await eventHandlers[event.type](event);
 				}
 
 				// If there was an error handling the event, take action
@@ -507,14 +508,12 @@ API.v1.addRoute(
 							event,
 						});
 
-						Promise.await(
-							requestEventsFromLatest(
-								event.origin,
-								getFederationDomain(),
-								contextDefinitions.defineType(event),
-								event.context,
-								eventResult.latestEventIds,
-							),
+						await requestEventsFromLatest(
+							event.origin,
+							getFederationDomain(),
+							contextDefinitions.defineType(event),
+							event.context,
+							eventResult.latestEventIds,
 						);
 
 						// And stop handling the events

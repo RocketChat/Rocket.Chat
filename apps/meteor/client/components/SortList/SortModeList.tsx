@@ -22,7 +22,7 @@ function SortModeList(): ReactElement {
 	return (
 		<>
 			<OptionTitle>{t('Sort_By')}</OptionTitle>
-			<ul aria-description='sortByList'>
+			<ul>
 				<ListItem
 					is='label'
 					role='listitem'

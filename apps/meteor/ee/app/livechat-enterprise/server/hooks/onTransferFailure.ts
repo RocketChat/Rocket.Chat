@@ -46,8 +46,4 @@ const onTransferFailure = async ({
 	return forwardSuccess;
 };
 
-callbacks.add(
-	'livechat:onTransferFailure',
-	({ room, guest, transferData }) => Promise.await(onTransferFailure({ room, guest, transferData })),
-	callbacks.priority.HIGH,
-);
+callbacks.add('livechat:onTransferFailure', onTransferFailure, callbacks.priority.HIGH);

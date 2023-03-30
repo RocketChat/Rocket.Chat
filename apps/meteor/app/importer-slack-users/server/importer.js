@@ -18,26 +18,26 @@ export class SlackUsersImporter extends Base {
 		return super.prepareUsingLocalFile(fullFilePath);
 	}
 
-	prepare(dataURI, sentContentType, fileName) {
+	async prepare(dataURI, sentContentType, fileName) {
 		this.logger.debug('start preparing import operation');
-		super.prepare(dataURI, sentContentType, fileName, true);
+		await super.prepare(dataURI, sentContentType, fileName, true);
 
-		super.updateProgress(ProgressStep.PREPARING_USERS);
+		await super.updateProgress(ProgressStep.PREPARING_USERS);
 		const uriResult = RocketChatFile.dataURIParse(dataURI);
 		const buf = Buffer.from(uriResult.image, 'base64');
 		const parsed = this.csvParser(buf.toString());
 
 		let userCount = 0;
-		parsed.forEach((user, index) => {
+		for await (const [index, user] of parsed.entries()) {
 			// Ignore the first column
 			if (index === 0) {
-				return;
+				continue;
 			}
 
 			const username = user[0];
 			const email = user[1];
 			if (!email) {
-				return;
+				continue;
 			}
 
 			const name = user[7] || user[8] || username;
@@ -63,19 +63,19 @@ export class SlackUsersImporter extends Base {
 					break;
 			}
 
-			this.converter.addUser(newUser);
+			await this.converter.addUser(newUser);
 			userCount++;
-		});
+		}
 
 		if (userCount === 0) {
 			this.logger.error('No users found in the import file.');
-			super.updateProgress(ProgressStep.ERROR);
+			await super.updateProgress(ProgressStep.ERROR);
 			return super.getProgress();
 		}
 
-		super.updateProgress(ProgressStep.USER_SELECTION);
-		super.addCountToTotal(userCount);
-		Settings.incrementValueById('Slack_Users_Importer_Count', userCount);
+		await super.updateProgress(ProgressStep.USER_SELECTION);
+		await super.addCountToTotal(userCount);
+		await Settings.incrementValueById('Slack_Users_Importer_Count', userCount);
 		return super.updateRecord({ 'count.users': userCount });
 	}
 }

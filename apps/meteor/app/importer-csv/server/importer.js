@@ -55,165 +55,169 @@ export class CsvImporter extends Base {
 		};
 
 		zip.forEach((entry) => {
-			this.logger.debug(`Entry: ${entry.entryName}`);
+			Promise.await(
+				(async () => {
+					this.logger.debug(`Entry: ${entry.entryName}`);
 
-			// Ignore anything that has `__MACOSX` in it's name, as sadly these things seem to mess everything up
-			if (entry.entryName.indexOf('__MACOSX') > -1) {
-				this.logger.debug(`Ignoring the file: ${entry.entryName}`);
-				return increaseProgressCount();
-			}
+					// Ignore anything that has `__MACOSX` in it's name, as sadly these things seem to mess everything up
+					if (entry.entryName.indexOf('__MACOSX') > -1) {
+						this.logger.debug(`Ignoring the file: ${entry.entryName}`);
+						return increaseProgressCount();
+					}
 
-			// Directories are ignored, since they are "virtual" in a zip file
-			if (entry.isDirectory) {
-				this.logger.debug(`Ignoring the directory entry: ${entry.entryName}`);
-				return increaseProgressCount();
-			}
+					// Directories are ignored, since they are "virtual" in a zip file
+					if (entry.isDirectory) {
+						this.logger.debug(`Ignoring the directory entry: ${entry.entryName}`);
+						return increaseProgressCount();
+					}
 
-			// Parse the channels
-			if (entry.entryName.toLowerCase() === 'channels.csv') {
-				super.updateProgress(ProgressStep.PREPARING_CHANNELS);
-				const parsedChannels = this.csvParser(entry.getData().toString());
-				channelsCount = parsedChannels.length;
+					// Parse the channels
+					if (entry.entryName.toLowerCase() === 'channels.csv') {
+						await super.updateProgress(ProgressStep.PREPARING_CHANNELS);
+						const parsedChannels = this.csvParser(entry.getData().toString());
+						channelsCount = parsedChannels.length;
 
-				for (const c of parsedChannels) {
-					const name = c[0].trim();
-					const id = getRoomId(name);
-					const creator = c[1].trim();
-					const isPrivate = c[2].trim().toLowerCase() === 'private';
-					const members = c[3]
-						.trim()
-						.split(';')
-						.map((m) => m.trim())
-						.filter((m) => m);
+						for await (const c of parsedChannels) {
+							const name = c[0].trim();
+							const id = getRoomId(name);
+							const creator = c[1].trim();
+							const isPrivate = c[2].trim().toLowerCase() === 'private';
+							const members = c[3]
+								.trim()
+								.split(';')
+								.map((m) => m.trim())
+								.filter((m) => m);
 
-					this.converter.addChannel({
-						importIds: [id],
-						u: {
-							_id: creator,
-						},
-						name,
-						users: members,
-						t: isPrivate ? 'p' : 'c',
-					});
-				}
-
-				super.updateRecord({ 'count.channels': channelsCount });
-				return increaseProgressCount();
-			}
-
-			// Parse the users
-			if (entry.entryName.toLowerCase() === 'users.csv') {
-				super.updateProgress(ProgressStep.PREPARING_USERS);
-				const parsedUsers = this.csvParser(entry.getData().toString());
-				usersCount = parsedUsers.length;
-
-				for (const u of parsedUsers) {
-					const username = u[0].trim();
-					availableUsernames.add(username);
-
-					const email = u[1].trim();
-					const name = u[2].trim();
-
-					this.converter.addUser({
-						importIds: [username],
-						emails: [email],
-						username,
-						name,
-					});
-				}
-
-				super.updateRecord({ 'count.users': usersCount });
-				return increaseProgressCount();
-			}
-
-			// Parse the messages
-			if (entry.entryName.indexOf('/') > -1) {
-				if (this.progress.step !== ProgressStep.PREPARING_MESSAGES) {
-					super.updateProgress(ProgressStep.PREPARING_MESSAGES);
-				}
-
-				const item = entry.entryName.split('/'); // random/messages.csv
-				const folderName = item[0]; // random
-
-				let msgs = [];
-
-				try {
-					msgs = this.csvParser(entry.getData().toString());
-				} catch (e) {
-					this.logger.warn(`The file ${entry.entryName} contains invalid syntax`, e);
-					return increaseProgressCount();
-				}
-
-				let data;
-				const msgGroupData = item[1].split('.')[0]; // messages
-				let isDirect = false;
-
-				if (folderName.toLowerCase() === 'directmessages') {
-					isDirect = true;
-					data = msgs.map((m) => ({
-						username: m[0],
-						ts: m[2],
-						text: m[3],
-						otherUsername: m[1],
-						isDirect: true,
-					}));
-				} else {
-					data = msgs.map((m) => ({ username: m[0], ts: m[1], text: m[2] }));
-				}
-
-				messagesCount += data.length;
-				const channelName = `${folderName}/${msgGroupData}`;
-
-				super.updateRecord({ messagesstatus: channelName });
-
-				if (isDirect) {
-					for (const msg of data) {
-						const sourceId = [msg.username, msg.otherUsername].sort().join('/');
-
-						if (!dmRooms.has(sourceId)) {
-							this.converter.addChannel({
-								importIds: [sourceId],
-								users: [msg.username, msg.otherUsername],
-								t: 'd',
+							await this.converter.addChannel({
+								importIds: [id],
+								u: {
+									_id: creator,
+								},
+								name,
+								users: members,
+								t: isPrivate ? 'p' : 'c',
 							});
-
-							dmRooms.set(sourceId, true);
 						}
 
-						const newMessage = {
-							rid: sourceId,
-							u: {
-								_id: msg.username,
-							},
-							ts: new Date(parseInt(msg.ts)),
-							msg: msg.text,
-						};
-
-						usedUsernames.add(msg.username);
-						usedUsernames.add(msg.otherUsername);
-						this.converter.addMessage(newMessage);
+						await super.updateRecord({ 'count.channels': channelsCount });
+						return increaseProgressCount();
 					}
-				} else {
-					const rid = getRoomId(folderName);
 
-					for (const msg of data) {
-						const newMessage = {
-							rid,
-							u: {
-								_id: msg.username,
-							},
-							ts: new Date(parseInt(msg.ts)),
-							msg: msg.text,
-						};
+					// Parse the users
+					if (entry.entryName.toLowerCase() === 'users.csv') {
+						await super.updateProgress(ProgressStep.PREPARING_USERS);
+						const parsedUsers = this.csvParser(entry.getData().toString());
+						usersCount = parsedUsers.length;
 
-						usedUsernames.add(msg.username);
-						this.converter.addMessage(newMessage);
+						for await (const u of parsedUsers) {
+							const username = u[0].trim();
+							availableUsernames.add(username);
+
+							const email = u[1].trim();
+							const name = u[2].trim();
+
+							await this.converter.addUser({
+								importIds: [username],
+								emails: [email],
+								username,
+								name,
+							});
+						}
+
+						await super.updateRecord({ 'count.users': usersCount });
+						return increaseProgressCount();
 					}
-				}
 
-				super.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
-				return increaseProgressCount();
-			}
+					// Parse the messages
+					if (entry.entryName.indexOf('/') > -1) {
+						if (this.progress.step !== ProgressStep.PREPARING_MESSAGES) {
+							await super.updateProgress(ProgressStep.PREPARING_MESSAGES);
+						}
+
+						const item = entry.entryName.split('/'); // random/messages.csv
+						const folderName = item[0]; // random
+
+						let msgs = [];
+
+						try {
+							msgs = this.csvParser(entry.getData().toString());
+						} catch (e) {
+							this.logger.warn(`The file ${entry.entryName} contains invalid syntax`, e);
+							return increaseProgressCount();
+						}
+
+						let data;
+						const msgGroupData = item[1].split('.')[0]; // messages
+						let isDirect = false;
+
+						if (folderName.toLowerCase() === 'directmessages') {
+							isDirect = true;
+							data = msgs.map((m) => ({
+								username: m[0],
+								ts: m[2],
+								text: m[3],
+								otherUsername: m[1],
+								isDirect: true,
+							}));
+						} else {
+							data = msgs.map((m) => ({ username: m[0], ts: m[1], text: m[2] }));
+						}
+
+						messagesCount += data.length;
+						const channelName = `${folderName}/${msgGroupData}`;
+
+						await super.updateRecord({ messagesstatus: channelName });
+
+						if (isDirect) {
+							for await (const msg of data) {
+								const sourceId = [msg.username, msg.otherUsername].sort().join('/');
+
+								if (!dmRooms.has(sourceId)) {
+									await this.converter.addChannel({
+										importIds: [sourceId],
+										users: [msg.username, msg.otherUsername],
+										t: 'd',
+									});
+
+									dmRooms.set(sourceId, true);
+								}
+
+								const newMessage = {
+									rid: sourceId,
+									u: {
+										_id: msg.username,
+									},
+									ts: new Date(parseInt(msg.ts)),
+									msg: msg.text,
+								};
+
+								usedUsernames.add(msg.username);
+								usedUsernames.add(msg.otherUsername);
+								await this.converter.addMessage(newMessage);
+							}
+						} else {
+							const rid = getRoomId(folderName);
+
+							for await (const msg of data) {
+								const newMessage = {
+									rid,
+									u: {
+										_id: msg.username,
+									},
+									ts: new Date(parseInt(msg.ts)),
+									msg: msg.text,
+								};
+
+								usedUsernames.add(msg.username);
+								await this.converter.addMessage(newMessage);
+							}
+						}
+
+						await super.updateRecord({ 'count.messages': messagesCount, 'messagesstatus': null });
+						return increaseProgressCount();
+					}
+				})(),
+			);
 
 			increaseProgressCount();
 		});
@@ -237,13 +241,13 @@ export class CsvImporter extends Base {
 			}
 		}
 
-		super.addCountToTotal(messagesCount + usersCount + channelsCount);
+		await super.addCountToTotal(messagesCount + usersCount + channelsCount);
 		ImporterWebsocket.progressUpdated({ rate: 100 });
 
 		// Ensure we have at least a single user, channel, or message
 		if (usersCount === 0 && channelsCount === 0 && messagesCount === 0) {
 			this.logger.error('No users, channels, or messages found in the import file.');
-			super.updateProgress(ProgressStep.ERROR);
+			await super.updateProgress(ProgressStep.ERROR);
 			return super.getProgress();
 		}
 	}

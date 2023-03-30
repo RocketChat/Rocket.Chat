@@ -153,7 +153,7 @@ export class Twilio implements ISMSProvider {
 			}
 
 			if (reason) {
-				rid && userId && notifyAgent(userId, rid, reason);
+				rid && userId && (await notifyAgent(userId, rid, reason));
 				SystemLogger.error(`(Twilio) -> ${reason}`);
 			}
 

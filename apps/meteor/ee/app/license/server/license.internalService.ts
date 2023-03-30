@@ -31,7 +31,7 @@ export class LicenseService extends ServiceClassInternal implements ILicense {
 		}
 
 		void api.broadcast('authorization.guestPermissions', guestPermissions);
-		resetEnterprisePermissions();
+		await resetEnterprisePermissions();
 	}
 
 	hasLicense(feature: string): boolean {

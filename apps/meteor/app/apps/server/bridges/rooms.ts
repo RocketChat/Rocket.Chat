@@ -5,9 +5,10 @@ import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import { Meteor } from 'meteor/meteor';
 import type { ISubscription, IUser as ICoreUser } from '@rocket.chat/core-typings';
+import { Subscriptions } from '@rocket.chat/models';
 
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
-import { Rooms, Subscriptions, Users } from '../../../models/server';
+import { Rooms, Users } from '../../../models/server';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 
@@ -20,7 +21,7 @@ export class AppRoomBridge extends RoomBridge {
 	protected async create(room: IRoom, members: Array<string>, appId: string): Promise<string> {
 		this.orch.debugLog(`The App ${appId} is creating a new room.`, room);
 
-		const rcRoom = this.orch.getConverters()?.get('rooms').convertAppRoom(room);
+		const rcRoom = await this.orch.getConverters()?.get('rooms').convertAppRoom(room);
 		let method: string;
 
 		switch (room.type) {
@@ -38,7 +39,7 @@ export class AppRoomBridge extends RoomBridge {
 		}
 
 		let rid = '';
-		Meteor.runAsUser(room.creator.id, () => {
+		await Meteor.runAsUser(room.creator.id, async () => {
 			const extraData = Object.assign({}, rcRoom);
 			delete extraData.name;
 			delete extraData.t;
@@ -46,9 +47,9 @@ export class AppRoomBridge extends RoomBridge {
 			delete extraData.customFields;
 			let info;
 			if (room.type === RoomType.DIRECT_MESSAGE) {
-				info = Meteor.call(method, ...members);
+				info = await Meteor.callAsync(method, ...members);
 			} else {
-				info = Meteor.call(method, rcRoom.name, members, rcRoom.ro, rcRoom.customFields, extraData);
+				info = await Meteor.callAsync(method, rcRoom.name, members, rcRoom.ro, rcRoom.customFields, extraData);
 			}
 			rid = info.rid;
 		});
@@ -95,7 +96,7 @@ export class AppRoomBridge extends RoomBridge {
 	protected async getMembers(roomId: string, appId: string): Promise<Array<IUser>> {
 		this.orch.debugLog(`The App ${appId} is getting the room's members by room id: "${roomId}"`);
 		const subscriptions = await Subscriptions.findByRoomId(roomId, {});
-		return subscriptions.map((sub: ISubscription) => this.orch.getConverters()?.get('users').convertById(sub.u?._id));
+		return (await subscriptions.toArray()).map((sub: ISubscription) => this.orch.getConverters()?.get('users').convertById(sub.u?._id));
 	}
 
 	protected async getDirectByUsernames(usernames: Array<string>, appId: string): Promise<IRoom | undefined> {
@@ -114,18 +115,18 @@ export class AppRoomBridge extends RoomBridge {
 			throw new Error('A room must exist to update.');
 		}
 
-		const rm = this.orch.getConverters()?.get('rooms').convertAppRoom(room);
+		const rm = await this.orch.getConverters()?.get('rooms').convertAppRoom(room);
 
 		Rooms.update(rm._id, rm);
 
-		for (const username of members) {
+		for await (const username of members) {
 			const member = Users.findOneByUsername(username, {});
 
 			if (!member) {
 				continue;
 			}
 
-			addUserToRoom(rm._id, member);
+			await addUserToRoom(rm._id, member);
 		}
 	}
 
@@ -143,7 +144,7 @@ export class AppRoomBridge extends RoomBridge {
 	): Promise<string> {
 		this.orch.debugLog(`The App ${appId} is creating a new discussion.`, room);
 
-		const rcRoom = this.orch.getConverters()?.get('rooms').convertAppRoom(room);
+		const rcRoom = await this.orch.getConverters()?.get('rooms').convertAppRoom(room);
 
 		let rcMessage;
 		if (parentMessage) {
@@ -163,8 +164,8 @@ export class AppRoomBridge extends RoomBridge {
 		};
 
 		let rid = '';
-		Meteor.runAsUser(room.creator.id, () => {
-			const info = Meteor.call('createDiscussion', discussion);
+		await Meteor.runAsUser(room.creator.id, async () => {
+			const info = await Meteor.callAsync('createDiscussion', discussion);
 			rid = info.rid;
 		});
 
@@ -188,7 +189,8 @@ export class AppRoomBridge extends RoomBridge {
 
 	private async getUsersByRoomIdAndSubscriptionRole(roomId: string, role: string): Promise<IUser[]> {
 		const subs = await Subscriptions.findByRoomIdAndRoles(roomId, [role], { projection: { uid: '$u._id', _id: 0 } });
-		const users = await Users.findByIds(subs.map((user: { uid: string }) => user.uid));
+		// Was this a bug?
+		const users = await Users.findByIds(subs.map((user) => user.u._id));
 		const userConverter = this.orch.getConverters()!.get('users');
 		return users.map((user: ICoreUser) => userConverter!.convertToApp(user));
 	}

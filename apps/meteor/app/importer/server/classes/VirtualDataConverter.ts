@@ -1,5 +1,6 @@
 import { Random } from '@rocket.chat/random';
 import type {
+	IImportUser,
 	IImportUserRecord,
 	IImportChannelRecord,
 	IImportMessageRecord,
@@ -38,7 +39,7 @@ export class VirtualDataConverter extends ImportDataConverter {
 		this.clearVirtualData();
 	}
 
-	public clearSuccessfullyImportedData(): void {
+	public async clearSuccessfullyImportedData(): Promise<void> {
 		if (!this.useVirtual) {
 			return super.clearSuccessfullyImportedData();
 		}
@@ -46,7 +47,7 @@ export class VirtualDataConverter extends ImportDataConverter {
 		this.clearVirtualData();
 	}
 
-	public findDMForImportedUsers(...users: Array<string>): IImportChannel | undefined {
+	public async findDMForImportedUsers(...users: Array<string>): Promise<IImportChannel | undefined> {
 		if (!this.useVirtual) {
 			return super.findDMForImportedUsers(...users);
 		}
@@ -55,9 +56,21 @@ export class VirtualDataConverter extends ImportDataConverter {
 		return undefined;
 	}
 
-	protected addObject(type: IImportRecordType, data: IImportData, options: Record<string, any> = {}): void {
+	public addUserSync(data: IImportUser): void {
+		return this.addObjectSync('user', data);
+	}
+
+	protected async addObject(type: IImportRecordType, data: IImportData, options: Record<string, any> = {}): Promise<void> {
 		if (!this.useVirtual) {
 			return super.addObject(type, data, options);
+		}
+
+		this.addObjectSync(type, data, options);
+	}
+
+	protected addObjectSync(type: IImportRecordType, data: IImportData, options: Record<string, any> = {}): void {
+		if (!this.useVirtual) {
+			throw new Error('Sync operations can only be used on virtual converter');
 		}
 
 		const list = this.getObjectList(type);
@@ -78,7 +91,7 @@ export class VirtualDataConverter extends ImportDataConverter {
 		return this._userRecords;
 	}
 
-	protected saveError(importId: string, error: Error): void {
+	protected async saveError(importId: string, error: Error): Promise<void> {
 		if (!this.useVirtual) {
 			return super.saveError(importId, error);
 		}
@@ -99,7 +112,7 @@ export class VirtualDataConverter extends ImportDataConverter {
 		});
 	}
 
-	protected skipRecord(_id: string): void {
+	protected async skipRecord(_id: string): Promise<void> {
 		if (!this.useVirtual) {
 			return super.skipRecord(_id);
 		}

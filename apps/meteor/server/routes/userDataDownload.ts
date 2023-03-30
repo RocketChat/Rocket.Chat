@@ -5,6 +5,7 @@ import { WebApp } from 'meteor/webapp';
 import { UserDataFiles } from '@rocket.chat/models';
 import type { IIncomingMessage, IUser, IUserDataFile } from '@rocket.chat/core-typings';
 import { Cookies } from 'meteor/ostrio:cookies';
+import { hashLoginToken } from '@rocket.chat/account-utils';
 
 import { FileUpload } from '../../app/file-upload/server';
 import { settings } from '../../app/settings/server';
@@ -13,7 +14,7 @@ import Users from '../../app/models/server/models/Users';
 const cookies = new Cookies();
 
 const matchUID = (uid: string | undefined, token: string | undefined, ownerUID: string) => {
-	return uid && token && uid === ownerUID && Boolean(Users.findOneByIdAndLoginToken(uid, token, { fields: { _id: 1 } }));
+	return uid && token && uid === ownerUID && Boolean(Users.findOneByIdAndLoginToken(uid, hashLoginToken(token), { fields: { _id: 1 } }));
 };
 
 const isRequestFromOwner = (req: IIncomingMessage, ownerUID: IUser['_id']) => {

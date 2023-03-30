@@ -335,12 +335,14 @@ const ComposerPopupProvider = ({ children, room }: { children: ReactNode; room: 
 				matchSelectorRegex: /(?:^)(\/[\w\d\S]+ )[^]*$/,
 				preview: true,
 				getItemsFromLocal: async ({ cmd, params, tmid }: { cmd: string; params: string; tmid: string }) => {
-					const { items } = await call({ cmd, params, msg: { rid, tmid } });
-					return items.map((item) => ({
-						_id: item.id,
-						value: item.value,
-						type: item.type,
-					}));
+					const result = await call({ cmd, params, msg: { rid, tmid } });
+					return (
+						result?.items.map((item) => ({
+							_id: item.id,
+							value: item.value,
+							type: item.type,
+						})) ?? []
+					);
 				},
 			}),
 		].filter(Boolean);

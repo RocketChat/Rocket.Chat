@@ -16,7 +16,7 @@ class AutoCloseOnHoldSchedulerClass {
 
 	running: boolean;
 
-	public init(): void {
+	public async init(): Promise<void> {
 		if (this.running) {
 			return;
 		}
@@ -27,7 +27,7 @@ class AutoCloseOnHoldSchedulerClass {
 			defaultConcurrency: 1,
 		});
 
-		this.scheduler.start();
+		await this.scheduler.start();
 		this.running = true;
 	}
 

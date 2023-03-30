@@ -1,5 +1,5 @@
 import type { IEmojiCustom, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { IEmojiCustomModel } from '@rocket.chat/model-typings';
+import type { IEmojiCustomModel, InsertionModel } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, FindOptions, IndexDescription, InsertOneResult, UpdateResult, WithId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -69,7 +69,7 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 	}
 
 	// INSERT
-	create(data: IEmojiCustom): Promise<InsertOneResult<WithId<IEmojiCustom>>> {
+	create(data: InsertionModel<IEmojiCustom>): Promise<InsertOneResult<WithId<IEmojiCustom>>> {
 		return this.insertOne(data);
 	}
 }
