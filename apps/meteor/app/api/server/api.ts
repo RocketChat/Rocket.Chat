@@ -106,7 +106,7 @@ const getRequestIP = (req: Request): string | null => {
 
 let prometheusAPIUserAgent = false;
 
-export class APIClass<TBasePath extends string = '/'> extends Restivus {
+export class APIClass<TBasePath extends string = ''> extends Restivus {
 	protected apiPath: string;
 
 	public authMethods: ((...args: any[]) => any)[];
@@ -194,6 +194,10 @@ export class APIClass<TBasePath extends string = '/'> extends Restivus {
 			Boolean(defaultRateLimiterOptions.numRequestsAllowed && defaultRateLimiterOptions.intervalTimeInMS)
 		);
 	}
+
+	public success(): SuccessResult<void>;
+
+	public success<T>(result: T): SuccessResult<T>;
 
 	public success<T>(result: T = {} as T): SuccessResult<T> {
 		if (isObject(result)) {

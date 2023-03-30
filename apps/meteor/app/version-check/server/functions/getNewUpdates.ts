@@ -1,11 +1,11 @@
 import os from 'os';
 
 import { Settings } from '@rocket.chat/models';
-import { HTTP } from 'meteor/http';
 import { check, Match } from 'meteor/check';
 
 import { Info } from '../../../utils/server';
 import { getWorkspaceAccessToken } from '../../../cloud/server';
+import { fetch } from '../../../../server/lib/http/fetch';
 
 export const getNewUpdates = async () => {
 	try {
@@ -32,11 +32,13 @@ export const getNewUpdates = async () => {
 		const headers = {
 			...(token && { Authorization: `Bearer ${token}` }),
 		};
-
-		const { data } = HTTP.get('https://releases.rocket.chat/updates/check', {
-			params,
+		const url = 'https://releases.rocket.chat/updates/check?';
+		const qs = new URLSearchParams(params);
+		const response = await fetch(url + qs, {
 			headers,
 		});
+
+		const { data } = await response.json();
 
 		check(
 			data,
@@ -55,7 +57,7 @@ export const getNewUpdates = async () => {
 							title: String,
 							text: String,
 							textArguments: [Match.Any],
-							modifiers: [String],
+							modifiers: [String] as [StringConstructor],
 							infoUrl: String,
 						}),
 					]),

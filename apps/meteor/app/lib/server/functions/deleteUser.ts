@@ -9,6 +9,7 @@ import {
 	Rooms,
 	Subscriptions,
 	Users,
+	LivechatUnitMonitors,
 } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
@@ -18,7 +19,6 @@ import { updateGroupDMsName } from './updateGroupDMsName';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
-import { LivechatUnitMonitors } from '../../../../ee/app/models/server';
 
 export async function deleteUser(userId: string, confirmRelinquish = false): Promise<void> {
 	const user = await Users.findOneById(userId, {
@@ -77,7 +77,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 
 		if (user.roles.includes('livechat-monitor')) {
 			// Remove user as Unit Monitor
-			LivechatUnitMonitors.removeByMonitorId(userId);
+			await LivechatUnitMonitors.removeByMonitorId(userId);
 		}
 
 		// This is for compatibility. Since we allowed any user to be contact manager b4, we need to have the same logic

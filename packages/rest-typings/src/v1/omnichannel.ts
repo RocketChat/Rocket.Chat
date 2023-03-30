@@ -3433,4 +3433,7 @@ export type OmnichannelEndpoints = {
 	'/v1/omnichannel/:rid/request-transcript': {
 		POST: () => void;
 	};
+	'/v1/livechat/inquiry.setSLA': {
+		PUT: (params: { roomId: string; sla: string }) => void;
+	};
 };
