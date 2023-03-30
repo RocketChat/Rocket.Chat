@@ -11,7 +11,7 @@ export enum SettingEditor {
 }
 type AssetValue = { defaultUrl?: string };
 export type SettingValueMultiSelect = (string | number)[];
-export type SettingValueRoomPick = string[];
+export type SettingValueRoomPick = { _id: string; name?: string }[];
 export type SettingValue =
 	| string
 	| boolean
