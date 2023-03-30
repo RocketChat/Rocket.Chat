@@ -10,7 +10,6 @@ import type {
 import { api, credentials, methodCall, request } from '../api-data';
 import { updatePermission } from '../permissions.helper';
 import { adminUsername } from '../user';
-import { getRandomVisitorToken } from './users';
 import type { DummyResponse } from './utils';
 
 export const createLivechatRoom = async (visitorToken: string, extraRoomParams?: Record<string, string>): Promise<IOmnichannelRoom> => {
@@ -32,7 +31,7 @@ export const createLivechatRoom = async (visitorToken: string, extraRoomParams?:
 
 export const createVisitor = (department?: string): Promise<ILivechatVisitor> =>
 	new Promise((resolve, reject) => {
-		const token = getRandomVisitorToken();
+		const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 		const email = `${token}@${token}.com`;
 		const phone = `${Math.floor(Math.random() * 10000000000)}`;
 		request.get(api(`livechat/visitor/${token}`)).end((err: Error, res: DummyResponse<ILivechatVisitor>) => {
