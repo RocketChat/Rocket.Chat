@@ -201,7 +201,7 @@ API.v1.addRoute(
 			}
 
 			if (this.bodyParams.avatarUrl) {
-				setUserAvatar(user, this.bodyParams.avatarUrl, '', 'url');
+				await setUserAvatar(user, this.bodyParams.avatarUrl, '', 'url');
 				return API.v1.success();
 			}
 
@@ -236,7 +236,7 @@ API.v1.addRoute(
 				}
 			}
 
-			setUserAvatar(user, fileBuffer, mimetype, 'rest');
+			await setUserAvatar(user, fileBuffer, mimetype, 'rest');
 
 			return API.v1.success();
 		},
