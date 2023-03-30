@@ -56,7 +56,7 @@ async function saveUserProfile(
 			_id: this.userId,
 			name: settings.realname,
 			username: settings.username,
-		})
+		});
 		if (!success) {
 			throw new Meteor.Error('error-could-not-save-identity', error ?? 'Could not save user identity', {
 				method: 'saveUserProfile',
