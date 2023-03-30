@@ -12,7 +12,6 @@ import { LivechatDepartment, LivechatInquiry, LivechatRooms, Subscriptions, Live
 import { Message } from '@rocket.chat/core-services';
 import moment from 'moment-timezone';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import axios from 'axios';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
@@ -23,6 +22,7 @@ import { settings } from '../../../settings/server';
 import * as Mailer from '../../../mailer/server/api';
 import type { MainLogger } from '../../../../server/lib/logger/getPino';
 import { metrics } from '../../../metrics/server';
+import { fetch } from '../../../../server/lib/http/fetch';
 
 type GenericCloseRoomParams = {
 	room: IOmnichannelRoom;
@@ -358,13 +358,17 @@ class LivechatClass {
 		}
 		const timeout = settings.get<number>('Livechat_http_timeout');
 		const secretToken = settings.get<string>('Livechat_secret_token');
-		const headers = { 'X-RocketChat-Livechat-Token': secretToken };
-		const options = {
-			...(secretToken !== '' && secretToken !== undefined && { headers }),
-			timeout,
-		};
 		try {
-			const result = await axios.post(settings.get('Livechat_webhookUrl'), postData, options);
+			const result = await fetch(settings.get('Livechat_webhookUrl'), {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					...(secretToken && { 'X-RocketChat-Livechat-Token': secretToken }),
+				},
+				body: JSON.stringify(postData),
+				timeout,
+			});
+
 			if (result.status === 200) {
 				metrics.totalLivechatWebhooksSuccess.inc();
 			} else {
