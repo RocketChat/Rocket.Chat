@@ -226,7 +226,7 @@ jobs:
           E2E_COVERAGE: ${{ inputs.release == 'ee' && 'true' || '' }}
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
           QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
-          QASE_REPORT: 'true'
+          QASE_REPORT: ${{ github.ref == 'refs/heads/develop' && 'true' || '' }}
         working-directory: ./apps/meteor
         run: yarn test:e2e --shard=${{ matrix.shard }}/${{ inputs.total-shard }}
 
