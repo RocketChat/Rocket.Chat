@@ -1,4 +1,4 @@
-import type { IOmnichannelRoom, IOmnichannelRoomClosingInfo, ISetting, IVisitor } from '@rocket.chat/core-typings';
+import type { IMessage, IOmnichannelRoom, IOmnichannelRoomClosingInfo, ISetting, IVisitor } from '@rocket.chat/core-typings';
 import type { FindCursor, UpdateResult, AggregationCursor, Document, FindOptions, DeleteResult } from 'mongodb';
 
 import type { FindPaginated } from '..';
@@ -180,7 +180,11 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	setResponseByRoomId(roomId: string, response: { user: { _id: string; username: string } }): Promise<UpdateResult>;
 	setNotResponseByRoomId(roomId: string): Promise<UpdateResult>;
 	setAgentLastMessageTs(roomId: string): Promise<UpdateResult>;
-	saveAnalyticsDataByRoomId(room: string, message: string, analyticsData: Record<string, string | number>): Promise<UpdateResult>;
+	saveAnalyticsDataByRoomId(
+		room: IOmnichannelRoom,
+		message: IMessage,
+		analyticsData?: Record<string, string | number | Date>,
+	): Promise<UpdateResult>;
 	getTotalConversationsBetweenDate(t: string, date: string, data?: { departmentId: string }): Promise<number>;
 	getAnalyticsMetricsBetweenDate(
 		t: string,
