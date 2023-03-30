@@ -27,6 +27,9 @@ import type { ILoginAttempt } from '../app/authentication/server/ILoginAttempt';
 import { compareByRanking } from './utils/comparisons';
 import type { CloseRoomParams } from '../app/livechat/server/lib/LivechatTyped';
 
+// Temporary since we are still using callbacks on client side
+Promise.await = Promise.await || ((promise: Promise<unknown>) => promise);
+
 enum CallbackPriority {
 	HIGH = -1000,
 	MEDIUM = 0,
@@ -103,7 +106,7 @@ type ChainedCallbackSignatures = {
 
 	'livechat.beforeForwardRoomToDepartment': <T extends { room: IOmnichannelRoom; transferData?: { department: { _id: string } } }>(
 		options: T,
-	) => T;
+	) => Promise<T>;
 
 	'livechat.beforeRouteChat': (inquiry: ILivechatInquiryRecord, agent?: { agentId: string; username: string }) => ILivechatInquiryRecord;
 	'livechat.checkDefaultAgentOnNewRoom': (
@@ -259,9 +262,6 @@ type CallbackTracker = (callback: Callback) => () => void;
 
 type HookTracker = (params: { hook: Hook; length: number }) => () => void;
 
-// Temporary since we are still using callbacks on client side
-Promise.await = Promise.await || ((promise: Promise<unknown>) => promise);
-
 class Callbacks {
 	private logger: Logger | undefined = undefined;
 
@@ -290,7 +290,12 @@ class Callbacks {
 		const stopTracking = this.trackCallback?.(callback);
 
 		try {
-			return Promise.await(callback(item, constant));
+			const result = callback(item, constant);
+			if (result && result instanceof Promise) {
+				return Promise.await(result);
+			}
+
+			return result;
 		} finally {
 			stopTracking?.();
 		}

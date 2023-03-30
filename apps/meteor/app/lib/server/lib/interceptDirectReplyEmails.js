@@ -66,7 +66,7 @@ class POP3Intercepter {
 		});
 
 		// on retrieved email
-		this.pop3.on('retr', (status, msgnumber, data) => {
+		this.pop3.on('retr', async (status, msgnumber, data) => {
 			if (!status) {
 				return console.log('Cannot Retrieve Message ....');
 			}

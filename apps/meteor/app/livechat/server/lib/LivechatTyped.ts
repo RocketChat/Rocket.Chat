@@ -1,6 +1,14 @@
-import type { IOmnichannelRoom, IOmnichannelRoomClosingInfo, IUser, MessageTypesValues, ILivechatVisitor } from '@rocket.chat/core-typings';
+import type {
+	IOmnichannelRoom,
+	IOmnichannelRoomClosingInfo,
+	IUser,
+	MessageTypesValues,
+	ILivechatVisitor,
+	IRegisterUser,
+} from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms, Subscriptions, LivechatVisitors, Messages, Users } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 import moment from 'moment-timezone';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
@@ -8,7 +16,6 @@ import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { Apps, AppEvents } from '../../../../ee/server/apps';
-import { Messages as LegacyMessage } from '../../../models/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 import { settings } from '../../../settings/server';
 import * as Mailer from '../../../mailer/server/api';
@@ -130,7 +137,7 @@ class LivechatClass {
 		this.logger.debug(`Sending closing message to room ${room._id}`);
 		await sendMessage(chatCloser, message, newRoom);
 
-		LegacyMessage.createCommandWithRoomIdAndUser('promptTranscript', rid, closeData.closedBy);
+		await Message.saveSystemMessage('command', rid, 'promptTranscript', closeData.closedBy);
 
 		this.logger.debug(`Running callbacks for room ${newRoom._id}`);
 
@@ -315,7 +322,7 @@ class LivechatClass {
 		});
 
 		let type = 'user';
-		if (!user) {
+		if (!user?.username) {
 			const cat = await Users.findOneById('rocket.cat', { projection: { _id: 1, username: 1, name: 1 } });
 			if (!cat) {
 				this.logger.error('rocket.cat user not found');
@@ -325,9 +332,16 @@ class LivechatClass {
 			type = 'visitor';
 		}
 
-		LegacyMessage.createTranscriptHistoryWithRoomIdMessageAndUser(room._id, '', user, {
-			requestData: { type, visitor, user },
-		});
+		await Messages.createWithTypeRoomIdMessageUserAndUnread(
+			'livechat_transcript_history',
+			room._id,
+			'',
+			user as IRegisterUser,
+			settings.get('Message_Read_Receipt_Enabled'),
+			{
+				requestData: { type, visitor, user },
+			} as any, // TODO should a message really have "requestData"? if so, it should be on IMessage
+		);
 		return true;
 	}
 }

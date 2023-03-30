@@ -924,6 +924,24 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.find(query, options);
 	}
 
+	countByRoomIdAndRoles(roomId: string, roles: string[]): Promise<number> {
+		roles = ([] as string[]).concat(roles);
+		const query = {
+			rid: roomId,
+			roles: { $in: roles },
+		};
+
+		return this.col.countDocuments(query);
+	}
+
+	countByRoomId(roomId: string): Promise<number> {
+		const query = {
+			rid: roomId,
+		};
+
+		return this.col.countDocuments(query);
+	}
+
 	findByType(types: ISubscription['t'][], options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
 		const query: Filter<ISubscription> = {
 			t: {
@@ -1090,7 +1108,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	setFavoriteByRoomIdAndUserId(roomId: string, userId: string, favorite: true | null): Promise<UpdateResult> {
+	setFavoriteByRoomIdAndUserId(roomId: string, userId: string, favorite?: boolean): Promise<UpdateResult> {
 		if (favorite == null) {
 			favorite = true;
 		}
@@ -1187,7 +1205,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	updateDirectNameAndFnameByName(name: string, newName: string, newFname: string): Promise<UpdateResult | Document> {
+	updateDirectNameAndFnameByName(name: string, newName?: string, newFname?: string): Promise<UpdateResult | Document> {
 		const query: Filter<ISubscription> = {
 			name,
 			t: 'd',
@@ -1520,11 +1538,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	}
 
 	// INSERT
-	async createWithRoomAndUser(
-		room: IRoom & { customFields: Record<string, any> },
-		user: IUser,
-		extraData: Record<string, any> = {},
-	): Promise<InsertOneResult<ISubscription>> {
+	async createWithRoomAndUser(room: IRoom, user: IUser, extraData: Record<string, any> = {}): Promise<InsertOneResult<ISubscription>> {
 		const subscription = {
 			open: false,
 			alert: false,
@@ -1535,7 +1549,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			rid: room._id,
 			name: room.name,
 			fname: room.fname,
-			customFields: room.customFields,
+			...(room.customFields && { customFields: room.customFields }),
 			t: room.t,
 			u: {
 				_id: user._id,
