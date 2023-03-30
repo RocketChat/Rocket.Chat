@@ -21,9 +21,21 @@ export async function saveRoomReadOnly(
 
 	if (result && sendMessage) {
 		if (readOnly) {
-			await Messages.createRoomSetReadOnlyByRoomIdAndUser(rid, user, settings.get('Message_Read_Receipt_Enabled'));
+			await Messages.createWithTypeRoomIdMessageUserAndUnread(
+				'room-set-read-only',
+				rid,
+				'',
+				user,
+				settings.get('Message_Read_Receipt_Enabled'),
+			);
 		} else {
-			await Messages.createRoomRemovedReadOnlyByRoomIdAndUser(rid, user, settings.get('Message_Read_Receipt_Enabled'));
+			await Messages.createWithTypeRoomIdMessageUserAndUnread(
+				'room-removed-read-only',
+				rid,
+				'',
+				user,
+				settings.get('Message_Read_Receipt_Enabled'),
+			);
 		}
 	}
 	return result;

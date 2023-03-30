@@ -9,7 +9,7 @@ import LivechatUnitMonitors from './LivechatUnitMonitors';
 const addQueryRestrictions = (originalQuery = {}) => {
 	const query = { ...originalQuery, type: 'u' };
 
-	const units = getUnitsFromUser();
+	const units = Promise.await(getUnitsFromUser());
 	if (Array.isArray(units)) {
 		query.ancestors = { $in: units };
 		const expressions = query.$and || [];

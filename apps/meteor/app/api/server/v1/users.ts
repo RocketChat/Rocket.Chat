@@ -84,7 +84,7 @@ API.v1.addRoute(
 			await saveUser(this.userId, userData);
 
 			if (this.bodyParams.data.customFields) {
-				saveCustomFields(this.bodyParams.userId, this.bodyParams.data.customFields);
+				await saveCustomFields(this.bodyParams.userId, this.bodyParams.data.customFields);
 			}
 
 			if (typeof this.bodyParams.data.active !== 'undefined') {
@@ -260,7 +260,7 @@ API.v1.addRoute(
 			const newUserId = await saveUser(this.userId, this.bodyParams);
 
 			if (this.bodyParams.customFields) {
-				saveCustomFieldsWithoutValidation(newUserId, this.bodyParams.customFields);
+				await saveCustomFieldsWithoutValidation(newUserId, this.bodyParams.customFields);
 			}
 
 			if (typeof this.bodyParams.active !== 'undefined') {
