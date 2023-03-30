@@ -5,7 +5,7 @@
   "devDependencies": {
     "@babel/core": "~7.20.5",
     "@rocket.chat/eslint-config": "workspace:^",
-    "@rocket.chat/fuselage": "next",
+    "@rocket.chat/fuselage": "^0.31.22",
     "@rocket.chat/icons": "next",
     "@storybook/addon-actions": "~6.5.15",
     "@storybook/addon-docs": "~6.5.15",
