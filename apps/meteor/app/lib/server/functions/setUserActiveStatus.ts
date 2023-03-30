@@ -136,5 +136,5 @@ export async function setUserActiveStatus(userId: string, active: boolean, confi
 		} as any),
 	};
 
-	Mailer.sendNoWrap(email);
+	void Mailer.sendNoWrap(email);
 }

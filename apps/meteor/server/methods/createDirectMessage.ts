@@ -3,10 +3,11 @@ import { check, Match } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { ICreatedRoom, IUser } from '@rocket.chat/core-typings';
 import type { ICreateRoomParams } from '@rocket.chat/core-services';
+import { Rooms } from '@rocket.chat/models';
 
 import { settings } from '../../app/settings/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { Users, Rooms } from '../../app/models/server';
+import { Users } from '../../app/models/server';
 import { RateLimiterClass as RateLimiter } from '../../app/lib/server/lib/RateLimiter';
 import { createRoom } from '../../app/lib/server/functions/createRoom';
 import { addUser } from '../../app/federation/server/functions/addUser';
@@ -80,12 +81,12 @@ export async function createDirectMessage(
 		if (await hasPermissionAsync(userId, 'view-d-room')) {
 			// Check if the direct room already exists, then return it
 			const uids = roomUsers.map(({ _id }) => _id).sort();
-			const room = Rooms.findOneDirectRoomContainingAllUserIDs(uids, { fields: { _id: 1 } });
+			const room = await Rooms.findOneDirectRoomContainingAllUserIDs(uids, { projection: { _id: 1 } });
 			if (room) {
 				return {
+					...room,
 					t: 'd',
 					rid: room._id,
-					...room,
 				};
 			}
 		}

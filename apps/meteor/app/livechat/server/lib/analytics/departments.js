@@ -157,8 +157,6 @@ export const findPercentageOfAbandonedRoomsAsync = async ({ start, end, departme
 	};
 };
 
-export const findAllAverageOfChatDurationTime = ({ start, end, departmentId, options }) =>
-	Promise.await(findAllAverageOfChatDurationTimeAsync({ start, end, departmentId, options }));
 export const findAllAverageServiceTime = ({ start, end, departmentId, options }) =>
 	Promise.await(findAllAverageServiceTimeAsync({ start, end, departmentId, options }));
 export const findAllRooms = ({ start, end, answered, departmentId, options }) =>
