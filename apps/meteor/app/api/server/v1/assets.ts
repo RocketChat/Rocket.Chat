@@ -35,7 +35,7 @@ API.v1.addRoute(
 				await Meteor.callAsync('refreshClients');
 			}
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );
@@ -57,7 +57,7 @@ API.v1.addRoute(
 			if (refreshAllClients) {
 				await Meteor.callAsync('refreshClients');
 			}
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );

@@ -31,7 +31,7 @@ API.v1.addRoute(
 				},
 			});
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );

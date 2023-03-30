@@ -20,7 +20,7 @@ API.v1.addRoute(
 				roomId,
 				sla,
 			});
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );

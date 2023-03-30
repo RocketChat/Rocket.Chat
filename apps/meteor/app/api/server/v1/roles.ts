@@ -173,7 +173,7 @@ API.v1.addRoute(
 
 			await Roles.removeById(role._id);
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );

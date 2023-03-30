@@ -108,7 +108,7 @@ API.v1.addRoute(
 			}
 
 			await VideoConf.cancel(userId, callId);
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );

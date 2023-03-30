@@ -55,7 +55,7 @@ API.v1.addRoute(
 
 			await FederationEE.addSearchedServerNameByInternalUserId(this.userId, serverName);
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );
@@ -72,7 +72,7 @@ API.v1.addRoute(
 
 			await FederationEE.removeSearchedServerNameByInternalUserId(this.userId, serverName);
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );
@@ -89,7 +89,7 @@ API.v1.addRoute(
 
 			await FederationEE.joinExternalPublicRoom(this.userId, externalRoomId);
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );

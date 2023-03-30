@@ -236,7 +236,7 @@ API.v1.addRoute(
 				starred: true,
 			});
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );
@@ -258,7 +258,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('unpinMessage', msg);
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );
@@ -284,7 +284,7 @@ API.v1.addRoute(
 				starred: false,
 			});
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );
@@ -350,7 +350,7 @@ API.v1.addRoute(
 
 			await executeSetReaction(emoji, msg._id, this.bodyParams.shouldReact);
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );
@@ -371,7 +371,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('reportMessage', messageId, description);
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );
@@ -396,7 +396,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('ignoreUser', { rid, userId, ignore });
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );
@@ -676,7 +676,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('followMessage', { mid });
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );
@@ -694,7 +694,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('unfollowMessage', { mid });
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );

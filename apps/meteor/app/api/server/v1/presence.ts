@@ -21,7 +21,7 @@ API.v1.addRoute(
 		async post() {
 			await Presence.toggleBroadcast(true);
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );

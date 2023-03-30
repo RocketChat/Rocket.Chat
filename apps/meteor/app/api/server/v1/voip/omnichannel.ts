@@ -80,7 +80,7 @@ API.v1.addRoute(
 			try {
 				logger.debug(`Setting extension ${extension} for agent with id ${user._id}`);
 				await Users.setExtension(user._id, extension);
-				return API.v1.success<void>();
+				return API.v1.success();
 			} catch (e) {
 				logger.error({ msg: 'Extension already in use' });
 				return API.v1.failure(`extension already in use ${extension}`);
@@ -147,12 +147,12 @@ API.v1.addRoute(
 			}
 			if (!user.extension) {
 				logger.debug(`User ${user._id} is not associated with any extension. Skipping`);
-				return API.v1.success<void>();
+				return API.v1.success();
 			}
 
 			logger.debug(`Removing extension association for user ${user._id} (extension was ${user.extension})`);
 			await Users.unsetExtension(user._id);
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );

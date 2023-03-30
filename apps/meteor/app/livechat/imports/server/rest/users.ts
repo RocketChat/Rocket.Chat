@@ -128,11 +128,11 @@ API.v1.addRoute(
 
 			if (this.urlParams.type === 'agent') {
 				if (await Livechat.removeAgent(user.username)) {
-					return API.v1.success<void>();
+					return API.v1.success();
 				}
 			} else if (this.urlParams.type === 'manager') {
 				if (await Livechat.removeManager(user.username)) {
-					return API.v1.success<void>();
+					return API.v1.success();
 				}
 			} else {
 				throw new Error('Invalid type');

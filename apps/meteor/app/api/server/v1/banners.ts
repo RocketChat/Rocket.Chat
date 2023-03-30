@@ -254,7 +254,7 @@ API.v1.addRoute(
 			const { bannerId } = this.bodyParams;
 
 			await Banner.dismiss(this.userId, bannerId);
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );

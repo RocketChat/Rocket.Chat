@@ -56,7 +56,7 @@ API.v1.addRoute(
 				void telemetryEvent.call(eventName, params);
 			});
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );

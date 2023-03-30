@@ -107,7 +107,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('eraseRoom', room._id);
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );
@@ -134,7 +134,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('hideRoom', room._id);
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );
@@ -519,7 +519,7 @@ API.v1.addRoute(
 				await Meteor.callAsync('openRoom', room._id);
 			}
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );

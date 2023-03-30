@@ -146,7 +146,7 @@ API.v1.addRoute(
 
 			await Team.deleteById(team._id);
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );
@@ -447,7 +447,7 @@ API.v1.addRoute(
 
 			await Team.addMembers(this.userId, team._id, members);
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );
@@ -474,7 +474,7 @@ API.v1.addRoute(
 
 			await Team.updateMember(team._id, member);
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );
@@ -519,7 +519,7 @@ API.v1.addRoute(
 					),
 				);
 			}
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );
@@ -550,7 +550,7 @@ API.v1.addRoute(
 				await Promise.all(roomsFromTeam.map((rid) => removeUserFromRoom(rid, this.user)));
 			}
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );
@@ -635,7 +635,7 @@ API.v1.addRoute(
 			// And finally delete the team itself
 			await Team.deleteById(team._id);
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );
@@ -682,7 +682,7 @@ API.v1.addRoute(
 
 			await Team.update(this.userId, team._id, data);
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );

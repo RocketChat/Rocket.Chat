@@ -60,12 +60,12 @@ API.v1.addRoute(
 				...(tags && { tags }),
 				...(departmentId && { departmentId }),
 			});
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 		async delete() {
 			const { _id } = this.bodyParams;
 			await Meteor.callAsync('removeCannedResponse', _id);
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );

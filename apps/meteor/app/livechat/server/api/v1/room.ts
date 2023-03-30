@@ -226,7 +226,7 @@ API.v1.addRoute(
 				comment,
 			});
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );
@@ -352,7 +352,7 @@ API.v1.addRoute(
 
 			const chatForwardedResult = await Livechat.transfer(room, guest, transferData);
 
-			return chatForwardedResult ? API.v1.success<void>() : API.v1.failure();
+			return chatForwardedResult ? API.v1.success() : API.v1.failure();
 		},
 	},
 );
@@ -418,7 +418,7 @@ API.v1.addRoute(
 
 			await addUserToRoom(roomId, user);
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );
@@ -452,7 +452,7 @@ API.v1.addRoute(
 				oldRoom: room,
 			});
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );

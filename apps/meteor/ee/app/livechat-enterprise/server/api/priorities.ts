@@ -56,7 +56,7 @@ API.v1.addRoute(
 		async put() {
 			const { priorityId } = this.urlParams;
 			await updatePriority(priorityId, this.bodyParams);
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );
@@ -76,7 +76,7 @@ API.v1.addRoute(
 				return API.v1.failure();
 			}
 			await LivechatPriority.resetPriorities();
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 		async get() {
 			return API.v1.success({ reset: await LivechatPriority.canResetPriorities() });

@@ -195,17 +195,15 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 		);
 	}
 
+	public success(): SuccessResult<void>;
+
+	public success<T>(result: T): SuccessResult<T>;
+
 	public success<T>(result: T = {} as T): SuccessResult<T> {
-		if (isObject(result)) {
-			(result as Record<string, any>).success = true;
-		}
-
-		const finalResult = {
+		return {
 			statusCode: 200,
-			body: result,
+			body: isObject(result) ? { success: true, ...result } : result,
 		} as SuccessResult<T>;
-
-		return finalResult as SuccessResult<T>;
 	}
 
 	public failure<T>(result?: T): FailureResult<T>;
@@ -623,8 +621,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 							this.parseJsonQuery = api.parseJsonQuery.bind(this as PartialThis);
 
 							result =
-								(await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) ||
-								API.v1.success<void>();
+								(await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) || API.v1.success();
 
 							log.http({
 								status: result.statusCode,

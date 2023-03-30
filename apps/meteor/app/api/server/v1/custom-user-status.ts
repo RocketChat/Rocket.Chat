@@ -72,7 +72,7 @@ API.v1.addRoute(
 
 			await Meteor.callAsync('deleteCustomUserStatus', customUserStatusId);
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );

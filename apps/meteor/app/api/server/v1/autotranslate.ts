@@ -62,7 +62,7 @@ API.v1.addRoute(
 				defaultLanguage,
 			});
 
-			return API.v1.success<void>();
+			return API.v1.success();
 		},
 	},
 );
