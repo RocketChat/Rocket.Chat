@@ -1,9 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Reports, Rooms } from '@rocket.chat/models';
+import { Reports, Rooms, Messages } from '@rocket.chat/models';
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { Messages } from '@rocket.chat/models';
 
 import { canAccessRoomAsync } from '../../app/authorization/server/functions/canAccessRoom';
 import { AppEvents, Apps } from '../../ee/server/apps';

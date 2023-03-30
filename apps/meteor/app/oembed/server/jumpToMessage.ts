@@ -2,8 +2,8 @@ import URL from 'url';
 import QueryString from 'querystring';
 
 import { Meteor } from 'meteor/meteor';
-import { isTranslatedMessage, ITranslatedMessage, MessageAttachment } from '@rocket.chat/core-typings';
-import { isQuoteAttachment } from '@rocket.chat/core-typings';
+import type { ITranslatedMessage, MessageAttachment } from '@rocket.chat/core-typings';
+import { isTranslatedMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';

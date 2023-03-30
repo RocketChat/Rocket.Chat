@@ -1,5 +1,6 @@
 import type { IRoom, ILivechatVisitor, ILivechatDepartment } from '@rocket.chat/core-typings';
-import { LivechatDepartment, Messages } from '@rocket.chat/models';
+import { LivechatDepartment } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { forwardRoomToDepartment } from '../../../../../app/livechat/server/lib/Helper';
@@ -38,7 +39,14 @@ const onTransferFailure = async ({
 	if (forwardSuccess) {
 		const { _id, username } = transferData.transferredBy;
 		// The property is injected dynamically on ee folder
-		await Messages.createTransferFailedHistoryMessage(room._id, '', { _id, username }, { transferData: transferDataFallback });
+
+		await Message.saveSystemMessage(
+			'livechat_transfer_history_fallback',
+			room._id,
+			'',
+			{ _id, username },
+			{ transferData: transferDataFallback },
+		);
 	}
 
 	return forwardSuccess;

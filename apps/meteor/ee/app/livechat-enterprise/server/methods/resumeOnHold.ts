@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ILivechatVisitor } from '@rocket.chat/core-typings';
-import { LivechatVisitors, LivechatInquiry, LivechatRooms, Messages } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Users } from '../../../../../app/models/server';
@@ -64,7 +65,8 @@ Meteor.methods<ServerMethods>({
 		const onHoldChatResumedBy = options.clientAction ? await Meteor.userAsync() : Users.findOneById('rocket.cat');
 
 		const comment = await resolveOnHoldCommentInfo(options, room, onHoldChatResumedBy);
-		await Messages.createOnHoldResumedHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldChatResumedBy);
+
+		await Message.saveSystemMessage('omnichannel_on_hold_chat_resumed', roomId, comment, onHoldChatResumedBy);
 
 		const updatedRoom = await LivechatRooms.findOneById(roomId);
 		updatedRoom && Meteor.defer(() => callbacks.run('livechat:afterOnHoldChatResumed', updatedRoom));
