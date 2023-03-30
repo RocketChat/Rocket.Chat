@@ -1,13 +1,4 @@
-import type {
-	IMessage,
-	IRoom,
-	IUser,
-	ILivechatDepartment,
-	ILivechatPriority,
-	IOmnichannelServiceLevelAgreements,
-	MessageTypesValues,
-	MessageAttachment,
-} from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser, ILivechatDepartment, MessageTypesValues, MessageAttachment } from '@rocket.chat/core-typings';
 import type {
 	AggregationCursor,
 	CountDocumentsOptions,
@@ -84,18 +75,6 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	findOneByFederationId(federationEventId: string): Promise<IMessage | null>;
 
 	setFederationEventIdById(_id: string, federationEventId: string): Promise<void>;
-
-	createPriorityHistoryWithRoomIdMessageAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		priority?: Pick<ILivechatPriority, 'name' | 'i18n'>,
-	): Promise<InsertOneResult<IMessage>>;
-
-	createSLAHistoryWithRoomIdMessageAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		sla?: Pick<IOmnichannelServiceLevelAgreements, 'name'>,
-	): Promise<InsertOneResult<IMessage>>;
 
 	removeByRoomId(roomId: IRoom['_id']): Promise<DeleteResult>;
 
