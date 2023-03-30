@@ -3193,8 +3193,8 @@ export type OmnichannelEndpoints = {
 		POST: (params: POSTLivechatMessageParams) => { message: IMessage };
 	};
 	'/v1/livechat/message/:_id': {
-		GET: (parms: GETLivechatMessageIdParams) => { message: IMessage };
-		PUT: (params: PUTLivechatMessageIdParams) => { message: IMessage };
+		GET: (parms: GETLivechatMessageIdParams) => { message: IMessage | void };
+		PUT: (params: PUTLivechatMessageIdParams) => { message: IMessage | void };
 		DELETE: (params: DELETELivechatMessageIdParams) => { message: Pick<Serialized<IMessage>, 'ts' | '_id'> };
 	};
 	'/v1/livechat/messages.history/:rid': {

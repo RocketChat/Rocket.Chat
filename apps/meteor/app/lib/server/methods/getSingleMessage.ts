@@ -9,7 +9,7 @@ import { canAccessRoomIdAsync } from '../../../authorization/server/functions/ca
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		getSingleMessage(mid: IMessage['_id']): IMessage;
+		getSingleMessage(mid: IMessage['_id']): Promise<IMessage | null>;
 	}
 }
 
@@ -26,7 +26,7 @@ Meteor.methods<ServerMethods>({
 		const msg = await Messages.findOneById(mid);
 
 		if (!msg?.rid) {
-			return undefined;
+			return null;
 		}
 
 		if (!(await canAccessRoomIdAsync(msg.rid, uid))) {

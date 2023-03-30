@@ -10,7 +10,7 @@ import { Apps } from '../../../../ee/server/apps';
 
 export async function deleteMessage(message: IMessage, user: IUser): Promise<void> {
 	const deletedMsg = await Messages.findOneById(message._id);
-	const isThread = deletedMsg?.tcount > 0;
+	const isThread = (deletedMsg?.tcount || 0) > 0;
 	const keepHistory = settings.get('Message_KeepHistory') || isThread;
 	const showDeletedStatus = settings.get('Message_ShowDeletedStatus') || isThread;
 	const bridges = Apps?.isLoaded() && Apps.getBridges();

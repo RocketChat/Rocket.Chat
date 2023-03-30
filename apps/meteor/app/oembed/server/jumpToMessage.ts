@@ -2,7 +2,7 @@ import URL from 'url';
 import QueryString from 'querystring';
 
 import { Meteor } from 'meteor/meteor';
-import type { ITranslatedMessage, MessageAttachment } from '@rocket.chat/core-typings';
+import { isTranslatedMessage, ITranslatedMessage, MessageAttachment } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 
@@ -63,7 +63,9 @@ callbacks.add(
 				continue;
 			}
 
-			const jumpToMessage = validateAttachmentDeepness(await Messages.findOneById(msgId));
+			const message = await Messages.findOneById(msgId);
+
+			const jumpToMessage = message && isTranslatedMessage(message) && validateAttachmentDeepness(message);
 			if (!jumpToMessage) {
 				continue;
 			}

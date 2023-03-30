@@ -68,6 +68,9 @@ API.v1.addRoute(
 			const result = await Livechat.sendMessage(sendMessage);
 			if (result) {
 				const message = await Messages.findOneById(_id);
+				if (!message) {
+					return API.v1.failure();
+				}
 				return API.v1.success({ message });
 			}
 
@@ -103,6 +106,10 @@ API.v1.addRoute(
 				message = await normalizeMessageFileUpload(message);
 			}
 
+			if (!message) {
+				throw new Error('invalid-message');
+			}
+
 			return API.v1.success({ message });
 		},
 
@@ -129,16 +136,24 @@ API.v1.addRoute(
 				guest,
 				message: { _id: msg._id, msg: this.bodyParams.msg },
 			});
-			if (result) {
-				let message = await Messages.findOneById(_id);
-				if (message.file) {
-					message = await normalizeMessageFileUpload(message);
-				}
-
-				return API.v1.success({ message });
+			if (!result) {
+				return API.v1.failure();
 			}
 
-			return API.v1.failure();
+			let message = await Messages.findOneById(_id);
+			if (!message) {
+				return API.v1.failure();
+			}
+
+			if (message?.file) {
+				message = await normalizeMessageFileUpload(message);
+			}
+
+			if (!message) {
+				throw new Error('invalid-message');
+			}
+
+			return API.v1.success({ message });
 		},
 		async delete() {
 			const { token, rid } = this.bodyParams;

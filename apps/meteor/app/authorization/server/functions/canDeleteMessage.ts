@@ -4,14 +4,14 @@ import { hasPermissionAsync } from './hasPermission';
 import { getValue } from '../../../settings/server/raw';
 import { Rooms } from '../../../models/server';
 
-const elapsedTime = (ts: number): number => {
-	const dif = Date.now() - ts;
+const elapsedTime = (ts: Date): number => {
+	const dif = Date.now() - ts.getTime();
 	return Math.round(dif / 1000 / 60);
 };
 
 export const canDeleteMessageAsync = async (
 	uid: string,
-	{ u, rid, ts }: { u: Pick<IUser, '_id' | 'username'>; rid: string; ts: number },
+	{ u, rid, ts }: { u: Pick<IUser, '_id' | 'username'>; rid: string; ts: Date },
 ): Promise<boolean> => {
 	const forceDelete = await hasPermissionAsync(uid, 'force-delete-message', rid);
 

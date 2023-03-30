@@ -8,10 +8,8 @@ import { callbacks } from '../../../../lib/callbacks';
 import { Apps } from '../../../../ee/server/apps';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
-export const updateMessage = async function (message: IMessage, user: IUser, originalMessage?: IMessage): Promise<void> {
-	if (!originalMessage) {
-		originalMessage = await Messages.findOneById(message._id);
-	}
+export const updateMessage = async function (message: IMessage, user: IUser, originalMsg?: IMessage): Promise<void> {
+	const originalMessage = originalMsg || (await Messages.findOneById(message._id));
 
 	// For the Rocket.Chat Apps :)
 	if (message && Apps && Apps.isLoaded()) {
@@ -55,7 +53,15 @@ export const updateMessage = async function (message: IMessage, user: IUser, ori
 	}
 
 	// do not send $unset if not defined. Can cause exceptions in certain mongo versions.
-	await Messages.updateOne({ _id }, { $set: editedMessage, ...(!editedMessage.md && { $unset: { md: 1 } }) });
+	await Messages.updateOne(
+		{ _id },
+		{
+			$set: {
+				...editedMessage,
+			},
+			...(!editedMessage.md && { $unset: { md: 1 } }),
+		},
+	);
 
 	const room = Rooms.findOneById(message.rid);
 

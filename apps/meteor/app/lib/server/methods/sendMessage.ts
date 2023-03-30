@@ -63,9 +63,12 @@ export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMe
 
 	// do not allow nested threads
 	if (message.tmid) {
-		const parentMessage = await Messages.findOneById(message.tmid);
+		const parentMessage = await Messages.findOneById(message.tmid, { projection: { rid: 1, tmid: 1}});
 		message.tmid = parentMessage?.tmid || message.tmid;
-		rid = parentMessage.rid;
+
+		if (parentMessage?.rid) {
+			rid = parentMessage?.rid;
+		}
 	}
 
 	if (!rid) {

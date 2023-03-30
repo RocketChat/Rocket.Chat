@@ -5,4 +5,4 @@ import Subscriptions from './models/Subscriptions';
 import Users from './models/Users';
 import LivechatDepartment from './models/LivechatDepartment';
 
-export { Base, BaseDb, Messages, Rooms, Subscriptions, Users, LivechatDepartment };
+export { Base, BaseDb, Rooms, Subscriptions, Users, LivechatDepartment };

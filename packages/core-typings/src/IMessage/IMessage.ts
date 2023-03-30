@@ -337,6 +337,7 @@ export type IMessageInbox = IMessage & {
 	email?: {
 		references?: string[];
 		messageId?: string;
+		thread?: string[];
 	};
 };
 

@@ -1,6 +1,7 @@
 import type Mail from 'nodemailer/lib/mailer';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { isIMessageInbox } from '@rocket.chat/core-typings';
 import type { IEmailInbox, IUser, IMessage } from '@rocket.chat/core-typings';
 import { Messages, Uploads, LivechatRooms } from '@rocket.chat/models';
 
@@ -118,7 +119,7 @@ slashCommands.add({
 					{
 						to: room.email.replyTo,
 						subject: room.email.subject,
-						text: message.attachments[0].description || '',
+						text: message?.attachments?.[0].description || '',
 						attachments: [
 							{
 								content: buffer,
@@ -137,7 +138,7 @@ slashCommands.add({
 				).then((info) => LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId));
 		});
 
-		Messages.update(
+		await Messages.updateOne(
 			{ _id: message._id },
 			{
 				$set: {
@@ -229,7 +230,7 @@ callbacks.add(
 		}
 
 		const replyToMessage = await Messages.findOneById(match.groups.id);
-		if (!replyToMessage?.email?.messageId) {
+		if (!replyToMessage || !isIMessageInbox(replyToMessage) || !replyToMessage.email?.messageId) {
 			return message;
 		}
 
