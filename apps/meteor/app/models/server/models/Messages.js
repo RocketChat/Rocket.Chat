@@ -1,7 +1,7 @@
 import _ from 'underscore';
+import { Rooms } from '@rocket.chat/models';
 
 import { Base } from './_Base';
-import Rooms from './Rooms';
 import { settings } from '../../../settings/server';
 
 export class Messages extends Base {
@@ -87,7 +87,7 @@ export class Messages extends Base {
 		_.extend(record, extraData);
 
 		record._id = this.insertOrUpsert(record);
-		Rooms.incMsgCountById(roomId, 1);
+		Promise.await(Rooms.incMsgCountById(roomId, 1));
 		return record;
 	}
 
