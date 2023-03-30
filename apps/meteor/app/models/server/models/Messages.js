@@ -1,8 +1,4 @@
-import _ from 'underscore';
-
 import { Base } from './_Base';
-import Rooms from './Rooms';
-import { settings } from '../../../settings/server';
 
 export class Messages extends Base {
 	constructor() {
@@ -32,39 +28,6 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ rid: 1, tcount: 1 }); // used for the List Threads Count
 		// livechat
 		this.tryEnsureIndex({ 'navigation.token': 1 }, { sparse: true });
-	}
-
-	// INSERT
-	/**
-	 * @returns {Pick<IMessage, '_id' | 't' | 'rid' | 'ts' | 'msg' | 'u' | 'groupable' | 'unread'>}
-	 */
-	createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {
-		const record = {
-			t: type,
-			rid: roomId,
-			ts: new Date(),
-			msg: message,
-			u: {
-				_id: user._id,
-				username: user.username,
-			},
-			groupable: false,
-		};
-
-		if (settings.get('Message_Read_Receipt_Enabled')) {
-			record.unread = true;
-		}
-
-		_.extend(record, extraData);
-
-		record._id = this.insertOrUpsert(record);
-		Rooms.incMsgCountById(roomId, 1);
-		return record;
-	}
-
-	createOtrSystemMessagesWithRoomIdAndUser(roomId, user, id, extraData) {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser(id, roomId, message, user, extraData);
 	}
 }
 
