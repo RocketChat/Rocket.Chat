@@ -46,6 +46,39 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		super(db, 'message', trash);
 	}
 
+	protected modelIndexes(): IndexDescription[] {
+		return [
+			{ key: { rid: 1, ts: 1, _updatedAt: 1 } },
+			{ key: { ts: 1 } },
+			{ key: { 'u._id': 1 } },
+			{ key: { editedAt: 1 }, sparse: true },
+			{ key: { 'editedBy._id': 1 }, sparse: true },
+			{ key: { 'rid': 1, 't': 1, 'u._id': 1 } },
+			{ key: { expireAt: 1 }, expireAfterSeconds: 0 },
+			{ key: { msg: 'text' } },
+			{ key: { 'file._id': 1 }, sparse: true },
+			{ key: { 'mentions.username': 1 }, sparse: true },
+			{ key: { pinned: 1 }, sparse: true },
+			{ key: { location: '2dsphere' } },
+			{ key: { slackTs: 1, slackBotId: 1 }, sparse: true },
+			{ key: { unread: 1 }, sparse: true },
+
+			// discussions
+			{ key: { drid: 1 }, sparse: true },
+
+			// threads
+			{ key: { tmid: 1 }, sparse: true },
+			{ key: { tcount: 1, tlm: 1 }, sparse: true },
+			{ key: { rid: 1, tlm: -1 }, partialFilterExpression: { tcount: { $exists: true } } }, // used for the List Threads
+			{ key: { rid: 1, tcount: 1 } }, // used for the List Threads Count
+
+			// livechat
+			{ key: { 'navigation.token': 1 }, sparse: true },
+
+			{ key: { 'federation.eventId': 1 }, sparse: true },
+		];
+	}
+
 	createOnHoldHistoryWithRoomIdMessageAndUser(
 		_roomId: string,
 		_comment: string,
@@ -81,138 +114,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		}
 	> {
 		throw new Error('Method not implemented.');
-	}
-
-	protected modelIndexes(): IndexDescription[] {
-		// add the indexes from the constructor in here
-		return [
-			{ key: { 'federation.eventId': 1 }, sparse: true },
-			{
-				key: {
-					rid: 1,
-					ts: 1,
-					_updatedAt: 1,
-				},
-			},
-			{
-				key: {
-					ts: 1,
-				},
-			},
-			{
-				key: {
-					'u._id': 1,
-				},
-			},
-			{
-				key: {
-					editedAt: 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					'editedBy._id': 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					'rid': 1,
-					't': 1,
-					'u._id': 1,
-				},
-			},
-			{
-				key: {
-					expireAt: 1,
-				},
-				expireAfterSeconds: 0,
-			},
-			{
-				key: {
-					msg: 'text',
-				},
-			},
-			{
-				key: {
-					'file._id': 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					'mentions.username': 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					pinned: 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					location: '2dsphere',
-				},
-			},
-			{
-				key: {
-					slackTs: 1,
-					slackBotId: 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					unread: 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					drid: 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					tmid: 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					tcount: 1,
-					tlm: 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					rid: 1,
-					tlm: -1,
-				},
-				partialFilterExpression: {
-					tcount: {
-						$exists: true,
-					},
-				},
-			},
-			{
-				key: {
-					rid: 1,
-					tcount: 1,
-				},
-			},
-			{
-				key: {
-					'navigation.token': 1,
-				},
-				sparse: true,
-			},
-		];
 	}
 
 	findVisibleByMentionAndRoomId(username: IUser['username'], rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
