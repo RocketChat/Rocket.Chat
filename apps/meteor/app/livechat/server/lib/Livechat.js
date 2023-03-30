@@ -980,7 +980,7 @@ export const Livechat = {
 
 		const cursor = LivechatRooms.findByVisitorToken(token);
 		for await (const room of cursor) {
-			FileUpload.removeFilesByRoomId(room._id);
+			await FileUpload.removeFilesByRoomId(room._id);
 			await Messages.removeByRoomId(room._id);
 		}
 

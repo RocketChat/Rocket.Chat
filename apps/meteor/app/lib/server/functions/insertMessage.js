@@ -36,7 +36,8 @@ export const insertMessage = async function (user, message, rid, upsert = false)
 		}
 		message._id = _id;
 	} else {
-		message._id = Messages.insert(message);
+		const result = await Messages.insertOne(message);
+		message._id = result.insertedId;
 		Rooms.incMsgCountById(rid, 1);
 	}
 
