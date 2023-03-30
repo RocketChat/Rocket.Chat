@@ -4,10 +4,10 @@ import type { ReactNode } from 'react';
 import type React from 'react';
 import { useCallback, useMemo } from 'react';
 
-import { useReactiveValue } from '../../../../hooks/useReactiveValue';
-import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import { useChat } from '../../contexts/ChatContext';
-import { useRoom } from '../../contexts/RoomContext';
+import { useReactiveValue } from '../../../../../hooks/useReactiveValue';
+import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
+import { useChat } from '../../../contexts/ChatContext';
+import { useRoom } from '../../../contexts/RoomContext';
 import { useDropTarget } from './useDropTarget';
 
 export const useFileUploadDropTarget = (): readonly [
@@ -35,7 +35,7 @@ export const useFileUploadDropTarget = (): readonly [
 	const chat = useChat();
 
 	const onFileDrop = useMutableCallback(async (files: File[]) => {
-		const { mime } = await import('../../../../../app/utils/lib/mimeTypes');
+		const { mime } = await import('../../../../../../app/utils/lib/mimeTypes');
 
 		const uploads = Array.from(files).map((file) => {
 			Object.defineProperty(file, 'type', { value: mime.lookup(file.name) });

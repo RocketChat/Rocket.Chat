@@ -51,10 +51,6 @@ konecty:user-presence
 
 dispatch:run-as-user
 
-jalik:ufs@1.0.4
-jalik:ufs-gridfs@1.0.5
-jalik:ufs-local@1.0.4
-
 jparker:gravatar
 kadira:flow-router
 mrt:reactive-store

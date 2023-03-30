@@ -44,7 +44,7 @@ export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMe
 	}
 
 	if (message.msg) {
-		if (message.msg.length > (settings.get('Message_MaxAllowedSize') ?? 0)) {
+		if (message.msg.length > (settings.get<number>('Message_MaxAllowedSize') ?? 0)) {
 			throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
 				method: 'sendMessage',
 			});

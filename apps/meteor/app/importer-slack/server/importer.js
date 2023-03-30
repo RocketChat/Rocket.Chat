@@ -268,7 +268,7 @@ export class SlackImporter extends Base {
 							await this.updateRecord({ messagesstatus: `${channel}/${date}` });
 							await this.addCountToTotal(tempMessages.length);
 
-							const slackChannelId = Promise.await(ImportData.findChannelImportIdByNameOrImportId(channel));
+							const slackChannelId = await ImportData.findChannelImportIdByNameOrImportId(channel);
 
 							if (slackChannelId) {
 								for await (const message of tempMessages) {
