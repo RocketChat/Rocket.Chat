@@ -105,7 +105,7 @@ export interface IRoomTypeServerDirectives {
 	canBeDeleted: (hasPermission: (permissionId: string, rid?: string) => Promise<boolean> | boolean, room: IRoom) => Promise<boolean>;
 	preventRenaming: () => boolean;
 	getDiscussionType: (room?: AtLeast<IRoom, 'teamId'>) => Promise<RoomType>;
-	canAccessUploadedFile: (params: { rc_uid: string; rc_rid: string; rc_token: string }) => boolean;
+	canAccessUploadedFile: (params: { rc_uid: string; rc_rid: string; rc_token: string }) => Promise<boolean>;
 	getNotificationDetails: (
 		room: IRoom,
 		sender: AtLeast<IUser, '_id' | 'name' | 'username'>,

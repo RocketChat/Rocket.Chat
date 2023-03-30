@@ -5052,7 +5052,7 @@
   "Verified": "Ellenőrizve",
   "Verify": "Ellenőrzés",
   "Verify_your_email": "Ellenőrizze az e-mail-címét",
-  "Verify_your_email_for_the_code_we_sent": "Ellenőrizze az e-mail-címét azzal a kóddal, amit küldtünk",
+  "Verify_your_email_with_the_code_we_sent": "Ellenőrizze az e-mail-címét azzal a kóddal, amit küldtünk",
   "Version": "Verzió",
   "Version_version": "Verzió: __version__",
   "App_version_incompatible_tooltip": "Az alkalmazás nem kompatibilis a Rocket.Chat verziójával",

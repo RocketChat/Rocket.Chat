@@ -36,7 +36,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createPrivateGroup' });
 		}
 
-		return createRoom('p', name, Meteor.user()?.username, members, readOnly, {
+		return createRoom('p', name, (await Meteor.userAsync())?.username, members, readOnly, {
 			customFields,
 			...extraData,
 		});

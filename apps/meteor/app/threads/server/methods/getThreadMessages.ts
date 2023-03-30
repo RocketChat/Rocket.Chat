@@ -37,7 +37,7 @@ Meteor.methods<ServerMethods>({
 			return [];
 		}
 
-		const user = Meteor.user();
+		const user = await Meteor.userAsync();
 		const room = Rooms.findOneById(thread.rid);
 
 		if (!user || !(await canAccessRoomAsync(room, user))) {

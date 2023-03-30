@@ -3,7 +3,7 @@ import _ from 'underscore';
 
 import { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOptionToJoin';
 import { sendMessage } from './sendMessage';
-import { validateRoomMessagePermissions } from '../../../authorization/server/functions/canSendMessage';
+import { validateRoomMessagePermissionsAsync } from '../../../authorization/server/functions/canSendMessage';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { trim } from '../../../../lib/utils/stringUtils';
 
@@ -99,7 +99,7 @@ export const processWebhookMessage = async function (messageObj, user, defaultVa
 			}
 		}
 
-		validateRoomMessagePermissions(room, { uid: user._id, ...user });
+		await validateRoomMessagePermissionsAsync(room, { uid: user._id, ...user });
 
 		const messageReturn = await sendMessage(user, message, room);
 		sentData.push({ channel, message: messageReturn });
