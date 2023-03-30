@@ -8,7 +8,11 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export async function registerPreIntentWorkspaceWizard(): Promise<boolean> {
 	const firstUser = (await Users.getOldest({ projection: { name: 1, emails: 1 } })) as IUser | undefined;
-	const email = firstUser?.emails?.find((address) => address)?.address || '';
+	const email = firstUser?.emails?.find((address) => address)?.address;
+
+	if (!email) {
+		return false;
+	}
 
 	const regInfo = await buildWorkspaceRegistrationData(email);
 	const cloudUrl = settings.get('Cloud_Url');

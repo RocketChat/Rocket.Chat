@@ -28,7 +28,11 @@ export class AppUserBridge extends UserBridge {
 	protected async getAppUser(appId?: string): Promise<IUser | undefined> {
 		this.orch.debugLog(`The App ${appId} is getting its assigned user`);
 
-		const user = await Users.findOneByAppId(appId || '', {});
+		if (!appId) {
+			return;
+		}
+
+		const user = await Users.findOneByAppId(appId, {});
 
 		return this.orch.getConverters()?.get('users').convertToApp(user);
 	}
