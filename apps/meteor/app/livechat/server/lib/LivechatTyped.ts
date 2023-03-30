@@ -8,6 +8,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms, Subscriptions, LivechatVisitors, Messages, Users } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 import moment from 'moment-timezone';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
@@ -15,7 +16,6 @@ import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { Apps, AppEvents } from '../../../../ee/server/apps';
-import { Messages as LegacyMessage } from '../../../models/server';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 import { settings } from '../../../settings/server';
 import * as Mailer from '../../../mailer/server/api';
@@ -137,7 +137,7 @@ class LivechatClass {
 		this.logger.debug(`Sending closing message to room ${room._id}`);
 		await sendMessage(chatCloser, message, newRoom);
 
-		LegacyMessage.createCommandWithRoomIdAndUser('promptTranscript', rid, closeData.closedBy);
+		await Message.saveSystemMessage('command', rid, 'promptTranscript', closeData.closedBy);
 
 		this.logger.debug(`Running callbacks for room ${newRoom._id}`);
 
