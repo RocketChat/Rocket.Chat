@@ -193,7 +193,7 @@ Meteor.methods<ServerMethods>({
 		};
 		originalMessage = callbacks.run('beforeSaveMessage', originalMessage);
 
-		const room = await Rooms.findOneById(originalMessage.rid, { fields: { ...roomAccessAttributes, lastMessage: 1 } });
+		const room = await Rooms.findOneById(originalMessage.rid, { projection: { ...roomAccessAttributes, lastMessage: 1 } });
 		if (!room) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'unpinMessage' });
 		}

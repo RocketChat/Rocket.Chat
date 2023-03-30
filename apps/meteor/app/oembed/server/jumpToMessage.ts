@@ -2,8 +2,8 @@ import URL from 'url';
 import QueryString from 'querystring';
 
 import { Meteor } from 'meteor/meteor';
-import type { ITranslatedMessage, MessageAttachment } from '@rocket.chat/core-typings';
-import { isTranslatedMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
+import type { IMessage, MessageAttachment } from '@rocket.chat/core-typings';
+import { isQuoteAttachment } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
@@ -24,7 +24,7 @@ const recursiveRemove = (attachments: MessageAttachment, deep = 1): MessageAttac
 	return attachments;
 };
 
-const validateAttachmentDeepness = (message: ITranslatedMessage): ITranslatedMessage => {
+const validateAttachmentDeepness = (message: IMessage): IMessage => {
 	if (!message?.attachments) {
 		return message;
 	}
@@ -65,7 +65,7 @@ callbacks.add(
 
 			const message = await Messages.findOneById(msgId);
 
-			const jumpToMessage = message && isTranslatedMessage(message) && validateAttachmentDeepness(message);
+			const jumpToMessage = message && validateAttachmentDeepness(message);
 			if (!jumpToMessage) {
 				continue;
 			}
