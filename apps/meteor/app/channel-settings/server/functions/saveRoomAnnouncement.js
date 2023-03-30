@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
+import { Messages, Rooms } from '@rocket.chat/models';
 
-import { Rooms, Messages } from '../../../models/server';
+import { settings } from '../../../settings/server';
 
-export const saveRoomAnnouncement = function (rid, roomAnnouncement, user, sendMessage = true) {
+export const saveRoomAnnouncement = async function (rid, roomAnnouncement, user, sendMessage = true) {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
 			function: 'RocketChat.saveRoomAnnouncement',
@@ -18,9 +19,15 @@ export const saveRoomAnnouncement = function (rid, roomAnnouncement, user, sendM
 		({ message, ...announcementDetails } = roomAnnouncement);
 	}
 
-	const updated = Rooms.setAnnouncementById(rid, message, announcementDetails);
+	const updated = await Rooms.setAnnouncementById(rid, message, announcementDetails);
 	if (updated && sendMessage) {
-		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_announcement', rid, message, user);
+		await Messages.createWithTypeRoomIdMessageUserAndUnread(
+			'room_changed_announcement',
+			rid,
+			message,
+			user,
+			settings.get('Message_Read_Receipt_Enabled'),
+		);
 	}
 
 	return updated;

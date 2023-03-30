@@ -33,7 +33,7 @@ roomCoordinator.add(PrivateRoomType, {
 
 	async allowMemberAction(_room, action, userId) {
 		if (isRoomFederated(_room as IRoom)) {
-			return Promise.await(Federation.actionAllowed(_room, action, userId));
+			return Federation.actionAllowed(_room, action, userId);
 		}
 		switch (action) {
 			case RoomMemberActions.BLOCK:
@@ -43,7 +43,7 @@ roomCoordinator.add(PrivateRoomType, {
 		}
 	},
 
-	roomName(room, _userId?) {
+	async roomName(room, _userId?) {
 		if (room.prid || isRoomFederated(room)) {
 			return room.fname;
 		}

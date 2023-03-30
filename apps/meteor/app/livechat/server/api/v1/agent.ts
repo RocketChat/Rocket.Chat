@@ -98,7 +98,7 @@ API.v1.addRoute(
 				return API.v1.success({ status: newStatus });
 			}
 
-			if (!Livechat.allowAgentChangeServiceStatus(newStatus, agentId)) {
+			if (!(await Livechat.allowAgentChangeServiceStatus(newStatus, agentId))) {
 				return API.v1.failure('error-business-hours-are-closed');
 			}
 

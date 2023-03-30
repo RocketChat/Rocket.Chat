@@ -11,8 +11,8 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	getUsernameSuggestion() {
-		const user = Meteor.user();
+	async getUsernameSuggestion() {
+		const user = await Meteor.userAsync();
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

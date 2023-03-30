@@ -1,10 +1,10 @@
-import { Roles } from '@rocket.chat/models';
+import { Roles, Rooms } from '@rocket.chat/models';
 import type { IUser } from '@rocket.chat/core-typings';
 
-import { Rooms } from '../../../../app/models/server';
 import { addUserToRoom, createRoom } from '../../../../app/lib/server/functions';
 import { Logger } from '../../../../app/logger/server';
 import { syncUserRoles } from '../syncUserRoles';
+import { getValidRoomName } from '../../../../app/utils/server';
 
 const logger = new Logger('OAuth');
 
@@ -26,15 +26,19 @@ export class OAuthEEManager {
 						channels = [channels];
 					}
 					for await (const channel of channels) {
-						let room = Rooms.findOneByNonValidatedName(channel);
+						const name = await getValidRoomName(channel.trim(), undefined, { allowDuplicates: true });
+						let room = await Rooms.findOneByNonValidatedName(name);
 						if (!room) {
-							room = await createRoom('c', channel, channelsAdmin, [], false);
-							if (!room?.rid) {
+							const createdRoom = await createRoom('c', channel, channelsAdmin, [], false);
+							if (!createdRoom?.rid) {
 								logger.error(`could not create channel ${channel}`);
 								return;
 							}
+
+							room = createdRoom;
 						}
-						if (Array.isArray(groupsFromSSO) && groupsFromSSO.includes(ssoGroup)) {
+
+						if (room && Array.isArray(groupsFromSSO) && groupsFromSSO.includes(ssoGroup)) {
 							await addUserToRoom(room._id, user);
 						}
 					}
