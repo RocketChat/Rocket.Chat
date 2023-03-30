@@ -13,6 +13,7 @@ const debounceByRoomId = function (fn) {
 		clearTimeout(list[roomId]);
 		list[roomId] = setTimeout(() => {
 			fn.call(this, roomId, ...args);
+			delete list[roomId];
 		}, 2000);
 	};
 };
