@@ -14,10 +14,10 @@ import type {
 	IImportData,
 	IImportRecordType,
 } from '@rocket.chat/core-typings';
-import { ImportData, Rooms as RoomsRaw } from '@rocket.chat/models';
+import { ImportData, Rooms as RoomsRaw, Subscriptions } from '@rocket.chat/models';
 
 import type { IConversionCallbacks } from '../definitions/IConversionCallbacks';
-import { Users, Rooms, Subscriptions } from '../../../models/server';
+import { Users, Rooms } from '../../../models/server';
 import { generateUsernameSuggestion, insertMessage, saveUserIdentity, addUserToDefaultChannels } from '../../../lib/server';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import type { Logger } from '../../../../server/lib/logger/Logger';
@@ -953,7 +953,7 @@ export class ImportDataConverter {
 
 	async archiveRoomById(rid: string) {
 		await RoomsRaw.archiveById(rid);
-		Subscriptions.archiveByRoomId(rid);
+		await Subscriptions.archiveByRoomId(rid);
 	}
 
 	async convertData(startedByUserId: string, callbacks: IConversionCallbacks = {}): Promise<void> {

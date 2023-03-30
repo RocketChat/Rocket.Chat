@@ -16,7 +16,7 @@ import {
 	Settings,
 	LivechatRooms,
 	LivechatInquiry,
-	Subscriptions as SubscriptionsRaw,
+	Subscriptions,
 	Messages,
 	LivechatDepartment as LivechatDepartmentRaw,
 	LivechatDepartmentAgents,
@@ -29,7 +29,7 @@ import { RoutingManager } from './RoutingManager';
 import { Analytics } from './Analytics';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Users, Subscriptions } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { Logger } from '../../../logger/server';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
@@ -455,7 +455,7 @@ export const Livechat = {
 
 		const result = await Promise.allSettled([
 			Messages.removeByRoomId(rid),
-			SubscriptionsRaw.removeByRoomId(rid),
+			Subscriptions.removeByRoomId(rid),
 			LivechatInquiry.removeByRoomId(rid),
 			LivechatRooms.removeById(rid),
 		]);
@@ -594,7 +594,7 @@ export const Livechat = {
 				(await LivechatInquiry.setNameByRoomId(rid, name)) &&
 				// This one needs to be the last since the agent may not have the subscription
 				// when the conversation is in the queue, then the result will be 0(zero)
-				SubscriptionsRaw.updateDisplayNameByRoomId(rid, name)
+				Subscriptions.updateDisplayNameByRoomId(rid, name)
 			);
 		}
 	},
@@ -984,7 +984,7 @@ export const Livechat = {
 			await Messages.removeByRoomId(room._id);
 		}
 
-		Subscriptions.removeByVisitorToken(token);
+		await Subscriptions.removeByVisitorToken(token);
 		await LivechatRooms.removeByVisitorToken(token);
 		await LivechatInquiry.removeByVisitorToken(token);
 	},

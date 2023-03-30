@@ -3,11 +3,10 @@ import { MessageBridge } from '@rocket.chat/apps-engine/server/bridges/MessageBr
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
-import type { ISubscription } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
-import { Messages } from '@rocket.chat/models';
+import { Messages, Subscriptions } from '@rocket.chat/models';
 
-import { Users, Subscriptions } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import notifications from '../../../notifications/server/lib/Notifications';
@@ -69,15 +68,13 @@ export class AppMessageBridge extends MessageBridge {
 	protected async notifyRoom(room: IRoom, message: IMessage, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is notifying a room's users.`);
 
-		if (!room || !room.id) {
+		if (!room?.id) {
 			return;
 		}
 
 		const msg = this.orch.getConverters()?.get('messages').convertAppMessage(message);
 
-		const users = Subscriptions.findByRoomIdWhenUserIdExists(room.id, { fields: { 'u._id': 1 } })
-			.fetch()
-			.map((s: ISubscription) => s.u._id);
+		const users = (await Subscriptions.findByRoomIdWhenUserIdExists(room.id, { projection: { 'u._id': 1 } }).toArray()).map((s) => s.u._id);
 
 		Users.findByIds(users, { fields: { _id: 1 } })
 			.fetch()

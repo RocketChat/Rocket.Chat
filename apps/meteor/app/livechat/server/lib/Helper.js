@@ -11,11 +11,11 @@ import {
 	LivechatInquiry,
 	LivechatRooms,
 	LivechatDepartment,
-	Subscriptions as SubscriptionsRaw,
+	Subscriptions,
 } from '@rocket.chat/models';
 
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
-import { Rooms, Subscriptions, Users } from '../../../models/server';
+import { Rooms, Users } from '../../../models/server';
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../../lib/callbacks';
@@ -155,7 +155,7 @@ export const createLivechatInquiry = async ({ rid, name, guest, message, initial
 	return result;
 };
 
-export const createLivechatSubscription = (rid, name, guest, agent, department) => {
+export const createLivechatSubscription = async (rid, name, guest, agent, department) => {
 	check(rid, String);
 	check(name, String);
 	check(
@@ -174,7 +174,7 @@ export const createLivechatSubscription = (rid, name, guest, agent, department) 
 		}),
 	);
 
-	const existingSubscription = Subscriptions.findOneByRoomIdAndUserId(rid, agent.agentId);
+	const existingSubscription = await Subscriptions.findOneByRoomIdAndUserId(rid, agent.agentId);
 	if (existingSubscription?._id) {
 		return existingSubscription;
 	}
@@ -206,14 +206,14 @@ export const createLivechatSubscription = (rid, name, guest, agent, department) 
 		...(department && { department }),
 	};
 
-	return Subscriptions.insert(subscriptionData);
+	return Subscriptions.insertOne(subscriptionData);
 };
 
 export const removeAgentFromSubscription = async (rid, { _id, username }) => {
 	const room = await LivechatRooms.findOneById(rid);
 	const user = Users.findOneById(_id);
 
-	await SubscriptionsRaw.removeByRoomIdAndUserId(rid, _id);
+	await Subscriptions.removeByRoomIdAndUserId(rid, _id);
 	await Message.saveSystemMessage('ul', rid, username, { _id: user._id, username: user.username, name: user.name });
 
 	Meteor.defer(() => {
@@ -404,7 +404,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 export const updateChatDepartment = async ({ rid, newDepartmentId, oldDepartmentId }) => {
 	await LivechatRooms.changeDepartmentIdByRoomId(rid, newDepartmentId);
 	await LivechatInquiry.changeDepartmentIdByRoomId(rid, newDepartmentId);
-	Subscriptions.changeDepartmentByRoomId(rid, newDepartmentId);
+	await Subscriptions.changeDepartmentByRoomId(rid, newDepartmentId);
 
 	Meteor.defer(() => {
 		Apps.triggerEvent(AppEvents.IPostLivechatRoomTransferred, {
