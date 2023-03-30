@@ -2,10 +2,10 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { useLayout, usePermission, useSetting, useUser, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo } from 'react';
 
-import { AutoTranslate } from '../../../../../app/autotranslate/client';
-import { createMessageContext } from '../../../../../app/ui-utils/client/lib/messageContext';
-import { useReactiveValue } from '../../../../hooks/useReactiveValue';
-import { useRoomSubscription } from '../../contexts/RoomContext';
+import { AutoTranslate } from '../../../../../../app/autotranslate/client';
+import { createMessageContext } from '../../../../../../app/ui-utils/client/lib/messageContext';
+import { useReactiveValue } from '../../../../../hooks/useReactiveValue';
+import { useRoomSubscription } from '../../../contexts/RoomContext';
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const useRoomMessageContext = (room: IRoom) => {
