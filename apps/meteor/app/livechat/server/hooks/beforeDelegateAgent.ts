@@ -6,7 +6,7 @@ import { Users } from '../../../models/server';
 
 callbacks.add(
 	'livechat.beforeDelegateAgent',
-	async (agent, { department }) => {
+	async (agent, { department } = {}) => {
 		if (agent) {
 			return agent;
 		}
