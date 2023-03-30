@@ -1,13 +1,19 @@
 import moment from 'moment';
 import { LivechatBusinessHours, LivechatDepartment, Messages, LivechatRooms } from '@rocket.chat/models';
+import type { IOmnichannelRoom, IMessage, IBusinessHourWorkHour } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { businessHourManager } from '../business-hour';
 
-const getSecondsWhenOfficeHoursIsDisabled = (room, agentLastMessage) =>
-	moment(new Date(room.closedAt)).diff(moment(new Date(agentLastMessage.ts)), 'seconds');
-const parseDays = (acc, day) => {
+const getSecondsWhenOfficeHoursIsDisabled = (room: IOmnichannelRoom, agentLastMessage: IMessage) =>
+	moment(new Date(room.closedAt || new Date())).diff(moment(new Date(agentLastMessage.ts)), 'seconds');
+
+const parseDays = (
+	acc: Record<string, { start: { day: string; time: string }; finish: { day: string; time: string }; open: boolean }>,
+	day: IBusinessHourWorkHour,
+) => {
 	acc[day.day] = {
 		start: { day: day.start.utc.dayOfWeek, time: day.start.utc.time },
 		finish: { day: day.finish.utc.dayOfWeek, time: day.finish.utc.time },
@@ -16,20 +22,29 @@ const parseDays = (acc, day) => {
 	return acc;
 };
 
-const getSecondsSinceLastAgentResponse = async (room, agentLastMessage) => {
+const getSecondsSinceLastAgentResponse = async (room: IOmnichannelRoom, agentLastMessage: IMessage) => {
 	if (!settings.get('Livechat_enable_business_hours')) {
 		return getSecondsWhenOfficeHoursIsDisabled(room, agentLastMessage);
 	}
 	let officeDays;
-	const department = room.departmentId && (await LivechatDepartment.findOneById(room.departmentId));
-	if (department && department.businessHourId) {
+	const department = room.departmentId ? await LivechatDepartment.findOneById(room.departmentId) : null;
+	if (department?.businessHourId) {
 		const businessHour = await LivechatBusinessHours.findOneById(department.businessHourId);
-		officeDays = (await businessHourManager.getBusinessHour(businessHour._id, businessHour.type)).workHours.reduce(parseDays, {});
+		if (!businessHour) {
+			return getSecondsWhenOfficeHoursIsDisabled(room, agentLastMessage);
+		}
+
+		officeDays = (await businessHourManager.getBusinessHour(businessHour._id, businessHour.type))?.workHours.reduce(parseDays, {});
 	} else {
-		officeDays = (await businessHourManager.getBusinessHour()).workHours.reduce(parseDays, {});
+		officeDays = (await businessHourManager.getBusinessHour())?.workHours.reduce(parseDays, {});
 	}
+
+	if (!officeDays) {
+		return getSecondsWhenOfficeHoursIsDisabled(room, agentLastMessage);
+	}
+
 	let totalSeconds = 0;
-	const endOfConversation = moment(new Date(room.closedAt));
+	const endOfConversation = moment(new Date(room.closedAt || new Date()));
 	const startOfInactivity = moment(new Date(agentLastMessage.ts));
 	const daysOfInactivity = endOfConversation.clone().startOf('day').diff(startOfInactivity.clone().startOf('day'), 'days');
 	const inactivityDay = moment(new Date(agentLastMessage.ts));
@@ -60,11 +75,20 @@ callbacks.add(
 	async function (params) {
 		const { room } = params;
 
+		if (!isOmnichannelRoom(room)) {
+			return params;
+		}
+
 		const closedByAgent = room.closer !== 'visitor';
 		const wasTheLastMessageSentByAgent = room.lastMessage && !room.lastMessage.token;
 		if (!closedByAgent || !wasTheLastMessageSentByAgent) {
 			return params;
 		}
+
+		if (!room.v?.lastMessageTs) {
+			return params;
+		}
+
 		const agentLastMessage = await Messages.findAgentLastMessageByVisitorLastMessageTs(room._id, room.v.lastMessageTs);
 		if (!agentLastMessage) {
 			return params;
