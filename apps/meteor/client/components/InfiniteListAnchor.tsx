@@ -2,11 +2,11 @@ import { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import React, { useEffect, useRef } from 'react';
 
-type RoomMembersListAnchorProps = {
-	loadMoreMembers: () => void;
+type InfiniteListAnchorProps = {
+	loadMore: () => void;
 } & ComponentProps<typeof Box>;
 
-const RoomMembersListAnchor = ({ loadMoreMembers, ...props }: RoomMembersListAnchorProps) => {
+const InfiniteListAnchor = ({ loadMore, ...props }: InfiniteListAnchorProps) => {
 	const ref = useRef<HTMLDivElement | null>(null);
 
 	useEffect(() => {
@@ -19,7 +19,7 @@ const RoomMembersListAnchor = ({ loadMoreMembers, ...props }: RoomMembersListAnc
 		const observer = new IntersectionObserver(
 			(e) => {
 				if (e[0].isIntersecting) {
-					loadMoreMembers();
+					loadMore();
 				}
 			},
 			{
@@ -31,9 +31,9 @@ const RoomMembersListAnchor = ({ loadMoreMembers, ...props }: RoomMembersListAnc
 		observer.observe(target);
 
 		return () => observer.disconnect();
-	}, [loadMoreMembers]);
+	}, [loadMore]);
 
-	return <Box width={10} height={10} backgroundColor='red' ref={ref} {...props} />;
+	return <Box width={5} height={5} ref={ref} {...props} />;
 };
 
-export default RoomMembersListAnchor;
+export default InfiniteListAnchor;

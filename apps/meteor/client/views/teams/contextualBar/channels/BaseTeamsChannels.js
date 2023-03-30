@@ -1,9 +1,10 @@
 import { Box, Icon, TextInput, Margins, Select, Throbber, ButtonGroup, Button } from '@rocket.chat/fuselage';
-import { useMutableCallback, useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback, useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import VerticalBar from '../../../../components/VerticalBar';
 import Row from './Row';
@@ -35,6 +36,18 @@ const BaseTeamsChannels = ({
 	);
 
 	const lm = useMutableCallback((start) => !loading && loadMoreItems(start));
+
+	const loadMoreMembers = useDebouncedCallback(
+		() => {
+			if (channels.length >= total) {
+				return;
+			}
+
+			lm(channels.length);
+		},
+		300,
+		[lm, channels],
+	);
 
 	return (
 		<>
@@ -74,9 +87,9 @@ const BaseTeamsChannels = ({
 					<Box w='full' h='full' overflow='hidden' flexShrink={1}>
 						<Virtuoso
 							totalCount={total}
-							endReached={lm}
 							data={channels}
-							components={{ Scroller: ScrollableContentWrapper }}
+							// eslint-disable-next-line react/no-multi-comp
+							components={{ Scroller: ScrollableContentWrapper, Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
 							itemContent={(index, data) => <Row onClickView={onClickView} room={data} reload={reload} />}
 						/>
 					</Box>
