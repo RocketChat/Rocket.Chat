@@ -87,7 +87,7 @@ API.v1.addRoute(
 
 			const { name, type, members, room, owner } = this.bodyParams;
 
-			const team: ITeam = await Team.create(this.userId, {
+			const team = await Team.create(this.userId, {
 				team: {
 					name,
 					type,
