@@ -1,11 +1,12 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
-import { Team } from '@rocket.chat/core-services';
+import { Message, Team } from '@rocket.chat/core-services';
+import { Subscriptions } from '@rocket.chat/models';
 
 import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
-import { Messages, Rooms, Subscriptions, Users } from '../../../models/server';
+import { Rooms, Users } from '../../../models/server';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
@@ -21,8 +22,8 @@ export const addUserToRoom = async function (
 	const userToBeAdded = typeof user !== 'string' ? user : Users.findOneByUsername(user.replace('@', ''));
 	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
 	if (
-		!roomDirectives?.allowMemberAction(room, RoomMemberActions.JOIN, userToBeAdded._id) &&
-		!roomDirectives?.allowMemberAction(room, RoomMemberActions.INVITE, userToBeAdded._id)
+		!(await roomDirectives.allowMemberAction(room, RoomMemberActions.JOIN, userToBeAdded._id)) &&
+		!(await roomDirectives.allowMemberAction(room, RoomMemberActions.INVITE, userToBeAdded._id))
 	) {
 		return;
 	}
@@ -34,7 +35,7 @@ export const addUserToRoom = async function (
 	}
 
 	// Check if user is already in room
-	const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
 	if (subscription) {
 		return;
 	}
@@ -65,7 +66,7 @@ export const addUserToRoom = async function (
 		throw error;
 	});
 
-	Subscriptions.createWithRoomAndUser(room, userToBeAdded, {
+	await Subscriptions.createWithRoomAndUser(room, userToBeAdded, {
 		ts: now,
 		open: true,
 		alert: true,
@@ -84,16 +85,16 @@ export const addUserToRoom = async function (
 				},
 			};
 			if (room.teamMain) {
-				Messages.createUserAddedToTeamWithRoomIdAndUser(rid, userToBeAdded, extraData);
+				await Message.saveSystemMessage('added-user-to-team', rid, userToBeAdded.username, userToBeAdded, extraData);
 			} else {
-				Messages.createUserAddedWithRoomIdAndUser(rid, userToBeAdded, extraData);
+				await Message.saveSystemMessage('au', rid, userToBeAdded.username, userToBeAdded, extraData);
 			}
 		} else if (room.prid) {
-			Messages.createUserJoinWithRoomIdAndUserDiscussion(rid, userToBeAdded, { ts: now });
+			await Message.saveSystemMessage('ut', rid, userToBeAdded.username, userToBeAdded, { ts: now });
 		} else if (room.teamMain) {
-			Messages.createUserJoinTeamWithRoomIdAndUser(rid, userToBeAdded, { ts: now });
+			await Message.saveSystemMessage('ujt', rid, userToBeAdded.username, userToBeAdded, { ts: now });
 		} else {
-			Messages.createUserJoinWithRoomIdAndUser(rid, userToBeAdded, { ts: now });
+			await Message.saveSystemMessage('uj', rid, userToBeAdded.username, userToBeAdded, { ts: now });
 		}
 	}
 

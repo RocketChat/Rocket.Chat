@@ -59,7 +59,7 @@ Meteor.methods<ServerMethods>({
 			};
 		}
 
-		return Meteor.call('getChannelHistory', {
+		return Meteor.callAsync('getChannelHistory', {
 			rid,
 			latest: latestDate,
 			oldest: oldestDate,

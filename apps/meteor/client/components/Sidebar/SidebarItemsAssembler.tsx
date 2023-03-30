@@ -29,6 +29,7 @@ const SidebarItemsAssembler: FC<SidebarItemsAssemblerProps> = ({ items, currentP
 							currentPath={currentPath}
 							tag={t.has(props.tag) ? t(props.tag) : props.tag}
 							externalUrl={props.externalUrl}
+							badge={props.badge}
 						/>
 					) : (
 						<Divider />

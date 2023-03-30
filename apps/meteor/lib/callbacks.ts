@@ -103,7 +103,7 @@ type ChainedCallbackSignatures = {
 
 	'livechat.beforeForwardRoomToDepartment': <T extends { room: IOmnichannelRoom; transferData?: { department: { _id: string } } }>(
 		options: T,
-	) => T;
+	) => Promise<T>;
 
 	'livechat.beforeRouteChat': (inquiry: ILivechatInquiryRecord, agent?: { agentId: string; username: string }) => ILivechatInquiryRecord;
 	'livechat.checkDefaultAgentOnNewRoom': (
@@ -290,7 +290,12 @@ class Callbacks {
 		const stopTracking = this.trackCallback?.(callback);
 
 		try {
-			return Promise.await(callback(item, constant));
+			const result = callback(item, constant);
+			if (result && result instanceof Promise) {
+				return Promise.await(result);
+			}
+
+			return result;
 		} finally {
 			stopTracking?.();
 		}

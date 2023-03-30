@@ -530,7 +530,7 @@ export class LDAPEEManager extends LDAPManager {
 			let count = 0;
 
 			void ldap.searchAllUsers<IImportUser>({
-				entryCallback: async (entry: ldapjs.SearchEntry): Promise<IImportUser | undefined> => {
+				entryCallback: (entry: ldapjs.SearchEntry): IImportUser | undefined => {
 					const data = ldap.extractLdapEntryData(entry);
 					count++;
 
@@ -603,7 +603,7 @@ export class LDAPEEManager extends LDAPManager {
 			}
 
 			if (this.isUserDeactivated(ldapUser)) {
-				UsersRaw.unsetLoginTokens(user._id);
+				await UsersRaw.unsetLoginTokens(user._id);
 			}
 		}
 	}

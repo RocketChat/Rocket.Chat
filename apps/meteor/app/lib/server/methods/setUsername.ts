@@ -22,7 +22,7 @@ Meteor.methods<ServerMethods>({
 		const { joinDefaultChannelsSilenced } = param;
 		check(username, String);
 
-		const user = Meteor.user();
+		const user = await Meteor.userAsync();
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setUsername' });
@@ -64,7 +64,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		if (!user.username) {
-			Meteor.runAsUser(user._id, () => Meteor.call('joinDefaultChannels', joinDefaultChannelsSilenced));
+			await Meteor.runAsUser(user._id, () => Meteor.callAsync('joinDefaultChannels', joinDefaultChannelsSilenced));
 			Meteor.defer(function () {
 				return callbacks.run('afterCreateUser', Users.findOneById(user._id));
 			});

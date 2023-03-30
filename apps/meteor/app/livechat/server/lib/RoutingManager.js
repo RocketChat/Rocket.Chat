@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { LivechatInquiry } from '@rocket.chat/models';
+import { LivechatInquiry, LivechatRooms, Subscriptions } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 
 import {
 	createLivechatSubscription,
@@ -14,7 +15,7 @@ import {
 } from './Helper';
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../../server/lib/logger/Logger';
-import { LivechatRooms, Rooms, Messages, Users, Subscriptions } from '../../../models/server';
+import { Rooms, Users } from '../../../models/server';
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 
 const logger = new Logger('RoutingManager');
@@ -68,7 +69,7 @@ export const RoutingManager = {
 	async delegateInquiry(inquiry, agent, options = {}) {
 		const { department, rid } = inquiry;
 		logger.debug(`Attempting to delegate inquiry ${inquiry._id}`);
-		if (!agent || (agent.username && !Users.findOneOnlineAgentByUserList(agent.username) && !allowAgentSkipQueue(agent))) {
+		if (!agent || (agent.username && !Users.findOneOnlineAgentByUserList(agent.username) && !(await allowAgentSkipQueue(agent)))) {
 			logger.debug(`Agent offline or invalid. Using routing method to get next agent for inquiry ${inquiry._id}`);
 			agent = await this.getNextAgent(department);
 			logger.debug(`Routing method returned agent ${agent && agent.agentId} for inquiry ${inquiry._id}`);
@@ -83,7 +84,7 @@ export const RoutingManager = {
 		return this.takeInquiry(inquiry, agent, options);
 	},
 
-	assignAgent(inquiry, agent) {
+	async assignAgent(inquiry, agent) {
 		check(
 			agent,
 			Match.ObjectIncluding({
@@ -100,13 +101,14 @@ export const RoutingManager = {
 			throw new Meteor.Error('error-creating-subscription', 'Error creating subscription');
 		}
 
-		LivechatRooms.changeAgentByRoomId(rid, agent);
+		await LivechatRooms.changeAgentByRoomId(rid, agent);
 		Rooms.incUsersCountById(rid);
 
 		const user = Users.findOneById(agent.agentId);
-		const room = LivechatRooms.findOneById(rid);
+		const room = await LivechatRooms.findOneById(rid);
 
-		Messages.createCommandWithRoomIdAndUser('connected', rid, user);
+		await Message.saveSystemMessage('command', rid, 'connected', user);
+
 		dispatchAgentDelegated(rid, agent.agentId);
 		logger.debug(`Agent ${agent.agentId} assigned to inquriy ${inquiry._id}. Instances notified`);
 
@@ -116,7 +118,7 @@ export const RoutingManager = {
 
 	async unassignAgent(inquiry, departmentId) {
 		const { rid, department } = inquiry;
-		const room = LivechatRooms.findOneById(rid);
+		const room = await LivechatRooms.findOneById(rid);
 
 		logger.debug(`Removing assignations of inquiry ${inquiry._id}`);
 		if (!room || !room.open) {
@@ -139,8 +141,8 @@ export const RoutingManager = {
 
 		if (servedBy) {
 			logger.debug(`Unassigning current agent for inquiry ${inquiry._id}`);
-			LivechatRooms.removeAgentByRoomId(rid);
-			this.removeAllRoomSubscriptions(room);
+			await LivechatRooms.removeAgentByRoomId(rid);
+			await this.removeAllRoomSubscriptions(room);
 			dispatchAgentDelegated(rid, null);
 		}
 
@@ -169,7 +171,7 @@ export const RoutingManager = {
 		logger.debug(`Attempting to take Inquiry ${inquiry._id} [Agent ${agent.agentId}] `);
 
 		const { _id, rid } = inquiry;
-		const room = LivechatRooms.findOneById(rid);
+		const room = await LivechatRooms.findOneById(rid);
 		if (!room || !room.open) {
 			logger.debug(`Cannot take Inquiry ${inquiry._id}: Room is closed`);
 			return room;
@@ -199,7 +201,7 @@ export const RoutingManager = {
 		}
 
 		await LivechatInquiry.takeInquiry(_id);
-		const inq = this.assignAgent(inquiry, agent);
+		const inq = await this.assignAgent(inquiry, agent);
 		logger.debug(`Inquiry ${inquiry._id} taken by agent ${agent.agentId}`);
 
 		callbacks.runAsync('livechat.afterTakeInquiry', inq, agent);
@@ -239,10 +241,10 @@ export const RoutingManager = {
 		return defaultAgent;
 	},
 
-	removeAllRoomSubscriptions(room, ignoreUser) {
+	async removeAllRoomSubscriptions(room, ignoreUser) {
 		const { _id: roomId } = room;
 
-		const subscriptions = Subscriptions.findByRoomId(roomId).fetch();
+		const subscriptions = await Subscriptions.findByRoomId(roomId).toArray();
 		subscriptions?.forEach(({ u }) => {
 			if (ignoreUser && ignoreUser._id === u._id) {
 				return;

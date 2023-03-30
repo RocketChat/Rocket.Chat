@@ -24,14 +24,14 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 	setTimeout(() => {
 		LegacyRoomManager.currentTracker?.stop();
 		LegacyRoomManager.currentTracker = Tracker.autorun(async function (c) {
-			const user = Meteor.user();
+			const user = await Meteor.userAsync();
 			if ((user && user.username == null) || (user == null && settings.get('Accounts_AllowAnonymousRead') === false)) {
 				appLayout.render(<MainLayout />);
 				return;
 			}
 
 			try {
-				const room = roomCoordinator.getRoomDirectives(type)?.findRoom(name) || (await call('getRoomByTypeAndName', type, name));
+				const room = roomCoordinator.getRoomDirectives(type).findRoom(name) || (await call('getRoomByTypeAndName', type, name));
 				if (!room._id) {
 					return;
 				}

@@ -45,7 +45,7 @@ API.v1.addRoute(
 		async post() {
 			const { accountId } = this.bodyParams;
 
-			const result = Meteor.call('removeWebdavAccount', accountId);
+			const result = await Meteor.callAsync('removeWebdavAccount', accountId);
 
 			return API.v1.success({ result });
 		},

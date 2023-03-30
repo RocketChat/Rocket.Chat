@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { api, Team } from '@rocket.chat/core-services';
+import { api, Message, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Subscriptions } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { Users, Subscriptions, Messages, Rooms } from '../../app/models/server';
+import { Users, Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -44,7 +45,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 
 		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
@@ -52,23 +53,17 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (Array.isArray(subscription.roles) === true && subscription.roles.includes('owner') === true) {
+		if (subscription.roles && Array.isArray(subscription.roles) === true && subscription.roles.includes('owner') === true) {
 			throw new Meteor.Error('error-user-already-owner', 'User is already an owner', {
 				method: 'addRoomOwner',
 			});
 		}
 
-		Subscriptions.addRoleById(subscription._id, 'owner');
+		await Subscriptions.addRoleById(subscription._id, 'owner');
 
 		const fromUser = Users.findOneById(uid);
 
-		Messages.createSubscriptionRoleAddedWithRoomIdAndUser(rid, user, {
-			u: {
-				_id: fromUser._id,
-				username: fromUser.username,
-			},
-			role: 'owner',
-		});
+		await Message.saveSystemMessage('subscription-role-added', rid, user.username, fromUser, { role: 'owner' });
 
 		const team = await Team.getOneByMainRoomId(rid);
 		if (team) {
