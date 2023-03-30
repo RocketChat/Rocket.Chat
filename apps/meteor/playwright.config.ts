@@ -32,7 +32,7 @@ export default {
 				runComplete: true,
 				basePath: 'https://api.qase.io/v1',
 				logging: true,
-				uploadAttachments: true,
+				uploadAttachments: false,
 				environmentId: '1',
 			},
 		],
