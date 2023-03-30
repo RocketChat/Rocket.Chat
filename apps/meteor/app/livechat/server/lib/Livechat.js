@@ -17,7 +17,7 @@ import {
 	LivechatRooms,
 	LivechatInquiry,
 	Subscriptions as SubscriptionsRaw,
-	Messages as MessagesRaw,
+	Messages,
 	LivechatDepartment as LivechatDepartmentRaw,
 	LivechatDepartmentAgents,
 	Rooms,
@@ -29,7 +29,7 @@ import { RoutingManager } from './RoutingManager';
 import { Analytics } from './Analytics';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Users, Messages, Subscriptions } from '../../../models/server';
+import { Users, Subscriptions } from '../../../models/server';
 import { Logger } from '../../../logger/server';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
@@ -215,7 +215,7 @@ export const Livechat = {
 		}
 
 		if (newRoom) {
-			await MessagesRaw.setRoomIdByToken(guest.token, room._id);
+			await Messages.setRoomIdByToken(guest.token, room._id);
 		}
 
 		return { room, newRoom };
@@ -235,7 +235,7 @@ export const Livechat = {
 	async updateMessage({ guest, message }) {
 		check(message, Match.ObjectIncluding({ _id: String }));
 
-		const originalMessage = Messages.findOneById(message._id);
+		const originalMessage = await Messages.findOneById(message._id);
 		if (!originalMessage || !originalMessage._id) {
 			return;
 		}
@@ -258,7 +258,7 @@ export const Livechat = {
 		Livechat.logger.debug(`Attempting to delete a message by visitor ${guest._id}`);
 		check(message, Match.ObjectIncluding({ _id: String }));
 
-		const msg = Messages.findOneById(message._id);
+		const msg = await Messages.findOneById(message._id);
 		if (!msg || !msg._id) {
 			return;
 		}
@@ -454,7 +454,7 @@ export const Livechat = {
 		}
 
 		const result = await Promise.allSettled([
-			MessagesRaw.removeByRoomId(rid),
+			Messages.removeByRoomId(rid),
 			SubscriptionsRaw.removeByRoomId(rid),
 			LivechatInquiry.removeByRoomId(rid),
 			LivechatRooms.removeById(rid),
@@ -981,7 +981,7 @@ export const Livechat = {
 		const cursor = LivechatRooms.findByVisitorToken(token);
 		for await (const room of cursor) {
 			FileUpload.removeFilesByRoomId(room._id);
-			await MessagesRaw.removeByRoomId(room._id);
+			await Messages.removeByRoomId(room._id);
 		}
 
 		Subscriptions.removeByVisitorToken(token);
@@ -1131,7 +1131,7 @@ export const Livechat = {
 			'livechat_video_call',
 		];
 
-		return MessagesRaw.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, {
+		return Messages.findVisibleByRoomIdNotContainingTypes(rid, ignoredMessageTypes, {
 			sort: { ts: 1 },
 		}).toArray();
 	},

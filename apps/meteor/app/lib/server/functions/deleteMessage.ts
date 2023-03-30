@@ -5,12 +5,11 @@ import { api } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
-import { Messages as MessagesSync } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Apps } from '../../../../ee/server/apps';
 
 export async function deleteMessage(message: IMessage, user: IUser): Promise<void> {
-	const deletedMsg = MessagesSync.findOneById(message._id);
+	const deletedMsg = await Messages.findOneById(message._id);
 	const isThread = deletedMsg.tcount > 0;
 	const keepHistory = settings.get('Message_KeepHistory') || isThread;
 	const showDeletedStatus = settings.get('Message_ShowDeletedStatus') || isThread;

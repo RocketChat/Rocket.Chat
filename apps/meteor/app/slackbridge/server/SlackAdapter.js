@@ -4,13 +4,13 @@ import https from 'https';
 
 import { RTMClient } from '@slack/rtm-api';
 import { Meteor } from 'meteor/meteor';
-import { Messages as MessagesRaw } from '@rocket.chat/models';
+import { Messages } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
 
 import { slackLogger } from './logger';
 import { SlackAPI } from './SlackAPI';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
-import { Messages, Rooms, Users } from '../../models/server';
+import { Rooms, Users } from '../../models/server';
 import { settings } from '../../settings/server';
 import { deleteMessage, updateMessage, addUserToRoom, removeUserFromRoom, unarchiveRoom, sendMessage } from '../../lib/server';
 import { archiveRoom } from '../../lib/server/functions/archiveRoom';
@@ -383,12 +383,12 @@ export default class SlackAdapter {
 			}
 			const rocketUser = this.rocket.getUser(slackReactionMsg.user);
 			// Lets find our Rocket originated message
-			let rocketMsg = await MessagesRaw.findOneBySlackTs(slackReactionMsg.item.ts);
+			let rocketMsg = await Messages.findOneBySlackTs(slackReactionMsg.item.ts);
 
 			if (!rocketMsg) {
 				// Must have originated from Slack
 				const rocketID = this.rocket.createRocketID(slackReactionMsg.item.channel, slackReactionMsg.item.ts);
-				rocketMsg = await MessagesRaw.findOneById(rocketID);
+				rocketMsg = await Messages.findOneById(rocketID);
 			}
 
 			if (rocketMsg && rocketUser) {
@@ -432,12 +432,12 @@ export default class SlackAdapter {
 			}
 
 			// Lets find our Rocket originated message
-			let rocketMsg = await MessagesRaw.findOneBySlackTs(slackReactionMsg.item.ts);
+			let rocketMsg = await Messages.findOneBySlackTs(slackReactionMsg.item.ts);
 
 			if (!rocketMsg) {
 				// Must have originated from Slack
 				const rocketID = this.rocket.createRocketID(slackReactionMsg.item.channel, slackReactionMsg.item.ts);
-				rocketMsg = Messages.findOneById(rocketID);
+				rocketMsg = await Messages.findOneById(rocketID);
 			}
 
 			if (rocketMsg && rocketUser) {
@@ -718,7 +718,7 @@ export default class SlackAdapter {
 			};
 
 			if (rocketMessage.tmid) {
-				const tmessage = Messages.findOneById(rocketMessage.tmid);
+				const tmessage = Promise.await(Messages.findOneById(rocketMessage.tmid));
 				if (tmessage && tmessage.slackTs) {
 					data.thread_ts = tmessage.slackTs;
 				}
@@ -744,7 +744,7 @@ export default class SlackAdapter {
 				postResult.data.message.ts
 			) {
 				this.slackBotId = postResult.data.message.bot_id;
-				Promise.await(MessagesRaw.setSlackBotIdAndSlackTs(rocketMessage._id, postResult.data.message.bot_id, postResult.data.message.ts));
+				Promise.await(Messages.setSlackBotIdAndSlackTs(rocketMessage._id, postResult.data.message.bot_id, postResult.data.message.ts));
 				slackLogger.debug(
 					`RocketMsgID=${rocketMessage._id} SlackMsgID=${postResult.data.message.ts} SlackBotID=${postResult.data.message.bot_id}`,
 				);
@@ -821,7 +821,7 @@ export default class SlackAdapter {
 
 			if (rocketChannel && rocketUser) {
 				// Find the Rocket message to delete
-				let rocketMsgObj = await MessagesRaw.findOneBySlackBotIdAndSlackTs(
+				let rocketMsgObj = await Messages.findOneBySlackBotIdAndSlackTs(
 					slackMessage.previous_message.bot_id,
 					slackMessage.previous_message.ts,
 				);
@@ -829,7 +829,7 @@ export default class SlackAdapter {
 				if (!rocketMsgObj) {
 					// Must have been a Slack originated msg
 					const _id = this.rocket.createRocketID(slackMessage.channel, slackMessage.previous_message.ts);
-					rocketMsgObj = await MessagesRaw.findOneById(_id);
+					rocketMsgObj = await Messages.findOneById(_id);
 				}
 
 				if (rocketMsgObj) {
@@ -845,7 +845,7 @@ export default class SlackAdapter {
 	 */
 	async processMessageChanged(slackMessage) {
 		if (slackMessage.previous_message) {
-			const currentMsg = Messages.findOneById(this.rocket.createRocketID(slackMessage.channel, slackMessage.message.ts));
+			const currentMsg = await Messages.findOneById(this.rocket.createRocketID(slackMessage.channel, slackMessage.message.ts));
 
 			// Only process this change, if its an actual update (not just Slack repeating back our Rocket original change)
 			if (currentMsg && slackMessage.message.text !== currentMsg.msg) {
@@ -1049,7 +1049,7 @@ export default class SlackAdapter {
 
 			if (!isImporting) {
 				Promise.await(
-					MessagesRaw.setPinnedByIdAndUserId(
+					Messages.setPinnedByIdAndUserId(
 						`slack-${slackMessage.attachments[0].channel_id}-${slackMessage.attachments[0].ts.replace(/\./g, '-')}`,
 						rocketMsgObj.u,
 						true,
@@ -1269,7 +1269,7 @@ export default class SlackAdapter {
 					};
 
 					Promise.await(
-						MessagesRaw.setPinnedByIdAndUserId(
+						Messages.setPinnedByIdAndUserId(
 							`slack-${pin.channel}-${pin.message.ts.replace(/\./g, '-')}`,
 							msgObj.u,
 							true,

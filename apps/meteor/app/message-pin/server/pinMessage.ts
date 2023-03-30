@@ -4,7 +4,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
 import { Message } from '@rocket.chat/core-services';
-import { Messages as MessagesRaw, Rooms, Subscriptions } from '@rocket.chat/models';
+import { Messages, Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
@@ -12,7 +12,7 @@ import { isTheLastMessage } from '../../lib/server';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
-import { Messages, Users } from '../../models/server';
+import { Users } from '../../models/server';
 import { Apps, AppEvents } from '../../../ee/server/apps/orchestrator';
 import { isTruthy } from '../../../lib/isTruthy';
 
@@ -62,7 +62,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		let originalMessage: IMessage = Messages.findOneById(message._id);
+		let originalMessage = await Messages.findOneById(message._id);
 		if (originalMessage == null || originalMessage._id == null) {
 			throw new Meteor.Error('error-invalid-message', 'Message you are pinning was not found', {
 				method: 'pinMessage',
@@ -87,7 +87,7 @@ Meteor.methods<ServerMethods>({
 
 		// If we keep history of edits, insert a new message to store history information
 		if (settings.get('Message_KeepHistory')) {
-			await MessagesRaw.cloneAndSaveAsHistoryById(message._id, me);
+			await Messages.cloneAndSaveAsHistoryById(message._id, me);
 		}
 
 		const room = await Rooms.findOneById(originalMessage.rid);
@@ -108,7 +108,7 @@ Meteor.methods<ServerMethods>({
 
 		originalMessage = callbacks.run('beforeSaveMessage', originalMessage);
 
-		await MessagesRaw.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
+		await Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
 		if (isTheLastMessage(room, message)) {
 			await Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
 		}
@@ -138,7 +138,7 @@ Meteor.methods<ServerMethods>({
 			],
 		});
 
-		return MessagesRaw.findOneById(msgId);
+		return Messages.findOneById(msgId);
 	},
 	async unpinMessage(message) {
 		check(message._id, String);
@@ -158,7 +158,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		let originalMessage = Messages.findOneById(message._id);
+		let originalMessage = await Messages.findOneById(message._id);
 		if (originalMessage == null || originalMessage._id == null) {
 			throw new Meteor.Error('error-invalid-message', 'Message you are unpinning was not found', {
 				method: 'unpinMessage',
@@ -183,7 +183,7 @@ Meteor.methods<ServerMethods>({
 
 		// If we keep history of edits, insert a new message to store history information
 		if (settings.get('Message_KeepHistory')) {
-			await MessagesRaw.cloneAndSaveAsHistoryById(originalMessage._id, me);
+			await Messages.cloneAndSaveAsHistoryById(originalMessage._id, me);
 		}
 
 		originalMessage.pinned = false;
@@ -209,7 +209,7 @@ Meteor.methods<ServerMethods>({
 		// App IPostMessagePinned event hook
 		await Apps.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, await Meteor.userAsync(), originalMessage.pinned);
 
-		await MessagesRaw.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
+		await Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
 
 		return true;
 	},

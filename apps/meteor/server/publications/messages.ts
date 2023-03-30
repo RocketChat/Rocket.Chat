@@ -5,7 +5,6 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
 import { canAccessRoomIdAsync } from '../../app/authorization/server/functions/canAccessRoom';
-import { Messages as MessagesSync } from '../../app/models/server';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -55,7 +54,7 @@ Meteor.methods<ServerMethods>({
 						ts: -1,
 					},
 				}).toArray(),
-				deleted: MessagesSync.trashFindDeletedAfter(lastUpdate, { rid }, { ...options, fields: { _id: 1, _deletedAt: 1 } }).fetch(),
+				deleted: await Messages.trashFindDeletedAfter(lastUpdate, { rid }, { ...options, fields: { _id: 1, _deletedAt: 1 } }).toArray(),
 			};
 		}
 
