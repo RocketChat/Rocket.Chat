@@ -80,7 +80,7 @@ export class CROWD {
 		if (username.indexOf('@') !== -1) {
 			const email = username;
 
-			user = await Meteor.users.findOne({ 'emails.address': email }, { projection: { username: 1, crowd_username: 1, crowd: 1 } });
+			user = await Users.findOne({ 'emails.address': email }, { projection: { username: 1, crowd_username: 1, crowd: 1 } });
 			if (user) {
 				crowd_username = user.crowd_username;
 			} else {
@@ -163,9 +163,12 @@ export class CROWD {
 			await _setRealName(id, crowdUser.displayname);
 		}
 
-		await Users.updateOne(id, {
-			$set: user,
-		});
+		await Users.updateOne(
+			{ _id: id },
+			{
+				$set: user,
+			},
+		);
 
 		await setUserActiveStatus(id, crowdUser.active);
 	}
@@ -240,11 +243,14 @@ export class CROWD {
 		if (user) {
 			const stampedToken = Accounts._generateStampedLoginToken();
 
-			await Users.updateOne(user._id, {
-				$push: {
-					'services.resume.loginTokens': Accounts._hashStampedToken(stampedToken),
+			await Users.updateOne(
+				{ _id: user._id },
+				{
+					$push: {
+						'services.resume.loginTokens': Accounts._hashStampedToken(stampedToken),
+					},
 				},
-			});
+			);
 
 			await this.syncDataToUser(crowdUser, user._id);
 

@@ -2374,7 +2374,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateOne(_id, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	resetPasswordAndSetRequirePasswordChange(_id, requirePasswordChange, requirePasswordChangeReason) {
