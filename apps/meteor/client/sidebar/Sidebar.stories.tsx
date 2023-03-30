@@ -71,7 +71,7 @@ const subscriptions: SubscriptionWithRoom[] = [
 		lowerCaseFName: 'general',
 		estimatedWaitingTimeQueue: 0,
 		livechatData: undefined,
-		priorityWeight: 0,
+		priorityWeight: 3,
 		responseBy: undefined,
 		usersCount: 0,
 		waitingResponse: undefined,
