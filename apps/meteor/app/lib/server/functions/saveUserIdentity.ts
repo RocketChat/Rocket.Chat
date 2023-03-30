@@ -31,7 +31,7 @@ export async function saveUserIdentity({ _id, name: rawName, username: rawUserna
 		if (!validateName(username)) {
 			return { success: false, error: 'Invalid username' };
 		}
-		const { success, error = null } = await _setUsername(_id, username, user) as any;
+		const { success, error = null } = (await _setUsername(_id, username, user)) as any;
 		if (!success) {
 			return { success, error: error ?? 'Unable to set username' };
 		}
