@@ -1,6 +1,6 @@
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { UserContext, useSetting } from '@rocket.chat/ui-contexts';
-import type { LoginService } from '@rocket.chat/ui-contexts';
+import type { LoginService, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import type { ContextType, FC } from 'react';
 import React, { useEffect, useMemo } from 'react';
@@ -86,7 +86,7 @@ const UserProvider: FC = ({ children }) => {
 				Subscriptions.findOne(query, { fields, sort }),
 			),
 			queryRoom: createReactiveSubscriptionFactory<IRoom | undefined>((query, fields) => Rooms.findOne(query, { fields })),
-			querySubscriptions: createReactiveSubscriptionFactory<Array<ISubscription> | []>((query, options) => {
+			querySubscriptions: createReactiveSubscriptionFactory<SubscriptionWithRoom[]>((query, options) => {
 				if (userId) {
 					return Subscriptions.find(query, options).fetch();
 				}

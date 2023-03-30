@@ -1,7 +1,6 @@
-import { FederationRoomEvents } from '@rocket.chat/models';
+import { FederationRoomEvents, Subscriptions } from '@rocket.chat/models';
 
 import { clientLogger } from '../lib/logger';
-import { Subscriptions } from '../../../models/server';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
 import { getFederationDomain } from '../lib/getFederationDomain';
@@ -39,7 +38,7 @@ async function afterCreateDirectRoom(room, extras) {
 			extras.members.map(async (member) => {
 				const normalizedMember = await normalizers.normalizeUser(member);
 
-				const sourceSubscription = Subscriptions.findOne({
+				const sourceSubscription = await Subscriptions.findOne({
 					'rid': normalizedRoom._id,
 					'u._id': normalizedMember._id,
 				});

@@ -24,10 +24,11 @@ import {
 	Settings,
 	LivechatTrigger,
 	LivechatCustomField,
+	Subscriptions,
 } from '@rocket.chat/models';
 import { Analytics, Team, VideoConf } from '@rocket.chat/core-services';
 
-import { Users, Rooms, Subscriptions } from '../../../models/server';
+import { Users, Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { getControl } from '../../../../server/lib/migrations';
@@ -304,7 +305,7 @@ export const statistics = {
 
 		statistics.lastLogin = Users.getLastLogin();
 		statistics.lastMessageSentAt = await Messages.getLastTimestamp();
-		statistics.lastSeenSubscription = Subscriptions.getLastSeen();
+		statistics.lastSeenSubscription = (await Subscriptions.getLastSeen())?.toString() || '';
 
 		statistics.os = {
 			type: os.type(),

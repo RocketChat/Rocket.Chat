@@ -1,7 +1,6 @@
-import { FederationRoomEvents, Users } from '@rocket.chat/models';
+import { FederationRoomEvents, Users, Subscriptions } from '@rocket.chat/models';
 
 import { clientLogger } from '../lib/logger';
-import { Subscriptions } from '../../../models/server';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
 import { getFederationDomain } from '../lib/getFederationDomain';
@@ -64,7 +63,7 @@ async function afterCreateRoom(roomOwner, room) {
 	}
 
 	// Find all subscriptions of this room
-	let subscriptions = Subscriptions.findByRoomIdWhenUsernameExists(room._id).fetch();
+	let subscriptions = await Subscriptions.findByRoomIdWhenUsernameExists(room._id).toArray();
 	subscriptions = subscriptions.reduce((acc, s) => {
 		acc[s.u._id] = s;
 

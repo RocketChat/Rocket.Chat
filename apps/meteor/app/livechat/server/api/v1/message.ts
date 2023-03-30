@@ -257,7 +257,7 @@ API.v1.addRoute(
 			}
 
 			const sentMessages = await Promise.all(
-				this.bodyParams.messages.map(async (message) => {
+				this.bodyParams.messages.map(async (message: { msg: string }): Promise<{ username: string; msg: string; ts: number }> => {
 					const sendMessage = {
 						guest: visitor,
 						message: {
