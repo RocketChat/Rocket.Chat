@@ -89,7 +89,7 @@ Meteor.startup(async function () {
 		icon: 'quote',
 		label: 'Quote',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
-		action(_, props) {
+		async action(_, props) {
 			const { message = messageArgs(this).msg, chat, autoTranslateOptions } = props;
 
 			if (message && autoTranslateOptions?.autoTranslateEnabled && autoTranslateOptions.showAutoTranslate(message)) {
@@ -99,7 +99,7 @@ Meteor.startup(async function () {
 						: message.msg;
 			}
 
-			chat?.composer?.quoteMessage(message);
+			await chat?.composer?.quoteMessage(message);
 		},
 		condition({ subscription }) {
 			if (subscription == null) {
@@ -122,7 +122,7 @@ Meteor.startup(async function () {
 			try {
 				const { message = messageArgs(this).msg } = props;
 				const permalink = await MessageAction.getPermaLink(message._id);
-				navigator.clipboard.writeText(permalink);
+				await navigator.clipboard.writeText(permalink);
 				dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
 			} catch (e) {
 				dispatchToastMessage({ type: 'error', message: e });
@@ -141,10 +141,10 @@ Meteor.startup(async function () {
 		label: 'Copy',
 		// classes: 'clipboard',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
-		action(_, props) {
+		async action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			const msgText = getMainMessageText(message).msg;
-			navigator.clipboard.writeText(msgText);
+			await navigator.clipboard.writeText(msgText);
 			dispatchToastMessage({ type: 'success', message: TAPi18n.__('Copied') });
 		},
 		condition({ subscription }) {
@@ -159,9 +159,9 @@ Meteor.startup(async function () {
 		icon: 'edit',
 		label: 'Edit',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
-		action(_, props) {
+		async action(_, props) {
 			const { message = messageArgs(this).msg, chat } = props;
-			chat?.messageEditing.editMessage(message);
+			await chat?.messageEditing.editMessage(message);
 		},
 		condition({ message, subscription, settings, room }) {
 			if (subscription == null) {
@@ -202,8 +202,8 @@ Meteor.startup(async function () {
 		label: 'Delete',
 		context: ['message', 'message-mobile', 'threads', 'federated'],
 		color: 'alert',
-		action(this: unknown, _, { message = messageArgs(this).msg, chat }) {
-			chat?.flows.requestMessageDeletion(message);
+		async action(this: unknown, _, { message = messageArgs(this).msg, chat }) {
+			await chat?.flows.requestMessageDeletion(message);
 		},
 		condition({ message, subscription, room, chat }) {
 			if (!subscription) {

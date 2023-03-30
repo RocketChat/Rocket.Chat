@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import {
 	Rooms as RoomRaw,
-	LivechatRooms as LivechatRoomsRaw,
+	LivechatRooms,
 	LivechatDepartment as LivechatDepartmentRaw,
 	LivechatCustomField,
 	LivechatInquiry,
@@ -84,7 +84,7 @@ export const dispatchInquiryPosition = async (inquiry, queueInfo) => {
 	const { position, department } = inquiry;
 	const data = await normalizeQueueInfo({ position, queueInfo, department });
 	const propagateInquiryPosition = Meteor.bindEnvironment((inquiry) => {
-		api.broadcast('omnichannel.room', inquiry.rid, {
+		void api.broadcast('omnichannel.room', inquiry.rid, {
 			type: 'queueData',
 			data,
 		});
@@ -170,16 +170,16 @@ export const setPredictedVisitorAbandonmentTime = async (room) => {
 	}
 
 	const willBeAbandonedAt = moment(room.v.lastMessageTs).add(Number(secondsToAdd), 'seconds').toDate();
-	await LivechatRoomsRaw.setPredictedVisitorAbandonmentByRoomId(room._id, willBeAbandonedAt);
+	await LivechatRooms.setPredictedVisitorAbandonmentByRoomId(room._id, willBeAbandonedAt);
 };
 
 export const updatePredictedVisitorAbandonment = async () => {
 	if (!settings.get('Livechat_abandoned_rooms_action') || settings.get('Livechat_abandoned_rooms_action') === 'none') {
-		await LivechatRoomsRaw.unsetAllPredictedVisitorAbandonment();
+		await LivechatRooms.unsetAllPredictedVisitorAbandonment();
 	} else {
 		// Eng day: use a promise queue to update the predicted visitor abandonment time instead of all at once
 		const promisesArray = [];
-		await LivechatRoomsRaw.findOpen().forEach((room) => promisesArray.push(setPredictedVisitorAbandonmentTime(room)));
+		await LivechatRooms.findOpen().forEach((room) => promisesArray.push(setPredictedVisitorAbandonmentTime(room)));
 
 		await Promise.all(promisesArray);
 	}
@@ -212,7 +212,7 @@ export const updateSLAInquiries = async (sla) => {
 
 	const { _id: slaId } = sla;
 	const promises = [];
-	await LivechatRoomsRaw.findOpenBySlaId(slaId).forEach((room) => {
+	await LivechatRooms.findOpenBySlaId(slaId).forEach((room) => {
 		promises.push(updateInquiryQueueSla(room._id, sla));
 	});
 	await Promise.allSettled(promises);

@@ -1,22 +1,6 @@
-import Ajv from 'ajv';
+import type { BaseProps } from './BaseProps';
+import { withBaseProps } from './BaseProps';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+export type GroupsCloseProps = BaseProps;
 
-export type GroupsCloseProps = {
-	roomId: string;
-};
-
-const GroupsClosePropsSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-		},
-	},
-	required: ['roomId'],
-	additionalProperties: false,
-};
-
-export const isGroupsCloseProps = ajv.compile<GroupsCloseProps>(GroupsClosePropsSchema);
+export const isGroupsCloseProps = withBaseProps;

@@ -1,12 +1,20 @@
 import { Meteor } from 'meteor/meteor';
 import type { IUser, IRole } from '@rocket.chat/core-typings';
 import { Roles } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { Users } from '../../app/models/server';
 
 const rolesToChangeTo: Map<IRole['_id'], [IRole['_id']]> = new Map([['anonymous', ['user']]]);
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		afterVerifyEmail(): void;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async afterVerifyEmail() {
 		const userId = Meteor.userId();
 

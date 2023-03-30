@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { settingsRegistry } from '../../settings/server';
 
 Meteor.startup(function () {
-	settingsRegistry.addGroup('IRC_Federation', function () {
+	void settingsRegistry.addGroup('IRC_Federation', function () {
 		this.add('IRC_Enabled', false, {
 			type: 'boolean',
 			i18nLabel: 'Enabled',

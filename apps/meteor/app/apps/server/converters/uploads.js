@@ -7,13 +7,13 @@ export class AppUploadsConverter {
 		this.orch = orch;
 	}
 
-	convertById(id) {
-		const upload = Promise.await(Uploads.findOneById(id));
+	async convertById(id) {
+		const upload = await Uploads.findOneById(id);
 
 		return this.convertToApp(upload);
 	}
 
-	convertToApp(upload) {
+	async convertToApp(upload) {
 		if (!upload) {
 			return undefined;
 		}
@@ -35,8 +35,8 @@ export class AppUploadsConverter {
 			url: 'url',
 			updatedAt: '_updatedAt',
 			uploadedAt: 'uploadedAt',
-			room: (upload) => {
-				const result = this.orch.getConverters().get('rooms').convertById(upload.rid);
+			room: async (upload) => {
+				const result = await this.orch.getConverters().get('rooms').convertById(upload.rid);
 				delete upload.rid;
 				return result;
 			},
@@ -49,12 +49,12 @@ export class AppUploadsConverter {
 				delete upload.userId;
 				return result;
 			},
-			visitor: (upload) => {
+			visitor: async (upload) => {
 				if (!upload.visitorToken) {
 					return undefined;
 				}
 
-				const result = this.orch.getConverters().get('visitors').convertByToken(upload.visitorToken);
+				const result = await this.orch.getConverters().get('visitors').convertByToken(upload.visitorToken);
 				delete upload.visitorToken;
 				return result;
 			},

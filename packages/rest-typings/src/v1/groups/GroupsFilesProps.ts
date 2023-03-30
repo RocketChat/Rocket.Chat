@@ -1,35 +1,32 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import Ajv from 'ajv';
+
+import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
+import type { GroupsBaseProps } from './BaseProps';
+import { withGroupBaseProperties } from './BaseProps';
 
 const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type GroupsFilesProps = {
-	roomId: IRoom['_id'];
-	count: number;
-	sort: string;
-	query: string;
-};
+export type GroupsFilesProps = PaginatedRequest<GroupsBaseProps>;
 
-const GroupsFilesPropsSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-		},
-		count: {
-			type: 'number',
-		},
-		sort: {
-			type: 'string',
-		},
-		query: {
-			type: 'string',
-		},
+const GroupsFilesPropsSchema = withGroupBaseProperties({
+	count: {
+		type: 'number',
+		nullable: true,
 	},
-	required: ['roomId', 'count', 'sort', 'query'],
-	additionalProperties: false,
-};
+	sort: {
+		type: 'string',
+		nullable: true,
+	},
+	query: {
+		type: 'string',
+		nullable: true,
+	},
+	offset: {
+		type: 'number',
+		nullable: true,
+	},
+});
 
 export const isGroupsFilesProps = ajv.compile<GroupsFilesProps>(GroupsFilesPropsSchema);

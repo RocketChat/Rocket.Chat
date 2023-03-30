@@ -3,4 +3,3 @@ export { default as SlaField } from './SlaField';
 export { default as SourceField } from './SourceField';
 export { default as ContactField } from './ContactField';
 export { FormSkeleton } from './FormSkeleton';
-export { CallDialpadButton } from './CallDialpadButton';

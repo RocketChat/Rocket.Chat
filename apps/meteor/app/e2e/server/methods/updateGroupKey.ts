@@ -22,14 +22,14 @@ Meteor.methods<ServerMethods>({
 		if (mySub) {
 			// Setting the key to myself, can set directly to the final field
 			if (userId === uid) {
-				Subscriptions.setGroupE2EKey(mySub._id, key);
+				await Subscriptions.setGroupE2EKey(mySub._id, key);
 				return;
 			}
 
 			// uid also has subscription to this room
 			const userSub = await Subscriptions.findOneByRoomIdAndUserId(rid, uid);
 			if (userSub) {
-				Subscriptions.setGroupE2ESuggestedKey(userSub._id, key);
+				await Subscriptions.setGroupE2ESuggestedKey(userSub._id, key);
 			}
 		}
 	},

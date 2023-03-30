@@ -27,7 +27,7 @@ export const useRoomDelete = (room: IRoom, resetState?: () => void) => {
 					return resetState();
 				}
 
-				return router.push({});
+				router.push({});
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}

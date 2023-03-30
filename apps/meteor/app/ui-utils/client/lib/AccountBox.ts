@@ -32,7 +32,7 @@ export const isAppAccountBoxItem = (item: IAppAccountBoxItem | AccountBoxItem): 
 class AccountBoxBase {
 	private items = new ReactiveVar<IAppAccountBoxItem[]>([]);
 
-	public setStatus(status: UserStatus, statusText: string): any {
+	public setStatus(status: UserStatus, statusText?: string): any {
 		return APIClient.post('/v1/users.setStatus', { status, message: statusText });
 	}
 

@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Permissions } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../functions/hasPermission';
+import { hasPermissionAsync } from '../functions/hasPermission';
 import { CONSTANTS } from '../../lib';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -25,8 +25,8 @@ Meteor.methods<ServerMethods>({
 
 		if (
 			!uid ||
-			!hasPermission(uid, 'access-permissions') ||
-			(permission.level === CONSTANTS.SETTINGS_LEVEL && !hasPermission(uid, 'access-setting-permissions'))
+			!(await hasPermissionAsync(uid, 'access-permissions')) ||
+			(permission.level === CONSTANTS.SETTINGS_LEVEL && !(await hasPermissionAsync(uid, 'access-setting-permissions')))
 		) {
 			throw new Meteor.Error('error-action-not-allowed', 'Removing permission is not allowed', {
 				method: 'authorization:removeRoleFromPermission',
@@ -38,8 +38,8 @@ Meteor.methods<ServerMethods>({
 		// related to this group have been removed
 
 		if (permission.groupPermissionId) {
-			Permissions.removeRole(permission.groupPermissionId, role);
+			await Permissions.removeRole(permission.groupPermissionId, role);
 		}
-		Permissions.removeRole(permission._id, role);
+		await Permissions.removeRole(permission._id, role);
 	},
 });

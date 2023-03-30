@@ -40,6 +40,7 @@ type ModelOptions = {
 	preventSetUpdatedAt?: boolean;
 	collectionNameResolver?: (name: string) => string;
 	collection?: CollectionOptions;
+	_updatedAtIndexOptions?: Omit<IndexDescription, 'key'>;
 };
 
 export abstract class BaseRaw<
@@ -71,6 +72,10 @@ export abstract class BaseRaw<
 		this.col = this.db.collection(this.collectionName, options?.collection || {});
 
 		const indexes = this.modelIndexes();
+		if (options?._updatedAtIndexOptions) {
+			indexes?.push({ ...options._updatedAtIndexOptions, key: { _updatedAt: 1 } });
+		}
+
 		if (indexes?.length) {
 			this.col.createIndexes(indexes).catch((e) => {
 				console.warn(`Some indexes for collection '${this.collectionName}' could not be created:\n\t${e.message}`);

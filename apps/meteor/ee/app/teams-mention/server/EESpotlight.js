@@ -10,7 +10,7 @@ export const SpotlightEnterprise = {
 		});
 	},
 
-	_searchTeams(_, userId, { text, options, users, mentions }) {
+	async _searchTeams(_, userId, { text, options, users, mentions }) {
 		if (!mentions) {
 			return users;
 		}
@@ -22,13 +22,13 @@ export const SpotlightEnterprise = {
 		}
 
 		const teamOptions = { ...options, projection: { name: 1, type: 1 } };
-		const teams = Promise.await(Team.search(userId, text, teamOptions));
+		const teams = await Team.search(userId, text, teamOptions);
 		users.push(...this.mapTeams(teams));
 
 		return users;
 	},
 
-	_performExtraUserSearches(_, userId, searchParams) {
+	async _performExtraUserSearches(_, userId, searchParams) {
 		return this._searchTeams(userId, searchParams);
 	},
 };

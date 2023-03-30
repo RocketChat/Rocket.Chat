@@ -6,9 +6,9 @@ import { sendMessage, createDirectRoom } from '../../../../lib/server';
  *
  *
  */
-const getDirectRoom = (source, target) => {
+const getDirectRoom = async (source, target) => {
 	const uids = [source._id, target._id];
-	const { _id, ...extraData } = createDirectRoom([source, target]);
+	const { _id, ...extraData } = await createDirectRoom([source, target]);
 
 	const room = Rooms.findOneDirectRoomContainingAllUserIDs(uids);
 	if (room) {
@@ -43,7 +43,7 @@ export default async function handleSentMessage(args) {
 			'profile.irc.nick': args.recipientNick,
 		});
 
-		room = getDirectRoom(user, recipientUser);
+		room = await getDirectRoom(user, recipientUser);
 	}
 
 	const message = {
@@ -51,5 +51,5 @@ export default async function handleSentMessage(args) {
 		ts: new Date(),
 	};
 
-	sendMessage(user, message, room);
+	await sendMessage(user, message, room);
 }

@@ -4,7 +4,7 @@ import { CustomSounds } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
 
 export type ICustomSoundData = {
@@ -29,7 +29,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async insertOrUpdateSound(soundData) {
-		if (!this.userId || !hasPermission(this.userId, 'manage-sounds')) {
+		if (!this.userId || !(await hasPermissionAsync(this.userId, 'manage-sounds'))) {
 			throw new Meteor.Error('not_authorized');
 		}
 
@@ -88,7 +88,7 @@ Meteor.methods<ServerMethods>({
 
 		if (soundData.name !== soundData.previousName) {
 			await CustomSounds.setName(soundData._id, soundData.name);
-			api.broadcast('notify.updateCustomSound', {
+			void api.broadcast('notify.updateCustomSound', {
 				soundData: {
 					_id: soundData._id,
 					name: soundData.name,
