@@ -66,7 +66,7 @@ Meteor.methods<ServerMethods>({
 
 		const comment = await resolveOnHoldCommentInfo(options, room, onHoldChatResumedBy);
 
-		await Message.saveSystemMessage('omnichannel_on_hold_chat_resumed', roomId, comment, onHoldChatResumedBy);
+		await Message.saveSystemMessage('omnichannel_on_hold_chat_resumed', roomId, '', onHoldChatResumedBy, { comment });
 
 		const updatedRoom = await LivechatRooms.findOneById(roomId);
 		updatedRoom && Meteor.defer(() => callbacks.run('livechat:afterOnHoldChatResumed', updatedRoom));

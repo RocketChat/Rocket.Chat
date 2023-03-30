@@ -187,7 +187,7 @@ export const LivechatEnterprise = {
 		}
 		await LivechatRooms.setOnHoldByRoomId(roomId);
 
-		await Message.saveSystemMessage('omnichannel_placed_chat_on_hold', roomId, comment, onHoldBy);
+		await Message.saveSystemMessage('omnichannel_placed_chat_on_hold', roomId, '', onHoldBy, { comment });
 
 		await callbacks.run('livechat:afterOnHold', room);
 
