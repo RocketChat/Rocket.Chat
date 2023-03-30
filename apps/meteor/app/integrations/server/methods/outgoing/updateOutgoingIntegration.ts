@@ -95,7 +95,7 @@ Meteor.methods<ServerMethods>({
 					triggerWordAnywhere: integration.triggerWordAnywhere,
 					runOnEdits: integration.runOnEdits,
 					_updatedAt: new Date(),
-					_updatedBy: await Users.findOne(this.userId, { projection: { username: 1 } }),
+					_updatedBy: await Users.findOne({ _id: this.userId }, { projection: { username: 1 } }),
 				},
 			},
 		);

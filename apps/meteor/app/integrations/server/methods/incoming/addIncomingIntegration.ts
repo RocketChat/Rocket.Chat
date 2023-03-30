@@ -92,7 +92,7 @@ Meteor.methods<ServerMethods>({
 			token: Random.id(48),
 			userId: user._id,
 			_createdAt: new Date(),
-			_createdBy: await Users.findOne(userId, { projection: { username: 1 } }),
+			_createdBy: await Users.findOne({ _id: userId }, { projection: { username: 1 } }),
 		};
 
 		if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {

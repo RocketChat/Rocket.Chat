@@ -17,6 +17,7 @@ import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
 import { settings } from '../../../settings/server';
 
 export const forbiddenModelMethods = ['registerModel', 'getCollectionName'];
+
 const compiledScripts = {};
 function buildSandbox(store = {}) {
 	const sandbox = {

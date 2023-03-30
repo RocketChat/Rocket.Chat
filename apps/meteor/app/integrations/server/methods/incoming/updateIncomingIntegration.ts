@@ -161,7 +161,7 @@ Meteor.methods<ServerMethods>({
 					script: integration.script,
 					scriptEnabled: integration.scriptEnabled,
 					_updatedAt: new Date(),
-					_updatedBy: await Users.findOne(this.userId, { projection: { username: 1 } }),
+					_updatedBy: await Users.findOne({ _id: this.userId }, { projection: { username: 1 } }),
 				},
 			},
 		);

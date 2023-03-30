@@ -15,6 +15,9 @@ const isValidName = (name: unknown): name is string => {
 	return typeof name === 'string' && name.trim().length > 0;
 };
 
+const onlyUsernames = (members: unknown): members is string[] =>
+	Array.isArray(members) && !members.every((member) => typeof member === 'string');
+
 // eslint-disable-next-line complexity
 export const createRoom = async <T extends RoomType>(
 	type: T,
@@ -34,6 +37,13 @@ export const createRoom = async <T extends RoomType>(
 
 	if (type === 'd') {
 		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || ownerUsername });
+	}
+
+	if (!onlyUsernames(members)) {
+		throw new Meteor.Error(
+			'error-invalid-members',
+			'members should be an array of usernames if provided for rooms other than direct messages',
+		);
 	}
 
 	if (!isValidName(name)) {
@@ -56,8 +66,8 @@ export const createRoom = async <T extends RoomType>(
 		});
 	}
 
-	if (owner.username && !(members as string[]).includes(owner.username)) {
-		(members as string[]).push(owner.username);
+	if (owner.username && !members.includes(owner.username)) {
+		members.push(owner.username);
 	}
 
 	if (extraData.broadcast) {
@@ -131,7 +141,7 @@ export const createRoom = async <T extends RoomType>(
 
 		await Subscriptions.createWithRoomAndUser(room, owner, extra);
 	} else {
-		for await (const username of [...new Set(members as string[])]) {
+		for await (const username of [...new Set(members)]) {
 			const member = await Users.findOneByUsername(username, {
 				projection: { 'username': 1, 'settings.preferences': 1, 'federated': 1 },
 			});
@@ -176,7 +186,7 @@ export const createRoom = async <T extends RoomType>(
 	}
 	callbacks.runAsync('afterCreateRoom', owner, room);
 	if (shouldBeHandledByFederation) {
-		callbacks.runAsync('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members as string[] });
+		callbacks.runAsync('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members });
 	}
 
 	void Apps.triggerEvent('IPostRoomCreate', room);
