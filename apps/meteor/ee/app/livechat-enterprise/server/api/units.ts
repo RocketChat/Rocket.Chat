@@ -48,7 +48,7 @@ API.v1.addRoute(
 		},
 		async post() {
 			const { unitData, unitMonitors, unitDepartments } = this.bodyParams;
-			return API.v1.success(LivechatEnterprise.saveUnit(null, unitData, unitMonitors, unitDepartments) as IOmnichannelBusinessUnit);
+			return API.v1.success((await LivechatEnterprise.saveUnit(null, unitData, unitMonitors, unitDepartments)) as IOmnichannelBusinessUnit);
 		},
 	},
 );
@@ -69,7 +69,7 @@ API.v1.addRoute(
 			const { unitData, unitMonitors, unitDepartments } = this.bodyParams;
 			const { id } = this.urlParams;
 
-			return API.v1.success(LivechatEnterprise.saveUnit(id, unitData, unitMonitors, unitDepartments) as IOmnichannelBusinessUnit);
+			return API.v1.success((await LivechatEnterprise.saveUnit(id, unitData, unitMonitors, unitDepartments)) as IOmnichannelBusinessUnit);
 		},
 		async delete() {
 			const { id } = this.urlParams;

@@ -21,10 +21,35 @@ export class CannedResponseRaw extends BaseRaw<IOmnichannelCannedResponse> imple
 		];
 	}
 
-	async createOrUpdateCannedResponse(
+	async updateCannedResponse(
 		_id: string,
-		{ shortcut, text, tags, scope, userId, departmentId, createdBy, _createdAt }: IOmnichannelCannedResponse,
-	): Promise<Omit<IOmnichannelCannedResponse, '_updatedAt'>> {
+		{ shortcut, text, tags, scope, userId, departmentId, createdBy }: Omit<IOmnichannelCannedResponse, '_id' | '_updatedAt' | '_createdAt'>,
+	): Promise<Omit<IOmnichannelCannedResponse, '_updatedAt' | '_createdAt'>> {
+		const record = {
+			shortcut,
+			text,
+			scope,
+			tags,
+			userId,
+			departmentId,
+			createdBy,
+		};
+
+		await this.updateOne({ _id }, { $set: record });
+
+		return Object.assign(record, { _id });
+	}
+
+	async createCannedResponse({
+		shortcut,
+		text,
+		tags,
+		scope,
+		userId,
+		departmentId,
+		createdBy,
+		_createdAt,
+	}: Omit<IOmnichannelCannedResponse, '_id' | '_updatedAt'>): Promise<Omit<IOmnichannelCannedResponse, '_updatedAt'>> {
 		const record = {
 			shortcut,
 			text,
@@ -36,12 +61,7 @@ export class CannedResponseRaw extends BaseRaw<IOmnichannelCannedResponse> imple
 			_createdAt,
 		};
 
-		if (_id) {
-			await this.updateOne({ _id }, { $set: record });
-		} else {
-			_id = (await this.insertOne(record)).insertedId;
-		}
-
+		const _id = (await this.insertOne(record)).insertedId;
 		return Object.assign(record, { _id });
 	}
 
