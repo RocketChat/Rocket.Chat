@@ -58,7 +58,12 @@ const RoomAutoCompleteMultiple = ({ value, onChange, ...props }: RoomAutoComplet
 				</Chip>
 			)}
 			renderItem={({ value, label, ...props }): ReactElement => (
-				<Option key={value} {...props} label={label.name} avatar={<RoomAvatar value={value} {...label} />} />
+				<Option
+					key={value}
+					{...props}
+					label={label.name}
+					avatar={<RoomAvatar size='x20' room={{ type: label?.type || 'c', _id: value, ...label }} />}
+				/>
 			)}
 			options={options}
 		/>
