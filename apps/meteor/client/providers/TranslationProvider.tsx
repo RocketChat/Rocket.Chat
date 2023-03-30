@@ -94,11 +94,15 @@ const useI18next = (lng: string): typeof i18next => {
 	}, [i18n, lng]);
 
 	useEffect(() => {
-		if (!customTranslations || typeof customTranslations !== 'string' || !parseToJSON(customTranslations)) {
+		if (!customTranslations || typeof customTranslations !== 'string') {
 			return;
 		}
 
 		const parsedCustomTranslations: Record<string, Record<string, string>> = JSON.parse(customTranslations);
+
+		if (!parsedCustomTranslations) {
+			return;
+		}
 
 		for (const [ln, translations] of Object.entries(parsedCustomTranslations)) {
 			const namespaces = Object.entries(translations).reduce((acc, [key, value]): Record<string, Record<string, string>> => {
