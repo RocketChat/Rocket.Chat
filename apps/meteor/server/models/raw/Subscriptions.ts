@@ -1205,7 +1205,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	updateDirectNameAndFnameByName(name: string, newName: string, newFname: string): Promise<UpdateResult | Document> {
+	updateDirectNameAndFnameByName(name: string, newName?: string, newFname?: string): Promise<UpdateResult | Document> {
 		const query: Filter<ISubscription> = {
 			name,
 			t: 'd',
