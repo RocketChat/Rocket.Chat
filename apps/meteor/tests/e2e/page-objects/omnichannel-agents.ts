@@ -24,8 +24,8 @@ export class OmnichannelAgents {
 		return this.page.locator('button.rcx-button--primary.rcx-button >> text="Add"');
 	}
 
-	get firstRowInTable() {
-		return this.page.locator('[data-qa="GenericTableAgentInfoBody"] .rcx-table__row--action .rcx-table__cell:first-child');
+	firstRowInTable(text: string) {
+		return this.page.locator(`[data-qa="GenericTableAgentInfoBody"] .rcx-table__row--action .rcx-table__cell:first-child >> text="${ text }"`);
 	}
 
 	get btnDeletefirstRowInTable() {
