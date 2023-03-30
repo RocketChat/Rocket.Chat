@@ -260,7 +260,8 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 			if (messageAlreadyExists) {
 				return;
 			}
-			message._id = await Messages.insertOne(message);
+			const result = await Messages.insertOne(message);
+			message._id = result.insertedId;
 		}
 
 		if (Apps && Apps.isLoaded()) {

@@ -63,6 +63,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{ key: { slackTs: 1, slackBotId: 1 }, sparse: true },
 			{ key: { unread: 1 }, sparse: true },
 			{ key: { 'pinnedBy._id': 1 }, sparse: true },
+			{ key: { 'starred._id': 1 }, sparse: true },
 
 			// discussions
 			{ key: { drid: 1 }, sparse: true },
