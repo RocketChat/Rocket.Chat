@@ -3,10 +3,10 @@ import URL from 'url';
 
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
-import { UploadFS } from 'meteor/jalik:ufs';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { InstanceStatus as InstanceStatusModel } from '@rocket.chat/models';
 
+import { UploadFS } from '../../../../server/ufs';
 import { Logger } from '../../../logger/server';
 import { isDocker } from '../../../utils/server';
 

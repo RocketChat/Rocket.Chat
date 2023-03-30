@@ -16,7 +16,7 @@ async function afterLeaveRoom(user, room) {
 
 	clientLogger.debug({ msg: 'afterLeaveRoom', user, room });
 
-	const { users } = getFederatedRoomData(room);
+	const { users } = await getFederatedRoomData(room);
 
 	try {
 		// Get the domains after leave
