@@ -17,7 +17,7 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 export const _setUsername = async function (userId: string, u: string, fullUser: IUser): Promise<unknown> {
 	const username = u.trim();
 	if (!userId || !username) {
-		return false;
+		return { succes: false, error: 'User ID and Username are required' };
 	}
 	let nameValidation;
 	try {
@@ -26,18 +26,18 @@ export const _setUsername = async function (userId: string, u: string, fullUser:
 		nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 	}
 	if (!nameValidation.test(username)) {
-		return false;
+		return { succes: false, error: 'Invalid Username' };
 	}
 	const user = fullUser || Users.findOneById(userId);
 	// User already has desired username, return
 	if (user.username === username) {
-		return user;
+		return { succes: true, user };
 	}
 	const previousUsername = user.username;
 	// Check username availability or if the user already owns a different casing of the name
 	if (!previousUsername || !(username.toLowerCase() === previousUsername.toLowerCase())) {
 		if (!(await checkUsernameAvailability(username))) {
-			return false;
+			return { succes: false, error: 'Username not available' };
 		}
 	}
 	// If first time setting username, send Enrollment Email
@@ -63,10 +63,10 @@ export const _setUsername = async function (userId: string, u: string, fullUser:
 				// eslint-disable-next-line dot-notation
 				setUserAvatar(user, avatarData['blob'], avatarData['contentType'], service);
 				gravatar = null;
-				return true;
+				return { succes: true };
 			}
 			gravatar = avatarData;
-			return false;
+			return { succes: false, error: 'Unable to update user' };
 		});
 		if (gravatar != null) {
 			// eslint-disable-next-line dot-notation
@@ -88,7 +88,7 @@ export const _setUsername = async function (userId: string, u: string, fullUser:
 		username: user.username,
 	});
 
-	return user;
+	return { succes: true, user };
 };
 
 export const setUsername = RateLimiter.limitFunction(_setUsername, 1, 60000, {

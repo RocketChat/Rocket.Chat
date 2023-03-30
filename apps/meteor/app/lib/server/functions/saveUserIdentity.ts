@@ -14,7 +14,7 @@ import { validateName } from './validateName';
 
 export async function saveUserIdentity({ _id, name: rawName, username: rawUsername }: { _id: string; name?: string; username?: string }) {
 	if (!_id) {
-		return false;
+		return { success: false, error: 'The required "_id" param is missing.' };
 	}
 
 	const name = String(rawName).trim();
@@ -29,18 +29,18 @@ export async function saveUserIdentity({ _id, name: rawName, username: rawUserna
 
 	if (typeof rawUsername !== 'undefined' && usernameChanged) {
 		if (!validateName(username)) {
-			return false;
+			return { success: false, error: 'Invalid username' };
 		}
-
-		if (!(await _setUsername(_id, username, user))) {
-			return false;
+		const { success, error = null } = await _setUsername(_id, username, user) as any;
+		if (!success) {
+			return { success, error: error ?? 'Unable to set username' };
 		}
 		user.username = username;
 	}
 
 	if (typeof rawName !== 'undefined' && nameChanged) {
 		if (!_setRealName(_id, name, user)) {
-			return false;
+			return { success: false, error: 'Unable to set name' };
 		}
 	}
 
@@ -87,5 +87,5 @@ export async function saveUserIdentity({ _id, name: rawName, username: rawUserna
 		}
 	}
 
-	return true;
+	return { success: true };
 }

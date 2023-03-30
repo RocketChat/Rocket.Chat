@@ -56,9 +56,9 @@ Meteor.methods<ServerMethods>({
 				field: username,
 			});
 		}
-
-		if (!(await saveUserIdentity({ _id: user._id, username }))) {
-			throw new Meteor.Error('error-could-not-change-username', 'Could not change username', {
+		const { success, error } = await saveUserIdentity({ _id: user._id, username });
+		if (!success) {
+			throw new Meteor.Error('error-could-not-change-username', error ?? 'Could not change username', {
 				method: 'setUsername',
 			});
 		}

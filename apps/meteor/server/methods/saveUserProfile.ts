@@ -52,14 +52,13 @@ async function saveUserProfile(
 	const user = Users.findOneById(this.userId);
 
 	if (settings.realname || settings.username) {
-		if (
-			!(await saveUserIdentity({
-				_id: this.userId,
-				name: settings.realname,
-				username: settings.username,
-			}))
-		) {
-			throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', {
+		const { success, error = null } = await saveUserIdentity({
+			_id: this.userId,
+			name: settings.realname,
+			username: settings.username,
+		})
+		if (!success) {
+			throw new Meteor.Error('error-could-not-save-identity', error ?? 'Could not save user identity', {
 				method: 'saveUserProfile',
 			});
 		}
