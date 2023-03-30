@@ -5,8 +5,8 @@ import React from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 import { useController } from 'react-hook-form';
 
+import UserAutoCompleteMultiple from '../../../../../../client/components/UserAutoCompleteMultiple';
 import type { AuditFields } from '../../hooks/useAuditForm';
-import UsernamesAutoComplete from '../forms/UsernamesAutoComplete';
 
 type UsersTabProps = {
 	form: UseFormReturn<AuditFields>;
@@ -32,7 +32,7 @@ const UsersTab = ({ form: { control } }: UsersTabProps): ReactElement => {
 		<Field flexShrink={1}>
 			<Field.Label>{t('Users')}</Field.Label>
 			<Field.Row>
-				<UsernamesAutoComplete
+				<UserAutoCompleteMultiple
 					error={!!usersFieldState.error}
 					value={usersField.value}
 					onChange={usersField.onChange}
