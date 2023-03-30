@@ -2,7 +2,7 @@ import { LivechatInquiry, Users, OmnichannelServiceLevelAgreements } from '@rock
 
 import { updateRoomSLA } from './sla';
 
-export async function setSLAToInquiry({ userId, roomId, sla }: { userId: string; roomId: string; sla: string }): Promise<void> {
+export async function setSLAToInquiry({ userId, roomId, sla }: { userId: string; roomId: string; sla?: string }): Promise<void> {
 	const inquiry = await LivechatInquiry.findOneByRoomId(roomId, { projection: { status: 1 } });
 	if (!inquiry || inquiry.status !== 'queued') {
 		throw new Error('error-invalid-inquiry');
@@ -14,7 +14,7 @@ export async function setSLAToInquiry({ userId, roomId, sla }: { userId: string;
 	}
 
 	const user = await Users.findOneById(userId, { projection: { _id: 1, username: 1, name: 1 } });
-	if (!user || !user.username) {
+	if (!user?.username) {
 		throw new Error('error-invalid-user');
 	}
 

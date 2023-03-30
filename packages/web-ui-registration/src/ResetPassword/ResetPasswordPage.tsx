@@ -51,7 +51,7 @@ const ResetPasswordPage = (): ReactElement => {
 			} else {
 				await setUserPassword(data.password);
 			}
-		} catch ({ error, reason }) {
+		} catch ({ error, reason }: any) {
 			const _error = reason ?? error;
 			setError('password', { message: String(_error) });
 		}

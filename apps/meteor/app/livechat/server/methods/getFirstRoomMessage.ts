@@ -1,9 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { LivechatRooms } from '@rocket.chat/models';
+import { LivechatRooms, Messages } from '@rocket.chat/models';
 
-import { Messages } from '../../../models/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 

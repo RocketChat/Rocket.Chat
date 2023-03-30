@@ -1,4 +1,4 @@
-import type { FindOptions, Filter } from 'mongodb';
+import type { Document, FindOptions, Filter } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
 	IRoom,
@@ -198,9 +198,9 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 	search(userId: string, term: string | RegExp, options: FindOptions<ITeam>): Promise<ITeam[]>;
 
-	search<P>(userId: string, term: string | RegExp, options: FindOptions<P extends ITeam ? ITeam : P>): Promise<P[]>;
+	search<P extends Document>(userId: string, term: string | RegExp, options: FindOptions<P extends ITeam ? ITeam : P>): Promise<P[]>;
 
-	async search<P>(
+	async search<P extends Document>(
 		userId: string,
 		term: string | RegExp,
 		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
@@ -295,9 +295,9 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 	listByNames(names: Array<string>, options: FindOptions<ITeam>): Promise<ITeam[]>;
 
-	listByNames<P>(names: Array<string>, options: FindOptions<P extends ITeam ? ITeam : P>): Promise<P[]>;
+	listByNames<P extends Document>(names: Array<string>, options: FindOptions<P extends ITeam ? ITeam : P>): Promise<P[]>;
 
-	async listByNames<P>(
+	async listByNames<P extends Document>(
 		names: Array<string>,
 		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): Promise<P[] | ITeam[]> {
@@ -487,9 +487,9 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 	listTeamsBySubscriberUserId(uid: string, options: FindOptions<ITeamMember>): Promise<ITeamMember[]>;
 
-	listTeamsBySubscriberUserId<P>(uid: string, options: FindOptions<P>): Promise<P[]>;
+	listTeamsBySubscriberUserId<P extends Document>(uid: string, options: FindOptions<P>): Promise<P[]>;
 
-	listTeamsBySubscriberUserId<P>(
+	listTeamsBySubscriberUserId<P extends Document>(
 		uid: string,
 		options?: undefined | FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
 	): Promise<P[] | ITeamMember[]> {

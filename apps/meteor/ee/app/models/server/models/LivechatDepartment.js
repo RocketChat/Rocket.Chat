@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
+import { LivechatUnit } from '@rocket.chat/models';
 
 import { LivechatDepartment } from '../../../../../app/models/server/models/LivechatDepartment';
 import { LivechatDepartment as LivechatDepartmentModel } from '../../../../../app/models/server';
-import { LivechatUnit } from '../index';
 import { overwriteClassOnLicense } from '../../../license/server';
 
 const { find, findOne, update, remove } = LivechatDepartment.prototype;
@@ -43,7 +43,7 @@ overwriteClassOnLicense('livechat-enterprise', LivechatDepartment, {
 		if (!businessUnit) {
 			return LivechatDepartmentModel.findEnabledWithAgents(fields);
 		}
-		const unit = LivechatUnit.findOneById(businessUnit, { fields: { _id: 1 } });
+		const unit = Promise.await(LivechatUnit.findOneById(businessUnit, { projection: { _id: 1 } }));
 		if (!unit) {
 			throw new Meteor.Error('error-unit-not-found', `Error! No Active Business Unit found with id: ${businessUnit}`);
 		}
