@@ -40,7 +40,7 @@ export class ConnectionImpl implements Connection {
 
 	calls: Method[] = [];
 
-	constructor(private ws: WebSocket, private client: DDPMethods, private retryOptions: RetryOptions) {}
+	constructor(private ws: WebSocket, private client: DDPMethods, _retryOptions: RetryOptions) {}
 
 	connect() {
 		this.status = 'connecting';
