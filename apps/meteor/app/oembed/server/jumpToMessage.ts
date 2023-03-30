@@ -4,9 +4,10 @@ import QueryString from 'querystring';
 import { Meteor } from 'meteor/meteor';
 import type { ITranslatedMessage, MessageAttachment } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
+import { Messages } from '@rocket.chat/models';
 
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
-import { Messages, Rooms, Users } from '../../models/server';
+import { Rooms, Users } from '../../models/server';
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { canAccessRoomAsync } from '../../authorization/server/functions/canAccessRoom';
@@ -62,7 +63,7 @@ callbacks.add(
 				continue;
 			}
 
-			const jumpToMessage = validateAttachmentDeepness(Messages.findOneById(msgId));
+			const jumpToMessage = validateAttachmentDeepness(await Messages.findOneById(msgId));
 			if (!jumpToMessage) {
 				continue;
 			}

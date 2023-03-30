@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Messages } from '@rocket.chat/models';
 
-import { Messages } from '../../../models/server';
 import { RateLimiter } from '../../../lib/server';
 import { settings } from '../../../settings/server';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -30,7 +30,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-allowed', 'not-allowed', { method: 'unfollowMessage' });
 		}
 
-		const message = Messages.findOneById(mid);
+		const message = await Messages.findOneById(mid);
 		if (!message) {
 			throw new Meteor.Error('error-invalid-message', 'Invalid message', {
 				method: 'unfollowMessage',

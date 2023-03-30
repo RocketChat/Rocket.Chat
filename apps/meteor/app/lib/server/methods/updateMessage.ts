@@ -3,8 +3,8 @@ import { Match, check } from 'meteor/check';
 import moment from 'moment';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IEditedMessage, IUser } from '@rocket.chat/core-typings';
+import { Messages } from '@rocket.chat/models';
 
-import { Messages } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -29,7 +29,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'updateMessage' });
 		}
 
-		const originalMessage = Messages.findOneById(message._id);
+		const originalMessage = await Messages.findOneById(message._id);
 		if (!originalMessage?._id) {
 			return;
 		}

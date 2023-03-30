@@ -617,7 +617,7 @@ export class ImportDataConverter {
 				}
 
 				try {
-					insertMessage(creator, msgObj, rid, true);
+					await insertMessage(creator, msgObj, rid, true);
 				} catch (e) {
 					this._logger.warn(`Failed to import message with timestamp ${String(msgObj.ts)} to room ${rid}`);
 					this._logger.error(e);

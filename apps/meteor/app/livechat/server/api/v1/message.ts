@@ -8,9 +8,8 @@ import {
 	isGETLivechatMessagesHistoryRidParams,
 	isGETLivechatMessagesParams,
 } from '@rocket.chat/rest-typings';
-import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatRooms, Messages } from '@rocket.chat/models';
 
-import { Messages } from '../../../../models/server';
 import { API } from '../../../../api/server';
 import { loadMessageHistory } from '../../../../lib/server/functions/loadMessageHistory';
 import { findGuest, findRoom, normalizeHttpHeaderData } from '../lib/livechat';
@@ -68,7 +67,7 @@ API.v1.addRoute(
 
 			const result = await Livechat.sendMessage(sendMessage);
 			if (result) {
-				const message = Messages.findOneById(_id);
+				const message = await Messages.findOneById(_id);
 				return API.v1.success({ message });
 			}
 
@@ -95,7 +94,7 @@ API.v1.addRoute(
 				throw new Error('invalid-room');
 			}
 
-			let message = Messages.findOneById(_id);
+			let message = await Messages.findOneById(_id);
 			if (!message) {
 				throw new Error('invalid-message');
 			}
@@ -121,7 +120,7 @@ API.v1.addRoute(
 				throw new Error('invalid-room');
 			}
 
-			const msg = Messages.findOneById(_id);
+			const msg = await Messages.findOneById(_id);
 			if (!msg) {
 				throw new Error('invalid-message');
 			}
@@ -131,7 +130,7 @@ API.v1.addRoute(
 				message: { _id: msg._id, msg: this.bodyParams.msg },
 			});
 			if (result) {
-				let message = Messages.findOneById(_id);
+				let message = await Messages.findOneById(_id);
 				if (message.file) {
 					message = await normalizeMessageFileUpload(message);
 				}
@@ -155,7 +154,7 @@ API.v1.addRoute(
 				throw new Error('invalid-room');
 			}
 
-			const message = Messages.findOneById(_id);
+			const message = await Messages.findOneById(_id);
 			if (!message) {
 				throw new Error('invalid-message');
 			}

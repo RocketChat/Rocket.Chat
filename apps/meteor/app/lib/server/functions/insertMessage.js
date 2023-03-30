@@ -1,8 +1,10 @@
-import { Messages, Rooms } from '../../../models/server';
+import { Messages } from '@rocket.chat/models';
+
+import { Rooms } from '../../../models/server';
 import { validateMessage, prepareMessageObject } from './sendMessage';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 
-export const insertMessage = function (user, message, rid, upsert = false) {
+export const insertMessage = async function (user, message, rid, upsert = false) {
 	if (!user || !message || !rid) {
 		return false;
 	}
@@ -14,14 +16,21 @@ export const insertMessage = function (user, message, rid, upsert = false) {
 	if (message._id && upsert) {
 		const { _id } = message;
 		delete message._id;
-		const existingMessage = Messages.findOneById(_id);
-		Messages.upsert(
-			{
-				_id,
-				'u._id': message.u._id,
-			},
-			message,
-		);
+		const existingMessage = await Messages.findOneById(_id);
+		if (existingMessage) {
+			await Messages.updateOne(
+				{
+					_id,
+					'u._id': message.u._id,
+				},
+				{ $set: message },
+			);
+		}
+		await Messages.insertOne({
+			_id,
+			'u._id': message.u._id,
+			...message,
+		});
 		if (!existingMessage) {
 			Rooms.incMsgCountById(rid, 1);
 		}
