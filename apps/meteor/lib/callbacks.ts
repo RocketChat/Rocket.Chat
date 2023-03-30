@@ -132,10 +132,14 @@ type ChainedCallbackSignatures = {
 		guest: ILivechatVisitor;
 		transferData: { [k: string]: string | any };
 	};
-	'livechat.afterForwardChatToAgent': (params: { rid: IRoom['_id']; servedBy: unknown; oldServedBy: unknown }) => {
+	'livechat.afterForwardChatToAgent': (params: {
 		rid: IRoom['_id'];
-		servedBy: unknown;
-		oldServedBy: unknown;
+		servedBy: { _id: string; ts: Date; username?: string };
+		oldServedBy: { _id: string; ts: Date; username?: string };
+	}) => {
+		rid: IRoom['_id'];
+		servedBy: { _id: string; ts: Date; username?: string };
+		oldServedBy: { _id: string; ts: Date; username?: string };
 	};
 	'livechat.afterForwardChatToDepartment': (params: {
 		rid: IRoom['_id'];
@@ -196,6 +200,8 @@ type ChainedCallbackSignatures = {
 	};
 	'livechat.beforeListTags': () => ILivechatTag[];
 	'livechat.offlineMessage': (data: { name: string; email: string; message: string; department?: string; host?: string }) => void;
+	'livechat.chatQueued': (room: IOmnichannelRoom) => IOmnichannelRoom;
+	'livechat.leadCapture': (room: IOmnichannelRoom) => IOmnichannelRoom;
 };
 
 type Hook =
@@ -230,7 +236,6 @@ type Hook =
 	| 'livechat.checkAgentBeforeTakeInquiry'
 	| 'livechat.sendTranscript'
 	| 'livechat.closeRoom'
-	| 'livechat.leadCapture'
 	| 'livechat.offlineMessage'
 	| 'livechat.onAgentAssignmentFailed'
 	| 'livechat.onCheckRoomApiParams'
