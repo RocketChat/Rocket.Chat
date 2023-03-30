@@ -85,16 +85,16 @@ export const addUserToRoom = async function (
 				},
 			};
 			if (room.teamMain) {
-				await Message.saveSystemMessage('added-user-to-team', rid, userToBeAdded.username, userToBeAdded, extraData);
+				await Message.saveSystemMessage('added-user-to-team', rid, userToBeAdded.username || '', userToBeAdded, extraData);
 			} else {
-				await Message.saveSystemMessage('au', rid, userToBeAdded.username, userToBeAdded, extraData);
+				await Message.saveSystemMessage('au', rid, userToBeAdded.username || '', userToBeAdded, extraData);
 			}
 		} else if (room.prid) {
-			await Message.saveSystemMessage('ut', rid, userToBeAdded.username, userToBeAdded, { ts: now });
+			await Message.saveSystemMessage('ut', rid, userToBeAdded.username || '', userToBeAdded, { ts: now });
 		} else if (room.teamMain) {
-			await Message.saveSystemMessage('ujt', rid, userToBeAdded.username, userToBeAdded, { ts: now });
+			await Message.saveSystemMessage('ujt', rid, userToBeAdded.username || '', userToBeAdded, { ts: now });
 		} else {
-			await Message.saveSystemMessage('uj', rid, userToBeAdded.username, userToBeAdded, { ts: now });
+			await Message.saveSystemMessage('uj', rid, userToBeAdded.username || '', userToBeAdded, { ts: now });
 		}
 	}
 
