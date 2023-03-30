@@ -8,6 +8,7 @@ import {
 	OmnichannelServiceLevelAgreements,
 	LivechatTag,
 	LivechatUnitMonitors,
+	LivechatUnit,
 } from '@rocket.chat/models';
 
 import { hasLicense } from '../../../license/server/license';
@@ -23,7 +24,6 @@ import { logger, queueLogger } from './logger';
 import { callbacks } from '../../../../../lib/callbacks';
 import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
-import { LivechatUnit } from '../../../models/server';
 
 export const LivechatEnterprise = {
 	async addMonitor(username) {
@@ -69,7 +69,7 @@ export const LivechatEnterprise = {
 	async removeUnit(_id) {
 		check(_id, String);
 
-		const unit = LivechatUnit.findOneById(_id, { fields: { _id: 1 } });
+		const unit = await LivechatUnit.findOneById(_id, { projection: { _id: 1 } });
 
 		if (!unit) {
 			throw new Meteor.Error('unit-not-found', 'Unit not found', { method: 'livechat:removeUnit' });
@@ -78,7 +78,7 @@ export const LivechatEnterprise = {
 		return LivechatUnit.removeById(_id);
 	},
 
-	saveUnit(_id, unitData, unitMonitors, unitDepartments) {
+	async saveUnit(_id, unitData, unitMonitors, unitDepartments) {
 		check(_id, Match.Maybe(String));
 
 		check(unitData, {
@@ -105,7 +105,7 @@ export const LivechatEnterprise = {
 
 		let ancestors = [];
 		if (_id) {
-			const unit = LivechatUnit.findOneById(_id);
+			const unit = await LivechatUnit.findOneById(_id);
 			if (!unit) {
 				throw new Meteor.Error('error-unit-not-found', 'Unit not found', {
 					method: 'livechat:saveUnit',
