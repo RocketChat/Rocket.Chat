@@ -227,6 +227,10 @@ callbacks.add(
 		}
 
 		const originalRoom = await LivechatRooms.findOneById(rid);
+		if (!originalRoom) {
+			return params;
+		}
+
 		const room = Object.assign(originalRoom, { oldDepartmentId });
 		await sendToCRM('LivechatSessionForwarded', room);
 		return params;
