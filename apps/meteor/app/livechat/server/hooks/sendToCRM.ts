@@ -95,7 +95,7 @@ async function sendToCRM(
 
 	let messages: IOmnichannelSystemMessage[] | null = null;
 	if (typeof includeMessages === 'boolean' && includeMessages) {
-		messages = (await Messages.findVisibleByRoomId(room._id, { sort: { ts: 1 } }).toArray()) as IOmnichannelSystemMessage[];
+		messages = await Messages.findVisibleByRoomId<IOmnichannelSysteMessage>(room._id, { sort: { ts: 1 } }).toArray();
 	} else if (includeMessages instanceof Array) {
 		messages = includeMessages;
 	}
