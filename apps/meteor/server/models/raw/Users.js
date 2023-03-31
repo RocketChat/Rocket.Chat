@@ -1816,6 +1816,17 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	countActiveUsersInRoles(roles, options) {
+		roles = [].concat(roles);
+
+		const query = {
+			roles: { $in: roles },
+			active: true,
+		};
+
+		return this.col.countDocuments(query, options);
+	}
+
 	findOneByUsernameAndServiceNameIgnoringCase(username, userId, serviceName, options) {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
@@ -1841,8 +1852,8 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findOneAdmin(admin, options) {
-		const query = { admin };
+	findOneAdmin(userId, options) {
+		const query = { roles: { $in: ['admin'] }, _id: userId };
 
 		return this.findOne(query, options);
 	}

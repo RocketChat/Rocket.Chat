@@ -147,7 +147,7 @@ export class SAML {
 			}
 
 			if (generateUsername === true) {
-				username = generateUsernameSuggestion(newUser);
+				username = await generateUsernameSuggestion(newUser);
 			}
 
 			if (username) {
