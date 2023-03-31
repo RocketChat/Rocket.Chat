@@ -1,14 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatRooms, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-
-import { Users } from '../../../models/server';
+import type { ILivechatAgent } from '@rocket.chat/core-typings';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'livechat:getAgentData'(params: { roomId: string; token: string }): void;
+		'livechat:getAgentData'(params: {
+			roomId: string;
+			token: string;
+		}): Promise<Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'customFields' | 'phone' | 'livechat'> | null | undefined>;
 	}
 }
 
