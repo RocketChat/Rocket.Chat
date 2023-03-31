@@ -22,9 +22,9 @@ async function getUsersWhoAreInTheSameGroupDMsAs(user: IUser) {
 		room.uids.forEach((uid) => uid !== user._id && userIds.add(uid));
 	});
 
-	await Users.findByIds([...userIds], { projection: { username: 1, name: 1 } }).forEach((user: IUser) => {
-		users.set(user._id, user);
-	});
+	(await Users.findByIds([...userIds], { projection: { username: 1, name: 1 } }).toArray()).forEach((user: IUser) =>
+		users.set(user._id, user),
+	);
 
 	return users;
 }

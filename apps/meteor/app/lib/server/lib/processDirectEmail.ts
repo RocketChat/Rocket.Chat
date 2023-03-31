@@ -4,8 +4,8 @@ import type { ParsedMail } from 'mailparser';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Messages, Subscriptions, Users } from '@rocket.chat/models';
 
-import { settings } from '../../../settings/server';
 import { Rooms } from '../../../models/server';
+import { settings } from '../../../settings/server';
 import { metrics } from '../../../metrics/server';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -91,7 +91,7 @@ export const processDirectEmail = Meteor.bindEnvironment(async function (email: 
 		return;
 	}
 
-	if ((roomInfo.muted || []).includes(user.username)) {
+	if ((roomInfo.muted || []).includes(user.username || '')) {
 		// user is muted
 		return;
 	}
@@ -100,7 +100,7 @@ export const processDirectEmail = Meteor.bindEnvironment(async function (email: 
 	if (roomInfo.ro === true) {
 		if (!(await hasPermissionAsync(user._id, 'post-readonly', roomInfo._id))) {
 			// Check if the user was manually unmuted
-			if (!(roomInfo.unmuted || []).includes(user.username)) {
+			if (!(roomInfo.unmuted || []).includes(user.username || '')) {
 				return;
 			}
 		}
