@@ -102189,6 +102189,118 @@
         "6.0"
       ],
       "pull_requests": []
+    },
+    "5.4.5": {
+      "node_version": "14.19.3",
+      "npm_version": "6.14.17",
+      "mongo_versions": [],
+      "pull_requests": [
+        {
+          "pr": "28363",
+          "title": "fix(upload): Restriction setting not being applied to the old UFS route",
+          "userLogin": "rodrigok",
+          "milestone": "5.4.5",
+          "contributors": [
+            "rodrigok",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28121",
+          "title": "Regression: Gracefully stop DDP Streamer publication and close WS",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.4.5",
+          "contributors": [
+            "sampaiodiego",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "27929",
+          "title": "[FIX][ENTERPRISE] DDP streamer sending data to destroyed streams",
+          "userLogin": "sampaiodiego",
+          "milestone": "5.4.5",
+          "contributors": [
+            "sampaiodiego",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        }
+      ]
+    },
+    "6.0.1": {
+      "node_version": "14.21.2",
+      "npm_version": "6.14.17",
+      "mongo_versions": [
+        "4.4",
+        "5.0",
+        "6.0"
+      ],
+      "pull_requests": [
+        {
+          "pr": "28450",
+          "title": "fix: Changing the app's error verification",
+          "userLogin": "AllanPazRibeiro",
+          "milestone": "6.0.1",
+          "contributors": [
+            "AllanPazRibeiro",
+            "web-flow",
+            "d-gubert",
+            "casalsgh",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "28514",
+          "title": "fix: Apps.engine resource consumption",
+          "userLogin": "tapiarafael",
+          "description": "Added some validations to avoid doing unnecessary updates and also avoid loop that causes high server usage",
+          "milestone": "6.0.1",
+          "contributors": [
+            "tapiarafael",
+            "web-flow",
+            "d-gubert",
+            "casalsgh",
+            "kodiakhq[bot]"
+          ]
+        },
+        {
+          "pr": "28467",
+          "title": "fix: Offline register option",
+          "userLogin": "csuadev",
+          "milestone": "6.0.1",
+          "contributors": [
+            "csuadev",
+            "web-flow",
+            "casalsgh"
+          ]
+        },
+        {
+          "pr": "28434",
+          "title": "fix: Horizontal scroll in main room if text is too long",
+          "userLogin": "gabriellsh",
+          "description": "Removed inline styles from elements and substituted `p` tag for `div`\r\n\r\nFor a quick explanation, the `p` tag adds the multiple line breaks by default when copying text. We should revise in the parser how we deal with paragraphs and text blocks.",
+          "milestone": "6.0.1",
+          "contributors": [
+            "gabriellsh",
+            "hugocostadev",
+            "web-flow"
+          ]
+        },
+        {
+          "pr": "28346",
+          "title": "fix: Thread list not scrolling to bottom when sending a message.",
+          "userLogin": "gabriellsh",
+          "milestone": "6.0.1",
+          "contributors": [
+            "gabriellsh",
+            "kodiakhq[bot]",
+            "web-flow"
+          ]
+        }
+      ]
     }
   },
   "5.4.0-rc.0": {

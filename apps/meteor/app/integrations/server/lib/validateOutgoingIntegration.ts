@@ -3,9 +3,8 @@ import { Match } from 'meteor/check';
 import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
 import type { IUser, INewOutgoingIntegration, IOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
-import { Subscriptions, Rooms } from '@rocket.chat/models';
+import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
-import { Users } from '../../../models/server';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { outgoingEvents } from '../../lib/outgoingEvents';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
@@ -74,7 +73,7 @@ async function _verifyUserHasPermissionForChannels(userId: IUser['_id'], channel
 					});
 					break;
 				case '@':
-					record = Users.findOne({
+					record = await Users.findOne({
 						$or: [{ _id: channel }, { username: channel }],
 					});
 					break;
@@ -143,7 +142,7 @@ export const validateOutgoingIntegration = async function (
 		});
 	}
 
-	const user = Users.findOne({ username: integration.username });
+	const user = await Users.findOne({ username: integration.username });
 
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user (did you delete the `rocket.cat` user?)', { function: 'validateOutgoing' });
@@ -155,7 +154,7 @@ export const validateOutgoingIntegration = async function (
 		channel: channels,
 		userId: user._id,
 		_createdAt: new Date(),
-		_createdBy: Users.findOne(userId, { fields: { username: 1 } }),
+		_createdBy: await Users.findOne(userId, { projection: { username: 1 } }),
 	};
 
 	if (outgoingEvents[integration.event].use.triggerWords && integration.triggerWords) {

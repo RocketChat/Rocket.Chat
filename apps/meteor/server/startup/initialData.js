@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-import { Settings, Rooms } from '@rocket.chat/models';
+import { Settings, Rooms, Users as UsersRaw } from '@rocket.chat/models';
 import colors from 'colors/safe';
 
 import { RocketChatFile } from '../../app/file/server';
@@ -146,7 +146,7 @@ Meteor.startup(async function () {
 	}
 
 	if ((await (await getUsersInRole('admin')).count()) === 0) {
-		const oldestUser = Users.getOldest({ _id: 1, username: 1, name: 1 });
+		const oldestUser = await UsersRaw.getOldest({ projection: { _id: 1, username: 1, name: 1 } });
 
 		if (oldestUser) {
 			await addUserRolesAsync(oldestUser._id, ['admin']);

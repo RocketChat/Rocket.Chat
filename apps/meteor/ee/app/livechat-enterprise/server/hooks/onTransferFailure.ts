@@ -1,9 +1,9 @@
 import type { IRoom, ILivechatVisitor, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 
 import { callbacks } from '../../../../../lib/callbacks';
 import { forwardRoomToDepartment } from '../../../../../app/livechat/server/lib/Helper';
-import { Messages } from '../../../../../app/models/server';
 import { cbLogger } from '../lib/logger';
 
 const onTransferFailure = async ({
@@ -39,8 +39,14 @@ const onTransferFailure = async ({
 	if (forwardSuccess) {
 		const { _id, username } = transferData.transferredBy;
 		// The property is injected dynamically on ee folder
-		// @ts-expect-error Property 'createTransferFailedHistoryMessage' does not exist on type 'Messages'.
-		Messages.createTransferFailedHistoryMessage(room._id, '', { _id, username }, { transferData: transferDataFallback });
+
+		await Message.saveSystemMessage(
+			'livechat_transfer_history_fallback',
+			room._id,
+			'',
+			{ _id, username },
+			{ transferData: transferDataFallback },
+		);
 	}
 
 	return forwardSuccess;
