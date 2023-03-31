@@ -1,4 +1,8 @@
-function getByteRange(header) {
+import type http from 'http';
+
+import type { IUpload } from '@rocket.chat/core-typings';
+
+function getByteRange(header?: string) {
 	if (!header) {
 		return;
 	}
@@ -12,12 +16,13 @@ function getByteRange(header) {
 	};
 }
 
-export function getFileRange(file, req) {
+export function getFileRange(file: IUpload, req: http.IncomingMessage) {
 	const range = getByteRange(req.headers.range);
 	if (!range) {
 		return;
 	}
-	if (range.start > file.size || range.stop <= range.start || range.stop > file.size) {
+	const size = file.size || 0;
+	if (range.start > size || range.stop <= range.start || range.stop > size) {
 		return { outOfRange: true };
 	}
 
@@ -25,7 +30,11 @@ export function getFileRange(file, req) {
 }
 
 // code from: https://github.com/jalik/jalik-ufs/blob/master/ufs-server.js#L310
-export const setRangeHeaders = function (range, file, res) {
+export const setRangeHeaders = function (
+	range: { start: number; stop: number; outOfRange?: boolean } | undefined,
+	file: IUpload,
+	res: http.ServerResponse,
+) {
 	if (!range) {
 		return;
 	}

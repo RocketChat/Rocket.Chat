@@ -70,7 +70,7 @@ const userDataDownloadHandler = Meteor.bindEnvironment(async (req: IncomingMessa
 		return;
 	}
 
-	if (!isRequestFromOwner(req as IIncomingMessage, file.userId)) {
+	if (!file.userId || !isRequestFromOwner(req as IIncomingMessage, file.userId)) {
 		res.writeHead(403).end();
 		return;
 	}

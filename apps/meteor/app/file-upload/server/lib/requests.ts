@@ -4,9 +4,9 @@ import { Uploads } from '@rocket.chat/models';
 import { FileUpload } from './FileUpload';
 
 WebApp.connectHandlers.use(FileUpload.getPath(), async function (req, res, next) {
-	const match = /^\/([^\/]+)\/(.*)/.exec(req.url);
+	const match = /^\/([^\/]+)\/(.*)/.exec(req.url || '');
 
-	if (match && match[1]) {
+	if (match?.[1]) {
 		const file = await Uploads.findOneById(match[1]);
 
 		if (file) {

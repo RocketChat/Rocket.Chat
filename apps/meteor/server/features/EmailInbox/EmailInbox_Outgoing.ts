@@ -111,7 +111,7 @@ slashCommands.add({
 			return;
 		}
 
-		FileUpload.getBuffer(file, (_err?: Error, buffer?: Buffer) => {
+		FileUpload.getBuffer(file, (_err?: Error, buffer?: Buffer | false) => {
 			!_err &&
 				buffer &&
 				void sendEmail(

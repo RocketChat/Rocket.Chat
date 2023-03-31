@@ -5,7 +5,7 @@ import _ from 'underscore';
 
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { settings } from '../../../settings/server';
-import '../../ufs/GoogleStorage/server.js';
+import '../../ufs/GoogleStorage/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
 const get = function (file, req, res) {
