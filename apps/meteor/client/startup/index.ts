@@ -23,7 +23,6 @@ import './notifications';
 import './oauth';
 import './otr';
 import './reloadRoomAfterLogin';
-import './renderMessage';
 import './renderNotification';
 import './roles';
 import './rootUrlChange';

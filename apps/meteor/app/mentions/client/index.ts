@@ -1,1 +1,1 @@
-export { createMentionsMessageRenderer } from './client';
+import './mentionLink.css';

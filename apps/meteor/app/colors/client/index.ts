@@ -1,1 +1,1 @@
-export { createHexColorPreviewMessageRenderer } from './client';
+import './style.css';
