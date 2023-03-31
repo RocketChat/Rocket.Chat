@@ -1,8 +1,7 @@
-import { Messages, VideoConference, LivechatDepartmentAgents, Rooms, Subscriptions } from '@rocket.chat/models';
+import { Messages, VideoConference, LivechatDepartmentAgents, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { _setUsername } from './setUsername';
 import { _setRealName } from './setRealName';
-import { Users } from '../../../models/server';
 import { FileUpload } from '../../../file-upload/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { validateName } from './validateName';
@@ -20,7 +19,10 @@ export async function saveUserIdentity({ _id, name: rawName, username: rawUserna
 	const name = String(rawName).trim();
 	const username = String(rawUsername).trim();
 
-	const user = Users.findOneById(_id);
+	const user = await Users.findOneById(_id);
+	if (!user) {
+		return false;
+	}
 
 	const previousUsername = user.username;
 	const previousName = user.name;
@@ -39,7 +41,7 @@ export async function saveUserIdentity({ _id, name: rawName, username: rawUserna
 	}
 
 	if (typeof rawName !== 'undefined' && nameChanged) {
-		if (!_setRealName(_id, name, user)) {
+		if (!(await _setRealName(_id, name, user))) {
 			return false;
 		}
 	}
