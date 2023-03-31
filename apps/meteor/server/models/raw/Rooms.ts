@@ -664,15 +664,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateMany(query, update);
 	}
 
-<<<<<<< HEAD:apps/meteor/server/models/raw/Rooms.ts
-	findOneByNameOrFname(name: NonNullable<IRoom['name'] | IRoom['fname']>, options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
-		return this.col.findOne({ $or: [{ name }, { fname: name }] }, options);
-	}
-
 	allRoomSourcesCount(): AggregationCursor<{ _id: Required<IOmnichannelGenericRoom['source']>; count: number }> {
-=======
-	allRoomSourcesCount() {
->>>>>>> e15c1784c70dc7fbf195f99e0b56e6f34182ca2c:apps/meteor/server/models/raw/Rooms.js
 		return this.col.aggregate([
 			{
 				$match: {
