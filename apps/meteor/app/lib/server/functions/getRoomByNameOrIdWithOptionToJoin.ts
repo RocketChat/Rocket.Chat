@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import type { IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
-import { Rooms } from '@rocket.chat/models';
+import { Rooms, Users } from '@rocket.chat/models';
 
-import { Users } from '../../../models/server';
 import { isObject } from '../../../../lib/utils/isObject';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 import { addUserToRoom } from './addUserToRoom';
@@ -32,11 +31,11 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 		// If the nameOrId starts with @ OR type is 'd', then let's try just a direct message
 		nameOrId = nameOrId.replace('@', '');
 
-		let roomUser: IUser;
+		let roomUser;
 		if (tryDirectByUserIdOnly) {
-			roomUser = Users.findOneById(nameOrId);
+			roomUser = await Users.findOneById(nameOrId);
 		} else {
-			roomUser = Users.findOne({
+			roomUser = await Users.findOne({
 				$or: [{ _id: nameOrId }, { username: nameOrId }],
 			});
 		}

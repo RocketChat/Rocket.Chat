@@ -240,9 +240,9 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	getAgentInfo(
 		agentId: string,
 		showAgentEmail?: boolean,
-	): Promise<Pick<ILivechatAgent, 'name' | 'username' | 'phone' | 'customFields' | 'status' | 'livechat'> | null>;
+	): Promise<Pick<ILivechatAgent, '_id' | 'name' | 'username' | 'phone' | 'customFields' | 'status' | 'livechat'> | null>;
 	roleBaseQuery(userId: string): { _id: string };
-	setE2EPublicAndPrivateKeysByUserId(userId: string, e2e: { publicKey: string; privateKey: string }): Promise<UpdateResult>;
+	setE2EPublicAndPrivateKeysByUserId(userId: string, e2e: { public_key: string; private_key: string }): Promise<UpdateResult>;
 	rocketMailUnsubscribe(userId: string, createdAt: string): Promise<number>;
 	fetchKeysByUserId(userId: string): Promise<{ public_key: string; private_key: string } | Record<string, never>>;
 	disable2FAAndSetTempSecretByUserId(userId: string, tempSecret: string): Promise<UpdateResult>;
@@ -257,6 +257,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	removeEmailCodeByUserIdAndCode(userId: string, code: string): Promise<UpdateResult>;
 	addEmailCodeByUserId(userId: string, code: string, expire: Date): Promise<UpdateResult>;
 	findActiveUsersInRoles(roles: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
+	countActiveUsersInRoles(roles: string[], options?: FindOptions<IUser>): Promise<number>;
 	findOneByUsernameAndServiceNameIgnoringCase(
 		username: string,
 		userId: string,
@@ -270,13 +271,14 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		options?: FindOptions<IUser>,
 	): Promise<IUser | null>;
 	findOneByEmailAddress(emailAddress: string, options?: FindOptions<IUser>): Promise<IUser | null>;
-	findOneAdmin(admin: boolean, options?: FindOptions<IUser>): Promise<IUser | null>;
+	findOneAdmin(admin: string, options?: FindOptions<IUser>): Promise<IUser | null>;
 	findOneByIdAndLoginToken(userId: string, loginToken: string, options?: FindOptions<IUser>): Promise<IUser | null>;
 	findOneActiveById(userId: string, options?: FindOptions<IUser>): Promise<IUser | null>;
 	findOneByIdOrUsername(userId: string, options?: FindOptions<IUser>): Promise<IUser | null>;
 	findOneByRolesAndType(roles: string[], type: string, options?: FindOptions<IUser>): Promise<IUser | null>;
 	findNotOfflineByIds(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
 	findUsersNotOffline(options?: FindOptions<IUser>): FindCursor<IUser>;
+	countUsersNotOffline(options?: FindOptions<IUser>): Promise<number>;
 	findNotIdUpdatedFrom(userId: string, updatedFrom: Date, options?: FindOptions<IUser>): FindCursor<IUser>;
 	findByRoomId(roomId: string, options?: FindOptions<IUser>): FindCursor<IUser>;
 	findByUsername(username: string, options?: FindOptions<IUser>): FindCursor<IUser>;
@@ -293,7 +295,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findUsersWithUsernameByIds(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
 	findUsersWithUsernameByIdsNotOffline(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
 	getOldest(options?: FindOptions<IUser>): Promise<IUser | null>;
-	findRemoteUsers(options?: FindOptions<IUser>): FindCursor<IUser>;
 	findActiveRemoteUsers(options?: FindOptions<IUser>): FindCursor<IUser>;
 	findActiveFederated(options?: FindOptions<IUser>): FindCursor<IUser>;
 	getSAMLByIdAndSAMLProvider(userId: string, samlProvider: string): Promise<IUser | null>;
@@ -349,4 +350,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findAllUsersWithPendingAvatar(): FindCursor<IUser>;
 	updateCustomFieldsById(userId: string, customFields: Record<string, unknown>): Promise<UpdateResult>;
 	countRoomMembers(roomId: string): Promise<number>;
+	countRemote(options?: FindOptions<IUser>): Promise<number>;
+	findOneByImportId(importId: string, options?: FindOptions<IUser>): Promise<IUser | null>;
 }

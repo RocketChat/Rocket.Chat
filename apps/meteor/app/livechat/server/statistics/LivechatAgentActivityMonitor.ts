@@ -50,8 +50,8 @@ export class LivechatAgentActivityMonitor {
 		// TODO use service event socket.connected instead
 		Meteor.onConnection((connection: unknown) => this._handleMeteorConnection(connection as ISocketConnection));
 		callbacks.add('livechat.agentStatusChanged', this._handleAgentStatusChanged);
-		callbacks.add('livechat.setUserStatusLivechat', (...args) => {
-			return Promise.await(this._handleUserStatusLivechatChanged(...args));
+		callbacks.add('livechat.setUserStatusLivechat', async (...args) => {
+			return this._handleUserStatusLivechatChanged(...args);
 		});
 		this._started = true;
 	}
@@ -60,8 +60,8 @@ export class LivechatAgentActivityMonitor {
 		SyncedCron.add({
 			name: this._name,
 			schedule: (parser: any) => parser.cron('0 0 * * *'),
-			job: () => {
-				Promise.await(this._updateActiveSessions());
+			job: async () => {
+				await this._updateActiveSessions();
 			},
 		});
 	}
@@ -106,12 +106,12 @@ export class LivechatAgentActivityMonitor {
 		}
 		connection.onClose(() => {
 			if (session) {
-				Promise.await(this._updateSessionWhenAgentStop(session.userId));
+				void this._updateSessionWhenAgentStop(session.userId);
 			}
 		});
 	}
 
-	_handleAgentStatusChanged({ userId, status }: { userId: string; status: string }): void {
+	async _handleAgentStatusChanged({ userId, status }: { userId: string; status: string }) {
 		if (!this.isRunning()) {
 			return;
 		}
@@ -122,9 +122,9 @@ export class LivechatAgentActivityMonitor {
 		}
 
 		if (status !== 'offline') {
-			Promise.await(this._createOrUpdateSession(userId));
+			await this._createOrUpdateSession(userId);
 		} else {
-			Promise.await(this._updateSessionWhenAgentStop(userId));
+			await this._updateSessionWhenAgentStop(userId);
 		}
 	}
 

@@ -1,7 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Rooms, Subscriptions } from '@rocket.chat/models';
-
-import { Users } from '../../../models/server';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 const getFname = (members: IUser[]): string => members.map(({ name, username }) => name || username).join(', ');
 const getName = (members: IUser[]): string => members.map(({ username }) => username).join(',');
@@ -24,7 +22,9 @@ async function getUsersWhoAreInTheSameGroupDMsAs(user: IUser) {
 		room.uids.forEach((uid) => uid !== user._id && userIds.add(uid));
 	});
 
-	Users.findByIds([...userIds], { fields: { username: 1, name: 1 } }).forEach((user: IUser) => users.set(user._id, user));
+	(await Users.findByIds([...userIds], { projection: { username: 1, name: 1 } }).toArray()).forEach((user: IUser) =>
+		users.set(user._id, user),
+	);
 
 	return users;
 }
