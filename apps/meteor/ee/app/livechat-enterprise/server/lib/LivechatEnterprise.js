@@ -9,7 +9,6 @@ import {
 	LivechatTag,
 	LivechatUnitMonitors,
 	LivechatUnit,
-	Messages,
 } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
 
