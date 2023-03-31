@@ -9,7 +9,6 @@ import {
 	LivechatUnitMonitors,
 	LivechatUnit,
 } from '@rocket.chat/models';
-import { Message } from '@rocket.chat/core-services';
 
 import { hasLicense } from '../../../license/server/license';
 import { updateDepartmentAgents } from '../../../../../app/livechat/server/lib/Helper';
