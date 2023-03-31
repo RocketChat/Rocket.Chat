@@ -5,14 +5,7 @@ import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/l
 import { OmnichannelSourceType, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
 import { api, Message } from '@rocket.chat/core-services';
-import {
-	LivechatDepartmentAgents,
-	Users as UsersRaw,
-	LivechatInquiry,
-	LivechatRooms,
-	LivechatDepartment,
-	Subscriptions,
-} from '@rocket.chat/models';
+import { LivechatDepartmentAgents, LivechatInquiry, LivechatRooms, LivechatDepartment, Subscriptions } from '@rocket.chat/models';
 
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { Rooms, Users } from '../../../models/server';
@@ -293,19 +286,16 @@ export const dispatchInquiryQueued = async (inquiry, agent) => {
 	}
 
 	// Alert only the online agents of the queued request
-	const onlineAgents = await Livechat.getOnlineAgents(department, agent);
+	const onlineAgents = await LivechatTyped.getOnlineAgents(department, agent);
 	if (!onlineAgents) {
 		logger.debug('Cannot notify agents of queued inquiry. No online agents found');
 		return;
 	}
 
-	logger.debug(`Notifying ${onlineAgents.count()} agents of new inquiry`);
+	logger.debug(`Notifying ${await onlineAgents.count()} agents of new inquiry`);
 	const notificationUserName = v && (v.name || v.username);
 
-	for await (let agent of onlineAgents) {
-		if (agent.agentId) {
-			agent = await UsersRaw.findOneById(agent.agentId);
-		}
+	for await (const agent of onlineAgents) {
 		const { _id, active, emails, language, status, statusConnection, username } = agent;
 		await sendNotification({
 			// fake a subscription in order to make use of the function defined above

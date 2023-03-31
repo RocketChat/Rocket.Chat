@@ -225,7 +225,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findPersonalAccessTokenByTokenNameAndUserId(data: { userId: string; tokenName: string }): Promise<IUser | null>;
 	setOperator(userId: string, operator: boolean): Promise<UpdateResult>;
 	checkOnlineAgents(agentId?: string): Promise<boolean>;
-	findOnlineAgents(agentId: string): FindCursor<ILivechatAgent>;
+	findOnlineAgents(agentId?: string): FindCursor<ILivechatAgent>;
 	findOneBotAgent(): Promise<ILivechatAgent | null>;
 	findOneOnlineAgentbyId(agentId: string): Promise<ILivechatAgent | null>;
 	findAgents(): FindCursor<ILivechatAgent>;

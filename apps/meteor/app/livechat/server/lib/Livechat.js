@@ -58,25 +58,6 @@ export const Livechat = {
 	logger,
 	webhookLogger: logger.section('Webhook'),
 
-	getAgents(department) {
-		if (department) {
-			// TODO: This and all others should get the user's info as well
-			return LivechatDepartmentAgents.findByDepartmentId(department);
-		}
-		return Users.findAgents();
-	},
-
-	async getOnlineAgents(department, agent) {
-		if (agent?.agentId) {
-			return Users.findOnlineAgents(agent.agentId);
-		}
-
-		if (department) {
-			return LivechatDepartmentAgents.getOnlineForDepartment(department);
-		}
-		return Users.findOnlineAgents();
-	},
-
 	async getRequiredDepartment(onlineRequired = true) {
 		const departments = await LivechatDepartmentRaw.findEnabledWithAgents();
 

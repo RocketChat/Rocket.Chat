@@ -6,6 +6,7 @@ import type {
 	ILivechatVisitor,
 	IOmnichannelSystemMessage,
 	SelectedAgent,
+	ILivechatAgent,
 } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import {
@@ -21,6 +22,7 @@ import {
 import { Message } from '@rocket.chat/core-services';
 import moment from 'moment-timezone';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import type { FindCursor } from 'mongodb';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
@@ -106,6 +108,22 @@ class LivechatClass {
 
 	getNextAgent(department?: string): Promise<SelectedAgent | null | undefined> {
 		return RoutingManager.getNextAgent(department);
+	}
+
+	async getOnlineAgents(department?: string, agent?: SelectedAgent): Promise<FindCursor<ILivechatAgent> | undefined> {
+		if (agent?.agentId) {
+			return Users.findOnlineAgents(agent.agentId);
+		}
+
+		if (department) {
+			const departmentAgents = await LivechatDepartmentAgents.getOnlineForDepartment(department);
+			if (!departmentAgents) {
+				return;
+			}
+
+			return Users.findByIds<ILivechatAgent>(departmentAgents?.map(({ agentId }) => agentId));
+		}
+		return Users.findOnlineAgents();
 	}
 
 	async closeRoom(params: CloseRoomParams): Promise<void> {
