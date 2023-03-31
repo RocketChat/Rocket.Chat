@@ -2,7 +2,11 @@
 	"extends": "../../tsconfig.base.client.json",
 	"compilerOptions": {
 		"rootDir": "./src",
-		"outDir": "./dist"
+		"outDir": "./dist",
+		"target": "es6",
+		"module": "commonjs",
+		"esModuleInterop": true,
+		"sourceMap": true
 	},
-	"include": ["./src/**/*"]
+	"include": ["./src/**/*", "__examples__/test.ts"]
 }

@@ -1,6 +1,6 @@
 import type { DDPClient } from './types/DDPClient';
 
-interface ClientStream {
+export interface ClientStream {
 	call(method: string, ...params: any[]): string;
 	callAsync(method: string, ...params: any[]): Promise<any> & { id: string };
 	subscribe(name: string, ...params: any[]): Promise<any> & { id: string };

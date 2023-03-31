@@ -1,18 +1,18 @@
 import type { DDPClient } from './types/DDPClient';
 
-type Subscription = {
-	name: string;
-	params: unknown[];
-	id: string;
-	status: 'queued' | 'subscribing' | 'ready' | 'error';
-};
+// type Subscription = {
+// 	name: string;
+// 	params: unknown[];
+// 	id: string;
+// 	status: 'queued' | 'subscribing' | 'ready' | 'error';
+// };
 
-type Method = {
-	method: string;
-	params: unknown[];
-	id: string;
-	status: 'queued' | 'calling' | 'ready' | 'error';
-};
+// type Method = {
+// 	method: string;
+// 	params: unknown[];
+// 	id: string;
+// 	status: 'queued' | 'calling' | 'ready' | 'error';
+// };
 
 type RetryOptions = {
 	retryCount: number;
@@ -24,10 +24,6 @@ export interface Connection {
 	session?: string;
 
 	status: 'idle' | 'connecting' | 'connected' | 'failed' | 'closed' | 'disconnected';
-
-	subscriptions: Subscription[];
-
-	calls: Method[];
 }
 
 export class ConnectionImpl implements Connection {
@@ -35,11 +31,7 @@ export class ConnectionImpl implements Connection {
 
 	status: 'idle' | 'connecting' | 'connected' | 'failed' | 'closed' | 'disconnected' = 'idle';
 
-	subscriptions: Subscription[] = [];
-
-	calls: Method[] = [];
-
-	constructor(private ws: WebSocket, private client: DDPClient, _retryOptions: RetryOptions) {}
+	constructor(private ws: WebSocket, private client: DDPClient, _retryOptions?: RetryOptions) {}
 
 	connect() {
 		this.status = 'connecting';
@@ -80,10 +72,6 @@ export class ConnectionImpl implements Connection {
 					reject(new Error('Unknown message type'));
 				});
 			};
-
-			this.ws.addEventListener('message', (event) => {
-				this.client.handleMessage(event.data);
-			});
 
 			this.ws.addEventListener('close', () => {
 				if (this.status === 'closed') {

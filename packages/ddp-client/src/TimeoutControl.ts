@@ -24,7 +24,7 @@ export class TimeoutControl
 
 	private heartbeatId: ReturnType<typeof setTimeout> | undefined;
 
-	constructor(readonly timeout: number = 30_000, readonly heartbeat: number = timeout / 2) {
+	constructor(readonly timeout: number = 60_000, readonly heartbeat: number = timeout / 2) {
 		super();
 		this.reset();
 		if (this.heartbeat >= this.timeout) {
