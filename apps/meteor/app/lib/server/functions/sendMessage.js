@@ -139,7 +139,7 @@ const validateAttachment = (attachment) => {
 
 const validateBodyAttachments = (attachments) => attachments.map(validateAttachment);
 
-export const validateMessage = (message, room, user) => {
+export const validateMessage = async (message, room, user) => {
 	check(
 		message,
 		objectMaybeIncluding({
@@ -159,7 +159,7 @@ export const validateMessage = (message, room, user) => {
 	if (message.alias || message.avatar) {
 		const isLiveChatGuest = !message.avatar && user.token && user.token === room.v?.token;
 
-		if (!isLiveChatGuest && !Promise.await(hasPermissionAsync(user._id, 'message-impersonate', room._id))) {
+		if (!isLiveChatGuest && !(await hasPermissionAsync(user._id, 'message-impersonate', room._id))) {
 			throw new Error('Not enough permission');
 		}
 	}
@@ -208,7 +208,7 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 		return false;
 	}
 
-	validateMessage(message, room, user);
+	await validateMessage(message, room, user);
 	prepareMessageObject(message, room._id, user);
 
 	if (settings.get('Message_Read_Receipt_Enabled')) {
@@ -230,7 +230,7 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 			message = Object.assign(message, result);
 
 			// Some app may have inserted malicious/invalid values in the message, let's check it again
-			validateMessage(message, room, user);
+			await validateMessage(message, room, user);
 		}
 	}
 
