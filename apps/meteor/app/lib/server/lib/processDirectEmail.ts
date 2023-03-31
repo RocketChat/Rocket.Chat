@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import type { ParsedMail } from 'mailparser';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import { Messages, Subscriptions } from '@rocket.chat/models';
+import { Messages, Subscriptions, Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
-import { Rooms, Users } from '../../../models/server';
+import { Rooms } from '../../../models/server';
 import { metrics } from '../../../metrics/server';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -34,15 +34,19 @@ export const processDirectEmail = Meteor.bindEnvironment(async function (email: 
 	if (msg && msg.length > (settings.get('Message_MaxAllowedSize') as number)) {
 		return;
 	}
+	const emailAdress = email.from.value[0].address;
+	if (!emailAdress) {
+		return;
+	}
 
-	const user = Users.findOneByEmailAddress(email.from.value[0].address, {
-		fields: {
+	const user = await Users.findOneByEmailAddress(emailAdress, {
+		projection: {
 			username: 1,
 			name: 1,
 		},
 	});
 
-	if (!user) {
+	if (!user?.username) {
 		// user not found
 		return;
 	}
