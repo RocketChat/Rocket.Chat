@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'e2e.fetchMyKeys'(): Promise<{ public_key?: string; private_key?: string }>;
+		'e2e.fetchMyKeys'(): { public_key?: string; private_key?: string };
 	}
 }
 
