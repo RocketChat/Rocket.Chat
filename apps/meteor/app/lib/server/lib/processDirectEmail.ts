@@ -34,15 +34,19 @@ export const processDirectEmail = Meteor.bindEnvironment(async function (email: 
 	if (msg && msg.length > (settings.get('Message_MaxAllowedSize') as number)) {
 		return;
 	}
+	const emailAdress = email.from.value[0].address;
+	if (!emailAdress) {
+		return;
+	}
 
-	const user = await Users.findOneByEmailAddress(email.from.value[0].address || '', {
+	const user = await Users.findOneByEmailAddress(emailAdress, {
 		projection: {
 			username: 1,
 			name: 1,
 		},
 	});
 
-	if (!user) {
+	if (!user?.username) {
 		// user not found
 		return;
 	}

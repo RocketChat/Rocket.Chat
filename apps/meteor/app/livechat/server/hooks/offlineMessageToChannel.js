@@ -1,10 +1,10 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { LivechatDepartment } from '@rocket.chat/models';
+import { LivechatDepartment, Users } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
 import { sendMessage } from '../../../lib/server';
-import { Rooms, Users } from '../../../models/server';
+import { Rooms } from '../../../models/server';
 
 callbacks.add(
 	'livechat.offlineMessage',
@@ -35,7 +35,7 @@ callbacks.add(
 			return data;
 		}
 
-		const user = Users.findOneById('rocket.cat', { fields: { username: 1 } });
+		const user = await Users.findOneById('rocket.cat', { projection: { username: 1 } });
 		if (!user) {
 			return data;
 		}

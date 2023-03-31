@@ -2,13 +2,13 @@ import type Mail from 'nodemailer/lib/mailer';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { isIMessageInbox } from '@rocket.chat/core-typings';
-import type { IEmailInbox, IUser, IMessage } from '@rocket.chat/core-typings';
-import { Messages, Uploads, LivechatRooms } from '@rocket.chat/models';
+import type { IEmailInbox, IUser, IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { Messages, Uploads, LivechatRooms, Rooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../lib/callbacks';
 import { FileUpload } from '../../../app/file-upload/server';
 import { slashCommands } from '../../../app/utils/server';
-import { Rooms, Users } from '../../../app/models/server';
+import { Users } from '../../../app/models/server';
 import type { Inbox } from './EmailInbox';
 import { inboxes } from './EmailInbox';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
@@ -93,7 +93,11 @@ slashCommands.add({
 			return;
 		}
 
-		const room = Rooms.findOneById(message.rid);
+		const room = await Rooms.findOneById<IOmnichannelRoom>(message.rid);
+
+		if (!room?.email) {
+			return;
+		}
 
 		const inbox = inboxes.get(room.email.inbox);
 
@@ -117,8 +121,8 @@ slashCommands.add({
 				void sendEmail(
 					inbox,
 					{
-						to: room.email.replyTo,
-						subject: room.email.subject,
+						to: room.email?.replyTo,
+						subject: room.email?.subject,
 						text: message?.attachments?.[0].description || '',
 						attachments: [
 							{
@@ -127,8 +131,8 @@ slashCommands.add({
 								filename: file.name,
 							},
 						],
-						inReplyTo: room.email.thread,
-						references: [room.email.thread],
+						inReplyTo: Array.isArray(room.email?.thread) ? room.email?.thread[0] : room.email?.thread,
+						references: ([] as string[]).concat(room.email?.thread || []),
 					},
 					{
 						msgId: message._id,

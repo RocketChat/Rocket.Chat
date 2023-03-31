@@ -5,7 +5,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
 import { Avatars, ExportOperations, UserDataFiles, Subscriptions } from '@rocket.chat/models';
-import type { IExportOperation, ISubscription, IUser, RoomType } from '@rocket.chat/core-typings';
+import type { IExportOperation, IUser, RoomType } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../app/settings/server';
 import { FileUpload } from '../../../app/file-upload/server';
@@ -34,12 +34,12 @@ const loadUserSubscriptions = async (_exportOperation: IExportOperation, fileTyp
 	)[] = [];
 
 	const cursor = Subscriptions.findByUserId(userId);
-	await cursor.forEach((subscription: ISubscription) => {
-		const roomData = getRoomData(subscription.rid, userId);
+	for await (const subscription of cursor) {
+		const roomData = await getRoomData(subscription.rid, userId);
 		roomData.targetFile = `${(fileType === 'json' && roomData.roomName) || subscription.rid}.${fileType}`;
 
 		roomList.push(roomData);
-	});
+	}
 
 	return roomList;
 };

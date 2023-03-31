@@ -1,11 +1,10 @@
 import moment from 'moment';
-import type { ISocketConnection } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, ISocketConnection } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
-import { LivechatAgentActivity, Sessions } from '@rocket.chat/models';
+import { LivechatAgentActivity, Sessions, Users } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { Users } from '../../../models/server';
 
 const formatDate = (dateTime = new Date()): { date: number } => ({
 	date: parseInt(moment(dateTime).format('YYYYMMDD')),
@@ -100,7 +99,7 @@ export class LivechatAgentActivityMonitor {
 		if (!session) {
 			return;
 		}
-		const user = Users.findOneById(session.userId);
+		const user = await Users.findOneById<ILivechatAgent>(session.userId);
 		if (user && user.status !== 'offline' && user.statusLivechat === 'available') {
 			await this._createOrUpdateSession(user._id);
 		}
@@ -116,7 +115,7 @@ export class LivechatAgentActivityMonitor {
 			return;
 		}
 
-		const user = Users.findOneById(userId);
+		const user = await Users.findOneById<ILivechatAgent>(userId);
 		if (!user || user.statusLivechat !== 'available') {
 			return;
 		}
@@ -133,7 +132,7 @@ export class LivechatAgentActivityMonitor {
 			return;
 		}
 
-		const user = Users.findOneById(userId);
+		const user = await Users.findOneById(userId);
 		if (user && user.status === 'offline') {
 			return;
 		}
