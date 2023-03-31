@@ -3,9 +3,8 @@ import { Match } from 'meteor/check';
 import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
 import type { IUser, INewOutgoingIntegration, IOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
-import { Subscriptions, Users } from '@rocket.chat/models';
+import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
-import { Rooms } from '../../../models/server';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { outgoingEvents } from '../../lib/outgoingEvents';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
@@ -69,7 +68,7 @@ async function _verifyUserHasPermissionForChannels(userId: IUser['_id'], channel
 
 			switch (channelType) {
 				case '#':
-					record = Rooms.findOne({
+					record = await Rooms.findOne({
 						$or: [{ _id: channel }, { name: channel }],
 					});
 					break;
