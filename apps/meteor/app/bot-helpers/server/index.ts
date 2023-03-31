@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
-import type { Mongo } from 'meteor/mongo';
+import type { Filter, FindCursor } from 'mongodb';
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { Rooms } from '@rocket.chat/models';
+import { Rooms, Users } from '@rocket.chat/models';
 
-import { Users } from '../../models/server';
 import { settings } from '../../settings/server';
 import { hasRoleAsync } from '../../authorization/server/functions/hasRole';
 
@@ -18,15 +17,15 @@ import './settings';
  */
 class BotHelpers {
 	private queries: {
-		online: Mongo.Query<IUser>;
-		users: Mongo.Query<IUser>;
+		online: Filter<IUser>;
+		users: Filter<IUser>;
 	};
 
 	private userFields: Record<string, 1>;
 
-	private _allUsers: Mongo.Cursor<IUser>;
+	private _allUsers: FindCursor<IUser>;
 
-	private _onlineUsers: Mongo.Cursor<IUser>;
+	private _onlineUsers: FindCursor<IUser>;
 
 	constructor() {
 		this.queries = {
@@ -44,12 +43,12 @@ class BotHelpers {
 		fieldsSetting.forEach((n) => {
 			this.userFields[n.trim()] = 1;
 		});
-		this._allUsers = Users.find(this.queries.users, { fields: this.userFields });
-		this._onlineUsers = Users.find({ $and: [this.queries.users, this.queries.online] }, { fields: this.userFields });
+		this._allUsers = Users.find(this.queries.users, { projection: this.userFields });
+		this._onlineUsers = Users.find({ $and: [this.queries.users, this.queries.online] }, { projection: this.userFields });
 	}
 
 	// request methods or props as arguments to Meteor.call
-	request(prop: keyof this, ...params: unknown[]) {
+	async request(prop: keyof this, ...params: unknown[]): Promise<any> {
 		const p = this[prop];
 
 		if (typeof p === 'undefined') {
@@ -62,22 +61,22 @@ class BotHelpers {
 		return p;
 	}
 
-	addUserToRole(userName: string, roleId: string) {
-		Meteor.call('authorization:addUserToRole', roleId, userName);
+	async addUserToRole(userName: string, roleId: string): Promise<void> {
+		await Meteor.callAsync('authorization:addUserToRole', roleId, userName);
 	}
 
-	removeUserFromRole(userName: string, roleId: string) {
-		Meteor.call('authorization:removeUserFromRole', roleId, userName);
+	async removeUserFromRole(userName: string, roleId: string): Promise<void> {
+		await Meteor.callAsync('authorization:removeUserFromRole', roleId, userName);
 	}
 
-	async addUserToRoom(userName: string, room: string) {
+	async addUserToRoom(userName: string, room: string): Promise<void> {
 		const foundRoom = await Rooms.findOneByIdOrName(room);
 
 		if (!foundRoom) {
 			throw new Meteor.Error('invalid-channel');
 		}
 
-		Meteor.call('addUserToRoom', {
+		await Meteor.callAsync('addUserToRoom', {
 			rid: foundRoom._id,
 			username: userName,
 		});
@@ -90,7 +89,7 @@ class BotHelpers {
 			throw new Meteor.Error('invalid-channel');
 		}
 
-		Meteor.call('removeUserFromRoom', {
+		await Meteor.callAsync('removeUserFromRoom', {
 			rid: foundRoom._id,
 			username: userName,
 		});
@@ -111,7 +110,7 @@ class BotHelpers {
 			this.requestError();
 			return false;
 		}
-		return this._allUsers.fetch();
+		return this._allUsers.toArray();
 	}
 
 	get onlineUsers() {
@@ -119,55 +118,67 @@ class BotHelpers {
 			this.requestError();
 			return false;
 		}
-		return this._onlineUsers.fetch();
+		return this._onlineUsers.toArray();
 	}
 
 	get allUsernames() {
-		if (!this.userFields.hasOwnProperty('username')) {
-			this.requestError();
-			return false;
-		}
-		return this._allUsers.fetch().map((user) => user.username);
+		return (async () => {
+			if (!this.userFields.hasOwnProperty('username')) {
+				this.requestError();
+				return false;
+			}
+			return (await this._allUsers.toArray()).map((user) => user.username);
+		})();
 	}
 
 	get onlineUsernames() {
-		if (!this.userFields.hasOwnProperty('username')) {
-			this.requestError();
-			return false;
-		}
-		return this._onlineUsers.fetch().map((user) => user.username);
+		return (async () => {
+			if (!this.userFields.hasOwnProperty('username')) {
+				this.requestError();
+				return false;
+			}
+			return (await this._onlineUsers.toArray()).map((user) => user.username);
+		})();
 	}
 
 	get allNames() {
-		if (!this.userFields.hasOwnProperty('name')) {
-			this.requestError();
-			return false;
-		}
-		return this._allUsers.fetch().map((user) => user.name);
+		return (async () => {
+			if (!this.userFields.hasOwnProperty('name')) {
+				this.requestError();
+				return false;
+			}
+			return (await this._allUsers.toArray()).map((user) => user.name);
+		})();
 	}
 
 	get onlineNames() {
-		if (!this.userFields.hasOwnProperty('name')) {
-			this.requestError();
-			return false;
-		}
-		return this._onlineUsers.fetch().map((user) => user.name);
+		return (async () => {
+			if (!this.userFields.hasOwnProperty('name')) {
+				this.requestError();
+				return false;
+			}
+			return (await this._onlineUsers.toArray()).map((user) => user.name);
+		})();
 	}
 
 	get allIDs() {
-		if (!this.userFields.hasOwnProperty('_id') || !this.userFields.hasOwnProperty('username')) {
-			this.requestError();
-			return false;
-		}
-		return this._allUsers.fetch().map((user) => ({ id: user._id, name: user.username }));
+		return (async () => {
+			if (!this.userFields.hasOwnProperty('_id') || !this.userFields.hasOwnProperty('username')) {
+				this.requestError();
+				return false;
+			}
+			return (await this._allUsers.toArray()).map((user) => ({ id: user._id, name: user.username }));
+		})();
 	}
 
 	get onlineIDs() {
-		if (!this.userFields.hasOwnProperty('_id') || !this.userFields.hasOwnProperty('username')) {
-			this.requestError();
-			return false;
-		}
-		return this._onlineUsers.fetch().map((user) => ({ id: user._id, name: user.username }));
+		return (async () => {
+			if (!this.userFields.hasOwnProperty('_id') || !this.userFields.hasOwnProperty('username')) {
+				this.requestError();
+				return false;
+			}
+			return (await this._onlineUsers.toArray()).map((user) => ({ id: user._id, name: user.username }));
+		})();
 	}
 }
 
@@ -182,7 +193,7 @@ settings.watch<string>('BotHelpers_userFields', (value) => {
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		botRequest: (prop: keyof BotHelpers, ...params: unknown[]) => unknown;
+		botRequest: (prop: keyof BotHelpers, ...params: unknown[]) => Promise<unknown>;
 	}
 }
 

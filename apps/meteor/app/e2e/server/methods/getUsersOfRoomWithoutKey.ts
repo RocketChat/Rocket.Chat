@@ -2,10 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Users } from '@rocket.chat/models';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { Users } from '../../../models/server';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -39,9 +38,9 @@ Meteor.methods<ServerMethods>({
 			projection: { 'u._id': 1 },
 		}).toArray();
 		const userIds = subscriptions.map((s) => s.u._id);
-		const options = { fields: { 'e2e.public_key': 1 } };
+		const options = { projection: { 'e2e.public_key': 1 } };
 
-		const users = Users.findByIdsWithPublicE2EKey(userIds, options).fetch();
+		const users = await Users.findByIdsWithPublicE2EKey(userIds, options).toArray();
 
 		return {
 			users,

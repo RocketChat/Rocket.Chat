@@ -4,9 +4,8 @@ import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import { api } from '@rocket.chat/core-services';
-import { Messages, Subscriptions } from '@rocket.chat/models';
+import { Users, Subscriptions, Messages } from '@rocket.chat/models';
 
-import { Users } from '../../../models/server';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import notifications from '../../../notifications/server/lib/Notifications';
@@ -46,7 +45,11 @@ export class AppMessageBridge extends MessageBridge {
 		}
 
 		const msg = this.orch.getConverters()?.get('messages').convertAppMessage(message);
-		const editor = Users.findOneById(message.editor.id);
+		const editor = await Users.findOneById(message.editor.id);
+
+		if (!editor) {
+			throw new Error('Invalid editor assigned to the message for the update.');
+		}
 
 		await updateMessage(msg, editor);
 	}
@@ -76,14 +79,12 @@ export class AppMessageBridge extends MessageBridge {
 
 		const users = (await Subscriptions.findByRoomIdWhenUserIdExists(room.id, { projection: { 'u._id': 1 } }).toArray()).map((s) => s.u._id);
 
-		Users.findByIds(users, { fields: { _id: 1 } })
-			.fetch()
-			.forEach(
-				({ _id }: { _id: string }) =>
-					void api.broadcast('notify.ephemeralMessage', _id, room.id, {
-						...msg,
-					}),
-			);
+		await Users.findByIds(users, { projection: { _id: 1 } }).forEach(
+			({ _id }: { _id: string }) =>
+				void api.broadcast('notify.ephemeralMessage', _id, room.id, {
+					...msg,
+				}),
+		);
 	}
 
 	protected async typing({ scope, id, username, isTyping }: ITypingDescriptor): Promise<void> {
