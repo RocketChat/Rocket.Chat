@@ -112,7 +112,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		return this.findOne(query) as unknown as Promise<(ILivechatInquiryRecord & { status: LivechatInquiryStatus.QUEUED }) | null>;
 	}
 
-	findOneByRoomId<T = ILivechatInquiryRecord>(
+	findOneByRoomId<T extends Document = ILivechatInquiryRecord>(
 		rid: string,
 		options: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
 	): Promise<T | null> {

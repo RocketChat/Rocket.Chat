@@ -2,9 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Messages } from '@rocket.chat/models';
 
 import { settings } from '../../app/settings/server';
-import { Messages, Rooms } from '../../app/models/server';
+import { Rooms } from '../../app/models/server';
 import { canAccessRoomAsync } from '../../app/authorization/server';
 import { readThread } from '../../app/threads/server/functions';
 import { callbacks } from '../../lib/callbacks';
@@ -26,12 +27,12 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const thread = Messages.findOneById(tmid);
+		const thread = await Messages.findOneById(tmid);
 		if (!thread) {
 			return;
 		}
 
-		const user = Meteor.user() ?? undefined;
+		const user = (await Meteor.userAsync()) ?? undefined;
 
 		const room = Rooms.findOneById(thread.rid);
 
@@ -40,7 +41,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		callbacks.run('beforeReadMessages', thread.rid, user?._id);
-		readThread({ userId: user?._id, rid: thread.rid, tmid });
+		await readThread({ userId: user?._id, rid: thread.rid, tmid });
 		if (user?._id) {
 			callbacks.runAsync('afterReadMessages', room._id, { uid: user._id, tmid });
 		}

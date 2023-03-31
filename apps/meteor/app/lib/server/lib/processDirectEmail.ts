@@ -2,16 +2,18 @@ import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import type { ParsedMail } from 'mailparser';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import { Messages, Subscriptions, Users } from '@rocket.chat/models';
 
+import { Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
-import { Rooms, Messages, Users, Subscriptions } from '../../../models/server';
 import { metrics } from '../../../metrics/server';
-import { canAccessRoomAsync, hasPermission } from '../../../authorization/server';
+import { canAccessRoomAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { sendMessage } from '../functions/sendMessage';
 
 const isParsedEmail = (email: ParsedMail): email is Required<ParsedMail> => 'date' in email && 'html' in email;
 
-export const processDirectEmail = Meteor.bindEnvironment(function (email: ParsedMail): void {
+export const processDirectEmail = Meteor.bindEnvironment(async function (email: ParsedMail): Promise<void> {
 	if (!isParsedEmail(email)) {
 		return;
 	}
@@ -33,8 +35,8 @@ export const processDirectEmail = Meteor.bindEnvironment(function (email: Parsed
 		return;
 	}
 
-	const user = Users.findOneByEmailAddress(email.from.value[0].address, {
-		fields: {
+	const user = await Users.findOneByEmailAddress(email.from.value[0].address || '', {
+		projection: {
 			username: 1,
 			name: 1,
 		},
@@ -45,7 +47,7 @@ export const processDirectEmail = Meteor.bindEnvironment(function (email: Parsed
 		return;
 	}
 
-	const prevMessage = Messages.findOneById(mid, {
+	const prevMessage = await Messages.findOneById(mid, {
 		rid: 1,
 		u: 1,
 	});
@@ -57,7 +59,7 @@ export const processDirectEmail = Meteor.bindEnvironment(function (email: Parsed
 
 	const roomInfo: IRoom = Rooms.findOneById(prevMessage.rid);
 
-	const room = Promise.await(canAccessRoomAsync(roomInfo, user));
+	const room = await canAccessRoomAsync(roomInfo, user);
 	if (!room) {
 		return;
 	}
@@ -79,22 +81,22 @@ export const processDirectEmail = Meteor.bindEnvironment(function (email: Parsed
 	// // add reply message link
 	// msg = prevMessageLink + msg;
 
-	const subscription = Subscriptions.findOneByRoomIdAndUserId(prevMessage.rid, user._id);
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(prevMessage.rid, user._id);
 	if (subscription && (subscription.blocked || subscription.blocker)) {
 		// room is blocked
 		return;
 	}
 
-	if ((roomInfo.muted || []).includes(user.username)) {
+	if ((roomInfo.muted || []).includes(user.username || '')) {
 		// user is muted
 		return;
 	}
 
 	// room is readonly
 	if (roomInfo.ro === true) {
-		if (!hasPermission(user._id, 'post-readonly', roomInfo._id)) {
+		if (!(await hasPermissionAsync(user._id, 'post-readonly', roomInfo._id))) {
 			// Check if the user was manually unmuted
-			if (!(roomInfo.unmuted || []).includes(user.username)) {
+			if (!(roomInfo.unmuted || []).includes(user.username || '')) {
 				return;
 			}
 		}

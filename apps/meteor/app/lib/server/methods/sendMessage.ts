@@ -3,19 +3,20 @@ import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
 import { api } from '@rocket.chat/core-services';
+import { Messages } from '@rocket.chat/models';
 import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { canSendMessage } from '../../../authorization/server';
+import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
-import { Users, Messages } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { sendMessage } from '../functions';
 import { RateLimiter } from '../lib';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage, 'rid'>) {
+export async function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage, 'rid'>) {
 	if (message.tshow && !message.tmid) {
 		throw new Meteor.Error('invalid-params', 'tshow provided but missing tmid', {
 			method: 'sendMessage',
@@ -44,7 +45,7 @@ export function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage,
 	}
 
 	if (message.msg) {
-		if (message.msg.length > (settings.get('Message_MaxAllowedSize') ?? 0)) {
+		if (message.msg.length > (settings.get<number>('Message_MaxAllowedSize') ?? 0)) {
 			throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
 				method: 'sendMessage',
 			});
@@ -62,9 +63,12 @@ export function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage,
 
 	// do not allow nested threads
 	if (message.tmid) {
-		const parentMessage = Messages.findOneById(message.tmid);
-		message.tmid = parentMessage.tmid || message.tmid;
-		rid = parentMessage.rid;
+		const parentMessage = await Messages.findOneById(message.tmid, { projection: { rid: 1, tmid: 1 } });
+		message.tmid = parentMessage?.tmid || message.tmid;
+
+		if (parentMessage?.rid) {
+			rid = parentMessage?.rid;
+		}
 	}
 
 	if (!rid) {
@@ -72,7 +76,7 @@ export function executeSendMessage(uid: IUser['_id'], message: AtLeast<IMessage,
 	}
 
 	try {
-		const room = canSendMessage(rid, { uid, username: user.username, type: user.type });
+		const room = await canSendMessageAsync(rid, { uid, username: user.username, type: user.type });
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
 		return sendMessage(user, message, room, false);

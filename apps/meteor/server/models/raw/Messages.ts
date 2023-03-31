@@ -1,8 +1,6 @@
 import type {
 	ILivechatDepartment,
-	ILivechatPriority,
 	IMessage,
-	IOmnichannelServiceLevelAgreements,
 	IRoom,
 	IUser,
 	MessageTypesValues,
@@ -47,138 +45,41 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	protected modelIndexes(): IndexDescription[] {
-		// add the indexes from the constructor in here
 		return [
+			{ key: { rid: 1, ts: 1, _updatedAt: 1 } },
+			{ key: { ts: 1 } },
+			{ key: { 'u._id': 1 } },
+			{ key: { editedAt: 1 }, sparse: true },
+			{ key: { 'editedBy._id': 1 }, sparse: true },
+			{ key: { 'rid': 1, 't': 1, 'u._id': 1 } },
+			{ key: { expireAt: 1 }, expireAfterSeconds: 0 },
+			{ key: { msg: 'text' } },
+			{ key: { 'file._id': 1 }, sparse: true },
+			{ key: { 'mentions.username': 1 }, sparse: true },
+			{ key: { pinned: 1 }, sparse: true },
+			{ key: { location: '2dsphere' } },
+			{ key: { slackTs: 1, slackBotId: 1 }, sparse: true },
+			{ key: { unread: 1 }, sparse: true },
+			{ key: { 'pinnedBy._id': 1 }, sparse: true },
+			{ key: { 'starred._id': 1 }, sparse: true },
+
+			// discussions
+			{ key: { drid: 1 }, sparse: true },
+
+			// threads
+			{ key: { tmid: 1 }, sparse: true },
+			{ key: { tcount: 1, tlm: 1 }, sparse: true },
+			{ key: { rid: 1, tlm: -1 }, partialFilterExpression: { tcount: { $exists: true } } }, // used for the List Threads
+			{ key: { rid: 1, tcount: 1 } }, // used for the List Threads Count
+
+			// livechat
+			{ key: { 'navigation.token': 1 }, sparse: true },
+
 			{ key: { 'federation.eventId': 1 }, sparse: true },
-			{
-				key: {
-					rid: 1,
-					ts: 1,
-					_updatedAt: 1,
-				},
-			},
-			{
-				key: {
-					ts: 1,
-				},
-			},
-			{
-				key: {
-					'u._id': 1,
-				},
-			},
-			{
-				key: {
-					editedAt: 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					'editedBy._id': 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					'rid': 1,
-					't': 1,
-					'u._id': 1,
-				},
-			},
-			{
-				key: {
-					expireAt: 1,
-				},
-				expireAfterSeconds: 0,
-			},
-			{
-				key: {
-					msg: 'text',
-				},
-			},
-			{
-				key: {
-					'file._id': 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					'mentions.username': 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					pinned: 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					location: '2dsphere',
-				},
-			},
-			{
-				key: {
-					slackTs: 1,
-					slackBotId: 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					unread: 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					drid: 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					tmid: 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					tcount: 1,
-					tlm: 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					rid: 1,
-					tlm: -1,
-				},
-				partialFilterExpression: {
-					tcount: {
-						$exists: true,
-					},
-				},
-			},
-			{
-				key: {
-					rid: 1,
-					tcount: 1,
-				},
-			},
-			{
-				key: {
-					'navigation.token': 1,
-				},
-				sparse: true,
-			},
 		];
 	}
 
-	findVisibleByMentionAndRoomId(username: IUser['username'], rid: IRoom['_id'], options: FindOptions<IMessage>): FindCursor<IMessage> {
+	findVisibleByMentionAndRoomId(username: IUser['username'], rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
 		const query: Filter<IMessage> = {
 			'_hidden': { $ne: true },
 			'mentions.username': username,
@@ -191,7 +92,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	findPaginatedVisibleByMentionAndRoomId(
 		username: IUser['username'],
 		rid: IRoom['_id'],
-		options: FindOptions<IMessage>,
+		options?: FindOptions<IMessage>,
 	): FindPaginated<FindCursor<IMessage>> {
 		const query: Filter<IMessage> = {
 			'_hidden': { $ne: true },
@@ -202,7 +103,11 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findPaginated(query, options);
 	}
 
-	findStarredByUserAtRoom(userId: IUser['_id'], roomId: IRoom['_id'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
+	findStarredByUserAtRoom(
+		userId: IUser['_id'],
+		roomId: IRoom['_id'],
+		options?: FindOptions<IMessage>,
+	): FindPaginated<FindCursor<IMessage>> {
 		const query: Filter<IMessage> = {
 			'_hidden': { $ne: true },
 			'starred._id': userId,
@@ -226,13 +131,13 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	// TODO: do we need this? currently not used anywhere
-	findDiscussionsByRoom(rid: IRoom['_id'], options: FindOptions<IMessage>): FindCursor<IMessage> {
+	findDiscussionsByRoom(rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage> {
 		const query: Filter<IMessage> = { rid, drid: { $exists: true } };
 
 		return this.find(query, options);
 	}
 
-	findDiscussionsByRoomAndText(rid: IRoom['_id'], text: string, options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
+	findDiscussionsByRoomAndText(rid: IRoom['_id'], text: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
 		const query: Filter<IMessage> = {
 			rid,
 			drid: { $exists: true },
@@ -556,7 +461,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return queryResult?.total || 0;
 	}
 
-	findPinned(options: FindOptions<IMessage>): FindCursor<IMessage> {
+	findPinned(options?: FindOptions<IMessage>): FindCursor<IMessage> {
 		const query: Filter<IMessage> = {
 			t: { $ne: 'rm' as MessageTypesValues },
 			_hidden: { $ne: true },
@@ -566,7 +471,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findPaginatedPinnedByRoom(roomId: IMessage['rid'], options: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
+	findPaginatedPinnedByRoom(roomId: IMessage['rid'], options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
 		const query: Filter<IMessage> = {
 			t: { $ne: 'rm' },
 			_hidden: { $ne: true },
@@ -577,7 +482,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findPaginated(query, options);
 	}
 
-	findStarred(options: FindOptions<IMessage>): FindCursor<IMessage> {
+	findStarred(options?: FindOptions<IMessage>): FindCursor<IMessage> {
 		const query: Filter<IMessage> = {
 			'_hidden': { $ne: true },
 			'starred._id': { $exists: true },
@@ -660,58 +565,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		)[0] as IMessage;
 	}
 
-	createSLAHistoryWithRoomIdMessageAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		sla?: Pick<IOmnichannelServiceLevelAgreements, 'name'>,
-	): Promise<InsertOneResult<IMessage>> {
-		return this.insertOne({
-			t: 'omnichannel_sla_change_history',
-			rid: roomId,
-			msg: '',
-			ts: new Date(),
-			groupable: false,
-			u: {
-				_id: user._id,
-				username: user.username,
-				name: user.name,
-			},
-			slaData: {
-				definedBy: {
-					_id: user._id,
-					username: user.username,
-				},
-				...(sla && { sla }),
-			},
-		});
-	}
-
-	createPriorityHistoryWithRoomIdMessageAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		priority?: Pick<ILivechatPriority, 'name' | 'i18n'>,
-	): Promise<InsertOneResult<IMessage>> {
-		return this.insertOne({
-			t: 'omnichannel_priority_change_history',
-			rid: roomId,
-			msg: '',
-			ts: new Date(),
-			groupable: false,
-			u: {
-				_id: user._id,
-				username: user.username,
-				name: user.name,
-			},
-			priorityData: {
-				definedBy: {
-					_id: user._id,
-					username: user.username,
-				},
-				...(priority && { priority }),
-			},
-		});
-	}
-
 	removeByRoomId(roomId: string): Promise<DeleteResult> {
 		return this.deleteMany({ rid: roomId });
 	}
@@ -751,54 +604,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
-	createRoomArchivedByRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('room-archived', roomId, '', user, readReceiptsEnabled);
-	}
-
-	createRoomUnarchivedByRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('room-unarchived', roomId, '', user, readReceiptsEnabled);
-	}
-
-	createRoomSetReadOnlyByRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('room-set-read-only', roomId, '', user, readReceiptsEnabled);
-	}
-
-	createRoomRemovedReadOnlyByRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('room-removed-read-only', roomId, '', user, readReceiptsEnabled);
-	}
-
-	createRoomAllowedReactingByRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('room-allowed-reacting', roomId, '', user, readReceiptsEnabled);
-	}
-
-	createRoomDisallowedReactingByRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('room-disallowed-reacting', roomId, '', user, readReceiptsEnabled);
-	}
-
 	unsetReactions(messageId: string): Promise<UpdateResult> {
 		return this.updateOne({ _id: messageId }, { $unset: { reactions: 1 } });
 	}
@@ -817,33 +622,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			ts: { $lte: ts },
 		};
 		return this.deleteMany(query);
-	}
-
-	updateOTRAck(_id: string, otrAck: string): Promise<UpdateResult> {
-		const query = { _id };
-		const update: UpdateFilter<IMessage> = { $set: { otrAck } };
-		return this.updateOne(query, update);
-	}
-
-	createRoomSettingsChangedWithTypeRoomIdMessageAndUser(
-		type: MessageTypesValues,
-		roomId: string,
-		message: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, any> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser(type, roomId, message, user, readReceiptsEnabled, extraData);
-	}
-
-	createRoomRenamedWithRoomIdRoomNameAndUser(
-		roomId: string,
-		roomName: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, any> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('r', roomId, roomName, user, readReceiptsEnabled, extraData);
 	}
 
 	addTranslations(messageId: string, translations: Record<string, string>, providerName: string): Promise<UpdateResult> {
@@ -906,7 +684,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findFilesByUserId(userId: string, options: FindOptions<IMessage> = {}): FindCursor<IMessage> {
+	findFilesByUserId(userId: string, options: FindOptions<IMessage> = {}): FindCursor<Pick<IMessage, 'file'>> {
 		const query = {
 			'u._id': userId,
 			'file._id': { $exists: true },
@@ -918,7 +696,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		rid: string,
 		excludePinned: boolean,
 		ignoreDiscussion = true,
-		ts: Date,
+		ts: Filter<IMessage>['ts'],
 		users: string[] = [],
 		ignoreThreads = true,
 		options: FindOptions<IMessage> = {},
@@ -939,7 +717,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	findDiscussionByRoomIdPinnedTimestampAndUsers(
 		rid: string,
 		excludePinned: boolean,
-		ts: Date,
+		ts: Filter<IMessage>['ts'],
 		users: string[] = [],
 		options: FindOptions<IMessage> = {},
 	): FindCursor<IMessage> {
@@ -1132,6 +910,42 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
+	countVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+		roomId: string,
+		afterTimestamp: Date,
+		beforeTimestamp: Date,
+		types: MessageTypesValues[],
+		showThreadMessages = true,
+		inclusive = false,
+	): Promise<number> {
+		const query = {
+			_hidden: {
+				$ne: true,
+			},
+			rid: roomId,
+			ts: {
+				[inclusive ? '$gte' : '$gt']: afterTimestamp,
+				[inclusive ? '$lte' : '$lt']: beforeTimestamp,
+			},
+			...(!showThreadMessages && {
+				$or: [
+					{
+						tmid: { $exists: false },
+					},
+					{
+						tshow: true,
+					},
+				],
+			}),
+			...(Array.isArray(types) &&
+				types.length > 0 && {
+					t: { $nin: types },
+				}),
+		};
+
+		return this.col.countDocuments(query);
+	}
+
 	async getLastTimestamp(options: FindOptions<IMessage> = { projection: { _id: 0, ts: 1 } }): Promise<Date | undefined> {
 		options.sort = { ts: -1 };
 		options.limit = 1;
@@ -1174,15 +988,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findOne(query, options);
 	}
 
-	findByRoomId(roomId: string, options?: FindOptions<IMessage>): FindCursor<IMessage> {
-		const query = {
-			rid: roomId,
-		};
-
-		return this.find(query, options);
-	}
-
-	getLastVisibleMessageSentWithNoTypeByRoomId(rid: string, messageId: string): Promise<IMessage | null> {
+	getLastVisibleMessageSentWithNoTypeByRoomId(rid: string, messageId?: string): Promise<IMessage | null> {
 		const query = {
 			rid,
 			_hidden: { $ne: true },
@@ -1367,18 +1173,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.updateOne(query, update);
 	}
 
-	upgradeEtsToEditAt(): Promise<UpdateResult | Document> {
-		const query = { ets: { $exists: 1 } };
-
-		const update = {
-			$rename: {
-				ets: 'editedAt',
-			},
-		};
-
-		return this.updateMany(query, update);
-	}
-
 	setMessageAttachments(_id: string, attachments: IMessage['attachments']): Promise<UpdateResult> {
 		const query = { _id };
 
@@ -1422,355 +1216,36 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	}
 
 	// INSERT
-	async createWithTypeRoomIdMessageAndUser(
+
+	async createWithTypeRoomIdMessageUserAndUnread(
 		type: MessageTypesValues,
-		roomId: string,
+		rid: string,
 		message: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData?: Record<string, string>,
-	): Promise<Omit<IMessage, '_updatedAt'>> {
+		user: Pick<IMessage['u'], '_id' | 'username'>,
+		unread?: boolean,
+		extraData?: Partial<IMessage>,
+	): Promise<InsertOneResult<IMessage>> {
 		const record: Omit<IMessage, '_id' | '_updatedAt'> = {
 			t: type,
-			rid: roomId,
+			rid,
 			ts: new Date(),
 			msg: message,
 			u: {
 				_id: user._id,
 				username: user.username,
-				name: '',
 			},
 			groupable: false as const,
-			...(readReceiptsEnabled && { unread: true }),
+			...(unread && { unread: true }),
 		};
 
 		const data = Object.assign(record, extraData);
 
-		await Rooms.incMsgCountById(roomId, 1);
-		return { ...record, _id: (await this.updateOne(data, data, { upsert: true })).upsertedId as unknown as string };
-	}
+		await Rooms.incMsgCountById(rid, 1);
 
-	async createNavigationHistoryWithRoomIdMessageAndUser(
-		roomId: string,
-		message: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const type = 'livechat_navigation_history' as const;
-		const record: Omit<IMessage, '_id' | '_updatedAt'> = {
-			t: type,
-			rid: roomId,
-			ts: new Date(),
-			msg: message,
-			u: {
-				_id: user._id,
-				username: user.username,
-				name: '',
-			},
-			groupable: false,
-			...(readReceiptsEnabled && { unread: true }),
-		};
-
-		const data = Object.assign(record, extraData);
-
-		return { ...record, _id: (await this.updateOne(data, data, { upsert: true })).upsertedId as unknown as string };
-	}
-
-	async createTranscriptHistoryWithRoomIdMessageAndUser(
-		roomId: string,
-		message: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const type = 'livechat_transcript_history' as const;
-		const record: Omit<IMessage, '_id' | '_updatedAt'> = {
-			t: type,
-			rid: roomId,
-			ts: new Date(),
-			msg: message,
-			u: {
-				_id: user._id,
-				username: user.username,
-				name: '',
-			},
-			groupable: false,
-			...(readReceiptsEnabled && { unread: true }),
-		};
-
-		const data = Object.assign(record, extraData);
-
-		return { ...record, _id: (await this.updateOne(data, data, { upsert: true })).upsertedId as unknown as string };
-	}
-
-	createUserJoinWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('uj', roomId, message, user, readReceiptsEnabled, extraData);
-	}
-
-	createUserJoinTeamWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('ujt', roomId, message, user, readReceiptsEnabled, extraData);
-	}
-
-	createUserJoinWithRoomIdAndUserDiscussion(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('ut', roomId, message, user, readReceiptsEnabled, extraData);
-	}
-
-	createUserLeaveWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('ul', roomId, message, user, readReceiptsEnabled, extraData);
-	}
-
-	createUserLeaveTeamWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('ult', roomId, message, user, readReceiptsEnabled, extraData);
-	}
-
-	createUserConvertChannelToTeamWithRoomIdAndUser(
-		roomId: string,
-		roomName: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('user-converted-to-team', roomId, roomName, user, readReceiptsEnabled, extraData);
-	}
-
-	createUserConvertTeamToChannelWithRoomIdAndUser(
-		roomId: string,
-		roomName: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('user-converted-to-channel', roomId, roomName, user, readReceiptsEnabled, extraData);
-	}
-
-	createUserRemoveRoomFromTeamWithRoomIdAndUser(
-		roomId: string,
-		roomName: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('user-removed-room-from-team', roomId, roomName, user, readReceiptsEnabled, extraData);
-	}
-
-	createUserDeleteRoomFromTeamWithRoomIdAndUser(
-		roomId: string,
-		roomName: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('user-deleted-room-from-team', roomId, roomName, user, readReceiptsEnabled, extraData);
-	}
-
-	createUserAddRoomToTeamWithRoomIdAndUser(
-		roomId: string,
-		roomName: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('user-added-room-to-team', roomId, roomName, user, readReceiptsEnabled, extraData);
-	}
-
-	createUserRemovedWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('ru', roomId, message, user, readReceiptsEnabled, extraData);
-	}
-
-	createUserRemovedFromTeamWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('removed-user-from-team', roomId, message, user, readReceiptsEnabled, extraData);
-	}
-
-	createUserAddedWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('au', roomId, message, user, readReceiptsEnabled, extraData);
-	}
-
-	createUserAddedToTeamWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('added-user-to-team', roomId, message, user, readReceiptsEnabled, extraData);
-	}
-
-	createCommandWithRoomIdAndUser(
-		command: string,
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser('command', roomId, command, user, readReceiptsEnabled, extraData);
-	}
-
-	createUserMutedWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('user-muted', roomId, message, user, readReceiptsEnabled, extraData);
-	}
-
-	createUserUnmutedWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('user-unmuted', roomId, message, user, readReceiptsEnabled, extraData);
-	}
-
-	createNewModeratorWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('new-moderator', roomId, message, user, readReceiptsEnabled, extraData);
-	}
-
-	createModeratorRemovedWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('moderator-removed', roomId, message, user, readReceiptsEnabled, extraData);
-	}
-
-	createNewOwnerWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('new-owner', roomId, message, user, readReceiptsEnabled, extraData);
-	}
-
-	createOwnerRemovedWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('owner-removed', roomId, message, user, readReceiptsEnabled, extraData);
-	}
-
-	createNewLeaderWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('new-leader', roomId, message, user, readReceiptsEnabled, extraData);
-	}
-
-	createLeaderRemovedWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('leader-removed', roomId, message, user, readReceiptsEnabled, extraData);
-	}
-
-	createSubscriptionRoleAddedWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('subscription-role-added', roomId, message, user, readReceiptsEnabled, extraData);
-	}
-
-	createSubscriptionRoleRemovedWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser('subscription-role-removed', roomId, message, user, readReceiptsEnabled, extraData);
-	}
-
-	createOtrSystemMessagesWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		id: MessageTypesValues,
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser(id, roomId, message, user, readReceiptsEnabled, extraData);
+		return this.insertOne(data);
 	}
 
 	// REMOVE
-	removeById(_id: string): Promise<DeleteResult> {
-		const query = { _id };
-
-		return this.deleteOne(query);
-	}
 
 	removeByRoomIds(rids: string[]): Promise<DeleteResult> {
 		return this.deleteMany({ rid: { $in: rids } });
@@ -1783,8 +1258,8 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			ignoreDiscussion = true,
 			ts,
 			users = [],
-		}: { rid: string; pinned: boolean; ignoreDiscussion?: boolean; ts: Date; users: string[] },
-		options: FindOptions<IMessage>,
+		}: { rid: string; pinned: boolean; ignoreDiscussion?: boolean; ts: Filter<IMessage>['ts']; users: string[] },
+		options?: FindOptions<IMessage>,
 	): FindCursor<IMessage> {
 		const query: Filter<IMessage> = {
 			rid,
@@ -1809,7 +1284,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		rid: string,
 		pinned: boolean,
 		ignoreDiscussion = true,
-		ts: Date,
+		ts: Filter<IMessage>['ts'],
 		limit: number,
 		users: string[] = [],
 		ignoreThreads = true,
@@ -1944,7 +1419,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		);
 	}
 
-	findVisibleUnreadMessagesByRoomAndDate(rid: string, after: Date): FindCursor<IMessage> {
+	findVisibleUnreadMessagesByRoomAndDate(rid: string, after: Date): FindCursor<Pick<IMessage, '_id'>> {
 		const query = {
 			unread: true,
 			rid,
@@ -1966,7 +1441,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		});
 	}
 
-	findUnreadThreadMessagesByDate(tmid: string, userId: string, after: Date): FindCursor<IMessage> {
+	findUnreadThreadMessagesByDate(tmid: string, userId: string, after: Date): FindCursor<Pick<IMessage, '_id'>> {
 		const query = {
 			'u._id': { $ne: userId },
 			'unread': true,
@@ -1989,25 +1464,11 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	 * to race conditions: If multiple updates occur, the current state will be updated
 	 * only if the new state of the discussion room is really newer.
 	 */
-	async refreshDiscussionMetadata({ rid }: { rid: string }): Promise<UpdateResult | Document | false> {
-		if (!rid) {
-			return false;
-		}
-		const room = await Rooms.findOneById(rid, {
-			projection: {
-				msgs: 1,
-				lm: 1,
-			},
-		});
-
-		if (!room) {
-			return false;
-		}
-
-		const { msgs: dcount, lm: dlm } = room;
+	async refreshDiscussionMetadata(room: Pick<IRoom, '_id' | 'msgs' | 'lm'>): Promise<UpdateResult | Document | false> {
+		const { _id: drid, msgs: dcount, lm: dlm } = room;
 
 		const query = {
-			drid: rid,
+			drid,
 		};
 
 		return this.updateMany(query, {
@@ -2023,16 +1484,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 	countThreads(): Promise<number> {
 		return this.col.countDocuments({ tcount: { $exists: true } });
-	}
-
-	removeThreadRefByThreadId(tmid: string): Promise<UpdateResult | Document> {
-		const query = { tmid };
-		const update: UpdateFilter<IMessage> = {
-			$unset: {
-				tmid: 1,
-			},
-		};
-		return this.updateMany(query, update);
 	}
 
 	updateRepliesByThreadId(tmid: string, replies: string[], ts: Date): Promise<UpdateResult> {
@@ -2060,43 +1511,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	async getThreadFollowsByThreadId(tmid: string): Promise<string[] | undefined> {
 		const msg = await this.findOneById(tmid, { projection: { replies: 1 } });
 		return msg?.replies;
-	}
-
-	getFirstReplyTsByThreadId(tmid: string): Promise<Pick<IMessage, 'ts'> | null> {
-		return this.findOne({ tmid }, { projection: { ts: 1 }, sort: { ts: 1 } });
-	}
-
-	unsetThreadByThreadId(tmid: string): Promise<UpdateResult> {
-		const query = {
-			_id: tmid,
-		};
-
-		const update: UpdateFilter<IMessage> = {
-			$unset: {
-				tcount: 1,
-				tlm: 1,
-				replies: 1,
-			},
-		};
-
-		return this.updateOne(query, update);
-	}
-
-	updateThreadLastMessageAndCountByThreadId(tmid: string, tlm: Date, tcount: number): Promise<UpdateResult> {
-		const query = {
-			_id: tmid,
-		};
-
-		const update: UpdateFilter<IMessage> = {
-			$set: {
-				tlm,
-			},
-			$inc: {
-				tcount,
-			},
-		};
-
-		return this.updateOne(query, update);
 	}
 
 	addThreadFollowerByThreadId(tmid: string, userId: string): Promise<UpdateResult> {
@@ -2158,6 +1572,25 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		};
 
 		return this.find(query);
+	}
+
+	countAllImportedMessagesWithFilesToDownload(): Promise<number> {
+		const query = {
+			'_importFile.downloadUrl': {
+				$exists: true,
+			},
+			'_importFile.rocketChatUrl': {
+				$exists: false,
+			},
+			'_importFile.downloaded': {
+				$ne: true,
+			},
+			'_importFile.external': {
+				$ne: true,
+			},
+		};
+
+		return this.col.countDocuments(query);
 	}
 
 	decreaseReplyCountById(_id: string, inc = -1): Promise<UpdateResult> {

@@ -5,7 +5,6 @@ import {
 	usePermission,
 	useQueryStringParameter,
 	useRole,
-	useSession,
 	useSetting,
 	useTranslation,
 	useUser,
@@ -24,7 +23,7 @@ import { withDebouncing, withThrottling } from '../../../../../lib/utils/highOrd
 import ScrollableContentWrapper from '../../../../components/ScrollableContentWrapper';
 import { useEmbeddedLayout } from '../../../../hooks/useEmbeddedLayout';
 import { useReactiveQuery } from '../../../../hooks/useReactiveQuery';
-import { RoomManager as NewRoomManager } from '../../../../lib/RoomManager';
+import { RoomManager } from '../../../../lib/RoomManager';
 import type { Upload } from '../../../../lib/chats/Upload';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { setMessageJumpQueryStringParameter } from '../../../../lib/utils/setMessageJumpQueryStringParameter';
@@ -45,9 +44,10 @@ import RoomForeword from './RoomForeword';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import UploadProgressIndicator from './UploadProgressIndicator';
 import ComposerContainer from './composer/ComposerContainer';
-import { useFileUploadDropTarget } from './useFileUploadDropTarget';
-import { useRetentionPolicy } from './useRetentionPolicy';
-import { useUnreadMessages } from './useUnreadMessages';
+import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
+import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
+import { useRetentionPolicy } from './hooks/useRetentionPolicy';
+import { useUnreadMessages } from './hooks/useUnreadMessages';
 
 const RoomBody = (): ReactElement => {
 	const t = useTranslation();
@@ -281,10 +281,8 @@ const RoomBody = (): ReactElement => {
 		[room._id],
 	);
 
-	const openedRoom = useSession('openedRoom');
-
 	useEffect(() => {
-		if (!routeName || !roomCoordinator.isRouteNameKnown(routeName) || room._id !== openedRoom) {
+		if (!routeName || !roomCoordinator.isRouteNameKnown(routeName)) {
 			return;
 		}
 
@@ -292,7 +290,7 @@ const RoomBody = (): ReactElement => {
 		if (subscribed && (subscription?.alert || subscription?.unread)) {
 			readMessage.refreshUnreadMark(room._id);
 		}
-	}, [debouncedReadMessageRead, openedRoom, room._id, routeName, subscribed, subscription?.alert, subscription?.unread]);
+	}, [debouncedReadMessageRead, room._id, routeName, subscribed, subscription?.alert, subscription?.unread]);
 
 	useEffect(() => {
 		if (!subscribed) {
@@ -404,7 +402,7 @@ const RoomBody = (): ReactElement => {
 			return;
 		}
 
-		const store = NewRoomManager.getStore(room._id);
+		const store = RoomManager.getStore(room._id);
 
 		const handleWrapperScroll = withThrottling({ wait: 30 })(() => {
 			store?.update({ scroll: wrapper.scrollTop, atBottom: isAtBottom(wrapper, 50) });
@@ -540,6 +538,8 @@ const RoomBody = (): ReactElement => {
 		},
 		[toolbox],
 	);
+
+	useReadMessageWindowEvents();
 
 	return (
 		<>

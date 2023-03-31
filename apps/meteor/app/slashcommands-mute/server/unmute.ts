@@ -12,7 +12,7 @@ import { settings } from '../../settings/server';
 
 slashCommands.add({
 	command: 'unmute',
-	callback: function Unmute(_command, params, item): void {
+	callback: async function Unmute(_command, params, item): Promise<void> {
 		const username = params.trim().replace('@', '');
 		if (username === '') {
 			return;
@@ -30,7 +30,7 @@ slashCommands.add({
 			return;
 		}
 
-		Meteor.call('unmuteUserInRoom', {
+		await Meteor.callAsync('unmuteUserInRoom', {
 			rid: item.rid,
 			username,
 		});

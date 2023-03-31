@@ -202,7 +202,7 @@ class RocketChatAssetsClass {
 		return assets;
 	}
 
-	public setAsset(binaryContent: BufferEncoding, contentType: string, asset: string): void {
+	public setAsset(binaryContent: string, contentType: string, asset: string): void {
 		const assetInstance = getAssetByKey(asset);
 		if (!assetInstance) {
 			throw new Meteor.Error('error-invalid-asset', 'Invalid asset', {
@@ -436,9 +436,9 @@ WebAppHashing.calculateClientHash = function (manifest, includeFilter, runtimeCo
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		refreshClients: () => boolean;
-		unsetAsset: (asset: string) => void;
-		setAsset: (binaryContent: BufferEncoding, contentType: string, asset: string) => void;
+		refreshClients(): boolean;
+		unsetAsset(asset: string): void;
+		setAsset(binaryContent: Buffer, contentType: string, asset: string): void;
 	}
 }
 

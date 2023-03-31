@@ -7,13 +7,14 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ISubscription, SlashCommand } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
+import { Subscriptions } from '@rocket.chat/models';
 
-import { Rooms, Subscriptions, Users } from '../../models/server';
+import { Rooms, Users } from '../../models/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
 
 function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
-	return function inviteAll(command: T, params: string, item): void {
+	return async function inviteAll(command: T, params: string, item): Promise<void> {
 		if (!/invite\-all-(to|from)/.test(command)) {
 			return;
 		}
@@ -50,7 +51,7 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 			return;
 		}
 		const cursor = Subscriptions.findByRoomIdWhenUsernameExists(baseChannel._id, {
-			fields: { 'u.username': 1 },
+			projection: { 'u.username': 1 },
 		});
 
 		try {
@@ -63,10 +64,10 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 					method: 'addAllToRoom',
 				});
 			}
-			const users = cursor.fetch().map((s: ISubscription) => s.u.username);
+			const users = (await cursor.toArray()).map((s: ISubscription) => s.u.username);
 
 			if (!targetChannel && ['c', 'p'].indexOf(baseChannel.t) > -1) {
-				Meteor.call(baseChannel.t === 'c' ? 'createChannel' : 'createPrivateGroup', channel, users);
+				await Meteor.callAsync(baseChannel.t === 'c' ? 'createChannel' : 'createPrivateGroup', channel, users);
 				void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 					msg: TAPi18n.__('Channel_created', {
 						postProcess: 'sprintf',
@@ -75,7 +76,7 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 					}),
 				});
 			} else {
-				Meteor.call('addUsersToRoom', {
+				await Meteor.callAsync('addUsersToRoom', {
 					rid: targetChannel._id,
 					users,
 				});

@@ -27,6 +27,6 @@ async function afterDeleteMessage(message) {
 
 export const definition = {
 	hook: 'afterDeleteMessage',
-	callback: (message) => Promise.await(afterDeleteMessage(message)),
+	callback: afterDeleteMessage,
 	id: 'federation-after-delete-message',
 };

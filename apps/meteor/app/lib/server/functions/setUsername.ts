@@ -1,19 +1,19 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Invites } from '@rocket.chat/models';
+import { Invites, Users } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
 import { settings } from '../../../settings/server';
-import { Users } from '../../../models/server';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RateLimiter } from '../lib';
 import { addUserToRoom } from './addUserToRoom';
-import { checkUsernameAvailability, setUserAvatar } from '.';
+import { setUserAvatar } from '.';
+import { checkUsernameAvailability } from './checkUsernameAvailability';
 import { getAvatarSuggestionForUser } from './getAvatarSuggestionForUser';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export const _setUsername = function (userId: string, u: string, fullUser: IUser): unknown {
+export const _setUsername = async function (userId: string, u: string, fullUser: IUser): Promise<unknown> {
 	const username = u.trim();
 	if (!userId || !username) {
 		return false;
@@ -27,7 +27,7 @@ export const _setUsername = function (userId: string, u: string, fullUser: IUser
 	if (!nameValidation.test(username)) {
 		return false;
 	}
-	const user = fullUser || Users.findOneById(userId);
+	const user = fullUser || (await Users.findOneById(userId));
 	// User already has desired username, return
 	if (user.username === username) {
 		return user;
@@ -35,7 +35,7 @@ export const _setUsername = function (userId: string, u: string, fullUser: IUser
 	const previousUsername = user.username;
 	// Check username availability or if the user already owns a different casing of the name
 	if (!previousUsername || !(username.toLowerCase() === previousUsername.toLowerCase())) {
-		if (!checkUsernameAvailability(username)) {
+		if (!(await checkUsernameAvailability(username))) {
 			return false;
 		}
 	}
@@ -50,11 +50,11 @@ export const _setUsername = function (userId: string, u: string, fullUser: IUser
 		SystemLogger.error(e);
 	}
 	// Set new username*
-	Users.setUsername(user._id, username);
+	await Users.setUsername(user._id, username);
 	user.username = username;
 	if (!previousUsername && settings.get('Accounts_SetDefaultAvatar') === true) {
 		// eslint-disable-next-line @typescript-eslint/ban-types
-		const avatarSuggestions = Promise.await(getAvatarSuggestionForUser(user)) as {};
+		const avatarSuggestions = (await getAvatarSuggestionForUser(user)) as {};
 		let gravatar;
 		Object.keys(avatarSuggestions).some((service) => {
 			const avatarData = avatarSuggestions[+service as keyof typeof avatarSuggestions];
@@ -75,9 +75,9 @@ export const _setUsername = function (userId: string, u: string, fullUser: IUser
 
 	// If it's the first username and the user has an invite Token, then join the invite room
 	if (!previousUsername && user.inviteToken) {
-		const inviteData = Promise.await(Invites.findOneById(user.inviteToken));
+		const inviteData = await Invites.findOneById(user.inviteToken);
 		if (inviteData?.rid) {
-			Promise.await(addUserToRoom(inviteData.rid, user));
+			await addUserToRoom(inviteData.rid, user);
 		}
 	}
 
@@ -91,8 +91,8 @@ export const _setUsername = function (userId: string, u: string, fullUser: IUser
 };
 
 export const setUsername = RateLimiter.limitFunction(_setUsername, 1, 60000, {
-	0() {
+	async 0() {
 		const userId = Meteor.userId();
-		return !userId || !hasPermission(userId, 'edit-other-user-info');
+		return !userId || !(await hasPermissionAsync(userId, 'edit-other-user-info'));
 	},
 });

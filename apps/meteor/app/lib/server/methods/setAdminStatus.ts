@@ -33,8 +33,8 @@ Meteor.methods<ServerMethods>({
 		}
 
 		if (admin) {
-			return Meteor.call('authorization:addUserToRole', 'admin', user?.username);
+			return Meteor.callAsync('authorization:addUserToRole', 'admin', user?.username);
 		}
-		return Meteor.call('authorization:removeUserFromRole', 'admin', user?.username);
+		return Meteor.callAsync('authorization:removeUserFromRole', 'admin', user?.username);
 	},
 });

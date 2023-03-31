@@ -32,6 +32,6 @@ async function afterUnsetReaction(message, { user, reaction }) {
 
 export const definition = {
 	hook: 'afterUnsetReaction',
-	callback: (message, extras) => Promise.await(afterUnsetReaction(message, extras)),
+	callback: afterUnsetReaction,
 	id: 'federation-after-unset-reaction',
 };

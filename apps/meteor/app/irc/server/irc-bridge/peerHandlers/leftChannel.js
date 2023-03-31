@@ -1,8 +1,9 @@
-import { Users, Rooms } from '../../../../models/server';
+import { Users, Rooms } from '@rocket.chat/models';
+
 import { removeUserFromRoom } from '../../../../lib/server';
 
 export default async function handleLeftChannel(args) {
-	const user = Users.findOne({
+	const user = await Users.findOne({
 		'profile.irc.nick': args.nick,
 	});
 
@@ -10,7 +11,7 @@ export default async function handleLeftChannel(args) {
 		throw new Error(`Could not find a user with nick ${args.nick}`);
 	}
 
-	const room = Rooms.findOneByName(args.roomName);
+	const room = await Rooms.findOneByName(args.roomName);
 
 	if (!room) {
 		throw new Error(`Could not find a room with name ${args.roomName}`);

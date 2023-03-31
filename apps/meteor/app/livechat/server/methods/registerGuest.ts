@@ -1,9 +1,8 @@
 import { Meteor } from 'meteor/meteor';
-import { LivechatVisitors, Messages } from '@rocket.chat/models';
+import { LivechatVisitors, Messages, LivechatRooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { ILivechatVisitor, IRoom } from '@rocket.chat/core-typings';
 
-import { LivechatRooms } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
@@ -58,7 +57,7 @@ Meteor.methods<ServerMethods>({
 		});
 
 		// If it's updating an existing visitor, it must also update the roomInfo
-		const rooms: IRoom[] = LivechatRooms.findOpenByVisitorToken(token).fetch();
+		const rooms: IRoom[] = await LivechatRooms.findOpenByVisitorToken(token).toArray();
 		await Promise.all(rooms.map((room) => Livechat.saveRoomInfo(room, visitor)));
 
 		if (customFields && customFields instanceof Array) {
