@@ -1,13 +1,14 @@
 import type Mail from 'nodemailer/lib/mailer';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { isIMessageInbox } from '@rocket.chat/core-typings';
 import type { IEmailInbox, IUser, IMessage } from '@rocket.chat/core-typings';
-import { Uploads, LivechatRooms } from '@rocket.chat/models';
+import { Messages, Uploads, LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../lib/callbacks';
 import { FileUpload } from '../../../app/file-upload/server';
 import { slashCommands } from '../../../app/utils/server';
-import { Messages, Rooms, Users } from '../../../app/models/server';
+import { Rooms, Users } from '../../../app/models/server';
 import type { Inbox } from './EmailInbox';
 import { inboxes } from './EmailInbox';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
@@ -87,8 +88,7 @@ slashCommands.add({
 			return;
 		}
 
-		const message = Messages.findOneById(params.trim());
-
+		const message = await Messages.findOneById(params.trim());
 		if (!message?.file) {
 			return;
 		}
@@ -119,7 +119,7 @@ slashCommands.add({
 					{
 						to: room.email.replyTo,
 						subject: room.email.subject,
-						text: message.attachments[0].description || '',
+						text: message?.attachments?.[0].description || '',
 						attachments: [
 							{
 								content: buffer,
@@ -138,7 +138,7 @@ slashCommands.add({
 				).then((info) => LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId));
 		});
 
-		Messages.update(
+		await Messages.updateOne(
 			{ _id: message._id },
 			{
 				$set: {
@@ -229,9 +229,8 @@ callbacks.add(
 			return message;
 		}
 
-		const replyToMessage = Messages.findOneById(match.groups.id);
-
-		if (!replyToMessage?.email?.messageId) {
+		const replyToMessage = await Messages.findOneById(match.groups.id);
+		if (!replyToMessage || !isIMessageInbox(replyToMessage) || !replyToMessage.email?.messageId) {
 			return message;
 		}
 

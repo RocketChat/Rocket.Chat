@@ -607,25 +607,29 @@ export const FileUpload = {
 		);
 	},
 
-	removeFilesByRoomId(rid: string) {
+	async removeFilesByRoomId(rid: string) {
 		if (typeof rid !== 'string' || rid.trim().length === 0) {
 			return;
 		}
-		Promise.await(
-			Messages.find(
-				{
-					rid,
-					'file._id': {
-						$exists: true,
-					},
+		const cursor = Messages.find(
+			{
+				rid,
+				'file._id': {
+					$exists: true,
 				},
-				{
-					projection: {
-						'file._id': 1,
-					},
+			},
+			{
+				projection: {
+					'file._id': 1,
 				},
-			).toArray(),
-		).forEach((document) => document.file && FileUpload.getStore('Uploads').deleteById(document.file._id));
+			},
+		);
+
+		for await (const document of cursor) {
+			if (document.file) {
+				await FileUpload.getStore('Uploads').deleteById(document.file._id);
+			}
+		}
 	},
 };
 
