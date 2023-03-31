@@ -1,7 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Messages, Rooms, Subscriptions } from '@rocket.chat/models';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 
 import { settings } from '../../../settings/server';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -49,13 +50,7 @@ export const saveRoomType = async function (rid, roomType, user, sendMessage = t
 				lng: (user && user.language) || settings.get('Language') || 'en',
 			});
 		}
-		await Messages.createWithTypeRoomIdMessageUserAndUnread(
-			'room_changed_privacy',
-			rid,
-			message,
-			user,
-			settings.get('Message_Read_Receipt_Enabled'),
-		);
+		await Message.saveSystemMessage('room_changed_privacy', rid, message, user);
 	}
 	return result;
 };

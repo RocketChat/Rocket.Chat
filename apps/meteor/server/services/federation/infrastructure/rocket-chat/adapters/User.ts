@@ -116,6 +116,6 @@ export class RocketChatUserAdapter {
 	}
 
 	public async updateRealName(internalUser: IUser, name: string): Promise<void> {
-		setRealName(internalUser._id, name, internalUser);
+		await setRealName(internalUser._id, name, internalUser);
 	}
 }

@@ -10,7 +10,7 @@ import type { IBaseModel } from './IBaseModel';
 
 export interface ILivechatInquiryModel extends IBaseModel<ILivechatInquiryRecord> {
 	findOneQueuedByRoomId(rid: string): Promise<(ILivechatInquiryRecord & { status: LivechatInquiryStatus.QUEUED }) | null>;
-	findOneByRoomId<T = ILivechatInquiryRecord>(
+	findOneByRoomId<T extends Document = ILivechatInquiryRecord>(
 		rid: string,
 		options: FindOptions<T extends ILivechatInquiryRecord ? ILivechatInquiryRecord : T>,
 	): Promise<T | null>;

@@ -200,9 +200,9 @@ export class LivechatUnitRaw extends BaseRaw<IOmnichannelBusinessUnit> implement
 		return monitoredUnits.map((u) => u.unitId);
 	}
 
-	async findMonitoredDepartmentsByMonitorId(monitorId: string): Promise<FindCursor<ILivechatDepartment>> {
+	async findMonitoredDepartmentsByMonitorId(monitorId: string): Promise<ILivechatDepartment[]> {
 		const monitoredUnits = await this.findByMonitorId(monitorId);
-		return LivechatDepartment.findByUnitIds(monitoredUnits, {});
+		return LivechatDepartment.findByUnitIds(monitoredUnits, {}).toArray();
 	}
 
 	countUnits(): Promise<number> {

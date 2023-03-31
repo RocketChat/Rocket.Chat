@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { HTTP } from 'meteor/http';
 import _ from 'underscore';
 import { AppsTokens } from '@rocket.chat/models';
 
@@ -8,6 +7,7 @@ import { initAPN, sendAPN } from './apn';
 import { sendGCM } from './gcm';
 import { logger } from './logger';
 import { settings } from '../../settings/server';
+import { fetch } from '../../../server/lib/http/fetch';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 
@@ -108,10 +108,10 @@ class PushClass {
 		notification.uniqueId = this.options.uniqueId;
 
 		const data = {
-			data: {
+			body: JSON.stringify({
 				token,
 				options: notification,
-			},
+			}),
 			headers: {},
 		};
 
@@ -119,49 +119,48 @@ class PushClass {
 			data.headers.Authorization = await this.options.getAuthorization();
 		}
 
-		return HTTP.post(`${gateway}/push/${service}/send`, data, (error, response) => {
-			if (response?.statusCode === 406) {
-				logger.info('removing push token', token);
-				Promise.await(
-					AppsTokens.deleteMany({
-						$or: [
-							{
-								'token.apn': token,
-							},
-							{
-								'token.gcm': token,
-							},
-						],
-					}),
-				);
-				return;
-			}
+		const result = await fetch(`${gateway}/push/${service}/send`, { ...data, method: 'POST' });
+		const response = await result.json();
 
-			if (response?.statusCode === 422) {
-				logger.info('gateway rejected push notification. not retrying.', response);
-				return;
-			}
+		if (result.status === 406) {
+			logger.info('removing push token', token);
+			await AppsTokens.deleteMany({
+				$or: [
+					{
+						'token.apn': token,
+					},
+					{
+						'token.gcm': token,
+					},
+				],
+			});
+			return;
+		}
 
-			if (response?.statusCode === 401) {
-				logger.warn('Error sending push to gateway (not authorized)', response);
-				return;
-			}
+		if (result.status === 422) {
+			logger.info('gateway rejected push notification. not retrying.', response);
+			return;
+		}
 
-			if (!error) {
-				return;
-			}
+		if (result.status === 401) {
+			logger.warn('Error sending push to gateway (not authorized)', response);
+			return;
+		}
 
-			logger.error({ msg: `Error sending push to gateway (${tries} try) ->`, err: error });
+		if (result.ok) {
+			return;
+		}
 
-			if (tries <= 4) {
-				// [1, 2, 4, 8, 16] minutes (total 31)
-				const ms = 60000 * Math.pow(2, tries);
+		logger.error({ msg: `Error sending push to gateway (${tries} try) ->`, err: response });
 
-				logger.log('Trying sending push to gateway again in', ms, 'milliseconds');
+		if (tries <= 4) {
+			// [1, 2, 4, 8, 16] minutes (total 31)
+			const ms = 60000 * Math.pow(2, tries);
 
-				return Meteor.setTimeout(() => this.sendGatewayPush(gateway, service, token, notification, tries + 1), ms);
-			}
-		});
+			logger.log('Trying sending push to gateway again in', ms, 'milliseconds');
+
+			return Meteor.setTimeout(() => this.sendGatewayPush(gateway, service, token, notification, tries + 1), ms);
+		}
 	}
 
 	async sendNotificationGateway(app, notification, countApn, countGcm) {
