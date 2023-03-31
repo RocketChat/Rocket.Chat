@@ -1,13 +1,12 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { isLivechatRoomOnHoldProps, isLivechatRoomResumeOnHoldProps, isPOSTLivechatRoomPriorityParams } from '@rocket.chat/rest-typings';
-import { LivechatRooms } from '@rocket.chat/models';
+import { LivechatRooms, Subscriptions } from '@rocket.chat/models';
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { OmnichannelEEService } from '@rocket.chat/core-services';
 
 import { API } from '../../../../../app/api/server';
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
-import { Subscriptions } from '../../../../../app/models/server';
 import { removePriorityFromRoom, updateRoomPriority } from './lib/priorities';
 
 API.v1.addRoute(
