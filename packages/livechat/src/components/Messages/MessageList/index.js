@@ -48,6 +48,13 @@ export class MessageList extends MemoizedComponent {
 			const { onScrollTo } = this.props;
 			onScrollTo && onScrollTo(scrollPosition);
 		}
+
+		const { dispatch } = this.props;
+		const { messageListPosition } = store.state;
+
+		if (messageListPosition !== this.scrollPosition) {
+			dispatch({ messageListPosition: this.scrollPosition });
+		}
 	};
 
 	handleResize = () => {
