@@ -1,1 +1,1 @@
-export { ClassMinimalDDPClient } from './ClassMinimalDDPClient';
+export { MinimalDDPClient } from './MinimalDDPClient';

@@ -1,4 +1,4 @@
-import type { DDPMethods } from './ClassMinimalDDPClient';
+import type { DDPClient } from './DDPClient';
 
 interface ClientStream {
 	call(method: string, ...params: any[]): string;
@@ -10,7 +10,7 @@ interface ClientStream {
 }
 
 export class ClientStreamImpl implements ClientStream {
-	constructor(private ws: DDPMethods) {}
+	constructor(private ws: DDPClient) {}
 
 	call(method: string, ...params: any[]): string {
 		// get the last argument

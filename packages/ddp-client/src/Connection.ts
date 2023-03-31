@@ -1,4 +1,4 @@
-import type { DDPMethods } from './ClassMinimalDDPClient';
+import type { DDPClient } from './DDPClient';
 
 type Subscription = {
 	name: string;
@@ -39,7 +39,7 @@ export class ConnectionImpl implements Connection {
 
 	calls: Method[] = [];
 
-	constructor(private ws: WebSocket, private client: DDPMethods, _retryOptions: RetryOptions) {}
+	constructor(private ws: WebSocket, private client: DDPClient, _retryOptions: RetryOptions) {}
 
 	connect() {
 		this.status = 'connecting';
