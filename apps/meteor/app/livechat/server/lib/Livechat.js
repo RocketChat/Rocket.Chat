@@ -285,10 +285,6 @@ export const Livechat = {
 		return 0;
 	},
 
-	enabled() {
-		return settings.get('Livechat_enabled');
-	},
-
 	async getInitSettings() {
 		const rcSettings = {};
 
