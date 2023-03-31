@@ -14,7 +14,7 @@ import type {
 } from './types/publicationPayloads';
 import type { OutgoingPayload } from './types/OutgoingPayload';
 import type { IncomingPayload } from './types/IncomingPayload';
-import type { DDPClient } from './DDPClient';
+import type { DDPClient } from './types/DDPClient';
 import type { RemoveListener } from './types/RemoveListener';
 import type { PongPayload } from './types/heartbeatsPayloads';
 
@@ -73,7 +73,7 @@ export class MinimalDDPClient extends Emitter<MinimalDDPClientEvents> implements
 
 		switch (data.msg) {
 			case 'ping':
-				this.sendSerialized({ msg: 'pong', ...(data.id && { id: data.id }) });
+				this.pong(data.id);
 				break;
 
 			case 'pong':
@@ -199,5 +199,19 @@ export class MinimalDDPClient extends Emitter<MinimalDDPClientEvents> implements
 
 	onMessage(callback: (payload: IncomingPayload) => void): RemoveListener {
 		return this.on('message', callback);
+	}
+
+	ping(id?: string): void {
+		this.sendSerialized({
+			msg: 'ping',
+			...(id && { id }),
+		});
+	}
+
+	private pong(id?: string): void {
+		this.sendSerialized({
+			msg: 'pong',
+			...(id && { id }),
+		});
 	}
 }

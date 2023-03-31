@@ -1,4 +1,4 @@
-import type { DDPClient } from './DDPClient';
+import type { DDPClient } from './types/DDPClient';
 
 interface ClientStream {
 	call(method: string, ...params: any[]): string;

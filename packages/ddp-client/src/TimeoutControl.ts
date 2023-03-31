@@ -1,0 +1,61 @@
+import { Emitter } from '@rocket.chat/emitter';
+
+import type { DDPClient } from './types/DDPClient';
+import type { ConnectionImpl } from './Connection';
+
+export interface TimeoutControlEvents
+	extends Emitter<{
+		timeout: void;
+		heartbeat: void;
+	}> {
+	reset(): void;
+	readonly timeout: number;
+	readonly heartbeat: number;
+}
+
+export class TimeoutControl
+	extends Emitter<{
+		timeout: void;
+		heartbeat: void;
+	}>
+	implements TimeoutControlEvents
+{
+	private timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+	private heartbeatId: ReturnType<typeof setTimeout> | undefined;
+
+	constructor(readonly timeout: number = 30_000, readonly heartbeat: number = timeout / 2) {
+		super();
+		this.reset();
+		if (this.heartbeat >= this.timeout) {
+			throw new Error('Heartbeat must be less than timeout');
+		}
+	}
+
+	reset() {
+		if (this.timeoutId) {
+			clearTimeout(this.timeoutId);
+		}
+		if (this.heartbeatId) {
+			clearTimeout(this.heartbeatId);
+		}
+		this.timeoutId = setTimeout(() => this.emit('timeout'), this.timeout);
+		this.heartbeatId = setTimeout(() => this.emit('heartbeat'), this.heartbeat);
+	}
+
+	static create(ddp: DDPClient, connection: ConnectionImpl, timeout?: number, heartbeat?: number): TimeoutControl {
+		const timeoutControl = new TimeoutControl(timeout, heartbeat);
+
+		timeoutControl.on('heartbeat', () => {
+			ddp.ping();
+		});
+
+		timeoutControl.on('timeout', () => {
+			connection.close();
+		});
+
+		ddp.onMessage(() => timeoutControl.reset());
+
+		return timeoutControl;
+	}
+}

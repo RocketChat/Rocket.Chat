@@ -1,9 +1,9 @@
-import type { ConnectedPayload, FailedPayload } from './types/connectionPayloads';
-import type { ResultPayload, UpdatedPayload } from './types/methodsPayloads';
-import type { NosubPayload, ServerPublicationPayloads } from './types/publicationPayloads';
-import type { OutgoingPayload } from './types/OutgoingPayload';
-import type { IncomingPayload } from './types/IncomingPayload';
-import type { RemoveListener } from './types/RemoveListener';
+import type { ConnectedPayload, FailedPayload } from './connectionPayloads';
+import type { ResultPayload, UpdatedPayload } from './methodsPayloads';
+import type { NosubPayload, ServerPublicationPayloads } from './publicationPayloads';
+import type { OutgoingPayload } from './OutgoingPayload';
+import type { IncomingPayload } from './IncomingPayload';
+import type { RemoveListener } from './RemoveListener';
 
 /**
  * A low-level DDP client that can be used to communicate with a DDP server.
@@ -108,4 +108,10 @@ export interface DDPClient {
 	 * @returns A function to unregister the callback.
 	 */
 	onceMessage(callback: (payload: IncomingPayload) => void): RemoveListener;
+
+	/**
+	 * Sends a ping message to the server.
+	 * @returns nothing
+	 */
+	ping(id?: string): void;
 }
