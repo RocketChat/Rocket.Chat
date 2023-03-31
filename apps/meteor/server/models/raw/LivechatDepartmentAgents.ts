@@ -50,12 +50,12 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 
 	findUsersInQueue(usersList: string[], options: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents>;
 
-	findUsersInQueue<P>(
+	findUsersInQueue<P extends Document>(
 		usersList: string[],
 		options: FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
 	): FindCursor<P>;
 
-	findUsersInQueue<P>(
+	findUsersInQueue<P extends Document>(
 		usersList: string[],
 		options?:
 			| undefined
@@ -89,7 +89,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		options: FindOptions<ILivechatDepartmentAgents>,
 	): FindPaginated<FindCursor<ILivechatDepartmentAgents>>;
 
-	findAgentsByDepartmentId<P>(
+	findAgentsByDepartmentId<P extends Document>(
 		departmentId: string,
 		options: FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
 	): FindPaginated<FindCursor<P>>;
@@ -111,12 +111,12 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 
 	findActiveDepartmentsByAgentId(agentId: string, options: FindOptions<ILivechatDepartmentAgents>): FindCursor<ILivechatDepartmentAgents>;
 
-	findActiveDepartmentsByAgentId<P>(
+	findActiveDepartmentsByAgentId<P extends Document>(
 		agentId: string,
 		options: FindOptions<P extends ILivechatDepartmentAgents ? ILivechatDepartmentAgents : P>,
 	): FindCursor<P>;
 
-	findActiveDepartmentsByAgentId<P>(
+	findActiveDepartmentsByAgentId<P extends Document>(
 		agentId: string,
 		options?:
 			| undefined
@@ -212,7 +212,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		const onlineUsernames = onlineUsers.map((user) => user.username).filter(isStringValue);
 
 		// get fully booked agents, to ignore them from the query
-		const currentUnavailableAgents = (await Users.getUnavailableAgents(departmentId, extraQuery)).map((u: { username: any }) => u.username);
+		const currentUnavailableAgents = (await Users.getUnavailableAgents(departmentId, extraQuery)).map((u) => u.username);
 
 		const query: Filter<ILivechatDepartmentAgents> = {
 			departmentId,

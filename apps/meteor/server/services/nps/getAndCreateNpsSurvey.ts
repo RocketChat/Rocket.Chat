@@ -1,4 +1,3 @@
-import { HTTP } from 'meteor/http';
 import { Meteor } from 'meteor/meteor';
 import type { UiKitBannerPayload, IBanner, BannerPlatform } from '@rocket.chat/core-typings';
 import { Banner } from '@rocket.chat/core-services';
@@ -6,6 +5,7 @@ import { Banner } from '@rocket.chat/core-services';
 import { settings } from '../../../app/settings/server';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { SystemLogger } from '../../lib/logger/system';
+import { fetch } from '../../lib/http/fetch';
 
 type NpsSurveyData = {
 	id: string;
@@ -32,18 +32,18 @@ export const getAndCreateNpsSurvey = Meteor.bindEnvironment(async function getNp
 	const npsUrl = settings.get('Nps_Url');
 
 	try {
-		const result = HTTP.get(`${npsUrl}/v1/surveys/${npsId}`, {
+		const result = await fetch(`${npsUrl}/v1/surveys/${npsId}`, {
 			headers: {
 				Authorization: `Bearer ${token}`,
 			},
 		});
 
-		if (result.statusCode !== 200) {
+		if (!result.ok) {
 			SystemLogger.error({ msg: 'invalid response from the nps service:', result });
 			return;
 		}
 
-		const surveyData = result.data as NpsSurveyData;
+		const surveyData = (await result.json()) as NpsSurveyData;
 
 		const banner: IBanner = {
 			_id: npsId,

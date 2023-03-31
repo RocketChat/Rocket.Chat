@@ -8,21 +8,21 @@ import {
 	Messages,
 	Rooms,
 	Subscriptions,
+	Users,
+	LivechatUnitMonitors,
 } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../file-upload/server';
-import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { getSubscribedRoomsForUserWithDetails, shouldRemoveOrChangeOwner } from './getRoomsWithSingleOwner';
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
-import { LivechatUnitMonitors } from '../../../../ee/app/models/server';
 
 export async function deleteUser(userId: string, confirmRelinquish = false): Promise<void> {
-	const user = Users.findOneById(userId, {
-		fields: { username: 1, avatarOrigin: 1, roles: 1, federated: 1 },
+	const user = await Users.findOneById(userId, {
+		projection: { username: 1, avatarOrigin: 1, roles: 1, federated: 1 },
 	});
 
 	if (!user) {
@@ -56,9 +56,12 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 				await Messages.removeByUserId(userId);
 				break;
 			case 'Unlink':
-				const rocketCat = Users.findOneById('rocket.cat');
+				const rocketCat = await Users.findOneById('rocket.cat');
 				const nameAlias = TAPi18n.__('Removed_User');
-				await Messages.unlinkUserId(userId, rocketCat._id, rocketCat.username, nameAlias);
+				if (!rocketCat?._id || !rocketCat?.username) {
+					break;
+				}
+				await Messages.unlinkUserId(userId, rocketCat?._id, rocketCat?.username, nameAlias);
 				break;
 		}
 
@@ -74,7 +77,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 
 		if (user.roles.includes('livechat-monitor')) {
 			// Remove user as Unit Monitor
-			LivechatUnitMonitors.removeByMonitorId(userId);
+			await LivechatUnitMonitors.removeByMonitorId(userId);
 		}
 
 		// This is for compatibility. Since we allowed any user to be contact manager b4, we need to have the same logic
@@ -95,7 +98,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 	}
 
 	// Remove user from users database
-	Users.removeById(userId);
+	await Users.removeById(userId);
 
 	// update name and fname of group direct messages
 	await updateGroupDMsName(user);

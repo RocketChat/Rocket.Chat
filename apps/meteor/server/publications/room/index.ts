@@ -33,7 +33,7 @@ Meteor.methods<ServerMethods>({
 
 		if (!user) {
 			if (settings.get('Accounts_AllowAnonymousRead')) {
-				return Rooms.findByDefaultAndTypes(true, ['c'], options).fetch();
+				return RoomsRaw.findByDefaultAndTypes(true, ['c'], options).toArray();
 			}
 			return [];
 		}
