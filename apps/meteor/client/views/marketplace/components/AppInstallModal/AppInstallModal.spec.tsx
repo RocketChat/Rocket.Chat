@@ -1,12 +1,7 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, screen } from '@testing-library/react';
 import { expect, spy } from 'chai';
 import proxyquire from 'proxyquire';
-import type { ReactNode } from 'react';
 import React from 'react';
-
-import RouterContextMock from '../../../tests/mocks/client/RouterContextMock';
-import type * as AppInstallModal_model from './AppInstallModal';
 
 describe('AppInstallModal', () => {
 	const loadMock = () => {
