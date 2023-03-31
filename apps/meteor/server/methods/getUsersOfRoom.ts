@@ -2,8 +2,9 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { Subscriptions } from '@rocket.chat/models';
 
-import { Rooms, Subscriptions } from '../../app/models/server';
+import { Rooms } from '../../app/models/server';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { findUsersOfRoom } from '../lib/findUsersOfRoom';
@@ -50,7 +51,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		// TODO this is currently counting deactivated users
-		const total = Subscriptions.findByRoomIdWhenUsernameExists(rid).count();
+		const total = await Subscriptions.countByRoomIdWhenUsernameExists(rid);
 
 		const { cursor } = findUsersOfRoom({
 			rid,

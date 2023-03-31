@@ -42,7 +42,7 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		const room = await Rooms.findOneById(message.rid, { fields: { ...roomAccessAttributes, lastMessage: 1 } });
+		const room = await Rooms.findOneById(message.rid, { projection: { ...roomAccessAttributes, lastMessage: 1 } });
 
 		if (!room) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'starMessage' });

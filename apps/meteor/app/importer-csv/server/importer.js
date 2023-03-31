@@ -1,8 +1,7 @@
-import { Settings } from '@rocket.chat/models';
+import { Settings, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
 import { Base, ProgressStep, ImporterWebsocket } from '../../importer/server';
-import { Users } from '../../models/server';
 
 export class CsvImporter extends Base {
 	constructor(info, importRecord) {
@@ -227,17 +226,17 @@ export class CsvImporter extends Base {
 		}
 
 		// Check if any of the message usernames was not in the imported list of users
-		for (const username of usedUsernames) {
+		for await (const username of usedUsernames) {
 			if (availableUsernames.has(username)) {
 				continue;
 			}
 
 			// Check if an user with that username already exists
-			const user = Users.findOneByUsername(username);
+			const user = await Users.findOneByUsername(username);
 			if (user && !user.importIds?.includes(username)) {
 				// Add the username to the local user's importIds so it can be found by the import process
 				// This way we can support importing new messages for existing users
-				Users.addImportIds(user._id, username);
+				await Users.addImportIds(user._id, username);
 			}
 		}
 

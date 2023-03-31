@@ -1,8 +1,6 @@
 import type {
 	ILivechatDepartment,
-	ILivechatPriority,
 	IMessage,
-	IOmnichannelServiceLevelAgreements,
 	IRoom,
 	IUser,
 	MessageTypesValues,
@@ -46,172 +44,38 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		super(db, 'message', trash);
 	}
 
-	createOnHoldHistoryWithRoomIdMessageAndUser(
-		_roomId: string,
-		_comment: string,
-		_user: Pick<IUser, '_id' | 'username'>,
-	): Promise<
-		{ t: string; rid: string; ts: Date; comment: string; u: { _id: string; username: string | undefined }; groupable: boolean } & {
-			_id: string;
-		}
-	> {
-		throw new Error('Method not implemented.');
-	}
-
-	createOnHoldResumedHistoryWithRoomIdMessageAndUser(
-		_roomId: string,
-		_comment: string,
-		_user: Pick<IUser, '_id' | 'username'>,
-	): Promise<
-		{ t: string; rid: string; ts: Date; comment: string; u: { _id: string; username: string | undefined }; groupable: boolean } & {
-			_id: string;
-		}
-	> {
-		throw new Error('Method not implemented.');
-	}
-
-	createTransferFailedHistoryMessage(
-		_rid: string,
-		_comment: string,
-		_user: Pick<IUser, '_id' | 'username'>,
-		_extraData?: Record<string, any>,
-	): Promise<
-		{ t: string; rid: string; ts: Date; comment: string; u: { _id: string; username: string | undefined }; groupable: boolean } & {
-			_id: string;
-		}
-	> {
-		throw new Error('Method not implemented.');
-	}
-
 	protected modelIndexes(): IndexDescription[] {
-		// add the indexes from the constructor in here
 		return [
+			{ key: { rid: 1, ts: 1, _updatedAt: 1 } },
+			{ key: { ts: 1 } },
+			{ key: { 'u._id': 1 } },
+			{ key: { editedAt: 1 }, sparse: true },
+			{ key: { 'editedBy._id': 1 }, sparse: true },
+			{ key: { 'rid': 1, 't': 1, 'u._id': 1 } },
+			{ key: { expireAt: 1 }, expireAfterSeconds: 0 },
+			{ key: { msg: 'text' } },
+			{ key: { 'file._id': 1 }, sparse: true },
+			{ key: { 'mentions.username': 1 }, sparse: true },
+			{ key: { pinned: 1 }, sparse: true },
+			{ key: { location: '2dsphere' } },
+			{ key: { slackTs: 1, slackBotId: 1 }, sparse: true },
+			{ key: { unread: 1 }, sparse: true },
+			{ key: { 'pinnedBy._id': 1 }, sparse: true },
+			{ key: { 'starred._id': 1 }, sparse: true },
+
+			// discussions
+			{ key: { drid: 1 }, sparse: true },
+
+			// threads
+			{ key: { tmid: 1 }, sparse: true },
+			{ key: { tcount: 1, tlm: 1 }, sparse: true },
+			{ key: { rid: 1, tlm: -1 }, partialFilterExpression: { tcount: { $exists: true } } }, // used for the List Threads
+			{ key: { rid: 1, tcount: 1 } }, // used for the List Threads Count
+
+			// livechat
+			{ key: { 'navigation.token': 1 }, sparse: true },
+
 			{ key: { 'federation.eventId': 1 }, sparse: true },
-			{
-				key: {
-					rid: 1,
-					ts: 1,
-					_updatedAt: 1,
-				},
-			},
-			{
-				key: {
-					ts: 1,
-				},
-			},
-			{
-				key: {
-					'u._id': 1,
-				},
-			},
-			{
-				key: {
-					editedAt: 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					'editedBy._id': 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					'rid': 1,
-					't': 1,
-					'u._id': 1,
-				},
-			},
-			{
-				key: {
-					expireAt: 1,
-				},
-				expireAfterSeconds: 0,
-			},
-			{
-				key: {
-					msg: 'text',
-				},
-			},
-			{
-				key: {
-					'file._id': 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					'mentions.username': 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					pinned: 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					location: '2dsphere',
-				},
-			},
-			{
-				key: {
-					slackTs: 1,
-					slackBotId: 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					unread: 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					drid: 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					tmid: 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					tcount: 1,
-					tlm: 1,
-				},
-				sparse: true,
-			},
-			{
-				key: {
-					rid: 1,
-					tlm: -1,
-				},
-				partialFilterExpression: {
-					tcount: {
-						$exists: true,
-					},
-				},
-			},
-			{
-				key: {
-					rid: 1,
-					tcount: 1,
-				},
-			},
-			{
-				key: {
-					'navigation.token': 1,
-				},
-				sparse: true,
-			},
 		];
 	}
 
@@ -701,58 +565,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		)[0] as IMessage;
 	}
 
-	createSLAHistoryWithRoomIdMessageAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		sla?: Pick<IOmnichannelServiceLevelAgreements, 'name'>,
-	): Promise<InsertOneResult<IMessage>> {
-		return this.insertOne({
-			t: 'omnichannel_sla_change_history',
-			rid: roomId,
-			msg: '',
-			ts: new Date(),
-			groupable: false,
-			u: {
-				_id: user._id,
-				username: user.username,
-				name: user.name,
-			},
-			slaData: {
-				definedBy: {
-					_id: user._id,
-					username: user.username,
-				},
-				...(sla && { sla }),
-			},
-		});
-	}
-
-	createPriorityHistoryWithRoomIdMessageAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		priority?: Pick<ILivechatPriority, 'name' | 'i18n'>,
-	): Promise<InsertOneResult<IMessage>> {
-		return this.insertOne({
-			t: 'omnichannel_priority_change_history',
-			rid: roomId,
-			msg: '',
-			ts: new Date(),
-			groupable: false,
-			u: {
-				_id: user._id,
-				username: user.username,
-				name: user.name,
-			},
-			priorityData: {
-				definedBy: {
-					_id: user._id,
-					username: user.username,
-				},
-				...(priority && { priority }),
-			},
-		});
-	}
-
 	removeByRoomId(roomId: string): Promise<DeleteResult> {
 		return this.deleteMany({ rid: roomId });
 	}
@@ -810,23 +622,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			ts: { $lte: ts },
 		};
 		return this.deleteMany(query);
-	}
-
-	updateOTRAck(_id: string, otrAck: string): Promise<UpdateResult> {
-		const query = { _id };
-		const update: UpdateFilter<IMessage> = { $set: { otrAck } };
-		return this.updateOne(query, update);
-	}
-
-	createRoomSettingsChangedWithTypeRoomIdMessageAndUser(
-		type: MessageTypesValues,
-		roomId: string,
-		message: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, any> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		return this.createWithTypeRoomIdMessageAndUser(type, roomId, message, user, readReceiptsEnabled, extraData);
 	}
 
 	addTranslations(messageId: string, translations: Record<string, string>, providerName: string): Promise<UpdateResult> {
@@ -1193,14 +988,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findOne(query, options);
 	}
 
-	findByRoomId(roomId: string, options?: FindOptions<IMessage>): FindCursor<IMessage> {
-		const query = {
-			rid: roomId,
-		};
-
-		return this.find(query, options);
-	}
-
 	getLastVisibleMessageSentWithNoTypeByRoomId(rid: string, messageId?: string): Promise<IMessage | null> {
 		const query = {
 			rid,
@@ -1430,36 +1217,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 	// INSERT
 
-	/**
-	 * @deprecated Use the `createWithTypeRoomIdMessageUserAndUnread` method instead.
-	 */
-	async createWithTypeRoomIdMessageAndUser(
-		type: MessageTypesValues,
-		roomId: string,
-		message: string,
-		user: Pick<IMessage['u'], '_id' | 'username'>,
-		readReceiptsEnabled?: boolean,
-		extraData?: Record<string, string>,
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const record: Omit<IMessage, '_id' | '_updatedAt'> = {
-			t: type,
-			rid: roomId,
-			ts: new Date(),
-			msg: message,
-			u: {
-				_id: user._id,
-				username: user.username,
-			},
-			groupable: false as const,
-			...(readReceiptsEnabled && { unread: true }),
-		};
-
-		const data = Object.assign(record, extraData);
-
-		await Rooms.incMsgCountById(roomId, 1);
-		return { ...record, _id: (await this.updateOne(data, data, { upsert: true })).upsertedId as unknown as string };
-	}
-
 	async createWithTypeRoomIdMessageUserAndUnread(
 		type: MessageTypesValues,
 		rid: string,
@@ -1486,44 +1243,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		await Rooms.incMsgCountById(rid, 1);
 
 		return this.insertOne(data);
-	}
-
-	async createNavigationHistoryWithRoomIdMessageAndUser(
-		roomId: string,
-		message: string,
-		user: IMessage['u'],
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const type = 'livechat_navigation_history' as const;
-		const record: Omit<IMessage, '_id' | '_updatedAt'> = {
-			t: type,
-			rid: roomId,
-			ts: new Date(),
-			msg: message,
-			u: {
-				_id: user._id,
-				username: user.username,
-				name: '',
-			},
-			groupable: false,
-			...(readReceiptsEnabled && { unread: true }),
-		};
-
-		const data = Object.assign(record, extraData);
-
-		return { ...record, _id: (await this.updateOne(data, data, { upsert: true })).upsertedId as unknown as string };
-	}
-
-	createOtrSystemMessagesWithRoomIdAndUser(
-		roomId: string,
-		user: IMessage['u'],
-		id: MessageTypesValues,
-		readReceiptsEnabled?: boolean,
-		extraData: Record<string, string> = {},
-	): Promise<Omit<IMessage, '_updatedAt'>> {
-		const message = user.username;
-		return this.createWithTypeRoomIdMessageAndUser(id, roomId, message, user, readReceiptsEnabled, extraData);
 	}
 
 	// REMOVE
