@@ -1,11 +1,11 @@
 import stream from 'stream';
 
 import { check } from 'meteor/check';
-import { UploadFS } from 'meteor/jalik:ufs';
 import { Random } from '@rocket.chat/random';
 import _ from 'underscore';
 import S3 from 'aws-sdk/clients/s3';
 
+import { UploadFS } from '../../../../server/ufs';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
 /**

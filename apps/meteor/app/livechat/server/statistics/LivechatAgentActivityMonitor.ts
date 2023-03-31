@@ -60,8 +60,8 @@ export class LivechatAgentActivityMonitor {
 		SyncedCron.add({
 			name: this._name,
 			schedule: (parser: any) => parser.cron('0 0 * * *'),
-			job: () => {
-				Promise.await(this._updateActiveSessions());
+			job: async () => {
+				await this._updateActiveSessions();
 			},
 		});
 	}

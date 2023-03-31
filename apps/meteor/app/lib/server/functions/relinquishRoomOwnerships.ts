@@ -5,7 +5,7 @@ import type { SubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwne
 
 const bulkRoomCleanUp = async (rids: string[]): Promise<unknown> => {
 	// no bulk deletion for files
-	rids.forEach((rid) => FileUpload.removeFilesByRoomId(rid));
+	await Promise.all(rids.map((rid) => FileUpload.removeFilesByRoomId(rid)));
 
 	return Promise.all([Subscriptions.removeByRoomIds(rids), Messages.removeByRoomIds(rids), Rooms.removeByIds(rids)]);
 };

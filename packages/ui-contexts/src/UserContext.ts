@@ -16,11 +16,11 @@ export type SubscriptionQuery =
 	  }
 	| object;
 
-export type Fields<TSchema = Document> = Exclude<MongoFindOptions<TSchema>['projection'], undefined>;
+export type Fields<TSchema extends Document = Document> = Exclude<MongoFindOptions<TSchema>['projection'], undefined>;
 
-export type Sort<TSchema = Document> = Exclude<MongoFindOptions<TSchema>['sort'], undefined>;
+export type Sort<TSchema extends Document = Document> = Exclude<MongoFindOptions<TSchema>['sort'], undefined>;
 
-export type FindOptions<TSchema = Document> = {
+export type FindOptions<TSchema extends Document = Document> = {
 	fields?: Fields<TSchema>;
 	sort?: Sort<TSchema>;
 };
