@@ -4,13 +4,13 @@ import https from 'https';
 
 import { RTMClient } from '@slack/rtm-api';
 import { Meteor } from 'meteor/meteor';
-import { Messages as MessagesRaw } from '@rocket.chat/models';
+import { Messages, Rooms as RoomsRaw } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
 
 import { slackLogger } from './logger';
 import { SlackAPI } from './SlackAPI';
 import { getUserAvatarURL } from '../../utils/lib/getUserAvatarURL';
-import { Messages, Rooms, Users } from '../../models/server';
+import { Rooms, Users } from '../../models/server';
 import { settings } from '../../settings/server';
 import { deleteMessage, updateMessage, addUserToRoom, removeUserFromRoom, unarchiveRoom, sendMessage } from '../../lib/server';
 import { archiveRoom } from '../../lib/server/functions/archiveRoom';
@@ -58,9 +58,9 @@ export default class SlackAdapter {
 
 		this.registerForEvents();
 
-		Meteor.startup(() => {
+		Meteor.startup(async () => {
 			try {
-				this.populateMembershipChannelMap(); // If run outside of Meteor.startup, HTTP is not defined
+				await this.populateMembershipChannelMap(); // If run outside of Meteor.startup, HTTP is not defined
 			} catch (err) {
 				slackLogger.error({ msg: 'Error attempting to connect to Slack', err });
 				this.slackBridge.disconnect();
@@ -383,12 +383,12 @@ export default class SlackAdapter {
 			}
 			const rocketUser = this.rocket.getUser(slackReactionMsg.user);
 			// Lets find our Rocket originated message
-			let rocketMsg = await MessagesRaw.findOneBySlackTs(slackReactionMsg.item.ts);
+			let rocketMsg = await Messages.findOneBySlackTs(slackReactionMsg.item.ts);
 
 			if (!rocketMsg) {
 				// Must have originated from Slack
 				const rocketID = this.rocket.createRocketID(slackReactionMsg.item.channel, slackReactionMsg.item.ts);
-				rocketMsg = await MessagesRaw.findOneById(rocketID);
+				rocketMsg = await Messages.findOneById(rocketID);
 			}
 
 			if (rocketMsg && rocketUser) {
@@ -432,12 +432,12 @@ export default class SlackAdapter {
 			}
 
 			// Lets find our Rocket originated message
-			let rocketMsg = await MessagesRaw.findOneBySlackTs(slackReactionMsg.item.ts);
+			let rocketMsg = await Messages.findOneBySlackTs(slackReactionMsg.item.ts);
 
 			if (!rocketMsg) {
 				// Must have originated from Slack
 				const rocketID = this.rocket.createRocketID(slackReactionMsg.item.channel, slackReactionMsg.item.ts);
-				rocketMsg = Messages.findOneById(rocketID);
+				rocketMsg = await Messages.findOneById(rocketID);
 			}
 
 			if (rocketMsg && rocketUser) {
@@ -576,40 +576,42 @@ export default class SlackAdapter {
 		return this.slackChannelRocketBotMembershipMap.get(rocketChID);
 	}
 
-	populateMembershipChannelMapByChannels() {
+	async populateMembershipChannelMapByChannels() {
 		const channels = this.slackAPI.getChannels();
 		if (!channels || channels.length <= 0) {
 			return;
 		}
 
-		for (const slackChannel of channels) {
+		for await (const slackChannel of channels) {
 			const rocketchat_room =
-				Rooms.findOneByName(slackChannel.name, { fields: { _id: 1 } }) || Rooms.findOneByImportId(slackChannel.id, { fields: { _id: 1 } });
+				Rooms.findOneByName(slackChannel.name, { fields: { _id: 1 } }) ||
+				(await RoomsRaw.findOneByImportId(slackChannel.id, { projection: { _id: 1 } }));
 			if (rocketchat_room && slackChannel.is_member) {
 				this.addSlackChannel(rocketchat_room._id, slackChannel.id);
 			}
 		}
 	}
 
-	populateMembershipChannelMapByGroups() {
+	async populateMembershipChannelMapByGroups() {
 		const groups = this.slackAPI.getGroups();
 		if (!groups || groups.length <= 0) {
 			return;
 		}
 
-		for (const slackGroup of groups) {
+		for await (const slackGroup of groups) {
 			const rocketchat_room =
-				Rooms.findOneByName(slackGroup.name, { fields: { _id: 1 } }) || Rooms.findOneByImportId(slackGroup.id, { fields: { _id: 1 } });
+				Rooms.findOneByName(slackGroup.name, { fields: { _id: 1 } }) ||
+				(await RoomsRaw.findOneByImportId(slackGroup.id, { projection: { _id: 1 } }));
 			if (rocketchat_room && slackGroup.is_member) {
 				this.addSlackChannel(rocketchat_room._id, slackGroup.id);
 			}
 		}
 	}
 
-	populateMembershipChannelMap() {
+	async populateMembershipChannelMap() {
 		slackLogger.debug('Populating channel map');
-		this.populateMembershipChannelMapByChannels();
-		this.populateMembershipChannelMapByGroups();
+		await this.populateMembershipChannelMapByChannels();
+		await this.populateMembershipChannelMapByGroups();
 	}
 
 	/*
@@ -718,7 +720,7 @@ export default class SlackAdapter {
 			};
 
 			if (rocketMessage.tmid) {
-				const tmessage = Messages.findOneById(rocketMessage.tmid);
+				const tmessage = Promise.await(Messages.findOneById(rocketMessage.tmid));
 				if (tmessage && tmessage.slackTs) {
 					data.thread_ts = tmessage.slackTs;
 				}
@@ -744,7 +746,7 @@ export default class SlackAdapter {
 				postResult.data.message.ts
 			) {
 				this.slackBotId = postResult.data.message.bot_id;
-				Messages.setSlackBotIdAndSlackTs(rocketMessage._id, postResult.data.message.bot_id, postResult.data.message.ts);
+				Promise.await(Messages.setSlackBotIdAndSlackTs(rocketMessage._id, postResult.data.message.bot_id, postResult.data.message.ts));
 				slackLogger.debug(
 					`RocketMsgID=${rocketMessage._id} SlackMsgID=${postResult.data.message.ts} SlackBotID=${postResult.data.message.bot_id}`,
 				);
@@ -821,7 +823,7 @@ export default class SlackAdapter {
 
 			if (rocketChannel && rocketUser) {
 				// Find the Rocket message to delete
-				let rocketMsgObj = await MessagesRaw.findOneBySlackBotIdAndSlackTs(
+				let rocketMsgObj = await Messages.findOneBySlackBotIdAndSlackTs(
 					slackMessage.previous_message.bot_id,
 					slackMessage.previous_message.ts,
 				);
@@ -829,7 +831,7 @@ export default class SlackAdapter {
 				if (!rocketMsgObj) {
 					// Must have been a Slack originated msg
 					const _id = this.rocket.createRocketID(slackMessage.channel, slackMessage.previous_message.ts);
-					rocketMsgObj = await MessagesRaw.findOneById(_id);
+					rocketMsgObj = await Messages.findOneById(_id);
 				}
 
 				if (rocketMsgObj) {
@@ -845,7 +847,7 @@ export default class SlackAdapter {
 	 */
 	async processMessageChanged(slackMessage) {
 		if (slackMessage.previous_message) {
-			const currentMsg = Messages.findOneById(this.rocket.createRocketID(slackMessage.channel, slackMessage.message.ts));
+			const currentMsg = await Messages.findOneById(this.rocket.createRocketID(slackMessage.channel, slackMessage.message.ts));
 
 			// Only process this change, if its an actual update (not just Slack repeating back our Rocket original change)
 			if (currentMsg && slackMessage.message.text !== currentMsg.msg) {
@@ -976,14 +978,10 @@ export default class SlackAdapter {
 
 	async processTopicMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
 		if (isImporting) {
-			await MessagesRaw.createWithTypeRoomIdMessageUserAndUnread(
-				'room_changed_topic',
-				rocketChannel._id,
-				slackMessage.topic,
-				rocketUser,
-				settings.get('Message_Read_Receipt_Enabled'),
-				{ ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000), imported: 'slackbridge' },
-			);
+			await Message.saveSystemMessage('room_changed_topic', rocketChannel._id, slackMessage.topic, rocketUser, {
+				ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
+				imported: 'slackbridge',
+			});
 		} else {
 			await saveRoomTopic(rocketChannel._id, slackMessage.topic, rocketUser, false);
 		}
@@ -991,14 +989,10 @@ export default class SlackAdapter {
 
 	async processPurposeMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
 		if (isImporting) {
-			await MessagesRaw.createWithTypeRoomIdMessageUserAndUnread(
-				'room_changed_topic',
-				rocketChannel._id,
-				slackMessage.purpose,
-				rocketUser,
-				settings.get('Message_Read_Receipt_Enabled'),
-				{ ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000), imported: 'slackbridge' },
-			);
+			await Message.saveSystemMessage('room_changed_topic', rocketChannel._id, slackMessage.purpose, rocketUser, {
+				ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
+				imported: 'slackbridge',
+			});
 		} else {
 			await saveRoomTopic(rocketChannel._id, slackMessage.purpose, rocketUser, false);
 		}
@@ -1006,17 +1000,10 @@ export default class SlackAdapter {
 
 	async processNameMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
 		if (isImporting) {
-			await MessagesRaw.createWithTypeRoomIdMessageUserAndUnread(
-				'r',
-				rocketChannel._id,
-				slackMessage.name,
-				rocketUser,
-				settings.get('Message_Read_Receipt_Enabled'),
-				{
-					ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
-					imported: 'slackbridge',
-				},
-			);
+			await Message.saveSystemMessage('r', rocketChannel._id, slackMessage.name, rocketUser, {
+				ts: new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
+				imported: 'slackbridge',
+			});
 		} else {
 			await saveRoomName(rocketChannel._id, slackMessage.name, rocketUser, false);
 		}
@@ -1064,7 +1051,7 @@ export default class SlackAdapter {
 
 			if (!isImporting) {
 				Promise.await(
-					MessagesRaw.setPinnedByIdAndUserId(
+					Messages.setPinnedByIdAndUserId(
 						`slack-${slackMessage.attachments[0].channel_id}-${slackMessage.attachments[0].ts.replace(/\./g, '-')}`,
 						rocketMsgObj.u,
 						true,
@@ -1284,7 +1271,7 @@ export default class SlackAdapter {
 					};
 
 					Promise.await(
-						MessagesRaw.setPinnedByIdAndUserId(
+						Messages.setPinnedByIdAndUserId(
 							`slack-${pin.channel}-${pin.message.ts.replace(/\./g, '-')}`,
 							msgObj.u,
 							true,
