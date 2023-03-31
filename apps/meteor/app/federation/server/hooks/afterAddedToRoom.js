@@ -61,7 +61,7 @@ async function afterAddedToRoom(involvedUsers, room) {
 			// Create the user add event
 			//
 
-			const normalizedSourceUser = normalizers.normalizeUser(addedUser);
+			const normalizedSourceUser = await normalizers.normalizeUser(addedUser);
 			const normalizedSourceSubscription = normalizers.normalizeSubscription(subscription);
 
 			const addUserEvent = await FederationRoomEvents.createAddUserEvent(

@@ -1,12 +1,12 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Meteor } from 'meteor/meteor';
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
+import { Subscriptions, Users } from '@rocket.chat/models';
 import { Message, Team } from '@rocket.chat/core-services';
-import { Subscriptions } from '@rocket.chat/models';
 
 import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
-import { Rooms, Users } from '../../../models/server';
+import { Rooms } from '../../../models/server';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
@@ -19,7 +19,7 @@ export const addUserToRoom = async function (
 	const now = new Date();
 	const room: IRoom = Rooms.findOneById(rid);
 
-	const userToBeAdded = typeof user !== 'string' ? user : Users.findOneByUsername(user.replace('@', ''));
+	const userToBeAdded = typeof user !== 'string' ? user : await Users.findOneByUsername(user.replace('@', ''));
 	const roomDirectives = roomCoordinator.getRoomDirectives(room.t);
 	if (
 		!(await roomDirectives.allowMemberAction(room, RoomMemberActions.JOIN, userToBeAdded._id)) &&
@@ -36,7 +36,7 @@ export const addUserToRoom = async function (
 
 	// Check if user is already in room
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
-	if (subscription) {
+	if (subscription || !userToBeAdded) {
 		return;
 	}
 
@@ -65,7 +65,7 @@ export const addUserToRoom = async function (
 		throw error;
 	});
 
-	await Subscriptions.createWithRoomAndUser(room, userToBeAdded, {
+	await Subscriptions.createWithRoomAndUser(room, userToBeAdded as IUser, {
 		ts: now,
 		open: true,
 		alert: true,
@@ -73,6 +73,10 @@ export const addUserToRoom = async function (
 		userMentions: 1,
 		groupMentions: 0,
 	});
+
+	if (!userToBeAdded.username) {
+		throw new Meteor.Error('error-invalid-user', 'Cannot add an user to a room without a username');
+	}
 
 	if (!silenced) {
 		if (inviter) {
