@@ -57,6 +57,18 @@ class LivechatClass {
 		this.logger = new Logger('Livechat');
 	}
 
+	findGuest(token: string) {
+		return LivechatVisitors.getVisitorByToken(token, {
+			projection: {
+				name: 1,
+				username: 1,
+				token: 1,
+				visitorEmails: 1,
+				department: 1,
+			},
+		});
+	}
+
 	async closeRoom(params: CloseRoomParams): Promise<void> {
 		const { comment } = params;
 		const { room } = params;
