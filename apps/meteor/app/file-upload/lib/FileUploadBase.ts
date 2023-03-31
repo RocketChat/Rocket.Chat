@@ -41,7 +41,7 @@ UploadFS.config.defaultStorePermissions = new UploadFS.StorePermissions({
 		}
 		return Promise.await(
 			void hasPermissionAsync(cUserId, 'delete-message', doc.rid) ||
-				((settings.get('Message_AllowDeleting') as boolean) && userId === doc.userId),
+				(settings.get<boolean>('Message_AllowDeleting') && userId === doc.userId),
 		);
 	},
 	remove(userId, doc) {
@@ -51,7 +51,7 @@ UploadFS.config.defaultStorePermissions = new UploadFS.StorePermissions({
 		}
 		return Promise.await(
 			void hasPermissionAsync(cUserId, 'delete-message', doc.rid) ||
-				((settings.get('Message_AllowDeleting') as boolean) && userId === doc.userId),
+				(settings.get<boolean>('Message_AllowDeleting') && userId === doc.userId),
 		);
 	},
 });

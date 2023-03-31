@@ -61,16 +61,16 @@ const AmazonS3UserDataFiles = new FileUploadClass({
 });
 
 const configure = _.debounce(function () {
-	const Bucket = settings.get('FileUpload_S3_Bucket') as string;
-	const Acl = settings.get('FileUpload_S3_Acl') as string;
-	const AWSAccessKeyId = settings.get('FileUpload_S3_AWSAccessKeyId') as string;
-	const AWSSecretAccessKey = settings.get('FileUpload_S3_AWSSecretAccessKey') as string;
-	const URLExpiryTimeSpan = settings.get('FileUpload_S3_URLExpiryTimeSpan') as number;
-	const Region = settings.get('FileUpload_S3_Region') as string;
-	const SignatureVersion = settings.get('FileUpload_S3_SignatureVersion') as string;
-	const ForcePathStyle = settings.get('FileUpload_S3_ForcePathStyle') as boolean;
+	const Bucket = settings.get<string>('FileUpload_S3_Bucket');
+	const Acl = settings.get<string>('FileUpload_S3_Acl');
+	const AWSAccessKeyId = settings.get<string>('FileUpload_S3_AWSAccessKeyId');
+	const AWSSecretAccessKey = settings.get<string>('FileUpload_S3_AWSSecretAccessKey');
+	const URLExpiryTimeSpan = settings.get<number>('FileUpload_S3_URLExpiryTimeSpan');
+	const Region = settings.get<string>('FileUpload_S3_Region');
+	const SignatureVersion = settings.get<string>('FileUpload_S3_SignatureVersion');
+	const ForcePathStyle = settings.get<boolean>('FileUpload_S3_ForcePathStyle');
 	// const CDN = RocketChat.settings.get('FileUpload_S3_CDN');
-	const BucketURL = settings.get('FileUpload_S3_BucketURL') as string;
+	const BucketURL = settings.get('FileUpload_S3_BucketURL');
 
 	if (!Bucket) {
 		return;
