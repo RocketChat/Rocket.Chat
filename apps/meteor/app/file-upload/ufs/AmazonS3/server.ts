@@ -11,7 +11,7 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import type { IFile } from '../../../../server/ufs/definition';
 import type { StoreOptions } from '../../../../server/ufs/ufs-store';
 
-type S3Options = StoreOptions & {
+export type S3Options = StoreOptions & {
 	connection: {
 		accessKeyId?: string;
 		secretAccessKey?: string;
@@ -73,20 +73,14 @@ class AmazonS3Store extends UploadFS.Store {
 			return file._id;
 		};
 
-		this.getRedirectURL = function (file, forceDownload = false, callback) {
+		this.getRedirectURL = async (file, forceDownload = false) => {
 			const params = {
 				Key: this.getPath(file),
 				Expires: classOptions.URLExpiryTimeSpan,
 				ResponseContentDisposition: `${forceDownload ? 'attachment' : 'inline'}; filename="${encodeURI(file.name || '')}"`,
 			};
 
-			try {
-				const url = s3.getSignedUrl('getObject', params);
-				callback?.(undefined, url);
-				return url;
-			} catch (err: any) {
-				callback?.(err);
-			}
+			return s3.getSignedUrl('getObject', params);
 		};
 
 		/**

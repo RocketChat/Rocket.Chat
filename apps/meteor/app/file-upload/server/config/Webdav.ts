@@ -1,8 +1,3 @@
-import type http from 'http';
-import type { WriteStream } from 'fs';
-
-import type { WritableStreamBuffer } from 'stream-buffers';
-import type { IUpload } from '@rocket.chat/core-typings';
 import _ from 'underscore';
 
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
@@ -10,7 +5,7 @@ import { settings } from '../../../settings/server';
 import '../../ufs/Webdav/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-const get = function (this: FileUploadClass, file: IUpload, _req: http.IncomingMessage, res: http.ServerResponse) {
+const get: FileUploadClass['get'] = async function (this: FileUploadClass, file, _req, res) {
 	this.store
 		.getReadStream(file._id, file)
 		.on('error', () => {
@@ -24,7 +19,7 @@ const get = function (this: FileUploadClass, file: IUpload, _req: http.IncomingM
 		.on('end', res.end.bind(res));
 };
 
-const copy = function (this: FileUploadClass, file: IUpload, out: WriteStream | WritableStreamBuffer) {
+const copy: FileUploadClass['copy'] = async function (this: FileUploadClass, file, out) {
 	this.store.getReadStream(file._id, file).pipe(out);
 };
 

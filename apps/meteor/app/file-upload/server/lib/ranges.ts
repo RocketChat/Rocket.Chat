@@ -23,10 +23,10 @@ export function getFileRange(file: IUpload, req: http.IncomingMessage) {
 	}
 	const size = file.size || 0;
 	if (range.start > size || range.stop <= range.start || range.stop > size) {
-		return { outOfRange: true };
+		return { outOfRange: true, start: range.start, stop: range.stop };
 	}
 
-	return { start: range.start, stop: range.stop };
+	return { outOfRange: false, start: range.start, stop: range.stop };
 }
 
 // code from: https://github.com/jalik/jalik-ufs/blob/master/ufs-server.js#L310

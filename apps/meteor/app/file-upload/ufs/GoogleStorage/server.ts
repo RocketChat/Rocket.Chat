@@ -50,22 +50,15 @@ class GoogleStorageStore extends UploadFS.Store {
 			return file._id;
 		};
 
-		this.getRedirectURL = function (file, forceDownload = false, callback) {
+		this.getRedirectURL = async (file, forceDownload = false) => {
 			const params: GetSignedUrlConfig = {
 				action: 'read',
 				responseDisposition: forceDownload ? 'attachment' : 'inline',
 				expires: Date.now() + options.URLExpiryTimeSpan * 1000,
 			};
 
-			bucket
-				.file(this.getPath(file))
-				.getSignedUrl(params)
-				.then(([url]) => {
-					callback?.(undefined, url);
-				})
-				.catch((err: any) => {
-					callback?.(err);
-				});
+			const res = await bucket.file(this.getPath(file)).getSignedUrl(params);
+			return res[0];
 		};
 
 		/**

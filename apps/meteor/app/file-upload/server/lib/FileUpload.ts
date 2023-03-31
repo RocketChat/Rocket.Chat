@@ -3,7 +3,9 @@ import fs from 'fs';
 import { unlink, rename } from 'fs/promises';
 import stream from 'stream';
 import type * as http from 'http';
+import type * as https from 'https';
 import { Buffer } from 'buffer';
+import URL from 'url';
 
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
@@ -34,7 +36,6 @@ import { streamToBuffer } from './streamToBuffer';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import type { Store } from '../../../../server/ufs/ufs-store';
-import { parseUrl } from '../../../../imports/client/query-string/index';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
@@ -443,7 +444,7 @@ export const FileUpload = {
 			return true;
 		}
 
-		const { query } = parseUrl(url);
+		const { query } = URL.parse(url, true);
 		// eslint-disable-next-line @typescript-eslint/naming-convention
 		let { rc_uid, rc_token, rc_rid, rc_room_type } = query as Record<string, string | undefined>;
 		const { token } = query;
@@ -553,19 +554,19 @@ export const FileUpload = {
 			cb(undefined, buffer.getContents());
 		});
 
-		store.copy(file, buffer);
+		void store.copy?.(file, buffer);
 	},
 
 	getBufferSync: Meteor.wrapAsync((file: IUpload, cb: (err?: Error, data?: false | Buffer) => void) => FileUpload.getBuffer(file, cb)),
 
-	copy(file: IUpload, targetFile: string) {
+	async copy(file: IUpload, targetFile: string) {
 		const store = this.getStoreByName(file.store);
 		const out = fs.createWriteStream(targetFile);
 
 		file = FileUpload.addExtensionTo(file);
 
 		if (store.copy) {
-			store.copy(file, out);
+			await store.copy(file, out);
 			return true;
 		}
 
@@ -584,7 +585,7 @@ export const FileUpload = {
 		fileName: string,
 		fileUrl: string,
 		forceDownload: boolean,
-		request: typeof http,
+		request: typeof http | typeof https,
 		_req: http.IncomingMessage,
 		res: http.ServerResponse,
 	) {
@@ -637,10 +638,10 @@ type FileUploadClassOptions = {
 	name: string;
 	model?: typeof Avatars | typeof Uploads | typeof UserDataFiles;
 	store?: Store;
-	get: (file: IUpload, req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => void;
+	get: (file: IUpload, req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => Promise<void>;
 	insert?: () => void;
 	getStore?: () => Store;
-	copy: (file: IUpload, out: WriteStream | WritableStreamBuffer) => void;
+	copy?: (file: IUpload, out: WriteStream | WritableStreamBuffer) => Promise<void>;
 };
 
 export class FileUploadClass {

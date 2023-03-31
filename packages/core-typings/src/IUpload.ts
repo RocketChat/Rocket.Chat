@@ -28,6 +28,7 @@ export interface IUpload {
 	url?: string;
 	originalStore?: string;
 	originalId?: string;
+	message_id?: string;
 	instanceId?: string;
 	AmazonS3?: {
 		path: string;

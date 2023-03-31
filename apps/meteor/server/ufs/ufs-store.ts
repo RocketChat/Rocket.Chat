@@ -35,7 +35,7 @@ export type StoreOptions = {
 		fileId: string,
 		file: IFile,
 		request: createServer.IncomingMessage,
-		headers: Record<string, any>,
+		headers?: Record<string, any>,
 	) => void;
 	transformWrite?: (readStream: stream.Readable, writeStream: stream.Writable, fileId: string, file: IFile) => void;
 };
@@ -429,6 +429,10 @@ export class Store {
 		return this.options.collection!;
 	}
 
+	getFilePath(_fileId: string, _file?: IFile): string {
+		throw new Error('Store.getFilePath is not implemented');
+	}
+
 	/**
 	 * Returns the file URL
 	 * @param fileId
@@ -499,7 +503,7 @@ export class Store {
 		return encodeURI(`${rootUrl}/${UploadFS.config.storesPath}/${storeName}/${path}`);
 	}
 
-	getRedirectURL(_file: IUpload, _forceDownload = false, _callback?: (err?: Error, url?: string) => void) {
+	async getRedirectURL(_file: IUpload, _forceDownload = false): Promise<string> {
 		throw new Error('getRedirectURL is not implemented');
 	}
 
@@ -598,7 +602,7 @@ export class Store {
 		fileId: string,
 		file: IFile,
 		request: createServer.IncomingMessage,
-		headers: Record<string, any>,
+		headers?: Record<string, any>,
 	) {
 		if (typeof this.options.transformRead === 'function') {
 			this.options.transformRead.call(this, readStream, writeStream, fileId, file, request, headers);
