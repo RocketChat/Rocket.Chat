@@ -7261,11 +7261,11 @@ __metadata:
   linkType: hard
 
 "@rocket.chat/message-parser@npm:next":
-  version: 0.32.0-dev.238
-  resolution: "@rocket.chat/message-parser@npm:0.32.0-dev.238"
+  version: 0.32.0-dev.254
+  resolution: "@rocket.chat/message-parser@npm:0.32.0-dev.254"
   dependencies:
     tldts: ~5.7.104
-  checksum: 6b33b51bebae2acb7b50ffa6d105309120402f3fe9ada5b778c83332492f720c3bea97f7f97204f1a2ae2c0c272ec2f269795af1a28e9f3102072cd579d20e9f
+  checksum: 5582f5e2a47746b597a95daf2c07b4ec211a3f0bb1857b4318e7992a54bc8d49a7e7e6a3d82804c8c4c8033a920a873ff0dcafc03d006cbcdcf3fcf29c4b9a4b
   languageName: node
   linkType: hard
 
