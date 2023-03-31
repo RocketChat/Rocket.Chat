@@ -11,13 +11,12 @@ import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Avatars, Messages, UserDataFiles, Uploads, Settings, Subscriptions } from '@rocket.chat/models';
+import { Avatars, Messages, UserDataFiles, Uploads, Settings, Subscriptions, Rooms } from '@rocket.chat/models';
 import { hashLoginToken } from '@rocket.chat/account-utils';
 
 import { UploadFS } from '../../../../server/ufs';
 import { settings } from '../../../settings/server';
 import Users from '../../../models/server/models/Users';
-import Rooms from '../../../models/server/models/Rooms';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -75,7 +74,7 @@ export const FileUpload = {
 		// livechat users can upload files but they don't have an userId
 		const user = file.userId ? Meteor.users.findOne(file.userId) : null;
 
-		const room = Rooms.findOneById(file.rid);
+		const room = Promise.await(Rooms.findOneById(file.rid));
 		const directMessageAllowed = settings.get('FileUpload_Enabled_Direct');
 		const fileUploadAllowed = settings.get('FileUpload_Enabled');
 		if (user?.type !== 'app' && Promise.await(canAccessRoomAsync(room, user, file)) !== true) {

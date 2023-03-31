@@ -17,7 +17,6 @@ import type {
 import { ImportData, Rooms as RoomsRaw, Users, Subscriptions } from '@rocket.chat/models';
 
 import type { IConversionCallbacks } from '../definitions/IConversionCallbacks';
-import { Rooms } from '../../../models/server';
 import { generateUsernameSuggestion, insertMessage, saveUserIdentity, addUserToDefaultChannels } from '../../../lib/server';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import type { Logger } from '../../../../server/lib/logger/Logger';
@@ -646,7 +645,7 @@ export class ImportDataConverter {
 		}
 	}
 
-	updateRoom(room: IRoom, roomData: IImportChannel, startedByUserId: string): void {
+	async updateRoom(room: IRoom, roomData: IImportChannel, startedByUserId: string): Promise<void> {
 		roomData._id = room._id;
 
 		// eslint-disable-next-line no-extra-parens
@@ -656,7 +655,7 @@ export class ImportDataConverter {
 			});
 		}
 
-		this.updateRoomId(room._id, roomData);
+		await this.updateRoomId(room._id, roomData);
 	}
 
 	public async findDMForImportedUsers(...users: Array<string>): Promise<IImportChannel | undefined> {
@@ -773,7 +772,7 @@ export class ImportDataConverter {
 		}
 	}
 
-	updateRoomId(_id: string, roomData: IImportChannel): void {
+	async updateRoomId(_id: string, roomData: IImportChannel): Promise<void> {
 		const set = {
 			ts: roomData.ts,
 			topic: roomData.topic,
@@ -795,7 +794,7 @@ export class ImportDataConverter {
 		}
 
 		if (roomUpdate.$set || roomUpdate.$addToSet) {
-			Rooms.update({ _id: roomData._id }, roomUpdate);
+			await RoomsRaw.updateOne({ _id: roomData._id }, roomUpdate);
 		}
 	}
 
@@ -853,7 +852,7 @@ export class ImportDataConverter {
 			throw e;
 		}
 
-		this.updateRoomId(roomData._id as 'string', roomData);
+		await this.updateRoomId(roomData._id as 'string', roomData);
 	}
 
 	async convertImportedIdsToUsernames(importedIds: Array<string>, idToRemove: string | undefined = undefined): Promise<Array<string>> {
@@ -943,7 +942,7 @@ export class ImportDataConverter {
 				const existingRoom = await this.findExistingRoom(data);
 
 				if (existingRoom) {
-					this.updateRoom(existingRoom, data, startedByUserId);
+					await this.updateRoom(existingRoom, data, startedByUserId);
 				} else {
 					await this.insertRoom(data, startedByUserId);
 				}

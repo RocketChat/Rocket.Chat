@@ -72,14 +72,14 @@ export default class MentionsServer extends MentionsParser {
 		return [...mentionsAll, ...mentions];
 	}
 
-	getChannelbyMentions({ msg }) {
+	async getChannelbyMentions({ msg }) {
 		const channels = this.getChannelMentions(msg);
 		return this.getChannels(channels.map((c) => c.trim().substr(1)));
 	}
 
 	async execute(message) {
 		const mentionsAll = await this.getUsersByMentions(message);
-		const channels = this.getChannelbyMentions(message);
+		const channels = await this.getChannelbyMentions(message);
 
 		message.mentions = mentionsAll;
 		message.channels = channels;

@@ -6,7 +6,6 @@ import { eventTypes } from '@rocket.chat/core-typings';
 import { API } from '../../../api/server';
 import { serverLogger } from '../lib/logger';
 import { contextDefinitions } from '../lib/context';
-import { Rooms } from '../../../models/server';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
 import { FileUpload } from '../../../file-upload/server';
@@ -43,17 +42,17 @@ const eventHandlers = {
 					} = event;
 
 					// Check if room exists
-					const persistedRoom = Rooms.findOne({ _id: room._id });
+					const persistedRoom = await RoomsRaw.findOne({ _id: room._id });
 
 					if (persistedRoom) {
 						// Update the federation
-						Rooms.update({ _id: persistedRoom._id }, { $set: { federation: room.federation } });
+						await RoomsRaw.updateOne({ _id: persistedRoom._id }, { $set: { federation: room.federation } });
 					} else {
 						// Denormalize room
 						const denormalizedRoom = normalizers.denormalizeRoom(room);
 
 						// Create the room
-						Rooms.insert(denormalizedRoom);
+						await RoomsRaw.insertOne(denormalizedRoom);
 					}
 				}
 				return eventResult;
@@ -69,7 +68,7 @@ const eventHandlers = {
 		} = event;
 
 		// Check if room exists
-		const persistedRoom = Rooms.findOne({ _id: roomId });
+		const persistedRoom = await RoomsRaw.findOne({ _id: roomId });
 
 		if (persistedRoom) {
 			// Delete the room
@@ -144,7 +143,7 @@ const eventHandlers = {
 				await FederationServers.refreshServers();
 
 				// Update the room's federation property
-				Rooms.update({ _id: roomId }, { $set: { 'federation.domains': domainsAfterAdd } });
+				await RoomsRaw.updateOne({ _id: roomId }, { $set: { 'federation.domains': domainsAfterAdd } });
 			}
 		}
 
@@ -170,7 +169,7 @@ const eventHandlers = {
 			await FederationServers.refreshServers();
 
 			// Update the room's federation property
-			Rooms.update({ _id: roomId }, { $set: { 'federation.domains': domainsAfterRemoval } });
+			await RoomsRaw.updateOne({ _id: roomId }, { $set: { 'federation.domains': domainsAfterRemoval } });
 		}
 
 		return eventResult;
@@ -195,7 +194,7 @@ const eventHandlers = {
 			await FederationServers.refreshServers();
 
 			// Update the room's federation property
-			Rooms.update({ _id: roomId }, { $set: { 'federation.domains': domainsAfterRemoval } });
+			await RoomsRaw.updateOne({ _id: roomId }, { $set: { 'federation.domains': domainsAfterRemoval } });
 		}
 
 		return eventResult;
@@ -223,7 +222,7 @@ const eventHandlers = {
 				}
 			} else {
 				// Load the room
-				const room = Rooms.findOneById(message.rid);
+				const room = await RoomsRaw.findOneById(message.rid);
 
 				// Denormalize message
 				const denormalizedMessage = normalizers.denormalizeMessage(message);

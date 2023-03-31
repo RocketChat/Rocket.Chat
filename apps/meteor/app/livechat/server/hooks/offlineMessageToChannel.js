@@ -1,10 +1,9 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { LivechatDepartment, Users } from '@rocket.chat/models';
+import { LivechatDepartment, Users, Rooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
 import { sendMessage } from '../../../lib/server';
-import { Rooms } from '../../../models/server';
 
 callbacks.add(
 	'livechat.offlineMessage',
@@ -30,7 +29,7 @@ callbacks.add(
 			return data;
 		}
 
-		const room = Rooms.findOneByName(channelName, { fields: { t: 1, archived: 1 } });
+		const room = await Rooms.findOneByName(channelName, { projection: { t: 1, archived: 1 } });
 		if (!room || room.archived || room.closedAt) {
 			return data;
 		}
