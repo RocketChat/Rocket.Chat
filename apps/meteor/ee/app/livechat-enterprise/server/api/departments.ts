@@ -19,7 +19,7 @@ import {
 	findAllNumberOfTransferredRooms,
 	findAllNumberOfAbandonedRooms,
 	findPercentageOfAbandonedRooms,
-	findAllAverageOfChatDurationTime,
+	findAllAverageOfChatDurationTimeAsync,
 } from '../../../../../app/livechat/server/lib/analytics/departments';
 import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 
@@ -121,7 +121,7 @@ API.v1.addRoute(
 			}
 			const endDate = new Date(end);
 
-			const { departments, total } = findAllAverageOfChatDurationTime({
+			const { departments, total } = await findAllAverageOfChatDurationTimeAsync({
 				start: startDate,
 				end: endDate,
 				departmentId,

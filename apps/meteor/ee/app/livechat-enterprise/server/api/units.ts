@@ -1,5 +1,3 @@
-import type { IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
-
 import { API } from '../../../../../app/api/server';
 import { findUnits, findUnitById, findUnitMonitors } from './lib/units';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
@@ -48,7 +46,7 @@ API.v1.addRoute(
 		},
 		async post() {
 			const { unitData, unitMonitors, unitDepartments } = this.bodyParams;
-			return API.v1.success(LivechatEnterprise.saveUnit(null, unitData, unitMonitors, unitDepartments) as IOmnichannelBusinessUnit);
+			return API.v1.success(await LivechatEnterprise.saveUnit(null, unitData, unitMonitors, unitDepartments));
 		},
 	},
 );
@@ -69,12 +67,12 @@ API.v1.addRoute(
 			const { unitData, unitMonitors, unitDepartments } = this.bodyParams;
 			const { id } = this.urlParams;
 
-			return API.v1.success(LivechatEnterprise.saveUnit(id, unitData, unitMonitors, unitDepartments) as IOmnichannelBusinessUnit);
+			return API.v1.success(await LivechatEnterprise.saveUnit(id, unitData, unitMonitors, unitDepartments));
 		},
 		async delete() {
 			const { id } = this.urlParams;
 
-			return LivechatEnterprise.removeUnit(id);
+			return API.v1.success((await LivechatEnterprise.removeUnit(id)).deletedCount);
 		},
 	},
 );

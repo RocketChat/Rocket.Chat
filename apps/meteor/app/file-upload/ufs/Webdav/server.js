@@ -1,9 +1,9 @@
 import stream from 'stream';
 
 import { check } from 'meteor/check';
-import { UploadFS } from 'meteor/jalik:ufs';
 import { Random } from '@rocket.chat/random';
 
+import { UploadFS } from '../../../../server/ufs';
 import { WebdavClientAdapter } from '../../../webdav/server/lib/webdavClientAdapter';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 /**

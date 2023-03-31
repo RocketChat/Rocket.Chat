@@ -92,13 +92,13 @@ export const slashCommands = {
 
 		return previewInfo;
 	},
-	executePreview(
+	async executePreview(
 		command: string,
 		params: string,
 		message: Pick<IMessage, 'rid'> & Partial<Omit<IMessage, 'rid'>>,
 		preview: SlashCommandPreviewItem,
 		triggerId?: string,
-	): void {
+	) {
 		const cmd = this.commands[command];
 		if (typeof cmd?.previewCallback !== 'function') {
 			return;
@@ -113,7 +113,7 @@ export const slashCommands = {
 			throw new Meteor.Error('error-invalid-preview', 'Preview Item must have an id, type, and value.');
 		}
 
-		return Promise.await(cmd.previewCallback(command, params, message, preview, triggerId));
+		return cmd.previewCallback(command, params, message, preview, triggerId);
 	},
 };
 

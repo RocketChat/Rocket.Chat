@@ -1,18 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import limax from 'limax';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+import { Rooms } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
-import { Rooms } from '../../../models/server';
 import { validateName } from '../../../lib/server/functions/validateName';
 
-export const getValidRoomName = (displayName, rid = '', options = {}) => {
+export const getValidRoomName = async (displayName, rid = '', options = {}) => {
 	let slugifiedName = displayName;
 
 	if (settings.get('UI_Allow_room_names_with_special_chars')) {
 		const cleanName = limax(displayName, { maintainCase: true });
 		if (options.allowDuplicates !== true) {
-			const room = Rooms.findOneByDisplayName(displayName);
+			const room = await Rooms.findOneByDisplayName(displayName);
 			if (room && room._id !== rid) {
 				if (room.archived) {
 					throw new Meteor.Error('error-archived-duplicate-name', `There's an archived channel with name ${cleanName}`, {
@@ -50,12 +50,13 @@ export const getValidRoomName = (displayName, rid = '', options = {}) => {
 	}
 
 	if (options.allowDuplicates !== true) {
-		const room = Rooms.findOneByName(slugifiedName);
+		const room = await Rooms.findOneByName(slugifiedName);
 		if (room && room._id !== rid) {
 			if (settings.get('UI_Allow_room_names_with_special_chars')) {
 				let tmpName = slugifiedName;
 				let next = 0;
-				while (Rooms.findOneByNameAndNotId(tmpName, rid)) {
+				// eslint-disable-next-line no-await-in-loop
+				while (await Rooms.findOneByNameAndNotId(tmpName, rid)) {
 					tmpName = `${slugifiedName}-${++next}`;
 				}
 				slugifiedName = tmpName;
