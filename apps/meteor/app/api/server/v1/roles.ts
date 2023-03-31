@@ -2,10 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 import { isRoleAddUserToRoleProps, isRoleDeleteProps, isRoleRemoveUserFromRoleProps } from '@rocket.chat/rest-typings';
 import type { IRole } from '@rocket.chat/core-typings';
-import { Roles } from '@rocket.chat/models';
+import { Roles, Users } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
-import { Users } from '../../../models/server';
 import { API } from '../api';
 import { hasRoleAsync, hasAnyRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { getUsersInRolePaginated } from '../../../authorization/server/functions/getUsersInRole';
@@ -202,7 +201,7 @@ API.v1.addRoute(
 				apiDeprecationLogger.warn(`Unassigning roles by name is deprecated and will be removed on the next major release of Rocket.Chat`);
 			}
 
-			const user = Users.findOneByUsername(username);
+			const user = await Users.findOneByUsername(username);
 
 			if (!user) {
 				throw new Meteor.Error('error-invalid-user', 'There is no user with this username');

@@ -610,6 +610,30 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		>(params, { allowDiskUse: true, readPreference });
 	}
 
+	findOneByNameOrFname(name: IRoom['name'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
+		const query = {
+			$or: [
+				{
+					name,
+				},
+				{
+					fname: name,
+				},
+			],
+		};
+
+		return this.findOne(query, options);
+	}
+
+	async findOneByNonValidatedName(name, options) {
+		const room = await this.findOneByNameOrFname(name, options);
+		if (room) {
+			return room;
+		}
+
+		return this.findOneByName(name, options);
+	}
+
 	findOneByName(name: IRoom['name'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
 		return this.col.findOne({ name }, options);
 	}
@@ -640,11 +664,15 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateMany(query, update);
 	}
 
+<<<<<<< HEAD:apps/meteor/server/models/raw/Rooms.ts
 	findOneByNameOrFname(name: NonNullable<IRoom['name'] | IRoom['fname']>, options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
 		return this.col.findOne({ $or: [{ name }, { fname: name }] }, options);
 	}
 
 	allRoomSourcesCount(): AggregationCursor<{ _id: Required<IOmnichannelGenericRoom['source']>; count: number }> {
+=======
+	allRoomSourcesCount() {
+>>>>>>> e15c1784c70dc7fbf195f99e0b56e6f34182ca2c:apps/meteor/server/models/raw/Rooms.js
 		return this.col.aggregate([
 			{
 				$match: {

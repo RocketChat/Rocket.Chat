@@ -65,7 +65,7 @@ slashCommands.add({
 						rid: item.rid,
 						username: user.username,
 					});
-				} catch ({ error }) {
+				} catch ({ error }: any) {
 					if (typeof error !== 'string') {
 						return;
 					}

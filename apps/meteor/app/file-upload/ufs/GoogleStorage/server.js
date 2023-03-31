@@ -1,8 +1,8 @@
 import { check } from 'meteor/check';
-import { UploadFS } from 'meteor/jalik:ufs';
 import { Random } from '@rocket.chat/random';
 import { Storage } from '@google-cloud/storage';
 
+import { UploadFS } from '../../../../server/ufs';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
 /**

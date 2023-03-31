@@ -118,6 +118,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findOneByNameOrFname(name: NonNullable<IRoom['name'] | IRoom['fname']>, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
+    findOneByNonValidatedName(name: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
+
 	allRoomSourcesCount(): AggregationCursor<{ _id: Required<IOmnichannelGenericRoom['source']>; count: number }>;
 
 	findByBroadcast(options?: FindOptions<IRoom>): FindCursor<IRoom>;

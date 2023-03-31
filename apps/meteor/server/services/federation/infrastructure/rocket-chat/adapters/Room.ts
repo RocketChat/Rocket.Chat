@@ -1,7 +1,7 @@
 import { api, Message } from '@rocket.chat/core-services';
 import type { IDirectMessageRoom, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
-import { MatrixBridgedRoom, Messages as MessagesRaw, Rooms, Subscriptions } from '@rocket.chat/models';
+import { MatrixBridgedRoom, Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { saveRoomTopic } from '../../../../../../app/channel-settings/server';
 import { addUserToRoom, createRoom, removeUserFromRoom } from '../../../../../../app/lib/server';
@@ -134,7 +134,8 @@ export class RocketChatRoomAdapter {
 			federatedRoom.getName() || '',
 			federatedRoom.getDisplayName() || '',
 		);
-		await MessagesRaw.createWithTypeRoomIdMessageUserAndUnread(
+
+		await Message.saveSystemMessage(
 			'r',
 			federatedRoom.getInternalId(),
 			federatedRoom.getDisplayName() || '',
