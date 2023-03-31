@@ -116,9 +116,6 @@ export class MinimalDDPClient extends Emitter<MinimalDDPClientEvents> implements
 			case 'failed':
 				this.emit('connection', data);
 				break;
-
-			default:
-				throw new Error(`Unknown message type: ${data}`);
 		}
 		this.emit('message', data);
 	}
