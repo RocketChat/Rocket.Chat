@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Users } from '../../../models/server';
 import {
 	callJoinRoom,
 	messageContainsHighlight,
@@ -51,8 +50,8 @@ export const sendNotification = async ({
 
 	if (!subscription.receiver) {
 		subscription.receiver = [
-			Users.findOneById(subscription.u._id, {
-				fields: {
+			await Users.findOneById(subscription.u._id, {
+				projection: {
 					active: 1,
 					emails: 1,
 					language: 1,

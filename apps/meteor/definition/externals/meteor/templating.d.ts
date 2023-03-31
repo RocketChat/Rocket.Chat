@@ -34,7 +34,6 @@ declare module 'meteor/templating' {
 		inputAutocomplete: BlazeTemplate;
 		_autocompleteContainer: BlazeTemplate;
 		_noMatch: BlazeTemplate;
-		CodeMirror: BlazeTemplate;
 		photoswipeContent: BlazeTemplate;
 		loading: BlazeTemplate;
 		messagePopupSlashCommandPreview: BlazeTemplate<
