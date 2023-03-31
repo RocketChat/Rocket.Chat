@@ -359,12 +359,10 @@ export const Analytics = {
 						gte: h.clone(),
 						lt: h.add(1, 'hours'),
 					};
-					await LivechatRooms.getAnalyticsBetweenDate(date, { departmentId })
-						.toArray()
-						.forEach(({ msgs }) => {
-							const dayHour = h.format('H'); // @int : 0, 1, ... 23
-							totalMessagesInHour.set(dayHour, totalMessagesInHour.has(dayHour) ? totalMessagesInHour.get(dayHour) + msgs : msgs);
-						});
+					(await LivechatRooms.getAnalyticsBetweenDate(date, { departmentId }).toArray()).forEach(({ msgs }) => {
+						const dayHour = h.format('H'); // @int : 0, 1, ... 23
+						totalMessagesInHour.set(dayHour, totalMessagesInHour.has(dayHour) ? totalMessagesInHour.get(dayHour) + msgs : msgs);
+					});
 				}
 			}
 
