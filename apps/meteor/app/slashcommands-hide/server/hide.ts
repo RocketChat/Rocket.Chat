@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Users } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
-import { Rooms, Users } from '../../models/server';
+import { Rooms } from '../../models/server';
 import { slashCommands } from '../../utils/server';
 
 /*
@@ -21,7 +21,7 @@ slashCommands.add({
 			return;
 		}
 
-		const user = Users.findOneById(userId);
+		const user = await Users.findOneById(userId);
 
 		if (!user) {
 			return;
