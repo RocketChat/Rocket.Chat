@@ -1,4 +1,3 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -61,7 +60,10 @@ callbacks.add(
 callbacks.add(
 	'afterDeleteRoom',
 	async (rid) => {
-		await Rooms.find({ prid: rid }, { projection: { _id: 1 } }).forEach(({ _id }: Pick<IRoom, '_id'>) => deleteRoom(_id));
+		for await (const { _id } of Rooms.find({ prid: rid }, { projection: { _id: 1 } })) {
+			await deleteRoom(_id);
+		}
+
 		return rid;
 	},
 	callbacks.priority.LOW,

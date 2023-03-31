@@ -423,7 +423,7 @@ async function saveRoomSettings(
 		});
 	}
 
-	const room = (await Rooms.findOneById(rid)) as IRoom | undefined;
+	const room = await Rooms.findOneById(rid);
 
 	if (!room) {
 		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
