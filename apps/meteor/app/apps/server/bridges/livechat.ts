@@ -10,6 +10,7 @@ import type {
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator';
+import type { SelectedAgent } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
 
@@ -83,10 +84,13 @@ export class AppLivechatBridge extends LivechatBridge {
 			label?: string;
 		};
 
-		let agentRoom;
+		let agentRoom: SelectedAgent | undefined;
 		if (agent?.id) {
 			const user = await Users.getAgentInfo(agent.id);
-			agentRoom = Object.assign({}, { agentId: user?._id, username: user?.username });
+			if (!user) {
+				throw new Error(`The agent with id "${agent.id}" was not found.`);
+			}
+			agentRoom = { agentId: user._id, username: user.username || '' };
 		}
 
 		const result = await getRoom({
