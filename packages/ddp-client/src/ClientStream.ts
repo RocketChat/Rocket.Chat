@@ -8,9 +8,13 @@ export interface ClientStream {
 	unsubscribe(id: string): Promise<any>;
 	connect(): Promise<any>;
 	onCollection(id: string, callback: (data: PublicationPayloads) => void): () => void;
+
+	subscriptions: Map<string, unknown>;
 }
 
 export class ClientStreamImpl implements ClientStream {
+	subscriptions = new Map<string, unknown>();
+
 	constructor(private ws: DDPClient) {}
 
 	call(method: string, ...params: any[]): string {
@@ -53,9 +57,12 @@ export class ClientStreamImpl implements ClientStream {
 
 	subscribe(name: string, ...params: any[]): Promise<any> & { id: string } {
 		const id = this.ws.subscribe(name, ...params);
+
+		this.subscriptions.set(id, true);
 		const result = new Promise((resolve, reject) => {
 			this.ws.onPublish(id, (payload) => {
 				if ('error' in payload) {
+					this.subscriptions.delete(id);
 					reject(payload.error);
 				} else {
 					resolve(payload);
@@ -67,6 +74,7 @@ export class ClientStreamImpl implements ClientStream {
 
 	unsubscribe(id: string): Promise<any> {
 		return new Promise((resolve, reject) => {
+			this.subscriptions.delete(id);
 			this.ws.unsubscribe(id);
 			this.ws.onNoSub(id, (payload) => {
 				if ('error' in payload) {
