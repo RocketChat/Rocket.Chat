@@ -7,10 +7,9 @@ import {
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
-import { LivechatInquiry, LivechatDepartment } from '@rocket.chat/models';
+import { LivechatInquiry, LivechatDepartment, Users } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
-import { Users } from '../../../../models/server';
 import { findInquiries, findOneInquiryByRoomId } from '../../../server/api/lib/inquiries';
 import { deprecationWarning } from '../../../../api/server/helpers/deprecationWarning';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
@@ -61,7 +60,7 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-l-room'], validateParams: isPOSTLivechatInquiriesTakeParams },
 	{
 		async post() {
-			if (this.bodyParams.userId && !Users.findOneById(this.bodyParams.userId, { fields: { _id: 1 } })) {
+			if (this.bodyParams.userId && !(await Users.findOneById(this.bodyParams.userId, { projection: { _id: 1 } }))) {
 				return API.v1.failure('The user is invalid');
 			}
 			return API.v1.success({

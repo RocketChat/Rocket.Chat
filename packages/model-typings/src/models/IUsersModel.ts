@@ -56,7 +56,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	findByIds<T = IUser>(userIds: any, options?: any): FindCursor<T>;
 
-	findOneByUsernameIgnoringCase<T = IUser>(username: any, options: any): Promise<T>;
+	findOneByUsernameIgnoringCase<T = IUser>(username: any, options?: any): Promise<T>;
 
 	findOneByLDAPId<T = IUser>(id: any, attribute?: any): Promise<T>;
 
@@ -226,6 +226,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	setOperator(userId: string, operator: boolean): Promise<UpdateResult>;
 	checkOnlineAgents(agentId: string): Promise<boolean>;
 	findOnlineAgents(agentId: string): FindCursor<ILivechatAgent>;
+	countOnlineAgents(agentId: string): Promise<number>;
 	findOneBotAgent(): Promise<ILivechatAgent | null>;
 	findOneOnlineAgentbyId(agentId: string): Promise<ILivechatAgent | null>;
 	findAgents(): FindCursor<ILivechatAgent>;
