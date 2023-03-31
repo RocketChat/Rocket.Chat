@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { SHA256 } from '@rocket.chat/sha256';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { Accounts } from 'meteor/accounts-base';
+import { Users } from '@rocket.chat/models';
 
 import { _setRealName } from '../../lib/server';
-import { Users } from '../../models/server';
 import { settings } from '../../settings/server';
 import { deleteUser } from '../../lib/server/functions';
 import { setUserActiveStatus } from '../../lib/server/functions/setUserActiveStatus';
@@ -49,19 +49,14 @@ export class CROWD {
 		};
 
 		this.crowdClient = new AtlassianCrowd(this.options);
-
-		this.crowdClient.user.authenticateSync = Meteor.wrapAsync(this.crowdClient.user.authenticate, this);
-		this.crowdClient.user.findSync = Meteor.wrapAsync(this.crowdClient.user.find, this);
-		this.crowdClient.searchSync = Meteor.wrapAsync(this.crowdClient.search, this);
-		this.crowdClient.pingSync = Meteor.wrapAsync(this.crowdClient.ping, this);
 	}
 
-	checkConnection() {
-		this.crowdClient.pingSync();
+	async checkConnection() {
+		await this.crowdClient.ping();
 	}
 
-	fetchCrowdUser(crowd_username) {
-		const userResponse = this.crowdClient.user.findSync(crowd_username);
+	async fetchCrowdUser(crowd_username) {
+		const userResponse = await this.crowdClient.user.find(crowd_username);
 
 		return {
 			displayname: userResponse['display-name'],
@@ -72,7 +67,7 @@ export class CROWD {
 		};
 	}
 
-	authenticate(username, password) {
+	async authenticate(username, password) {
 		if (!username || !password) {
 			logger.error('No username or password');
 			return;
@@ -85,7 +80,7 @@ export class CROWD {
 		if (username.indexOf('@') !== -1) {
 			const email = username;
 
-			user = Meteor.users.findOne({ 'emails.address': email }, { fields: { username: 1, crowd_username: 1, crowd: 1 } });
+			user = await Users.findOne({ 'emails.address': email }, { projection: { username: 1, crowd_username: 1, crowd: 1 } });
 			if (user) {
 				crowd_username = user.crowd_username;
 			} else {
@@ -94,7 +89,7 @@ export class CROWD {
 		}
 
 		if (user == null) {
-			user = Meteor.users.findOne({ username }, { fields: { username: 1, crowd_username: 1, crowd: 1 } });
+			user = await Users.findOne({ username }, { projection: { username: 1, crowd_username: 1, crowd: 1 } });
 			if (user) {
 				crowd_username = user.crowd_username;
 			} else {
@@ -103,7 +98,7 @@ export class CROWD {
 		}
 
 		if (user == null) {
-			user = Meteor.users.findOne({ crowd_username: username }, { fields: { username: 1, crowd_username: 1, crowd: 1 } });
+			user = await Users.findOne({ crowd_username: username }, { projection: { username: 1, crowd_username: 1, crowd: 1 } });
 			if (user) {
 				crowd_username = user.crowd_username;
 			} else {
@@ -122,13 +117,13 @@ export class CROWD {
 			logger.debug('New user. User is not synced yet.');
 		}
 		logger.debug('Going to crowd:', crowd_username);
-		const auth = this.crowdClient.user.authenticateSync(crowd_username, password);
+		const auth = await this.crowdClient.user.authenticate(crowd_username, password);
 
 		if (!auth) {
 			return;
 		}
 
-		const crowdUser = this.fetchCrowdUser(crowd_username);
+		const crowdUser = await this.fetchCrowdUser(crowd_username);
 
 		if (user && settings.get('CROWD_Allow_Custom_Username') === true) {
 			crowdUser.username = user.username;
@@ -142,7 +137,7 @@ export class CROWD {
 		return crowdUser;
 	}
 
-	syncDataToUser(crowdUser, id) {
+	async syncDataToUser(crowdUser, id) {
 		const self = this;
 		const user = {
 			username: self.cleanUsername(crowdUser.username),
@@ -161,39 +156,42 @@ export class CROWD {
 				logout: false,
 			});
 
-			Users.unsetRequirePasswordChange(id);
+			await Users.unsetRequirePasswordChange(id);
 		}
 
 		if (crowdUser.displayname) {
-			_setRealName(id, crowdUser.displayname);
+			await _setRealName(id, crowdUser.displayname);
 		}
 
-		Meteor.users.update(id, {
-			$set: user,
-		});
+		await Users.updateOne(
+			{ _id: id },
+			{
+				$set: user,
+			},
+		);
 
-		Promise.await(setUserActiveStatus(id, crowdUser.active));
+		await setUserActiveStatus(id, crowdUser.active);
 	}
 
-	sync() {
+	async sync() {
 		// if crowd is disabled bail out
 		if (settings.get('CROWD_Enable') !== true) {
 			return;
 		}
 
 		const self = this;
-		const users = Users.findCrowdUsers() || [];
+		const users = (await Users.findCrowdUsers()) || [];
 
 		logger.info('Sync started...');
 
-		users.forEach(function (user) {
+		for await (const user of users) {
 			let crowd_username = user.hasOwnProperty('crowd_username') ? user.crowd_username : user.username;
 			logger.info('Syncing user', crowd_username);
 
 			let crowdUser = null;
 
 			try {
-				crowdUser = self.fetchCrowdUser(crowd_username);
+				crowdUser = await self.fetchCrowdUser(crowd_username);
 			} catch (err) {
 				logger.debug({ err });
 				logger.error({ msg: 'Could not sync user with username', crowd_username });
@@ -216,15 +214,15 @@ export class CROWD {
 				crowd_username = response.users[0].name;
 				logger.info('User found by email. Syncing user', crowd_username);
 
-				crowdUser = self.fetchCrowdUser(crowd_username);
+				crowdUser = await self.fetchCrowdUser(crowd_username);
 			}
 
 			if (settings.get('CROWD_Allow_Custom_Username') === true) {
 				crowdUser.username = user.username;
 			}
 
-			self.syncDataToUser(crowdUser, user._id);
-		});
+			await self.syncDataToUser(crowdUser, user._id);
+		}
 	}
 
 	cleanUsername(username) {
@@ -234,24 +232,27 @@ export class CROWD {
 		return username;
 	}
 
-	updateUserCollection(crowdUser) {
+	async updateUserCollection(crowdUser) {
 		const userQuery = {
 			_id: crowdUser._id,
 		};
 
 		// find our existing user if they exist
-		const user = Meteor.users.findOne(userQuery);
+		const user = await Users.findOne(userQuery);
 
 		if (user) {
 			const stampedToken = Accounts._generateStampedLoginToken();
 
-			Meteor.users.update(user._id, {
-				$push: {
-					'services.resume.loginTokens': Accounts._hashStampedToken(stampedToken),
+			await Users.updateOne(
+				{ _id: user._id },
+				{
+					$push: {
+						'services.resume.loginTokens': Accounts._hashStampedToken(stampedToken),
+					},
 				},
-			});
+			);
 
-			this.syncDataToUser(crowdUser, user._id);
+			await this.syncDataToUser(crowdUser, user._id);
 
 			return {
 				userId: user._id,
@@ -264,7 +265,7 @@ export class CROWD {
 			crowdUser._id = Accounts.createUser(crowdUser);
 
 			// sync the user data
-			this.syncDataToUser(crowdUser, crowdUser._id);
+			await this.syncDataToUser(crowdUser, crowdUser._id);
 
 			return {
 				userId: crowdUser._id,
@@ -275,7 +276,7 @@ export class CROWD {
 	}
 }
 
-Accounts.registerLoginHandler('crowd', function (loginRequest) {
+Accounts.registerLoginHandler('crowd', async function (loginRequest) {
 	if (!loginRequest.crowd) {
 		return undefined;
 	}
@@ -288,7 +289,7 @@ Accounts.registerLoginHandler('crowd', function (loginRequest) {
 
 	try {
 		const crowd = new CROWD();
-		const user = crowd.authenticate(loginRequest.username, loginRequest.crowdPassword);
+		const user = await crowd.authenticate(loginRequest.username, loginRequest.crowdPassword);
 
 		if (user && user.crowd === false) {
 			logger.debug(`User ${loginRequest.username} is not a valid crowd user, falling back`);
@@ -300,7 +301,9 @@ Accounts.registerLoginHandler('crowd', function (loginRequest) {
 			return new Meteor.Error('not-authorized', 'User is not authorized by crowd');
 		}
 
-		return crowd.updateUserCollection(user);
+		const result = await crowd.updateUserCollection(user);
+
+		return result;
 	} catch (err) {
 		logger.debug({ err });
 		logger.error('Crowd user not authenticated due to an error');
@@ -324,8 +327,8 @@ Meteor.startup(() => {
 			SyncedCron.add({
 				name: jobName,
 				schedule: (parser) => parser.text(interval),
-				job() {
-					crowd.sync();
+				async job() {
+					await crowd.sync();
 				},
 			});
 		}

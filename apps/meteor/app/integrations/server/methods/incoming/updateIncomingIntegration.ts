@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
-import { Integrations, Roles, Subscriptions } from '@rocket.chat/models';
+import { Integrations, Roles, Subscriptions, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IIntegration, INewIncomingIntegration, IUpdateIncomingIntegration } from '@rocket.chat/core-typings';
 
-import { Rooms, Users } from '../../../../models/server';
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { Rooms } from '../../../../models/server';
 
 const validChannelChars = ['@', '#'];
 
@@ -116,7 +116,7 @@ Meteor.methods<ServerMethods>({
 					});
 					break;
 				case '@':
-					record = Users.findOne({
+					record = await Users.findOne({
 						$or: [{ _id: channel }, { username: channel }],
 					});
 					break;
@@ -138,7 +138,7 @@ Meteor.methods<ServerMethods>({
 			}
 		}
 
-		const user = Users.findOne({ username: currentIntegration.username });
+		const user = await Users.findOne({ username: currentIntegration.username });
 
 		if (!user?._id) {
 			throw new Meteor.Error('error-invalid-post-as-user', 'Invalid Post As User', {
@@ -161,7 +161,7 @@ Meteor.methods<ServerMethods>({
 					script: integration.script,
 					scriptEnabled: integration.scriptEnabled,
 					_updatedAt: new Date(),
-					_updatedBy: Users.findOne(this.userId, { fields: { username: 1 } }),
+					_updatedBy: await Users.findOne({ _id: this.userId }, { projection: { username: 1 } }),
 				},
 			},
 		);

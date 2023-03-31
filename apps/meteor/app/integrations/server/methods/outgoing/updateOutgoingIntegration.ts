@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { Integrations } from '@rocket.chat/models';
+import { Integrations, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IIntegration, INewOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { Users } from '../../../../models/server';
 import { validateOutgoingIntegration } from '../../lib/validateOutgoingIntegration';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -96,7 +95,7 @@ Meteor.methods<ServerMethods>({
 					triggerWordAnywhere: integration.triggerWordAnywhere,
 					runOnEdits: integration.runOnEdits,
 					_updatedAt: new Date(),
-					_updatedBy: Users.findOne(this.userId, { fields: { username: 1 } }),
+					_updatedBy: await Users.findOne({ _id: this.userId }, { projection: { username: 1 } }),
 				},
 			},
 		);
