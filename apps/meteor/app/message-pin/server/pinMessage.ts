@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { IMessage, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
 import { Message } from '@rocket.chat/core-services';
 import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
@@ -38,8 +38,8 @@ const shouldAdd = (attachments: MessageAttachment[], attachment: MessageQuoteAtt
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		pinMessage(message: IMessage, pinnedAt?: Date): IMessage | null;
-		unpinMessage(message: IMessage): boolean;
+		pinMessage(message: IMessage, pinnedAt?: Date): Promise<IMessage | null>;
+		unpinMessage(message: IMessage): Promise<boolean>;
 	}
 }
 
@@ -82,16 +82,21 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
 		}
 
-		const me = await Users.findOneById(userId);
+		const me = await Users.findOneById<Required<Pick<IUser, '_id' | 'username' | 'name'>>>(userId, {
+			projection: { username: 1, name: 1 },
+		});
+		if (!me) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'pinMessage' });
+		}
 
 		// If we keep history of edits, insert a new message to store history information
-		if (settings.get('Message_KeepHistory')) {
+		if (settings.get('Message_KeepHistory') && me.username) {
 			await Messages.cloneAndSaveAsHistoryById(message._id, me);
 		}
 
 		const room = await Rooms.findOneById(originalMessage.rid);
 		if (!room) {
-			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'unpinMessage' });
+			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'pinMessage' });
 		}
 
 		if (!(await canAccessRoomAsync(room, { _id: userId }))) {
@@ -178,10 +183,15 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'unpinMessage' });
 		}
 
-		const me = await Users.findOneById(userId);
+		const me = await Users.findOneById<Required<Pick<IUser, '_id' | 'username' | 'name'>>>(userId, {
+			projection: { username: 1, name: 1 },
+		});
+		if (!me) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'unpinMessage' });
+		}
 
 		// If we keep history of edits, insert a new message to store history information
-		if (settings.get('Message_KeepHistory')) {
+		if (settings.get('Message_KeepHistory') && me.username) {
 			await Messages.cloneAndSaveAsHistoryById(originalMessage._id, me);
 		}
 
