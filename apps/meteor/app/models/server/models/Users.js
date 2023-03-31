@@ -811,10 +811,6 @@ export class Users extends Base {
 		return this.findOne(query, options);
 	}
 
-	findRemote(options = {}) {
-		return this.find({ isRemote: true }, options);
-	}
-
 	findActiveRemote(options = {}) {
 		return this.find(
 			{
