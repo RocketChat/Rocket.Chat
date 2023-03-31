@@ -1,11 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import type { ILivechatVisitorDTO, IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors as VisitorsRaw, LivechatCustomField, LivechatRooms } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
 import { findGuest, normalizeHttpHeaderData } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
+import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { settings } from '../../../../settings/server';
 
 API.v1.addRoute('livechat/visitor', {
@@ -29,14 +30,13 @@ API.v1.addRoute('livechat/visitor', {
 		});
 
 		const { token, customFields } = this.bodyParams.visitor;
-		const guest: ILivechatVisitorDTO = { ...this.bodyParams.visitor };
+		const guest: Parameters<typeof LivechatTyped.registerGuest>[0] = {
+			...this.bodyParams.visitor,
+			phone: this.bodyParams.visitor.phone ? { number: this.bodyParams.visitor.phone as string } : undefined,
+			connectionData: normalizeHttpHeaderData(this.request.headers),
+		};
 
-		if (this.bodyParams.visitor.phone) {
-			guest.phone = { number: this.bodyParams.visitor.phone as string };
-		}
-
-		guest.connectionData = normalizeHttpHeaderData(this.request.headers);
-		const visitorId = await Livechat.registerGuest(guest as any); // TODO: Rewrite Livechat to TS
+		const visitorId = await LivechatTyped.registerGuest(guest);
 
 		let visitor = await VisitorsRaw.findOneById(visitorId, {});
 		if (visitor) {

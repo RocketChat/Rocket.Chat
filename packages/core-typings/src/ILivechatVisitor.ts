@@ -54,7 +54,7 @@ export interface ILivechatVisitorDTO {
 	name?: string;
 	email?: string;
 	department?: string;
-	phone?: string | { number: string };
+	phone?: { number: string };
 	username?: string;
 	customFields?: {
 		key: string;

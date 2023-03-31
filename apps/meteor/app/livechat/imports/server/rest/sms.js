@@ -55,7 +55,7 @@ const defineVisitor = async (smsNumber, targetDepartment) => {
 		data.department = targetDepartment;
 	}
 
-	const id = await Livechat.registerGuest(data);
+	const id = await LivechatTyped.registerGuest(data);
 	return LivechatVisitors.findOneById(id);
 };
 

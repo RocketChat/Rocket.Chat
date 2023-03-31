@@ -59,15 +59,11 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 		msg: 'Creating a new Omnichannel guest for visitor with email',
 		email,
 	});
-	const userId = await Livechat.registerGuest({
+	const userId = await LivechatTyped.registerGuest({
 		token: Random.id(),
 		name: name || email,
 		email,
 		department,
-		phone: undefined,
-		username: undefined,
-		connectionData: undefined,
-		id: undefined,
 	});
 
 	const newGuest = await LivechatVisitors.findOneById(userId);

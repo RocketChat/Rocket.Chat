@@ -37,7 +37,7 @@ import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { updateMessage } from '../../../lib/server/functions/updateMessage';
 import { deleteMessage } from '../../../lib/server/functions/deleteMessage';
 import { FileUpload } from '../../../file-upload/server';
-import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents, validateEmail } from './Helper';
+import { normalizeTransferredByData, parseAgentCustomFields, updateDepartmentAgents } from './Helper';
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { businessHourManager } from '../business-hour';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
@@ -51,7 +51,6 @@ const dnsResolveMx = Meteor.wrapAsync(dns.resolveMx);
 
 export const Livechat = {
 	Analytics,
-	historyMonitorType: 'url',
 
 	logger,
 	webhookLogger: logger.section('Webhook'),
@@ -111,99 +110,6 @@ export const Livechat = {
 		await deleteMessage(message, guest);
 
 		return true;
-	},
-
-	/**
-	 * Returns the next visitor in the queue
-	 * @param {object} options
-	 * @param {string} [options.id] - The visitor's id
-	 * @param {string} options.token - The visitor's token
-	 * @param {string} [options.name] - The visitor's name
-	 * @param {string} [options.email] - The visitor's email
-	 * @param {string} [options.department] - The visitor's department
-	 * @param {object} [options.phone] - The visitor's phone
-	 * @param {string} [options.username] - The visitor's username
-	 * @param {string} [options.connectionData] - The visitor's connection data
-	 * @param {string} [options.status] - The visitor's status
-	 */
-	async registerGuest({ id, token, name, email, department, phone, username, connectionData, status = 'online' } = {}) {
-		check(token, String);
-		check(id, Match.Maybe(String));
-
-		Livechat.logger.debug(`New incoming conversation: id: ${id} | token: ${token}`);
-
-		let userId;
-		const updateUser = {
-			$set: {
-				token,
-				status,
-				...(phone?.number ? { phone: [{ phoneNumber: phone.number }] } : {}),
-				...(name ? { name } : {}),
-			},
-		};
-
-		if (email) {
-			email = email.trim().toLowerCase();
-			validateEmail(email);
-			updateUser.$set.visitorEmails = [{ address: email }];
-		}
-
-		if (department) {
-			Livechat.logger.debug(`Attempt to find a department with id/name ${department}`);
-			const dep = await LivechatDepartmentRaw.findOneByIdOrName(department);
-			if (!dep) {
-				Livechat.logger.debug('Invalid department provided');
-				throw new Meteor.Error('error-invalid-department', 'The provided department is invalid', {
-					method: 'registerGuest',
-				});
-			}
-			Livechat.logger.debug(`Assigning visitor ${token} to department ${dep._id}`);
-			updateUser.$set.department = dep._id;
-		}
-
-		const user = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
-		let existingUser = null;
-
-		if (user) {
-			Livechat.logger.debug('Found matching user by token');
-			userId = user._id;
-		} else if (phone?.number && (existingUser = await LivechatVisitors.findOneVisitorByPhone(phone.number))) {
-			Livechat.logger.debug('Found matching user by phone number');
-			userId = existingUser._id;
-			// Don't change token when matching by phone number, use current visitor token
-			updateUser.$set.token = existingUser.token;
-		} else if (email && (existingUser = await LivechatVisitors.findOneGuestByEmailAddress(email))) {
-			Livechat.logger.debug('Found matching user by email');
-			userId = existingUser._id;
-		} else {
-			Livechat.logger.debug(`No matches found. Attempting to create new user with token ${token}`);
-			if (!username) {
-				username = await LivechatVisitors.getNextVisitorUsername();
-			}
-
-			const userData = {
-				username,
-				status,
-				ts: new Date(),
-				...(id && { _id: id }),
-			};
-
-			if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
-				Livechat.logger.debug(`Saving connection data for visitor ${token}`);
-				const connection = this.connection || connectionData;
-				if (connection && connection.httpHeaders) {
-					userData.userAgent = connection.httpHeaders['user-agent'];
-					userData.ip = connection.httpHeaders['x-real-ip'] || connection.httpHeaders['x-forwarded-for'] || connection.clientAddress;
-					userData.host = connection.httpHeaders.host;
-				}
-			}
-
-			userId = (await LivechatVisitors.insertOne(userData)).insertedId;
-		}
-
-		await LivechatVisitors.updateById(userId, updateUser);
-
-		return userId;
 	},
 
 	async saveGuest(guestData, userId) {
@@ -407,7 +313,7 @@ export const Livechat = {
 
 	async savePageHistory(token, roomId, pageInfo) {
 		Livechat.logger.debug(`Saving page movement history for visitor with token ${token}`);
-		if (pageInfo.change !== Livechat.historyMonitorType) {
+		if (pageInfo.change !== settings.get('Livechat_history_monitor_type')) {
 			return;
 		}
 		const user = Users.findOneById('rocket.cat');
@@ -1089,7 +995,3 @@ export const Livechat = {
 		}
 	},
 };
-
-settings.watch('Livechat_history_monitor_type', (value) => {
-	Livechat.historyMonitorType = value;
-});

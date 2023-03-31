@@ -23,7 +23,7 @@ import {
 import { Message } from '@rocket.chat/core-services';
 import moment from 'moment-timezone';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { FindCursor } from 'mongodb';
+import type { FindCursor, UpdateFilter } from 'mongodb';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
@@ -34,6 +34,7 @@ import { settings } from '../../../settings/server';
 import * as Mailer from '../../../mailer/server/api';
 import { RoutingManager } from './RoutingManager';
 import { QueueManager } from './QueueManager';
+import { validateEmail } from './Helper';
 
 type GenericCloseRoomParams = {
 	room: IOmnichannelRoom;
@@ -513,6 +514,111 @@ class LivechatClass {
 		});
 
 		return true;
+	}
+
+	async registerGuest({
+		id,
+		token,
+		name,
+		email,
+		department,
+		phone,
+		username,
+		connectionData,
+		status = 'online',
+	}: {
+		id?: string;
+		token: string;
+		name?: string;
+		email?: string;
+		department?: string;
+		phone?: { number: string };
+		username?: string;
+		connectionData?: any;
+		status?: ILivechatVisitor['status'];
+	}) {
+		check(token, String);
+		check(id, Match.Maybe(String));
+
+		Livechat.logger.debug(`New incoming conversation: id: ${id} | token: ${token}`);
+
+		let userId;
+		type Mutable<Type> = {
+			-readonly [Key in keyof Type]: Type[Key];
+		};
+
+		type UpdateUserType = Required<Pick<UpdateFilter<ILivechatVisitor>, '$set'>>;
+		const updateUser: Required<Pick<UpdateFilter<ILivechatVisitor>, '$set'>> = {
+			$set: {
+				token,
+				status,
+				...(phone?.number ? { phone: [{ phoneNumber: phone.number }] } : {}),
+				...(name ? { name } : {}),
+			},
+		};
+
+		if (email) {
+			email = email.trim().toLowerCase();
+			validateEmail(email);
+			(updateUser.$set as Mutable<UpdateUserType['$set']>).visitorEmails = [{ address: email }];
+		}
+
+		if (department) {
+			Livechat.logger.debug(`Attempt to find a department with id/name ${department}`);
+			const dep = await LivechatDepartment.findOneByIdOrName(department);
+			if (!dep) {
+				Livechat.logger.debug('Invalid department provided');
+				throw new Meteor.Error('error-invalid-department', 'The provided department is invalid');
+			}
+			Livechat.logger.debug(`Assigning visitor ${token} to department ${dep._id}`);
+			(updateUser.$set as Mutable<UpdateUserType['$set']>).department = dep._id;
+		}
+
+		const user = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
+		let existingUser = null;
+
+		if (user) {
+			Livechat.logger.debug('Found matching user by token');
+			userId = user._id;
+		} else if (phone?.number && (existingUser = await LivechatVisitors.findOneVisitorByPhone(phone.number))) {
+			Livechat.logger.debug('Found matching user by phone number');
+			userId = existingUser._id;
+			// Don't change token when matching by phone number, use current visitor token
+			(updateUser.$set as Mutable<UpdateUserType['$set']>).token = existingUser.token;
+		} else if (email && (existingUser = await LivechatVisitors.findOneGuestByEmailAddress(email))) {
+			Livechat.logger.debug('Found matching user by email');
+			userId = existingUser._id;
+		} else {
+			Livechat.logger.debug(`No matches found. Attempting to create new user with token ${token}`);
+			if (!username) {
+				username = await LivechatVisitors.getNextVisitorUsername();
+			}
+
+			const userData = {
+				username,
+				status,
+				ts: new Date(),
+				token,
+				...(id && { _id: id }),
+			};
+
+			if (settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
+				Livechat.logger.debug(`Saving connection data for visitor ${token}`);
+				const connection = connectionData;
+				if (connection?.httpHeaders) {
+					(updateUser.$set as Mutable<UpdateUserType['$set']>).userAgent = connection.httpHeaders['user-agent'];
+					(updateUser.$set as Mutable<UpdateUserType['$set']>).ip =
+						connection.httpHeaders['x-real-ip'] || connection.httpHeaders['x-forwarded-for'] || connection.clientAddress;
+					(updateUser.$set as Mutable<UpdateUserType['$set']>).host = connection.httpHeaders.host;
+				}
+			}
+
+			userId = (await LivechatVisitors.insertOne(userData)).insertedId;
+		}
+
+		await LivechatVisitors.updateById(userId, updateUser);
+
+		return userId;
 	}
 
 	private async getBotAgents(department?: string) {

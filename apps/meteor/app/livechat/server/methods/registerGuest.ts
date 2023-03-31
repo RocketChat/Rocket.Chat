@@ -4,6 +4,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { ILivechatVisitor, IRoom } from '@rocket.chat/core-typings';
 
 import { Livechat } from '../lib/Livechat';
+import { Livechat as LivechatTyped } from '../lib/LivechatTyped';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -36,7 +37,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-token', 'Invalid token', { method: 'livechat:registerGuest' });
 		}
 
-		const userId = await Livechat.registerGuest.call(this, {
+		const userId = await LivechatTyped.registerGuest.call(this, {
 			token,
 			name,
 			email,
