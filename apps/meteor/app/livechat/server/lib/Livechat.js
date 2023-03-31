@@ -252,33 +252,6 @@ export const Livechat = {
 		return ret;
 	},
 
-	async removeRoom(rid) {
-		Livechat.logger.debug(`Deleting room ${rid}`);
-		check(rid, String);
-		const room = await LivechatRooms.findOneById(rid);
-		if (!room) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-				method: 'livechat:removeRoom',
-			});
-		}
-
-		const result = await Promise.allSettled([
-			Messages.removeByRoomId(rid),
-			Subscriptions.removeByRoomId(rid),
-			LivechatInquiry.removeByRoomId(rid),
-			LivechatRooms.removeById(rid),
-		]);
-
-		const errors = result.filter((r) => r.status === 'rejected').map((r) => r.reason);
-		if (errors.length > 0) {
-			this.logger.error(`Error removing room ${rid}: ${errors.join(', ')}`);
-			throw new Meteor.Error('error-removing-room', 'Error removing room', {
-				method: 'livechat:removeRoom',
-				errors,
-			});
-		}
-	},
-
 	async setCustomFields({ token, key, value, overwrite } = {}) {
 		check(token, String);
 		check(key, String);

@@ -379,6 +379,29 @@ class LivechatClass {
 		await LivechatVisitors.updateById(visitor._id, updateUser);
 	}
 
+	async removeRoom(rid: string) {
+		Livechat.logger.debug(`Deleting room ${rid}`);
+		check(rid, String);
+		const room = await LivechatRooms.findOneById(rid);
+		if (!room) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room');
+		}
+
+		const result = await Promise.allSettled([
+			Messages.removeByRoomId(rid),
+			Subscriptions.removeByRoomId(rid),
+			LivechatInquiry.removeByRoomId(rid),
+			LivechatRooms.removeById(rid),
+		]);
+
+		for (const r of result) {
+			if (r.status === 'rejected') {
+				this.logger.error(`Error removing room ${rid}: ${r.reason}`);
+				throw new Meteor.Error('error-removing-room', 'Error removing room');
+			}
+		}
+	}
+
 	private async resolveChatTags(
 		room: IOmnichannelRoom,
 		options: CloseRoomParams['options'] = {},
