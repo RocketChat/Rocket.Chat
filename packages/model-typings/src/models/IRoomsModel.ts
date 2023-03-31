@@ -163,11 +163,11 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	incMsgCountById(rid: string, inc: number): Promise<UpdateResult>;
 	decreaseMessageCountById(rid: string, dec: number): Promise<UpdateResult>;
 	findOneByIdOrName(_idOrName: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
-	setCallStatus(_id: string, callStatus: string): Promise<UpdateResult>;
-	setCallStatusAndCallStartTime(_id: string, callStatus: string): Promise<UpdateResult>;
+	setCallStatus(_id: string, callStatus: IRoom['callStatus']): Promise<UpdateResult>;
+	setCallStatusAndCallStartTime(_id: string, callStatus: IRoom['callStatus']): Promise<UpdateResult>;
 	setReactionsInLastMessage(roomId: string, reactions: NonNullable<IRoom['lastMessage']>['reactions']): Promise<UpdateResult>;
 	unsetReactionsInLastMessage(roomId: string): Promise<UpdateResult>;
-	unsetAllImportIds(): Promise<UpdateResult>;
+	unsetAllImportIds(): Promise<Document | UpdateResult>;
 	updateLastMessageStar(roomId: string, userId: string, starred?: boolean): Promise<UpdateResult>;
 	// TODO check types
 	setLastMessagePinned(roomId: string, pinnedBy: unknown, pinned?: boolean, pinnedAt?: Date): Promise<UpdateResult>;
@@ -218,7 +218,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		includeFederatedRooms?: boolean,
 	): FindCursor<IRoom>;
 	findByDefaultAndTypes(defaultValue: boolean, types: IRoom['t'][], options?: FindOptions<IRoom>): FindCursor<IRoom>;
-	findDirectRoomContainingAllUsernames(usernames: string[], options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findDirectRoomContainingAllUsernames(usernames: string[], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 	findByTypeAndName(type: IRoom['t'], name: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 	findByTypeAndNameOrId(type: IRoom['t'], name: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 	findByTypeAndNameContaining(type: IRoom['t'], name: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
@@ -232,7 +232,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	setNameById(rid: string, name: string, fname: string): Promise<UpdateResult>;
 	incMsgCountAndSetLastMessageById(rid: string, inc: number, lastMessageTs: Date, lastMessage: IRoom['lastMessage']): Promise<UpdateResult>;
 	incUsersCountById(rid: string, inc: number): Promise<UpdateResult>;
-	incUsersCountNotDMsByIds(rids: string[], inc: number): Promise<UpdateResult>;
+	incUsersCountNotDMsByIds(rids: string[], inc: number): Promise<Document | UpdateResult>;
 	setLastMessageById(rid: string, lastMessage: IRoom['lastMessage']): Promise<UpdateResult>;
 	resetLastMessageById(rid: string, lastMessage?: IMessage | null): Promise<UpdateResult>;
 	replaceUsername(username: string, newUsername: string): Promise<UpdateResult | Document>;
