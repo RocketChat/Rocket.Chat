@@ -139,11 +139,11 @@ function createIntegration(options, user) {
 	return API.v1.success();
 }
 
-function removeIntegration(options, user) {
+async function removeIntegration(options, user) {
 	incomingLogger.info('Remove integration');
 	incomingLogger.debug({ options });
 
-	const integrationToRemove = Promise.await(Integrations.findOneByUrl(options.target_url));
+	const integrationToRemove = await Integrations.findOneByUrl(options.target_url);
 	if (!integrationToRemove) {
 		return API.v1.failure('integration-not-found');
 	}
@@ -291,7 +291,7 @@ function addIntegrationRest() {
 	return createIntegration(this.bodyParams, this.user);
 }
 
-function removeIntegrationRest() {
+async function removeIntegrationRest() {
 	return removeIntegration(this.bodyParams, this.user);
 }
 
