@@ -275,6 +275,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findOneByRolesAndType(roles: string[], type: string, options?: FindOptions<IUser>): Promise<IUser | null>;
 	findNotOfflineByIds(userIds: string[], options?: FindOptions<IUser>): FindCursor<IUser>;
 	findUsersNotOffline(options?: FindOptions<IUser>): FindCursor<IUser>;
+	countUsersNotOffline(options?: FindOptions<IUser>): Promise<number>;
 	findNotIdUpdatedFrom(userId: string, updatedFrom: Date, options?: FindOptions<IUser>): FindCursor<IUser>;
 	findByRoomId(roomId: string, options?: FindOptions<IUser>): FindCursor<IUser>;
 	findByUsername(username: string, options?: FindOptions<IUser>): FindCursor<IUser>;
