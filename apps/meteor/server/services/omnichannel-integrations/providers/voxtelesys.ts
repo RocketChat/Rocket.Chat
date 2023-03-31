@@ -1,4 +1,3 @@
-import { HTTP } from 'meteor/http';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
 import { api } from '@rocket.chat/core-services';
@@ -9,6 +8,7 @@ import { settings } from '../../../../app/settings/server';
 import { fileUploadIsValidContentType } from '../../../../app/utils/lib/fileUploadRestrictions';
 import { mime } from '../../../../app/utils/lib/mimeTypes';
 import { SystemLogger } from '../../../lib/logger/system';
+import { fetch } from '../../../lib/http/fetch';
 
 type VoxtelesysData = {
 	from: string;
@@ -108,7 +108,7 @@ export class Voxtelesys implements ISMSProvider {
 				userId,
 				fileUpload: { size, type, publicFilePath },
 			} = extraData;
-			const user = userId ? await Users.findOne(userId, { projection: { language: 1 } }) : null;
+			const user = userId ? await Users.findOne({ _id: userId }, { projection: { language: 1 } }) : null;
 			const lng = user?.language || defaultLanguage;
 
 			let reason;
@@ -135,16 +135,17 @@ export class Voxtelesys implements ISMSProvider {
 			headers: {
 				Authorization: `Bearer ${this.authToken}`,
 			},
-			data: {
+			body: JSON.stringify({
 				to: [toNumber],
 				from: fromNumber,
 				body: message,
 				...(media && { media }),
-			},
+			}),
+			method: 'POST',
 		};
 
 		try {
-			HTTP.call('POST', this.URL || 'https://smsapi.voxtelesys.net/api/v1/sms', options);
+			await fetch(this.URL || 'https://smsapi.voxtelesys.net/api/v1/sms', options);
 		} catch (err) {
 			SystemLogger.error({ msg: 'Error connecting to Voxtelesys SMS API', err });
 		}

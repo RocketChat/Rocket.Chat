@@ -1,4 +1,3 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import { Box, Modal, Button, TextInput, Field, ToggleSwitch, FieldGroup, Icon } from '@rocket.chat/fuselage';
 import { useTranslation, useSetting, usePermission, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -15,7 +14,7 @@ type CreateTeamModalInputs = {
 	readOnly: boolean;
 	encrypted: boolean;
 	broadcast: boolean;
-	members?: Exclude<IUser['username'], undefined>[];
+	members?: string[];
 };
 
 const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => {
@@ -233,21 +232,7 @@ const CreateTeamModal = ({ onClose }: { onClose: () => void }): ReactElement => 
 						<Controller
 							control={control}
 							name='members'
-							render={({ field: { onChange, value } }): ReactElement => (
-								<UserAutoCompleteMultiple
-									value={value}
-									onChange={(member, action): void => {
-										if (!action && value) {
-											if (value.includes(member)) {
-												return;
-											}
-											return onChange([...value, member]);
-										}
-
-										onChange(value?.filter((current) => current !== member));
-									}}
-								/>
-							)}
+							render={({ field: { onChange, value } }): ReactElement => <UserAutoCompleteMultiple value={value} onChange={onChange} />}
 						/>
 					</Field>
 				</FieldGroup>

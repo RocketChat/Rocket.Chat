@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { LivechatInquiry, LivechatRooms, Subscriptions } from '@rocket.chat/models';
+import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
 
 import {
@@ -15,7 +15,7 @@ import {
 } from './Helper';
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../../server/lib/logger/Logger';
-import { Rooms, Users } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 
 const logger = new Logger('RoutingManager');
@@ -96,13 +96,13 @@ export const RoutingManager = {
 		logger.debug(`Assigning agent ${agent.agentId} to inquiry ${inquiry._id}`);
 
 		const { rid, name, v, department } = inquiry;
-		if (!createLivechatSubscription(rid, name, v, agent, department)) {
+		if (!(await createLivechatSubscription(rid, name, v, agent, department))) {
 			logger.debug(`Cannot assign agent to inquiry ${inquiry._id}: Cannot create subscription`);
 			throw new Meteor.Error('error-creating-subscription', 'Error creating subscription');
 		}
 
 		await LivechatRooms.changeAgentByRoomId(rid, agent);
-		Rooms.incUsersCountById(rid);
+		await Rooms.incUsersCountById(rid);
 
 		const user = Users.findOneById(agent.agentId);
 		const room = await LivechatRooms.findOneById(rid);

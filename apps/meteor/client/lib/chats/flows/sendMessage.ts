@@ -55,7 +55,7 @@ export const sendMessage = async (chat: ChatAPI, { text, tshow }: { text: string
 		const message = await chat.data.composeMessage(text, {
 			sendToChannel: tshow,
 			quotedMessages: chat.composer?.quotedMessages.get() ?? [],
-			originalMessage: chat.currentEditing ? await chat.data.findMessageByID(chat.currentEditing.mid) : undefined,
+			originalMessage: chat.currentEditing ? await chat.data.findMessageByID(chat.currentEditing.mid) : null,
 		});
 
 		try {

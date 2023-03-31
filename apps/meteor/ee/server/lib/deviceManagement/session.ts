@@ -98,7 +98,7 @@ export const listenSessionLogin = async (): Promise<void> => {
 						data: mailData,
 					});
 				}
-			} catch ({ message }) {
+			} catch ({ message }: any) {
 				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
 					method: 'listenSessionLogin',
 					message,

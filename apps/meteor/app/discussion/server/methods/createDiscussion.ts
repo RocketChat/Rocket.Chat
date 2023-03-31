@@ -3,10 +3,12 @@ import { Random } from '@rocket.chat/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IMessage, IRoom, IUser, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Messages } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 
 import { hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
-import { Messages, Rooms } from '../../../models/server';
+import { Rooms } from '../../../models/server';
 import { createRoom, addUserToRoom, sendMessage, attachMessage } from '../../../lib/server';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
@@ -17,37 +19,38 @@ const getParentRoom = (rid: IRoom['_id']) => {
 	return room && (room.prid ? Rooms.findOne(room.prid, { fields: { _id: 1 } }) : room);
 };
 
-const createDiscussionMessage = (
+async function createDiscussionMessage(
 	rid: IRoom['_id'],
 	user: IUser,
 	drid: IRoom['_id'],
 	msg: IMessage['msg'],
 	messageEmbedded?: MessageAttachmentDefault,
-): IMessage => {
-	const welcomeMessage = {
-		msg,
-		rid,
+): Promise<IMessage | null> {
+	const msgId = await Message.saveSystemMessage('discussion-created', rid, msg, user, {
 		drid,
-		attachments: [messageEmbedded].filter((e) => e),
-	};
-	return Messages.createWithTypeRoomIdMessageAndUser('discussion-created', rid, '', user, welcomeMessage) as IMessage;
-};
+		...(messageEmbedded && { attachments: [messageEmbedded] }),
+	});
 
-const mentionMessage = (
+	return Messages.findOneById(msgId);
+}
+
+async function mentionMessage(
 	rid: IRoom['_id'],
-	{ _id, username, name }: Pick<IUser, '_id' | 'name' | 'username'>,
+	{ _id, username }: Pick<IUser, '_id' | 'username'>,
 	messageEmbedded?: MessageAttachmentDefault,
-) => {
-	const welcomeMessage = {
+) {
+	if (!username) {
+		return null;
+	}
+	await Messages.insertOne({
 		rid,
-		u: { _id, username, name },
+		msg: '',
+		u: { _id, username },
 		ts: new Date(),
 		_updatedAt: new Date(),
-		attachments: [messageEmbedded].filter((e) => e),
-	};
-
-	return Messages.insert(welcomeMessage);
-};
+		...(messageEmbedded && { attachments: [messageEmbedded] }),
+	});
+}
 
 type CreateDiscussionProperties = {
 	prid: IRoom['_id'];
@@ -61,9 +64,9 @@ type CreateDiscussionProperties = {
 
 const create = async ({ prid, pmid, t_name: discussionName, reply, users, user, encrypted }: CreateDiscussionProperties) => {
 	// if you set both, prid and pmid, and the rooms dont match... should throw an error)
-	let message: undefined | IMessage;
+	let message: null | IMessage = null;
 	if (pmid) {
-		message = Messages.findOne({ _id: pmid }) as IMessage | undefined;
+		message = await Messages.findOneById(pmid);
 		if (!message) {
 			throw new Meteor.Error('error-invalid-message', 'Invalid message', {
 				method: 'DiscussionCreation',
@@ -164,14 +167,16 @@ const create = async ({ prid, pmid, t_name: discussionName, reply, users, user, 
 		if (parentRoom.encrypted) {
 			message.msg = TAPi18n.__('Encrypted_message');
 		}
-		mentionMessage(discussion._id, user, attachMessage(message, parentRoom));
+		await mentionMessage(discussion._id, user, attachMessage(message, parentRoom));
 
-		discussionMsg = createDiscussionMessage(message.rid, user, discussion._id, discussionName, attachMessage(message, parentRoom));
+		discussionMsg = await createDiscussionMessage(message.rid, user, discussion._id, discussionName, attachMessage(message, parentRoom));
 	} else {
-		discussionMsg = createDiscussionMessage(prid, user, discussion._id, discussionName);
+		discussionMsg = await createDiscussionMessage(prid, user, discussion._id, discussionName);
 	}
 
-	callbacks.runAsync('afterSaveMessage', discussionMsg, parentRoom);
+	if (discussionMsg) {
+		callbacks.runAsync('afterSaveMessage', discussionMsg, parentRoom);
+	}
 
 	if (reply) {
 		await sendMessage(user, { msg: reply }, discussion);

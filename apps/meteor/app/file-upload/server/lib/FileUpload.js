@@ -7,14 +7,14 @@ import streamBuffers from 'stream-buffers';
 import Future from 'fibers/future';
 import sharp from 'sharp';
 import { Cookies } from 'meteor/ostrio:cookies';
-import { UploadFS } from 'meteor/jalik:ufs';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import filesize from 'filesize';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Avatars, UserDataFiles, Uploads, Settings, Subscriptions } from '@rocket.chat/models';
+import { Avatars, Messages, UserDataFiles, Uploads, Settings, Subscriptions } from '@rocket.chat/models';
 import { hashLoginToken } from '@rocket.chat/account-utils';
 
+import { UploadFS } from '../../../../server/ufs';
 import { settings } from '../../../settings/server';
 import Users from '../../../models/server/models/Users';
 import Rooms from '../../../models/server/models/Rooms';
@@ -23,7 +23,6 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
-import { Messages } from '../../../models/server';
 import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { streamToBuffer } from './streamToBuffer';
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -581,11 +580,11 @@ export const FileUpload = {
 		);
 	},
 
-	removeFilesByRoomId(rid) {
+	async removeFilesByRoomId(rid) {
 		if (typeof rid !== 'string' || rid.trim().length === 0) {
 			return;
 		}
-		Messages.find(
+		const cursor = Messages.find(
 			{
 				rid,
 				'file._id': {
@@ -593,13 +592,15 @@ export const FileUpload = {
 				},
 			},
 			{
-				fields: {
+				projection: {
 					'file._id': 1,
 				},
 			},
-		)
-			.fetch()
-			.forEach((document) => FileUpload.getStore('Uploads').deleteById(document.file._id));
+		);
+
+		for await (const document of cursor) {
+			await FileUpload.getStore('Uploads').deleteById(document.file._id);
+		}
 	},
 };
 

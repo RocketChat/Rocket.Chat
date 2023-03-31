@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Reports, Rooms } from '@rocket.chat/models';
+import { Reports, Rooms, Messages } from '@rocket.chat/models';
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { Messages } from '../../app/models/server';
 import { canAccessRoomAsync } from '../../app/authorization/server/functions/canAccessRoom';
 import { AppEvents, Apps } from '../../ee/server/apps';
 
@@ -34,7 +33,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const message = Messages.findOneById(messageId);
+		const message = await Messages.findOneById(messageId);
 		if (!message) {
 			throw new Meteor.Error('error-invalid-message_id', 'Invalid message id', {
 				method: 'reportMessage',

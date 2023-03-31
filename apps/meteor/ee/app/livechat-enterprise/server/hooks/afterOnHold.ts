@@ -29,7 +29,7 @@ const handleAfterOnHold = async (room: Pick<IOmnichannelRoom, '_id'>): Promise<a
 	await AutoCloseOnHoldScheduler.scheduleRoom(rid, autoCloseOnHoldChatTimeout, closeComment);
 };
 
-settings.watch('Livechat_auto_close_on_hold_chats_timeout', (value) => {
+settings.watch<number>('Livechat_auto_close_on_hold_chats_timeout', (value) => {
 	autoCloseOnHoldChatTimeout = value as number;
 	if (!value || value <= 0) {
 		callbacks.remove('livechat:afterOnHold', 'livechat-auto-close-on-hold');

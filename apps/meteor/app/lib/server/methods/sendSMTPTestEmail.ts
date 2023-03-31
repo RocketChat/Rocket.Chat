@@ -35,7 +35,7 @@ Meteor.methods<ServerMethods>({
 				subject: 'SMTP Test Email',
 				html: '<p>You have successfully sent an email</p>',
 			});
-		} catch ({ message }) {
+		} catch ({ message }: any) {
 			throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
 				method: 'sendSMTPTestEmail',
 				message,
