@@ -72,7 +72,7 @@ export async function saveUserIdentity({ _id, name: rawName, username: rawUserna
 				await fileStore.model.deleteFile(file._id);
 			}
 			if (previousFile) {
-				fileStore.model.updateFileNameById(previousFile._id, username);
+				await fileStore.model.updateFileNameById(previousFile._id, username);
 			}
 		}
 

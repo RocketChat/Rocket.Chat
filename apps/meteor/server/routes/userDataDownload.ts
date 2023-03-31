@@ -46,7 +46,7 @@ const sendUserDataFile = (file: IUserDataFile) => (req: IncomingMessage, res: Se
 
 	res.setHeader('Content-Security-Policy', "default-src 'none'");
 	res.setHeader('Cache-Control', 'max-age=31536000');
-	userDataStore.get(file, req, res, next);
+	void userDataStore.get(file, req, res, next);
 };
 
 const matchFileRoute = match<{ fileID: string }>('/:fileID', { decode: decodeURIComponent });
