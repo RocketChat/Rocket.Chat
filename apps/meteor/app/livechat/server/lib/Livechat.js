@@ -10,7 +10,6 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { HTTP } from 'meteor/http';
 import UAParser from 'ua-parser-js';
 import {
-	Users as UsersRaw,
 	LivechatVisitors,
 	LivechatCustomField,
 	Settings,
@@ -920,7 +919,7 @@ export const Livechat = {
 			await Promise.all([
 				LivechatDepartmentAgents.removeByAgentId(_id),
 				LivechatVisitors.removeContactManagerByUsername(username),
-				UsersRaw.unsetExtension(_id),
+				Users.unsetExtension(_id),
 			]);
 			return true;
 		}
@@ -962,7 +961,7 @@ export const Livechat = {
 	},
 
 	async setUserStatusLivechatIf(userId, status, condition, fields) {
-		const user = await UsersRaw.setLivechatStatusIf(userId, status, condition, fields);
+		const user = await Users.setLivechatStatusIf(userId, status, condition, fields);
 		callbacks.runAsync('livechat.setUserStatusLivechat', { userId, status });
 		return user;
 	},
