@@ -1,8 +1,7 @@
 import moment from 'moment';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
+import { Subscriptions, Rooms } from '@rocket.chat/models';
 
-import { Subscriptions } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 
@@ -64,19 +63,19 @@ const incGroupMentions = async (rid, roomType, excludeUserId, unreadCount) => {
 	const incUnreadByGroup = ['all_messages', 'group_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount);
 	const incUnread = roomType === 'd' || roomType === 'l' || incUnreadByGroup ? 1 : 0;
 
-	await SubscriptionsRaw.incGroupMentionsAndUnreadForRoomIdExcludingUserId(rid, excludeUserId, 1, incUnread);
+	await Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(rid, excludeUserId, 1, incUnread);
 };
 
 const incUserMentions = async (rid, roomType, uids, unreadCount) => {
 	const incUnreadByUser = ['all_messages', 'user_mentions_only', 'user_and_group_mentions_only'].includes(unreadCount);
 	const incUnread = roomType === 'd' || roomType === 'l' || incUnreadByUser ? 1 : 0;
 
-	await SubscriptionsRaw.incUserMentionsAndUnreadForRoomIdAndUserIds(rid, uids, 1, incUnread);
+	await Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(rid, uids, 1, incUnread);
 };
 
-const getUserIdsFromHighlights = (rid, message) => {
-	const highlightOptions = { fields: { 'userHighlights': 1, 'u._id': 1 } };
-	const subs = Subscriptions.findByRoomWithUserHighlights(rid, highlightOptions).fetch();
+const getUserIdsFromHighlights = async (rid, message) => {
+	const highlightOptions = { projection: { 'userHighlights': 1, 'u._id': 1 } };
+	const subs = await Subscriptions.findByRoomWithUserHighlights(rid, highlightOptions).toArray();
 
 	return subs
 		.filter(
@@ -114,7 +113,7 @@ async function updateUsersSubscriptions(message, room) {
 
 		const unreadCount = getUnreadSettingCount(room.t);
 
-		getUserIdsFromHighlights(room._id, message).forEach((uid) => userIds.add(uid));
+		(await getUserIdsFromHighlights(room._id, message)).forEach((uid) => userIds.add(uid));
 
 		// give priority to user mentions over group mentions
 		if (userIds.size > 0) {
@@ -125,7 +124,7 @@ async function updateUsersSubscriptions(message, room) {
 
 		// this shouldn't run only if has group mentions because it will already exclude mentioned users from the query
 		if (!toAll && !toHere && unreadCount === 'all_messages') {
-			await SubscriptionsRaw.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id]);
+			await Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id]);
 		}
 	}
 
@@ -133,8 +132,8 @@ async function updateUsersSubscriptions(message, room) {
 	// the unread counter, as it is only for mentions and direct messages
 	// We now set alert and open properties in two separate update commands. This proved to be more efficient on MongoDB - because it uses a more efficient index.
 	await Promise.all([
-		SubscriptionsRaw.setAlertForRoomIdExcludingUserId(message.rid, message.u._id),
-		SubscriptionsRaw.setOpenForRoomIdExcludingUserId(message.rid, message.u._id),
+		Subscriptions.setAlertForRoomIdExcludingUserId(message.rid, message.u._id),
+		Subscriptions.setOpenForRoomIdExcludingUserId(message.rid, message.u._id),
 	]);
 }
 
@@ -143,13 +142,13 @@ export async function updateThreadUsersSubscriptions(message, room, replies) {
 
 	// incUserMentions(room._id, room.t, replies, unreadCount);
 
-	await SubscriptionsRaw.setAlertForRoomIdAndUserIds(message.rid, replies);
+	await Subscriptions.setAlertForRoomIdAndUserIds(message.rid, replies);
 
 	const repliesPlusSender = [...new Set([message.u._id, ...replies])];
 
-	await SubscriptionsRaw.setOpenForRoomIdAndUserIds(message.rid, repliesPlusSender);
+	await Subscriptions.setOpenForRoomIdAndUserIds(message.rid, repliesPlusSender);
 
-	await SubscriptionsRaw.setLastReplyForRoomIdAndUserIds(message.rid, repliesPlusSender, new Date());
+	await Subscriptions.setLastReplyForRoomIdAndUserIds(message.rid, repliesPlusSender, new Date());
 }
 
 export async function notifyUsersOnMessage(message, room) {

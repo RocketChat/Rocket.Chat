@@ -176,8 +176,8 @@ API.v1.addRoute(
 					}),
 				),
 			);
-			const { type } = this.queryParams;
-			switch ((type as string).toLowerCase()) {
+
+			switch (this.queryParams.type.toLowerCase()) {
 				case 'free': {
 					const extensions = await LivechatVoip.getFreeExtensions();
 					if (!extensions) {
@@ -209,7 +209,7 @@ API.v1.addRoute(
 					return API.v1.success({ extensions });
 				}
 				default:
-					return API.v1.notFound(`${type} not found `);
+					return API.v1.notFound(`${this.queryParams.type} not found `);
 			}
 		},
 	},
@@ -229,7 +229,12 @@ API.v1.addRoute(
 			check(extension, Match.Maybe(String));
 
 			const extensions = await LivechatVoip.getExtensionListWithAgentData();
-			const filteredExts = filter(extensions, { status, agentId, queues, extension });
+			const filteredExts = filter(extensions, {
+				status: status ?? undefined,
+				agentId: agentId ?? undefined,
+				queues: queues ?? undefined,
+				extension: extension ?? undefined,
+			});
 
 			// paginating in memory as Asterisk doesn't provide pagination for commands
 			return API.v1.success({

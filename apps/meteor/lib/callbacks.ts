@@ -230,7 +230,6 @@ type Hook =
 	| 'beforeSaveMessage'
 	| 'beforeSendMessageNotifications'
 	| 'beforeValidateLogin'
-	| 'enter-room'
 	| 'livechat.beforeForwardRoomToDepartment'
 	| 'livechat.beforeInquiry'
 	| 'livechat.beforeRoom'

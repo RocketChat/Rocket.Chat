@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
+import { Users } from '@rocket.chat/models';
 
 import { getRedirectUri } from './getRedirectUri';
 import { settings } from '../../../settings/server';
-import { Users } from '../../../models/server';
 import { userScopes } from '../oauthScopes';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export function finishOAuthAuthorization(code, state) {
+export async function finishOAuthAuthorization(code, state) {
 	if (settings.get('Cloud_Workspace_Registration_State') !== state) {
 		throw new Meteor.Error('error-invalid-state', 'Invalid state provided', {
 			method: 'cloud:finishOAuthAuthorization',
@@ -47,7 +47,7 @@ export function finishOAuthAuthorization(code, state) {
 	const expiresAt = new Date();
 	expiresAt.setSeconds(expiresAt.getSeconds() + result.data.expires_in);
 
-	Users.update(
+	await Users.updateOne(
 		{ _id: Meteor.userId() },
 		{
 			$set: {

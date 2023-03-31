@@ -1,7 +1,7 @@
 import { Button, Field, Icon } from '@rocket.chat/fuselage';
 import { Random } from '@rocket.chat/random';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useUpload } from '@rocket.chat/ui-contexts';
-import type { ChangeEventHandler, DragEvent, ReactElement } from 'react';
+import type { ChangeEventHandler, DragEvent, ReactElement, SyntheticEvent } from 'react';
 import React from 'react';
 
 import './AssetSettingInput.styles.css';
@@ -21,7 +21,7 @@ function AssetSettingInput({ _id, label, value, asset, fileConstraints }: AssetS
 	const setAsset = useUpload('/v1/assets.setAsset');
 	const unsetAsset = useEndpoint('POST', '/v1/assets.unsetAsset');
 
-	const isDataTransferEvent = <T,>(event: T): event is T & DragEvent<HTMLInputElement> =>
+	const isDataTransferEvent = <T extends SyntheticEvent>(event: T): event is T & DragEvent<HTMLInputElement> =>
 		Boolean('dataTransfer' in event && (event as any).dataTransfer.files);
 
 	const handleUpload: ChangeEventHandler<HTMLInputElement> = (event): void => {

@@ -9,8 +9,6 @@ import './methods/removeUnit';
 import './methods/saveUnit';
 import './methods/removeBusinessHour';
 import './methods/resumeOnHold';
-import '../../models/server/models/LivechatUnit';
-import '../../models/server/models/LivechatUnitMonitors';
 import './hooks/afterTakeInquiry';
 import './hooks/beforeNewInquiry';
 import './hooks/beforeNewRoom';
