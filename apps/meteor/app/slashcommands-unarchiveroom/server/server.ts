@@ -2,9 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
 import { isRegisterUser } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
+import { Users, Rooms } from '@rocket.chat/models';
 
-import { Rooms } from '../../models/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
 import { roomCoordinator } from '../../../server/lib/rooms/roomCoordinator';
@@ -18,11 +17,13 @@ slashCommands.add({
 		let room;
 
 		if (channel === '') {
-			room = Rooms.findOneById(item.rid);
-			channel = room.name;
+			room = await Rooms.findOneById(item.rid);
+			if (room?.name) {
+				channel = room.name;
+			}
 		} else {
 			channel = channel.replace('#', '');
-			room = Rooms.findOneByName(channel);
+			room = await Rooms.findOneByName(channel);
 		}
 
 		const userId = Meteor.userId();

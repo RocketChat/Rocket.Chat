@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import _ from 'underscore';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
-import { Users } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { checkUsernameAvailability } from '../functions/checkUsernameAvailability';
 import { RateLimiter } from '../lib';
@@ -65,8 +65,8 @@ Meteor.methods<ServerMethods>({
 
 		if (!user.username) {
 			await Meteor.runAsUser(user._id, () => Meteor.callAsync('joinDefaultChannels', joinDefaultChannelsSilenced));
-			Meteor.defer(function () {
-				return callbacks.run('afterCreateUser', Users.findOneById(user._id));
+			Meteor.defer(async function () {
+				return callbacks.run('afterCreateUser', await Users.findOneById(user._id));
 			});
 		}
 

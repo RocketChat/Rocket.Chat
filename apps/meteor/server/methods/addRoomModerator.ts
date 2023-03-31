@@ -4,10 +4,10 @@ import { api, Message, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Rooms } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { Users, Rooms } from '../../app/models/server';
+import { Users } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -30,7 +30,13 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const room = Rooms.findOneById(rid, { fields: { t: 1, federated: 1 } });
+		const room = await Rooms.findOneById(rid, { projection: { t: 1, federated: 1 } });
+		if (!room) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+				method: 'addRoomModerator',
+			});
+		}
+
 		if (!(await hasPermissionAsync(uid, 'set-moderator', rid)) && !isRoomFederated(room)) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'addRoomModerator',

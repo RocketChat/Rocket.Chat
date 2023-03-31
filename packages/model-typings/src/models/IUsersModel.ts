@@ -56,7 +56,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	findByIds<T = IUser>(userIds: any, options?: any): FindCursor<T>;
 
-	findOneByUsernameIgnoringCase<T = IUser>(username: any, options: any): Promise<T>;
+	findOneByUsernameIgnoringCase<T = IUser>(username: any, options?: any): Promise<T>;
 
 	findOneByLDAPId<T = IUser>(id: any, attribute?: any): Promise<T>;
 
@@ -226,10 +226,11 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	setOperator(userId: string, operator: boolean): Promise<UpdateResult>;
 	checkOnlineAgents(agentId: string): Promise<boolean>;
 	findOnlineAgents(agentId: string): FindCursor<ILivechatAgent>;
+	countOnlineAgents(agentId: string): Promise<number>;
 	findOneBotAgent(): Promise<ILivechatAgent | null>;
-	findOneOnlineAgentbyId(agentId: string): Promise<ILivechatAgent | null>;
+	findOneOnlineAgentById(agentId: string, isLivechatEnabledWhenAgentIdle?: boolean): Promise<ILivechatAgent | null>;
 	findAgents(): FindCursor<ILivechatAgent>;
-	getNextAgent(ignoreAgentId: string, extraQuery?: Filter<IUser>): Promise<{ agentId: string; username: string } | null>;
+	getNextAgent(ignoreAgentId?: string, extraQuery?: Filter<IUser>): Promise<{ agentId: string; username: string } | null>;
 	getNextBotAgent(ignoreAgentId: string): Promise<{ agentId: string; username: string } | null>;
 	setLivechatStatus(userId: string, status: UserStatus): Promise<UpdateResult>;
 	setLivechatData(userId: string, data?: Record<string, any>): Promise<UpdateResult>;
@@ -269,7 +270,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		options?: FindOptions<IUser>,
 	): Promise<IUser | null>;
 	findOneByEmailAddress(emailAddress: string, options?: FindOptions<IUser>): Promise<IUser | null>;
-	findOneAdmin(admin: string, options?: FindOptions<IUser>): Promise<IUser | null>;
+	findOneAdmin(userId: string, options?: FindOptions<IUser>): Promise<IUser | null>;
 	findOneByIdAndLoginToken(userId: string, loginToken: string, options?: FindOptions<IUser>): Promise<IUser | null>;
 	findOneActiveById(userId: string, options?: FindOptions<IUser>): Promise<IUser | null>;
 	findOneByIdOrUsername(userId: string, options?: FindOptions<IUser>): Promise<IUser | null>;

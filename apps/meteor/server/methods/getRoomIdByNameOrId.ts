@@ -2,8 +2,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Rooms } from '@rocket.chat/models';
 
-import { Rooms } from '../../app/models/server';
 import { canAccessRoomAsync } from '../../app/authorization/server';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -23,7 +23,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const room = Rooms.findOneById(rid) || Rooms.findOneByName(rid);
+		const room = (await Rooms.findOneById(rid)) || (await Rooms.findOneByName(rid));
 
 		if (room == null) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
