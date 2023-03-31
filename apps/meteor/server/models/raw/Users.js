@@ -1435,6 +1435,13 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query);
 	}
 
+	countOnlineAgents(agentId) {
+		// TODO:: Create class Agent
+		const query = queryStatusAgentOnline(agentId && { _id: agentId });
+
+		return this.col.countDocuments(query);
+	}
+
 	findOneBotAgent() {
 		// TODO:: Create class Agent
 		const query = {
