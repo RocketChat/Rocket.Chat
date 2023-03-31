@@ -59,6 +59,8 @@ const AppsFilters = ({
 		private: t('Search_Private_apps'),
 	};
 
+	const fixFiltersSize = window.innerWidth > 1060 ? { maxWidth: 'x200', minWidth: 'x200' } : null;
+
 	return (
 		<Box pi='x24'>
 			<FilterByText
@@ -73,6 +75,7 @@ const AppsFilters = ({
 						mie={hasFilterStackMargin}
 						mbs={hasNotFilterStackMargin}
 						mbe={hasNotFilterStackMargin}
+						{...fixFiltersSize}
 					/>
 				)}
 				<RadioDropDown
@@ -81,6 +84,7 @@ const AppsFilters = ({
 					mie={hasFilterStackMargin}
 					mbs={shouldFiltersStack && isPrivateAppsPage ? 'x8' : ''}
 					mbe={hasNotFilterStackMargin}
+					{...fixFiltersSize}
 				/>
 				{!isPrivateAppsPage && (
 					<CategoryDropDown
@@ -91,7 +95,7 @@ const AppsFilters = ({
 						mbe={hasNotFilterStackMargin}
 					/>
 				)}
-				<RadioDropDown group={sortFilterStructure} onSelected={sortFilterOnSelected} />
+				<RadioDropDown group={sortFilterStructure} onSelected={sortFilterOnSelected} {...fixFiltersSize} />
 			</FilterByText>
 			<TagList categories={categoryTagList} onClick={onSelected} />
 		</Box>
