@@ -8,7 +8,7 @@ import { TranslationProviderRegistry } from '..';
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'autoTranslate.translateMessage'(message: IMessage | undefined, targetLanguage: string): void;
+		'autoTranslate.translateMessage'(message: IMessage | undefined, targetLanguage: string): Promise<void>;
 	}
 }
 
@@ -17,6 +17,10 @@ Meteor.methods<ServerMethods>({
 		if (!TranslationProviderRegistry.enabled) {
 			return;
 		}
+		if (!message?.rid) {
+			return;
+		}
+
 		const room = await Rooms.findOneById(message?.rid);
 		if (message && room) {
 			await TranslationProviderRegistry.translateMessage(message, room, targetLanguage);
