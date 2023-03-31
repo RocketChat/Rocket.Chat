@@ -14,7 +14,7 @@ import type {
 	IImportData,
 	IImportRecordType,
 } from '@rocket.chat/core-typings';
-import { ImportData, Rooms as RoomsRaw, Users, Subscriptions } from '@rocket.chat/models';
+import { ImportData, Rooms, Users, Subscriptions } from '@rocket.chat/models';
 
 import type { IConversionCallbacks } from '../definitions/IConversionCallbacks';
 import { generateUsernameSuggestion, insertMessage, saveUserIdentity, addUserToDefaultChannels } from '../../../lib/server';
@@ -511,7 +511,7 @@ export class ImportDataConverter {
 
 		// If the importId was not found, check if we have a room with that name
 		const roomName = await getValidRoomName(importId.trim(), undefined, { allowDuplicates: true });
-		const room = await RoomsRaw.findOneByNonValidatedName(roomName, { projection: { name: 1 } });
+		const room = await Rooms.findOneByNonValidatedName(roomName, { projection: { name: 1 } });
 		if (room?.name) {
 			this.addRoomToCache(importId, room._id);
 			this.addRoomNameToCache(importId, room.name);
@@ -637,7 +637,7 @@ export class ImportDataConverter {
 
 		for await (const rid of rids) {
 			try {
-				await RoomsRaw.resetLastMessageById(rid);
+				await Rooms.resetLastMessageById(rid);
 			} catch (e) {
 				this._logger.warn(`Failed to update last message of room ${rid}`);
 				this._logger.error(e);
@@ -676,7 +676,7 @@ export class ImportDataConverter {
 			},
 		};
 
-		const room = await RoomsRaw.findOneByImportId(importId, options);
+		const room = await Rooms.findOneByImportId(importId, options);
 		if (room) {
 			return this.addRoomToCache(importId, room._id);
 		}
@@ -696,7 +696,7 @@ export class ImportDataConverter {
 			},
 		};
 
-		const room = await RoomsRaw.findOneByImportId(importId, options);
+		const room = await Rooms.findOneByImportId(importId, options);
 		if (room) {
 			if (!this._roomCache.has(importId)) {
 				this.addRoomToCache(importId, room._id);
@@ -794,7 +794,7 @@ export class ImportDataConverter {
 		}
 
 		if (roomUpdate.$set || roomUpdate.$addToSet) {
-			await RoomsRaw.updateOne({ _id: roomData._id }, roomUpdate);
+			await Rooms.updateOne({ _id: roomData._id }, roomUpdate);
 		}
 	}
 
@@ -889,7 +889,7 @@ export class ImportDataConverter {
 
 	async findExistingRoom(data: IImportChannel): Promise<IRoom | null> {
 		if (data._id && data._id.toUpperCase() === 'GENERAL') {
-			const room = await RoomsRaw.findOneById('GENERAL', {});
+			const room = await Rooms.findOneById('GENERAL', {});
 			// Prevent the importer from trying to create a new general
 			if (!room) {
 				throw new Error('importer-channel-general-not-found');
@@ -904,7 +904,7 @@ export class ImportDataConverter {
 				throw new Error('importer-channel-missing-users');
 			}
 
-			return RoomsRaw.findDirectRoomContainingAllUsernames(users, {});
+			return Rooms.findDirectRoomContainingAllUsernames(users, {});
 		}
 
 		if (!data.name) {
@@ -912,7 +912,7 @@ export class ImportDataConverter {
 		}
 
 		const roomName = await getValidRoomName(data.name.trim(), undefined, { allowDuplicates: true });
-		return RoomsRaw.findOneByNonValidatedName(roomName, {});
+		return Rooms.findOneByNonValidatedName(roomName, {});
 	}
 
 	protected async getChannelsToImport(): Promise<Array<IImportChannelRecord>> {
@@ -961,7 +961,7 @@ export class ImportDataConverter {
 	}
 
 	async archiveRoomById(rid: string) {
-		await RoomsRaw.archiveById(rid);
+		await Rooms.archiveById(rid);
 		await Subscriptions.archiveByRoomId(rid);
 	}
 
