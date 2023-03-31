@@ -6,7 +6,15 @@ import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { disableDefaultBusinessHour, makeDefaultBusinessHourActiveAndClosed } from '../../../data/livechat/businessHours';
-import { createAgent, createManager, createVisitor, createLivechatRoom, takeInquiry, fetchInquiry } from '../../../data/livechat/rooms';
+import {
+	createAgent,
+	createManager,
+	createVisitor,
+	createLivechatRoom,
+	takeInquiry,
+	fetchInquiry,
+	makeAgentAvailable,
+} from '../../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 import { password } from '../../../data/user';
 import { createUser, getMe, login } from '../../../data/users.helper';
@@ -31,6 +39,8 @@ describe('LIVECHAT - Agents', function () {
 		const user: IUser = await createUser();
 		const userCredentials = await login(user.username, password);
 		await createAgent(user.username);
+
+		await makeAgentAvailable(userCredentials);
 
 		agent2 = {
 			user,

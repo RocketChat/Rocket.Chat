@@ -127,7 +127,12 @@ class LivechatClass {
 				return;
 			}
 
-			return Users.findByIds<ILivechatAgent>(departmentAgents?.map(({ agentId }) => agentId));
+			const agentIds = await departmentAgents.map(({ agentId }) => agentId).toArray();
+			if (!agentIds.length) {
+				return;
+			}
+
+			return Users.findByIds<ILivechatAgent>(agentIds);
 		}
 		return Users.findOnlineAgents();
 	}
