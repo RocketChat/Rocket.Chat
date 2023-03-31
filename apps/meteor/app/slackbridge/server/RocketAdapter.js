@@ -4,12 +4,12 @@ import _ from 'underscore';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Random } from '@rocket.chat/random';
-import { Messages as MessagesRaw, Rooms as RoomsRaw } from '@rocket.chat/models';
+import { Messages, Rooms as RoomsRaw } from '@rocket.chat/models';
 
 import { rocketLogger } from './logger';
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
-import { Messages, Rooms, Users } from '../../models/server';
+import { Rooms, Users } from '../../models/server';
 import { createRoom, sendMessage, setUserAvatar } from '../../lib/server';
 
 export default class RocketAdapter {
@@ -83,7 +83,7 @@ export default class RocketAdapter {
 					// This was a Slack reaction, we don't need to tell Slack about it
 					return;
 				}
-				const rocketMsg = Messages.findOneById(rocketMsgID);
+				const rocketMsg = Promise.await(Messages.findOneById(rocketMsgID));
 				if (rocketMsg) {
 					this.slackAdapters.forEach((slack) => {
 						const slackChannel = slack.getSlackChannel(rocketMsg.rid);
@@ -113,7 +113,7 @@ export default class RocketAdapter {
 					return;
 				}
 
-				const rocketMsg = Messages.findOneById(rocketMsgID);
+				const rocketMsg = Promise.await(Messages.findOneById(rocketMsgID));
 				if (rocketMsg) {
 					this.slackAdapters.forEach((slack) => {
 						const slackChannel = slack.getSlackChannel(rocketMsg.rid);
@@ -239,8 +239,8 @@ export default class RocketAdapter {
 		return `slack-${slackChannel}-${ts.replace(/\./g, '-')}`;
 	}
 
-	findChannel(slackChannelId) {
-		return Rooms.findOneByImportId(slackChannelId);
+	async findChannel(slackChannelId) {
+		return RoomsRaw.findOneByImportId(slackChannelId);
 	}
 
 	getRocketUsers(members, slackChannel) {
@@ -478,7 +478,7 @@ export default class RocketAdapter {
 			}
 			rocketMsgObj.slackTs = slackMessage.ts;
 			if (slackMessage.thread_ts) {
-				const tmessage = await MessagesRaw.findOneBySlackTs(slackMessage.thread_ts);
+				const tmessage = await Messages.findOneBySlackTs(slackMessage.thread_ts);
 				if (tmessage) {
 					rocketMsgObj.tmid = tmessage._id;
 				}
@@ -496,7 +496,7 @@ export default class RocketAdapter {
 				Meteor.setTimeout(async () => {
 					if (slackMessage.bot_id && slackMessage.ts) {
 						// Make sure that a message with the same bot_id and timestamp doesn't already exists
-						const msg = await MessagesRaw.findOneBySlackBotIdAndSlackTs(slackMessage.bot_id, slackMessage.ts);
+						const msg = await Messages.findOneBySlackBotIdAndSlackTs(slackMessage.bot_id, slackMessage.ts);
 						if (!msg) {
 							void sendMessage(rocketUser, rocketMsgObj, rocketChannel, true);
 						}

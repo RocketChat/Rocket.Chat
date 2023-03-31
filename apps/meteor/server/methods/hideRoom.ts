@@ -1,26 +1,26 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-
-import { Subscriptions } from '../../app/models/server';
+import { Subscriptions } from '@rocket.chat/models';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		hideRoom(rid: string): number;
+		hideRoom(rid: string): Promise<number>;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	hideRoom(rid) {
+	async hideRoom(rid) {
 		check(rid, String);
+		const uid = Meteor.userId();
 
-		if (!Meteor.userId()) {
+		if (!uid) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'hideRoom',
 			});
 		}
 
-		return Subscriptions.hideByRoomIdAndUserId(rid, Meteor.userId());
+		return (await Subscriptions.hideByRoomIdAndUserId(rid, uid)).modifiedCount;
 	},
 });

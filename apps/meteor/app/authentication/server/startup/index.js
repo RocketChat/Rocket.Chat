@@ -432,6 +432,6 @@ Accounts.onLogin(async ({ user }) => {
 	const { tokens } = (await UsersRaw.findAllResumeTokensByUserId(user._id))[0];
 	if (tokens.length >= MAX_RESUME_LOGIN_TOKENS) {
 		const oldestDate = tokens.reverse()[MAX_RESUME_LOGIN_TOKENS - 1];
-		Users.removeOlderResumeTokensByUserId(user._id, oldestDate.when);
+		await UsersRaw.removeOlderResumeTokensByUserId(user._id, oldestDate.when);
 	}
 });

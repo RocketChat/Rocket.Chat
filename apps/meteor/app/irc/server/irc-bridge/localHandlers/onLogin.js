@@ -1,7 +1,4 @@
-import { Meteor } from 'meteor/meteor';
-import { Rooms } from '@rocket.chat/models';
-
-import { Users } from '../../../../models/server';
+import { Rooms, Users } from '@rocket.chat/models';
 
 export default async function handleOnLogin(login) {
 	if (login.user === null) {
@@ -16,7 +13,7 @@ export default async function handleOnLogin(login) {
 
 	this.loggedInUsers.push(login.user._id);
 
-	Meteor.users.update(
+	await Users.updateOne(
 		{ _id: login.user._id },
 		{
 			$set: {
@@ -28,7 +25,7 @@ export default async function handleOnLogin(login) {
 		},
 	);
 
-	const user = Users.findOne({
+	const user = await Users.findOne({
 		_id: login.user._id,
 	});
 

@@ -1,8 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import { Logger } from '../../../logger/server';
 import { settings } from '../../../settings/server';
-import { Users } from '../../../models/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
 const logger = new Logger('getFullUserData');
@@ -73,21 +73,24 @@ export async function getFullUserDataByIdOrUsername(
 	userId: string,
 	{ filterId, filterUsername }: { filterId: string; filterUsername?: undefined } | { filterId?: undefined; filterUsername: string },
 ): Promise<IUser | null> {
-	const caller = Users.findOneById(userId, { fields: { username: 1 } });
-	const targetUser = filterId || filterUsername;
+	const caller = await Users.findOneById(userId, { projection: { username: 1 } });
+	if (!caller) {
+		return null;
+	}
+	const targetUser = (filterId || filterUsername) as string;
 	const myself = (filterId && targetUser === userId) || (filterUsername && targetUser === caller.username);
 	const canViewAllInfo = !!myself || (await hasPermissionAsync(userId, 'view-full-other-user-info'));
 
 	const fields = getFields(canViewAllInfo);
 
 	const options = {
-		fields: {
+		projection: {
 			...fields,
 			...(myself && { services: 1 }),
 		},
 	};
 
-	const user = Users.findOneByIdOrUsername(targetUser, options);
+	const user = await Users.findOneByIdOrUsername(targetUser, options);
 	if (!user) {
 		return null;
 	}

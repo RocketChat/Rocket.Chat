@@ -15,20 +15,20 @@ import {
 	Settings,
 	LivechatRooms,
 	LivechatInquiry,
-	Subscriptions as SubscriptionsRaw,
-	Messages as MessagesRaw,
+	Subscriptions,
+	Messages,
 	LivechatDepartment as LivechatDepartmentRaw,
 	LivechatDepartmentAgents,
 	Rooms,
 } from '@rocket.chat/models';
-import { VideoConf, api } from '@rocket.chat/core-services';
+import { Message, VideoConf, api } from '@rocket.chat/core-services';
 
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
 import { Analytics } from './Analytics';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Users, Messages, Subscriptions } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { Logger } from '../../../logger/server';
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
@@ -213,7 +213,7 @@ export const Livechat = {
 		}
 
 		if (newRoom) {
-			await MessagesRaw.setRoomIdByToken(guest.token, room._id);
+			await Messages.setRoomIdByToken(guest.token, room._id);
 		}
 
 		return { room, newRoom };
@@ -233,7 +233,7 @@ export const Livechat = {
 	async updateMessage({ guest, message }) {
 		check(message, Match.ObjectIncluding({ _id: String }));
 
-		const originalMessage = Messages.findOneById(message._id);
+		const originalMessage = await Messages.findOneById(message._id);
 		if (!originalMessage || !originalMessage._id) {
 			return;
 		}
@@ -256,7 +256,7 @@ export const Livechat = {
 		Livechat.logger.debug(`Attempting to delete a message by visitor ${guest._id}`);
 		check(message, Match.ObjectIncluding({ _id: String }));
 
-		const msg = Messages.findOneById(message._id);
+		const msg = await Messages.findOneById(message._id);
 		if (!msg || !msg._id) {
 			return;
 		}
@@ -452,8 +452,8 @@ export const Livechat = {
 		}
 
 		const result = await Promise.allSettled([
-			MessagesRaw.removeByRoomId(rid),
-			SubscriptionsRaw.removeByRoomId(rid),
+			Messages.removeByRoomId(rid),
+			Subscriptions.removeByRoomId(rid),
 			LivechatInquiry.removeByRoomId(rid),
 			LivechatRooms.removeById(rid),
 		]);
@@ -592,7 +592,7 @@ export const Livechat = {
 				(await LivechatInquiry.setNameByRoomId(rid, name)) &&
 				// This one needs to be the last since the agent may not have the subscription
 				// when the conversation is in the queue, then the result will be 0(zero)
-				SubscriptionsRaw.updateDisplayNameByRoomId(rid, name)
+				Subscriptions.updateDisplayNameByRoomId(rid, name)
 			);
 		}
 	},
@@ -625,7 +625,7 @@ export const Livechat = {
 		}
 	},
 
-	savePageHistory(token, roomId, pageInfo) {
+	async savePageHistory(token, roomId, pageInfo) {
 		Livechat.logger.debug(`Saving page movement history for visitor with token ${token}`);
 		if (pageInfo.change !== Livechat.historyMonitorType) {
 			return;
@@ -651,7 +651,7 @@ export const Livechat = {
 			extraData._hidden = true;
 		}
 
-		return Messages.createNavigationHistoryWithRoomIdMessageAndUser(roomId, `${pageTitle} - ${pageUrl}`, user, extraData);
+		return Message.saveSystemMessage('livechat_navigation_history', roomId, `${pageTitle} - ${pageUrl}`, user, extraData);
 	},
 
 	async saveTransferHistory(room, transferData) {
@@ -953,11 +953,11 @@ export const Livechat = {
 
 		const cursor = LivechatRooms.findByVisitorToken(token);
 		for await (const room of cursor) {
-			FileUpload.removeFilesByRoomId(room._id);
-			await MessagesRaw.removeByRoomId(room._id);
+			await FileUpload.removeFilesByRoomId(room._id);
+			await Messages.removeByRoomId(room._id);
 		}
 
-		Subscriptions.removeByVisitorToken(token);
+		await Subscriptions.removeByVisitorToken(token);
 		await LivechatRooms.removeByVisitorToken(token);
 		await LivechatInquiry.removeByVisitorToken(token);
 	},

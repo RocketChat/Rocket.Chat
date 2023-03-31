@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
-import { Messages, Rooms } from '@rocket.chat/models';
-
-import { settings } from '../../../settings/server';
+import { Rooms } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 
 export const saveRoomDescription = async function (rid, roomDescription, user) {
 	if (!Match.test(rid, String)) {
@@ -12,12 +11,6 @@ export const saveRoomDescription = async function (rid, roomDescription, user) {
 	}
 
 	const update = await Rooms.setDescriptionById(rid, roomDescription);
-	await Messages.createWithTypeRoomIdMessageUserAndUnread(
-		'room_changed_description',
-		rid,
-		roomDescription,
-		user,
-		settings.get('Message_Read_Receipt_Enabled'),
-	);
+	await Message.saveSystemMessage('room_changed_description', rid, roomDescription, user);
 	return update;
 };

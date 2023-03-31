@@ -52,7 +52,7 @@ const ImportProgressPage = function ImportProgressPage() {
 					return;
 				}
 
-				if (!ImportingStartedStates.includes(status)) {
+				if (!(ImportingStartedStates as string[]).includes(status)) {
 					prepareImportRoute.push();
 				}
 			},
