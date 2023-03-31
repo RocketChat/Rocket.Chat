@@ -58,24 +58,6 @@ export const Livechat = {
 	logger,
 	webhookLogger: logger.section('Webhook'),
 
-	async getRequiredDepartment(onlineRequired = true) {
-		const departments = await LivechatDepartmentRaw.findEnabledWithAgents();
-
-		for await (const dept of departments) {
-			if (!dept.showOnRegistration) {
-				continue;
-			}
-			if (!onlineRequired) {
-				return dept;
-			}
-
-			const onlineAgents = await LivechatDepartmentAgents.getOnlineForDepartment(dept._id);
-			if (onlineAgents && onlineAgents.length) {
-				return dept;
-			}
-		}
-	},
-
 	async getRoom(guest, message, roomInfo, agent, extraData) {
 		if (!this.enabled()) {
 			throw new Meteor.Error('error-omnichannel-is-disabled');
@@ -99,7 +81,7 @@ export const Livechat = {
 			const defaultAgent = callbacks.run('livechat.checkDefaultAgentOnNewRoom', agent, guest);
 			// if no department selected verify if there is at least one active and pick the first
 			if (!defaultAgent && !guest.department) {
-				const department = await this.getRequiredDepartment();
+				const department = await LivechatTyped.getRequiredDepartment();
 				Livechat.logger.debug(`No department or default agent selected for ${guest._id}`);
 
 				if (department) {

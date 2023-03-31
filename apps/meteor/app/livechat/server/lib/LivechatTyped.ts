@@ -226,6 +226,24 @@ class LivechatClass {
 		this.logger.debug(`Room ${newRoom._id} was closed`);
 	}
 
+	async getRequiredDepartment(onlineRequired = true) {
+		const departments = LivechatDepartment.findEnabledWithAgents();
+
+		for await (const dept of departments) {
+			if (!dept.showOnRegistration) {
+				continue;
+			}
+			if (!onlineRequired) {
+				return dept;
+			}
+
+			const onlineAgents = await LivechatDepartmentAgents.getOnlineForDepartment(dept._id);
+			if (onlineAgents && (await onlineAgents.count())) {
+				return dept;
+			}
+		}
+	}
+
 	private async getBotAgents(department?: string) {
 		if (department) {
 			return LivechatDepartmentAgents.getBotsForDepartment(department);

@@ -4,8 +4,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { LivechatRooms } from '@rocket.chat/models';
 
 import { Users } from '../../../models/server';
-import { Livechat } from '../lib/Livechat';
-import { Livechat as LivechatTyped } from '../lib/LivechatTyped';
+import { Livechat } from '../lib/LivechatTyped';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -27,13 +26,13 @@ Meteor.methods<ServerMethods>({
 		}
 
 		if (!department) {
-			const requireDeparment = await Livechat.getRequiredDepartment();
-			if (requireDeparment) {
-				department = requireDeparment._id;
+			const requireDepartment = await Livechat.getRequiredDepartment();
+			if (requireDepartment) {
+				department = requireDepartment._id;
 			}
 		}
 
-		const agent = await LivechatTyped.getNextAgent(department);
+		const agent = await Livechat.getNextAgent(department);
 		if (!agent) {
 			return;
 		}
