@@ -2,6 +2,7 @@ import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import DescriptionList from './DescriptionList';
+import DescriptionListEntry from './DescriptionListEntry';
 
 export default {
 	title: 'Admin/Info/DescriptionList',
@@ -14,9 +15,9 @@ export default {
 
 export const Default: ComponentStory<typeof DescriptionList> = (args) => (
 	<DescriptionList {...args}>
-		<DescriptionList.Entry label='Key'>Value</DescriptionList.Entry>
-		<DescriptionList.Entry label='Key'>Value</DescriptionList.Entry>
-		<DescriptionList.Entry label='Key'>Value</DescriptionList.Entry>
+		<DescriptionListEntry label='Key'>Value</DescriptionListEntry>
+		<DescriptionListEntry label='Key'>Value</DescriptionListEntry>
+		<DescriptionListEntry label='Key'>Value</DescriptionListEntry>
 	</DescriptionList>
 );
 Default.storyName = 'DescriptionList';
