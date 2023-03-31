@@ -402,75 +402,6 @@ class LivechatClass {
 		}
 	}
 
-	private async resolveChatTags(
-		room: IOmnichannelRoom,
-		options: CloseRoomParams['options'] = {},
-	): Promise<{ updatedOptions: CloseRoomParams['options'] }> {
-		this.logger.debug(`Resolving chat tags for room ${room._id}`);
-
-		const concatUnique = (...arrays: (string[] | undefined)[]): string[] => [
-			...new Set(([] as string[]).concat(...arrays.filter((a): a is string[] => !!a))),
-		];
-
-		const { departmentId, tags: optionsTags } = room;
-		const { clientAction, tags: oldRoomTags } = options;
-		const roomTags = concatUnique(oldRoomTags, optionsTags);
-
-		if (!departmentId) {
-			return {
-				updatedOptions: {
-					...options,
-					...(roomTags.length && { tags: roomTags }),
-				},
-			};
-		}
-
-		const department = await LivechatDepartment.findOneById(departmentId);
-		if (!department) {
-			return {
-				updatedOptions: {
-					...options,
-					...(roomTags.length && { tags: roomTags }),
-				},
-			};
-		}
-
-		const { requestTagBeforeClosingChat, chatClosingTags } = department;
-		const extraRoomTags = concatUnique(roomTags, chatClosingTags);
-
-		if (!requestTagBeforeClosingChat) {
-			return {
-				updatedOptions: {
-					...options,
-					...(extraRoomTags.length && { tags: extraRoomTags }),
-				},
-			};
-		}
-
-		const checkRoomTags = !clientAction || (roomTags && roomTags.length > 0);
-		const checkDepartmentTags = chatClosingTags && chatClosingTags.length > 0;
-		if (!checkRoomTags || !checkDepartmentTags) {
-			throw new Error('error-tags-must-be-assigned-before-closing-chat');
-		}
-
-		return {
-			updatedOptions: {
-				...options,
-				...(extraRoomTags.length && { tags: extraRoomTags }),
-			},
-		};
-	}
-
-	private sendEmail(from: string, to: string, replyTo: string, subject: string, html: string): void {
-		Mailer.send({
-			to,
-			from,
-			replyTo,
-			subject,
-			html,
-		});
-	}
-
 	async sendTranscript({
 		token,
 		rid,
@@ -590,6 +521,75 @@ class LivechatClass {
 		});
 
 		return true;
+	}
+
+	private async resolveChatTags(
+		room: IOmnichannelRoom,
+		options: CloseRoomParams['options'] = {},
+	): Promise<{ updatedOptions: CloseRoomParams['options'] }> {
+		this.logger.debug(`Resolving chat tags for room ${room._id}`);
+
+		const concatUnique = (...arrays: (string[] | undefined)[]): string[] => [
+			...new Set(([] as string[]).concat(...arrays.filter((a): a is string[] => !!a))),
+		];
+
+		const { departmentId, tags: optionsTags } = room;
+		const { clientAction, tags: oldRoomTags } = options;
+		const roomTags = concatUnique(oldRoomTags, optionsTags);
+
+		if (!departmentId) {
+			return {
+				updatedOptions: {
+					...options,
+					...(roomTags.length && { tags: roomTags }),
+				},
+			};
+		}
+
+		const department = await LivechatDepartment.findOneById(departmentId);
+		if (!department) {
+			return {
+				updatedOptions: {
+					...options,
+					...(roomTags.length && { tags: roomTags }),
+				},
+			};
+		}
+
+		const { requestTagBeforeClosingChat, chatClosingTags } = department;
+		const extraRoomTags = concatUnique(roomTags, chatClosingTags);
+
+		if (!requestTagBeforeClosingChat) {
+			return {
+				updatedOptions: {
+					...options,
+					...(extraRoomTags.length && { tags: extraRoomTags }),
+				},
+			};
+		}
+
+		const checkRoomTags = !clientAction || (roomTags && roomTags.length > 0);
+		const checkDepartmentTags = chatClosingTags && chatClosingTags.length > 0;
+		if (!checkRoomTags || !checkDepartmentTags) {
+			throw new Error('error-tags-must-be-assigned-before-closing-chat');
+		}
+
+		return {
+			updatedOptions: {
+				...options,
+				...(extraRoomTags.length && { tags: extraRoomTags }),
+			},
+		};
+	}
+
+	private sendEmail(from: string, to: string, replyTo: string, subject: string, html: string): void {
+		Mailer.send({
+			to,
+			from,
+			replyTo,
+			subject,
+			html,
+		});
 	}
 }
 
