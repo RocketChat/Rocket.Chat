@@ -25,6 +25,7 @@ import './otr';
 import './reloadRoomAfterLogin';
 import './renderMessage';
 import './renderNotification';
+import './roles';
 import './rootUrlChange';
 import './routes';
 import './setupWizard';
