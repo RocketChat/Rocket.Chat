@@ -2129,8 +2129,8 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findRemote(options = {}) {
-		return this.find({ isRemote: true }, options);
+	countRemote(options = {}) {
+		return this.col.countDocuments({ isRemote: true }, options);
 	}
 
 	findActiveRemote(options = {}) {
@@ -2386,7 +2386,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateOne(_id, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	resetPasswordAndSetRequirePasswordChange(_id, requirePasswordChange, requirePasswordChangeReason) {
