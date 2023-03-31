@@ -8,7 +8,7 @@ import type {
 	ILivechatTrigger,
 	ILivechatVisitor,
 	IOmnichannelRoom,
-	OmnichannelSourceType,
+	SelectedAgent,
 } from '@rocket.chat/core-typings';
 
 import { Livechat } from '../../lib/Livechat';
@@ -105,11 +105,11 @@ export function getRoom({
 	extraParams,
 }: {
 	guest: ILivechatVisitor;
-	rid?: string;
-	roomInfo?: {
-		source?: { type: OmnichannelSourceType; id?: string; alias?: string; label?: string; sidebarIcon?: string; defaultIcon?: string };
+	rid: string;
+	roomInfo: {
+		source?: IOmnichannelRoom['source'];
 	};
-	agent?: { agentId?: string; username?: string };
+	agent?: SelectedAgent;
 	extraParams?: Record<string, any>;
 }): Promise<{ room: IOmnichannelRoom; newRoom: boolean }> {
 	const token = guest?.token;
@@ -122,7 +122,7 @@ export function getRoom({
 		ts: new Date(),
 	};
 
-	return Livechat.getRoom(guest, message, roomInfo, agent, extraParams);
+	return LivechatTyped.getRoom(guest, message, roomInfo, agent, extraParams);
 }
 
 export function findAgent(agentId: string): void | { hiddenInfo: true } | ILivechatAgent {

@@ -8,6 +8,7 @@ import { FileUpload } from '../../../../file-upload/server';
 import { API } from '../../../../api/server';
 import { fetch } from '../../../../../server/lib/http/fetch';
 import { Livechat } from '../../../server/lib/Livechat';
+import { Livechat as LivechatTyped } from '../../../server/lib/LivechatTyped';
 import { settings } from '../../../../settings/server';
 
 const getUploadFile = async (details, fileUrl) => {
@@ -107,7 +108,7 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 
 		// create an empty room first place, so attachments have a place to live
 		if (!roomExists) {
-			await Livechat.getRoom(visitor, { rid, token, msg: '' }, sendMessage.roomInfo, undefined);
+			await LivechatTyped.getRoom(visitor, { rid, token, msg: '' }, sendMessage.roomInfo, undefined);
 		}
 
 		let file;
