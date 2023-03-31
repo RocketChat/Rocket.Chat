@@ -5,7 +5,7 @@ declare module 'meteor/rocketchat:restivus' {
 		useDefaultAuth?: boolean;
 		auth?: {
 			token: string;
-			user: () => void;
+			user: () => Promise<{ userId: string; token: string }>;
 		};
 		defaultHeaders?: Record<string, any>;
 		prettyJson?: boolean;

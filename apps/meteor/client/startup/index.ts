@@ -10,8 +10,6 @@ import './contextualBar';
 import './customOAuth';
 import './customTranslations';
 import './e2e';
-import './emailVerification';
-import './enterRoom';
 import './forceLogout';
 import './i18n';
 import './iframeCommands';

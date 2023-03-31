@@ -6,9 +6,9 @@ import _ from 'underscore';
 import moment from 'moment';
 import Fiber from 'fibers';
 import Future from 'fibers/future';
-import { Integrations, IntegrationHistory } from '@rocket.chat/models';
+import { Integrations, IntegrationHistory, Users, Rooms, Messages } from '@rocket.chat/models';
+import * as Models from '@rocket.chat/models';
 
-import * as Models from '../../../models/server';
 import * as s from '../../../../lib/utils/stringUtils';
 import { settings } from '../../../settings/server';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
@@ -17,6 +17,7 @@ import { outgoingLogger } from '../logger';
 import { outgoingEvents } from '../../lib/outgoingEvents';
 import { fetch } from '../../../../server/lib/http/fetch';
 import { omit } from '../../../../lib/utils/omit';
+import { forbiddenModelMethods } from '../api/api';
 
 class RocketChatIntegrationHandler {
 	constructor() {
@@ -178,13 +179,13 @@ class RocketChatIntegrationHandler {
 		let user;
 		// Try to find the user who we are impersonating
 		if (trigger.impersonateUser) {
-			user = Models.Users.findOneByUsernameIgnoringCase(data.user_name);
+			user = await Users.findOneByUsernameIgnoringCase(data.user_name);
 		}
 
 		// If they don't exist (aka the trigger didn't contain a user) then we set the user based upon the
 		// configured username for the integration since this is required at all times.
 		if (!user) {
-			user = Models.Users.findOneByUsernameIgnoringCase(trigger.username);
+			user = await Users.findOneByUsernameIgnoringCase(trigger.username);
 		}
 
 		let tmpRoom;
@@ -256,7 +257,7 @@ class RocketChatIntegrationHandler {
 		};
 
 		Object.keys(Models)
-			.filter((k) => !k.startsWith('_'))
+			.filter((k) => !forbiddenModelMethods.includes(k))
 			.forEach((k) => {
 				sandbox[k] = Models[k];
 			});
@@ -947,13 +948,13 @@ class RocketChatIntegrationHandler {
 		}
 
 		const { event } = history;
-		const message = Models.Messages.findOneById(history.data.message_id);
-		const room = Models.Rooms.findOneById(history.data.channel_id);
-		const user = Models.Users.findOneById(history.data.user_id);
+		const message = await Messages.findOneById(history.data.message_id);
+		const room = await Rooms.findOneById(history.data.channel_id);
+		const user = await Users.findOneById(history.data.user_id);
 		let owner;
 
 		if (history.data.owner && history.data.owner._id) {
-			owner = Models.Users.findOneById(history.data.owner._id);
+			owner = await Users.findOneById(history.data.owner._id);
 		}
 
 		return this.executeTriggerUrl(history.url, integration, { event, message, room, owner, user });

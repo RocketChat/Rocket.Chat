@@ -36,7 +36,7 @@ async function afterCreateDirectRoom(room, extras) {
 
 		const events = await Promise.all(
 			extras.members.map(async (member) => {
-				const normalizedMember = normalizers.normalizeUser(member);
+				const normalizedMember = await normalizers.normalizeUser(member);
 
 				const sourceSubscription = await Subscriptions.findOne({
 					'rid': normalizedRoom._id,
