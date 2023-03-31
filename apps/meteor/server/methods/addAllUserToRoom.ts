@@ -3,11 +3,11 @@ import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { Mongo } from 'meteor/mongo';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { Users, Rooms } from '../../app/models/server';
+import { Users } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { callbacks } from '../../lib/callbacks';
 
@@ -44,7 +44,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const room = Rooms.findOneById(rid);
+		const room = await Rooms.findOneById(rid);
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 				method: 'addAllToRoom',
