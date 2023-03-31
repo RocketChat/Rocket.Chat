@@ -38,8 +38,8 @@ const shouldAdd = (attachments: MessageAttachment[], attachment: MessageQuoteAtt
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		pinMessage(message: IMessage, pinnedAt?: Date): Promise<IMessage | null>;
-		unpinMessage(message: IMessage): Promise<boolean>;
+		pinMessage(message: IMessage, pinnedAt?: Date): IMessage | null;
+		unpinMessage(message: IMessage): boolean;
 	}
 }
 
