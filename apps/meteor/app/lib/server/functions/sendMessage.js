@@ -1,8 +1,8 @@
 import { Match, check } from 'meteor/check';
+import { Messages } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Messages } from '../../../models/server';
 import { Apps } from '../../../../ee/server/apps';
 import { isURL } from '../../../../lib/utils/isURL';
 import { FileUpload } from '../../../file-upload/server';
@@ -246,20 +246,22 @@ export const sendMessage = async function (user, message, room, upsert = false) 
 		} else if (message._id && upsert) {
 			const { _id } = message;
 			delete message._id;
-			Messages.upsert(
+			await Messages.updateOne(
 				{
 					_id,
 					'u._id': message.u._id,
 				},
-				message,
+				{ $set: message },
+				{ upsert: true },
 			);
 			message._id = _id;
 		} else {
-			const messageAlreadyExists = message._id && Messages.findOneById(message._id, { fields: { _id: 1 } });
+			const messageAlreadyExists = message._id && (await Messages.findOneById(message._id, { projection: { _id: 1 } }));
 			if (messageAlreadyExists) {
 				return;
 			}
-			message._id = Messages.insert(message);
+			const result = await Messages.insertOne(message);
+			message._id = result.insertedId;
 		}
 
 		if (Apps && Apps.isLoaded()) {

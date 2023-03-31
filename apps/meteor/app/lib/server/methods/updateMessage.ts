@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import moment from 'moment';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { IEditedMessage, IUser } from '@rocket.chat/core-typings';
+import type { IEditedMessage, IMessage, IUser } from '@rocket.chat/core-typings';
+import { Messages } from '@rocket.chat/models';
 
-import { Messages } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -20,7 +20,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	async updateMessage(message) {
+	async updateMessage(message: IEditedMessage) {
 		check(message, Match.ObjectIncluding({ _id: String }));
 
 		const uid = Meteor.userId();
@@ -29,13 +29,13 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'updateMessage' });
 		}
 
-		const originalMessage = Messages.findOneById(message._id);
+		const originalMessage = await Messages.findOneById(message._id);
 		if (!originalMessage?._id) {
 			return;
 		}
 
 		Object.entries(message).forEach(([key, value]) => {
-			if (!allowedEditedFields.includes(key) && value !== originalMessage[key]) {
+			if (!allowedEditedFields.includes(key) && value !== originalMessage[key as keyof IMessage]) {
 				throw new Meteor.Error('error-invalid-update-key', `Cannot update the message ${key}`, {
 					method: 'updateMessage',
 				});

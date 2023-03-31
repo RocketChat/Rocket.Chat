@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
+import { Messages } from '@rocket.chat/models';
 
-import { Messages } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
 import { reply } from '../functions';
@@ -41,7 +41,7 @@ export async function processThreads(message, room) {
 		return message;
 	}
 
-	const parentMessage = Messages.findOneById(message.tmid);
+	const parentMessage = await Messages.findOneById(message.tmid);
 	if (!parentMessage) {
 		return message;
 	}

@@ -38,6 +38,7 @@ jobs:
       - uses: Bhacaz/checkout-files@v2
         with:
           files: package.json
+          branch: ${{ github.head_ref || github.ref_name }}
 
       - id: var
         run: |
@@ -249,6 +250,7 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
+      QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
 
   test-api-ee:
     name: 🔨 Test API (EE)
@@ -296,6 +298,7 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
+      QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
 
   tests-done:
     name: ✅ Tests Done
