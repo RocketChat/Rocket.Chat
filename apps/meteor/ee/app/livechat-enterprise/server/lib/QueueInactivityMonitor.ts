@@ -60,17 +60,17 @@ class OmnichannelQueueInactivityMonitorClass {
 		);
 	}
 
-	start(): void {
+	async start(): Promise<void> {
 		if (this.running) {
 			return;
 		}
 
-		Promise.await(this.scheduler.start());
+		await this.scheduler.start();
 		this.running = true;
 	}
 
-	scheduleInquiry(inquiryId: string, time: Date): void {
-		Promise.await(this.stopInquiry(inquiryId));
+	async scheduleInquiry(inquiryId: string, time: Date): Promise<void> {
+		await this.stopInquiry(inquiryId);
 		this.logger.debug(`Scheduling automatic close of inquiry ${inquiryId} at ${time}`);
 		const name = this.getName(inquiryId);
 		this.scheduler.define(name, this.bindedCloseRoom);
@@ -78,7 +78,7 @@ class OmnichannelQueueInactivityMonitorClass {
 		const job = this.scheduler.create(name, { inquiryId });
 		job.schedule(time);
 		job.unique({ 'data.inquiryId': inquiryId });
-		Promise.await(job.save());
+		await job.save();
 	}
 
 	async stop(): Promise<void> {
@@ -102,22 +102,22 @@ class OmnichannelQueueInactivityMonitorClass {
 		});
 	}
 
-	closeRoom({ attrs: { data } }: any = {}): void {
+	async closeRoom({ attrs: { data } }: any = {}): Promise<void> {
 		const { inquiryId } = data;
-		const inquiry = Promise.await(LivechatInquiryRaw.findOneById(inquiryId));
+		const inquiry = await LivechatInquiryRaw.findOneById(inquiryId);
 		this.logger.debug(`Processing inquiry item ${inquiryId}`);
 		if (!inquiry || inquiry.status !== 'queued') {
 			this.logger.debug(`Skipping inquiry ${inquiryId}. Invalid or not queued anymore`);
 			return;
 		}
 
-		const room = Promise.await(LivechatRooms.findOneById(inquiry.rid));
+		const room = await LivechatRooms.findOneById(inquiry.rid);
 		if (!room) {
 			this.logger.error(`Error: unable to find room ${inquiry.rid} for inquiry ${inquiryId} to close in queue inactivity monitor`);
 			return;
 		}
 
-		Promise.await(Promise.all([this.closeRoomAction(room), this.stopInquiry(inquiryId)]));
+		await Promise.all([this.closeRoomAction(room), this.stopInquiry(inquiryId)]);
 
 		this.logger.debug(`Running successful. Closed inquiry ${inquiry._id} because of inactivity`);
 	}

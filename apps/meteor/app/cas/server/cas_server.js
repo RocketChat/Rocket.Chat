@@ -201,7 +201,7 @@ Accounts.registerLoginHandler('cas', async function (options) {
 			logger.debug('Syncing user attributes');
 			// Update name
 			if (int_attrs.name) {
-				_setRealName(user._id, int_attrs.name);
+				await _setRealName(user._id, int_attrs.name);
 			}
 
 			// Update email

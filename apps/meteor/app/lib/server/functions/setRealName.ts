@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
+import { Users } from '@rocket.chat/models';
 
-import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RateLimiter } from '../lib';
 
-export const _setRealName = function (userId: string, name: string, fullUser: IUser): IUser | undefined {
+export const _setRealName = async function (userId: string, name: string, fullUser: IUser): Promise<IUser | undefined> {
 	name = name.trim();
 
 	if (!userId || (settings.get('Accounts_RequireNameForSignUp') && !name)) {
@@ -27,9 +27,9 @@ export const _setRealName = function (userId: string, name: string, fullUser: IU
 
 	// Set new name
 	if (name) {
-		Users.setName(user._id, name);
+		await Users.setName(user._id, name);
 	} else {
-		Users.unsetName(user._id);
+		await Users.unsetName(user._id);
 	}
 	user.name = name;
 
