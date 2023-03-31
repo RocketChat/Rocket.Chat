@@ -2,15 +2,15 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import type { ICreatedRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
-import { Subscriptions, Rooms } from '@rocket.chat/models';
+import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import type { MatchKeysAndValues } from 'mongodb';
 import type { ISubscriptionExtraData } from '@rocket.chat/core-services';
 
-import { Users } from '../../../models/server';
 import { Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
 import { getDefaultSubscriptionPref } from '../../../utils/server';
+import { isTruthy } from '../../../../lib/isTruthy';
 
 const generateSubscription = (
 	fname: string,
@@ -47,21 +47,23 @@ export async function createDirectRoom(
 		subscriptionExtra?: ISubscriptionExtraData;
 	},
 ): Promise<ICreatedRoom> {
-	if (members.length > (settings.get('DirectMesssage_maxUsers') || 1)) {
+	if (members.length > (settings.get<number>('DirectMesssage_maxUsers') || 1)) {
 		throw new Error('error-direct-message-max-user-exceeded');
 	}
 	callbacks.run('beforeCreateDirectRoom', members);
 
-	const membersUsernames = members.map((member) => {
-		if (typeof member === 'string') {
-			return member.replace('@', '');
-		}
-		return member.username;
-	});
+	const membersUsernames: string[] = members
+		.map((member) => {
+			if (typeof member === 'string') {
+				return member.replace('@', '');
+			}
+			return member.username;
+		})
+		.filter(isTruthy);
 
-	const roomMembers: IUser[] = Users.findUsersByUsernames(membersUsernames, {
-		fields: { _id: 1, name: 1, username: 1, settings: 1, customFields: 1 },
-	}).fetch();
+	const roomMembers: IUser[] = await Users.findUsersByUsernames(membersUsernames, {
+		projection: { _id: 1, name: 1, username: 1, settings: 1, customFields: 1 },
+	}).toArray();
 	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	const sortedMembers = roomMembers.sort((u1, u2) => (u1.name! || u1.username!).localeCompare(u2.name! || u2.username!));
 
@@ -132,10 +134,10 @@ export async function createDirectRoom(
 		);
 	} else {
 		const memberIds = roomMembers.map((member) => member._id);
-		const membersWithPreferences: IUser[] = Users.find(
+		const membersWithPreferences: IUser[] = await Users.find(
 			{ _id: { $in: memberIds } },
 			{ projection: { 'username': 1, 'settings.preferences': 1 } },
-		);
+		).toArray();
 
 		for await (const member of membersWithPreferences) {
 			const otherMembers = sortedMembers.filter(({ _id }) => _id !== member._id);

@@ -11,6 +11,7 @@ import {
 	LivechatUnit,
 	Messages,
 } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 
 import { hasLicense } from '../../../license/server/license';
 import { updateDepartmentAgents } from '../../../../../app/livechat/server/lib/Helper';
@@ -188,7 +189,7 @@ export const LivechatEnterprise = {
 		}
 		await LivechatRooms.setOnHoldByRoomId(roomId);
 
-		await Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldBy);
+		await Message.saveSystemMessage('omnichannel_placed_chat_on_hold', roomId, '', onHoldBy, { comment });
 
 		await callbacks.run('livechat:afterOnHold', room);
 
