@@ -3,10 +3,10 @@ import { Match } from 'meteor/check';
 import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
 import type { IUser, INewOutgoingIntegration, IOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
+import { Subscriptions, Users } from '@rocket.chat/models';
 
-import { Rooms, Users, Subscriptions } from '../../../models/server';
-import { hasAllPermission } from '../../../authorization/server';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { Rooms } from '../../../models/server';
+import { hasPermissionAsync, hasAllPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { outgoingEvents } from '../../lib/outgoingEvents';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 
@@ -74,7 +74,7 @@ async function _verifyUserHasPermissionForChannels(userId: IUser['_id'], channel
 					});
 					break;
 				case '@':
-					record = Users.findOne({
+					record = await Users.findOne({
 						$or: [{ _id: channel }, { username: channel }],
 					});
 					break;
@@ -87,8 +87,8 @@ async function _verifyUserHasPermissionForChannels(userId: IUser['_id'], channel
 			}
 
 			if (
-				!hasAllPermission(userId, ['manage-outgoing-integrations', 'manage-own-outgoing-integrations']) &&
-				!Subscriptions.findOneByRoomIdAndUserId(record._id, userId, { fields: { _id: 1 } })
+				!(await hasAllPermissionAsync(userId, ['manage-outgoing-integrations', 'manage-own-outgoing-integrations'])) &&
+				!(await Subscriptions.findOneByRoomIdAndUserId(record._id, userId, { projection: { _id: 1 } }))
 			) {
 				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', {
 					function: 'validateOutgoing._verifyUserHasPermissionForChannels',
@@ -143,7 +143,7 @@ export const validateOutgoingIntegration = async function (
 		});
 	}
 
-	const user = Users.findOne({ username: integration.username });
+	const user = await Users.findOne({ username: integration.username });
 
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user (did you delete the `rocket.cat` user?)', { function: 'validateOutgoing' });
@@ -155,7 +155,7 @@ export const validateOutgoingIntegration = async function (
 		channel: channels,
 		userId: user._id,
 		_createdAt: new Date(),
-		_createdBy: Users.findOne(userId, { fields: { username: 1 } }),
+		_createdBy: await Users.findOne(userId, { projection: { username: 1 } }),
 	};
 
 	if (outgoingEvents[integration.event].use.triggerWords && integration.triggerWords) {

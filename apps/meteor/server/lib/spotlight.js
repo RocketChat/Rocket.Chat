@@ -1,9 +1,9 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Users, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
+import { Users, Subscriptions as SubscriptionsRaw, Rooms as RoomsRaw } from '@rocket.chat/models';
 
-import { hasAllPermission, canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
-import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { Subscriptions, Rooms } from '../../app/models/server';
+import { canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
+import { hasPermissionAsync, hasAllPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
+import { Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 import { roomCoordinator } from './rooms/roomCoordinator';
@@ -26,7 +26,7 @@ export class Spotlight {
 
 		const roomOptions = {
 			limit: 5,
-			fields: {
+			projection: {
 				t: 1,
 				name: 1,
 				fname: 1,
@@ -44,28 +44,28 @@ export class Spotlight {
 				return [];
 			}
 
-			return this.fetchRooms(userId, Rooms.findByNameAndTypeNotDefault(regex, 'c', roomOptions, includeFederatedRooms).fetch());
+			return this.fetchRooms(userId, await RoomsRaw.findByNameAndTypeNotDefault(regex, 'c', roomOptions, includeFederatedRooms).toArray());
 		}
 
-		if (!hasAllPermission(userId, ['view-outside-room', 'view-c-room'])) {
+		if (!(await hasAllPermissionAsync(userId, ['view-outside-room', 'view-c-room']))) {
 			return [];
 		}
 
 		const searchableRoomTypeIds = roomCoordinator.searchableRoomTypes();
 
-		const roomIds = Subscriptions.findByUserIdAndTypes(userId, searchableRoomTypeIds, {
-			fields: { rid: 1 },
-		})
-			.fetch()
-			.map((s) => s.rid);
-		const exactRoom = Rooms.findOneByNameAndType(text, searchableRoomTypeIds, roomOptions, includeFederatedRooms);
+		const roomIds = (
+			await SubscriptionsRaw.findByUserIdAndTypes(userId, searchableRoomTypeIds, {
+				projection: { rid: 1 },
+			}).toArray()
+		).map((s) => s.rid);
+		const exactRoom = await RoomsRaw.findOneByNameAndType(text, searchableRoomTypeIds, roomOptions, includeFederatedRooms);
 		if (exactRoom) {
 			roomIds.push(exactRoom.rid);
 		}
 
 		return this.fetchRooms(
 			userId,
-			Rooms.findByNameAndTypesNotInIds(regex, searchableRoomTypeIds, roomIds, roomOptions, includeFederatedRooms).fetch(),
+			await RoomsRaw.findByNameAndTypesNotInIds(regex, searchableRoomTypeIds, roomIds, roomOptions, includeFederatedRooms).toArray(),
 		);
 	}
 
@@ -162,7 +162,7 @@ export class Spotlight {
 			return users;
 		}
 
-		const canListOutsiders = hasAllPermission(userId, ['view-outside-room', 'view-d-room']);
+		const canListOutsiders = await hasAllPermissionAsync(userId, ['view-outside-room', 'view-d-room']);
 		const canListInsiders = canListOutsiders || (rid && (await canAccessRoomAsync(room, { _id: userId })));
 
 		const insiderExtraQuery = [];
@@ -177,10 +177,7 @@ export class Spotlight {
 				case 'l':
 					insiderExtraQuery.push({
 						_id: {
-							$in: Subscriptions.findByRoomId(room._id)
-								.fetch()
-								.map((s) => s.u?._id)
-								.filter((id) => id && id !== userId),
+							$in: (await SubscriptionsRaw.findByRoomId(room._id).toArray()).map((s) => s.u?._id).filter((id) => id && id !== userId),
 						},
 					});
 					break;

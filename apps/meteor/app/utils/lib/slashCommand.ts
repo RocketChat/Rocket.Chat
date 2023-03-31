@@ -65,7 +65,11 @@ export const slashCommands = {
 
 		return cmd.callback(command, params, message, triggerId);
 	},
-	getPreviews(command: string, params: string, message: RequiredField<Partial<IMessage>, 'rid'>): SlashCommandPreviews | undefined {
+	async getPreviews(
+		command: string,
+		params: string,
+		message: RequiredField<Partial<IMessage>, 'rid'>,
+	): Promise<SlashCommandPreviews | undefined> {
 		const cmd = this.commands[command];
 		if (typeof cmd?.previewer !== 'function') {
 			return;
@@ -75,7 +79,7 @@ export const slashCommands = {
 			throw new Meteor.Error('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
 
-		const previewInfo = Promise.await(cmd.previewer(command, params, message));
+		const previewInfo = await cmd.previewer(command, params, message);
 
 		if (!previewInfo?.items?.length) {
 			return;
@@ -88,13 +92,13 @@ export const slashCommands = {
 
 		return previewInfo;
 	},
-	executePreview(
+	async executePreview(
 		command: string,
 		params: string,
 		message: Pick<IMessage, 'rid'> & Partial<Omit<IMessage, 'rid'>>,
 		preview: SlashCommandPreviewItem,
 		triggerId?: string,
-	): void {
+	) {
 		const cmd = this.commands[command];
 		if (typeof cmd?.previewCallback !== 'function') {
 			return;
@@ -109,7 +113,7 @@ export const slashCommands = {
 			throw new Meteor.Error('error-invalid-preview', 'Preview Item must have an id, type, and value.');
 		}
 
-		return Promise.await(cmd.previewCallback(command, params, message, preview, triggerId));
+		return cmd.previewCallback(command, params, message, preview, triggerId);
 	},
 };
 

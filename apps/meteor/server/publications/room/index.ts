@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import type { IRoom, RoomType } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Rooms as RoomsRaw } from '@rocket.chat/models';
 
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { canAccessRoomAsync } from '../../../app/authorization/server';
@@ -26,25 +27,25 @@ const roomMap = (record: IRoom) => {
 };
 
 Meteor.methods<ServerMethods>({
-	'rooms/get'(updatedAt) {
-		const options = { fields: roomFields };
+	async 'rooms/get'(updatedAt) {
+		const options = { projection: roomFields };
 		const user = Meteor.userId();
 
 		if (!user) {
 			if (settings.get('Accounts_AllowAnonymousRead')) {
-				return Rooms.findByDefaultAndTypes(true, ['c'], options).fetch();
+				return RoomsRaw.findByDefaultAndTypes(true, ['c'], options).toArray();
 			}
 			return [];
 		}
 
 		if (updatedAt instanceof Date) {
 			return {
-				update: Rooms.findBySubscriptionUserIdUpdatedAfter(user, updatedAt, options).fetch(),
+				update: await (await RoomsRaw.findBySubscriptionUserIdUpdatedAfter(user, updatedAt, options)).toArray(),
 				remove: Rooms.trashFindDeletedAfter(updatedAt, {}, { fields: { _id: 1, _deletedAt: 1 } }).fetch(),
 			};
 		}
 
-		return Rooms.findBySubscriptionUserId(user, options).fetch();
+		return (await RoomsRaw.findBySubscriptionUserId(user, options)).toArray();
 	},
 
 	async 'getRoomByTypeAndName'(type, name) {
@@ -58,7 +59,7 @@ Meteor.methods<ServerMethods>({
 
 		const roomFind = roomCoordinator.getRoomFind(type);
 
-		const room = roomFind ? await roomFind.call(this, name) : Rooms.findByTypeAndNameOrId(type, name);
+		const room = roomFind ? await roomFind.call(this, name) : await RoomsRaw.findByTypeAndNameOrId(type, name);
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {

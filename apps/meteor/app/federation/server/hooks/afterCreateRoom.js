@@ -1,7 +1,6 @@
-import { FederationRoomEvents } from '@rocket.chat/models';
+import { FederationRoomEvents, Users, Subscriptions } from '@rocket.chat/models';
 
 import { clientLogger } from '../lib/logger';
-import { Subscriptions, Users } from '../../../models/server';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
 import { getFederationDomain } from '../lib/getFederationDomain';
@@ -16,12 +15,12 @@ export async function doAfterCreateRoom(room, users, subscriptions) {
 	//
 	const addUserEvents = [];
 
-	for (const user of users) {
+	for await (const user of users) {
 		/* eslint-disable no-await-in-loop */
 
 		const subscription = subscriptions[user._id];
 
-		const normalizedSourceUser = normalizers.normalizeUser(user);
+		const normalizedSourceUser = await normalizers.normalizeUser(user);
 		const normalizedSourceSubscription = normalizers.normalizeSubscription(subscription);
 
 		normalizedUsers.push(normalizedSourceUser);
@@ -64,7 +63,7 @@ async function afterCreateRoom(roomOwner, room) {
 	}
 
 	// Find all subscriptions of this room
-	let subscriptions = Subscriptions.findByRoomIdWhenUsernameExists(room._id).fetch();
+	let subscriptions = await Subscriptions.findByRoomIdWhenUsernameExists(room._id).toArray();
 	subscriptions = subscriptions.reduce((acc, s) => {
 		acc[s.u._id] = s;
 
@@ -75,7 +74,7 @@ async function afterCreateRoom(roomOwner, room) {
 	const userIds = Object.keys(subscriptions);
 
 	// Load all the users
-	const users = Users.findUsersWithUsernameByIds(userIds).fetch();
+	const users = await Users.findUsersWithUsernameByIds(userIds).toArray();
 
 	// Check if there is a federated user on this room
 	const hasFederatedUser = users.find((u) => u.username.indexOf('@') !== -1);

@@ -51,9 +51,21 @@ const AppsFilters = ({
 	const hasFilterStackMargin = shouldFiltersStack ? '' : 'x8';
 	const hasNotFilterStackMargin = shouldFiltersStack ? 'x8' : '';
 
+	const appsSearchPlaceholders: { [key: string]: string } = {
+		explore: t('Search_Apps'),
+		enterprise: t('Search_Enterprise_Apps'),
+		installed: t('Search_Installed_Apps'),
+		requested: t('Search_Requested_Apps'),
+		private: t('Search_Private_apps'),
+	};
+
 	return (
 		<Box pi='x24'>
-			<FilterByText placeholder={t('Search_Apps')} onChange={({ text }): void => setText(text)} shouldFiltersStack={shouldFiltersStack}>
+			<FilterByText
+				placeholder={appsSearchPlaceholders[context]}
+				onChange={({ text }): void => setText(text)}
+				shouldFiltersStack={shouldFiltersStack}
+			>
 				{!isPrivateAppsPage && (
 					<RadioDropDown
 						group={freePaidFilterStructure}

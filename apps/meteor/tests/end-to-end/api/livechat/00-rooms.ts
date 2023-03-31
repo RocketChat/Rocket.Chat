@@ -25,7 +25,7 @@ import { createUser, login } from '../../../data/users.helper.js';
 import { adminUsername, password } from '../../../data/user.js';
 import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
 import type { DummyResponse } from '../../../data/livechat/utils';
-import type { SuccessResult } from '../../../../app/api/server/api';
+import type { SuccessResult } from '../../../../app/api/server/definition';
 import { sleep } from '../../../data/livechat/utils';
 import { IS_EE } from '../../../e2e/config/constants';
 import { createCustomField } from '../../../data/livechat/custom-fields';
@@ -411,10 +411,13 @@ describe('LIVECHAT - rooms', function () {
 					})
 					.expect(200);
 
+				// Give time for the setting to be on the user's preferences
+				await sleep(500);
+
 				await request.post(api('livechat/room.close')).send({ rid: roomId, token: visitor.token }).expect(200);
 
 				// Wait for the pdf to be generated
-				await sleep(1500);
+				await sleep(2000);
 
 				const latestRoom = await getLivechatRoomInfo(roomId);
 				expect(latestRoom).to.have.property('pdfTranscriptFileId').and.to.be.a('string');
