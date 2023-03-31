@@ -1133,7 +1133,7 @@ export default class SlackAdapter {
 		parsedUrl.headers = { Authorization: `Bearer ${this.apiToken}` };
 		await requestModule.get(
 			parsedUrl,
-			await Meteor.bindEnvironment(async (stream) => {
+			Meteor.bindEnvironment(async (stream) => {
 				const fileStore = FileUpload.getStore('Uploads');
 
 				fileStore.insert(details, stream, (err, file) => {
@@ -1182,7 +1182,7 @@ export default class SlackAdapter {
 							msg._id = details.message_id;
 						}
 
-						return sendMessage(rocketUser, msg, rocketChannel, true);
+						void sendMessage(rocketUser, msg, rocketChannel, true);
 					}
 				});
 			}),
