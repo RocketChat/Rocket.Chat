@@ -1,16 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Messages } from '@rocket.chat/models';
+import { Messages, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { Rooms, Users } from '../../../models/server';
+import { Rooms } from '../../../models/server';
 import { canAccessRoomAsync } from '../../../authorization/server';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		getUserMentionsByChannel(params: { roomId: string; options: { limit: number; sort: { ts: -1 | 1 } } }): IMessage[];
+		getUserMentionsByChannel(params: { roomId: string; options: { limit: number; sort: { ts: -1 | 1 } } }): Promise<IMessage[]>;
 	}
 }
 
@@ -26,7 +26,10 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const user = Users.findOneById(uid);
+		const user = await Users.findOneById(uid);
+		if (!user) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user');
+		}
 
 		const room = Rooms.findOneById(roomId);
 
