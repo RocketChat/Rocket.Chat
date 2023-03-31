@@ -504,7 +504,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	}
 
 	const { token } = guest;
-	await Livechat.setDepartmentForGuest({ token, department: departmentId });
+	await LivechatTyped.setDepartmentForGuest({ token, department: departmentId });
 	logger.debug(`Department for visitor with token ${token} was updated to ${departmentId}`);
 
 	return true;

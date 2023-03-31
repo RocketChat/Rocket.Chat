@@ -355,6 +355,30 @@ class LivechatClass {
 		return Users.checkOnlineAgents();
 	}
 
+	async setDepartmentForGuest({ token, department }: { token: string; department: string }) {
+		check(token, String);
+		check(department, String);
+
+		Livechat.logger.debug(`Switching departments for user with token ${token} (to ${department})`);
+
+		const updateUser = {
+			$set: {
+				department,
+			},
+		};
+
+		const dep = await LivechatDepartment.findOneById(department);
+		if (!dep) {
+			throw new Meteor.Error('invalid-department', 'Provided department does not exists');
+		}
+
+		const visitor = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
+		if (!visitor) {
+			throw new Meteor.Error('invalid-token', 'Provided token is invalid');
+		}
+		await LivechatVisitors.updateById(visitor._id, updateUser);
+	}
+
 	private async resolveChatTags(
 		room: IOmnichannelRoom,
 		options: CloseRoomParams['options'] = {},

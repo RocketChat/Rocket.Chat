@@ -206,32 +206,6 @@ export const Livechat = {
 		return userId;
 	},
 
-	async setDepartmentForGuest({ token, department } = {}) {
-		check(token, String);
-		check(department, String);
-
-		Livechat.logger.debug(`Switching departments for user with token ${token} (to ${department})`);
-
-		const updateUser = {
-			$set: {
-				department,
-			},
-		};
-
-		const dep = await LivechatDepartmentRaw.findOneById(department);
-		if (!dep) {
-			throw new Meteor.Error('invalid-department', 'Provided department does not exists', {
-				method: 'setDepartmentForGuest',
-			});
-		}
-
-		const user = await LivechatVisitors.getVisitorByToken(token, { projection: { _id: 1 } });
-		if (user) {
-			return LivechatVisitors.updateById(user._id, updateUser);
-		}
-		return false;
-	},
-
 	async saveGuest(guestData, userId) {
 		const { _id, name, email, phone, livechatData = {} } = guestData;
 		Livechat.logger.debug(`Saving data for visitor ${_id}`);
