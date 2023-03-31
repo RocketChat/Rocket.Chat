@@ -1,6 +1,6 @@
 import type { ConnectedPayload, FailedPayload } from './connectionPayloads';
 import type { ResultPayload, UpdatedPayload } from './methodsPayloads';
-import type { NosubPayload, ServerPublicationPayloads } from './publicationPayloads';
+import type { NosubPayload, PublicationPayloads, ServerPublicationPayloads } from './publicationPayloads';
 import type { OutgoingPayload } from './OutgoingPayload';
 import type { IncomingPayload } from './IncomingPayload';
 import type { RemoveListener } from './RemoveListener';
@@ -86,7 +86,7 @@ export interface DDPClient {
 	 * @param callback The callback to be called.
 	 * @returns A function to unregister the callback.
 	 */
-	onCollection(name: string, callback: (payload: ServerPublicationPayloads) => void): RemoveListener;
+	onCollection(name: string, callback: (payload: PublicationPayloads) => void): RemoveListener;
 
 	/**
 	 * Registers a callback to be called once after the connection is established or rejected.

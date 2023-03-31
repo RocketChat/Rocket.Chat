@@ -1,3 +1,5 @@
+import { Emitter } from '@rocket.chat/emitter';
+
 import type { DDPClient } from './types/DDPClient';
 
 // type Subscription = {
@@ -20,18 +22,32 @@ type RetryOptions = {
 	retryTime: number;
 };
 
-export interface Connection {
+export interface Connection
+	extends Emitter<{
+		connection: (payload: { msg: 'connected' | 'failed'; session?: string; version?: string }) => void;
+		disconnected: () => void;
+		close: () => void;
+	}> {
 	session?: string;
 
 	status: 'idle' | 'connecting' | 'connected' | 'failed' | 'closed' | 'disconnected';
 }
 
-export class ConnectionImpl implements Connection {
+export class ConnectionImpl
+	extends Emitter<{
+		connection: (payload: { msg: 'connected' | 'failed'; session?: string; version?: string }) => void;
+		disconnected: () => void;
+		close: () => void;
+	}>
+	implements Connection
+{
 	session?: string;
 
 	status: 'idle' | 'connecting' | 'connected' | 'failed' | 'closed' | 'disconnected' = 'idle';
 
-	constructor(private ws: WebSocket, private client: DDPClient, _retryOptions?: RetryOptions) {}
+	constructor(private ws: WebSocket, private client: DDPClient, _retryOptions?: RetryOptions) {
+		super();
+	}
 
 	connect() {
 		this.status = 'connecting';

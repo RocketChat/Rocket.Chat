@@ -10,11 +10,8 @@ const run = async (url: string, token: string) => {
 	try {
 		await sdk.callAsync('login', { resume: token });
 		console.log('ROOMS', await sdk.callAsync('subscriptions/get'));
-		sdk.subscribe('stream-room-messages', 'GENERAL', false);
 
-		sdk.onCollection('stream-room-messages', (data) => {
-			console.log('stream-room-messages', data);
-		});
+		await sdk.stream('stream-room-messages', ['GENERAL'], () => console.log('STREAMER -> GENERAL', JSON.stringify(args, undefined, 2)));
 	} catch (error) {
 		console.log('error', error);
 	}

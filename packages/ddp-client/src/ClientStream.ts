@@ -1,4 +1,5 @@
 import type { DDPClient } from './types/DDPClient';
+import type { PublicationPayloads } from './types/publicationPayloads';
 
 export interface ClientStream {
 	call(method: string, ...params: any[]): string;
@@ -6,7 +7,7 @@ export interface ClientStream {
 	subscribe(name: string, ...params: any[]): Promise<any> & { id: string };
 	unsubscribe(id: string): Promise<any>;
 	connect(): Promise<any>;
-	onCollection(id: string, callback: (data: any) => void): () => void;
+	onCollection(id: string, callback: (data: PublicationPayloads) => void): () => void;
 }
 
 export class ClientStreamImpl implements ClientStream {
@@ -87,7 +88,7 @@ export class ClientStreamImpl implements ClientStream {
 		});
 	}
 
-	onCollection(id: string, callback: (data: any) => void) {
+	onCollection(id: string, callback: (data: PublicationPayloads) => void) {
 		return this.ws.onCollection(id, callback);
 	}
 }

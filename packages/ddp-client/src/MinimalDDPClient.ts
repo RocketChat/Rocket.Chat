@@ -6,6 +6,7 @@ import type {
 	AddedPayload,
 	ChangedPayload,
 	NosubPayload,
+	PublicationPayloads,
 	ReadyPayload,
 	RemovedPayload,
 	ServerPublicationPayloads,
@@ -182,7 +183,7 @@ export class MinimalDDPClient extends Emitter<MinimalDDPClientEvents> implements
 		return this.once(`nosub/${id}`, callback);
 	}
 
-	onCollection(name: string, callback: (payload: ServerPublicationPayloads) => void): RemoveListener {
+	onCollection(name: string, callback: (payload: PublicationPayloads) => void): RemoveListener {
 		return this.on(`collection/${name}`, callback);
 	}
 

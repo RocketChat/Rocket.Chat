@@ -128,3 +128,5 @@ export type ServerPublicationPayloads =
 	| ReadyPayload
 	| AddedBeforePayload
 	| MovedBeforePayload;
+
+export type PublicationPayloads = AddedPayload | ChangedPayload | RemovedPayload;
