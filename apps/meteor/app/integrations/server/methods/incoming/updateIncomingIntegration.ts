@@ -6,7 +6,6 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IIntegration, INewIncomingIntegration, IUpdateIncomingIntegration } from '@rocket.chat/core-typings';
 
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { Rooms } from '../../../../models/server';
 
 const validChannelChars = ['@', '#'];
 
