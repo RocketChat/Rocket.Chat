@@ -1,14 +1,12 @@
+import type { IncomingPayload } from './IncomingPayload';
+import type { RemoveListener } from './RemoveListener';
 import type { ConnectedPayload, FailedPayload } from './connectionPayloads';
 import type { ResultPayload, UpdatedPayload } from './methodsPayloads';
 import type { NosubPayload, PublicationPayloads, ServerPublicationPayloads } from './publicationPayloads';
-import type { OutgoingPayload } from './OutgoingPayload';
-import type { IncomingPayload } from './IncomingPayload';
-import type { RemoveListener } from './RemoveListener';
 
 /**
  * A low-level DDP client that can be used to communicate with a DDP server.
  */
-
 export interface DDPClient {
 	/**
 	 * Invokes a remote method.
@@ -33,15 +31,14 @@ export interface DDPClient {
 	unsubscribe(id: string): void;
 
 	/**
-	 * Sends a message to the server.
-	 * @param msg The message to send.
-	 */
-	sendSerialized(msg: OutgoingPayload): void;
-
-	/**
 	 * Handles a message received from the server.
 	 */
-	handleMessage(msg: string): void;
+	handleMessage(serialized: string): void;
+
+	/**
+	 * Registers a callback to be called every time a message is sent to the server.
+	 */
+	onDispatchMessage(callback: (serialized: string) => void): RemoveListener;
 
 	/**
 	 * Sends a connect message to the server.

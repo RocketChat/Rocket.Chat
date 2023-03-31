@@ -59,8 +59,9 @@ interface MinimalDDPClientEvents {
  * ```
  */
 export class MinimalDDPClient extends Emitter<MinimalDDPClientEvents> implements DDPClient {
-	constructor(readonly send: (params: string) => void, readonly encode = JSON.stringify, readonly decode = JSON.parse) {
+	constructor(send: (params: string) => void, readonly encode = JSON.stringify, readonly decode = JSON.parse) {
 		super();
+		this.onDispatchMessage(send);
 	}
 
 	/**
@@ -121,8 +122,13 @@ export class MinimalDDPClient extends Emitter<MinimalDDPClientEvents> implements
 		this.emit('message', data);
 	}
 
-	sendSerialized(payload: OutgoingPayload): void {
-		this.send(this.encode(payload));
+	onDispatchMessage(callback: (msg: string) => void): RemoveListener {
+		return this.on('send', (payload) => {
+			callback(this.encode(payload));
+		});
+	}
+
+	protected dispatch(payload: OutgoingPayload): void {
 		this.emit('send', payload);
 	}
 
@@ -134,7 +140,7 @@ export class MinimalDDPClient extends Emitter<MinimalDDPClientEvents> implements
 			params,
 			id,
 		};
-		this.sendSerialized(payload);
+		this.dispatch(payload);
 		return id;
 	}
 
@@ -146,7 +152,7 @@ export class MinimalDDPClient extends Emitter<MinimalDDPClientEvents> implements
 			name,
 			params,
 		};
-		this.sendSerialized(payload);
+		this.dispatch(payload);
 		return id;
 	}
 
@@ -155,7 +161,7 @@ export class MinimalDDPClient extends Emitter<MinimalDDPClientEvents> implements
 			msg: 'unsub',
 			id,
 		};
-		this.sendSerialized(payload);
+		this.dispatch(payload);
 	}
 
 	connect(): void {
@@ -164,7 +170,7 @@ export class MinimalDDPClient extends Emitter<MinimalDDPClientEvents> implements
 			version: '1',
 			support: SUPPORTED_DDP_VERSIONS,
 		};
-		this.sendSerialized(payload);
+		this.dispatch(payload);
 	}
 
 	onPublish(name: string, callback: (payload: ServerPublicationPayloads) => void): RemoveListener {
@@ -200,14 +206,14 @@ export class MinimalDDPClient extends Emitter<MinimalDDPClientEvents> implements
 	}
 
 	ping(id?: string): void {
-		this.sendSerialized({
+		this.dispatch({
 			msg: 'ping',
 			...(id && { id }),
 		});
 	}
 
 	private pong(id?: string): void {
-		this.sendSerialized({
+		this.dispatch({
 			msg: 'pong',
 			...(id && { id }),
 		});
