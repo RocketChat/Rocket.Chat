@@ -12,11 +12,12 @@ import type {
 } from '@rocket.chat/core-typings';
 
 import { Livechat } from '../../lib/Livechat';
+import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { callbacks } from '../../../../../lib/callbacks';
 import { normalizeAgent } from '../../lib/Helper';
 
 export function online(department: string, skipSettingCheck = false, skipFallbackCheck = false): Promise<boolean> {
-	return Livechat.online(department, skipSettingCheck, skipFallbackCheck);
+	return LivechatTyped.online(department, skipSettingCheck, skipFallbackCheck);
 }
 
 async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' | 'conditions' | 'runOnce'>[]> {

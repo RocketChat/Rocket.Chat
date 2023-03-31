@@ -23,7 +23,7 @@ API.v1.addRoute(
 
 			const config = await cachedSettings({ businessUnit });
 
-			const status = await Livechat.online(department);
+			const status = await LivechatTyped.online(department);
 			const guest = token ? await LivechatTyped.findGuest(token) : null;
 
 			const room = guest ? await findOpenRoom(guest.token) : undefined;

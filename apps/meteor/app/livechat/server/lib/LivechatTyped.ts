@@ -7,7 +7,16 @@ import type {
 	IOmnichannelSystemMessage,
 } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { LivechatDepartment, LivechatInquiry, LivechatRooms, Subscriptions, LivechatVisitors, Messages, Users } from '@rocket.chat/models';
+import {
+	LivechatDepartment,
+	LivechatInquiry,
+	LivechatRooms,
+	Subscriptions,
+	LivechatVisitors,
+	Messages,
+	Users,
+	LivechatDepartmentAgents,
+} from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
 import moment from 'moment-timezone';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
@@ -67,6 +76,30 @@ class LivechatClass {
 				department: 1,
 			},
 		});
+	}
+
+	async online(department?: string, skipNoAgentSetting = false, skipFallbackCheck = false): Promise<boolean> {
+		Livechat.logger.debug(`Checking online agents ${department ? `for department ${department}` : ''}`);
+		if (!skipNoAgentSetting && settings.get('Livechat_accept_chats_with_no_agents')) {
+			Livechat.logger.debug('Can accept without online agents: true');
+			return true;
+		}
+
+		if (settings.get('Livechat_assign_new_conversation_to_bot')) {
+			Livechat.logger.debug(`Fetching online bot agents for department ${department}`);
+			const botAgents = await Livechat.getBotAgents(department);
+			if (botAgents) {
+				const onlineBots = await botAgents.count();
+				this.logger.debug(`Found ${onlineBots} online`);
+				if (onlineBots > 0) {
+					return true;
+				}
+			}
+		}
+
+		const agentsOnline = await this.checkOnlineAgents(department, undefined, skipFallbackCheck);
+		Livechat.logger.debug(`Are online agents ${department ? `for department ${department}` : ''}?: ${agentsOnline}`);
+		return agentsOnline;
 	}
 
 	async closeRoom(params: CloseRoomParams): Promise<void> {
@@ -167,6 +200,36 @@ class LivechatClass {
 		});
 
 		this.logger.debug(`Room ${newRoom._id} was closed`);
+	}
+
+	private async getBotAgents(department?: string) {
+		if (department) {
+			return LivechatDepartmentAgents.getBotsForDepartment(department);
+		}
+
+		return Users.findBotAgents();
+	}
+
+	async checkOnlineAgents(department?: string, agent?: { agentId: string }, skipFallbackCheck = false): Promise<boolean> {
+		if (agent?.agentId) {
+			return Users.checkOnlineAgents(agent.agentId);
+		}
+
+		if (department) {
+			const onlineForDep = await LivechatDepartmentAgents.checkOnlineForDepartment(department);
+			if (onlineForDep || skipFallbackCheck) {
+				return onlineForDep;
+			}
+
+			const dep = await LivechatDepartment.findOneById(department);
+			if (!dep?.fallbackForwardDepartment) {
+				return onlineForDep;
+			}
+
+			return this.checkOnlineAgents(dep?.fallbackForwardDepartment);
+		}
+
+		return Users.checkOnlineAgents();
 	}
 
 	private async resolveChatTags(

@@ -5,7 +5,7 @@ import { settings } from '../../../../../app/settings/server';
 import { getMaxNumberSimultaneousChat } from '../lib/Helper';
 import { allowAgentSkipQueue } from '../../../../../app/livechat/server/lib/Helper';
 import { cbLogger } from '../lib/logger';
-import { Livechat } from '../../../../../app/livechat/server';
+import { Livechat } from '../../../../../app/livechat/server/lib/LivechatTyped';
 
 const validateMaxChats = async ({
 	agent,
@@ -32,7 +32,7 @@ const validateMaxChats = async ({
 	}
 	const { agentId } = agent;
 
-	if (!Livechat.checkOnlineAgents(null, agent)) {
+	if (!(await Livechat.checkOnlineAgents(undefined, agent))) {
 		cbLogger.debug('Callback with error. provided agent is not online');
 		throw new Error('Provided agent is not online');
 	}

@@ -17,6 +17,7 @@ import {
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 import { Rooms, Users } from '../../../models/server';
 import { Livechat } from './Livechat';
+import { Livechat as LivechatTyped } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
@@ -536,7 +537,7 @@ export const normalizeTransferredByData = (transferredBy, room) => {
 
 export const checkServiceStatus = async ({ guest, agent }) => {
 	if (!agent) {
-		return Livechat.online(guest.department);
+		return LivechatTyped.online(guest.department);
 	}
 
 	const { agentId } = agent;
