@@ -16,4 +16,5 @@ onLicense('livechat-enterprise', () => {
 	import('./ReadReceipts');
 	import('./LivechatDepartment');
 	import('./Users');
+	import('./LivechatDepartmentAgents');
 });
