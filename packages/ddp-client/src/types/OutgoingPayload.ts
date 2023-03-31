@@ -1,6 +1,9 @@
-import type { ConnectPayload } from './ConnectingPayload';
-import type { PingPayload, PongPayload } from './HeartbeatPayloads';
-import type { MethodPayload } from './MethodPayloads';
-import type { ClientPublicationPayloads } from './PublishPayloads';
+import type { ConnectPayload } from './connectionPayloads';
+import type { PingPayload, PongPayload } from './heartbeatsPayloads';
+import type { MethodPayload } from './methodsPayloads';
+import type { ClientPublicationPayloads } from './publicationPayloads';
 
+/**
+ * @category outgoing
+ */
 export type OutgoingPayload = PingPayload | PongPayload | ConnectPayload | ClientPublicationPayloads | MethodPayload;

@@ -1,6 +1,6 @@
-import type { ConnectedPayload, FailedPayload } from './types/ConnectingPayload';
-import type { ResultPayload, ServerMethodPayloads } from './types/MethodPayloads';
-import type { ServerPublicationPayloads } from './types/PublishPayloads';
+import type { ConnectedPayload, FailedPayload } from './types/connectionPayloads';
+import type { ResultPayload, ServerMethodPayloads } from './types/methodsPayloads';
+import type { ServerPublicationPayloads } from './types/publicationPayloads';
 import type { OutgoingPayload } from './types/OutgoingPayload';
 import type { IncomingPayload } from './types/IncomingPayload';
 import type { RemoveListener } from './types/RemoveListener';

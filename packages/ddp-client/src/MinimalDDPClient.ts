@@ -1,8 +1,8 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import type { ConnectedPayload, ConnectPayload, FailedPayload } from './types/ConnectingPayload';
-import type { MethodPayload, ResultPayload, ServerMethodPayloads } from './types/MethodPayloads';
-import type { ServerPublicationPayloads, SubscribePayload, UnsubscribePayload } from './types/PublishPayloads';
+import type { ConnectedPayload, ConnectPayload, FailedPayload } from './types/connectionPayloads';
+import type { MethodPayload, ResultPayload, ServerMethodPayloads } from './types/methodsPayloads';
+import type { ServerPublicationPayloads, SubscribePayload, UnsubscribePayload } from './types/publicationPayloads';
 import type { OutgoingPayload } from './types/OutgoingPayload';
 import type { IncomingPayload } from './types/IncomingPayload';
 import type { DDPClient } from './DDPClient';
