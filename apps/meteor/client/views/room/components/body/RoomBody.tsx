@@ -8,6 +8,7 @@ import {
 	useRoute,
 	useSetting,
 	useStream,
+	useToastMessageDispatch,
 	useTranslation,
 	useUser,
 	useUserPreference,
@@ -62,6 +63,7 @@ const RoomBody = (): ReactElement => {
 	const subscription = useRoomSubscription();
 	const homeRouter = useRoute('home');
 	const queryClient = useQueryClient();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [lastMessageDate, setLastMessageDate] = useState<Date | undefined>();
 	const [hideLeaderHeader, setHideLeaderHeader] = useState(false);
@@ -228,13 +230,19 @@ const RoomBody = (): ReactElement => {
 			(event: string, subscription: ISubscription) => {
 				if (event === 'removed' && subscription.rid === room._id) {
 					queryClient.invalidateQueries(['rooms', room._id]);
+					dispatchToastMessage({
+						type: 'success',
+						message: t('You_have_been_removed_from_channel', {
+							roomName: room?.fname || room?.name || '',
+						}),
+					});
 					homeRouter.push({});
 				}
 			},
 		);
 
 		return unSubscribeFromNotifyUser;
-	}, [user?._id, homeRouter, subscribeToNotifyUser, room, queryClient]);
+	}, [user?._id, homeRouter, subscribeToNotifyUser, room._id, room?.fname, room?.name, t, dispatchToastMessage, queryClient]);
 
 	useEffect(() => {
 		callbacks.add(
