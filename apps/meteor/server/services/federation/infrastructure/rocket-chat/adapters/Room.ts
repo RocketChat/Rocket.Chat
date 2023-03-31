@@ -50,7 +50,7 @@ export class RocketChatRoomAdapter {
 		if (!usernameOrId) {
 			throw new Error('Cannot create a room without a creator');
 		}
-		const roomName = getValidRoomName(
+		const roomName = await getValidRoomName(
 			(federatedRoom.getDisplayName() || '')
 				.replace(/[^a-zA-Z0-9 ]/g, '')
 				.trim()
