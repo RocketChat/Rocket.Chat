@@ -6,6 +6,7 @@ import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { API } from '../../../../api/server';
 import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
 import { Livechat } from '../../lib/Livechat';
+import { Livechat as LivechatTyped } from '../../lib/LivechatTyped';
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 
 API.v1.addRoute('livechat/agent.info/:rid/:token', {
@@ -48,7 +49,7 @@ API.v1.addRoute(
 				}
 			}
 
-			const agentData = await Livechat.getNextAgent(department);
+			const agentData = await LivechatTyped.getNextAgent(department);
 			if (!agentData) {
 				throw new Error('agent-not-found');
 			}

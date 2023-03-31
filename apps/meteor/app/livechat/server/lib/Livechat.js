@@ -58,10 +58,6 @@ export const Livechat = {
 	logger,
 	webhookLogger: logger.section('Webhook'),
 
-	getNextAgent(department) {
-		return RoutingManager.getNextAgent(department);
-	},
-
 	getAgents(department) {
 		if (department) {
 			// TODO: This and all others should get the user's info as well

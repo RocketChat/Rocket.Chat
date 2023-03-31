@@ -5,6 +5,7 @@ import { LivechatRooms } from '@rocket.chat/models';
 
 import { Users } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
+import { Livechat as LivechatTyped } from '../lib/LivechatTyped';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -32,7 +33,7 @@ Meteor.methods<ServerMethods>({
 			}
 		}
 
-		const agent = await Livechat.getNextAgent(department);
+		const agent = await LivechatTyped.getNextAgent(department);
 		if (!agent) {
 			return;
 		}

@@ -5,6 +5,7 @@ import type {
 	MessageTypesValues,
 	ILivechatVisitor,
 	IOmnichannelSystemMessage,
+	SelectedAgent,
 } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import {
@@ -28,6 +29,7 @@ import { Apps, AppEvents } from '../../../../ee/server/apps';
 import { getTimezone } from '../../../utils/server/lib/getTimezone';
 import { settings } from '../../../settings/server';
 import * as Mailer from '../../../mailer/server/api';
+import { RoutingManager } from './RoutingManager';
 
 type GenericCloseRoomParams = {
 	room: IOmnichannelRoom;
@@ -100,6 +102,10 @@ class LivechatClass {
 		const agentsOnline = await this.checkOnlineAgents(department, undefined, skipFallbackCheck);
 		Livechat.logger.debug(`Are online agents ${department ? `for department ${department}` : ''}?: ${agentsOnline}`);
 		return agentsOnline;
+	}
+
+	getNextAgent(department?: string): Promise<SelectedAgent | null | undefined> {
+		return RoutingManager.getNextAgent(department);
 	}
 
 	async closeRoom(params: CloseRoomParams): Promise<void> {
