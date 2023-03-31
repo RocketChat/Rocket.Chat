@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
-import { Subscriptions, Users } from '@rocket.chat/models';
+import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
-import { Rooms } from '../../models/server';
 import { slashCommands } from '../../utils/server';
 
 /*
@@ -38,8 +37,8 @@ slashCommands.add({
 
 			const roomObject =
 				type === '#'
-					? Rooms.findOneByName(strippedRoom)
-					: Rooms.findOne({
+					? await Rooms.findOneByName(strippedRoom)
+					: await Rooms.findOne({
 							t: 'd',
 							usernames: { $all: [user.username, strippedRoom] },
 					  });

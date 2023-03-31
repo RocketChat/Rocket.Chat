@@ -265,7 +265,7 @@ const handleNickname = (updateUser, nickname) => {
 	}
 };
 
-const saveNewUser = function (userData, sendPassword) {
+const saveNewUser = async function (userData, sendPassword) {
 	validateEmailDomain(userData.email);
 
 	const roles = (!!userData.roles && userData.roles.length > 0 && userData.roles) || getNewUserRoles();
@@ -323,7 +323,7 @@ const saveNewUser = function (userData, sendPassword) {
 		});
 
 		try {
-			setUserAvatar(userData, gravatarUrl, '', 'url');
+			await setUserAvatar(userData, gravatarUrl, '', 'url');
 		} catch (e) {
 			// Ignore this error for now, as it not being successful isn't bad
 		}

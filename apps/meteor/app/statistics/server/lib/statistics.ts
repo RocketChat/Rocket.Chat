@@ -28,7 +28,7 @@ import {
 } from '@rocket.chat/models';
 import { Analytics, Team, VideoConf } from '@rocket.chat/core-services';
 
-import { Users, Rooms } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { getControl } from '../../../../server/lib/migrations';
@@ -114,7 +114,7 @@ export const statistics = {
 		);
 
 		// Room statistics
-		statistics.totalRooms = Rooms.find().count();
+		statistics.totalRooms = await RoomsRaw.col.countDocuments({});
 		statistics.totalChannels = await RoomsRaw.findByType('c').count();
 		statistics.totalPrivateGroups = await RoomsRaw.findByType('p').count();
 		statistics.totalDirect = await RoomsRaw.findByType('d').count();

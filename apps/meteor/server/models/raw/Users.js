@@ -1435,6 +1435,13 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query);
 	}
 
+	countOnlineAgents(agentId) {
+		// TODO:: Create class Agent
+		const query = queryStatusAgentOnline(agentId && { _id: agentId });
+
+		return this.col.countDocuments(query);
+	}
+
 	findOneBotAgent() {
 		// TODO:: Create class Agent
 		const query = {
@@ -1446,9 +1453,9 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query);
 	}
 
-	findOneOnlineAgentById(_id) {
+	findOneOnlineAgentById(_id, isLivechatEnabledWhenAgentIdle) {
 		// TODO: Create class Agent
-		const query = queryStatusAgentOnline({ _id });
+		const query = queryStatusAgentOnline({ _id }, isLivechatEnabledWhenAgentIdle);
 
 		return this.findOne(query);
 	}
