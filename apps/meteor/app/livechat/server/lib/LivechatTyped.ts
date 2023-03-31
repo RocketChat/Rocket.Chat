@@ -325,14 +325,6 @@ class LivechatClass {
 		return { room, newRoom };
 	}
 
-	private async getBotAgents(department?: string) {
-		if (department) {
-			return LivechatDepartmentAgents.getBotsForDepartment(department);
-		}
-
-		return Users.findBotAgents();
-	}
-
 	async checkOnlineAgents(department?: string, agent?: { agentId: string }, skipFallbackCheck = false): Promise<boolean> {
 		if (agent?.agentId) {
 			return Users.checkOnlineAgents(agent.agentId);
@@ -521,6 +513,14 @@ class LivechatClass {
 		});
 
 		return true;
+	}
+
+	private async getBotAgents(department?: string) {
+		if (department) {
+			return LivechatDepartmentAgents.getBotsForDepartment(department);
+		}
+
+		return Users.findBotAgents();
 	}
 
 	private async resolveChatTags(
