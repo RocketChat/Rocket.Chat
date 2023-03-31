@@ -1,12 +1,22 @@
 import { Emitter } from '@rocket.chat/emitter';
 
 import type { ConnectedPayload, ConnectPayload, FailedPayload } from './types/connectionPayloads';
-import type { MethodPayload, ResultPayload, ServerMethodPayloads } from './types/methodsPayloads';
-import type { ServerPublicationPayloads, SubscribePayload, UnsubscribePayload } from './types/publicationPayloads';
+import type { MethodPayload, ResultPayload, UpdatedPayload } from './types/methodsPayloads';
+import type {
+	AddedPayload,
+	ChangedPayload,
+	NosubPayload,
+	ReadyPayload,
+	RemovedPayload,
+	ServerPublicationPayloads,
+	SubscribePayload,
+	UnsubscribePayload,
+} from './types/publicationPayloads';
 import type { OutgoingPayload } from './types/OutgoingPayload';
 import type { IncomingPayload } from './types/IncomingPayload';
 import type { DDPClient } from './DDPClient';
 import type { RemoveListener } from './types/RemoveListener';
+import type { PongPayload } from './types/heartbeatsPayloads';
 
 /**
  * Creates a unique id for a DDP client.
@@ -18,6 +28,18 @@ const getUniqueId = (() => {
 })();
 
 const SUPPORTED_DDP_VERSIONS = ['1', 'pre2', 'pre1'];
+
+interface MinimalDDPClientEvents {
+	pong: PongPayload;
+	connection: ConnectedPayload | FailedPayload;
+	message: IncomingPayload;
+	send: OutgoingPayload;
+	[x: `publication/${string}`]: NosubPayload | ReadyPayload;
+	[x: `nosub/${string}`]: NosubPayload;
+	[x: `collection/${string}`]: AddedPayload | ChangedPayload | RemovedPayload;
+	[x: `result/${string}`]: ResultPayload;
+	[x: `updated/${string}`]: UpdatedPayload;
+}
 
 /**
  * This class was created to be used together with the `WebSocket` class.
@@ -35,11 +57,17 @@ const SUPPORTED_DDP_VERSIONS = ['1', 'pre2', 'pre1'];
  * ddp.sendSerialized({ msg: 'connect', version: '1', support: ['pre1'] });
  * ```
  */
-export class MinimalDDPClient extends Emitter implements DDPClient {
+export class MinimalDDPClient extends Emitter<MinimalDDPClientEvents> implements DDPClient {
 	constructor(readonly send: (params: string) => void, readonly encode = JSON.stringify, readonly decode = JSON.parse) {
 		super();
 	}
 
+	/**
+	 * @param payload - The incoming message.
+	 * @throws {Error} - If the message is not a string.
+	 * @throws {Error} - If the message is not a valid JSON.
+	 * @throws {Error} - If the message is not a valid DDP message.
+	 */
 	handleMessage(payload: string): void {
 		const data = this.decode(payload) as IncomingPayload;
 
@@ -47,6 +75,7 @@ export class MinimalDDPClient extends Emitter implements DDPClient {
 			case 'ping':
 				this.sendSerialized({ msg: 'pong', ...(data.id && { id: data.id }) });
 				break;
+
 			case 'pong':
 				this.emit('pong', data);
 				break;
@@ -57,11 +86,14 @@ export class MinimalDDPClient extends Emitter implements DDPClient {
 				this.emit(`publication/${data.id}`, data);
 				this.emit(`nosub/${data.id}`, data);
 				break;
+
 			case 'ready':
 				data.subs.forEach((id) => {
-					this.emit(`publication/${id}`, { msg: 'ready', id });
+					// 	this.emit(`publication/${id}`, { msg: 'ready', id });
+					this.emit(`publication/${id}`, { msg: 'ready', subs: [id] });
 				});
 				break;
+
 			case 'added':
 			case 'changed':
 			case 'removed':
@@ -73,6 +105,7 @@ export class MinimalDDPClient extends Emitter implements DDPClient {
 			case 'result':
 				this.emit(`result/${data.id}`, data);
 				break;
+
 			case 'updated':
 				data.methods.forEach((id) => {
 					this.emit(`updated/${id}`, data);
@@ -83,6 +116,7 @@ export class MinimalDDPClient extends Emitter implements DDPClient {
 			case 'failed':
 				this.emit('connection', data);
 				break;
+
 			default:
 				throw new Error(`Unknown message type: ${data}`);
 		}
@@ -143,11 +177,11 @@ export class MinimalDDPClient extends Emitter implements DDPClient {
 		return this.once(`result/${id}`, callback);
 	}
 
-	onUpdate(id: string, callback: (payload: ServerMethodPayloads) => void): RemoveListener {
+	onUpdate(id: string, callback: (payload: UpdatedPayload) => void): RemoveListener {
 		return this.on(`updated/${id}`, callback);
 	}
 
-	onNoSub(id: string, callback: (payload: ServerMethodPayloads) => void): RemoveListener {
+	onNoSub(id: string, callback: (payload: NosubPayload) => void): RemoveListener {
 		return this.once(`nosub/${id}`, callback);
 	}
 

@@ -33,7 +33,7 @@ export type NosubPayload = {
 	/** the id passed to `'sub'` */
 	id: string;
 	/** an error thrown by the subscription (or sub-not-found) */
-	error?: string;
+	error?: unknown;
 };
 
 /**

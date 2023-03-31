@@ -26,6 +26,7 @@ describe('ping/pong mechanism', () => {
 			msg: 'pong',
 		});
 	});
+
 	it('should reply with pong if id is provided', () => {
 		const handlerCallback = jest.fn();
 		const senderCallback = jest.fn();
@@ -95,7 +96,7 @@ describe('subscription mechanism', () => {
 		expect(handlerCallback).toBeCalledTimes(1);
 		expect(handlerCallback).toBeCalledWith({
 			msg: 'ready',
-			id,
+			subs: [id],
 		});
 	});
 
@@ -153,7 +154,7 @@ describe('subscription mechanism', () => {
 		expect(handlerCallback).toBeCalledTimes(1);
 		expect(handlerCallback).toBeCalledWith({
 			msg: 'ready',
-			id,
+			subs: [id],
 		});
 
 		expect(nosubCallback).toBeCalledTimes(1);
@@ -197,7 +198,7 @@ describe('subscription added/changed/removed mechanism', () => {
 		expect(readyCallback).toBeCalledTimes(1);
 		expect(readyCallback).toBeCalledWith({
 			msg: 'ready',
-			id,
+			subs: [id],
 		});
 
 		expect(handlerCallback).toBeCalledTimes(1);
@@ -243,7 +244,7 @@ describe('subscription added/changed/removed mechanism', () => {
 		expect(readyCallback).toBeCalledTimes(1);
 		expect(readyCallback).toBeCalledWith({
 			msg: 'ready',
-			id,
+			subs: [id],
 		});
 
 		expect(handlerCallback).toBeCalledTimes(1);
@@ -286,7 +287,7 @@ describe('subscription added/changed/removed mechanism', () => {
 		expect(readyCallback).toBeCalledTimes(1);
 		expect(readyCallback).toBeCalledWith({
 			msg: 'ready',
-			id,
+			subs: [id],
 		});
 
 		expect(handlerCallback).toBeCalledTimes(1);

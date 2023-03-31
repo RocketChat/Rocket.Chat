@@ -21,7 +21,7 @@ export type ResultPayload = {
 	/** the id passed to `'method'` */
 	id: string;
 	/** an error thrown by the method (or method-not-found) */
-	error?: string;
+	error?: unknown;
 	/** the EJSON return value of the method, if any */
 	result?: any;
 };

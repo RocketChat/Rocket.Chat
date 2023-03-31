@@ -17,6 +17,7 @@ describe('call procedures', () => {
 		expect(callback).toBeCalledTimes(1);
 		expect(callback).toBeCalledWith(null, ['arg1', 'arg2']);
 	});
+
 	it('should be able to  handle errors thrown by the method call', async () => {
 		const callback = jest.fn();
 		const ws = new MinimalDDPClient(() => undefined);
@@ -85,6 +86,7 @@ describe('call procedures', () => {
 		});
 	});
 });
+
 describe('subscribe procedures', () => {
 	it('should be able to subscribe to a collection and receive a result', async () => {
 		const ws = new MinimalDDPClient(() => undefined);
@@ -99,9 +101,10 @@ describe('subscribe procedures', () => {
 
 		await expect(promise).resolves.toEqual({
 			msg: 'ready',
-			id: promise.id,
+			subs: [promise.id],
 		});
 	});
+
 	it('should be able to subscribe to a collection and receive an error', async () => {
 		const ws = new MinimalDDPClient(() => undefined);
 		const client = new ClientStreamImpl(ws);
@@ -139,7 +142,7 @@ describe('subscribe procedures', () => {
 		);
 		await expect(promise).resolves.toEqual({
 			msg: 'ready',
-			id: promise.id,
+			subs: [promise.id],
 		});
 		const unsubPromise = client.unsubscribe(promise.id);
 
@@ -170,7 +173,7 @@ describe('subscribe procedures', () => {
 
 		await expect(promise).resolves.toEqual({
 			msg: 'ready',
-			id: promise.id,
+			subs: [promise.id],
 		});
 
 		const observer = jest.fn();

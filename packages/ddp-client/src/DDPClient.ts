@@ -1,6 +1,6 @@
 import type { ConnectedPayload, FailedPayload } from './types/connectionPayloads';
-import type { ResultPayload, ServerMethodPayloads } from './types/methodsPayloads';
-import type { ServerPublicationPayloads } from './types/publicationPayloads';
+import type { ResultPayload, UpdatedPayload } from './types/methodsPayloads';
+import type { NosubPayload, ServerPublicationPayloads } from './types/publicationPayloads';
 import type { OutgoingPayload } from './types/OutgoingPayload';
 import type { IncomingPayload } from './types/IncomingPayload';
 import type { RemoveListener } from './types/RemoveListener';
@@ -70,7 +70,7 @@ export interface DDPClient {
 	 * @param callback The callback to be called.
 	 * @returns A function to unregister the callback.
 	 */
-	onUpdate(id: string, callback: (payload: ServerMethodPayloads) => void): RemoveListener;
+	onUpdate(id: string, callback: (payload: UpdatedPayload) => void): RemoveListener;
 
 	/**
 	 * Registers a callback to be called once after the subscription is stopped.
@@ -78,7 +78,7 @@ export interface DDPClient {
 	 * @param callback The callback to be called.
 	 * @returns A function to unregister the callback.
 	 */
-	onNoSub(id: string, callback: (payload: ServerMethodPayloads) => void): RemoveListener;
+	onNoSub(id: string, callback: (payload: NosubPayload) => void): RemoveListener;
 
 	/**
 	 * Registers a callback to be called every time a new document is added/updated/removed from the collection.

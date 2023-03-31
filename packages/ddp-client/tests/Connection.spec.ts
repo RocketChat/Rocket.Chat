@@ -1,5 +1,5 @@
 import WS from 'jest-websocket-mock';
-import { WebSocket as WebSocketImpl } from 'ws';
+import { WebSocket } from 'ws';
 
 import { MinimalDDPClient } from '../src/MinimalDDPClient';
 import { ConnectionImpl } from '../src/Connection';
@@ -15,9 +15,9 @@ afterEach(() => {
 });
 
 it('should connect', async () => {
-	const ws = new WebSocketImpl('ws://localhost:1234');
+	const ws = new WebSocket('ws://localhost:1234');
 	const client = new MinimalDDPClient(ws.send.bind(ws));
-	const connection = new ConnectionImpl(ws as unknown as WebSocket, client, { retryCount: 0, retryTime: 0 });
+	const connection = new ConnectionImpl(ws as unknown as globalThis.WebSocket, client, { retryCount: 0, retryTime: 0 });
 
 	server.nextMessage.then((message) => {
 		expect(message).toBe('{"msg":"connect","version":"1","support":["1","pre2","pre1"]}');
@@ -29,8 +29,8 @@ it('should connect', async () => {
 
 	await expect(connection.connect()).resolves.toBe(true);
 
-	await expect(connection.session).toBe('123');
-	await expect(connection.status).toBe('connected');
+	expect(connection.session).toBe('123');
+	expect(connection.status).toBe('connected');
 
 	// Close the connection
 	// connection.close();
@@ -38,9 +38,9 @@ it('should connect', async () => {
 });
 
 it('should handle a failing connection', async () => {
-	const ws = new WebSocketImpl('ws://localhost:1234');
+	const ws = new WebSocket('ws://localhost:1234');
 	const client = new MinimalDDPClient(ws.send.bind(ws));
-	const connection = new ConnectionImpl(ws as unknown as WebSocket, client, { retryCount: 0, retryTime: 0 });
+	const connection = new ConnectionImpl(ws as unknown as globalThis.WebSocket, client, { retryCount: 0, retryTime: 0 });
 
 	const suggestedVersion = '1';
 
