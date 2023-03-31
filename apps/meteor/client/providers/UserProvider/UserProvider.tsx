@@ -2,15 +2,17 @@ import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { UserContext, useSetting } from '@rocket.chat/ui-contexts';
 import type { LoginService, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import type { ContextType, FC } from 'react';
-import React, { useEffect, useMemo } from 'react';
+import type { ContextType, ReactElement, ReactNode } from 'react';
+import React, { useMemo } from 'react';
 
-import { Subscriptions, Rooms } from '../../app/models/client';
-import { getUserPreference } from '../../app/utils/client';
-import { callbacks } from '../../lib/callbacks';
-import { useReactiveValue } from '../hooks/useReactiveValue';
-import { createReactiveSubscriptionFactory } from '../lib/createReactiveSubscriptionFactory';
-import { call } from '../lib/utils/call';
+import { Subscriptions, Rooms } from '../../../app/models/client';
+import { getUserPreference } from '../../../app/utils/client';
+import { callbacks } from '../../../lib/callbacks';
+import { useReactiveValue } from '../../hooks/useReactiveValue';
+import { createReactiveSubscriptionFactory } from '../../lib/createReactiveSubscriptionFactory';
+import { call } from '../../lib/utils/call';
+import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
+import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
 
 const getUserId = (): string | null => Meteor.userId();
 
@@ -49,31 +51,23 @@ const logout = (): Promise<void> =>
 		});
 	});
 
-type LoginMethods = keyof typeof Meteor;
+export type LoginMethods = keyof typeof Meteor;
 
-const UserProvider: FC = ({ children }) => {
-	const isLdapEnabled = Boolean(useSetting('LDAP_Enable'));
-	const isCrowdEnabled = Boolean(useSetting('CROWD_Enable'));
+type UserProviderProps = {
+	children: ReactNode;
+};
+
+const UserProvider = ({ children }: UserProviderProps): ReactElement => {
+	const isLdapEnabled = useSetting<boolean>('LDAP_Enable');
+	const isCrowdEnabled = useSetting<boolean>('CROWD_Enable');
 
 	const userId = useReactiveValue(getUserId);
 	const user = useReactiveValue(getUser);
 
 	const loginMethod: LoginMethods = (isLdapEnabled && 'loginWithLDAP') || (isCrowdEnabled && 'loginWithCrowd') || 'loginWithPassword';
 
-	useEffect(() => {
-		if (isLdapEnabled && isCrowdEnabled) {
-			if (process.env.NODE_ENV === 'development') {
-				throw new Error('You can not use both LDAP and Crowd at the same time');
-			}
-			console.log('Both LDAP and Crowd are enabled. Please disable one of them.');
-		}
-		if (!Meteor[loginMethod]) {
-			if (process.env.NODE_ENV === 'development') {
-				throw new Error(`Meteor.${loginMethod} is not defined`);
-			}
-			console.log(`Meteor.${loginMethod} is not defined`);
-		}
-	}, [isLdapEnabled, isCrowdEnabled, loginMethod]);
+	useLDAPAndCrowdCollisionWarning();
+	useEmailVerificationWarning(user ?? undefined);
 
 	const contextValue = useMemo(
 		(): ContextType<typeof UserContext> => ({
