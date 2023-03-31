@@ -18,6 +18,9 @@ const { AppMessagesConverter } = proxyquire.noCallThru().load('../../../../../ap
 			id: () => 1,
 		},
 	},
+	'@rocket.chat/models': {
+		Rooms: new RoomsMock(),
+	},
 });
 
 describe('The AppMessagesConverter instance', function () {
@@ -145,8 +148,12 @@ describe('The AppMessagesConverter instance', function () {
 		});
 
 		it('should throw if message has an invalid room', async function () {
-			const result = await messagesConverter.convertAppMessage(appMessageInvalidRoomMock);
-			expect(result).to.throw(Error, 'Invalid room provided on the message.');
+			try {
+				await messagesConverter.convertAppMessage(appMessageInvalidRoomMock);
+			} catch (e) {
+				expect(e).to.be.an.instanceOf(Error);
+				expect(e.message).to.equal('Invalid room provided on the message.');
+			}
 		});
 	});
 });
