@@ -16,10 +16,9 @@ import {
 	validateParamsPwGetPolicyRest,
 } from '@rocket.chat/rest-typings';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Users as UsersRaw } from '@rocket.chat/models';
+import { Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
@@ -174,7 +173,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const fields = getDefaultUserFields();
-			const { services, ...user } = Users.findOneById(this.userId, { fields }) as IUser;
+			const { services, ...user } = (await Users.findOneById(this.userId, { projection: fields })) as IUser;
 
 			return API.v1.success(
 				await getUserInfo({
@@ -241,7 +240,7 @@ API.v1.addRoute(
 			switch (type) {
 				case 'online':
 					if (Date.now() - onlineCacheDate > cacheInvalid) {
-						onlineCache = Users.findUsersNotOffline().count();
+						onlineCache = await Users.countUsersNotOffline();
 						onlineCacheDate = Date.now();
 					}
 
@@ -418,7 +417,7 @@ API.v1.addRoute(
 			);
 			const { token } = this.queryParams;
 
-			const user = await UsersRaw.findOneByResetToken(token, { projection: { _id: 1 } });
+			const user = await Users.findOneByResetToken(token, { projection: { _id: 1 } });
 			if (!user) {
 				return API.v1.unauthorized();
 			}
