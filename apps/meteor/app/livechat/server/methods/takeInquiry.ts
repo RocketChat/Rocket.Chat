@@ -1,9 +1,8 @@
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-import { LivechatInquiry } from '@rocket.chat/models';
+import { LivechatInquiry, Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Users } from '../../../models/server';
 import { RoutingManager } from '../lib/RoutingManager';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -36,7 +35,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const user = Users.findOneOnlineAgentById(uid);
+		const user = await Users.findOneOnlineAgentById(uid);
 		if (!user) {
 			throw new Meteor.Error('error-agent-status-service-offline', 'Agent status is offline or Omnichannel service is not active', {
 				method: 'livechat:takeInquiry',
