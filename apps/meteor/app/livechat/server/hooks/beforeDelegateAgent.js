@@ -1,8 +1,7 @@
-import { LivechatDepartmentAgents } from '@rocket.chat/models';
+import { LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
-import { Users } from '../../../models/server';
 
 callbacks.add(
 	'livechat.beforeDelegateAgent',

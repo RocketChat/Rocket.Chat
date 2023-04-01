@@ -8,12 +8,12 @@ import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarn
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'Mailer:unsubscribe'(_id: string, createdAt: string): boolean;
+		'Mailer:unsubscribe'(_id: string, createdAt: string): Promise<boolean>;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	'Mailer:unsubscribe'(_id, createdAt) {
+	async 'Mailer:unsubscribe'(_id, createdAt) {
 		methodDeprecationLogger.warn('Mailer:unsubscribe will be deprecated in future versions of Rocket.Chat');
 
 		return Mailer.unsubscribe(_id, createdAt);
