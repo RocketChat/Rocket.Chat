@@ -32,7 +32,7 @@ const oauthAppsGetParamsSchema = {
 		{
 			type: 'object',
 			properties: {
-				appId: {
+				_id: {
 					type: 'string',
 				},
 			},
