@@ -5,7 +5,7 @@ import { settings } from '../../../settings/server';
 
 callbacks.add(
 	'livechat.beforeDelegateAgent',
-	async (agent, { department }) => {
+	async (agent, { department } = {}) => {
 		if (agent) {
 			return agent;
 		}

@@ -1,9 +1,15 @@
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+
 import { callbacks } from '../../../../lib/callbacks';
 import { Livechat } from '../lib/Livechat';
 
 callbacks.add(
 	'livechat.newRoom',
 	async (room) => {
+		if (!isOmnichannelRoom(room)) {
+			return room;
+		}
+
 		const {
 			_id,
 			v: { _id: guestId },
