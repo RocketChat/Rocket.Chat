@@ -2196,6 +2196,12 @@ export class UsersRaw extends BaseRaw {
 		});
 	}
 
+	countBySAMLNameIdOrIdpSession(nameID, idpSession) {
+		return this.col.countDocuments({
+			$or: [{ 'services.saml.nameID': nameID }, { 'services.saml.idpSession': idpSession }],
+		});
+	}
+
 	findBySAMLInResponseTo(inResponseTo) {
 		return this.find({
 			'services.saml.inResponseTo': inResponseTo,

@@ -297,8 +297,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findActiveRemoteUsers(options?: FindOptions<IUser>): FindCursor<IUser>;
 	findActiveFederated(options?: FindOptions<IUser>): FindCursor<IUser>;
 	getSAMLByIdAndSAMLProvider(userId: string, samlProvider: string): Promise<IUser | null>;
-	findBySAMLNameIdOrIdpSession(samlNameId: string, idpSession: string): Promise<IUser | null>;
-	findBySAMLInResponseTo(inResponseTo: string): Promise<IUser | null>;
+	findBySAMLNameIdOrIdpSession(samlNameId: string, idpSession: string): FindCursor<IUser>;
+	findBySAMLInResponseTo(inResponseTo: string): FindCursor<IUser>;
 	addImportIds(userId: string, importIds: Array<{ service: string; id: string }>): Promise<UpdateResult>;
 	updateInviteToken(userId: string, token: string): Promise<UpdateResult>;
 	updateLastLoginById(userId: string): Promise<UpdateResult>;
