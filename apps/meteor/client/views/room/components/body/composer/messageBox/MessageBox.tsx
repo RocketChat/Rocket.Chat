@@ -1,23 +1,24 @@
 /* eslint-disable complexity */
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { Button, Tag, Box } from '@rocket.chat/fuselage';
+import { Box, Button, IconButton, Tag } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
-	MessageComposerAction,
-	MessageComposerToolbarActions,
 	MessageComposer,
+	MessageComposerAction,
+	MessageComposerActionsDivider,
 	MessageComposerInput,
 	MessageComposerToolbar,
-	MessageComposerActionsDivider,
+	MessageComposerToolbarActions,
 	MessageComposerToolbarSubmit,
 } from '@rocket.chat/ui-composer';
-import { useTranslation, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
+import { useLayout, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { MouseEventHandler, ReactElement, FormEvent, KeyboardEventHandler, KeyboardEvent, Ref, ClipboardEventHandler } from 'react';
-import React, { memo, useRef, useReducer, useCallback } from 'react';
+import type { ClipboardEventHandler, FormEvent, KeyboardEvent, KeyboardEventHandler, MouseEventHandler, ReactElement, Ref } from 'react';
+import React, { memo, useCallback, useReducer, useRef } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { EmojiPicker } from '../../../../../../../app/emoji/client';
+import { settings } from '../../../../../../../app/settings/client';
 import { createComposerAPI } from '../../../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -40,12 +41,9 @@ import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedR
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxReplies from './MessageBoxReplies';
-import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
-
-import { settings } from '../../../../../../../app/settings/client';
-import { IconButton } from '@rocket.chat/fuselage';
-import { useMarkdownPreview } from './hooks/useMarkdownPreview';
 import { MessagePreview } from './MessagePreview';
+import { useMarkdownPreview } from './hooks/useMarkdownPreview';
+import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 
 const previewAllowed = settings.get('Message_AllowPreviewing');
 
@@ -115,7 +113,6 @@ const MessageBox = ({
 	readOnly,
 	tshow,
 }: MessageBoxProps): ReactElement => {
-
 	const [typing, setTyping] = useReducer(reducer, false);
 
 	const { isMobile } = useLayout();
@@ -150,14 +147,7 @@ const MessageBox = ({
 
 	const useEmojis = useUserPreference<boolean>('useEmojis');
 
-	const { 
-		md,
-		channels,
-		mentions,
-		setShowMarkdownPreview,
-		showMarkdownPreview, 
-		handleViewPreview 
-	} = useMarkdownPreview(rid);
+	const { md, channels, mentions, setShowMarkdownPreview, showMarkdownPreview, handleViewPreview } = useMarkdownPreview(rid);
 
 	const handleOpenEmojiPicker: MouseEventHandler<HTMLElement> = useMutableCallback((e) => {
 		e.stopPropagation();
@@ -178,8 +168,8 @@ const MessageBox = ({
 	const handleSendMessage = useMutableCallback(() => {
 		const text = chat?.composer?.text ?? '';
 		chat?.composer?.clear();
-		if(showMarkdownPreview){
-			setShowMarkdownPreview(!showMarkdownPreview)
+		if (showMarkdownPreview) {
+			setShowMarkdownPreview(!showMarkdownPreview);
 		}
 
 		onSend?.({
@@ -364,7 +354,7 @@ const MessageBox = ({
 	// ==================================================================================================
 	const previewAreaRef = useRef<HTMLTextAreaElement>(null);
 	const shadowPreviewRef = useRef(null);
-	const { shadowStyle:shadowPreviewStyle } = useAutoGrow(previewAreaRef, shadowPreviewRef);
+	const { shadowStyle: shadowPreviewStyle } = useAutoGrow(previewAreaRef, shadowPreviewRef);
 	// ==================================================================================================
 
 	return (
@@ -404,38 +394,39 @@ const MessageBox = ({
 			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={rid} tmid={tmid} />}
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
 				{isRecordingAudio && <AudioMessageRecorder rid={rid} isMicrophoneDenied={isMicrophoneDenied} />}
-					<MessageComposerInput
-						ref={mergedRefs as unknown as Ref<HTMLInputElement>}
-						aria-label={t('Message')}
-						name='msg'
-						disabled={isRecording || !canSend || showMarkdownPreview}
-						onChange={setTyping}
-						style={textAreaStyle}
-						placeholder={t('Message')}
-						onKeyDown={handler}
-						onPaste={handlePaste}
-						aria-activedescendant={ariaActiveDescendant}
+				<MessageComposerInput
+					ref={mergedRefs as unknown as Ref<HTMLInputElement>}
+					aria-label={t('Message')}
+					name='msg'
+					disabled={isRecording || !canSend || showMarkdownPreview}
+					onChange={setTyping}
+					style={textAreaStyle}
+					placeholder={t('Message')}
+					onKeyDown={handler}
+					onPaste={handlePaste}
+					aria-activedescendant={ariaActiveDescendant}
+				/>
+				<div ref={shadowRef} style={shadowStyle} />
+				{showMarkdownPreview && (
+					<MessagePreview
+						md={md}
+						channels={channels}
+						mentions={mentions}
+						shadowPreviewRef={shadowPreviewRef}
+						shadowPreviewStyle={shadowPreviewStyle}
 					/>
-					<div ref={shadowRef} style={shadowStyle} />
-					{showMarkdownPreview && (
-        				<MessagePreview 
-							md={md} 
-							channels={channels} 
-							mentions={mentions}
-							shadowPreviewRef={shadowPreviewRef}
-							shadowPreviewStyle={shadowPreviewStyle}
-						/>
-      				)}
-				
-				{previewAllowed
-					&& <IconButton 
-						info={typing || isEditing} 
-						disabled={!canSend || (!typing && !isEditing)} 
-						style={{"position":"absolute","right":0,"marginTop":"10px","marginRight":"5px","zIndex":100}} 
-						small 
-						icon={showMarkdownPreview?'eye-off':'eye'} 
-						onClick={()=>handleViewPreview(chat.composer?.text as any)} 
-					/>}
+				)}
+
+				{previewAllowed && (
+					<IconButton
+						info={typing || isEditing}
+						disabled={!canSend || (!typing && !isEditing)}
+						style={{ position: 'absolute', right: 0, marginTop: '10px', marginRight: '5px', zIndex: 100 }}
+						small
+						icon={showMarkdownPreview ? 'eye-off' : 'eye'}
+						onClick={() => handleViewPreview(chat.composer?.text as any)}
+					/>
+				)}
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 						<MessageComposerAction
