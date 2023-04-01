@@ -1,3 +1,4 @@
+import { isOmnichannelRoom, isEditedMessage } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -5,8 +6,12 @@ import { callbacks } from '../../../../lib/callbacks';
 callbacks.add(
 	'afterSaveMessage',
 	async function (message, room) {
+		if (!isOmnichannelRoom(room)) {
+			return message;
+		}
+
 		// skips this callback if the message was edited
-		if (!message || message.editedAt) {
+		if (!message || isEditedMessage(message)) {
 			return message;
 		}
 
