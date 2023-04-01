@@ -70,7 +70,7 @@ const configure = _.debounce(function () {
 	const SignatureVersion = settings.get<string>('FileUpload_S3_SignatureVersion');
 	const ForcePathStyle = settings.get<boolean>('FileUpload_S3_ForcePathStyle');
 	// const CDN = RocketChat.settings.get('FileUpload_S3_CDN');
-	const BucketURL = settings.get('FileUpload_S3_BucketURL');
+	const BucketURL = settings.get<string>('FileUpload_S3_BucketURL');
 
 	if (!Bucket) {
 		return;
