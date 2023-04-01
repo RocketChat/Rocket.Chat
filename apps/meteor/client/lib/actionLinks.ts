@@ -1,8 +1,8 @@
-import { Meteor } from 'meteor/meteor';
 import type { IMessage } from '@rocket.chat/core-typings';
+import { Meteor } from 'meteor/meteor';
 
-import { isLayoutEmbedded } from '../../../../client/lib/utils/isLayoutEmbedded';
-import { fireGlobalEvent } from '../../../../client/lib/utils/fireGlobalEvent';
+import { fireGlobalEvent } from './utils/fireGlobalEvent';
+import { isLayoutEmbedded } from './utils/isLayoutEmbedded';
 
 // Action Links namespace creation.
 export const actionLinks = {
