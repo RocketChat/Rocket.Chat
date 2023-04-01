@@ -10,16 +10,20 @@ export const useMarkdownPreview = (rid: IRoom['_id']) => {
   const [mentions, setMentions] = useState([]);
   const userSpotlight = useMethod('spotlight');
 
-  const handleViewPreview = async (text: string | undefined) => {
-    setMd(textToMessageToken(text, {}));
+  // TODO: add proper types, currently using "any"
+
+  const handleViewPreview = async (text: string) => {
+    let mdToken = textToMessageToken(text, {})
+    // Type 'Root' is not assignable to parameter of type 'SetStateAction<undefined>' 
+    setMd(mdToken as any);
     const channelTextArray = getChannelMentions(text)
-    const channelsMentioned = channelTextArray.map((c) => getChannel(c)).filter(ch => ch !== undefined)
-    setChannels(channelsMentioned);
-    setMentions(getUserMentions(text));
+    const channelsMentioned = channelTextArray.map((c:string) => getChannel(c)).filter((ch:any) => ch !== undefined)
+    setChannels(channelsMentioned as any);
+    setMentions(getUserMentions(text) as any);
     const mentionsText = getUserMentions(text);
-    const promises = mentionsText.map((u) => getUser(u,rid,userSpotlight));
+    const promises = mentionsText.map((u:any) => getUser(u,rid,userSpotlight));
     const users = await Promise.all(promises);
-    setMentions(users.filter(user => user !== undefined));
+    setMentions(users.filter((user:any) => user !== undefined) as any);
     setShowMarkdownPreview(!showMarkdownPreview);
   };
 

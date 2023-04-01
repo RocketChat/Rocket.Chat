@@ -44,7 +44,7 @@ export const getUser = async (filter:string,rid: IRoom['_id'],userSpotlight:any)
 		return
 	}
     const { users = [] } = await userSpotlight(filter, usernames, { users: true, mentions: true }, rid)
-    return users.map(({ _id, username, name}) => {
+    return users.map(({ _id, username, name }:{ _id:string, username:string, name:string}) => {
         return {
             _id,
             username,
@@ -75,15 +75,15 @@ export const getChannel = (filter:string) => {
 
 const isParsedMessage = (text: string | Root): text is Root => Array.isArray(text) && text.length > 0;
 
-export const textToMessageToken = (textOrRoot: string | Root, parseOptions: Options): Root => {
-	if (!textOrRoot) {
+export const textToMessageToken = (text: string | undefined, parseOptions: Options): Root => {
+	if (!text) {
 		return [];
 	}
 
-	if (isParsedMessage(textOrRoot)) {
-		return textOrRoot;
+	if (isParsedMessage(text)) {
+		return text;
 	}
-	const parsedMessage = parse(textOrRoot, parseOptions);
+	const parsedMessage = parse(text, parseOptions);
 
 	const parsedMessageCleaned = parsedMessage[0].type !== 'LINE_BREAK' ? parsedMessage : (parsedMessage.slice(1) as Root);
 
