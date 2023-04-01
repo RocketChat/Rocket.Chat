@@ -1,7 +1,7 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { actionLinks } from '../../action-links/client';
+import { actionLinks } from '../../../client/lib/actionLinks';
 import { APIClient } from '../../utils/client';
 import { Rooms } from '../../models/client';
 import { Notifications } from '../../notifications/client';

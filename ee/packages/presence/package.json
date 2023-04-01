@@ -12,13 +12,13 @@
 		"@types/node": "^14.18.21",
 		"babel-jest": "^29.0.3",
 		"eslint": "^8.29.0",
-		"jest": "^29.0.3",
+		"jest": "~29.5.0",
 		"typescript": "~5.0.2"
 	},
 	"scripts": {
 		"lint": "eslint src",
 		"lint:fix": "eslint src --fix",
-		"jest": "jest",
+		"test": "jest",
 		"build": "tsc -p tsconfig.json",
 		"testunit": "jest tests/**/*.test.ts",
 		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"

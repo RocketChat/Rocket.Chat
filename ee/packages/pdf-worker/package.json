@@ -15,19 +15,20 @@
 		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/react": "~13.4.0",
 		"@types/emojione": "^2.2.6",
-		"@types/jest": "^27.4.1",
+		"@types/jest": "~29.5.0",
 		"@types/react-dom": "^18",
-		"@types/testing-library__jest-dom": "^5",
+		"@types/testing-library__jest-dom": "~5.14.5",
 		"eslint": "^8.12.0",
-		"jest": "^27.5.1",
+		"jest": "~29.5.0",
+		"jest-environment-jsdom": "~29.5.0",
 		"react-dom": "^18.2.0",
-		"ts-jest": "^27.1.4",
+		"ts-jest": "~29.0.5",
 		"typescript": "~5.0.2"
 	},
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"jest": "jest",
+		"test": "jest",
 		"build": "rm -rf dist && tsc -p tsconfig.json && cp -r src/public dist/public",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
 		"storybook": "start-storybook -p 6006"
@@ -47,5 +48,8 @@
 		"moment": "^2.29.4",
 		"moment-timezone": "^0.5.34",
 		"react": "^18.2.0"
+	},
+	"volta": {
+		"extends": "../../../package.json"
 	}
 }
