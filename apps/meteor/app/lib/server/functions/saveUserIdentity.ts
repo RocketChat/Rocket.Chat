@@ -69,10 +69,10 @@ export async function saveUserIdentity({ _id, name: rawName, username: rawUserna
 			const previousFile = await fileStore.model.findOneByName(previousUsername);
 			const file = await fileStore.model.findOneByName(username);
 			if (file) {
-				fileStore.model.deleteFile(file._id);
+				await fileStore.model.deleteFile(file._id);
 			}
 			if (previousFile) {
-				fileStore.model.updateFileNameById(previousFile._id, username);
+				await fileStore.model.updateFileNameById(previousFile._id, username);
 			}
 		}
 

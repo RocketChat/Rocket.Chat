@@ -107,7 +107,7 @@ const generateUserAvatarFile = async (exportOperation: IExportOperation, userDat
 	}
 
 	const filePath = joinPath(exportOperation.exportPath, 'avatar');
-	if (FileUpload.copy(file, filePath)) {
+	if (await FileUpload.copy?.(file, filePath)) {
 		exportOperation.generatedAvatar = true;
 	}
 };

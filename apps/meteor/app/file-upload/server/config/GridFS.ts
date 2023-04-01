@@ -1,6 +1,9 @@
+import type { TransformCallback, TransformOptions } from 'stream';
 import stream from 'stream';
 import zlib from 'zlib';
-import util from 'util';
+import type * as http from 'http';
+
+import type { IUpload } from '@rocket.chat/core-typings';
 
 import { UploadFS } from '../../../../server/ufs';
 import { Logger } from '../../../logger/server';
@@ -9,48 +12,60 @@ import { getFileRange, setRangeHeaders } from '../lib/ranges';
 
 const logger = new Logger('FileUpload');
 
-function ExtractRange(options) {
-	if (!(this instanceof ExtractRange)) {
-		return new ExtractRange(options);
+class ExtractRange extends stream.Transform {
+	private start: number;
+
+	private stop: number;
+
+	private bytes_read: number;
+
+	constructor(options: TransformOptions & { start: number; stop: number }) {
+		super(options);
+
+		this.start = options.start;
+		this.stop = options.stop;
+		this.bytes_read = 0;
 	}
 
-	this.start = options.start;
-	this.stop = options.stop;
-	this.bytes_read = 0;
+	_transform(chunk: any, _enc: BufferEncoding, cb: TransformCallback) {
+		if (this.bytes_read > this.stop) {
+			// done reading
+			this.end();
+		} else if (this.bytes_read + chunk.length < this.start) {
+			// this chunk is still before the start byte
+		} else {
+			let start;
+			let stop;
 
-	stream.Transform.call(this, options);
+			if (this.start <= this.bytes_read) {
+				start = 0;
+			} else {
+				start = this.start - this.bytes_read;
+			}
+			if (this.stop - this.bytes_read + 1 < chunk.length) {
+				stop = this.stop - this.bytes_read + 1;
+			} else {
+				stop = chunk.length;
+			}
+			const newchunk = chunk.slice(start, stop);
+			this.push(newchunk);
+		}
+		this.bytes_read += chunk.length;
+		cb();
+	}
 }
-util.inherits(ExtractRange, stream.Transform);
-
-ExtractRange.prototype._transform = function (chunk, enc, cb) {
-	if (this.bytes_read > this.stop) {
-		// done reading
-		this.end();
-	} else if (this.bytes_read + chunk.length < this.start) {
-		// this chunk is still before the start byte
-	} else {
-		let start;
-		let stop;
-
-		if (this.start <= this.bytes_read) {
-			start = 0;
-		} else {
-			start = this.start - this.bytes_read;
-		}
-		if (this.stop - this.bytes_read + 1 < chunk.length) {
-			stop = this.stop - this.bytes_read + 1;
-		} else {
-			stop = chunk.length;
-		}
-		const newchunk = chunk.slice(start, stop);
-		this.push(newchunk);
-	}
-	this.bytes_read += chunk.length;
-	cb();
-};
 
 // code from: https://github.com/jalik/jalik-ufs/blob/master/ufs-server.js#L310
-const readFromGridFS = function (storeName, fileId, file, req, res) {
+const readFromGridFS = function (
+	storeName: string | undefined,
+	fileId: string,
+	file: IUpload,
+	req: http.IncomingMessage,
+	res: http.ServerResponse,
+) {
+	if (!storeName) {
+		return;
+	}
 	const store = UploadFS.getStore(storeName);
 	const rs = store.getReadStream(fileId, file);
 	const ws = new stream.PassThrough();
@@ -83,7 +98,7 @@ const readFromGridFS = function (storeName, fileId, file, req, res) {
 		return;
 	}
 
-	const accept = req.headers['accept-encoding'] || '';
+	const accept = (Array.isArray(req.headers['accept-encoding']) ? req.headers['accept-encoding'][0] : req.headers['accept-encoding']) || '';
 
 	// Compress data using gzip
 	if (accept.match(/\bgzip\b/)) {
@@ -107,7 +122,11 @@ const readFromGridFS = function (storeName, fileId, file, req, res) {
 	ws.pipe(res);
 };
 
-const copyFromGridFS = function (storeName, fileId, file, out) {
+const copyFromGridFS = function (storeName: string | undefined, fileId: string, file: IUpload, out: stream.Writable) {
+	if (!storeName) {
+		return;
+	}
+
 	const store = UploadFS.getStore(storeName);
 	const rs = store.getReadStream(fileId, file);
 
@@ -139,18 +158,18 @@ FileUpload.configureUploadsStore('GridFS', 'GridFS:Avatars', {
 new FileUploadClass({
 	name: 'GridFS:Uploads',
 
-	get(file, req, res) {
+	async get(file, req, res) {
 		file = FileUpload.addExtensionTo(file);
 
-		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.name)}`);
-		res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
+		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
+		file.uploadedAt && res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 		res.setHeader('Content-Type', file.type || 'application/octet-stream');
-		res.setHeader('Content-Length', file.size);
+		res.setHeader('Content-Length', file.size || 0);
 
-		return readFromGridFS(file.store, file._id, file, req, res);
+		readFromGridFS(file.store, file._id, file, req, res);
 	},
 
-	copy(file, out) {
+	async copy(file, out) {
 		copyFromGridFS(file.store, file._id, file, out);
 	},
 });
@@ -158,18 +177,18 @@ new FileUploadClass({
 new FileUploadClass({
 	name: 'GridFS:UserDataFiles',
 
-	get(file, req, res) {
+	async get(file, req, res) {
 		file = FileUpload.addExtensionTo(file);
 
-		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.name)}`);
-		res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
-		res.setHeader('Content-Type', file.type);
-		res.setHeader('Content-Length', file.size);
+		res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
+		file.uploadedAt && res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
+		res.setHeader('Content-Type', file.type || '');
+		res.setHeader('Content-Length', file.size || 0);
 
-		return readFromGridFS(file.store, file._id, file, req, res);
+		readFromGridFS(file.store, file._id, file, req, res);
 	},
 
-	copy(file, out) {
+	async copy(file, out) {
 		copyFromGridFS(file.store, file._id, file, out);
 	},
 });
@@ -177,13 +196,13 @@ new FileUploadClass({
 new FileUploadClass({
 	name: 'GridFS:Avatars',
 
-	get(file, req, res) {
+	async get(file, req, res) {
 		file = FileUpload.addExtensionTo(file);
 
-		return readFromGridFS(file.store, file._id, file, req, res);
+		readFromGridFS(file.store, file._id, file, req, res);
 	},
 
-	copy(file, out) {
+	async copy(file, out) {
 		copyFromGridFS(file.store, file._id, file, out);
 	},
 });

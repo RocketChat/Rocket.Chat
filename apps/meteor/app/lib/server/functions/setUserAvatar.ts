@@ -104,7 +104,7 @@ export async function setUserAvatar(
 	);
 
 	const fileStore = FileUpload.getStore('Avatars');
-	fileStore.deleteByName(user.username);
+	user.username && fileStore.deleteByName(user.username);
 
 	const file = {
 		userId: user._id,
@@ -114,7 +114,7 @@ export async function setUserAvatar(
 
 	const result = fileStore.insertSync(file, buffer);
 
-	const avatarETag = etag || result?.etag || null;
+	const avatarETag = etag || result?.etag || '';
 
 	Meteor.setTimeout(async function () {
 		await Users.setAvatarData(user._id, service, avatarETag);

@@ -3,11 +3,11 @@ import _ from 'underscore';
 import { UploadFS } from '../../../../server/ufs';
 import { settings } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import './AmazonS3.js';
-import './FileSystem.js';
-import './GoogleStorage.js';
-import './GridFS.js';
-import './Webdav.js';
+import './AmazonS3';
+import './FileSystem';
+import './GoogleStorage';
+import './GridFS';
+import './Webdav';
 
 const configStore = _.debounce(() => {
 	const store = settings.get('FileUpload_Storage_Type');

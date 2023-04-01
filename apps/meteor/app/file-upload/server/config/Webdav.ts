@@ -2,10 +2,10 @@ import _ from 'underscore';
 
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { settings } from '../../../settings/server';
-import '../../ufs/Webdav/server.js';
+import '../../ufs/Webdav/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-const get = function (file, req, res) {
+const get: FileUploadClass['get'] = async function (this: FileUploadClass, file, _req, res) {
 	this.store
 		.getReadStream(file._id, file)
 		.on('error', () => {
@@ -19,7 +19,7 @@ const get = function (file, req, res) {
 		.on('end', res.end.bind(res));
 };
 
-const copy = function (file, out) {
+const copy: FileUploadClass['copy'] = async function (this: FileUploadClass, file, out) {
 	this.store.getReadStream(file._id, file).pipe(out);
 };
 
