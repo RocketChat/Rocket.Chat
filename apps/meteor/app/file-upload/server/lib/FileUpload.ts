@@ -145,10 +145,7 @@ export const FileUpload = {
 		}
 
 		// livechat users can upload files but they don't have an userId
-		const user = file.userId ? Promise.await(Users.findOne(file.userId)) : null;
-		if (!user) {
-			return false;
-		}
+		const user = (file.userId && Promise.await(Users.findOne(file.userId))) || undefined;
 
 		const room = Rooms.findOneById(file.rid);
 		const directMessageAllowed = settings.get('FileUpload_Enabled_Direct');
