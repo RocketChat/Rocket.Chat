@@ -44,4 +44,5 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	getNextVisitorUsername(): Promise<string>;
 
 	updateLastAgentByToken(token: string, lastAgent: ILivechatVisitor['lastAgent']): Promise<Document | UpdateResult>;
+	saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<UpdateResult | Document | void>;
 }

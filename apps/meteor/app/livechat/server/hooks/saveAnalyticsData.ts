@@ -1,4 +1,4 @@
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
@@ -15,7 +15,7 @@ callbacks.add(
 		}
 
 		// skips this callback if the message was edited
-		if (!message || message.editedAt) {
+		if (!message || isEditedMessage(message)) {
 			return message;
 		}
 
@@ -35,25 +35,26 @@ callbacks.add(
 		const now = new Date();
 		let analyticsData;
 
-		const visitorLastQuery = room.metrics && room.metrics.v ? room.metrics.v.lq : room.ts;
-		const agentLastReply = room.metrics && room.metrics.servedBy ? room.metrics.servedBy.lr : room.ts;
-		const agentJoinTime = room.servedBy && room.servedBy.ts ? room.servedBy.ts : room.ts;
+		const visitorLastQuery = room.metrics?.v ? room.metrics.v.lq : room.ts;
+		const agentLastReply = room.metrics?.servedBy ? room.metrics.servedBy.lr : room.ts;
+		const agentJoinTime = room.servedBy?.ts ? room.servedBy.ts : room.ts;
 
-		const isResponseTt = room.metrics && room.metrics.response && room.metrics.response.tt;
-		const isResponseTotal = room.metrics && room.metrics.response && room.metrics.response.total;
+		const isResponseTt = room.metrics?.response?.tt;
+		const isResponseTotal = room.metrics?.response?.total;
 
 		if (agentLastReply === room.ts) {
 			callbackLogger.debug('Calculating: first message from agent');
 			// first response
 			const firstResponseDate = now;
-			const firstResponseTime = (now.getTime() - visitorLastQuery) / 1000;
-			const responseTime = (now.getTime() - visitorLastQuery) / 1000;
+			const firstResponseTime = (now.getTime() - new Date(visitorLastQuery).getTime()) / 1000;
+			const responseTime = (now.getTime() - new Date(visitorLastQuery).getTime()) / 1000;
 			const avgResponseTime =
-				((isResponseTt ? room.metrics.response.tt : 0) + responseTime) / ((isResponseTotal ? room.metrics.response.total : 0) + 1);
+				((isResponseTt ? room.metrics?.response?.tt : 0) || 0 + responseTime) /
+				((isResponseTotal ? room.metrics?.response?.total : 0) || 0 + 1);
 
 			const firstReactionDate = now;
-			const firstReactionTime = (now.getTime() - agentJoinTime) / 1000;
-			const reactionTime = (now.getTime() - agentJoinTime) / 1000;
+			const firstReactionTime = (now.getTime() - new Date(agentJoinTime).getTime()) / 1000;
+			const reactionTime = (now.getTime() - new Date(agentJoinTime).getTime()) / 1000;
 
 			analyticsData = {
 				firstResponseDate,
@@ -67,11 +68,12 @@ callbacks.add(
 		} else if (visitorLastQuery > agentLastReply) {
 			callbackLogger.debug('Calculating: visitor sent a message after agent');
 			// response, not first
-			const responseTime = (now.getTime() - visitorLastQuery) / 1000;
+			const responseTime = (now.getTime() - new Date(visitorLastQuery).getTime()) / 1000;
 			const avgResponseTime =
-				((isResponseTt ? room.metrics.response.tt : 0) + responseTime) / ((isResponseTotal ? room.metrics.response.total : 0) + 1);
+				((isResponseTt ? room.metrics?.response?.tt : 0) || 0 + responseTime) /
+				((isResponseTotal ? room.metrics?.response?.total : 0) || 0 + 1);
 
-			const reactionTime = (now.getTime() - visitorLastQuery) / 1000;
+			const reactionTime = (now.getTime() - new Date(visitorLastQuery).getTime()) / 1000;
 
 			analyticsData = {
 				responseTime,
