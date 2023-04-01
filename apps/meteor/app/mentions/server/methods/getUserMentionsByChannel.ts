@@ -10,7 +10,7 @@ import { canAccessRoomAsync } from '../../../authorization/server';
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		getUserMentionsByChannel(params: { roomId: string; options: { limit: number; sort: { ts: -1 | 1 } } }):IMessage[];
+		getUserMentionsByChannel(params: { roomId: string; options: { limit: number; sort: { ts: -1 | 1 } } }): IMessage[];
 	}
 }
 
