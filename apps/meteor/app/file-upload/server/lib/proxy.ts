@@ -5,6 +5,8 @@ import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { InstanceStatus as InstanceStatusModel } from '@rocket.chat/models';
+import type { NextFunction } from 'connect';
+import type createServer from 'connect';
 
 import { UploadFS } from '../../../../server/ufs';
 import { Logger } from '../../../logger/server';
@@ -14,9 +16,9 @@ const logger = new Logger('UploadProxy');
 
 WebApp.connectHandlers.stack.unshift({
 	route: '',
-	handle: Meteor.bindEnvironment(function (req, res, next) {
+	handle: Meteor.bindEnvironment(function (req: createServer.IncomingMessage, res: http.ServerResponse, next: NextFunction) {
 		// Quick check to see if request should be catch
-		if (!req.url.includes(`/${UploadFS.config.storesPath}/`)) {
+		if (!req.url?.includes(`/${UploadFS.config.storesPath}/`)) {
 			return next();
 		}
 
@@ -28,7 +30,7 @@ WebApp.connectHandlers.stack.unshift({
 
 		// Remove store path
 		const parsedUrl = URL.parse(req.url);
-		const path = parsedUrl.pathname.substr(UploadFS.config.storesPath.length + 1);
+		const path = parsedUrl.pathname?.substr(UploadFS.config.storesPath.length + 1) || '';
 
 		// Get store
 		const regExp = new RegExp('^/([^/?]+)/([^/?]+)$');
@@ -58,7 +60,7 @@ WebApp.connectHandlers.stack.unshift({
 			return;
 		}
 
-		if (file.instanceId === InstanceStatus.id()) {
+		if (!file.instanceId || file.instanceId === InstanceStatus.id()) {
 			logger.debug('Correct instance');
 			return next();
 		}
@@ -88,6 +90,7 @@ WebApp.connectHandlers.stack.unshift({
 		logger.warn(
 			'UFS proxy middleware is deprecated as this upload method is not being used by Web/Mobile Clients. See this: https://docs.rocket.chat/api/rest-api/methods/rooms/upload',
 		);
+		// eslint-disable-next-line @typescript-eslint/naming-convention
 		const proxy = http.request(options, function (proxy_res) {
 			proxy_res.pipe(res, {
 				end: true,

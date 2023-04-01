@@ -1,49 +1,43 @@
 import http from 'http';
 import https from 'https';
+import URL from 'url';
 
 import _ from 'underscore';
 
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
 import { settings } from '../../../settings/server';
-import '../../ufs/GoogleStorage/server.js';
-import { SystemLogger } from '../../../../server/lib/logger/system';
+import '../../ufs/GoogleStorage/server';
 
-const get = function (file, req, res) {
-	const forceDownload = typeof req.query.download !== 'undefined';
+const get: FileUploadClass['get'] = async function (this: FileUploadClass, file, req, res) {
+	const { query } = URL.parse(req.url || '', true);
+	const forceDownload = typeof query.download !== 'undefined';
 
-	this.store.getRedirectURL(file, forceDownload, (err, fileUrl) => {
-		if (err) {
-			return SystemLogger.error(err);
-		}
+	const fileUrl = await this.store.getRedirectURL(file, forceDownload);
+	if (!fileUrl || !file.store) {
+		res.end();
+		return;
+	}
 
-		if (!fileUrl) {
-			return res.end();
-		}
+	const storeType = file.store.split(':').pop();
+	if (settings.get(`FileUpload_GoogleStorage_Proxy_${storeType}`)) {
+		const request = /^https:/.test(fileUrl) ? https : http;
 
-		const storeType = file.store.split(':').pop();
-		if (settings.get(`FileUpload_GoogleStorage_Proxy_${storeType}`)) {
-			const request = /^https:/.test(fileUrl) ? https : http;
+		FileUpload.proxyFile(file.name || '', fileUrl, forceDownload, request, req, res);
+		return;
+	}
 
-			return FileUpload.proxyFile(file.name, fileUrl, forceDownload, request, req, res);
-		}
-
-		return FileUpload.redirectToFile(fileUrl, req, res);
-	});
+	FileUpload.redirectToFile(fileUrl, req, res);
 };
 
-const copy = function (file, out) {
-	this.store.getRedirectURL(file, false, (err, fileUrl) => {
-		if (err) {
-			SystemLogger.error(err);
-		}
+const copy: FileUploadClass['copy'] = async function (this: FileUploadClass, file, out) {
+	const fileUrl = await this.store.getRedirectURL(file, false);
 
-		if (fileUrl) {
-			const request = /^https:/.test(fileUrl) ? https : http;
-			request.get(fileUrl, (fileRes) => fileRes.pipe(out));
-		} else {
-			out.end();
-		}
-	});
+	if (fileUrl) {
+		const request = /^https:/.test(fileUrl) ? https : http;
+		request.get(fileUrl, (fileRes) => fileRes.pipe(out));
+	} else {
+		out.end();
+	}
 };
 
 const GoogleCloudStorageUploads = new FileUploadClass({

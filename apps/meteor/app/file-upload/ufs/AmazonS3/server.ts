@@ -4,17 +4,34 @@ import { check } from 'meteor/check';
 import { Random } from '@rocket.chat/random';
 import _ from 'underscore';
 import S3 from 'aws-sdk/clients/s3';
+import type { OptionalId } from 'mongodb';
 
 import { UploadFS } from '../../../../server/ufs';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import type { IFile } from '../../../../server/ufs/definition';
+import type { StoreOptions } from '../../../../server/ufs/ufs-store';
 
-/**
- * AmazonS3 store
- * @param options
- * @constructor
- */
+export type S3Options = StoreOptions & {
+	connection: {
+		accessKeyId?: string;
+		secretAccessKey?: string;
+		endpoint?: string;
+		signatureVersion: string;
+		s3ForcePathStyle?: boolean;
+		params: {
+			Bucket: string;
+			ACL: string;
+		};
+		region: string;
+	};
+	URLExpiryTimeSpan: number;
+	getPath: (file: OptionalId<IFile>) => string;
+};
+
 class AmazonS3Store extends UploadFS.Store {
-	constructor(options) {
+	protected getPath: (file: IFile) => string;
+
+	constructor(options: S3Options) {
 		// Default options
 		// options.secretAccessKey,
 		// options.accessKeyId,
@@ -52,16 +69,18 @@ class AmazonS3Store extends UploadFS.Store {
 			if (file.s3) {
 				return file.s3.path + file._id;
 			}
+
+			return file._id;
 		};
 
-		this.getRedirectURL = function (file, forceDownload = false, callback) {
+		this.getRedirectURL = async (file, forceDownload = false) => {
 			const params = {
 				Key: this.getPath(file),
 				Expires: classOptions.URLExpiryTimeSpan,
-				ResponseContentDisposition: `${forceDownload ? 'attachment' : 'inline'}; filename="${encodeURI(file.name)}"`,
+				ResponseContentDisposition: `${forceDownload ? 'attachment' : 'inline'}; filename="${encodeURI(file.name || '')}"`,
 			};
 
-			return s3.getSignedUrl('getObject', params, callback);
+			return s3.getSignedUrl('getObject', params);
 		};
 
 		/**
@@ -70,7 +89,7 @@ class AmazonS3Store extends UploadFS.Store {
 		 * @param callback
 		 * @return {string}
 		 */
-		this.create = function (file, callback) {
+		this.create = (file, callback) => {
 			check(file, Object);
 
 			if (file._id == null) {
@@ -78,7 +97,7 @@ class AmazonS3Store extends UploadFS.Store {
 			}
 
 			file.AmazonS3 = {
-				path: this.options.getPath(file),
+				path: classOptions.getPath(file),
 			};
 
 			file.store = this.options.name; // assign store to file
@@ -92,8 +111,13 @@ class AmazonS3Store extends UploadFS.Store {
 		 */
 		this.delete = function (fileId, callback) {
 			const file = this.getCollection().findOne({ _id: fileId });
+			if (!file) {
+				callback?.(new Error('File not found'));
+				return;
+			}
 			const params = {
 				Key: this.getPath(file),
+				Bucket: classOptions.connection.params.Bucket,
 			};
 
 			s3.deleteObject(params, (err, data) => {
@@ -101,7 +125,7 @@ class AmazonS3Store extends UploadFS.Store {
 					SystemLogger.error(err);
 				}
 
-				callback && callback(err, data);
+				callback?.(err, data);
 			});
 		};
 
@@ -112,9 +136,14 @@ class AmazonS3Store extends UploadFS.Store {
 		 * @param options
 		 * @return {*}
 		 */
-		this.getReadStream = function (fileId, file, options = {}) {
-			const params = {
+		this.getReadStream = function (_fileId, file, options = {}) {
+			const params: {
+				Key: string;
+				Bucket: string;
+				Range?: string;
+			} = {
 				Key: this.getPath(file),
+				Bucket: classOptions.connection.params.Bucket,
 			};
 
 			if (options.start && options.end) {
@@ -131,9 +160,10 @@ class AmazonS3Store extends UploadFS.Store {
 		 * @param options
 		 * @return {*}
 		 */
-		this.getWriteStream = function (fileId, file /* , options*/) {
+		this.getWriteStream = function (_fileId, file /* , options*/) {
 			const writeStream = new stream.PassThrough();
-			writeStream.length = file.size;
+			// TODO: Check if is necessary, type does not allow;
+			// writeStream.length = file.size;
 
 			writeStream.on('newListener', (event, listener) => {
 				if (event === 'finish') {
@@ -149,6 +179,7 @@ class AmazonS3Store extends UploadFS.Store {
 					Key: this.getPath(file),
 					Body: writeStream,
 					ContentType: file.type,
+					Bucket: classOptions.connection.params.Bucket,
 				},
 				(error) => {
 					if (error) {
