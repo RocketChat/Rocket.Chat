@@ -185,11 +185,11 @@ export const updatePredictedVisitorAbandonment = async () => {
 	}
 };
 
-export const updateQueueInactivityTimeout = () => {
+export const updateQueueInactivityTimeout = async () => {
 	const queueTimeout = settings.get('Livechat_max_queue_wait_time');
 	if (queueTimeout <= 0) {
 		logger.debug('QueueInactivityTimer: Disabling scheduled closing');
-		OmnichannelQueueInactivityMonitor.stop();
+		await OmnichannelQueueInactivityMonitor.stop();
 		return;
 	}
 

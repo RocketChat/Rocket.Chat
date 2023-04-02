@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
-import { Messages, SmarshHistory } from '@rocket.chat/models';
+import { Messages, SmarshHistory, Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
-import { Rooms, Users } from '../../../models/server';
+import { Rooms } from '../../../models/server';
 import { MessageTypes } from '../../../ui-utils/server';
 import { smarsh } from '../lib/rocketchat';
 import 'moment-timezone';
@@ -50,7 +50,7 @@ smarsh.generateEml = () => {
 				room: room.name ? `#${room.name}` : `Direct Message Between: ${room.usernames.join(' & ')}`,
 			};
 
-			await Messages.find(query).forEach((message) => {
+			await Messages.find(query).forEach(async (message) => {
 				rows.push(opentr);
 
 				// The timestamp
@@ -60,7 +60,7 @@ smarsh.generateEml = () => {
 
 				// The sender
 				rows.push(open20td);
-				const sender = Users.findOne({ _id: message.u._id });
+				const sender = await Users.findOne({ _id: message.u._id });
 				if (data.users.indexOf(sender._id) === -1) {
 					data.users.push(sender._id);
 				}

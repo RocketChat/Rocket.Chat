@@ -2,11 +2,11 @@ import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../../app/settings/server';
 import { OmnichannelQueueInactivityMonitor } from '../lib/QueueInactivityMonitor';
 
-const removeScheduledQueueCloseTime = (inquiry: any): void => {
+const removeScheduledQueueCloseTime = async (inquiry: any): Promise<void> => {
 	if (!inquiry?._id) {
 		return;
 	}
-	void OmnichannelQueueInactivityMonitor.stopInquiry(inquiry._id);
+	await OmnichannelQueueInactivityMonitor.stopInquiry(inquiry._id);
 };
 
 settings.watch('Livechat_max_queue_wait_time', function (value: number) {

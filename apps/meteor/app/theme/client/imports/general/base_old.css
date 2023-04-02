@@ -1212,22 +1212,6 @@
 }
 
 .rc-old .code-mirror-box {
-	& .title {
-		display: none;
-	}
-
-	& .button-fullscreen {
-		display: initial;
-	}
-
-	& .button-restore {
-		display: none;
-	}
-
-	& .buttons {
-		margin: 10px 0;
-	}
-
 	& .CodeMirror {
 		border-width: var(--input-border-width);
 		border-color: var(--input-border-color);
@@ -1235,43 +1219,6 @@
 	}
 
 	&.code-mirror-box-fullscreen {
-		position: fixed;
-		z-index: 100;
-		top: 0;
-		right: 0;
-		bottom: 0;
-		left: 0;
-
-		display: flex;
-
-		flex-direction: column;
-
-		width: auto;
-		height: auto;
-
-		padding: 40px;
-
-		align-items: stretch;
-
-		& .buttons {
-			border-width: 0;
-		}
-
-		& .title {
-			display: initial;
-
-			font-size: 16px;
-			line-height: 50px;
-		}
-
-		& .button-fullscreen {
-			display: none;
-		}
-
-		& .button-restore {
-			display: initial;
-		}
-
 		& .CodeMirror {
 			display: flex;
 			flex-direction: column;
@@ -1363,10 +1310,6 @@
 	.rc-old.main-content {
 		transition: right 0.25s cubic-bezier(0.5, 0, 0.1, 1), transform 0.1s linear;
 		will-change: transform;
-	}
-
-	.rc-old .code-mirror-box.code-mirror-box-fullscreen {
-		left: 0;
 	}
 
 	.rc-old .container-bars .unread-bar {

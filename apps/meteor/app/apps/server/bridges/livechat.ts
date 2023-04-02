@@ -41,7 +41,7 @@ export class AppLivechatBridge extends LivechatBridge {
 
 		const msg = await Livechat.sendMessage({
 			guest: this.orch.getConverters()?.get('visitors').convertAppVisitor(message.visitor),
-			message: this.orch.getConverters()?.get('messages').convertAppMessage(message),
+			message: await this.orch.getConverters()?.get('messages').convertAppMessage(message),
 			agent: undefined,
 			roomInfo: {
 				source: {
@@ -66,7 +66,7 @@ export class AppLivechatBridge extends LivechatBridge {
 
 		const data = {
 			guest: message.visitor,
-			message: this.orch.getConverters()?.get('messages').convertAppMessage(message),
+			message: await this.orch.getConverters()?.get('messages').convertAppMessage(message),
 		};
 
 		await Livechat.updateMessage(data);

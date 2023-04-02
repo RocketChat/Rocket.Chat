@@ -147,7 +147,7 @@ export class AppRoomBridge extends RoomBridge {
 
 		let rcMessage;
 		if (parentMessage) {
-			rcMessage = this.orch.getConverters()?.get('messages').convertAppMessage(parentMessage);
+			rcMessage = await this.orch.getConverters()?.get('messages').convertAppMessage(parentMessage);
 		}
 
 		if (!rcRoom.prid || !(await Rooms.findOneById(rcRoom.prid))) {

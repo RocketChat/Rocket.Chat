@@ -1,4 +1,5 @@
 import { isGETDashboardTotalizerParams, isGETDashboardsAgentStatusParams } from '@rocket.chat/rest-typings';
+import { Users } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
 import {
@@ -12,7 +13,6 @@ import {
 	getAgentsProductivityMetricsAsync,
 	getChatsMetricsAsync,
 } from '../../../server/lib/analytics/dashboards';
-import { Users } from '../../../../models/server';
 
 API.v1.addRoute(
 	'livechat/analytics/dashboards/conversation-totalizers',
@@ -36,7 +36,10 @@ API.v1.addRoute(
 			}
 			const endDate = new Date(end);
 
-			const user = Users.findOneById(this.userId, { fields: { utcOffset: 1, language: 1 } });
+			const user = await Users.findOneById(this.userId, { projection: { utcOffset: 1, language: 1 } });
+			if (!user) {
+				return API.v1.failure('User not found');
+			}
 
 			const totalizers = await getConversationsMetricsAsync({ start: startDate, end: endDate, departmentId, user });
 			return API.v1.success(totalizers);
@@ -62,7 +65,10 @@ API.v1.addRoute(
 			}
 			const endDate = new Date(end);
 
-			const user = Users.findOneById(this.userId, { fields: { utcOffset: 1, language: 1 } });
+			const user = await Users.findOneById(this.userId, { projection: { utcOffset: 1, language: 1 } });
+			if (!user) {
+				return API.v1.failure('User not found');
+			}
 
 			const totalizers = await getAgentsProductivityMetricsAsync({ start: startDate, end: endDate, departmentId, user });
 			return API.v1.success(totalizers);
@@ -112,7 +118,10 @@ API.v1.addRoute(
 			}
 			const endDate = new Date(end);
 
-			const user = Users.findOneById(this.userId, { fields: { utcOffset: 1, language: 1 } });
+			const user = await Users.findOneById(this.userId, { projection: { utcOffset: 1, language: 1 } });
+			if (!user) {
+				return API.v1.failure('User not found');
+			}
 
 			const totalizers = await getProductivityMetricsAsync({ start: startDate, end: endDate, departmentId, user });
 
