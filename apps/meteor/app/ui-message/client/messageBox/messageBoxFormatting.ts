@@ -50,6 +50,11 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 		pattern: '```\n{{text}}\n``` ',
 	},
 	{
+		label: 'Link',
+		icon: 'link',
+		pattern: '[Title]({{text}})',
+	},
+	{
 		label: 'KaTeX' as TranslationKey,
 		icon: 'katex',
 		text: () => {
