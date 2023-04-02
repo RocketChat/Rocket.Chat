@@ -6,7 +6,6 @@ import { FocusScope } from 'react-aria';
 
 import { getURL } from '../../../app/utils/lib/getURL';
 import { getButtonStyle } from './getButtonStyle';
-import './textParsers';
 
 const focusableElementsString = `
 	a[href]:not([tabindex="-1"]),

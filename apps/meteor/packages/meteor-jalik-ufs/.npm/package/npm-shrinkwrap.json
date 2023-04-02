@@ -1,0 +1,15 @@
+{
+  "lockfileVersion": 1,
+  "dependencies": {
+    "mkdirp": {
+      "version": "0.3.5",
+      "resolved": "https://registry.npmjs.org/mkdirp/-/mkdirp-0.3.5.tgz",
+      "integrity": "sha512-8OCq0De/h9ZxseqzCH8Kw/Filf5pF/vMI6+BH7Lu0jXz2pqYCjTAQRolSxRIi+Ax+oCCjlxoJMP0YQ4XlrQNHg=="
+    },
+    "spark-md5": {
+      "version": "3.0.0",
+      "resolved": "https://registry.npmjs.org/spark-md5/-/spark-md5-3.0.0.tgz",
+      "integrity": "sha512-BpPFB0Oh83mi+6DRcFwxPx96f3OL8Tkq3hdvaHuXaQUsy5F3saI3zIPNQ/UsTQgyAXIHnML1waeCe1WoCPXbpQ=="
+    }
+  }
+}

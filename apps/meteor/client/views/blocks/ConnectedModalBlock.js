@@ -5,7 +5,6 @@ import React, { useEffect, useReducer, useState } from 'react';
 
 import * as ActionManager from '../../../app/ui-message/client/ActionManager';
 import ModalBlock from './ModalBlock';
-import './textParsers';
 
 const useActionManagerState = (initialState) => {
 	const [state, setState] = useState(initialState);
