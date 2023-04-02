@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { Box, Button, IconButton, Tag } from '@rocket.chat/fuselage';
+import { Box, Button, Tag } from '@rocket.chat/fuselage';
 import { useContentBoxSize, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	MessageComposer,
@@ -14,7 +14,7 @@ import {
 import { useLayout, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ClipboardEventHandler, FormEvent, KeyboardEvent, KeyboardEventHandler, MouseEventHandler, ReactElement, Ref } from 'react';
-import React, { memo, useCallback, useReducer, useRef } from 'react';
+import React, { memo, useCallback, useReducer, useRef, useState } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { EmojiPicker } from '../../../../../../../app/emoji/client';
@@ -146,8 +146,12 @@ const MessageBox = ({
 	const autofocusRef = useMessageBoxAutoFocus();
 
 	const useEmojis = useUserPreference<boolean>('useEmojis');
+	const [inputValue, setInputValue] = useState('');
+	const { md, channels, mentions } = useMarkdownPreview(inputValue, rid);
 
-	const { md, channels, mentions, setShowMarkdownPreview, showMarkdownPreview, handleViewPreview } = useMarkdownPreview(rid);
+	const handleInputChange = (event: React.FormEvent<HTMLInputElement>) => {
+		setInputValue(event.currentTarget.value);
+	};
 
 	const handleOpenEmojiPicker: MouseEventHandler<HTMLElement> = useMutableCallback((e) => {
 		e.stopPropagation();
@@ -168,9 +172,6 @@ const MessageBox = ({
 	const handleSendMessage = useMutableCallback(() => {
 		const text = chat?.composer?.text ?? '';
 		chat?.composer?.clear();
-		if (showMarkdownPreview) {
-			setShowMarkdownPreview(!showMarkdownPreview);
-		}
 
 		onSend?.({
 			value: text,
@@ -398,16 +399,17 @@ const MessageBox = ({
 					ref={mergedRefs as unknown as Ref<HTMLInputElement>}
 					aria-label={t('Message')}
 					name='msg'
-					disabled={isRecording || !canSend || showMarkdownPreview}
+					disabled={isRecording || !canSend}
 					onChange={setTyping}
 					style={textAreaStyle}
 					placeholder={t('Message')}
 					onKeyDown={handler}
+					onInput={handleInputChange}
 					onPaste={handlePaste}
 					aria-activedescendant={ariaActiveDescendant}
 				/>
 				<div ref={shadowRef} style={shadowStyle} />
-				{showMarkdownPreview && (
+				{previewAllowed && (
 					<MessagePreview
 						md={md}
 						channels={channels}
@@ -417,21 +419,11 @@ const MessageBox = ({
 					/>
 				)}
 
-				{previewAllowed && (
-					<IconButton
-						info={typing || isEditing}
-						disabled={!canSend || (!typing && !isEditing)}
-						style={{ position: 'absolute', right: 0, marginTop: '10px', marginRight: '5px', zIndex: 100 }}
-						small
-						icon={showMarkdownPreview ? 'eye-off' : 'eye'}
-						onClick={() => handleViewPreview(chat.composer?.text as any)}
-					/>
-				)}
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 						<MessageComposerAction
 							icon='emoji'
-							disabled={!useEmojis || isRecording || !canSend || showMarkdownPreview}
+							disabled={!useEmojis || isRecording || !canSend}
 							onClick={handleOpenEmojiPicker}
 							title={t('Emoji')}
 						/>
@@ -441,7 +433,7 @@ const MessageBox = ({
 								composer={chat.composer}
 								variant={sizes.inlineSize < 480 ? 'small' : 'large'}
 								items={formatters}
-								disabled={isRecording || !canSend || showMarkdownPreview}
+								disabled={isRecording || !canSend}
 							/>
 						)}
 						<MessageComposerActionsDivider />

@@ -1,39 +1,23 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useMethod } from '@rocket.chat/ui-contexts';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-import { getChannel, getChannelMentions, getUser, getUserMentions, textToMessageToken } from '../utils/messageMarkdownUtils';
+import { getUserMentions, getChannelMentions, getChannel, getUser, textToMessageToken } from '../utils/messageMarkdownUtils';
 
-export const useMarkdownPreview = (rid: IRoom['_id']) => {
-	const [showMarkdownPreview, setShowMarkdownPreview] = useState(false);
-	const [md, setMd] = useState();
+export const useMarkdownPreview = (text: string, rid: IRoom['_id']) => {
+	const [md, setMd] = useState([]);
 	const [channels, setChannels] = useState([]);
 	const [mentions, setMentions] = useState([]);
 	const userSpotlight = useMethod('spotlight');
 
-	// TODO: add proper types, currently using "any"
-
-	const handleViewPreview = async (text: string) => {
-		const mdToken = textToMessageToken(text, {});
-		// Type 'Root' is not assignable to parameter of type 'SetStateAction<undefined>'
-		setMd(mdToken as any);
-		const channelTextArray = getChannelMentions(text) as any;
-		const channelsMentioned = channelTextArray.map((c: string) => getChannel(c)).filter((ch: any) => ch !== undefined);
-		setChannels(channelsMentioned as any);
+	useEffect(() => {
+		setMd(textToMessageToken(text, {}) as any);
+		setChannels(getChannelMentions(text).map((c) => getChannel(c)) as any);
 		setMentions(getUserMentions(text) as any);
 		const mentionsText = getUserMentions(text);
-		const promises = mentionsText.map((u: any) => getUser(u, rid, userSpotlight));
-		const users = await Promise.all(promises);
-		setMentions(users.filter((user: any) => user !== undefined) as any);
-		setShowMarkdownPreview(!showMarkdownPreview);
-	};
+		const promises = mentionsText.map((u) => getUser(u, rid, userSpotlight));
+		Promise.all(promises).then((users: any) => setMentions(users));
+	}, [text]);
 
-	return {
-		showMarkdownPreview,
-		setShowMarkdownPreview,
-		handleViewPreview,
-		md,
-		channels,
-		mentions,
-	};
+	return { md, channels, mentions };
 };
