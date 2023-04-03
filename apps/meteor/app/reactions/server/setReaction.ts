@@ -28,6 +28,8 @@ const removeUserReaction = (message: IMessage, reaction: string, username: strin
 async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction: string, shouldReact?: boolean) {
 	reaction = `:${reaction.replace(/:/g, '')}:`;
 
+	console.log('before ->', message);
+
 	if (!emoji.list[reaction] && (await EmojiCustom.findByNameOrAlias(reaction, {}).count()) === 0) {
 		throw new Meteor.Error('error-not-allowed', 'Invalid emoji provided.', {
 			method: 'setReaction',
@@ -84,6 +86,8 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 		callbacks.run('unsetReaction', message._id, reaction);
 		callbacks.run('afterUnsetReaction', message, { user, reaction, shouldReact, oldMessage });
 
+		console.log('before1 ->', message);
+
 		isReacted = false;
 	} else {
 		if (!message.reactions) {
@@ -101,11 +105,14 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 		}
 		callbacks.run('setReaction', message._id, reaction);
 		callbacks.run('afterSetReaction', message, { user, reaction, shouldReact });
+		console.log('before2 ->', message);
 
 		isReacted = true;
 	}
 
 	await Apps.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, isReacted);
+
+	console.log('after ->', message);
 }
 
 export async function executeSetReaction(reaction: string, messageId: IMessage['_id'], shouldReact?: boolean) {
