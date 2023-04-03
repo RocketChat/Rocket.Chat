@@ -333,17 +333,6 @@ export class Store {
 			// Execute transformation
 			this.transformWrite(rs, ws, fileId, file);
 		};
-
-		const collection = this.getCollection();
-
-		// Code executed before inserting file
-		collection.before.insert((userId: string, file: IFile) => {
-			console.log('before.insert', userId);
-			// TODO collection hooks support for async?
-			if (!Promise.await(this.permissions?.checkInsert(userId, file))) {
-				throw new Meteor.Error('forbidden', 'Forbidden');
-			}
-		});
 	}
 
 	async removeById(fileId: string) {
