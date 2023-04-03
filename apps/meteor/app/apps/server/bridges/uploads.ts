@@ -58,15 +58,15 @@ export class AppUploadBridge extends UploadBridge {
 		details.type = determineFileType(buffer, details.name);
 
 		return new Promise(
-			Meteor.bindEnvironment((resolve, reject) => {
+			Meteor.bindEnvironment(async (resolve, reject) => {
 				try {
-					Meteor.runAsUser(details.userId, () => {
+					await Meteor.runAsUser(details.userId, async () => {
 						const uploadedFile = fileStore.insertSync(getUploadDetails(details), buffer);
 						this.orch.debugLog(`The App ${appId} has created an upload`, uploadedFile);
 						if (details.visitorToken) {
-							Meteor.call('sendFileLivechatMessage', details.rid, details.visitorToken, uploadedFile);
+							await Meteor.callAsync('sendFileLivechatMessage', details.rid, details.visitorToken, uploadedFile);
 						} else {
-							Meteor.call('sendFileMessage', details.rid, null, uploadedFile);
+							await Meteor.callAsync('sendFileMessage', details.rid, null, uploadedFile);
 						}
 						resolve(this.orch.getConverters()?.get('uploads').convertToApp(uploadedFile));
 					});

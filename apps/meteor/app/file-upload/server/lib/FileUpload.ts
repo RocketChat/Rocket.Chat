@@ -761,7 +761,7 @@ export class FileUploadClass {
 				throw new Error('Invalid file type');
 			}
 
-			const file = Meteor.call('ufsComplete', fileId, this.name, token);
+			const file = Promise.await(Meteor.callAsync('ufsComplete', fileId, this.name, token));
 
 			if (cb) {
 				cb(undefined, file);
