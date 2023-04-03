@@ -2,12 +2,11 @@ import URL from 'url';
 import QueryString from 'querystring';
 
 import { Meteor } from 'meteor/meteor';
-import type { IMessage, MessageAttachment } from '@rocket.chat/core-typings';
+import type { MessageAttachment, IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
-import { Messages, Users } from '@rocket.chat/models';
+import { Messages, Users, Rooms } from '@rocket.chat/models';
 
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
-import { Rooms } from '../../models/server';
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { canAccessRoomAsync } from '../../authorization/server/functions/canAccessRoom';
@@ -75,7 +74,10 @@ callbacks.add(
 
 			// validates if user can see the message
 			// user has to belong to the room the message was first wrote in
-			const room = Rooms.findOneById(jumpToMessage.rid);
+			const room = await Rooms.findOneById<IOmnichannelRoom>(jumpToMessage.rid);
+			if (!room) {
+				continue;
+			}
 			const isLiveChatRoomVisitor = !!msg.token && !!room.v?.token && msg.token === room.v.token;
 			const canAccessRoomForUser = isLiveChatRoomVisitor || (await canAccessRoomAsync(room, currentUser));
 			if (!canAccessRoomForUser) {

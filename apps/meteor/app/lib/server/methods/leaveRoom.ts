@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Roles, Subscriptions } from '@rocket.chat/models';
+import { Roles, Subscriptions, Rooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Rooms } from '../../../models/server';
 import { removeUserFromRoom } from '../functions';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
@@ -26,7 +25,11 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'leaveRoom' });
 		}
 
-		const room = Rooms.findOneById(rid);
+		const room = await Rooms.findOneById(rid);
+		if (!room) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'leaveRoom' });
+		}
+
 		const user = (await Meteor.userAsync()) as unknown as IUser;
 
 		if (!user || !(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.LEAVE, user._id))) {
