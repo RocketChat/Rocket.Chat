@@ -8,7 +8,7 @@ import { ChatMessage } from '../../../../../app/models/client';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import { useRoom } from '../../contexts/RoomContext';
 
-const joinHideSysMessages = (
+const mergeHideSysMessages = (
 	sysMesArray1: Array<MessageTypesValues>,
 	sysMesArray2: Array<MessageTypesValues>,
 ): Array<MessageTypesValues> => {
@@ -20,7 +20,7 @@ export const useMessages = ({ rid }: { rid: IRoom['_id'] }): IMessage[] => {
 	const room = useRoom();
 	const hideRoomSysMes: Array<MessageTypesValues> = Array.isArray(room.sysMes) ? room.sysMes : [];
 
-	const hideSysMessages = useStableArray(joinHideSysMessages(hideSysMesSetting, hideRoomSysMes));
+	const hideSysMessages = useStableArray(mergeHideSysMessages(hideSysMesSetting, hideRoomSysMes));
 
 	const query: Mongo.Query<IMessage> = useMemo(
 		() => ({
