@@ -1,23 +1,23 @@
 import type { SettingValue } from '@rocket.chat/core-typings';
 import { Users, Settings } from '@rocket.chat/models';
+import { eventTypes } from '@rocket.chat/core-typings';
 
 import { resolveSRV, resolveTXT } from '../../app/federation/server/functions/resolveDNS';
 import { settings, settingsRegistry } from '../../app/settings/server';
 import { dispatchEvent } from '../../app/federation/server/handler';
 import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
-import { eventTypes } from '../../app/models/server/models/FederationEvents';
 
 function updateSetting(id: string, value: SettingValue | null): void {
 	if (value !== null) {
 		const setting = settings.get(id);
 
 		if (setting === undefined) {
-			settingsRegistry.add(id, value);
+			void settingsRegistry.add(id, value);
 		} else {
-			Settings.updateValueById(id, value);
+			void Settings.updateValueById(id, value);
 		}
 	} else {
-		Settings.updateValueById(id, null);
+		void Settings.updateValueById(id, null);
 	}
 }
 
@@ -58,7 +58,7 @@ async function runFederation(): Promise<void> {
 
 	// Test if federation is healthy
 	try {
-		dispatchEvent([getFederationDomain()], {
+		void dispatchEvent([getFederationDomain()], {
 			type: eventTypes.PING,
 		});
 

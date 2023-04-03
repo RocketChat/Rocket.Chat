@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
 import { Box, MessageDivider, Throbber } from '@rocket.chat/fuselage';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement, ComponentProps, ReactNode } from 'react';
 import React, { useCallback } from 'react';
@@ -36,6 +36,7 @@ type MessageListTabProps = {
 const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryResult }: MessageListTabProps): ReactElement => {
 	const t = useTranslation();
 	const formatDate = useFormatDate();
+	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
 	const closeTabBar = useTabBarClose();
 	const handleTabBarCloseButtonClick = useCallback(() => {
@@ -96,7 +97,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 														)}
 
 														{system ? (
-															<SystemMessage message={message} />
+															<SystemMessage message={message} showUserAvatar={showUserAvatar} />
 														) : (
 															<RoomMessage
 																message={message}
@@ -105,6 +106,7 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 																mention={mention}
 																all={all}
 																context={context}
+																showUserAvatar={showUserAvatar}
 															/>
 														)}
 													</>

@@ -1,8 +1,6 @@
 import type { AtLeast, ValueOf } from '@rocket.chat/core-typings';
-import { Session } from 'meteor/session';
 
 import { hasPermission } from '../../../../app/authorization/client';
-import { LivechatInquiry } from '../../../../app/livechat/client/collections/LivechatInquiry';
 import { ChatRoom, ChatSubscription } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
@@ -50,15 +48,6 @@ roomCoordinator.add(LivechatRoomType, {
 		return getAvatarURL({ username: `@${this.roomName(room)}` }) || '';
 	},
 
-	getUserStatus(rid) {
-		const room = Session.get(`roomData${rid}`);
-		if (room) {
-			return room.v?.status;
-		}
-		const inquiry = LivechatInquiry.findOne({ rid });
-		return inquiry?.v?.status;
-	},
-
 	findRoom(identifier) {
 		return ChatRoom.findOne({ _id: identifier });
 	},
@@ -74,7 +63,7 @@ roomCoordinator.add(LivechatRoomType, {
 
 	readOnly(rid, _user) {
 		const room = ChatRoom.findOne({ _id: rid }, { fields: { open: 1, servedBy: 1 } });
-		if (!room || !room.open) {
+		if (!room?.open) {
 			return true;
 		}
 

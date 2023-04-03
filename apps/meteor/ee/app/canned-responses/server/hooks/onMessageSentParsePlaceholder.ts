@@ -1,11 +1,11 @@
 import get from 'lodash.get';
 import type { IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatVisitors, Rooms } from '@rocket.chat/models';
 
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
-import { Users, Rooms } from '../../../../../app/models/server';
+import { Users } from '../../../../../app/models/server';
 
 const placeholderFields = {
 	'contact.name': {
@@ -32,12 +32,12 @@ const placeholderFields = {
 
 const replaceAll = (text: string, old: string, replace: string): string => text.replace(new RegExp(old, 'g'), replace);
 
-const handleBeforeSaveMessage = (message: IMessage, room?: IOmnichannelRoom): IMessage => {
+const handleBeforeSaveMessage = async (message: IMessage, room?: IOmnichannelRoom | null): Promise<IMessage> => {
 	if (!message.msg || message.msg === '') {
 		return message;
 	}
 
-	room = room?._id ? room : Rooms.findOneById(message.rid);
+	room = room?._id ? room : await Rooms.findOneById<IOmnichannelRoom>(message.rid);
 	if (!room || !isOmnichannelRoom(room)) {
 		return message;
 	}
@@ -46,7 +46,7 @@ const handleBeforeSaveMessage = (message: IMessage, room?: IOmnichannelRoom): IM
 	const agentId = room?.servedBy?._id;
 	const visitorId = room?.v?._id;
 	const agent = Users.findOneById(agentId, { fields: { name: 1, _id: 1, emails: 1 } }) || {};
-	const visitor = visitorId && (Promise.await(LivechatVisitors.findOneById(visitorId, {})) || {});
+	const visitor = visitorId && ((await LivechatVisitors.findOneById(visitorId, {})) || {});
 
 	Object.keys(placeholderFields).map((field) => {
 		const templateKey = `{{${field}}}`;

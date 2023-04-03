@@ -78,7 +78,6 @@ describe('[OAuthApps]', function () {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(403);
-
 			await updatePermission('manage-oauth-apps', ['admin']);
 		});
 

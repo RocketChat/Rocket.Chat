@@ -6,7 +6,10 @@ import React, { useMemo } from 'react';
 
 import { getURL } from '../../app/utils/client';
 
-const AttachmentProvider: FC = ({ children }) => {
+const AttachmentProvider: FC<{
+	width?: number;
+	height?: number;
+}> = ({ children, width = 360, height = 360 }) => {
 	const { isMobile } = useLayout();
 	const reducedData = usePrefersReducedData();
 	const collapsedByDefault = !!useUserPreference<boolean>('collapseMediaByDefault');
@@ -19,11 +22,11 @@ const AttachmentProvider: FC = ({ children }) => {
 			collapsedByDefault,
 			autoLoadEmbedMedias: !reducedData && autoLoadEmbedMedias && (!saveMobileBandwidth || !isMobile),
 			dimensions: {
-				width: 368,
-				height: 368,
+				width,
+				height,
 			},
 		}),
-		[collapsedByDefault, reducedData, autoLoadEmbedMedias, saveMobileBandwidth, isMobile],
+		[collapsedByDefault, reducedData, autoLoadEmbedMedias, saveMobileBandwidth, isMobile, width, height],
 	);
 
 	return <AttachmentContext.Provider children={children} value={contextValue} />;

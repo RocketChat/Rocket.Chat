@@ -5,6 +5,7 @@ import { WebApp } from 'meteor/webapp';
 import { UserDataFiles } from '@rocket.chat/models';
 import type { IIncomingMessage, IUser, IUserDataFile } from '@rocket.chat/core-typings';
 import { Cookies } from 'meteor/ostrio:cookies';
+import { hashLoginToken } from '@rocket.chat/account-utils';
 
 import { FileUpload } from '../../app/file-upload/server';
 import { settings } from '../../app/settings/server';
@@ -13,7 +14,7 @@ import Users from '../../app/models/server/models/Users';
 const cookies = new Cookies();
 
 const matchUID = (uid: string | undefined, token: string | undefined, ownerUID: string) => {
-	return uid && token && uid === ownerUID && Boolean(Users.findOneByIdAndLoginToken(uid, token, { fields: { _id: 1 } }));
+	return uid && token && uid === ownerUID && Boolean(Users.findOneByIdAndLoginToken(uid, hashLoginToken(token), { fields: { _id: 1 } }));
 };
 
 const isRequestFromOwner = (req: IIncomingMessage, ownerUID: IUser['_id']) => {
@@ -45,7 +46,7 @@ const sendUserDataFile = (file: IUserDataFile) => (req: IncomingMessage, res: Se
 
 	res.setHeader('Content-Security-Policy', "default-src 'none'");
 	res.setHeader('Cache-Control', 'max-age=31536000');
-	userDataStore.get(file, req, res, next);
+	void userDataStore.get(file, req, res, next);
 };
 
 const matchFileRoute = match<{ fileID: string }>('/:fileID', { decode: decodeURIComponent });
@@ -69,7 +70,7 @@ const userDataDownloadHandler = Meteor.bindEnvironment(async (req: IncomingMessa
 		return;
 	}
 
-	if (!isRequestFromOwner(req as IIncomingMessage, file.userId)) {
+	if (!file.userId || !isRequestFromOwner(req as IIncomingMessage, file.userId)) {
 		res.writeHead(403).end();
 		return;
 	}

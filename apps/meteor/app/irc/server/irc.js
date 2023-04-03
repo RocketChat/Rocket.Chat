@@ -21,7 +21,7 @@ if (!!settings.get('IRC_Enabled') === true) {
 
 	Meteor.ircBridge = new Bridge(config);
 
-	Meteor.startup(() => {
-		Meteor.ircBridge.init();
+	Meteor.startup(async () => {
+		await Meteor.ircBridge.init();
 	});
 }

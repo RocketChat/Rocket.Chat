@@ -1,14 +1,15 @@
 import { EJSON } from 'meteor/ejson';
-import { FederationServers } from '@rocket.chat/models';
+import { FederationServers, FederationRoomEvents, Rooms as RoomsRaw, Messages, Subscriptions, Users } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
+import { eventTypes } from '@rocket.chat/core-typings';
 
 import { API } from '../../../api/server';
 import { serverLogger } from '../lib/logger';
-import { contextDefinitions, eventTypes } from '../../../models/server/models/FederationEvents';
-import { FederationRoomEvents, Messages, Rooms, Subscriptions, Users } from '../../../models/server';
+import { contextDefinitions } from '../lib/context';
+import { Rooms } from '../../../models/server';
 import { normalizers } from '../normalizers';
 import { deleteRoom } from '../../../lib/server/functions';
-import { FileUpload } from '../../../file-upload';
+import { FileUpload } from '../../../file-upload/server';
 import { getFederationDomain } from '../lib/getFederationDomain';
 import { decryptIfNeeded } from '../lib/crypt';
 import { isFederationEnabled } from '../lib/isFederationEnabled';
@@ -99,12 +100,12 @@ const eventHandlers = {
 			} = event;
 
 			// Check if user exists
-			const persistedUser = Users.findOne({ _id: user._id });
+			const persistedUser = await Users.findOne({ _id: user._id });
 
 			if (persistedUser) {
 				// Update the federation, if its not already set (if it's set, this is likely an event being reprocessed)
 				if (!persistedUser.federation) {
-					Users.update({ _id: persistedUser._id }, { $set: { federation: user.federation } });
+					await Users.updateOne({ _id: persistedUser._id }, { $set: { federation: user.federation } });
 					federationAltered = true;
 				}
 			} else {
@@ -112,18 +113,18 @@ const eventHandlers = {
 				const denormalizedUser = normalizers.denormalizeUser(user);
 
 				// Create the user
-				Users.insert(denormalizedUser);
+				await Users.insertOne(denormalizedUser);
 				federationAltered = true;
 			}
 
 			// Check if subscription exists
-			const persistedSubscription = Subscriptions.findOne({ _id: subscription._id });
+			const persistedSubscription = await Subscriptions.findOne({ _id: subscription._id });
 
 			try {
 				if (persistedSubscription) {
 					// Update the federation, if its not already set (if it's set, this is likely an event being reprocessed
 					if (!persistedSubscription.federation) {
-						Subscriptions.update({ _id: persistedSubscription._id }, { $set: { federation: subscription.federation } });
+						await Subscriptions.updateOne({ _id: persistedSubscription._id }, { $set: { federation: subscription.federation } });
 						federationAltered = true;
 					}
 				} else {
@@ -131,7 +132,7 @@ const eventHandlers = {
 					const denormalizedSubscription = normalizers.denormalizeSubscription(subscription);
 
 					// Create the subscription
-					Subscriptions.insert(denormalizedSubscription);
+					await Subscriptions.insertOne(denormalizedSubscription);
 					federationAltered = true;
 				}
 			} catch (ex) {
@@ -163,7 +164,7 @@ const eventHandlers = {
 			} = event;
 
 			// Remove the user's subscription
-			Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+			await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
 
 			// Refresh the servers list
 			await FederationServers.refreshServers();
@@ -188,7 +189,7 @@ const eventHandlers = {
 			} = event;
 
 			// Remove the user's subscription
-			Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
+			await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
 
 			// Refresh the servers list
 			await FederationServers.refreshServers();
@@ -213,12 +214,12 @@ const eventHandlers = {
 			} = event;
 
 			// Check if message exists
-			const persistedMessage = Messages.findOne({ _id: message._id });
+			const persistedMessage = await Messages.findOne({ _id: message._id });
 
 			if (persistedMessage) {
 				// Update the federation
 				if (!persistedMessage.federation) {
-					Messages.update({ _id: persistedMessage._id }, { $set: { federation: message.federation } });
+					await Messages.updateOne({ _id: persistedMessage._id }, { $set: { federation: message.federation } });
 				}
 			} else {
 				// Load the room
@@ -268,9 +269,9 @@ const eventHandlers = {
 
 				// Create the message
 				try {
-					Messages.insert(denormalizedMessage);
+					await Messages.insertOne(denormalizedMessage);
 
-					processThreads(denormalizedMessage, room);
+					await processThreads(denormalizedMessage, room);
 
 					// Notify users
 					await notifyUsersOnMessage(denormalizedMessage, room);
@@ -297,14 +298,14 @@ const eventHandlers = {
 			} = event;
 
 			// Check if message exists
-			const persistedMessage = Messages.findOne({ _id: message._id });
+			const persistedMessage = await Messages.findOne({ _id: message._id });
 
 			if (!persistedMessage) {
 				eventResult.success = false;
 				eventResult.reason = 'missingMessageToEdit';
 			} else {
 				// Update the message
-				Messages.update({ _id: persistedMessage._id }, { $set: { msg: message.msg, federation: message.federation } });
+				await Messages.updateOne({ _id: persistedMessage._id }, { $set: { msg: message.msg, federation: message.federation } });
 			}
 		}
 
@@ -324,10 +325,10 @@ const eventHandlers = {
 			} = event;
 
 			// Remove the message
-			Messages.removeById(messageId);
+			await Messages.removeById(messageId);
 
 			// Notify the room
-			api.broadcast('notify.deleteMessage', roomId, { _id: messageId });
+			void api.broadcast('notify.deleteMessage', roomId, { _id: messageId });
 		}
 
 		return eventResult;
@@ -346,7 +347,7 @@ const eventHandlers = {
 			} = event;
 
 			// Get persisted message
-			const persistedMessage = Messages.findOne({ _id: messageId });
+			const persistedMessage = await Messages.findOne({ _id: messageId });
 
 			// Make sure reactions exist
 			persistedMessage.reactions = persistedMessage.reactions || {};
@@ -365,7 +366,7 @@ const eventHandlers = {
 			}
 
 			// Update the property
-			Messages.update({ _id: messageId }, { $set: { [`reactions.${reaction}`]: reactionObj } });
+			await Messages.updateOne({ _id: messageId }, { $set: { [`reactions.${reaction}`]: reactionObj } });
 		}
 
 		return eventResult;
@@ -384,7 +385,7 @@ const eventHandlers = {
 			} = event;
 
 			// Get persisted message
-			const persistedMessage = Messages.findOne({ _id: messageId });
+			const persistedMessage = await Messages.findOne({ _id: messageId });
 
 			// Make sure reactions exist
 			persistedMessage.reactions = persistedMessage.reactions || {};
@@ -409,10 +410,10 @@ const eventHandlers = {
 
 			// If there are no more users for that reaction, remove the property
 			if (reactionObj.usernames.length === 0) {
-				Messages.update({ _id: messageId }, { $unset: { [`reactions.${reaction}`]: 1 } });
+				await Messages.updateOne({ _id: messageId }, { $unset: { [`reactions.${reaction}`]: 1 } });
 			} else {
 				// Otherwise, update the property
-				Messages.update({ _id: messageId }, { $set: { [`reactions.${reaction}`]: reactionObj } });
+				await Messages.updateOne({ _id: messageId }, { $set: { [`reactions.${reaction}`]: reactionObj } });
 			}
 		}
 
@@ -435,7 +436,7 @@ const eventHandlers = {
 			const denormalizedUser = normalizers.denormalizeUser(user);
 
 			// Mute user
-			Rooms.muteUsernameByRoomId(roomId, denormalizedUser.username);
+			await RoomsRaw.muteUsernameByRoomId(roomId, denormalizedUser.username);
 		}
 
 		return eventResult;
@@ -457,7 +458,7 @@ const eventHandlers = {
 			const denormalizedUser = normalizers.denormalizeUser(user);
 
 			// Mute user
-			Rooms.unmuteUsernameByRoomId(roomId, denormalizedUser.username);
+			await RoomsRaw.unmuteUsernameByRoomId(roomId, denormalizedUser.username);
 		}
 
 		return eventResult;
@@ -468,7 +469,7 @@ API.v1.addRoute(
 	'federation.events.dispatch',
 	{ authRequired: false, rateLimiterOptions: { numRequestsAllowed: 30, intervalTimeInMS: 1000 } },
 	{
-		post() {
+		async post() {
 			if (!isFederationEnabled()) {
 				return API.v1.failure('Federation not enabled');
 			}
@@ -478,7 +479,7 @@ API.v1.addRoute(
 			let payload;
 
 			try {
-				payload = Promise.await(decryptIfNeeded(this.request, this.bodyParams));
+				payload = await decryptIfNeeded(this.request, this.bodyParams);
 			} catch (err) {
 				return API.v1.failure('Could not decrypt payload');
 			}
@@ -496,7 +497,7 @@ API.v1.addRoute(
 				let eventResult;
 
 				if (eventHandlers[event.type]) {
-					eventResult = Promise.await(eventHandlers[event.type](event));
+					eventResult = await eventHandlers[event.type](event);
 				}
 
 				// If there was an error handling the event, take action
@@ -507,14 +508,12 @@ API.v1.addRoute(
 							event,
 						});
 
-						Promise.await(
-							requestEventsFromLatest(
-								event.origin,
-								getFederationDomain(),
-								contextDefinitions.defineType(event),
-								event.context,
-								eventResult.latestEventIds,
-							),
+						await requestEventsFromLatest(
+							event.origin,
+							getFederationDomain(),
+							contextDefinitions.defineType(event),
+							event.context,
+							eventResult.latestEventIds,
 						);
 
 						// And stop handling the events

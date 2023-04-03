@@ -9,13 +9,13 @@ import { useForm, Controller } from 'react-hook-form';
 import GenericModal from '../../../components/GenericModal';
 import VerticalBar from '../../../components/VerticalBar';
 
-export type EditOAuthAddAppPayload = {
+type EditOAuthAddAppPayload = {
 	name: string;
 	active: boolean;
 	redirectUri: string;
 };
 
-export type EditOauthAppProps = {
+type EditOauthAppProps = {
 	onChange: () => void;
 	data: Serialized<IOAuthApps>;
 } & Omit<ComponentProps<typeof VerticalBar.ScrollableContent>, 'data'>;

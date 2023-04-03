@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import type { SettingValue } from '@rocket.chat/core-typings';
 
-export type SettingComposedValue<T extends SettingValue = SettingValue> = { key: string; value: T };
-export type SettingCallback = (key: string, value: SettingValue, initialLoad?: boolean) => void;
+type SettingComposedValue<T extends SettingValue = SettingValue> = { key: string; value: T };
+type SettingCallback = (key: string, value: SettingValue, initialLoad?: boolean) => void;
 
 interface ISettingRegexCallbacks {
 	regex: RegExp;

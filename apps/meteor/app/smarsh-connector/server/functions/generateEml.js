@@ -1,12 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import _ from 'underscore';
 import moment from 'moment';
-import { SmarshHistory } from '@rocket.chat/models';
+import { Messages, SmarshHistory, Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
-import { Rooms, Messages, Users } from '../../../models/server';
-import { MessageTypes } from '../../../ui-utils';
+import { Rooms } from '../../../models/server';
+import { MessageTypes } from '../../../ui-utils/server';
 import { smarsh } from '../lib/rocketchat';
 import 'moment-timezone';
 
@@ -51,7 +50,7 @@ smarsh.generateEml = () => {
 				room: room.name ? `#${room.name}` : `Direct Message Between: ${room.usernames.join(' & ')}`,
 			};
 
-			Messages.find(query).forEach((message) => {
+			await Messages.find(query).forEach(async (message) => {
 				rows.push(opentr);
 
 				// The timestamp
@@ -61,7 +60,7 @@ smarsh.generateEml = () => {
 
 				// The sender
 				rows.push(open20td);
-				const sender = Users.findOne({ _id: message.u._id });
+				const sender = await Users.findOne({ _id: message.u._id });
 				if (data.users.indexOf(sender._id) === -1) {
 					data.users.push(sender._id);
 				}
@@ -89,7 +88,7 @@ smarsh.generateEml = () => {
 					rows.push(`${message.attachments[0].title} (${_getLink(message.attachments[0])})`);
 				} else if (message.attachments) {
 					const attaches = [];
-					_.each(message.attachments, function _loopThroughMessageAttachments(a) {
+					message.attachments.forEach((a) => {
 						if (a.image_url) {
 							attaches.push(a.image_url);
 						}
