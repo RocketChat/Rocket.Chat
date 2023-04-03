@@ -1,17 +1,17 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Team } from '@rocket.chat/core-services';
+import { Message, Team } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Rooms } from '@rocket.chat/models';
 
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 import { deleteRoom } from '../../app/lib/server/functions/deleteRoom';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { Rooms, Messages } from '../../app/models/server';
 import { Apps } from '../../ee/server/apps';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
 export async function eraseRoom(rid: string, uid: string): Promise<void> {
-	const room = Rooms.findOneById(rid);
+	const room = await Rooms.findOneById(rid);
 
 	if (!room) {
 		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
@@ -48,7 +48,9 @@ export async function eraseRoom(rid: string, uid: string): Promise<void> {
 
 	if (team) {
 		const user = await Meteor.userAsync();
-		Messages.createUserDeleteRoomFromTeamWithRoomIdAndUser(team.roomId, room.name, user);
+		if (user) {
+			await Message.saveSystemMessage('user-deleted-room-from-team', team.roomId, room.name || '', user);
+		}
 	}
 
 	if (Apps?.isLoaded()) {

@@ -32,7 +32,9 @@ export async function reply({ tmid }, message, parentMessage, followers) {
 		await Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, repliesFiltered, tmid);
 	}
 
-	mentionIds.forEach((mentionId) => Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, [mentionId], tmid, { userMention: true }));
+	for await (const userId of mentionIds) {
+		await Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, [userId], tmid, { userMention: true });
+	}
 }
 
 export async function follow({ tmid, uid }) {

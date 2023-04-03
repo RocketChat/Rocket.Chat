@@ -113,7 +113,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return `guest-${livechatCount.value.value}`;
 	}
 
-	findByNameRegexWithExceptionsAndConditions<P = ILivechatVisitor>(
+	findByNameRegexWithExceptionsAndConditions<P extends Document = ILivechatVisitor>(
 		searchTerm: string,
 		exceptions: string[] = [],
 		conditions: Filter<ILivechatVisitor> = {},

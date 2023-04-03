@@ -5043,7 +5043,7 @@
   "Verified": "Überprüft",
   "Verify": "Überprüfen",
   "Verify_your_email": "Bestätigen Sie Ihre E-Mail",
-  "Verify_your_email_for_the_code_we_sent": "Prüfen Sie Ihre Mails auf den Code, den wir Ihnen eben geschickt haben.",
+  "Verify_your_email_with_the_code_we_sent": "Prüfen Sie Ihre Mails auf den Code, den wir Ihnen eben geschickt haben.",
   "Version": "Version",
   "Version_version": "Version __version__",
   "App_version_incompatible_tooltip": "App nicht kompatibel mit Rocket.Chat-Version",

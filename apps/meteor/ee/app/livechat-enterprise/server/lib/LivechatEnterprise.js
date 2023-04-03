@@ -6,11 +6,14 @@ import {
 	LivechatRooms,
 	LivechatDepartment as LivechatDepartmentRaw,
 	OmnichannelServiceLevelAgreements,
+	LivechatTag,
+	LivechatUnitMonitors,
+	LivechatUnit,
 } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 
 import { hasLicense } from '../../../license/server/license';
 import { updateDepartmentAgents } from '../../../../../app/livechat/server/lib/Helper';
-import { Messages } from '../../../../../app/models/server';
 import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../../server/lib/roles/removeUserFromRoles';
 import { processWaitingQueue, updateSLAInquiries } from './Helper';
@@ -21,7 +24,6 @@ import { logger, queueLogger } from './logger';
 import { callbacks } from '../../../../../lib/callbacks';
 import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
-import { LivechatTag, LivechatUnit, LivechatUnitMonitors } from '../../../models/server';
 
 export const LivechatEnterprise = {
 	async addMonitor(username) {
@@ -59,7 +61,7 @@ export const LivechatEnterprise = {
 		}
 
 		// remove this monitor from any unit it is assigned to
-		LivechatUnitMonitors.removeByMonitorId(user._id);
+		await LivechatUnitMonitors.removeByMonitorId(user._id);
 
 		return true;
 	},
@@ -67,7 +69,7 @@ export const LivechatEnterprise = {
 	async removeUnit(_id) {
 		check(_id, String);
 
-		const unit = LivechatUnit.findOneById(_id, { fields: { _id: 1 } });
+		const unit = await LivechatUnit.findOneById(_id, { projection: { _id: 1 } });
 
 		if (!unit) {
 			throw new Meteor.Error('unit-not-found', 'Unit not found', { method: 'livechat:removeUnit' });
@@ -76,7 +78,7 @@ export const LivechatEnterprise = {
 		return LivechatUnit.removeById(_id);
 	},
 
-	saveUnit(_id, unitData, unitMonitors, unitDepartments) {
+	async saveUnit(_id, unitData, unitMonitors, unitDepartments) {
 		check(_id, Match.Maybe(String));
 
 		check(unitData, {
@@ -103,7 +105,7 @@ export const LivechatEnterprise = {
 
 		let ancestors = [];
 		if (_id) {
-			const unit = LivechatUnit.findOneById(_id);
+			const unit = await LivechatUnit.findOneById(_id);
 			if (!unit) {
 				throw new Meteor.Error('error-unit-not-found', 'Unit not found', {
 					method: 'livechat:saveUnit',
@@ -116,10 +118,10 @@ export const LivechatEnterprise = {
 		return LivechatUnit.createOrUpdateUnit(_id, unitData, ancestors, unitMonitors, unitDepartments);
 	},
 
-	removeTag(_id) {
+	async removeTag(_id) {
 		check(_id, String);
 
-		const tag = LivechatTag.findOneById(_id, { fields: { _id: 1 } });
+		const tag = await LivechatTag.findOneById(_id, { projection: { _id: 1 } });
 
 		if (!tag) {
 			throw new Meteor.Error('tag-not-found', 'Tag not found', { method: 'livechat:removeTag' });
@@ -128,7 +130,7 @@ export const LivechatEnterprise = {
 		return LivechatTag.removeById(_id);
 	},
 
-	saveTag(_id, tagData, tagDepartments) {
+	async saveTag(_id, tagData, tagDepartments) {
 		check(_id, Match.Maybe(String));
 
 		check(tagData, {
@@ -186,7 +188,7 @@ export const LivechatEnterprise = {
 		}
 		await LivechatRooms.setOnHoldByRoomId(roomId);
 
-		Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldBy);
+		await Message.saveSystemMessage('omnichannel_placed_chat_on_hold', roomId, '', onHoldBy, { comment });
 
 		await callbacks.run('livechat:afterOnHold', room);
 

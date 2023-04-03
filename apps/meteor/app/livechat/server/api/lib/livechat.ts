@@ -34,12 +34,14 @@ async function findDepartments(
 ): Promise<Pick<ILivechatDepartment, '_id' | 'name' | 'showOnRegistration' | 'showOnOfflineForm'>[]> {
 	// TODO: check this function usage
 	return (
-		await LivechatDepartment.findEnabledWithAgentsAndBusinessUnit(businessUnit, {
-			_id: 1,
-			name: 1,
-			showOnRegistration: 1,
-			showOnOfflineForm: 1,
-		}).toArray()
+		await (
+			await LivechatDepartment.findEnabledWithAgentsAndBusinessUnit(businessUnit, {
+				_id: 1,
+				name: 1,
+				showOnRegistration: 1,
+				showOnOfflineForm: 1,
+			})
+		).toArray()
 	).map(({ _id, name, showOnRegistration, showOnOfflineForm }) => ({
 		_id,
 		name,
@@ -122,7 +124,7 @@ export function getRoom({
 	return Livechat.getRoom(guest, message, roomInfo, agent, extraParams);
 }
 
-export function findAgent(agentId: string): void | { hiddenInfo: true } | ILivechatAgent {
+export async function findAgent(agentId: string): Promise<void | { hiddenInfo: true } | ILivechatAgent> {
 	return normalizeAgent(agentId);
 }
 

@@ -39,14 +39,20 @@ API.v1.addRoute(
 			}
 
 			const fields = await Promise.all(
-				this.bodyParams.customFields.map(async (customField) => {
-					const data = Object.assign({ token }, customField);
-					if (!(await Livechat.setCustomFields(data))) {
-						throw new Error('error-setting-custom-field');
-					}
+				this.bodyParams.customFields.map(
+					async (customField: {
+						key: string;
+						value: string;
+						overwrite: boolean;
+					}): Promise<{ Key: string; value: string; overwrite: boolean }> => {
+						const data = Object.assign({ token }, customField);
+						if (!(await Livechat.setCustomFields(data))) {
+							throw new Error('error-setting-custom-field');
+						}
 
-					return { Key: customField.key, value: customField.value, overwrite: customField.overwrite };
-				}),
+						return { Key: customField.key, value: customField.value, overwrite: customField.overwrite };
+					},
+				),
 			);
 
 			return API.v1.success({ fields });

@@ -3,10 +3,11 @@ import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { Mongo } from 'meteor/mongo';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Rooms } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { Users, Rooms, Messages } from '../../app/models/server';
+import { Users } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { callbacks } from '../../lib/callbacks';
 
@@ -43,7 +44,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const room = Rooms.findOneById(rid);
+		const room = await Rooms.findOneById(rid);
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 				method: 'addAllToRoom',
@@ -66,9 +67,7 @@ Meteor.methods<ServerMethods>({
 				userMentions: 1,
 				groupMentions: 0,
 			});
-			Messages.createUserJoinWithRoomIdAndUser(rid, user, {
-				ts: now,
-			});
+			await Message.saveSystemMessage('uj', rid, user.username || '', user, { ts: now });
 			return callbacks.run('afterJoinRoom', user, room);
 		}
 		return true;

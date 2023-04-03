@@ -4,11 +4,10 @@ import { Random } from '@rocket.chat/random';
 import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
 import type { INewIncomingIntegration, IIncomingIntegration } from '@rocket.chat/core-typings';
-import { Integrations, Roles, Subscriptions } from '@rocket.chat/models';
+import { Integrations, Roles, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermissionAsync, hasAllPermission } from '../../../../authorization/server/functions/hasPermission';
-import { Users, Rooms } from '../../../../models/server';
+import { hasPermissionAsync, hasAllPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 
 const validChannelChars = ['@', '#'];
 
@@ -77,7 +76,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const user = Users.findOne({ username: integration.username });
+		const user = await Users.findOne({ username: integration.username });
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -92,7 +91,7 @@ Meteor.methods<ServerMethods>({
 			token: Random.id(48),
 			userId: user._id,
 			_createdAt: new Date(),
-			_createdBy: Users.findOne(userId, { fields: { username: 1 } }),
+			_createdBy: await Users.findOne({ _id: userId }, { projection: { username: 1 } }),
 		};
 
 		if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
@@ -115,12 +114,12 @@ Meteor.methods<ServerMethods>({
 
 			switch (channelType) {
 				case '#':
-					record = Rooms.findOne({
+					record = await Rooms.findOne({
 						$or: [{ _id: channel }, { name: channel }],
 					});
 					break;
 				case '@':
-					record = Users.findOne({
+					record = await Users.findOne({
 						$or: [{ _id: channel }, { username: channel }],
 					});
 					break;
@@ -133,7 +132,7 @@ Meteor.methods<ServerMethods>({
 			}
 
 			if (
-				!hasAllPermission(userId, ['manage-incoming-integrations', 'manage-own-incoming-integrations']) &&
+				!(await hasAllPermissionAsync(userId, ['manage-incoming-integrations', 'manage-own-incoming-integrations'])) &&
 				!(await Subscriptions.findOneByRoomIdAndUserId(record._id, userId, { projection: { _id: 1 } }))
 			) {
 				throw new Meteor.Error('error-invalid-channel', 'Invalid Channel', {

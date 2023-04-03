@@ -1,4 +1,135 @@
 
+# 6.1.0
+`2023-03-29  ·  1 🎉  ·  1 🚀  ·  4 🐛  ·  4 🔍  ·  11 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.2`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+- Apps-Engine: `1.38.0`
+
+### 🎉 New features
+
+
+- VideoConference Guest mode and Conference Router ([#28186](https://github.com/RocketChat/Rocket.Chat/pull/28186))
+
+  Jira Issue: [VC-79]
+
+### 🚀 Improvements
+
+
+- Adding input type=password to AWS secrets fields ([#28159](https://github.com/RocketChat/Rocket.Chat/pull/28159))
+
+  Some fields that store secrets for AWS were exposing sensitive data because they didn't have the input type as `password`. 
+
+  The change includes adding the password type and also changing the autocomplete value from `<PasswordInput />` component to add the value `new-password` to avoid the browser autocompleting with the existing password. (This does not prevent the browser to show the hint to add the password)
+
+### 🐛 Bug fixes
+
+
+- Engagement dashboard crash on Users tab ([#28131](https://github.com/RocketChat/Rocket.Chat/pull/28131))
+
+- Gallery opening other image after closing ([#27957](https://github.com/RocketChat/Rocket.Chat/pull/27957))
+
+  How to reproduce:
+  1   - Upload MANY images to a channel (they have to be images and the bigger and more images the easier to reproduce)
+  2   - Click on one of the images
+  3   - Try to close the glalery as QUICK as possible
+
+  If done correctly, another image will open after closing the gallery. You could also try opening different images or throttling the network thru the devtools in order to help reproduce it.
+
+  I also took some time to make part of the code more readable.
+
+- hide offline registration option for disconnected workspaces ([#28662](https://github.com/RocketChat/Rocket.Chat/pull/28662))
+
+- Livechat MessageList not auto scrolling on new message ([#28547](https://github.com/RocketChat/Rocket.Chat/pull/28547))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Change price filters for Enterprise apps ([#27553](https://github.com/RocketChat/Rocket.Chat/pull/27553))
+
+  * Currently, Enterprise apps are classified as “Free apps”. Now, they have been moved to a new “Enterprise” category in the _Apps_ page of the Marketplace.  
+  * Created a new "Enterprise" pricing filter in the _Apps_ page.  
+  * Removed the "Free" tag next to the _install_ button for enterprise apps, on the _App Info_ page.
+
+  ![New-version](https://user-images.githubusercontent.com/84182706/208493531-11fc0153-2c94-4fab-baac-e359ba89ed72.gif)
+
+- regression: removed css for unread and upload indicators ([#28645](https://github.com/RocketChat/Rocket.Chat/pull/28645))
+
+  I had to revert a css deletion to rollback the styles form Upload and Unread indicators
+
+  **Current (problem):** 
+  ![image](https://user-images.githubusercontent.com/20212776/228034906-57f9a818-e071-4102-9410-b9e03afbb777.png)
+
+  **Expected: (current changes)**
+  ![image](https://user-images.githubusercontent.com/20212776/228035090-1ef28ce8-2ab1-46a0-aeff-b9aa76c79e5f.png)
+  ![image](https://user-images.githubusercontent.com/20212776/228035150-fc259b37-83c5-458c-8e4f-8a6a822af641.png)
+
+- Remove old css ([#28140](https://github.com/RocketChat/Rocket.Chat/pull/28140))
+
+- Update Apps-Engine to latest ([#28646](https://github.com/RocketChat/Rocket.Chat/pull/28646))
+
+  Update the Apps-Engine version to v1.38.0
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@csuadev](https://github.com/csuadev)
+- [@d-gubert](https://github.com/d-gubert)
+- [@dougfabris](https://github.com/dougfabris)
+- [@felipe-rod123](https://github.com/felipe-rod123)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@rique223](https://github.com/rique223)
+- [@totoi690](https://github.com/totoi690)
+
+
+# 6.0.1
+`2023-03-22  ·  5 🔍  ·  7 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.2`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- fix: Apps.engine resource consumption ([#28514](https://github.com/RocketChat/Rocket.Chat/pull/28514))
+
+  Added some validations to avoid doing unnecessary updates and also avoid loop that causes high server usage
+
+- fix: Changing the app's error verification ([#28450](https://github.com/RocketChat/Rocket.Chat/pull/28450))
+
+- fix: Horizontal scroll in main room if text is too long ([#28434](https://github.com/RocketChat/Rocket.Chat/pull/28434))
+
+  Removed inline styles from elements and substituted `p` tag for `div`
+
+  For a quick explanation, the `p` tag adds the multiple line breaks by default when copying text. We should revise in the parser how we deal with paragraphs and text blocks.
+
+- fix: Offline register option ([#28467](https://github.com/RocketChat/Rocket.Chat/pull/28467))
+
+- fix: Thread list not scrolling to bottom when sending a message. ([#28346](https://github.com/RocketChat/Rocket.Chat/pull/28346))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@AllanPazRibeiro](https://github.com/AllanPazRibeiro)
+- [@casalsgh](https://github.com/casalsgh)
+- [@csuadev](https://github.com/csuadev)
+- [@d-gubert](https://github.com/d-gubert)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@tapiarafael](https://github.com/tapiarafael)
+
 # 6.0.0
 `2023-03-09  ·  20 ️️️⚠️  ·  12 🎉  ·  13 🚀  ·  60 🐛  ·  238 🔍  ·  56 👩‍💻👨‍💻`
 
@@ -196,7 +327,7 @@
 
   We're working on [MS Teams bridge](https://github.com/RocketChat/Apps.teams.bridge), to make it usable we have created a new method for the apps engine to [create new users](https://github.com/RocketChat/Rocket.Chat.Apps-engine/pull/536) and we'll also need to delete all when we uninstall the app. Therefore, we created this bridge to cover the action of deleting users on the app side.
 
-- Emojis rendering properly on quote message previews ([#27972](https://github.com/RocketChat/Rocket.Chat/pull/27972))
+- Emojis rendering properly on quote message previews ([#27972](https://github.com/RocketChat/Rocket.Chat/pull/27972) by [@Educg550](https://github.com/Educg550))
 
   ![image](https://user-images.githubusercontent.com/47800334/217540055-de7cdc29-5478-4a23-a884-4476318bd83d.png)
 
@@ -240,11 +371,11 @@
 
   This PR adds a new permission called `bypass-time-limit-edit-and-delete`, to bypass the time limit when editing or deleting a message, the purpose of this PR is to remove the limitation for bots that cannot change the message after the specified time.
 
-- Rocket.cat message for users when an app previously requested is installed ([#27672](https://github.com/RocketChat/Rocket.Chat/pull/27672))
+- Rocket.cat message for users when an app previously requested is installed ([#27672](https://github.com/RocketChat/Rocket.Chat/pull/27672) by [@matheuslc](https://github.com/matheuslc))
 
 - Upload service ([#27543](https://github.com/RocketChat/Rocket.Chat/pull/27543))
 
-- Warning Popup reinforcing Zapier deprecation on Integrations Admin settings ([#27744](https://github.com/RocketChat/Rocket.Chat/pull/27744))
+- Warning Popup reinforcing Zapier deprecation on Integrations Admin settings ([#27744](https://github.com/RocketChat/Rocket.Chat/pull/27744) by [@Educg550](https://github.com/Educg550))
 
   #### Warning being displayed on Zapier settings, above Zapier itself:
   ![warning](https://user-images.githubusercontent.com/47800334/213696834-be7ac8e0-7249-4d02-93ba-e4c5e34b67da.png)
@@ -306,7 +437,7 @@
 ### 🐛 Bug fixes
 
 
-- "Jump to first unread" banner does not always appear when the first unread message is outside of the visible screen ([#27941](https://github.com/RocketChat/Rocket.Chat/pull/27941))
+- "Jump to first unread" banner does not always appear when the first unread message is outside of the visible screen ([#27941](https://github.com/RocketChat/Rocket.Chat/pull/27941) by [@Educg550](https://github.com/Educg550))
 
 - **ENTERPRISE:** DDP streamer sending data to destroyed streams ([#27929](https://github.com/RocketChat/Rocket.Chat/pull/27929))
 
@@ -354,7 +485,7 @@
 
 - Broken settings check for updates ([#27779](https://github.com/RocketChat/Rocket.Chat/pull/27779))
 
-- Comunity users accessing exclusive ee endpoints in omnichannel section ([#27876](https://github.com/RocketChat/Rocket.Chat/pull/27876))
+- Comunity users accessing exclusive ee endpoints in omnichannel section ([#27876](https://github.com/RocketChat/Rocket.Chat/pull/27876) by [@FabioCavaleti](https://github.com/FabioCavaleti))
 
 - Custom fields does not appear on the registration form ([#28031](https://github.com/RocketChat/Rocket.Chat/pull/28031))
 
@@ -445,7 +576,7 @@
   Check the changes in this PR: 
   https://github.com/RocketChat/fuselage/pull/962
 
-- Missing placeholders from encrypted channel preview messages now with expected behavior ([#27699](https://github.com/RocketChat/Rocket.Chat/pull/27699))
+- Missing placeholders from encrypted channel preview messages now with expected behavior ([#27699](https://github.com/RocketChat/Rocket.Chat/pull/27699) by [@Educg550](https://github.com/Educg550))
 
   Referent to [TC-259]
 
@@ -532,7 +663,7 @@
 
 - Tokens usage ([#27541](https://github.com/RocketChat/Rocket.Chat/pull/27541))
 
-- Unintended "Reply on thread" button showing on thread's first message ([#27716](https://github.com/RocketChat/Rocket.Chat/pull/27716))
+- Unintended "Reply on thread" button showing on thread's first message ([#27716](https://github.com/RocketChat/Rocket.Chat/pull/27716) by [@Educg550](https://github.com/Educg550))
 
   Referent to TC-128
 
@@ -560,7 +691,7 @@
 
 - Chore: Add dark theme assets ([#28214](https://github.com/RocketChat/Rocket.Chat/pull/28214))
 
-- Chore: add e2e test coverage for Video Conference ([#27075](https://github.com/RocketChat/Rocket.Chat/pull/27075) by [@lingohub[bot]](https://github.com/lingohub[bot]))
+- Chore: add e2e test coverage for Video Conference ([#27075](https://github.com/RocketChat/Rocket.Chat/pull/27075) by [@lingohub[bot]](https://github.com/lingohub[bot]) & [@weslley543](https://github.com/weslley543))
 
   Jira Issue: [VC-49]
 
@@ -1364,7 +1495,7 @@
 
 - Regression: run clientMessageRecieved hooks on thread main message ([#27962](https://github.com/RocketChat/Rocket.Chat/pull/27962))
 
-- Regression: Save button is not enable while trying to save contact manager ([#28183](https://github.com/RocketChat/Rocket.Chat/pull/28183))
+- Regression: Save button is not enable while trying to save contact manager ([#28183](https://github.com/RocketChat/Rocket.Chat/pull/28183) by [@FabioCavaleti](https://github.com/FabioCavaleti))
 
 - Regression: Scroll bars in sidebar ([#28091](https://github.com/RocketChat/Rocket.Chat/pull/28091))
 
@@ -1474,25 +1605,27 @@
 ### 👩‍💻👨‍💻 Contributors 😍
 
 - [@Dnouv](https://github.com/Dnouv)
+- [@Educg550](https://github.com/Educg550)
+- [@FabioCavaleti](https://github.com/FabioCavaleti)
 - [@Nabhag8848](https://github.com/Nabhag8848)
 - [@carlosrodrigues94](https://github.com/carlosrodrigues94)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
 - [@henit-chobisa](https://github.com/henit-chobisa)
 - [@jschirrmacher](https://github.com/jschirrmacher)
 - [@lingohub[bot]](https://github.com/lingohub[bot])
+- [@matheuslc](https://github.com/matheuslc)
 - [@nYCSTs](https://github.com/nYCSTs)
 - [@ostjen](https://github.com/ostjen)
 - [@pouyadarabi](https://github.com/pouyadarabi)
 - [@try-catch-stack](https://github.com/try-catch-stack)
 - [@urbalazs](https://github.com/urbalazs)
+- [@weslley543](https://github.com/weslley543)
 - [@xareyli](https://github.com/xareyli)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@AlenDavid](https://github.com/AlenDavid)
 - [@AllanPazRibeiro](https://github.com/AllanPazRibeiro)
-- [@Educg550](https://github.com/Educg550)
-- [@FabioCavaleti](https://github.com/FabioCavaleti)
 - [@Harmeet221](https://github.com/Harmeet221)
 - [@KevLehman](https://github.com/KevLehman)
 - [@LucianoPierdona](https://github.com/LucianoPierdona)
@@ -1518,7 +1651,6 @@
 - [@hugocostadev](https://github.com/hugocostadev)
 - [@juliajforesti](https://github.com/juliajforesti)
 - [@matheusbsilva137](https://github.com/matheusbsilva137)
-- [@matheuslc](https://github.com/matheuslc)
 - [@murtaza98](https://github.com/murtaza98)
 - [@nishant23122000](https://github.com/nishant23122000)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
@@ -1530,8 +1662,34 @@
 - [@thassiov](https://github.com/thassiov)
 - [@tiagoevanp](https://github.com/tiagoevanp)
 - [@totoi690](https://github.com/totoi690)
-- [@weslley543](https://github.com/weslley543)
 - [@yash-rajpal](https://github.com/yash-rajpal)
+
+# 5.4.5
+`2023-03-16  ·  1 🐛  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+
+### 🐛 Bug fixes
+
+
+- **ENTERPRISE:** DDP streamer sending data to destroyed streams ([#27929](https://github.com/RocketChat/Rocket.Chat/pull/27929))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- fix(upload): Restriction setting not being applied to the old UFS route ([#28363](https://github.com/RocketChat/Rocket.Chat/pull/28363))
+
+- Regression: Gracefully stop DDP Streamer publication and close WS ([#28121](https://github.com/RocketChat/Rocket.Chat/pull/28121))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 5.4.4
 `2023-03-08  ·  2 🔍  ·  2 👩‍💻👨‍💻`
@@ -1697,7 +1855,7 @@
   - Ability to sync Users' real names (since they have at least one room in common with other users);  
   - User typing event;
 
-- Incompatible Apps ([#27280](https://github.com/RocketChat/Rocket.Chat/pull/27280))
+- Incompatible Apps ([#27280](https://github.com/RocketChat/Rocket.Chat/pull/27280) by [@matheuslc](https://github.com/matheuslc))
 
 - REST API endpoint `/v1/oauth-apps.create` ([#27054](https://github.com/RocketChat/Rocket.Chat/pull/27054))
 
@@ -2259,7 +2417,7 @@
 
   Adding `roomId` as another option of payload in the `subscriptions.read` endpoint besides from `rid`.
 
-- Chore: Test for import  ([#26871](https://github.com/RocketChat/Rocket.Chat/pull/26871))
+- Chore: Test for import  ([#26871](https://github.com/RocketChat/Rocket.Chat/pull/26871) by [@weslley543](https://github.com/weslley543))
 
 - Chore: Update Apps-Engine to latest ([#27433](https://github.com/RocketChat/Rocket.Chat/pull/27433))
 
@@ -2383,6 +2541,7 @@
 - [@im-adithya](https://github.com/im-adithya)
 - [@ivan1kazantsev](https://github.com/ivan1kazantsev)
 - [@lucassartor](https://github.com/lucassartor)
+- [@matheuslc](https://github.com/matheuslc)
 - [@nmagedman](https://github.com/nmagedman)
 - [@rettinghaus](https://github.com/rettinghaus)
 - [@satishp962](https://github.com/satishp962)
@@ -2390,6 +2549,7 @@
 - [@sidmohanty11](https://github.com/sidmohanty11)
 - [@sumukhah](https://github.com/sumukhah)
 - [@tusharxoxoxo](https://github.com/tusharxoxoxo)
+- [@weslley543](https://github.com/weslley543)
 - [@xareyli](https://github.com/xareyli)
 - [@yasemincidem](https://github.com/yasemincidem)
 
@@ -2414,7 +2574,6 @@
 - [@hugocostadev](https://github.com/hugocostadev)
 - [@juliajforesti](https://github.com/juliajforesti)
 - [@matheusbsilva137](https://github.com/matheusbsilva137)
-- [@matheuslc](https://github.com/matheuslc)
 - [@murtaza98](https://github.com/murtaza98)
 - [@nishant23122000](https://github.com/nishant23122000)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
@@ -2424,7 +2583,6 @@
 - [@tassoevan](https://github.com/tassoevan)
 - [@thassiov](https://github.com/thassiov)
 - [@tiagoevanp](https://github.com/tiagoevanp)
-- [@weslley543](https://github.com/weslley543)
 - [@yash-rajpal](https://github.com/yash-rajpal)
 
 # 5.3.6
@@ -3095,7 +3253,7 @@
 
   Translated the admin apps WarningModal component from Javascript to Typescript
 
-- Chore: Test/improve reliability ([#26724](https://github.com/RocketChat/Rocket.Chat/pull/26724))
+- Chore: Test/improve reliability ([#26724](https://github.com/RocketChat/Rocket.Chat/pull/26724) by [@souzaramon](https://github.com/souzaramon))
 
 - Chore: Tests for EE features ([#26939](https://github.com/RocketChat/Rocket.Chat/pull/26939))
 
@@ -3180,6 +3338,7 @@
 
 - [@dependabot[bot]](https://github.com/dependabot[bot])
 - [@neo-clon](https://github.com/neo-clon)
+- [@souzaramon](https://github.com/souzaramon)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
@@ -3205,7 +3364,6 @@
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@rique223](https://github.com/rique223)
 - [@sampaiodiego](https://github.com/sampaiodiego)
-- [@souzaramon](https://github.com/souzaramon)
 - [@tassoevan](https://github.com/tassoevan)
 - [@tiagoevanp](https://github.com/tiagoevanp)
 - [@yash-rajpal](https://github.com/yash-rajpal)
@@ -3559,7 +3717,7 @@
 
 - Chore: Add license env var to ee tests ([#26650](https://github.com/RocketChat/Rocket.Chat/pull/26650))
 
-- Chore: add playwright ee coverage ([#26293](https://github.com/RocketChat/Rocket.Chat/pull/26293))
+- Chore: add playwright ee coverage ([#26293](https://github.com/RocketChat/Rocket.Chat/pull/26293) by [@souzaramon](https://github.com/souzaramon) & [@weslley543](https://github.com/weslley543))
 
 - Chore: Add translations code owner ([#26560](https://github.com/RocketChat/Rocket.Chat/pull/26560))
 
@@ -3573,7 +3731,7 @@
 
 - Chore: Change some places still using `fields` to `projection` ([#26308](https://github.com/RocketChat/Rocket.Chat/pull/26308))
 
-- Chore: cleanup startup of test and put wizard in setup function ([#26306](https://github.com/RocketChat/Rocket.Chat/pull/26306))
+- Chore: cleanup startup of test and put wizard in setup function ([#26306](https://github.com/RocketChat/Rocket.Chat/pull/26306) by [@weslley543](https://github.com/weslley543))
 
 - Chore: Codecov threshold ([#26477](https://github.com/RocketChat/Rocket.Chat/pull/26477))
 
@@ -3595,7 +3753,7 @@
 
 - Chore: Convert client/views/account/security folder to ts ([#26413](https://github.com/RocketChat/Rocket.Chat/pull/26413))
 
-- Chore: create a test for managers screen ([#26581](https://github.com/RocketChat/Rocket.Chat/pull/26581))
+- Chore: create a test for managers screen ([#26581](https://github.com/RocketChat/Rocket.Chat/pull/26581) by [@weslley543](https://github.com/weslley543))
 
 - Chore: create removeWebdavAccount endpoint ([#26393](https://github.com/RocketChat/Rocket.Chat/pull/26393))
 
@@ -3605,9 +3763,9 @@
 
   Created the missing rest endpoint 'roomNameExists' for `apps/meteor/client/sidebar/header/CreateChannel.tsx`, on the packages/rest-typings/src/v1/ folder.
 
-- Chore: Create teams management tests ([#26578](https://github.com/RocketChat/Rocket.Chat/pull/26578))
+- Chore: Create teams management tests ([#26578](https://github.com/RocketChat/Rocket.Chat/pull/26578) by [@souzaramon](https://github.com/souzaramon))
 
-- Chore: Create tests for Omnichannel admin add a custom fields ([#26609](https://github.com/RocketChat/Rocket.Chat/pull/26609))
+- Chore: Create tests for Omnichannel admin add a custom fields ([#26609](https://github.com/RocketChat/Rocket.Chat/pull/26609) by [@weslley543](https://github.com/weslley543))
 
 - Chore: Engagement Dashboard end to end tests ([#26702](https://github.com/RocketChat/Rocket.Chat/pull/26702))
 
@@ -3640,13 +3798,13 @@
 
 - Chore: Fix some settings with incompatible default value types ([#26114](https://github.com/RocketChat/Rocket.Chat/pull/26114))
 
-- Chore: fix tests with beforeEach ([#26335](https://github.com/RocketChat/Rocket.Chat/pull/26335))
+- Chore: fix tests with beforeEach ([#26335](https://github.com/RocketChat/Rocket.Chat/pull/26335) by [@souzaramon](https://github.com/souzaramon) & [@weslley543](https://github.com/weslley543))
 
 - Chore: Fix UiKit dependency issue for Livechat ([#26534](https://github.com/RocketChat/Rocket.Chat/pull/26534))
 
 - Chore: Importer rest types, meteor methods to TS and API unit tests ([#26284](https://github.com/RocketChat/Rocket.Chat/pull/26284))
 
-- Chore: Improve test for livechat  ([#26527](https://github.com/RocketChat/Rocket.Chat/pull/26527))
+- Chore: Improve test for livechat  ([#26527](https://github.com/RocketChat/Rocket.Chat/pull/26527) by [@weslley543](https://github.com/weslley543))
 
 - Chore: Migrate AppPermissionsReviewModal from JS to TS ([#26498](https://github.com/RocketChat/Rocket.Chat/pull/26498))
 
@@ -3682,7 +3840,7 @@
 
   I found this while I was doing some refactorings on the federation side. 😬
 
-- Chore: Parallelize e2e tests ([#26390](https://github.com/RocketChat/Rocket.Chat/pull/26390))
+- Chore: Parallelize e2e tests ([#26390](https://github.com/RocketChat/Rocket.Chat/pull/26390) by [@souzaramon](https://github.com/souzaramon) & [@weslley543](https://github.com/weslley543))
 
 - Chore: Permissions check per endpoint/method ([#26419](https://github.com/RocketChat/Rocket.Chat/pull/26419))
 
@@ -3692,7 +3850,7 @@
 
   The title says it all.
 
-- Chore: Refactor create-target-channel util ([#26493](https://github.com/RocketChat/Rocket.Chat/pull/26493))
+- Chore: Refactor create-target-channel util ([#26493](https://github.com/RocketChat/Rocket.Chat/pull/26493) by [@souzaramon](https://github.com/souzaramon))
 
 - Chore: Refactor ReportMessage Modal to React Component ([#26478](https://github.com/RocketChat/Rocket.Chat/pull/26478))
 
@@ -3757,11 +3915,11 @@
 
 - Chore: skipping tests that are based on kebab menu ([#26616](https://github.com/RocketChat/Rocket.Chat/pull/26616))
 
-- Chore: test for change avatar ([#26543](https://github.com/RocketChat/Rocket.Chat/pull/26543))
+- Chore: test for change avatar ([#26543](https://github.com/RocketChat/Rocket.Chat/pull/26543) by [@weslley543](https://github.com/weslley543))
 
-- Chore: Tests intermitences ([#26464](https://github.com/RocketChat/Rocket.Chat/pull/26464))
+- Chore: Tests intermitences ([#26464](https://github.com/RocketChat/Rocket.Chat/pull/26464) by [@weslley543](https://github.com/weslley543))
 
-- Chore: transfer to another agent ([#26545](https://github.com/RocketChat/Rocket.Chat/pull/26545))
+- Chore: transfer to another agent ([#26545](https://github.com/RocketChat/Rocket.Chat/pull/26545) by [@weslley543](https://github.com/weslley543))
 
 - Chore: Update Apps-Engine ([#26765](https://github.com/RocketChat/Rocket.Chat/pull/26765))
 
@@ -3881,6 +4039,8 @@
 - [@imyaman](https://github.com/imyaman)
 - [@pierreozoux](https://github.com/pierreozoux)
 - [@shrinish123](https://github.com/shrinish123)
+- [@souzaramon](https://github.com/souzaramon)
+- [@weslley543](https://github.com/weslley543)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
@@ -3910,11 +4070,9 @@
 - [@rique223](https://github.com/rique223)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
-- [@souzaramon](https://github.com/souzaramon)
 - [@tapiarafael](https://github.com/tapiarafael)
 - [@tassoevan](https://github.com/tassoevan)
 - [@tiagoevanp](https://github.com/tiagoevanp)
-- [@weslley543](https://github.com/weslley543)
 - [@yash-rajpal](https://github.com/yash-rajpal)
 
 # 5.0.5
@@ -4926,7 +5084,7 @@
 
   See title
 
-- Chore: Add tests for agents screens ([#25637](https://github.com/RocketChat/Rocket.Chat/pull/25637))
+- Chore: Add tests for agents screens ([#25637](https://github.com/RocketChat/Rocket.Chat/pull/25637) by [@weslley543](https://github.com/weslley543))
 
 - Chore: Add typings for /v1/webdav.getMyAccounts ([#25276](https://github.com/RocketChat/Rocket.Chat/pull/25276))
 
@@ -4934,7 +5092,7 @@
 
 - Chore: Adding default message parser template ([#26064](https://github.com/RocketChat/Rocket.Chat/pull/26064))
 
-- Chore: adjust in some configurations ([#25612](https://github.com/RocketChat/Rocket.Chat/pull/25612))
+- Chore: adjust in some configurations ([#25612](https://github.com/RocketChat/Rocket.Chat/pull/25612) by [@weslley543](https://github.com/weslley543))
 
 - Chore: Allow endpoints to optionally require authentication ([#26084](https://github.com/RocketChat/Rocket.Chat/pull/26084))
 
@@ -4980,7 +5138,7 @@
 
 - Chore: Code Improvements for #25391 ([#25606](https://github.com/RocketChat/Rocket.Chat/pull/25606))
 
-- Chore: Collect e2e coverage ([#25743](https://github.com/RocketChat/Rocket.Chat/pull/25743))
+- Chore: Collect e2e coverage ([#25743](https://github.com/RocketChat/Rocket.Chat/pull/25743) by [@souzaramon](https://github.com/souzaramon))
 
 - Chore: Colors ([#25969](https://github.com/RocketChat/Rocket.Chat/pull/25969))
 
@@ -5059,7 +5217,7 @@
 
 - Chore: Convert Mailer to TS ([#25121](https://github.com/RocketChat/Rocket.Chat/pull/25121))
 
-- Chore: convert marketplace price display component to use typescript ([#25504](https://github.com/RocketChat/Rocket.Chat/pull/25504))
+- Chore: convert marketplace price display component to use typescript ([#25504](https://github.com/RocketChat/Rocket.Chat/pull/25504) by [@matheuslc](https://github.com/matheuslc))
 
   **Marketplace apps listing page**
   ![Screen Shot 2022-05-13 at 12 57 43](https://user-images.githubusercontent.com/4161171/168322189-67990fdf-a447-46dc-8f88-08b16c2a5416.png)
@@ -5119,7 +5277,7 @@
 
 - Chore: Converting orchestrator.js to ts ([#25367](https://github.com/RocketChat/Rocket.Chat/pull/25367))
 
-- Chore: create a e2e test guideline ([#25884](https://github.com/RocketChat/Rocket.Chat/pull/25884))
+- Chore: create a e2e test guideline ([#25884](https://github.com/RocketChat/Rocket.Chat/pull/25884) by [@souzaramon](https://github.com/souzaramon))
 
 - Chore: Create a token for each action ([#26023](https://github.com/RocketChat/Rocket.Chat/pull/26023))
 
@@ -5137,9 +5295,9 @@
 
 - Chore: Do not log integrations using `name` key ([#26163](https://github.com/RocketChat/Rocket.Chat/pull/26163))
 
-- Chore: Enable marketplace screenshots endpoint ([#25395](https://github.com/RocketChat/Rocket.Chat/pull/25395))
+- Chore: Enable marketplace screenshots endpoint ([#25395](https://github.com/RocketChat/Rocket.Chat/pull/25395) by [@matheuslc](https://github.com/matheuslc))
 
-- Chore: ensure scripts use cross-env and ignore some dirs (ROC-54) ([#25218](https://github.com/RocketChat/Rocket.Chat/pull/25218))
+- Chore: ensure scripts use cross-env and ignore some dirs (ROC-54) ([#25218](https://github.com/RocketChat/Rocket.Chat/pull/25218) by [@souzaramon](https://github.com/souzaramon))
 
   - data and test-failure should be ignored  
   - ensure scripts use cross-env
@@ -5158,7 +5316,7 @@
 
 - Chore: fix watermark condition ([#26095](https://github.com/RocketChat/Rocket.Chat/pull/26095))
 
-- Chore: Fixes e2e playwright intermittences ([#25984](https://github.com/RocketChat/Rocket.Chat/pull/25984))
+- Chore: Fixes e2e playwright intermittences ([#25984](https://github.com/RocketChat/Rocket.Chat/pull/25984) by [@souzaramon](https://github.com/souzaramon) & [@weslley543](https://github.com/weslley543))
 
 - Chore: Fuselage update ([#26004](https://github.com/RocketChat/Rocket.Chat/pull/26004))
 
@@ -5188,7 +5346,7 @@
 
 - Chore: Livechat change output level ([#25522](https://github.com/RocketChat/Rocket.Chat/pull/25522))
 
-- Chore: Major refactors in pageobjects ([#26015](https://github.com/RocketChat/Rocket.Chat/pull/26015))
+- Chore: Major refactors in pageobjects ([#26015](https://github.com/RocketChat/Rocket.Chat/pull/26015) by [@souzaramon](https://github.com/souzaramon))
 
 - Chore: Make kodiak merge message empty ([#26069](https://github.com/RocketChat/Rocket.Chat/pull/26069))
 
@@ -5196,9 +5354,9 @@
 
 - Chore: Messages raw model rewrite to ts ([#25761](https://github.com/RocketChat/Rocket.Chat/pull/25761))
 
-- Chore: Migrate 15-message-popup from cypress to playwright ([#25462](https://github.com/RocketChat/Rocket.Chat/pull/25462))
+- Chore: Migrate 15-message-popup from cypress to playwright ([#25462](https://github.com/RocketChat/Rocket.Chat/pull/25462) by [@souzaramon](https://github.com/souzaramon))
 
-- Chore: migrate from cypress to pw 14-setting-permission ([#25523](https://github.com/RocketChat/Rocket.Chat/pull/25523))
+- Chore: migrate from cypress to pw 14-setting-permission ([#25523](https://github.com/RocketChat/Rocket.Chat/pull/25523) by [@weslley543](https://github.com/weslley543))
 
 - Chore: migrate katex to ts ([#25501](https://github.com/RocketChat/Rocket.Chat/pull/25501))
 
@@ -5216,9 +5374,9 @@
 
 - Chore: Migrate spotify to ts ([#25507](https://github.com/RocketChat/Rocket.Chat/pull/25507))
 
-- Chore: migrate-to-pw-16-discussion ([#25567](https://github.com/RocketChat/Rocket.Chat/pull/25567))
+- Chore: migrate-to-pw-16-discussion ([#25567](https://github.com/RocketChat/Rocket.Chat/pull/25567) by [@weslley543](https://github.com/weslley543))
 
-- Chore: migrate-to-pw-adjust-in-intermitences ([#25542](https://github.com/RocketChat/Rocket.Chat/pull/25542))
+- Chore: migrate-to-pw-adjust-in-intermitences ([#25542](https://github.com/RocketChat/Rocket.Chat/pull/25542) by [@weslley543](https://github.com/weslley543))
 
 - Chore: Minor dependency updates ([#25269](https://github.com/RocketChat/Rocket.Chat/pull/25269))
 
@@ -5254,7 +5412,7 @@
 
 - Chore: Prune Messages contextualBar rewrite ([#25757](https://github.com/RocketChat/Rocket.Chat/pull/25757))
 
-- Chore: Remove all cypress tests, configs and references ([#25564](https://github.com/RocketChat/Rocket.Chat/pull/25564))
+- Chore: Remove all cypress tests, configs and references ([#25564](https://github.com/RocketChat/Rocket.Chat/pull/25564) by [@souzaramon](https://github.com/souzaramon))
 
 - Chore: Remove Alpine image deps after using them ([#25053](https://github.com/RocketChat/Rocket.Chat/pull/25053))
 
@@ -5284,7 +5442,7 @@
 
 - Chore: Remove unused Drone CI files ([#25124](https://github.com/RocketChat/Rocket.Chat/pull/25124))
 
-- Chore: remove unused locators from e2e tests ([#25860](https://github.com/RocketChat/Rocket.Chat/pull/25860))
+- Chore: remove unused locators from e2e tests ([#25860](https://github.com/RocketChat/Rocket.Chat/pull/25860) by [@souzaramon](https://github.com/souzaramon))
 
 - Chore: Remove unused migrations ([#26102](https://github.com/RocketChat/Rocket.Chat/pull/26102))
 
@@ -5392,23 +5550,23 @@
   npx hygen package new test
   ```
 
-- Chore: Test for department screen ([#25696](https://github.com/RocketChat/Rocket.Chat/pull/25696))
+- Chore: Test for department screen ([#25696](https://github.com/RocketChat/Rocket.Chat/pull/25696) by [@weslley543](https://github.com/weslley543))
 
 - Chore: test turbo params ([#26038](https://github.com/RocketChat/Rocket.Chat/pull/26038))
 
 - Chore: Testing Kodiak feature ([#25794](https://github.com/RocketChat/Rocket.Chat/pull/25794))
 
-- Chore: Tests refactor pageobjects ([#26245](https://github.com/RocketChat/Rocket.Chat/pull/26245))
+- Chore: Tests refactor pageobjects ([#26245](https://github.com/RocketChat/Rocket.Chat/pull/26245) by [@souzaramon](https://github.com/souzaramon) & [@weslley543](https://github.com/weslley543))
 
-- Chore: Tests with Playwright (task: All works) ([#25122](https://github.com/RocketChat/Rocket.Chat/pull/25122))
+- Chore: Tests with Playwright (task: All works) ([#25122](https://github.com/RocketChat/Rocket.Chat/pull/25122) by [@weslley543](https://github.com/weslley543))
 
-- Chore: Tests with Playwright (task: ROC-25, 06-message) ([#25252](https://github.com/RocketChat/Rocket.Chat/pull/25252))
+- Chore: Tests with Playwright (task: ROC-25, 06-message) ([#25252](https://github.com/RocketChat/Rocket.Chat/pull/25252) by [@weslley543](https://github.com/weslley543))
 
 - Chore: Tests with Playwright (task: ROC-28, 09-channels) ([#25196](https://github.com/RocketChat/Rocket.Chat/pull/25196))
 
-- Chore: Tests with Playwright (task: ROC-31, 12-settings) ([#25253](https://github.com/RocketChat/Rocket.Chat/pull/25253))
+- Chore: Tests with Playwright (task: ROC-31, 12-settings) ([#25253](https://github.com/RocketChat/Rocket.Chat/pull/25253) by [@souzaramon](https://github.com/souzaramon))
 
-- Chore: Tests with Playwright (task: ROC-66, Intermittent resolution in tests) ([#25416](https://github.com/RocketChat/Rocket.Chat/pull/25416))
+- Chore: Tests with Playwright (task: ROC-66, Intermittent resolution in tests) ([#25416](https://github.com/RocketChat/Rocket.Chat/pull/25416) by [@souzaramon](https://github.com/souzaramon) & [@weslley543](https://github.com/weslley543))
 
 - Chore: Translate admin helpers to TS ([#25690](https://github.com/RocketChat/Rocket.Chat/pull/25690))
 
@@ -5440,7 +5598,7 @@
 
 - Chore: Update package.json update tsc memory  ([#25755](https://github.com/RocketChat/Rocket.Chat/pull/25755))
 
-- Chore: update pageobjects to use es6 getters and remove export default ([#25867](https://github.com/RocketChat/Rocket.Chat/pull/25867))
+- Chore: update pageobjects to use es6 getters and remove export default ([#25867](https://github.com/RocketChat/Rocket.Chat/pull/25867) by [@souzaramon](https://github.com/souzaramon))
 
 - Chore: Update poplib ([#25964](https://github.com/RocketChat/Rocket.Chat/pull/25964))
 
@@ -5958,9 +6116,9 @@
 
 - Regression: yarn dev triggers build dependencies ([#25208](https://github.com/RocketChat/Rocket.Chat/pull/25208))
 
-- Revert:  "Chore: Collect e2e coverage" ([#25936](https://github.com/RocketChat/Rocket.Chat/pull/25936))
+- Revert:  "Chore: Collect e2e coverage" ([#25936](https://github.com/RocketChat/Rocket.Chat/pull/25936) by [@souzaramon](https://github.com/souzaramon))
 
-- Test: Migrate 13-permissions from cypress to playwright ([#25558](https://github.com/RocketChat/Rocket.Chat/pull/25558))
+- Test: Migrate 13-permissions from cypress to playwright ([#25558](https://github.com/RocketChat/Rocket.Chat/pull/25558) by [@souzaramon](https://github.com/souzaramon))
 
 </details>
 
@@ -5982,11 +6140,14 @@
 - [@g-thome](https://github.com/g-thome)
 - [@joakimaho](https://github.com/joakimaho)
 - [@kibonusp](https://github.com/kibonusp)
+- [@matheuslc](https://github.com/matheuslc)
 - [@matthias4217](https://github.com/matthias4217)
 - [@ostjen](https://github.com/ostjen)
 - [@paulobernardoaf](https://github.com/paulobernardoaf)
 - [@sidmohanty11](https://github.com/sidmohanty11)
+- [@souzaramon](https://github.com/souzaramon)
 - [@ujorgeleite](https://github.com/ujorgeleite)
+- [@weslley543](https://github.com/weslley543)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
@@ -6016,20 +6177,17 @@
 - [@juliajforesti](https://github.com/juliajforesti)
 - [@marceloschmidt](https://github.com/marceloschmidt)
 - [@matheusbsilva137](https://github.com/matheusbsilva137)
-- [@matheuslc](https://github.com/matheuslc)
 - [@murtaza98](https://github.com/murtaza98)
 - [@nishant23122000](https://github.com/nishant23122000)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@rique223](https://github.com/rique223)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
-- [@souzaramon](https://github.com/souzaramon)
 - [@tapiarafael](https://github.com/tapiarafael)
 - [@tassoevan](https://github.com/tassoevan)
 - [@thassiov](https://github.com/thassiov)
 - [@tiagoevanp](https://github.com/tiagoevanp)
 - [@tmontini](https://github.com/tmontini)
-- [@weslley543](https://github.com/weslley543)
 - [@yash-rajpal](https://github.com/yash-rajpal)
 
 # 4.8.4
@@ -6663,7 +6821,7 @@
 
 - Chore: Convert Mailer to TS ([#25121](https://github.com/RocketChat/Rocket.Chat/pull/25121))
 
-- Chore: convert marketplace price display component to use typescript ([#25504](https://github.com/RocketChat/Rocket.Chat/pull/25504))
+- Chore: convert marketplace price display component to use typescript ([#25504](https://github.com/RocketChat/Rocket.Chat/pull/25504) by [@matheuslc](https://github.com/matheuslc))
 
   **Marketplace apps listing page**
   ![Screen Shot 2022-05-13 at 12 57 43](https://user-images.githubusercontent.com/4161171/168322189-67990fdf-a447-46dc-8f88-08b16c2a5416.png)
@@ -6701,9 +6859,9 @@
 
 - Chore: Dependencies upgrade ([#25290](https://github.com/RocketChat/Rocket.Chat/pull/25290))
 
-- Chore: Enable marketplace screenshots endpoint ([#25395](https://github.com/RocketChat/Rocket.Chat/pull/25395))
+- Chore: Enable marketplace screenshots endpoint ([#25395](https://github.com/RocketChat/Rocket.Chat/pull/25395) by [@matheuslc](https://github.com/matheuslc))
 
-- Chore: ensure scripts use cross-env and ignore some dirs (ROC-54) ([#25218](https://github.com/RocketChat/Rocket.Chat/pull/25218))
+- Chore: ensure scripts use cross-env and ignore some dirs (ROC-54) ([#25218](https://github.com/RocketChat/Rocket.Chat/pull/25218) by [@souzaramon](https://github.com/souzaramon))
 
   - data and test-failure should be ignored  
   - ensure scripts use cross-env
@@ -6718,9 +6876,9 @@
 
 - Chore: Manager Page Rewrite ([#25431](https://github.com/RocketChat/Rocket.Chat/pull/25431))
 
-- Chore: Migrate 15-message-popup from cypress to playwright ([#25462](https://github.com/RocketChat/Rocket.Chat/pull/25462))
+- Chore: Migrate 15-message-popup from cypress to playwright ([#25462](https://github.com/RocketChat/Rocket.Chat/pull/25462) by [@souzaramon](https://github.com/souzaramon))
 
-- Chore: migrate from cypress to pw 14-setting-permission ([#25523](https://github.com/RocketChat/Rocket.Chat/pull/25523))
+- Chore: migrate from cypress to pw 14-setting-permission ([#25523](https://github.com/RocketChat/Rocket.Chat/pull/25523) by [@weslley543](https://github.com/weslley543))
 
 - Chore: Migrate NotFoundPage to TS ([#25509](https://github.com/RocketChat/Rocket.Chat/pull/25509))
 
@@ -6730,7 +6888,7 @@
 
 - Chore: Migrate spotify to ts ([#25507](https://github.com/RocketChat/Rocket.Chat/pull/25507))
 
-- Chore: migrate-to-pw-adjust-in-intermitences ([#25542](https://github.com/RocketChat/Rocket.Chat/pull/25542))
+- Chore: migrate-to-pw-adjust-in-intermitences ([#25542](https://github.com/RocketChat/Rocket.Chat/pull/25542) by [@weslley543](https://github.com/weslley543))
 
 - Chore: Minor dependency updates ([#25269](https://github.com/RocketChat/Rocket.Chat/pull/25269))
 
@@ -6824,15 +6982,15 @@
   npx hygen package new test
   ```
 
-- Chore: Tests with Playwright (task: All works) ([#25122](https://github.com/RocketChat/Rocket.Chat/pull/25122))
+- Chore: Tests with Playwright (task: All works) ([#25122](https://github.com/RocketChat/Rocket.Chat/pull/25122) by [@weslley543](https://github.com/weslley543))
 
-- Chore: Tests with Playwright (task: ROC-25, 06-message) ([#25252](https://github.com/RocketChat/Rocket.Chat/pull/25252))
+- Chore: Tests with Playwright (task: ROC-25, 06-message) ([#25252](https://github.com/RocketChat/Rocket.Chat/pull/25252) by [@weslley543](https://github.com/weslley543))
 
 - Chore: Tests with Playwright (task: ROC-28, 09-channels) ([#25196](https://github.com/RocketChat/Rocket.Chat/pull/25196))
 
-- Chore: Tests with Playwright (task: ROC-31, 12-settings) ([#25253](https://github.com/RocketChat/Rocket.Chat/pull/25253))
+- Chore: Tests with Playwright (task: ROC-31, 12-settings) ([#25253](https://github.com/RocketChat/Rocket.Chat/pull/25253) by [@souzaramon](https://github.com/souzaramon))
 
-- Chore: Tests with Playwright (task: ROC-66, Intermittent resolution in tests) ([#25416](https://github.com/RocketChat/Rocket.Chat/pull/25416))
+- Chore: Tests with Playwright (task: ROC-66, Intermittent resolution in tests) ([#25416](https://github.com/RocketChat/Rocket.Chat/pull/25416) by [@souzaramon](https://github.com/souzaramon) & [@weslley543](https://github.com/weslley543))
 
 - Chore: TS conversion folder client ([#25031](https://github.com/RocketChat/Rocket.Chat/pull/25031))
 
@@ -6973,7 +7131,7 @@
 
 - Release 4.7.2 ([#25580](https://github.com/RocketChat/Rocket.Chat/pull/25580))
 
-- Test: Migrate 13-permissions from cypress to playwright ([#25558](https://github.com/RocketChat/Rocket.Chat/pull/25558))
+- Test: Migrate 13-permissions from cypress to playwright ([#25558](https://github.com/RocketChat/Rocket.Chat/pull/25558) by [@souzaramon](https://github.com/souzaramon))
 
 </details>
 
@@ -6990,10 +7148,13 @@
 - [@felipe-menelau](https://github.com/felipe-menelau)
 - [@kibonusp](https://github.com/kibonusp)
 - [@lingohub[bot]](https://github.com/lingohub[bot])
+- [@matheuslc](https://github.com/matheuslc)
 - [@ostjen](https://github.com/ostjen)
 - [@paulobernardoaf](https://github.com/paulobernardoaf)
 - [@sidmohanty11](https://github.com/sidmohanty11)
+- [@souzaramon](https://github.com/souzaramon)
 - [@ujorgeleite](https://github.com/ujorgeleite)
+- [@weslley543](https://github.com/weslley543)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
@@ -7020,19 +7181,16 @@
 - [@juliajforesti](https://github.com/juliajforesti)
 - [@marceloschmidt](https://github.com/marceloschmidt)
 - [@matheusbsilva137](https://github.com/matheusbsilva137)
-- [@matheuslc](https://github.com/matheuslc)
 - [@murtaza98](https://github.com/murtaza98)
 - [@nishant23122000](https://github.com/nishant23122000)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@rique223](https://github.com/rique223)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
-- [@souzaramon](https://github.com/souzaramon)
 - [@tapiarafael](https://github.com/tapiarafael)
 - [@tassoevan](https://github.com/tassoevan)
 - [@tiagoevanp](https://github.com/tiagoevanp)
 - [@tmontini](https://github.com/tmontini)
-- [@weslley543](https://github.com/weslley543)
 - [@yash-rajpal](https://github.com/yash-rajpal)
 
 # 4.7.4
@@ -7429,7 +7587,7 @@
 
 - Chore: Create README.md for Rest Typings ([#25335](https://github.com/RocketChat/Rocket.Chat/pull/25335))
 
-- Chore: ensure scripts use cross-env and ignore some dirs (ROC-54) ([#25218](https://github.com/RocketChat/Rocket.Chat/pull/25218))
+- Chore: ensure scripts use cross-env and ignore some dirs (ROC-54) ([#25218](https://github.com/RocketChat/Rocket.Chat/pull/25218) by [@souzaramon](https://github.com/souzaramon))
 
   - data and test-failure should be ignored  
   - ensure scripts use cross-env
@@ -7468,7 +7626,7 @@
   npx hygen package new test
   ```
 
-- Chore: Tests with Playwright (task: All works) ([#25122](https://github.com/RocketChat/Rocket.Chat/pull/25122))
+- Chore: Tests with Playwright (task: All works) ([#25122](https://github.com/RocketChat/Rocket.Chat/pull/25122) by [@weslley543](https://github.com/weslley543))
 
 - Chore: Tests with Playwright (task: ROC-28, 09-channels) ([#25196](https://github.com/RocketChat/Rocket.Chat/pull/25196))
 
@@ -7569,6 +7727,8 @@
 - [@kibonusp](https://github.com/kibonusp)
 - [@paulobernardoaf](https://github.com/paulobernardoaf)
 - [@sidmohanty11](https://github.com/sidmohanty11)
+- [@souzaramon](https://github.com/souzaramon)
+- [@weslley543](https://github.com/weslley543)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
@@ -7593,11 +7753,9 @@
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
-- [@souzaramon](https://github.com/souzaramon)
 - [@tassoevan](https://github.com/tassoevan)
 - [@tiagoevanp](https://github.com/tiagoevanp)
 - [@tmontini](https://github.com/tmontini)
-- [@weslley543](https://github.com/weslley543)
 - [@yash-rajpal](https://github.com/yash-rajpal)
 
 # 4.6.3
@@ -9486,7 +9644,7 @@
 
   Just removing a duplicated/unused file.
 
-- Chore: ensure scripts use cross-env and ignore some dirs (ROC-54) ([#25218](https://github.com/RocketChat/Rocket.Chat/pull/25218))
+- Chore: ensure scripts use cross-env and ignore some dirs (ROC-54) ([#25218](https://github.com/RocketChat/Rocket.Chat/pull/25218) by [@souzaramon](https://github.com/souzaramon))
 
   - data and test-failure should be ignored  
   - ensure scripts use cross-env
@@ -9563,7 +9721,7 @@
   npx hygen package new test
   ```
 
-- Chore: Tests with Playwright (task: All works) ([#25122](https://github.com/RocketChat/Rocket.Chat/pull/25122))
+- Chore: Tests with Playwright (task: All works) ([#25122](https://github.com/RocketChat/Rocket.Chat/pull/25122) by [@weslley543](https://github.com/weslley543))
 
 - Chore: Tests with Playwright (task: ROC-28, 09-channels) ([#25196](https://github.com/RocketChat/Rocket.Chat/pull/25196))
 
@@ -9832,8 +9990,10 @@
 - [@paulobernardoaf](https://github.com/paulobernardoaf)
 - [@pedrogssouza](https://github.com/pedrogssouza)
 - [@sidmohanty11](https://github.com/sidmohanty11)
+- [@souzaramon](https://github.com/souzaramon)
 - [@tkurz](https://github.com/tkurz)
 - [@ujorgeleite](https://github.com/ujorgeleite)
+- [@weslley543](https://github.com/weslley543)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
@@ -9863,11 +10023,9 @@
 - [@rique223](https://github.com/rique223)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
-- [@souzaramon](https://github.com/souzaramon)
 - [@tassoevan](https://github.com/tassoevan)
 - [@tiagoevanp](https://github.com/tiagoevanp)
 - [@tmontini](https://github.com/tmontini)
-- [@weslley543](https://github.com/weslley543)
 - [@yash-rajpal](https://github.com/yash-rajpal)
 
 # 4.4.4
@@ -10560,7 +10718,7 @@
 
   Just removing a duplicated/unused file.
 
-- Chore: ensure scripts use cross-env and ignore some dirs (ROC-54) ([#25218](https://github.com/RocketChat/Rocket.Chat/pull/25218))
+- Chore: ensure scripts use cross-env and ignore some dirs (ROC-54) ([#25218](https://github.com/RocketChat/Rocket.Chat/pull/25218) by [@souzaramon](https://github.com/souzaramon))
 
   - data and test-failure should be ignored  
   - ensure scripts use cross-env
@@ -10637,7 +10795,7 @@
   npx hygen package new test
   ```
 
-- Chore: Tests with Playwright (task: All works) ([#25122](https://github.com/RocketChat/Rocket.Chat/pull/25122))
+- Chore: Tests with Playwright (task: All works) ([#25122](https://github.com/RocketChat/Rocket.Chat/pull/25122) by [@weslley543](https://github.com/weslley543))
 
 - Chore: Tests with Playwright (task: ROC-28, 09-channels) ([#25196](https://github.com/RocketChat/Rocket.Chat/pull/25196))
 
@@ -10906,8 +11064,10 @@
 - [@paulobernardoaf](https://github.com/paulobernardoaf)
 - [@pedrogssouza](https://github.com/pedrogssouza)
 - [@sidmohanty11](https://github.com/sidmohanty11)
+- [@souzaramon](https://github.com/souzaramon)
 - [@tkurz](https://github.com/tkurz)
 - [@ujorgeleite](https://github.com/ujorgeleite)
+- [@weslley543](https://github.com/weslley543)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
@@ -10937,11 +11097,9 @@
 - [@rique223](https://github.com/rique223)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
-- [@souzaramon](https://github.com/souzaramon)
 - [@tassoevan](https://github.com/tassoevan)
 - [@tiagoevanp](https://github.com/tiagoevanp)
 - [@tmontini](https://github.com/tmontini)
-- [@weslley543](https://github.com/weslley543)
 - [@yash-rajpal](https://github.com/yash-rajpal)
 
 # 4.4.3
@@ -18986,7 +19144,7 @@
 
 - Update Apps-Engine version ([#19385](https://github.com/RocketChat/Rocket.Chat/pull/19385))
 
-- Update comment of "issue-close-app" ([#19078](https://github.com/RocketChat/Rocket.Chat/pull/19078))
+- Update comment of "issue-close-app" ([#19078](https://github.com/RocketChat/Rocket.Chat/pull/19078) by [@frdmn](https://github.com/frdmn))
 
 - Update feature-request opening process on README ([#19240](https://github.com/RocketChat/Rocket.Chat/pull/19240) by [@brij1999](https://github.com/brij1999))
 
@@ -19008,6 +19166,7 @@
 - [@brij1999](https://github.com/brij1999)
 - [@ceefour](https://github.com/ceefour)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
+- [@frdmn](https://github.com/frdmn)
 - [@galshiff](https://github.com/galshiff)
 - [@jgribonvald](https://github.com/jgribonvald)
 - [@lolimay](https://github.com/lolimay)
@@ -19019,7 +19178,6 @@
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@d-gubert](https://github.com/d-gubert)
 - [@dougfabris](https://github.com/dougfabris)
-- [@frdmn](https://github.com/frdmn)
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
@@ -30292,7 +30450,7 @@
 
 - Typo: German language file ([#9190](https://github.com/RocketChat/Rocket.Chat/pull/9190) by [@TheReal1604](https://github.com/TheReal1604))
 
-- Update license ([#9490](https://github.com/RocketChat/Rocket.Chat/pull/9490))
+- Update license ([#9490](https://github.com/RocketChat/Rocket.Chat/pull/9490) by [@frdmn](https://github.com/frdmn))
 
 - Update Marked dependecy to 0.3.9 ([#9346](https://github.com/RocketChat/Rocket.Chat/pull/9346))
 
@@ -30306,6 +30464,7 @@
 - [@TheReal1604](https://github.com/TheReal1604)
 - [@cpitman](https://github.com/cpitman)
 - [@cyclops24](https://github.com/cyclops24)
+- [@frdmn](https://github.com/frdmn)
 - [@gdelavald](https://github.com/gdelavald)
 - [@ggrish](https://github.com/ggrish)
 - [@karlprieb](https://github.com/karlprieb)
@@ -30322,7 +30481,6 @@
 
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@engelgabriel](https://github.com/engelgabriel)
-- [@frdmn](https://github.com/frdmn)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
 - [@graywolf336](https://github.com/graywolf336)

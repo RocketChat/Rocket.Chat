@@ -62,9 +62,9 @@ export type ComposerAPI = {
 export type DataAPI = {
 	composeMessage(
 		text: string,
-		options: { sendToChannel?: boolean; quotedMessages: IMessage[]; originalMessage?: IMessage },
+		options: { sendToChannel?: boolean; quotedMessages: IMessage[]; originalMessage?: IMessage | null },
 	): Promise<IMessage>;
-	findMessageByID(mid: IMessage['_id']): Promise<IMessage | undefined>;
+	findMessageByID(mid: IMessage['_id']): Promise<IMessage | null>;
 	getMessageByID(mid: IMessage['_id']): Promise<IMessage>;
 	findLastMessage(): Promise<IMessage | undefined>;
 	getLastMessage(): Promise<IMessage>;
