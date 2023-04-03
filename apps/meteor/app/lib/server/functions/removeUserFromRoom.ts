@@ -3,9 +3,8 @@ import { AppsEngineException } from '@rocket.chat/apps-engine/definition/excepti
 import { Meteor } from 'meteor/meteor';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Message, Team } from '@rocket.chat/core-services';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Rooms } from '@rocket.chat/models';
 
-import { Rooms } from '../../../models/server';
 import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { callbacks } from '../../../../lib/callbacks';
 
@@ -14,7 +13,7 @@ export const removeUserFromRoom = async function (
 	user: IUser,
 	options?: { byUser: Pick<IUser, '_id' | 'username'> },
 ): Promise<void> {
-	const room = Rooms.findOneById(rid);
+	const room = await Rooms.findOneById(rid);
 
 	if (!room) {
 		return;

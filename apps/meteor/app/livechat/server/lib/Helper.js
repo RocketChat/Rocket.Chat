@@ -13,10 +13,10 @@ import {
 	LivechatDepartment,
 	Subscriptions,
 	Users,
+	Rooms,
 } from '@rocket.chat/models';
 
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
-import { Rooms } from '../../../models/server';
 import { Livechat } from './Livechat';
 import { RoutingManager } from './RoutingManager';
 import { callbacks } from '../../../../lib/callbacks';
@@ -93,7 +93,7 @@ export const createLivechatRoom = async (rid, name, guest, roomInfo = {}, extraD
 		extraRoomInfo,
 	);
 
-	const roomId = Rooms.insert(room);
+	const roomId = (await Rooms.insertOne(room)).insertedId;
 
 	Apps.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
 	callbacks.run('livechat.newRoom', room);

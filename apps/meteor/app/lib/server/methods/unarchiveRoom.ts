@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Users } from '@rocket.chat/models';
+import { Users, Rooms } from '@rocket.chat/models';
 import { isRegisterUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Rooms } from '../../../models/server';
 import { unarchiveRoom } from '../functions';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -30,7 +29,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'archiveRoom' });
 		}
 
-		const room = Rooms.findOneById(rid);
+		const room = await Rooms.findOneById(rid);
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'unarchiveRoom' });

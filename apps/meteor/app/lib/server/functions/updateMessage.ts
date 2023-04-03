@@ -1,8 +1,7 @@
 import type { IEditedMessage, IMessage, IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
-import { Messages } from '@rocket.chat/models';
+import { Messages, Rooms } from '@rocket.chat/models';
 
-import { Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { Apps } from '../../../../ee/server/apps';
@@ -63,7 +62,11 @@ export const updateMessage = async function (message: IMessage, user: IUser, ori
 		},
 	);
 
-	const room = Rooms.findOneById(message.rid);
+	const room = await Rooms.findOneById(message.rid);
+
+	if (!room) {
+		return;
+	}
 
 	if (Apps?.isLoaded()) {
 		// This returns a promise, but it won't mutate anything about the message
