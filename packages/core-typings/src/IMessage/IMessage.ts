@@ -311,7 +311,7 @@ export interface IOmnichannelSystemMessage extends IMessage {
 	requestData?: {
 		type: 'visitor' | 'user';
 		visitor?: ILivechatVisitor;
-		user?: Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'>;
+		user?: Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'> | null;
 	};
 	webRtcCallEndTs?: Date;
 	comment?: string;

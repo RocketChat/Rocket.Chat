@@ -20,7 +20,7 @@ API.v1.addRoute('livechat/agent.info/:rid/:token', {
 			throw new Error('invalid-room');
 		}
 
-		const agent = room?.servedBy && findAgent(room.servedBy._id);
+		const agent = room?.servedBy && (await findAgent(room.servedBy._id));
 		if (!agent) {
 			throw new Error('invalid-agent');
 		}
@@ -53,7 +53,7 @@ API.v1.addRoute(
 				throw new Error('agent-not-found');
 			}
 
-			const agent = findAgent(agentData.agentId);
+			const agent = await findAgent(agentData.agentId);
 			if (!agent) {
 				throw new Error('invalid-agent');
 			}
@@ -93,7 +93,7 @@ API.v1.addRoute(
 				if (!(await hasPermissionAsync(this.userId, 'manage-livechat-agents'))) {
 					return API.v1.unauthorized();
 				}
-				Livechat.setUserStatusLivechat(agentId, newStatus);
+				await Livechat.setUserStatusLivechat(agentId, newStatus);
 
 				return API.v1.success({ status: newStatus });
 			}
@@ -102,7 +102,7 @@ API.v1.addRoute(
 				return API.v1.failure('error-business-hours-are-closed');
 			}
 
-			Livechat.setUserStatusLivechat(agentId, newStatus);
+			await Livechat.setUserStatusLivechat(agentId, newStatus);
 
 			return API.v1.success({ status: newStatus });
 		},

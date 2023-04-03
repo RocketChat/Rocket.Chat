@@ -135,10 +135,14 @@ type ChainedCallbackSignatures = {
 		guest: ILivechatVisitor;
 		transferData: { [k: string]: string | any };
 	};
-	'livechat.afterForwardChatToAgent': (params: { rid: IRoom['_id']; servedBy: unknown; oldServedBy: unknown }) => {
+	'livechat.afterForwardChatToAgent': (params: {
 		rid: IRoom['_id'];
-		servedBy: unknown;
-		oldServedBy: unknown;
+		servedBy: { _id: string; ts: Date; username?: string };
+		oldServedBy: { _id: string; ts: Date; username?: string };
+	}) => {
+		rid: IRoom['_id'];
+		servedBy: { _id: string; ts: Date; username?: string };
+		oldServedBy: { _id: string; ts: Date; username?: string };
 	};
 	'livechat.afterForwardChatToDepartment': (params: {
 		rid: IRoom['_id'];
@@ -155,7 +159,19 @@ type ChainedCallbackSignatures = {
 		agentsId: ILivechatAgent['_id'][];
 	};
 	'livechat.applySimultaneousChatRestrictions': (_: undefined, params: { departmentId?: ILivechatDepartmentRecord['_id'] }) => undefined;
-	'livechat.beforeDelegateAgent': (agent: ILivechatAgent, params: { department?: ILivechatDepartmentRecord }) => ILivechatAgent | null;
+	'livechat.beforeDelegateAgent': (
+		agent: {
+			agentId: string;
+			username: string;
+		},
+		params?: { department?: string },
+	) =>
+		| {
+				agentId: string;
+				username: string;
+		  }
+		| null
+		| undefined;
 	'livechat.applyDepartmentRestrictions': (
 		query: FilterOperators<ILivechatDepartmentRecord>,
 		params: { userId: IUser['_id'] },
@@ -186,6 +202,9 @@ type ChainedCallbackSignatures = {
 		content: OEmbedUrlContent;
 	};
 	'livechat.beforeListTags': () => ILivechatTag[];
+	'livechat.offlineMessage': (data: { name: string; email: string; message: string; department?: string; host?: string }) => void;
+	'livechat.chatQueued': (room: IOmnichannelRoom) => IOmnichannelRoom;
+	'livechat.leadCapture': (room: IOmnichannelRoom) => IOmnichannelRoom;
 };
 
 type Hook =
@@ -219,7 +238,6 @@ type Hook =
 	| 'livechat.checkAgentBeforeTakeInquiry'
 	| 'livechat.sendTranscript'
 	| 'livechat.closeRoom'
-	| 'livechat.leadCapture'
 	| 'livechat.offlineMessage'
 	| 'livechat.onAgentAssignmentFailed'
 	| 'livechat.onCheckRoomApiParams'

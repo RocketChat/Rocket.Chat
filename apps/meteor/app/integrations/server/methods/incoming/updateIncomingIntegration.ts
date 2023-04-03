@@ -1,12 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Babel } from 'meteor/babel-compiler';
 import _ from 'underscore';
-import { Integrations, Roles, Subscriptions, Users } from '@rocket.chat/models';
+import { Integrations, Roles, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IIntegration, INewIncomingIntegration, IUpdateIncomingIntegration } from '@rocket.chat/core-typings';
 
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { Rooms } from '../../../../models/server';
 
 const validChannelChars = ['@', '#'];
 
@@ -111,7 +110,7 @@ Meteor.methods<ServerMethods>({
 
 			switch (channelType) {
 				case '#':
-					record = Rooms.findOne({
+					record = await Rooms.findOne({
 						$or: [{ _id: channel }, { name: channel }],
 					});
 					break;

@@ -56,13 +56,13 @@ Meteor.methods<ServerMethods>({
 		SearchLogger.debug({ msg: 'search', text, context, payload });
 
 		return new Promise((resolve, reject) => {
-			searchProviderService.activeProvider?.search(text, context, payload, (error, data) => {
+			searchProviderService.activeProvider?.search(text, context, payload, async (error, data) => {
 				if (error) {
 					reject(error);
 					return;
 				}
 
-				resolve(validationService.validateSearchResult(data));
+				resolve(await validationService.validateSearchResult(data));
 			});
 		});
 	},
