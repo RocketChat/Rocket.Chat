@@ -237,7 +237,7 @@ class LivechatClass {
 		rid: string;
 		email: string;
 		subject?: string;
-		user?: Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'>;
+		user?: Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'> | null;
 	}): Promise<boolean> {
 		check(rid, String);
 		check(email, String);

@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import type { OptionalId } from 'mongodb';
 
 import type { IFile } from './definition';
 
@@ -7,12 +8,12 @@ type IFilterOptions = {
 	extensions?: string[];
 	minSize?: number;
 	maxSize?: number;
-	onCheck?: (file: IFile) => boolean;
+	onCheck?: (file: IFile, content?: Buffer) => boolean;
 	invalidFileError?: () => Meteor.Error;
 	fileTooSmallError?: (fileSize: number, minFileSize: number) => Meteor.Error;
 	fileTooLargeError?: (fileSize: number, maxFileSize: number) => Meteor.Error;
 	invalidFileExtension?: (fileExtension: string, allowedExtensions: string[]) => Meteor.Error;
-	invalidFileType?: (fileType: string, allowedContentTypes: string[]) => Meteor.Error;
+	invalidFileType?: (fileType: string | undefined, allowedContentTypes: string[]) => Meteor.Error;
 };
 
 export class Filter {
@@ -59,13 +60,13 @@ export class Filter {
 		}
 	}
 
-	check(file: IFile) {
+	check(file: OptionalId<IFile>, content?: Buffer) {
 		let error = null;
 		if (typeof file !== 'object' || !file) {
 			error = this.options.invalidFileError();
 		}
 		// Check size
-		const fileSize = file.size;
+		const fileSize = file.size || 0;
 		const minSize = this.getMinSize();
 		if (fileSize <= 0 || fileSize < minSize) {
 			error = this.options.fileTooSmallError(fileSize, minSize);
@@ -76,7 +77,7 @@ export class Filter {
 		}
 		// Check extension
 		const allowedExtensions = this.getExtensions();
-		const fileExtension = file.extension;
+		const fileExtension = file.extension || '';
 		if (allowedExtensions.length && !allowedExtensions.includes(fileExtension)) {
 			error = this.options.invalidFileExtension(fileExtension, allowedExtensions);
 		}
@@ -87,7 +88,7 @@ export class Filter {
 			error = this.options.invalidFileType(fileTypes, allowedContentTypes);
 		}
 		// Apply custom check
-		if (typeof this.onCheck === 'function' && !this.onCheck(file)) {
+		if (typeof this.onCheck === 'function' && !this.onCheck(file, content)) {
 			error = new Meteor.Error('invalid-file', 'File does not match filter');
 		}
 
@@ -112,7 +113,7 @@ export class Filter {
 		return this.options.minSize;
 	}
 
-	isContentTypeInList(type: string, list: string[]) {
+	isContentTypeInList(type: string | undefined, list: string[]) {
 		if (typeof type === 'string' && list instanceof Array) {
 			if (list.includes(type)) {
 				return true;
@@ -137,7 +138,7 @@ export class Filter {
 		return result;
 	}
 
-	onCheck(_file: IFile) {
+	onCheck(_file: OptionalId<IFile>, _content?: Buffer) {
 		return true;
 	}
 }

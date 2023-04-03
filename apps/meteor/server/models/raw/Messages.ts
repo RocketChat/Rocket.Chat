@@ -732,7 +732,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomId(rid: string, options?: FindOptions<IMessage>): FindCursor<IMessage> {
+	findVisibleByRoomId<T extends IMessage = IMessage>(rid: string, options?: FindOptions<T>): FindCursor<T> {
 		const query = {
 			_hidden: {
 				$ne: true,
