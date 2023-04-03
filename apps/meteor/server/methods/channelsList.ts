@@ -87,7 +87,7 @@ Meteor.methods<ServerMethods>({
 					'settings.preferences.sidebarGroupByType': 1,
 				},
 			});
-			const userPref = getUserPreference(user, 'sidebarGroupByType');
+			const userPref = await getUserPreference(user, 'sidebarGroupByType');
 			// needs to negate globalPref because userPref represents its opposite
 			const groupByType = userPref !== undefined ? userPref : settings.get('UI_Group_Channels_By_Type');
 
