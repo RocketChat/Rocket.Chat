@@ -1,95 +1,32 @@
 import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
 import { useDebouncedCallback, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { kitContext } from '@rocket.chat/fuselage-ui-kit';
-import React, { useEffect, useReducer, useState } from 'react';
+import type { LayoutBlock } from '@rocket.chat/ui-kit';
+import type { ContextType, ReactElement, ReactEventHandler } from 'react';
+import React from 'react';
 
-import * as ActionManager from '../../../app/ui-message/client/ActionManager';
+import * as ActionManager from '../../../../app/ui-message/client/ActionManager';
 import ModalBlock from './ModalBlock';
+import type { ActionManagerState } from './hooks/useActionManagerState';
+import { useActionManagerState } from './hooks/useActionManagerState';
+import { useValues } from './hooks/useValues';
 
-const useActionManagerState = (initialState) => {
-	const [state, setState] = useState(initialState);
-
-	const { viewId } = state;
-
-	useEffect(() => {
-		const handleUpdate = ({ type, ...data }) => {
-			if (type === 'errors') {
-				const { errors } = data;
-				setState((state) => ({ ...state, errors }));
-				return;
-			}
-
-			setState(data);
-		};
-
-		ActionManager.on(viewId, handleUpdate);
-
-		return () => {
-			ActionManager.off(viewId, handleUpdate);
-		};
-	}, [viewId]);
-
-	return state;
-};
-
-const useValues = (view) => {
-	const reducer = useMutableCallback((values, { actionId, payload }) => ({
-		...values,
-		[actionId]: payload,
-	}));
-
-	const initializer = useMutableCallback(() => {
-		const filterInputFields = ({ element, elements = [] }) => {
-			if (element && element.initialValue) {
-				return true;
-			}
-
-			if (elements.length && elements.map((element) => ({ element })).filter(filterInputFields).length) {
-				return true;
-			}
-		};
-
-		const mapElementToState = ({ element, blockId, elements = [] }) => {
-			if (elements.length) {
-				return elements
-					.map((element) => ({ element, blockId }))
-					.filter(filterInputFields)
-					.map(mapElementToState);
-			}
-			return [element.actionId, { value: element.initialValue, blockId }];
-		};
-
-		return view.blocks
-			.filter(filterInputFields)
-			.map(mapElementToState)
-			.reduce((obj, el) => {
-				if (Array.isArray(el[0])) {
-					return { ...obj, ...Object.fromEntries(el) };
-				}
-
-				const [key, value] = el;
-				return { ...obj, [key]: value };
-			}, {});
-	});
-
-	return useReducer(reducer, null, initializer);
-};
-
-function ConnectedModalBlock(props) {
+const UiKitModal = (props: ActionManagerState): ReactElement => {
 	const state = useActionManagerState(props);
 
 	const { appId, viewId, mid: _mid, errors, view } = state;
 
-	const [values, updateValues] = useValues(view);
+	const [values, updateValues] = useValues(view.blocks as LayoutBlock[]);
 
-	const groupStateByBlockId = (obj) =>
-		Object.entries(obj).reduce((obj, [key, { blockId, value }]) => {
+	const groupStateByBlockId = (values: { value: unknown; blockId: string }[]) =>
+		Object.entries(values).reduce<any>((obj, [key, { blockId, value }]) => {
 			obj[blockId] = obj[blockId] || {};
 			obj[blockId][key] = value;
+
 			return obj;
 		}, {});
 
-	const prevent = (e) => {
+	const prevent: ReactEventHandler = (e) => {
 		if (e) {
 			(e.nativeEvent || e).stopImmediatePropagation();
 			e.stopPropagation();
@@ -111,7 +48,9 @@ function ConnectedModalBlock(props) {
 		});
 	}, 700);
 
-	const context = {
+	// TODO: this structure is atrociously wrong; we should revisit this
+	const context: ContextType<typeof kitContext> = {
+		// @ts-expect-error Property 'mid' does not exist on type 'ActionParams'.
 		action: ({ actionId, appId, value, blockId, mid = _mid, dispatchActionConfig }) => {
 			if (Array.isArray(dispatchActionConfig) && dispatchActionConfig.includes('on_character_entered')) {
 				debouncedBlockAction(actionId, appId, value, blockId, mid);
@@ -160,9 +99,9 @@ function ConnectedModalBlock(props) {
 
 	const handleCancel = useMutableCallback((e) => {
 		prevent(e);
-		return ActionManager.triggerCancel({
-			appId,
+		ActionManager.triggerCancel({
 			viewId,
+			appId,
 			view: {
 				...view,
 				id: viewId,
@@ -171,11 +110,10 @@ function ConnectedModalBlock(props) {
 		});
 	});
 
-	const handleClose = useMutableCallback((e) => {
-		prevent(e);
-		return ActionManager.triggerCancel({
-			appId,
+	const handleClose = useMutableCallback(() => {
+		ActionManager.triggerCancel({
 			viewId,
+			appId,
 			view: {
 				...view,
 				id: viewId,
@@ -190,6 +128,6 @@ function ConnectedModalBlock(props) {
 			<ModalBlock view={view} errors={errors} appId={appId} onSubmit={handleSubmit} onCancel={handleCancel} onClose={handleClose} />
 		</kitContext.Provider>
 	);
-}
+};
 
-export default ConnectedModalBlock;
+export default UiKitModal;
