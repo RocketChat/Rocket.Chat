@@ -56,15 +56,19 @@ slashCommands.add({
 				command: 'Shift + Enter',
 			},
 		];
-		keys.forEach((key) => {
+    switch (_command) {
+		case 'help':
+		  keys.forEach((key) => {
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__(key.key, {
-					postProcess: 'sprintf',
-					sprintf: [key.command],
-					lng: user?.language || settings.get('Language') || 'en',
-				}),
+			  msg: TAPi18n.__(key.key, {
+				postProcess: 'sprintf',
+				sprintf: [key.command],
+				lng: user?.language || settings.get('Language') || 'en',
+			  }),
 			});
-		});
+		  });
+		  break;
+	  }
 	},
 	options: {
 		description: 'Show_the_keyboard_shortcut_list',
