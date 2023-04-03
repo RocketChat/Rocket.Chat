@@ -8,10 +8,11 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { callbacks } from '../../../lib/callbacks';
 import { emoji } from '../../emoji/server';
-import { isTheLastMessage, msgStream } from '../../lib/server';
+import { isTheLastMessage } from '../../lib/server';
 import { canAccessRoomAsync } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { AppEvents, Apps } from '../../../ee/server/apps/orchestrator';
+import notifications from '../../notifications/server/lib/Notifications';
 
 const removeUserReaction = (message: IMessage, reaction: string, username: string) => {
 	if (!message.reactions) {
@@ -107,7 +108,8 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 
 	await Apps.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, isReacted);
 
-	msgStream.emit(message.rid, message);
+	// TODO remove
+	notifications.streamRoomMessage.emit(message.rid, message);
 }
 
 export async function executeSetReaction(reaction: string, messageId: IMessage['_id'], shouldReact?: boolean) {
