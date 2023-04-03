@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import mem from 'mem';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { Rooms } from '@rocket.chat/models';
+import { Users, Rooms } from '@rocket.chat/models';
 
 import { SearchLogger } from '../logger/logger';
 import { canAccessRoomAsync } from '../../../authorization/server';
-import { Users } from '../../../models/server';
 import type { IRawSearchResult, ISearchResult } from '../model/ISearchResult';
 import { isTruthy } from '../../../../lib/isTruthy';
 
@@ -27,12 +26,12 @@ export class SearchResultValidationService {
 		return room;
 	});
 
-	private getUser = mem((uid: IUser['_id']) => {
+	private getUser = mem(async (uid: IUser['_id']) => {
 		if (!uid) {
 			return;
 		}
 
-		return Users.findOneById(uid, { fields: { username: 1 } }) as IUser | undefined;
+		return Users.findOneById(uid, { projection: { username: 1 } });
 	});
 
 	async validateSearchResult(result: IRawSearchResult): Promise<ISearchResult> {
@@ -46,7 +45,7 @@ export class SearchResultValidationService {
 				docs: (
 					await Promise.all(
 						result.message.docs.map(async (msg) => {
-							const user = this.getUser(msg.u._id);
+							const user = await this.getUser(msg.u._id);
 							const subscription = await this.getSubscription(msg.rid, uid);
 
 							if (subscription) {

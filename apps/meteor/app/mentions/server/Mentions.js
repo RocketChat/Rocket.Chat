@@ -60,7 +60,7 @@ export default class MentionsServer extends MentionsParser {
 				continue;
 			}
 			if (this.messageMaxAll > 0 && (await this.getTotalChannelMembers(rid)) > this.messageMaxAll) {
-				this.onMaxRoomMembersExceeded({ sender, rid });
+				await this.onMaxRoomMembersExceeded({ sender, rid });
 				continue;
 			}
 			mentionsAll.push({

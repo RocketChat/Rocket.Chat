@@ -890,11 +890,9 @@ const getUserAuth = function _getUserAuth(...args: any[]): {
 				this.bodyParams = JSON.parse(this.bodyParams.payload);
 			}
 
-			for (let i = 0; i < (API.v1?.authMethods || []).length; i++) {
-				const method = API.v1?.authMethods?.[i];
-
+			for await (const method of API.v1?.authMethods || []) {
 				if (typeof method === 'function') {
-					const result = method.apply(this, args);
+					const result = await method.apply(this, args);
 					if (!invalidResults.includes(result)) {
 						return result;
 					}

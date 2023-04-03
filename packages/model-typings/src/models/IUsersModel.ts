@@ -231,7 +231,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findOneOnlineAgentById(agentId: string, isLivechatEnabledWhenAgentIdle?: boolean): Promise<ILivechatAgent | null>;
 	findAgents(): FindCursor<ILivechatAgent>;
 	getNextAgent(ignoreAgentId?: string, extraQuery?: Filter<IUser>): Promise<{ agentId: string; username: string } | null>;
-	getNextBotAgent(ignoreAgentId: string): Promise<{ agentId: string; username: string } | null>;
+	getNextBotAgent(ignoreAgentId?: string): Promise<{ agentId: string; username: string } | null>;
 	setLivechatStatus(userId: string, status: UserStatus): Promise<UpdateResult>;
 	setLivechatData(userId: string, data?: Record<string, any>): Promise<UpdateResult>;
 	closeOffice(): Promise<void>;
@@ -297,8 +297,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findActiveRemoteUsers(options?: FindOptions<IUser>): FindCursor<IUser>;
 	findActiveFederated(options?: FindOptions<IUser>): FindCursor<IUser>;
 	getSAMLByIdAndSAMLProvider(userId: string, samlProvider: string): Promise<IUser | null>;
-	findBySAMLNameIdOrIdpSession(samlNameId: string, idpSession: string): Promise<IUser | null>;
-	findBySAMLInResponseTo(inResponseTo: string): Promise<IUser | null>;
+	findBySAMLNameIdOrIdpSession(samlNameId: string, idpSession: string): FindCursor<IUser>;
+	findBySAMLInResponseTo(inResponseTo: string): FindCursor<IUser>;
 	addImportIds(userId: string, importIds: Array<{ service: string; id: string }>): Promise<UpdateResult>;
 	updateInviteToken(userId: string, token: string): Promise<UpdateResult>;
 	updateLastLoginById(userId: string): Promise<UpdateResult>;

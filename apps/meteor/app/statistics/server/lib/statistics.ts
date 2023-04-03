@@ -416,7 +416,7 @@ export const statistics = {
 		);
 
 		statistics.apps = getAppsStatistics();
-		statistics.services = getServicesStatistics();
+		statistics.services = await getServicesStatistics();
 		statistics.importer = getImporterStatistics();
 		statistics.videoConf = await VideoConf.getStatistics();
 

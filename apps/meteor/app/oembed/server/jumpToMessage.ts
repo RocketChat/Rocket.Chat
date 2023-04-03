@@ -3,11 +3,9 @@ import QueryString from 'querystring';
 
 import { Meteor } from 'meteor/meteor';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
-import type { IMessage, IOmnichannelRoom, MessageAttachment } from '@rocket.chat/core-typings';
-import { Messages, Rooms } from '@rocket.chat/models';
+import { Messages, Users, Rooms } from '@rocket.chat/models';
 
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
-import { Users } from '../../models/server';
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { canAccessRoomAsync } from '../../authorization/server/functions/canAccessRoom';
@@ -42,7 +40,10 @@ callbacks.add(
 			return msg;
 		}
 
-		const currentUser = Users.findOneById(msg.u._id);
+		const currentUser = await Users.findOneById(msg.u._id);
+		if (!currentUser) {
+			return msg;
+		}
 
 		for await (const item of msg.urls) {
 			// if the URL doesn't belong to the current server, skip
