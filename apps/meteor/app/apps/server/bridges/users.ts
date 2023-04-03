@@ -77,7 +77,7 @@ export class AppUserBridge extends UserBridge {
 				await Users.insertOne(user);
 
 				if (options?.avatarUrl) {
-					setUserAvatar(user, options.avatarUrl, '', 'local');
+					await setUserAvatar(user, options.avatarUrl, '', 'local');
 				}
 
 				break;

@@ -41,7 +41,6 @@ export const SetupWizardContext = createContext<SetupWizarContextValue>({
 	setupWizardData: {
 		organizationData: {
 			organizationName: '',
-			organizationType: '',
 			organizationIndustry: '',
 			organizationSize: '',
 			country: '',

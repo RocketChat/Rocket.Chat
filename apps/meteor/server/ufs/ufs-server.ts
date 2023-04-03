@@ -289,7 +289,7 @@ WebApp.connectHandlers.use((req, res, next) => {
 							return;
 						}
 
-						const total = file.size;
+						const total = file.size || 0;
 						const unit = range.substr(0, range.indexOf('='));
 
 						if (unit !== 'bytes') {
@@ -358,7 +358,7 @@ WebApp.connectHandlers.use((req, res, next) => {
 				// Parse request headers
 				if (typeof req.headers === 'object') {
 					// Compress data using if needed (ignore audio/video as they are already compressed)
-					if (typeof req.headers['accept-encoding'] === 'string' && !/^(audio|video)/.test(file.type)) {
+					if (typeof req.headers['accept-encoding'] === 'string' && (!file.type || !/^(audio|video)/.test(file.type))) {
 						const accept = req.headers['accept-encoding'];
 
 						// Compress with gzip

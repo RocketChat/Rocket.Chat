@@ -8,7 +8,7 @@ export const insertMessage = async function (user, message, rid, upsert = false)
 		return false;
 	}
 
-	validateMessage(message, { _id: rid }, user);
+	await validateMessage(message, { _id: rid }, user);
 	prepareMessageObject(message, rid, user);
 	parseUrlsInMessage(message);
 
