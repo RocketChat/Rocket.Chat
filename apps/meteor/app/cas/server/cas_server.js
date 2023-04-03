@@ -117,7 +117,7 @@ Accounts.registerLoginHandler('cas', async function (options) {
 	}
 
 	// TODO: Sync wrapper due to the chain conversion to async models
-	const credentials = Promise.await(CredentialTokens.findOneNotExpiredById(options.cas.credentialToken));
+	const credentials = await CredentialTokens.findOneNotExpiredById(options.cas.credentialToken);
 	if (credentials === undefined) {
 		throw new Meteor.Error(Accounts.LoginCancelledError.numericError, 'no matching login attempt found');
 	}
@@ -201,7 +201,7 @@ Accounts.registerLoginHandler('cas', async function (options) {
 			logger.debug('Syncing user attributes');
 			// Update name
 			if (int_attrs.name) {
-				_setRealName(user._id, int_attrs.name);
+				await _setRealName(user._id, int_attrs.name);
 			}
 
 			// Update email

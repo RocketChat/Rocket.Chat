@@ -2,11 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Subscriptions, Rooms } from '@rocket.chat/models';
 
-import { Subscriptions, Rooms } from '../../app/models/server';
-import { canAccessRoomAsync, hasPermission, roomAccessAttributes } from '../../app/authorization/server';
+import { canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
+import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../app/settings/server';
-import { loadMessageHistory } from '../../app/lib/server';
+import { loadMessageHistory } from '../../app/lib/server/functions/loadMessageHistory';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -20,7 +21,7 @@ declare module '@rocket.chat/ui-contexts' {
 		):
 			| {
 					messages: IMessage[];
-					firstUnread: IMessage;
+					firstUnread: IMessage | undefined;
 					unreadNotLoaded: number;
 			  }
 			| false;
@@ -39,7 +40,7 @@ Meteor.methods<ServerMethods>({
 
 		const fromId = Meteor.userId();
 
-		const room = Rooms.findOneById(rid, { fields: { ...roomAccessAttributes, t: 1 } });
+		const room = await Rooms.findOneById(rid, { fields: { ...roomAccessAttributes, t: 1 } });
 		if (!room) {
 			return false;
 		}
@@ -49,9 +50,14 @@ Meteor.methods<ServerMethods>({
 		}
 
 		const canAnonymous = settings.get('Accounts_AllowAnonymousRead');
-		const canPreview = hasPermission(fromId, 'preview-c-room');
+		const canPreview = await hasPermissionAsync(fromId, 'preview-c-room');
 
-		if (room.t === 'c' && !canAnonymous && !canPreview && !Subscriptions.findOneByRoomIdAndUserId(rid, fromId, { fields: { _id: 1 } })) {
+		if (
+			room.t === 'c' &&
+			!canAnonymous &&
+			!canPreview &&
+			!(await Subscriptions.findOneByRoomIdAndUserId(rid, fromId, { projection: { _id: 1 } }))
+		) {
 			return false;
 		}
 

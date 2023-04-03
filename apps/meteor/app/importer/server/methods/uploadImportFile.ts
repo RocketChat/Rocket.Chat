@@ -4,7 +4,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { RocketChatFile } from '../../../file/server';
 import { RocketChatImportFileInstance } from '../startup/store';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { Importers } from '..';
 
@@ -28,7 +28,7 @@ export const executeUploadImportFile = async (
 	const newFileName = `${dateStr}_${userId}_${fileName}`;
 
 	// Store the file name and content type on the imports collection
-	importer.instance.startFileUpload(newFileName, contentType);
+	await importer.instance.startFileUpload(newFileName, contentType);
 
 	// Save the file on the File Store
 	const file = Buffer.from(binaryContent, 'base64');
@@ -60,7 +60,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', 'uploadImportFile');
 		}
 
-		if (!hasPermission(userId, 'run-import')) {
+		if (!(await hasPermissionAsync(userId, 'run-import'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', 'uploadImportFile');
 		}
 

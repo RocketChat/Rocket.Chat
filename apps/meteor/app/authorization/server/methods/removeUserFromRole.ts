@@ -1,12 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import type { IRole, IUser } from '@rocket.chat/core-typings';
-import { Roles } from '@rocket.chat/models';
+import { Roles, Users } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
-import { hasPermission } from '../functions/hasPermission';
+import { hasPermissionAsync } from '../functions/hasPermission';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -20,7 +19,7 @@ Meteor.methods<ServerMethods>({
 	async 'authorization:removeUserFromRole'(roleId, username, scope) {
 		const userId = Meteor.userId();
 
-		if (!userId || !hasPermission(userId, 'access-permissions')) {
+		if (!userId || !(await hasPermissionAsync(userId, 'access-permissions'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Access permissions is not allowed', {
 				method: 'authorization:removeUserFromRole',
 				action: 'Accessing_permissions',
@@ -47,12 +46,12 @@ Meteor.methods<ServerMethods>({
 			);
 		}
 
-		const user = Users.findOneByUsernameIgnoringCase(username, {
-			fields: {
+		const user = await Users.findOneByUsernameIgnoringCase(username, {
+			projection: {
 				_id: 1,
 				roles: 1,
 			},
-		}) as Pick<IUser, '_id' | 'roles'>;
+		});
 
 		if (!user?._id) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

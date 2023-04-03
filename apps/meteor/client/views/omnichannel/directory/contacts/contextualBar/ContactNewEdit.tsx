@@ -56,7 +56,7 @@ const getInitialValues = (data: ContactNewEditProps['data']): ContactFormData =>
 	};
 };
 
-export const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement => {
+const ContactNewEdit = ({ id, data, close }: ContactNewEditProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 

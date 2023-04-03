@@ -8,7 +8,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { RocketChatImportFileInstance } from '../startup/store';
 import { ProgressStep } from '../../lib/ImporterProgressStep';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Importers } from '..';
 
 function downloadHttpFile(fileUrl: string, writeStream: fs.WriteStream): void {
@@ -49,22 +49,22 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 	const newFileName = `${dateStr}_${userId}_${oldFileName}`;
 
 	// Store the file name on the imports collection
-	importer.instance.startFileUpload(newFileName);
-	importer.instance.updateProgress(ProgressStep.DOWNLOADING_FILE);
+	await importer.instance.startFileUpload(newFileName);
+	await importer.instance.updateProgress(ProgressStep.DOWNLOADING_FILE);
 
 	const writeStream = RocketChatImportFileInstance.createWriteStream(newFileName);
 
 	writeStream.on(
 		'error',
 		Meteor.bindEnvironment(() => {
-			importer.instance.updateProgress(ProgressStep.ERROR);
+			void importer.instance.updateProgress(ProgressStep.ERROR);
 		}),
 	);
 
 	writeStream.on(
 		'end',
 		Meteor.bindEnvironment(() => {
-			importer.instance.updateProgress(ProgressStep.FILE_LOADED);
+			void importer.instance.updateProgress(ProgressStep.FILE_LOADED);
 		}),
 	);
 
@@ -97,7 +97,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', 'downloadPublicImportFile');
 		}
 
-		if (!hasPermission(userId, 'run-import')) {
+		if (!(await hasPermissionAsync(userId, 'run-import'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', 'downloadPublicImportFile');
 		}
 

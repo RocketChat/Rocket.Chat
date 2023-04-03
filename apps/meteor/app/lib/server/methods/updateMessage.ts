@@ -2,11 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import moment from 'moment';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { IEditedMessage, IUser } from '@rocket.chat/core-typings';
+import type { IEditedMessage, IMessage, IUser } from '@rocket.chat/core-typings';
+import { Messages } from '@rocket.chat/models';
 
-import { Messages } from '../../../models/server';
 import { settings } from '../../../settings/server';
-import { hasPermission, canSendMessage } from '../../../authorization/server';
+import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { updateMessage } from '../functions';
 
 const allowedEditedFields = ['tshow', 'alias', 'attachments', 'avatar', 'emoji', 'msg'];
@@ -19,7 +20,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	updateMessage(message) {
+	async updateMessage(message: IEditedMessage) {
 		check(message, Match.ObjectIncluding({ _id: String }));
 
 		const uid = Meteor.userId();
@@ -28,13 +29,13 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'updateMessage' });
 		}
 
-		const originalMessage = Messages.findOneById(message._id);
+		const originalMessage = await Messages.findOneById(message._id);
 		if (!originalMessage?._id) {
 			return;
 		}
 
 		Object.entries(message).forEach(([key, value]) => {
-			if (!allowedEditedFields.includes(key) && value !== originalMessage[key]) {
+			if (!allowedEditedFields.includes(key) && value !== originalMessage[key as keyof IMessage]) {
 				throw new Meteor.Error('error-invalid-update-key', `Cannot update the message ${key}`, {
 					method: 'updateMessage',
 				});
@@ -56,7 +57,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-message-change-to-thread', 'Cannot update message to a thread', { method: 'updateMessage' });
 		}
 
-		const _hasPermission = hasPermission(uid, 'edit-message', message.rid);
+		const _hasPermission = await hasPermissionAsync(uid, 'edit-message', message.rid);
 		const editAllowed = settings.get('Message_AllowEditing');
 		const editOwn = originalMessage.u && originalMessage.u._id === uid;
 
@@ -68,7 +69,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		const blockEditInMinutes = settings.get('Message_AllowEditing_BlockEditInMinutes');
-		const bypassBlockTimeLimit = hasPermission(uid, 'bypass-time-limit-edit-and-delete');
+		const bypassBlockTimeLimit = await hasPermissionAsync(uid, 'bypass-time-limit-edit-and-delete');
 
 		if (!bypassBlockTimeLimit && Match.test(blockEditInMinutes, Number) && blockEditInMinutes !== 0) {
 			let currentTsDiff = 0;
@@ -88,7 +89,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		const user = Meteor.users.findOne(uid) as IUser;
-		canSendMessage(message.rid, { uid: user._id, username: user.username ?? undefined, ...user });
+		await canSendMessageAsync(message.rid, { uid: user._id, username: user.username ?? undefined, ...user });
 
 		// It is possible to have an empty array as the attachments property, so ensure both things exist
 		if (originalMessage.attachments && originalMessage.attachments.length > 0 && originalMessage.attachments[0].description !== undefined) {
