@@ -17,10 +17,10 @@ export class RocketChatFileAdapter {
 		internalUser: IUser,
 		fileRecord: Partial<IUpload>,
 	): Promise<{ files: IMessage['files']; attachments: IMessage['attachments'] }> {
-		return new Promise<{ files: IMessage['files']; attachments: IMessage['attachments'] }>((resolve, reject) => {
+		return new Promise<{ files: IMessage['files']; attachments: IMessage['attachments'] }>(async (resolve, reject) => {
 			const fileStore = FileUpload.getStore('Uploads');
 			// this needs to be here due to a high coupling in the third party lib that rely on the logged in user
-			Meteor.runAsUser(internalUser._id, async () => {
+			await Meteor.runAsUser(internalUser._id, async () => {
 				const uploadedFile = fileStore.insertSync(fileRecord, readableStream);
 				try {
 					const { files, attachments } = await parseFileIntoMessageAttachments(uploadedFile, internalRoomId, internalUser);
@@ -35,9 +35,12 @@ export class RocketChatFileAdapter {
 
 	public async getBufferFromFileRecord(fileRecord: IUpload): Promise<Buffer> {
 		return new Promise((resolve, reject) => {
-			FileUpload.getBuffer(fileRecord, (err: Error, buffer: Buffer) => {
+			FileUpload.getBuffer(fileRecord, (err?: Error, buffer?: Buffer | false) => {
 				if (err) {
 					return reject(err);
+				}
+				if (!(buffer instanceof Buffer)) {
+					return reject(new Error('Unknown error'));
 				}
 				resolve(buffer);
 			});

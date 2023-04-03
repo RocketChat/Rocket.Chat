@@ -36,9 +36,10 @@ import { useMessageListShowRealName, useMessageListShowUsername } from '../list/
 
 type SystemMessageProps = {
 	message: IMessage;
+	showUserAvatar: boolean;
 };
 
-const SystemMessage = ({ message }: SystemMessageProps): ReactElement => {
+const SystemMessage = ({ message, showUserAvatar }: SystemMessageProps): ReactElement => {
 	const t = useTranslation();
 	const formatTime = useFormatTime();
 	const formatDateAndTime = useFormatDateAndTime();
@@ -65,7 +66,7 @@ const SystemMessage = ({ message }: SystemMessageProps): ReactElement => {
 			data-system-message-type={message.t}
 		>
 			<MessageSystemLeftContainer>
-				{!isSelecting && <UserAvatar username={message.u.username} size='x18' />}
+				{!isSelecting && showUserAvatar && <UserAvatar username={message.u.username} size='x18' />}
 				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
@@ -110,7 +111,7 @@ const SystemMessage = ({ message }: SystemMessageProps): ReactElement => {
 				</MessageSystemBlock>
 				{message.attachments && (
 					<MessageSystemBlock>
-						<Attachments attachments={message.attachments} file={message.file} />
+						<Attachments attachments={message.attachments} />
 					</MessageSystemBlock>
 				)}
 				{message.actionLinks?.length && (

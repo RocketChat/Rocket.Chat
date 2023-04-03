@@ -1,4 +1,7 @@
 import './Analytics';
+import './Apps';
+import './AppLogs';
+import './AppsPersistence';
 import './Avatars';
 import './Banners';
 import './BannersDismiss';
@@ -57,3 +60,7 @@ import './UsersSessions';
 import './VideoConference';
 import './VoipRoom';
 import './WebdavAccounts';
+import './FederationRoomEvents';
+import './Imports';
+import './RawImports';
+import './AppsTokens';

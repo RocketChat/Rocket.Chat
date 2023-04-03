@@ -205,7 +205,7 @@ function EditChannel({ room, onClickClose, onClickBack }) {
 		canViewJoinCode,
 		canViewEncrypted,
 	] = useMemo(() => {
-		const isAllowed = roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange || (() => {});
+		const isAllowed = roomCoordinator.getRoomDirectives(room.t).allowRoomSettingChange || (() => {});
 		return [
 			isAllowed(room, RoomSettingsEnum.NAME),
 			isAllowed(room, RoomSettingsEnum.TOPIC),

@@ -12,14 +12,14 @@ describe('[Roles]', function () {
 
 	describe.skip('[/roles.create]', () => {
 		const testRoleName = `role.test.${Date.now()}`;
-		it('should throw an error when not running EE to create a role', function (done) {
+		it('should throw an error when not running EE to create a role', async function () {
 			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
 			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
 			if (isEnterprise) {
 				this.skip();
 				return;
 			}
-			request
+			await request
 				.post(api('roles.create'))
 				.set(credentials)
 				.send({
@@ -31,18 +31,17 @@ describe('[Roles]', function () {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'This is an enterprise feature [error-action-not-allowed]');
 					expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
-				})
-				.end(done);
+				});
 		});
 
-		it('should successfully create a role in EE', function (done) {
+		it('should successfully create a role in EE', async function () {
 			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
 			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
 			if (!isEnterprise) {
 				this.skip();
 				return;
 			}
-			request
+			await request
 				.post(api('roles.create'))
 				.set(credentials)
 				.send({
@@ -54,8 +53,7 @@ describe('[Roles]', function () {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('role');
 					expect(res.body.role).to.have.property('name', testRoleName);
-				})
-				.end(done);
+				});
 		});
 	});
 
@@ -64,12 +62,12 @@ describe('[Roles]', function () {
 		const newTestRoleName = `role.test.updated.${Date.now()}`;
 		let testRoleId = '';
 
-		before('Create a new role with Users scope', (done) => {
+		before('Create a new role with Users scope', async () => {
 			if (!isEnterprise) {
-				return done();
+				return;
 			}
 
-			request
+			await request
 				.post(api('roles.create'))
 				.set(credentials)
 				.send({
@@ -82,18 +80,17 @@ describe('[Roles]', function () {
 					expect(res.body).to.have.property('role');
 					expect(res.body.role).to.have.property('name', testRoleName);
 					testRoleId = res.body.role._id;
-				})
-				.end(done);
+				});
 		});
 
-		it('should throw an error when not running EE to update a role', function (done) {
+		it('should throw an error when not running EE to update a role', async function () {
 			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
 			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
 			if (isEnterprise) {
 				this.skip();
 				return;
 			}
-			request
+			await request
 				.post(api('roles.update'))
 				.set(credentials)
 				.send({
@@ -106,11 +103,10 @@ describe('[Roles]', function () {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'This is an enterprise feature [error-action-not-allowed]');
 					expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
-				})
-				.end(done);
+				});
 		});
 
-		it('should successfully update a role in EE', function (done) {
+		it('should successfully update a role in EE', async function () {
 			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
 			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
 			if (!isEnterprise) {
@@ -118,7 +114,7 @@ describe('[Roles]', function () {
 				return;
 			}
 
-			request
+			await request
 				.post(api('roles.update'))
 				.set(credentials)
 				.send({
@@ -131,8 +127,7 @@ describe('[Roles]', function () {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('role');
 					expect(res.body.role).to.have.property('name', newTestRoleName);
-				})
-				.end(done);
+				});
 		});
 	});
 });

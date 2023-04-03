@@ -1,14 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { IUser } from '@rocket.chat/core-typings';
+import { Subscriptions, Users } from '@rocket.chat/models';
 
-import { Users, Subscriptions } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import * as Mailer from '../../app/mailer/server/api';
 import { isUserIdFederated } from './isUserIdFederated';
 
-const sendResetNotitification = function (uid: string): void {
-	const user: IUser = Users.findOneById(uid, {});
+const sendResetNotification = async function (uid: string): Promise<void> {
+	const user = await Users.findOneById(uid, {});
 	if (!user) {
 		throw new Meteor.Error('invalid-user');
 	}
@@ -57,21 +56,21 @@ const sendResetNotitification = function (uid: string): void {
 	}
 };
 
-export function resetUserE2EEncriptionKey(uid: string, notifyUser: boolean): boolean {
+export async function resetUserE2EEncriptionKey(uid: string, notifyUser: boolean): Promise<boolean> {
 	if (notifyUser) {
-		sendResetNotitification(uid);
+		await sendResetNotification(uid);
 	}
 
-	const isUserFederated = Promise.await(isUserIdFederated(uid));
+	const isUserFederated = await isUserIdFederated(uid);
 	if (isUserFederated) {
 		throw new Meteor.Error('error-not-allowed', 'Federated Users cant have TOTP', { function: 'resetTOTP' });
 	}
 
-	Users.resetE2EKey(uid);
-	Subscriptions.resetUserE2EKey(uid);
+	await Users.resetE2EKey(uid);
+	await Subscriptions.resetUserE2EKey(uid);
 
 	// Force the user to logout, so that the keys can be generated again
-	Users.unsetLoginTokens(uid);
+	await Users.unsetLoginTokens(uid);
 
 	return true;
 }

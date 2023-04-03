@@ -22,10 +22,8 @@ export const useMessageSearchQuery = ({
 	return useQuery(
 		['rooms', room._id, 'message-search', { uid, rid: room._id, searchText, limit, globalSearch }] as const,
 		async () => {
-			const {
-				message: { docs },
-			} = await searchMessages(searchText, { uid, rid: room._id }, { limit, searchAll: globalSearch });
-			return docs;
+			const result = await searchMessages(searchText, { uid, rid: room._id }, { limit, searchAll: globalSearch });
+			return result.message?.docs ?? [];
 		},
 		{
 			keepPreviousData: true,

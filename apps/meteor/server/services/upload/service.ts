@@ -16,19 +16,22 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 	}
 
 	async sendFileMessage({ roomId, file, userId, message }: ISendFileMessageParams): Promise<IMessage | undefined> {
-		return Meteor.runAsUser(userId, () => Meteor.call('sendFileMessage', roomId, null, file, message));
+		return Meteor.runAsUser(userId, () => Meteor.callAsync('sendFileMessage', roomId, null, file, message));
 	}
 
 	async sendFileLivechatMessage({ roomId, visitorToken, file, message }: ISendFileLivechatMessageParams): Promise<IMessage> {
-		return Meteor.call('sendFileLivechatMessage', roomId, visitorToken, file, message);
+		return Meteor.callAsync('sendFileLivechatMessage', roomId, visitorToken, file, message);
 	}
 
 	async getFileBuffer({ userId, file }: { userId: string; file: IUpload }): Promise<Buffer> {
 		return Meteor.runAsUser(userId, () => {
 			return new Promise((resolve, reject) => {
-				FileUpload.getBuffer(file, (err: Error, buffer: Buffer) => {
+				FileUpload.getBuffer(file, (err?: Error, buffer?: false | Buffer) => {
 					if (err) {
 						return reject(err);
+					}
+					if (!(buffer instanceof Buffer)) {
+						return reject(new Error('Unknown error'));
 					}
 					return resolve(buffer);
 				});

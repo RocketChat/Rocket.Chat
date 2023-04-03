@@ -4,16 +4,14 @@ import { Users, Analytics, Sessions } from '@rocket.chat/models';
 
 import { convertDateToInt, diffBetweenDaysInclusive, getTotalOfWeekItems, convertIntToDate } from './date';
 
-export const handleUserCreated = (user: IUser): IUser => {
+export const handleUserCreated = async (user: IUser): Promise<IUser> => {
 	if (user.roles?.includes('anonymous')) {
 		return user;
 	}
 
-	Promise.await(
-		Analytics.saveUserData({
-			date: convertDateToInt(user.createdAt),
-		}),
-	);
+	await Analytics.saveUserData({
+		date: convertDateToInt(user.createdAt),
+	});
 
 	return user;
 };

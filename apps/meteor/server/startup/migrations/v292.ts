@@ -16,16 +16,16 @@ addMigration({
 
 		const apps = await appsStorage.retrieveAll();
 
-		const promises: Array<ReturnType<AppRealStorage['update']>> = [];
+		const promises: Promise<IAppStorageItem>[] = [];
 
-		apps.forEach(async (app) =>
+		for await (const app of apps.values()) {
 			promises.push(
 				appsStorage.update({
 					...app,
 					signature: await sigMan.signApp(app),
-				} as IAppStorageItem),
-			),
-		);
+				}),
+			);
+		}
 
 		await Promise.all(promises);
 	},

@@ -140,7 +140,7 @@ const createEventListenerFor =
 
 		let hasOpenedGallery = false;
 
-		slidePromises.reduce(
+		void slidePromises.reduce(
 			(p, curr) =>
 				p
 					.then(() => curr)
