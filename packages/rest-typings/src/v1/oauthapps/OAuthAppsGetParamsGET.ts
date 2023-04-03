@@ -7,6 +7,16 @@ const oauthAppsGetParamsSchema = {
 		{
 			type: 'object',
 			properties: {
+				_id: {
+					type: 'string',
+				},
+			},
+			required: ['_id'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
 				clientId: {
 					type: 'string',
 				},
