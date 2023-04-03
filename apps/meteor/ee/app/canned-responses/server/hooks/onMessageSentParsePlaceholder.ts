@@ -1,11 +1,10 @@
 import get from 'lodash.get';
 import type { IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { LivechatVisitors, Rooms } from '@rocket.chat/models';
+import { LivechatVisitors, Rooms, Users } from '@rocket.chat/models';
 
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../lib/callbacks';
-import { Users } from '../../../../../app/models/server';
 
 const placeholderFields = {
 	'contact.name': {
@@ -44,8 +43,11 @@ const handleBeforeSaveMessage = async (message: IMessage, room?: IOmnichannelRoo
 
 	let messageText = message.msg;
 	const agentId = room?.servedBy?._id;
+	if (!agentId) {
+		return message;
+	}
 	const visitorId = room?.v?._id;
-	const agent = Users.findOneById(agentId, { fields: { name: 1, _id: 1, emails: 1 } }) || {};
+	const agent = (await Users.findOneById(agentId, { projection: { name: 1, _id: 1, emails: 1 } })) || {};
 	const visitor = visitorId && ((await LivechatVisitors.findOneById(visitorId, {})) || {});
 
 	Object.keys(placeholderFields).map((field) => {
