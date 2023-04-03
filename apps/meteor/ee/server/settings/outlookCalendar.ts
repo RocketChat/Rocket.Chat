@@ -1,7 +1,7 @@
 import { settingsRegistry } from '../../../app/settings/server';
 
 export function addSettings(): void {
-	settingsRegistry.addGroup('General', function () {
+	void settingsRegistry.addGroup('Outlook_Calendar', function () {
 		this.with(
 			{
 				enterprise: true,
@@ -12,17 +12,20 @@ export function addSettings(): void {
 					type: 'boolean',
 					public: true,
 					invalidValue: false,
-					hidden: true,
 				});
 
 				this.add('Outlook_Calendar_Exchange_Url', '', {
 					type: 'string',
 					public: true,
 					invalidValue: '',
-					hidden: true,
+				});
+
+				this.add('Outlook_Calendar_Outlook_Url', '', {
+					type: 'string',
+					public: true,
+					invalidValue: '',
 				});
 			},
 		);
 	});
 }
-
