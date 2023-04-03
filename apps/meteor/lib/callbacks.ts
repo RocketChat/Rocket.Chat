@@ -93,7 +93,6 @@ interface EventLikeCallbackSignatures {
 	'afterValidateLogin': (login: { user: IUser }) => void;
 	'afterJoinRoom': (user: IUser, room: IRoom) => void;
 	'beforeCreateRoom': (data: { type: IRoom['t']; extraData: { encrypted: boolean } }) => void;
-	'beforeSendMessageNotifications': (message: string) => string;
 }
 
 /**
@@ -209,6 +208,7 @@ type ChainedCallbackSignatures = {
 	'livechat.offlineMessage': (data: { name: string; email: string; message: string; department?: string; host?: string }) => void;
 	'livechat.chatQueued': (room: IOmnichannelRoom) => IOmnichannelRoom;
 	'livechat.leadCapture': (room: IOmnichannelRoom) => IOmnichannelRoom;
+	'beforeSendMessageNotifications': (message: string) => string;
 };
 
 export type Hook =
