@@ -35,9 +35,12 @@ export class RocketChatFileAdapter {
 
 	public async getBufferFromFileRecord(fileRecord: IUpload): Promise<Buffer> {
 		return new Promise((resolve, reject) => {
-			FileUpload.getBuffer(fileRecord, (err: Error, buffer: Buffer) => {
+			FileUpload.getBuffer(fileRecord, (err?: Error, buffer?: Buffer | false) => {
 				if (err) {
 					return reject(err);
+				}
+				if (!(buffer instanceof Buffer)) {
+					return reject(new Error('Unknown error'));
 				}
 				resolve(buffer);
 			});

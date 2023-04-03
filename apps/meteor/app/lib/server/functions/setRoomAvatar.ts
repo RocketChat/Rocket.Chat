@@ -41,13 +41,13 @@ export const setRoomAvatar = async function (rid: string, dataURI: string, user:
 		fileStore.deleteById(current._id);
 	}
 
-	fileStore.insert(file, buffer, (err: unknown, result: { etag: string }) => {
+	fileStore.insert(file, buffer, (err?: Error, result: { etag?: string } = {}) => {
 		if (err) {
 			throw err;
 		}
 
 		Meteor.setTimeout(async function () {
-			await Rooms.setAvatarData(rid, 'upload', result.etag);
+			result.etag && (await Rooms.setAvatarData(rid, 'upload', result.etag));
 			await Message.saveSystemMessage('room_changed_avatar', rid, '', user);
 			void api.broadcast('room.avatarUpdate', { _id: rid, avatarETag: result.etag });
 		}, 500);

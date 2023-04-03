@@ -298,7 +298,7 @@ export type UsersEndpoints = {
 						user: string;
 				  },
 		) => {
-			presence: 'online' | 'offline' | 'away' | 'busy';
+			presence: UserStatus;
 			connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
 			lastLogin?: string;
 		};
@@ -312,7 +312,7 @@ export type UsersEndpoints = {
 		GET: () => {
 			status: 'online' | 'offline' | 'away' | 'busy';
 			message?: string;
-			_id: string;
+			_id?: string;
 			connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
 		};
 	};

@@ -10,10 +10,28 @@ const HOURS_IN_DAY = 24;
 const logger = new Logger('OmnichannelAnalytics');
 
 async function* dayIterator(from, to) {
-	const m = moment(from);
+	const m = moment(from).startOf('day');
 	while (m.diff(to, 'days') <= 0) {
 		yield moment(m);
 		m.add(1, 'days');
+	}
+}
+
+async function* weekIterator(from, to, customDay, timezone) {
+	const m = moment.tz(from, timezone).day(customDay);
+	while (m.diff(to, 'weeks') <= 0) {
+		yield moment(m);
+		m.add(1, 'weeks');
+	}
+}
+
+async function* hourIterator(day) {
+	const m = moment(day).startOf('day');
+	let passedHours = 0;
+	while (passedHours < HOURS_IN_DAY) {
+		yield moment(m);
+		m.add(1, 'hours');
+		passedHours++;
 	}
 }
 
@@ -155,14 +173,17 @@ export const Analytics = {
 			return Math.round(avgCD * 100) / 100;
 		},
 
-		Total_messages(date, departmentId) {
+		async Total_messages(date, departmentId) {
 			let total = 0;
 
 			// we don't want to count visitor messages
 			const extraFilter = { $lte: ['$token', null] };
-			const allConversations = Promise.await(
-				LivechatRooms.getAnalyticsMetricsBetweenDateWithMessages('l', date, { departmentId }, extraFilter).toArray(),
-			);
+			const allConversations = await LivechatRooms.getAnalyticsMetricsBetweenDateWithMessages(
+				'l',
+				date,
+				{ departmentId },
+				extraFilter,
+			).toArray();
 			allConversations.map(({ msgs }) => {
 				if (msgs) {
 					total += msgs;
@@ -286,7 +307,7 @@ export const Analytics = {
 		 *
 		 * @returns {Array[Object]}
 		 */
-		Conversations(from, to, departmentId, timezone, t = (v) => v) {
+		async Conversations(from, to, departmentId, timezone, t = (v) => v) {
 			// TODO: most calls to db here can be done in one single call instead of one per day/hour
 			let totalConversations = 0; // Total conversations
 			let openConversations = 0; // open conversations
@@ -307,13 +328,16 @@ export const Analytics = {
 					totalMessagesOnWeekday.set(weekday, totalMessagesOnWeekday.has(weekday) ? totalMessagesOnWeekday.get(weekday) + msgs : msgs);
 				};
 
-			for (let m = moment.tz(from, timezone).startOf('day').utc(), daysProcessed = 0; daysProcessed < days; daysProcessed++) {
+			const m = moment.tz(from, timezone).startOf('day').utc();
+			// eslint-disable-next-line no-unused-vars
+			for await (const _ of Array(days).fill(0)) {
 				const clonedDate = m.clone();
 				const date = {
 					gte: clonedDate,
 					lt: m.add(1, 'days'),
 				};
-				const result = Promise.await(LivechatRooms.getAnalyticsBetweenDate(date, { departmentId }).toArray());
+				// eslint-disable-next-line no-await-in-loop
+				const result = await LivechatRooms.getAnalyticsBetweenDate(date, { departmentId }).toArray();
 				totalConversations += result.length;
 
 				result.forEach(summarize(clonedDate));
@@ -325,16 +349,17 @@ export const Analytics = {
 			// This means that for periods larger than 1 week, the busiest hour won't be the "busiest hour"
 			// on the period, but the busiest hour on the busiest day. (sorry for busiest excess)
 			// iterate through all busiestDay in given date-range and find busiest hour
-			for (let m = moment.tz(from, timezone).day(busiestDay).startOf('day').utc(); m <= to; m.add(7, 'days')) {
+			for await (const m of weekIterator(from, to, timezone)) {
 				if (m < from) {
 					continue;
 				}
-				for (let h = moment(m), currentHour = 0; currentHour < 24; currentHour++) {
+
+				for await (const h of hourIterator(m)) {
 					const date = {
 						gte: h.clone(),
 						lt: h.add(1, 'hours'),
 					};
-					Promise.await(LivechatRooms.getAnalyticsBetweenDate(date, { departmentId }).toArray()).forEach(({ msgs }) => {
+					(await LivechatRooms.getAnalyticsBetweenDate(date, { departmentId }).toArray()).forEach(({ msgs }) => {
 						const dayHour = h.format('H'); // @int : 0, 1, ... 23
 						totalMessagesInHour.set(dayHour, totalMessagesInHour.has(dayHour) ? totalMessagesInHour.get(dayHour) + msgs : msgs);
 					});
@@ -346,7 +371,7 @@ export const Analytics = {
 				to: utcBusiestHour >= 0 ? moment.utc().set({ hour: utcBusiestHour }).tz(timezone).format('hA') : '-',
 				from: utcBusiestHour >= 0 ? moment.utc().set({ hour: utcBusiestHour }).subtract(1, 'hour').tz(timezone).format('hA') : '',
 			};
-			const onHoldConversations = Promise.await(LivechatRooms.getOnHoldConversationsBetweenDate(from, to, departmentId));
+			const onHoldConversations = await LivechatRooms.getOnHoldConversationsBetweenDate(from, to, departmentId);
 
 			return [
 				{
@@ -466,7 +491,7 @@ export const Analytics = {
 		 *
 		 * @returns {Array(Object), Array(Object)}
 		 */
-		Total_conversations(from, to, departmentId) {
+		async Total_conversations(from, to, departmentId) {
 			let total = 0;
 			const agentConversations = new Map(); // stores total conversations for each agent
 			const date = {
@@ -486,11 +511,9 @@ export const Analytics = {
 				data: [],
 			};
 
-			const allConversations = Promise.await(
-				LivechatRooms.getAnalyticsMetricsBetweenDateWithMessages('l', date, {
-					departmentId,
-				}).toArray(),
-			);
+			const allConversations = await LivechatRooms.getAnalyticsMetricsBetweenDateWithMessages('l', date, {
+				departmentId,
+			}).toArray();
 			allConversations.map((room) => {
 				if (room.servedBy) {
 					this.updateMap(agentConversations, room.servedBy.username, 1);
@@ -586,7 +609,7 @@ export const Analytics = {
 		 *
 		 * @returns {Array(Object), Array(Object)}
 		 */
-		Total_messages(from, to, departmentId) {
+		async Total_messages(from, to, departmentId) {
 			const agentMessages = new Map(); // stores total conversations for each agent
 			const date = {
 				gte: from,
@@ -607,9 +630,12 @@ export const Analytics = {
 
 			// we don't want to count visitor messages
 			const extraFilter = { $lte: ['$token', null] };
-			const allConversations = Promise.await(
-				LivechatRooms.getAnalyticsMetricsBetweenDateWithMessages('l', date, { departmentId }, extraFilter).toArray(),
-			);
+			const allConversations = await LivechatRooms.getAnalyticsMetricsBetweenDateWithMessages(
+				'l',
+				date,
+				{ departmentId },
+				extraFilter,
+			).toArray();
 			allConversations.map(({ servedBy, msgs }) => {
 				if (servedBy) {
 					this.updateMap(agentMessages, servedBy.username, msgs);

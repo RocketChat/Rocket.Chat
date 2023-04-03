@@ -41,7 +41,7 @@ interface IAPIProperties {
 	useDefaultAuth: boolean;
 	prettyJson: boolean;
 	defaultOptionsEndpoint: () => Promise<void>;
-	auth: { token: string; user: () => { userId: string; token: string } };
+	auth: { token: string; user: () => Promise<{ userId: string; token: string }> };
 }
 
 interface IAPIDefaultFieldsToExclude {
@@ -878,20 +878,21 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 	}
 }
 
-const getUserAuth = function _getUserAuth(...args: any[]): { token: string; user: (this: Restivus) => { userId: string; token: string } } {
+const getUserAuth = function _getUserAuth(...args: any[]): {
+	token: string;
+	user: (this: Restivus) => Promise<{ userId: string; token: string }>;
+} {
 	const invalidResults = [undefined, null, false];
 	return {
 		token: 'services.resume.loginTokens.hashedToken',
-		user() {
+		async user() {
 			if (this.bodyParams?.payload) {
 				this.bodyParams = JSON.parse(this.bodyParams.payload);
 			}
 
-			for (let i = 0; i < (API.v1?.authMethods || []).length; i++) {
-				const method = API.v1?.authMethods?.[i];
-
+			for await (const method of API.v1?.authMethods || []) {
 				if (typeof method === 'function') {
-					const result = method.apply(this, args);
+					const result = await method.apply(this, args);
 					if (!invalidResults.includes(result)) {
 						return result;
 					}
@@ -913,7 +914,7 @@ const getUserAuth = function _getUserAuth(...args: any[]): { token: string; user
 	};
 };
 
-const defaultOptionsEndpoint = function _defaultOptionsEndpoint(this: Restivus) {
+const defaultOptionsEndpoint = async function _defaultOptionsEndpoint(this: Restivus): Promise<void> {
 	// check if a pre-flight request
 	if (!this.request.headers['access-control-request-method'] && !this.request.headers.origin) {
 		this.done();
@@ -980,7 +981,7 @@ const createApi = function _createApi(options: { version?: string } = {}): APICl
 export const API: {
 	v1: APIClass<'/v1'>;
 	default: APIClass;
-	getUserAuth?: () => { token: string; user: (this: Restivus) => { userId: string; token: string } };
+	getUserAuth?: () => { token: string; user: (this: Restivus) => Promise<{ userId: string; token: string }> };
 	ApiClass?: typeof APIClass;
 	channels?: {
 		create: {

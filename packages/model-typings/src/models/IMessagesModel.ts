@@ -136,7 +136,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		ignoreThreads: boolean,
 		options?: FindOptions<IMessage>,
 	): FindCursor<IMessage>;
-	findVisibleByRoomId(rid: string, options?: FindOptions<IMessage>): FindCursor<IMessage>;
+	findVisibleByRoomId<T extends IMessage = IMessage>(rid: string, options?: FindOptions<T>): FindCursor<T>;
 	findDiscussionByRoomIdPinnedTimestampAndUsers(
 		rid: string,
 		excludePinned: boolean,

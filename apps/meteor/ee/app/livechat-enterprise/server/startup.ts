@@ -15,8 +15,8 @@ const businessHours = {
 	Single: new SingleBusinessHourBehavior(),
 };
 
-settings.change('Livechat_max_queue_wait_time', function () {
-	updateQueueInactivityTimeout();
+settings.change('Livechat_max_queue_wait_time', async function () {
+	await updateQueueInactivityTimeout();
 });
 
 Meteor.startup(async function () {
