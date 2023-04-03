@@ -8,7 +8,7 @@ import type { IRoom, IStats } from '@rocket.chat/core-typings';
 import {
 	NotificationQueue,
 	Users as UsersRaw,
-	Rooms as RoomsRaw,
+	Rooms,
 	Statistics,
 	Sessions,
 	Integrations,
@@ -114,12 +114,12 @@ export const statistics = {
 		);
 
 		// Room statistics
-		statistics.totalRooms = await RoomsRaw.col.countDocuments({});
-		statistics.totalChannels = await RoomsRaw.findByType('c').count();
-		statistics.totalPrivateGroups = await RoomsRaw.findByType('p').count();
-		statistics.totalDirect = await RoomsRaw.findByType('d').count();
-		statistics.totalLivechat = await RoomsRaw.findByType('l').count();
-		statistics.totalDiscussions = await RoomsRaw.countDiscussions();
+		statistics.totalRooms = await Rooms.col.countDocuments({});
+		statistics.totalChannels = await Rooms.findByType('c').count();
+		statistics.totalPrivateGroups = await Rooms.findByType('p').count();
+		statistics.totalDirect = await Rooms.findByType('d').count();
+		statistics.totalLivechat = await Rooms.findByType('l').count();
+		statistics.totalDiscussions = await Rooms.countDiscussions();
 		statistics.totalThreads = await Messages.countThreads();
 
 		// livechat visitors
@@ -134,7 +134,7 @@ export const statistics = {
 
 		// Count and types of omnichannel rooms
 		statsPms.push(
-			RoomsRaw.allRoomSourcesCount()
+			Rooms.allRoomSourcesCount()
 				.toArray()
 				.then((roomSources) => {
 					statistics.omnichannelSources = roomSources.map(({ _id: { id, alias, type }, count }) => ({
@@ -228,7 +228,7 @@ export const statistics = {
 
 		// Amount of VoIP Calls
 		statsPms.push(
-			RoomsRaw.countByType('v').then((count) => {
+			Rooms.countByType('v').then((count) => {
 				statistics.voipCalls = count;
 			}),
 		);
@@ -262,28 +262,28 @@ export const statistics = {
 
 		// Message statistics
 		statistics.totalChannelMessages = _.reduce(
-			await RoomsRaw.findByType('c', { projection: { msgs: 1 } }).toArray(),
+			await Rooms.findByType('c', { projection: { msgs: 1 } }).toArray(),
 			function _countChannelMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
 		);
 		statistics.totalPrivateGroupMessages = _.reduce(
-			await RoomsRaw.findByType('p', { projection: { msgs: 1 } }).toArray(),
+			await Rooms.findByType('p', { projection: { msgs: 1 } }).toArray(),
 			function _countPrivateGroupMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
 		);
 		statistics.totalDirectMessages = _.reduce(
-			await RoomsRaw.findByType('d', { projection: { msgs: 1 } }).toArray(),
+			await Rooms.findByType('d', { projection: { msgs: 1 } }).toArray(),
 			function _countDirectMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
 		);
 		statistics.totalLivechatMessages = _.reduce(
-			await RoomsRaw.findByType('l', { projection: { msgs: 1 } }).toArray(),
+			await Rooms.findByType('l', { projection: { msgs: 1 } }).toArray(),
 			function _countLivechatMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
@@ -487,10 +487,10 @@ export const statistics = {
 		statistics.messageAuditLoad = settings.get('Message_Auditing_Panel_Load_Count');
 		statistics.joinJitsiButton = settings.get('Jitsi_Click_To_Join_Count');
 		statistics.slashCommandsJitsi = settings.get('Jitsi_Start_SlashCommands_Count');
-		statistics.totalOTRRooms = await RoomsRaw.findByCreatedOTR().count();
+		statistics.totalOTRRooms = await Rooms.findByCreatedOTR().count();
 		statistics.totalOTR = settings.get('OTR_Count');
-		statistics.totalBroadcastRooms = await RoomsRaw.findByBroadcast().count();
-		statistics.totalRoomsWithActiveLivestream = await RoomsRaw.findByActiveLivestream().count();
+		statistics.totalBroadcastRooms = await Rooms.findByBroadcast().count();
+		statistics.totalRoomsWithActiveLivestream = await Rooms.findByActiveLivestream().count();
 		statistics.totalTriggeredEmails = settings.get('Triggered_Emails_Count');
 		statistics.totalRoomsWithStarred = await Messages.countRoomsWithStarredMessages({ readPreference });
 		statistics.totalRoomsWithPinned = await Messages.countRoomsWithPinnedMessages({ readPreference });
@@ -501,7 +501,7 @@ export const statistics = {
 		statistics.totalLinkInvitation = await Invites.find().count();
 		statistics.totalLinkInvitationUses = await Invites.countUses();
 		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
-		statistics.totalE2ERooms = await RoomsRaw.findByE2E({ readPreference }).count();
+		statistics.totalE2ERooms = await Rooms.findByE2E({ readPreference }).count();
 		statistics.logoChange = Object.keys(settings.get('Assets_logo')).includes('url');
 		statistics.showHomeButton = settings.get('Layout_Show_Home_Button');
 		statistics.totalEncryptedMessages = await Messages.countByType('e2e', { readPreference });
@@ -535,7 +535,7 @@ export const statistics = {
 		// Omnichannel call stats
 		statistics.webRTCEnabled = settings.get('WebRTC_Enabled');
 		statistics.webRTCEnabledForOmnichannel = settings.get('Omnichannel_call_provider') === 'WebRTC';
-		statistics.omnichannelWebRTCCalls = await RoomsRaw.findCountOfRoomsWithActiveCalls();
+		statistics.omnichannelWebRTCCalls = await Rooms.findCountOfRoomsWithActiveCalls();
 
 		await Promise.all(statsPms).catch(log);
 
