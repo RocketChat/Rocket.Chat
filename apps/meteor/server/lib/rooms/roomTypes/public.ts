@@ -31,7 +31,7 @@ roomCoordinator.add(PublicRoomType, {
 		}
 	},
 
-	allowMemberAction(_room, action, userId) {
+	async allowMemberAction(_room, action, userId) {
 		if (isRoomFederated(_room as IRoom)) {
 			return Federation.actionAllowed(_room, action, userId);
 		}
@@ -43,7 +43,7 @@ roomCoordinator.add(PublicRoomType, {
 		}
 	},
 
-	roomName(room, _userId?) {
+	async roomName(room, _userId?) {
 		if (room.prid || isRoomFederated(room)) {
 			return room.fname;
 		}

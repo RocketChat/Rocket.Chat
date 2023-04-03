@@ -2,11 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { ISubscription } from '@rocket.chat/core-typings';
+import { Subscriptions } from '@rocket.chat/models';
 
-import { Subscriptions } from '../../../models/server';
 import { getUserNotificationPreference } from '../../../utils/server';
 
-const saveAudioNotificationValue = (subId: ISubscription['_id'], value: unknown) =>
+const saveAudioNotificationValue = (subId: ISubscription['_id'], value: string) =>
 	value === 'default' ? Subscriptions.clearAudioNotificationValueById(subId) : Subscriptions.updateAudioNotificationValueById(subId, value);
 
 declare module '@rocket.chat/ui-contexts' {
@@ -31,8 +31,9 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	saveNotificationSettings(roomId, field, value) {
-		if (!Meteor.userId()) {
+	async saveNotificationSettings(roomId, field, value) {
+		const userId = Meteor.userId();
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'saveNotificationSettings',
 			});
@@ -78,14 +79,15 @@ Meteor.methods<ServerMethods>({
 					),
 			},
 			unreadAlert: {
-				updateMethod: (subscription: ISubscription, value: unknown) => Subscriptions.updateUnreadAlertById(subscription._id, value),
+				// @ts-expect-error - Check types of model. The way the method is defined makes difficult to type it, check proper types for `value`
+				updateMethod: (subscription: ISubscription, value: string) => Subscriptions.updateUnreadAlertById(subscription._id, value),
 			},
 			disableNotifications: {
 				updateMethod: (subscription: ISubscription, value: unknown) =>
 					Subscriptions.updateDisableNotificationsById(subscription._id, value === '1'),
 			},
 			hideUnreadStatus: {
-				updateMethod: (subscription: ISubscription, value: unknown) =>
+				updateMethod: (subscription: ISubscription, value: string) =>
 					Subscriptions.updateHideUnreadStatusById(subscription._id, value === '1'),
 			},
 			hideMentionStatus: {
@@ -97,7 +99,7 @@ Meteor.methods<ServerMethods>({
 					Subscriptions.updateMuteGroupMentions(subscription._id, value === '1'),
 			},
 			audioNotificationValue: {
-				updateMethod: (subscription: ISubscription, value: unknown) => saveAudioNotificationValue(subscription._id, value),
+				updateMethod: (subscription: ISubscription, value: string) => saveAudioNotificationValue(subscription._id, value),
 			},
 		};
 		const isInvalidNotification = !Object.keys(notifications).includes(field);
@@ -116,26 +118,32 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(roomId, Meteor.userId());
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, userId);
 		if (!subscription) {
 			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', {
 				method: 'saveNotificationSettings',
 			});
 		}
 
-		notifications[field].updateMethod(subscription, value);
+		await notifications[field].updateMethod(subscription, value);
 
 		return true;
 	},
 
-	saveAudioNotificationValue(rid, value) {
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, Meteor.userId());
+	async saveAudioNotificationValue(rid, value) {
+		const userId = Meteor.userId();
+		if (!userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'saveAudioNotificationValue',
+			});
+		}
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userId);
 		if (!subscription) {
 			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', {
 				method: 'saveAudioNotificationValue',
 			});
 		}
-		saveAudioNotificationValue(subscription._id, value);
+		await saveAudioNotificationValue(subscription._id, value);
 		return true;
 	},
 });

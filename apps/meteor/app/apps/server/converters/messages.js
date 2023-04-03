@@ -1,6 +1,7 @@
 import { Random } from '@rocket.chat/random';
+import { Messages, Rooms } from '@rocket.chat/models';
 
-import { Messages, Rooms, Users } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { transformMappedData } from '../../../../ee/lib/misc/transformMappedData';
 
 export class AppMessagesConverter {
@@ -8,13 +9,13 @@ export class AppMessagesConverter {
 		this.orch = orch;
 	}
 
-	convertById(msgId) {
-		const msg = Messages.findOneById(msgId);
+	async convertById(msgId) {
+		const msg = await Messages.findOneById(msgId);
 
 		return this.convertMessage(msg);
 	}
 
-	convertMessage(msgObj) {
+	async convertMessage(msgObj) {
 		if (!msgObj) {
 			return undefined;
 		}
@@ -36,8 +37,8 @@ export class AppMessagesConverter {
 			groupable: 'groupable',
 			token: 'token',
 			blocks: 'blocks',
-			room: (message) => {
-				const result = this.orch.getConverters().get('rooms').convertById(message.rid);
+			room: async (message) => {
+				const result = await this.orch.getConverters().get('rooms').convertById(message.rid);
 				delete message.rid;
 				return result;
 			},
@@ -51,8 +52,8 @@ export class AppMessagesConverter {
 
 				return this.orch.getConverters().get('users').convertById(editedBy._id);
 			},
-			attachments: (message) => {
-				const result = this._convertAttachmentsToApp(message.attachments);
+			attachments: async (message) => {
+				const result = await this._convertAttachmentsToApp(message.attachments);
 				delete message.attachments;
 				return result;
 			},
@@ -77,12 +78,12 @@ export class AppMessagesConverter {
 		return transformMappedData(msgObj, map);
 	}
 
-	convertAppMessage(message) {
+	async convertAppMessage(message) {
 		if (!message || !message.room) {
 			return undefined;
 		}
 
-		const room = Rooms.findOneById(message.room.id);
+		const room = await Rooms.findOneById(message.room.id);
 
 		if (!room) {
 			throw new Error('Invalid room provided on the message.');
@@ -185,7 +186,7 @@ export class AppMessagesConverter {
 		);
 	}
 
-	_convertAttachmentsToApp(attachments) {
+	async _convertAttachmentsToApp(attachments) {
 		if (typeof attachments === 'undefined' || !Array.isArray(attachments)) {
 			return undefined;
 		}
@@ -237,6 +238,6 @@ export class AppMessagesConverter {
 			},
 		};
 
-		return attachments.map((attachment) => transformMappedData(attachment, map));
+		return Promise.all(attachments.map(async (attachment) => transformMappedData(attachment, map)));
 	}
 }

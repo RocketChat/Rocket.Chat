@@ -1,8 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { LivechatInquiry } from '@rocket.chat/models';
+import { LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 
-import { LivechatRooms, Users } from '../../../models/server';
 import { checkServiceStatus, createLivechatRoom, createLivechatInquiry } from './Helper';
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../logger/server';
@@ -47,7 +46,7 @@ export const QueueManager = {
 			}),
 		);
 
-		if (!checkServiceStatus({ guest, agent })) {
+		if (!(await checkServiceStatus({ guest, agent }))) {
 			logger.debug(`Cannot create room for visitor ${guest._id}. No online agents`);
 			throw new Meteor.Error('no-agent-online', 'Sorry, no online agents');
 		}
@@ -55,7 +54,7 @@ export const QueueManager = {
 		const { rid } = message;
 		const name = (roomInfo && roomInfo.fname) || guest.name || guest.username;
 
-		const room = LivechatRooms.findOneById(createLivechatRoom(rid, name, guest, roomInfo, extraData));
+		const room = await LivechatRooms.findOneById(await createLivechatRoom(rid, name, guest, roomInfo, extraData));
 		logger.debug(`Room for visitor ${guest._id} created with id ${room._id}`);
 
 		const inquiry = await LivechatInquiry.findOneById(
@@ -108,12 +107,16 @@ export const QueueManager = {
 		};
 
 		let defaultAgent;
-		if (servedBy && Users.findOneOnlineAgentByUserList(servedBy.username)) {
+		if (servedBy && (await Users.findOneOnlineAgentByUserList(servedBy.username))) {
 			defaultAgent = { agentId: servedBy._id, username: servedBy.username };
 		}
 
-		LivechatRooms.unarchiveOneById(rid);
-		const room = LivechatRooms.findOneById(rid);
+		await LivechatRooms.unarchiveOneById(rid);
+		const room = await LivechatRooms.findOneById(rid);
+		if (!room) {
+			logger.debug(`Room with id ${rid} not found`);
+			throw new Error('room-not-found');
+		}
 		const inquiry = await LivechatInquiry.findOneById(await createLivechatInquiry({ rid, name, guest, message, extraData: { source } }));
 		logger.debug(`Generated inquiry for visitor ${v._id} with id ${inquiry._id} [Not queued]`);
 

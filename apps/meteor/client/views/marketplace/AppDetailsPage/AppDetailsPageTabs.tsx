@@ -11,9 +11,17 @@ type AppDetailsPageTabsProps = {
 	marketplace: unknown;
 	settings: ISettings | undefined;
 	tab: string | undefined;
+	context: string;
 };
 
-const AppDetailsPageTabs = ({ installed, isSecurityVisible, marketplace, settings, tab }: AppDetailsPageTabsProps): ReactElement => {
+const AppDetailsPageTabs = ({
+	installed,
+	isSecurityVisible,
+	marketplace,
+	settings,
+	tab,
+	context,
+}: AppDetailsPageTabsProps): ReactElement => {
 	const t = useTranslation();
 	const isAdminUser = usePermission('manage-apps');
 
@@ -33,7 +41,7 @@ const AppDetailsPageTabs = ({ installed, isSecurityVisible, marketplace, setting
 			<Tabs.Item onClick={(): void => handleTabClick('details')} selected={!tab || tab === 'details'}>
 				{t('Details')}
 			</Tabs.Item>
-			{isAdminUser && (
+			{isAdminUser && context !== 'private' && (
 				<Tabs.Item onClick={(): void => handleTabClick('requests')} selected={tab === 'requests'}>
 					{t('Requests')}
 				</Tabs.Item>

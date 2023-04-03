@@ -5064,7 +5064,7 @@
   "Verified": "Vahvistettu",
   "Verify": "Vahvista",
   "Verify_your_email": "Vahvista sähköpostiosoitteesi",
-  "Verify_your_email_for_the_code_we_sent": "Tarkista lähettämämme koodi sähköpostissasi",
+  "Verify_your_email_with_the_code_we_sent": "Tarkista lähettämämme koodi sähköpostissasi",
   "Version": "Versio",
   "Version_version": "Versio __version__",
   "App_version_incompatible_tooltip": "Sovellus ei ole yhteensopiva Rocket.Chat-version kanssa",

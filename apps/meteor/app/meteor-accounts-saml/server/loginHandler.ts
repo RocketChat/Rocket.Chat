@@ -16,7 +16,7 @@ Accounts.registerLoginHandler('saml', async function (loginRequest) {
 		return undefined;
 	}
 
-	const loginResult = Promise.await(SAML.retrieveCredential(loginRequest.credentialToken));
+	const loginResult = await SAML.retrieveCredential(loginRequest.credentialToken);
 	SAMLUtils.log({ msg: 'RESULT', loginResult });
 
 	if (!loginResult) {

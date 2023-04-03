@@ -5,8 +5,9 @@ import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Subscriptions, Users } from '@rocket.chat/models';
 
-import { Rooms, Subscriptions, Users } from '../../../models/server';
+import { Rooms } from '../../../models/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../functions';
 import { callbacks } from '../../../../lib/callbacks';
@@ -37,9 +38,8 @@ Meteor.methods<ServerMethods>({
 
 		// Get user and room details
 		const room = Rooms.findOneById(data.rid);
-		const userId = uid;
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(data.rid, userId, {
-			fields: { _id: 1 },
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, uid, {
+			projection: { _id: 1 },
 		});
 		const userInRoom = subscription != null;
 
@@ -52,11 +52,11 @@ Meteor.methods<ServerMethods>({
 
 		// Can add to any room you're in, with permission, otherwise need specific room type permission
 		let canAddUser = false;
-		if (userInRoom && (await hasPermissionAsync(userId, 'add-user-to-joined-room', room._id))) {
+		if (userInRoom && (await hasPermissionAsync(uid, 'add-user-to-joined-room', room._id))) {
 			canAddUser = true;
-		} else if (room.t === 'c' && (await hasPermissionAsync(userId, 'add-user-to-any-c-room'))) {
+		} else if (room.t === 'c' && (await hasPermissionAsync(uid, 'add-user-to-any-c-room'))) {
 			canAddUser = true;
-		} else if (room.t === 'p' && (await hasPermissionAsync(userId, 'add-user-to-any-p-room'))) {
+		} else if (room.t === 'p' && (await hasPermissionAsync(uid, 'add-user-to-any-p-room'))) {
 			canAddUser = true;
 		}
 
@@ -75,7 +75,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		// Validate each user, then add to room
-		const user = (Meteor.user() as IUser | null) ?? undefined;
+		const user = ((await Meteor.userAsync()) as IUser | null) ?? undefined;
 		if (isRoomFederated(room)) {
 			callbacks.run('federation.onAddUsersToARoom', { invitees: data.users, inviter: user }, room);
 			return true;
@@ -83,17 +83,20 @@ Meteor.methods<ServerMethods>({
 
 		await Promise.all(
 			data.users.map(async (username) => {
-				const newUser = Users.findOneByUsernameIgnoringCase(username);
+				const newUser = await Users.findOneByUsernameIgnoringCase(username);
 				if (!newUser && !Federation.isAFederatedUsername(username)) {
 					throw new Meteor.Error('error-invalid-username', 'Invalid username', {
 						method: 'addUsersToRoom',
 					});
 				}
-				const subscription = newUser && Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
+				const subscription = newUser && (await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id));
 				if (!subscription) {
 					await addUserToRoom(data.rid, newUser || username, user);
 				} else {
-					void api.broadcast('notify.ephemeralMessage', userId, data.rid, {
+					if (!newUser.username) {
+						return;
+					}
+					void api.broadcast('notify.ephemeralMessage', uid, data.rid, {
 						msg: TAPi18n.__(
 							'Username_is_already_in_here',
 							{

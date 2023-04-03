@@ -168,7 +168,7 @@ export class Base {
 		const started = Date.now();
 		const startedByUserId = Meteor.userId();
 
-		const beforeImportFn = (data, type) => {
+		const beforeImportFn = async (data, type) => {
 			switch (type) {
 				case 'channel': {
 					const id = data.t === 'd' ? '__directMessages__' : data.importIds[0];
@@ -195,8 +195,8 @@ export class Base {
 			return true;
 		};
 
-		const afterImportFn = () => {
-			Promise.await(this.addCountCompleted(1));
+		const afterImportFn = async () => {
+			return this.addCountCompleted(1);
 		};
 
 		process.nextTick(async () => {
