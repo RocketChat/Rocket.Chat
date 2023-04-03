@@ -79,6 +79,7 @@ export class CustomOAuth {
 		this.nameField = (options.nameField || '').trim();
 		this.avatarField = (options.avatarField || '').trim();
 		this.mergeUsers = options.mergeUsers;
+		this.mergeUsersDistinctServices = options.mergeUsersDistinctServices;
 		this.rolesClaim = options.rolesClaim || 'roles';
 		this.accessTokenParam = options.accessTokenParam;
 		this.channelsAdmin = options.channelsAdmin || 'rocket.cat';
@@ -333,9 +334,13 @@ export class CustomOAuth {
 				let user = undefined;
 
 				if (this.keyField === 'username') {
-					user = Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceData._id, serviceName);
+					user = this.mergeUsersDistinctServices
+						? Users.findOneByUsernameIgnoringCase(serviceData.username)
+						: Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceData.id, serviceName);
 				} else if (this.keyField === 'email') {
-					user = Users.findOneByEmailAddressAndServiceNameIgnoringCase(serviceData.email, serviceData._id, serviceName);
+					user = this.mergeUsersDistinctServices
+						? Users.findOneByEmailAddress(serviceData.email)
+						: Users.findOneByEmailAddressAndServiceNameIgnoringCase(serviceData.email, serviceData.id, serviceName);
 				}
 
 				if (!user) {

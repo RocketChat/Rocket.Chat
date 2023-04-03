@@ -230,6 +230,18 @@ export function addOAuthService(name: string, values: { [k: string]: string | bo
 		i18nLabel: 'Accounts_OAuth_Custom_Merge_Users',
 		persistent: true,
 	});
+	void settingsRegistry.add(`Accounts_OAuth_Custom-${name}-merge_users_distinct_services`, values.mergeUsersDistinctServices || false, {
+		type: 'boolean',
+		group: 'OAuth',
+		section: `Custom OAuth: ${name}`,
+		i18nLabel: 'Accounts_OAuth_Custom_Merge_Users_Distinct_Services',
+		i18nDescription: 'Accounts_OAuth_Custom_Merge_Users_Distinct_Services_Description',
+		enableQuery: {
+			_id: `Accounts_OAuth_Custom-${name}-merge_users`,
+			value: true,
+		},
+		persistent: true,
+	});
 	void settingsRegistry.add(`Accounts_OAuth_Custom-${name}-show_button`, values.showButton || true, {
 		type: 'boolean',
 		group: 'OAuth',
