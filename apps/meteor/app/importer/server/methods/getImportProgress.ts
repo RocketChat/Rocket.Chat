@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { Imports } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Importers } from '..';
 
 export const executeGetImportProgress = async (): Promise<IImportProgress> => {
@@ -32,13 +32,13 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	getImportProgress() {
+	async getImportProgress() {
 		const userId = Meteor.userId();
 		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', 'getImportProgress');
 		}
 
-		if (!hasPermission(userId, 'run-import')) {
+		if (!(await hasPermissionAsync(userId, 'run-import'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', 'setupImporter');
 		}
 

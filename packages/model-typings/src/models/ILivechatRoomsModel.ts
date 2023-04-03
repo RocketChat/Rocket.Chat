@@ -1,4 +1,4 @@
-import type { IOmnichannelRoom, IOmnichannelRoomClosingInfo, ISetting, IVisitor } from '@rocket.chat/core-typings';
+import type { IMessage, IOmnichannelRoom, IOmnichannelRoomClosingInfo, ISetting, IVisitor } from '@rocket.chat/core-typings';
 import type { FindCursor, UpdateResult, AggregationCursor, Document, FindOptions, DeleteResult } from 'mongodb';
 
 import type { FindPaginated } from '..';
@@ -138,12 +138,12 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	): Promise<IOmnichannelRoom | null>;
 	findOneByVisitorTokenAndEmailThread(
 		visitorToken: string,
-		emailThread: string,
+		emailThread: string[],
 		options?: FindOptions<IOmnichannelRoom>,
 	): Promise<IOmnichannelRoom | null>;
 	findOneByVisitorTokenAndEmailThreadAndDepartment(
 		visitorToken: string,
-		emailThread: string,
+		emailThread: string[],
 		departmentId?: string,
 		options?: FindOptions<IOmnichannelRoom>,
 	): Promise<IOmnichannelRoom | null>;
@@ -152,7 +152,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		emailThread: string,
 		options: FindOptions<IOmnichannelRoom>,
 	): Promise<IOmnichannelRoom | null>;
-	updateEmailThreadByRoomId(roomId: string, threadIds: string[]): Promise<UpdateResult>;
+	updateEmailThreadByRoomId(roomId: string, threadIds: string[] | string): Promise<UpdateResult>;
 	findOneLastServedAndClosedByVisitorToken(visitorToken: string, options?: FindOptions<IOmnichannelRoom>): Promise<IOmnichannelRoom | null>;
 	findOneByVisitorToken(visitorToken: string, fields?: FindOptions<IOmnichannelRoom>['projection']): Promise<IOmnichannelRoom | null>;
 	updateRoomCount(): Promise<ISetting | null>;
@@ -180,7 +180,11 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	setResponseByRoomId(roomId: string, response: { user: { _id: string; username: string } }): Promise<UpdateResult>;
 	setNotResponseByRoomId(roomId: string): Promise<UpdateResult>;
 	setAgentLastMessageTs(roomId: string): Promise<UpdateResult>;
-	saveAnalyticsDataByRoomId(room: string, message: string, analyticsData: Record<string, string | number>): Promise<UpdateResult>;
+	saveAnalyticsDataByRoomId(
+		room: IOmnichannelRoom,
+		message: IMessage,
+		analyticsData?: Record<string, string | number | Date>,
+	): Promise<UpdateResult>;
 	getTotalConversationsBetweenDate(t: string, date: string, data?: { departmentId: string }): Promise<number>;
 	getAnalyticsMetricsBetweenDate(
 		t: string,

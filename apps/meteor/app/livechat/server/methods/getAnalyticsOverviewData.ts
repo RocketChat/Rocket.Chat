@@ -1,8 +1,8 @@
 import type { ServerMethods, TranslationKey } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
+import { Users } from '@rocket.chat/models';
 
-import { hasPermission } from '../../../authorization/server';
-import { Users } from '../../../models/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { Livechat } from '../lib/Livechat';
 
@@ -17,9 +17,9 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	'livechat:getAnalyticsOverviewData'(options) {
+	async 'livechat:getAnalyticsOverviewData'(options) {
 		const uid = Meteor.userId();
-		if (!uid || !hasPermission(uid, 'view-livechat-manager')) {
+		if (!uid || !(await hasPermissionAsync(uid, 'view-livechat-manager'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:getAnalyticsOverviewData',
 			});
@@ -30,8 +30,8 @@ Meteor.methods<ServerMethods>({
 			return;
 		}
 
-		const user = Users.findOneById(uid, { fields: { _id: 1, utcOffset: 1, language: 1 } });
-		const language = user.language || settings.get('Language') || 'en';
+		const user = await Users.findOneById(uid, { projection: { _id: 1, utcOffset: 1, language: 1 } });
+		const language = user?.language || settings.get('Language') || 'en';
 
 		return Livechat.Analytics.getAnalyticsOverviewData({
 			...options,

@@ -6,7 +6,7 @@ import React from 'react';
 
 import GenericModal from '../../../../client/components/GenericModal';
 
-export type RemoveCannedResponseButtonProps = {
+type RemoveCannedResponseButtonProps = {
 	_id: string;
 	reload: () => void;
 	totalDataReload: () => void;

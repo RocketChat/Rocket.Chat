@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Users } from '@rocket.chat/models';
 
 import { Livechat } from '../lib/Livechat';
-import { hasPermission } from '../../../authorization/server';
-import Users from '../../../models/server/models/Users';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -14,7 +14,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	'livechat:changeLivechatStatus'({ status, agentId = Meteor.userId() } = {}) {
+	async 'livechat:changeLivechatStatus'({ status, agentId = Meteor.userId() } = {}) {
 		methodDeprecationLogger.warn(
 			'livechat:changeLivechatStatus is deprecated and will be removed in future versions of Rocket.Chat. Use /api/v1/livechat/agent.status REST API instead.',
 		);
@@ -27,8 +27,8 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const agent = Users.findOneAgentById(agentId, {
-			fields: {
+		const agent = await Users.findOneAgentById(agentId, {
+			projection: {
 				status: 1,
 				statusLivechat: 1,
 			},
@@ -53,7 +53,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		if (agentId !== uid) {
-			if (!hasPermission(uid, 'manage-livechat-agents')) {
+			if (!(await hasPermissionAsync(uid, 'manage-livechat-agents'))) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 					method: 'livechat:saveAgentInfo',
 				});
@@ -61,7 +61,7 @@ Meteor.methods<ServerMethods>({
 			return Livechat.setUserStatusLivechat(agentId, newStatus);
 		}
 
-		if (!Livechat.allowAgentChangeServiceStatus(newStatus, agentId)) {
+		if (!(await Livechat.allowAgentChangeServiceStatus(newStatus, agentId))) {
 			throw new Meteor.Error('error-business-hours-are-closed', 'Not allowed', {
 				method: 'livechat:changeLivechatStatus',
 			});

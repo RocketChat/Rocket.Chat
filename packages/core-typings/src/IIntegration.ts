@@ -3,7 +3,7 @@ import type { IUser } from './IUser';
 
 export interface IIncomingIntegration extends IRocketChatRecord {
 	type: 'webhook-incoming';
-	_createdBy: Pick<IUser, 'username' | '_id'>;
+	_createdBy: Pick<IUser, 'username' | '_id'> | null;
 	_createdAt: Date;
 	userId: IUser['_id'];
 	username: string;
@@ -34,7 +34,7 @@ export type OutgoingIntegrationEvent =
 
 export interface IOutgoingIntegration extends IRocketChatRecord {
 	type: 'webhook-outgoing';
-	_createdBy: Pick<IUser, 'username' | '_id'>;
+	_createdBy: Pick<IUser, 'username' | '_id'> | null;
 	_createdAt: Date;
 	userId: IUser['_id'];
 	username: string;

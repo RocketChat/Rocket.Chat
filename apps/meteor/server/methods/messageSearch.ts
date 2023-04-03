@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Messages } from '@rocket.chat/models';
+import { Messages, Subscriptions } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { ISubscription, IUser } from '@rocket.chat/core-typings';
 
-import { canAccessRoomId } from '../../app/authorization/server';
-import { Subscriptions } from '../../app/models/server';
+import { canAccessRoomIdAsync } from '../../app/authorization/server/functions/canAccessRoom';
 import { settings } from '../../app/settings/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 import { parseMessageSearchQuery } from '../lib/parseMessageSearchQuery';
@@ -34,7 +33,7 @@ Meteor.methods<ServerMethods>({
 
 		// Don't process anything else if the user can't access the room
 		if (rid) {
-			if (!canAccessRoomId(rid, currentUserId)) {
+			if (!(await canAccessRoomIdAsync(rid, currentUserId))) {
 				return false;
 			}
 		} else if (settings.get('Search.defaultProvider.GlobalSearchEnabled') !== true) {
@@ -45,7 +44,7 @@ Meteor.methods<ServerMethods>({
 			};
 		}
 
-		const user = (Meteor.user() ?? undefined) as IUser | undefined;
+		const user = (await Meteor.userAsync()) as IUser | undefined;
 
 		const { query, options } = parseMessageSearchQuery(text, {
 			user,
@@ -73,11 +72,7 @@ Meteor.methods<ServerMethods>({
 			query.rid = rid;
 		} else {
 			query.rid = {
-				$in: user?._id
-					? Subscriptions.findByUserId(user._id)
-							.fetch()
-							.map((subscription: ISubscription) => subscription.rid)
-					: [],
+				$in: user?._id ? (await Subscriptions.findByUserId(user._id).toArray()).map((subscription: ISubscription) => subscription.rid) : [],
 			};
 		}
 

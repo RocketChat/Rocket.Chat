@@ -45,6 +45,8 @@ import type { SubscriptionsEndpoints } from './v1/subscriptionsEndpoints';
 import type { ImportEndpoints } from './v1/import';
 import type { CalendarEndpoints } from './v1/calendar';
 import type { FederationEndpoints } from './v1/federation';
+import type { AuthEndpoints } from './v1/auth';
+import type { DefaultEndpoints } from './default';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface, @typescript-eslint/naming-convention
 export interface Endpoints
@@ -92,7 +94,10 @@ export interface Endpoints
 		AutoTranslateEndpoints,
 		ImportEndpoints,
 		FederationEndpoints,
-		CalendarEndpoints {}
+		CalendarEndpoints,
+		AuthEndpoints,
+		ImportEndpoints,
+		DefaultEndpoints {}
 
 type OperationsByPathPatternAndMethod<
 	TEndpoints extends Endpoints,
@@ -253,3 +258,4 @@ export * from './v1/federation';
 export * from './v1/rooms';
 export * from './v1/groups';
 export * from './v1/chat';
+export * from './v1/auth';

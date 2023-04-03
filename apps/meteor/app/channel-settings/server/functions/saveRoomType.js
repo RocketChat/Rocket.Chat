@@ -1,13 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 
-import { Rooms, Subscriptions, Messages } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 
-export const saveRoomType = function (rid, roomType, user, sendMessage = true) {
+export const saveRoomType = async function (rid, roomType, user, sendMessage = true) {
 	if (!Match.test(rid, String)) {
 		throw new Meteor.Error('invalid-room', 'Invalid room', {
 			function: 'RocketChat.saveRoomType',
@@ -19,7 +20,7 @@ export const saveRoomType = function (rid, roomType, user, sendMessage = true) {
 			type: roomType,
 		});
 	}
-	const room = Rooms.findOneById(rid);
+	const room = await Rooms.findOneById(rid);
 	if (room == null) {
 		throw new Meteor.Error('error-invalid-room', 'error-invalid-room', {
 			function: 'RocketChat.saveRoomType',
@@ -27,13 +28,13 @@ export const saveRoomType = function (rid, roomType, user, sendMessage = true) {
 		});
 	}
 
-	if (!roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange(room, RoomSettingsEnum.TYPE)) {
+	if (!(await roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange(room, RoomSettingsEnum.TYPE))) {
 		throw new Meteor.Error('error-direct-room', "Can't change type of direct rooms", {
 			function: 'RocketChat.saveRoomType',
 		});
 	}
 
-	const result = Rooms.setTypeById(rid, roomType) && Subscriptions.updateTypeByRoomId(rid, roomType);
+	const result = (await Rooms.setTypeById(rid, roomType)) && (await Subscriptions.updateTypeByRoomId(rid, roomType));
 	if (!result) {
 		return result;
 	}
@@ -49,7 +50,7 @@ export const saveRoomType = function (rid, roomType, user, sendMessage = true) {
 				lng: (user && user.language) || settings.get('Language') || 'en',
 			});
 		}
-		Messages.createRoomSettingsChangedWithTypeRoomIdMessageAndUser('room_changed_privacy', rid, message, user);
+		await Message.saveSystemMessage('room_changed_privacy', rid, message, user);
 	}
 	return result;
 };

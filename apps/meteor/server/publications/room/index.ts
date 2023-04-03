@@ -2,10 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 import type { IRoom, RoomType } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Rooms } from '@rocket.chat/models';
 
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-import { canAccessRoomAsync, hasPermission } from '../../../app/authorization/server';
-import { Rooms } from '../../../app/models/server';
+import { canAccessRoomAsync } from '../../../app/authorization/server';
+import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../../app/settings/server';
 import { roomFields } from '../../modules/watchers/publishFields';
 
@@ -25,25 +26,25 @@ const roomMap = (record: IRoom) => {
 };
 
 Meteor.methods<ServerMethods>({
-	'rooms/get'(updatedAt) {
-		const options = { fields: roomFields };
+	async 'rooms/get'(updatedAt) {
+		const options = { projection: roomFields };
 		const user = Meteor.userId();
 
 		if (!user) {
 			if (settings.get('Accounts_AllowAnonymousRead')) {
-				return Rooms.findByDefaultAndTypes(true, ['c'], options).fetch();
+				return Rooms.findByDefaultAndTypes(true, ['c'], options).toArray();
 			}
 			return [];
 		}
 
 		if (updatedAt instanceof Date) {
 			return {
-				update: Rooms.findBySubscriptionUserIdUpdatedAfter(user, updatedAt, options).fetch(),
-				remove: Rooms.trashFindDeletedAfter(updatedAt, {}, { fields: { _id: 1, _deletedAt: 1 } }).fetch(),
+				update: await (await Rooms.findBySubscriptionUserIdUpdatedAfter(user, updatedAt, options)).toArray(),
+				remove: await Rooms.trashFindDeletedAfter(updatedAt, {}, { projection: { _id: 1, _deletedAt: 1 } }).toArray(),
 			};
 		}
 
-		return Rooms.findBySubscriptionUserId(user, options).fetch();
+		return (await Rooms.findBySubscriptionUserId(user, options)).toArray();
 	},
 
 	async 'getRoomByTypeAndName'(type, name) {
@@ -57,7 +58,7 @@ Meteor.methods<ServerMethods>({
 
 		const roomFind = roomCoordinator.getRoomFind(type);
 
-		const room = roomFind ? roomFind.call(this, name) : Rooms.findByTypeAndNameOrId(type, name);
+		const room = roomFind ? await roomFind.call(this, name) : await Rooms.findByTypeAndNameOrId(type, name);
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
@@ -71,7 +72,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (settings.get('Store_Last_Message') && userId && !hasPermission(userId, 'preview-c-room')) {
+		if (settings.get('Store_Last_Message') && userId && !(await hasPermissionAsync(userId, 'preview-c-room'))) {
 			delete room.lastMessage;
 		}
 
