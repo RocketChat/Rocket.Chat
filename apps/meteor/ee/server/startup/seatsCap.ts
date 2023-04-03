@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import { callbacks } from '../../../lib/callbacks';
 import { canAddNewUser, getMaxActiveUsers, onValidateLicenses } from '../../app/license/server/license';
@@ -12,7 +13,6 @@ import {
 	enableWarningBanner,
 } from '../../app/license/server/maxSeatsBanners';
 import { validateUserRoles } from '../../app/authorization/server/validateUserRoles';
-import { Users } from '../../../app/models/server';
 
 callbacks.add(
 	'onCreateUser',
@@ -50,10 +50,10 @@ callbacks.add(
 
 callbacks.add(
 	'validateUserRoles',
-	(userData: Partial<IUser>) => {
+	async (userData: Partial<IUser>) => {
 		const isGuest = userData.roles?.includes('guest');
 		if (isGuest) {
-			validateUserRoles(Meteor.userId(), userData);
+			await validateUserRoles(Meteor.userId(), userData);
 			return;
 		}
 
@@ -61,8 +61,8 @@ callbacks.add(
 			return;
 		}
 
-		const currentUserData = Users.findOneById(userData._id);
-		if (currentUserData.type === 'app') {
+		const currentUserData = await Users.findOneById(userData._id);
+		if (currentUserData?.type === 'app') {
 			return;
 		}
 
@@ -88,7 +88,7 @@ async function handleMaxSeatsBanners() {
 		return;
 	}
 
-	const activeUsers = Users.getActiveLocalUserCount();
+	const activeUsers = await Users.getActiveLocalUserCount();
 
 	// callback runs before user is added, so we should add the user
 	// that is being created to the current value.
