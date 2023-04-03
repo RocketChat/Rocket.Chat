@@ -24,20 +24,36 @@ class VersionCompiler {
 			};
 
 			output.marketplaceApiVersion = require('@rocket.chat/apps-engine/package.json').version.replace(/^[^0-9]/g, '');
-			const result = await execAsync("git log --pretty=format:'%H%n%ad%n%an%n%s' -n 1");
-			const data = result.stdout.split('\n');
-			output.commit = {
-				hash: data.shift(),
-				date: data.shift(),
-				author: data.shift(),
-				subject: data.join('\n'),
-			};
+			try {
+				const result = await execAsync("git log --pretty=format:'%H%n%ad%n%an%n%s' -n 1");
+				const data = result.stdout.split('\n');
+				output.commit = {
+					hash: data.shift(),
+					date: data.shift(),
+					author: data.shift(),
+					subject: data.join('\n'),
+				};
+			} catch (e) {
+				// no git
+			}
 
-			const tags = await execAsync('git describe --abbrev=0 --tags');
-			output.commit.tag = tags.stdout.replace('\n', '');
+			try {
+				const tags = await execAsync('git describe --abbrev=0 --tags');
+				if (output.commit) {
+					output.commit.tag = tags.stdout.replace('\n', '');
+				}
+			} catch (e) {
+				// no tags
+			}
 
-			const branch = await execAsync('git rev-parse --abbrev-ref HEAD');
-			output.commit.branch = branch.stdout.replace('\n', '');
+			try {
+				const branch = await execAsync('git rev-parse --abbrev-ref HEAD');
+				if (output.commit) {
+					output.commit.branch = branch.stdout.replace('\n', '');
+				}
+			} catch (e) {
+				// no branch
+			}
 
 			output = `exports.Info = ${JSON.stringify(output, null, 4)};`;
 
