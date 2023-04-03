@@ -1,21 +1,21 @@
 import { Meteor } from 'meteor/meteor';
-import { HTTP } from 'meteor/http';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
 import { settings } from '../../../app/settings/server';
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { appRequestNotififyForUsers } from './marketplace/appRequestNotifyUsers';
+import { fetch } from '../../../server/lib/http/fetch';
 
-const appsNotifyAppRequests = Meteor.bindEnvironment(function _appsNotifyAppRequests() {
+const appsNotifyAppRequests = Meteor.bindEnvironment(async function _appsNotifyAppRequests() {
 	try {
-		const installedApps = Promise.await(Apps.installedApps({ enabled: true }));
+		const installedApps = await Apps.installedApps({ enabled: true });
 		if (!installedApps || installedApps.length === 0) {
 			return;
 		}
 
 		const workspaceUrl = settings.get<string>('Site_Url');
-		const token = Promise.await(getWorkspaceAccessToken());
+		const token = await getWorkspaceAccessToken();
 
 		if (!token) {
 			Apps.debugLog(`could not load workspace token to send app requests notifications`);
@@ -35,32 +35,30 @@ const appsNotifyAppRequests = Meteor.bindEnvironment(function _appsNotifyAppRequ
 		};
 
 		const pendingSentUrl = `${baseUrl}/v1/app-request/sent/pending`;
-		const result = HTTP.get(pendingSentUrl, options);
-		const data = result.data?.data;
+		const result = await fetch(pendingSentUrl, options);
+		const data = (await result.json()).data?.data;
 		const filtered = installedApps.filter((app) => data.indexOf(app.getID()) !== -1);
 
-		filtered.forEach((app) => {
+		for await (const app of filtered) {
 			const appId = app.getID();
 			const appName = app.getName();
 
-			const usersNotified = Promise.await<(string | Error)[]>(
-				appRequestNotififyForUsers(baseUrl, workspaceUrl, appId, appName)
-					.then((response) => {
-						// Mark all app requests as sent
-						HTTP.post(`${baseUrl}/v1/app-request/markAsSent/${appId}`, options);
-						return response;
-					})
-					.catch((err) => {
-						Apps.debugLog(`could not send app request notifications for app ${appId}. Error: ${err}`);
-						return err;
-					}),
-			);
+			const usersNotified = await appRequestNotififyForUsers(baseUrl, workspaceUrl, appId, appName)
+				.then(async (response) => {
+					// Mark all app requests as sent
+					await fetch(`${baseUrl}/v1/app-request/markAsSent/${appId}`, { ...options, method: 'POST' });
+					return response;
+				})
+				.catch((err) => {
+					Apps.debugLog(`could not send app request notifications for app ${appId}. Error: ${err}`);
+					return err;
+				});
 
-			const errors = usersNotified.filter((batch) => batch instanceof Error);
+			const errors = (usersNotified as (string | Error)[]).filter((batch) => batch instanceof Error);
 			if (errors.length > 0) {
 				Apps.debugLog(`Some batches of users could not be notified for app ${appId}. Errors: ${errors}`);
 			}
-		});
+		}
 	} catch (err) {
 		Apps.debugLog(err);
 	}
@@ -70,7 +68,7 @@ const appsNotifyAppRequests = Meteor.bindEnvironment(function _appsNotifyAppRequ
 SyncedCron.add({
 	name: 'Apps-Request-End-Users:notify',
 	schedule: (parser) => parser.text('every 12 hours'),
-	job() {
-		appsNotifyAppRequests();
+	async job() {
+		await appsNotifyAppRequests();
 	},
 });

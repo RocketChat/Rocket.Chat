@@ -142,18 +142,7 @@ const CreateDiscussion = ({ onClose, defaultParentRoom, parentMessageId, nameSug
 								control={control}
 								name='usernames'
 								render={({ field: { onChange, value } }) => (
-									<UserAutoCompleteMultiple
-										value={value}
-										onChange={(currentUsername, action) => {
-											const expunged = value?.filter((username) => username !== currentUsername) ?? [];
-											if (action === 'remove') {
-												onChange(expunged);
-												return;
-											}
-											onChange([...expunged, currentUsername]);
-										}}
-										placeholder={t('Username_Placeholder')}
-									/>
+									<UserAutoCompleteMultiple value={value} onChange={onChange} placeholder={t('Username_Placeholder')} />
 								)}
 							/>
 						</Field.Row>

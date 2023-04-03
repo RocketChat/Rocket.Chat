@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Messages, Rooms } from '@rocket.chat/models';
 
 import { settings } from '../../app/settings/server';
-import { Messages, Rooms } from '../../app/models/server';
 import { canAccessRoomAsync } from '../../app/authorization/server';
 import { readThread } from '../../app/threads/server/functions';
 import { callbacks } from '../../lib/callbacks';
@@ -26,14 +26,17 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const thread = Messages.findOneById(tmid);
+		const thread = await Messages.findOneById(tmid);
 		if (!thread) {
 			return;
 		}
 
 		const user = (await Meteor.userAsync()) ?? undefined;
 
-		const room = Rooms.findOneById(thread.rid);
+		const room = await Rooms.findOneById(thread.rid);
+		if (!room) {
+			throw new Meteor.Error('error-room-does-not-exist', 'This room does not exist', { method: 'getThreadMessages' });
+		}
 
 		if (!(await canAccessRoomAsync(room, user))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getThreadMessages' });

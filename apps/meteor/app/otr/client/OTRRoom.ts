@@ -266,12 +266,10 @@ export class OTRRoom implements IOTRRoom {
 							this.acknowledge();
 
 							if (data.refresh) {
-								await Meteor.callAsync(
-									'sendSystemMessages',
-									this._roomId,
-									await Meteor.userAsync(),
-									otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
-								);
+								await APIClient.post('/v1/chat.otr', {
+									roomId: this._roomId,
+									type: otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
+								});
 							}
 						});
 					} catch (e) {
@@ -335,7 +333,10 @@ export class OTRRoom implements IOTRRoom {
 					this.setState(OtrRoomState.ESTABLISHED);
 
 					if (this.isFirstOTR) {
-						await Meteor.callAsync('sendSystemMessages', this._roomId, await Meteor.userAsync(), otrSystemMessages.USER_JOINED_OTR);
+						await APIClient.post('/v1/chat.otr', {
+							roomId: this._roomId,
+							type: otrSystemMessages.USER_JOINED_OTR,
+						});
 					}
 					this.isFirstOTR = false;
 				} catch (e) {

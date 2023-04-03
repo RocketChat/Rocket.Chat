@@ -237,6 +237,16 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	metrics?: {
 		serviceTimeDuration?: number;
 		chatDuration?: number;
+		v?: {
+			lq: Date;
+		};
+		servedBy?: {
+			lr: Date;
+		};
+		response?: {
+			tt: number;
+			total: number;
+		};
 	};
 
 	// Both fields are being used for the auto transfer feature for unanswered chats

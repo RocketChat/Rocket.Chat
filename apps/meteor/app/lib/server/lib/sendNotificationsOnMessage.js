@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
+import { Subscriptions, Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Subscriptions, Users } from '../../../models/server';
 import {
 	callJoinRoom,
 	messageContainsHighlight,
@@ -50,8 +50,8 @@ export const sendNotification = async ({
 
 	if (!subscription.receiver) {
 		subscription.receiver = [
-			Users.findOneById(subscription.u._id, {
-				fields: {
+			await Users.findOneById(subscription.u._id, {
+				projection: {
 					active: 1,
 					emails: 1,
 					language: 1,
@@ -295,24 +295,22 @@ export async function sendMessageNotifications(message, room, usersInThread = []
 	// the find below is crucial. All subscription records returned will receive at least one kind of notification.
 	// the query is defined by the server's default values and Notifications_Max_Room_Members setting.
 
-	const subscriptions = await Subscriptions.model
-		.rawCollection()
-		.aggregate([{ $match: query }, lookup, filter, project])
-		.toArray();
+	const subscriptions = await Subscriptions.col.aggregate([{ $match: query }, lookup, filter, project]).toArray();
 
-	subscriptions.forEach((subscription) =>
-		sendNotification({
-			subscription,
-			sender,
-			hasMentionToAll,
-			hasMentionToHere,
-			message,
-			notificationMessage,
-			room,
-			mentionIds,
-			disableAllMessageNotifications,
-			hasReplyToThread: usersInThread && usersInThread.includes(subscription.u._id),
-		}),
+	subscriptions.forEach(
+		(subscription) =>
+			void sendNotification({
+				subscription,
+				sender,
+				hasMentionToAll,
+				hasMentionToHere,
+				message,
+				notificationMessage,
+				room,
+				mentionIds,
+				disableAllMessageNotifications,
+				hasReplyToThread: usersInThread && usersInThread.includes(subscription.u._id),
+			}),
 	);
 
 	return {
@@ -354,42 +352,42 @@ export async function sendAllNotifications(message, room) {
 	if (room.t === 'c') {
 		// get subscriptions from users already in room (to not send them a notification)
 		const mentions = [...mentionIdsWithoutGroups];
-		Subscriptions.findByRoomIdAndUserIds(room._id, mentionIdsWithoutGroups, {
-			fields: { 'u._id': 1 },
-		}).forEach((subscription) => {
+		const cursor = Subscriptions.findByRoomIdAndUserIds(room._id, mentionIdsWithoutGroups, {
+			projection: { 'u._id': 1 },
+		});
+
+		for await (const subscription of cursor) {
 			const index = mentions.indexOf(subscription.u._id);
 			if (index !== -1) {
 				mentions.splice(index, 1);
 			}
-		});
+		}
 
-		Promise.all(
+		const users = await Promise.all(
 			mentions.map(async (userId) => {
 				await callJoinRoom(userId, room._id);
 
 				return userId;
 			}),
-		)
-			.then((users) => {
-				const subscriptions = Subscriptions.findByRoomIdAndUserIds(room._id, users).fetch();
-				users.forEach((userId) => {
-					const subscription = subscriptions.find((subscription) => subscription.u._id === userId);
+		).catch((error) => {
+			throw new Meteor.Error(error);
+		});
 
-					sendNotification({
-						subscription,
-						sender,
-						hasMentionToAll,
-						hasMentionToHere,
-						message,
-						notificationMessage,
-						room,
-						mentionIds,
-					});
-				});
-			})
-			.catch((error) => {
-				throw new Meteor.Error(error);
+		const subscriptions = await Subscriptions.findByRoomIdAndUserIds(room._id, users).toArray();
+		users.forEach((userId) => {
+			const subscription = subscriptions.find((subscription) => subscription.u._id === userId);
+
+			void sendNotification({
+				subscription,
+				sender,
+				hasMentionToAll,
+				hasMentionToHere,
+				message,
+				notificationMessage,
+				room,
+				mentionIds,
 			});
+		});
 	}
 
 	return message;

@@ -61,7 +61,7 @@ type OmnichannelTypesValues = 'omnichannel_placed_chat_on_hold' | 'omnichannel_o
 
 type OtrMessageTypeValues = 'otr' | 'otr-ack';
 
-type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
+export type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
 
 export type MessageTypesValues =
 	| 'e2e'
@@ -100,6 +100,7 @@ export type MessageTypesValues =
 	| 'owner-removed'
 	| 'new-leader'
 	| 'leader-removed'
+	| 'discussion-created'
 	| LivechatMessageTypes
 	| TeamMessageTypes
 	| VoipMessageTypesValues
@@ -310,7 +311,7 @@ export interface IOmnichannelSystemMessage extends IMessage {
 	requestData?: {
 		type: 'visitor' | 'user';
 		visitor?: ILivechatVisitor;
-		user?: IUser;
+		user?: Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'> | null;
 	};
 	webRtcCallEndTs?: Date;
 	comment?: string;
@@ -336,6 +337,7 @@ export type IMessageInbox = IMessage & {
 	email?: {
 		references?: string[];
 		messageId?: string;
+		thread?: string[];
 	};
 };
 

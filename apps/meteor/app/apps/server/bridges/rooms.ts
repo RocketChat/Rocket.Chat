@@ -5,10 +5,9 @@ import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import { Meteor } from 'meteor/meteor';
 import type { ISubscription, IUser as ICoreUser } from '@rocket.chat/core-typings';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
-import { Rooms, Users } from '../../../models/server';
 import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
 import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
 
@@ -72,7 +71,7 @@ export class AppRoomBridge extends RoomBridge {
 	protected async getCreatorById(roomId: string, appId: string): Promise<IUser | undefined> {
 		this.orch.debugLog(`The App ${appId} is getting the room's creator by id: "${roomId}"`);
 
-		const room = Rooms.findOneById(roomId);
+		const room = await Rooms.findOneById(roomId);
 
 		if (!room || !room.u || !room.u._id) {
 			return undefined;
@@ -84,7 +83,7 @@ export class AppRoomBridge extends RoomBridge {
 	protected async getCreatorByName(roomName: string, appId: string): Promise<IUser | undefined> {
 		this.orch.debugLog(`The App ${appId} is getting the room's creator by name: "${roomName}"`);
 
-		const room = Rooms.findOneByName(roomName, {});
+		const room = await Rooms.findOneByName(roomName, {});
 
 		if (!room || !room.u || !room.u._id) {
 			return undefined;
@@ -111,16 +110,16 @@ export class AppRoomBridge extends RoomBridge {
 	protected async update(room: IRoom, members: Array<string> = [], appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is updating a room.`);
 
-		if (!room.id || !Rooms.findOneById(room.id)) {
+		if (!room.id || !(await Rooms.findOneById(room.id))) {
 			throw new Error('A room must exist to update.');
 		}
 
 		const rm = await this.orch.getConverters()?.get('rooms').convertAppRoom(room);
 
-		Rooms.update(rm._id, rm);
+		await Rooms.updateOne({ _id: rm._id }, { $set: rm });
 
 		for await (const username of members) {
-			const member = Users.findOneByUsername(username, {});
+			const member = await Users.findOneByUsername(username, {});
 
 			if (!member) {
 				continue;
@@ -132,7 +131,7 @@ export class AppRoomBridge extends RoomBridge {
 
 	protected async delete(roomId: string, appId: string): Promise<void> {
 		this.orch.debugLog(`The App ${appId} is deleting a room.`);
-		deleteRoom(roomId);
+		await deleteRoom(roomId);
 	}
 
 	protected async createDiscussion(
@@ -148,10 +147,10 @@ export class AppRoomBridge extends RoomBridge {
 
 		let rcMessage;
 		if (parentMessage) {
-			rcMessage = this.orch.getConverters()?.get('messages').convertAppMessage(parentMessage);
+			rcMessage = await this.orch.getConverters()?.get('messages').convertAppMessage(parentMessage);
 		}
 
-		if (!rcRoom.prid || !Rooms.findOneById(rcRoom.prid)) {
+		if (!rcRoom.prid || !(await Rooms.findOneById(rcRoom.prid))) {
 			throw new Error('There must be a parent room to create a discussion.');
 		}
 
@@ -188,9 +187,13 @@ export class AppRoomBridge extends RoomBridge {
 	}
 
 	private async getUsersByRoomIdAndSubscriptionRole(roomId: string, role: string): Promise<IUser[]> {
-		const subs = await Subscriptions.findByRoomIdAndRoles(roomId, [role], { projection: { uid: '$u._id', _id: 0 } });
+		const subs = (await Subscriptions.findByRoomIdAndRoles(roomId, [role], {
+			projection: { uid: '$u._id', _id: 0 },
+		}).toArray()) as unknown as {
+			uid: string;
+		}[];
 		// Was this a bug?
-		const users = await Users.findByIds(subs.map((user) => user.u._id));
+		const users = await Users.findByIds(subs.map((user: { uid: string }) => user.uid)).toArray();
 		const userConverter = this.orch.getConverters()!.get('users');
 		return users.map((user: ICoreUser) => userConverter!.convertToApp(user));
 	}

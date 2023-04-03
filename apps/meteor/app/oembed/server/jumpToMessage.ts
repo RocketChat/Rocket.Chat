@@ -2,11 +2,12 @@ import URL from 'url';
 import QueryString from 'querystring';
 
 import { Meteor } from 'meteor/meteor';
-import type { ITranslatedMessage, MessageAttachment } from '@rocket.chat/core-typings';
+import type { IMessage, MessageAttachment } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
+import { Messages, Users } from '@rocket.chat/models';
 
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
-import { Messages, Rooms, Users } from '../../models/server';
+import { Rooms } from '../../models/server';
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
 import { canAccessRoomAsync } from '../../authorization/server/functions/canAccessRoom';
@@ -23,7 +24,7 @@ const recursiveRemove = (attachments: MessageAttachment, deep = 1): MessageAttac
 	return attachments;
 };
 
-const validateAttachmentDeepness = (message: ITranslatedMessage): ITranslatedMessage => {
+const validateAttachmentDeepness = (message: IMessage): IMessage => {
 	if (!message?.attachments) {
 		return message;
 	}
@@ -41,7 +42,10 @@ callbacks.add(
 			return msg;
 		}
 
-		const currentUser = Users.findOneById(msg.u._id);
+		const currentUser = await Users.findOneById(msg.u._id);
+		if (!currentUser) {
+			return msg;
+		}
 
 		for await (const item of msg.urls) {
 			// if the URL doesn't belong to the current server, skip
@@ -62,7 +66,9 @@ callbacks.add(
 				continue;
 			}
 
-			const jumpToMessage = validateAttachmentDeepness(Messages.findOneById(msgId));
+			const message = await Messages.findOneById(msgId);
+
+			const jumpToMessage = message && validateAttachmentDeepness(message);
 			if (!jumpToMessage) {
 				continue;
 			}
