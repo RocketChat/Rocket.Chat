@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { Settings, Users as UsersRaw } from '@rocket.chat/models';
+import { Settings, Users } from '@rocket.chat/models';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 
@@ -9,7 +9,6 @@ import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormD
 import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
 import { settings } from '../../../../app/settings/server';
 import { Info } from '../../../../app/utils/server';
-import { Users } from '../../../../app/models/server';
 import { Apps } from '../orchestrator';
 import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
@@ -183,7 +182,7 @@ export class AppsRestApi {
 
 					const subscribeRoute = this.queryParams.details === 'true' ? 'subscribe/details' : 'subscribe';
 
-					const seats = Users.getActiveLocalUserCount();
+					const seats = await Users.getActiveLocalUserCount();
 
 					return API.v1.success({
 						url: `${baseUrl}/apps/${this.queryParams.appId}/${
@@ -287,7 +286,7 @@ export class AppsRestApi {
 
 						const subscribeRoute = this.queryParams.details === 'true' ? 'subscribe/details' : 'subscribe';
 
-						const seats = Users.getActiveLocalUserCount();
+						const seats = await Users.getActiveLocalUserCount();
 
 						return API.v1.success({
 							url: `${baseUrl}/apps/${this.queryParams.appId}/${
@@ -442,7 +441,7 @@ export class AppsRestApi {
 
 					let admins = [];
 					try {
-						const adminsRaw = await UsersRaw.findUsersInRoles('admin', undefined, {
+						const adminsRaw = await Users.findUsersInRoles('admin', undefined, {
 							projection: {
 								username: 1,
 								name: 1,
@@ -820,7 +819,7 @@ export class AppsRestApi {
 					const learnMore = `${safeWorkspaceUrl}/marketplace/explore/info/${appId}/${appVersion}/requests`;
 
 					try {
-						const msgs = ({ adminUser }) => {
+						const msgs = async ({ adminUser }) => {
 							return {
 								msg: TAPi18n.__('App_Request_Admin_Message', {
 									admin_name: adminUser.name,

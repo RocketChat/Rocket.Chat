@@ -15,11 +15,13 @@ const getUserPreferences = async (me: IUser): Promise<Record<string, unknown>> =
 	const defaultUserSettingPrefix = 'Accounts_Default_User_Preferences_';
 	const allDefaultUserSettings = settings.getByRegexp(new RegExp(`^${defaultUserSettingPrefix}.*$`));
 
-	return allDefaultUserSettings.reduce((accumulator: { [key: string]: unknown }, [key]) => {
+	const accumulator: Record<string, any> = {};
+	for await (const [key] of allDefaultUserSettings) {
 		const settingWithoutPrefix = key.replace(defaultUserSettingPrefix, ' ').trim();
-		accumulator[settingWithoutPrefix] = getUserPreference(me, settingWithoutPrefix);
-		return accumulator;
-	}, {});
+		accumulator[settingWithoutPrefix] = await getUserPreference(me, settingWithoutPrefix);
+	}
+
+	return accumulator;
 };
 
 export async function getUserInfo(me: IUser): Promise<
