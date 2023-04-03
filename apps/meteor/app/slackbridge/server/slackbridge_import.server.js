@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
+import { Random } from '@rocket.chat/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { api } from '@rocket.chat/core-services';
 import { Rooms } from '@rocket.chat/models';
 
 import { SlackBridge } from './slackbridge';
+import { msgStream } from '../../lib/server';
 import { slashCommands } from '../../utils/server';
 
 async function SlackBridgeImport(command, params, item) {
@@ -16,7 +17,11 @@ async function SlackBridgeImport(command, params, item) {
 	const channel = room.name;
 	const user = Meteor.users.findOne(Meteor.userId());
 
-	void api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
+	msgStream.emit(item.rid, {
+		_id: Random.id(),
+		rid: item.rid,
+		u: { username: 'rocket.cat' },
+		ts: new Date(),
 		msg: TAPi18n.__(
 			'SlackBridge_start',
 			{
@@ -31,7 +36,11 @@ async function SlackBridgeImport(command, params, item) {
 		for await (const slack of SlackBridge.slackAdapters) {
 			await slack.importMessages(item.rid, (error) => {
 				if (error) {
-					void api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
+					msgStream.emit(item.rid, {
+						_id: Random.id(),
+						rid: item.rid,
+						u: { username: 'rocket.cat' },
+						ts: new Date(),
 						msg: TAPi18n.__(
 							'SlackBridge_error',
 							{
@@ -42,7 +51,11 @@ async function SlackBridgeImport(command, params, item) {
 						),
 					});
 				} else {
-					void api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
+					msgStream.emit(item.rid, {
+						_id: Random.id(),
+						rid: item.rid,
+						u: { username: 'rocket.cat' },
+						ts: new Date(),
 						msg: TAPi18n.__(
 							'SlackBridge_finish',
 							{
@@ -56,7 +69,11 @@ async function SlackBridgeImport(command, params, item) {
 			});
 		}
 	} catch (error) {
-		void api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
+		msgStream.emit(item.rid, {
+			_id: Random.id(),
+			rid: item.rid,
+			u: { username: 'rocket.cat' },
+			ts: new Date(),
 			msg: TAPi18n.__(
 				'SlackBridge_error',
 				{
