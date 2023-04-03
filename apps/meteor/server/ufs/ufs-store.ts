@@ -19,7 +19,6 @@ import { Tokens } from './ufs-tokens';
 
 export type StoreOptions = {
 	collection?: Mongo.Collection<IFile>;
-	copyTo?: Store[];
 	filter?: Filter;
 	name: string;
 	onCopyError?: (err: any, fileId: string, file: IFile) => void;
@@ -196,7 +195,7 @@ export class Store {
 				copyId,
 				Meteor.bindEnvironment((err) => {
 					if (err) {
-						this.getCollection().remove({ _id: copyId });
+						void this.removeById(copyId);
 						this.onCopyError.call(this, err, fileId, file);
 					}
 					if (typeof callback === 'function') {
@@ -323,15 +322,6 @@ export class Store {
 
 						// Return file info
 						callback.call(this, undefined, file);
-
-						// Copy file to other stores
-						if (this.options.copyTo instanceof Array) {
-							for await (const store of this.options.copyTo) {
-								if (!store.getFilter() || (await store.getFilter()?.isValid(file))) {
-									await this.copy(fileId, store);
-								}
-							}
-						}
 					}),
 				);
 			});
@@ -346,55 +336,32 @@ export class Store {
 
 		const collection = this.getCollection();
 
-		// Code executed after removing file
-		collection.after.remove((_userId: string, file: IFile) => {
-			// Remove associated tokens
-			Tokens.remove({ fileId: file._id });
-
-			if (this.options.copyTo instanceof Array) {
-				for (let i = 0; i < this.options.copyTo.length; i += 1) {
-					// Remove copies in stores
-					this.options.copyTo[i].getCollection().remove({ originalId: file._id });
-				}
-			}
-		});
-
 		// Code executed before inserting file
 		collection.before.insert((userId: string, file: IFile) => {
+			console.log('before.insert', userId);
 			// TODO collection hooks support for async?
 			if (!Promise.await(this.permissions?.checkInsert(userId, file))) {
 				throw new Meteor.Error('forbidden', 'Forbidden');
 			}
 		});
+	}
 
-		// Code executed before updating file
-		collection.before.update((userId: string, file: IFile, fields, modifiers) => {
-			// TODO collection hooks support for async?
-			if (!Promise.await(this.permissions?.checkUpdate(userId, file, fields, modifiers))) {
-				throw new Meteor.Error('forbidden', 'Forbidden');
-			}
+	async removeById(fileId: string) {
+		// Delete the physical file in the store
+		this.delete(fileId);
+
+		const tmpFile = UploadFS.getTempFilePath(fileId);
+
+		// Delete the temp file
+		fs.stat(tmpFile, (err) => {
+			!err &&
+				fs.unlink(tmpFile, (err2) => {
+					err2 && console.error(`ufs: cannot delete temp file at ${tmpFile} (${err2.message})`);
+				});
 		});
 
-		// Code executed before removing file
-		collection.before.remove((userId: string, file: IFile) => {
-			// TODO collection hooks support for async?
-			if (!Promise.await(this.permissions?.checkRemove(userId, file))) {
-				throw new Meteor.Error('forbidden', 'Forbidden');
-			}
-
-			// Delete the physical file in the store
-			this.delete(file._id);
-
-			const tmpFile = UploadFS.getTempFilePath(file._id);
-
-			// Delete the temp file
-			fs.stat(tmpFile, (err) => {
-				!err &&
-					fs.unlink(tmpFile, (err2) => {
-						err2 && console.error(`ufs: cannot delete temp file at ${tmpFile} (${err2.message})`);
-					});
-			});
-		});
+		await this.getCollection().remove({ _id: fileId });
+		Tokens.remove({ fileId });
 	}
 
 	/**

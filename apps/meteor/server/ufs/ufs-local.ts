@@ -91,7 +91,7 @@ export class LocalStore extends Store {
 						fs.unlink(
 							path,
 							Meteor.bindEnvironment(() => {
-								this.getCollection().remove(fileId);
+								void this.removeById(fileId);
 								callback?.call(this);
 							}),
 						);

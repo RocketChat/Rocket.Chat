@@ -1,11 +1,7 @@
 import path from 'path';
 
-import { Meteor } from 'meteor/meteor';
-
 import { UploadFS } from '../../../server/ufs';
 import { canAccessRoomAsync } from '../../authorization/server';
-import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
-import { settings } from '../../settings/server';
 
 // set ufs temp dir to $TMPDIR/ufs instead of /tmp/ufs if the variable is set
 if ('TMPDIR' in process.env) {
@@ -33,25 +29,5 @@ UploadFS.config.defaultStorePermissions = new UploadFS.StorePermissions({
 		}
 
 		return false;
-	},
-	async update(userId, doc) {
-		const cUserId = Meteor.userId();
-		if (!cUserId) {
-			return false;
-		}
-		return (
-			(await hasPermissionAsync(cUserId, 'delete-message', doc.rid)) ||
-			(settings.get<boolean>('Message_AllowDeleting') && userId === doc.userId)
-		);
-	},
-	async remove(userId, doc) {
-		const cUserId = Meteor.userId();
-		if (!cUserId) {
-			return false;
-		}
-		return (
-			(await hasPermissionAsync(cUserId, 'delete-message', doc.rid)) ||
-			(settings.get<boolean>('Message_AllowDeleting') && userId === doc.userId)
-		);
 	},
 });

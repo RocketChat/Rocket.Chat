@@ -66,7 +66,7 @@ Meteor.methods({
 				'error',
 				Meteor.bindEnvironment(function (err) {
 					console.error(err);
-					store.getCollection().remove({ _id: fileId });
+					void store.removeById(fileId);
 					fut.throw(err);
 				}),
 			);
@@ -94,7 +94,7 @@ Meteor.methods({
 			return fut.wait();
 		} catch (err: any) {
 			// If write failed, remove the file
-			store.getCollection().remove({ _id: fileId });
+			void store.removeById(fileId);
 			// removeTempFile(); // todo remove temp file on error or try again ?
 			throw new Meteor.Error('ufs: cannot upload file', err);
 		}
