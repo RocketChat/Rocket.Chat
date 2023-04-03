@@ -625,7 +625,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne(query, options);
 	}
 
-	async findOneByNonValidatedName(name, options) {
+	async findOneByNonValidatedName(name: IRoom['name'], options: FindOptions<IRoom> = {}) {
 		const room = await this.findOneByNameOrFname(name, options);
 		if (room) {
 			return room;
@@ -1202,7 +1202,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	findByIds(roomIds: Array<IRoom['_id']>, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
-		return this.find({ _id: { $in: [].concat(roomIds) } }, options);
+		return this.find({ _id: { $in: roomIds } }, options);
 	}
 
 	findByType(type: IRoom['t'], options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
@@ -1304,19 +1304,25 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			default: {
 				$ne: true,
 			},
-			$or: [
+			$and: [
 				{
-					teamId: {
-						$exists: false,
-					},
+					$or: [
+						{
+							teamId: {
+								$exists: false,
+							},
+						},
+						{
+							teamMain: true,
+						},
+					],
 				},
-				{
-					teamMain: true,
-				},
+				includeFederatedRooms
+					? {
+							$or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }],
+					  }
+					: { $or: [{ federated: { $exists: false } }, { federated: false }], name },
 			],
-			...(includeFederatedRooms
-				? { $or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }] }
-				: { $or: [{ federated: { $exists: false } }, { federated: false }], name }),
 		};
 
 		// do not use cache
