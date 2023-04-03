@@ -2,7 +2,7 @@ import type { IFile } from './definition';
 
 type Action = 'insert' | 'remove' | 'update';
 
-type Actions = Partial<Record<Action, (userId: string, file: IFile, fields?: string[], modifiers?: string[]) => boolean>>;
+type Actions = Partial<Record<Action, (userId: string, file: IFile, fields?: string[], modifiers?: string[]) => Promise<boolean>>>;
 
 export class StorePermissions {
 	private actions: Actions;
@@ -25,22 +25,22 @@ export class StorePermissions {
 		}
 	}
 
-	check(action: Action, userId: string, file: IFile, fields?: string[], modifiers?: string[]) {
+	async check(action: Action, userId: string, file: IFile, fields?: string[], modifiers?: string[]) {
 		if (typeof this.actions[action] === 'function') {
 			return this.actions[action]?.(userId, file, fields, modifiers);
 		}
 		return true; // by default allow all
 	}
 
-	checkInsert(userId: string, file: IFile, _fields?: string[], _modifiers?: string[]) {
+	async checkInsert(userId: string, file: IFile, _fields?: string[], _modifiers?: string[]) {
 		return this.check('insert', userId, file);
 	}
 
-	checkRemove(userId: string, file: IFile, _fields?: string[], _modifiers?: string[]) {
+	async checkRemove(userId: string, file: IFile, _fields?: string[], _modifiers?: string[]) {
 		return this.check('remove', userId, file);
 	}
 
-	checkUpdate(userId: string, file: IFile, fields?: string[], modifiers?: string[]) {
+	async checkUpdate(userId: string, file: IFile, fields?: string[], modifiers?: string[]) {
 		return this.check('update', userId, file, fields, modifiers);
 	}
 }

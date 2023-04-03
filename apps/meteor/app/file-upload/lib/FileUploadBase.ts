@@ -13,7 +13,7 @@ if ('TMPDIR' in process.env) {
 }
 
 UploadFS.config.defaultStorePermissions = new UploadFS.StorePermissions({
-	insert(userId, doc) {
+	async insert(userId, doc) {
 		if (userId) {
 			return true;
 		}
@@ -28,30 +28,30 @@ UploadFS.config.defaultStorePermissions = new UploadFS.StorePermissions({
 			return true;
 		}
 
-		if (Promise.await(canAccessRoomAsync(undefined, undefined, doc))) {
+		if (await canAccessRoomAsync(undefined, undefined, doc)) {
 			return true;
 		}
 
 		return false;
 	},
-	update(userId, doc) {
+	async update(userId, doc) {
 		const cUserId = Meteor.userId();
 		if (!cUserId) {
 			return false;
 		}
-		return Promise.await(
-			void hasPermissionAsync(cUserId, 'delete-message', doc.rid) ||
-				(settings.get<boolean>('Message_AllowDeleting') && userId === doc.userId),
+		return (
+			(await hasPermissionAsync(cUserId, 'delete-message', doc.rid)) ||
+			(settings.get<boolean>('Message_AllowDeleting') && userId === doc.userId)
 		);
 	},
-	remove(userId, doc) {
+	async remove(userId, doc) {
 		const cUserId = Meteor.userId();
 		if (!cUserId) {
 			return false;
 		}
-		return Promise.await(
-			void hasPermissionAsync(cUserId, 'delete-message', doc.rid) ||
-				(settings.get<boolean>('Message_AllowDeleting') && userId === doc.userId),
+		return (
+			(await hasPermissionAsync(cUserId, 'delete-message', doc.rid)) ||
+			(settings.get<boolean>('Message_AllowDeleting') && userId === doc.userId)
 		);
 	},
 });

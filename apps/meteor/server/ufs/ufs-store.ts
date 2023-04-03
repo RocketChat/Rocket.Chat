@@ -361,21 +361,24 @@ export class Store {
 
 		// Code executed before inserting file
 		collection.before.insert((userId: string, file: IFile) => {
-			if (!this.permissions?.checkInsert(userId, file)) {
+			// TODO collection hooks support for async?
+			if (!Promise.await(this.permissions?.checkInsert(userId, file))) {
 				throw new Meteor.Error('forbidden', 'Forbidden');
 			}
 		});
 
 		// Code executed before updating file
 		collection.before.update((userId: string, file: IFile, fields, modifiers) => {
-			if (!this.permissions?.checkUpdate(userId, file, fields, modifiers)) {
+			// TODO collection hooks support for async?
+			if (!Promise.await(this.permissions?.checkUpdate(userId, file, fields, modifiers))) {
 				throw new Meteor.Error('forbidden', 'Forbidden');
 			}
 		});
 
 		// Code executed before removing file
 		collection.before.remove((userId: string, file: IFile) => {
-			if (!this.permissions?.checkRemove(userId, file)) {
+			// TODO collection hooks support for async?
+			if (!Promise.await(this.permissions?.checkRemove(userId, file))) {
 				throw new Meteor.Error('forbidden', 'Forbidden');
 			}
 
