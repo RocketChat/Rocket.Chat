@@ -53,7 +53,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		return {
-			messages: normalizeMessagesForUser(records, fromId),
+			messages: await normalizeMessagesForUser(records, fromId),
 		};
 	},
 });
