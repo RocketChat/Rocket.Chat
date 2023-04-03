@@ -2,6 +2,7 @@ import URL from 'url';
 import QueryString from 'querystring';
 
 import { Meteor } from 'meteor/meteor';
+import type { MessageAttachment, IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { isQuoteAttachment } from '@rocket.chat/core-typings';
 import { Messages, Users, Rooms } from '@rocket.chat/models';
 
