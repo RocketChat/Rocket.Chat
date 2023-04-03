@@ -1,14 +1,14 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Rooms } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 
-import { Rooms, Messages } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 
 export const addUserToDefaultChannels = async function (user: IUser, silenced?: boolean): Promise<void> {
 	callbacks.run('beforeJoinDefaultChannels', user);
-	const defaultRooms = Rooms.findByDefaultAndTypes(true, ['c', 'p'], {
-		fields: { usernames: 0 },
-	}).fetch();
+	const defaultRooms = await Rooms.findByDefaultAndTypes(true, ['c', 'p'], {
+		projection: { usernames: 0 },
+	}).toArray();
 	for await (const room of defaultRooms) {
 		if (!(await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { projection: { _id: 1 } }))) {
 			// Add a subscription to this user
@@ -24,7 +24,7 @@ export const addUserToDefaultChannels = async function (user: IUser, silenced?: 
 
 			// Insert user joined message
 			if (!silenced) {
-				Messages.createUserJoinWithRoomIdAndUser(room._id, user);
+				await Message.saveSystemMessage('uj', room._id, user.username || '', user);
 			}
 		}
 	}

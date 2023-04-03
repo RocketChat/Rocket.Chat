@@ -1,5 +1,4 @@
 import { Meteor } from 'meteor/meteor';
-import { HTTP } from 'meteor/http';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
@@ -9,6 +8,7 @@ import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
 import { Users } from '../../../app/models/server';
+import { fetch } from '../../../server/lib/http/fetch';
 
 const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(async function _notifyAdminsAboutInvalidApps(apps) {
 	if (!apps) {
@@ -87,7 +87,8 @@ const appsUpdateMarketplaceInfo = Meteor.bindEnvironment(async function _appsUpd
 	let data = [];
 
 	try {
-		const result = HTTP.get(fullUrl, options);
+		const response = await fetch(fullUrl, options);
+		const result = await response.json();
 
 		if (Array.isArray(result.data)) {
 			data = result.data;

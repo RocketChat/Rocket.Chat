@@ -14,11 +14,11 @@ declare module '@rocket.chat/rest-typings' {
 		};
 		'/v1/livechat/units': {
 			GET: (params: { text: string }) => PaginatedResult & { units: IOmnichannelBusinessUnit[] };
-			POST: (params: { unitData: string; unitMonitors: string; unitDepartments: string }) => IOmnichannelBusinessUnit;
+			POST: (params: { unitData: string; unitMonitors: string; unitDepartments: string }) => Omit<IOmnichannelBusinessUnit, '_updatedAt'>;
 		};
 		'/v1/livechat/units/:id': {
 			GET: () => IOmnichannelBusinessUnit | null;
-			POST: (params: { unitData: string; unitMonitors: string; unitDepartments: string }) => IOmnichannelBusinessUnit;
+			POST: (params: { unitData: string; unitMonitors: string; unitDepartments: string }) => Omit<IOmnichannelBusinessUnit, '_updatedAt'>;
 			DELETE: () => number;
 		};
 	}

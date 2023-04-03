@@ -32,7 +32,7 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		})) as IMessage;
 	};
 
-	const findMessageByID = async (mid: IMessage['_id']): Promise<IMessage | undefined> =>
+	const findMessageByID = async (mid: IMessage['_id']): Promise<IMessage | null> =>
 		Messages.findOne({ _id: mid, _hidden: { $ne: true } }, { reactive: false }) ?? call('getSingleMessage', mid);
 
 	const getMessageByID = async (mid: IMessage['_id']): Promise<IMessage> => {

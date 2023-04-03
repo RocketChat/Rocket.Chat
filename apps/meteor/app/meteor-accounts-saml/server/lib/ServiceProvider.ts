@@ -167,28 +167,28 @@ export class SAMLServiceProvider {
 		this.requestToUrl(request, 'authorize', callback);
 	}
 
-	public validateLogoutRequest(samlRequest: string, callback: ILogoutRequestValidateCallback): void {
-		SAMLUtils.inflateXml(
+	public async validateLogoutRequest(samlRequest: string, callback: ILogoutRequestValidateCallback): Promise<void> {
+		await SAMLUtils.inflateXml(
 			samlRequest,
-			(xml: string) => {
+			async (xml: string) => {
 				const parser = new LogoutRequestParser(this.serviceProviderOptions);
 				return parser.validate(xml, callback);
 			},
-			(err: string | object | null) => {
-				callback(err, null);
+			async (err: string | object | null) => {
+				await callback(err, null);
 			},
 		);
 	}
 
-	public validateLogoutResponse(samlResponse: string, callback: ILogoutResponseValidateCallback): void {
-		SAMLUtils.inflateXml(
+	public async validateLogoutResponse(samlResponse: string, callback: ILogoutResponseValidateCallback): Promise<void> {
+		await SAMLUtils.inflateXml(
 			samlResponse,
-			(xml: string) => {
+			async (xml: string) => {
 				const parser = new LogoutResponseParser(this.serviceProviderOptions);
 				return parser.validate(xml, callback);
 			},
-			(err: string | object | null) => {
-				callback(err, null);
+			async (err: string | object | null) => {
+				await callback(err, null);
 			},
 		);
 	}

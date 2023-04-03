@@ -1,13 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Team } from '@rocket.chat/core-services';
+import { Message, Team } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Rooms } from '@rocket.chat/models';
 
 import { hasRoleAsync } from '../../app/authorization/server/functions/hasRole';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { removeUserFromRolesAsync } from '../lib/roles/removeUserFromRoles';
-import { Users, Rooms, Messages } from '../../app/models/server';
+import { Users } from '../../app/models/server';
 import { callbacks } from '../../lib/callbacks';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
@@ -44,7 +44,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const room = Rooms.findOneById(data.rid);
+		const room = await Rooms.findOneById(data.rid);
 
 		if (!room || !(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.REMOVE_USER, fromId))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
@@ -83,12 +83,7 @@ Meteor.methods<ServerMethods>({
 			await removeUserFromRolesAsync(removedUser._id, ['moderator', 'owner'], data.rid);
 		}
 
-		Messages.createUserRemovedWithRoomIdAndUser(data.rid, removedUser, {
-			u: {
-				_id: fromUser._id,
-				username: fromUser.username,
-			},
-		});
+		await Message.saveSystemMessage('ru', data.rid, removedUser.username || '', fromUser);
 
 		if (room.teamId && room.teamMain) {
 			// if a user is kicked from the main team room, delete the team membership

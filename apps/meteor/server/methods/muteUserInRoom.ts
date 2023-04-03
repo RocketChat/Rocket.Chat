@@ -3,8 +3,9 @@ import { Match, check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 
-import { Users, Messages } from '../../app/models/server';
+import { Users } from '../../app/models/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
@@ -73,12 +74,7 @@ Meteor.methods<ServerMethods>({
 
 		await Rooms.muteUsernameByRoomId(data.rid, mutedUser.username);
 
-		Messages.createUserMutedWithRoomIdAndUser(data.rid, mutedUser, {
-			u: {
-				_id: fromUser._id,
-				username: fromUser.username,
-			},
-		});
+		await Message.saveSystemMessage('user-muted', data.rid, mutedUser.username, fromUser);
 
 		callbacks.run('afterMuteUser', { mutedUser, fromUser }, room);
 

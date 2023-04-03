@@ -24,10 +24,11 @@ import {
 	Settings,
 	LivechatTrigger,
 	LivechatCustomField,
+	Subscriptions,
 } from '@rocket.chat/models';
 import { Analytics, Team, VideoConf } from '@rocket.chat/core-services';
 
-import { Users, Rooms, Subscriptions } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { getControl } from '../../../../server/lib/migrations';
@@ -113,7 +114,7 @@ export const statistics = {
 		);
 
 		// Room statistics
-		statistics.totalRooms = Rooms.find().count();
+		statistics.totalRooms = await RoomsRaw.col.countDocuments({});
 		statistics.totalChannels = await RoomsRaw.findByType('c').count();
 		statistics.totalPrivateGroups = await RoomsRaw.findByType('p').count();
 		statistics.totalDirect = await RoomsRaw.findByType('d').count();
@@ -304,7 +305,7 @@ export const statistics = {
 
 		statistics.lastLogin = Users.getLastLogin();
 		statistics.lastMessageSentAt = await Messages.getLastTimestamp();
-		statistics.lastSeenSubscription = Subscriptions.getLastSeen();
+		statistics.lastSeenSubscription = (await Subscriptions.getLastSeen())?.toString() || '';
 
 		statistics.os = {
 			type: os.type(),
@@ -415,7 +416,7 @@ export const statistics = {
 		);
 
 		statistics.apps = getAppsStatistics();
-		statistics.services = getServicesStatistics();
+		statistics.services = await getServicesStatistics();
 		statistics.importer = getImporterStatistics();
 		statistics.videoConf = await VideoConf.getStatistics();
 

@@ -7,7 +7,6 @@ import { Rooms as RoomsRaw } from '@rocket.chat/models';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { canAccessRoomAsync } from '../../../app/authorization/server';
 import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
-import { Rooms } from '../../../app/models/server';
 import { settings } from '../../../app/settings/server';
 import { roomFields } from '../../modules/watchers/publishFields';
 
@@ -33,7 +32,7 @@ Meteor.methods<ServerMethods>({
 
 		if (!user) {
 			if (settings.get('Accounts_AllowAnonymousRead')) {
-				return Rooms.findByDefaultAndTypes(true, ['c'], options).fetch();
+				return RoomsRaw.findByDefaultAndTypes(true, ['c'], options).toArray();
 			}
 			return [];
 		}
@@ -41,7 +40,7 @@ Meteor.methods<ServerMethods>({
 		if (updatedAt instanceof Date) {
 			return {
 				update: await (await RoomsRaw.findBySubscriptionUserIdUpdatedAfter(user, updatedAt, options)).toArray(),
-				remove: Rooms.trashFindDeletedAfter(updatedAt, {}, { fields: { _id: 1, _deletedAt: 1 } }).fetch(),
+				remove: await RoomsRaw.trashFindDeletedAfter(updatedAt, {}, { projection: { _id: 1, _deletedAt: 1 } }).toArray(),
 			};
 		}
 

@@ -3,7 +3,6 @@ import { Users, Subscriptions as SubscriptionsRaw, Rooms as RoomsRaw } from '@ro
 
 import { canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { Rooms } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 import { roomCoordinator } from './rooms/roomCoordinator';
@@ -26,7 +25,7 @@ export class Spotlight {
 
 		const roomOptions = {
 			limit: 5,
-			fields: {
+			projection: {
 				t: 1,
 				name: 1,
 				fname: 1,
@@ -156,7 +155,7 @@ export class Spotlight {
 			readPreference: readSecondaryPreferred(Users.col.s.db),
 		};
 
-		const room = Rooms.findOneById(rid, { fields: { ...roomAccessAttributes, _id: 1, t: 1, uids: 1 } });
+		const room = await RoomsRaw.findOneById(rid, { projection: { ...roomAccessAttributes, _id: 1, t: 1, uids: 1 } });
 
 		if (rid && !room) {
 			return users;
