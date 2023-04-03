@@ -1,6 +1,6 @@
 import { ajv } from '../Ajv';
 
-export type OauthAppsGetParams = { clientId: string } | { appId: string };
+export type OauthAppsGetParams = { clientId: string } | { appId: string } | { _id: string };
 
 const oauthAppsGetParamsSchema = {
 	oneOf: [
