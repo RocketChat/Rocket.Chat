@@ -3,20 +3,19 @@ import { Random } from '@rocket.chat/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IMessage, IRoom, IUser, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { Messages } from '@rocket.chat/models';
+import { Messages, Rooms } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
 
 import { hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
-import { Rooms } from '../../../models/server';
 import { createRoom, addUserToRoom, sendMessage, attachMessage } from '../../../lib/server';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
-const getParentRoom = (rid: IRoom['_id']) => {
-	const room = Rooms.findOne(rid);
-	return room && (room.prid ? Rooms.findOne(room.prid, { fields: { _id: 1 } }) : room);
+const getParentRoom = async (rid: IRoom['_id']) => {
+	const room = await Rooms.findOne(rid);
+	return room && (room.prid ? Rooms.findOne(room.prid, { projection: { _id: 1 } }) : room);
 };
 
 async function createDiscussionMessage(
@@ -73,7 +72,8 @@ const create = async ({ prid, pmid, t_name: discussionName, reply, users, user, 
 			});
 		}
 		if (prid) {
-			if (prid !== getParentRoom(message.rid)._id) {
+			const parentRoom = await getParentRoom(message.rid);
+			if (!parentRoom || prid !== parentRoom._id) {
 				throw new Meteor.Error('error-invalid-arguments', 'Root message room ID does not match parent room ID ', {
 					method: 'DiscussionCreation',
 				});
@@ -111,13 +111,13 @@ const create = async ({ prid, pmid, t_name: discussionName, reply, users, user, 
 	}
 
 	if (pmid) {
-		const discussionAlreadyExists = Rooms.findOne(
+		const discussionAlreadyExists = await Rooms.findOne(
 			{
 				prid,
 				pmid,
 			},
 			{
-				fields: { _id: 1 },
+				projection: { _id: 1 },
 			},
 		);
 		if (discussionAlreadyExists) {

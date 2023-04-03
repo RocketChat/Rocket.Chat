@@ -23,7 +23,6 @@ import { useStepRouting } from '../hooks/useStepRouting';
 const initialData: ContextType<typeof SetupWizardContext>['setupWizardData'] = {
 	organizationData: {
 		organizationName: '',
-		organizationType: '',
 		organizationIndustry: '',
 		organizationSize: '',
 		country: '',
@@ -125,17 +124,13 @@ const SetupWizardProvider = ({ children }: { children: ReactElement }): ReactEle
 
 	const saveOrganizationData = useCallback(async (): Promise<void> => {
 		const {
-			organizationData: { organizationName, organizationType, organizationIndustry, organizationSize, country },
+			organizationData: { organizationName, organizationIndustry, organizationSize, country },
 		} = setupWizardData;
 
 		await dispatchSettings([
 			{
 				_id: 'Country',
 				value: country,
-			},
-			{
-				_id: 'Organization_Type',
-				value: organizationType,
 			},
 			{
 				_id: 'Industry',
