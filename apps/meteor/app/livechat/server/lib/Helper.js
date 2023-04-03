@@ -5,10 +5,17 @@ import { LivechatTransferEventType } from '@rocket.chat/apps-engine/definition/l
 import { OmnichannelSourceType, DEFAULT_SLA_CONFIG } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings/src/ILivechatPriority';
 import { api, Message } from '@rocket.chat/core-services';
-import { LivechatDepartmentAgents, LivechatInquiry, LivechatRooms, LivechatDepartment, Subscriptions } from '@rocket.chat/models';
+import {
+	LivechatDepartmentAgents,
+	LivechatInquiry,
+	LivechatRooms,
+	LivechatDepartment,
+	Subscriptions,
+	Rooms,
+	Users,
+} from '@rocket.chat/models';
 
 import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
-import { Rooms, Users } from '../../../models/server';
 import { Livechat } from './Livechat';
 import { Livechat as LivechatTyped } from './LivechatTyped';
 import { RoutingManager } from './RoutingManager';
@@ -86,7 +93,7 @@ export const createLivechatRoom = async (rid, name, guest, roomInfo = {}, extraD
 		extraRoomInfo,
 	);
 
-	const roomId = Rooms.insert(room);
+	const roomId = (await Rooms.insertOne(room)).insertedId;
 
 	Apps.triggerEvent(AppEvents.IPostLivechatRoomStarted, room);
 	callbacks.run('livechat.newRoom', room);
@@ -205,7 +212,7 @@ export const createLivechatSubscription = async (rid, name, guest, agent, depart
 
 export const removeAgentFromSubscription = async (rid, { _id, username }) => {
 	const room = await LivechatRooms.findOneById(rid);
-	const user = Users.findOneById(_id);
+	const user = await Users.findOneById(_id);
 
 	await Subscriptions.removeByRoomIdAndUserId(rid, _id);
 	await Message.saveSystemMessage('ul', rid, username, { _id: user._id, username: user.username, name: user.name });
@@ -242,7 +249,7 @@ export const parseAgentCustomFields = (customFields) => {
 	);
 };
 
-export const normalizeAgent = (agentId) => {
+export const normalizeAgent = async (agentId) => {
 	if (!agentId) {
 		return;
 	}
@@ -251,7 +258,7 @@ export const normalizeAgent = (agentId) => {
 		return { hiddenInfo: true };
 	}
 
-	const agent = Users.getAgentInfo(agentId);
+	const agent = await Users.getAgentInfo(agentId);
 	const { customFields: agentCustomFields, ...extraData } = agent;
 	const customFields = parseAgentCustomFields(agentCustomFields);
 
@@ -336,7 +343,7 @@ export const forwardRoomToAgent = async (room, transferData) => {
 	logger.debug(`Forwarding room ${room._id} to agent ${transferData.userId}`);
 
 	const { userId: agentId, clientAction } = transferData;
-	const user = Users.findOneOnlineAgentById(agentId);
+	const user = await Users.findOneOnlineAgentById(agentId);
 	if (!user) {
 		logger.debug(`Agent ${agentId} is offline. Cannot forward`);
 		throw new Error('error-user-is-offline');
@@ -437,7 +444,7 @@ export const forwardRoomToDepartment = async (room, guest, transferData) => {
 	const { userId: agentId, clientAction } = transferData;
 	if (agentId) {
 		logger.debug(`Forwarding room ${room._id} to department ${departmentId} (to user ${agentId})`);
-		let user = Users.findOneOnlineAgentById(agentId);
+		let user = await Users.findOneOnlineAgentById(agentId);
 		if (!user) {
 			throw new Error('error-user-is-offline');
 		}
@@ -531,8 +538,8 @@ export const checkServiceStatus = async ({ guest, agent }) => {
 	}
 
 	const { agentId } = agent;
-	const users = Users.findOnlineAgents(agentId);
-	return users && users.count() > 0;
+	const users = await Users.countOnlineAgents(agentId);
+	return users > 0;
 };
 
 export const updateDepartmentAgents = async (departmentId, agents, departmentEnabled) => {
@@ -558,7 +565,7 @@ export const updateDepartmentAgents = async (departmentId, agents, departmentEna
 	}
 
 	for await (const agent of upsert) {
-		const agentFromDb = Users.findOneById(agent.agentId, { fields: { _id: 1, username: 1 } });
+		const agentFromDb = await Users.findOneById(agent.agentId, { projection: { _id: 1, username: 1 } });
 		if (!agentFromDb) {
 			continue;
 		}

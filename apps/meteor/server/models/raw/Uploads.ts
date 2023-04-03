@@ -66,6 +66,14 @@ export class UploadsRaw extends BaseRaw<IUpload> implements IUploadsModel {
 		});
 	}
 
+	async findOneByName(name: string): Promise<IUpload | null> {
+		return this.findOne({ name });
+	}
+
+	async findOneByRoomId(rid: string): Promise<IUpload | null> {
+		return this.findOne({ rid });
+	}
+
 	async insertFileInit(userId: string, store: string, file: { name: string }, extra: object): Promise<InsertOneResult<WithId<IUpload>>> {
 		const fileData = {
 			userId,
@@ -109,6 +117,16 @@ export class UploadsRaw extends BaseRaw<IUpload> implements IUploadsModel {
 
 	async deleteFile(fileId: string): Promise<DeleteResult> {
 		return this.deleteOne({ _id: fileId });
+	}
+
+	async updateFileNameById(fileId: string, name: string): Promise<Document | UpdateResult> {
+		const filter = { _id: fileId };
+		const update = {
+			$set: {
+				name,
+			},
+		};
+		return this.updateOne(filter, update);
 	}
 
 	findPaginatedWithoutThumbs(query: Filter<IUpload> = {}, options?: FindOptions<IUpload>): FindPaginated<FindCursor<WithId<IUpload>>> {

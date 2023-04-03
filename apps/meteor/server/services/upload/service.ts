@@ -26,9 +26,12 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 	async getFileBuffer({ userId, file }: { userId: string; file: IUpload }): Promise<Buffer> {
 		return Meteor.runAsUser(userId, () => {
 			return new Promise((resolve, reject) => {
-				FileUpload.getBuffer(file, (err: Error, buffer: Buffer) => {
+				FileUpload.getBuffer(file, (err?: Error, buffer?: false | Buffer) => {
 					if (err) {
 						return reject(err);
+					}
+					if (!(buffer instanceof Buffer)) {
+						return reject(new Error('Unknown error'));
 					}
 					return resolve(buffer);
 				});

@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Invites } from '@rocket.chat/models';
+import { Invites, Users } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
 import { settings } from '../../../settings/server';
-import { Users } from '../../../models/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RateLimiter } from '../lib';
 import { addUserToRoom } from './addUserToRoom';
@@ -28,7 +27,7 @@ export const _setUsername = async function (userId: string, u: string, fullUser:
 	if (!nameValidation.test(username)) {
 		return false;
 	}
-	const user = fullUser || Users.findOneById(userId);
+	const user = fullUser || (await Users.findOneById(userId));
 	// User already has desired username, return
 	if (user.username === username) {
 		return user;
@@ -51,26 +50,25 @@ export const _setUsername = async function (userId: string, u: string, fullUser:
 		SystemLogger.error(e);
 	}
 	// Set new username*
-	Users.setUsername(user._id, username);
+	await Users.setUsername(user._id, username);
 	user.username = username;
 	if (!previousUsername && settings.get('Accounts_SetDefaultAvatar') === true) {
 		// eslint-disable-next-line @typescript-eslint/ban-types
 		const avatarSuggestions = (await getAvatarSuggestionForUser(user)) as {};
 		let gravatar;
-		Object.keys(avatarSuggestions).some((service) => {
+		for await (const service of Object.keys(avatarSuggestions)) {
 			const avatarData = avatarSuggestions[+service as keyof typeof avatarSuggestions];
 			if (service !== 'gravatar') {
 				// eslint-disable-next-line dot-notation
-				setUserAvatar(user, avatarData['blob'], avatarData['contentType'], service);
+				await setUserAvatar(user, avatarData['blob'], avatarData['contentType'], service);
 				gravatar = null;
-				return true;
+				break;
 			}
 			gravatar = avatarData;
-			return false;
-		});
+		}
 		if (gravatar != null) {
 			// eslint-disable-next-line dot-notation
-			setUserAvatar(user, gravatar['blob'], gravatar['contentType'], 'gravatar');
+			await setUserAvatar(user, gravatar['blob'], gravatar['contentType'], 'gravatar');
 		}
 	}
 

@@ -1435,6 +1435,13 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query);
 	}
 
+	countOnlineAgents(agentId) {
+		// TODO:: Create class Agent
+		const query = queryStatusAgentOnline(agentId && { _id: agentId });
+
+		return this.col.countDocuments(query);
+	}
+
 	findOneBotAgent() {
 		// TODO:: Create class Agent
 		const query = {
@@ -1446,9 +1453,9 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query);
 	}
 
-	findOneOnlineAgentById(_id) {
+	findOneOnlineAgentById(_id, isLivechatEnabledWhenAgentIdle) {
 		// TODO: Create class Agent
-		const query = queryStatusAgentOnline({ _id });
+		const query = queryStatusAgentOnline({ _id }, isLivechatEnabledWhenAgentIdle);
 
 		return this.findOne(query);
 	}
@@ -1817,6 +1824,17 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	countActiveUsersInRoles(roles, options) {
+		roles = [].concat(roles);
+
+		const query = {
+			roles: { $in: roles },
+			active: true,
+		};
+
+		return this.col.countDocuments(query, options);
+	}
+
 	findOneByUsernameAndServiceNameIgnoringCase(username, userId, serviceName, options) {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
@@ -1842,8 +1860,8 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findOneAdmin(admin, options) {
-		const query = { admin };
+	findOneAdmin(userId, options) {
+		const query = { roles: { $in: ['admin'] }, _id: userId };
 
 		return this.findOne(query, options);
 	}
@@ -2175,6 +2193,12 @@ export class UsersRaw extends BaseRaw {
 
 	findBySAMLNameIdOrIdpSession(nameID, idpSession) {
 		return this.find({
+			$or: [{ 'services.saml.nameID': nameID }, { 'services.saml.idpSession': idpSession }],
+		});
+	}
+
+	countBySAMLNameIdOrIdpSession(nameID, idpSession) {
+		return this.col.countDocuments({
 			$or: [{ 'services.saml.nameID': nameID }, { 'services.saml.idpSession': idpSession }],
 		});
 	}
