@@ -11,7 +11,7 @@ import { callbacks } from '../../../lib/callbacks';
 
 Meteor.startup(() =>
 	onLicense('videoconference-enterprise', () => {
-		addSettings();
+		Promise.await(addSettings());
 
 		videoConfTypes.registerVideoConferenceType(
 			{ type: 'direct', status: VideoConferenceStatus.CALLING },

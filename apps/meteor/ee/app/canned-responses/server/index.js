@@ -9,5 +9,5 @@ onLicense('canned-responses', () => {
 	require('./methods/saveCannedResponse');
 	require('./methods/removeCannedResponse');
 
-	createSettings();
+	Promise.await(createSettings());
 });

@@ -13,7 +13,7 @@ import { addSettings } from '../settings/ldap';
 
 Meteor.startup(() =>
 	onLicense('ldap-enterprise', () => {
-		addSettings();
+		Promise.await(addSettings());
 
 		// Configure background sync cronjob
 		function configureBackgroundSync(jobName: string, enableSetting: string, intervalSetting: string, cb: () => void): () => void {
