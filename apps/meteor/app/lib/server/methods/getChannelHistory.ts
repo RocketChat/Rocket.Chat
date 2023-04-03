@@ -97,7 +97,7 @@ Meteor.methods<ServerMethods>({
 						inclusive,
 				  ).toArray();
 
-		const messages = normalizeMessagesForUser(records, fromUserId);
+		const messages = await normalizeMessagesForUser(records, fromUserId);
 
 		if (unreads) {
 			let unreadNotLoaded = 0;

@@ -1,13 +1,10 @@
 import os from 'os';
 import { log } from 'console';
 
-import _ from 'underscore';
-import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 import type { IRoom, IStats } from '@rocket.chat/core-typings';
 import {
 	NotificationQueue,
-	Users as UsersRaw,
 	Rooms,
 	Statistics,
 	Sessions,
@@ -25,10 +22,11 @@ import {
 	LivechatTrigger,
 	LivechatCustomField,
 	Subscriptions,
+	Users,
 } from '@rocket.chat/models';
 import { Analytics, Team, VideoConf } from '@rocket.chat/core-services';
+import { UserStatus } from '@rocket.chat/core-typings';
 
-import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { getControl } from '../../../../server/lib/migrations';
@@ -45,7 +43,7 @@ import { getMatrixFederationStatistics } from '../../../../server/services/feder
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
 const getUserLanguages = async (totalUsers: number): Promise<{ [key: string]: number }> => {
-	const result = await UsersRaw.getUserLanguages();
+	const result = await Users.getUserLanguages();
 
 	const languages: { [key: string]: number } = {
 		none: totalUsers,
@@ -97,14 +95,14 @@ export const statistics = {
 		}
 
 		// User statistics
-		statistics.totalUsers = Users.find().count();
-		statistics.activeUsers = Users.getActiveLocalUserCount();
-		statistics.activeGuests = Users.getActiveLocalGuestCount();
-		statistics.nonActiveUsers = Users.find({ active: false }).count();
-		statistics.appUsers = Users.find({ type: 'app' }).count();
-		statistics.onlineUsers = Meteor.users.find({ status: 'online' }).count();
-		statistics.awayUsers = Meteor.users.find({ status: 'away' }).count();
-		statistics.busyUsers = Meteor.users.find({ status: 'busy' }).count();
+		statistics.totalUsers = await Users.col.countDocuments({});
+		statistics.activeUsers = await Users.getActiveLocalUserCount();
+		statistics.activeGuests = await Users.getActiveLocalGuestCount();
+		statistics.nonActiveUsers = await Users.col.countDocuments({ active: false });
+		statistics.appUsers = await Users.col.countDocuments({ type: 'app' });
+		statistics.onlineUsers = await Users.col.countDocuments({ status: UserStatus.ONLINE });
+		statistics.awayUsers = await Users.col.countDocuments({ status: UserStatus.AWAY });
+		statistics.busyUsers = await Users.col.countDocuments({ status: UserStatus.BUSY });
 		statistics.totalConnectedUsers = statistics.onlineUsers + statistics.awayUsers;
 		statistics.offlineUsers = statistics.totalUsers - statistics.onlineUsers - statistics.awayUsers - statistics.busyUsers;
 		statsPms.push(
@@ -126,8 +124,8 @@ export const statistics = {
 		statistics.totalLivechatVisitors = await LivechatVisitors.col.estimatedDocumentCount();
 
 		// livechat agents
-		statistics.totalLivechatAgents = Users.findAgents().count();
-		statistics.totalLivechatManagers = await UsersRaw.col.countDocuments({ roles: 'livechat-manager' });
+		statistics.totalLivechatAgents = await Users.countAgents();
+		statistics.totalLivechatManagers = await Users.col.countDocuments({ roles: 'livechat-manager' });
 
 		// livechat enabled
 		statistics.livechatEnabled = settings.get('Livechat_enabled');
@@ -235,7 +233,7 @@ export const statistics = {
 
 		// Amount of VoIP Extensions connected
 		statsPms.push(
-			UsersRaw.col.countDocuments({ extension: { $exists: true } }).then((count) => {
+			Users.col.countDocuments({ extension: { $exists: true } }).then((count) => {
 				statistics.voipExtensions = count;
 			}),
 		);
@@ -261,29 +259,25 @@ export const statistics = {
 		);
 
 		// Message statistics
-		statistics.totalChannelMessages = _.reduce(
-			await Rooms.findByType('c', { projection: { msgs: 1 } }).toArray(),
+		statistics.totalChannelMessages = (await Rooms.findByType('c', { projection: { msgs: 1 } }).toArray()).reduce(
 			function _countChannelMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
 		);
-		statistics.totalPrivateGroupMessages = _.reduce(
-			await Rooms.findByType('p', { projection: { msgs: 1 } }).toArray(),
+		statistics.totalPrivateGroupMessages = (await Rooms.findByType('p', { projection: { msgs: 1 } }).toArray()).reduce(
 			function _countPrivateGroupMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
 		);
-		statistics.totalDirectMessages = _.reduce(
-			await Rooms.findByType('d', { projection: { msgs: 1 } }).toArray(),
+		statistics.totalDirectMessages = (await Rooms.findByType('d', { projection: { msgs: 1 } }).toArray()).reduce(
 			function _countDirectMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
 		);
-		statistics.totalLivechatMessages = _.reduce(
-			await Rooms.findByType('l', { projection: { msgs: 1 } }).toArray(),
+		statistics.totalLivechatMessages = (await Rooms.findByType('l', { projection: { msgs: 1 } }).toArray()).reduce(
 			function _countLivechatMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
@@ -303,7 +297,7 @@ export const statistics = {
 			}),
 		);
 
-		statistics.lastLogin = Users.getLastLogin();
+		statistics.lastLogin = (await Users.getLastLogin())?.toString() || '';
 		statistics.lastMessageSentAt = await Messages.getLastTimestamp();
 		statistics.lastSeenSubscription = (await Subscriptions.getLastSeen())?.toString() || '';
 
@@ -494,8 +488,8 @@ export const statistics = {
 		statistics.totalTriggeredEmails = settings.get('Triggered_Emails_Count');
 		statistics.totalRoomsWithStarred = await Messages.countRoomsWithStarredMessages({ readPreference });
 		statistics.totalRoomsWithPinned = await Messages.countRoomsWithPinnedMessages({ readPreference });
-		statistics.totalUserTOTP = await UsersRaw.findActiveUsersTOTPEnable({ readPreference }).count();
-		statistics.totalUserEmail2fa = await UsersRaw.findActiveUsersEmail2faEnable({ readPreference }).count();
+		statistics.totalUserTOTP = await Users.countActiveUsersTOTPEnable({ readPreference });
+		statistics.totalUserEmail2fa = await Users.countActiveUsersEmail2faEnable({ readPreference });
 		statistics.totalPinned = await Messages.findPinned({ readPreference }).count();
 		statistics.totalStarred = await Messages.findStarred({ readPreference }).count();
 		statistics.totalLinkInvitation = await Invites.find().count();
