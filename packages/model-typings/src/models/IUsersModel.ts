@@ -167,7 +167,11 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	findActiveUsersTOTPEnable(options: any): any;
 
+	countActiveUsersTOTPEnable(options: any): Promise<number>;
+
 	findActiveUsersEmail2faEnable(options: any): any;
+
+	countActiveUsersEmail2faEnable(options: any): Promise<number>;
 
 	findActiveByIdsOrUsernames(userIds: string[], options?: any): FindCursor<IUser>;
 
@@ -230,6 +234,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findOneBotAgent(): Promise<ILivechatAgent | null>;
 	findOneOnlineAgentById(agentId: string, isLivechatEnabledWhenAgentIdle?: boolean): Promise<ILivechatAgent | null>;
 	findAgents(): FindCursor<ILivechatAgent>;
+	countAgents(): Promise<number>;
 	getNextAgent(ignoreAgentId?: string, extraQuery?: Filter<IUser>): Promise<{ agentId: string; username: string } | null>;
 	getNextBotAgent(ignoreAgentId?: string): Promise<{ agentId: string; username: string } | null>;
 	setLivechatStatus(userId: string, status: UserStatus): Promise<UpdateResult>;
