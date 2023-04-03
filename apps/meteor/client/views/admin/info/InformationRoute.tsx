@@ -38,7 +38,10 @@ const InformationRoute = (): ReactElement => {
 				if (didCancel) {
 					return;
 				}
-				setStatistics(statistics);
+				setStatistics({
+					...statistics,
+					lastMessageSentAt: statistics.lastMessageSentAt ? new Date(statistics.lastMessageSentAt) : undefined,
+				});
 				setInstances(instancesData.instances);
 			} catch (error) {
 				setError(!!error);

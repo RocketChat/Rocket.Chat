@@ -1,7 +1,7 @@
 import { settingsRegistry } from '../../../app/settings/server';
 
 export function addSettings(): void {
-	settingsRegistry.addGroup('Device_Management', function () {
+	void settingsRegistry.addGroup('Device_Management', function () {
 		this.with(
 			{
 				enterprise: true,

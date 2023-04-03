@@ -75,11 +75,11 @@ export async function getUserCloudAccessToken(userId: string, forceNew = false, 
 		if (err.response?.data?.error) {
 			if (err.response.data.error === 'oauth_invalid_client_credentials') {
 				SystemLogger.error('Server has been unregistered from cloud');
-				removeWorkspaceRegistrationInfo();
+				await removeWorkspaceRegistrationInfo();
 			}
 
 			if (err.response.data.error === 'unauthorized') {
-				userLoggedOut(userId);
+				await userLoggedOut(userId);
 			}
 		}
 

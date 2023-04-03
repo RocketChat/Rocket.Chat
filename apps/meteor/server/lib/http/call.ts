@@ -12,7 +12,7 @@ import { fetch } from './fetch';
 const envTimeout = parseInt(process.env.HTTP_DEFAULT_TIMEOUT || '', 10);
 const defaultTimeout = !isNaN(envTimeout) ? envTimeout : 20000;
 
-export type HttpCallOptions = {
+type HttpCallOptions = {
 	content?: string | URLSearchParams;
 	data?: Record<string, any>;
 	query?: string;
@@ -174,14 +174,9 @@ function _call(httpMethod: string, url: string, options: HttpCallOptions, callba
 		.catch((err) => wrappedCallback(err));
 }
 
-export function httpCallAsync(httpMethod: string, url: string, options: HttpCallOptions, callback: callbackFn): void;
-export function httpCallAsync(httpMethod: string, url: string, callback: callbackFn): void;
-export function httpCallAsync(
-	httpMethod: string,
-	url: string,
-	optionsOrCallback: HttpCallOptions | callbackFn = {},
-	callback?: callbackFn,
-): void {
+function httpCallAsync(httpMethod: string, url: string, options: HttpCallOptions, callback: callbackFn): void;
+function httpCallAsync(httpMethod: string, url: string, callback: callbackFn): void;
+function httpCallAsync(httpMethod: string, url: string, optionsOrCallback: HttpCallOptions | callbackFn = {}, callback?: callbackFn): void {
 	// If the options argument was ommited, adjust the arguments:
 	if (!callback && typeof optionsOrCallback === 'function') {
 		return _call(httpMethod, url, {}, optionsOrCallback as callbackFn);

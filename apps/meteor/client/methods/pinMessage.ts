@@ -1,31 +1,34 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { ChatMessage, ChatSubscription } from '../../app/models/client';
 import { settings } from '../../app/settings/client';
-import { t } from '../../app/utils/client';
-import { dispatchToastMessage } from '../lib/toast';
 
-Meteor.methods({
+Meteor.methods<ServerMethods>({
 	pinMessage(message: IMessage) {
 		if (!Meteor.userId()) {
-			dispatchToastMessage({ type: 'error', message: t('error-not-authorized') });
-			return false;
+			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
+				method: 'pinMessage',
+			});
 		}
 		if (!settings.get('Message_AllowPinning')) {
-			dispatchToastMessage({ type: 'error', message: t('pinning-not-allowed') });
-			return false;
+			throw new Meteor.Error('pinning-not-allowed', 'Pinning messages is not allowed', {
+				method: 'pinMessage',
+			});
 		}
 		if (!ChatSubscription.findOne({ rid: message.rid })) {
-			dispatchToastMessage({ type: 'error', message: t('error-pinning-message') });
-			return false;
+			throw new Meteor.Error('error-pinning-message', 'Pinning messages is not allowed', {
+				method: 'pinMessage',
+			});
 		}
 		if (typeof message._id !== 'string') {
-			dispatchToastMessage({ type: 'error', message: t('error-pinning-message') });
-			return false;
+			throw new Meteor.Error('error-pinning-message', 'Invalid message', {
+				method: 'pinMessage',
+			});
 		}
-		dispatchToastMessage({ type: 'success', message: t('Message_has_been_pinned') });
-		return ChatMessage.update(
+
+		ChatMessage.update(
 			{
 				_id: message._id,
 				rid: message.rid,
@@ -36,5 +39,15 @@ Meteor.methods({
 				},
 			},
 		);
+
+		const msg = ChatMessage.findOne({ _id: message._id });
+
+		if (!msg) {
+			throw new Meteor.Error('error-pinning-message', 'Error pinning message', {
+				method: 'pinMessage',
+			});
+		}
+
+		return msg;
 	},
 });

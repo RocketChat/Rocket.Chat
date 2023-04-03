@@ -38,7 +38,7 @@ function broadcastRoleChange(type: string, roleList: Array<IRole['_id']>, user: 
 	const { _id, username } = user;
 
 	for (const roleId of roleList) {
-		api.broadcast('user.roleUpdate', {
+		void api.broadcast('user.roleUpdate', {
 			type,
 			_id: roleId,
 			u: {

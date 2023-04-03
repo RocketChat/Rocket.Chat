@@ -3,14 +3,14 @@ import { Meteor } from 'meteor/meteor';
 import { settingsRegistry } from '../../settings/server';
 
 Meteor.startup(function () {
-	settingsRegistry.add('AutoTranslate_Enabled', false, {
+	void settingsRegistry.add('AutoTranslate_Enabled', false, {
 		type: 'boolean',
 		group: 'Message',
 		section: 'AutoTranslate',
 		public: true,
 	});
 
-	settingsRegistry.add('AutoTranslate_ServiceProvider', 'google-translate', {
+	void settingsRegistry.add('AutoTranslate_ServiceProvider', 'google-translate', {
 		type: 'select',
 		group: 'Message',
 		section: 'AutoTranslate',
@@ -33,7 +33,7 @@ Meteor.startup(function () {
 		public: true,
 	});
 
-	settingsRegistry.add('AutoTranslate_GoogleAPIKey', '', {
+	void settingsRegistry.add('AutoTranslate_GoogleAPIKey', '', {
 		type: 'string',
 		group: 'Message',
 		section: 'AutoTranslate_Google',
@@ -51,7 +51,7 @@ Meteor.startup(function () {
 		],
 	});
 
-	settingsRegistry.add('AutoTranslate_DeepLAPIKey', '', {
+	void settingsRegistry.add('AutoTranslate_DeepLAPIKey', '', {
 		type: 'string',
 		group: 'Message',
 		section: 'AutoTranslate_DeepL',
@@ -69,7 +69,7 @@ Meteor.startup(function () {
 		],
 	});
 
-	settingsRegistry.add('AutoTranslate_MicrosoftAPIKey', '', {
+	void settingsRegistry.add('AutoTranslate_MicrosoftAPIKey', '', {
 		type: 'string',
 		group: 'Message',
 		section: 'AutoTranslate_Microsoft',

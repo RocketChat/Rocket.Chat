@@ -23,15 +23,6 @@ const getMessage = async (msgId: string): Promise<Serialized<IMessage> | null> =
 	}
 };
 
-export const addMessageToList = (messagesList: IMessage[], message: IMessage): IMessage[] => {
-	// checks if the message is not already on the list
-	if (!messagesList.find(({ _id }) => _id === message._id)) {
-		messagesList.push(message);
-	}
-
-	return messagesList;
-};
-
 type MessageActionGroup = 'message' | 'menu';
 export type MessageActionContext =
 	| 'message'
@@ -101,7 +92,7 @@ export const MessageAction = new (class {
 	buttons = new ReactiveVar<Record<string, MessageActionConfig>>({});
 
 	addButton(config: MessageActionConfig): void {
-		if (!config || !config.id) {
+		if (!config?.id) {
 			return;
 		}
 
