@@ -1,7 +1,7 @@
 import { Random } from '@rocket.chat/random';
-import { Messages } from '@rocket.chat/models';
+import { Messages, Rooms } from '@rocket.chat/models';
 
-import { Rooms, Users } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { transformMappedData } from '../../../../ee/lib/misc/transformMappedData';
 
 export class AppMessagesConverter {
@@ -78,12 +78,12 @@ export class AppMessagesConverter {
 		return transformMappedData(msgObj, map);
 	}
 
-	convertAppMessage(message) {
+	async convertAppMessage(message) {
 		if (!message || !message.room) {
 			return undefined;
 		}
 
-		const room = Rooms.findOneById(message.room.id);
+		const room = await Rooms.findOneById(message.room.id);
 
 		if (!room) {
 			throw new Error('Invalid room provided on the message.');

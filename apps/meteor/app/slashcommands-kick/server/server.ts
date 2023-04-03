@@ -2,8 +2,8 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
+import { Users } from '@rocket.chat/models';
 
-import { Users } from '../../models/server';
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 
@@ -15,10 +15,10 @@ slashCommands.add({
 			return;
 		}
 		const userId = Meteor.userId() as string;
-		const user = Users.findOneById(userId);
+		const user = await Users.findOneById(userId);
 		const lng = user?.language || settings.get('Language') || 'en';
 
-		const kickedUser = Users.findOneByUsernameIgnoringCase(username);
+		const kickedUser = await Users.findOneByUsernameIgnoringCase(username);
 
 		if (kickedUser == null) {
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
