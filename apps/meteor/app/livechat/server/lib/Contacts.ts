@@ -80,7 +80,7 @@ export const Contacts = {
 		for await (const cf of allowedCF) {
 			if (!customFields.hasOwnProperty(cf._id)) {
 				if (cf.required) {
-					throw new Error(TAPi18n.__('error-required-custom-field-value', { field: cf.label }));
+					throw new Error(TAPi18n.__('error-invalid-custom-field-value', { field: cf.label }));
 				}
 				continue;
 			}
@@ -88,7 +88,7 @@ export const Contacts = {
 
 			if (!cfValue || typeof cfValue !== 'string') {
 				if (cf.required) {
-					throw new Error(TAPi18n.__('error-req1-custom-field-value', { field: cf.label }));
+					throw new Error(TAPi18n.__('error-invalid-custom-field-value', { field: cf.label }));
 				}
 				continue;
 			}
