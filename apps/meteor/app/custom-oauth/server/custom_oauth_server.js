@@ -431,7 +431,7 @@ export class CustomOAuth {
 }
 
 const { updateOrCreateUserFromExternalService } = Accounts;
-Accounts.updateOrCreateUserFromExternalService = function (...args /* serviceName, serviceData, options*/) {
+Accounts.updateOrCreateUserFromExternalService = async function (...args /* serviceName, serviceData, options*/) {
 	for (const hook of BeforeUpdateOrCreateUserFromExternalService) {
 		hook.apply(this, args);
 	}
@@ -441,7 +441,7 @@ Accounts.updateOrCreateUserFromExternalService = function (...args /* serviceNam
 	const user = updateOrCreateUserFromExternalService.apply(this, args);
 	const fullUser = Users.findOneById(user.userId);
 	if (settings.get('LDAP_Update_Data_On_OAuth_Login')) {
-		LDAP.loginRequest(fullUser.username);
+		await LDAP.loginAuthenticatedUserRequest(fullUser.username);
 	}
 
 	callbacks.run('afterValidateNewOAuthUser', {
