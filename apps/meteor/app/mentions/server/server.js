@@ -1,12 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
-import { Subscriptions, Users } from '@rocket.chat/models';
+import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
 import MentionsServer from './Mentions';
 import { settings } from '../../settings/server';
 import { callbacks } from '../../../lib/callbacks';
-import { Rooms } from '../../models/server';
 
 export class MentionQueries {
 	async getUsers(usernames) {
@@ -42,8 +41,8 @@ export class MentionQueries {
 				],
 				t: { $in: ['c', 'p'] },
 			},
-			{ fields: { _id: 1, name: 1, fname: 1, federated: 1 } },
-		).fetch();
+			{ projection: { _id: 1, name: 1, fname: 1, federated: 1 } },
+		).toArray();
 	}
 }
 
