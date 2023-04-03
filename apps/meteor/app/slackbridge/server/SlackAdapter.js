@@ -1136,7 +1136,7 @@ export default class SlackAdapter {
 			Meteor.bindEnvironment(async (stream) => {
 				const fileStore = FileUpload.getStore('Uploads');
 
-				fileStore.insert(details, stream, (err, file) => {
+				await fileStore.insert(details, stream, (err, file) => {
 					if (err) {
 						throw new Error(err);
 					} else {

@@ -64,9 +64,9 @@ const defaults: Record<string, () => Partial<StoreOptions>> = {
 				return `${settings.get('uniqueID')}/uploads/${file.rid}/${file.userId}/${file._id}`;
 			},
 			onValidate: FileUpload.uploadsOnValidate,
-			onRead(_fileId: string, file: IUpload, req: http.IncomingMessage, res: http.ServerResponse) {
+			async onRead(_fileId: string, file: IUpload, req: http.IncomingMessage, res: http.ServerResponse) {
 				// Deprecated: Remove support to usf path
-				if (!FileUpload.requestCanAccessFiles(req, file)) {
+				if (!(await FileUpload.requestCanAccessFiles(req, file))) {
 					res.writeHead(403);
 					return false;
 				}
@@ -99,8 +99,8 @@ const defaults: Record<string, () => Partial<StoreOptions>> = {
 				return `${settings.get('uniqueID')}/uploads/userData/${file.userId}`;
 			},
 			onValidate: FileUpload.uploadsOnValidate,
-			onRead(_fileId: string, file: IUpload, req: http.IncomingMessage, res: http.ServerResponse) {
-				if (!FileUpload.requestCanAccessFiles(req)) {
+			async onRead(_fileId: string, file: IUpload, req: http.IncomingMessage, res: http.ServerResponse) {
+				if (!(await FileUpload.requestCanAccessFiles(req))) {
 					res.writeHead(403);
 					return false;
 				}
@@ -289,8 +289,8 @@ export const FileUpload = {
 		});
 	},
 
-	resizeImagePreview(fileParam: IUpload) {
-		let file = Promise.await(Uploads.findOneById(fileParam._id));
+	async resizeImagePreview(fileParam: IUpload) {
+		let file = await Uploads.findOneById(fileParam._id);
 		if (!file) {
 			return;
 		}
@@ -307,7 +307,7 @@ export const FileUpload = {
 		return sharp(FileUpload.getBufferSync(file)).metadata();
 	},
 
-	createImageThumbnail(fileParam: IUpload) {
+	async createImageThumbnail(fileParam: IUpload) {
 		if (!settings.get('Message_Attachments_Thumbnails_Enabled')) {
 			return;
 		}
@@ -319,7 +319,7 @@ export const FileUpload = {
 			return;
 		}
 
-		let file = Promise.await(Uploads.findOneById(fileParam._id));
+		let file = await Uploads.findOneById(fileParam._id);
 		if (!file) {
 			return;
 		}
@@ -336,7 +336,7 @@ export const FileUpload = {
 		return result;
 	},
 
-	uploadImageThumbnail(file: IUpload, buffer: Buffer, rid: string, userId: string) {
+	async uploadImageThumbnail(file: IUpload, buffer: Buffer, rid: string, userId: string) {
 		const store = FileUpload.getStore('Uploads');
 		const details = {
 			name: `thumb-${file.name}`,
@@ -401,13 +401,13 @@ export const FileUpload = {
 		);
 	},
 
-	avatarRoomOnFinishUpload(file: IUpload) {
+	async avatarRoomOnFinishUpload(file: IUpload) {
 		const userId = Meteor.userId();
-		if (userId && !Promise.await(hasPermissionAsync(userId, 'edit-room-avatar', file.rid))) {
+		if (userId && !(await hasPermissionAsync(userId, 'edit-room-avatar', file.rid))) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 	},
-	avatarsOnFinishUpload(file: IUpload) {
+	async avatarsOnFinishUpload(file: IUpload) {
 		if (file.rid) {
 			return FileUpload.avatarRoomOnFinishUpload(file);
 		}
@@ -418,23 +418,23 @@ export const FileUpload = {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 
-		if (userId && userId !== file.userId && !Promise.await(hasPermissionAsync(userId, 'edit-other-user-avatar'))) {
+		if (userId && userId !== file.userId && !(await hasPermissionAsync(userId, 'edit-other-user-avatar'))) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 		// update file record to match user's username
-		const user = Promise.await(Users.findOneById(file.userId));
+		const user = await Users.findOneById(file.userId);
 		if (!user?.username) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
-		const oldAvatar = Promise.await(Avatars.findOneByName(user.username));
+		const oldAvatar = await Avatars.findOneByName(user.username);
 		if (oldAvatar) {
-			Promise.await(Avatars.deleteFile(oldAvatar._id));
+			await Avatars.deleteFile(oldAvatar._id);
 		}
-		Promise.await(Avatars.updateFileNameById(file._id, user.username));
+		await Avatars.updateFileNameById(file._id, user.username);
 		// console.log('upload finished ->', file);
 	},
 
-	requestCanAccessFiles({ headers = {}, url }: http.IncomingMessage, file?: IUpload) {
+	async requestCanAccessFiles({ headers = {}, url }: http.IncomingMessage, file?: IUpload) {
 		if (!url || !settings.get('FileUpload_ProtectFiles')) {
 			return true;
 		}
@@ -451,27 +451,25 @@ export const FileUpload = {
 			rc_room_type = cookie.get('rc_room_type', headers.cookie);
 		}
 
-		const isAuthorizedByRoom = () =>
+		const isAuthorizedByRoom = async () =>
 			rc_room_type &&
-			Promise.await(
-				roomCoordinator
-					.getRoomDirectives(rc_room_type)
-					.canAccessUploadedFile({ rc_uid: rc_uid || '', rc_rid: rc_rid || '', rc_token: rc_token || '' }),
-			);
+			roomCoordinator
+				.getRoomDirectives(rc_room_type)
+				.canAccessUploadedFile({ rc_uid: rc_uid || '', rc_rid: rc_rid || '', rc_token: rc_token || '' });
+
 		const isAuthorizedByJWT = () =>
 			settings.get('FileUpload_Enable_json_web_token_for_files') &&
 			token &&
 			isValidJWT(token, settings.get('FileUpload_json_web_token_secret_for_files'));
 
-		if (isAuthorizedByRoom() || isAuthorizedByJWT()) {
+		if ((await isAuthorizedByRoom()) || isAuthorizedByJWT()) {
 			return true;
 		}
 
 		const uid = rc_uid || (headers['x-user-id'] as string);
 		const authToken = rc_token || (headers['x-auth-token'] as string);
 
-		const user =
-			uid && authToken && Promise.await(Users.findOneByIdAndLoginToken(uid, hashLoginToken(authToken), { projection: { _id: 1 } }));
+		const user = uid && authToken && (await Users.findOneByIdAndLoginToken(uid, hashLoginToken(authToken), { projection: { _id: 1 } }));
 
 		if (!user) {
 			return false;
@@ -481,7 +479,7 @@ export const FileUpload = {
 			return true;
 		}
 
-		const subscription = Promise.await(Subscriptions.findOneByRoomIdAndUserId(file.rid, user._id, { projection: { _id: 1 } }));
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(file.rid, user._id, { projection: { _id: 1 } });
 
 		if (subscription) {
 			return true;
@@ -634,7 +632,7 @@ type FileUploadClassOptions = {
 	model?: typeof Avatars | typeof Uploads | typeof UserDataFiles;
 	store?: Store;
 	get: (file: IUpload, req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => Promise<void>;
-	insert?: () => void;
+	insert?: () => Promise<void>;
 	getStore?: () => Store;
 	copy?: (file: IUpload, out: WriteStream | WritableStreamBuffer) => Promise<void>;
 };
@@ -650,7 +648,7 @@ export class FileUploadClass {
 
 	public copy: FileUploadClassOptions['copy'];
 
-	public insertSync: (fileData: OptionalId<IUpload>, streamOrBuffer: ReadableStream | stream | Buffer) => IUpload;
+	public insertSync: (fileData: OptionalId<IUpload>, streamOrBuffer: ReadableStream | stream | Buffer) => Promise<IUpload>;
 
 	constructor({ name, model, store, get, insert, getStore, copy }: FileUploadClassOptions) {
 		this.name = name;
@@ -697,17 +695,17 @@ export class FileUploadClass {
 		return modelsAvailable[modelName];
 	}
 
-	delete(fileId: string) {
+	async delete(fileId: string) {
 		// TODO: Remove this method
 		if (this.store?.delete) {
 			this.store.delete(fileId);
 		}
 
-		return Promise.await(this.model.deleteFile(fileId));
+		return this.model.deleteFile(fileId);
 	}
 
-	deleteById(fileId: string) {
-		const file = Promise.await(this.model.findOneById(fileId));
+	async deleteById(fileId: string) {
+		const file = await this.model.findOneById(fileId);
 
 		// eslint-disable-next-line @typescript-eslint/no-misused-promises
 		if (!file) {
@@ -719,8 +717,8 @@ export class FileUploadClass {
 		return store.delete(file._id);
 	}
 
-	deleteByName(fileName: string) {
-		const file = Promise.await(this.model.findOneByName(fileName));
+	async deleteByName(fileName: string) {
+		const file = await this.model.findOneByName(fileName);
 
 		if (!file) {
 			return;
@@ -731,8 +729,8 @@ export class FileUploadClass {
 		return store.delete(file._id);
 	}
 
-	deleteByRoomId(rid: string) {
-		const file = Promise.await(this.model.findOneByRoomId(rid));
+	async deleteByRoomId(rid: string) {
+		const file = await this.model.findOneByRoomId(rid);
 
 		if (!file) {
 			return;
@@ -773,9 +771,9 @@ export class FileUploadClass {
 		}
 	}
 
-	insert(fileData: OptionalId<IUpload>, streamOrBuffer: stream.Readable | Buffer, cb?: (err?: Error, file?: IUpload) => void) {
+	async insert(fileData: OptionalId<IUpload>, streamOrBuffer: stream.Readable | Buffer, cb?: (err?: Error, file?: IUpload) => void) {
 		if (streamOrBuffer instanceof stream) {
-			streamOrBuffer = Promise.await(streamToBuffer(streamOrBuffer));
+			streamOrBuffer = await streamToBuffer(streamOrBuffer);
 		}
 
 		if (streamOrBuffer instanceof Uint8Array) {
@@ -786,7 +784,7 @@ export class FileUploadClass {
 		// Check if the fileData matches store filter
 		const filter = this.store.getFilter();
 		if (filter?.check) {
-			Promise.await(filter.check(fileData, streamOrBuffer));
+			await filter.check(fileData, streamOrBuffer);
 		}
 
 		return this._doInsert(fileData, streamOrBuffer, cb);

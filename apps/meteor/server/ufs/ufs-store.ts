@@ -23,8 +23,8 @@ export type StoreOptions = {
 	filter?: Filter;
 	name: string;
 	onCopyError?: (err: any, fileId: string, file: IFile) => void;
-	onFinishUpload?: (file: IFile) => void;
-	onRead?: (fileId: string, file: IFile, request: any, response: any) => boolean;
+	onFinishUpload?: (file: IFile) => Promise<void>;
+	onRead?: (fileId: string, file: IFile, request: any, response: any) => Promise<boolean>;
 	onReadError?: (err: any, fileId: string, file: IFile) => void;
 	onValidate?: (file: IFile) => Promise<void>;
 	onWriteError?: (err: any, fileId: string, file: IFile) => void;
@@ -299,7 +299,7 @@ export class Store {
 
 						// Execute callback
 						if (typeof this.onFinishUpload === 'function') {
-							this.onFinishUpload.call(this, file);
+							await this.onFinishUpload.call(this, file);
 						}
 
 						// Sets the file URL when file transfer is complete,
@@ -528,7 +528,7 @@ export class Store {
 	 * Called when a file has been uploaded
 	 * @param file
 	 */
-	onFinishUpload(_file: IFile) {
+	async onFinishUpload(_file: IFile) {
 		//
 	}
 
@@ -540,7 +540,7 @@ export class Store {
 	 * @param response
 	 * @return boolean
 	 */
-	onRead(_fileId: string, _file: IFile, _request: createServer.IncomingMessage, _response: http.ServerResponse) {
+	async onRead(_fileId: string, _file: IFile, _request: createServer.IncomingMessage, _response: http.ServerResponse) {
 		return true;
 	}
 

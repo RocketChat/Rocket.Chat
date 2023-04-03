@@ -45,7 +45,7 @@ d.on('error', (err) => {
 });
 
 // Listen HTTP requests to serve files
-WebApp.connectHandlers.use((req, res, next) => {
+WebApp.connectHandlers.use(async (req, res, next) => {
 	// Quick check to see if request should be caught
 	if (!req.url?.includes(`/${UploadFS.config.storesPath}/`)) {
 		next();
@@ -225,9 +225,9 @@ WebApp.connectHandlers.use((req, res, next) => {
 			return;
 		}
 
-		d.run(() => {
+		await d.run(async () => {
 			// Check if the file can be accessed
-			if (store.onRead.call(store, fileId, file, req, res) !== false) {
+			if ((await store.onRead.call(store, fileId, file, req, res)) !== false) {
 				const options: {
 					start?: number;
 					end?: number;

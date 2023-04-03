@@ -43,7 +43,7 @@ Meteor.startup(async function () {
 
 		const rs = RocketChatFile.bufferToStream(buffer, 'utf8');
 		const fileStore = FileUpload.getStore('Avatars');
-		fileStore.deleteByName('rocket.cat');
+		await fileStore.deleteByName('rocket.cat');
 
 		const file = {
 			userId: 'rocket.cat',
@@ -51,8 +51,8 @@ Meteor.startup(async function () {
 			size: buffer.length,
 		};
 
-		Meteor.runAsUser('rocket.cat', () => {
-			fileStore.insert(file, rs, () => Users.setAvatarData('rocket.cat', 'local', null));
+		Meteor.runAsUser('rocket.cat', async () => {
+			await fileStore.insert(file, rs, () => Users.setAvatarData('rocket.cat', 'local', null));
 		});
 	}
 
