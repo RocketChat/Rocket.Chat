@@ -51,7 +51,7 @@ export class Store {
 		fileId: string,
 		store: Store,
 		callback?: (err?: Error, copyId?: string, copy?: OptionalId<IFile>, store?: Store) => void,
-	) => void;
+	) => Promise<void>;
 
 	public create: (file: OptionalId<IFile>, callback?: (err?: Error, file?: IFile) => void) => string;
 
@@ -154,7 +154,7 @@ export class Store {
 		 * @param store
 		 * @param callback
 		 */
-		this.copy = (fileId, store, callback) => {
+		this.copy = async (fileId, store, callback) => {
 			check(fileId, String);
 
 			if (!(store instanceof Store)) {
@@ -167,7 +167,7 @@ export class Store {
 			}
 			// Silently ignore the file if it does not match filter
 			const filter = store.getFilter();
-			if (filter instanceof Filter && !filter.isValid(file)) {
+			if (filter instanceof Filter && !(await filter.isValid(file))) {
 				return;
 			}
 
@@ -282,7 +282,7 @@ export class Store {
 				);
 				readStream.on(
 					'end',
-					Meteor.bindEnvironment(() => {
+					Meteor.bindEnvironment(async () => {
 						if (file.complete) {
 							return;
 						}
@@ -326,11 +326,9 @@ export class Store {
 
 						// Copy file to other stores
 						if (this.options.copyTo instanceof Array) {
-							for (let i = 0; i < this.options.copyTo.length; i += 1) {
-								const store = this.options.copyTo[i];
-
-								if (!store.getFilter() || store.getFilter()?.isValid(file)) {
-									this.copy(fileId, store);
+							for await (const store of this.options.copyTo) {
+								if (!store.getFilter() || (await store.getFilter()?.isValid(file))) {
+									await this.copy(fileId, store);
 								}
 							}
 						}

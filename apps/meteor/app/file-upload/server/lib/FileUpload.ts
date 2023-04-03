@@ -15,7 +15,7 @@ import sharp from 'sharp';
 import { Cookies } from 'meteor/ostrio:cookies';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Users, Avatars, UserDataFiles, Uploads, Settings, Subscriptions, Messages } from '@rocket.chat/models';
+import { Users, Avatars, UserDataFiles, Uploads, Settings, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
 import filesize from 'filesize';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { hashLoginToken } from '@rocket.chat/account-utils';
@@ -25,7 +25,6 @@ import type { OptionalId } from 'mongodb';
 
 import { UploadFS } from '../../../../server/ufs';
 import { settings } from '../../../settings/server';
-import Rooms from '../../../models/server/models/Rooms';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -139,18 +138,21 @@ export const FileUpload = {
 		);
 	},
 
-	validateFileUpload(file: IUpload, content?: Buffer) {
+	async validateFileUpload(file: IUpload, content?: Buffer) {
 		if (!Match.test(file.rid, String)) {
 			return false;
 		}
 
 		// livechat users can upload files but they don't have an userId
-		const user = (file.userId && Promise.await(Users.findOne(file.userId))) || undefined;
+		const user = (file.userId && (await Users.findOne(file.userId))) || undefined;
 
-		const room = Rooms.findOneById(file.rid);
+		const room = await Rooms.findOneById(file.rid);
+		if (!room) {
+			return false;
+		}
 		const directMessageAllowed = settings.get('FileUpload_Enabled_Direct');
 		const fileUploadAllowed = settings.get('FileUpload_Enabled');
-		if (user?.type !== 'app' && Promise.await(canAccessRoomAsync(room, user, file)) !== true) {
+		if (user?.type !== 'app' && (await canAccessRoomAsync(room, user, file)) !== true) {
 			return false;
 		}
 		const language = user?.language || 'en';
@@ -183,7 +185,7 @@ export const FileUpload = {
 
 		// App IPreFileUpload event hook
 		try {
-			Promise.await(Apps.triggerEvent(AppEvents.IPreFileUpload, { file, content: content || Buffer.from([]) }));
+			await Apps.triggerEvent(AppEvents.IPreFileUpload, { file, content: content || Buffer.from([]) });
 		} catch (error: any) {
 			if (error.name === AppsEngineException.name) {
 				throw new Meteor.Error('error-app-prevented', error.message);
@@ -195,12 +197,12 @@ export const FileUpload = {
 		return true;
 	},
 
-	validateAvatarUpload(file: IUpload) {
+	async validateAvatarUpload(file: IUpload) {
 		if (!Match.test(file.rid, String) && !Match.test(file.userId, String)) {
 			return false;
 		}
 
-		const user = file.uid ? Promise.await(Users.findOne(file.uid, { projection: { language: 1 } })) : null;
+		const user = file.uid ? await Users.findOne(file.uid, { projection: { language: 1 } }) : null;
 		const language = user?.language || 'en';
 
 		// accept only images
@@ -788,7 +790,7 @@ export class FileUploadClass {
 		// Check if the fileData matches store filter
 		const filter = this.store.getFilter();
 		if (filter?.check) {
-			filter.check(fileData, streamOrBuffer);
+			Promise.await(filter.check(fileData, streamOrBuffer));
 		}
 
 		return this._doInsert(fileData, streamOrBuffer, cb);

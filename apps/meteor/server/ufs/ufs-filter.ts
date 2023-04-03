@@ -8,7 +8,7 @@ type IFilterOptions = {
 	extensions?: string[];
 	minSize?: number;
 	maxSize?: number;
-	onCheck?: (file: IFile, content?: Buffer) => boolean;
+	onCheck?: (file: IFile, content?: Buffer) => Promise<boolean>;
 	invalidFileError?: () => Meteor.Error;
 	fileTooSmallError?: (fileSize: number, minFileSize: number) => Meteor.Error;
 	fileTooLargeError?: (fileSize: number, maxFileSize: number) => Meteor.Error;
@@ -60,7 +60,7 @@ export class Filter {
 		}
 	}
 
-	check(file: OptionalId<IFile>, content?: Buffer) {
+	async check(file: OptionalId<IFile>, content?: Buffer) {
 		let error = null;
 		if (typeof file !== 'object' || !file) {
 			error = this.options.invalidFileError();
@@ -88,7 +88,7 @@ export class Filter {
 			error = this.options.invalidFileType(fileTypes, allowedContentTypes);
 		}
 		// Apply custom check
-		if (typeof this.onCheck === 'function' && !this.onCheck(file, content)) {
+		if (typeof this.onCheck === 'function' && !(await this.onCheck(file, content))) {
 			error = new Meteor.Error('invalid-file', 'File does not match filter');
 		}
 
@@ -128,17 +128,17 @@ export class Filter {
 		return false;
 	}
 
-	isValid(file: IFile) {
+	async isValid(file: IFile) {
 		let result = true;
 		try {
-			this.check(file);
+			await this.check(file);
 		} catch (err) {
 			result = false;
 		}
 		return result;
 	}
 
-	onCheck(_file: OptionalId<IFile>, _content?: Buffer) {
+	async onCheck(_file: OptionalId<IFile>, _content?: Buffer) {
 		return true;
 	}
 }
