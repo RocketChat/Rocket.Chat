@@ -79,7 +79,7 @@ Meteor.methods<ServerMethods>({
 		messages.push(...afterMessages);
 
 		return {
-			messages: fromId ? normalizeMessagesForUser(messages, fromId) : messages,
+			messages: fromId ? await normalizeMessagesForUser(messages, fromId) : messages,
 			moreBefore,
 			moreAfter,
 		};
