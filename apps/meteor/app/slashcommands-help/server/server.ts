@@ -56,7 +56,7 @@ slashCommands.add({
 				command: 'Shift + Enter',
 			},
 		];
-		let msg = "";
+		let msg = '';
 		keys.forEach((key) => {
 			msg = msg + `\n` + TAPi18n.__(key.key, {
 				postProcess: 'sprintf',
@@ -65,8 +65,8 @@ slashCommands.add({
 			})
 		});
 		api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-			msg: msg
-		})
+			msg: msg,
+		});
 	},
 	options: {
 		description: 'Show_the_keyboard_shortcut_list',
