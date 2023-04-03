@@ -8,7 +8,7 @@ import type { IRoom, IStats } from '@rocket.chat/core-typings';
 import {
 	NotificationQueue,
 	Users as UsersRaw,
-	Rooms as RoomsRaw,
+	Rooms,
 	Statistics,
 	Sessions,
 	Integrations,
@@ -24,10 +24,11 @@ import {
 	Settings,
 	LivechatTrigger,
 	LivechatCustomField,
+	Subscriptions,
 } from '@rocket.chat/models';
 import { Analytics, Team, VideoConf } from '@rocket.chat/core-services';
 
-import { Users, Rooms, Subscriptions } from '../../../models/server';
+import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { Info, getMongoInfo } from '../../../utils/server';
 import { getControl } from '../../../../server/lib/migrations';
@@ -113,12 +114,12 @@ export const statistics = {
 		);
 
 		// Room statistics
-		statistics.totalRooms = Rooms.find().count();
-		statistics.totalChannels = Rooms.findByType('c').count();
-		statistics.totalPrivateGroups = Rooms.findByType('p').count();
-		statistics.totalDirect = Rooms.findByType('d').count();
-		statistics.totalLivechat = Rooms.findByType('l').count();
-		statistics.totalDiscussions = Rooms.countDiscussions();
+		statistics.totalRooms = await Rooms.col.countDocuments({});
+		statistics.totalChannels = await Rooms.findByType('c').count();
+		statistics.totalPrivateGroups = await Rooms.findByType('p').count();
+		statistics.totalDirect = await Rooms.findByType('d').count();
+		statistics.totalLivechat = await Rooms.findByType('l').count();
+		statistics.totalDiscussions = await Rooms.countDiscussions();
 		statistics.totalThreads = await Messages.countThreads();
 
 		// livechat visitors
@@ -133,7 +134,7 @@ export const statistics = {
 
 		// Count and types of omnichannel rooms
 		statsPms.push(
-			RoomsRaw.allRoomSourcesCount()
+			Rooms.allRoomSourcesCount()
 				.toArray()
 				.then((roomSources) => {
 					statistics.omnichannelSources = roomSources.map(({ _id: { id, alias, type }, count }) => ({
@@ -227,7 +228,7 @@ export const statistics = {
 
 		// Amount of VoIP Calls
 		statsPms.push(
-			RoomsRaw.countByType('v').then((count) => {
+			Rooms.countByType('v').then((count) => {
 				statistics.voipCalls = count;
 			}),
 		);
@@ -261,28 +262,28 @@ export const statistics = {
 
 		// Message statistics
 		statistics.totalChannelMessages = _.reduce(
-			Rooms.findByType('c', { fields: { msgs: 1 } }).fetch(),
+			await Rooms.findByType('c', { projection: { msgs: 1 } }).toArray(),
 			function _countChannelMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
 		);
 		statistics.totalPrivateGroupMessages = _.reduce(
-			Rooms.findByType('p', { fields: { msgs: 1 } }).fetch(),
+			await Rooms.findByType('p', { projection: { msgs: 1 } }).toArray(),
 			function _countPrivateGroupMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
 		);
 		statistics.totalDirectMessages = _.reduce(
-			Rooms.findByType('d', { fields: { msgs: 1 } }).fetch(),
+			await Rooms.findByType('d', { projection: { msgs: 1 } }).toArray(),
 			function _countDirectMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
 			0,
 		);
 		statistics.totalLivechatMessages = _.reduce(
-			Rooms.findByType('l', { fields: { msgs: 1 } }).fetch(),
+			await Rooms.findByType('l', { projection: { msgs: 1 } }).toArray(),
 			function _countLivechatMessages(num: number, room: IRoom) {
 				return num + room.msgs;
 			},
@@ -304,7 +305,7 @@ export const statistics = {
 
 		statistics.lastLogin = Users.getLastLogin();
 		statistics.lastMessageSentAt = await Messages.getLastTimestamp();
-		statistics.lastSeenSubscription = Subscriptions.getLastSeen();
+		statistics.lastSeenSubscription = (await Subscriptions.getLastSeen())?.toString() || '';
 
 		statistics.os = {
 			type: os.type(),
@@ -415,7 +416,7 @@ export const statistics = {
 		);
 
 		statistics.apps = getAppsStatistics();
-		statistics.services = getServicesStatistics();
+		statistics.services = await getServicesStatistics();
 		statistics.importer = getImporterStatistics();
 		statistics.videoConf = await VideoConf.getStatistics();
 
@@ -486,10 +487,10 @@ export const statistics = {
 		statistics.messageAuditLoad = settings.get('Message_Auditing_Panel_Load_Count');
 		statistics.joinJitsiButton = settings.get('Jitsi_Click_To_Join_Count');
 		statistics.slashCommandsJitsi = settings.get('Jitsi_Start_SlashCommands_Count');
-		statistics.totalOTRRooms = Rooms.findByCreatedOTR().count();
+		statistics.totalOTRRooms = await Rooms.findByCreatedOTR().count();
 		statistics.totalOTR = settings.get('OTR_Count');
-		statistics.totalBroadcastRooms = await RoomsRaw.findByBroadcast().count();
-		statistics.totalRoomsWithActiveLivestream = await RoomsRaw.findByActiveLivestream().count();
+		statistics.totalBroadcastRooms = await Rooms.findByBroadcast().count();
+		statistics.totalRoomsWithActiveLivestream = await Rooms.findByActiveLivestream().count();
 		statistics.totalTriggeredEmails = settings.get('Triggered_Emails_Count');
 		statistics.totalRoomsWithStarred = await Messages.countRoomsWithStarredMessages({ readPreference });
 		statistics.totalRoomsWithPinned = await Messages.countRoomsWithPinnedMessages({ readPreference });
@@ -500,7 +501,7 @@ export const statistics = {
 		statistics.totalLinkInvitation = await Invites.find().count();
 		statistics.totalLinkInvitationUses = await Invites.countUses();
 		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
-		statistics.totalE2ERooms = await RoomsRaw.findByE2E({ readPreference }).count();
+		statistics.totalE2ERooms = await Rooms.findByE2E({ readPreference }).count();
 		statistics.logoChange = Object.keys(settings.get('Assets_logo')).includes('url');
 		statistics.showHomeButton = settings.get('Layout_Show_Home_Button');
 		statistics.totalEncryptedMessages = await Messages.countByType('e2e', { readPreference });
@@ -534,7 +535,7 @@ export const statistics = {
 		// Omnichannel call stats
 		statistics.webRTCEnabled = settings.get('WebRTC_Enabled');
 		statistics.webRTCEnabledForOmnichannel = settings.get('Omnichannel_call_provider') === 'WebRTC';
-		statistics.omnichannelWebRTCCalls = await RoomsRaw.findCountOfRoomsWithActiveCalls();
+		statistics.omnichannelWebRTCCalls = await Rooms.findCountOfRoomsWithActiveCalls();
 
 		await Promise.all(statsPms).catch(log);
 

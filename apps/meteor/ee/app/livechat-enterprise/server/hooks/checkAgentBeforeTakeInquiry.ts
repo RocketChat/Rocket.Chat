@@ -42,7 +42,7 @@ const validateMaxChats = async ({
 		return agent;
 	}
 
-	if (allowAgentSkipQueue(agent)) {
+	if (await allowAgentSkipQueue(agent)) {
 		cbLogger.debug(`Callback success. Agent ${agent.agentId} can skip queue`);
 		return agent;
 	}

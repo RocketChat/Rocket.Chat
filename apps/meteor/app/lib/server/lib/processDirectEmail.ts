@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import type { ParsedMail } from 'mailparser';
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import { Subscriptions } from '@rocket.chat/models';
+import type { IMessage } from '@rocket.chat/core-typings';
+import { Messages, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
-import { Rooms, Messages, Users } from '../../../models/server';
 import { metrics } from '../../../metrics/server';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -34,20 +33,24 @@ export const processDirectEmail = Meteor.bindEnvironment(async function (email: 
 	if (msg && msg.length > (settings.get('Message_MaxAllowedSize') as number)) {
 		return;
 	}
+	const emailAdress = email.from.value[0].address;
+	if (!emailAdress) {
+		return;
+	}
 
-	const user = Users.findOneByEmailAddress(email.from.value[0].address, {
-		fields: {
+	const user = await Users.findOneByEmailAddress(emailAdress, {
+		projection: {
 			username: 1,
 			name: 1,
 		},
 	});
 
-	if (!user) {
+	if (!user?.username) {
 		// user not found
 		return;
 	}
 
-	const prevMessage = Messages.findOneById(mid, {
+	const prevMessage = await Messages.findOneById(mid, {
 		rid: 1,
 		u: 1,
 	});
@@ -57,9 +60,14 @@ export const processDirectEmail = Meteor.bindEnvironment(async function (email: 
 		return;
 	}
 
-	const roomInfo: IRoom = Rooms.findOneById(prevMessage.rid);
+	const roomInfo = await Rooms.findOneById(prevMessage.rid);
 
-	const room = Promise.await(canAccessRoomAsync(roomInfo, user));
+	if (!roomInfo) {
+		// room doesn't exist anymore
+		return;
+	}
+
+	const room = await canAccessRoomAsync(roomInfo, user);
 	if (!room) {
 		return;
 	}
@@ -87,7 +95,7 @@ export const processDirectEmail = Meteor.bindEnvironment(async function (email: 
 		return;
 	}
 
-	if ((roomInfo.muted || []).includes(user.username)) {
+	if ((roomInfo.muted || []).includes(user.username || '')) {
 		// user is muted
 		return;
 	}
@@ -96,7 +104,7 @@ export const processDirectEmail = Meteor.bindEnvironment(async function (email: 
 	if (roomInfo.ro === true) {
 		if (!(await hasPermissionAsync(user._id, 'post-readonly', roomInfo._id))) {
 			// Check if the user was manually unmuted
-			if (!(roomInfo.unmuted || []).includes(user.username)) {
+			if (!(roomInfo.unmuted || []).includes(user.username || '')) {
 				return;
 			}
 		}

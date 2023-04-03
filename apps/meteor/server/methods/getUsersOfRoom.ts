@@ -2,8 +2,8 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { Subscriptions, Rooms } from '@rocket.chat/models';
 
-import { Rooms, Subscriptions } from '../../app/models/server';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { findUsersOfRoom } from '../lib/findUsersOfRoom';
@@ -36,7 +36,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getUsersOfRoom' });
 		}
 
-		const room = Rooms.findOneById(rid, { fields: { ...roomAccessAttributes, broadcast: 1 } });
+		const room = await Rooms.findOneById(rid, { projection: { ...roomAccessAttributes, broadcast: 1 } });
 		if (!room) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getUsersOfRoom' });
 		}
@@ -50,7 +50,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		// TODO this is currently counting deactivated users
-		const total = Subscriptions.findByRoomIdWhenUsernameExists(rid).count();
+		const total = await Subscriptions.countByRoomIdWhenUsernameExists(rid);
 
 		const { cursor } = findUsersOfRoom({
 			rid,

@@ -28,9 +28,9 @@ type RoomFilters = {
 	text: string;
 };
 
-export const DEFAULT_TYPES = ['d', 'p', 'c', 'teams'];
+const DEFAULT_TYPES = ['d', 'p', 'c', 'teams'];
 
-export const roomTypeI18nMap = {
+const roomTypeI18nMap = {
 	l: 'Omnichannel',
 	c: 'Channel',
 	d: 'Direct',

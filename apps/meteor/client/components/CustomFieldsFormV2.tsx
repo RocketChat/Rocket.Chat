@@ -32,7 +32,7 @@ const FIELD_TYPES = {
 	text: TextInput,
 } as const;
 
-export const CustomField = <T extends FieldValues>({
+const CustomField = <T extends FieldValues>({
 	name,
 	type,
 	control,

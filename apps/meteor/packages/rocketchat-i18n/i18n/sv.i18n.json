@@ -5045,7 +5045,7 @@
   "Verified": "Verifierad",
   "Verify": "Verifiera",
   "Verify_your_email": "Verifiera din e-post",
-  "Verify_your_email_for_the_code_we_sent": "Titta i e-posten efter koden vi skickat",
+  "Verify_your_email_with_the_code_we_sent": "Titta i e-posten efter koden vi skickat",
   "Version": "Version",
   "Version_version": "Version __version__",
   "App_version_incompatible_tooltip": "Appen är inkompatibel med Rocket.Chat-versionen",

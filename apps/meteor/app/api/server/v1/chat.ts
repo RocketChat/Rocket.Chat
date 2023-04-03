@@ -2,6 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { Message } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
 
 import { roomAccessAttributes } from '../../../authorization/server';
@@ -13,7 +14,9 @@ import { settings } from '../../../settings/server';
 import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
+import { getPaginationItems } from '../helpers/getPaginationItems';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 
 API.v1.addRoute(
 	'chat.delete',
@@ -173,7 +176,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId, searchText } = this.queryParams;
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!roomId) {
 				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
@@ -406,7 +409,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId, since } = this.queryParams;
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!roomId) {
 				throw new Meteor.Error('The required "roomId" query param is missing.');
@@ -446,7 +449,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId } = this.queryParams;
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!roomId) {
 				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
@@ -483,8 +486,8 @@ API.v1.addRoute(
 			check(type, Match.Maybe(String));
 			check(text, Match.Maybe(String));
 
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields, query } = await this.parseJsonQuery();
 
 			if (!settings.get<boolean>('Threads_enabled')) {
 				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
@@ -529,7 +532,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { rid } = this.queryParams;
-			const { query, fields, sort } = this.parseJsonQuery();
+			const { query, fields, sort } = await this.parseJsonQuery();
 			const { updatedSince } = this.queryParams;
 			let updatedSinceDate;
 			if (!settings.get<boolean>('Threads_enabled')) {
@@ -578,8 +581,8 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { tmid } = this.queryParams;
-			const { query, fields, sort } = this.parseJsonQuery();
-			const { offset, count } = this.getPaginationItems();
+			const { query, fields, sort } = await this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!settings.get('Threads_enabled')) {
 				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
@@ -625,7 +628,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { tmid } = this.queryParams;
-			const { query, fields, sort } = this.parseJsonQuery();
+			const { query, fields, sort } = await this.parseJsonQuery();
 			const { updatedSince } = this.queryParams;
 			let updatedSinceDate;
 			if (!settings.get<boolean>('Threads_enabled')) {
@@ -704,8 +707,8 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId } = this.queryParams;
-			const { sort } = this.parseJsonQuery();
-			const { offset, count } = this.getPaginationItems();
+			const { sort } = await this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			if (!roomId) {
 				throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
 			}
@@ -730,8 +733,8 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId } = this.queryParams;
-			const { sort } = this.parseJsonQuery();
-			const { offset, count } = this.getPaginationItems();
+			const { sort } = await this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!roomId) {
 				throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
@@ -759,8 +762,8 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId, text } = this.queryParams;
-			const { sort } = this.parseJsonQuery();
-			const { offset, count } = this.getPaginationItems();
+			const { sort } = await this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!roomId) {
 				throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
@@ -776,6 +779,36 @@ API.v1.addRoute(
 				},
 			});
 			return API.v1.success(messages);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'chat.otr',
+	{ authRequired: true },
+	{
+		async post() {
+			const { roomId, type: otrType } = this.bodyParams;
+
+			if (!roomId) {
+				throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
+			}
+
+			if (!otrType) {
+				throw new Meteor.Error('error-invalid-params', 'The required "type" query param is missing.');
+			}
+
+			const { username, type } = this.user;
+
+			if (!username) {
+				throw new Meteor.Error('error-invalid-user', 'Invalid user');
+			}
+
+			await canSendMessageAsync(roomId, { uid: this.userId, username, type });
+
+			await Message.saveSystemMessage(otrType, roomId, username, { _id: this.userId, username });
+
+			return API.v1.success();
 		},
 	},
 );

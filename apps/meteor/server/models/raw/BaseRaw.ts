@@ -112,9 +112,9 @@ export abstract class BaseRaw<
 		};
 	}
 
-	private ensureDefaultFields<P>(options: FindOptions<P>): FindOptions<P>;
+	private ensureDefaultFields<P extends Document>(options: FindOptions<P>): FindOptions<P>;
 
-	private ensureDefaultFields<P>(
+	private ensureDefaultFields<P extends Document>(
 		options?: FindOptions<P> & { fields?: FindOptions<P>['projection'] },
 	): FindOptions<P> | FindOptions<T> | undefined {
 		if (options?.fields) {
@@ -142,7 +142,7 @@ export abstract class BaseRaw<
 
 	async findOneById(_id: T['_id'], options?: FindOptions<T>): Promise<T | null>;
 
-	async findOneById<P = T>(_id: T['_id'], options?: FindOptions<P>): Promise<P | null>;
+	async findOneById<P extends Document = T>(_id: T['_id'], options?: FindOptions<P>): Promise<P | null>;
 
 	async findOneById(_id: T['_id'], options?: any): Promise<T | null> {
 		const query: Filter<T> = { _id } as Filter<T>;
@@ -154,7 +154,7 @@ export abstract class BaseRaw<
 
 	async findOne(query?: Filter<T> | T['_id'], options?: undefined): Promise<T | null>;
 
-	async findOne<P = T>(query: Filter<T> | T['_id'], options?: FindOptions<P extends T ? T : P>): Promise<P | null>;
+	async findOne<P extends Document = T>(query: Filter<T> | T['_id'], options?: FindOptions<P extends T ? T : P>): Promise<P | null>;
 
 	async findOne<P>(query: Filter<T> | T['_id'] = {}, options?: any): Promise<WithId<T> | WithId<P> | null> {
 		const q: Filter<T> = typeof query === 'string' ? ({ _id: query } as Filter<T>) : query;
@@ -167,14 +167,17 @@ export abstract class BaseRaw<
 
 	find(query?: Filter<T>): FindCursor<ResultFields<T, C>>;
 
-	find<P = T>(query: Filter<T>, options?: FindOptions<P extends T ? T : P>): FindCursor<P>;
+	find<P extends Document = T>(query: Filter<T>, options?: FindOptions<P extends T ? T : P>): FindCursor<P>;
 
-	find<P>(query: Filter<T> = {}, options?: FindOptions<P extends T ? T : P>): FindCursor<WithId<P>> | FindCursor<WithId<T>> {
+	find<P extends Document>(
+		query: Filter<T> = {},
+		options?: FindOptions<P extends T ? T : P>,
+	): FindCursor<WithId<P>> | FindCursor<WithId<T>> {
 		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
 		return this.col.find(query, optionsDef);
 	}
 
-	findPaginated<P = T>(query: Filter<T>, options?: FindOptions<P extends T ? T : P>): FindPaginated<FindCursor<WithId<P>>>;
+	findPaginated<P extends Document = T>(query: Filter<T>, options?: FindOptions<P extends T ? T : P>): FindPaginated<FindCursor<WithId<P>>>;
 
 	findPaginated(query: Filter<T> = {}, options?: any): FindPaginated<FindCursor<WithId<T>>> {
 		const optionsDef = this.doNotMixInclusionAndExclusionFields(options);
@@ -339,7 +342,7 @@ export abstract class BaseRaw<
 
 	trashFindOneById(_id: TDeleted['_id']): Promise<TDeleted | null>;
 
-	trashFindOneById<P>(_id: TDeleted['_id'], options: FindOptions<P extends TDeleted ? TDeleted : P>): Promise<P | null>;
+	trashFindOneById<P extends Document>(_id: TDeleted['_id'], options: FindOptions<P extends TDeleted ? TDeleted : P>): Promise<P | null>;
 
 	async trashFindOneById<P extends TDeleted>(
 		_id: TDeleted['_id'],
@@ -369,7 +372,7 @@ export abstract class BaseRaw<
 
 	trashFindDeletedAfter(deletedAt: Date): FindCursor<WithId<TDeleted>>;
 
-	trashFindDeletedAfter<P = TDeleted>(
+	trashFindDeletedAfter<P extends Document = TDeleted>(
 		deletedAt: Date,
 		query?: Filter<TDeleted>,
 		options?: FindOptions<P extends TDeleted ? TDeleted : P>,
@@ -392,7 +395,7 @@ export abstract class BaseRaw<
 		return this.trash.find(q);
 	}
 
-	trashFindPaginatedDeletedAfter<P = TDeleted>(
+	trashFindPaginatedDeletedAfter<P extends Document = TDeleted>(
 		deletedAt: Date,
 		query?: Filter<TDeleted>,
 		options?: FindOptions<P extends TDeleted ? TDeleted : P>,

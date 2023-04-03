@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Users as UsersRaw } from '@rocket.chat/models';
 
 import { Users } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
@@ -72,7 +72,7 @@ export async function resetUserE2EEncriptionKey(uid: string, notifyUser: boolean
 	await Subscriptions.resetUserE2EKey(uid);
 
 	// Force the user to logout, so that the keys can be generated again
-	Users.unsetLoginTokens(uid);
+	await UsersRaw.unsetLoginTokens(uid);
 
 	return true;
 }
