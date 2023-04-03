@@ -1,6 +1,6 @@
 import { Users } from '@rocket.chat/models';
 
-import { settings } from '../../settings';
+import { settings } from '../../../settings/server';
 
 /**
  * @summary Get a user preference

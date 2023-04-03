@@ -5,7 +5,6 @@ import { MongoInternals } from 'meteor/mongo';
 import type { IRoom, IStats } from '@rocket.chat/core-typings';
 import {
 	NotificationQueue,
-	Users as UsersRaw,
 	Rooms as RoomsRaw,
 	Statistics,
 	Sessions,
@@ -44,7 +43,7 @@ import { getMatrixFederationStatistics } from '../../../../server/services/feder
 const wizardFields = ['Organization_Type', 'Industry', 'Size', 'Country', 'Language', 'Server_Type', 'Register_Server'];
 
 const getUserLanguages = async (totalUsers: number): Promise<{ [key: string]: number }> => {
-	const result = await UsersRaw.getUserLanguages();
+	const result = await Users.getUserLanguages();
 
 	const languages: { [key: string]: number } = {
 		none: totalUsers,
@@ -234,7 +233,7 @@ export const statistics = {
 
 		// Amount of VoIP Extensions connected
 		statsPms.push(
-			UsersRaw.col.countDocuments({ extension: { $exists: true } }).then((count) => {
+			Users.col.countDocuments({ extension: { $exists: true } }).then((count) => {
 				statistics.voipExtensions = count;
 			}),
 		);
@@ -489,8 +488,8 @@ export const statistics = {
 		statistics.totalTriggeredEmails = settings.get('Triggered_Emails_Count');
 		statistics.totalRoomsWithStarred = await Messages.countRoomsWithStarredMessages({ readPreference });
 		statistics.totalRoomsWithPinned = await Messages.countRoomsWithPinnedMessages({ readPreference });
-		statistics.totalUserTOTP = await UsersRaw.findActiveUsersTOTPEnable({ readPreference }).count();
-		statistics.totalUserEmail2fa = await UsersRaw.findActiveUsersEmail2faEnable({ readPreference }).count();
+		statistics.totalUserTOTP = await Users.countActiveUsersTOTPEnable({ readPreference });
+		statistics.totalUserEmail2fa = await Users.countActiveUsersEmail2faEnable({ readPreference });
 		statistics.totalPinned = await Messages.findPinned({ readPreference }).count();
 		statistics.totalStarred = await Messages.findStarred({ readPreference }).count();
 		statistics.totalLinkInvitation = await Invites.find().count();
