@@ -1,9 +1,9 @@
 /* eslint-disable new-cap */
-import type { Appointment } from 'ews-js-api-browser';
+import type { Appointment, IXHROptions } from 'ews-js-api-browser';
 import {
+	ExchangeCredentials,
 	ExchangeService,
 	ExchangeVersion,
-	WebCredentials,
 	Uri,
 	FolderId,
 	CalendarView,
@@ -13,13 +13,20 @@ import {
 	BasePropertySet,
 } from 'ews-js-api-browser';
 
-// #ToDo: Remove this line
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+class TokenCredentials extends ExchangeCredentials {
+	constructor(private token: string) {
+		super('', '');
+	}
 
-export const getOutlookEvents = async (date: Date, server: string, user: string, password: string): Promise<Appointment[]> => {
+	PrepareWebRequest(request: IXHROptions): void {
+		request.headers.Authorization = `Basic ${this.token}`;
+	}
+}
+
+export const getOutlookEvents = async (date: Date, server: string, token: string): Promise<Appointment[]> => {
 	const exchange = new ExchangeService(ExchangeVersion.Exchange2013);
 
-	exchange.Credentials = new WebCredentials(user, password);
+	exchange.Credentials = new TokenCredentials(token);
 	exchange.Url = new Uri(server);
 
 	const folderId = new FolderId(WellKnownFolderName.Calendar);

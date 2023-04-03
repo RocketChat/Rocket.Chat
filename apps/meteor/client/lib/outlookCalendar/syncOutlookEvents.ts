@@ -2,14 +2,14 @@
 import { APIClient } from '../../../app/utils/client/lib/RestApiClient';
 import { getOutlookEvents } from './getOutlookEvents';
 
-export const syncOutlookEvents = async (date: Date, server: string, user: string, password: string): Promise<void> => {
+export const syncOutlookEvents = async (date: Date, server: string, token: string): Promise<void> => {
 	// Load all the event that are already on the calendar for today
 	const serverEvents = await APIClient.get('/v1/calendar-events.list', {
 		date: date.toISOString().substring(0, 10),
 	});
 	const externalEvents = serverEvents.data.filter(({ externalId }) => externalId);
 
-	const appointments = await getOutlookEvents(date, server, user, password);
+	const appointments = await getOutlookEvents(date, server, token);
 	const appointmentsFound = appointments.map((appointment) => appointment.Id.UniqueId);
 
 	for await (const appointment of appointments) {
