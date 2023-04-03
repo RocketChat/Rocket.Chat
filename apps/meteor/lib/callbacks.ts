@@ -210,7 +210,7 @@ type ChainedCallbackSignatures = {
 	'livechat.leadCapture': (room: IOmnichannelRoom) => IOmnichannelRoom;
 };
 
-type Hook =
+export type Hook =
 	| keyof EventLikeCallbackSignatures
 	| keyof ChainedCallbackSignatures
 	| 'afterLeaveRoom'
