@@ -14,7 +14,7 @@ Meteor.methods({
 	 * @param storeName
 	 * @param token
 	 */
-	ufsComplete(fileId, storeName, token) {
+	async ufsComplete(fileId, storeName, token) {
 		check(fileId, String);
 		check(storeName, String);
 		check(token, String);
@@ -52,7 +52,7 @@ Meteor.methods({
 			}
 
 			// Validate file before moving to the store
-			store.validate(file);
+			await store.validate(file);
 
 			// Get the temp file
 			const rs = fs.createReadStream(tmpFile, {

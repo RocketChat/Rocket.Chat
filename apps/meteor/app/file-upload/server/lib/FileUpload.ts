@@ -34,7 +34,7 @@ import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { streamToBuffer } from './streamToBuffer';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
-import type { Store } from '../../../../server/ufs/ufs-store';
+import type { Store, StoreOptions } from '../../../../server/ufs/ufs-store';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
@@ -47,13 +47,13 @@ settings.watch('FileUpload_MaxFileSize', async function (value: string) {
 	}
 });
 
-const AvatarModel = new Mongo.Collection(Avatars.col.collectionName);
-const UserDataFilesModel = new Mongo.Collection(UserDataFiles.col.collectionName);
-const UploadsModel = new Mongo.Collection(Uploads.col.collectionName);
+const AvatarModel = new Mongo.Collection<IUpload>(Avatars.col.collectionName);
+const UserDataFilesModel = new Mongo.Collection<IUpload>(UserDataFiles.col.collectionName);
+const UploadsModel = new Mongo.Collection<IUpload>(Uploads.col.collectionName);
 
 const handlers: Record<string, FileUploadClass> = {};
 
-const defaults: Record<string, any> = {
+const defaults: Record<string, () => Partial<StoreOptions>> = {
 	Uploads() {
 		return {
 			collection: UploadsModel,
@@ -228,17 +228,17 @@ export const FileUpload = {
 
 	defaults,
 
-	avatarsOnValidate(this: Store, file: IUpload) {
+	async avatarsOnValidate(this: Store, file: IUpload) {
 		const userId = Meteor.userId();
 		if (!userId || settings.get('Accounts_AvatarResize') !== true) {
 			return;
 		}
 
 		if (file.rid) {
-			if (!Promise.await(hasPermissionAsync(userId, 'edit-room-avatar', file.rid))) {
+			if (!(await hasPermissionAsync(userId, 'edit-room-avatar', file.rid))) {
 				throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 			}
-		} else if (userId !== file.userId && !Promise.await(hasPermissionAsync(userId, 'edit-other-user-avatar'))) {
+		} else if (userId !== file.userId && !(await hasPermissionAsync(userId, 'edit-other-user-avatar'))) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 
@@ -247,47 +247,45 @@ export const FileUpload = {
 		const height = settings.get('Accounts_AvatarSize') as number;
 		const width = height as number;
 
-		Promise.await(async () => {
-			const s = sharp(tempFilePath);
-			if (settings.get('FileUpload_RotateImages') === true) {
-				s.rotate();
+		const s = sharp(tempFilePath);
+		if (settings.get('FileUpload_RotateImages') === true) {
+			s.rotate();
+		}
+
+		const metadata = await s.metadata();
+		// if (!metadata) {
+		// 	metadata = {};
+		// }
+
+		const { data, info } = await s
+			.resize({
+				width,
+				height,
+				fit: metadata.hasAlpha ? sharp.fit.contain : sharp.fit.cover,
+				background: { r: 255, g: 255, b: 255, alpha: metadata.hasAlpha ? 0 : 1 },
+			})
+			// Use buffer to get the result in memory then replace the existing file
+			// There is no option to override a file using this library
+			//
+			// BY THE SHARP DOCUMENTATION:
+			// toBuffer: Write output to a Buffer. JPEG, PNG, WebP, TIFF and RAW output are supported.
+			// By default, the format will match the input image, except GIF and SVG input which become PNG output.
+			.toBuffer({ resolveWithObject: true });
+
+		fs.writeFile(tempFilePath, data, (err) => {
+			if (err != null) {
+				SystemLogger.error(err);
 			}
 
-			const metadata = await s.metadata();
-			// if (!metadata) {
-			// 	metadata = {};
-			// }
-
-			const { data, info } = await s
-				.resize({
-					width,
-					height,
-					fit: metadata.hasAlpha ? sharp.fit.contain : sharp.fit.cover,
-					background: { r: 255, g: 255, b: 255, alpha: metadata.hasAlpha ? 0 : 1 },
-				})
-				// Use buffer to get the result in memory then replace the existing file
-				// There is no option to override a file using this library
-				//
-				// BY THE SHARP DOCUMENTATION:
-				// toBuffer: Write output to a Buffer. JPEG, PNG, WebP, TIFF and RAW output are supported.
-				// By default, the format will match the input image, except GIF and SVG input which become PNG output.
-				.toBuffer({ resolveWithObject: true });
-
-			fs.writeFile(tempFilePath, data, (err) => {
-				if (err != null) {
-					SystemLogger.error(err);
-				}
-
-				this.getCollection().direct.update(
-					{ _id: file._id },
-					{
-						$set: {
-							size: info.size,
-							...(['gif', 'svg'].includes(metadata.format || '') ? { type: 'image/png' } : {}),
-						},
+			this.getCollection().direct.update(
+				{ _id: file._id },
+				{
+					$set: {
+						size: info.size,
+						...(['gif', 'svg'].includes(metadata.format || '') ? { type: 'image/png' } : {}),
 					},
-				);
-			});
+				},
+			);
 		});
 	},
 
@@ -355,54 +353,52 @@ export const FileUpload = {
 		return store.insertSync(details, buffer);
 	},
 
-	uploadsOnValidate(this: Store, file: IUpload) {
+	async uploadsOnValidate(this: Store, file: IUpload) {
 		if (!file.type || !/^image\/((x-windows-)?bmp|p?jpeg|png|gif|webp)$/.test(file.type)) {
 			return;
 		}
 
 		const tmpFile = UploadFS.getTempFilePath(file._id);
 
-		Promise.await(async () => {
-			const s = sharp(tmpFile);
-			const metadata = await s.metadata();
-			// if (err != null) {
-			// 	SystemLogger.error(err);
-			// 	return fut.return();
-			// }
+		const s = sharp(tmpFile);
+		const metadata = await s.metadata();
+		// if (err != null) {
+		// 	SystemLogger.error(err);
+		// 	return fut.return();
+		// }
 
-			const rotated = typeof metadata.orientation !== 'undefined' && metadata.orientation !== 1;
+		const rotated = typeof metadata.orientation !== 'undefined' && metadata.orientation !== 1;
 
-			const identify = {
-				format: metadata.format,
-				size: {
-					width: rotated ? metadata.height : metadata.width,
-					height: rotated ? metadata.width : metadata.height,
-				},
-			};
+		const identify = {
+			format: metadata.format,
+			size: {
+				width: rotated ? metadata.height : metadata.width,
+				height: rotated ? metadata.width : metadata.height,
+			},
+		};
 
-			const reorientation = async () => {
-				if (!rotated || settings.get('FileUpload_RotateImages') !== true) {
-					return;
-				}
+		const reorientation = async () => {
+			if (!rotated || settings.get('FileUpload_RotateImages') !== true) {
+				return;
+			}
 
-				await s.rotate().toFile(`${tmpFile}.tmp`);
+			await s.rotate().toFile(`${tmpFile}.tmp`);
 
-				await unlink(tmpFile);
+			await unlink(tmpFile);
 
-				await rename(`${tmpFile}.tmp`, tmpFile);
-				// SystemLogger.error(err);
-			};
+			await rename(`${tmpFile}.tmp`, tmpFile);
+			// SystemLogger.error(err);
+		};
 
-			await reorientation();
+		await reorientation();
 
-			const { size } = await fs.lstatSync(tmpFile);
-			this.getCollection().direct.update(
-				{ _id: file._id },
-				{
-					$set: { size, identify },
-				},
-			);
-		});
+		const { size } = await fs.lstatSync(tmpFile);
+		this.getCollection().direct.update(
+			{ _id: file._id },
+			{
+				$set: { size, identify },
+			},
+		);
 	},
 
 	avatarRoomOnFinishUpload(file: IUpload) {

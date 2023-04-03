@@ -26,7 +26,7 @@ export type StoreOptions = {
 	onFinishUpload?: (file: IFile) => void;
 	onRead?: (fileId: string, file: IFile, request: any, response: any) => boolean;
 	onReadError?: (err: any, fileId: string, file: IFile) => void;
-	onValidate?: (file: IFile) => void;
+	onValidate?: (file: IFile) => Promise<void>;
 	onWriteError?: (err: any, fileId: string, file: IFile) => void;
 	permissions?: StorePermissions;
 	transformRead?: (
@@ -559,7 +559,7 @@ export class Store {
 	 * Called when file is being validated
 	 * @param file
 	 */
-	onValidate(_file: IFile) {
+	async onValidate(_file: IFile) {
 		//
 	}
 
@@ -628,9 +628,9 @@ export class Store {
 	 * Validates the file
 	 * @param file
 	 */
-	validate(file: IFile) {
+	async validate(file: IFile) {
 		if (typeof this.onValidate === 'function') {
-			this.onValidate(file);
+			await this.onValidate(file);
 		}
 	}
 }
