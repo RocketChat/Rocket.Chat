@@ -16,12 +16,12 @@ import { validateUserRoles } from '../../app/authorization/server/validateUserRo
 
 callbacks.add(
 	'onCreateUser',
-	({ isGuest }: { isGuest: boolean }) => {
+	async ({ isGuest }: { isGuest: boolean }) => {
 		if (isGuest) {
 			return;
 		}
 
-		if (!canAddNewUser()) {
+		if (!(await canAddNewUser())) {
 			throw new Meteor.Error('error-license-user-limit-reached', TAPi18n.__('error-license-user-limit-reached'));
 		}
 	},
@@ -31,7 +31,7 @@ callbacks.add(
 
 callbacks.add(
 	'beforeActivateUser',
-	(user: IUser) => {
+	async (user: IUser) => {
 		if (user.roles.length === 1 && user.roles.includes('guest')) {
 			return;
 		}
@@ -40,7 +40,7 @@ callbacks.add(
 			return;
 		}
 
-		if (!canAddNewUser()) {
+		if (!(await canAddNewUser())) {
 			throw new Meteor.Error('error-license-user-limit-reached', TAPi18n.__('error-license-user-limit-reached'));
 		}
 	},
@@ -71,7 +71,7 @@ callbacks.add(
 			return;
 		}
 
-		if (!canAddNewUser()) {
+		if (!(await canAddNewUser())) {
 			throw new Meteor.Error('error-license-user-limit-reached', TAPi18n.__('error-license-user-limit-reached'));
 		}
 	},
