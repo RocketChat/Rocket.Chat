@@ -1,5 +1,4 @@
 import type {
-	LivechatSendRequestData,
 	IOmnichannelRoom,
 	IOmnichannelRoomClosingInfo,
 	IUser,
@@ -354,7 +353,13 @@ class LivechatClass {
 		return true;
 	}
 
-	async sendRequest(postData: LivechatSendRequestData, attempts = 10) {
+	async sendRequest(
+		postData: {
+			type: string;
+			[key: string]: any;
+		},
+		attempts = 10,
+	) {
 		if (!attempts) {
 			return;
 		}

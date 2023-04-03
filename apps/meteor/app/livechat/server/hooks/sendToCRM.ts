@@ -127,10 +127,11 @@ async function sendToCRM(
 	const additionalData = getAdditionalFieldsByType(type, room);
 	const responseData = Object.assign(postData, additionalData);
 
-	const response = Promise.await(LivechatTyped.sendRequest(responseData));
+	const response = await LivechatTyped.sendRequest(responseData);
 
-	if (response?.data?.data) {
-		await LivechatRooms.saveCRMDataByRoomId(room._id, response.data.data);
+	if (response) {
+		const responseData = await response.text();
+		await LivechatRooms.saveCRMDataByRoomId(room._id, responseData);
 	}
 
 	return room;
