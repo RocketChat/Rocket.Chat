@@ -2,9 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Subscriptions } from '@rocket.chat/models';
-
-import { Users } from '../../app/models/server';
+import { Subscriptions, Users } from '@rocket.chat/models';
 
 type UserPreferences = {
 	language: string;
@@ -97,11 +95,11 @@ Meteor.methods<ServerMethods>({
 		} = user.settings?.preferences || {};
 
 		if (user.settings == null) {
-			Users.clearSettings(user._id);
+			await Users.clearSettings(user._id);
 		}
 
 		if (settings.language != null) {
-			Users.setLanguage(user._id, settings.language);
+			await Users.setLanguage(user._id, settings.language);
 		}
 
 		// Keep compatibility with old values
@@ -115,7 +113,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('invalid-idle-time-limit-value', 'Invalid idleTimeLimit');
 		}
 
-		Users.setPreferences(user._id, settings);
+		await Users.setPreferences(user._id, settings);
 
 		// propagate changed notification preferences
 		Meteor.defer(async () => {
