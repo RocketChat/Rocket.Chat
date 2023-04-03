@@ -15,7 +15,7 @@ import sharp from 'sharp';
 import { Cookies } from 'meteor/ostrio:cookies';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Users, Avatars, UserDataFiles, Uploads, Settings, Subscriptions, Messages } from '@rocket.chat/models';
+import { Users, Avatars, UserDataFiles, Uploads, Settings, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
 import filesize from 'filesize';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { hashLoginToken } from '@rocket.chat/account-utils';
@@ -25,7 +25,6 @@ import type { OptionalId } from 'mongodb';
 
 import { UploadFS } from '../../../../server/ufs';
 import { settings } from '../../../settings/server';
-import Rooms from '../../../models/server/models/Rooms';
 import { mime } from '../../../utils/lib/mimeTypes';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -147,7 +146,10 @@ export const FileUpload = {
 		// livechat users can upload files but they don't have an userId
 		const user = (file.userId && Promise.await(Users.findOne(file.userId))) || undefined;
 
-		const room = Rooms.findOneById(file.rid);
+		const room = Promise.await(Rooms.findOneById(file.rid));
+		if (!room) {
+			return false;
+		}
 		const directMessageAllowed = settings.get('FileUpload_Enabled_Direct');
 		const fileUploadAllowed = settings.get('FileUpload_Enabled');
 		if (user?.type !== 'app' && Promise.await(canAccessRoomAsync(room, user, file)) !== true) {
