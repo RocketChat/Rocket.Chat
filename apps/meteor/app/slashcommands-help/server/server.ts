@@ -58,14 +58,14 @@ slashCommands.add({
 		];
 		let msg = '';
 		keys.forEach((key) => {
-			msg = msg + `\n` + TAPi18n.__(key.key, {
+			msg = `${msg}\n${TAPi18n.__(key.key, {
 				postProcess: 'sprintf',
 				sprintf: [key.command],
 				lng: user?.language || settings.get('language') || 'en',
-			})
+			})}`;
 		});
-		api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-			msg: msg,
+		void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			msg,
 		});
 	},
 	options: {
