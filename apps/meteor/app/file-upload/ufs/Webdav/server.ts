@@ -2,17 +2,30 @@ import stream from 'stream';
 
 import { check } from 'meteor/check';
 import { Random } from '@rocket.chat/random';
+import type { OptionalId } from 'mongodb';
 
 import { UploadFS } from '../../../../server/ufs';
 import { WebdavClientAdapter } from '../../../webdav/server/lib/webdavClientAdapter';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-/**
- * WebDAV store
- * @param options
- * @constructor
- */
+import type { StoreOptions } from '../../../../server/ufs/ufs-store';
+import type { IFile } from '../../../../server/ufs/definition';
+
+type WebdavOptions = StoreOptions & {
+	connection: {
+		credentials: {
+			server: string;
+			username: string;
+			password: string;
+		};
+	};
+	uploadFolderPath: string;
+	getPath: (file: OptionalId<IFile>) => string;
+};
+
 class WebdavStore extends UploadFS.Store {
-	constructor(options) {
+	protected getPath: (file: IFile) => string;
+
+	constructor(options: WebdavOptions) {
 		super(options);
 		const { server, username, password } = options.connection.credentials;
 		const client = new WebdavClientAdapter(server, { username, password });
@@ -26,7 +39,7 @@ class WebdavStore extends UploadFS.Store {
 
 		client.stat(options.uploadFolderPath).catch((err) => {
 			if (err.message.toLowerCase() === 'not found') {
-				client.createDirectory(options.uploadFolderPath);
+				void client.createDirectory(options.uploadFolderPath);
 			} else if (err.message.toLowerCase() === 'unauthorized') {
 				console.warn('File upload is unauthorized to connect on Webdav, please verify your credentials');
 			}
@@ -41,6 +54,8 @@ class WebdavStore extends UploadFS.Store {
 			if (file.Webdav) {
 				return file.Webdav.path;
 			}
+
+			return file._id;
 		};
 
 		/**
@@ -71,10 +86,14 @@ class WebdavStore extends UploadFS.Store {
 		 */
 		this.delete = function (fileId, callback) {
 			const file = this.getCollection().findOne({ _id: fileId });
+			if (!file) {
+				callback?.(new Error('File no found'));
+				return;
+			}
 			client
 				.deleteFile(this.getPath(file))
 				.then((data) => {
-					callback && callback(null, data);
+					callback?.(undefined, data);
 				})
 				.catch((...args) => SystemLogger.error(...args));
 		};
@@ -86,8 +105,11 @@ class WebdavStore extends UploadFS.Store {
 		 * @param options
 		 * @return {*}
 		 */
-		this.getReadStream = function (fileId, file, options = {}) {
-			const range = {};
+		this.getReadStream = function (_fileId, file, options = {}) {
+			const range: {
+				start?: number;
+				end?: number;
+			} = {};
 
 			if (options.start != null) {
 				range.start = options.start;
@@ -105,12 +127,12 @@ class WebdavStore extends UploadFS.Store {
 		 * @param file
 		 * @return {*}
 		 */
-		this.getWriteStream = function (fileId, file) {
+		this.getWriteStream = function (_fileId, file) {
 			const writeStream = new stream.PassThrough();
 			const webdavStream = client.createWriteStream(this.getPath(file), file.size || 0);
 
 			// TODO remove timeout when UploadFS bug resolved
-			const newListenerCallback = (event, listener) => {
+			const newListenerCallback = (event: string, listener: () => any) => {
 				if (event === 'finish') {
 					process.nextTick(() => {
 						writeStream.removeListener(event, listener);

@@ -19,7 +19,7 @@ export function authenticationMiddleware(config: AuthenticationMiddlewareConfig 
 		if (userId && authToken) {
 			req.user = (await Users.findOneByIdAndLoginToken(userId as string, hashLoginToken(authToken as string))) || undefined;
 		} else {
-			req.user = oAuth2ServerAuth(req)?.user;
+			req.user = (await oAuth2ServerAuth(req))?.user;
 		}
 
 		if (config.rejectUnauthorized && !req.user) {

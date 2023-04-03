@@ -1,39 +1,36 @@
 import http from 'http';
 import https from 'https';
+import URL from 'url';
 
 import _ from 'underscore';
 
 import { settings } from '../../../settings/server';
 import { FileUploadClass, FileUpload } from '../lib/FileUpload';
-import '../../ufs/AmazonS3/server.js';
-import { SystemLogger } from '../../../../server/lib/logger/system';
+import type { S3Options } from '../../ufs/AmazonS3/server';
 
-const get = function (file, req, res) {
-	const forceDownload = typeof req.query.download !== 'undefined';
+const get: FileUploadClass['get'] = async function (this: FileUploadClass, file, req, res) {
+	const { query } = URL.parse(req.url || '', true);
+	const forceDownload = typeof query.download !== 'undefined';
 
-	this.store.getRedirectURL(file, forceDownload, (err, fileUrl) => {
-		if (err) {
-			return SystemLogger.error(err);
-		}
+	const fileUrl = await this.store.getRedirectURL(file, forceDownload);
+	if (!fileUrl || !file.store) {
+		res.end();
+		return;
+	}
 
-		if (!fileUrl) {
-			return res.end();
-		}
+	const storeType = file.store.split(':').pop();
+	if (settings.get(`FileUpload_S3_Proxy_${storeType}`)) {
+		const request = /^https:/.test(fileUrl) ? https : http;
 
-		const storeType = file.store.split(':').pop();
-		if (settings.get(`FileUpload_S3_Proxy_${storeType}`)) {
-			const request = /^https:/.test(fileUrl) ? https : http;
+		FileUpload.proxyFile(file.name || '', fileUrl, forceDownload, request, req, res);
+		return;
+	}
 
-			return FileUpload.proxyFile(file.name, fileUrl, forceDownload, request, req, res);
-		}
-
-		return FileUpload.redirectToFile(fileUrl, req, res);
-	});
+	FileUpload.redirectToFile(fileUrl, req, res);
 };
 
-const copy = function (file, out) {
-	const fileUrl = this.store.getRedirectURL(file);
-
+const copy: FileUploadClass['copy'] = async function (this: FileUploadClass, file, out) {
+	const fileUrl = await this.store.getRedirectURL(file);
 	if (fileUrl) {
 		const request = /^https:/.test(fileUrl) ? https : http;
 		request.get(fileUrl, (fileRes) => fileRes.pipe(out));
@@ -64,22 +61,22 @@ const AmazonS3UserDataFiles = new FileUploadClass({
 });
 
 const configure = _.debounce(function () {
-	const Bucket = settings.get('FileUpload_S3_Bucket');
-	const Acl = settings.get('FileUpload_S3_Acl');
-	const AWSAccessKeyId = settings.get('FileUpload_S3_AWSAccessKeyId');
-	const AWSSecretAccessKey = settings.get('FileUpload_S3_AWSSecretAccessKey');
-	const URLExpiryTimeSpan = settings.get('FileUpload_S3_URLExpiryTimeSpan');
-	const Region = settings.get('FileUpload_S3_Region');
-	const SignatureVersion = settings.get('FileUpload_S3_SignatureVersion');
-	const ForcePathStyle = settings.get('FileUpload_S3_ForcePathStyle');
+	const Bucket = settings.get<string>('FileUpload_S3_Bucket');
+	const Acl = settings.get<string>('FileUpload_S3_Acl');
+	const AWSAccessKeyId = settings.get<string>('FileUpload_S3_AWSAccessKeyId');
+	const AWSSecretAccessKey = settings.get<string>('FileUpload_S3_AWSSecretAccessKey');
+	const URLExpiryTimeSpan = settings.get<number>('FileUpload_S3_URLExpiryTimeSpan');
+	const Region = settings.get<string>('FileUpload_S3_Region');
+	const SignatureVersion = settings.get<string>('FileUpload_S3_SignatureVersion');
+	const ForcePathStyle = settings.get<boolean>('FileUpload_S3_ForcePathStyle');
 	// const CDN = RocketChat.settings.get('FileUpload_S3_CDN');
-	const BucketURL = settings.get('FileUpload_S3_BucketURL');
+	const BucketURL = settings.get<string>('FileUpload_S3_BucketURL');
 
 	if (!Bucket) {
 		return;
 	}
 
-	const config = {
+	const config: Omit<S3Options, 'name' | 'getPath'> = {
 		connection: {
 			signatureVersion: SignatureVersion,
 			s3ForcePathStyle: ForcePathStyle,

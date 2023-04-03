@@ -46,7 +46,7 @@ const sendUserDataFile = (file: IUserDataFile) => (req: IncomingMessage, res: Se
 
 	res.setHeader('Content-Security-Policy', "default-src 'none'");
 	res.setHeader('Cache-Control', 'max-age=31536000');
-	userDataStore.get(file, req, res, next);
+	void userDataStore.get(file, req, res, next);
 };
 
 const matchFileRoute = match<{ fileID: string }>('/:fileID', { decode: decodeURIComponent });
@@ -70,7 +70,7 @@ const userDataDownloadHandler = Meteor.bindEnvironment(async (req: IncomingMessa
 		return;
 	}
 
-	if (!isRequestFromOwner(req as IIncomingMessage, file.userId)) {
+	if (!file.userId || !isRequestFromOwner(req as IIncomingMessage, file.userId)) {
 		res.writeHead(403).end();
 		return;
 	}

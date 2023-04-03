@@ -276,7 +276,7 @@ export default class RocketAdapter {
 					return;
 				}
 
-				const rocketRoom = Rooms.findOneByName(slackChannel.name);
+				const rocketRoom = await Rooms.findOneByName(slackChannel.name);
 
 				if (rocketRoom || slackChannel.is_general) {
 					slackChannel.rocketId = slackChannel.is_general ? 'GENERAL' : rocketRoom._id;
@@ -322,7 +322,7 @@ export default class RocketAdapter {
 					slack.addSlackChannel(slackChannel.rocketId, slackChannelID);
 				}
 
-				addedRoom = Rooms.findOneById(slackChannel.rocketId);
+				addedRoom = await Rooms.findOneById(slackChannel.rocketId);
 			}
 		}
 

@@ -13,10 +13,13 @@ const FileSystemUploads = new FileUploadClass({
 	name: 'FileSystem:Uploads',
 	// store setted bellow
 
-	get(file, req, res) {
+	async get(file, req, res) {
+		if (!this.store || !file) {
+			return;
+		}
 		const filePath = this.store.getFilePath(file._id, file);
 
-		const options = {};
+		const options: { start?: number; end?: number } = {};
 
 		try {
 			const stat = statSync(filePath);
@@ -27,8 +30,8 @@ const FileSystemUploads = new FileUploadClass({
 			}
 
 			file = FileUpload.addExtensionTo(file);
-			res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.name)}`);
-			res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
+			res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
+			file.uploadedAt && res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 			res.setHeader('Content-Type', file.type || 'application/octet-stream');
 
 			if (req.headers.range) {
@@ -46,7 +49,7 @@ const FileSystemUploads = new FileUploadClass({
 
 			// set content-length if range has not set
 			if (!res.getHeader('Content-Length')) {
-				res.setHeader('Content-Length', file.size);
+				res.setHeader('Content-Length', file.size || 0);
 			}
 
 			this.store.getReadStream(file._id, file, options).pipe(res);
@@ -56,12 +59,15 @@ const FileSystemUploads = new FileUploadClass({
 		}
 	},
 
-	copy(file, out) {
+	async copy(file, out) {
+		if (!this.store) {
+			return;
+		}
 		const filePath = this.store.getFilePath(file._id, file);
 		try {
 			const stat = statSync(filePath);
 
-			if (stat && stat.isFile()) {
+			if (stat?.isFile()) {
 				file = FileUpload.addExtensionTo(file);
 
 				this.store.getReadStream(file._id, file).pipe(out);
@@ -76,13 +82,16 @@ const FileSystemAvatars = new FileUploadClass({
 	name: 'FileSystem:Avatars',
 	// store setted bellow
 
-	get(file, req, res) {
+	async get(file, _req, res) {
+		if (!this.store) {
+			return;
+		}
 		const filePath = this.store.getFilePath(file._id, file);
 
 		try {
 			const stat = statSync(filePath);
 
-			if (stat && stat.isFile()) {
+			if (stat?.isFile()) {
 				file = FileUpload.addExtensionTo(file);
 
 				this.store.getReadStream(file._id, file).pipe(res);
@@ -97,18 +106,21 @@ const FileSystemAvatars = new FileUploadClass({
 const FileSystemUserDataFiles = new FileUploadClass({
 	name: 'FileSystem:UserDataFiles',
 
-	get(file, req, res) {
+	async get(file, _req, res) {
+		if (!this.store) {
+			return;
+		}
 		const filePath = this.store.getFilePath(file._id, file);
 
 		try {
 			const stat = statSync(filePath);
 
-			if (stat && stat.isFile()) {
+			if (stat?.isFile()) {
 				file = FileUpload.addExtensionTo(file);
-				res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.name)}`);
-				res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
-				res.setHeader('Content-Type', file.type);
-				res.setHeader('Content-Length', file.size);
+				res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
+				file.uploadedAt && res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
+				res.setHeader('Content-Type', file.type || '');
+				res.setHeader('Content-Length', file.size || 0);
 
 				this.store.getReadStream(file._id, file).pipe(res);
 			}
@@ -128,6 +140,6 @@ settings.watch('FileUpload_FileSystemPath', function () {
 	FileSystemAvatars.store = FileUpload.configureUploadsStore('Local', FileSystemAvatars.name, options);
 	FileSystemUserDataFiles.store = FileUpload.configureUploadsStore('Local', FileSystemUserDataFiles.name, options);
 
-	// DEPRECATED backwards compatibililty (remove)
+	// DEPRECATED backwards compatibility (remove)
 	UploadFS.getStores().fileSystem = UploadFS.getStores()[FileSystemUploads.name];
 });
