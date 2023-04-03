@@ -93,6 +93,7 @@ interface EventLikeCallbackSignatures {
 	'afterValidateLogin': (login: { user: IUser }) => void;
 	'afterJoinRoom': (user: IUser, room: IRoom) => void;
 	'beforeCreateRoom': (data: { type: IRoom['t']; extraData: { encrypted: boolean } }) => void;
+	'beforeSendMessageNotifications': (message: string) => string;
 }
 
 /**
@@ -227,7 +228,6 @@ export type Hook =
 	| 'beforeGetMentions'
 	| 'beforeReadMessages'
 	| 'beforeRemoveFromRoom'
-	| 'beforeSendMessageNotifications'
 	| 'beforeValidateLogin'
 	| 'livechat.beforeForwardRoomToDepartment'
 	| 'livechat.beforeInquiry'
