@@ -1469,6 +1469,15 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query);
 	}
 
+	countAgents() {
+		// TODO: Create class Agent
+		const query = {
+			roles: 'livechat-agent',
+		};
+
+		return this.col.countDocuments(query);
+	}
+
 	// 2
 	async getNextAgent(ignoreAgentId, extraQuery) {
 		// TODO: Create class Agent

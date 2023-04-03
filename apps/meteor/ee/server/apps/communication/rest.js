@@ -820,7 +820,7 @@ export class AppsRestApi {
 					const learnMore = `${safeWorkspaceUrl}/marketplace/explore/info/${appId}/${appVersion}/requests`;
 
 					try {
-						const msgs = ({ adminUser }) => {
+						const msgs = async ({ adminUser }) => {
 							return {
 								msg: TAPi18n.__('App_Request_Admin_Message', {
 									admin_name: adminUser.name,
