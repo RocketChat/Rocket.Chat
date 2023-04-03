@@ -3,6 +3,9 @@ import { Meteor } from 'meteor/meteor';
 import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
 import { LivechatVisitors, Users, LivechatRooms, LivechatCustomField, LivechatInquiry, Rooms, Subscriptions } from '@rocket.chat/models';
 import type { ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+
+import { trim } from '../../../../lib/utils/stringUtils';
 
 type RegisterContactProps = {
 	_id?: string;
@@ -68,16 +71,37 @@ export const Contacts = {
 			}
 		}
 
-		const allowedCF = await LivechatCustomField.findByScope<Pick<ILivechatCustomField, '_id'>>('visitor', { projection: { _id: 1 } })
-			.map(({ _id }) => _id)
-			.toArray();
+		const allowedCF = LivechatCustomField.findByScope<Pick<ILivechatCustomField, '_id' | 'label' | 'regexp' | 'required'>>('visitor', {
+			projection: { _id: 1, label: 1, regexp: 1, required: 1 },
+		});
 
-		const livechatData = Object.keys(customFields)
-			.filter((key) => allowedCF.includes(key) && customFields[key] !== '' && customFields[key] !== undefined)
-			.reduce((obj: Record<string, unknown | string>, key) => {
-				obj[key] = customFields[key];
-				return obj;
-			}, {});
+		const livechatData: Record<string, string> = {};
+
+		for await (const cf of allowedCF) {
+			if (!customFields.hasOwnProperty(cf._id)) {
+				if (cf.required) {
+					throw new Error(TAPi18n.__('error-required-custom-field-value', { field: cf.label }));
+				}
+				continue;
+			}
+			const cfValue: string | undefined = trim(customFields[cf._id] || '');
+
+			if (!cfValue || typeof cfValue !== 'string') {
+				if (cf.required) {
+					throw new Error(TAPi18n.__('error-req1-custom-field-value', { field: cf.label }));
+				}
+				continue;
+			}
+
+			if (cf.regexp) {
+				const regex = new RegExp(cf.regexp);
+				if (!regex.test(cfValue)) {
+					throw new Error(TAPi18n.__('error-invalid-custom-field-value', { field: cf.label }));
+				}
+			}
+
+			livechatData[cf._id] = cfValue;
+		}
 
 		const updateUser: { $set: MatchKeysAndValues<ILivechatVisitor>; $unset?: OnlyFieldsOfType<ILivechatVisitor> } = {
 			$set: {
