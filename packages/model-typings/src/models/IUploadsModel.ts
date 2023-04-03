@@ -10,7 +10,13 @@ export interface IUploadsModel extends IBaseModel<IUpload> {
 
 	updateFileComplete(fileId: string, userId: string, file: object): Promise<UpdateResult | undefined>;
 
+	updateFileNameById(fileId: string, name: string): Promise<Document | UpdateResult>;
+
 	deleteFile(fileId: string): Promise<DeleteResult>;
 
 	findPaginatedWithoutThumbs(query: Filter<IUpload>, options?: any): FindPaginated<FindCursor<WithId<IUpload>>>;
+
+	findOneByName(name: string): Promise<IUpload | null>;
+
+	findOneByRoomId(rid: string): Promise<IUpload | null>;
 }

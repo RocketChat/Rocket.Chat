@@ -56,20 +56,19 @@ export const _setUsername = async function (userId: string, u: string, fullUser:
 		// eslint-disable-next-line @typescript-eslint/ban-types
 		const avatarSuggestions = (await getAvatarSuggestionForUser(user)) as {};
 		let gravatar;
-		Object.keys(avatarSuggestions).some((service) => {
+		for await (const service of Object.keys(avatarSuggestions)) {
 			const avatarData = avatarSuggestions[+service as keyof typeof avatarSuggestions];
 			if (service !== 'gravatar') {
 				// eslint-disable-next-line dot-notation
-				setUserAvatar(user, avatarData['blob'], avatarData['contentType'], service);
+				await setUserAvatar(user, avatarData['blob'], avatarData['contentType'], service);
 				gravatar = null;
-				return true;
+				break;
 			}
 			gravatar = avatarData;
-			return false;
-		});
+		}
 		if (gravatar != null) {
 			// eslint-disable-next-line dot-notation
-			setUserAvatar(user, gravatar['blob'], gravatar['contentType'], 'gravatar');
+			await setUserAvatar(user, gravatar['blob'], gravatar['contentType'], 'gravatar');
 		}
 	}
 
