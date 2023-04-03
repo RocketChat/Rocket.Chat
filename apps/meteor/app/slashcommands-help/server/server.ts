@@ -55,6 +55,10 @@ slashCommands.add({
 				key: 'New_line_message_compose_input',
 				command: 'Shift + Enter',
 			},
+			{
+               			key: 'Help_command',
+                		command: 'Command (or Ctrl) + /',
+			},
 		];
 		keys.forEach((key) => {
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
