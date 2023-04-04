@@ -1,9 +1,8 @@
 import _ from 'underscore';
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { Roles, Subscriptions } from '@rocket.chat/models';
+import { Roles, Subscriptions, Users } from '@rocket.chat/models';
 
 import { settings } from '../../../app/settings/server';
-import { Users } from '../../../app/models/server';
 
 export async function getRoomRoles(rid: IRoom['_id']): Promise<ISubscription[]> {
 	const options = {
@@ -25,9 +24,11 @@ export async function getRoomRoles(rid: IRoom['_id']): Promise<ISubscription[]> 
 	if (!useRealName) {
 		return subscriptions;
 	}
-	return subscriptions.map((subscription) => {
-		const user = Users.findOneById(subscription.u._id);
-		subscription.u.name = user?.name;
-		return subscription;
-	});
+	return Promise.all(
+		subscriptions.map(async (subscription) => {
+			const user = await Users.findOneById(subscription.u._id);
+			subscription.u.name = user?.name;
+			return subscription;
+		}),
+	);
 }

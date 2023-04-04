@@ -2,7 +2,6 @@ import type { RouteOptions } from 'meteor/kadira:flow-router';
 import type {
 	IRoom,
 	RoomType,
-	IRocketChatRecord,
 	IUser,
 	IMessage,
 	ReadReceipt,
@@ -112,7 +111,7 @@ export interface IRoomTypeServerDirectives {
 		notificationMessage: string,
 		userId: string,
 	) => Promise<{ title: string | undefined; text: string }>;
-	getMsgSender: (senderId: IRocketChatRecord['_id']) => Promise<IRocketChatRecord | undefined>;
+	getMsgSender: (senderId: IUser['_id']) => Promise<IUser | null>;
 	includeInRoomSearch: () => boolean;
 	getReadReceiptsExtraData: (message: IMessage) => Partial<ReadReceipt>;
 	includeInDashboard: () => boolean;

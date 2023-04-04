@@ -101,7 +101,7 @@ Meteor.startup(async function () {
 
 			if (!Users.bannerExistsById(id)) {
 				sendMessagesToAdmins({
-					msgs: ({ adminUser }) => [
+					msgs: async ({ adminUser }) => [
 						{
 							msg: `*${TAPi18n.__(title, adminUser.language)}*\n${TAPi18n.__(text, mongoVersion, adminUser.language)}\n${link}`,
 						},
