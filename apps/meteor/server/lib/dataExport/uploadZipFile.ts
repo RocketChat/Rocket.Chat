@@ -34,7 +34,7 @@ export const uploadZipFile = async (filePath: string, userId: IUser['_id'], expo
 
 	const userDataStore = FileUpload.getStore('UserDataFiles');
 
-	const file = await userDataStore.insertSync(details, stream);
+	const file = await userDataStore.insert(details, stream);
 
 	return file;
 };

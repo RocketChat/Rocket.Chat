@@ -346,7 +346,7 @@ export const FileUpload = {
 			userId,
 		};
 
-		return store.insertSync(details, buffer);
+		return store.insert(details, buffer);
 	},
 
 	async uploadsOnValidate(this: Store, file: IUpload) {
@@ -633,7 +633,7 @@ type FileUploadClassOptions = {
 	model?: typeof Avatars | typeof Uploads | typeof UserDataFiles;
 	store?: Store;
 	get: (file: IUpload, req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => Promise<void>;
-	insert?: () => Promise<void>;
+	insert?: () => Promise<IUpload>;
 	getStore?: () => Store;
 	copy?: (file: IUpload, out: WriteStream | WritableStreamBuffer) => Promise<void>;
 };
@@ -648,8 +648,6 @@ export class FileUploadClass {
 	public get: FileUploadClassOptions['get'];
 
 	public copy: FileUploadClassOptions['copy'];
-
-	public insertSync: (fileData: OptionalId<IUpload>, streamOrBuffer: ReadableStream | stream | Buffer) => Promise<IUpload>;
 
 	constructor({ name, model, store, get, insert, getStore, copy }: FileUploadClassOptions) {
 		this.name = name;
@@ -667,8 +665,6 @@ export class FileUploadClass {
 		}
 
 		FileUpload.handlers[name] = this;
-
-		this.insertSync = Meteor.wrapAsync(this.insert, this);
 	}
 
 	getStore() {
@@ -742,7 +738,7 @@ export class FileUploadClass {
 		return store.delete(file._id);
 	}
 
-	async _doInsert(fileData: OptionalId<IUpload>, streamOrBuffer: stream | Buffer, cb?: (err?: Error, file?: IUpload) => void) {
+	async _doInsert(fileData: OptionalId<IUpload>, streamOrBuffer: stream | Buffer): Promise<IUpload> {
 		const fileId = await this.store.create(fileData);
 		const tmpFile = UploadFS.getTempFilePath(fileId);
 
@@ -763,15 +759,11 @@ export class FileUploadClass {
 
 			return file;
 		} catch (e: any) {
-			if (cb) {
-				cb(e);
-			} else {
-				throw e;
-			}
+			throw e;
 		}
 	}
 
-	async insert(fileData: OptionalId<IUpload>, streamOrBuffer: stream.Readable | Buffer, cb?: (err?: Error, file?: IUpload) => void) {
+	async insert(fileData: OptionalId<IUpload>, streamOrBuffer: stream.Readable | Buffer) {
 		if (streamOrBuffer instanceof stream) {
 			streamOrBuffer = await streamToBuffer(streamOrBuffer);
 		}
@@ -787,6 +779,6 @@ export class FileUploadClass {
 			await filter.check(fileData, streamOrBuffer);
 		}
 
-		return this._doInsert(fileData, streamOrBuffer, cb);
+		return this._doInsert(fileData, streamOrBuffer);
 	}
 }

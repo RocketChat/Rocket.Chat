@@ -21,7 +21,7 @@ export class RocketChatFileAdapter {
 			const fileStore = FileUpload.getStore('Uploads');
 			// this needs to be here due to a high coupling in the third party lib that rely on the logged in user
 			await Meteor.runAsUser(internalUser._id, async () => {
-				const uploadedFile = await fileStore.insertSync(fileRecord, readableStream);
+				const uploadedFile = await fileStore.insert(fileRecord, readableStream);
 				try {
 					const { files, attachments } = await parseFileIntoMessageAttachments(uploadedFile, internalRoomId, internalUser);
 

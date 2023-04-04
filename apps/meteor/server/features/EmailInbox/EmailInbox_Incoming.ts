@@ -78,51 +78,46 @@ async function getGuestByEmail(email: string, name: string, department = ''): Pr
 	throw new Error('Error getting guest');
 }
 
-async function uploadAttachment(attachment: Attachment, rid: string, visitorToken: string): Promise<FileAttachment> {
+async function uploadAttachment(attachmentParam: Attachment, rid: string, visitorToken: string): Promise<FileAttachment> {
 	const details = {
-		name: attachment.filename,
-		size: attachment.size,
-		type: attachment.contentType,
+		name: attachmentParam.filename,
+		size: attachmentParam.size,
+		type: attachmentParam.contentType,
 		rid,
 		visitorToken,
 	};
 
 	const fileStore = FileUpload.getStore('Uploads');
-	return new Promise(async (resolve, reject) => {
-		await fileStore.insert(details, attachment.content, function (err: any, file: any) {
-			if (err) {
-				reject(new Error(err));
-			}
 
-			const url = FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`);
+	const file = await fileStore.insert(details, attachmentParam.content);
 
-			const attachment: FileAttachment = {
-				title: file.name,
-				title_link: url,
-			};
+	const url = FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`);
 
-			if (/^image\/.+/.test(file.type)) {
-				attachment.image_url = url;
-				attachment.image_type = file.type;
-				attachment.image_size = file.size;
-				attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
-			}
+	const attachment: FileAttachment = {
+		title: file.name,
+		title_link: url,
+	};
 
-			if (/^audio\/.+/.test(file.type)) {
-				attachment.audio_url = url;
-				attachment.audio_type = file.type;
-				attachment.audio_size = file.size;
-			}
+	if (/^image\/.+/.test(file.type)) {
+		attachment.image_url = url;
+		attachment.image_type = file.type;
+		attachment.image_size = file.size;
+		attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
+	}
 
-			if (/^video\/.+/.test(file.type)) {
-				attachment.video_url = url;
-				attachment.video_type = file.type;
-				attachment.video_size = file.size;
-			}
+	if (/^audio\/.+/.test(file.type)) {
+		attachment.audio_url = url;
+		attachment.audio_type = file.type;
+		attachment.audio_size = file.size;
+	}
 
-			resolve(attachment);
-		});
-	});
+	if (/^video\/.+/.test(file.type)) {
+		attachment.video_url = url;
+		attachment.video_type = file.type;
+		attachment.video_size = file.size;
+	}
+
+	return attachment;
 }
 
 export async function onEmailReceived(email: ParsedMail, inbox: string, department = ''): Promise<void> {
