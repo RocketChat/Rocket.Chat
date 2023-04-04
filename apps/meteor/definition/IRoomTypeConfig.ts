@@ -16,7 +16,6 @@ export type RoomIdentification = { rid?: IRoom['_id']; name?: string };
 export interface IRoomTypeRouteConfig {
 	name: string;
 	path?: string;
-	action?: RouteOptions['action'];
 	link?: (data: RoomIdentification) => Record<string, string>;
 }
 
@@ -58,20 +57,18 @@ export const UiTextContext = {
 
 export interface IRoomTypeConfig {
 	identifier: string;
+	route?: IRoomTypeRouteConfig;
+}
+
+export interface IRoomTypeClientConfig extends IRoomTypeConfig {
 	order: number;
 	icon?: 'hash' | 'hashtag' | 'hashtag-lock' | 'at' | 'omnichannel' | 'phone' | 'star';
-	header?: string;
 	label?: string;
-	route?: IRoomTypeRouteConfig;
-	customTemplate?: string;
-	/** @deprecated */
-	notSubscribedTpl?: 'livechatNotSubscribed';
-	/** @deprecated */
-	readOnlyTpl?: 'ComposerNotAvailablePhoneCalls' | 'livechatReadOnly';
+	action?: RouteOptions['action'];
 }
 
 export interface IRoomTypeClientDirectives {
-	config: IRoomTypeConfig;
+	config: IRoomTypeClientConfig;
 
 	allowRoomSettingChange: (room: Partial<IRoom>, setting: ValueOf<typeof RoomSettingsEnum>) => boolean;
 	allowMemberAction: (
@@ -87,7 +84,7 @@ export interface IRoomTypeClientDirectives {
 	getAvatarPath: (
 		room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid' | 'avatarETag' | 'uids' | 'usernames'> & { username?: IRoom['_id'] },
 	) => string;
-	getIcon: (room: Partial<IRoom>) => IRoomTypeConfig['icon'];
+	getIcon: (room: Partial<IRoom>) => IRoomTypeClientConfig['icon'];
 	findRoom: (identifier: string) => IRoom | undefined;
 	showJoinLink: (roomId: string) => boolean;
 	isLivechatRoom: () => boolean;

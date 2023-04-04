@@ -1,4 +1,3 @@
-import { FlowRouter } from 'meteor/kadira:flow-router';
 import type { RoomType } from '@rocket.chat/core-typings';
 
 import type {
@@ -12,26 +11,10 @@ export abstract class RoomCoordinator {
 	protected roomTypes: Record<string, { config: IRoomTypeConfig; directives: IRoomTypeClientDirectives | IRoomTypeServerDirectives }> = {};
 
 	protected validateRoomConfig(roomConfig: IRoomTypeConfig): void {
-		const { identifier, order, icon, header, label } = roomConfig;
+		const { identifier } = roomConfig;
 
 		if (typeof identifier !== 'string' || identifier.length === 0) {
 			throw new Error('The identifier must be a string.');
-		}
-
-		if (typeof order !== 'number') {
-			throw new Error('The order must be a number.');
-		}
-
-		if (icon !== undefined && (typeof icon !== 'string' || icon.length === 0)) {
-			throw new Error('The icon must be a string.');
-		}
-
-		if (header !== undefined && (typeof header !== 'string' || header.length === 0)) {
-			throw new Error('The header must be a string.');
-		}
-
-		if (label !== undefined && (typeof label !== 'string' || label.length === 0)) {
-			throw new Error('The label must be a string.');
 		}
 	}
 
@@ -68,7 +51,32 @@ export abstract class RoomCoordinator {
 			return false;
 		}
 
-		return FlowRouter.path(config.route.name, routeData);
+		if (!config.route.path) {
+			console.warn(`The route for the room type ${roomType} does not have a path`);
+			return false;
+		}
+
+		const pathDef = config.route.path;
+		const fields = routeData;
+
+		const regExp = /(:[\w\(\)\\\+\*\.\?]+)+/g;
+		let path = pathDef.replace(regExp, function (key) {
+			const firstRegexpChar = key.indexOf('(');
+			// get the content behind : and (\\d+/)
+			key = key.substring(1, firstRegexpChar > 0 ? firstRegexpChar : undefined);
+			// remove +?*
+			key = key.replace(/[\+\*\?]+/g, '');
+
+			return fields[key] || '';
+		});
+
+		path = path.replace(/\/\/+/g, '/'); // Replace multiple slashes with single slash
+
+		// remove trailing slash
+		// but keep the root slash if it's the only one
+		path = path.match(/^\/{1}$/) ? path : path.replace(/\/$/, '');
+
+		return path;
 	}
 
 	protected getRouteData(roomType: string, subData: RoomIdentification): Record<string, string> | false {

@@ -6,9 +6,16 @@ import { roomCoordinator } from '../roomCoordinator';
 
 export const ConversationRoomType = getConversationRoomType(roomCoordinator);
 
-roomCoordinator.add(ConversationRoomType, {
-	condition(): boolean {
-		// returns true only if sidebarGroupByType is not set
-		return !getUserPreference(Meteor.userId(), 'sidebarGroupByType');
+roomCoordinator.add(
+	{
+		...ConversationRoomType,
+		order: 30,
+		label: 'Conversations',
 	},
-});
+	{
+		condition(): boolean {
+			// returns true only if sidebarGroupByType is not set
+			return !getUserPreference(Meteor.userId(), 'sidebarGroupByType');
+		},
+	},
+);

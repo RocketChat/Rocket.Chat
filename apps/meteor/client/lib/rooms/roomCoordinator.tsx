@@ -16,6 +16,7 @@ import type {
 	IRoomTypeClientDirectives,
 	RoomIdentification,
 	IRoomTypeRouteConfig,
+	IRoomTypeClientConfig,
 } from '../../../definition/IRoomTypeConfig';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 import { Room, RoomNotFound, RoomProvider, RoomSkeleton } from '../../views/room';
@@ -31,7 +32,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		this.roomTypesOrder = [];
 	}
 
-	public add(roomConfig: IRoomTypeConfig, directives: Partial<IRoomTypeClientDirectives>): void {
+	public add(roomConfig: IRoomTypeClientConfig, directives: Partial<IRoomTypeClientDirectives>): void {
 		this.addRoomType(roomConfig, {
 			allowRoomSettingChange(_room: Partial<IRoom>, _setting: ValueOf<typeof RoomSettingsEnum>): boolean {
 				return true;
@@ -59,7 +60,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			getAvatarPath(_room): string {
 				return '';
 			},
-			getIcon(_room: Partial<IRoom>): IRoomTypeConfig['icon'] {
+			getIcon(_room: Partial<IRoom>): IRoomTypeClientConfig['icon'] {
 				return this.config.icon;
 			},
 			findRoom(_identifier: string): IRoom | undefined {
@@ -134,7 +135,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			});
 	}
 
-	getIcon(room: Partial<IRoom>): IRoomTypeConfig['icon'] {
+	getIcon(room: Partial<IRoom>): IRoomTypeClientConfig['icon'] {
 		return room?.t && this.getRoomDirectives(room.t).getIcon(room);
 	}
 
@@ -237,7 +238,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 	}
 
 	private validateRoute(route: IRoomTypeRouteConfig): void {
-		const { name, path, action, link } = route;
+		const { name, path, link } = route;
 
 		if (typeof name !== 'string' || name.length === 0) {
 			throw new Error('The route name must be a string.');
@@ -247,35 +248,47 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			throw new Error('The route path must be a string.');
 		}
 
-		if (!['undefined', 'function'].includes(typeof action)) {
-			throw new Error('The route action must be a function.');
-		}
-
 		if (!['undefined', 'function'].includes(typeof link)) {
 			throw new Error('The route link must be a function.');
 		}
 	}
 
-	protected validateRoomConfig(roomConfig: IRoomTypeConfig): void {
+	protected validateRoomConfig(roomConfig: IRoomTypeClientConfig): void {
 		super.validateRoomConfig(roomConfig);
 
-		if (roomConfig.route !== undefined) {
-			this.validateRoute(roomConfig.route);
+		const { route, order, icon, label, action } = roomConfig;
+
+		if (route !== undefined) {
+			this.validateRoute(route);
+		}
+
+		if (typeof order !== 'number') {
+			throw new Error('The order must be a number.');
+		}
+
+		if (icon !== undefined && (typeof icon !== 'string' || icon.length === 0)) {
+			throw new Error('The icon must be a string.');
+		}
+
+		if (label !== undefined && (typeof label !== 'string' || label.length === 0)) {
+			throw new Error('The label must be a string.');
+		}
+
+		if (!['undefined', 'function'].includes(typeof action)) {
+			throw new Error('The route action must be a function.');
 		}
 	}
 
 	private mainOrder = 1;
 
-	protected addRoomType(roomConfig: IRoomTypeConfig, directives: IRoomTypeClientDirectives): void {
+	protected addRoomType(roomConfig: IRoomTypeClientConfig, directives: IRoomTypeClientDirectives): void {
 		super.addRoomType(roomConfig, directives);
 
-		if (roomConfig.route?.path && roomConfig.route.name && roomConfig.route.action) {
-			const routeConfig = {
+		if (roomConfig.route?.path && roomConfig.route.name && roomConfig.action) {
+			return this.addRoute(roomConfig.route.path, {
 				name: roomConfig.route.name,
-				action: roomConfig.route.action,
-			};
-
-			return this.addRoute(roomConfig.route.path, routeConfig);
+				action: roomConfig.action,
+			});
 		}
 
 		if (!roomConfig.order) {
