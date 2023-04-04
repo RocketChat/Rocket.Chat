@@ -19,7 +19,7 @@
 
 We are the ultimate **Free Open Source Solution** for team communications, enabling real-time conversations between colleagues, with other companies or with your customers, regardless of how they connect with you. The result is an increase in productivity and customer satisfaction rates.
 
-Every day, tens of millions of users in over 150 countries and in organizations such as Deutsche Bahn, The US Navy, and Credit Suisse trust [Rocket.Chat](https://rocket.chat) to keep their communications completely private and secure.
+Every day, tens of millions of users in over 150 countries and in organizations such as Deutsche Bahn, The US Navy, and Credit Suisse trust Rocket.Chat to keep their communications completely private and secure.
 
 # 🚀 Product Offerings - Self Hosted and Cloud
 
@@ -49,7 +49,7 @@ Free for 30 days. Afterwards, choose between continuing to host on our secure cl
 
 You can follow these instructions to setup a dev environment:
 
-- Install **Node 14.x (LTS)** either [manually](https://nodejs.org/dist/latest-v14.x/) or using a tool like [nvm](https://github.com/creationix/nvm) or [volta](volta.sh) (recommended)
+- Install **Node 14.x (LTS)** either [manually](https://nodejs.org/dist/latest-v14.x/) or using a tool like [nvm](https://github.com/creationix/nvm) or [volta](https://volta.sh/) (recommended)
 - Install **Meteor** ([version here](apps/meteor/.meteor/release)): https://www.meteor.com/developers/install
 - Install **yarn**: https://yarnpkg.com/getting-started/install
 - Clone this repo: `git clone https://github.com/RocketChat/Rocket.Chat.git`
@@ -79,7 +79,7 @@ After initialized, you can access the server at http://localhost:4000
 
 # 💻 Installation
 
-Please see the [requirements documentation](https://docs.rocket.chat/installing-and-updating/minimum-requirements-for-using-rocket.chat) for system requirements and more information about supported operating systems.
+Please see the [requirements documentation](https://docs.rocket.chat/deploy/installing-client-apps/minimum-requirements-for-using-rocket.chat) for system requirements and more information about supported operating systems.
 Please refer to [Install Rocket.Chat](https://rocket.chat/install) to install your Rocket.Chat instance.
 
 # 📱 Mobile Apps
@@ -91,7 +91,7 @@ In addition to the web interface, you can also download Rocket.Chat clients for:
 
 You can also contribute to the Mobile open source code in [Rocket.Chat.ReactNative](https://github.com/RocketChat/Rocket.Chat.ReactNative) and check it out its [documentation](https://developer.rocket.chat/mobile-app/mobile-app-environment-setup) 
 
-# 🕹️ Apps Engine for Rocket.Chat
+# 🧩 Apps Engine for Rocket.Chat
 
 You can develop your own app that can be integrated with Rocket.Chat. We provide an [Open Source Apps Engine framework](https://developer.rocket.chat/apps-engine/rocketchat-app) increasing the world of possibilities of integrations around the Rocket.Chat ecosystem
 
@@ -101,22 +101,21 @@ You can develop your own app that can be integrated with Rocket.Chat. We provide
 - [Developer Documentation](https://developer.rocket.chat)
 - [API Documentation](https://developer.rocket.chat/reference/api)
 - [Apps Engine Development](https://developer.rocket.chat/apps-engine/rocketchat-app)
-- [See who's using Rocket.Chat](https://rocket.chat/customer-stories)
+- [See who's using Rocket.Chat](https://www.rocket.chat/customers)
 
-# 🧩 Feature Request
+# 🆕 Feature Request
 
 [Rocket.Chat/feature-requests](https://github.com/RocketChat/feature-requests) is used to track Rocket.Chat feature requests and discussions. Click [here](https://github.com/RocketChat/feature-requests/issues/new?template=feature_request.md) to open a new feature request. [Feature Request Forums](https://forums.rocket.chat/c/feature-requests/8) stores the historical archives of old feature requests (up to 2018).
 
 # 🤝 Community
 
 Join thousands of members worldwide in our [community server](https://open.rocket.chat).
-Join [#Support](https://open.rocket.chat/channel/support) for help from our community with general Rocket.Chat questions.
-Join [#support](https://open.rocket.chat/channel/support) and [#general](https://open.rocket.chat/channel/general) for needing help from the community to develop new features.
+Join [#support](https://open.rocket.chat/channel/support) and [#general](https://open.rocket.chat/channel/general) for help from the community.
 Talk with Rocket.Chat's leadership at the [Community Open Call](https://www.youtube.com/playlist?list=PLee3gqXJQrFVaxryc0OKTKc92yqQX9U-5), held monthly. Join us for [the next Community Open Call](https://app.livestorm.co/rocket-chat/community-open-call?type=detailed).
 
 # 👥 Contributions
 
-Rocket.Chat is an open source project and we are very happy to accept community contributions. Please refer to the [How can I help?](https://docs.rocket.chat/contributors/how-can-i-help) for more details.
+Rocket.Chat is an open source project and we are very happy to accept community contributions. Please refer to the [How can I help?](https://docs.rocket.chat/contribute-to-rocket.chat/how-can-i-help) page for more details.
 
 
 ## 💼 Become a Rocketeer
@@ -137,5 +136,3 @@ Any other questions, reach out to us at [our website](https://rocket.chat/contac
 ## 🗒️ Credits
 
 - Emoji provided graciously by [JoyPixels](https://www.joypixels.com).
-- Testing with [BrowserStack](https://www.browserstack.com).
-- Translations done with [LingoHub](https://lingohub.com).
