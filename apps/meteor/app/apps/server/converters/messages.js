@@ -41,7 +41,7 @@ export class AppMessagesConverter {
 				delete message.rid;
 				return result;
 			},
-			editor: (message) => {
+			editor: async (message) => {
 				const { editedBy } = message;
 				delete message.editedBy;
 
@@ -56,12 +56,12 @@ export class AppMessagesConverter {
 				delete message.attachments;
 				return result;
 			},
-			sender: (message) => {
+			sender: async (message) => {
 				if (!message.u || !message.u._id) {
 					return undefined;
 				}
 
-				let user = this.orch.getConverters().get('users').convertById(message.u._id);
+				let user = await this.orch.getConverters().get('users').convertById(message.u._id);
 
 				// When the sender of the message is a Guest (livechat) and not a user
 				if (!user) {

@@ -153,7 +153,7 @@ export class AppRoomsConverter {
 				delete room.t;
 				return result;
 			},
-			creator: (room) => {
+			creator: async (room) => {
 				const { u } = room;
 
 				if (!u) {
@@ -186,7 +186,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('departments').convertById(departmentId);
 			},
-			servedBy: (room) => {
+			servedBy: async (room) => {
 				const { servedBy } = room;
 
 				if (!servedBy) {
@@ -197,7 +197,7 @@ export class AppRoomsConverter {
 
 				return this.orch.getConverters().get('users').convertById(servedBy._id);
 			},
-			responseBy: (room) => {
+			responseBy: async (room) => {
 				const { responseBy } = room;
 
 				if (!responseBy) {

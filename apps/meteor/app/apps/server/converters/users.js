@@ -6,8 +6,8 @@ export class AppUsersConverter {
 		this.orch = orch;
 	}
 
-	convertById(userId) {
-		const user = Users.findOneById(userId);
+	async convertById(userId) {
+		const user = await Users.findOneById(userId);
 
 		return this.convertToApp(user);
 	}
