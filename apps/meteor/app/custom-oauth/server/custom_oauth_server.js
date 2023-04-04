@@ -5,10 +5,10 @@ import { OAuth } from 'meteor/oauth';
 import { HTTP } from 'meteor/http';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
+import { Users } from '@rocket.chat/models';
 
 import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
 import { Logger } from '../../logger/server';
-import { Users } from '../../models/server';
 import { isURL } from '../../../lib/utils/isURL';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
 import { callbacks } from '../../../lib/callbacks';
@@ -333,9 +333,9 @@ export class CustomOAuth {
 				let user = undefined;
 
 				if (this.keyField === 'username') {
-					user = Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceData._id, serviceName);
+					user = Promise.await(Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceData._id, serviceName));
 				} else if (this.keyField === 'email') {
-					user = Users.findOneByEmailAddressAndServiceNameIgnoringCase(serviceData.email, serviceData._id, serviceName);
+					user = Promise.await(Users.findOneByEmailAddressAndServiceNameIgnoringCase(serviceData.email, serviceData._id, serviceName));
 				}
 
 				if (!user) {
@@ -368,7 +368,7 @@ export class CustomOAuth {
 					},
 				};
 
-				Users.update({ _id: user._id }, update);
+				Promise.await(Users.update({ _id: user._id }, update));
 			}
 		});
 
@@ -441,7 +441,7 @@ Accounts.updateOrCreateUserFromExternalService = function (...args /* serviceNam
 	callbacks.run('afterValidateNewOAuthUser', {
 		identity: serviceData,
 		serviceName,
-		user: Users.findOneById(user.userId),
+		user: Promise.await(Users.findOneById(user.userId)),
 	});
 
 	return user;
