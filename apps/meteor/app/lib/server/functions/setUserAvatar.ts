@@ -14,23 +14,23 @@ export function setUserAvatar(
 	contentType: string,
 	service: 'rest',
 	etag?: string,
-): void;
+): Promise<void>;
 export function setUserAvatar(
 	user: Pick<IUser, '_id' | 'username'>,
 	dataURI: string,
 	contentType?: string,
 	service?: 'initials' | 'url' | 'rest' | string,
 	etag?: string,
-): void;
-export function setUserAvatar(
+): Promise<void>;
+export async function setUserAvatar(
 	user: Pick<IUser, '_id' | 'username'>,
 	dataURI: string | Buffer,
 	contentType: string | undefined,
 	service?: 'initials' | 'url' | 'rest' | string,
 	etag?: string,
-): void {
+): Promise<void> {
 	if (service === 'initials') {
-		Users.setAvatarData(user._id, service, null);
+		await Users.setAvatarData(user._id, service, null);
 		return;
 	}
 
@@ -104,7 +104,7 @@ export function setUserAvatar(
 	);
 
 	const fileStore = FileUpload.getStore('Avatars');
-	fileStore.deleteByName(user.username);
+	user.username && fileStore.deleteByName(user.username);
 
 	const file = {
 		userId: user._id,
@@ -114,10 +114,10 @@ export function setUserAvatar(
 
 	const result = fileStore.insertSync(file, buffer);
 
-	const avatarETag = etag || result?.etag || null;
+	const avatarETag = etag || result?.etag || '';
 
-	Meteor.setTimeout(function () {
-		Users.setAvatarData(user._id, service, avatarETag);
+	Meteor.setTimeout(async function () {
+		await Users.setAvatarData(user._id, service, avatarETag);
 		void api.broadcast('user.avatarUpdate', {
 			username: user.username,
 			avatarETag,

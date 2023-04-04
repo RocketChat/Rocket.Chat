@@ -1,7 +1,6 @@
 import { Random } from '@rocket.chat/random';
-import { LivechatVisitors, ReadReceipts, Messages, Rooms, Subscriptions } from '@rocket.chat/models';
+import { LivechatVisitors, ReadReceipts, Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
-import { Users } from '../../../../app/models/server';
 import { settings } from '../../../../app/settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -47,7 +46,7 @@ export const ReadReceipt = {
 
 		this.storeReadReceipts(await Messages.findVisibleUnreadMessagesByRoomAndDate(roomId, userLastSeen).toArray(), roomId, userId);
 
-		updateMessages(room);
+		await updateMessages(room);
 	},
 
 	async markMessageAsReadBySender(message, { _id: roomId, t }, userId) {
@@ -60,7 +59,8 @@ export const ReadReceipt = {
 		}
 
 		// mark message as read if the sender is the only one in the room
-		if ((await Subscriptions.findByRoomIdAndNotUserId(roomId, userId, { fields: { _id: 1 } }).count()) === 0) {
+		const isUserAlone = (await Subscriptions.countByRoomIdAndNotUserId(roomId, userId)) === 0;
+		if (isUserAlone) {
 			await Messages.setAsReadById(message._id);
 		}
 
@@ -115,7 +115,7 @@ export const ReadReceipt = {
 				...receipt,
 				user: receipt.token
 					? await LivechatVisitors.getVisitorByToken(receipt.token, { projection: { username: 1, name: 1 } })
-					: Users.findOneById(receipt.userId, { fields: { username: 1, name: 1 } }),
+					: await Users.findOneById(receipt.userId, { projection: { username: 1, name: 1 } }),
 			})),
 		);
 	},

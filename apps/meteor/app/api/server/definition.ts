@@ -139,19 +139,15 @@ export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern,
 			? T
 			: Partial<OperationParams<TMethod, TPathPattern>>
 		: // TODO remove the extra (optionals) params when all the endpoints that use these are typed correctly
-		  Partial<OperationParams<TMethod, TPathPattern>> & {
-				userId?: string;
-				username?: string;
-				user?: string;
-		  };
+		  Partial<OperationParams<TMethod, TPathPattern>>;
 	readonly request: Request;
 
 	readonly queryOperations: TOptions extends { queryOperations: infer T } ? T : never;
-	parseJsonQuery(): {
+	parseJsonQuery(): Promise<{
 		sort: Record<string, 1 | -1>;
 		fields: Record<string, 0 | 1>;
 		query: Record<string, unknown>;
-	};
+	}>;
 } & (TOptions extends { authRequired: true }
 	? {
 			user: IUser;
@@ -174,7 +170,11 @@ export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> 
 	| SuccessResult<OperationResult<TMethod, TPathPattern>>
 	| FailureResult<unknown, unknown, unknown, unknown>
 	| UnauthorizedResult<unknown>
-	| NotFoundResult;
+	| NotFoundResult
+	| {
+			statusCode: number;
+			body: unknown;
+	  };
 
 export type Action<TMethod extends Method, TPathPattern extends PathPattern, TOptions> =
 	| ((this: ActionThis<TMethod, TPathPattern, TOptions>) => Promise<ResultFor<TMethod, TPathPattern>>)

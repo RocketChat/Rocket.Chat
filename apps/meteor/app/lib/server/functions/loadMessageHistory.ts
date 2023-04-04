@@ -1,8 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Messages } from '@rocket.chat/models';
+import { Messages, Rooms } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
-import { Rooms } from '../../../models/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
 
@@ -23,7 +22,11 @@ export async function loadMessageHistory({
 	showThreadMessages?: boolean;
 	offset?: number;
 }) {
-	const room = Rooms.findOneById(rid, { fields: { sysMes: 1 } });
+	const room = await Rooms.findOneById(rid, { projection: { sysMes: 1 } });
+
+	if (!room) {
+		throw new Error('error-invalid-room');
+	}
 
 	const hiddenMessageTypes = getHiddenSystemMessages(room);
 
@@ -44,7 +47,7 @@ export async function loadMessageHistory({
 				showThreadMessages,
 		  ).toArray()
 		: await Messages.findVisibleByRoomIdNotContainingTypes(rid, hiddenMessageTypes, options, showThreadMessages).toArray();
-	const messages = normalizeMessagesForUser(records, userId);
+	const messages = await normalizeMessagesForUser(records, userId);
 	let unreadNotLoaded = 0;
 	let firstUnread;
 
