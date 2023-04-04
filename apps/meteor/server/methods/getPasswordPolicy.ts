@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods, TranslationKey } from '@rocket.chat/ui-contexts';
+import { Users } from '@rocket.chat/models';
 
-import { Users } from '../../app/models/server';
 import { passwordPolicy } from '../../app/lib/server';
 import { methodDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
 
@@ -17,12 +17,12 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	getPasswordPolicy(params) {
+	async getPasswordPolicy(params) {
 		methodDeprecationLogger.warn('getPasswordPolicy is deprecated and will be removed in future versions of Rocket.Chat');
 
 		check(params, { token: String });
 
-		const user = Users.findOne({ 'services.password.reset.token': params.token });
+		const user = await Users.findOne({ 'services.password.reset.token': params.token });
 		if (!user && !Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'getPasswordPolicy',
