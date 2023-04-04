@@ -202,7 +202,7 @@ class RocketChatAssetsClass {
 		return assets;
 	}
 
-	public setAsset(binaryContent: string, contentType: string, asset: string): void {
+	public async setAsset(binaryContent: string, contentType: string, asset: string): Promise<void> {
 		const assetInstance = getAssetByKey(asset);
 		if (!assetInstance) {
 			throw new Meteor.Error('error-invalid-asset', 'Invalid asset', {
@@ -231,7 +231,7 @@ class RocketChatAssetsClass {
 		}
 
 		const rs = RocketChatFile.bufferToStream(file);
-		Promise.await(RocketChatAssetsInstance.deleteFile(asset));
+		await RocketChatAssetsInstance.deleteFile(asset);
 
 		const ws = RocketChatAssetsInstance.createWriteStream(asset, contentType);
 		ws.on('end', function () {
@@ -258,7 +258,7 @@ class RocketChatAssetsClass {
 			});
 		}
 
-		Promise.await(RocketChatAssetsInstance.deleteFile(asset));
+		await RocketChatAssetsInstance.deleteFile(asset);
 		const key = `Assets_${asset}`;
 		const value = {
 			defaultUrl: getAssetByKey(asset).defaultUrl,
@@ -494,7 +494,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		RocketChatAssets.setAsset(binaryContent, contentType, asset);
+		await RocketChatAssets.setAsset(binaryContent, contentType, asset);
 	},
 });
 
