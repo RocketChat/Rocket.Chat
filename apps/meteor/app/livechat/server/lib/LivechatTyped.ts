@@ -41,7 +41,7 @@ type GenericCloseRoomParams = {
 };
 
 export type CloseRoomParamsByUser = {
-	user: IUser;
+	user: IUser | null;
 } & GenericCloseRoomParams;
 
 export type CloseRoomParamsByVisitor = {
@@ -90,11 +90,11 @@ class LivechatClass {
 		let chatCloser: any;
 		if (isRoomClosedByUserParams(params)) {
 			const { user } = params;
-			this.logger.debug(`Closing by user ${user._id}`);
+			this.logger.debug(`Closing by user ${user?._id}`);
 			closeData.closer = 'user';
 			closeData.closedBy = {
-				_id: user._id,
-				username: user.username,
+				_id: user?._id || '',
+				username: user?.username,
 			};
 			chatCloser = user;
 		} else if (isRoomClosedByVisitorParams(params)) {

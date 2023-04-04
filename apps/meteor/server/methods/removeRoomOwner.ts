@@ -3,11 +3,10 @@ import { check } from 'meteor/check';
 import { api, Message, Team } from '@rocket.chat/core-services';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { Subscriptions, Rooms } from '@rocket.chat/models';
+import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
 
 import { getUsersInRole } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { Users } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -43,7 +42,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const user = Users.findOneById(userId);
+		const user = await Users.findOneById(userId);
 		if (!user?.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'removeRoomOwner',
@@ -74,7 +73,12 @@ Meteor.methods<ServerMethods>({
 
 		await Subscriptions.removeRoleById(subscription._id, 'owner');
 
-		const fromUser = Users.findOneById(uid);
+		const fromUser = await Users.findOneById(uid);
+		if (!fromUser) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'removeRoomOwner',
+			});
+		}
 
 		await Message.saveSystemMessage('subscription-role-removed', rid, user.username, fromUser, { role: 'owner' });
 
