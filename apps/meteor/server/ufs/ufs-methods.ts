@@ -14,7 +14,7 @@ Meteor.methods({
 	 * @param storeName
 	 * @param token
 	 */
-	ufsComplete(fileId, storeName, token) {
+	async ufsComplete(fileId, storeName, token) {
 		check(fileId, String);
 		check(storeName, String);
 		check(token, String);
@@ -45,14 +45,14 @@ Meteor.methods({
 			// todo check if temp file exists
 
 			// Get file
-			const file = store.getCollection().findOne({ _id: fileId });
+			const file = await store.getCollection().findOne({ _id: fileId });
 
 			if (!file) {
 				throw new Meteor.Error('invalid-file', 'File is not valid');
 			}
 
 			// Validate file before moving to the store
-			store.validate(file);
+			await store.validate(file);
 
 			// Get the temp file
 			const rs = fs.createReadStream(tmpFile, {
@@ -66,13 +66,13 @@ Meteor.methods({
 				'error',
 				Meteor.bindEnvironment(function (err) {
 					console.error(err);
-					store.getCollection().remove({ _id: fileId });
+					void store.removeById(fileId);
 					fut.throw(err);
 				}),
 			);
 
 			// Save file in the store
-			store.write(
+			await store.write(
 				rs,
 				fileId,
 				Meteor.bindEnvironment(function (err, file) {
@@ -94,7 +94,7 @@ Meteor.methods({
 			return fut.wait();
 		} catch (err: any) {
 			// If write failed, remove the file
-			store.getCollection().remove({ _id: fileId });
+			void store.removeById(fileId);
 			// removeTempFile(); // todo remove temp file on error or try again ?
 			throw new Meteor.Error('ufs: cannot upload file', err);
 		}

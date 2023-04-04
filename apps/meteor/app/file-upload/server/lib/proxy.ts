@@ -16,7 +16,8 @@ const logger = new Logger('UploadProxy');
 
 WebApp.connectHandlers.stack.unshift({
 	route: '',
-	handle: Meteor.bindEnvironment(function (req: createServer.IncomingMessage, res: http.ServerResponse, next: NextFunction) {
+	// eslint-disable-next-line @typescript-eslint/no-misused-promises
+	handle: Meteor.bindEnvironment(async function (req: createServer.IncomingMessage, res: http.ServerResponse, next: NextFunction) {
 		// Quick check to see if request should be catch
 		if (!req.url?.includes(`/${UploadFS.config.storesPath}/`)) {
 			return next();
@@ -53,8 +54,8 @@ WebApp.connectHandlers.stack.unshift({
 
 		// Get file
 		const fileId = match[2];
-		const file = store.getCollection().findOne({ _id: fileId });
-		if (file === undefined) {
+		const file = await store.getCollection().findOne({ _id: fileId });
+		if (!file) {
 			res.writeHead(404);
 			res.end();
 			return;
@@ -66,7 +67,7 @@ WebApp.connectHandlers.stack.unshift({
 		}
 
 		// Proxy to other instance
-		const instance = Promise.await(InstanceStatusModel.findOneById(file.instanceId));
+		const instance = await InstanceStatusModel.findOneById(file.instanceId);
 
 		if (instance == null) {
 			res.writeHead(404);

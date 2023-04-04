@@ -36,10 +36,10 @@ export const sendMail = async function ({
 		userQuery = { $and: [userQuery, EJSON.parse(query)] };
 	}
 
+	const users = await Users.find(userQuery).toArray();
+
 	if (dryrun) {
-		return Users.find({
-			'emails.address': from,
-		}).forEach((u): void => {
+		for await (const u of users) {
 			const user: Partial<IUser> & Pick<IUser, '_id'> = u;
 			const email = `${user.name} <${user.emails?.[0].address}>`;
 			const html = placeholders.replace(body, {
@@ -54,16 +54,16 @@ export const sendMail = async function ({
 			});
 
 			SystemLogger.debug(`Sending email to ${email}`);
-			return Mailer.send({
+			await Mailer.send({
 				to: email,
 				from,
 				subject,
 				html,
 			});
-		});
+		}
 	}
 
-	return Users.find(userQuery).forEach(function (u) {
+	for await (const u of users) {
 		const user: Partial<IUser> & Pick<IUser, '_id'> = u;
 		if (user?.emails && Array.isArray(user.emails) && user.emails.length) {
 			const email = `${user.name} <${user.emails[0].address}>`;
@@ -79,12 +79,12 @@ export const sendMail = async function ({
 				email: escapeHTML(email),
 			});
 			SystemLogger.debug(`Sending email to ${email}`);
-			return Mailer.send({
+			await Mailer.send({
 				to: email,
 				from,
 				subject,
 				html,
 			});
 		}
-	});
+	}
 };

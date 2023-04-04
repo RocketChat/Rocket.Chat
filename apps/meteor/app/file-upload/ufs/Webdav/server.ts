@@ -64,7 +64,7 @@ class WebdavStore extends UploadFS.Store {
 		 * @param callback
 		 * @return {string}
 		 */
-		this.create = function (file, callback) {
+		this.create = async function (file) {
 			check(file, Object);
 
 			if (file._id == null) {
@@ -76,7 +76,8 @@ class WebdavStore extends UploadFS.Store {
 			};
 
 			file.store = this.options.name;
-			return this.getCollection().insert(file, callback);
+
+			return (await this.getCollection().insertOne(file)).insertedId;
 		};
 
 		/**
@@ -84,18 +85,17 @@ class WebdavStore extends UploadFS.Store {
 		 * @param fileId
 		 * @param callback
 		 */
-		this.delete = function (fileId, callback) {
-			const file = this.getCollection().findOne({ _id: fileId });
+		this.delete = async function (fileId) {
+			const file = await this.getCollection().findOne({ _id: fileId });
 			if (!file) {
-				callback?.(new Error('File no found'));
-				return;
+				throw new Error('File no found');
 			}
-			client
-				.deleteFile(this.getPath(file))
-				.then((data) => {
-					callback?.(undefined, data);
-				})
-				.catch((...args) => SystemLogger.error(...args));
+
+			try {
+				return client.deleteFile(this.getPath(file));
+			} catch (err: any) {
+				SystemLogger.error(err);
+			}
 		};
 
 		/**
@@ -105,7 +105,7 @@ class WebdavStore extends UploadFS.Store {
 		 * @param options
 		 * @return {*}
 		 */
-		this.getReadStream = function (_fileId, file, options = {}) {
+		this.getReadStream = async function (_fileId, file, options = {}) {
 			const range: {
 				start?: number;
 				end?: number;
@@ -127,7 +127,7 @@ class WebdavStore extends UploadFS.Store {
 		 * @param file
 		 * @return {*}
 		 */
-		this.getWriteStream = function (_fileId, file) {
+		this.getWriteStream = async function (_fileId, file) {
 			const writeStream = new stream.PassThrough();
 			const webdavStream = client.createWriteStream(this.getPath(file), file.size || 0);
 

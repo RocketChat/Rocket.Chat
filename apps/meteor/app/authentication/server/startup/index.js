@@ -214,7 +214,7 @@ Accounts.onCreateUser(function (options, user = {}) {
 			}),
 		};
 
-		Mailer.send(email);
+		Promise.await(Mailer.send(email));
 	}
 
 	callbacks.run('onCreateUser', options, user);

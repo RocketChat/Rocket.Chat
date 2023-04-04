@@ -89,7 +89,7 @@ class AmazonS3Store extends UploadFS.Store {
 		 * @param callback
 		 * @return {string}
 		 */
-		this.create = (file, callback) => {
+		this.create = async (file) => {
 			check(file, Object);
 
 			if (file._id == null) {
@@ -101,7 +101,8 @@ class AmazonS3Store extends UploadFS.Store {
 			};
 
 			file.store = this.options.name; // assign store to file
-			return this.getCollection().insert(file, callback);
+
+			return (await this.getCollection().insertOne(file)).insertedId;
 		};
 
 		/**
@@ -109,24 +110,21 @@ class AmazonS3Store extends UploadFS.Store {
 		 * @param fileId
 		 * @param callback
 		 */
-		this.delete = function (fileId, callback) {
-			const file = this.getCollection().findOne({ _id: fileId });
+		this.delete = async function (fileId) {
+			const file = await this.getCollection().findOne({ _id: fileId });
 			if (!file) {
-				callback?.(new Error('File not found'));
-				return;
+				throw new Error('File not found');
 			}
 			const params = {
 				Key: this.getPath(file),
 				Bucket: classOptions.connection.params.Bucket,
 			};
 
-			s3.deleteObject(params, (err, data) => {
-				if (err) {
-					SystemLogger.error(err);
-				}
-
-				callback?.(err, data);
-			});
+			try {
+				return s3.deleteObject(params).promise();
+			} catch (err: any) {
+				SystemLogger.error(err);
+			}
 		};
 
 		/**
@@ -136,7 +134,7 @@ class AmazonS3Store extends UploadFS.Store {
 		 * @param options
 		 * @return {*}
 		 */
-		this.getReadStream = function (_fileId, file, options = {}) {
+		this.getReadStream = async function (_fileId, file, options = {}) {
 			const params: {
 				Key: string;
 				Bucket: string;
@@ -160,7 +158,7 @@ class AmazonS3Store extends UploadFS.Store {
 		 * @param options
 		 * @return {*}
 		 */
-		this.getWriteStream = function (_fileId, file /* , options*/) {
+		this.getWriteStream = async function (_fileId, file /* , options*/) {
 			const writeStream = new stream.PassThrough();
 			// TS does not allow but S3 requires a length property;
 			(writeStream as unknown as any).length = file.size;

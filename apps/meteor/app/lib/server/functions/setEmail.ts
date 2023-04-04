@@ -15,7 +15,7 @@ Meteor.startup(() => {
 	});
 });
 
-const _sendEmailChangeNotification = function (to: string, newEmail: string) {
+const _sendEmailChangeNotification = async function (to: string, newEmail: string) {
 	const subject = String(settings.get('Email_Changed_Email_Subject'));
 	const email = {
 		to,
@@ -28,7 +28,7 @@ const _sendEmailChangeNotification = function (to: string, newEmail: string) {
 	};
 
 	try {
-		Mailer.send(email);
+		await Mailer.send(email);
 	} catch (error: any) {
 		throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${error.message}`, {
 			function: 'setEmail',
@@ -70,7 +70,7 @@ const _setEmail = async function (userId: string, email: string, shouldSendVerif
 	const oldEmail = user?.emails?.[0];
 
 	if (oldEmail) {
-		_sendEmailChangeNotification(oldEmail.address, email);
+		await _sendEmailChangeNotification(oldEmail.address, email);
 	}
 
 	// Set new email

@@ -1,6 +1,6 @@
 import type { WriteStream } from 'fs';
 import fs from 'fs';
-import { unlink, rename } from 'fs/promises';
+import { unlink, rename, writeFile } from 'fs/promises';
 import stream from 'stream';
 import type * as http from 'http';
 import type * as https from 'https';
@@ -8,7 +8,6 @@ import { Buffer } from 'buffer';
 import URL from 'url';
 
 import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
 import type { WritableStreamBuffer } from 'stream-buffers';
 import streamBuffers from 'stream-buffers';
 import sharp from 'sharp';
@@ -34,7 +33,7 @@ import { AppEvents, Apps } from '../../../../ee/server/apps';
 import { streamToBuffer } from './streamToBuffer';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
-import type { Store } from '../../../../server/ufs/ufs-store';
+import type { Store, StoreOptions } from '../../../../server/ufs/ufs-store';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
@@ -47,16 +46,12 @@ settings.watch('FileUpload_MaxFileSize', async function (value: string) {
 	}
 });
 
-const AvatarModel = new Mongo.Collection(Avatars.col.collectionName);
-const UserDataFilesModel = new Mongo.Collection(UserDataFiles.col.collectionName);
-const UploadsModel = new Mongo.Collection(Uploads.col.collectionName);
-
 const handlers: Record<string, FileUploadClass> = {};
 
-const defaults: Record<string, any> = {
+const defaults: Record<string, () => Partial<StoreOptions>> = {
 	Uploads() {
 		return {
-			collection: UploadsModel,
+			collection: Uploads,
 			filter: new UploadFS.Filter({
 				onCheck: FileUpload.validateFileUpload,
 			}),
@@ -64,9 +59,9 @@ const defaults: Record<string, any> = {
 				return `${settings.get('uniqueID')}/uploads/${file.rid}/${file.userId}/${file._id}`;
 			},
 			onValidate: FileUpload.uploadsOnValidate,
-			onRead(_fileId: string, file: IUpload, req: http.IncomingMessage, res: http.ServerResponse) {
+			async onRead(_fileId: string, file: IUpload, req: http.IncomingMessage, res: http.ServerResponse) {
 				// Deprecated: Remove support to usf path
-				if (!FileUpload.requestCanAccessFiles(req, file)) {
+				if (!(await FileUpload.requestCanAccessFiles(req, file))) {
 					res.writeHead(403);
 					return false;
 				}
@@ -79,7 +74,7 @@ const defaults: Record<string, any> = {
 
 	Avatars() {
 		return {
-			collection: AvatarModel,
+			collection: Avatars,
 			filter: new UploadFS.Filter({
 				onCheck: FileUpload.validateAvatarUpload,
 			}),
@@ -94,13 +89,13 @@ const defaults: Record<string, any> = {
 
 	UserDataFiles() {
 		return {
-			collection: UserDataFilesModel,
+			collection: UserDataFiles,
 			getPath(file: IUpload) {
 				return `${settings.get('uniqueID')}/uploads/userData/${file.userId}`;
 			},
 			onValidate: FileUpload.uploadsOnValidate,
-			onRead(_fileId: string, file: IUpload, req: http.IncomingMessage, res: http.ServerResponse) {
-				if (!FileUpload.requestCanAccessFiles(req)) {
+			async onRead(_fileId: string, file: IUpload, req: http.IncomingMessage, res: http.ServerResponse) {
+				if (!(await FileUpload.requestCanAccessFiles(req))) {
 					res.writeHead(403);
 					return false;
 				}
@@ -138,21 +133,21 @@ export const FileUpload = {
 		);
 	},
 
-	validateFileUpload(file: IUpload, content?: Buffer) {
+	async validateFileUpload(file: IUpload, content?: Buffer) {
 		if (!Match.test(file.rid, String)) {
 			return false;
 		}
 
 		// livechat users can upload files but they don't have an userId
-		const user = (file.userId && Promise.await(Users.findOne(file.userId))) || undefined;
+		const user = (file.userId && (await Users.findOne(file.userId))) || undefined;
 
-		const room = Promise.await(Rooms.findOneById(file.rid));
+		const room = await Rooms.findOneById(file.rid);
 		if (!room) {
 			return false;
 		}
 		const directMessageAllowed = settings.get('FileUpload_Enabled_Direct');
 		const fileUploadAllowed = settings.get('FileUpload_Enabled');
-		if (user?.type !== 'app' && Promise.await(canAccessRoomAsync(room, user, file)) !== true) {
+		if (user?.type !== 'app' && (await canAccessRoomAsync(room, user, file)) !== true) {
 			return false;
 		}
 		const language = user?.language || 'en';
@@ -185,7 +180,7 @@ export const FileUpload = {
 
 		// App IPreFileUpload event hook
 		try {
-			Promise.await(Apps.triggerEvent(AppEvents.IPreFileUpload, { file, content: content || Buffer.from([]) }));
+			await Apps.triggerEvent(AppEvents.IPreFileUpload, { file, content: content || Buffer.from([]) });
 		} catch (error: any) {
 			if (error.name === AppsEngineException.name) {
 				throw new Meteor.Error('error-app-prevented', error.message);
@@ -197,12 +192,12 @@ export const FileUpload = {
 		return true;
 	},
 
-	validateAvatarUpload(file: IUpload) {
+	async validateAvatarUpload(file: IUpload) {
 		if (!Match.test(file.rid, String) && !Match.test(file.userId, String)) {
 			return false;
 		}
 
-		const user = file.uid ? Promise.await(Users.findOne(file.uid, { projection: { language: 1 } })) : null;
+		const user = file.uid ? await Users.findOne(file.uid, { projection: { language: 1 } }) : null;
 		const language = user?.language || 'en';
 
 		// accept only images
@@ -228,17 +223,17 @@ export const FileUpload = {
 
 	defaults,
 
-	avatarsOnValidate(this: Store, file: IUpload) {
+	async avatarsOnValidate(this: Store, file: IUpload) {
 		const userId = Meteor.userId();
 		if (!userId || settings.get('Accounts_AvatarResize') !== true) {
 			return;
 		}
 
 		if (file.rid) {
-			if (!Promise.await(hasPermissionAsync(userId, 'edit-room-avatar', file.rid))) {
+			if (!(await hasPermissionAsync(userId, 'edit-room-avatar', file.rid))) {
 				throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 			}
-		} else if (userId !== file.userId && !Promise.await(hasPermissionAsync(userId, 'edit-other-user-avatar'))) {
+		} else if (userId !== file.userId && !(await hasPermissionAsync(userId, 'edit-other-user-avatar'))) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 
@@ -247,57 +242,55 @@ export const FileUpload = {
 		const height = settings.get('Accounts_AvatarSize') as number;
 		const width = height as number;
 
-		Promise.await(async () => {
-			const s = sharp(tempFilePath);
-			if (settings.get('FileUpload_RotateImages') === true) {
-				s.rotate();
-			}
+		const s = sharp(tempFilePath);
+		if (settings.get('FileUpload_RotateImages') === true) {
+			s.rotate();
+		}
 
-			const metadata = await s.metadata();
-			// if (!metadata) {
-			// 	metadata = {};
-			// }
+		const metadata = await s.metadata();
+		// if (!metadata) {
+		// 	metadata = {};
+		// }
 
-			const { data, info } = await s
-				.resize({
-					width,
-					height,
-					fit: metadata.hasAlpha ? sharp.fit.contain : sharp.fit.cover,
-					background: { r: 255, g: 255, b: 255, alpha: metadata.hasAlpha ? 0 : 1 },
-				})
-				// Use buffer to get the result in memory then replace the existing file
-				// There is no option to override a file using this library
-				//
-				// BY THE SHARP DOCUMENTATION:
-				// toBuffer: Write output to a Buffer. JPEG, PNG, WebP, TIFF and RAW output are supported.
-				// By default, the format will match the input image, except GIF and SVG input which become PNG output.
-				.toBuffer({ resolveWithObject: true });
+		const { data, info } = await s
+			.resize({
+				width,
+				height,
+				fit: metadata.hasAlpha ? sharp.fit.contain : sharp.fit.cover,
+				background: { r: 255, g: 255, b: 255, alpha: metadata.hasAlpha ? 0 : 1 },
+			})
+			// Use buffer to get the result in memory then replace the existing file
+			// There is no option to override a file using this library
+			//
+			// BY THE SHARP DOCUMENTATION:
+			// toBuffer: Write output to a Buffer. JPEG, PNG, WebP, TIFF and RAW output are supported.
+			// By default, the format will match the input image, except GIF and SVG input which become PNG output.
+			.toBuffer({ resolveWithObject: true });
 
-			fs.writeFile(tempFilePath, data, (err) => {
-				if (err != null) {
-					SystemLogger.error(err);
-				}
+		try {
+			await writeFile(tempFilePath, data);
+		} catch (err: any) {
+			SystemLogger.error(err);
+		}
 
-				this.getCollection().direct.update(
-					{ _id: file._id },
-					{
-						$set: {
-							size: info.size,
-							...(['gif', 'svg'].includes(metadata.format || '') ? { type: 'image/png' } : {}),
-						},
-					},
-				);
-			});
-		});
+		await this.getCollection().updateOne(
+			{ _id: file._id },
+			{
+				$set: {
+					size: info.size,
+					...(['gif', 'svg'].includes(metadata.format || '') ? { type: 'image/png' } : {}),
+				},
+			},
+		);
 	},
 
-	resizeImagePreview(fileParam: IUpload) {
-		let file = Promise.await(Uploads.findOneById(fileParam._id));
+	async resizeImagePreview(fileParam: IUpload) {
+		let file = await Uploads.findOneById(fileParam._id);
 		if (!file) {
 			return;
 		}
 		file = FileUpload.addExtensionTo(file);
-		const image = FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
+		const image = await FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
 
 		const transformer = sharp().resize({ width: 32, height: 32, fit: 'inside' }).jpeg().blur();
 		const result = transformer.toBuffer().then((out) => out.toString('base64'));
@@ -309,7 +302,7 @@ export const FileUpload = {
 		return sharp(FileUpload.getBufferSync(file)).metadata();
 	},
 
-	createImageThumbnail(fileParam: IUpload) {
+	async createImageThumbnail(fileParam: IUpload) {
 		if (!settings.get('Message_Attachments_Thumbnails_Enabled')) {
 			return;
 		}
@@ -321,14 +314,14 @@ export const FileUpload = {
 			return;
 		}
 
-		let file = Promise.await(Uploads.findOneById(fileParam._id));
+		let file = await Uploads.findOneById(fileParam._id);
 		if (!file) {
 			return;
 		}
 
 		file = FileUpload.addExtensionTo(file);
 		const store = FileUpload.getStore('Uploads');
-		const image = store._store.getReadStream(file._id, file);
+		const image = await store._store.getReadStream(file._id, file);
 
 		const transformer = sharp().resize({ width, height, fit: 'inside' });
 
@@ -338,7 +331,7 @@ export const FileUpload = {
 		return result;
 	},
 
-	uploadImageThumbnail(file: IUpload, buffer: Buffer, rid: string, userId: string) {
+	async uploadImageThumbnail(file: IUpload, buffer: Buffer, rid: string, userId: string) {
 		const store = FileUpload.getStore('Uploads');
 		const details = {
 			name: `thumb-${file.name}`,
@@ -355,63 +348,66 @@ export const FileUpload = {
 		return store.insertSync(details, buffer);
 	},
 
-	uploadsOnValidate(this: Store, file: IUpload) {
+	async uploadsOnValidate(this: Store, file: IUpload) {
 		if (!file.type || !/^image\/((x-windows-)?bmp|p?jpeg|png|gif|webp)$/.test(file.type)) {
 			return;
 		}
 
 		const tmpFile = UploadFS.getTempFilePath(file._id);
 
-		Promise.await(async () => {
-			const s = sharp(tmpFile);
-			const metadata = await s.metadata();
-			// if (err != null) {
-			// 	SystemLogger.error(err);
-			// 	return fut.return();
-			// }
+		const s = sharp(tmpFile);
+		const metadata = await s.metadata();
+		// if (err != null) {
+		// 	SystemLogger.error(err);
+		// 	return fut.return();
+		// }
 
-			const rotated = typeof metadata.orientation !== 'undefined' && metadata.orientation !== 1;
+		const rotated = typeof metadata.orientation !== 'undefined' && metadata.orientation !== 1;
+		const width = rotated ? metadata.height : metadata.width;
+		const height = rotated ? metadata.width : metadata.height;
 
-			const identify = {
-				format: metadata.format,
-				size: {
-					width: rotated ? metadata.height : metadata.width,
-					height: rotated ? metadata.width : metadata.height,
-				},
-			};
+		const identify = {
+			format: metadata.format,
+			size:
+				width != null && height != null
+					? {
+							width,
+							height,
+					  }
+					: undefined,
+		};
 
-			const reorientation = async () => {
-				if (!rotated || settings.get('FileUpload_RotateImages') !== true) {
-					return;
-				}
+		const reorientation = async () => {
+			if (!rotated || settings.get('FileUpload_RotateImages') !== true) {
+				return;
+			}
 
-				await s.rotate().toFile(`${tmpFile}.tmp`);
+			await s.rotate().toFile(`${tmpFile}.tmp`);
 
-				await unlink(tmpFile);
+			await unlink(tmpFile);
 
-				await rename(`${tmpFile}.tmp`, tmpFile);
-				// SystemLogger.error(err);
-			};
+			await rename(`${tmpFile}.tmp`, tmpFile);
+			// SystemLogger.error(err);
+		};
 
-			await reorientation();
+		await reorientation();
 
-			const { size } = await fs.lstatSync(tmpFile);
-			this.getCollection().direct.update(
-				{ _id: file._id },
-				{
-					$set: { size, identify },
-				},
-			);
-		});
+		const { size } = await fs.lstatSync(tmpFile);
+		await this.getCollection().updateOne(
+			{ _id: file._id },
+			{
+				$set: { size, identify },
+			},
+		);
 	},
 
-	avatarRoomOnFinishUpload(file: IUpload) {
+	async avatarRoomOnFinishUpload(file: IUpload) {
 		const userId = Meteor.userId();
-		if (userId && !Promise.await(hasPermissionAsync(userId, 'edit-room-avatar', file.rid))) {
+		if (userId && !(await hasPermissionAsync(userId, 'edit-room-avatar', file.rid))) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 	},
-	avatarsOnFinishUpload(file: IUpload) {
+	async avatarsOnFinishUpload(file: IUpload) {
 		if (file.rid) {
 			return FileUpload.avatarRoomOnFinishUpload(file);
 		}
@@ -422,23 +418,23 @@ export const FileUpload = {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 
-		if (userId && userId !== file.userId && !Promise.await(hasPermissionAsync(userId, 'edit-other-user-avatar'))) {
+		if (userId && userId !== file.userId && !(await hasPermissionAsync(userId, 'edit-other-user-avatar'))) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 		// update file record to match user's username
-		const user = Promise.await(Users.findOneById(file.userId));
+		const user = await Users.findOneById(file.userId);
 		if (!user?.username) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
-		const oldAvatar = Promise.await(Avatars.findOneByName(user.username));
+		const oldAvatar = await Avatars.findOneByName(user.username);
 		if (oldAvatar) {
-			Promise.await(Avatars.deleteFile(oldAvatar._id));
+			await Avatars.deleteFile(oldAvatar._id);
 		}
-		Promise.await(Avatars.updateFileNameById(file._id, user.username));
+		await Avatars.updateFileNameById(file._id, user.username);
 		// console.log('upload finished ->', file);
 	},
 
-	requestCanAccessFiles({ headers = {}, url }: http.IncomingMessage, file?: IUpload) {
+	async requestCanAccessFiles({ headers = {}, url }: http.IncomingMessage, file?: IUpload) {
 		if (!url || !settings.get('FileUpload_ProtectFiles')) {
 			return true;
 		}
@@ -455,27 +451,25 @@ export const FileUpload = {
 			rc_room_type = cookie.get('rc_room_type', headers.cookie);
 		}
 
-		const isAuthorizedByRoom = () =>
+		const isAuthorizedByRoom = async () =>
 			rc_room_type &&
-			Promise.await(
-				roomCoordinator
-					.getRoomDirectives(rc_room_type)
-					.canAccessUploadedFile({ rc_uid: rc_uid || '', rc_rid: rc_rid || '', rc_token: rc_token || '' }),
-			);
+			roomCoordinator
+				.getRoomDirectives(rc_room_type)
+				.canAccessUploadedFile({ rc_uid: rc_uid || '', rc_rid: rc_rid || '', rc_token: rc_token || '' });
+
 		const isAuthorizedByJWT = () =>
 			settings.get('FileUpload_Enable_json_web_token_for_files') &&
 			token &&
 			isValidJWT(token, settings.get('FileUpload_json_web_token_secret_for_files'));
 
-		if (isAuthorizedByRoom() || isAuthorizedByJWT()) {
+		if ((await isAuthorizedByRoom()) || isAuthorizedByJWT()) {
 			return true;
 		}
 
 		const uid = rc_uid || (headers['x-user-id'] as string);
 		const authToken = rc_token || (headers['x-auth-token'] as string);
 
-		const user =
-			uid && authToken && Promise.await(Users.findOneByIdAndLoginToken(uid, hashLoginToken(authToken), { projection: { _id: 1 } }));
+		const user = uid && authToken && (await Users.findOneByIdAndLoginToken(uid, hashLoginToken(authToken), { projection: { _id: 1 } }));
 
 		if (!user) {
 			return false;
@@ -485,7 +479,7 @@ export const FileUpload = {
 			return true;
 		}
 
-		const subscription = Promise.await(Subscriptions.findOneByRoomIdAndUserId(file.rid, user._id, { projection: { _id: 1 } }));
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(file.rid, user._id, { projection: { _id: 1 } });
 
 		if (subscription) {
 			return true;
@@ -638,7 +632,7 @@ type FileUploadClassOptions = {
 	model?: typeof Avatars | typeof Uploads | typeof UserDataFiles;
 	store?: Store;
 	get: (file: IUpload, req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => Promise<void>;
-	insert?: () => void;
+	insert?: () => Promise<void>;
 	getStore?: () => Store;
 	copy?: (file: IUpload, out: WriteStream | WritableStreamBuffer) => Promise<void>;
 };
@@ -654,7 +648,7 @@ export class FileUploadClass {
 
 	public copy: FileUploadClassOptions['copy'];
 
-	public insertSync: (fileData: OptionalId<IUpload>, streamOrBuffer: ReadableStream | stream | Buffer) => IUpload;
+	public insertSync: (fileData: OptionalId<IUpload>, streamOrBuffer: ReadableStream | stream | Buffer) => Promise<IUpload>;
 
 	constructor({ name, model, store, get, insert, getStore, copy }: FileUploadClassOptions) {
 		this.name = name;
@@ -701,17 +695,17 @@ export class FileUploadClass {
 		return modelsAvailable[modelName];
 	}
 
-	delete(fileId: string) {
+	async delete(fileId: string) {
 		// TODO: Remove this method
 		if (this.store?.delete) {
-			this.store.delete(fileId);
+			await this.store.delete(fileId);
 		}
 
-		return Promise.await(this.model.deleteFile(fileId));
+		return this.model.deleteFile(fileId);
 	}
 
-	deleteById(fileId: string) {
-		const file = Promise.await(this.model.findOneById(fileId));
+	async deleteById(fileId: string) {
+		const file = await this.model.findOneById(fileId);
 
 		// eslint-disable-next-line @typescript-eslint/no-misused-promises
 		if (!file) {
@@ -723,8 +717,8 @@ export class FileUploadClass {
 		return store.delete(file._id);
 	}
 
-	deleteByName(fileName: string) {
-		const file = Promise.await(this.model.findOneByName(fileName));
+	async deleteByName(fileName: string) {
+		const file = await this.model.findOneByName(fileName);
 
 		if (!file) {
 			return;
@@ -735,8 +729,8 @@ export class FileUploadClass {
 		return store.delete(file._id);
 	}
 
-	deleteByRoomId(rid: string) {
-		const file = Promise.await(this.model.findOneByRoomId(rid));
+	async deleteByRoomId(rid: string) {
+		const file = await this.model.findOneByRoomId(rid);
 
 		if (!file) {
 			return;
@@ -747,8 +741,8 @@ export class FileUploadClass {
 		return store.delete(file._id);
 	}
 
-	_doInsert(fileData: OptionalId<IUpload>, streamOrBuffer: stream | Buffer, cb?: (err?: Error, file?: IUpload) => void) {
-		const fileId = this.store.create(fileData);
+	async _doInsert(fileData: OptionalId<IUpload>, streamOrBuffer: stream | Buffer, cb?: (err?: Error, file?: IUpload) => void) {
+		const fileId = await this.store.create(fileData);
 		const token = this.store.createToken(fileId);
 		const tmpFile = UploadFS.getTempFilePath(fileId);
 
@@ -777,9 +771,9 @@ export class FileUploadClass {
 		}
 	}
 
-	insert(fileData: OptionalId<IUpload>, streamOrBuffer: stream.Readable | Buffer, cb?: (err?: Error, file?: IUpload) => void) {
+	async insert(fileData: OptionalId<IUpload>, streamOrBuffer: stream.Readable | Buffer, cb?: (err?: Error, file?: IUpload) => void) {
 		if (streamOrBuffer instanceof stream) {
-			streamOrBuffer = Promise.await(streamToBuffer(streamOrBuffer));
+			streamOrBuffer = await streamToBuffer(streamOrBuffer);
 		}
 
 		if (streamOrBuffer instanceof Uint8Array) {
@@ -790,7 +784,7 @@ export class FileUploadClass {
 		// Check if the fileData matches store filter
 		const filter = this.store.getFilter();
 		if (filter?.check) {
-			filter.check(fileData, streamOrBuffer);
+			await filter.check(fileData, streamOrBuffer);
 		}
 
 		return this._doInsert(fileData, streamOrBuffer, cb);

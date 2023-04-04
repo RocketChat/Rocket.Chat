@@ -1054,13 +1054,11 @@ export default class SlackAdapter {
 			};
 
 			if (!isImporting) {
-				Promise.await(
-					Messages.setPinnedByIdAndUserId(
-						`slack-${slackMessage.attachments[0].channel_id}-${slackMessage.attachments[0].ts.replace(/\./g, '-')}`,
-						rocketMsgObj.u,
-						true,
-						new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
-					),
+				await Messages.setPinnedByIdAndUserId(
+					`slack-${slackMessage.attachments[0].channel_id}-${slackMessage.attachments[0].ts.replace(/\./g, '-')}`,
+					rocketMsgObj.u,
+					true,
+					new Date(parseInt(slackMessage.ts.split('.')[0]) * 1000),
 				);
 			}
 
@@ -1136,7 +1134,7 @@ export default class SlackAdapter {
 			Meteor.bindEnvironment(async (stream) => {
 				const fileStore = FileUpload.getStore('Uploads');
 
-				fileStore.insert(details, stream, (err, file) => {
+				await fileStore.insert(details, stream, (err, file) => {
 					if (err) {
 						throw new Error(err);
 					} else {

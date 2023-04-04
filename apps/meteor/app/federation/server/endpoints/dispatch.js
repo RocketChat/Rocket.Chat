@@ -72,7 +72,7 @@ const eventHandlers = {
 
 		if (persistedRoom) {
 			// Delete the room
-			deleteRoom(roomId);
+			await deleteRoom(roomId);
 		}
 
 		// Remove all room events
@@ -248,7 +248,7 @@ const eventHandlers = {
 						origin,
 					};
 
-					fileStore.insertSync(upload, buffer);
+					await fileStore.insertSync(upload, buffer);
 
 					// Update the message's file
 					denormalizedMessage.file._id = upload._id;
