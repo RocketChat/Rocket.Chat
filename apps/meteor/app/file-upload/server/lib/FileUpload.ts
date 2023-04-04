@@ -8,7 +8,6 @@ import { Buffer } from 'buffer';
 import URL from 'url';
 
 import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
 import type { WritableStreamBuffer } from 'stream-buffers';
 import streamBuffers from 'stream-buffers';
 import sharp from 'sharp';
@@ -47,16 +46,12 @@ settings.watch('FileUpload_MaxFileSize', async function (value: string) {
 	}
 });
 
-const AvatarModel = new Mongo.Collection<IUpload>(Avatars.col.collectionName);
-const UserDataFilesModel = new Mongo.Collection<IUpload>(UserDataFiles.col.collectionName);
-const UploadsModel = new Mongo.Collection<IUpload>(Uploads.col.collectionName);
-
 const handlers: Record<string, FileUploadClass> = {};
 
 const defaults: Record<string, () => Partial<StoreOptions>> = {
 	Uploads() {
 		return {
-			collection: UploadsModel,
+			collection: Uploads,
 			filter: new UploadFS.Filter({
 				onCheck: FileUpload.validateFileUpload,
 			}),
@@ -79,7 +74,7 @@ const defaults: Record<string, () => Partial<StoreOptions>> = {
 
 	Avatars() {
 		return {
-			collection: AvatarModel,
+			collection: Avatars,
 			filter: new UploadFS.Filter({
 				onCheck: FileUpload.validateAvatarUpload,
 			}),
@@ -94,7 +89,7 @@ const defaults: Record<string, () => Partial<StoreOptions>> = {
 
 	UserDataFiles() {
 		return {
-			collection: UserDataFilesModel,
+			collection: UserDataFiles,
 			getPath(file: IUpload) {
 				return `${settings.get('uniqueID')}/uploads/userData/${file.userId}`;
 			},
@@ -277,14 +272,16 @@ export const FileUpload = {
 				SystemLogger.error(err);
 			}
 
-			this.getCollection().direct.update(
-				{ _id: file._id },
-				{
-					$set: {
-						size: info.size,
-						...(['gif', 'svg'].includes(metadata.format || '') ? { type: 'image/png' } : {}),
+			Promise.await(
+				this.getCollection().updateOne(
+					{ _id: file._id },
+					{
+						$set: {
+							size: info.size,
+							...(['gif', 'svg'].includes(metadata.format || '') ? { type: 'image/png' } : {}),
+						},
 					},
-				},
+				),
 			);
 		});
 	},
@@ -368,13 +365,18 @@ export const FileUpload = {
 		// }
 
 		const rotated = typeof metadata.orientation !== 'undefined' && metadata.orientation !== 1;
+		const width = rotated ? metadata.height : metadata.width;
+		const height = rotated ? metadata.width : metadata.height;
 
 		const identify = {
 			format: metadata.format,
-			size: {
-				width: rotated ? metadata.height : metadata.width,
-				height: rotated ? metadata.width : metadata.height,
-			},
+			size:
+				width != null && height != null
+					? {
+							width,
+							height,
+					  }
+					: undefined,
 		};
 
 		const reorientation = async () => {
@@ -393,7 +395,7 @@ export const FileUpload = {
 		await reorientation();
 
 		const { size } = await fs.lstatSync(tmpFile);
-		this.getCollection().direct.update(
+		await this.getCollection().updateOne(
 			{ _id: file._id },
 			{
 				$set: { size, identify },

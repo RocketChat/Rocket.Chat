@@ -64,7 +64,7 @@ class WebdavStore extends UploadFS.Store {
 		 * @param callback
 		 * @return {string}
 		 */
-		this.create = function (file, callback) {
+		this.create = function (file) {
 			check(file, Object);
 
 			if (file._id == null) {
@@ -76,7 +76,7 @@ class WebdavStore extends UploadFS.Store {
 			};
 
 			file.store = this.options.name;
-			return this.getCollection().insert(file, callback);
+			return Promise.await(this.getCollection().insertOne(file)).insertedId;
 		};
 
 		/**
@@ -85,7 +85,7 @@ class WebdavStore extends UploadFS.Store {
 		 * @param callback
 		 */
 		this.delete = function (fileId, callback) {
-			const file = this.getCollection().findOne({ _id: fileId });
+			const file = Promise.await(this.getCollection().findOne({ _id: fileId }));
 			if (!file) {
 				callback?.(new Error('File no found'));
 				return;

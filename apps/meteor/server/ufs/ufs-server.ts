@@ -117,7 +117,7 @@ WebApp.connectHandlers.use(async (req, res, next) => {
 
 		// Get file
 		const fileId = match[2];
-		if (store.getCollection().find({ _id: fileId }).count() === 0) {
+		if ((await store.getCollection().find({ _id: fileId }).count()) === 0) {
 			res.writeHead(404);
 			res.end();
 			return;
@@ -132,7 +132,7 @@ WebApp.connectHandlers.use(async (req, res, next) => {
 
 		// Check if duplicate
 		const unique = function (hash: string) {
-			const originalId = store.getCollection().findOne({ hash, _id: { $ne: fileId } });
+			const originalId = Promise.await(store.getCollection().findOne({ hash, _id: { $ne: fileId } }));
 			return originalId ? originalId._id : false;
 		};
 
@@ -143,7 +143,7 @@ WebApp.connectHandlers.use(async (req, res, next) => {
 			uploading: boolean;
 			progress?: number;
 			hash?: string;
-			originalId?: string | false;
+			originalId?: string;
 		} = { uploading: true };
 		const progress = parseFloat(typeof query.progress === 'string' ? query.progress : '0');
 		if (!isNaN(progress) && progress > 0) {
@@ -159,16 +159,13 @@ WebApp.connectHandlers.use(async (req, res, next) => {
 			res.writeHead(500);
 			res.end();
 		});
-		req.on(
-			'end',
-			Meteor.bindEnvironment(() => {
-				// Update completed state without triggering hooks
-				fields.hash = spark.digest('hex');
-				fields.originalId = unique(fields.hash);
-				store.getCollection().direct.update({ _id: fileId }, { $set: fields });
-				ws.end();
-			}),
-		);
+		req.on('end', () => {
+			// Update completed state without triggering hooks
+			fields.hash = spark.digest('hex');
+			fields.originalId = unique(fields.hash) || undefined;
+			Promise.await(store.getCollection().updateOne({ _id: fileId }, { $set: fields }));
+			ws.end();
+		});
 		ws.on('error', (err) => {
 			console.error(`ufs: cannot write chunk of file "${fileId}" (${err.message})`);
 			fs.stat(tmpFile, (err) => {
@@ -218,7 +215,7 @@ WebApp.connectHandlers.use(async (req, res, next) => {
 		const fileId = index !== -1 ? match[2].substr(0, index) : match[2];
 
 		// Get file from database
-		const file = store.getCollection().findOne({ _id: fileId });
+		const file = await store.getCollection().findOne({ _id: fileId });
 		if (!file) {
 			res.writeHead(404);
 			res.end();
@@ -333,20 +330,14 @@ WebApp.connectHandlers.use(async (req, res, next) => {
 				const rs = store.getReadStream(fileId, file, options);
 				const ws = new stream.PassThrough();
 
-				rs.on(
-					'error',
-					Meteor.bindEnvironment((err) => {
-						store.onReadError.call(store, err, fileId, file);
-						res.end();
-					}),
-				);
-				ws.on(
-					'error',
-					Meteor.bindEnvironment((err) => {
-						store.onReadError.call(store, err, fileId, file);
-						res.end();
-					}),
-				);
+				rs.on('error', (err) => {
+					store.onReadError.call(store, err, fileId, file);
+					res.end();
+				});
+				ws.on('error', (err) => {
+					store.onReadError.call(store, err, fileId, file);
+					res.end();
+				});
 				ws.on('close', () => {
 					// Close output stream at the end
 					ws.emit('end');

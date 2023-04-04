@@ -45,7 +45,7 @@ Meteor.methods({
 			// todo check if temp file exists
 
 			// Get file
-			const file = store.getCollection().findOne({ _id: fileId });
+			const file = await store.getCollection().findOne({ _id: fileId });
 
 			if (!file) {
 				throw new Meteor.Error('invalid-file', 'File is not valid');

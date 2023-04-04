@@ -10,6 +10,7 @@ import { Mongo } from 'meteor/mongo';
 import type createServer from 'connect';
 import type { OptionalId } from 'mongodb';
 import type { IUpload } from '@rocket.chat/core-typings';
+import type { IBaseUploadsModel } from '@rocket.chat/model-typings';
 
 import { UploadFS } from '.';
 import type { IFile } from './definition';
@@ -18,7 +19,7 @@ import { StorePermissions } from './ufs-store-permissions';
 import { Tokens } from './ufs-tokens';
 
 export type StoreOptions = {
-	collection?: Mongo.Collection<IFile>;
+	collection?: IBaseUploadsModel<IFile>;
 	filter?: Filter;
 	name: string;
 	onCopyError?: (err: any, fileId: string, file: IFile) => void;
@@ -52,7 +53,7 @@ export class Store {
 		callback?: (err?: Error, copyId?: string, copy?: OptionalId<IFile>, store?: Store) => void,
 	) => Promise<void>;
 
-	public create: (file: OptionalId<IFile>, callback?: (err?: Error, file?: IFile) => void) => string;
+	public create: (file: OptionalId<IFile>) => string;
 
 	public createToken: (fileId: string) => void;
 
@@ -135,24 +136,12 @@ export class Store {
 			}
 		}
 
-		/**
-		 * Checks token validity
-		 * @param token
-		 * @param fileId
-		 * @returns {boolean}
-		 */
 		this.checkToken = (token, fileId) => {
 			check(token, String);
 			check(fileId, String);
 			return Tokens.find({ value: token, fileId }).count() === 1;
 		};
 
-		/**
-		 * Copies the file to a store
-		 * @param fileId
-		 * @param store
-		 * @param callback
-		 */
 		this.copy = async (fileId, store, callback) => {
 			check(fileId, String);
 
@@ -160,7 +149,7 @@ export class Store {
 				throw new TypeError('store is not an instance of UploadFS.Store');
 			}
 			// Get original file
-			const file = this.getCollection().findOne({ _id: fileId });
+			const file = await this.getCollection().findOne({ _id: fileId });
 			if (!file) {
 				throw new Meteor.Error('file-not-found', 'File not found');
 			}
@@ -205,23 +194,12 @@ export class Store {
 			);
 		};
 
-		/**
-		 * Creates the file in the collection
-		 * @param file
-		 * @param callback
-		 * @return {string}
-		 */
-		this.create = (file, callback) => {
+		this.create = (file) => {
 			check(file, Object);
 			file.store = this.options.name; // assign store to file
-			return this.getCollection().insert(file, callback);
+			return Promise.await(this.getCollection().insertOne(file)).insertedId;
 		};
 
-		/**
-		 * Creates a token for the file (only needed for client side upload)
-		 * @param fileId
-		 * @returns {*}
-		 */
 		this.createToken = (fileId) => {
 			const token = this.generateToken();
 
@@ -246,14 +224,8 @@ export class Store {
 			return token;
 		};
 
-		/**
-		 * Writes the file to the store
-		 * @param rs
-		 * @param fileId
-		 * @param callback
-		 */
 		this.write = (rs, fileId, callback) => {
-			const file = this.getCollection().findOne({ _id: fileId });
+			const file = Promise.await(this.getCollection().findOne({ _id: fileId }));
 			if (!file) {
 				return callback(new Error('File not found'));
 			}
@@ -303,7 +275,7 @@ export class Store {
 
 						// Sets the file URL when file transfer is complete,
 						// this way, the image will loads entirely.
-						this.getCollection().direct.update(
+						await this.getCollection().updateOne(
 							{ _id: fileId },
 							{
 								$set: {
@@ -349,24 +321,14 @@ export class Store {
 				});
 		});
 
-		await this.getCollection().remove({ _id: fileId });
+		await this.getCollection().removeById(fileId);
 		Tokens.remove({ fileId });
 	}
 
-	/**
-	 * Deletes a file async
-	 * @param fileId
-	 * @param callback
-	 */
 	delete(_fileId: string, _callback?: (err?: Error, data?: any) => void) {
 		throw new Error('delete is not implemented');
 	}
 
-	/**
-	 * Generates a random token
-	 * @param pattern
-	 * @return {string}
-	 */
 	generateToken(pattern?: string) {
 		return (pattern || 'xyxyxyxyxy').replace(/[xy]/g, (c) => {
 			// eslint-disable-next-line no-mixed-operators
@@ -377,10 +339,6 @@ export class Store {
 		});
 	}
 
-	/**
-	 * Returns the collection
-	 * @return {Mongo.Collection}
-	 */
 	getCollection() {
 		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		return this.options.collection!;
@@ -390,56 +348,28 @@ export class Store {
 		throw new Error('Store.getFilePath is not implemented');
 	}
 
-	/**
-	 * Returns the file URL
-	 * @param fileId
-	 * @return {string|null}
-	 */
 	getFileRelativeURL(fileId: string) {
-		const file = this.getCollection().findOne(fileId, { fields: { name: 1 } });
+		const file = Promise.await(this.getCollection().findOne(fileId, { projection: { name: 1 } }));
 		return file ? this.getRelativeURL(`${fileId}/${file.name}`) : undefined;
 	}
 
-	/**
-	 * Returns the file URL
-	 * @param fileId
-	 * @return {string|null}
-	 */
 	getFileURL(fileId: string) {
-		const file = this.getCollection().findOne(fileId, { fields: { name: 1 } });
+		const file = Promise.await(this.getCollection().findOne(fileId, { projection: { name: 1 } }));
 		return file ? this.getURL(`${fileId}/${file.name}`) : undefined;
 	}
 
-	/**
-	 * Returns the file filter
-	 * @return {UploadFS.Filter}
-	 */
 	getFilter() {
 		return this.options.filter;
 	}
 
-	/**
-	 * Returns the store name
-	 * @return {string}
-	 */
 	getName() {
 		return this.options.name;
 	}
 
-	/**
-	 * Returns the file read stream
-	 * @param fileId
-	 * @param file
-	 */
 	getReadStream(_fileId: string, _file: IFile, _options?: { start?: number; end?: number }): stream.Readable {
 		throw new Error('Store.getReadStream is not implemented');
 	}
 
-	/**
-	 * Returns the store relative URL
-	 * @param path
-	 * @return {string}
-	 */
 	getRelativeURL(path: string) {
 		const rootUrl = Meteor.absoluteUrl().replace(/\/+$/, '');
 		const rootPath = rootUrl.replace(/^[a-z]+:\/\/[^/]+\/*/gi, '');
@@ -448,11 +378,6 @@ export class Store {
 		return encodeURI(`${rootPath}/${UploadFS.config.storesPath}/${storeName}/${path}`);
 	}
 
-	/**
-	 * Returns the store absolute URL
-	 * @param path
-	 * @return {string}
-	 */
 	getURL(path: string) {
 		const rootUrl = Meteor.absoluteUrl('', { secure: UploadFS.config.https }).replace(/\/+$/, '');
 		const storeName = this.getName();
@@ -464,79 +389,34 @@ export class Store {
 		throw new Error('getRedirectURL is not implemented');
 	}
 
-	/**
-	 * Returns the file write stream
-	 * @param fileId
-	 * @param file
-	 */
 	getWriteStream(_fileId: string, _file: IFile): stream.Writable {
 		throw new Error('getWriteStream is not implemented');
 	}
 
-	/**
-	 * Called when a copy error happened
-	 * @param err
-	 * @param fileId
-	 * @param file
-	 */
 	onCopyError(err: Error, fileId: string, _file: IFile) {
 		console.error(`ufs: cannot copy file "${fileId}" (${err.message})`, err);
 	}
 
-	/**
-	 * Called when a file has been uploaded
-	 * @param file
-	 */
 	async onFinishUpload(_file: IFile) {
 		//
 	}
 
-	/**
-	 * Called when a file is read from the store
-	 * @param fileId
-	 * @param file
-	 * @param request
-	 * @param response
-	 * @return boolean
-	 */
 	async onRead(_fileId: string, _file: IFile, _request: createServer.IncomingMessage, _response: http.ServerResponse) {
 		return true;
 	}
 
-	/**
-	 * Called when a read error happened
-	 * @param err
-	 * @param fileId
-	 * @param file
-	 * @return boolean
-	 */
 	onReadError(err: Error, fileId: string, _file: IFile) {
 		console.error(`ufs: cannot read file "${fileId}" (${err.message})`, err);
 	}
 
-	/**
-	 * Called when file is being validated
-	 * @param file
-	 */
 	async onValidate(_file: IFile) {
 		//
 	}
 
-	/**
-	 * Called when a write error happened
-	 * @param err
-	 * @param fileId
-	 * @param file
-	 * @return boolean
-	 */
 	onWriteError(err: Error, fileId: string, _file: IFile) {
 		console.error(`ufs: cannot write file "${fileId}" (${err.message})`, err);
 	}
 
-	/**
-	 * Sets the store permissions
-	 * @param permissions
-	 */
 	setPermissions(permissions: StorePermissions) {
 		if (!(permissions instanceof StorePermissions)) {
 			throw new TypeError('Permissions is not an instance of UploadFS.StorePermissions');
@@ -544,15 +424,6 @@ export class Store {
 		this.permissions = permissions;
 	}
 
-	/**
-	 * Transforms the file on reading
-	 * @param readStream
-	 * @param writeStream
-	 * @param fileId
-	 * @param file
-	 * @param request
-	 * @param headers
-	 */
 	transformRead(
 		readStream: stream.Readable,
 		writeStream: stream.Writable,
@@ -568,13 +439,6 @@ export class Store {
 		}
 	}
 
-	/**
-	 * Transforms the file on writing
-	 * @param readStream
-	 * @param writeStream
-	 * @param fileId
-	 * @param file
-	 */
 	transformWrite(readStream: stream.Readable, writeStream: stream.Writable, fileId: string, file: IFile) {
 		if (typeof this.options.transformWrite === 'function') {
 			this.options.transformWrite.call(this, readStream, writeStream, fileId, file);
@@ -583,10 +447,6 @@ export class Store {
 		}
 	}
 
-	/**
-	 * Validates the file
-	 * @param file
-	 */
 	async validate(file: IFile) {
 		if (typeof this.onValidate === 'function') {
 			await this.onValidate(file);

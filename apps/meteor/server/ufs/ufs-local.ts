@@ -62,20 +62,10 @@ export class LocalStore extends Store {
 			}
 		});
 
-		/**
-		 * Returns the path or sub path
-		 * @param file
-		 * @return {string}
-		 */
 		this.getPath = function (file) {
 			return path + (file ? `/${file}` : '');
 		};
 
-		/**
-		 * Removes the file
-		 * @param fileId
-		 * @param callback
-		 */
 		this.delete = (fileId, callback) => {
 			const path = this.getFilePath(fileId);
 
@@ -100,13 +90,6 @@ export class LocalStore extends Store {
 			);
 		};
 
-		/**
-		 * Returns the file read stream
-		 * @param fileId
-		 * @param file
-		 * @param options
-		 * @return {*}
-		 */
 		this.getReadStream = (fileId: string, file: IFile, options?: { start?: number; end?: number }) => {
 			options = Object.assign({}, options);
 			return fs.createReadStream(this.getFilePath(fileId, file), {
@@ -118,13 +101,6 @@ export class LocalStore extends Store {
 			});
 		};
 
-		/**
-		 * Returns the file write stream
-		 * @param fileId
-		 * @param file
-		 * @param options
-		 * @return {*}
-		 */
 		this.getWriteStream = (fileId: string, file: IFile, options?: { start?: number }) => {
 			options = Object.assign({}, options);
 			return fs.createWriteStream(this.getFilePath(fileId, file), {
@@ -136,14 +112,8 @@ export class LocalStore extends Store {
 		};
 	}
 
-	/**
-	 * Returns the file path
-	 * @param fileId
-	 * @param file
-	 * @return {string}
-	 */
-	getFilePath(fileId: string, file?: IFile): string {
-		file = file || this.getCollection().findOne(fileId, { fields: { extension: 1 } });
+	getFilePath(fileId: string, fileParam?: IFile): string {
+		const file = fileParam || Promise.await(this.getCollection().findOne(fileId, { projection: { extension: 1 } }));
 		return (file && this.getPath(fileId + (file.extension ? `.${file.extension}` : ''))) || '';
 	}
 }

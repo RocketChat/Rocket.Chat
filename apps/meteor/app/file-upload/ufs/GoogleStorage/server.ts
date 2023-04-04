@@ -67,7 +67,7 @@ class GoogleStorageStore extends UploadFS.Store {
 		 * @param callback
 		 * @return {string}
 		 */
-		this.create = function (file, callback) {
+		this.create = function (file) {
 			check(file, Object);
 
 			if (file._id == null) {
@@ -79,7 +79,7 @@ class GoogleStorageStore extends UploadFS.Store {
 			};
 
 			file.store = this.options.name; // assign store to file
-			return this.getCollection().insert(file, callback);
+			return Promise.await(this.getCollection().insertOne(file)).insertedId;
 		};
 
 		/**
@@ -88,7 +88,7 @@ class GoogleStorageStore extends UploadFS.Store {
 		 * @param callback
 		 */
 		this.delete = function (fileId, callback) {
-			const file = this.getCollection().findOne({ _id: fileId });
+			const file = Promise.await(this.getCollection().findOne({ _id: fileId }));
 			if (!file) {
 				callback?.(new Error('File not found'));
 				return;

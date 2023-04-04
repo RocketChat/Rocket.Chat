@@ -54,8 +54,8 @@ WebApp.connectHandlers.stack.unshift({
 
 		// Get file
 		const fileId = match[2];
-		const file = store.getCollection().findOne({ _id: fileId });
-		if (file === undefined) {
+		const file = await store.getCollection().findOne({ _id: fileId });
+		if (!file) {
 			res.writeHead(404);
 			res.end();
 			return;
