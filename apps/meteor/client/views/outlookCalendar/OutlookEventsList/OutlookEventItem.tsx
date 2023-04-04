@@ -1,3 +1,4 @@
+import type { ICalendarEvent } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, Palette } from '@rocket.chat/fuselage';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
@@ -5,25 +6,16 @@ import React from 'react';
 
 import GenericModal from '../../../components/GenericModal';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
+import OutlookEventItemContent from './OutlookEventItemContent';
 
 type OutlookEventItemProps = {
-	calendarData: {
-		_id: string;
-		uid: string;
-		startTime: string;
-		externalId: string;
-		subject: string;
-		_updatedAt: string;
-		content?: string;
-	};
+	calendarData: ICalendarEvent;
 };
 
 const OutlookEventItem = ({ calendarData }: OutlookEventItemProps) => {
 	const t = useTranslation();
 	const setModal = useSetModal();
 	const formatDateAndTime = useFormatDateAndTime();
-
-	console.log(calendarData);
 
 	const hovered = css`
 		&:hover {
@@ -33,9 +25,6 @@ const OutlookEventItem = ({ calendarData }: OutlookEventItemProps) => {
 		&:hover,
 		&:focus {
 			background: ${Palette.surface['surface-hover']};
-			.rcx-message {
-				background: ${Palette.surface['surface-hover']};
-			}
 		}
 	`;
 
@@ -49,13 +38,23 @@ const OutlookEventItem = ({ calendarData }: OutlookEventItemProps) => {
 				onClose={() => setModal(null)}
 				onConfirm={() => setModal(null)}
 			>
-				{calendarData.content}
+				<OutlookEventItemContent html={calendarData.description} />
 			</GenericModal>,
 		);
 	};
 
 	return (
-		<Box className={hovered} pi='x24' pb='x16' display='flex' justifyContent='space-between' onClick={handleOpenEvent}>
+		<Box
+			className={hovered}
+			borderBlockEndWidth={2}
+			borderBlockEndColor='stroke-extra-light'
+			borderBlockEndStyle='solid'
+			pi='x24'
+			pb='x16'
+			display='flex'
+			justifyContent='space-between'
+			onClick={handleOpenEvent}
+		>
 			<Box>
 				<Box fontScale='h4'>{calendarData.subject}</Box>
 				<Box fontScale='c1'>{formatDateAndTime(calendarData.startTime)}</Box>

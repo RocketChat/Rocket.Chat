@@ -1,4 +1,5 @@
-import { FieldGroup, Field, EmailInput, Label, PasswordInput, CheckBox, Callout } from '@rocket.chat/fuselage';
+import { FieldGroup, Field, TextInput, Label, PasswordInput, CheckBox, Callout } from '@rocket.chat/fuselage';
+import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -6,7 +7,7 @@ import { useForm, Controller } from 'react-hook-form';
 import GenericModal from '../../components/GenericModal';
 
 export type CalendarAuthPayload = {
-	email: string;
+	login: string;
 	password: string;
 	rememberCredentials?: boolean;
 };
@@ -17,6 +18,7 @@ type CalendarAuthModalProps = {
 };
 
 const CalendarAuthModal = ({ onCancel, onConfirm }: CalendarAuthModalProps) => {
+	const t = useTranslation();
 	const {
 		register,
 		handleSubmit,
@@ -41,20 +43,24 @@ const CalendarAuthModal = ({ onCancel, onConfirm }: CalendarAuthModalProps) => {
 		>
 			<FieldGroup>
 				<Field>
-					<Label>Email</Label>
+					<Label>{t('Login')}</Label>
 					<Field.Row>
-						<EmailInput {...register('email', { required: true })} />
+						<TextInput {...register('login', { required: true })} />
 					</Field.Row>
-					{errors.email && <Field.Error>Required</Field.Error>}
+					{errors.login && <Field.Error>Required</Field.Error>}
 				</Field>
 				<Field>
-					<Label>Password</Label>
+					<Label>{t('Password')}</Label>
 					<Field.Row>
 						<PasswordInput {...register('password', { required: true })} />
 					</Field.Row>
 					{errors.password && <Field.Error>Required</Field.Error>}
 				</Field>
-				{rememberCredentials && <Callout type='warning'>OH MY GOD</Callout>}
+				{rememberCredentials && (
+					<Callout title='Security warning' type='warning'>
+						Your credentials will be saved on plain text. Do not share your browser session.
+					</Callout>
+				)}
 				<Field>
 					<Field.Row>
 						<Controller

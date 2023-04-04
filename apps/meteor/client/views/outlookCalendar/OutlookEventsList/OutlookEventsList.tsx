@@ -1,7 +1,7 @@
 import type { IGroupVideoConference } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Button, Icon } from '@rocket.chat/fuselage';
 import { useResizeObserver, useSessionStorage } from '@rocket.chat/fuselage-hooks';
-import { useTranslation, useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useTranslation, useEndpoint, useSetModal, useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import React, { useState } from 'react';
@@ -26,8 +26,6 @@ type OutlookEventsListProps = {
 	loadMoreItems: (min: number, max: number) => void;
 };
 
-const OUTLOOK_HOST_URL = 'https://rocketchat-pexip-exchange.eastus.cloudapp.azure.com/EWS/Exchange.asmx';
-
 const OutlookEventsList = ({
 	onClose,
 	onChangeRoute,
@@ -39,14 +37,13 @@ const OutlookEventsList = ({
 	const setModal = useSetModal();
 	const [isSyncing, setIsSyncing] = useState(false);
 	const dispatchToastMessage = useToastMessageDispatch();
-	const [outlookCredential, setOutlookCredential] = useSessionStorage('outlookCredential', {
-		email: undefined,
-		password: undefined,
-	});
+	const outlookExchangeUrl = useSetting('Outlook_Calendar_Exchange_Url') as string;
+	const outlookUrl = useSetting('Outlook_Calendar_Outlook_Url') as string;
+	const [outlookToken, setOutlookToken] = useSessionStorage('outlookToken', '');
 
-	const today = new Date('2023-03-15').toISOString();
+	const today = new Date().toISOString();
 	const calendarData = useEndpoint('GET', '/v1/calendar-events.list');
-	const { data, isLoading, refetch } = useQuery(['calendar'], async () => calendarData({ date: today }));
+	const { data, isLoading, refetch } = useQuery(['calendar'], async () => calendarData({ date: today }), { refetchOnWindowFocus: false });
 
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
 		debounceDelay: 200,
@@ -55,16 +52,18 @@ const OutlookEventsList = ({
 	const calendarEvents = data?.data;
 	const total = calendarEvents?.length || 0;
 
-	console.log('outlookCredential', outlookCredential);
+	console.log('outlookCredential', outlookToken);
 	console.log(data);
 
 	const handleSync = () => {
-		const fetchCalendarData = async ({ email, password, rememberCredentials }: CalendarAuthPayload) => {
+		const fetchCalendarData = async ({ login, password, rememberCredentials }: CalendarAuthPayload) => {
+			const token = window.btoa(`${login}:${password}`);
+
 			try {
-				await syncOutlookEvents(new Date(), OUTLOOK_HOST_URL, email, password);
+				await syncOutlookEvents(new Date(), outlookExchangeUrl, token);
 
 				if (rememberCredentials) {
-					setOutlookCredential({ email, password });
+					setOutlookToken(token);
 				}
 				dispatchToastMessage({ type: 'success', message: 'Sync Success' });
 				refetch();
@@ -77,9 +76,10 @@ const OutlookEventsList = ({
 			}
 		};
 
-		if (outlookCredential.email && outlookCredential.password) {
+		if (outlookToken) {
 			setIsSyncing(true);
-			return fetchCalendarData({ email: outlookCredential.email, password: outlookCredential.password });
+			const token = window.atob(outlookToken).split(':');
+			return fetchCalendarData({ login: token[0], password: token[1] });
 		}
 
 		setModal(<CalendarAuthModal onCancel={() => setModal(null)} onConfirm={fetchCalendarData} />);
@@ -128,12 +128,7 @@ const OutlookEventsList = ({
 							overscan={25}
 							data={calendarEvents}
 							components={{ Scroller: ScrollableContentWrapper as any }}
-							itemContent={(_index, calendarData): ReactElement => (
-								<OutlookEventItem
-									calendarData={calendarData}
-									// reload={reload}
-								/>
-							)}
+							itemContent={(_index, calendarData): ReactElement => <OutlookEventItem calendarData={calendarData} />}
 						/>
 					</Box>
 				)}
@@ -141,13 +136,15 @@ const OutlookEventsList = ({
 			<VerticalBar.Footer>
 				<ButtonGroup mbe='x8' stretch>
 					<Button onClick={onChangeRoute}>{t('Calendar_settings')}</Button>
-					<Button onClick={() => window.open(OUTLOOK_HOST_URL, '_blank')}>
-						<Icon mie='x4' name='new-window' />
-						<Box is='span'>{t('Open_Outlook')}</Box>
-					</Button>
+					{outlookUrl && (
+						<Button onClick={() => window.open(outlookUrl, '_blank')}>
+							<Icon mie='x4' name='new-window' />
+							<Box is='span'>{t('Open_Outlook')}</Box>
+						</Button>
+					)}
 				</ButtonGroup>
 				<ButtonGroup stretch>
-					<Button disabled={isSyncing} onClick={handleSync}>
+					<Button primary disabled={isSyncing} onClick={handleSync}>
 						{isSyncing ? t('Sync_in_progress') : t('Sync')}
 					</Button>
 				</ButtonGroup>

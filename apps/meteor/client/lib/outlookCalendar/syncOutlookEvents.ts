@@ -19,7 +19,7 @@ export const syncOutlookEvents = async (date: Date, server: string, token: strin
 			const externalId = appointment.Id.UniqueId;
 			const subject = appointment.Subject;
 			const startTime = appointment.Start.ToISOString();
-			const description = appointment.Body?.Text;
+			const description = appointment.Body?.Text || '';
 
 			// If the appointment is not in the rocket.chat calendar, add it.
 			if (!existingEvent) {
