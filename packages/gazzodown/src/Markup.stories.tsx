@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, MessageBody, MessageContainer } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import { parse } from '@rocket.chat/message-parser';
+import { Options, parse } from '@rocket.chat/message-parser';
 import type { ComponentMeta, ComponentStoryFn, StoryFn } from '@storybook/react';
 import outdent from 'outdent';
 import { ReactElement, Suspense } from 'react';
@@ -217,9 +217,11 @@ lineBreak.args = {
 	],
 };
 
-export const example: StoryFn<{ msg: string }> = ({ msg }) => (
-	<Markup tokens={parse(msg, { katex: { dollarSyntax: true, parenthesisSyntax: true }, colors: true, emoticons: true })} />
-);
+export const example: StoryFn<{ msg: string }> = ({ msg }) => {
+	const parseOptions: Options = { katex: { dollarSyntax: true, parenthesisSyntax: true }, colors: true, emoticons: true };
+
+	return <Markup tokens={parse(msg, parseOptions)} />;
+};
 example.args = {
 	msg: outdent`
 		:smile:😀:smile:

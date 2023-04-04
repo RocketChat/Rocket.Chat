@@ -26,7 +26,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const tokenExist = Users.findPersonalAccessTokenByTokenNameAndUserId({
+		const tokenExist = await Users.findPersonalAccessTokenByTokenNameAndUserId({
 			userId: uid,
 			tokenName,
 		});

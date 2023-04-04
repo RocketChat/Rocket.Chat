@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Users } from '@rocket.chat/models';
 
-import { Users } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 
@@ -26,8 +26,8 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const user = Users.findOneById(userId, {
-			fields: { _id: 1, username: 1, name: 1, utcOffset: 1 },
+		const user = await Users.findOneById(userId, {
+			projection: { _id: 1, username: 1, name: 1, utcOffset: 1 },
 		});
 
 		await Livechat.requestTranscript({ rid, email, subject, user });
