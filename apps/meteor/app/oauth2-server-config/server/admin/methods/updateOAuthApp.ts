@@ -1,16 +1,18 @@
 import { Meteor } from 'meteor/meteor';
-import { OAuthApps } from '@rocket.chat/models';
+import { OAuthApps, Users } from '@rocket.chat/models';
 import type { IOAuthApps } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { Users } from '../../../../models/server';
 import { parseUriList } from '../functions/parseUriList';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		updateOAuthApp(applicationId: IOAuthApps['_id'], application: Pick<IOAuthApps, 'name' | 'redirectUri' | 'active'>): IOAuthApps | null;
+		updateOAuthApp(
+			applicationId: IOAuthApps['_id'],
+			application: Pick<IOAuthApps, 'name' | 'redirectUri' | 'active'>,
+		): Promise<IOAuthApps | null>;
 	}
 }
 
@@ -63,8 +65,8 @@ Meteor.methods<ServerMethods>({
 					active: application.active,
 					redirectUri,
 					_updatedAt: new Date(),
-					_updatedBy: Users.findOne(this.userId, {
-						fields: {
+					_updatedBy: await Users.findOneById(this.userId, {
+						projection: {
 							username: 1,
 						},
 					}),

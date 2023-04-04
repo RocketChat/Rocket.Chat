@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
+import { Messages } from '@rocket.chat/models';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
 import { canDeleteMessageAsync } from '../../../authorization/server/functions/canDeleteMessage';
-import { Messages } from '../../../models/server';
 import { deleteMessage } from '../functions';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -31,8 +31,8 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const originalMessage = Messages.findOneById(message._id, {
-			fields: {
+		const originalMessage = await Messages.findOneById(message._id, {
+			projection: {
 				u: 1,
 				rid: 1,
 				file: 1,

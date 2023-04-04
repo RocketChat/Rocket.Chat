@@ -1,9 +1,9 @@
 import { check } from 'meteor/check';
 import _ from 'underscore';
 import { isLivechatUsersManagerGETProps, isPOSTLivechatUsersTypeProps } from '@rocket.chat/rest-typings';
+import { Users } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
-import { Users } from '../../../../models/server';
 import { Livechat } from '../../../server/lib/Livechat';
 import { findAgents, findManagers } from '../../../server/api/lib/users';
 import { hasAtLeastOnePermissionAsync } from '../../../../authorization/server/functions/hasPermission';
@@ -93,7 +93,7 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
 	{
 		async get() {
-			const user = Users.findOneById(this.urlParams._id);
+			const user = await Users.findOneById(this.urlParams._id);
 
 			if (!user) {
 				return API.v1.failure('User not found');
@@ -120,7 +120,7 @@ API.v1.addRoute(
 			});
 		},
 		async delete() {
-			const user = Users.findOneById(this.urlParams._id);
+			const user = await Users.findOneById(this.urlParams._id);
 
 			if (!user) {
 				return API.v1.failure();

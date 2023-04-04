@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import type { IMessage, IPushNotificationConfig, IRoom, IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import { Push } from '../../../push/server';
 import { settings } from '../../../settings/server';
 import { metrics } from '../../../metrics/server';
-import { Users } from '../../../models/server';
 import { RocketChatAssets } from '../../../assets/server';
 import { replaceMentionedUsernamesWithFullNames, parseMessageTextPerUser } from '../../../lib/server/functions/notifications';
 import { callbacks } from '../../../../lib/callbacks';
@@ -123,7 +123,7 @@ class PushNotification {
 		message: IMessage;
 		room: IRoom;
 	}): Promise<NotificationPayload> {
-		const sender = Users.findOne(message.u._id, { fields: { username: 1, name: 1 } });
+		const sender = await Users.findOneById(message.u._id, { projection: { username: 1, name: 1 } });
 		if (!sender) {
 			throw new Error('Message sender not found');
 		}

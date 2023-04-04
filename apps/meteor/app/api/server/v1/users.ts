@@ -18,12 +18,11 @@ import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser } from '@rocket.chat/core-typings';
-import { Users as UsersRaw, Subscriptions } from '@rocket.chat/models';
+import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
+import { Users, Subscriptions } from '@rocket.chat/models';
 import type { Filter } from 'mongodb';
 import { Team, api } from '@rocket.chat/core-services';
 
-import { Users } from '../../../models/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { validateCustomFields, saveUser, saveCustomFieldsWithoutValidation, setUserAvatar, saveCustomFields } from '../../../lib/server';
@@ -98,7 +97,12 @@ API.v1.addRoute(
 			}
 			const { fields } = await this.parseJsonQuery();
 
-			return API.v1.success({ user: Users.findOneById(this.bodyParams.userId, { fields }) });
+			const user = await Users.findOneById(this.bodyParams.userId, { projection: fields });
+			if (!user) {
+				return API.v1.failure('User not found');
+			}
+
+			return API.v1.success({ user });
 		},
 	},
 );
@@ -129,7 +133,7 @@ API.v1.addRoute(
 			await Meteor.callAsync('saveUserProfile', userData, this.bodyParams.customFields, twoFactorOptions);
 
 			return API.v1.success({
-				user: Users.findOneById(this.userId, { fields: API.v1.defaultFieldsToExclude }),
+				user: await Users.findOneById(this.userId, { projection: API.v1.defaultFieldsToExclude }),
 			});
 		},
 	},
@@ -148,27 +152,32 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-action-not-allowed', 'Editing user is not allowed');
 			}
 			const userId = this.bodyParams.userId ? this.bodyParams.userId : this.userId;
-			if (!Users.findOneById(userId)) {
+			if (!(await Users.findOneById(userId))) {
 				throw new Meteor.Error('error-invalid-user', 'The optional "userId" param provided does not match any users');
 			}
 
 			await Meteor.runAsUser(userId, () => Meteor.callAsync('saveUserPreferences', this.bodyParams.data));
-			const user = Users.findOneById(userId, {
-				fields: {
+			const user = await Users.findOneById(userId, {
+				projection: {
 					'settings.preferences': 1,
 					'language': 1,
 				},
 			});
+
+			if (!user) {
+				return API.v1.failure('User not found');
+			}
+
 			return API.v1.success({
 				user: {
 					_id: user._id,
 					settings: {
 						preferences: {
-							...user.settings.preferences,
+							...user.settings?.preferences,
 							language: user.language,
 						},
 					},
-				} as Required<Pick<IUser, '_id' | 'settings'>>,
+				} as unknown as Required<Pick<IUser, '_id' | 'settings'>>,
 			});
 		},
 	},
@@ -187,7 +196,9 @@ API.v1.addRoute(
 				});
 			}
 
-			let user = await (async (): Promise<Pick<IUser, '_id' | 'roles' | 'username' | 'name' | 'status' | 'statusText'> | undefined> => {
+			let user = await (async (): Promise<
+				Pick<IUser, '_id' | 'roles' | 'username' | 'name' | 'status' | 'statusText'> | undefined | null
+			> => {
 				if (isUserFromParams(this.bodyParams, this.userId, this.user)) {
 					return Meteor.users.findOne(this.userId) as IUser | undefined;
 				}
@@ -201,7 +212,7 @@ API.v1.addRoute(
 			}
 
 			if (this.bodyParams.avatarUrl) {
-				setUserAvatar(user, this.bodyParams.avatarUrl, '', 'url');
+				await setUserAvatar(user, this.bodyParams.avatarUrl, '', 'url');
 				return API.v1.success();
 			}
 
@@ -221,9 +232,9 @@ API.v1.addRoute(
 			const sentTheUserByFormData = fields.userId || fields.username;
 			if (sentTheUserByFormData) {
 				if (fields.userId) {
-					user = Users.findOneById(fields.userId, { fields: { username: 1 } });
+					user = await Users.findOneById(fields.userId, { projection: { username: 1 } });
 				} else if (fields.username) {
-					user = Users.findOneByUsernameIgnoringCase(fields.username, { fields: { username: 1 } });
+					user = await Users.findOneByUsernameIgnoringCase(fields.username, { projection: { username: 1 } });
 				}
 
 				if (!user) {
@@ -236,7 +247,7 @@ API.v1.addRoute(
 				}
 			}
 
-			setUserAvatar(user, fileBuffer, mimetype, 'rest');
+			await setUserAvatar(user, fileBuffer, mimetype, 'rest');
 
 			return API.v1.success();
 		},
@@ -269,7 +280,12 @@ API.v1.addRoute(
 
 			const { fields } = await this.parseJsonQuery();
 
-			return API.v1.success({ user: Users.findOneById(newUserId, { fields }) });
+			const user = await Users.findOneById(newUserId as string, { projection: fields });
+			if (!user) {
+				return API.v1.failure('User not found');
+			}
+
+			return API.v1.success({ user });
 		},
 	},
 );
@@ -326,8 +342,13 @@ API.v1.addRoute(
 
 			const { userId, activeStatus, confirmRelinquish = false } = this.bodyParams;
 			await Meteor.callAsync('setUserActiveStatus', userId, activeStatus, confirmRelinquish);
+
+			const user = await Users.findOneById(this.bodyParams.userId, { projection: { active: 1 } });
+			if (!user) {
+				return API.v1.failure('User not found');
+			}
 			return API.v1.success({
-				user: Users.findOneById(this.bodyParams.userId, { fields: { active: 1 } }),
+				user,
 			});
 		},
 	},
@@ -347,7 +368,7 @@ API.v1.addRoute(
 			const lastLoggedIn = new Date();
 			lastLoggedIn.setDate(lastLoggedIn.getDate() - daysIdle);
 
-			const count = Users.setActiveNotLoggedInAfterWithRole(lastLoggedIn, role, false);
+			const count = (await Users.setActiveNotLoggedInAfterWithRole(lastLoggedIn, role, false)).modifiedCount;
 
 			return API.v1.success({
 				count,
@@ -466,7 +487,7 @@ API.v1.addRoute(
 					  ]
 					: [];
 
-			const result = await UsersRaw.col
+			const result = await Users.col
 				.aggregate<{ sortedResults: IUser[]; totalCount: { total: number }[] }>([
 					{
 						$match: nonEmptyQuery,
@@ -544,7 +565,12 @@ API.v1.addRoute(
 			const { fields } = await this.parseJsonQuery();
 			await Meteor.runAsUser(userId, () => Meteor.callAsync('setUsername', this.bodyParams.username));
 
-			return API.v1.success({ user: Users.findOneById(userId, { fields }) });
+			const user = await Users.findOneById(userId, { projection: fields });
+			if (!user) {
+				return API.v1.failure('User not found');
+			}
+
+			return API.v1.success({ user });
 		},
 	},
 );
@@ -587,11 +613,11 @@ API.v1.addRoute(
 	'users.getPreferences',
 	{ authRequired: true },
 	{
-		get() {
-			const user = Users.findOneById(this.userId);
-			if (user.settings) {
-				const { preferences = {} } = user.settings;
-				preferences.language = user.language;
+		async get() {
+			const user = await Users.findOneById(this.userId);
+			if (user?.settings) {
+				const { preferences = {} } = user?.settings;
+				preferences.language = user?.language;
 
 				return API.v1.success({
 					preferences,
@@ -687,7 +713,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('not-authorized', 'Not Authorized');
 			}
 
-			const user = Users.getLoginTokensByUserId(this.userId).fetch()[0] as IUser | undefined;
+			const user = (await Users.getLoginTokensByUserId(this.userId).toArray())[0] as unknown as IUser | undefined;
 
 			const isPersonalAccessToken = (loginToken: ILoginToken | IPersonalAccessToken): loginToken is IPersonalAccessToken =>
 				'type' in loginToken && loginToken.type === 'personalAccessToken';
@@ -727,8 +753,8 @@ API.v1.addRoute(
 	'users.2fa.enableEmail',
 	{ authRequired: true },
 	{
-		post() {
-			Users.enableEmail2FAByUserId(this.userId);
+		async post() {
+			await Users.enableEmail2FAByUserId(this.userId);
 
 			return API.v1.success();
 		},
@@ -739,8 +765,8 @@ API.v1.addRoute(
 	'users.2fa.disableEmail',
 	{ authRequired: true, twoFactorRequired: true, twoFactorOptions: { disableRememberMe: true } },
 	{
-		post() {
-			Users.disableEmail2FAByUserId(this.userId);
+		async post() {
+			await Users.disableEmail2FAByUserId(this.userId);
 
 			return API.v1.success();
 		},
@@ -756,10 +782,14 @@ API.v1.addRoute('users.2fa.sendEmailCode', {
 		}
 
 		const method = emailOrUsername.includes('@') ? 'findOneByEmailAddress' : 'findOneByUsername';
-		const userId = this.userId || Users[method](emailOrUsername, { fields: { _id: 1 } })?._id;
+		const userId = this.userId || (await Users[method](emailOrUsername, { projection: { _id: 1 } }))?._id;
 
+		if (!userId) {
+			// this.logger.error('[2fa] User was not found when requesting 2fa email code');
+			return API.v1.success();
+		}
 		const user = await getUserForCheck(userId);
-		if (!userId || !user) {
+		if (!user) {
 			// this.logger.error('[2fa] User was not found when requesting 2fa email code');
 			return API.v1.success();
 		}
@@ -792,7 +822,7 @@ API.v1.addRoute(
 	'users.presence',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			// if presence broadcast is disabled, return an empty array (all users are "offline")
 			if (settings.get('Presence_broadcast_disabled')) {
 				return API.v1.success({
@@ -804,7 +834,7 @@ API.v1.addRoute(
 			const { from, ids } = this.queryParams;
 
 			const options = {
-				fields: {
+				projection: {
 					username: 1,
 					name: 1,
 					status: 1,
@@ -816,7 +846,7 @@ API.v1.addRoute(
 
 			if (ids) {
 				return API.v1.success({
-					users: Users.findNotOfflineByIds(Array.isArray(ids) ? ids : ids.split(','), options).fetch(),
+					users: await Users.findNotOfflineByIds(Array.isArray(ids) ? ids : ids.split(','), options).toArray(),
 					full: false,
 				});
 			}
@@ -827,14 +857,14 @@ API.v1.addRoute(
 
 				if (diff < 10) {
 					return API.v1.success({
-						users: Users.findNotIdUpdatedFrom(this.userId, ts, options).fetch(),
+						users: await Users.findNotIdUpdatedFrom(this.userId, ts, options).toArray(),
 						full: false,
 					});
 				}
 			}
 
 			return API.v1.success({
-				users: Users.findUsersNotOffline(options).fetch(),
+				users: await Users.findUsersNotOffline(options).toArray(),
 				full: true,
 			});
 		},
@@ -872,11 +902,11 @@ API.v1.addRoute(
 			}
 			const hashedToken = Accounts._hashLoginToken(xAuthToken);
 
-			if (!(await UsersRaw.removeNonPATLoginTokensExcept(this.userId, hashedToken))) {
+			if (!(await Users.removeNonPATLoginTokensExcept(this.userId, hashedToken))) {
 				throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 			}
 
-			const me = (await UsersRaw.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1 } })) as Pick<IUser, 'services'>;
+			const me = (await Users.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1 } })) as Pick<IUser, 'services'>;
 
 			const token = me.services?.resume?.loginTokens?.find((token) => token.hashedToken === hashedToken);
 
@@ -1029,7 +1059,7 @@ API.v1.addRoute(
 			}
 
 			// this method logs the user out automatically, if successful returns 1, otherwise 0
-			if (!(await UsersRaw.unsetLoginTokens(userId))) {
+			if (!(await Users.unsetLoginTokens(userId))) {
 				throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
 			}
 
@@ -1046,18 +1076,18 @@ API.v1.addRoute(
 	{
 		async get() {
 			if (isUserFromParams(this.queryParams, this.userId, this.user)) {
-				const user = Users.findOneById(this.userId);
+				const user = await Users.findOneById(this.userId);
 				return API.v1.success({
-					presence: user.status || 'offline',
-					connectionStatus: user.statusConnection || 'offline',
-					...(user.lastLogin && { lastLogin: user.lastLogin }),
+					presence: (user?.status || 'offline') as UserStatus,
+					connectionStatus: user?.statusConnection || 'offline',
+					...(user?.lastLogin && { lastLogin: user?.lastLogin }),
 				});
 			}
 
 			const user = await getUserFromParams(this.queryParams);
 
 			return API.v1.success({
-				presence: user.status || 'offline',
+				presence: user.status || ('offline' as UserStatus),
 			});
 		},
 	},
@@ -1151,12 +1181,12 @@ API.v1.addRoute(
 	{
 		async get() {
 			if (isUserFromParams(this.queryParams, this.userId, this.user)) {
-				const user = Users.findOneById(this.userId);
+				const user: IUser | null = await Users.findOneById(this.userId);
 				return API.v1.success({
-					_id: user._id,
+					_id: user?._id,
 					// message: user.statusText,
-					connectionStatus: (user.statusConnection || 'offline') as 'online' | 'offline' | 'away' | 'busy',
-					status: (user.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
+					connectionStatus: (user?.statusConnection || 'offline') as 'online' | 'offline' | 'away' | 'busy',
+					status: (user?.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
 				});
 			}
 
