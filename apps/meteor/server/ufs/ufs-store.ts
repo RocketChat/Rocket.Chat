@@ -14,7 +14,6 @@ import type { IBaseUploadsModel } from '@rocket.chat/model-typings';
 import { UploadFS } from '.';
 import type { IFile } from './definition';
 import { Filter } from './ufs-filter';
-import { StorePermissions } from './ufs-store-permissions';
 import { Tokens } from './ufs-tokens';
 
 export type StoreOptions = {
@@ -27,7 +26,6 @@ export type StoreOptions = {
 	onReadError?: (err: any, fileId: string, file: IFile) => void;
 	onValidate?: (file: IFile) => Promise<void>;
 	onWriteError?: (err: any, fileId: string, file: IFile) => void;
-	permissions?: StorePermissions;
 	transformRead?: (
 		readStream: stream.Readable,
 		writeStream: stream.Writable,
@@ -41,8 +39,6 @@ export type StoreOptions = {
 
 export class Store {
 	protected options: StoreOptions;
-
-	private permissions?: StorePermissions;
 
 	public checkToken: (token: string, fileId: string) => boolean;
 
@@ -87,9 +83,6 @@ export class Store {
 		if (options.onWriteError && typeof options.onWriteError !== 'function') {
 			throw new TypeError('Store: onWriteError is not a function');
 		}
-		if (options.permissions && !(options.permissions instanceof StorePermissions)) {
-			throw new TypeError('Store: permissions is not a UploadFS.StorePermissions');
-		}
 		if (options.transformRead && typeof options.transformRead !== 'function') {
 			throw new TypeError('Store: transformRead is not a function');
 		}
@@ -102,7 +95,6 @@ export class Store {
 
 		// Public attributes
 		this.options = options;
-		this.permissions = options.permissions;
 
 		if (options.onCopyError) this.onCopyError = options.onCopyError;
 		if (options.onFinishUpload) this.onFinishUpload = options.onFinishUpload;
@@ -113,17 +105,6 @@ export class Store {
 
 		// Add the store to the list
 		UploadFS.addStore(this);
-
-		// Set default permissions
-		if (!(this.permissions instanceof StorePermissions)) {
-			// Uses custom default permissions or UFS default permissions
-			if (UploadFS.config.defaultStorePermissions instanceof StorePermissions) {
-				this.permissions = UploadFS.config.defaultStorePermissions;
-			} else {
-				this.permissions = new StorePermissions();
-				console.warn(`ufs: permissions are not defined for store "${options.name}"`);
-			}
-		}
 
 		this.checkToken = (token, fileId) => {
 			check(token, String);
@@ -404,13 +385,6 @@ export class Store {
 
 	onWriteError(err: Error, fileId: string, _file: IFile) {
 		console.error(`ufs: cannot write file "${fileId}" (${err.message})`, err);
-	}
-
-	setPermissions(permissions: StorePermissions) {
-		if (!(permissions instanceof StorePermissions)) {
-			throw new TypeError('Permissions is not an instance of UploadFS.StorePermissions');
-		}
-		this.permissions = permissions;
 	}
 
 	transformRead(
