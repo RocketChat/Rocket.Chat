@@ -34,74 +34,72 @@ export async function setUserAvatar(
 		return;
 	}
 
-	const { buffer, type } = Promise.await(
-		(async (): Promise<{ buffer: Buffer; type: string }> => {
-			if (service === 'url' && typeof dataURI === 'string') {
-				let response: Response;
-				try {
-					response = await fetch(dataURI);
-				} catch (e) {
-					SystemLogger.info(`Not a valid response, from the avatar url: ${encodeURI(dataURI)}`);
-					throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${encodeURI(dataURI)}`, {
-						function: 'setUserAvatar',
-						url: dataURI,
-					});
-				}
+	const { buffer, type } = await (async (): Promise<{ buffer: Buffer; type: string }> => {
+		if (service === 'url' && typeof dataURI === 'string') {
+			let response: Response;
+			try {
+				response = await fetch(dataURI);
+			} catch (e) {
+				SystemLogger.info(`Not a valid response, from the avatar url: ${encodeURI(dataURI)}`);
+				throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${encodeURI(dataURI)}`, {
+					function: 'setUserAvatar',
+					url: dataURI,
+				});
+			}
 
-				if (response.status !== 200) {
-					if (response.status !== 404) {
-						SystemLogger.info(`Error while handling the setting of the avatar from a url (${encodeURI(dataURI)}) for ${user.username}`);
-						throw new Meteor.Error(
-							'error-avatar-url-handling',
-							`Error while handling avatar setting from a URL (${encodeURI(dataURI)}) for ${user.username}`,
-							{ function: 'RocketChat.setUserAvatar', url: dataURI, username: user.username },
-						);
-					}
-
-					SystemLogger.info(`Not a valid response, ${response.status}, from the avatar url: ${dataURI}`);
-					throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${dataURI}`, {
-						function: 'setUserAvatar',
-						url: dataURI,
-					});
-				}
-
-				if (!/image\/.+/.test(response.headers.get('content-type') || '')) {
-					SystemLogger.info(
-						`Not a valid content-type from the provided url, ${response.headers.get('content-type')}, from the avatar url: ${dataURI}`,
+			if (response.status !== 200) {
+				if (response.status !== 404) {
+					SystemLogger.info(`Error while handling the setting of the avatar from a url (${encodeURI(dataURI)}) for ${user.username}`);
+					throw new Meteor.Error(
+						'error-avatar-url-handling',
+						`Error while handling avatar setting from a URL (${encodeURI(dataURI)}) for ${user.username}`,
+						{ function: 'RocketChat.setUserAvatar', url: dataURI, username: user.username },
 					);
-					throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${dataURI}`, {
-						function: 'setUserAvatar',
-						url: dataURI,
-					});
 				}
 
-				return {
-					buffer: Buffer.from(await response.arrayBuffer()),
-					type: response.headers.get('content-type') || '',
-				};
+				SystemLogger.info(`Not a valid response, ${response.status}, from the avatar url: ${dataURI}`);
+				throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${dataURI}`, {
+					function: 'setUserAvatar',
+					url: dataURI,
+				});
 			}
 
-			if (service === 'rest') {
-				if (!contentType) {
-					throw new Meteor.Error('error-avatar-invalid-content-type', 'Invalid avatar content type', {
-						function: 'setUserAvatar',
-					});
-				}
-
-				return {
-					buffer: dataURI instanceof Buffer ? dataURI : Buffer.from(dataURI, 'binary'),
-					type: contentType,
-				};
+			if (!/image\/.+/.test(response.headers.get('content-type') || '')) {
+				SystemLogger.info(
+					`Not a valid content-type from the provided url, ${response.headers.get('content-type')}, from the avatar url: ${dataURI}`,
+				);
+				throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${dataURI}`, {
+					function: 'setUserAvatar',
+					url: dataURI,
+				});
 			}
-
-			const fileData = RocketChatFile.dataURIParse(dataURI);
 
 			return {
-				buffer: Buffer.from(fileData.image, 'base64'),
-				type: fileData.contentType,
+				buffer: Buffer.from(await response.arrayBuffer()),
+				type: response.headers.get('content-type') || '',
 			};
-		})(),
-	);
+		}
+
+		if (service === 'rest') {
+			if (!contentType) {
+				throw new Meteor.Error('error-avatar-invalid-content-type', 'Invalid avatar content type', {
+					function: 'setUserAvatar',
+				});
+			}
+
+			return {
+				buffer: dataURI instanceof Buffer ? dataURI : Buffer.from(dataURI, 'binary'),
+				type: contentType,
+			};
+		}
+
+		const fileData = RocketChatFile.dataURIParse(dataURI);
+
+		return {
+			buffer: Buffer.from(fileData.image, 'base64'),
+			type: fileData.contentType,
+		};
+	})();
 
 	const fileStore = FileUpload.getStore('Avatars');
 	user.username && fileStore.deleteByName(user.username);
