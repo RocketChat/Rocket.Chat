@@ -22,35 +22,42 @@ type RetryOptions = {
 	retryTime: number;
 };
 
+type ConnectionStatus = 'idle' | 'connecting' | 'connected' | 'failed' | 'closed' | 'disconnected';
+
 export interface Connection
 	extends Emitter<{
-		connection: (payload: { msg: 'connected' | 'failed'; session?: string; version?: string }) => void;
-		disconnected: () => void;
-		close: () => void;
+		connection: ConnectionStatus;
+		disconnected: void;
+		close: void;
 	}> {
 	session?: string;
 
-	status: 'idle' | 'connecting' | 'connected' | 'failed' | 'closed' | 'disconnected';
+	status: ConnectionStatus;
 }
 
 export class ConnectionImpl
 	extends Emitter<{
-		connection: (payload: { msg: 'connected' | 'failed'; session?: string; version?: string }) => void;
-		disconnected: () => void;
-		close: () => void;
+		connection: ConnectionStatus;
+		disconnected: void;
+		close: void;
 	}>
 	implements Connection
 {
 	session?: string;
 
-	status: 'idle' | 'connecting' | 'connected' | 'failed' | 'closed' | 'disconnected' = 'idle';
+	status: ConnectionStatus = 'idle';
 
 	constructor(private ws: WebSocket, private client: DDPClient, _retryOptions?: RetryOptions) {
 		super();
 	}
 
+	private emitStatus() {
+		this.emit('connection', this.status);
+	}
+
 	connect() {
 		this.status = 'connecting';
+		this.emitStatus();
 		return new Promise((resolve, reject) => {
 			this.ws.onopen = () => {
 				// The server may send an initial message which is a JSON object lacking a msg key. If so, the client should ignore it. The client does not have to wait for this message.
@@ -78,11 +85,13 @@ export class ConnectionImpl
 				this.client.onConnection((payload) => {
 					if (payload.msg === 'connected') {
 						this.status = 'connected';
+						this.emitStatus();
 						this.session = payload.session;
 						return resolve(true);
 					}
 					if (payload.msg === 'failed') {
 						this.status = 'failed';
+						this.emitStatus();
 						return reject(payload.version);
 					}
 					reject(new Error('Unknown message type'));
@@ -97,6 +106,7 @@ export class ConnectionImpl
 					return;
 				}
 				this.status = 'disconnected';
+				this.emitStatus();
 				// if (this.retryOptions.retryCount > 0) {
 				// 	this.retryOptions.retryCount -= 1;
 				// 	this.retryOptions.retryTimer = setTimeout(() => {
@@ -110,5 +120,6 @@ export class ConnectionImpl
 	close() {
 		this.status = 'closed';
 		this.ws.close();
+		this.emitStatus();
 	}
 }

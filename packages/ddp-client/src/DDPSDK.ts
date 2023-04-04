@@ -83,6 +83,8 @@ export class DDPSDK extends ClientStreamImpl implements SDK {
 
 		await connection.connect();
 
-		return new DDPSDK(ddp);
+		const sdk = new DDPSDK(ddp);
+
+		return sdk;
 	}
 }
