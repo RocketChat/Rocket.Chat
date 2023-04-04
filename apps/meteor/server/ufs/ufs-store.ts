@@ -12,28 +12,27 @@ import type { IUpload } from '@rocket.chat/core-typings';
 import type { IBaseUploadsModel } from '@rocket.chat/model-typings';
 
 import { UploadFS } from '.';
-import type { IFile } from './definition';
 import { Filter } from './ufs-filter';
 
 export type StoreOptions = {
-	collection?: IBaseUploadsModel<IFile>;
+	collection?: IBaseUploadsModel<IUpload>;
 	filter?: Filter;
 	name: string;
-	onCopyError?: (err: any, fileId: string, file: IFile) => void;
-	onFinishUpload?: (file: IFile) => Promise<void>;
-	onRead?: (fileId: string, file: IFile, request: any, response: any) => Promise<boolean>;
-	onReadError?: (err: any, fileId: string, file: IFile) => void;
-	onValidate?: (file: IFile) => Promise<void>;
-	onWriteError?: (err: any, fileId: string, file: IFile) => void;
+	onCopyError?: (err: any, fileId: string, file: IUpload) => void;
+	onFinishUpload?: (file: IUpload) => Promise<void>;
+	onRead?: (fileId: string, file: IUpload, request: any, response: any) => Promise<boolean>;
+	onReadError?: (err: any, fileId: string, file: IUpload) => void;
+	onValidate?: (file: IUpload) => Promise<void>;
+	onWriteError?: (err: any, fileId: string, file: IUpload) => void;
 	transformRead?: (
 		readStream: stream.Readable,
 		writeStream: stream.Writable,
 		fileId: string,
-		file: IFile,
+		file: IUpload,
 		request: createServer.IncomingMessage,
 		headers?: Record<string, any>,
 	) => void;
-	transformWrite?: (readStream: stream.Readable, writeStream: stream.Writable, fileId: string, file: IFile) => void;
+	transformWrite?: (readStream: stream.Readable, writeStream: stream.Writable, fileId: string, file: IUpload) => void;
 };
 
 export class Store {
@@ -42,12 +41,12 @@ export class Store {
 	public copy: (
 		fileId: string,
 		store: Store,
-		callback?: (err?: Error, copyId?: string, copy?: OptionalId<IFile>, store?: Store) => void,
+		callback?: (err?: Error, copyId?: string, copy?: OptionalId<IUpload>, store?: Store) => void,
 	) => Promise<void>;
 
-	public create: (file: OptionalId<IFile>) => Promise<string>;
+	public create: (file: OptionalId<IUpload>) => Promise<string>;
 
-	public write: (rs: stream.Readable, fileId: string, callback: (err?: Error, file?: IFile) => void) => Promise<void>;
+	public write: (rs: stream.Readable, fileId: string, callback: (err?: Error, file?: IUpload) => void) => Promise<void>;
 
 	constructor(options: StoreOptions) {
 		options = {
@@ -262,7 +261,7 @@ export class Store {
 		return this.options.collection!;
 	}
 
-	async getFilePath(_fileId: string, _file?: IFile): Promise<string> {
+	async getFilePath(_fileId: string, _file?: IUpload): Promise<string> {
 		throw new Error('Store.getFilePath is not implemented');
 	}
 
@@ -284,7 +283,7 @@ export class Store {
 		return this.options.name;
 	}
 
-	async getReadStream(_fileId: string, _file: IFile, _options?: { start?: number; end?: number }): Promise<stream.Readable> {
+	async getReadStream(_fileId: string, _file: IUpload, _options?: { start?: number; end?: number }): Promise<stream.Readable> {
 		throw new Error('Store.getReadStream is not implemented');
 	}
 
@@ -307,31 +306,31 @@ export class Store {
 		throw new Error('getRedirectURL is not implemented');
 	}
 
-	async getWriteStream(_fileId: string, _file: IFile): Promise<stream.Writable> {
+	async getWriteStream(_fileId: string, _file: IUpload): Promise<stream.Writable> {
 		throw new Error('getWriteStream is not implemented');
 	}
 
-	onCopyError(err: Error, fileId: string, _file: IFile) {
+	onCopyError(err: Error, fileId: string, _file: IUpload) {
 		console.error(`ufs: cannot copy file "${fileId}" (${err.message})`, err);
 	}
 
-	async onFinishUpload(_file: IFile) {
+	async onFinishUpload(_file: IUpload) {
 		//
 	}
 
-	async onRead(_fileId: string, _file: IFile, _request: createServer.IncomingMessage, _response: http.ServerResponse) {
+	async onRead(_fileId: string, _file: IUpload, _request: createServer.IncomingMessage, _response: http.ServerResponse) {
 		return true;
 	}
 
-	onReadError(err: Error, fileId: string, _file: IFile) {
+	onReadError(err: Error, fileId: string, _file: IUpload) {
 		console.error(`ufs: cannot read file "${fileId}" (${err.message})`, err);
 	}
 
-	async onValidate(_file: IFile) {
+	async onValidate(_file: IUpload) {
 		//
 	}
 
-	onWriteError(err: Error, fileId: string, _file: IFile) {
+	onWriteError(err: Error, fileId: string, _file: IUpload) {
 		console.error(`ufs: cannot write file "${fileId}" (${err.message})`, err);
 	}
 
@@ -339,7 +338,7 @@ export class Store {
 		readStream: stream.Readable,
 		writeStream: stream.Writable,
 		fileId: string,
-		file: IFile,
+		file: IUpload,
 		request: createServer.IncomingMessage,
 		headers?: Record<string, any>,
 	) {
@@ -350,7 +349,7 @@ export class Store {
 		}
 	}
 
-	transformWrite(readStream: stream.Readable, writeStream: stream.Writable, fileId: string, file: IFile) {
+	transformWrite(readStream: stream.Readable, writeStream: stream.Writable, fileId: string, file: IUpload) {
 		if (typeof this.options.transformWrite === 'function') {
 			this.options.transformWrite.call(this, readStream, writeStream, fileId, file);
 		} else {
@@ -358,7 +357,7 @@ export class Store {
 		}
 	}
 
-	async validate(file: IFile) {
+	async validate(file: IUpload) {
 		if (typeof this.onValidate === 'function') {
 			await this.onValidate(file);
 		}

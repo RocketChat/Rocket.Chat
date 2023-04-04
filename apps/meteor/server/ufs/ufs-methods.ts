@@ -2,10 +2,11 @@ import fs from 'fs';
 
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
+import type { IUpload } from '@rocket.chat/core-typings';
 
 import { UploadFS } from '.';
 
-export async function ufsComplete(fileId: string, storeName: string) {
+export async function ufsComplete(fileId: string, storeName: string): Promise<IUpload> {
 	check(fileId, String);
 	check(storeName, String);
 
@@ -60,6 +61,9 @@ export async function ufsComplete(fileId: string, storeName: string) {
 
 				if (err) {
 					return reject(err);
+				}
+				if (!file) {
+					return reject(new Error('Unknown error writing file'));
 				}
 				resolve(file);
 			});
