@@ -16,8 +16,8 @@ type IControl = {
 type IMigration = {
 	name?: string;
 	version: number;
-	up: (migration: IMigration) => void;
-	down?: (migration: IMigration) => void;
+	up: (migration: IMigration) => Promise<void> | void;
+	down?: (migration: IMigration) => Promise<void> | void;
 };
 
 const log = new Logger('Migrations');
@@ -148,21 +148,21 @@ function showError(version: number, control: IControl, e: any): void {
 }
 
 // run the actual migration
-function migrate(direction: 'up' | 'down', migration: IMigration): void {
+async function migrate(direction: 'up' | 'down', migration: IMigration): Promise<void> {
 	if (typeof migration[direction] !== 'function') {
 		throw new Error(`Cannot migrate ${direction} on version ${migration.version}`);
 	}
 
 	log.startup(`Running ${direction}() on version ${migration.version}${migration.name ? `(${migration.name})` : ''}`);
 
-	Promise.await(migration[direction]?.(migration));
+	await migration[direction]?.(migration);
 }
 
 const maxAttempts = 30;
 const retryInterval = 10;
 let currentAttempt = 0;
 
-export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: string[]): boolean {
+export async function migrateDatabase(targetVersion: 'latest' | number, subcommands?: string[]): Promise<boolean> {
 	const control = getControl();
 	const currentVersion = control.version;
 
@@ -227,7 +227,7 @@ export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: 
 		}
 
 		try {
-			migrate('up', migration);
+			await migrate('up', migration);
 		} catch (e) {
 			showError(version, control, e);
 			log.error({ err: e });
@@ -257,22 +257,30 @@ export function migrateDatabase(targetVersion: 'latest' | number, subcommands?: 
 	log.startup(`Migrating from version ${orderedMigrations[startIdx].version} -> ${orderedMigrations[endIdx].version}`);
 
 	try {
+		const migrations = [];
 		if (currentVersion < version) {
 			for (let i = startIdx; i < endIdx; i++) {
-				migrate('up', orderedMigrations[i + 1]);
-				setControl({
-					locked: true,
-					version: orderedMigrations[i + 1].version,
+				migrations.push(async () => {
+					await migrate('up', orderedMigrations[i + 1]);
+					setControl({
+						locked: true,
+						version: orderedMigrations[i + 1].version,
+					});
 				});
 			}
 		} else {
 			for (let i = startIdx; i > endIdx; i--) {
-				migrate('down', orderedMigrations[i]);
-				setControl({
-					locked: true,
-					version: orderedMigrations[i - 1].version,
+				migrations.push(async () => {
+					await migrate('down', orderedMigrations[i]);
+					setControl({
+						locked: true,
+						version: orderedMigrations[i - 1].version,
+					});
 				});
 			}
+		}
+		for await (const migration of migrations) {
+			await migration();
 		}
 	} catch (e) {
 		showError(version, control, e);

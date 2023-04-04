@@ -62,7 +62,7 @@ export class OmnichannelVoipService extends ServiceClassInternal implements IOmn
 			return;
 		}
 		this.logger.debug(`Notifying agent ${agent._id} of hangup on room ${currentRoom._id}`);
-		api.broadcast('call.callerhangup', agent._id, { roomId: currentRoom._id });
+		void api.broadcast('call.callerhangup', agent._id, { roomId: currentRoom._id });
 	}
 
 	private async processAgentDisconnect(extension: string): Promise<void> {

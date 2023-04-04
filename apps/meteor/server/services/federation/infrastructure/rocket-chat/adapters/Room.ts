@@ -1,6 +1,6 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
-import { Rooms, Subscriptions, MatrixBridgedRoom } from '@rocket.chat/models';
+import { Messages as MessagesRaw, Rooms, Subscriptions, MatrixBridgedRoom } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
 import { DirectMessageFederatedRoom, FederatedRoom } from '../../../domain/FederatedRoom';
@@ -45,7 +45,7 @@ export class RocketChatRoomAdapter {
 		if (!usernameOrId) {
 			throw new Error('Cannot create a room without a creator');
 		}
-		const { rid, _id } = createRoom(federatedRoom.getRoomType(), federatedRoom.getDisplayName(), usernameOrId);
+		const { rid, _id } = await createRoom(federatedRoom.getRoomType(), federatedRoom.getDisplayName(), usernameOrId);
 		const roomId = rid || _id;
 		await MatrixBridgedRoom.createOrUpdateByLocalRoomId(roomId, federatedRoom.getExternalId());
 		await Rooms.setAsFederated(roomId);
@@ -72,7 +72,7 @@ export class RocketChatRoomAdapter {
 
 		const readonly = false;
 		const extraData = undefined;
-		const { rid, _id } = createRoom(
+		const { rid, _id } = await createRoom(
 			federatedRoom.getRoomType(),
 			federatedRoom.getDisplayName(),
 			usernameOrId,
@@ -104,13 +104,13 @@ export class RocketChatRoomAdapter {
 	}
 
 	public async addUserToRoom(federatedRoom: FederatedRoom, inviteeUser: FederatedUser, inviterUser?: FederatedUser): Promise<void> {
-		addUserToRoom(federatedRoom.getInternalId(), inviteeUser.getInternalReference(), inviterUser?.getInternalReference());
+		await addUserToRoom(federatedRoom.getInternalId(), inviteeUser.getInternalReference(), inviterUser?.getInternalReference());
 	}
 
 	public async removeUserFromRoom(federatedRoom: FederatedRoom, affectedUser: FederatedUser, byUser: FederatedUser): Promise<void> {
 		const userHasBeenRemoved = byUser.getInternalId() !== affectedUser.getInternalId();
 		const options = userHasBeenRemoved ? { byUser: byUser.getInternalReference() } : undefined;
-		removeUserFromRoom(federatedRoom.getInternalId(), affectedUser.getInternalReference(), options);
+		await removeUserFromRoom(federatedRoom.getInternalId(), affectedUser.getInternalReference(), options);
 	}
 
 	public async isUserAlreadyJoined(internalRoomId: string, internalUserId: string): Promise<boolean> {
@@ -131,10 +131,10 @@ export class RocketChatRoomAdapter {
 			federatedRoom.getName() || '',
 			federatedRoom.getDisplayName() || '',
 		);
-		Messages.createRoomRenamedWithRoomIdRoomNameAndUser(
+		await MessagesRaw.createRoomRenamedWithRoomIdRoomNameAndUser(
 			federatedRoom.getInternalId(),
-			federatedRoom.getDisplayName(),
-			federatedUser.getInternalReference(),
+			federatedRoom.getDisplayName() || '',
+			federatedUser.getInternalReference() as unknown as Required<IUser>, // TODO fix type
 		);
 	}
 

@@ -5,13 +5,15 @@ import { Gravatar } from 'meteor/jparker:gravatar';
 import { isUserFederated } from '@rocket.chat/core-typings';
 
 import * as Mailer from '../../../mailer/server/api';
-import { getRoles, hasPermission } from '../../../authorization/server';
+import { getRoles } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { passwordPolicy } from '../lib/passwordPolicy';
 import { validateEmailDomain } from '../lib';
 import { getNewUserRoles } from '../../../../server/services/user/lib/getNewUserRoles';
 import { saveUserIdentity } from './saveUserIdentity';
-import { checkEmailAvailability, checkUsernameAvailability, setUserAvatar, setEmail, setStatusText } from '.';
+import { checkEmailAvailability, setUserAvatar, setEmail, setStatusText } from '.';
+import { checkUsernameAvailability } from './checkUsernameAvailability';
 import { Users } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
@@ -59,17 +61,17 @@ function _sendUserEmail(subject, html, userData) {
 	}
 }
 
-function validateUserData(userId, userData) {
-	const existingRoles = _.pluck(getRoles(), '_id');
+async function validateUserData(userId, userData) {
+	const existingRoles = _.pluck(await getRoles(), '_id');
 
-	if (userData._id && userId !== userData._id && !hasPermission(userId, 'edit-other-user-info')) {
+	if (userData._id && userId !== userData._id && !(await hasPermissionAsync(userId, 'edit-other-user-info'))) {
 		throw new Meteor.Error('error-action-not-allowed', 'Editing user is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Editing_user',
 		});
 	}
 
-	if (!userData._id && !hasPermission(userId, 'create-user')) {
+	if (!userData._id && !(await hasPermissionAsync(userId, 'create-user'))) {
 		throw new Meteor.Error('error-action-not-allowed', 'Adding user is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Adding_user',
@@ -83,7 +85,7 @@ function validateUserData(userId, userData) {
 		});
 	}
 
-	if (userData.roles && userData.roles.includes('admin') && !hasPermission(userId, 'assign-admin-role')) {
+	if (userData.roles && userData.roles.includes('admin') && !(await hasPermissionAsync(userId, 'assign-admin-role'))) {
 		throw new Meteor.Error('error-action-not-allowed', 'Assigning admin is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Assign_admin',
@@ -132,7 +134,7 @@ function validateUserData(userId, userData) {
 	}
 
 	if (!userData._id) {
-		if (!checkUsernameAvailability(userData.username)) {
+		if (!(await checkUsernameAvailability(userData.username))) {
 			throw new Meteor.Error('error-field-unavailable', `${_.escape(userData.username)} is already in use :(`, {
 				method: 'insertOrUpdateUser',
 				field: userData.username,
@@ -152,20 +154,20 @@ function validateUserData(userId, userData) {
  * Validate permissions to edit user fields
  *
  * @param {string} userId
- * @param {{ _id: string, roles: string[], username: string, name: string, statusText: string, email: string, password: string}} userData
+ * @param {{ _id: string, roles?: string[], username?: string, name?: string, statusText?: string, email?: string, password?: string}} userData
  */
-export function validateUserEditing(userId, userData) {
+export async function validateUserEditing(userId, userData) {
 	const editingMyself = userData._id && userId === userData._id;
 
-	const canEditOtherUserInfo = hasPermission(userId, 'edit-other-user-info');
-	const canEditOtherUserPassword = hasPermission(userId, 'edit-other-user-password');
+	const canEditOtherUserInfo = await hasPermissionAsync(userId, 'edit-other-user-info');
+	const canEditOtherUserPassword = await hasPermissionAsync(userId, 'edit-other-user-password');
 	const user = Users.findOneById(userData._id);
 
 	const isEditingUserRoles = (previousRoles, newRoles) =>
 		typeof newRoles !== 'undefined' && !_.isEqual(_.sortBy(previousRoles), _.sortBy(newRoles));
 	const isEditingField = (previousValue, newValue) => typeof newValue !== 'undefined' && newValue !== previousValue;
 
-	if (isEditingUserRoles(user.roles, userData.roles) && !hasPermission(userId, 'assign-roles')) {
+	if (isEditingUserRoles(user.roles, userData.roles) && !(await hasPermissionAsync(userId, 'assign-roles'))) {
 		throw new Meteor.Error('error-action-not-allowed', 'Assign roles is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Assign_role',
@@ -265,7 +267,7 @@ const handleNickname = (updateUser, nickname) => {
 const saveNewUser = function (userData, sendPassword) {
 	validateEmailDomain(userData.email);
 
-	const roles = userData.roles || getNewUserRoles();
+	const roles = (!!userData.roles && userData.roles.length > 0 && userData.roles) || getNewUserRoles();
 	const isGuest = roles && roles.length === 1 && roles.includes('guest');
 
 	// insert user
@@ -329,12 +331,12 @@ const saveNewUser = function (userData, sendPassword) {
 	return _id;
 };
 
-export const saveUser = function (userId, userData) {
+export const saveUser = async function (userId, userData) {
 	const oldUserData = Users.findOneById(userData._id);
 	if (oldUserData && isUserFederated(oldUserData)) {
 		throw new Meteor.Error('Edit_Federated_User_Not_Allowed', 'Not possible to edit a federated user');
 	}
-	validateUserData(userId, userData);
+	await validateUserData(userId, userData);
 	let sendPassword = false;
 
 	if (userData.hasOwnProperty('setRandomPassword')) {
@@ -351,16 +353,16 @@ export const saveUser = function (userId, userData) {
 		return saveNewUser(userData, sendPassword);
 	}
 
-	validateUserEditing(userId, userData);
+	await validateUserEditing(userId, userData);
 
 	// update user
 	if (userData.hasOwnProperty('username') || userData.hasOwnProperty('name')) {
 		if (
-			!saveUserIdentity({
+			!(await saveUserIdentity({
 				_id: userData._id,
 				username: userData.username,
 				name: userData.name,
-			})
+			}))
 		) {
 			throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', {
 				method: 'saveUser',
@@ -369,7 +371,7 @@ export const saveUser = function (userId, userData) {
 	}
 
 	if (typeof userData.statusText === 'string') {
-		setStatusText(userData._id, userData.statusText);
+		await setStatusText(userData._id, userData.statusText);
 	}
 
 	if (userData.email) {
@@ -380,7 +382,7 @@ export const saveUser = function (userId, userData) {
 	if (
 		userData.password &&
 		userData.password.trim() &&
-		hasPermission(userId, 'edit-other-user-password') &&
+		(await hasPermissionAsync(userId, 'edit-other-user-password')) &&
 		passwordPolicy.validate(userData.password)
 	) {
 		Accounts.setPassword(userData._id, userData.password.trim());
@@ -420,13 +422,12 @@ export const saveUser = function (userId, userData) {
 
 	// App IPostUserUpdated event hook
 	const userUpdated = Users.findOneById(userId);
-	Promise.await(
-		Apps.triggerEvent(AppEvents.IPostUserUpdated, {
-			user: userUpdated,
-			previousUser: oldUserData,
-			performedBy: safeGetMeteorUser(),
-		}),
-	);
+
+	await Apps.triggerEvent(AppEvents.IPostUserUpdated, {
+		user: userUpdated,
+		previousUser: oldUserData,
+		performedBy: safeGetMeteorUser(),
+	});
 
 	if (sendPassword) {
 		_sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);

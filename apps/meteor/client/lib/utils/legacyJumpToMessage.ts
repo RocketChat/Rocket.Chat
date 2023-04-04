@@ -4,6 +4,7 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 
 import { ChatRoom } from '../../../app/models/client';
 import { RoomHistoryManager } from '../../../app/ui-utils/client';
+import { RoomManager } from '../RoomManager';
 import { goToRoomById } from './goToRoomById';
 
 /** @deprecated */
@@ -35,7 +36,7 @@ export const legacyJumpToMessage = async (message: IMessage) => {
 		return;
 	}
 
-	if (Session.get('openedRoom') === message.rid) {
+	if (RoomManager.opened === message.rid) {
 		RoomHistoryManager.getSurroundingMessages(message);
 		return;
 	}

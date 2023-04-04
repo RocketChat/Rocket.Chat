@@ -38,14 +38,14 @@ function fallbackMongoInfo() {
 	return { oplogEnabled, mongoVersion, mongoStorageEngine, mongo };
 }
 
-export function getMongoInfo() {
+export async function getMongoInfo() {
 	let mongoVersion;
 	let mongoStorageEngine;
 
 	const { oplogEnabled, mongo } = getOplogInfo();
 
 	try {
-		const { version, storageEngine } = Promise.await(mongo.db.command({ serverStatus: 1 }));
+		const { version, storageEngine } = await mongo.db.command({ serverStatus: 1 });
 
 		mongoVersion = version;
 		mongoStorageEngine = storageEngine.name;

@@ -8,10 +8,10 @@ import { settings } from '../../../app/settings/server';
 class RoomCoordinatorServer extends RoomCoordinator {
 	add(roomConfig: IRoomTypeConfig, directives: Partial<IRoomTypeServerDirectives>): void {
 		this.addRoomType(roomConfig, {
-			allowRoomSettingChange(_room: IRoom, _setting: ValueOf<typeof RoomSettingsEnum>): boolean {
+			allowRoomSettingChange(_room: IRoom, _setting: ValueOf<typeof RoomSettingsEnum>) {
 				return true;
 			},
-			allowMemberAction(_room: IRoom, _action: ValueOf<typeof RoomMemberActions>, _userId?: IUser['_id']): boolean {
+			async allowMemberAction(_room: IRoom, _action: ValueOf<typeof RoomMemberActions>, _userId?: IUser['_id']): Promise<boolean> {
 				return false;
 			},
 			roomName(_room: IRoom, _userId?: string): string {
@@ -20,7 +20,7 @@ class RoomCoordinatorServer extends RoomCoordinator {
 			isGroupChat(_room: IRoom): boolean {
 				return false;
 			},
-			canBeDeleted(hasPermission: (permissionId: string, rid?: string) => boolean, room: IRoom): boolean {
+			async canBeDeleted(hasPermission: (permissionId: string, rid?: string) => Promise<boolean> | boolean, room: IRoom): Promise<boolean> {
 				if (!hasPermission && typeof hasPermission !== 'function') {
 					throw new Error('You MUST provide the "hasPermission" to canBeDeleted function');
 				}
@@ -29,7 +29,7 @@ class RoomCoordinatorServer extends RoomCoordinator {
 			preventRenaming(): boolean {
 				return false;
 			},
-			getDiscussionType(): RoomType {
+			async getDiscussionType(): Promise<RoomType> {
 				return 'p';
 			},
 			canAccessUploadedFile(_params: { rc_uid: string; rc_rid: string; rc_token: string }): boolean {
@@ -48,7 +48,7 @@ class RoomCoordinatorServer extends RoomCoordinator {
 
 				return { title, text };
 			},
-			getMsgSender(senderId: IRocketChatRecord['_id']): IRocketChatRecord | undefined {
+			getMsgSender(senderId: IRocketChatRecord['_id']): Promise<IRocketChatRecord | undefined> {
 				return Users.findOneById(senderId);
 			},
 			includeInRoomSearch(): boolean {
@@ -66,8 +66,13 @@ class RoomCoordinatorServer extends RoomCoordinator {
 		});
 	}
 
-	getRoomDirectives(roomType: string): IRoomTypeServerDirectives | undefined {
-		return this.roomTypes[roomType]?.directives as IRoomTypeServerDirectives;
+	getRoomDirectives(roomType: string): IRoomTypeServerDirectives {
+		const directives = this.roomTypes[roomType]?.directives;
+
+		if (!directives) {
+			throw new Error(`Room type ${roomType} not found`);
+		}
+		return directives as IRoomTypeServerDirectives;
 	}
 
 	openRoom(_type: string, _name: string, _render = true): void {
@@ -79,7 +84,7 @@ class RoomCoordinatorServer extends RoomCoordinator {
 	}
 
 	getRoomName(roomType: string, roomData: IRoom, userId?: string): string {
-		return this.getRoomDirectives(roomType)?.roomName(roomData, userId) ?? '';
+		return this.getRoomDirectives(roomType).roomName(roomData, userId) ?? '';
 	}
 
 	setRoomFind(roomType: string, roomFind: Required<Pick<IRoomTypeServerDirectives, 'roomFind'>>['roomFind']): void {
@@ -96,7 +101,7 @@ class RoomCoordinatorServer extends RoomCoordinator {
 	}
 
 	getRoomFind(roomType: string): Required<Pick<IRoomTypeServerDirectives, 'roomFind'>>['roomFind'] | undefined {
-		return this.getRoomDirectives(roomType)?.roomFind;
+		return this.getRoomDirectives(roomType).roomFind;
 	}
 
 	searchableRoomTypes(): Array<string> {

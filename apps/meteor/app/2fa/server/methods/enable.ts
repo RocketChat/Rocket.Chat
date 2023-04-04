@@ -1,9 +1,17 @@
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { Users } from '../../../models/server';
 import { TOTP } from '../lib/totp';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'2fa:enable': () => { secret: string; url: string };
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	'2fa:enable'() {
 		const userId = Meteor.userId();
 		if (!userId) {
@@ -12,7 +20,7 @@ Meteor.methods({
 
 		const user = Meteor.user();
 
-		if (!user || !user.username) {
+		if (!user?.username) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: '2fa:enable',
 			});

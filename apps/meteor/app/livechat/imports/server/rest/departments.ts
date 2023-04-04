@@ -3,7 +3,7 @@ import { Match, check } from 'meteor/check';
 import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
-import { hasPermission } from '../../../../authorization/server';
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { Livechat } from '../../../server/lib/Livechat';
 import {
 	findDepartments,
@@ -104,8 +104,8 @@ API.v1.addRoute(
 			return API.v1.success({ department, agents });
 		},
 		async put() {
-			const permissionToSave = hasPermission(this.userId, 'manage-livechat-departments');
-			const permissionToAddAgents = hasPermission(this.userId, 'add-livechat-department-agents');
+			const permissionToSave = await hasPermissionAsync(this.userId, 'manage-livechat-departments');
+			const permissionToAddAgents = await hasPermissionAsync(this.userId, 'add-livechat-department-agents');
 
 			check(this.urlParams, {
 				_id: String,
@@ -280,7 +280,7 @@ API.v1.addRoute(
 					remove: Array,
 				}),
 			);
-			Livechat.saveDepartmentAgents(this.urlParams._id, this.bodyParams);
+			await Livechat.saveDepartmentAgents(this.urlParams._id, this.bodyParams);
 
 			return API.v1.success();
 		},

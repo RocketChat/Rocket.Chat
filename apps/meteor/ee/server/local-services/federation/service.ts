@@ -134,7 +134,7 @@ abstract class AbstractBaseFederationServiceEE extends AbstractFederationService
 
 	public async stopped(): Promise<void> {
 		await this.stopFederation();
-		super.stopped();
+		await super.stopped();
 	}
 }
 
@@ -185,5 +185,11 @@ export class FederationServiceEE extends AbstractBaseFederationServiceEE impleme
 		await this.internalRoomServiceSenderEE.joinExternalPublicRoom(
 			FederationRoomSenderConverterEE.toJoinExternalPublicRoomDto(internalUserId, externalRoomId),
 		);
+	}
+
+	static async createFederationService(): Promise<FederationServiceEE> {
+		const federationService = new FederationServiceEE();
+		await federationService.initialize();
+		return federationService;
 	}
 }

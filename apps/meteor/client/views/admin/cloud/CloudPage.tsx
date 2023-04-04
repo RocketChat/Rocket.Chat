@@ -61,7 +61,7 @@ const CloudPage = (): ReactNode => {
 			}
 
 			try {
-				await finishOAuthAuthorization(code, state);
+				await finishOAuthAuthorization(code ?? '', state ?? '');
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {

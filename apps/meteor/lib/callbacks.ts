@@ -17,6 +17,7 @@ import type {
 	OEmbedUrlContent,
 	Username,
 	IOmnichannelRoom,
+	ILivechatTag,
 } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 
@@ -37,7 +38,8 @@ enum CallbackPriority {
  *
  * TODO: move those to event-based systems
  */
-type EventLikeCallbackSignatures = {
+// eslint-disable-next-line @typescript-eslint/naming-convention
+interface EventLikeCallbackSignatures {
 	'afterActivateUser': (user: IUser) => void;
 	'afterCreateChannel': (owner: IUser, room: IRoom) => void;
 	'afterCreatePrivateGroup': (owner: IUser, room: IRoom) => void;
@@ -49,6 +51,7 @@ type EventLikeCallbackSignatures = {
 	'beforeReadMessages': (rid: IRoom['_id'], uid: IUser['_id']) => void;
 	'afterDeleteUser': (user: IUser) => void;
 	'afterFileUpload': (params: { user: IUser; room: IRoom; message: IMessage }) => void;
+	'afterRoomNameChange': (params: { rid: string; name: string; oldName: string }) => void;
 	'afterSaveMessage': (message: IMessage, room: IRoom, uid?: string) => void;
 	'livechat.removeAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
 	'livechat.saveAgentDepartment': (params: { departmentId: ILivechatDepartmentRecord['_id']; agentsId: ILivechatAgent['_id'][] }) => void;
@@ -57,7 +60,7 @@ type EventLikeCallbackSignatures = {
 	'livechat:afterReturnRoomAsInquiry': (params: { room: IRoom }) => void;
 	'livechat.setUserStatusLivechat': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
 	'livechat.agentStatusChanged': (params: { userId: IUser['_id']; status: OmnichannelAgentStatus }) => void;
-	'livechat.afterTakeInquiry': (inq: ILivechatInquiryRecord, agent: ILivechatAgent) => void;
+	'livechat.afterTakeInquiry': (inq: ILivechatInquiryRecord, agent: { agentId: string; username: string }) => void;
 	'afterAddedToRoom': (params: { user: IUser; inviter?: IUser }, room: IRoom) => void;
 	'beforeAddedToRoom': (params: { user: IUser; inviter: IUser }) => void;
 	'afterCreateDirectRoom': (params: IRoom, second: { members: IUser[]; creatorId: IUser['_id'] }) => void;
@@ -80,7 +83,11 @@ type EventLikeCallbackSignatures = {
 	'usernameSet': () => void;
 	'beforeLeaveRoom': (user: IUser, room: IRoom) => void;
 	'beforeJoinRoom': (user: IUser, room: IRoom) => void;
-};
+	'beforeMuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
+	'afterMuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
+	'beforeUnmuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
+	'afterUnmuteUser': (users: { mutedUser: IUser; fromUser: IUser }, room: IRoom) => void;
+}
 
 /**
  * Callbacks that are supposed to be composed like a chain.
@@ -88,6 +95,33 @@ type EventLikeCallbackSignatures = {
  * TODO: develop a middleware alternative and grant independence of execution order
  */
 type ChainedCallbackSignatures = {
+	'livechat.beforeRoom': (
+		roomInfo: Record<string, unknown>,
+		extraData?: Record<string, unknown> & { sla?: string },
+	) => Record<string, unknown>;
+	'livechat.newRoom': (room: IOmnichannelRoom) => IOmnichannelRoom;
+
+	'livechat.beforeForwardRoomToDepartment': <T extends { room: IOmnichannelRoom; transferData?: { department: { _id: string } } }>(
+		options: T,
+	) => T;
+
+	'livechat.beforeRouteChat': (inquiry: ILivechatInquiryRecord, agent?: { agentId: string; username: string }) => ILivechatInquiryRecord;
+	'livechat.checkDefaultAgentOnNewRoom': (
+		agent: { agentId: string; username: string },
+		visitor?: ILivechatVisitor,
+	) => { agentId: string; username: string };
+
+	'livechat.onLoadForwardDepartmentRestrictions': (params: { departmentId: string }) => Record<string, unknown>;
+
+	'livechat.saveInfo': (
+		newRoom: IOmnichannelRoom,
+		props: { user: Required<Pick<IUser, '_id' | 'username' | 'name'>>; oldRoom: IOmnichannelRoom },
+	) => IOmnichannelRoom;
+
+	'livechat.onCheckRoomApiParams': (params: Record<string, unknown>) => Record<string, unknown>;
+
+	'livechat.onLoadConfigApi': (config: { room: IOmnichannelRoom }) => Record<string, unknown>;
+
 	'beforeSaveMessage': (message: IMessage, room?: IRoom) => IMessage;
 	'afterCreateUser': (user: IUser) => IUser;
 	'afterDeleteRoom': (rid: IRoom['_id']) => IRoom['_id'];
@@ -127,7 +161,6 @@ type ChainedCallbackSignatures = {
 	'on-business-hour-start': (params: { BusinessHourBehaviorClass: { new (): IBusinessHourBehavior } }) => {
 		BusinessHourBehaviorClass: { new (): IBusinessHourBehavior };
 	};
-	'livechat.saveInfo': (newRoom: IOmnichannelRoom, { user, oldRoom }: { user: IUser; oldRoom: IOmnichannelRoom }) => IOmnichannelRoom;
 	'renderMessage': <T extends IMessage & { html: string }>(message: T) => T;
 	'oembed:beforeGetUrlContent': (data: {
 		urlObj: Omit<UrlWithParsedQuery, 'host' | 'search'> & { host?: unknown; search?: unknown };
@@ -149,6 +182,7 @@ type ChainedCallbackSignatures = {
 		parsedUrl: ParsedUrl;
 		content: OEmbedUrlContent;
 	};
+	'livechat.beforeListTags': () => ILivechatTag[];
 };
 
 type Hook =
@@ -160,7 +194,6 @@ type Hook =
 	| 'afterProcessOAuthUser'
 	| 'afterRemoveFromRoom'
 	| 'afterRoomArchived'
-	| 'afterRoomNameChange'
 	| 'afterRoomTopicChange'
 	| 'afterSaveUser'
 	| 'afterValidateLogin'
@@ -178,22 +211,17 @@ type Hook =
 	| 'enter-room'
 	| 'livechat.beforeForwardRoomToDepartment'
 	| 'livechat.beforeInquiry'
-	| 'livechat.beforeListTags'
 	| 'livechat.beforeRoom'
 	| 'livechat.beforeRouteChat'
 	| 'livechat.chatQueued'
 	| 'livechat.checkAgentBeforeTakeInquiry'
-	| 'livechat.checkDefaultAgentOnNewRoom'
 	| 'livechat.sendTranscript'
 	| 'livechat.closeRoom'
 	| 'livechat.leadCapture'
-	| 'livechat.newRoom'
 	| 'livechat.offlineMessage'
 	| 'livechat.onAgentAssignmentFailed'
 	| 'livechat.onCheckRoomApiParams'
 	| 'livechat.onLoadConfigApi'
-	| 'livechat.onLoadForwardDepartmentRestrictions'
-	| 'livechat.saveInfo'
 	| 'loginPageStateChange'
 	| 'mapLDAPUserData'
 	| 'onCreateUser'
@@ -231,6 +259,9 @@ type CallbackTracker = (callback: Callback) => () => void;
 
 type HookTracker = (params: { hook: Hook; length: number }) => () => void;
 
+// Temporary since we are still using callbacks on client side
+Promise.await = Promise.await || ((promise: Promise<unknown>) => promise);
+
 class Callbacks {
 	private logger: Logger | undefined = undefined;
 
@@ -259,7 +290,12 @@ class Callbacks {
 		const stopTracking = this.trackCallback?.(callback);
 
 		try {
-			return callback(item, constant);
+			const result = callback(item, constant);
+			if (result && result instanceof Promise) {
+				return Promise.await(result);
+			}
+
+			return result;
 		} finally {
 			stopTracking?.();
 		}

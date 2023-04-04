@@ -1,10 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import type { IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
+import { Subscriptions } from '@rocket.chat/models';
 
-import { Rooms, Users, Subscriptions } from '../../../models/server';
+import { Rooms, Users } from '../../../models/server';
 import { isObject } from '../../../../lib/utils/isObject';
 
-export const getRoomByNameOrIdWithOptionToJoin = ({
+export const getRoomByNameOrIdWithOptionToJoin = async ({
 	currentUserId = '',
 	nameOrId = '',
 	type,
@@ -18,7 +19,7 @@ export const getRoomByNameOrIdWithOptionToJoin = ({
 	tryDirectByUserIdOnly?: boolean;
 	joinChannel?: boolean;
 	errorOnEmpty?: boolean;
-}): IRoom | undefined => {
+}): Promise<IRoom | undefined> => {
 	let room: IRoom;
 
 	// If the nameOrId starts with #, then let's try to find a channel or group
@@ -84,7 +85,7 @@ export const getRoomByNameOrIdWithOptionToJoin = ({
 	// If the room type is channel and joinChannel has been passed, try to join them
 	// if they can't join the room, this will error out!
 	if (room.t === 'c' && joinChannel) {
-		const sub = Subscriptions.findOneByRoomIdAndUserId(room._id, currentUserId);
+		const sub = await Subscriptions.findOneByRoomIdAndUserId(room._id, currentUserId);
 
 		if (!sub) {
 			Meteor.runAsUser(currentUserId, function () {

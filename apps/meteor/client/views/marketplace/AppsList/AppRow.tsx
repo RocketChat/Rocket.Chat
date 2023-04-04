@@ -30,7 +30,7 @@ const AppRow = (props: App): ReactElement => {
 			router.push({
 				context,
 				page: 'info',
-				version: marketplaceVersion,
+				version: marketplaceVersion || version,
 				id,
 				tab: 'details',
 			});

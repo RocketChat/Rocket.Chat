@@ -17,7 +17,7 @@ settings.watch('Accounts_BlockedUsernameList', (value: string) => {
 const usernameIsBlocked = (username: string, usernameBlackList: RegExp[]): boolean | number =>
 	usernameBlackList.length && usernameBlackList.some((restrictedUsername) => restrictedUsername.test(escapeRegExp(username).trim()));
 
-export const checkUsernameAvailability = function (username: string): boolean {
+export const checkUsernameAvailability = async function (username: string): Promise<boolean> {
 	if (usernameIsBlocked(username, usernameBlackList) || !validateName(username)) {
 		throw new Meteor.Error('error-blocked-username', `${_.escape(username)} is blocked and can't be used!`, {
 			method: 'checkUsernameAvailability',

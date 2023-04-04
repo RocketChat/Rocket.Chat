@@ -1,14 +1,34 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import _ from 'underscore';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { IMessage } from '@rocket.chat/core-typings';
+import { Subscriptions } from '@rocket.chat/models';
 
-import { canAccessRoom, hasPermission } from '../../../authorization/server';
-import { Subscriptions, Messages, Rooms } from '../../../models/server';
+import { canAccessRoomAsync } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { Messages, Rooms } from '../../../models/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { getHiddenSystemMessages } from '../lib/getHiddenSystemMessages';
 
-Meteor.methods({
-	getChannelHistory({ rid, latest, oldest, inclusive, offset = 0, count = 20, unreads, showThreadMessages = true }) {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		getChannelHistory(params: {
+			rid: string;
+			latest?: Date;
+			oldest?: Date;
+			inclusive?: boolean;
+			offset?: number;
+			count?: number;
+			unreads?: boolean;
+			showThreadMessages?: boolean;
+		}): boolean | IMessage[] | { messages: IMessage[]; firstUnread?: any; unreadNotLoaded?: number };
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async getChannelHistory({ rid, latest, oldest, inclusive, offset = 0, count = 20, unreads, showThreadMessages = true }) {
 		check(rid, String);
 
 		if (!Meteor.userId()) {
@@ -25,15 +45,15 @@ Meteor.methods({
 			return false;
 		}
 
-		if (!canAccessRoom(room, { _id: fromUserId })) {
+		if (!(await canAccessRoomAsync(room, { _id: fromUserId }))) {
 			return false;
 		}
 
 		// Make sure they can access the room
 		if (
 			room.t === 'c' &&
-			!hasPermission(fromUserId, 'preview-c-room') &&
-			!Subscriptions.findOneByRoomIdAndUserId(rid, fromUserId, { fields: { _id: 1 } })
+			!(await hasPermissionAsync(fromUserId, 'preview-c-room')) &&
+			!(await Subscriptions.findOneByRoomIdAndUserId(rid, fromUserId, { projection: { _id: 1 } }))
 		) {
 			return false;
 		}

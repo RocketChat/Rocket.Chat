@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Mongo } from 'meteor/mongo';
 import { HTTP } from 'meteor/http';
 import _ from 'underscore';
+import { AppsTokens } from '@rocket.chat/models';
 
 import { initAPN, sendAPN } from './apn';
 import { sendGCM } from './gcm';
@@ -10,7 +10,6 @@ import { logger } from './logger';
 import { settings } from '../../settings/server';
 
 export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
-export const appTokensCollection = new Mongo.Collection('_raix_push_app_tokens');
 
 class PushClass {
 	options = {};
@@ -64,11 +63,11 @@ class PushClass {
 	}
 
 	_replaceToken(currentToken, newToken) {
-		appTokensCollection.rawCollection().updateMany({ token: currentToken }, { $set: { token: newToken } });
+		void AppsTokens.updateMany({ token: currentToken }, { $set: { token: newToken } });
 	}
 
 	_removeToken(token) {
-		appTokensCollection.rawCollection().deleteOne({ token });
+		void AppsTokens.deleteOne({ token });
 	}
 
 	_shouldUseGateway() {
@@ -123,16 +122,18 @@ class PushClass {
 		return HTTP.post(`${gateway}/push/${service}/send`, data, (error, response) => {
 			if (response?.statusCode === 406) {
 				logger.info('removing push token', token);
-				appTokensCollection.remove({
-					$or: [
-						{
-							'token.apn': token,
-						},
-						{
-							'token.gcm': token,
-						},
-					],
-				});
+				Promise.await(
+					AppsTokens.deleteMany({
+						$or: [
+							{
+								'token.apn': token,
+							},
+							{
+								'token.gcm': token,
+							},
+						],
+					}),
+				);
 				return;
 			}
 
@@ -180,7 +181,7 @@ class PushClass {
 		}
 	}
 
-	sendNotification(notification = { badge: 0 }) {
+	async sendNotification(notification = { badge: 0 }) {
 		logger.debug('Sending notification', notification);
 
 		const countApn = [];
@@ -203,7 +204,7 @@ class PushClass {
 			$or: [{ 'token.apn': { $exists: true } }, { 'token.gcm': { $exists: true } }],
 		};
 
-		appTokensCollection.find(query).forEach((app) => {
+		await AppsTokens.find(query).forEach((app) => {
 			logger.debug('send to token', app.token);
 
 			if (this._shouldUseGateway()) {
@@ -219,16 +220,16 @@ class PushClass {
 			// Add some verbosity about the send result, making sure the developer
 			// understands what just happened.
 			if (!countApn.length && !countGcm.length) {
-				if (appTokensCollection.find().count() === 0) {
-					logger.debug('GUIDE: The "appTokensCollection" is empty - No clients have registered on the server yet...');
+				if ((await AppsTokens.col.estimatedDocumentCount()) === 0) {
+					logger.debug('GUIDE: The "AppsTokens" is empty - No clients have registered on the server yet...');
 				}
 			} else if (!countApn.length) {
-				if (appTokensCollection.find({ 'token.apn': { $exists: true } }).count() === 0) {
-					logger.debug('GUIDE: The "appTokensCollection" - No APN clients have registered on the server yet...');
+				if ((await AppsTokens.col.countDocuments({ 'token.apn': { $exists: true } })) === 0) {
+					logger.debug('GUIDE: The "AppsTokens" - No APN clients have registered on the server yet...');
 				}
 			} else if (!countGcm.length) {
-				if (appTokensCollection.find({ 'token.gcm': { $exists: true } }).count() === 0) {
-					logger.debug('GUIDE: The "appTokensCollection" - No GCM clients have registered on the server yet...');
+				if ((await AppsTokens.col.countDocuments({ 'token.gcm': { $exists: true } })) === 0) {
+					logger.debug('GUIDE: The "AppsTokens" - No GCM clients have registered on the server yet...');
 				}
 			}
 		}
@@ -289,7 +290,7 @@ class PushClass {
 		}
 	}
 
-	send(options) {
+	async send(options) {
 		// If on the client we set the user id - on the server we need an option
 		// set or we default to "<SERVER>" as the creator of the notification
 		// If current user not set see if we can set it to the logged in user
@@ -344,7 +345,7 @@ class PushClass {
 		this._validateDocument(notification);
 
 		try {
-			this.sendNotification(notification);
+			await this.sendNotification(notification);
 		} catch (error) {
 			logger.debug(`Could not send notification id: "${notification._id}", Error: ${error.message}`);
 			logger.debug(error.stack);

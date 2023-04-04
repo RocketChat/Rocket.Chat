@@ -12,7 +12,7 @@ import {
 import { Settings } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import type { ResultFor } from '../api';
 import { API } from '../api';
 import { SettingsEvents, settings } from '../../../settings/server';
@@ -106,7 +106,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-name-param-not-provided', 'The parameter "name" is required');
 			}
 
-			await Meteor.call('addOAuthService', this.bodyParams.name, this.userId);
+			await Meteor.callAsync('addOAuthService', this.bodyParams.name, this.userId);
 
 			return API.v1.success();
 		},
@@ -125,7 +125,7 @@ API.v1.addRoute(
 				hidden: { $ne: true },
 			};
 
-			if (!hasPermission(this.userId, 'view-privileged-setting')) {
+			if (!(await hasPermissionAsync(this.userId, 'view-privileged-setting'))) {
 				ourQuery.public = true;
 			}
 
@@ -148,7 +148,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			if (!hasPermission(this.userId, 'view-privileged-setting')) {
+			if (!(await hasPermissionAsync(this.userId, 'view-privileged-setting'))) {
 				return API.v1.unauthorized();
 			}
 			const setting = await Settings.findOneNotHiddenById(this.urlParams._id);
@@ -160,7 +160,7 @@ API.v1.addRoute(
 		post: {
 			twoFactorRequired: true,
 			async action(): Promise<ResultFor<'POST', '/v1/settings/:_id'>> {
-				if (!hasPermission(this.userId, 'edit-privileged-setting')) {
+				if (!(await hasPermissionAsync(this.userId, 'edit-privileged-setting'))) {
 					return API.v1.unauthorized();
 				}
 
@@ -177,15 +177,15 @@ API.v1.addRoute(
 
 				if (isSettingAction(setting) && isSettingsUpdatePropsActions(this.bodyParams) && this.bodyParams.execute) {
 					// execute the configured method
-					Meteor.call(setting.value);
+					await Meteor.callAsync(setting.value);
 					return API.v1.success();
 				}
 
 				if (isSettingColor(setting) && isSettingsUpdatePropsColor(this.bodyParams)) {
-					Settings.updateOptionsById<ISettingColor>(this.urlParams._id, {
+					await Settings.updateOptionsById<ISettingColor>(this.urlParams._id, {
 						editor: this.bodyParams.editor,
 					});
-					Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
+					await Settings.updateValueNotHiddenById(this.urlParams._id, this.bodyParams.value);
 					return API.v1.success();
 				}
 

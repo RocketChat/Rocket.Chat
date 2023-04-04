@@ -3,7 +3,7 @@ import { LivechatRooms } from '@rocket.chat/models';
 
 import { API } from '../../../../api/server';
 import { findRooms } from '../../../server/api/lib/rooms';
-import { hasPermission } from '../../../../authorization/server';
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 
 const validateDateParams = (property: string, date?: string) => {
 	let parsedDate: { start?: string; end?: string } | undefined = undefined;
@@ -35,8 +35,9 @@ API.v1.addRoute(
 			const createdAtParam = validateDateParams('createdAt', createdAt);
 			const closedAtParam = validateDateParams('closedAt', closedAt);
 
-			const hasAdminAccess = hasPermission(this.userId, 'view-livechat-rooms');
-			const hasAgentAccess = hasPermission(this.userId, 'view-l-room') && agents?.includes(this.userId) && agents?.length === 1;
+			const hasAdminAccess = await hasPermissionAsync(this.userId, 'view-livechat-rooms');
+			const hasAgentAccess =
+				(await hasPermissionAsync(this.userId, 'view-l-room')) && agents?.includes(this.userId) && agents?.length === 1;
 			if (!hasAdminAccess && !hasAgentAccess) {
 				return API.v1.unauthorized();
 			}

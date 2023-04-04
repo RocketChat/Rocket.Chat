@@ -71,7 +71,7 @@ API.v1.addRoute(
 				return API.v1.notFound('Session not found');
 			}
 
-			Promise.all([
+			await Promise.all([
 				Users.unsetOneLoginToken(this.userId, sessionObj.loginToken),
 				Sessions.logoutByloginTokenAndUserId({ loginToken: sessionObj.loginToken, userId: this.userId }),
 			]);
@@ -158,7 +158,7 @@ API.v1.addRoute(
 
 			Notifications.notifyUser(sessionObj.userId, 'force_logout');
 
-			Promise.all([
+			await Promise.all([
 				Users.unsetOneLoginToken(sessionObj.userId, sessionObj.loginToken),
 				Sessions.logoutByloginTokenAndUserId({ loginToken: sessionObj.loginToken, userId: sessionObj.userId, logoutBy: this.userId }),
 			]);

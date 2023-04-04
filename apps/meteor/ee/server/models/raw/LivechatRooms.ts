@@ -32,6 +32,7 @@ declare module '@rocket.chat/model-typings' {
 	}
 }
 
+// @ts-expect-error - Model is in JS, and types are getting weird :)
 export class LivechatRoomsRawEE extends LivechatRoomsRaw implements ILivechatRoomsModel {
 	async unsetAllPredictedVisitorAbandonment(): Promise<void> {
 		return this.updateMany(

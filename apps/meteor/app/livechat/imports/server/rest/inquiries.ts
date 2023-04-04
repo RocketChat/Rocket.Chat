@@ -64,8 +64,8 @@ API.v1.addRoute(
 				return API.v1.failure('The user is invalid');
 			}
 			return API.v1.success({
-				inquiry: Meteor.runAsUser(this.bodyParams.userId || this.userId, () =>
-					Meteor.call('livechat:takeInquiry', this.bodyParams.inquiryId),
+				inquiry: await Meteor.runAsUser(this.bodyParams.userId || this.userId, () =>
+					Meteor.callAsync('livechat:takeInquiry', this.bodyParams.inquiryId),
 				),
 			});
 		},

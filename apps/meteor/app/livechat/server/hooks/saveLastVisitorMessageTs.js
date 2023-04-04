@@ -1,7 +1,7 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatRooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { LivechatRooms } from '../../../models/server';
 
 callbacks.add(
 	'afterSaveMessage',
@@ -10,7 +10,7 @@ callbacks.add(
 			return message;
 		}
 		if (message.token) {
-			LivechatRooms.setVisitorLastMessageTimestampByRoomId(room._id, message.ts);
+			Promise.await(LivechatRooms.setVisitorLastMessageTimestampByRoomId(room._id, message.ts));
 		}
 		return message;
 	},

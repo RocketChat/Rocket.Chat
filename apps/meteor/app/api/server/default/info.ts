@@ -5,10 +5,10 @@ API.default.addRoute(
 	'info',
 	{ authRequired: false },
 	{
-		get() {
+		async get() {
 			const user = this.getLoggedInUser();
 
-			return API.v1.success(Promise.await(getServerInfo(user?._id)));
+			return API.v1.success(await getServerInfo(user?._id));
 		},
 	},
 );

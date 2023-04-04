@@ -38,7 +38,7 @@ export class AppRoomBridge extends RoomBridge {
 		}
 
 		let rid = '';
-		Meteor.runAsUser(room.creator.id, () => {
+		await Meteor.runAsUser(room.creator.id, async () => {
 			const extraData = Object.assign({}, rcRoom);
 			delete extraData.name;
 			delete extraData.t;
@@ -46,9 +46,9 @@ export class AppRoomBridge extends RoomBridge {
 			delete extraData.customFields;
 			let info;
 			if (room.type === RoomType.DIRECT_MESSAGE) {
-				info = Meteor.call(method, ...members);
+				info = await Meteor.callAsync(method, ...members);
 			} else {
-				info = Meteor.call(method, rcRoom.name, members, rcRoom.ro, rcRoom.customFields, extraData);
+				info = await Meteor.callAsync(method, rcRoom.name, members, rcRoom.ro, rcRoom.customFields, extraData);
 			}
 			rid = info.rid;
 		});
@@ -118,14 +118,14 @@ export class AppRoomBridge extends RoomBridge {
 
 		Rooms.update(rm._id, rm);
 
-		for (const username of members) {
+		for await (const username of members) {
 			const member = Users.findOneByUsername(username, {});
 
 			if (!member) {
 				continue;
 			}
 
-			addUserToRoom(rm._id, member);
+			await addUserToRoom(rm._id, member);
 		}
 	}
 
@@ -163,8 +163,8 @@ export class AppRoomBridge extends RoomBridge {
 		};
 
 		let rid = '';
-		Meteor.runAsUser(room.creator.id, () => {
-			const info = Meteor.call('createDiscussion', discussion);
+		await Meteor.runAsUser(room.creator.id, async () => {
+			const info = await Meteor.callAsync('createDiscussion', discussion);
 			rid = info.rid;
 		});
 

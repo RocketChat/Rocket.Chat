@@ -1,4 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
+import { hashLoginToken } from '@rocket.chat/account-utils';
 
 import { Users } from '../../../models/server';
 import { oAuth2ServerAuth } from '../../../oauth2-server-config/server/oauth/oauth2-server';
@@ -16,7 +17,7 @@ export function authenticationMiddleware(config: AuthenticationMiddlewareConfig 
 		const { 'x-user-id': userId, 'x-auth-token': authToken } = req.headers;
 
 		if (userId && authToken) {
-			req.user = Users.findOneByIdAndLoginToken(userId, authToken);
+			req.user = Users.findOneByIdAndLoginToken(userId, hashLoginToken(authToken as string));
 		} else {
 			req.user = oAuth2ServerAuth(req)?.user;
 		}

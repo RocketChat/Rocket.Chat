@@ -1,19 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
-import { Messages } from '@rocket.chat/models';
+import { Messages, AppsTokens } from '@rocket.chat/models';
 
-import { appTokensCollection } from '../../../push/server';
 import { API } from '../api';
 import PushNotification from '../../../push-notifications/server/lib/PushNotification';
-import { canAccessRoom } from '../../../authorization/server/functions/canAccessRoom';
+import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { Users, Rooms } from '../../../models/server';
 
 API.v1.addRoute(
 	'push.token',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			const { id, type, value, appName } = this.bodyParams;
 
 			if (id && typeof id !== 'string') {
@@ -34,36 +33,36 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-appName-param-not-valid', 'The required "appName" body param is missing or invalid.');
 			}
 
-			const result = Meteor.runAsUser(this.userId, () =>
-				Meteor.call('raix:push-update', {
-					id: deviceId,
-					token: { [type]: value },
-					authToken: this.request.headers['x-auth-token'],
-					appName,
-					userId: this.userId,
-				}),
-			);
+			const result = await Meteor.callAsync('raix:push-update', {
+				id: deviceId,
+				token: { [type]: value },
+				authToken: this.request.headers['x-auth-token'],
+				appName,
+				userId: this.userId,
+			});
 
 			return API.v1.success({ result });
 		},
-		delete() {
+		async delete() {
 			const { token } = this.bodyParams;
 
 			if (!token || typeof token !== 'string') {
 				throw new Meteor.Error('error-token-param-not-valid', 'The required "token" body param is missing or invalid.');
 			}
 
-			const affectedRecords = appTokensCollection.remove({
-				$or: [
-					{
-						'token.apn': token,
-					},
-					{
-						'token.gcm': token,
-					},
-				],
-				userId: this.userId,
-			});
+			const affectedRecords = (
+				await AppsTokens.deleteMany({
+					$or: [
+						{
+							'token.apn': token,
+						},
+						{
+							'token.gcm': token,
+						},
+					],
+					userId: this.userId,
+				})
+			).deletedCount;
 
 			if (affectedRecords === 0) {
 				return API.v1.notFound();
@@ -102,7 +101,7 @@ API.v1.addRoute(
 				throw new Error('error-room-not-found');
 			}
 
-			if (!canAccessRoom(room, receiver)) {
+			if (!(await canAccessRoomAsync(room, receiver))) {
 				throw new Error('error-not-allowed');
 			}
 

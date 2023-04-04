@@ -12,7 +12,7 @@ import { Subscriptions } from '../../models/server';
  */
 slashCommands.add({
 	command: 'invite',
-	callback: (_command: 'invite', params, item): void => {
+	callback: async (_command: 'invite', params, item): Promise<void> => {
 		const usernames = params
 			.split(/[\s,]/)
 			.map((username) => username.replace(/(^@)|( @)/, ''))
@@ -27,7 +27,7 @@ slashCommands.add({
 		});
 		const userId = Meteor.userId() as string;
 		if (users.count() === 0) {
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('User_doesnt_exist', {
 					postProcess: 'sprintf',
 					sprintf: [usernames.join(' @')],
@@ -44,7 +44,7 @@ slashCommands.add({
 				return true;
 			}
 			const usernameStr = user.username as string;
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('Username_is_already_in_here', {
 					postProcess: 'sprintf',
 					sprintf: [usernameStr],
@@ -54,27 +54,29 @@ slashCommands.add({
 			return false;
 		});
 
-		usersFiltered.forEach(function (user) {
-			try {
-				return Meteor.call('addUserToRoom', {
-					rid: item.rid,
-					username: user.username,
-				});
-			} catch ({ error }) {
-				if (typeof error !== 'string') {
-					return;
-				}
-				if (error === 'cant-invite-for-direct-room') {
-					api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-						msg: TAPi18n.__('Cannot_invite_users_to_direct_rooms', { lng: settings.get('Language') || 'en' }),
+		await Promise.all(
+			usersFiltered.map(async (user) => {
+				try {
+					return await Meteor.callAsync('addUserToRoom', {
+						rid: item.rid,
+						username: user.username,
 					});
-				} else {
-					api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-						msg: TAPi18n.__(error, { lng: settings.get('Language') || 'en' }),
-					});
+				} catch ({ error }) {
+					if (typeof error !== 'string') {
+						return;
+					}
+					if (error === 'cant-invite-for-direct-room') {
+						void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+							msg: TAPi18n.__('Cannot_invite_users_to_direct_rooms', { lng: settings.get('Language') || 'en' }),
+						});
+					} else {
+						void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+							msg: TAPi18n.__(error, { lng: settings.get('Language') || 'en' }),
+						});
+					}
 				}
-			}
-		});
+			}),
+		);
 	},
 	options: {
 		description: 'Invite_user_to_join_channel',

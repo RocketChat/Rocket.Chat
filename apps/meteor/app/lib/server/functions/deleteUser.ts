@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { FileProp } from '@rocket.chat/core-typings';
-import { Integrations, FederationServers, LivechatVisitors } from '@rocket.chat/models';
+import { Integrations, FederationServers, LivechatVisitors, LivechatDepartmentAgents, Messages as MessagesRaw } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../file-upload/server';
-import { Users, Subscriptions, Messages, Rooms, LivechatDepartmentAgents } from '../../../models/server';
+import { Users, Subscriptions, Messages, Rooms } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { updateGroupDMsName } from './updateGroupDMsName';
 import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
@@ -40,12 +40,12 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 				Messages.findFilesByUserId(userId).forEach(function ({ file }: { file: FileProp }) {
 					store.deleteById(file._id);
 				});
-				Messages.removeByUserId(userId);
+				await MessagesRaw.removeByUserId(userId);
 				break;
 			case 'Unlink':
 				const rocketCat = Users.findOneById('rocket.cat');
 				const nameAlias = TAPi18n.__('Removed_User');
-				Messages.unlinkUserId(userId, rocketCat._id, rocketCat.username, nameAlias);
+				await MessagesRaw.unlinkUserId(userId, rocketCat._id, rocketCat.username, nameAlias);
 				break;
 		}
 
@@ -56,7 +56,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 
 		if (user.roles.includes('livechat-agent')) {
 			// Remove user as livechat agent
-			LivechatDepartmentAgents.removeByAgentId(userId);
+			await LivechatDepartmentAgents.removeByAgentId(userId);
 		}
 
 		if (user.roles.includes('livechat-monitor')) {
@@ -77,7 +77,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 
 		// Don't broadcast user.deleted for Erasure Type of 'Keep' so that messages don't disappear from logged in sessions
 		if (messageErasureType !== 'Keep') {
-			api.broadcast('user.deleted', user);
+			void api.broadcast('user.deleted', user);
 		}
 	}
 

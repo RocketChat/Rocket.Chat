@@ -38,8 +38,22 @@
 				"react/jsx-uses-react": "error",
 				"react/jsx-uses-vars": "error",
 				"react/jsx-no-undef": "error",
-				"react/jsx-fragments": ["error", "syntax"]
+				"react/jsx-fragments": ["error", "syntax"],
+				"@typescript-eslint/no-misused-promises": [
+					"error",
+					{
+						"checksVoidReturn": {
+							"arguments": false
+						}
+					}
+				],
+				"@typescript-eslint/no-floating-promises": "error",
+				"no-unreachable-loop": "error"
 			},
+			"parserOptions": {
+				"project": ["./tsconfig.json"]
+			},
+			"excludedFiles": [".scripts/*.ts"],
 			"settings": {
 				"react": {
 					"version": "detect"
