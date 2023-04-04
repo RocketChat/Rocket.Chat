@@ -15,6 +15,7 @@ import type {
 	IRoomTypeConfig,
 	IRoomTypeClientDirectives,
 	RoomIdentification,
+	IRoomTypeRouteConfig,
 } from '../../../definition/IRoomTypeConfig';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 import { Room, RoomNotFound, RoomProvider, RoomSkeleton } from '../../views/room';
@@ -23,7 +24,14 @@ import { appLayout } from '../appLayout';
 import { roomExit } from './roomExit';
 
 class RoomCoordinatorClient extends RoomCoordinator {
-	add(roomConfig: IRoomTypeConfig, directives: Partial<IRoomTypeClientDirectives>): void {
+	private roomTypesOrder: Array<{ identifier: string; order: number }>;
+
+	constructor() {
+		super();
+		this.roomTypesOrder = [];
+	}
+
+	public add(roomConfig: IRoomTypeConfig, directives: Partial<IRoomTypeClientDirectives>): void {
 		this.addRoomType(roomConfig, {
 			allowRoomSettingChange(_room: Partial<IRoom>, _setting: ValueOf<typeof RoomSettingsEnum>): boolean {
 				return true;
@@ -69,10 +77,6 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			...directives,
 			config: roomConfig,
 		});
-	}
-
-	protected addRoute(path: string, routeConfig: RouteOptions): void {
-		super.addRoute(path, { ...routeConfig, triggersExit: [roomExit] });
 	}
 
 	getRoomDirectives(roomType: string): IRoomTypeClientDirectives {
@@ -230,6 +234,89 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			.sort((a, b) => a.order - b.order)
 			.map((type) => this.roomTypes[type.identifier] as { config: IRoomTypeConfig; directives: IRoomTypeClientDirectives })
 			.filter((type) => type.directives.condition());
+	}
+
+	private validateRoute(route: IRoomTypeRouteConfig): void {
+		const { name, path, action, link } = route;
+
+		if (typeof name !== 'string' || name.length === 0) {
+			throw new Error('The route name must be a string.');
+		}
+
+		if (path !== undefined && (typeof path !== 'string' || path.length === 0)) {
+			throw new Error('The route path must be a string.');
+		}
+
+		if (!['undefined', 'function'].includes(typeof action)) {
+			throw new Error('The route action must be a function.');
+		}
+
+		if (!['undefined', 'function'].includes(typeof link)) {
+			throw new Error('The route link must be a function.');
+		}
+	}
+
+	protected validateRoomConfig(roomConfig: IRoomTypeConfig): void {
+		super.validateRoomConfig(roomConfig);
+
+		if (roomConfig.route !== undefined) {
+			this.validateRoute(roomConfig.route);
+		}
+	}
+
+	private mainOrder = 1;
+
+	protected addRoomType(roomConfig: IRoomTypeConfig, directives: IRoomTypeClientDirectives): void {
+		super.addRoomType(roomConfig, directives);
+
+		if (roomConfig.route?.path && roomConfig.route.name && roomConfig.route.action) {
+			const routeConfig = {
+				name: roomConfig.route.name,
+				action: roomConfig.route.action,
+			};
+
+			return this.addRoute(roomConfig.route.path, routeConfig);
+		}
+
+		if (!roomConfig.order) {
+			roomConfig.order = this.mainOrder + 10;
+			this.mainOrder += 10;
+		}
+
+		this.roomTypesOrder.push({
+			identifier: roomConfig.identifier,
+			order: roomConfig.order,
+		});
+	}
+
+	protected addRoute(path: string, routeConfig: RouteOptions): void {
+		FlowRouter.route(path, { ...routeConfig, triggersExit: [roomExit] });
+	}
+
+	public getURL(roomType: string, subData: RoomIdentification): string | false {
+		const config = this.getRoomTypeConfig(roomType);
+		if (!config?.route) {
+			return false;
+		}
+
+		const routeData = this.getRouteData(roomType, subData);
+		if (!routeData) {
+			return false;
+		}
+
+		return FlowRouter.url(config.route.name, routeData);
+	}
+
+	public isRouteNameKnown(routeName: string): boolean {
+		return Boolean(this.getRouteNameIdentifier(routeName));
+	}
+
+	public getRouteNameIdentifier(routeName: string): string | undefined {
+		if (!routeName) {
+			return;
+		}
+
+		return Object.keys(this.roomTypes).find((key) => this.roomTypes[key].config.route?.name === routeName);
 	}
 }
 

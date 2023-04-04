@@ -12,6 +12,7 @@ import type {
 } from '@rocket.chat/core-typings';
 
 export type RoomIdentification = { rid?: IRoom['_id']; name?: string };
+
 export interface IRoomTypeRouteConfig {
 	name: string;
 	path?: string;
