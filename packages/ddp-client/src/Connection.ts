@@ -33,6 +33,14 @@ export interface Connection
 	session?: string;
 
 	status: ConnectionStatus;
+
+	connect(): Promise<boolean>;
+
+	close(): void;
+}
+
+interface WebSocketConstructor {
+	new (url: string | URL, protocols?: string | string[]): WebSocket;
 }
 
 export class ConnectionImpl
@@ -49,6 +57,14 @@ export class ConnectionImpl
 
 	constructor(private ws: WebSocket, private client: DDPClient, _retryOptions?: RetryOptions) {
 		super();
+
+		ws.onmessage = (event) => {
+			client.handleMessage(String(event.data));
+		};
+
+		client.onDispatchMessage((message) => {
+			ws.send(message);
+		});
 	}
 
 	private emitStatus() {
@@ -58,7 +74,7 @@ export class ConnectionImpl
 	connect() {
 		this.status = 'connecting';
 		this.emitStatus();
-		return new Promise((resolve, reject) => {
+		return new Promise<boolean>((resolve, reject) => {
 			this.ws.onopen = () => {
 				// The server may send an initial message which is a JSON object lacking a msg key. If so, the client should ignore it. The client does not have to wait for this message.
 				// (The message was once used to help implement Meteor's hot code reload feature; it is now only included to force old clients to update).
@@ -121,5 +137,12 @@ export class ConnectionImpl
 		this.status = 'closed';
 		this.ws.close();
 		this.emitStatus();
+	}
+
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	static create(url: string, WebSocketImpl: WebSocketConstructor, client: DDPClient, retryOptions?: RetryOptions): Connection {
+		const ws = new WebSocketImpl(url);
+
+		return new ConnectionImpl(ws, client, retryOptions);
 	}
 }

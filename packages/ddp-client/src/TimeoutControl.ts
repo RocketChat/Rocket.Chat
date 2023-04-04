@@ -1,7 +1,7 @@
 import { Emitter } from '@rocket.chat/emitter';
 
 import type { DDPClient } from './types/DDPClient';
-import type { ConnectionImpl } from './Connection';
+import type { Connection } from './Connection';
 
 export interface TimeoutControlEvents
 	extends Emitter<{
@@ -43,7 +43,7 @@ export class TimeoutControl
 		this.heartbeatId = setTimeout(() => this.emit('heartbeat'), this.heartbeat);
 	}
 
-	static create(ddp: DDPClient, connection: ConnectionImpl, timeout?: number, heartbeat?: number): TimeoutControl {
+	static create(ddp: DDPClient, connection: Connection, timeout?: number, heartbeat?: number): TimeoutControl {
 		const timeoutControl = new TimeoutControl(timeout, heartbeat);
 
 		timeoutControl.on('heartbeat', () => {

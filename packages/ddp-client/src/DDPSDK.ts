@@ -66,20 +66,11 @@ export class DDPSDK extends ClientStreamImpl implements SDK {
 	}
 
 	static async create(url: string): Promise<DDPSDK> {
-		const websocket = new WebSocket(url);
+		const ddp = new MinimalDDPClient();
 
-		const ddp = new MinimalDDPClient((data) => {
-			websocket.send(data);
-		});
+		const connection = ConnectionImpl.create(url, WebSocket, ddp);
 
-		const connection = new ConnectionImpl(websocket as any, ddp);
-
-		const timeout = TimeoutControl.create(ddp, connection);
-
-		websocket.onmessage = (event) => {
-			timeout.reset();
-			ddp.handleMessage(String(event.data));
-		};
+		TimeoutControl.create(ddp, connection);
 
 		await connection.connect();
 
