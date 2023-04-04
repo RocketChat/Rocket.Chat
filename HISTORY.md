@@ -1,4 +1,24 @@
 
+# 6.0.2
+`2023-04-04  ·  1 🐛  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.2`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+
+### 🐛 Bug fixes
+
+
+- Messages jumping after reaction ([#28770](https://github.com/RocketChat/Rocket.Chat/pull/28770))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@casalsgh](https://github.com/casalsgh)
+- [@debdutdeb](https://github.com/debdutdeb)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+
 # 6.0.1
 `2023-03-22  ·  5 🔍  ·  7 👩‍💻👨‍💻`
 
