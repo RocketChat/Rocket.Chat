@@ -5,21 +5,24 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { ILivechatAgent, ILivechatVisitor, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { Mongo } from 'meteor/mongo';
+import type { Filter } from 'mongodb';
+import { LivechatRooms, Messages, Rooms, Users } from '@rocket.chat/models';
 
 import AuditLog from './AuditLog';
-import { LivechatRooms, Rooms, Messages, Users } from '../../../../app/models/server';
-import { hasPermission } from '../../../../app/authorization/server';
+import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
 import { updateCounter } from '../../../../app/statistics/server';
+import type { IAuditLog } from '../../../definition/IAuditLog';
+import { isTruthy } from '../../../../lib/isTruthy';
 
-const getValue = (room?: IRoom) => room && { rids: [room._id], name: room.name };
+const getValue = (room: IRoom | null) => room && { rids: [room._id], name: room.name };
 
-const getUsersIdFromUserName = (usernames: IUser['username'][]) => {
-	const user: IUser[] = usernames ? Users.findByUsername({ $in: usernames }) : undefined;
-	return user.map((userId) => userId._id);
+const getUsersIdFromUserName = async (usernames: IUser['username'][]) => {
+	const users = usernames ? await Users.findByUsernames(usernames.filter(isTruthy)).toArray() : undefined;
+
+	return users?.filter(isTruthy).map((userId) => userId._id);
 };
 
-const getRoomInfoByAuditParams = ({
+const getRoomInfoByAuditParams = async ({
 	type,
 	roomId: rid,
 	users: usernames,
@@ -28,44 +31,70 @@ const getRoomInfoByAuditParams = ({
 }: {
 	type: string;
 	roomId: IRoom['_id'];
-	users: IUser['username'][];
+	users: NonNullable<IUser['username']>[];
 	visitor: ILivechatVisitor['_id'];
 	agent: ILivechatAgent['_id'];
 }) => {
 	if (rid) {
-		return getValue(Rooms.findOne({ _id: rid }));
+		return getValue(await Rooms.findOne({ _id: rid }));
 	}
 
 	if (type === 'd') {
-		return getValue(Rooms.findDirectRoomContainingAllUsernames(usernames));
+		return getValue(await Rooms.findDirectRoomContainingAllUsernames(usernames));
 	}
 
 	if (type === 'l') {
 		console.warn('Deprecation Warning! This method will be removed in the next version (4.0.0)');
-		const rooms: IRoom[] = LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, {
-			fields: { _id: 1 },
-		}).fetch();
+		const rooms: IRoom[] = await LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, {
+			projection: { _id: 1 },
+		}).toArray();
 		return rooms?.length ? { rids: rooms.map(({ _id }) => _id), name: TAPi18n.__('Omnichannel') } : undefined;
 	}
 };
 
-Meteor.methods({
-	auditGetOmnichannelMessages({ startDate, endDate, users: usernames, msg, type, visitor, agent }) {
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		auditGetAuditions: (params: { startDate: Date; endDate: Date }) => IAuditLog[];
+		auditGetMessages: (params: {
+			rid: IRoom['_id'];
+			startDate: Date;
+			endDate: Date;
+			users: NonNullable<IUser['username']>[];
+			msg: IMessage['msg'];
+			type: string;
+			visitor: ILivechatVisitor['_id'];
+			agent: ILivechatAgent['_id'];
+		}) => IMessage[];
+		auditGetOmnichannelMessages: (params: {
+			startDate: Date;
+			endDate: Date;
+			users: NonNullable<IUser['username']>[];
+			msg: IMessage['msg'];
+			type: 'l';
+			visitor?: ILivechatVisitor['_id'];
+			agent?: ILivechatAgent['_id'];
+		}) => IMessage[];
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async auditGetOmnichannelMessages({ startDate, endDate, users: usernames, msg, type, visitor, agent }) {
 		check(startDate, Date);
 		check(endDate, Date);
 
-		const user = Meteor.user();
-		if (!user || !hasPermission(user._id, 'can-audit')) {
+		const user = await Meteor.userAsync();
+		if (!user || !(await hasPermissionAsync(user._id, 'can-audit'))) {
 			throw new Meteor.Error('Not allowed');
 		}
 
-		const rooms: IRoom[] = LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, {
-			fields: { _id: 1 },
-		}).fetch();
+		const rooms: IRoom[] = await LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, {
+			projection: { _id: 1 },
+		}).toArray();
 		const rids = rooms?.length ? rooms.map(({ _id }) => _id) : undefined;
 		const name = TAPi18n.__('Omnichannel');
 
-		const query: Mongo.Selector<IMessage> = {
+		const query: Filter<IMessage> = {
 			rid: { $in: rids },
 			ts: {
 				$gt: startDate,
@@ -77,7 +106,7 @@ Meteor.methods({
 			const regex = new RegExp(escapeRegExp(msg).trim(), 'i');
 			query.msg = regex;
 		}
-		const messages = Messages.find(query).fetch();
+		const messages = await Messages.find(query).toArray();
 
 		// Once the filter is applied, messages will be shown and a log containing all filters will be saved for further auditing.
 
@@ -90,19 +119,19 @@ Meteor.methods({
 
 		return messages;
 	},
-	auditGetMessages({ rid, startDate, endDate, users: usernames, msg, type, visitor, agent }) {
+	async auditGetMessages({ rid, startDate, endDate, users: usernames, msg, type, visitor, agent }) {
 		check(startDate, Date);
 		check(endDate, Date);
 
-		const user = Meteor.user();
-		if (!user || !hasPermission(user._id, 'can-audit')) {
+		const user = await Meteor.userAsync();
+		if (!user || !(await hasPermissionAsync(user._id, 'can-audit'))) {
 			throw new Meteor.Error('Not allowed');
 		}
 
 		let rids;
 		let name;
 
-		const query: Mongo.Selector<IMessage> = {
+		const query: Filter<IMessage> = {
 			ts: {
 				$gt: startDate,
 				$lt: endDate,
@@ -110,10 +139,10 @@ Meteor.methods({
 		};
 
 		if (type === 'u') {
-			const usersId = getUsersIdFromUserName(usernames);
+			const usersId = await getUsersIdFromUserName(usernames);
 			query['u._id'] = { $in: usersId };
 		} else {
-			const roomInfo = getRoomInfoByAuditParams({ type, roomId: rid, users: usernames, visitor, agent });
+			const roomInfo = await getRoomInfoByAuditParams({ type, roomId: rid, users: usernames, visitor, agent });
 			if (!roomInfo) {
 				throw new Meteor.Error('Room doesn`t exist');
 			}
@@ -128,7 +157,7 @@ Meteor.methods({
 			query.msg = regex;
 		}
 
-		const messages = Messages.find(query).fetch();
+		const messages = await Messages.find(query).toArray();
 
 		// Once the filter is applied, messages will be shown and a log containing all filters will be saved for further auditing.
 
@@ -142,11 +171,11 @@ Meteor.methods({
 
 		return messages;
 	},
-	auditGetAuditions({ startDate, endDate }) {
+	async auditGetAuditions({ startDate, endDate }) {
 		check(startDate, Date);
 		check(endDate, Date);
 		const uid = Meteor.userId();
-		if (!uid || !hasPermission(uid, 'can-audit-log')) {
+		if (!uid || !(await hasPermissionAsync(uid, 'can-audit-log'))) {
 			throw new Meteor.Error('Not allowed');
 		}
 		return AuditLog.find({
@@ -157,7 +186,7 @@ Meteor.methods({
 			},
 		}).fetch();
 	},
-} as Pick<ServerMethods, 'auditGetAuditions' | 'auditGetMessages' | 'auditGetOmnichannelMessages'>);
+});
 
 DDPRateLimiter.addRule(
 	{

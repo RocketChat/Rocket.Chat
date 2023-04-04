@@ -21,7 +21,7 @@ const fields = {
 
 export const createMessageContext = ({
 	uid = Meteor.userId(),
-	user = (uid ? Users.findOne({ _id: uid }, { fields }) : {}) || {},
+	user = uid ? Users.findOne({ _id: uid }, { fields }) : undefined,
 	rid = (Template.instance() as CommonRoomTemplateInstance).data.rid,
 	room = Tracker.nonreactive(() =>
 		Rooms.findOne(
@@ -72,7 +72,7 @@ export const createMessageContext = ({
 	Message_GroupingPeriod = settings.get('Message_GroupingPeriod') * 1000,
 }: {
 	uid?: IUser['_id'] | null;
-	user?: Partial<IUser>;
+	user?: Pick<IUser, '_id' | 'settings'>;
 	rid?: IRoom['_id'];
 	room?: Omit<IRoom, '_updatedAt' | 'lastMessage'>;
 	subscription?: Pick<ISubscription, 'name' | 'autoTranslate' | 'rid' | 'tunread' | 'tunreadUser' | 'tunreadGroup'>;

@@ -11,9 +11,14 @@ export default {
 		launchOptions: {
 			// force GPU hardware acceleration
 			// (even in headless mode)
-			args: ['--use-gl=egl', '--use-fake-ui-for-media-stream'],
+			args: [
+				'--use-gl=egl',
+				'--use-fake-device-for-media-stream',
+				'--use-fake-ui-for-media-stream',
+				'--use-file-for-fake-video-capture=tests/e2e/federation/files/video_mock_for_webcam.y4m',
+				'--use-file-for-fake-audio-capture=tests/e2e/federation/files/audio_mock.wav',
+			],
 		},
-		permissions: ['microphone', 'camera'],
 	},
 	outputDir: 'tests/e2e/.playwright',
 	reporter: 'list',

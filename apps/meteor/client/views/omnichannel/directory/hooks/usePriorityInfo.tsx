@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 
 import { useOmnichannelPriorities } from '../../../../../ee/client/omnichannel/hooks/useOmnichannelPriorities';
 
-export type ILivechatClientPriority = Serialized<ILivechatPriority> & {
+type ILivechatClientPriority = Serialized<ILivechatPriority> & {
 	i18n: TranslationKey;
 };
 

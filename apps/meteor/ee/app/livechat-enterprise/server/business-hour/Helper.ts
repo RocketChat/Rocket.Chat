@@ -39,13 +39,13 @@ const getAgentIdsToHandle = async (businessHour: Record<string, any>): Promise<s
 export const openBusinessHour = async (businessHour: Record<string, any>): Promise<void> => {
 	const agentIds: string[] = await getAgentIdsToHandle(businessHour);
 	await Users.addBusinessHourByAgentIds(agentIds, businessHour._id);
-	Users.updateLivechatStatusBasedOnBusinessHours();
+	await Users.updateLivechatStatusBasedOnBusinessHours();
 };
 
 export const closeBusinessHour = async (businessHour: Record<string, any>): Promise<void> => {
 	const agentIds: string[] = await getAgentIdsToHandle(businessHour);
 	await Users.removeBusinessHourByAgentIds(agentIds, businessHour._id);
-	Users.updateLivechatStatusBasedOnBusinessHours();
+	await Users.updateLivechatStatusBasedOnBusinessHours();
 };
 
 export const removeBusinessHourByAgentIds = async (agentIds: string[], businessHourId: string): Promise<void> => {
@@ -53,11 +53,11 @@ export const removeBusinessHourByAgentIds = async (agentIds: string[], businessH
 		return;
 	}
 	await Users.removeBusinessHourByAgentIds(agentIds, businessHourId);
-	Users.updateLivechatStatusBasedOnBusinessHours();
+	await Users.updateLivechatStatusBasedOnBusinessHours();
 };
 
 export const resetDefaultBusinessHourIfNeeded = async (): Promise<void> => {
-	Meteor.call('license:isEnterprise', async (err: any, isEnterprise: any) => {
+	await Meteor.callAsync('license:isEnterprise', async (err: any, isEnterprise: any) => {
 		if (err) {
 			throw err;
 		}
@@ -70,7 +70,7 @@ export const resetDefaultBusinessHourIfNeeded = async (): Promise<void> => {
 		if (!defaultBusinessHour) {
 			return;
 		}
-		LivechatBusinessHours.update(
+		await LivechatBusinessHours.update(
 			{ _id: defaultBusinessHour._id },
 			{
 				$set: {

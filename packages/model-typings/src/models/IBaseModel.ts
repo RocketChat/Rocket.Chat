@@ -50,18 +50,21 @@ export interface IBaseModel<
 	findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<ModifyResult<T>>;
 
 	findOneById(_id: T['_id'], options?: FindOptions<T> | undefined): Promise<T | null>;
-	findOneById<P = T>(_id: T['_id'], options?: FindOptions<P>): Promise<P | null>;
+	findOneById<P extends Document = T>(_id: T['_id'], options?: FindOptions<P>): Promise<P | null>;
 	findOneById(_id: T['_id'], options?: any): Promise<T | null>;
 
 	findOne(query?: Filter<T> | T['_id'], options?: undefined): Promise<T | null>;
-	findOne<P = T>(query: Filter<T> | T['_id'], options: FindOptions<P extends T ? T : P>): Promise<P | null>;
+	findOne<P extends Document = T>(query: Filter<T> | T['_id'], options: FindOptions<P extends T ? T : P>): Promise<P | null>;
 	findOne<P>(query: Filter<T> | T['_id'], options?: any): Promise<WithId<T> | WithId<P> | null>;
 
 	find(query?: Filter<T>): FindCursor<ResultFields<T, C>>;
-	find<P = T>(query: Filter<T>, options: FindOptions<P extends T ? T : P>): FindCursor<P>;
-	find<P>(query: Filter<T> | undefined, options?: FindOptions<P extends T ? T : P>): FindCursor<WithId<P>> | FindCursor<WithId<T>>;
+	find<P extends Document = T>(query: Filter<T>, options: FindOptions<P extends T ? T : P>): FindCursor<P>;
+	find<P extends Document>(
+		query: Filter<T> | undefined,
+		options?: FindOptions<P extends T ? T : P>,
+	): FindCursor<WithId<P>> | FindCursor<WithId<T>>;
 
-	findPaginated<P = T>(query: Filter<T>, options?: FindOptions<P extends T ? T : P>): FindPaginated<FindCursor<WithId<P>>>;
+	findPaginated<P extends Document = T>(query: Filter<T>, options?: FindOptions<P extends T ? T : P>): FindPaginated<FindCursor<WithId<P>>>;
 	findPaginated(query: Filter<T>, options?: any): FindPaginated<FindCursor<WithId<T>>>;
 
 	update(
@@ -92,7 +95,7 @@ export interface IBaseModel<
 
 	trashFindOneById(_id: TDeleted['_id']): Promise<TDeleted | null>;
 
-	trashFindOneById<P>(_id: TDeleted['_id'], options: FindOptions<P extends TDeleted ? TDeleted : P>): Promise<P | null>;
+	trashFindOneById<P extends Document>(_id: TDeleted['_id'], options: FindOptions<P extends TDeleted ? TDeleted : P>): Promise<P | null>;
 
 	trashFindOneById<P extends TDeleted>(
 		_id: TDeleted['_id'],
@@ -101,13 +104,13 @@ export interface IBaseModel<
 
 	trashFindDeletedAfter(deletedAt: Date): FindCursor<WithId<TDeleted>>;
 
-	trashFindDeletedAfter<P = TDeleted>(
+	trashFindDeletedAfter<P extends Document = TDeleted>(
 		deletedAt: Date,
 		query?: Filter<TDeleted>,
 		options?: FindOptions<P extends TDeleted ? TDeleted : P>,
 	): FindCursor<WithId<TDeleted>>;
 
-	trashFindPaginatedDeletedAfter<P = TDeleted>(
+	trashFindPaginatedDeletedAfter<P extends Document = TDeleted>(
 		deletedAt: Date,
 		query?: Filter<TDeleted>,
 		options?: FindOptions<P extends TDeleted ? TDeleted : P>,

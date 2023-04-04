@@ -29,7 +29,7 @@ function getScopes(accessToken) {
 	}
 }
 
-registerAccessTokenService('google', function (options) {
+registerAccessTokenService('google', async function (options) {
 	check(
 		options,
 		Match.ObjectIncluding({

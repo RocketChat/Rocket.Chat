@@ -9,7 +9,7 @@ Meteor.startup(() => {
 		if (value) {
 			return callbacks.add(
 				'afterValidateLogin',
-				(login) => {
+				async (login) => {
 					const { user } = login;
 					const { services } = user;
 					if (!services || !services.nextcloud) {
@@ -26,7 +26,7 @@ Meteor.startup(() => {
 						token,
 					};
 					try {
-						Meteor.runAsUser(user._id, () => Meteor.call('addWebdavAccountByToken', data));
+						await Meteor.runAsUser(user._id, () => Meteor.callAsync('addWebdavAccountByToken', data));
 					} catch (error) {
 						SystemLogger.error(error);
 					}

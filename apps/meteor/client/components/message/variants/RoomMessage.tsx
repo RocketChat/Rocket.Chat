@@ -24,6 +24,7 @@ import RoomMessageContent from './room/RoomMessageContent';
 
 type RoomMessageProps = {
 	message: IMessage & { ignored?: boolean };
+	showUserAvatar: boolean;
 	sequential: boolean;
 	unread: boolean;
 	mention: boolean;
@@ -33,7 +34,17 @@ type RoomMessageProps = {
 	searchText?: string;
 };
 
-const RoomMessage = ({ message, sequential, all, mention, unread, context, ignoredUser, searchText }: RoomMessageProps): ReactElement => {
+const RoomMessage = ({
+	message,
+	showUserAvatar,
+	sequential,
+	all,
+	mention,
+	unread,
+	context,
+	ignoredUser,
+	searchText,
+}: RoomMessageProps): ReactElement => {
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
@@ -68,7 +79,7 @@ const RoomMessage = ({ message, sequential, all, mention, unread, context, ignor
 			aria-busy={message.temp}
 		>
 			<MessageLeftContainer>
-				{!sequential && message.u.username && !selecting && (
+				{!sequential && message.u.username && !selecting && showUserAvatar && (
 					<UserAvatar
 						url={message.avatar}
 						username={message.u.username}

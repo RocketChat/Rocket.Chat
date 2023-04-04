@@ -1,16 +1,16 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Users, Subscriptions as SubscriptionsRaw } from '@rocket.chat/models';
+import { Users, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
 
-import { hasAllPermission, hasPermission, canAccessRoom, roomAccessAttributes } from '../../app/authorization/server';
-import { Subscriptions, Rooms } from '../../app/models/server';
+import { canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
+import { hasPermissionAsync, hasAllPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../app/settings/server';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 import { roomCoordinator } from './rooms/roomCoordinator';
 import { trim } from '../../lib/utils/stringUtils';
 
 export class Spotlight {
-	fetchRooms(userId, rooms) {
-		if (!settings.get('Store_Last_Message') || hasPermission(userId, 'preview-c-room')) {
+	async fetchRooms(userId, rooms) {
+		if (!settings.get('Store_Last_Message') || (await hasPermissionAsync(userId, 'preview-c-room'))) {
 			return rooms;
 		}
 
@@ -20,12 +20,12 @@ export class Spotlight {
 		});
 	}
 
-	searchRooms({ userId, text, includeFederatedRooms = false }) {
+	async searchRooms({ userId, text, includeFederatedRooms = false }) {
 		const regex = new RegExp(trim(escapeRegExp(text)), 'i');
 
 		const roomOptions = {
 			limit: 5,
-			fields: {
+			projection: {
 				t: 1,
 				name: 1,
 				fname: 1,
@@ -43,28 +43,28 @@ export class Spotlight {
 				return [];
 			}
 
-			return this.fetchRooms(userId, Rooms.findByNameAndTypeNotDefault(regex, 'c', roomOptions, includeFederatedRooms).fetch());
+			return this.fetchRooms(userId, await Rooms.findByNameAndTypeNotDefault(regex, 'c', roomOptions, includeFederatedRooms).toArray());
 		}
 
-		if (!hasAllPermission(userId, ['view-outside-room', 'view-c-room'])) {
+		if (!(await hasAllPermissionAsync(userId, ['view-outside-room', 'view-c-room']))) {
 			return [];
 		}
 
 		const searchableRoomTypeIds = roomCoordinator.searchableRoomTypes();
 
-		const roomIds = Subscriptions.findByUserIdAndTypes(userId, searchableRoomTypeIds, {
-			fields: { rid: 1 },
-		})
-			.fetch()
-			.map((s) => s.rid);
-		const exactRoom = Rooms.findOneByNameAndType(text, searchableRoomTypeIds, roomOptions, includeFederatedRooms);
+		const roomIds = (
+			await SubscriptionsRaw.findByUserIdAndTypes(userId, searchableRoomTypeIds, {
+				projection: { rid: 1 },
+			}).toArray()
+		).map((s) => s.rid);
+		const exactRoom = await Rooms.findOneByNameAndType(text, searchableRoomTypeIds, roomOptions, includeFederatedRooms);
 		if (exactRoom) {
 			roomIds.push(exactRoom.rid);
 		}
 
 		return this.fetchRooms(
 			userId,
-			Rooms.findByNameAndTypesNotInIds(regex, searchableRoomTypeIds, roomIds, roomOptions, includeFederatedRooms).fetch(),
+			await Rooms.findByNameAndTypesNotInIds(regex, searchableRoomTypeIds, roomIds, roomOptions, includeFederatedRooms).toArray(),
 		);
 	}
 
@@ -86,14 +86,12 @@ export class Spotlight {
 		usernames.push(...users.map((u) => u.username).filter((u) => !usernames.includes(u)));
 	}
 
-	_searchInsiderUsers({ rid, text, usernames, options, users, insiderExtraQuery, match = { startsWith: false, endsWith: false } }) {
+	async _searchInsiderUsers({ rid, text, usernames, options, users, insiderExtraQuery, match = { startsWith: false, endsWith: false } }) {
 		// Get insiders first
 		if (rid) {
 			const searchFields = settings.get('Accounts_SearchFields').trim().split(',');
 
-			users.push(
-				...Promise.await(Users.findByActiveUsersExcept(text, usernames, options, searchFields, insiderExtraQuery, match).toArray()),
-			);
+			users.push(...(await Users.findByActiveUsersExcept(text, usernames, options, searchFields, insiderExtraQuery, match).toArray()));
 
 			// If the limit was reached, return
 			if (this.processLimitAndUsernames(options, usernames, users)) {
@@ -102,15 +100,14 @@ export class Spotlight {
 		}
 	}
 
-	_searchConnectedUsers(userId, { text, usernames, options, users, match = { startsWith: false, endsWith: false } }, roomType) {
+	async _searchConnectedUsers(userId, { text, usernames, options, users, match = { startsWith: false, endsWith: false } }, roomType) {
 		const searchFields = settings.get('Accounts_SearchFields').trim().split(',');
 
 		users.push(
-			...Promise.await(
-				SubscriptionsRaw.findConnectedUsersExcept(userId, text, usernames, searchFields, {}, options.limit || 5, roomType, match),
-				{
+			...(
+				await SubscriptionsRaw.findConnectedUsersExcept(userId, text, usernames, searchFields, {}, options.limit || 5, roomType, match, {
 					readPreference: options.readPreference,
-				},
+				})
 			).map(this.mapOutsiders),
 		);
 
@@ -120,14 +117,12 @@ export class Spotlight {
 		}
 	}
 
-	_searchOutsiderUsers({ text, usernames, options, users, canListOutsiders, match = { startsWith: false, endsWith: false } }) {
+	async _searchOutsiderUsers({ text, usernames, options, users, canListOutsiders, match = { startsWith: false, endsWith: false } }) {
 		// Then get the outsiders if allowed
 		if (canListOutsiders) {
 			const searchFields = settings.get('Accounts_SearchFields').trim().split(',');
 			users.push(
-				...Promise.await(Users.findByActiveUsersExcept(text, usernames, options, searchFields, undefined, match).toArray()).map(
-					this.mapOutsiders,
-				),
+				...(await Users.findByActiveUsersExcept(text, usernames, options, searchFields, undefined, match).toArray()).map(this.mapOutsiders),
 			);
 
 			// If the limit was reached, return
@@ -137,11 +132,11 @@ export class Spotlight {
 		}
 	}
 
-	_performExtraUserSearches(/* userId, searchParams */) {
+	async _performExtraUserSearches(/* userId, searchParams */) {
 		// Overwrite this method to include extra searches
 	}
 
-	searchUsers({ userId, rid, text, usernames, mentions }) {
+	async searchUsers({ userId, rid, text, usernames, mentions }) {
 		const users = [];
 
 		const options = {
@@ -160,14 +155,14 @@ export class Spotlight {
 			readPreference: readSecondaryPreferred(Users.col.s.db),
 		};
 
-		const room = Rooms.findOneById(rid, { fields: { ...roomAccessAttributes, _id: 1, t: 1, uids: 1 } });
+		const room = await Rooms.findOneById(rid, { projection: { ...roomAccessAttributes, _id: 1, t: 1, uids: 1 } });
 
 		if (rid && !room) {
 			return users;
 		}
 
-		const canListOutsiders = hasAllPermission(userId, ['view-outside-room', 'view-d-room']);
-		const canListInsiders = canListOutsiders || (rid && canAccessRoom(room, { _id: userId }));
+		const canListOutsiders = await hasAllPermissionAsync(userId, ['view-outside-room', 'view-d-room']);
+		const canListInsiders = canListOutsiders || (rid && (await canAccessRoomAsync(room, { _id: userId })));
 
 		const insiderExtraQuery = [];
 
@@ -181,10 +176,7 @@ export class Spotlight {
 				case 'l':
 					insiderExtraQuery.push({
 						_id: {
-							$in: Subscriptions.findByRoomId(room._id)
-								.fetch()
-								.map((s) => s.u?._id)
-								.filter((id) => id && id !== userId),
+							$in: (await SubscriptionsRaw.findByRoomId(room._id).toArray()).map((s) => s.u?._id).filter((id) => id && id !== userId),
 						},
 					});
 					break;
@@ -209,12 +201,10 @@ export class Spotlight {
 
 		// Exact match for username only
 		if (rid && canListInsiders) {
-			const exactMatch = Promise.await(
-				Users.findOneByUsernameAndRoomIgnoringCase(text, rid, {
-					projection: options.projection,
-					readPreference: options.readPreference,
-				}),
-			);
+			const exactMatch = await Users.findOneByUsernameAndRoomIgnoringCase(text, rid, {
+				projection: options.projection,
+				readPreference: options.readPreference,
+			});
 			if (exactMatch) {
 				users.push(exactMatch);
 				this.processLimitAndUsernames(options, usernames, users);
@@ -222,12 +212,10 @@ export class Spotlight {
 		}
 
 		if (users.length === 0 && canListOutsiders) {
-			const exactMatch = Promise.await(
-				Users.findOneByUsernameIgnoringCase(text, {
-					projection: options.projection,
-					readPreference: options.readPreference,
-				}),
-			);
+			const exactMatch = await Users.findOneByUsernameIgnoringCase(text, {
+				projection: options.projection,
+				readPreference: options.readPreference,
+			});
 			if (exactMatch) {
 				users.push(this.mapOutsiders(exactMatch));
 				this.processLimitAndUsernames(options, usernames, users);
@@ -236,12 +224,12 @@ export class Spotlight {
 
 		if (canListInsiders && rid) {
 			// Search for insiders
-			if (this._searchInsiderUsers(searchParams)) {
+			if (await this._searchInsiderUsers(searchParams)) {
 				return users;
 			}
 
 			// Search for users that the requester has DMs with
-			if (this._searchConnectedUsers(userId, searchParams, 'd')) {
+			if (await this._searchConnectedUsers(userId, searchParams, 'd')) {
 				return users;
 			}
 		}
@@ -249,14 +237,14 @@ export class Spotlight {
 		// If the user can search outsiders, search for any user in the server
 		// Otherwise, search for users that are subscribed to the same rooms as the requester
 		if (canListOutsiders) {
-			if (this._searchOutsiderUsers(searchParams)) {
+			if (await this._searchOutsiderUsers(searchParams)) {
 				return users;
 			}
-		} else if (this._searchConnectedUsers(userId, searchParams)) {
+		} else if (await this._searchConnectedUsers(userId, searchParams)) {
 			return users;
 		}
 
-		if (this._performExtraUserSearches(userId, searchParams)) {
+		if (await this._performExtraUserSearches(userId, searchParams)) {
 			return users;
 		}
 

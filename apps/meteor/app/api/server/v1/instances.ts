@@ -1,7 +1,7 @@
 import { InstanceStatus } from '@rocket.chat/models';
 
 import { Instance as InstanceService } from '../../../../ee/server/sdk';
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
 import { isRunningMs } from '../../../../server/lib/isRunningMs';
 
@@ -18,7 +18,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			if (!hasPermission(this.userId, 'view-statistics')) {
+			if (!(await hasPermissionAsync(this.userId, 'view-statistics'))) {
 				return API.v1.unauthorized();
 			}
 

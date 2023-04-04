@@ -9,7 +9,7 @@ const colors = createColors({
 
 type LogColors = 'white' | 'blue' | 'green' | 'magenta' | 'red';
 
-export function showBox(title: string, message: string, color?: LogColors): void {
+function showBox(title: string, message: string, color?: LogColors): void {
 	const msgLines = message.split('\n');
 
 	const len = Math.max.apply(

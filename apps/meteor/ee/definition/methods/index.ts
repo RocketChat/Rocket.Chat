@@ -1,2 +1,1 @@
-import './audit';
 import './license';

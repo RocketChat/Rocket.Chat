@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { settings } from '../../settings';
+import { settings } from '../../settings/client';
 
 Meteor.startup(() => {
 	Tracker.autorun((c) => {

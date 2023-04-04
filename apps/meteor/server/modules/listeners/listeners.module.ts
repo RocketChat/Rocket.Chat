@@ -17,7 +17,7 @@ const STATUS_MAP: { [k: string]: number } = {
 	[UserStatus.BUSY]: 3,
 };
 
-export const minimongoChangeMap: Record<string, string> = {
+const minimongoChangeMap: Record<string, string> = {
 	inserted: 'added',
 	updated: 'changed',
 	removed: 'removed',
@@ -39,9 +39,17 @@ export class ListenersModule {
 
 		service.onEvent('notify.ephemeralMessage', (uid, rid, message) => {
 			if (!isMessageParserDisabled && message.msg) {
+				const customDomains = settings.get<string>('Message_CustomDomain_AutoLink')
+					? settings
+							.get<string>('Message_CustomDomain_AutoLink')
+							.split(',')
+							.map((domain) => domain.trim())
+					: [];
+
 				message.md = parse(message.msg, {
 					colors: settings.get('HexColorPreview_Enabled'),
 					emoticons: true,
+					customDomains,
 					...(settings.get('Katex_Enabled') && {
 						katex: {
 							dollarSyntax: settings.get('Katex_Dollar_Syntax'),

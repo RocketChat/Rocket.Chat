@@ -22,8 +22,8 @@ const exitIfNotBypassed = (ignore, errorCode = 1) => {
 
 const skipMongoDbDeprecationCheck = ['yes', 'true'].includes(String(process.env.SKIP_MONGODEPRECATION_CHECK).toLowerCase());
 
-Meteor.startup(function () {
-	const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
+Meteor.startup(async function () {
+	const { oplogEnabled, mongoVersion, mongoStorageEngine } = await getMongoInfo();
 
 	const desiredNodeVersion = semver.clean(fs.readFileSync(path.join(process.cwd(), '../../.node_version.txt')).toString());
 	const desiredNodeVersionMajor = String(semver.parse(desiredNodeVersion).major);
@@ -101,7 +101,7 @@ Meteor.startup(function () {
 
 			if (!Users.bannerExistsById(id)) {
 				sendMessagesToAdmins({
-					msgs: ({ adminUser }) => [
+					msgs: async ({ adminUser }) => [
 						{
 							msg: `*${TAPi18n.__(title, adminUser.language)}*\n${TAPi18n.__(text, mongoVersion, adminUser.language)}\n${link}`,
 						},
