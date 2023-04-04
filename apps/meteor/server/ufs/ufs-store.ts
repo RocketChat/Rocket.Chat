@@ -14,7 +14,6 @@ import type { IBaseUploadsModel } from '@rocket.chat/model-typings';
 import { UploadFS } from '.';
 import type { IFile } from './definition';
 import { Filter } from './ufs-filter';
-import { Tokens } from './ufs-tokens';
 
 export type StoreOptions = {
 	collection?: IBaseUploadsModel<IFile>;
@@ -40,8 +39,6 @@ export type StoreOptions = {
 export class Store {
 	protected options: StoreOptions;
 
-	public checkToken: (token: string, fileId: string) => boolean;
-
 	public copy: (
 		fileId: string,
 		store: Store,
@@ -49,8 +46,6 @@ export class Store {
 	) => Promise<void>;
 
 	public create: (file: OptionalId<IFile>) => Promise<string>;
-
-	public createToken: (fileId: string) => void;
 
 	public write: (rs: stream.Readable, fileId: string, callback: (err?: Error, file?: IFile) => void) => Promise<void>;
 
@@ -105,12 +100,6 @@ export class Store {
 
 		// Add the store to the list
 		UploadFS.addStore(this);
-
-		this.checkToken = (token, fileId) => {
-			check(token, String);
-			check(fileId, String);
-			return Tokens.find({ value: token, fileId }).count() === 1;
-		};
 
 		this.copy = async (fileId, store, callback) => {
 			check(fileId, String);
@@ -168,30 +157,6 @@ export class Store {
 			check(file, Object);
 			file.store = this.options.name; // assign store to file
 			return (await this.getCollection().insertOne(file)).insertedId;
-		};
-
-		this.createToken = (fileId) => {
-			const token = this.generateToken();
-
-			// Check if token exists
-			if (Tokens.find({ fileId }).count()) {
-				Tokens.update(
-					{ fileId },
-					{
-						$set: {
-							createdAt: new Date(),
-							value: token,
-						},
-					},
-				);
-			} else {
-				Tokens.insert({
-					createdAt: new Date(),
-					fileId,
-					value: token,
-				});
-			}
-			return token;
 		};
 
 		this.write = async (rs, fileId, callback) => {
@@ -292,7 +257,6 @@ export class Store {
 		});
 
 		await this.getCollection().removeById(fileId);
-		Tokens.remove({ fileId });
 	}
 
 	async delete(_fileId: string): Promise<any> {

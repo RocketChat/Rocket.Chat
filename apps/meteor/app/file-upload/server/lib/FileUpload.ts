@@ -34,6 +34,7 @@ import { streamToBuffer } from './streamToBuffer';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import type { Store, StoreOptions } from '../../../../server/ufs/ufs-store';
+import { ufsComplete } from '../../../../server/ufs/ufs-methods';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
@@ -743,7 +744,6 @@ export class FileUploadClass {
 
 	async _doInsert(fileData: OptionalId<IUpload>, streamOrBuffer: stream | Buffer, cb?: (err?: Error, file?: IUpload) => void) {
 		const fileId = await this.store.create(fileData);
-		const token = this.store.createToken(fileId);
 		const tmpFile = UploadFS.getTempFilePath(fileId);
 
 		try {
@@ -755,7 +755,7 @@ export class FileUploadClass {
 				throw new Error('Invalid file type');
 			}
 
-			const file = Meteor.call('ufsComplete', fileId, this.name, token);
+			const file = await ufsComplete(fileId, this.name);
 
 			if (cb) {
 				cb(undefined, file);
