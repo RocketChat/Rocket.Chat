@@ -175,7 +175,7 @@ export const sendNoWrap = async ({
 	Meteor.defer(() => Email.send(eventResult || email));
 };
 
-export const send = ({
+export const send = async ({
 	to,
 	from,
 	replyTo,
@@ -193,18 +193,16 @@ export const send = ({
 	text?: string;
 	headers?: string;
 	data?: { [key: string]: unknown };
-}): void =>
-	Promise.await(
-		sendNoWrap({
-			to,
-			from,
-			replyTo,
-			subject: replace(subject, data),
-			text: (text && replace(text, data)) || (html && stripHtml(replace(html, data)).result) || undefined,
-			html: html ? wrap(html, data) : undefined,
-			headers,
-		}),
-	);
+}): Promise<void> =>
+	sendNoWrap({
+		to,
+		from,
+		replyTo,
+		subject: replace(subject, data),
+		text: (text && replace(text, data)) || (html && stripHtml(replace(html, data)).result) || undefined,
+		html: html ? wrap(html, data) : undefined,
+		headers,
+	});
 
 // Needed because of https://github.com/microsoft/TypeScript/issues/36931
 type Assert = (input: string, func: string) => asserts input;
