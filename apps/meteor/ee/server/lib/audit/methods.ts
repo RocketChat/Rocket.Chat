@@ -6,19 +6,20 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { ILivechatAgent, ILivechatVisitor, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { Filter } from 'mongodb';
-import { LivechatRooms, Messages, Rooms } from '@rocket.chat/models';
+import { LivechatRooms, Messages, Rooms, Users } from '@rocket.chat/models';
 
 import AuditLog from './AuditLog';
-import { Users } from '../../../../app/models/server';
 import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
 import { updateCounter } from '../../../../app/statistics/server';
 import type { IAuditLog } from '../../../definition/IAuditLog';
+import { isTruthy } from '../../../../lib/isTruthy';
 
 const getValue = (room: IRoom | null) => room && { rids: [room._id], name: room.name };
 
-const getUsersIdFromUserName = (usernames: IUser['username'][]) => {
-	const user: IUser[] = usernames ? Users.findByUsername({ $in: usernames }) : undefined;
-	return user.map((userId) => userId._id);
+const getUsersIdFromUserName = async (usernames: IUser['username'][]) => {
+	const users = usernames ? await Users.findByUsernames(usernames.filter(isTruthy)).toArray() : undefined;
+
+	return users?.filter(isTruthy).map((userId) => userId._id);
 };
 
 const getRoomInfoByAuditParams = async ({
@@ -138,7 +139,7 @@ Meteor.methods<ServerMethods>({
 		};
 
 		if (type === 'u') {
-			const usersId = getUsersIdFromUserName(usernames);
+			const usersId = await getUsersIdFromUserName(usernames);
 			query['u._id'] = { $in: usersId };
 		} else {
 			const roomInfo = await getRoomInfoByAuditParams({ type, roomId: rid, users: usernames, visitor, agent });

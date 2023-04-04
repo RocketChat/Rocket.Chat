@@ -60,14 +60,16 @@ slashCommands.add({
                 		command: 'Command (or Ctrl) + /',
 			},
 		];
+		let msg = '';
 		keys.forEach((key) => {
-			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__(key.key, {
-					postProcess: 'sprintf',
-					sprintf: [key.command],
-					lng: user?.language || settings.get('Language') || 'en',
-				}),
-			});
+			msg = `${msg}\n${TAPi18n.__(key.key, {
+				postProcess: 'sprintf',
+				sprintf: [key.command],
+				lng: user?.language || settings.get('language') || 'en',
+			})}`;
+		});
+		void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			msg,
 		});
 	},
 	options: {
