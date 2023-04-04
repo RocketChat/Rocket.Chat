@@ -12,6 +12,7 @@ afterEach(() => {
 	server.close();
 	WS.clean();
 });
+
 it('should connect', async () => {
 	const client = new MinimalDDPClient();
 	const connection = new ConnectionImpl('ws://localhost:1234', WebSocket as any, client, { retryCount: 0, retryTime: 0 });
@@ -98,4 +99,41 @@ it('should handle the close method', async () => {
 	connection.close();
 
 	expect(connection.status).toBe('closed');
+});
+
+it('should handle reconnecting', async () => {
+	const client = new MinimalDDPClient();
+	const connection = ConnectionImpl.create('ws://localhost:1234', WebSocket, client, { retryCount: 1, retryTime: 100 });
+
+	server.nextMessage.then((message) => {
+		expect(message).toBe('{"msg":"connect","version":"1","support":["1","pre2","pre1"]}');
+		return server.send('{"msg":"connected","session":"123"}');
+	});
+
+	expect(connection.status).toBe('idle');
+	expect(connection.session).toBeUndefined();
+
+	await expect(connection.connect()).resolves.toBe(true);
+
+	expect(connection.session).toBe('123');
+	expect(connection.status).toBe('connected');
+
+	server.close();
+	WS.clean();
+	server = new WS('ws://localhost:1234');
+
+	server.nextMessage.then((message) => {
+		expect(message).toBe('{"msg":"connect","version":"1","support":["1","pre2","pre1"]}');
+		return server.send('{"msg":"connected","session":"123"}');
+	});
+
+	expect(connection.status).toBe('disconnected');
+
+	await expect(new Promise((resolve) => connection.once('reconnecting', () => resolve(undefined)))).resolves.toBeUndefined();
+
+	expect(connection.status).toBe('connecting');
+
+	// await expect(new Promise((resolve) => connection.once('connection', (data) => resolve(data)))).resolves.toBe('connected');
+
+	// expect(connection.status).toBe('connected');
 });

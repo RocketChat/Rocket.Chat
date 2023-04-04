@@ -28,6 +28,7 @@ export interface Connection
 	extends Emitter<{
 		connection: ConnectionStatus;
 		disconnected: void;
+		reconnecting: void;
 		close: void;
 	}> {
 	session?: string;
@@ -47,6 +48,7 @@ export class ConnectionImpl
 	extends Emitter<{
 		connection: ConnectionStatus;
 		disconnected: void;
+		reconnecting: void;
 		close: void;
 	}>
 	implements Connection
@@ -78,18 +80,16 @@ export class ConnectionImpl
 
 		const ws = new this.WS(this.url);
 
-		ws.onmessage = (event) => {
-			this.client.handleMessage(String(event.data));
-		};
-
-		const handle = (message: string) => {
-			ws.send(message);
-		};
-
 		let stop: () => void | undefined;
 		return new Promise<boolean>((resolve, reject) => {
 			ws.onopen = () => {
-				// stop =
+				ws.onmessage = (event) => {
+					this.client.handleMessage(String(event.data));
+				};
+
+				const handle = (message: string) => {
+					ws.send(message);
+				};
 				this.client.onDispatchMessage(handle);
 
 				this.retryCount = 0;
@@ -132,6 +132,7 @@ export class ConnectionImpl
 			};
 
 			ws.addEventListener('close', () => {
+				clearTimeout(this.retryOptions.retryTimer);
 				stop?.();
 				if (this.status === 'closed') {
 					return;
@@ -146,6 +147,7 @@ export class ConnectionImpl
 				this.retryCount += 1;
 
 				this.retryOptions.retryTimer = setTimeout(() => {
+					this.emit('reconnecting');
 					this.connect();
 				}, this.retryOptions.retryTime);
 			});
