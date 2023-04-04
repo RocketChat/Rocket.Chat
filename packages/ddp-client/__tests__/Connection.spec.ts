@@ -99,3 +99,29 @@ it('should trigger a disconnect callback', async () => {
 
 	expect(connection.status).toBe('disconnected');
 });
+
+it('should handle the close method', async () => {
+	const client = new MinimalDDPClient();
+
+	const connection = ConnectionImpl.create('ws://localhost:1234', globalThis.WebSocket, client, {
+		retryCount: 0,
+		retryTime: 0,
+	});
+
+	server.nextMessage.then((message) => {
+		expect(message).toBe('{"msg":"connect","version":"1","support":["1","pre2","pre1"]}');
+		server.send('{"msg":"connected","session":"123"}');
+	});
+
+	expect(connection.status).toBe('idle');
+	expect(connection.session).toBeUndefined();
+
+	await expect(connection.connect()).resolves.toBe(true);
+
+	expect(connection.session).toBe('123');
+	expect(connection.status).toBe('connected');
+
+	connection.close();
+
+	expect(connection.status).toBe('closed');
+});
