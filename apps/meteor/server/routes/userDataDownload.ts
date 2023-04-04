@@ -1,5 +1,6 @@
 import type { IncomingMessage, ServerResponse } from 'http';
 
+import { Meteor } from 'meteor/meteor';
 import { match } from 'path-to-regexp';
 import { WebApp } from 'meteor/webapp';
 import { UserDataFiles, Users } from '@rocket.chat/models';

@@ -6,7 +6,6 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useUserPreference, useUserSubscriptions, useSetting, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
-import { Meteor } from 'meteor/meteor';
 import type { ReactElement, MutableRefObject, SetStateAction, Dispatch, FormEventHandler, Ref, MouseEventHandler } from 'react';
 import React, { forwardRef, useState, useMemo, useEffect, useRef } from 'react';
 import type { VirtuosoHandle } from 'react-virtuoso';
@@ -21,9 +20,6 @@ import Row from './Row';
 import ScrollerWithCustomProps from './ScrollerWithCustomProps';
 
 const shortcut = ((): string => {
-	if (!(Meteor as any).Device.isDesktop()) {
-		return '';
-	}
 	if (window.navigator.platform.toLowerCase().includes('mac')) {
 		return '(\u2318+K)';
 	}
