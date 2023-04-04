@@ -21,6 +21,8 @@ import { AppEvents, Apps } from '../../../../ee/server/apps/orchestrator';
 import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { safeHtmlDots } from '../../../../lib/utils/safeHtmlDots';
 
+import './wrap';
+
 Accounts.config({
 	forbidClientAccountCreation: true,
 });
@@ -157,7 +159,7 @@ const getLinkedInName = ({ firstName, lastName }) => {
 	return `${firstName} ${lastName}`;
 };
 
-Accounts.onCreateUser(function (options, user = {}) {
+Accounts.onCreateUser(async function (options, user = {}) {
 	callbacks.run('beforeCreateUser', options, user);
 
 	user.status = 'offline';
@@ -195,8 +197,8 @@ Accounts.onCreateUser(function (options, user = {}) {
 
 	if (!user.active) {
 		const destinations = [];
-		const usersInRole = Promise.await(Roles.findUsersInRole('admin'));
-		Promise.await(usersInRole.toArray()).forEach((adminUser) => {
+		const usersInRole = await Roles.findUsersInRole('admin');
+		(await usersInRole.toArray()).forEach((adminUser) => {
 			if (Array.isArray(adminUser.emails)) {
 				adminUser.emails.forEach((email) => {
 					destinations.push(`${adminUser.name}<${email.address}>`);
@@ -215,18 +217,18 @@ Accounts.onCreateUser(function (options, user = {}) {
 			}),
 		};
 
-		Promise.await(Mailer.send(email));
+		await Mailer.send(email);
 	}
 
 	callbacks.run('onCreateUser', options, user);
 
 	// App IPostUserCreated event hook
-	Promise.await(Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: safeGetMeteorUser() }));
+	await Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: safeGetMeteorUser() });
 
 	return user;
 });
 
-Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc, options, user) {
+Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, async function (insertUserDoc, options, user) {
 	const globalRoles = [];
 
 	if (Match.test(user.globalRoles, [String]) && user.globalRoles.length > 0) {
@@ -276,7 +278,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc,
 			});
 		}
 		if (settings.get('Accounts_SetDefaultAvatar') === true) {
-			const avatarSuggestions = Promise.await(getAvatarSuggestionForUser(user));
+			const avatarSuggestions = await getAvatarSuggestionForUser(user);
 			Object.keys(avatarSuggestions).some((service) => {
 				const avatarData = avatarSuggestions[service];
 				if (service !== 'gravatar') {
@@ -302,25 +304,30 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc,
 	if (!roles.includes('admin') && !hasAdmin) {
 		roles.push('admin');
 		if (settings.get('Show_Setup_Wizard') === 'pending') {
-			Promise.await(Settings.updateValueById('Show_Setup_Wizard', 'in_progress'));
+			await Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
 		}
 	}
 
-	Promise.await(addUserRolesAsync(_id, roles));
+	await addUserRolesAsync(_id, roles);
 
 	return _id;
 });
 
-Accounts.validateLoginAttempt(function (login) {
+const originalInsertUserDoc = Accounts.insertUserDoc;
+Accounts.insertUserDoc = function (insertUserDoc, options, user) {
+	return Promise.await(originalInsertUserDoc(options, user));
+};
+
+Accounts.validateLoginAttempt(async function (login) {
 	login = callbacks.run('beforeValidateLogin', login);
 
-	if (!Promise.await(isValidLoginAttemptByIp(getClientAddress(login.connection)))) {
+	if (!(await isValidLoginAttemptByIp(getClientAddress(login.connection)))) {
 		throw new Meteor.Error('error-login-blocked-for-ip', 'Login has been temporarily blocked For IP', {
 			function: 'Accounts.validateLoginAttempt',
 		});
 	}
 
-	if (!Promise.await(isValidAttemptByUser(login))) {
+	if (!(await isValidAttemptByUser(login))) {
 		throw new Meteor.Error('error-login-blocked-for-user', 'Login has been temporarily blocked For User', {
 			function: 'Accounts.validateLoginAttempt',
 		});
@@ -372,7 +379,7 @@ Accounts.validateLoginAttempt(function (login) {
 	 */
 	if (login.type !== 'resume') {
 		// App IPostUserLoggedIn event hook
-		Promise.await(Apps.triggerEvent(AppEvents.IPostUserLoggedIn, login.user));
+		await Apps.triggerEvent(AppEvents.IPostUserLoggedIn, login.user);
 	}
 
 	return true;
