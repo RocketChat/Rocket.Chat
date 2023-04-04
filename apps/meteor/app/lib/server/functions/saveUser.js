@@ -377,7 +377,7 @@ export const saveUser = async function (userId, userData) {
 
 	if (userData.email) {
 		const shouldSendVerificationEmailToUser = userData.verified !== true;
-		setEmail(userData._id, userData.email, shouldSendVerificationEmailToUser);
+		await setEmail(userData._id, userData.email, shouldSendVerificationEmailToUser);
 	}
 
 	if (
