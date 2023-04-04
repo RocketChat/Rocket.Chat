@@ -39,20 +39,18 @@ RocketChatFile.GridFS = class {
 		this.transformWrite = transformWrite;
 
 		this.bucket = new mongo.GridFSBucket(db, { bucketName: this.name });
-
-		this.getFileSync = Meteor.wrapAsync(this.getFile.bind(this));
 	}
 
-	findOne(filename) {
-		const file = Promise.await(this.bucket.find({ filename }).limit(1).toArray());
+	async findOne(filename) {
+		const file = await this.bucket.find({ filename }).limit(1).toArray();
 		if (!file) {
 			return;
 		}
 		return file[0];
 	}
 
-	remove(fileId) {
-		Promise.await(this.bucket.delete(fileId));
+	async remove(fileId) {
+		await this.bucket.delete(fileId);
 	}
 
 	createWriteStream(fileName, contentType) {
@@ -81,8 +79,8 @@ RocketChatFile.GridFS = class {
 		return this.bucket.openDownloadStreamByName(fileName);
 	}
 
-	getFileWithReadStream(fileName) {
-		const file = this.findOne(fileName);
+	async getFileWithReadStream(fileName) {
+		const file = await this.findOne(fileName);
 		if (file == null) {
 			return null;
 		}
@@ -95,33 +93,33 @@ RocketChatFile.GridFS = class {
 		};
 	}
 
-	getFile(fileName, cb) {
-		const file = this.getFileWithReadStream(fileName);
+	async getFile(fileName) {
+		const file = await this.getFileWithReadStream(fileName);
 		if (!file) {
-			return cb();
+			return;
 		}
-		const data = [];
-		file.readStream.on(
-			'data',
-			Meteor.bindEnvironment(function (chunk) {
-				return data.push(chunk);
-			}),
-		);
-		return file.readStream.on(
-			'end',
-			Meteor.bindEnvironment(function () {
-				return cb(null, {
+		return new Promise((resolve) => {
+			const data = [];
+			file.readStream.on(
+				'data',
+				Meteor.bindEnvironment(function (chunk) {
+					return data.push(chunk);
+				}),
+			);
+
+			file.readStream.on('end', function () {
+				resolve({
 					buffer: Buffer.concat(data),
 					contentType: file.contentType,
 					length: file.length,
 					uploadDate: file.uploadDate,
 				});
-			}),
-		);
+			});
+		});
 	}
 
-	deleteFile(fileName) {
-		const file = this.findOne(fileName);
+	async deleteFile(fileName) {
+		const file = await this.findOne(fileName);
 		if (file == null) {
 			return undefined;
 		}

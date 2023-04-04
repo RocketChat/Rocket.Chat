@@ -88,8 +88,8 @@ async function uploadAttachment(attachment: Attachment, rid: string, visitorToke
 	};
 
 	const fileStore = FileUpload.getStore('Uploads');
-	return new Promise((resolve, reject) => {
-		fileStore.insert(details, attachment.content, function (err: any, file: any) {
+	return new Promise(async (resolve, reject) => {
+		await fileStore.insert(details, attachment.content, function (err: any, file: any) {
 			if (err) {
 				reject(new Error(err));
 			}

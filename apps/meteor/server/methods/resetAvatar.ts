@@ -52,7 +52,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		FileUpload.getStore('Avatars').deleteByName(user.username);
+		await FileUpload.getStore('Avatars').deleteByName(user.username);
 		await Users.unsetAvatarData(user._id);
 		void api.broadcast('user.avatarUpdate', { username: user.username, avatarETag: undefined });
 	},
