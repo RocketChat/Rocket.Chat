@@ -11,7 +11,7 @@ import { compareUserPassword } from '../lib/compareUserPassword';
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		setUserPassword(password: string): Promise<UpdateResult>;
+		setUserPassword(password: string): UpdateResult;
 	}
 }
 
@@ -35,7 +35,12 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (user && compareUserPassword(user, { plain: password })) {
+		if (!user) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'setUserPassword',
+			});
+		}
+		if (compareUserPassword(user, { plain: password })) {
 			throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
 				method: 'setUserPassword',
 			});
