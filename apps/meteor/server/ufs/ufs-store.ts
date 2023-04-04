@@ -130,27 +130,20 @@ export class Store {
 			const rs = await this.getReadStream(fileId, file);
 
 			// Catch errors to avoid app crashing
-			rs.on(
-				'error',
-				Meteor.bindEnvironment((err: Error) => {
-					callback?.call(this, err);
-				}),
-			);
+			rs.on('error', (err: Error) => {
+				callback?.call(this, err);
+			});
 
 			// Copy file data
-			await store.write(
-				rs,
-				copyId,
-				Meteor.bindEnvironment((err) => {
-					if (err) {
-						void this.removeById(copyId);
-						this.onCopyError.call(this, err, fileId, file);
-					}
-					if (typeof callback === 'function') {
-						callback.call(this, err, copyId, copy, store);
-					}
-				}),
-			);
+			await store.write(rs, copyId, (err) => {
+				if (err) {
+					void this.removeById(copyId);
+					this.onCopyError.call(this, err, fileId, file);
+				}
+				if (typeof callback === 'function') {
+					callback.call(this, err, copyId, copy, store);
+				}
+			});
 		};
 
 		this.create = async (file) => {
@@ -165,73 +158,64 @@ export class Store {
 				return callback(new Error('File not found'));
 			}
 
-			const errorHandler = Meteor.bindEnvironment((err: Error) => {
+			const errorHandler = (err: Error) => {
 				this.onWriteError.call(this, err, fileId, file);
 				callback.call(this, err);
-			});
+			};
 
-			const finishHandler = Meteor.bindEnvironment(async () => {
+			const finishHandler = async () => {
 				let size = 0;
 				const readStream = await this.getReadStream(fileId, file);
 
-				readStream.on(
-					'error',
-					Meteor.bindEnvironment((error: Error) => {
-						callback.call(this, error);
-					}),
-				);
-				readStream.on(
-					'data',
-					Meteor.bindEnvironment((data) => {
-						size += data.length;
-					}),
-				);
-				readStream.on(
-					'end',
-					Meteor.bindEnvironment(async () => {
-						if (file.complete) {
-							return;
-						}
-						// Set file attribute
-						file.complete = true;
-						file.etag = UploadFS.generateEtag();
-						file.path = await this.getFileRelativeURL(fileId);
-						file.progress = 1;
-						file.size = size;
-						file.token = this.generateToken();
-						file.uploading = false;
-						file.uploadedAt = new Date();
-						file.url = await this.getFileURL(fileId);
+				readStream.on('error', (error: Error) => {
+					callback.call(this, error);
+				});
+				readStream.on('data', (data) => {
+					size += data.length;
+				});
+				readStream.on('end', async () => {
+					if (file.complete) {
+						return;
+					}
+					// Set file attribute
+					file.complete = true;
+					file.etag = UploadFS.generateEtag();
+					file.path = await this.getFileRelativeURL(fileId);
+					file.progress = 1;
+					file.size = size;
+					file.token = this.generateToken();
+					file.uploading = false;
+					file.uploadedAt = new Date();
+					file.url = await this.getFileURL(fileId);
 
-						// Execute callback
-						if (typeof this.onFinishUpload === 'function') {
-							await this.onFinishUpload.call(this, file);
-						}
+					// Execute callback
+					if (typeof this.onFinishUpload === 'function') {
+						await this.onFinishUpload.call(this, file);
+					}
 
-						// Sets the file URL when file transfer is complete,
-						// this way, the image will loads entirely.
-						await this.getCollection().updateOne(
-							{ _id: fileId },
-							{
-								$set: {
-									complete: file.complete,
-									etag: file.etag,
-									path: file.path,
-									progress: file.progress,
-									size: file.size,
-									token: file.token,
-									uploading: file.uploading,
-									uploadedAt: file.uploadedAt,
-									url: file.url,
-								},
+					// Sets the file URL when file transfer is complete,
+					// this way, the image will loads entirely.
+					await this.getCollection().updateOne(
+						{ _id: fileId },
+						{
+							$set: {
+								complete: file.complete,
+								etag: file.etag,
+								path: file.path,
+								progress: file.progress,
+								size: file.size,
+								token: file.token,
+								uploading: file.uploading,
+								uploadedAt: file.uploadedAt,
+								url: file.url,
 							},
-						);
+						},
+					);
 
-						// Return file info
-						callback.call(this, undefined, file);
-					}),
-				);
-			});
+					// Return file info
+					callback.call(this, undefined, file);
+				});
+			};
 
 			const ws = await this.getWriteStream(fileId, file);
 			ws.on('error', errorHandler);
