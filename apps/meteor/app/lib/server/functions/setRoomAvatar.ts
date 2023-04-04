@@ -19,7 +19,7 @@ export const setRoomAvatar = async function (rid: string, dataURI: string, user:
 	const current = await Avatars.findOneByRoomId(rid);
 
 	if (!dataURI) {
-		fileStore.deleteByRoomId(rid);
+		await fileStore.deleteByRoomId(rid);
 		await Message.saveSystemMessage('room_changed_avatar', rid, '', user);
 		void api.broadcast('room.avatarUpdate', { _id: rid });
 		await Rooms.unsetAvatarData(rid);
@@ -38,10 +38,10 @@ export const setRoomAvatar = async function (rid: string, dataURI: string, user:
 	};
 
 	if (current) {
-		fileStore.deleteById(current._id);
+		await fileStore.deleteById(current._id);
 	}
 
-	fileStore.insert(file, buffer, (err?: Error, result: { etag?: string } = {}) => {
+	await fileStore.insert(file, buffer, (err?: Error, result: { etag?: string } = {}) => {
 		if (err) {
 			throw err;
 		}
