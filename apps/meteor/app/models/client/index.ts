@@ -57,8 +57,6 @@ export {
 	/** @deprecated */
 	Users,
 	/** @deprecated */
-	ChatRoom as Rooms,
-	/** @deprecated */
 	ChatRoom,
 	/** @deprecated */
 	ChatSubscription,

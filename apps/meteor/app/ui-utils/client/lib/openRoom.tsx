@@ -5,7 +5,7 @@ import type { RoomType } from '@rocket.chat/core-typings';
 
 import { appLayout } from '../../../../client/lib/appLayout';
 import { waitUntilFind } from '../../../../client/lib/utils/waitUntilFind';
-import { ChatSubscription, Rooms, Subscriptions } from '../../../models/client';
+import { ChatSubscription, ChatRoom, Subscriptions } from '../../../models/client';
 import { queueMicrotask } from '../../../../client/lib/utils/queueMicrotask';
 import { settings } from '../../../settings/client';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
@@ -22,7 +22,7 @@ import { readMessage } from './readMessages';
 export const openRoom = (type: RoomType, name: string, render = true) => {
 	queueMicrotask(async () => {
 		const user = await Meteor.userAsync();
-		if ((user && user.username == null) || (user == null && settings.get('Accounts_AllowAnonymousRead') === false)) {
+		if ((user && !user.username) || (!user && (settings.get<boolean>('Accounts_AllowAnonymousRead') ?? true))) {
 			appLayout.render(<MainLayout />);
 			return;
 		}
@@ -33,7 +33,7 @@ export const openRoom = (type: RoomType, name: string, render = true) => {
 				return;
 			}
 
-			Rooms.upsert({ _id: room._id }, { $set: room });
+			ChatRoom.upsert({ _id: room._id }, { $set: room });
 
 			if (room._id !== name && type === 'd') {
 				// Redirect old url using username to rid
@@ -73,7 +73,7 @@ export const openRoom = (type: RoomType, name: string, render = true) => {
 				const { rid } = sub;
 				setTimeout(() => readMessage.read(rid), 1000);
 			}
-		} catch (error) {
+		} catch (_error) {
 			FlowRouter.setQueryParams({ msg: null });
 
 			if (type === 'd') {
