@@ -1,3 +1,4 @@
+import type { IAuditLog } from '@rocket.chat/core-typings';
 import { Box, TableCell, TableRow } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import type { ReactElement } from 'react';
@@ -5,7 +6,6 @@ import React, { memo, useMemo } from 'react';
 
 import UserAvatar from '../../../../../client/components/avatar/UserAvatar';
 import { useFormatDateAndTime } from '../../../../../client/hooks/useFormatDateAndTime';
-import type { IAuditLog } from '../../../../definition/IAuditLog';
 import AuditFiltersDisplay from './AuditFiltersDisplay';
 
 type AuditLogEntryProps = { value: IAuditLog };
