@@ -8,7 +8,7 @@ import GenericTable from '../../../../client/components/GenericTable';
 import NoResults from '../../../../client/components/GenericTable/NoResults';
 import Page from '../../../../client/components/Page';
 
-export type CannedResponsesPageProps = {
+type CannedResponsesPageProps = {
 	data: any;
 	header: ReactElement[];
 	setParams: Dispatch<SetStateAction<{ current: number; itemsPerPage: 25 | 50 | 100 }>>;

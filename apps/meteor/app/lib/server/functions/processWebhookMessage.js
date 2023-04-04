@@ -3,7 +3,7 @@ import _ from 'underscore';
 
 import { getRoomByNameOrIdWithOptionToJoin } from './getRoomByNameOrIdWithOptionToJoin';
 import { sendMessage } from './sendMessage';
-import { validateRoomMessagePermissions } from '../../../authorization/server/functions/canSendMessage';
+import { validateRoomMessagePermissionsAsync } from '../../../authorization/server/functions/canSendMessage';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { trim } from '../../../../lib/utils/stringUtils';
 
@@ -20,14 +20,14 @@ export const processWebhookMessage = async function (messageObj, user, defaultVa
 		switch (channelType) {
 			case '#':
 				room = await getRoomByNameOrIdWithOptionToJoin({
-					currentUserId: user._id,
+					user,
 					nameOrId: channelValue,
 					joinChannel: true,
 				});
 				break;
 			case '@':
 				room = await getRoomByNameOrIdWithOptionToJoin({
-					currentUserId: user._id,
+					user,
 					nameOrId: channelValue,
 					type: 'd',
 				});
@@ -37,7 +37,7 @@ export const processWebhookMessage = async function (messageObj, user, defaultVa
 
 				// Try to find the room by id or name if they didn't include the prefix.
 				room = await getRoomByNameOrIdWithOptionToJoin({
-					currentUserId: user._id,
+					user,
 					nameOrId: channelValue,
 					joinChannel: true,
 					errorOnEmpty: false,
@@ -48,7 +48,7 @@ export const processWebhookMessage = async function (messageObj, user, defaultVa
 
 				// We didn't get a room, let's try finding direct messages
 				room = await getRoomByNameOrIdWithOptionToJoin({
-					currentUserId: user._id,
+					user,
 					nameOrId: channelValue,
 					tryDirectByUserIdOnly: true,
 					type: 'd',
@@ -99,7 +99,7 @@ export const processWebhookMessage = async function (messageObj, user, defaultVa
 			}
 		}
 
-		validateRoomMessagePermissions(room, { uid: user._id, ...user });
+		await validateRoomMessagePermissionsAsync(room, { uid: user._id, ...user });
 
 		const messageReturn = await sendMessage(user, message, room);
 		sentData.push({ channel, message: messageReturn });

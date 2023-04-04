@@ -79,7 +79,7 @@ export async function getUserCloudAccessToken(userId: string, forceNew = false, 
 			}
 
 			if (err.response.data.error === 'unauthorized') {
-				userLoggedOut(userId);
+				await userLoggedOut(userId);
 			}
 		}
 

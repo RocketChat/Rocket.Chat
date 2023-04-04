@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
+import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
-import { Rooms, Subscriptions, Users } from '../../models/server';
 import { slashCommands } from '../../utils/server';
 
 /*
@@ -20,7 +20,7 @@ slashCommands.add({
 			return;
 		}
 
-		const user = Users.findOneById(userId);
+		const user = await Users.findOneById(userId);
 
 		if (!user) {
 			return;
@@ -37,8 +37,8 @@ slashCommands.add({
 
 			const roomObject =
 				type === '#'
-					? Rooms.findOneByName(strippedRoom)
-					: Rooms.findOne({
+					? await Rooms.findOneByName(strippedRoom)
+					: await Rooms.findOne({
 							t: 'd',
 							usernames: { $all: [user.username, strippedRoom] },
 					  });
@@ -51,7 +51,7 @@ slashCommands.add({
 					}),
 				});
 			}
-			if (!Subscriptions.findOneByRoomIdAndUserId(roomObject._id, user._id, { fields: { _id: 1 } })) {
+			if (!(await Subscriptions.findOneByRoomIdAndUserId(roomObject._id, user._id, { projection: { _id: 1 } }))) {
 				void api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
 					msg: TAPi18n.__('error-logged-user-not-in-room', {
 						postProcess: 'sprintf',

@@ -41,7 +41,7 @@ export type ProviderCapabilities = {
 	title?: boolean;
 };
 
-export type CurrentCallParams = {
+type CurrentCallParams = {
 	callId: string;
 	url: string;
 };

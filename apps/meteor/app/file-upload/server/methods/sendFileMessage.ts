@@ -29,7 +29,7 @@ export const parseFileIntoMessageAttachments = async (
 
 	await Uploads.updateFileComplete(file._id, user._id, omit(file, '_id'));
 
-	const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`);
+	const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name || '')}`);
 
 	const attachments: MessageAttachment[] = [];
 
@@ -63,7 +63,7 @@ export const parseFileIntoMessageAttachments = async (
 			if (thumbResult) {
 				const { data: thumbBuffer, width, height } = thumbResult;
 				const thumbnail = FileUpload.uploadImageThumbnail(file, thumbBuffer, roomId, user._id);
-				const thumbUrl = FileUpload.getPath(`${thumbnail._id}/${encodeURI(file.name)}`);
+				const thumbUrl = FileUpload.getPath(`${thumbnail._id}/${encodeURI(file.name || '')}`);
 				attachment.image_url = thumbUrl;
 				attachment.image_type = thumbnail.type;
 				attachment.image_dimensions = {
@@ -128,7 +128,7 @@ declare module '@rocket.chat/ui-contexts' {
 
 Meteor.methods<ServerMethods>({
 	async sendFileMessage(roomId, _store, file, msgData = {}) {
-		const user = Meteor.user() as IUser | undefined;
+		const user = (await Meteor.userAsync()) as IUser | undefined;
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'sendFileMessage',

@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { HTTP } from 'meteor/http';
-import { Settings, Users as UsersRaw } from '@rocket.chat/models';
+import { Settings, Users } from '@rocket.chat/models';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 
@@ -9,7 +9,6 @@ import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormD
 import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
 import { settings } from '../../../../app/settings/server';
 import { Info } from '../../../../app/utils/server';
-import { Users } from '../../../../app/models/server';
 import { Apps } from '../orchestrator';
 import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
@@ -19,6 +18,7 @@ import { notifyAppInstall } from '../marketplace/appInstall';
 import { canEnableApp } from '../../../app/license/server/license';
 import { appsCountHandler } from './endpoints/appsCountHandler';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
+import { getPaginationItems } from '../../../../app/api/server/helpers/getPaginationItems';
 
 const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
@@ -182,7 +182,7 @@ export class AppsRestApi {
 
 					const subscribeRoute = this.queryParams.details === 'true' ? 'subscribe/details' : 'subscribe';
 
-					const seats = Users.getActiveLocalUserCount();
+					const seats = await Users.getActiveLocalUserCount();
 
 					return API.v1.success({
 						url: `${baseUrl}/apps/${this.queryParams.appId}/${
@@ -286,7 +286,7 @@ export class AppsRestApi {
 
 						const subscribeRoute = this.queryParams.details === 'true' ? 'subscribe/details' : 'subscribe';
 
-						const seats = Users.getActiveLocalUserCount();
+						const seats = await Users.getActiveLocalUserCount();
 
 						return API.v1.success({
 							url: `${baseUrl}/apps/${this.queryParams.appId}/${
@@ -381,7 +381,10 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Failed to get a file to install for the App. ' });
 					}
 
-					const user = orchestrator.getConverters().get('users').convertToApp(Meteor.user());
+					const user = orchestrator
+						.getConverters()
+						.get('users')
+						.convertToApp(await Meteor.userAsync());
 
 					const aff = await manager.add(buff, { marketplaceInfo, permissionsGranted, enable: false, user });
 					const info = aff.getAppInfo();
@@ -438,7 +441,7 @@ export class AppsRestApi {
 
 					let admins = [];
 					try {
-						const adminsRaw = await UsersRaw.findUsersInRoles('admin', undefined, {
+						const adminsRaw = await Users.findUsersInRoles('admin', undefined, {
 							projection: {
 								username: 1,
 								name: 1,
@@ -754,7 +757,10 @@ export class AppsRestApi {
 						return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 					}
 
-					const user = orchestrator.getConverters().get('users').convertToApp(Meteor.user());
+					const user = orchestrator
+						.getConverters()
+						.get('users')
+						.convertToApp(await Meteor.userAsync());
 
 					await manager.remove(prl.getID(), { user });
 
@@ -813,7 +819,7 @@ export class AppsRestApi {
 					const learnMore = `${safeWorkspaceUrl}/marketplace/explore/info/${appId}/${appVersion}/requests`;
 
 					try {
-						const msgs = ({ adminUser }) => {
+						const msgs = async ({ adminUser }) => {
 							return {
 								msg: TAPi18n.__('App_Request_Admin_Message', {
 									admin_name: adminUser.name,
@@ -952,8 +958,8 @@ export class AppsRestApi {
 					const prl = manager.getOneById(this.urlParams.id);
 
 					if (prl) {
-						const { offset, count } = this.getPaginationItems();
-						const { sort, fields, query } = this.parseJsonQuery();
+						const { offset, count } = await getPaginationItems(this.queryParams);
+						const { sort, fields, query } = await this.parseJsonQuery();
 
 						const ourQuery = Object.assign({}, query, { appId: prl.getID() });
 						const options = {

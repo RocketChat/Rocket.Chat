@@ -8,7 +8,7 @@ import { twoFactorRequired } from '../../../../../app/2fa/server/twoFactorRequir
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'personalAccessTokens:regenerateToken'(params: { tokenName: string }): string;
+		'personalAccessTokens:regenerateToken'(params: { tokenName: string }): Promise<string>;
 	}
 }
 
@@ -26,7 +26,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const tokenExist = Users.findPersonalAccessTokenByTokenNameAndUserId({
+		const tokenExist = await Users.findPersonalAccessTokenByTokenNameAndUserId({
 			userId: uid,
 			tokenName,
 		});

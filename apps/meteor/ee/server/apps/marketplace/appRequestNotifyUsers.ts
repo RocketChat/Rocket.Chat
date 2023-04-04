@@ -1,10 +1,10 @@
-import { HTTP } from 'meteor/http';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { AppRequest, IUser, Pagination } from '@rocket.chat/core-typings';
 
 import { API } from '../../../../app/api/server';
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
 import { sendDirectMessageToUsers } from '../../../../server/lib/sendDirectMessageToUsers';
+import { fetch } from '../../../../server/lib/http/fetch';
 
 const ROCKET_CAT_USERID = 'rocket.cat';
 const DEFAULT_LIMIT = 100;
@@ -53,10 +53,12 @@ export const appRequestNotififyForUsers = async (
 		const pagination: Pagination = { limit: DEFAULT_LIMIT, offset: 0 };
 
 		// First request to get the total and the first batch
-		const data = HTTP.get(
+		const response = await fetch(
 			`${marketplaceBaseUrl}/v1/app-request?appId=${appId}&q=notification-not-sent&limit=${pagination.limit}&offset=${pagination.offset}`,
 			{ headers },
 		);
+
+		const data = await response.json();
 
 		const appRequests = API.v1.success({ data });
 		const { total } = appRequests.body.data.data.meta;
@@ -78,15 +80,18 @@ export const appRequestNotififyForUsers = async (
 		);
 
 		// Batch requests
-		for (let i = 0; i < loops; i++) {
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		for await (const _i of Array.from({ length: loops })) {
 			pagination.offset += pagination.limit;
 
-			const request = HTTP.get(
+			const request = await fetch(
 				`${marketplaceBaseUrl}/v1/app-request?appId=${appId}&q=notification-not-sent&limit=${pagination.limit}&offset=${pagination.offset}`,
 				{ headers },
 			);
 
-			requestsCollection.push(notifyBatchOfUsers(appName, learnMore, request.data.data));
+			const data = await request.json();
+
+			requestsCollection.push(notifyBatchOfUsers(appName, learnMore, data.data.data));
 		}
 
 		const finalResult = await Promise.all(requestsCollection);

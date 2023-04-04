@@ -1187,12 +1187,28 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	countActiveUsersTOTPEnable(options) {
+		const query = {
+			'active': true,
+			'services.totp.enabled': true,
+		};
+		return this.col.countDocuments(query, options);
+	}
+
 	findActiveUsersEmail2faEnable(options) {
 		const query = {
 			'active': true,
 			'services.email2fa.enabled': true,
 		};
 		return this.find(query, options);
+	}
+
+	countActiveUsersEmail2faEnable(options) {
+		const query = {
+			'active': true,
+			'services.email2fa.enabled': true,
+		};
+		return this.col.countDocuments(query, options);
 	}
 
 	setAsFederated(uid) {
@@ -1378,19 +1394,25 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	addPersonalAccessTokenToUser({ userId, loginTokenObject }) {
-		return this.updateOne(userId, {
-			$push: {
-				'services.resume.loginTokens': loginTokenObject,
+		return this.updateOne(
+			{ _id: userId },
+			{
+				$push: {
+					'services.resume.loginTokens': loginTokenObject,
+				},
 			},
-		});
+		);
 	}
 
 	removePersonalAccessTokenOfUser({ userId, loginTokenObject }) {
-		return this.updateOne(userId, {
-			$pull: {
-				'services.resume.loginTokens': loginTokenObject,
+		return this.updateOne(
+			{ _id: userId },
+			{
+				$pull: {
+					'services.resume.loginTokens': loginTokenObject,
+				},
 			},
-		});
+		);
 	}
 
 	findPersonalAccessTokenByTokenNameAndUserId({ userId, tokenName }) {
@@ -1412,7 +1434,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateOne(_id, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	async checkOnlineAgents(agentId) {
@@ -1429,6 +1451,13 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query);
 	}
 
+	countOnlineAgents(agentId) {
+		// TODO:: Create class Agent
+		const query = queryStatusAgentOnline(agentId && { _id: agentId });
+
+		return this.col.countDocuments(query);
+	}
+
 	findOneBotAgent() {
 		// TODO:: Create class Agent
 		const query = {
@@ -1440,9 +1469,9 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query);
 	}
 
-	findOneOnlineAgentById(_id) {
+	findOneOnlineAgentById(_id, isLivechatEnabledWhenAgentIdle) {
 		// TODO: Create class Agent
-		const query = queryStatusAgentOnline({ _id });
+		const query = queryStatusAgentOnline({ _id }, isLivechatEnabledWhenAgentIdle);
 
 		return this.findOne(query);
 	}
@@ -1454,6 +1483,15 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		return this.find(query);
+	}
+
+	countAgents() {
+		// TODO: Create class Agent
+		const query = {
+			roles: 'livechat-agent',
+		};
+
+		return this.col.countDocuments(query);
 	}
 
 	// 2
@@ -1694,7 +1732,6 @@ export class UsersRaw extends BaseRaw {
 		);
 	}
 
-	// 3
 	enableEmail2FAByUserId(userId) {
 		return this.updateOne(
 			{
@@ -1811,6 +1848,17 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	countActiveUsersInRoles(roles, options) {
+		roles = [].concat(roles);
+
+		const query = {
+			roles: { $in: roles },
+			active: true,
+		};
+
+		return this.col.countDocuments(query, options);
+	}
+
 	findOneByUsernameAndServiceNameIgnoringCase(username, userId, serviceName, options) {
 		if (typeof username === 'string') {
 			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
@@ -1836,8 +1884,8 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findOneAdmin(admin, options) {
-		const query = { admin };
+	findOneAdmin(userId, options) {
+		const query = { roles: { $in: ['admin'] }, _id: userId };
 
 		return this.findOne(query, options);
 	}
@@ -1910,6 +1958,19 @@ export class UsersRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
+	countUsersNotOffline(options) {
+		const query = {
+			username: {
+				$exists: 1,
+			},
+			status: {
+				$in: ['online', 'away', 'busy'],
+			},
+		};
+
+		return this.col.countDocuments(query, options);
+	}
+
 	findNotIdUpdatedFrom(uid, from, options) {
 		const query = {
 			_id: { $ne: uid },
@@ -1935,6 +1996,12 @@ export class UsersRaw extends BaseRaw {
 
 	findByUsername(username, options) {
 		const query = { username };
+
+		return this.find(query, options);
+	}
+
+	findByUsernames(usernames, options) {
+		const query = { $in: usernames };
 
 		return this.find(query, options);
 	}
@@ -2045,7 +2112,7 @@ export class UsersRaw extends BaseRaw {
 
 	async getLastLogin(options = { projection: { _id: 0, lastLogin: 1 } }) {
 		options.sort = { lastLogin: -1 };
-		const [user] = await this.findOne({}, options);
+		const user = await this.findOne({}, options);
 		return user?.lastLogin;
 	}
 
@@ -2100,7 +2167,7 @@ export class UsersRaw extends BaseRaw {
 	/**
 	 * @param {import('mongodb').Filter<import('@rocket.chat/core-typings').IStats>} projection
 	 */
-	getOldest(projection = { _id: 1 }) {
+	getOldest(optionsParams) {
 		const query = {
 			_id: {
 				$ne: 'rocket.cat',
@@ -2108,7 +2175,7 @@ export class UsersRaw extends BaseRaw {
 		};
 
 		const options = {
-			projection,
+			...optionsParams,
 			sort: {
 				createdAt: 1,
 			},
@@ -2117,8 +2184,8 @@ export class UsersRaw extends BaseRaw {
 		return this.findOne(query, options);
 	}
 
-	findRemote(options = {}) {
-		return this.find({ isRemote: true }, options);
+	countRemote(options = {}) {
+		return this.col.countDocuments({ isRemote: true }, options);
 	}
 
 	findActiveRemote(options = {}) {
@@ -2160,6 +2227,12 @@ export class UsersRaw extends BaseRaw {
 		});
 	}
 
+	countBySAMLNameIdOrIdpSession(nameID, idpSession) {
+		return this.col.countDocuments({
+			$or: [{ 'services.saml.nameID': nameID }, { 'services.saml.idpSession': idpSession }],
+		});
+	}
+
 	findBySAMLInResponseTo(inResponseTo) {
 		return this.find({
 			'services.saml.inResponseTo': inResponseTo,
@@ -2190,7 +2263,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateOne(_id, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	updateLastLoginById(_id) {
@@ -2200,7 +2273,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateOne(_id, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	addPasswordToHistory(_id, password, passwordHistoryAmount) {
@@ -2212,7 +2285,7 @@ export class UsersRaw extends BaseRaw {
 				},
 			},
 		};
-		return this.updateOne(_id, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	setServiceId(_id, serviceName, serviceId) {
@@ -2221,13 +2294,13 @@ export class UsersRaw extends BaseRaw {
 		const serviceIdKey = `services.${serviceName}.id`;
 		update.$set[serviceIdKey] = serviceId;
 
-		return this.updateOne(_id, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	setUsername(_id, username) {
 		const update = { $set: { username } };
 
-		return this.updateOne(_id, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	setEmail(_id, email) {
@@ -2242,7 +2315,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateOne(_id, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	// 5
@@ -2273,7 +2346,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateOne(_id, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	unsetName(_id) {
@@ -2283,7 +2356,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateOne(_id, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	setCustomFields(_id, fields) {
@@ -2294,7 +2367,7 @@ export class UsersRaw extends BaseRaw {
 
 		const update = { $set: values };
 
-		return this.updateOne(_id, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	setAvatarData(_id, origin, etag) {
@@ -2305,7 +2378,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateOne(_id, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	unsetAvatarData(_id) {
@@ -2316,7 +2389,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateOne(_id, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	setUserActive(_id, active) {
@@ -2329,7 +2402,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateOne(_id, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	setAllUsersActive(active) {
@@ -2374,7 +2447,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateOne(_id, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	resetPasswordAndSetRequirePasswordChange(_id, requirePasswordChange, requirePasswordChangeReason) {
@@ -2388,7 +2461,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateOne(_id, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	setLanguage(_id, language) {
@@ -2398,7 +2471,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateOne(_id, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	setProfile(_id, profile) {
@@ -2408,7 +2481,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateOne(_id, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	setBio(_id, bio = '') {
@@ -2425,7 +2498,7 @@ export class UsersRaw extends BaseRaw {
 						},
 				  }),
 		};
-		return this.updateOne(_id, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	setNickname(_id, nickname = '') {
@@ -2442,7 +2515,7 @@ export class UsersRaw extends BaseRaw {
 						},
 				  }),
 		};
-		return this.updateOne(_id, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	clearSettings(_id) {
@@ -2452,7 +2525,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateOne(_id, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	setPreferences(_id, preferences) {
@@ -2471,7 +2544,7 @@ export class UsersRaw extends BaseRaw {
 			update.$unset = { 'settings.preferences.clockMode': 1 };
 		}
 
-		return this.updateOne(_id, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(_id, token, hash, until) {
@@ -2558,7 +2631,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateOne(_id, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	unsetReason(_id) {
@@ -2568,7 +2641,7 @@ export class UsersRaw extends BaseRaw {
 			},
 		};
 
-		return this.updateOne(_id, update);
+		return this.updateOne({ _id }, update);
 	}
 
 	async bannerExistsById(_id, bannerId) {
@@ -2653,7 +2726,7 @@ export class UsersRaw extends BaseRaw {
 
 	// REMOVE
 	removeById(_id) {
-		return this.deleteOne(_id);
+		return this.deleteOne({ _id });
 	}
 
 	removeLivechatData(userId) {
@@ -2724,13 +2797,16 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	removeOlderResumeTokensByUserId(userId, fromDate) {
-		this.updateOne(userId, {
-			$pull: {
-				'services.resume.loginTokens': {
-					when: { $lt: fromDate },
+		this.updateOne(
+			{ _id: userId },
+			{
+				$pull: {
+					'services.resume.loginTokens': {
+						when: { $lt: fromDate },
+					},
 				},
 			},
-		});
+		);
 	}
 
 	findAllUsersWithPendingAvatar() {
@@ -2752,11 +2828,14 @@ export class UsersRaw extends BaseRaw {
 	}
 
 	updateCustomFieldsById(userId, customFields) {
-		return this.updateOne(userId, {
-			$set: {
-				customFields,
+		return this.updateOne(
+			{ _id: userId },
+			{
+				$set: {
+					customFields,
+				},
 			},
-		});
+		);
 	}
 
 	countRoomMembers(roomId) {
