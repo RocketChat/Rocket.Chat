@@ -23,6 +23,7 @@ const LoginServicesButton = <T extends LoginService>({
 }): ReactElement => {
 	const t = useTranslation();
 	const handler = useLoginWithService({ service, buttonLabelText, title, clientConfig, ...props });
+
 	const handleOnClick = useCallback(() => {
 		handler().catch((e: LoginErrors) => {
 			if (typeof e !== 'string') {
@@ -30,7 +31,8 @@ const LoginServicesButton = <T extends LoginService>({
 			}
 			setError?.(e);
 		});
-	}, []);
+	}, [handler, setError]);
+
 	return (
 		<Button
 			className={className}
