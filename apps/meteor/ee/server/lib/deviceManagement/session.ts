@@ -90,7 +90,7 @@ export const listenSessionLogin = async (): Promise<void> => {
 				const shouldSendLoginEmail = settings.get('Device_Management_Enable_Login_Emails') && userReceiveLoginEmailPreference;
 
 				if (shouldSendLoginEmail) {
-					Mailer.send({
+					await Mailer.send({
 						to: `${name} <${email}>`,
 						from: Accounts.emailTemplates.from,
 						subject: settings.get('Device_Management_Email_Subject'),
