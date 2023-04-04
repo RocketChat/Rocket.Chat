@@ -36,7 +36,7 @@ Meteor.startup(() => {
 	});
 });
 
-function _sendUserEmail(subject, html, userData) {
+async function _sendUserEmail(subject, html, userData) {
 	const email = {
 		to: userData.email,
 		from: settings.get('From_Email'),
@@ -53,7 +53,7 @@ function _sendUserEmail(subject, html, userData) {
 	}
 
 	try {
-		Mailer.send(email);
+		await Mailer.send(email);
 	} catch (error) {
 		throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${error.message}`, {
 			function: 'RocketChat.saveUser',
@@ -306,11 +306,11 @@ const saveNewUser = async function (userData, sendPassword) {
 	Meteor.users.update({ _id }, updateUser);
 
 	if (userData.sendWelcomeEmail) {
-		_sendUserEmail(settings.get('Accounts_UserAddedEmail_Subject'), html, userData);
+		await _sendUserEmail(settings.get('Accounts_UserAddedEmail_Subject'), html, userData);
 	}
 
 	if (sendPassword) {
-		_sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
+		await _sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
 	}
 
 	userData._id = _id;
@@ -431,7 +431,7 @@ export const saveUser = async function (userId, userData) {
 	});
 
 	if (sendPassword) {
-		_sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
+		await _sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);
 	}
 
 	return true;
