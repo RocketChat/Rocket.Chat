@@ -1,5 +1,5 @@
 import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
+import { Users } from '@rocket.chat/models';
 
 import { Auth } from './auth';
 import { Route } from './route';
@@ -137,7 +137,7 @@ export class Restivus {
 					if (auth.userId && auth.authToken) {
 						const searchQuery = {};
 						searchQuery[self._config.auth.token] = Accounts._hashLoginToken(auth.authToken);
-						this.user = await Meteor.users.findOneAsync(
+						this.user = await Users.findOne(
 							{
 								_id: auth.userId,
 							},
@@ -170,9 +170,12 @@ export class Restivus {
 			tokenToRemove[tokenFieldName] = hashedToken;
 			const tokenRemovalQuery = {};
 			tokenRemovalQuery[tokenPath] = tokenToRemove;
-			await Meteor.users.updateAsync(this.user._id, {
-				$pull: tokenRemovalQuery,
-			});
+			await Users.updateOne(
+				{ _id: this.user._id },
+				{
+					$pull: tokenRemovalQuery,
+				},
+			);
 			const response = {
 				status: 'success',
 				data: {

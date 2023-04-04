@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { Avatars } from '@rocket.chat/models';
+import { Avatars, Users } from '@rocket.chat/models';
 
 import { renderSVGLetters, serveAvatar, wasFallbackModified, setCacheAndDispositionHeaders } from './utils';
 import { FileUpload } from '../../../app/file-upload/server';
 import { settings } from '../../../app/settings/server';
-import { Users } from '../../../app/models/server';
 
 // request /avatar/@name forces returning the svg
 export const userAvatar = Meteor.bindEnvironment(async function (req, res) {
@@ -57,8 +56,8 @@ export const userAvatar = Meteor.bindEnvironment(async function (req, res) {
 	let svg = renderSVGLetters(requestUsername, avatarSize);
 
 	if (settings.get('UI_Use_Name_Avatar')) {
-		const user = Users.findOneByUsernameIgnoringCase(requestUsername, {
-			fields: {
+		const user = await Users.findOneByUsernameIgnoringCase(requestUsername, {
+			projection: {
 				name: 1,
 			},
 		});

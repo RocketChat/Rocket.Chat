@@ -73,7 +73,7 @@ export async function sendViaEmail(
 		})
 		.join('');
 
-	Mailer.send({
+	await Mailer.send({
 		to: emails,
 		from: settings.get('From_Email'),
 		replyTo: email,
