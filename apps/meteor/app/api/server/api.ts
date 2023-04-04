@@ -10,6 +10,7 @@ import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { RateLimiter } from 'meteor/rate-limit';
 import type { IMethodConnection, IUser, IRoom } from '@rocket.chat/core-typings';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
+import { Users } from '@rocket.chat/models';
 
 import { getRestPayload } from '../../../server/lib/logger/logPayloads';
 import { settings } from '../../settings/server';
@@ -537,13 +538,13 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 						if (!options.authRequired && options.authOrAnonRequired) {
 							const { 'x-user-id': userId, 'x-auth-token': userToken } = this.request.headers;
 							if (userId && userToken) {
-								this.user = Meteor.users.findOne(
+								this.user = await Users.findOne(
 									{
 										'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(userToken),
 										'_id': userId,
 									},
 									{
-										fields: getDefaultUserFields(),
+										projection: getDefaultUserFields(),
 									},
 								);
 
@@ -787,16 +788,16 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 						} as unknown as SuccessResult<Record<string, any>>;
 					}
 
-					this.user = Meteor.users.findOne(
+					this.user = await Users.findOne(
 						{
 							_id: auth.id,
 						},
 						{
-							fields: getDefaultUserFields(),
+							projection: getDefaultUserFields(),
 						},
-					) as any;
+					);
 
-					this.userId = (this.user as unknown as IUser)?._id as any;
+					this.userId = (this.user as unknown as IUser)?._id;
 
 					const response = {
 						status: 'success',
@@ -820,7 +821,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 			},
 		);
 
-		const logout = function (this: Restivus): { status: string; data: { message: string } } {
+		const logout = async function (this: Restivus): Promise<{ status: string; data: { message: string } }> {
 			// Remove the given auth token from the user's account
 			const authToken = this.request.headers['x-auth-token'];
 			const hashedToken = Accounts._hashLoginToken(authToken);
@@ -833,9 +834,12 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 			const tokenRemovalQuery: Record<string, any> = {};
 			tokenRemovalQuery[tokenPath] = tokenToRemove;
 
-			Meteor.users.update(this.user._id, {
-				$pull: tokenRemovalQuery,
-			});
+			await Users.updateOne(
+				{ _id: this.user._id },
+				{
+					$pull: tokenRemovalQuery,
+				},
+			);
 
 			const response = {
 				status: 'success',

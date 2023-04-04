@@ -9,7 +9,7 @@ import { placeholders } from '../../../utils/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import * as Mailer from '../../../mailer/server/api';
 
-export const sendMail = function ({
+export const sendMail = async function ({
 	from,
 	subject,
 	body,
@@ -21,7 +21,7 @@ export const sendMail = function ({
 	body: string;
 	dryrun?: boolean;
 	query?: string;
-}): void {
+}): Promise<void> {
 	Mailer.checkAddressFormatAndThrow(from, 'Mailer.sendMail');
 
 	if (body.indexOf('[unsubscribe]') === -1) {
@@ -36,35 +36,31 @@ export const sendMail = function ({
 	}
 
 	if (dryrun) {
-		return Meteor.users
-			.find({
-				'emails.address': from,
-			})
-			.forEach((u): void => {
-				const user: Partial<IUser> & Pick<IUser, '_id'> = u;
-				const email = `${user.name} <${user.emails?.[0].address}>`;
-				const html = placeholders.replace(body, {
-					unsubscribe: Meteor.absoluteUrl(
-						FlowRouter.path('mailer/unsubscribe/:_id/:createdAt', {
-							_id: user._id,
-							createdAt: user.createdAt?.getTime().toString() || '',
-						}),
-					),
-					name: user.name,
-					email,
-				});
-
-				SystemLogger.debug(`Sending email to ${email}`);
-				return Mailer.send({
-					to: email,
-					from,
-					subject,
-					html,
-				});
+		for await (const u of Meteor.users.find(userQuery).fetch()) {
+			const user: Partial<IUser> & Pick<IUser, '_id'> = u;
+			const email = `${user.name} <${user.emails?.[0].address}>`;
+			const html = placeholders.replace(body, {
+				unsubscribe: Meteor.absoluteUrl(
+					FlowRouter.path('mailer/unsubscribe/:_id/:createdAt', {
+						_id: user._id,
+						createdAt: user.createdAt?.getTime().toString() || '',
+					}),
+				),
+				name: user.name,
+				email,
 			});
+
+			SystemLogger.debug(`Sending email to ${email}`);
+			await Mailer.send({
+				to: email,
+				from,
+				subject,
+				html,
+			});
+		}
 	}
 
-	return Meteor.users.find(userQuery).forEach(function (u) {
+	for await (const u of Meteor.users.find(userQuery).fetch()) {
 		const user: Partial<IUser> & Pick<IUser, '_id'> = u;
 		if (user?.emails && Array.isArray(user.emails) && user.emails.length) {
 			const email = `${user.name} <${user.emails[0].address}>`;
@@ -80,12 +76,12 @@ export const sendMail = function ({
 				email: escapeHTML(email),
 			});
 			SystemLogger.debug(`Sending email to ${email}`);
-			return Mailer.send({
+			await Mailer.send({
 				to: email,
 				from,
 				subject,
 				html,
 			});
 		}
-	});
+	}
 };

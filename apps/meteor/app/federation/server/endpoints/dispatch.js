@@ -72,7 +72,7 @@ const eventHandlers = {
 
 		if (persistedRoom) {
 			// Delete the room
-			deleteRoom(roomId);
+			await deleteRoom(roomId);
 		}
 
 		// Remove all room events
