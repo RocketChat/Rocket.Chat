@@ -690,7 +690,7 @@ class RocketChatIntegrationHandler {
 			return;
 		}
 
-		const historyId = this.updateHistory({
+		const historyId = await this.updateHistory({
 			step: 'start-execute-trigger-url',
 			integration: trigger,
 			event,
