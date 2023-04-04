@@ -2,7 +2,6 @@ import React, { Suspense } from 'react';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import { Session } from 'meteor/session';
 import type { RoomType } from '@rocket.chat/core-typings';
 
 import { appLayout } from '../../../../client/lib/appLayout';
@@ -71,7 +70,6 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 
 				fireGlobalEvent('room-opened', omit(room, 'usernames'));
 
-				Session.set('editRoomTitle', false);
 				// KonchatNotification.removeRoomNotification(params._id)
 				// update user's room subscription
 				const sub = ChatSubscription.findOne({ rid: room._id });
