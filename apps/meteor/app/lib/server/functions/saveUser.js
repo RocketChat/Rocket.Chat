@@ -142,7 +142,7 @@ async function validateUserData(userId, userData) {
 			});
 		}
 
-		if (userData.email && !checkEmailAvailability(userData.email)) {
+		if (userData.email && !(await checkEmailAvailability(userData.email))) {
 			throw new Meteor.Error('error-field-unavailable', `${_.escape(userData.email)} is already in use :(`, {
 				method: 'insertOrUpdateUser',
 				field: userData.email,
@@ -303,7 +303,7 @@ const saveNewUser = async function (userData, sendPassword) {
 	handleBio(updateUser, userData.bio);
 	handleNickname(updateUser, userData.nickname);
 
-	Meteor.users.update({ _id }, updateUser);
+	await Users.updateOne({ _id }, updateUser);
 
 	if (userData.sendWelcomeEmail) {
 		_sendUserEmail(settings.get('Accounts_UserAddedEmail_Subject'), html, userData);
@@ -417,7 +417,7 @@ export const saveUser = async function (userId, userData) {
 		updateUser.$set['emails.0.verified'] = userData.verified;
 	}
 
-	Meteor.users.update({ _id: userData._id }, updateUser);
+	await Users.updateOne({ _id: userData._id }, updateUser);
 
 	callbacks.run('afterSaveUser', userData);
 
