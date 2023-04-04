@@ -18,7 +18,7 @@ export const openRoom = (type: RoomType, name: string) => {
 	return new Promise<{ type: RoomType; id: string } | { rid: IRoom['_id'] }>((resolve, reject) => {
 		queueMicrotask(async () => {
 			const user = await Meteor.userAsync();
-			if ((user && !user.username) || (!user && (settings.get<boolean>('Accounts_AllowAnonymousRead') ?? true))) {
+			if ((user && !user.username) || (!user && !(settings.get<boolean>('Accounts_AllowAnonymousRead') ?? true))) {
 				reject(new Error('Not authorized'));
 				return;
 			}
