@@ -216,8 +216,8 @@ class LivechatClass {
 		};
 	}
 
-	private sendEmail(from: string, to: string, replyTo: string, subject: string, html: string): void {
-		Mailer.send({
+	private async sendEmail(from: string, to: string, replyTo: string, subject: string, html: string): Promise<void> {
+		return Mailer.send({
 			to,
 			from,
 			replyTo,
@@ -315,7 +315,7 @@ class LivechatClass {
 
 		const mailSubject = subject || TAPi18n.__('Transcript_of_your_livechat_conversation', { lng: userLanguage });
 
-		this.sendEmail(emailFromRegexp, email, emailFromRegexp, mailSubject, html);
+		await this.sendEmail(emailFromRegexp, email, emailFromRegexp, mailSubject, html);
 
 		Meteor.defer(() => {
 			callbacks.run('livechat.sendTranscript', messages, email);
