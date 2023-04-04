@@ -1,6 +1,5 @@
 import { UserStatusConnection, UserType } from '@rocket.chat/apps-engine/definition/users';
-
-import { Users } from '../../../models/server';
+import { Users } from '@rocket.chat/models';
 
 export class AppUsersConverter {
 	constructor(orch) {
@@ -13,8 +12,8 @@ export class AppUsersConverter {
 		return this.convertToApp(user);
 	}
 
-	convertByUsername(username) {
-		const user = Users.findOneByUsername(username);
+	async convertByUsername(username) {
+		const user = await Users.findOneByUsername(username);
 
 		return this.convertToApp(user);
 	}

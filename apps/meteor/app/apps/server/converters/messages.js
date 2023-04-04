@@ -1,7 +1,6 @@
 import { Random } from '@rocket.chat/random';
-import { Messages, Rooms } from '@rocket.chat/models';
+import { Messages, Rooms, Users } from '@rocket.chat/models';
 
-import { Users } from '../../../models/server';
 import { transformMappedData } from '../../../../ee/lib/misc/transformMappedData';
 
 export class AppMessagesConverter {
@@ -91,7 +90,7 @@ export class AppMessagesConverter {
 
 		let u;
 		if (message.sender && message.sender.id) {
-			const user = Users.findOneById(message.sender.id);
+			const user = await Users.findOneById(message.sender.id);
 
 			if (user) {
 				u = {
@@ -110,7 +109,7 @@ export class AppMessagesConverter {
 
 		let editedBy;
 		if (message.editor) {
-			const editor = Users.findOneById(message.editor.id);
+			const editor = await Users.findOneById(message.editor.id);
 			editedBy = {
 				_id: editor._id,
 				username: editor.username,
