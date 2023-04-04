@@ -85,7 +85,7 @@ export const listenSessionLogin = async (): Promise<void> => {
 
 			try {
 				const userReceiveLoginEmailPreference = settings.get('Device_Management_Allow_Login_Email_preference')
-					? getUserPreference(userId, 'receiveLoginDetectionEmail', true)
+					? await getUserPreference(userId, 'receiveLoginDetectionEmail', true)
 					: true;
 				const shouldSendLoginEmail = settings.get('Device_Management_Enable_Login_Emails') && userReceiveLoginEmailPreference;
 

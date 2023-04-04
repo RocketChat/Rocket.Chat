@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
-import { Users } from '../../../../../app/models/server';
 import { twoFactorRequired } from '../../../../../app/2fa/server/twoFactorRequired';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -29,7 +29,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		const token = Random.secret();
-		const tokenExist = Users.findPersonalAccessTokenByTokenNameAndUserId({
+		const tokenExist = await Users.findPersonalAccessTokenByTokenNameAndUserId({
 			userId: uid,
 			tokenName,
 		});
@@ -39,7 +39,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		Users.addPersonalAccessTokenToUser({
+		await Users.addPersonalAccessTokenToUser({
 			userId: uid,
 			loginTokenObject: {
 				hashedToken: Accounts._hashLoginToken(token),

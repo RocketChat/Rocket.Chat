@@ -16,12 +16,13 @@ export const AudioAttachment: FC<AudioAttachmentProps> = ({
 	descriptionMd,
 	title_link: link,
 	title_link_download: hasDownload,
+	collapsed,
 }) => {
 	const getURL = useMediaUrl();
 	return (
 		<>
 			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
-			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size}>
+			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
 				<audio controls preload='metadata'>
 					<source src={getURL(url)} type={type} />
 				</audio>

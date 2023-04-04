@@ -25,7 +25,7 @@
 	"scripts": {
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
 		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
-		"jest": "jest",
+		"test": "jest",
 		"build": "tsc -p tsconfig.json",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
 	},

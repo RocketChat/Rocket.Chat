@@ -137,7 +137,7 @@ export class Twilio implements ISMSProvider {
 				userId,
 				fileUpload: { size, type, publicFilePath },
 			} = extraData;
-			const user = userId ? await Users.findOne(userId, { projection: { language: 1 } }) : null;
+			const user = userId ? await Users.findOne({ _id: userId }, { projection: { language: 1 } }) : null;
 			const lng = user?.language || defaultLanguage;
 
 			let reason;

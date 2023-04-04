@@ -10,7 +10,7 @@
 		"typescript": "~5.0.2"
 	},
 	"scripts": {
-		"jest": "jest"
+		"test": "jest"
 	},
 	"main": "./src/index.js",
 	"typings": "./dist/index.d.ts"

@@ -1,8 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { Rooms } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from './hasPermission';
 import { getValue } from '../../../settings/server/raw';
-import { Rooms } from '../../../models/server';
 
 const elapsedTime = (ts: Date): number => {
 	const dif = Date.now() - ts.getTime();
@@ -46,9 +46,14 @@ export const canDeleteMessageAsync = async (
 	}
 
 	const room = await Rooms.findOneById(rid, { projection: { ro: 1, unmuted: 1 } });
+
+	if (!room) {
+		return false;
+	}
+
 	if (room.ro === true && !(await hasPermissionAsync(uid, 'post-readonly', rid))) {
 		// Unless the user was manually unmuted
-		if (!(room.unmuted || []).includes(u.username)) {
+		if (u.username && !(room.unmuted || []).includes(u.username)) {
 			throw new Error("You can't delete messages because the room is readonly.");
 		}
 	}
