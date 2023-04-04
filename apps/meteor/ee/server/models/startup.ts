@@ -6,7 +6,7 @@ import { onLicense } from '../../app/license/server/license';
 import('./LivechatPriority');
 import('./OmnichannelServiceLevelAgreements');
 
-onLicense('livechat-enterprise', () => {
+await onLicense('livechat-enterprise', () => {
 	import('./CannedResponse');
 	import('./LivechatTag');
 	import('./LivechatUnit');
