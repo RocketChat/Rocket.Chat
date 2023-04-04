@@ -1,13 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import type { Mongo } from 'meteor/mongo';
-import { Subscriptions, Rooms } from '@rocket.chat/models';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { Users } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { callbacks } from '../../lib/callbacks';
 
@@ -36,9 +34,8 @@ Meteor.methods<ServerMethods>({
 			userFilter.active = true;
 		}
 
-		const userCursor: Mongo.Cursor<IUser> = Users.find(userFilter);
-		const usersCount = userCursor.count();
-		if (usersCount > settings.get<number>('API_User_Limit')) {
+		const users = await Users.find(userFilter).toArray();
+		if (users.length > settings.get<number>('API_User_Limit')) {
 			throw new Meteor.Error('error-user-limit-exceeded', 'User Limit Exceeded', {
 				method: 'addAllToRoom',
 			});
@@ -51,7 +48,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const users = userCursor.fetch();
 		const now = new Date();
 		for await (const user of users) {
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
