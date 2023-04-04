@@ -4,7 +4,7 @@ import NodeRSA from 'node-rsa';
 import { fetch } from '../../../server/lib/http/fetch';
 
 async function isValidAppleJWT(identityToken: string, header: any): Promise<boolean> {
-	const request = await fetch('https://appleid.apple.com/auth/keys');
+	const request = await fetch('https://appleid.apple.com/auth/keys', { method: 'GET' });
 	const applePublicKeys = (await request.json()).data.keys;
 	const { kid } = header;
 
