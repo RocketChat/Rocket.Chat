@@ -1,6 +1,6 @@
 import type { WriteStream } from 'fs';
 import fs from 'fs';
-import { unlink, rename } from 'fs/promises';
+import { unlink, rename, writeFile } from 'fs/promises';
 import stream from 'stream';
 import type * as http from 'http';
 import type * as https from 'https';
@@ -267,23 +267,21 @@ export const FileUpload = {
 			// By default, the format will match the input image, except GIF and SVG input which become PNG output.
 			.toBuffer({ resolveWithObject: true });
 
-		fs.writeFile(tempFilePath, data, (err) => {
-			if (err != null) {
-				SystemLogger.error(err);
-			}
+		try {
+			await writeFile(tempFilePath, data);
+		} catch (err: any) {
+			SystemLogger.error(err);
+		}
 
-			Promise.await(
-				this.getCollection().updateOne(
-					{ _id: file._id },
-					{
-						$set: {
-							size: info.size,
-							...(['gif', 'svg'].includes(metadata.format || '') ? { type: 'image/png' } : {}),
-						},
-					},
-				),
-			);
-		});
+		await this.getCollection().updateOne(
+			{ _id: file._id },
+			{
+				$set: {
+					size: info.size,
+					...(['gif', 'svg'].includes(metadata.format || '') ? { type: 'image/png' } : {}),
+				},
+			},
+		);
 	},
 
 	async resizeImagePreview(fileParam: IUpload) {
@@ -292,7 +290,7 @@ export const FileUpload = {
 			return;
 		}
 		file = FileUpload.addExtensionTo(file);
-		const image = FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
+		const image = await FileUpload.getStore('Uploads')._store.getReadStream(file._id, file);
 
 		const transformer = sharp().resize({ width: 32, height: 32, fit: 'inside' }).jpeg().blur();
 		const result = transformer.toBuffer().then((out) => out.toString('base64'));
@@ -323,7 +321,7 @@ export const FileUpload = {
 
 		file = FileUpload.addExtensionTo(file);
 		const store = FileUpload.getStore('Uploads');
-		const image = store._store.getReadStream(file._id, file);
+		const image = await store._store.getReadStream(file._id, file);
 
 		const transformer = sharp().resize({ width, height, fit: 'inside' });
 
@@ -700,7 +698,7 @@ export class FileUploadClass {
 	async delete(fileId: string) {
 		// TODO: Remove this method
 		if (this.store?.delete) {
-			this.store.delete(fileId);
+			await this.store.delete(fileId);
 		}
 
 		return this.model.deleteFile(fileId);
@@ -743,8 +741,8 @@ export class FileUploadClass {
 		return store.delete(file._id);
 	}
 
-	_doInsert(fileData: OptionalId<IUpload>, streamOrBuffer: stream | Buffer, cb?: (err?: Error, file?: IUpload) => void) {
-		const fileId = this.store.create(fileData);
+	async _doInsert(fileData: OptionalId<IUpload>, streamOrBuffer: stream | Buffer, cb?: (err?: Error, file?: IUpload) => void) {
+		const fileId = await this.store.create(fileData);
 		const token = this.store.createToken(fileId);
 		const tmpFile = UploadFS.getTempFilePath(fileId);
 

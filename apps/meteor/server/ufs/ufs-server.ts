@@ -131,8 +131,8 @@ WebApp.connectHandlers.use(async (req, res, next) => {
 		}
 
 		// Check if duplicate
-		const unique = function (hash: string) {
-			const originalId = Promise.await(store.getCollection().findOne({ hash, _id: { $ne: fileId } }));
+		const unique = async function (hash: string) {
+			const originalId = await store.getCollection().findOne({ hash, _id: { $ne: fileId } });
 			return originalId ? originalId._id : false;
 		};
 
@@ -159,11 +159,11 @@ WebApp.connectHandlers.use(async (req, res, next) => {
 			res.writeHead(500);
 			res.end();
 		});
-		req.on('end', () => {
+		req.on('end', async () => {
 			// Update completed state without triggering hooks
 			fields.hash = spark.digest('hex');
-			fields.originalId = unique(fields.hash) || undefined;
-			Promise.await(store.getCollection().updateOne({ _id: fileId }, { $set: fields }));
+			fields.originalId = (await unique(fields.hash)) || undefined;
+			await store.getCollection().updateOne({ _id: fileId }, { $set: fields });
 			ws.end();
 		});
 		ws.on('error', (err) => {
@@ -327,7 +327,7 @@ WebApp.connectHandlers.use(async (req, res, next) => {
 				}
 
 				// Open the file stream
-				const rs = store.getReadStream(fileId, file, options);
+				const rs = await store.getReadStream(fileId, file, options);
 				const ws = new stream.PassThrough();
 
 				rs.on('error', (err) => {

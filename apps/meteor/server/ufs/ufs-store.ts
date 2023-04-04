@@ -6,7 +6,6 @@ import type * as http from 'http';
 
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import { Mongo } from 'meteor/mongo';
 import type createServer from 'connect';
 import type { OptionalId } from 'mongodb';
 import type { IUpload } from '@rocket.chat/core-typings';
@@ -53,11 +52,11 @@ export class Store {
 		callback?: (err?: Error, copyId?: string, copy?: OptionalId<IFile>, store?: Store) => void,
 	) => Promise<void>;
 
-	public create: (file: OptionalId<IFile>) => string;
+	public create: (file: OptionalId<IFile>) => Promise<string>;
 
 	public createToken: (fileId: string) => void;
 
-	public write: (rs: stream.Readable, fileId: string, callback: (err?: Error, file?: IFile) => void) => void;
+	public write: (rs: stream.Readable, fileId: string, callback: (err?: Error, file?: IFile) => void) => Promise<void>;
 
 	constructor(options: StoreOptions) {
 		options = {
@@ -70,16 +69,6 @@ export class Store {
 			...options,
 		};
 
-		// Check options
-		if (!(options.collection instanceof Mongo.Collection)) {
-			throw new TypeError('Store: collection is not a Mongo.Collection');
-		}
-		if (options.filter && !(options.filter instanceof Filter)) {
-			throw new TypeError('Store: filter is not a UploadFS.Filter');
-		}
-		if (typeof options.name !== 'string') {
-			throw new TypeError('Store: name is not a string');
-		}
 		if (UploadFS.getStore(options.name)) {
 			throw new TypeError('Store: name already exists');
 		}
@@ -165,10 +154,10 @@ export class Store {
 			copy.originalId = fileId;
 
 			// Create the copy
-			const copyId = store.create(copy);
+			const copyId = await store.create(copy);
 
 			// Get original stream
-			const rs = this.getReadStream(fileId, file);
+			const rs = await this.getReadStream(fileId, file);
 
 			// Catch errors to avoid app crashing
 			rs.on(
@@ -179,7 +168,7 @@ export class Store {
 			);
 
 			// Copy file data
-			store.write(
+			await store.write(
 				rs,
 				copyId,
 				Meteor.bindEnvironment((err) => {
@@ -194,10 +183,10 @@ export class Store {
 			);
 		};
 
-		this.create = (file) => {
+		this.create = async (file) => {
 			check(file, Object);
 			file.store = this.options.name; // assign store to file
-			return Promise.await(this.getCollection().insertOne(file)).insertedId;
+			return (await this.getCollection().insertOne(file)).insertedId;
 		};
 
 		this.createToken = (fileId) => {
@@ -224,8 +213,8 @@ export class Store {
 			return token;
 		};
 
-		this.write = (rs, fileId, callback) => {
-			const file = Promise.await(this.getCollection().findOne({ _id: fileId }));
+		this.write = async (rs, fileId, callback) => {
+			const file = await this.getCollection().findOne({ _id: fileId });
 			if (!file) {
 				return callback(new Error('File not found'));
 			}
@@ -235,9 +224,9 @@ export class Store {
 				callback.call(this, err);
 			});
 
-			const finishHandler = Meteor.bindEnvironment(() => {
+			const finishHandler = Meteor.bindEnvironment(async () => {
 				let size = 0;
-				const readStream = this.getReadStream(fileId, file);
+				const readStream = await this.getReadStream(fileId, file);
 
 				readStream.on(
 					'error',
@@ -260,13 +249,13 @@ export class Store {
 						// Set file attribute
 						file.complete = true;
 						file.etag = UploadFS.generateEtag();
-						file.path = this.getFileRelativeURL(fileId);
+						file.path = await this.getFileRelativeURL(fileId);
 						file.progress = 1;
 						file.size = size;
 						file.token = this.generateToken();
 						file.uploading = false;
 						file.uploadedAt = new Date();
-						file.url = this.getFileURL(fileId);
+						file.url = await this.getFileURL(fileId);
 
 						// Execute callback
 						if (typeof this.onFinishUpload === 'function') {
@@ -298,7 +287,7 @@ export class Store {
 				);
 			});
 
-			const ws = this.getWriteStream(fileId, file);
+			const ws = await this.getWriteStream(fileId, file);
 			ws.on('error', errorHandler);
 			ws.once('finish', finishHandler);
 
@@ -309,7 +298,7 @@ export class Store {
 
 	async removeById(fileId: string) {
 		// Delete the physical file in the store
-		this.delete(fileId);
+		await this.delete(fileId);
 
 		const tmpFile = UploadFS.getTempFilePath(fileId);
 
@@ -325,7 +314,7 @@ export class Store {
 		Tokens.remove({ fileId });
 	}
 
-	delete(_fileId: string, _callback?: (err?: Error, data?: any) => void) {
+	async delete(_fileId: string): Promise<any> {
 		throw new Error('delete is not implemented');
 	}
 
@@ -344,17 +333,17 @@ export class Store {
 		return this.options.collection!;
 	}
 
-	getFilePath(_fileId: string, _file?: IFile): string {
+	async getFilePath(_fileId: string, _file?: IFile): Promise<string> {
 		throw new Error('Store.getFilePath is not implemented');
 	}
 
-	getFileRelativeURL(fileId: string) {
-		const file = Promise.await(this.getCollection().findOne(fileId, { projection: { name: 1 } }));
+	async getFileRelativeURL(fileId: string) {
+		const file = await this.getCollection().findOne(fileId, { projection: { name: 1 } });
 		return file ? this.getRelativeURL(`${fileId}/${file.name}`) : undefined;
 	}
 
-	getFileURL(fileId: string) {
-		const file = Promise.await(this.getCollection().findOne(fileId, { projection: { name: 1 } }));
+	async getFileURL(fileId: string) {
+		const file = await this.getCollection().findOne(fileId, { projection: { name: 1 } });
 		return file ? this.getURL(`${fileId}/${file.name}`) : undefined;
 	}
 
@@ -366,7 +355,7 @@ export class Store {
 		return this.options.name;
 	}
 
-	getReadStream(_fileId: string, _file: IFile, _options?: { start?: number; end?: number }): stream.Readable {
+	async getReadStream(_fileId: string, _file: IFile, _options?: { start?: number; end?: number }): Promise<stream.Readable> {
 		throw new Error('Store.getReadStream is not implemented');
 	}
 
@@ -389,7 +378,7 @@ export class Store {
 		throw new Error('getRedirectURL is not implemented');
 	}
 
-	getWriteStream(_fileId: string, _file: IFile): stream.Writable {
+	async getWriteStream(_fileId: string, _file: IFile): Promise<stream.Writable> {
 		throw new Error('getWriteStream is not implemented');
 	}
 

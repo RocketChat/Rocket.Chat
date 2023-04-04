@@ -142,10 +142,10 @@ export class PendingFileImporter extends Base {
 
 							res.on(
 								'end',
-								Meteor.bindEnvironment(() => {
+								Meteor.bindEnvironment(async () => {
 									try {
 										// Bypass the fileStore filters
-										fileStore._doInsert(details, Buffer.concat(rawData), function (error, file) {
+										await fileStore._doInsert(details, Buffer.concat(rawData), function (error, file) {
 											if (error) {
 												completeFile(details);
 												logError(error);

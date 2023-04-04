@@ -17,7 +17,7 @@ const FileSystemUploads = new FileUploadClass({
 		if (!this.store || !file) {
 			return;
 		}
-		const filePath = this.store.getFilePath(file._id, file);
+		const filePath = await this.store.getFilePath(file._id, file);
 
 		const options: { start?: number; end?: number } = {};
 
@@ -52,7 +52,7 @@ const FileSystemUploads = new FileUploadClass({
 				res.setHeader('Content-Length', file.size || 0);
 			}
 
-			this.store.getReadStream(file._id, file, options).pipe(res);
+			(await this.store.getReadStream(file._id, file, options)).pipe(res);
 		} catch (e) {
 			res.writeHead(404);
 			res.end();
@@ -63,14 +63,14 @@ const FileSystemUploads = new FileUploadClass({
 		if (!this.store) {
 			return;
 		}
-		const filePath = this.store.getFilePath(file._id, file);
+		const filePath = await this.store.getFilePath(file._id, file);
 		try {
 			const stat = statSync(filePath);
 
 			if (stat?.isFile()) {
 				file = FileUpload.addExtensionTo(file);
 
-				this.store.getReadStream(file._id, file).pipe(out);
+				(await this.store.getReadStream(file._id, file)).pipe(out);
 			}
 		} catch (e) {
 			out.end();
@@ -86,7 +86,7 @@ const FileSystemAvatars = new FileUploadClass({
 		if (!this.store) {
 			return;
 		}
-		const filePath = this.store.getFilePath(file._id, file);
+		const filePath = await this.store.getFilePath(file._id, file);
 
 		try {
 			const stat = statSync(filePath);
@@ -94,7 +94,7 @@ const FileSystemAvatars = new FileUploadClass({
 			if (stat?.isFile()) {
 				file = FileUpload.addExtensionTo(file);
 
-				this.store.getReadStream(file._id, file).pipe(res);
+				(await this.store.getReadStream(file._id, file)).pipe(res);
 			}
 		} catch (e) {
 			res.writeHead(404);
@@ -110,7 +110,7 @@ const FileSystemUserDataFiles = new FileUploadClass({
 		if (!this.store) {
 			return;
 		}
-		const filePath = this.store.getFilePath(file._id, file);
+		const filePath = await this.store.getFilePath(file._id, file);
 
 		try {
 			const stat = statSync(filePath);
@@ -122,7 +122,7 @@ const FileSystemUserDataFiles = new FileUploadClass({
 				res.setHeader('Content-Type', file.type || '');
 				res.setHeader('Content-Length', file.size || 0);
 
-				this.store.getReadStream(file._id, file).pipe(res);
+				(await this.store.getReadStream(file._id, file)).pipe(res);
 			}
 		} catch (e) {
 			res.writeHead(404);

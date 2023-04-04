@@ -72,7 +72,7 @@ Meteor.methods({
 			);
 
 			// Save file in the store
-			store.write(
+			await store.write(
 				rs,
 				fileId,
 				Meteor.bindEnvironment(function (err, file) {
