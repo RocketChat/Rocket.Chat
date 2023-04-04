@@ -23,7 +23,9 @@ const ComposerAnonymous = (): ReactElement => {
 	const registerAnonymous = useMutation(
 		async (...params: Parameters<typeof anonymousUser>) => {
 			const result = await anonymousUser(...params);
-			await loginWithToken(result.token);
+			if (typeof result !== 'string' && result.token) {
+				await loginWithToken(result.token);
+			}
 			return result;
 		},
 		{
