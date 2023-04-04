@@ -42,7 +42,6 @@ import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { isUserFromParams } from '../helpers/isUserFromParams';
 
-
 API.v1.addRoute(
 	'users.getAvatar',
 	{ authRequired: false },
