@@ -2,13 +2,13 @@ import { EventEmitter } from 'events';
 import type { IncomingMessage } from 'http';
 
 import { v1 as uuidv1 } from 'uuid';
-import WebSocket from 'ws';
+import type WebSocket from 'ws';
 import type { ISocketConnection } from '@rocket.chat/core-typings';
 
 import { DDP_EVENTS, WS_ERRORS, WS_ERRORS_MESSAGES, TIMEOUT } from './constants';
 import { SERVER_ID } from './Server';
 import { server } from './configureServer';
-import { IPacket } from './types/IPacket';
+import type { IPacket } from './types/IPacket';
 
 // TODO why localhost not as 127.0.0.1?
 // based on Meteor's implementation (link)

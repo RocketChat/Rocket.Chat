@@ -21,7 +21,7 @@ export type UsersUpdateParamsPOST = {
 		setRandomPassword?: boolean;
 		sendWelcomeEmail?: boolean;
 		verified?: boolean;
-		customFields?: {};
+		customFields?: Record<string, unknown>;
 		status?: string;
 	};
 	confirmRelinquish?: boolean;

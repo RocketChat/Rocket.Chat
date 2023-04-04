@@ -1,6 +1,7 @@
 import { Box, Field, FieldGroup, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useUniqueId } from '@rocket.chat/fuselage-hooks';
-import React, { memo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo } from 'react';
 
 type NotificationToogleProps = {
 	label: string;

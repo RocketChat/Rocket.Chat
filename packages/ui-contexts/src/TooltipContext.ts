@@ -1,4 +1,5 @@
-import { createContext, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import { createContext } from 'react';
 
 type TooltipPayload = ReactElement;
 

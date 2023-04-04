@@ -1,36 +1,21 @@
-import { RoomType } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Sidebar, TextInput, Box, Icon } from '@rocket.chat/fuselage';
-import {
-	useMutableCallback,
-	useDebouncedValue,
-	useStableArray,
-	useAutoFocus,
-	useUniqueId,
-	useMergedRefs,
-} from '@rocket.chat/fuselage-hooks';
+import { useMutableCallback, useDebouncedValue, useAutoFocus, useUniqueId, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { useUserPreference, useUserSubscriptions, useSetting, useTranslation } from '@rocket.chat/ui-contexts';
+import { useUserPreference, useUserSubscriptions, useSetting, useTranslation, useMethod } from '@rocket.chat/ui-contexts';
+import type { UseQueryResult } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Meteor } from 'meteor/meteor';
-import React, {
-	forwardRef,
-	useState,
-	useMemo,
-	useEffect,
-	useRef,
-	ReactElement,
-	MutableRefObject,
-	SetStateAction,
-	Dispatch,
-	FormEventHandler,
-	Ref,
-} from 'react';
-import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
+import type { ReactElement, MutableRefObject, SetStateAction, Dispatch, FormEventHandler, Ref, MouseEventHandler } from 'react';
+import React, { forwardRef, useState, useMemo, useEffect, useRef } from 'react';
+import type { VirtuosoHandle } from 'react-virtuoso';
+import { Virtuoso } from 'react-virtuoso';
 import tinykeys from 'tinykeys';
 
-import { AsyncStatePhase } from '../../hooks/useAsyncState';
-import { useMethodData } from '../../hooks/useMethodData';
+import { getConfig } from '../../lib/utils/getConfig';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
+import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 import Row from './Row';
 import ScrollerWithCustomProps from './ScrollerWithCustomProps';
@@ -45,113 +30,110 @@ const shortcut = ((): string => {
 	return '(\u2303+K)';
 })();
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-const useSpotlight = (filterText: string, usernames: string[]) => {
-	const expression = /(@|#)?(.*)/i;
-	const [, mention, name] = filterText.match(expression) || [];
-
-	const searchForChannels = mention === '#';
-	const searchForDMs = mention === '@';
-
-	const type = useMemo(() => {
-		if (searchForChannels) {
-			return { users: false, rooms: true };
-		}
-		if (searchForDMs) {
-			return { users: true, rooms: false };
-		}
-		return { users: true, rooms: true };
-	}, [searchForChannels, searchForDMs]);
-
-	const args = useMemo(() => [name, usernames, type], [type, name, usernames]);
-
-	const { value: data, phase: status } = useMethodData('spotlight', args);
-
-	return useMemo(() => {
-		if (!data) {
-			return { data: { users: [], rooms: [] }, status: 'loading' };
-		}
-		return { data, status };
-	}, [data, status]);
-};
+const LIMIT = parseInt(String(getConfig('Sidebar_Search_Spotlight_LIMIT', 20)));
 
 const options = {
 	sort: {
 		lm: -1,
 		name: 1,
 	},
-};
+	limit: LIMIT,
+} as const;
 
-const useSearchItems = (filterText: string): any => {
-	const expression = /(@|#)?(.*)/i;
-	const [, type, name] = filterText.match(expression) || [];
-
+const useSearchItems = (filterText: string): UseQueryResult<(ISubscription & IRoom)[] | undefined, Error> => {
+	const [, mention, name] = useMemo(() => filterText.match(/(@|#)?(.*)/i) || [], [filterText]);
 	const query = useMemo(() => {
 		const filterRegex = new RegExp(escapeRegExp(name), 'i');
 
 		return {
 			$or: [{ name: filterRegex }, { fname: filterRegex }],
-			...(type && {
-				t: type === '@' ? 'd' : { $ne: 'd' },
+			...(mention && {
+				t: mention === '@' ? 'd' : { $ne: 'd' },
 			}),
 		};
-	}, [name, type]);
+	}, [name, mention]);
 
-	const localRooms: { rid: string; t: RoomType; _id: string; name: string; uids?: string }[] = useUserSubscriptions(query, options);
+	const localRooms = useUserSubscriptions(query, options);
 
-	const usernamesFromClient = useStableArray([...localRooms?.map(({ t, name }) => (t === 'd' ? name : null))].filter(Boolean)) as string[];
+	const usernamesFromClient = [...localRooms?.map(({ t, name }) => (t === 'd' ? name : null))].filter(Boolean) as string[];
 
-	const { data: spotlight, status } = useSpotlight(filterText, usernamesFromClient);
+	const searchForChannels = mention === '#';
+	const searchForDMs = mention === '@';
 
-	return useMemo(() => {
-		const filterUsersUnique = ({ _id }: { _id: string }, index: number, arr: { _id: string }[]): boolean =>
-			index === arr.findIndex((user) => _id === user._id);
+	const type = useMemo(() => {
+		if (searchForChannels) {
+			return { users: false, rooms: true, includeFederatedRooms: true };
+		}
+		if (searchForDMs) {
+			return { users: true, rooms: false };
+		}
+		return { users: true, rooms: true, includeFederatedRooms: true };
+	}, [searchForChannels, searchForDMs]);
 
-		const roomFilter = (room: { t: string; uids?: string[]; _id: string; name?: string }): boolean =>
-			!localRooms.find(
-				(item) =>
-					(room.t === 'd' && room.uids && room.uids.length > 1 && room.uids?.includes(item._id)) || [item.rid, item._id].includes(room._id),
-			);
-		const usersfilter = (user: { _id: string }): boolean =>
-			!localRooms.find((room) => room.t === 'd' && room.uids && room.uids?.length === 2 && room.uids.includes(user._id));
+	const getSpotlight = useMethod('spotlight');
 
-		const userMap = (user: {
-			_id: string;
-			name: string;
-			username: string;
-			avatarETag?: string;
-		}): {
-			_id: string;
-			t: string;
-			name: string;
-			fname: string;
-			avatarETag?: string;
-		} => ({
-			_id: user._id,
-			t: 'd',
-			name: user.username,
-			fname: user.name,
-			avatarETag: user.avatarETag,
-		});
+	return useQuery(
+		['sidebar/search/spotlight', name, usernamesFromClient, type],
+		async () => {
+			if (localRooms.length === LIMIT) {
+				return localRooms;
+			}
 
-		type resultsFromServerType = {
-			_id: string;
-			t: string;
-			name: string;
-			fname?: string;
-			avatarETag?: string | undefined;
-			uids?: string[] | undefined;
-		}[];
+			const spotlight = await getSpotlight(name, usernamesFromClient, type);
 
-		const resultsFromServer: resultsFromServerType = [];
-		resultsFromServer.push(...spotlight.users.filter(filterUsersUnique).filter(usersfilter).map(userMap));
-		resultsFromServer.push(...spotlight.rooms.filter(roomFilter));
+			const filterUsersUnique = ({ _id }: { _id: string }, index: number, arr: { _id: string }[]): boolean =>
+				index === arr.findIndex((user) => _id === user._id);
 
-		const exact = resultsFromServer?.filter((item) => [item.name, item.fname].includes(name));
+			const roomFilter = (room: { t: string; uids?: string[]; _id: string; name?: string }): boolean =>
+				!localRooms.find(
+					(item) =>
+						(room.t === 'd' && room.uids && room.uids.length > 1 && room.uids?.includes(item._id)) ||
+						[item.rid, item._id].includes(room._id),
+				);
+			const usersFilter = (user: { _id: string }): boolean =>
+				!localRooms.find((room) => room.t === 'd' && room.uids && room.uids?.length === 2 && room.uids.includes(user._id));
 
-		return { data: Array.from(new Set([...exact, ...localRooms, ...resultsFromServer])), status };
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [localRooms, name, spotlight]);
+			const userMap = (user: {
+				_id: string;
+				name: string;
+				username: string;
+				avatarETag?: string;
+			}): {
+				_id: string;
+				t: string;
+				name: string;
+				fname: string;
+				avatarETag?: string;
+			} => ({
+				_id: user._id,
+				t: 'd',
+				name: user.username,
+				fname: user.name,
+				avatarETag: user.avatarETag,
+			});
+
+			type resultsFromServerType = {
+				_id: string;
+				t: string;
+				name: string;
+				fname?: string;
+				avatarETag?: string | undefined;
+				uids?: string[] | undefined;
+			}[];
+
+			const resultsFromServer: resultsFromServerType = [];
+			resultsFromServer.push(...spotlight.users.filter(filterUsersUnique).filter(usersFilter).map(userMap));
+			resultsFromServer.push(...spotlight.rooms.filter(roomFilter));
+
+			const exact = resultsFromServer?.filter((item) => [item.name, item.fname].includes(name));
+			return Array.from(new Set([...exact, ...localRooms, ...resultsFromServer]));
+		},
+		{
+			staleTime: 60_000,
+			keepPreviousData: true,
+			placeholderData: localRooms,
+		},
+	);
 };
 
 const useInput = (initial: string): { value: string; onChange: FormEventHandler; setValue: Dispatch<SetStateAction<string>> } => {
@@ -206,7 +188,7 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 
 	const placeholder = [t('Search'), shortcut].filter(Boolean).join(' ');
 
-	const { data: items, status } = useSearchItems(filterText);
+	const { data: items = [], isLoading } = useSearchItems(filterText);
 
 	const itemData = useMemo(
 		() => ({
@@ -248,6 +230,8 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 		}
 	});
 
+	usePreventDefault(boxRef);
+
 	useEffect(() => {
 		resetCursor();
 	});
@@ -260,7 +244,7 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 		if (!cursorRef?.current) {
 			return;
 		}
-		const unsubscribe = tinykeys(cursorRef?.current, {
+		return tinykeys(cursorRef?.current, {
 			Escape: (event) => {
 				event.preventDefault();
 				setFilterValue((value) => {
@@ -280,7 +264,7 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 			},
 			ArrowDown: () => {
 				const currentElement = changeSelection('down');
-				itemIndexRef.current = Math.min(itemIndexRef.current + 1, items?.length + 1);
+				itemIndexRef.current = Math.min(itemIndexRef.current + 1, items.length + 1);
 				listRef.current?.scrollToIndex({ index: itemIndexRef.current });
 				selectedElement.current = currentElement;
 			},
@@ -290,10 +274,14 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 				}
 			},
 		});
-		return (): void => {
-			unsubscribe();
-		};
 	}, [cursorRef, changeSelection, items.length, onClose, resetCursor, setFilterValue]);
+
+	const handleClick: MouseEventHandler<HTMLElement> = (e): void => {
+		if (e.target instanceof Element && [e.target.tagName, e.target.parentElement?.tagName].includes('BUTTON')) {
+			return;
+		}
+		return onClose();
+	};
 
 	return (
 		<Box
@@ -309,20 +297,21 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 				top: 0;
 			`}
 			ref={ref}
+			role='search'
 		>
-			<Sidebar.TopBar.Section {...({ role: 'search' } as any)} is='form'>
+			<Sidebar.TopBar.Section {...({ flexShrink: 0 } as any)} is='form'>
 				<TextInput
 					aria-owns={listId}
 					data-qa='sidebar-search-input'
 					ref={autofocus}
 					{...filter}
 					placeholder={placeholder}
+					role='searchbox'
 					addon={<Icon name='cross' size='x20' onClick={onClose} />}
 				/>
 			</Sidebar.TopBar.Section>
 			<Box
 				ref={boxRef}
-				aria-expanded='true'
 				role='listbox'
 				id={listId}
 				tabIndex={-1}
@@ -330,14 +319,17 @@ const SearchList = forwardRef(function SearchList({ onClose }: SearchListProps, 
 				h='full'
 				w='full'
 				data-qa='sidebar-search-result'
-				onClick={onClose}
-				aria-busy={status !== AsyncStatePhase.RESOLVED}
+				aria-live='polite'
+				aria-atomic='true'
+				aria-busy={isLoading}
+				onClick={handleClick}
 			>
 				<Virtuoso
 					style={{ height: '100%', width: '100%' }}
-					totalCount={items?.length}
+					totalCount={items.length}
 					data={items}
 					components={{ Scroller: ScrollerWithCustomProps }}
+					computeItemKey={(_, room) => room._id}
 					itemContent={(_, data): ReactElement => <Row data={itemData} item={data} />}
 					ref={listRef}
 				/>

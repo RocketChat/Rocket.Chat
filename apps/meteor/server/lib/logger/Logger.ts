@@ -1,6 +1,7 @@
 import type { MainLogger } from './getPino';
 import { getPino } from './getPino';
-import { logLevel, LogLevelSetting } from './logLevel';
+import type { LogLevelSetting } from './logLevel';
+import { logLevel } from './logLevel';
 
 const getLevel = (level: LogLevelSetting): string => {
 	switch (level) {
@@ -48,8 +49,6 @@ export class Logger {
 
 	log<T extends object>(obj: T, ...args: any[]): void;
 
-	log(msg: string, ...args: any[]): void;
-
 	log(obj: unknown, ...args: any[]): void;
 
 	log(msg: string, ...args: any[]): void {
@@ -57,8 +56,6 @@ export class Logger {
 	}
 
 	debug<T extends object>(obj: T, ...args: any[]): void;
-
-	debug(msg: string, ...args: any[]): void;
 
 	debug(obj: unknown, ...args: any[]): void;
 
@@ -68,8 +65,6 @@ export class Logger {
 
 	info<T extends object>(obj: T, ...args: any[]): void;
 
-	info(msg: string, ...args: any[]): void;
-
 	info(obj: unknown, ...args: any[]): void;
 
 	info(msg: string, ...args: any[]): void {
@@ -77,8 +72,6 @@ export class Logger {
 	}
 
 	startup<T extends object>(obj: T, ...args: any[]): void;
-
-	startup(msg: string, ...args: any[]): void;
 
 	startup(obj: unknown, ...args: any[]): void;
 
@@ -88,8 +81,6 @@ export class Logger {
 
 	success<T extends object>(obj: T, ...args: any[]): void;
 
-	success(msg: string, ...args: any[]): void;
-
 	success(obj: unknown, ...args: any[]): void;
 
 	success(msg: string, ...args: any[]): void {
@@ -97,8 +88,6 @@ export class Logger {
 	}
 
 	warn<T extends object>(obj: T, ...args: any[]): void;
-
-	warn(msg: string, ...args: any[]): void;
 
 	warn(obj: unknown, ...args: any[]): void;
 
@@ -108,8 +97,6 @@ export class Logger {
 
 	error<T extends object>(obj: T, ...args: any[]): void;
 
-	error(msg: string, ...args: any[]): void;
-
 	error(obj: unknown, ...args: any[]): void;
 
 	error(msg: string, ...args: any[]): void {
@@ -117,8 +104,6 @@ export class Logger {
 	}
 
 	method<T extends object>(obj: T, ...args: any[]): void;
-
-	method(msg: string, ...args: any[]): void;
 
 	method(obj: unknown, ...args: any[]): void;
 
@@ -128,11 +113,13 @@ export class Logger {
 
 	subscription<T extends object>(obj: T, ...args: any[]): void;
 
-	subscription(msg: string, ...args: any[]): void;
-
 	subscription(obj: unknown, ...args: any[]): void;
 
 	subscription(msg: string, ...args: any[]): void {
 		this.logger.subscription(msg, ...args);
+	}
+
+	fatal(err: unknown, ...args: any[]): void {
+		this.logger.fatal(err, ...args);
 	}
 }

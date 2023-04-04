@@ -1,12 +1,13 @@
 import { Meteor } from 'meteor/meteor';
 import { Inject } from 'meteor/meteorhacks:inject-initial';
 import { Tracker } from 'meteor/tracker';
-import _ from 'underscore';
+import { Settings } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 
-import { Settings } from '../../models/server';
 import { settings } from '../../settings/server';
 import { applyHeadInjections, headInjections, injectIntoBody, injectIntoHead } from './inject';
+import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
+
 import './scripts';
 
 export * from './inject';
@@ -123,17 +124,12 @@ Meteor.startup(() => {
 	injectIntoHead('css-theme', '');
 });
 
-const renderDynamicCssList = _.debounce(
-	Meteor.bindEnvironment(() => {
+const renderDynamicCssList = withDebouncing({ wait: 500 })(
+	Meteor.bindEnvironment(async () => {
 		// const variables = RocketChat.models.Settings.findOne({_id:'theme-custom-variables'}, {fields: { value: 1}});
-		const colors = Settings.find({ _id: /theme-color-rc/i }, { fields: { value: 1, editor: 1 } })
-			.fetch()
-			.filter((color) => color && color.value);
-
-		if (!colors) {
-			return;
-		}
+		const colors = await Settings.find({ _id: /theme-color-rc/i }, { projection: { value: 1, editor: 1 } }).toArray();
 		const css = colors
+			.filter((color) => color && color.value)
 			.map(({ _id, value, editor }) => {
 				if (editor === 'expression') {
 					return `--${_id.replace('theme-color-', '')}: var(--${value});`;
@@ -143,20 +139,18 @@ const renderDynamicCssList = _.debounce(
 			.join('\n');
 		injectIntoBody('dynamic-variables', `<style id='css-variables'> :root {${css}}</style>`);
 	}),
-	500,
 );
 
 renderDynamicCssList();
-
-// RocketChat.models.Settings.find({_id:'theme-custom-variables'}, {fields: { value: 1}}).observe({
-// 	changed: renderDynamicCssList
-// });
 
 settings.watchByRegex(/theme-color-rc/i, renderDynamicCssList);
 
 injectIntoBody(
 	'react-root',
 	`
+<noscript style="color: white; text-align:center">
+	You need to enable JavaScript to run this app.
+</noscript>
 <div id="react-root">
 	<div class="page-loading">
 		<div class="loading-animation">

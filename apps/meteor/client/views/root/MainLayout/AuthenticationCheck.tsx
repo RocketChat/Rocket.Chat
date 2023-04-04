@@ -1,21 +1,38 @@
 import { useSession, useUserId, useSetting } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, ReactNode } from 'react';
+import RegistrationRoute from '@rocket.chat/web-ui-registration';
+import type { ReactElement, ReactNode } from 'react';
+import React from 'react';
 
 import LoginPage from './LoginPage';
 import UsernameCheck from './UsernameCheck';
 
-const AuthenticationCheck = ({ children }: { children: ReactNode }): ReactElement => {
+/*
+ * Anonymous and guest are similar in some way
+ *
+ * Anonymous is an old feature that allows the user to navigate as an anonymus user
+ * by default the user dont need to do anything its hadled by the system but by behind the scenes a new    * user is registered
+ *
+ * Guest is only for certain locations, it shows a form asking if the user wants to stay as guest and if so
+ * renders the page, without creating an user (not even an anonymous user)
+ */
+const AuthenticationCheck = ({ children, guest }: { children: ReactNode; guest?: boolean }): ReactElement => {
 	const uid = useUserId();
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 	const forceLogin = useSession('forceLogin');
 
-	const showLogin = !uid && (allowAnonymousRead !== true || forceLogin === true);
-
-	if (showLogin) {
-		return <LoginPage />;
+	if (uid) {
+		return <UsernameCheck>{children}</UsernameCheck>;
 	}
 
-	return <UsernameCheck>{children}</UsernameCheck>;
+	if (!forceLogin && guest) {
+		return <RegistrationRoute defaultRoute='guest' children={children} />;
+	}
+
+	if (!forceLogin && allowAnonymousRead) {
+		return <UsernameCheck>{children}</UsernameCheck>;
+	}
+
+	return <LoginPage />;
 };
 
 export default AuthenticationCheck;

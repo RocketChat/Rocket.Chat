@@ -1,35 +1,10 @@
-import { Tracker } from 'meteor/tracker';
 import { useMemo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
+import { createReactiveSubscriptionFactory } from '../lib/createReactiveSubscriptionFactory';
+
 export const useReactiveValue = <T>(computeCurrentValue: () => T): T => {
-	const [subscribe, getSnapshot] = useMemo(() => {
-		const callbacks = new Set<() => void>();
-
-		let currentValue: T;
-
-		const computation = Tracker.autorun(() => {
-			currentValue = computeCurrentValue();
-			callbacks.forEach((callback) => {
-				callback();
-			});
-		});
-
-		return [
-			(callback: () => void): (() => void) => {
-				callbacks.add(callback);
-
-				return (): void => {
-					callbacks.delete(callback);
-
-					if (callbacks.size === 0) {
-						computation.stop();
-					}
-				};
-			},
-			(): T => currentValue,
-		];
-	}, [computeCurrentValue]);
+	const [subscribe, getSnapshot] = useMemo(() => createReactiveSubscriptionFactory<T>(computeCurrentValue)(), [computeCurrentValue]);
 
 	return useSyncExternalStore(subscribe, getSnapshot);
 };

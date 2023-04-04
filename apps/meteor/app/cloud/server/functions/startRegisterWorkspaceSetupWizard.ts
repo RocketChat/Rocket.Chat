@@ -1,5 +1,5 @@
 import { HTTP } from 'meteor/http';
-import { CloudRegistrationIntentData } from '@rocket.chat/core-typings';
+import type { CloudRegistrationIntentData } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
 import { buildWorkspaceRegistrationData } from './buildRegistrationData';
@@ -14,14 +14,15 @@ export async function startRegisterWorkspaceSetupWizard(resend = false, email: s
 		result = HTTP.post(`${cloudUrl}/api/v2/register/workspace/intent?resent=${resend}`, {
 			data: regInfo,
 		});
-	} catch (e: any) {
-		if (e.response && e.response.data && e.response.data.error) {
-			SystemLogger.error(`Failed to register with Rocket.Chat Cloud.  ErrorCode: ${e.response.data.error}`);
-		} else {
-			SystemLogger.error(e);
-		}
+	} catch (err: any) {
+		SystemLogger.error({
+			msg: 'Failed to register workspace intent with Rocket.Chat Cloud',
+			url: '/api/v2/register/workspace',
+			...(err.response?.data && { cloudError: err.response.data }),
+			err,
+		});
 
-		throw e;
+		throw err;
 	}
 
 	const { data } = result;

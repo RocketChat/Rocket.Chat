@@ -1,4 +1,4 @@
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import type { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 
 import UsageCard from './UsageCard';
@@ -54,13 +54,18 @@ export default {
 				totalRoomsInsideTeams: 0,
 				totalDefaultRoomsInsideTeams: 0,
 			},
+			totalLivechatManagers: 10,
+			totalCustomFields: 10,
+			totalTriggers: 1,
+			isDepartmentRemovalEnabled: false,
+			archivedDepartments: 0,
 			totalLivechatVisitors: 0,
 			totalLivechatAgents: 0,
 			livechatEnabled: false,
 			federatedServers: 0,
 			federatedUsers: 0,
 			lastLogin: '',
-			lastMessageSentAt: '',
+			lastMessageSentAt: new Date(),
 			lastSeenSubscription: '',
 			os: {
 				type: '',
@@ -103,6 +108,7 @@ export default {
 				lockedAt: '',
 			},
 			instanceCount: 0,
+			msEnabled: false,
 			oplogEnabled: false,
 			mongoVersion: '',
 			mongoStorageEngine: '',
@@ -123,6 +129,9 @@ export default {
 			voipSuccessfulCalls: 0,
 			voipErrorCalls: 0,
 			voipOnHoldCalls: 0,
+			webRTCEnabled: false,
+			webRTCEnabledForOmnichannel: false,
+			omnichannelWebRTCCalls: 1,
 			federationOverviewData: {
 				numberOfEvents: 0,
 				numberOfFederatedUsers: 0,
@@ -140,7 +149,7 @@ export default {
 			uniqueOSOfLastWeek: { data: [], day: 0, month: 0, year: 0 },
 			uniqueOSOfLastMonth: { data: [], day: 0, month: 0, year: 0 },
 			apps: {
-				engineVersion: 0,
+				engineVersion: 'x.y.z',
 				enabled: false,
 				totalInstalled: 0,
 				totalActive: 0,
@@ -179,10 +188,8 @@ export default {
 			customScript: 0,
 			tabInvites: 0,
 			totalEmailInvitation: 0,
-			totalRoomsWithSnippet: 0,
 			totalRoomsWithStarred: 0,
 			totalRoomsWithPinned: 0,
-			totalSnippet: 0,
 			totalStarred: 0,
 			totalPinned: 0,
 			totalE2ERooms: 0,
@@ -233,9 +240,12 @@ export default {
 			},
 			totalSubscriptionRoles: 0,
 			totalUserRoles: 0,
+			totalCustomRoles: 0,
 			totalWebRTCCalls: 0,
-			matrixBridgeEnabled: false,
 			uncaughtExceptionsCount: 0,
+			matrixFederation: {
+				enabled: false,
+			},
 		},
 	},
 } as ComponentMeta<typeof UsageCard>;

@@ -1,7 +1,9 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useEffect, useState, memo } from 'react';
+import type { ReactElement } from 'react';
+import React, { useEffect, useState, memo } from 'react';
 
+import { userAgentMIMETypeFallback } from '../../../../lib/utils/userAgentMIMETypeFallback';
 import { FilePreviewType } from './FilePreview';
 import ImagePreview from './ImagePreview';
 import PreviewSkeleton from './PreviewSkeleton';
@@ -58,7 +60,7 @@ const MediaPreview = ({ file, fileType }: MediaPreviewProps): ReactElement => {
 	if (fileType === FilePreviewType.VIDEO) {
 		return (
 			<Box is='video' w='full' controls>
-				<source src={url} type={file.type} />
+				<source src={url} type={userAgentMIMETypeFallback(file.type)} />
 				{t('Browser_does_not_support_video_element')}
 			</Box>
 		);

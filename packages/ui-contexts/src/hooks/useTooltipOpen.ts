@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 
-import { TooltipContext, TooltipContextValue } from '../TooltipContext';
+import type { TooltipContextValue } from '../TooltipContext';
+import { TooltipContext } from '../TooltipContext';
 
 export const useTooltipOpen = (): TooltipContextValue['open'] => useContext(TooltipContext).open;

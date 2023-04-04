@@ -14,9 +14,8 @@ const BusinessHoursTableContainer = () => {
 		value: data,
 		phase: state,
 		reload,
-	} = useEndpointData(
-		'/v1/livechat/business-hours',
-		useMemo(
+	} = useEndpointData('/v1/livechat/business-hours', {
+		params: useMemo(
 			() => ({
 				count: params.itemsPerPage,
 				offset: params.current,
@@ -24,7 +23,7 @@ const BusinessHoursTableContainer = () => {
 			}),
 			[params],
 		),
-	);
+	});
 
 	if (state === AsyncStatePhase.REJECTED) {
 		return <Callout>{t('Error')}: error</Callout>;

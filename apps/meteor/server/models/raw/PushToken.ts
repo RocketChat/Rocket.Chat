@@ -23,4 +23,10 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 			authToken: { $nin: tokens },
 		});
 	}
+
+	removeAllByUserId(userId: string): Promise<DeleteResult> {
+		return this.deleteMany({
+			userId,
+		});
+	}
 }

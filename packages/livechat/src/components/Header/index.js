@@ -3,19 +3,10 @@ import { toChildArray } from 'preact';
 import { createClassName } from '../helpers';
 import styles from './styles.scss';
 
-
-export const Header = ({
-	children,
-	theme: { color: backgroundColor, fontColor: color } = {},
-	className,
-	post,
-	large,
-	style,
-	...props
-}) => (
+export const Header = ({ children, theme: { color: backgroundColor, fontColor: color } = {}, className, post, large, style, ...props }) => (
 	<header
 		className={createClassName(styles, 'header', { large }, [className])}
-		style={style || backgroundColor || color ? { ...style || {}, backgroundColor, color } : null}
+		style={style || backgroundColor || color ? { ...(style || {}), backgroundColor, color } : null}
 		{...props}
 	>
 		{children}
@@ -43,9 +34,14 @@ export const Title = ({ children, className, ...props }) => (
 
 export const SubTitle = ({ children, className, ...props }) => (
 	<div
-		className={createClassName(styles, 'header__subtitle', {
-			children: toChildArray(children).length > 0,
-		}, [className])}
+		className={createClassName(
+			styles,
+			'header__subtitle',
+			{
+				children: toChildArray(children).length > 0,
+			},
+			[className],
+		)}
 		{...props}
 	>
 		{children}
@@ -71,10 +67,7 @@ export const Post = ({ children, className, ...props }) => (
 );
 
 export const CustomField = ({ children, className, ...props }) => (
-	<div
-		className={createClassName(styles, 'header__custom-field', {}, [className])}
-		{...props}
-	>
+	<div className={createClassName(styles, 'header__custom-field', {}, [className])} {...props}>
 		{children}
 	</div>
 );

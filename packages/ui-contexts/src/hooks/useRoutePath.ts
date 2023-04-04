@@ -1,7 +1,8 @@
 import { useContext, useMemo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-import { QueryStringParameters, RouteParameters, RouterContext } from '../RouterContext';
+import type { QueryStringParameters, RouteParameters } from '../RouterContext';
+import { RouterContext } from '../RouterContext';
 
 export const useRoutePath = (
 	name: string,

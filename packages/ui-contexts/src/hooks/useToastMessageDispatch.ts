@@ -1,5 +1,6 @@
 import { useContext } from 'react';
 
-import { ToastMessagesContext, ToastMessagesContextValue } from '../ToastMessagesContext';
+import type { ToastMessagesContextValue } from '../ToastMessagesContext';
+import { ToastMessagesContext } from '../ToastMessagesContext';
 
 export const useToastMessageDispatch = (): ToastMessagesContextValue['dispatch'] => useContext(ToastMessagesContext).dispatch;

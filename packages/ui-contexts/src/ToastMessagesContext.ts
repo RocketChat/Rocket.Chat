@@ -1,11 +1,18 @@
 import { createContext } from 'react';
 
-type ToastMessagePayload = {
-	type: 'success' | 'info' | 'warning' | 'error';
-	message: string | Error;
-	title?: string;
-	options?: object;
-};
+type ToastMessagePayload =
+	| {
+			type: 'success' | 'info' | 'warning';
+			message: string;
+			title?: string;
+			options?: object;
+	  }
+	| {
+			type: 'error';
+			message: unknown;
+			title?: string;
+			options?: object;
+	  };
 
 export type ToastMessagesContextValue = {
 	dispatch: (payload: ToastMessagePayload) => void;

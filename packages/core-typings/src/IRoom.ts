@@ -1,17 +1,20 @@
+import type { ILivechatPriority } from './ILivechatPriority';
+import type { IOmnichannelServiceLevelAgreements } from './IOmnichannelServiceLevelAgreements';
 import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { IMessage } from './IMessage';
+import type { IMessage, MessageTypesValues } from './IMessage';
 import type { IUser, Username } from './IUser';
 import type { RoomType } from './RoomType';
+import type { IVisitor } from './IInquiry';
 
 type CallStatus = 'ringing' | 'ended' | 'declined' | 'ongoing';
 
 export type RoomID = string;
 export type ChannelName = string;
 interface IRequestTranscript {
-	email: string;
+	email: string; // the email address to send the transcript to
+	subject: string; // the subject of the email
 	requestedAt: Date;
-	requestedBy: IUser;
-	subject: string;
+	requestedBy: Pick<IUser, '_id' | 'username' | 'name' | 'utcOffset'>;
 }
 
 export interface IRoom extends IRocketChatRecord {
@@ -24,12 +27,16 @@ export interface IRoom extends IRocketChatRecord {
 	broadcast?: true;
 	featured?: true;
 	announcement?: string;
+	joinCodeRequired?: boolean;
+	announcementDetails?: {
+		style?: string;
+	};
 	encrypted?: boolean;
 	topic?: string;
 
 	reactWhenReadOnly?: boolean;
 
-	sysMes?: string[];
+	sysMes?: MessageTypesValues[];
 
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 	uids?: Array<string>;
@@ -56,7 +63,7 @@ export interface IRoom extends IRocketChatRecord {
 	teamDefault?: boolean;
 	open?: boolean;
 
-	autoTranslateLanguage: string;
+	autoTranslateLanguage?: string;
 	autoTranslate?: boolean;
 	unread?: number;
 	alert?: boolean;
@@ -79,8 +86,18 @@ export interface IRoom extends IRocketChatRecord {
 
 	/* @deprecated */
 	federated?: boolean;
+	/* @deprecated */
+	customFields?: Record<string, any>;
 
 	channel?: { _id: string };
+}
+
+export const isRoomWithJoinCode = (room: Partial<IRoom>): room is IRoomWithJoinCode =>
+	'joinCodeRequired' in room && (room as any).joinCodeRequired === true;
+
+export interface IRoomWithJoinCode extends IRoom {
+	joinCodeRequired: true;
+	joinCode: string;
 }
 
 export interface IRoomFederated extends IRoom {
@@ -127,15 +144,11 @@ export enum OmnichannelSourceType {
 
 export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featured' | 'broadcast' | ''> {
 	t: 'l' | 'v';
-	v: {
-		_id?: string;
-		token?: string;
-		status: 'online' | 'busy' | 'away' | 'offline';
-	};
+	v: IVisitor;
 	email?: {
 		// Data used when the room is created from an email, via email Integration.
 		inbox: string;
-		thread: string;
+		thread: string[];
 		replyTo: string;
 		subject: string;
 	};
@@ -154,7 +167,10 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 		// The default sidebar icon
 		defaultIcon?: string;
 	};
+
+	// Note: this field is used only for email transcripts. For Pdf transcripts, we have a separate field.
 	transcriptRequest?: IRequestTranscript;
+
 	servedBy?: {
 		_id: string;
 		ts: Date;
@@ -165,15 +181,18 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 
 	lastMessage?: IMessage & { token?: string };
 
-	tags?: any;
+	tags?: string[];
 	closedAt?: Date;
-	metrics?: any;
+	metrics?: {
+		serviceTimeDuration?: number;
+	};
 	waitingResponse: any;
 	responseBy: any;
-	priorityId: any;
+
 	livechatData: any;
 	queuedAt?: Date;
-	status?: 'queued'; // TODO: missing types for this
+
+	status?: 'queued' | 'taken' | 'ready'; // TODO: missing types for this
 
 	ts: Date;
 	label?: string;
@@ -185,10 +204,55 @@ export interface IOmnichannelGenericRoom extends Omit<IRoom, 'default' | 'featur
 		_id: string;
 		username: IUser['username'];
 	};
+	closingMessage?: IMessage;
+
+	departmentAncestors?: string[];
 }
 
 export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	t: 'l';
+	omnichannel?: {
+		predictedVisitorAbandonmentAt: Date;
+	};
+	// sms field is used when the room is created from one of the internal SMS integrations (e.g. Twilio)
+	sms?: {
+		from: string;
+	};
+
+	// Following props are used for priorities feature
+	priorityId?: string;
+	priorityWeight: ILivechatPriority['sortItem']; // It should always have a default value for sorting mechanism to work
+
+	// Following props are used for SLA feature
+	slaId?: string;
+	estimatedWaitingTimeQueue: IOmnichannelServiceLevelAgreements['dueTimeInMinutes']; // It should always have a default value for sorting mechanism to work
+
+	// Signals if the room already has a pdf transcript requested
+	// This prevents the user from requesting a transcript multiple times
+	pdfTranscriptRequested?: boolean;
+	// The ID of the pdf file generated for the transcript
+	// This will help if we want to have this file shown on other places of the UI
+	pdfTranscriptFileId?: string;
+
+	metrics?: {
+		serviceTimeDuration?: number;
+		chatDuration?: number;
+		v?: {
+			lq: Date;
+		};
+		servedBy?: {
+			lr: Date;
+		};
+		response?: {
+			tt: number;
+			total: number;
+		};
+	};
+
+	// Both fields are being used for the auto transfer feature for unanswered chats
+	// which is controlled by Livechat_auto_transfer_chat_timeout setting
+	autoTransferredAt?: Date;
+	autoTransferOngoing?: boolean;
 }
 
 export interface IVoipRoom extends IOmnichannelGenericRoom {
@@ -206,12 +270,7 @@ export interface IVoipRoom extends IOmnichannelGenericRoom {
 	queue: string;
 	// The ID assigned to the call (opaque ID)
 	callUniqueId?: string;
-	v: {
-		_id?: string;
-		token?: string;
-		status: 'online' | 'busy' | 'away' | 'offline';
-		phone?: string | null;
-	};
+	v: IVisitor;
 	// Outbound means the call was initiated from Rocket.Chat and vise versa
 	direction: 'inbound' | 'outbound';
 }
@@ -226,10 +285,15 @@ export interface IOmnichannelRoomFromAppSource extends IOmnichannelRoom {
 	};
 }
 
-export type IRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedBy' | 'closedAt' | 'tags'> &
+export type IVoipRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedBy' | 'closedAt' | 'tags'> &
 	Pick<IVoipRoom, 'callDuration' | 'callTotalHoldTime'> & {
 		serviceTimeDuration?: number;
 	};
+
+export type IOmnichannelRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedBy' | 'closedAt' | 'tags'> & {
+	serviceTimeDuration?: number;
+	chatDuration: number;
+};
 
 export const isOmnichannelRoom = (room: IRoom): room is IOmnichannelRoom & IRoom => room.t === 'l';
 
@@ -259,6 +323,7 @@ export type RoomAdminFieldsType =
 	| 'default'
 	| 'favorite'
 	| 'featured'
+	| 'reactWhenReadOnly'
 	| 'topic'
 	| 'msgs'
 	| 'archived'
@@ -272,9 +337,11 @@ export type RoomAdminFieldsType =
 
 export interface IRoomWithRetentionPolicy extends IRoom {
 	retention: {
+		enabled?: boolean;
 		maxAge: number;
 		filesOnly: boolean;
 		excludePinned: boolean;
 		ignoreThreads: boolean;
+		overrideGlobal?: boolean;
 	};
 }

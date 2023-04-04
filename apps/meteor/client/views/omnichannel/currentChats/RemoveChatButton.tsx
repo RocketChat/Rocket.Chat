@@ -1,23 +1,21 @@
-import { Table, IconButton } from '@rocket.chat/fuselage';
+import { IconButton } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import { useSetModal, useToastMessageDispatch, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC } from 'react';
+import { useSetModal, useToastMessageDispatch, useTranslation } from '@rocket.chat/ui-contexts';
+import type { FC } from 'react';
+import React from 'react';
 
 import GenericModal from '../../../components/GenericModal';
+import { GenericTableCell } from '../../../components/GenericTable';
+import { useRemoveCurrentChatMutation } from './hooks/useRemoveCurrentChatMutation';
 
-const RemoveChatButton: FC<{ _id: string; reload: () => void }> = ({ _id, reload }) => {
-	const removeChat = useMethod('livechat:removeRoom');
+const RemoveChatButton: FC<{ _id: string }> = ({ _id }) => {
+	const removeCurrentChatMutation = useRemoveCurrentChatMutation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
 	const handleRemoveClick = useMutableCallback(async () => {
-		try {
-			await removeChat(_id);
-		} catch (error) {
-			console.log(error);
-		}
-		reload();
+		removeCurrentChatMutation.mutate(_id);
 	});
 
 	const handleDelete = useMutableCallback((e) => {
@@ -27,7 +25,7 @@ const RemoveChatButton: FC<{ _id: string; reload: () => void }> = ({ _id, reload
 				await handleRemoveClick();
 				dispatchToastMessage({ type: 'success', message: t('Chat_removed') });
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: String(error) });
+				dispatchToastMessage({ type: 'error', message: error });
 			}
 			setModal(null);
 		};
@@ -42,9 +40,9 @@ const RemoveChatButton: FC<{ _id: string; reload: () => void }> = ({ _id, reload
 	});
 
 	return (
-		<Table.Cell fontScale='p2' color='hint' withTruncatedText>
-			<IconButton small icon='trash' title={t('Remove')} onClick={handleDelete} />
-		</Table.Cell>
+		<GenericTableCell maxHeight='x36' fontScale='p2' color='hint' withTruncatedText data-qa='current-chats-cell-delete'>
+			<IconButton small icon='trash' title={t('Remove')} disabled={removeCurrentChatMutation.isLoading} onClick={handleDelete} />
+		</GenericTableCell>
 	);
 };
 

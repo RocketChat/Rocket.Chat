@@ -1,9 +1,11 @@
 import { UserStatus, isSettingColor } from '@rocket.chat/core-typings';
+import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
+import type { IUser, IRoom, VideoConference, ISetting } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
+import type { IServiceClass } from '@rocket.chat/core-services';
+import { EnterpriseSettings } from '@rocket.chat/core-services';
 
-import { IServiceClass } from '../../sdk/types/ServiceClass';
-import { NotificationsModule } from '../notifications/notifications.module';
-import { EnterpriseSettings } from '../../sdk/index';
+import type { NotificationsModule } from '../notifications/notifications.module';
 import { settings } from '../../../app/settings/server/cached';
 
 const isMessageParserDisabled = process.env.DISABLE_MESSAGE_PARSER === 'true';
@@ -15,7 +17,7 @@ const STATUS_MAP: { [k: string]: number } = {
 	[UserStatus.BUSY]: 3,
 };
 
-export const minimongoChangeMap: Record<string, string> = {
+const minimongoChangeMap: Record<string, string> = {
 	inserted: 'added',
 	updated: 'changed',
 	removed: 'removed',
@@ -37,20 +39,30 @@ export class ListenersModule {
 
 		service.onEvent('notify.ephemeralMessage', (uid, rid, message) => {
 			if (!isMessageParserDisabled && message.msg) {
+				const customDomains = settings.get<string>('Message_CustomDomain_AutoLink')
+					? settings
+							.get<string>('Message_CustomDomain_AutoLink')
+							.split(',')
+							.map((domain) => domain.trim())
+					: [];
+
 				message.md = parse(message.msg, {
 					colors: settings.get('HexColorPreview_Enabled'),
 					emoticons: true,
-					katex: {
-						dollarSyntax: settings.get('Katex_Dollar_Syntax'),
-						parenthesisSyntax: settings.get('Katex_Parenthesis_Syntax'),
-					},
+					customDomains,
+					...(settings.get('Katex_Enabled') && {
+						katex: {
+							dollarSyntax: settings.get('Katex_Dollar_Syntax'),
+							parenthesisSyntax: settings.get('Katex_Parenthesis_Syntax'),
+						},
+					}),
 				});
 			}
 
 			notifications.notifyUserInThisInstance(uid, 'message', {
 				groupable: false,
 				...message,
-				_id: String(Date.now()),
+				_id: message._id || String(Date.now()),
 				rid,
 				ts: new Date(),
 			});
@@ -94,6 +106,25 @@ export class ListenersModule {
 			notifications.notifyLoggedInThisInstance('roles-change', update);
 		});
 
+		service.onEvent(
+			'user.video-conference',
+			({
+				userId,
+				action,
+				params,
+			}: {
+				userId: string;
+				action: string;
+				params: {
+					callId: VideoConference['_id'];
+					uid: IUser['_id'];
+					rid: IRoom['_id'];
+				};
+			}) => {
+				notifications.notifyUserInThisInstance(userId, 'video-conference', { action, params });
+			},
+		);
+
 		service.onEvent('presence.status', ({ user }) => {
 			const { _id, username, name, status, statusText, roles } = user;
 			if (!status) {
@@ -126,6 +157,12 @@ export class ListenersModule {
 			);
 
 			notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
+		});
+
+		service.onEvent('message.update', ({ message }) => {
+			if (message.rid) {
+				notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
+			}
 		});
 
 		service.onEvent('watch.subscriptions', ({ clientAction, subscription }) => {
@@ -169,6 +206,17 @@ export class ListenersModule {
 				});
 			}
 
+			// Don't do notifications for updating inquiries when the only thing changing is the queue metadata
+			if (
+				clientAction === 'updated' &&
+				diff?.hasOwnProperty('lockedAt') &&
+				diff?.hasOwnProperty('locked') &&
+				diff?.hasOwnProperty('_updatedAt') &&
+				Object.keys(diff).length === 3
+			) {
+				return;
+			}
+
 			notifications.streamLivechatQueueData.emitWithoutBroadcast(inquiry._id, {
 				...inquiry,
 				clientAction,
@@ -190,6 +238,7 @@ export class ListenersModule {
 
 		service.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
 			if (clientAction !== 'removed') {
+				// TODO check if setting is EE before calling this
 				const result = await EnterpriseSettings.changeSettingValue(setting);
 				if (result !== undefined && !(result instanceof Error)) {
 					setting.value = result;
@@ -333,6 +382,52 @@ export class ListenersModule {
 
 		service.onEvent('connector.statuschanged', (enabled): void => {
 			notifications.notifyLoggedInThisInstance('voip.statuschanged', enabled);
+		});
+		service.onEvent('omnichannel.room', (roomId, data): void => {
+			notifications.streamLivechatRoom.emitWithoutBroadcast(roomId, data);
+		});
+		service.onEvent('watch.priorities', async ({ clientAction, diff, id }): Promise<void> => {
+			notifications.notifyLoggedInThisInstance('omnichannel.priority-changed', { id, clientAction, name: diff?.name });
+		});
+
+		service.onEvent('apps.added', (appId: string) => {
+			notifications.streamApps.emitWithoutBroadcast('app/added', appId);
+		});
+
+		service.onEvent('apps.removed', (appId: string) => {
+			notifications.streamApps.emitWithoutBroadcast('app/removed', appId);
+		});
+
+		service.onEvent('apps.updated', (appId: string) => {
+			notifications.streamApps.emitWithoutBroadcast('app/updated', appId);
+		});
+
+		service.onEvent('apps.statusUpdate', (appId: string, status: AppStatus) => {
+			notifications.streamApps.emitWithoutBroadcast('app/statusUpdate', { appId, status });
+		});
+
+		service.onEvent('apps.settingUpdated', (appId: string, setting: ISetting) => {
+			notifications.streamApps.emitWithoutBroadcast('app/settingUpdated', { appId, setting });
+		});
+
+		service.onEvent('command.added', (command: string) => {
+			notifications.streamApps.emitWithoutBroadcast('command/added', command);
+		});
+
+		service.onEvent('command.disabled', (command: string) => {
+			notifications.streamApps.emitWithoutBroadcast('command/disabled', command);
+		});
+
+		service.onEvent('command.updated', (command: string) => {
+			notifications.streamApps.emitWithoutBroadcast('command/updated', command);
+		});
+
+		service.onEvent('command.removed', (command: string) => {
+			notifications.streamApps.emitWithoutBroadcast('command/removed', command);
+		});
+
+		service.onEvent('actions.changed', () => {
+			notifications.streamApps.emitWithoutBroadcast('actions/changed');
 		});
 	}
 }

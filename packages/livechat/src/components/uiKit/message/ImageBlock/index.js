@@ -7,11 +7,7 @@ import styles from './styles.scss';
 const MAX_SIZE = 360;
 
 const ImageBlock = ({ appId, blockId, title, imageUrl, altText, parser }) => {
-	const [{
-		loading,
-		naturalWidth,
-		naturalHeight,
-	}, updateImageState] = useState(() => ({
+	const [{ loading, naturalWidth, naturalHeight }, updateImageState] = useState(() => ({
 		loading: true,
 		naturalWidth: MAX_SIZE,
 		naturalHeight: MAX_SIZE,
@@ -40,44 +36,47 @@ const ImageBlock = ({ appId, blockId, title, imageUrl, altText, parser }) => {
 		};
 	}, [imageUrl]);
 
-	const contentStyle = useMemo(() => ({
-		maxWidth: Math.min(MAX_SIZE, naturalWidth / naturalHeight * MAX_SIZE),
-	}), [naturalHeight, naturalWidth]);
+	const contentStyle = useMemo(
+		() => ({
+			maxWidth: Math.min(MAX_SIZE, (naturalWidth / naturalHeight) * MAX_SIZE),
+		}),
+		[naturalHeight, naturalWidth],
+	);
 
-	const wrapperStyle = useMemo(() => ({
-		paddingBottom: `${ naturalHeight / naturalWidth * 100 }%`,
-	}), [naturalHeight, naturalWidth]);
+	const wrapperStyle = useMemo(
+		() => ({
+			paddingBottom: `${(naturalHeight / naturalWidth) * 100}%`,
+		}),
+		[naturalHeight, naturalWidth],
+	);
 
-	const linkStyle = useMemo(() => ({
-		backgroundImage: `url(${ imageUrl })`,
-	}), [imageUrl]);
+	const linkStyle = useMemo(
+		() => ({
+			backgroundImage: `url(${imageUrl})`,
+		}),
+		[imageUrl],
+	);
 
-	return <Block appId={appId} blockId={blockId}>
-		<div className={createClassName(styles, 'uikit-image-block')}>
-			{title && <h3 className={createClassName(styles, 'uikit-image-block__title')}>
-				{parser.text(title)}
-			</h3>}
-			<div
-				className={createClassName(styles, 'uikit-image-block__content', { loading })}
-				style={contentStyle}
-			>
-				<div
-					className={createClassName(styles, 'uikit-image-block__wrapper')}
-					style={wrapperStyle}
-				>
-					<a
-						children={imageUrl}
-						className={createClassName(styles, 'uikit-image-block__link')}
-						href={imageUrl}
-						rel='noopener noreferrer'
-						style={linkStyle}
-						target='_blank'
-						title={altText}
-					/>
+	return (
+		<Block appId={appId} blockId={blockId}>
+			<div className={createClassName(styles, 'uikit-image-block')}>
+				{title && <h3 className={createClassName(styles, 'uikit-image-block__title')}>{parser.text(title)}</h3>}
+				<div className={createClassName(styles, 'uikit-image-block__content', { loading })} style={contentStyle}>
+					<div className={createClassName(styles, 'uikit-image-block__wrapper')} style={wrapperStyle}>
+						<a
+							children={imageUrl}
+							className={createClassName(styles, 'uikit-image-block__link')}
+							href={imageUrl}
+							rel='noopener noreferrer'
+							style={linkStyle}
+							target='_blank'
+							title={altText}
+						/>
+					</div>
 				</div>
 			</div>
-		</div>
-	</Block>;
+		</Block>
+	);
 };
 
 export default memo(ImageBlock);

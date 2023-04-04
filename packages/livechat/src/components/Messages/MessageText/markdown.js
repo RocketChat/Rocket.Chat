@@ -1,6 +1,5 @@
 import MarkdownIt from 'markdown-it';
 
-
 const md = new MarkdownIt({
 	html: true,
 	breaks: true,
@@ -50,7 +49,7 @@ md.use((md) => {
 			return false;
 		}
 
-		if (marker !== 0x7E/* ~ */) {
+		if (marker !== 0x7e /* ~ */) {
 			return false;
 		}
 

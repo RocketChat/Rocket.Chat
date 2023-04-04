@@ -20,13 +20,17 @@ const exitIfNotBypassed = (ignore, errorCode = 1) => {
 	process.exit(errorCode);
 };
 
-Meteor.startup(function () {
-	const { oplogEnabled, mongoVersion, mongoStorageEngine } = getMongoInfo();
+const skipMongoDbDeprecationCheck = ['yes', 'true'].includes(String(process.env.SKIP_MONGODEPRECATION_CHECK).toLowerCase());
+
+Meteor.startup(async function () {
+	const { oplogEnabled, mongoVersion, mongoStorageEngine } = await getMongoInfo();
 
 	const desiredNodeVersion = semver.clean(fs.readFileSync(path.join(process.cwd(), '../../.node_version.txt')).toString());
 	const desiredNodeVersionMajor = String(semver.parse(desiredNodeVersion).major);
 
 	return Meteor.setTimeout(function () {
+		const replicaSet = isRunningMs() ? 'Not required (running micro services)' : `${oplogEnabled ? 'Enabled' : 'Disabled'}`;
+
 		let msg = [
 			`Rocket.Chat Version: ${Info.version}`,
 			`     NodeJS Version: ${process.versions.node} - ${process.arch}`,
@@ -35,7 +39,7 @@ Meteor.startup(function () {
 			`           Platform: ${process.platform}`,
 			`       Process Port: ${process.env.PORT}`,
 			`           Site URL: ${settings.get('Site_Url')}`,
-			`   ReplicaSet OpLog: ${oplogEnabled ? 'Enabled' : 'Disabled'}`,
+			`   ReplicaSet OpLog: ${replicaSet}`,
 		];
 
 		if (Info.commit && Info.commit.hash) {
@@ -72,7 +76,7 @@ Meteor.startup(function () {
 			exitIfNotBypassed(process.env.BYPASS_NODEJS_VALIDATION);
 		}
 
-		if (!semver.satisfies(semver.coerce(mongoVersion), '>=4.2.0')) {
+		if (!semver.satisfies(semver.coerce(mongoVersion), '>=4.4.0')) {
 			msg += ['', '', 'YOUR CURRENT MONGODB VERSION IS NOT SUPPORTED,', 'PLEASE UPGRADE TO VERSION 4.4 OR LATER'].join('\n');
 			showErrorBox('SERVER ERROR', msg);
 
@@ -82,11 +86,11 @@ Meteor.startup(function () {
 		showSuccessBox('SERVER RUNNING', msg);
 
 		// Deprecation
-		if (!semver.satisfies(semver.coerce(mongoVersion), '>=4.4.0')) {
+		if (!skipMongoDbDeprecationCheck && !semver.satisfies(semver.coerce(mongoVersion), '>=5.0.0')) {
 			msg = [
 				`YOUR CURRENT MONGODB VERSION (${mongoVersion}) IS DEPRECATED.`,
-				'IT WILL NOT BE SUPPORTED ON ROCKET.CHAT VERSION 6.0.0 AND GREATER,',
-				'PLEASE UPGRADE MONGODB TO VERSION 4.4 OR GREATER',
+				'IT WILL NOT BE SUPPORTED ON ROCKET.CHAT VERSION 7.0.0 AND GREATER,',
+				'PLEASE UPGRADE MONGODB TO VERSION 5.0 OR GREATER',
 			].join('\n');
 			showWarningBox('DEPRECATION', msg);
 
@@ -97,7 +101,7 @@ Meteor.startup(function () {
 
 			if (!Users.bannerExistsById(id)) {
 				sendMessagesToAdmins({
-					msgs: ({ adminUser }) => [
+					msgs: async ({ adminUser }) => [
 						{
 							msg: `*${TAPi18n.__(title, adminUser.language)}*\n${TAPi18n.__(text, mongoVersion, adminUser.language)}\n${link}`,
 						},

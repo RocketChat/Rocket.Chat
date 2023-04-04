@@ -1,14 +1,17 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import type { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 import type { IRocketChatAssets } from '@rocket.chat/core-typings';
 
 export type AssetsUnsetAssetProps = { assetName: keyof IRocketChatAssets; refreshAllClients?: boolean };
 
+export type AssetsSetAssetProps = { asset: string | ArrayBuffer; assetName: keyof IRocketChatAssets; refreshAllClients?: boolean };
+
 export type AssetsEndpoints = {
-	'assets.setAsset': {
-		POST: (params: AssetsUnsetAssetProps) => void;
+	'/v1/assets.setAsset': {
+		POST: (params: AssetsSetAssetProps) => void;
 	};
 
-	'assets.unsetAsset': {
+	'/v1/assets.unsetAsset': {
 		POST: (params: AssetsUnsetAssetProps) => void;
 	};
 };
@@ -25,4 +28,17 @@ const assetsUnsetAssetPropsSchema: JSONSchemaType<AssetsUnsetAssetProps> = {
 	additionalProperties: false,
 };
 
+const assetsSetAssetPropsSchema: JSONSchemaType<AssetsSetAssetProps> = {
+	type: 'object',
+	properties: {
+		assetName: { type: 'string' },
+		asset: { type: 'string' },
+		refreshAllClients: { type: 'boolean', nullable: true },
+	},
+	required: ['assetName'],
+	additionalProperties: false,
+};
+
 export const isAssetsUnsetAssetProps = ajv.compile(assetsUnsetAssetPropsSchema);
+
+export const isAssetsSetAssetProps = ajv.compile(assetsSetAssetPropsSchema);

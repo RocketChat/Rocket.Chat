@@ -1,4 +1,4 @@
-import { BLOCK_CONTEXT } from '@rocket.chat/ui-kit';
+import { BlockContext } from '@rocket.chat/ui-kit';
 import { useState, useMemo, useCallback } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 
@@ -17,23 +17,30 @@ const ActionsBlock = ({ appId, blockId, elements, parser, t }) => {
 		setCollapsed(false);
 	}, []);
 
-	return <Block appId={appId} blockId={blockId}>
-		<div className={createClassName(styles, 'uikit-actions-block')}>
-			{renderableElements.map((element, key) => {
-				const renderedElement = parser.renderActions(element, BLOCK_CONTEXT.ACTION);
-				if (!renderedElement) {
-					return null;
-				}
+	return (
+		<Block appId={appId} blockId={blockId}>
+			<div className={createClassName(styles, 'uikit-actions-block')}>
+				{renderableElements.map((element, key) => {
+					const renderedElement = parser.renderActions(element, BlockContext.ACTION);
 
-				return <div key={key} className={createClassName(styles, 'uikit-actions-block__item')}>
-					{renderedElement}
-				</div>;
-			})}
-			{isMoreButtonVisible && <Button outline secondary small onClick={handleMoreButtonClick}>
-				{t('hiddenelementscount_more', { hiddenElementsCount })}
-			</Button>}
-		</div>
-	</Block>;
+					if (!renderedElement) {
+						return null;
+					}
+
+					return (
+						<div key={key} className={createClassName(styles, 'uikit-actions-block__item')}>
+							{renderedElement}
+						</div>
+					);
+				})}
+				{isMoreButtonVisible && (
+					<Button outline secondary small onClick={handleMoreButtonClick}>
+						{t('hiddenelementscount_more', { hiddenElementsCount })}
+					</Button>
+				)}
+			</div>
+		</Block>
+	);
 };
 
 export default withTranslation()(ActionsBlock);

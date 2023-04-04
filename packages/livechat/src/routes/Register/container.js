@@ -66,9 +66,7 @@ export class RegisterContainer extends Component {
 		}
 	}
 
-	render = (props) => (
-		<Register {...props} onSubmit={this.handleSubmit} departmentDefault={this.getDepartmentDefault()} />
-	);
+	render = (props) => <Register {...props} onSubmit={this.handleSubmit} departmentDefault={this.getDepartmentDefault()} />;
 }
 
 export const RegisterConnector = ({ ref, ...props }) => (
@@ -76,31 +74,14 @@ export const RegisterConnector = ({ ref, ...props }) => (
 		{({
 			config: {
 				departments = {},
-				messages: {
-					registrationFormMessage: message,
-				} = {},
-				settings: {
-					nameFieldRegistrationForm: hasNameField,
-					emailFieldRegistrationForm: hasEmailField,
-				} = {},
-				theme: {
-					title,
-					color,
-				} = {},
+				messages: { registrationFormMessage: message } = {},
+				settings: { nameFieldRegistrationForm: hasNameField, emailFieldRegistrationForm: hasEmailField } = {},
+				theme: { title, color } = {},
 				customFields = [],
 			} = {},
 			iframe: {
-				guest: {
-					department: guestDepartment,
-					name: guestName,
-					email: guestEmail,
-				} = {},
-				theme: {
-					color: customColor,
-					fontColor: customFontColor,
-					iconColor: customIconColor,
-					title: customTitle,
-				} = {},
+				guest: { department: guestDepartment, name: guestName, email: guestEmail } = {},
+				theme: { color: customColor, fontColor: customFontColor, iconColor: customIconColor, title: customTitle } = {},
 			} = {},
 			loading = false,
 			token,
@@ -134,6 +115,5 @@ export const RegisterConnector = ({ ref, ...props }) => (
 		)}
 	</Consumer>
 );
-
 
 export default RegisterConnector;

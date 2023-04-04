@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import s from 'underscore.string';
+import { Subscriptions, Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
-import { Users, Subscriptions } from '../../../models/server';
+import { trim } from '../../../../lib/utils/stringUtils';
 
-export const saveCustomFieldsWithoutValidation = function (userId, formData) {
-	if (s.trim(settings.get('Accounts_CustomFields')) !== '') {
+export const saveCustomFieldsWithoutValidation = async function (userId, formData) {
+	if (trim(settings.get('Accounts_CustomFields')) !== '') {
 		let customFieldsMeta;
 		try {
 			customFieldsMeta = JSON.parse(settings.get('Accounts_CustomFields'));
@@ -17,12 +17,12 @@ export const saveCustomFieldsWithoutValidation = function (userId, formData) {
 		Object.keys(customFieldsMeta).forEach((key) => {
 			customFields[key] = formData[key];
 		});
-		Users.setCustomFields(userId, customFields);
+		await Users.setCustomFields(userId, customFields);
 
 		// Update customFields of all Direct Messages' Rooms for userId
-		Subscriptions.setCustomFieldsDirectMessagesByUserId(userId, customFields);
+		await Subscriptions.setCustomFieldsDirectMessagesByUserId(userId, customFields);
 
-		Object.keys(customFields).forEach((fieldName) => {
+		for await (const fieldName of Object.keys(customFields)) {
 			if (!customFieldsMeta[fieldName].modifyRecordField) {
 				return;
 			}
@@ -37,7 +37,7 @@ export const saveCustomFieldsWithoutValidation = function (userId, formData) {
 				update.$set[modifyRecordField.field] = customFields[fieldName];
 			}
 
-			Users.update(userId, update);
-		});
+			await Users.updateOne(userId, update);
+		}
 	}
 };

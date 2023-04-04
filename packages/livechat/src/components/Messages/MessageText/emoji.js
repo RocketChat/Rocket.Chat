@@ -9,9 +9,9 @@ const emojiRanges = [
 ].join('|');
 
 // this func is called for each emoji, input-> emoji shortname, o/p-> emoji icon in html format
-const transformEmojisToNormalSize = (emoji) => `<span>${ emoji }</span>`;
+const transformEmojisToNormalSize = (emoji) => `<span>${emoji}</span>`;
 
-const transformEmojisToLargeSize = (emoji) => `<span style="font-size:2rem">${ emoji }</span>`;
+const transformEmojisToLargeSize = (emoji) => `<span style="font-size:2rem">${emoji}</span>`;
 
 const removeSpaces = (str) => str && str.replace(/\s/g, '');
 

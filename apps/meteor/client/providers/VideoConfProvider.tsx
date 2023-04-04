@@ -1,32 +1,25 @@
-import { IRoom } from '@rocket.chat/core-typings';
-import { useSetModal } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useState, ReactNode, useMemo, useEffect } from 'react';
-import { Unsubscribe } from 'use-subscription';
+import type { IRoom } from '@rocket.chat/core-typings';
+import type { ReactElement, ReactNode } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import type { Unsubscribe } from 'use-subscription';
 
-import { VideoConfContext, VideoConfPopupPayload } from '../contexts/VideoConfContext';
-import { VideoConfManager, DirectCallParams, ProviderCapabilities, CallPreferences } from '../lib/VideoConfManager';
-import VideoConfBlockModal from '../views/room/contextualBar/VideoConference/VideoConfBlockModal';
-import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoConfPopups/VideoConfPopups';
+import type { VideoConfPopupPayload } from '../contexts/VideoConfContext';
+import { VideoConfContext } from '../contexts/VideoConfContext';
+import type { DirectCallParams, ProviderCapabilities, CallPreferences } from '../lib/VideoConfManager';
+import { VideoConfManager } from '../lib/VideoConfManager';
+import VideoConfPopups from '../views/room/contextualBar/VideoConference/VideoConfPopups';
+import { useVideoOpenCall } from '../views/room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
 
 const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactElement => {
 	const [outgoing, setOutgoing] = useState<VideoConfPopupPayload | undefined>();
-	const setModal = useSetModal();
+	const handleOpenCall = useVideoOpenCall();
 
 	useEffect(
 		() =>
 			VideoConfManager.on('call/join', (props) => {
-				const open = (): void => {
-					const popup = window.open(props.url);
-
-					if (popup !== null) {
-						return;
-					}
-
-					setModal(<VideoConfBlockModal onClose={(): void => setModal(null)} onConfirm={open} />);
-				};
-				open();
+				handleOpenCall(props.url);
 			}),
-		[setModal],
+		[handleOpenCall],
 	);
 
 	useEffect(() => {
@@ -36,6 +29,7 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 
 	const contextValue = useMemo(
 		() => ({
+			manager: VideoConfManager,
 			dispatchOutgoing: (option: Omit<VideoConfPopupPayload, 'id'>): void => setOutgoing({ ...option, id: option.rid }),
 			dismissOutgoing: (): void => setOutgoing(undefined),
 			startCall: (rid: IRoom['_id'], confTitle?: string): Promise<void> => VideoConfManager.startCall(rid, confTitle),

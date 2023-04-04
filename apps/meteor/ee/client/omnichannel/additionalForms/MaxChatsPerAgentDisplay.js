@@ -1,7 +1,7 @@
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import UserInfo from '../../../../client/views/room/contextualBar/UserInfo';
+import UserInfo from '../../../../client/components/UserInfo';
 
 const MaxChatsPerAgentDisplay = ({ data: { livechat: { maxNumberSimultaneousChat = 0 } = {} } = {} }) => {
 	const t = useTranslation();

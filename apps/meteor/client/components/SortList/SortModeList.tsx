@@ -1,51 +1,44 @@
 import { RadioButton, OptionTitle } from '@rocket.chat/fuselage';
-import { useUserPreference, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useCallback } from 'react';
+import { useUserPreference, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React, { useCallback } from 'react';
 
+import { useOmnichannelEnterpriseEnabled } from '../../hooks/omnichannel/useOmnichannelEnterpriseEnabled';
+import { OmnichannelSortingDisclaimer } from '../Omnichannel/OmnichannelSortingDisclaimer';
 import ListItem from '../Sidebar/ListItem';
-
-const style = {
-	textTransform: 'uppercase',
-};
-
-const checkBoxStyle = {
-	paddingLeft: '24px',
-	paddingInlineStart: '24px',
-};
 
 function SortModeList(): ReactElement {
 	const t = useTranslation();
-	const saveUserPreferences = useMethod('saveUserPreferences');
+	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
 	const sidebarSortBy = useUserPreference<'activity' | 'alphabetical'>('sidebarSortby', 'activity');
+	const isOmnichannelEnabled = useOmnichannelEnterpriseEnabled();
 
 	const useHandleChange = (value: 'alphabetical' | 'activity'): (() => void) =>
-		useCallback(() => saveUserPreferences({ sidebarSortby: value }), [value]);
+		useCallback(() => saveUserPreferences({ data: { sidebarSortby: value } }), [value]);
 
 	const setToAlphabetical = useHandleChange('alphabetical');
 	const setToActivity = useHandleChange('activity');
 
 	return (
 		<>
-			<OptionTitle {...({ style } as any)}>{t('Sort_By')}</OptionTitle>
-			<ul className='rc-popover__list'>
+			<OptionTitle>{t('Sort_By')}</OptionTitle>
+			<ul>
 				<ListItem
-					icon={'clock'}
+					is='label'
+					role='listitem'
+					icon='clock'
 					text={t('Activity')}
-					input={<RadioButton style={checkBoxStyle} name='sidebarSortby' onChange={setToActivity} checked={sidebarSortBy === 'activity'} />}
+					input={<RadioButton pis='x24' onChange={setToActivity} checked={sidebarSortBy === 'activity'} />}
 				/>
 				<ListItem
-					icon={'sort-az'}
+					is='label'
+					role='listitem'
+					icon='sort-az'
 					text={t('Name')}
-					input={
-						<RadioButton
-							style={checkBoxStyle}
-							name='sidebarSortby'
-							onChange={setToAlphabetical}
-							checked={sidebarSortBy === 'alphabetical'}
-						/>
-					}
+					input={<RadioButton pis='x24' name='sidebarSortby' onChange={setToAlphabetical} checked={sidebarSortBy === 'alphabetical'} />}
 				/>
 			</ul>
+			{isOmnichannelEnabled && <OmnichannelSortingDisclaimer id='sortByList' />}
 		</>
 	);
 }

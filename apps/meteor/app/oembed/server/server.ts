@@ -7,19 +7,11 @@ import iconv from 'iconv-lite';
 import ipRangeCheck from 'ip-range-check';
 import he from 'he';
 import jschardet from 'jschardet';
-import {
-	OEmbedUrlContentResult,
-	OEmbedUrlWithMetadata,
-	IMessage,
-	MessageAttachment,
-	isOEmbedUrlContentResult,
-	isOEmbedUrlWithMetadata,
-	OEmbedMeta,
-} from '@rocket.chat/core-typings';
-import { OEmbedCache } from '@rocket.chat/models';
+import type { OEmbedUrlContentResult, OEmbedUrlWithMetadata, IMessage, MessageAttachment, OEmbedMeta } from '@rocket.chat/core-typings';
+import { isOEmbedUrlContentResult, isOEmbedUrlWithMetadata } from '@rocket.chat/core-typings';
+import { Messages, OEmbedCache } from '@rocket.chat/models';
 
 import { Logger } from '../../logger/server';
-import { Messages } from '../../models/server';
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
 import { isURL } from '../../../lib/utils/isURL';
@@ -175,8 +167,8 @@ const getUrlMeta = async function (
 	let content: OEmbedUrlContentResult | undefined;
 	try {
 		content = await getUrlContent(urlObj, 5);
-	} catch (e) {
-		log.error('Error fetching url content', e);
+	} catch (err) {
+		log.error({ msg: 'Error fetching url content', err });
 	}
 
 	if (!content) {
@@ -316,7 +308,7 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 				}
 				if (isOEmbedUrlWithMetadata(data) && data.meta != null) {
 					item.meta = getRelevantMetaTags(data.meta) || {};
-					if (item.meta && item.meta.oembedHtml) {
+					if (item.meta?.oembedHtml) {
 						item.meta.oembedHtml = insertMaxWidthInOembedHtml(item.meta.oembedHtml) || '';
 					}
 				}
@@ -331,10 +323,10 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 			}
 		}
 		if (attachments.length) {
-			Messages.setMessageAttachments(message._id, attachments);
+			await Messages.setMessageAttachments(message._id, attachments);
 		}
 		if (changed === true) {
-			Messages.setUrlsById(message._id, message.urls);
+			await Messages.setUrlsById(message._id, message.urls);
 		}
 	}
 	return message;
@@ -352,12 +344,7 @@ const OEmbed: {
 
 settings.watch('API_Embed', function (value) {
 	if (value) {
-		return callbacks.add(
-			'afterSaveMessage',
-			(message) => Promise.await(OEmbed.rocketUrlParser(message)),
-			callbacks.priority.LOW,
-			'API_Embed',
-		);
+		return callbacks.add('afterSaveMessage', (message) => OEmbed.rocketUrlParser(message), callbacks.priority.LOW, 'API_Embed');
 	}
 	return callbacks.remove('afterSaveMessage', 'API_Embed');
 });

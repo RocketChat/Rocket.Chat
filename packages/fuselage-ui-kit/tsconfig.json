@@ -1,0 +1,11 @@
+{
+	"extends": "../../tsconfig.base.client.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "allowJs": false,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+  },
+  "exclude": ["node_modules", "dist"]
+}

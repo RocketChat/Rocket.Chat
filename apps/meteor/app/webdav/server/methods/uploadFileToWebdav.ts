@@ -1,46 +1,49 @@
 import { Meteor } from 'meteor/meteor';
-import { WebdavAccounts } from '@rocket.chat/models';
+import { MeteorError } from '@rocket.chat/core-services';
+import type { IWebdavAccount } from '@rocket.chat/core-typings';
+import type { ServerMethods, TranslationKey } from '@rocket.chat/ui-contexts';
 
 import { settings } from '../../../settings/server';
 import { Logger } from '../../../logger/server';
-import { getWebdavCredentials } from './getWebdavCredentials';
-import { WebdavClientAdapter } from '../lib/webdavClientAdapter';
+import { uploadFileToWebdav } from '../lib/uploadFileToWebdav';
 
 const logger = new Logger('WebDAV_Upload');
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		uploadFileToWebdav(
+			accountId: IWebdavAccount['_id'],
+			fileData: string | Buffer | ArrayBuffer,
+			name: string,
+		): { success: boolean; message?: TranslationKey };
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async uploadFileToWebdav(accountId, fileData, name) {
 		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid User', {
+			throw new MeteorError('error-invalid-user', 'Invalid User', {
 				method: 'uploadFileToWebdav',
 			});
 		}
 
 		if (!settings.get('Webdav_Integration_Enabled')) {
-			throw new Meteor.Error('error-not-allowed', 'WebDAV Integration Not Allowed', {
+			throw new MeteorError('error-not-allowed', 'WebDAV Integration Not Allowed', {
 				method: 'uploadFileToWebdav',
 			});
 		}
-
-		const account = await WebdavAccounts.findOneById(accountId);
-		if (!account) {
-			throw new Meteor.Error('error-invalid-account', 'Invalid WebDAV Account', {
-				method: 'uploadFileToWebdav',
-			});
-		}
-
-		const uploadFolder = 'Rocket.Chat Uploads/';
-		const buffer = Buffer.from(fileData);
 
 		try {
-			const cred = getWebdavCredentials(account);
-			const client = new WebdavClientAdapter(account.serverURL, cred);
-			// eslint-disable-next-line @typescript-eslint/no-empty-function
-			await client.createDirectory(uploadFolder).catch(() => {});
-			await client.putFileContents(`${uploadFolder}/${name}`, buffer, { overwrite: false });
+			await uploadFileToWebdav(accountId, fileData instanceof ArrayBuffer ? Buffer.from(fileData) : fileData, name);
 			return { success: true };
 		} catch (error: any) {
-			// @ts-ignore
+			if (typeof error === 'object' && error instanceof Error && error.name === 'error-invalid-account') {
+				throw new MeteorError(error.name, 'Invalid WebDAV Account', {
+					method: 'uploadFileToWebdav',
+				});
+			}
+
 			logger.error(error);
 
 			if (error.response) {

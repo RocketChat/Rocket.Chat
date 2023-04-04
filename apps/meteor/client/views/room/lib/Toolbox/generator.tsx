@@ -1,4 +1,5 @@
-import { Emitter, EventHandlerOf } from '@rocket.chat/emitter';
+import type { EventHandlerOf } from '@rocket.chat/emitter';
+import { Emitter } from '@rocket.chat/emitter';
 
 export type Store<T> = Map<string, T>;
 
@@ -10,7 +11,7 @@ export const generator = function generator<T>(name?: string): {
 	store: Store<T>;
 	add: (id: string, action: T) => Store<T>;
 	remove: (id: string) => boolean;
-	listen: (handler: EventHandlerOf<Events<T>, 'change'>) => Function;
+	listen: (handler: EventHandlerOf<Events<T>, 'change'>) => () => void;
 	name: string | undefined;
 } {
 	const store: Store<T> = new Map();
@@ -28,7 +29,7 @@ export const generator = function generator<T>(name?: string): {
 		return result;
 	};
 
-	const listen = (handler: EventHandlerOf<Events<T>, 'change'>): Function => emitter.on('change', handler);
+	const listen = (handler: EventHandlerOf<Events<T>, 'change'>): (() => void) => emitter.on('change', handler);
 
 	return Object.freeze({
 		store,

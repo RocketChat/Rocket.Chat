@@ -5,9 +5,9 @@ import { settings, settingsRegistry } from '../../settings/server';
 import { config } from '../lib/config';
 import { AppleCustomOAuth } from './AppleCustomOAuth';
 
-export const AppleOAuth = new AppleCustomOAuth('apple', config);
+new AppleCustomOAuth('apple', config);
 
-settingsRegistry.addGroup('OAuth', function () {
+void settingsRegistry.addGroup('OAuth', function () {
 	this.section('Apple', function () {
 		this.add('Accounts_OAuth_Apple', false, { type: 'boolean', public: true });
 
@@ -32,6 +32,22 @@ settings.watchMultiple(
 			return ServiceConfiguration.configurations.remove({
 				service: 'apple',
 			});
+		}
+
+		// if everything is empty but Apple login is enabled, don't show the login button
+		if (!clientId && !serverSecret && !iss && !kid) {
+			ServiceConfiguration.configurations.upsert(
+				{
+					service: 'apple',
+				},
+				{
+					$set: {
+						showButton: false,
+						enabled: settings.get('Accounts_OAuth_Apple'),
+					},
+				},
+			);
+			return;
 		}
 
 		const HEADER = {
@@ -67,7 +83,6 @@ settings.watchMultiple(
 					enabled: settings.get('Accounts_OAuth_Apple'),
 					loginStyle: 'popup',
 					clientId,
-					buttonLabelText: 'Sign in with Apple',
 					buttonColor: '#000',
 					buttonLabelColor: '#FFF',
 				},

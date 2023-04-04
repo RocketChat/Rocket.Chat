@@ -4,16 +4,14 @@ import { Users, Analytics, Sessions } from '@rocket.chat/models';
 
 import { convertDateToInt, diffBetweenDaysInclusive, getTotalOfWeekItems, convertIntToDate } from './date';
 
-export const handleUserCreated = (user: IUser): IUser => {
+export const handleUserCreated = async (user: IUser): Promise<IUser> => {
 	if (user.roles?.includes('anonymous')) {
 		return user;
 	}
 
-	Promise.await(
-		Analytics.saveUserData({
-			date: convertDateToInt(user.createdAt),
-		}),
-	);
+	await Analytics.saveUserData({
+		date: convertDateToInt(user.createdAt),
+	});
 
 	return user;
 };
@@ -74,8 +72,8 @@ export const findWeeklyUsersRegisteredData = async ({
 		end: convertDateToInt(endOfLastWeek),
 		options: { count: daysBetweenDates, sort: { _id: -1 } },
 	}).toArray();
-	const yesterdayUsers = (currentPeriodUsers.find((item) => item._id === yesterday) || {}).users || 0;
-	const todayUsers = (currentPeriodUsers.find((item) => item._id === today) || {}).users || 0;
+	const yesterdayUsers = currentPeriodUsers.find((item) => item._id === yesterday)?.users || 0;
+	const todayUsers = currentPeriodUsers.find((item) => item._id === today)?.users || 0;
 	const currentPeriodTotalUsers = getTotalOfWeekItems(currentPeriodUsers, 'users');
 	const lastPeriodTotalUsers = getTotalOfWeekItems(lastPeriodUsers, 'users');
 	return {

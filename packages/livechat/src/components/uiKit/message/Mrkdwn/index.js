@@ -5,12 +5,13 @@ import { renderMarkdown } from '../../../Messages/MessageText/markdown';
 import { createClassName } from '../../../helpers';
 import styles from './styles.scss';
 
-const Mrkdwn = ({ text/* , verbatim = false */ }) =>
+const Mrkdwn = ({ text /* , verbatim = false */ }) => (
 	<div
 		className={createClassName(styles, 'uikit-mrkdwn')}
 		// eslint-disable-next-line react/no-danger
 		dangerouslySetInnerHTML={{ __html: renderEmojis(renderMarkdown(text)) }}
 		dir='auto'
-	/>;
+	/>
+);
 
 export default memo(Mrkdwn);

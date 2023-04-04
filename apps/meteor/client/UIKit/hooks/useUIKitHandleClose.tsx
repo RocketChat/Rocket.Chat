@@ -1,9 +1,9 @@
-import { UIKitInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
+import type { UIKitInteractionType } from '@rocket.chat/apps-engine/definition/uikit';
 /* eslint-disable new-cap */
 // import { Banner, Icon } from '@rocket.chat/fuselage';
 // import { kitContext, UiKitBanner as renderUiKitBannerBlocks } from '@rocket.chat/fuselage-ui-kit';
 // import React, { Context, FC, useMemo } from 'react';
-import { UiKitPayload } from '@rocket.chat/core-typings';
+import type { UiKitPayload } from '@rocket.chat/core-typings';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 // import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';

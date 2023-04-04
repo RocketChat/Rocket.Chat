@@ -26,22 +26,21 @@ class ChatFinished extends Component {
 		const defaultGreeting = t('thanks_for_talking_with_us');
 		const defaultMessage = t('if_you_have_any_other_questions_just_press_the_but');
 
-		return <Screen
-			color={color}
-			title={title}
-			className={createClassName(styles, 'chat-finished')}
-			{...props}
-		>
-			<Screen.Content>
-				<p className={createClassName(styles, 'chat-finished__greeting')}>{greeting || defaultGreeting}</p>
-				<p className={createClassName(styles, 'chat-finished__message')}>{message || defaultMessage}</p>
+		return (
+			<Screen color={color} title={title} className={createClassName(styles, 'chat-finished')} {...props}>
+				<Screen.Content>
+					<p className={createClassName(styles, 'chat-finished__greeting')}>{greeting || defaultGreeting}</p>
+					<p className={createClassName(styles, 'chat-finished__message')}>{message || defaultMessage}</p>
 
-				<ButtonGroup>
-					<Button onClick={this.handleClick} stack>{ t('new_chat') }</Button>
-				</ButtonGroup>
-			</Screen.Content>
-			<Screen.Footer />
-		</Screen>;
+					<ButtonGroup>
+						<Button onClick={this.handleClick} stack>
+							{t('new_chat')}
+						</Button>
+					</ButtonGroup>
+				</Screen.Content>
+				<Screen.Footer />
+			</Screen>
+		);
 	};
 }
 

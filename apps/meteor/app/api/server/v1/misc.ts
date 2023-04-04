@@ -13,17 +13,23 @@ import {
 	isMethodCallProps,
 	isMethodCallAnonProps,
 	isMeteorCall,
+	validateParamsPwGetPolicyRest,
 } from '@rocket.chat/rest-typings';
-import { IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
-import { hasPermission } from '../../../authorization/server';
-import { Users } from '../../../models/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 import { getURL } from '../../../utils/lib/getURL';
 import { getLogs } from '../../../../server/stream/stdout';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { passwordPolicy } from '../../../lib/server';
+import { getLoggedInUser } from '../helpers/getLoggedInUser';
+import { getUserInfo } from '../helpers/getUserInfo';
+import { getPaginationItems } from '../helpers/getPaginationItems';
+import { getUserFromParams } from '../helpers/getUserFromParams';
 
 /**
  * @openapi
@@ -167,10 +173,10 @@ API.v1.addRoute(
 	{
 		async get() {
 			const fields = getDefaultUserFields();
-			const { services, ...user } = Users.findOneById(this.userId, { fields }) as IUser;
+			const { services, ...user } = (await Users.findOneById(this.userId, { projection: fields })) as IUser;
 
 			return API.v1.success(
-				this.getUserInfo({
+				await getUserInfo({
 					...user,
 					...(services && {
 						services: {
@@ -202,7 +208,7 @@ API.v1.addRoute(
 		validateParams: isShieldSvgProps,
 	},
 	{
-		get() {
+		async get() {
 			const { type, icon } = this.queryParams;
 			let { channel, name } = this.queryParams;
 			if (!settings.get('API_Enable_Shields')) {
@@ -234,7 +240,7 @@ API.v1.addRoute(
 			switch (type) {
 				case 'online':
 					if (Date.now() - onlineCacheDate > cacheInvalid) {
-						onlineCache = Users.findUsersNotOffline().count();
+						onlineCache = await Users.countUsersNotOffline();
 						onlineCacheDate = Date.now();
 					}
 
@@ -248,10 +254,10 @@ API.v1.addRoute(
 					text = `#${channel}`;
 					break;
 				case 'user':
-					if (settings.get('API_Shield_user_require_auth') && !this.getLoggedInUser()) {
+					if (settings.get('API_Shield_user_require_auth') && !(await getLoggedInUser(this.request))) {
 						return API.v1.failure('You must be logged in to do this.');
 					}
-					const user = this.getUserFromParams();
+					const user = await getUserFromParams(this.queryParams);
 
 					// Respect the server's choice for using their real names or not
 					if (user.name && settings.get('UI_Use_Real_Name')) {
@@ -331,10 +337,10 @@ API.v1.addRoute(
 		validateParams: isSpotlightProps,
 	},
 	{
-		get() {
+		async get() {
 			const { query } = this.queryParams;
 
-			const result = Meteor.call('spotlight', query);
+			const result = await Meteor.callAsync('spotlight', query);
 
 			return API.v1.success(result);
 		},
@@ -348,9 +354,9 @@ API.v1.addRoute(
 		validateParams: isDirectoryProps,
 	},
 	{
-		get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort, query } = this.parseJsonQuery();
+		async get() {
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, query } = await this.parseJsonQuery();
 
 			const { text, type, workspace = 'local' } = query;
 
@@ -360,7 +366,7 @@ API.v1.addRoute(
 			const sortBy = sort ? Object.keys(sort)[0] : undefined;
 			const sortDirection = sort && Object.values(sort)[0] === 1 ? 'asc' : 'desc';
 
-			const result = Meteor.call('browseChannels', {
+			const result = await Meteor.callAsync('browseChannels', {
 				text,
 				type,
 				workspace,
@@ -379,6 +385,44 @@ API.v1.addRoute(
 				offset,
 				total: result.total,
 			});
+		},
+	},
+);
+
+API.v1.addRoute(
+	'pw.getPolicy',
+	{
+		authRequired: true,
+	},
+	{
+		get() {
+			return API.v1.success(passwordPolicy.getPasswordPolicy());
+		},
+	},
+);
+
+API.v1.addRoute(
+	'pw.getPolicyReset',
+	{
+		authRequired: false,
+		validateParams: validateParamsPwGetPolicyRest,
+	},
+	{
+		async get() {
+			check(
+				this.queryParams,
+				Match.ObjectIncluding({
+					token: String,
+				}),
+			);
+			const { token } = this.queryParams;
+
+			const user = await Users.findOneByResetToken(token, { projection: { _id: 1 } });
+			if (!user) {
+				return API.v1.unauthorized();
+			}
+
+			return API.v1.success(passwordPolicy.getPasswordPolicy());
 		},
 	},
 );
@@ -423,8 +467,8 @@ API.v1.addRoute(
 	'stdout.queue',
 	{ authRequired: true },
 	{
-		get() {
-			if (!hasPermission(this.userId, 'view-logs')) {
+		async get() {
+			if (!(await hasPermissionAsync(this.userId, 'view-logs'))) {
 				return API.v1.unauthorized();
 			}
 			return API.v1.success({ queue: getLogs() });
@@ -473,7 +517,7 @@ API.v1.addRoute(
 		validateParams: isMeteorCall,
 	},
 	{
-		post() {
+		async post() {
 			check(this.bodyParams, {
 				message: String,
 			});
@@ -510,16 +554,17 @@ API.v1.addRoute(
 					});
 				}
 
-				const result = Meteor.call(method, ...params);
+				const result = await Meteor.callAsync(method, ...params);
 				return API.v1.success(mountResult({ id, result }));
-			} catch (error) {
-				if (error instanceof Error) SystemLogger.error(`Exception while invoking method ${method}`, error.message);
-				else SystemLogger.error(`Exception while invoking method ${method}`, error);
+			} catch (err) {
+				if (!(err as any).isClientSafe && !(err as any).meteorError) {
+					SystemLogger.error({ msg: `Exception while invoking method ${method}`, err });
+				}
 
 				if (settings.get('Log_Level') === '2') {
-					Meteor._debug(`Exception while invoking method ${method}`, error);
+					Meteor._debug(`Exception while invoking method ${method}`, err);
 				}
-				return API.v1.success(mountResult({ id, error }));
+				return API.v1.success(mountResult({ id, error: err }));
 			}
 		},
 	},
@@ -532,7 +577,7 @@ API.v1.addRoute(
 		validateParams: isMeteorCall,
 	},
 	{
-		post() {
+		async post() {
 			check(this.bodyParams, {
 				message: String,
 			});
@@ -562,6 +607,7 @@ API.v1.addRoute(
 
 			try {
 				DDPRateLimiter._increment(rateLimiterInput);
+
 				const rateLimitResult = DDPRateLimiter._check(rateLimiterInput);
 				if (!rateLimitResult.allowed) {
 					throw new Meteor.Error('too-many-requests', DDPRateLimiter.getErrorMessage(rateLimitResult), {
@@ -569,16 +615,16 @@ API.v1.addRoute(
 					});
 				}
 
-				const result = Meteor.call(method, ...params);
+				const result = await Meteor.callAsync(method, ...params);
 				return API.v1.success(mountResult({ id, result }));
-			} catch (error) {
-				if (error instanceof Error) SystemLogger.error(`Exception while invoking method ${method}`, error.message);
-				else SystemLogger.error(`Exception while invoking method ${method}`, error);
-
-				if (settings.get('Log_Level') === '2') {
-					Meteor._debug(`Exception while invoking method ${method}`, error);
+			} catch (err) {
+				if (!(err as any).isClientSafe && !(err as any).meteorError) {
+					SystemLogger.error({ msg: `Exception while invoking method ${method}`, err });
 				}
-				return API.v1.success(mountResult({ id, error }));
+				if (settings.get('Log_Level') === '2') {
+					Meteor._debug(`Exception while invoking method ${method}`, err);
+				}
+				return API.v1.success(mountResult({ id, error: err }));
 			}
 		},
 	},

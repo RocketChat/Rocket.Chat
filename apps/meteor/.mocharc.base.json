@@ -3,8 +3,6 @@
 	"reporter": "spec",
 	"extension": ["js", "ts", "tsx"],
 	"require": [
-		"@babel/register",
-		"regenerator-runtime/runtime",
 		"ts-node/register",
 		"./tests/setup/chaiPlugins.ts"
 	],

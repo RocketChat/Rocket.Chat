@@ -1,4 +1,5 @@
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import { useSetupWizardContext } from './contexts/SetupWizardContext';
 import AdminInfoStep from './steps/AdminInfoStep';

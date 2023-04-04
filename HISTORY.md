@@ -1,6 +1,4261 @@
 
+# 6.1.0
+`2023-03-29  ·  1 🎉  ·  1 🚀  ·  4 🐛  ·  4 🔍  ·  11 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.2`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+- Apps-Engine: `1.38.0`
+
+### 🎉 New features
+
+
+- VideoConference Guest mode and Conference Router ([#28186](https://github.com/RocketChat/Rocket.Chat/pull/28186))
+
+  Jira Issue: [VC-79]
+
+### 🚀 Improvements
+
+
+- Adding input type=password to AWS secrets fields ([#28159](https://github.com/RocketChat/Rocket.Chat/pull/28159))
+
+  Some fields that store secrets for AWS were exposing sensitive data because they didn't have the input type as `password`. 
+
+  The change includes adding the password type and also changing the autocomplete value from `<PasswordInput />` component to add the value `new-password` to avoid the browser autocompleting with the existing password. (This does not prevent the browser to show the hint to add the password)
+
+### 🐛 Bug fixes
+
+
+- Engagement dashboard crash on Users tab ([#28131](https://github.com/RocketChat/Rocket.Chat/pull/28131))
+
+- Gallery opening other image after closing ([#27957](https://github.com/RocketChat/Rocket.Chat/pull/27957))
+
+  How to reproduce:
+  1   - Upload MANY images to a channel (they have to be images and the bigger and more images the easier to reproduce)
+  2   - Click on one of the images
+  3   - Try to close the glalery as QUICK as possible
+
+  If done correctly, another image will open after closing the gallery. You could also try opening different images or throttling the network thru the devtools in order to help reproduce it.
+
+  I also took some time to make part of the code more readable.
+
+- hide offline registration option for disconnected workspaces ([#28662](https://github.com/RocketChat/Rocket.Chat/pull/28662))
+
+- Livechat MessageList not auto scrolling on new message ([#28547](https://github.com/RocketChat/Rocket.Chat/pull/28547))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Change price filters for Enterprise apps ([#27553](https://github.com/RocketChat/Rocket.Chat/pull/27553))
+
+  * Currently, Enterprise apps are classified as “Free apps”. Now, they have been moved to a new “Enterprise” category in the _Apps_ page of the Marketplace.  
+  * Created a new "Enterprise" pricing filter in the _Apps_ page.  
+  * Removed the "Free" tag next to the _install_ button for enterprise apps, on the _App Info_ page.
+
+  ![New-version](https://user-images.githubusercontent.com/84182706/208493531-11fc0153-2c94-4fab-baac-e359ba89ed72.gif)
+
+- regression: removed css for unread and upload indicators ([#28645](https://github.com/RocketChat/Rocket.Chat/pull/28645))
+
+  I had to revert a css deletion to rollback the styles form Upload and Unread indicators
+
+  **Current (problem):** 
+  ![image](https://user-images.githubusercontent.com/20212776/228034906-57f9a818-e071-4102-9410-b9e03afbb777.png)
+
+  **Expected: (current changes)**
+  ![image](https://user-images.githubusercontent.com/20212776/228035090-1ef28ce8-2ab1-46a0-aeff-b9aa76c79e5f.png)
+  ![image](https://user-images.githubusercontent.com/20212776/228035150-fc259b37-83c5-458c-8e4f-8a6a822af641.png)
+
+- Remove old css ([#28140](https://github.com/RocketChat/Rocket.Chat/pull/28140))
+
+- Update Apps-Engine to latest ([#28646](https://github.com/RocketChat/Rocket.Chat/pull/28646))
+
+  Update the Apps-Engine version to v1.38.0
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@csuadev](https://github.com/csuadev)
+- [@d-gubert](https://github.com/d-gubert)
+- [@dougfabris](https://github.com/dougfabris)
+- [@felipe-rod123](https://github.com/felipe-rod123)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@rique223](https://github.com/rique223)
+- [@totoi690](https://github.com/totoi690)
+
+
+# 6.0.1
+`2023-03-22  ·  5 🔍  ·  7 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.2`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- fix: Apps.engine resource consumption ([#28514](https://github.com/RocketChat/Rocket.Chat/pull/28514))
+
+  Added some validations to avoid doing unnecessary updates and also avoid loop that causes high server usage
+
+- fix: Changing the app's error verification ([#28450](https://github.com/RocketChat/Rocket.Chat/pull/28450))
+
+- fix: Horizontal scroll in main room if text is too long ([#28434](https://github.com/RocketChat/Rocket.Chat/pull/28434))
+
+  Removed inline styles from elements and substituted `p` tag for `div`
+
+  For a quick explanation, the `p` tag adds the multiple line breaks by default when copying text. We should revise in the parser how we deal with paragraphs and text blocks.
+
+- fix: Offline register option ([#28467](https://github.com/RocketChat/Rocket.Chat/pull/28467))
+
+- fix: Thread list not scrolling to bottom when sending a message. ([#28346](https://github.com/RocketChat/Rocket.Chat/pull/28346))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@AllanPazRibeiro](https://github.com/AllanPazRibeiro)
+- [@casalsgh](https://github.com/casalsgh)
+- [@csuadev](https://github.com/csuadev)
+- [@d-gubert](https://github.com/d-gubert)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@tapiarafael](https://github.com/tapiarafael)
+
+# 6.0.0
+`2023-03-09  ·  20 ️️️⚠️  ·  12 🎉  ·  13 🚀  ·  60 🐛  ·  238 🔍  ·  56 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.21.2`
+- NPM: `6.14.17`
+- MongoDB: `4.4, 5.0, 6.0`
+
+### ⚠️ BREAKING CHANGES
+
+
+- **ENTERPRISE:** Limit presence statuses to 200 concurrent users when running monolith to keep performance ([#27854](https://github.com/RocketChat/Rocket.Chat/pull/27854))
+
+- **FIX:** VideoConference Ringer working intermittently on microservices ([#27703](https://github.com/RocketChat/Rocket.Chat/pull/27703))
+
+- **IMPROVE:** SMTP warning for invitations  ([#27713](https://github.com/RocketChat/Rocket.Chat/pull/27713))
+
+  - TC-347   - SMTP warning for invitations flow  
+  - Create rest endpoint for sendInvitationEmail  
+  - Use endpoint in-place of removed Meteor method
+
+- **NEW:** Custom roles upsell modal ([#27707](https://github.com/RocketChat/Rocket.Chat/pull/27707))
+
+  ![image](https://user-images.githubusercontent.com/40830821/211393807-2dd4ad76-cc98-4950-99a6-93d6c2087406.png)
+
+  Also changed the `edit role` button:
+  ![image](https://user-images.githubusercontent.com/40830821/211393881-980293fa-a3af-46a5-8bfe-48f99872333a.png)
+
+- Drop support for MongoDB 4.2 and deprecate MongoDB 4.4 ([#27891](https://github.com/RocketChat/Rocket.Chat/pull/27891))
+
+  As per MongoDB Lifecycle Schedules ([mongodb.com/support-policy/lifecycles](https://www.mongodb.com/support-policy/lifecycles)) we're removing official support to MongoDB version 4.2 that is close to reach end of life (April 2023).
+
+  We recommend upgrading to MongoDB 5.0+, though 4.4 is still a supported version.
+
+  Here are official docs on how to upgrade to some of the supported versions:
+
+  [mongodb.com/docs/v4.4/release-notes/4.4-upgrade-replica-set](https://www.mongodb.com/docs/v4.4/release-notes/4.4-upgrade-replica-set/)
+  [mongodb.com/docs/manual/release-notes/5.0-upgrade-replica-set](https://www.mongodb.com/docs/manual/release-notes/5.0-upgrade-replica-set/)
+  [mongodb.com/docs/manual/release-notes/6.0-upgrade-replica-set](https://www.mongodb.com/docs/manual/release-notes/6.0-upgrade-replica-set/)
+
+- Freeze Custom Roles ([#27481](https://github.com/RocketChat/Rocket.Chat/pull/27481))
+
+  This PR moves role creation and update to enterprise folder
+
+  --  
+  - Removed method `authorization:saveRole`  
+  - Moved `/v1/roles.create/` and `/v1/roles.update` to enterprise edition  
+  - Changed message for delete a custom role in community edition
+
+- Limit `underscore` usage and remove `underscore.string` (even from integration script sandboxes) ([#28037](https://github.com/RocketChat/Rocket.Chat/pull/28037))
+
+  [Underscore.js](https://underscorejs.org/) is quite outdated and we're not using it in a way that take advantage of modularization, bloating the client bundle. This PR aims to limit its usage across the application.
+
+  break: if you are used to have scripts, and they are using underscore, please pay attention probably you need to update them
+
+- Marketplace standalone page and app request flow ([#27389](https://github.com/RocketChat/Rocket.Chat/pull/27389))
+
+  Remove marketplace from the admin menu (on both the file system and the UI), change it into a standalone page, expose its use to end-users, and create an app request flow that allows end-users to ask for app installations in their workspaces directly through Rocket Chats UI.
+
+  Demo loom: https://www.loom.com/share/643ba3432225418e96c10041f386ff48
+
+  ## Jira tasks and ADRs
+  All tasks, descriptions, and designs of work done in this PR can be found on the tasks below, which also double down as simplified ADRs.
+
+  ### [MKP-147](https://rocketchat.atlassian.net/browse/MKP-147?atlOrigin=eyJpIjoiNDJjNjBlNjU1MjI3NGI0M2I0NDZiZTRkMjkyYjcyZWMiLCJwIjoiaiJ9)   - Remove marketplace from the admin menu and put it on its own page
+
+  ### [MKP-68](https://rocketchat.atlassian.net/browse/MKP-68?atlOrigin=eyJpIjoiMGRhMmExYTViNDNlNGI0Y2FjY2ViNDc3MDgyNWUxNDciLCJwIjoiaiJ9)   - Create an enterprise option on the new marketplace sidebar
+
+  ### [MKP-150](https://rocketchat.atlassian.net/browse/MKP-150?atlOrigin=eyJpIjoiOGIyOWZlMWRhNmFmNDhlODhhMmNlOWE0MmMzOTYwMTgiLCJwIjoiaiJ9)   - Implement the SideNav of the new marketplace page
+
+  ### [MKP-151](https://rocketchat.atlassian.net/browse/MKP-151?atlOrigin=eyJpIjoiN2Y2OTc3MzhlZTAzNGJkOTgwYWVmZjFmMGY0MjA0ZmEiLCJwIjoiaiJ9)   - Brainstorm and implement the new marketplace routes
+
+  ### [MKP-179](https://rocketchat.atlassian.net/browse/MKP-179?atlOrigin=eyJpIjoiYjBmMDgxOGE4OTAxNDgzYTgwMDkxZmQxZGQwZTliNDQiLCJwIjoiaiJ9)   - Retrieve number of requested apps and make it available for components
+
+  ### [MKP-181](https://rocketchat.atlassian.net/browse/MKP-181?atlOrigin=eyJpIjoiNzRiNGM0MTM5NjNjNGVlNmFhZmIyZmQ1MGFhZTkzMjgiLCJwIjoiaiJ9)   - Implement requested option on marketplace sidebar
+
+  ### [MKP-184](https://rocketchat.atlassian.net/browse/MKP-184?atlOrigin=eyJpIjoiY2RkYjJhODc2MTcyNDlkOTllNzc1ZGU4OWIyNTMwYmIiLCJwIjoiaiJ9)   - Create requested apps page
+
+  ### [MKP-185](https://rocketchat.atlassian.net/browse/MKP-185?atlOrigin=eyJpIjoiY2M4ZjVmMzZlODA3NDBkZWE3NTU3YTQ2NWMyYWFjYTAiLCJwIjoiaiJ9)   - Implement requested apps list layout and logic
+
+  ### [MKP-180](https://rocketchat.atlassian.net/browse/MKP-180?atlOrigin=eyJpIjoiYjQwOTVkOTQ4YmYyNDlmN2JlNWI5YzcwYmMzYTEzZmIiLCJwIjoiaiJ9)   - Implement requested apps option to home screen kebab menu
+
+  ### [MKP-188](https://rocketchat.atlassian.net/browse/MKP-188?atlOrigin=eyJpIjoiYTkzNWMwMzdlODBlNDMwOGIzOGQ1MGJhMzFkNzhjYmMiLCJwIjoiaiJ9)   - Implement the requested apps tab on app details page
+
+  ### [MKP-187](https://rocketchat.atlassian.net/browse/MKP-187?atlOrigin=eyJpIjoiYmUzMjI2YTE4Njc1NGFjMThjYjUxNDlhYjMwMTc2MDgiLCJwIjoiaiJ9)   - Implement visualized requests system on apps list tags and app requests tab
+
+  ### [MKP-164](https://rocketchat.atlassian.net/browse/MKP-164?atlOrigin=eyJpIjoiMDUxOTJmNzVlNmZjNGQ4ZTljNzY2NDI4YjU5MjU0N2EiLCJwIjoiaiJ9)   - ALL view the app's technical documentation page
+
+  ### [MKP-197](https://rocketchat.atlassian.net/browse/MKP-197)   - Rocket.cat notification for admins when an app is requested
+
+  ### [MKP-224](https://rocketchat.atlassian.net/browse/MKP-224)   - After i click submit request in the modal the modal is not closing
+
+- Move Multiple Department Creation to EE & [NEW] Department Archive ([#27753](https://github.com/RocketChat/Rocket.Chat/pull/27753))
+
+  [BREAK] **Move Multiple Department Creation to EE**: Limit max department creation to 1 in Community edition, existing departments will still function as before.
+
+  [NEW] 📁 **Department archival**: Adds the ability to archive departments, archived departments are disabled and cannot be edited, but will still show in historical data (current chats, directory, chat info, etc...). This offers an alternative to department deletion.
+
+- Move read-receipts to EE and threads check marks improvements ([#27074](https://github.com/RocketChat/Rocket.Chat/pull/27074))
+
+  - Improvement: add read receipts for messages in threads only when the thread is open;  
+  - Move read-receipts feature to EE (under the `message-read-receipt` module). The `chat.getMessageReadReceipts` endpoint and `getReadReceipts` Meteor method are now EE only.
+
+- Remove Chatpal ([#28012](https://github.com/RocketChat/Rocket.Chat/pull/28012))
+
+- Remove legacy FB Messenger integration ([#27760](https://github.com/RocketChat/Rocket.Chat/pull/27760))
+
+  Legacy FB messenger integration has been removed in favour of the new and enhanced FB App integration. [Click here](https://docs.rocket.chat/guides/app-guides/omnichannel-apps/facebook-app) for more info
+
+- Remove less theming ([#27647](https://github.com/RocketChat/Rocket.Chat/pull/27647))
+
+- Remove message view mode from User Preferences ([#27867](https://github.com/RocketChat/Rocket.Chat/pull/27867))
+
+  Since the view mode setting in `User preferences -> Messages -> View Mode` does not work with the new messages template it will be removed
+
+  It was removed from every file and it was created a migration to remove from user obj in DB
+
+- Remove support to deprecated typing event ([#28234](https://github.com/RocketChat/Rocket.Chat/pull/28234))
+
+- Removed deprecated settings for Legacy Messages, Marked, Snippet Messages, Autolinker and IssueLinks ([#27902](https://github.com/RocketChat/Rocket.Chat/pull/27902))
+
+  Removed Settings:
+  
+  - Markdown_Parser  
+  - Markdown_Headers  
+  - Markdown_SupportSchemesForLink  
+  - Markdown_Marked_GFM  
+  - Markdown_Marked_Tables  
+  - Markdown_Marked_Breaks  
+  - Markdown_Marked_Pedantic  
+  - Markdown_Marked_SmartLists  
+  - Markdown_Marked_Smartypants  
+  - Message_AllowSnippeting  
+  - Message_Attachments_GroupAttach  
+  - Message_ShowEditedStatus  
+  - Message_ShowFormattingTips  
+  - Accounts_Default_User_Preferences_useLegacyMessageTemplate  
+  - AutoLinker  
+  - AutoLinker_StripPrefix  
+  - AutoLinker_Urls_Scheme  
+  - AutoLinker_Urls_www  
+  - AutoLinker_Urls_TLD  
+  - AutoLinker_UrlsRegExp  
+  - AutoLinker_Email  
+  - AutoLinker_Phone  
+  - IssueLinks_Enabled  
+  - IssueLinks_Template  
+  - API_EmbedDisabledFor
+
+- Unify monolith and microservices intercommunication on same technology and limit to Enterprise only  ([#27969](https://github.com/RocketChat/Rocket.Chat/pull/27969))
+
+  This change removes the old DDP Matrix communication by Moleculer based breaker over TCP, simplifying code maintenance, allowing better reliability, performance and monitoring.
+
+  It requires a license to enable communication among servers as the rest of the Moleculer implementation.
+
+  Community Edition will loose ephemeral events as Typing indication and others when running multiple instances.
+
+- Update livechat:saveDepartment to accept a string array in departmentsAllowedToForward ([#28261](https://github.com/RocketChat/Rocket.Chat/pull/28261))
+
+  **Breaking change:** There have been some changes to `livechat:saveDepartment` meteor method's `departmentsAllowedToForward` parameter. Previously it used to accept a string which was a comma-separated list of departmentIds. The new type is an array of strings.
+
+  Due to recent changes to the `useDepartmentList` hook the component `AutoCompleteDepartment` became incompatible with many of our existing pages, causing them to break. This PR makes them work again.
+
+- Update Meteor to 2.9.1 and NodeJS to 14.21.2 ([#27639](https://github.com/RocketChat/Rocket.Chat/pull/27639))
+
+- Upgrade to version 6.0 can be done only from version 5.x  ([#28098](https://github.com/RocketChat/Rocket.Chat/pull/28098))
+
+### 🎉 New features
+
+
+- **EE:** Omnichannel Priorities & SLAs ([#27083](https://github.com/RocketChat/Rocket.Chat/pull/27083))
+
+- **EE:** PDF Chat transcript for Omnichannel conversations ([#27572](https://github.com/RocketChat/Rocket.Chat/pull/27572))
+
+- Attachment Files Redesign ([#27470](https://github.com/RocketChat/Rocket.Chat/pull/27470))
+
+  - Replace File attachments to use `MessageGenericPreview`  
+  - Move File attachments to the` /MessageList` folder  
+  - Refactor Video, Image, and Audio Attachments to use `MessageGenericPreview`   
+  - New component MessageCollapsible   
+  - Refactored the `OEmbedCollpsible` component to use `MessageCollapsible`   
+  - Refactored the `AttachmentSize` component to include different style  
+  - Added `descriptionMd` property to the `MessageAttachment` object to use the new parser in descriptions  
+  - Added size and format to attachment object at `sendFileMessage.ts`  
+  - Changed maxWidth and maxHeight of AttachmentContext to be the same as the OEmbed sizes
+
+  **OLD:**
+  <img width="448" alt="image" src="https://user-images.githubusercontent.com/20212776/206214767-f6383ee2-7536-419c-93d7-1637857a950c.png">
+
+
+  **NEW:**
+  <img width="405" alt="image" src="https://user-images.githubusercontent.com/20212776/206214236-a2d096bd-66ed-4489-b825-0fd952906067.png">
+
+- Bridge to get all users crated by app and also delete them ([#27877](https://github.com/RocketChat/Rocket.Chat/pull/27877))
+
+  We're working on [MS Teams bridge](https://github.com/RocketChat/Apps.teams.bridge), to make it usable we have created a new method for the apps engine to [create new users](https://github.com/RocketChat/Rocket.Chat.Apps-engine/pull/536) and we'll also need to delete all when we uninstall the app. Therefore, we created this bridge to cover the action of deleting users on the app side.
+
+- Emojis rendering properly on quote message previews ([#27972](https://github.com/RocketChat/Rocket.Chat/pull/27972) by [@Educg550](https://github.com/Educg550))
+
+  ![image](https://user-images.githubusercontent.com/47800334/217540055-de7cdc29-5478-4a23-a884-4476318bd83d.png)
+
+- Homepage new block ([#27540](https://github.com/RocketChat/Rocket.Chat/pull/27540))
+
+  - Create a new admin homepage block that includes:
+      - Button to go to /admin/Layout setting
+      - Button to show and hide the custom content to the user (a badge on top indicates if the custom content is hidden or not)
+      - Button to show and hide the other blocks (add users, create channel) on the homepage (EE only button)
+    
+  New homepage block admin view:
+  <img width="1437" alt="Screen Shot 2023-02-10 at 14 28 40" src="https://user-images.githubusercontent.com/48109548/218157495-96c60104-655c-45f2-8513-49279202daad.png">
+
+  Normal user view:
+  <img width="1440" alt="Screen Shot 2023-02-10 at 17 12 39" src="https://user-images.githubusercontent.com/48109548/218188731-f9ed2bd4-ef7c-40af-88f3-6b6b7119a365.png">
+
+
+   - Changes on the /admin/Layout settings:
+       - text and homepage settings small changes
+       - add Layout_Home_Custom_Block_Visible setting to show or hide custom content
+     
+  Admin Homepage Content settings page:
+
+  <img width="452" alt="Screen Shot 2023-02-10 at 15 29 18" src="https://user-images.githubusercontent.com/48109548/218169719-33ead352-6668-46f4-9794-bb21fafd6408.png">
+
+- Matrix federation events coverage expansion + bug fixes ([#27763](https://github.com/RocketChat/Rocket.Chat/pull/27763))
+
+  - Disables not supported features in federated channels (#27204)  
+  - Add support for the whole Matrix Markdown spec (#27725)  
+  - Allow federated rooms with the same name per different servers when they have a contact between them (#27559)  
+  -  Matrix Federation send message when multiple users are involved was not working (#27327)  
+  - Allow the room owner to set roles on federated rooms, following a specific and different approach as normal rooms (available on docs) (https://github.com/RocketChat/Rocket.Chat/pull/27633)  
+  - E2E Tests (PS: they don't run on CI) (#27578 #27282 #27115)  
+  - Disables admin actions disallowed for federated users/rooms (https://github.com/RocketChat/Rocket.Chat/pull/27251)
+
+  FED-81
+
+- New Message Composer ([#27566](https://github.com/RocketChat/Rocket.Chat/pull/27566))
+
+- Permission to bypass message editing and removing limits ([#27644](https://github.com/RocketChat/Rocket.Chat/pull/27644))
+
+  This PR adds a new permission called `bypass-time-limit-edit-and-delete`, to bypass the time limit when editing or deleting a message, the purpose of this PR is to remove the limitation for bots that cannot change the message after the specified time.
+
+- Rocket.cat message for users when an app previously requested is installed ([#27672](https://github.com/RocketChat/Rocket.Chat/pull/27672) by [@matheuslc](https://github.com/matheuslc))
+
+- Upload service ([#27543](https://github.com/RocketChat/Rocket.Chat/pull/27543))
+
+- Warning Popup reinforcing Zapier deprecation on Integrations Admin settings ([#27744](https://github.com/RocketChat/Rocket.Chat/pull/27744) by [@Educg550](https://github.com/Educg550))
+
+  #### Warning being displayed on Zapier settings, above Zapier itself:
+  ![warning](https://user-images.githubusercontent.com/47800334/213696834-be7ac8e0-7249-4d02-93ba-e4c5e34b67da.png)
+
+### 🚀 Improvements
+
+
+- Audit ([#27994](https://github.com/RocketChat/Rocket.Chat/pull/27994))
+
+- Authorize search of custom fields on `users.list`  ([#27423](https://github.com/RocketChat/Rocket.Chat/pull/27423))
+
+  This PR allows users to filter and search for custom fields on the `users.list` endpoint
+
+- Emoji picker for large amount of custom emojis ([#27745](https://github.com/RocketChat/Rocket.Chat/pull/27745))
+
+- Increase read receipt size ([#27665](https://github.com/RocketChat/Rocket.Chat/pull/27665))
+
+  increase from 11px to 1rem (16px)
+  ![image](https://user-images.githubusercontent.com/40830821/209961616-3198b51a-ff7e-49eb-9627-15b53fbfe16a.png)
+
+- Livechat Persian translation ([#27825](https://github.com/RocketChat/Rocket.Chat/pull/27825) by [@pouyadarabi](https://github.com/pouyadarabi))
+
+- Play selected notification sounds as preview while changing sound settings  ([#24205](https://github.com/RocketChat/Rocket.Chat/pull/24205) by [@try-catch-stack](https://github.com/try-catch-stack))
+
+- Registration Experience ([#27820](https://github.com/RocketChat/Rocket.Chat/pull/27820))
+
+  If you didn't register when you initially setup your server.  Its now easier to register.
+
+  Disconnecting and reconnecting your workspace from the cloud is now also easier
+
+- Require acceptance when setting new E2E Encryption key for another user ([#27556](https://github.com/RocketChat/Rocket.Chat/pull/27556))
+
+  Change the end to end encryption flow to require an acceptance from the user when receiving a new key.
+  
+  1. Changes API `e2e.updateGroupKey` to set the new key to an auxiliary property named `E2ESuggestedKey`  
+  2. Adds new API `e2e.acceptSuggestedGroupKey` to be called to accept the suggested key and save it to the final property `E2EKey`  
+  3. Adds new API `e2e.rejectSuggestedGroupKey` to be called to reject the suggested key and clear the `E2ESuggestedKey`
+
+- SAML and OAuth role sync to support id and name ([#27405](https://github.com/RocketChat/Rocket.Chat/pull/27405))
+
+  This PR allows the sync of roles by either `name` or `id`.
+
+- Save toPhone when receiving SMSs ([#27656](https://github.com/RocketChat/Rocket.Chat/pull/27656))
+
+- Setup Wizard Flow for airgapped environment ([#28018](https://github.com/RocketChat/Rocket.Chat/pull/28018))
+
+  ![image](https://user-images.githubusercontent.com/40830821/217655867-ddfbd99f-e0b8-4c71-9a33-b06555bb97dc.png)
+  ![image](https://user-images.githubusercontent.com/40830821/217655885-b84a92b6-da9f-4f57-b4ef-297e8541ded3.png)
+
+- Spanish home translation ([#27898](https://github.com/RocketChat/Rocket.Chat/pull/27898) by [@nYCSTs](https://github.com/nYCSTs))
+
+  Update translation of home page to Spanish. The page had some untranslated texts.
+  ![image](https://user-images.githubusercontent.com/63932475/215656626-5fbeb5b6-e398-4dd4-a150-ec69305ebb56.png)
+
+- User data download overhaul ([#26358](https://github.com/RocketChat/Rocket.Chat/pull/26358))
+
+  It migrates modules to TypeScript, as well adapts the code to the current version of Node.
+
+### 🐛 Bug fixes
+
+
+- "Jump to first unread" banner does not always appear when the first unread message is outside of the visible screen ([#27941](https://github.com/RocketChat/Rocket.Chat/pull/27941) by [@Educg550](https://github.com/Educg550))
+
+- **ENTERPRISE:** DDP streamer sending data to destroyed streams ([#27929](https://github.com/RocketChat/Rocket.Chat/pull/27929))
+
+- `*.files` endpoints returning hidden files ([#27617](https://github.com/RocketChat/Rocket.Chat/pull/27617))
+
+- Access to localStorage in Livechat ([#27627](https://github.com/RocketChat/Rocket.Chat/pull/27627) by [@jschirrmacher](https://github.com/jschirrmacher))
+
+  This fixes access to localStorage in LiveChat, if the user has third party coockies disabled.
+
+- Add the possibility of danger style prop to close button on UiKit contextual-bar component ([#27533](https://github.com/RocketChat/Rocket.Chat/pull/27533))
+
+  <img width="611" alt="image" src="https://user-images.githubusercontent.com/17487063/207465305-bd1a017b-e80d-40a6-8f22-9a85df5b1c8b.png">
+
+- Announcement banner link opening in the same page ([#27554](https://github.com/RocketChat/Rocket.Chat/pull/27554))
+
+  Channel Announcements that contain links are opening on the same page instead of a new page/tab causing render issues, especially on the desktop client.
+
+  The fix was simple to add a hook for the `dompurify` library to add the `target` and `rel` attributes to keep the _blank behavior.
+
+  Also, it introduced some parsers settings to `inlineWithoutBreaks` variant to avoid breaking messages at Announcements and other places that uses this variant.
+
+- Anonymous user buttons ([#27551](https://github.com/RocketChat/Rocket.Chat/pull/27551))
+
+  When the server accepts an anonymous user to join and chat without login, two buttons appears: one for Login and the other to send messages without login.
+
+  The component was rewritten to use the fuselage Design System and native hooks to perform actions.
+
+  ![image](https://user-images.githubusercontent.com/20212776/207855313-97d0e2dc-b24d-4baf-b6b5-214aed4be6f1.png)
+
+- App page showing version undefined for apps not in marketplace ([#27766](https://github.com/RocketChat/Rocket.Chat/pull/27766))
+
+  The app page is not showing the correct version of apps that are installed in the workspace but not in the Marketplace.
+
+  This PR changes the behavior so that the page shows the version that is installed in the workspace; otherwise, it shows the version in the marketplace
+
+- Auto Translate not working on new message template ([#27317](https://github.com/RocketChat/Rocket.Chat/pull/27317))
+
+  - Fix auto translate not working on new message template;   
+  - Fix a bug that the auto-translate icon was showing for users who didn't have enabled.   
+  - Show translated quote messages;  
+  - Remove translation provider for end users.  
+  - Translate the ThreadMessagePreview component
+
+- Black screen when try to open a chat with a non-existent department ([#27609](https://github.com/RocketChat/Rocket.Chat/pull/27609))
+
+- Broken settings check for updates ([#27779](https://github.com/RocketChat/Rocket.Chat/pull/27779))
+
+- Comunity users accessing exclusive ee endpoints in omnichannel section ([#27876](https://github.com/RocketChat/Rocket.Chat/pull/27876) by [@FabioCavaleti](https://github.com/FabioCavaleti))
+
+- Custom fields does not appear on the registration form ([#28031](https://github.com/RocketChat/Rocket.Chat/pull/28031))
+
+- Custom languages not being applied to i18next ([#27557](https://github.com/RocketChat/Rocket.Chat/pull/27557))
+
+- Disable video call on read-only rooms for not allowed users ([#27789](https://github.com/RocketChat/Rocket.Chat/pull/27789))
+
+  Jira Issue [VC-58]
+
+- Discussion visibility when inside a private team. ([#27601](https://github.com/RocketChat/Rocket.Chat/pull/27601))
+
+  Create discussions as private when the public channel is inside a private team.
+
+- E2EE initial banner not showing ([#27574](https://github.com/RocketChat/Rocket.Chat/pull/27574))
+
+- Embedded layout opening sidebar ([#27892](https://github.com/RocketChat/Rocket.Chat/pull/27892))
+
+  In the embedded layout view, certain actions were opening the sidebar due to the missing query param mandatory to the embedded layout view (`?layout=embedded`)
+
+  In addition to this issue, the user was able to navigate to different pages in the embedded layout causing them to get stuck on some other pages other than the Room page. Because of the reported issue, I removed some actions that redirect the user to other pages such as: "Reply in Direct Message"
+
+- Emoji rendering on reactions ([#27863](https://github.com/RocketChat/Rocket.Chat/pull/27863))
+
+- Empty DMs go to sidebar's top after updating user preferences ([#27912](https://github.com/RocketChat/Rocket.Chat/pull/27912))
+
+  - Do not use `_updatedAt` as `lm` field when merging info from subscriptions and rooms (since this field is updated along with the user preferences).
+
+- File upload modal not opening after too long message modal ([#28212](https://github.com/RocketChat/Rocket.Chat/pull/28212))
+
+  - Close the 'too long message to attachment' modal before opening the 'file upload' modal
+
+- Filtering users by status username is broken in Administration -> Users ([#27706](https://github.com/RocketChat/Rocket.Chat/pull/27706))
+
+- Fix emoji appearance on sidebar ([#27580](https://github.com/RocketChat/Rocket.Chat/pull/27580))
+
+  The emojis appear in plain text format in the side-bar (As seen in the below issues)
+  By this PR, it should be fixed
+
+  This is how it looks now (As shown on the sidebar, it's appearing as an emoji not plaintext)
+  ![image](https://user-images.githubusercontent.com/34144004/163888602-7df27713-0a82-443e-8944-f48525232ca8.png)
+
+- Fix Login with Show default form disabled ([#27475](https://github.com/RocketChat/Rocket.Chat/pull/27475))
+
+- Fix typo when create discussion modal opens ([#24982](https://github.com/RocketChat/Rocket.Chat/pull/24982))
+
+  Fixed typo when discussion modal opens. Now it says   - Help keep an overview of what's going on!
+
+  ![Screenshot 2022-03-29 at 6 59 45 PM](https://user-images.githubusercontent.com/74371312/160625549-8de71046-07bd-493f-ab7b-066d3653c16f.png)
+
+- Google Cloud Storage storage type ([#26851](https://github.com/RocketChat/Rocket.Chat/pull/26851) by [@carlosrodrigues94](https://github.com/carlosrodrigues94))
+
+  Google Cloud Storage now requires a "project ID" to be filled. 
+
+  Useful links:
+
+  https://googleapis.dev/nodejs/storage/latest/global.html#StorageOptions
+  https://support.google.com/googleapi/answer/7014113?hl=en
+
+- Ignored messages reactivity ([#27279](https://github.com/RocketChat/Rocket.Chat/pull/27279))
+
+- Invalid regex on search fields crashes UI ([#27942](https://github.com/RocketChat/Rocket.Chat/pull/27942))
+
+- IPostMessageReacted return field named isReacted instead isRemoved ([#27561](https://github.com/RocketChat/Rocket.Chat/pull/27561) by [@Nabhag8848](https://github.com/Nabhag8848))
+
+- Marketplace app status initially disabled ([#27330](https://github.com/RocketChat/Rocket.Chat/pull/27330))
+
+  ## Jira task: [MKP-20](https://rocketchat.atlassian.net/browse/MKP-20?atlOrigin=eyJpIjoiZTA3YWU5MGYwMDU1NDQ0MGJiNzQyMjYxZmMwMWVmMWQiLCJwIjoiaiJ9)
+
+  Currently, the only apps engine statuses considered enabled in the UI are the auto-enabled and manually-enabled statuses, this causes a UX problem in which the app will be considered disabled for the first few seconds of its lifecycle, upon the first installation in a workspace, since it will have the apps engine status of initialized. This PR adds the initialized status to the appEnabledStatuses list and solves this problem.
+  Demo gif:
+  ![disabled_status_issue_solution](https://user-images.githubusercontent.com/43561537/204306496-961384c3-ec24-4959-90cd-03f4638be948.gif)\
+
+- Message Actions menu does not close upon choosing an action ([#27328](https://github.com/RocketChat/Rocket.Chat/pull/27328))
+
+- Message for VideoConf on SidebarItemExtended ([#27626](https://github.com/RocketChat/Rocket.Chat/pull/27626))
+
+  Jitsi Issue: [VC-30]
+
+  ### before
+  ![Screen Shot 2022-12-23 at 11 38 24](https://user-images.githubusercontent.com/27704687/209353143-bef571c6-c79d-4489-828b-0f33ecddb5b7.png)
+
+  ### after
+  ![Screen Shot 2022-12-23 at 11 36 09](https://user-images.githubusercontent.com/27704687/209352853-c977ae04-3074-47bd-842b-70f3118a175b.png)
+
+- Message-parser link issues ([#27947](https://github.com/RocketChat/Rocket.Chat/pull/27947))
+
+  The changes were made in the fuselage repository. This PR just update the message-parser package version
+  Check the changes in this PR: 
+  https://github.com/RocketChat/fuselage/pull/962
+
+- Missing placeholders from encrypted channel preview messages now with expected behavior ([#27699](https://github.com/RocketChat/Rocket.Chat/pull/27699) by [@Educg550](https://github.com/Educg550))
+
+  Referent to [TC-259]
+
+  ![Clipboard screenshot](https://user-images.githubusercontent.com/47800334/211094753-30434b6d-46aa-490a-9b27-59770cf0ff24.png)
+  Note that now the file uses `isE2EEMessage()` function and the `useTranslation` internal hook.
+
+- Move Omni startup to be EE wrapped ([#28020](https://github.com/RocketChat/Rocket.Chat/pull/28020))
+
+- New users aren't mapped to rooms with OAuth groups/channels map ([#27000](https://github.com/RocketChat/Rocket.Chat/pull/27000) by [@carlosrodrigues94](https://github.com/carlosrodrigues94))
+
+  This change deals with the problem with the new users coming from key cloak, this users were not being mapped to the correct channels on RC.
+
+- Not all messages in chat conversations are available when forwarding between agents or departments. ([#27816](https://github.com/RocketChat/Rocket.Chat/pull/27816))
+
+- Notify apps engine event through ms api ([#28169](https://github.com/RocketChat/Rocket.Chat/pull/28169))
+
+  The Apps-Engine must drop the current Streamer utilization and start using the Service APIs to correctly communicate between instances and client-server.
+
+- Omnichannel call provider option ([#27466](https://github.com/RocketChat/Rocket.Chat/pull/27466))
+
+  Jira Issue: [VC-38]
+
+- OmnichannelRoomIconProvider order breaking VideoConfPopup ([#27740](https://github.com/RocketChat/Rocket.Chat/pull/27740))
+
+  Jira Issue [VC-39]
+
+- Option to Join Read-Only Channels ([#27488](https://github.com/RocketChat/Rocket.Chat/pull/27488) by [@henit-chobisa](https://github.com/henit-chobisa))
+
+- Pagination not working on current chats ([#27432](https://github.com/RocketChat/Rocket.Chat/pull/27432))
+
+- Reduce re-subscription on `notify-room/user-activity` stream event ([#27911](https://github.com/RocketChat/Rocket.Chat/pull/27911))
+
+  Whenever something changed the room subscription, it would trigger a re-subscription to `notify-room/user-activity`.
+
+- Register Workspace UI fixes and fix doc link ([#28021](https://github.com/RocketChat/Rocket.Chat/pull/28021))
+
+- Registration and Login placeholders not being used ([#27558](https://github.com/RocketChat/Rocket.Chat/pull/27558))
+
+- Remove invalid settings at startup ([#27653](https://github.com/RocketChat/Rocket.Chat/pull/27653))
+
+- Remove unnecessary permissions check on app permissions review modal ([#27329](https://github.com/RocketChat/Rocket.Chat/pull/27329))
+
+  ## Jira task: [MKP-166](https://rocketchat.atlassian.net/browse/MKP-166?atlOrigin=eyJpIjoiYzdjNzVhMThkOThjNGEzMmIyYTE2YmY2ZDA1MzA4YjEiLCJwIjoiaiJ9)
+  Removed an unnecessary check that verified if the app permissions list was an array and threw an error if it wasn't. This check has become unnecessary ever since the app permission review modal changed to show a default list of permissions in case the app happened to not have one and that's what caused those "random" undefined toasts that showed every once in a while.
+  Demo gif:
+  ![undefined_toast](https://user-images.githubusercontent.com/43561537/203644331-be9583e1-a92d-46a8-ab3b-add875e7a646.gif)
+
+- room data is not erased after deleting rooms by app ([#27886](https://github.com/RocketChat/Rocket.Chat/pull/27886))
+
+- RoomLeader status not working  ([#27576](https://github.com/RocketChat/Rocket.Chat/pull/27576))
+
+  It also fixes some visual issues
+
+  ### before
+  ![image](https://user-images.githubusercontent.com/27704687/208500278-85c705a2-e10a-416f-a4e5-afda34e2650f.png)
+
+  ### after
+  ![image](https://user-images.githubusercontent.com/27704687/208500309-d4aaa116-268b-4240-9422-abff98da898c.png)
+
+- Save button does not stay disabled in Notification Preferences for no change on mute group option ([#27513](https://github.com/RocketChat/Rocket.Chat/pull/27513) by [@xareyli](https://github.com/xareyli))
+
+  Added default value for "Mute @all and @here mentions" option
+
+- Search list missing key parameter ([#28230](https://github.com/RocketChat/Rocket.Chat/pull/28230))
+
+- Showing thumbnails on files list ([#23301](https://github.com/RocketChat/Rocket.Chat/pull/23301) by [@carlosrodrigues94](https://github.com/carlosrodrigues94))
+
+- Showing Workspace Section For User Having LiveChat Manager Permission ([#27188](https://github.com/RocketChat/Rocket.Chat/pull/27188))
+
+- Team mention highlight EE ([#27493](https://github.com/RocketChat/Rocket.Chat/pull/27493))
+
+  The team Mentioned highlighted with the char `@` was not working in Enterprise Edition using the new message parser.
+
+  I added validation to the filter by `type: 'team'` and fixed the title to include the team name on mouse hover. 
+
+  **Previous:** 
+  <img width="347" alt="image" src="https://user-images.githubusercontent.com/20212776/206460415-a2e60d1d-71d1-419d-98ae-2f3074d68614.png">
+
+
+  **NOW:**
+  <img width="400" alt="image" src="https://user-images.githubusercontent.com/20212776/206459995-4e7974b4-dbff-4693-bb57-668da64d634a.png">
+
+- Toast notification ignoring 403 errors ([#27624](https://github.com/RocketChat/Rocket.Chat/pull/27624))
+
+- Tokens usage ([#27541](https://github.com/RocketChat/Rocket.Chat/pull/27541))
+
+- Unintended "Reply on thread" button showing on thread's first message ([#27716](https://github.com/RocketChat/Rocket.Chat/pull/27716) by [@Educg550](https://github.com/Educg550))
+
+  Referent to TC-128
+
+  #### Before:
+  ![image](https://user-images.githubusercontent.com/47800334/211622867-5d24a4c9-172b-4b36-aac9-cea1af3f925a.png)
+
+  #### After:
+  ![image](https://user-images.githubusercontent.com/47800334/211622729-14e8c552-615c-44e3-b5ae-8e815909e5ac.png)
+
+- Unread Message count not displayed for new messages in Omni-Rooms ([#27539](https://github.com/RocketChat/Rocket.Chat/pull/27539))
+
+- User registration with EmailConfirmation not working ([#28143](https://github.com/RocketChat/Rocket.Chat/pull/28143))
+
+- Video Conf Message Blocks not always updating when running on micro services ([#27764](https://github.com/RocketChat/Rocket.Chat/pull/27764))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Bump version to 6.0.0-develop ([#27598](https://github.com/RocketChat/Rocket.Chat/pull/27598))
+
+- Chore:  Threads as React components ([#27524](https://github.com/RocketChat/Rocket.Chat/pull/27524))
+
+- Chore: `desktop` icon instead of `computer` icon ([#27959](https://github.com/RocketChat/Rocket.Chat/pull/27959))
+
+- Chore: Add dark theme assets ([#28214](https://github.com/RocketChat/Rocket.Chat/pull/28214))
+
+- Chore: add e2e test coverage for Video Conference ([#27075](https://github.com/RocketChat/Rocket.Chat/pull/27075) by [@lingohub[bot]](https://github.com/lingohub[bot]) & [@weslley543](https://github.com/weslley543))
+
+  Jira Issue: [VC-49]
+
+- Chore: Add E2E tests to Triggers view ([#27413](https://github.com/RocketChat/Rocket.Chat/pull/27413))
+
+- Chore: Add Eslint rules to tests ([#28074](https://github.com/RocketChat/Rocket.Chat/pull/28074))
+
+- Chore: Add extra stats for omnichannel video calling ([#28211](https://github.com/RocketChat/Rocket.Chat/pull/28211))
+
+- Chore: Add hint (description) to CodeSettingInput after label ([#27843](https://github.com/RocketChat/Rocket.Chat/pull/27843))
+
+  - Added hint (description) to CodeSettingInput after label  
+  - Created a storybook story for that scenario  
+  - add a checker to not add hint to`<MemoizedSetting />` if the inputType is `code`
+
+  **Before:**
+  ![image](https://user-images.githubusercontent.com/20212776/214575455-f2073084-bc10-4e55-9eb2-99bc9fcb71a3.png)
+
+  **After:**
+  ![image](https://user-images.githubusercontent.com/20212776/214622377-eb706c31-909f-4b25-ae2e-71cff70f80b2.png)
+
+- Chore: Add quote message option back on live chat rooms ([#28038](https://github.com/RocketChat/Rocket.Chat/pull/28038))
+
+- Chore: Add spacing adjustments Home page ([#27367](https://github.com/RocketChat/Rocket.Chat/pull/27367))
+
+  - Spacings adjustments in homepage
+
+- Chore: Add surface-light background to AppRow ([#27765](https://github.com/RocketChat/Rocket.Chat/pull/27765))
+
+  In light of the recent changes to the fuselage color system, the AppRow went from having a default background color of white to not having a color. Because of this, I've added the bg='surface-light' prop to the Wrapper box of the component.
+  Before:
+  ![image](https://user-images.githubusercontent.com/43561537/212754530-ab847cc2-9026-45e3-a138-14c3c657f373.png)
+
+  After: 
+  ![image](https://user-images.githubusercontent.com/43561537/212754573-010bb538-7a2d-4db2-889d-933cc907a9f1.png)
+
+- Chore: Added Enterprise Options to Login customization ([#27855](https://github.com/RocketChat/Rocket.Chat/pull/27855))
+
+- Chore: Adjust ProgressBar usage ([#27832](https://github.com/RocketChat/Rocket.Chat/pull/27832))
+
+- Chore: anonymous e2e test dispatch error ([#28171](https://github.com/RocketChat/Rocket.Chat/pull/28171))
+
+- Chore: AppsTable UI Tweaks ([#27629](https://github.com/RocketChat/Rocket.Chat/pull/27629))
+
+  ### before
+  ![Kapture 2022-12-23 at 16 00 51](https://user-images.githubusercontent.com/27704687/209394897-0217725b-25b2-4d70-a7eb-404b7f158a31.gif)
+
+
+  ### after
+  ![Kapture 2022-12-23 at 15 59 21](https://user-images.githubusercontent.com/27704687/209394759-0e703463-3d19-43b5-9aa7-b18c4c4cbdef.gif)
+
+- Chore: Aria busy indicators ([#27978](https://github.com/RocketChat/Rocket.Chat/pull/27978))
+
+- Chore: Bump message-parser version and fix typerrors ([#27643](https://github.com/RocketChat/Rocket.Chat/pull/27643))
+
+  Bumping message-parser version and fix gazzodown package errors.
+
+- Chore: Change bundle tags color and refactor app details page header styles ([#27293](https://github.com/RocketChat/Rocket.Chat/pull/27293))
+
+  Increased the right side margin of the app avatar, removed the 'by' substring from the app author metadata, and changed the font scale and colors for the metadata section and short description.
+  Demo image:
+  ![image](https://user-images.githubusercontent.com/43561537/202550456-41bc5216-5f6f-4a15-a38e-2e220f8ab3b5.png)
+
+- Chore: change colors to dark theme on Marketplace ([#27532](https://github.com/RocketChat/Rocket.Chat/pull/27532))
+
+  Fixed some bugs on the new dark theme in the Marketplace page. The new version looks like this now:
+
+  ![new-version](https://user-images.githubusercontent.com/84182706/207443296-b9466105-7dfb-46eb-8f71-eee113c3532b.png)
+
+- Chore: Change Omnichannel aggregations to run on a secondary ([#25346](https://github.com/RocketChat/Rocket.Chat/pull/25346))
+
+- Chore: CI improvements ([#28076](https://github.com/RocketChat/Rocket.Chat/pull/28076))
+
+- Chore: Composer missing Slash Command preview ([#27652](https://github.com/RocketChat/Rocket.Chat/pull/27652))
+
+- Chore: Composer Quote Component ([#27604](https://github.com/RocketChat/Rocket.Chat/pull/27604))
+
+  ### before
+  <img width="1132" alt="Screen Shot 2022-12-26 at 11 01 17" src="https://user-images.githubusercontent.com/27704687/209556499-e3d2c2f3-0950-4622-9afa-63b1e725ecfa.png">
+
+  ### after
+  ![image](https://user-images.githubusercontent.com/27704687/209555642-ca6bdda0-a3f8-4dc1-a34c-d1fb57539b47.png)
+
+- Chore: Composer Styling ([#27620](https://github.com/RocketChat/Rocket.Chat/pull/27620))
+
+- Chore: Composer wrapper around the textarea ([#27658](https://github.com/RocketChat/Rocket.Chat/pull/27658))
+
+- Chore: Convert UserTable on Directory to TS ([#27534](https://github.com/RocketChat/Rocket.Chat/pull/27534) by [@nYCSTs](https://github.com/nYCSTs))
+
+  Rewrote the UserTable component to TS.
+
+- Chore: Create service template ([#27519](https://github.com/RocketChat/Rocket.Chat/pull/27519))
+
+- Chore: Custom emoji empty state ([#27641](https://github.com/RocketChat/Rocket.Chat/pull/27641))
+
+  It also replace `useEndpointData` in favor of `useQuery`
+  ### before
+  ![Screen Shot 2022-12-26 at 15 43 59](https://user-images.githubusercontent.com/27704687/209576037-93744632-a74f-4b0c-926d-b444cf4601e2.png)
+
+  ### after
+  ![Screen Shot 2022-12-26 at 15 43 08](https://user-images.githubusercontent.com/27704687/209576006-4f2f1928-3532-4f42-88fa-ba661a2b7715.png)
+
+- Chore: Custom Sounds Empty State ([#27632](https://github.com/RocketChat/Rocket.Chat/pull/27632))
+
+  It also replace `useEndpointData` in favor of `useQuery`
+
+  ### before
+  ![Screen Shot 2022-12-23 at 17 32 35](https://user-images.githubusercontent.com/27704687/209403136-791a8196-93f3-4fa6-8519-1d48a1d17430.png)
+
+  ### after
+  ![Screen Shot 2022-12-23 at 17 31 50](https://user-images.githubusercontent.com/27704687/209403089-8f426d3e-c09d-447a-93a7-0e50ea97c0ca.png)
+
+- Chore: Deprecate unused omnichannel API ([#27538](https://github.com/RocketChat/Rocket.Chat/pull/27538))
+
+- Chore: Do not rely on external service on tests ([#27874](https://github.com/RocketChat/Rocket.Chat/pull/27874))
+
+- Chore: e2e changes tests ([#27987](https://github.com/RocketChat/Rocket.Chat/pull/27987))
+
+- Chore: e2e omnichannel tests - Close every opened page after the test ([#28152](https://github.com/RocketChat/Rocket.Chat/pull/28152))
+
+- Chore: E2E tests small corrections ([#28066](https://github.com/RocketChat/Rocket.Chat/pull/28066))
+
+- Chore: EmojiPicker Wrapper Styles ([#28049](https://github.com/RocketChat/Rocket.Chat/pull/28049))
+
+- Chore: ExportMessages missing icon ([#27628](https://github.com/RocketChat/Rocket.Chat/pull/27628))
+
+- Chore: FileItem hover color ([#27600](https://github.com/RocketChat/Rocket.Chat/pull/27600))
+
+- Chore: Fix babel config related to TypeScript `declare` usage ([#28029](https://github.com/RocketChat/Rocket.Chat/pull/28029))
+
+- Chore: Fix CI Docker Alpine build missing ([#28138](https://github.com/RocketChat/Rocket.Chat/pull/28138))
+
+- Chore: Fix CI docker publish ([#28134](https://github.com/RocketChat/Rocket.Chat/pull/28134))
+
+- Chore: Fix e2e EE tests not working reliably ([#28061](https://github.com/RocketChat/Rocket.Chat/pull/28061))
+
+- Chore: fix e2e Omnichannel tests ([#28097](https://github.com/RocketChat/Rocket.Chat/pull/28097))
+
+- Chore: Fix Email Inbox flaky test ([#28294](https://github.com/RocketChat/Rocket.Chat/pull/28294))
+
+- Chore: fix EmailInbox intermittent e2e tests ([#27573](https://github.com/RocketChat/Rocket.Chat/pull/27573))
+
+- Chore: Fix fetching Apps-Engine and MongoDB versions for release notes ([#28129](https://github.com/RocketChat/Rocket.Chat/pull/28129))
+
+- Chore: Fix homepage grid items style ([#27527](https://github.com/RocketChat/Rocket.Chat/pull/27527))
+
+  - Change homepage card border-radius from 4px to 8px
+
+- Chore: Improve `ts-node` startup time with `swc` ([#27686](https://github.com/RocketChat/Rocket.Chat/pull/27686))
+
+- Chore: improve global setup e2e ([#28087](https://github.com/RocketChat/Rocket.Chat/pull/28087))
+
+- Chore: Improve service's licence check ([#27872](https://github.com/RocketChat/Rocket.Chat/pull/27872))
+
+- Chore: improve some e2e selectors ([#27936](https://github.com/RocketChat/Rocket.Chat/pull/27936))
+
+- Chore: Improve time of meteor build ([#28128](https://github.com/RocketChat/Rocket.Chat/pull/28128))
+
+- Chore: Invites Empty State ([#27631](https://github.com/RocketChat/Rocket.Chat/pull/27631))
+
+  It also replace `useEndpointData` in favor of `useQuery`
+  ### before
+  ![Screen Shot 2022-12-23 at 16 49 45](https://user-images.githubusercontent.com/27704687/209399990-95b15ba3-0ba9-4ae4-92fa-fed4c1d39d31.png)
+
+  ### after
+  ![Screen Shot 2022-12-23 at 16 48 27](https://user-images.githubusercontent.com/27704687/209399874-1c38f206-c385-49f5-8050-7b4f7b55bd7a.png)
+
+- Chore: KeyboardShortCut color ([#27599](https://github.com/RocketChat/Rocket.Chat/pull/27599))
+
+  <img src='https://user-images.githubusercontent.com/27704687/208955920-f7ea9b50-ae43-44d9-94fc-aa2c5181c5c5.png' width='420px' />
+
+  <img src='https://user-images.githubusercontent.com/27704687/208955954-bf73e9af-9180-4c95-8f98-635fdfb76a2e.png' width='420px' />
+
+- Chore: Livechat convert emoji to ts ([#27425](https://github.com/RocketChat/Rocket.Chat/pull/27425))
+
+- Chore: Manually define shared secrets to reusable workflows ([#28315](https://github.com/RocketChat/Rocket.Chat/pull/28315))
+
+- Chore: Message search changes ([#28001](https://github.com/RocketChat/Rocket.Chat/pull/28001))
+
+- Chore: Migrate cached collections to TypeScript ([#27909](https://github.com/RocketChat/Rocket.Chat/pull/27909))
+
+- Chore: More E2E tests for PDF transcript feature of Omnichannel ([#28110](https://github.com/RocketChat/Rocket.Chat/pull/28110))
+
+- Chore: Move all variables to first step and reduce code duplication ([#28106](https://github.com/RocketChat/Rocket.Chat/pull/28106))
+
+- Chore: move PaletteStyleTag ([#28086](https://github.com/RocketChat/Rocket.Chat/pull/28086))
+
+- Chore: Move service definitions to core services package ([#27546](https://github.com/RocketChat/Rocket.Chat/pull/27546))
+
+- Chore: Move service shutdown logic to each service ([#27690](https://github.com/RocketChat/Rocket.Chat/pull/27690))
+
+- Chore: Notify Marketplace on App Install ([#27925](https://github.com/RocketChat/Rocket.Chat/pull/27925))
+
+  Notifies Rocket.Chat's Marketplace of an app install action. This correlates with the app request flow.
+
+- Chore: OAuth authorization pages reconditioned ([#28085](https://github.com/RocketChat/Rocket.Chat/pull/28085))
+
+- Chore: Omnichannel Sidebar icons alignment ([#27501](https://github.com/RocketChat/Rocket.Chat/pull/27501))
+
+- Chore: Playwright test improvements ([#28100](https://github.com/RocketChat/Rocket.Chat/pull/28100))
+
+- Chore: Presence cap tweaks ([#28058](https://github.com/RocketChat/Rocket.Chat/pull/28058))
+
+- Chore: Purge styles of the legacy `message` template ([#28126](https://github.com/RocketChat/Rocket.Chat/pull/28126))
+
+- Chore: QoL improvements to Omnichannel E2E tests ([#28075](https://github.com/RocketChat/Rocket.Chat/pull/28075))
+
+- Chore: Reduce Less usage in theming ([#27689](https://github.com/RocketChat/Rocket.Chat/pull/27689))
+
+  This PR is a preparation for a coming breaking change on layout colors.
+
+- Chore: Refactor `AudioMessageRecorder` ([#28019](https://github.com/RocketChat/Rocket.Chat/pull/28019))
+
+  [DSA-11]
+
+  ![Kapture 2023-02-13 at 17 24 54](https://user-images.githubusercontent.com/27704687/218567103-1090cf5c-61d1-4bd9-8c0a-d582d614ef85.gif)
+
+- Chore: Refactor `VideoMessageRecorder` ([#27850](https://github.com/RocketChat/Rocket.Chat/pull/27850))
+
+  Jira Issue: [DSA-2]
+  ### before
+  <img width='720px' src='https://user-images.githubusercontent.com/27704687/214734963-00537e4b-ae2e-45b8-87ea-d9dfb18e740c.gif' />
+
+  ### after
+  <img width='720px' src='https://user-images.githubusercontent.com/27704687/214734774-3beb9433-7493-486e-a9b3-c4efc6385c3b.gif' />
+
+- Chore: Refactor CI to improve code reusability and organization ([#28108](https://github.com/RocketChat/Rocket.Chat/pull/28108))
+
+- Chore: Refactor Composer Collapsed Formatters and Actions ([#28039](https://github.com/RocketChat/Rocket.Chat/pull/28039))
+
+  [DSA-19]
+
+  ![Kapture 2023-02-14 at 14 05 19](https://user-images.githubusercontent.com/27704687/218807178-4c280e92-67f2-48ec-afa3-e5b2948120f2.gif)
+
+- Chore: Refactor Composer Dropdown ([#27931](https://github.com/RocketChat/Rocket.Chat/pull/27931))
+
+  ![Screen Shot 2023-02-01 at 17 59 31](https://user-images.githubusercontent.com/27704687/216162082-ea258bb8-5629-4898-a410-6162a0fa008e.png)
+
+- Chore: Refactor Composer Popup ([#28013](https://github.com/RocketChat/Rocket.Chat/pull/28013))
+
+- Chore: Refactor CreateChannelModal ([#27469](https://github.com/RocketChat/Rocket.Chat/pull/27469))
+
+  Jira Issue: [UFR-11]
+  
+  - Replace `useForm`  
+  - Improve UI validations on Modal  
+  - Add ToastBar message on creating a channel  
+  - Fixes `topic` field not being added properly
+
+- Chore: Refactor Directory Tables ([#27646](https://github.com/RocketChat/Rocket.Chat/pull/27646))
+
+  It also replaces `useEndpointData` in favor of `useQuery`
+
+- Chore: Refactor e2e selectors to use roles ([#27582](https://github.com/RocketChat/Rocket.Chat/pull/27582))
+
+- Chore: Refactor message subcomponents ([#27630](https://github.com/RocketChat/Rocket.Chat/pull/27630))
+
+- Chore: Refactor other kinds of message - Phase 1 ([#27712](https://github.com/RocketChat/Rocket.Chat/pull/27712))
+
+  It pays some technical debts on APIs consumed by message-related components.
+
+- Chore: Refactor other kinds of message - Phase 2 ([#27927](https://github.com/RocketChat/Rocket.Chat/pull/27927))
+
+  Migrate "Starred Messages", "Pinned Messages", and "Mentions" from Blaze templates to React components.
+
+- Chore: Refactor useThemeMode in favor of userPreferences ([#28063](https://github.com/RocketChat/Rocket.Chat/pull/28063))
+
+- Chore: Remove `body` template ([#28064](https://github.com/RocketChat/Rocket.Chat/pull/28064))
+
+- Chore: Remove `meteor build --debug` option ([#28170](https://github.com/RocketChat/Rocket.Chat/pull/28170))
+
+- Chore: Remove duplicated functions in tests ([#28336](https://github.com/RocketChat/Rocket.Chat/pull/28336))
+
+- Chore: Remove fail-fast from matrix strategy ([#28153](https://github.com/RocketChat/Rocket.Chat/pull/28153))
+
+- Chore: Remove medium prop from ButtonGroup  ([#27784](https://github.com/RocketChat/Rocket.Chat/pull/27784))
+
+- Chore: Remove method meteor call on message action ([#26213](https://github.com/RocketChat/Rocket.Chat/pull/26213))
+
+- Chore: Remove old tooltip usage ([#26882](https://github.com/RocketChat/Rocket.Chat/pull/26882))
+
+- Chore: Remove Sidebar from Blaze ([#27571](https://github.com/RocketChat/Rocket.Chat/pull/27571))
+
+- Chore: Remove unused Blaze templates after message rewrite ([#28025](https://github.com/RocketChat/Rocket.Chat/pull/28025))
+
+- Chore: Remove unused templates and bump fuselage ([#27606](https://github.com/RocketChat/Rocket.Chat/pull/27606))
+
+- Chore: Replace borders to `default` ([#27667](https://github.com/RocketChat/Rocket.Chat/pull/27667))
+
+- Chore: Replace deprecated color tokens ([#28164](https://github.com/RocketChat/Rocket.Chat/pull/28164))
+
+- Chore: Restrict `ChatMessages API` - Phase 2 ([#27457](https://github.com/RocketChat/Rocket.Chat/pull/27457))
+
+  It split `ChatMessages` service class into a collection of smaller objects, in a composition pattern fashion. Additionally, it loosens its dependency on the DOM tree and assumes almost all methods are asynchronous.
+
+- Chore: Restrict legacy message events ([#27691](https://github.com/RocketChat/Rocket.Chat/pull/27691))
+
+  This PR aims to fix conflicts between the legacy messages and the new ones, specially click events on threads.
+
+- Chore: RoomAutocomplete Debounce Query ([#28083](https://github.com/RocketChat/Rocket.Chat/pull/28083))
+
+- Chore: Service cap ([#28022](https://github.com/RocketChat/Rocket.Chat/pull/28022))
+
+- Chore: Set missing colors ([#27817](https://github.com/RocketChat/Rocket.Chat/pull/27817))
+
+- Chore: Settings regenerator on migration ([#27661](https://github.com/RocketChat/Rocket.Chat/pull/27661))
+
+- Chore: Show different labels based on the call originator on direct calls ([#27729](https://github.com/RocketChat/Rocket.Chat/pull/27729))
+
+  Jira Issue: [VC-26]
+
+- Chore: Sidebar theme ([#27426](https://github.com/RocketChat/Rocket.Chat/pull/27426))
+
+- Chore: SlashCommands Preview ([#28065](https://github.com/RocketChat/Rocket.Chat/pull/28065))
+
+- Chore: Sync `develop` with `master` ([#28043](https://github.com/RocketChat/Rocket.Chat/pull/28043) by [@carlosrodrigues94](https://github.com/carlosrodrigues94) & [@ostjen](https://github.com/ostjen))
+
+- Chore: test turbo cache action ([#28082](https://github.com/RocketChat/Rocket.Chat/pull/28082))
+
+- Chore: Token refactor ([#27655](https://github.com/RocketChat/Rocket.Chat/pull/27655))
+
+- Chore: TwoFactorPass Modals icon misalignment ([#27591](https://github.com/RocketChat/Rocket.Chat/pull/27591))
+
+  ### before 
+  <img width="620" alt="Screen Shot 2022-12-20 at 21 05 24" src="https://user-images.githubusercontent.com/27704687/208790177-aca2ce19-1e8a-4759-8156-3c418897cb12.png">
+
+  ### after
+  <img width="616" alt="Screen Shot 2022-12-20 at 21 04 29" src="https://user-images.githubusercontent.com/27704687/208790090-0a124f58-cb11-41ab-af4d-1715aa0c8f24.png">
+
+- Chore: Update color tokens ([#27704](https://github.com/RocketChat/Rocket.Chat/pull/27704))
+
+  Jira issues: 
+  [DSA-25](https://rocketchat.atlassian.net/browse/DSA-25)
+  [DSA-26](https://rocketchat.atlassian.net/browse/DSA-26)
+  [DSA-27](https://rocketchat.atlassian.net/browse/DSA-27)
+  [DSA-28](https://rocketchat.atlassian.net/browse/DSA-28)
+  [DSA-30](https://rocketchat.atlassian.net/browse/DSA-30)
+  
+  - [x] Fix ScreenshotCarousel tokens  
+  - [x] Replace ScreenshotCarousel Button with IconButton secondary  
+  - [x] Fix UsagePieGraph tokens  
+  - [x] Fix Page.tsx tokens  
+  - [x] Fix VoipFooter tokens  
+  - [x] Fix DeviceIcon token  
+  - [x] Fix SidebarFooterWatermark token  
+  - [x] Fix PaletteDark button hover bg color  
+  - [x] Fix MessageComposerActionsDivider token  
+  - [x] Fix room Announcement colors  
+  - [x] Apply surface-room  
+  - [x] Replace all deprecated Box color tokens usage  
+  - [x] Replace all deprecated Box bg tokens usage
+
+- Chore: Update ESlint rules of client code ([#27427](https://github.com/RocketChat/Rocket.Chat/pull/27427))
+
+- Chore: Update Some Composer Icons ([#27862](https://github.com/RocketChat/Rocket.Chat/pull/27862))
+
+  Jira Issue [DSA-20]
+
+  ### before
+  ![Screen Shot 2023-01-26 at 18 09 19](https://user-images.githubusercontent.com/27704687/214950981-794d1f23-b33f-4fcf-9ab1-f042925e5639.png)
+
+  ### after
+  ![Screen Shot 2023-01-26 at 18 08 28](https://user-images.githubusercontent.com/27704687/214950829-357ea6eb-9fde-4144-8819-5052e21ae604.png)
+
+- Chore: Update tokens ([#28079](https://github.com/RocketChat/Rocket.Chat/pull/28079))
+
+- Chore: Update tsconfig base target to es2020 ([#27552](https://github.com/RocketChat/Rocket.Chat/pull/27552))
+
+  The base files are not split into two other files, a "client" and a "server" file. Both extends the new base one. Packages should extend either "client" or "server" ones:
+
+  ```mermaid
+  graph TD;
+    base[tsconfig.base.json]-->client[tsconfig.base.client.json];
+    base-->server[tsconfig.base.server.json];
+    server-->s1["@rocket.chat/models"];
+    server-->s2["@rocket.chat/ddp-streamer"];
+    server-->s3[...];
+    client-->c1["@rocket.chat/ui-theming"];
+    client-->c2["@rocket.chat/fuselage-ui-kit"];
+    client-->c3[...];
+  ```
+
+  Important changes:
+  
+  - The client config `target` have been bumped to `es2015` (it was `es5` before)  
+  - The server config `target` have been bumped to `es2020`  
+  - The default value for `jsx` is `react-jsx`  
+  - Raised `"noUnusedLocals": true` to a base config, so had to remove a bunch of imports to `React` that were not being used
+
+- Chore: Upgrade `mongodb` typings ([#27424](https://github.com/RocketChat/Rocket.Chat/pull/27424))
+
+  It upgrades the `mongodb` package to overcome the circular reference issue of `IMessage`.
+
+- Chore: Upgrade EE license for CI ([#27682](https://github.com/RocketChat/Rocket.Chat/pull/27682))
+
+- Chore: use useQuery in place of deprecated useEndpointData ([#27673](https://github.com/RocketChat/Rocket.Chat/pull/27673) by [@Dnouv](https://github.com/Dnouv))
+
+  Chore done:
+  useEndpointData -> useEndpoint for:
+  
+  - `/apps/meteor/client/views/admin/`
+    - `apps`
+    - `customEmoji`
+    - `customSounds`
+    - `customUserStatus`
+    - `integrations`
+    - `invites`
+    - `oauthApps`
+    - `permissions`
+    - `rooms`
+    - `users`
+
+- Chore: Wait message to not be Busy ([#28000](https://github.com/RocketChat/Rocket.Chat/pull/28000))
+
+- Chore(deps): Bump thehanimo/pr-title-checker from 1.3.4 to 1.3.6 ([#27884](https://github.com/RocketChat/Rocket.Chat/pull/27884) by [@dependabot[bot]](https://github.com/dependabot[bot]))
+
+- i18n: Language update from LingoHub 🤖 on 2022-12-05Z ([#27450](https://github.com/RocketChat/Rocket.Chat/pull/27450))
+
+- i18n: Language update from LingoHub 🤖 on 2022-12-22Z ([#27618](https://github.com/RocketChat/Rocket.Chat/pull/27618))
+
+- i18n: Language update from LingoHub 🤖 on 2023-01-09Z ([#27705](https://github.com/RocketChat/Rocket.Chat/pull/27705))
+
+- i18n: Language update from LingoHub 🤖 on 2023-01-23Z ([#27814](https://github.com/RocketChat/Rocket.Chat/pull/27814))
+
+- i18n: Language update from LingoHub 🤖 on 2023-02-14Z ([#28036](https://github.com/RocketChat/Rocket.Chat/pull/28036))
+
+- i18n: Update Hungarian translation ([#27575](https://github.com/RocketChat/Rocket.Chat/pull/27575) by [@urbalazs](https://github.com/urbalazs))
+
+- Merge master into develop & Set version to 5.5.0-develop ([#27452](https://github.com/RocketChat/Rocket.Chat/pull/27452))
+
+- Regression:  Fix mentioning rooms with special chars ([#28206](https://github.com/RocketChat/Rocket.Chat/pull/28206))
+
+- Regression:  Fix sidebar horizontal scrolling ([#28125](https://github.com/RocketChat/Rocket.Chat/pull/28125))
+
+- Regression: "Enable unlimited apps" button on installation modal doesn't do anything ([#28132](https://github.com/RocketChat/Rocket.Chat/pull/28132))
+
+- Regression: `Admin UI -> Rooms` Search filter not working ([#27970](https://github.com/RocketChat/Rocket.Chat/pull/27970))
+
+- Regression: 0 appearing on sidebar on specific occasions ([#28056](https://github.com/RocketChat/Rocket.Chat/pull/28056))
+
+  Fixed faulty logic
+
+- Regression: Add auto translate option back to live chat room ([#28139](https://github.com/RocketChat/Rocket.Chat/pull/28139))
+
+  Add the `translation` option to the live chat room;
+  The behavior of this feature in live chat rooms is quite different from direct and group messages. In these rooms, you need to activate and set up the language, while in the live chat room, the `translate` option should always appear for every room and should use the application language to translate.
+
+- Regression: Add button-icon-disabled-color to the palette ([#27522](https://github.com/RocketChat/Rocket.Chat/pull/27522))
+
+- Regression: Add support for 2FA errors to `Meteor.callAsync` ([#27767](https://github.com/RocketChat/Rocket.Chat/pull/27767))
+
+- Regression: Add tshow to composer params ([#27602](https://github.com/RocketChat/Rocket.Chat/pull/27602))
+
+- Regression: Added anchors elements to the allowed list to be clicked ([#28341](https://github.com/RocketChat/Rocket.Chat/pull/28341))
+
+- Regression: Adjusted components using PaginatedMultiSelected to be compatible with new Fuselage version ([#28233](https://github.com/RocketChat/Rocket.Chat/pull/28233))
+
+- Regression: Adjusted departments upsell modal message ([#28258](https://github.com/RocketChat/Rocket.Chat/pull/28258))
+
+  This PR adjusts the logic to display the correct message on the departments upsell modal. This affects users with a trial license, expired expired licence, as well as no licence.
+
+- Regression: Adjusted departments upsell modal to check for licence and modules ([#28246](https://github.com/RocketChat/Rocket.Chat/pull/28246))
+
+  This PR fixes a regression on the departments upsell modal, for the rare cases where the workspace has an enterprise licence but has no active modules. This changes improves the check to also consider modules.
+
+- Regression: App requests notify admin function generating wrong link ([#28111](https://github.com/RocketChat/Rocket.Chat/pull/28111))
+
+  Fixed a development oversight in which the link of the app request Rocket.Cat message was generated without the marketplace version of the app nor the requests tab param.
+  Demo gif (before):
+  ![notify-admin-before](https://user-images.githubusercontent.com/43561537/220368522-084a171c-52ab-48b4-aa43-f73f6cc12ca6.gif)
+
+  Demo gif (after):
+  ![notify-admin-after](https://user-images.githubusercontent.com/43561537/220368591-93c6e157-922f-4b48-b474-f5c65c2b04b8.gif)
+
+- Regression: Apps provider not handling apps lists correctly ([#28264](https://github.com/RocketChat/Rocket.Chat/pull/28264))
+
+  ## Jira tasks: [MKP-272](https://rocketchat.atlassian.net/browse/MKP-272?atlOrigin=eyJpIjoiNDQzMmY4NmYyYTEyNDJjMmJmZmY3ZGUyYmQ3Y2Y2Y2EiLCJwIjoiaiJ9) [MKP-270](https://rocketchat.atlassian.net/browse/MKP-270?atlOrigin=eyJpIjoiOWRhYWM5N2VmY2UwNDAyMjlhY2ZiM2IwYjMwYWQxOWUiLCJwIjoiaiJ9)
+  Fixed a bug in which the AppsProvider would not handle the marketplace, installed, and private apps lists correctly when running the install, update, and delete listeners. This also solved related bugs of app duplication during installation and loss of reactivity during uninstalls and status changes(private apps only).
+  Demo gif: ![apps-provider-behavior](https://user-images.githubusercontent.com/43561537/222833328-1d9836c0-738c-41d5-ac17-a5d86452ea83.gif)
+
+- Regression: Apps-Engine startup process was faulty ([#28322](https://github.com/RocketChat/Rocket.Chat/pull/28322))
+
+  * App loading routine was forcing apps to be enabled, even if they were previously disabled  
+  * Isolated Apps startup routine for more granular control
+
+- Regression: Attachment auto size ([#28332](https://github.com/RocketChat/Rocket.Chat/pull/28332))
+
+  Attachment Image or Image Preview size in small screens are not respecting container boundaries
+ 
+ **Before:**
+  ![image](https://user-images.githubusercontent.com/20212776/223826977-507e0b57-aba1-471d-a901-30198a51d82f.png)
+
+
+  **NOW:**
+  ![image](https://user-images.githubusercontent.com/20212776/223826829-7c6006bd-0738-4cd4-acc6-ba8b8c274e3b.png)
+
+- Regression: Avoid rendering unsupported media on PDFs & update quote styling ([#28048](https://github.com/RocketChat/Rocket.Chat/pull/28048))
+
+  - Fix faulty logic when deciding which attachment to render based on the mime type of it
+  
+  - Replace media query syntax `(width < 767px)` with `(max-width: 767px)` since the first one isn't supported on safari  
+  - Fix a bug when has bold text in multiple rows.
+
+- Regression: broken message exhibition when edited ([#28180](https://github.com/RocketChat/Rocket.Chat/pull/28180))
+
+  Sometimes a message will have the fields `editedBy` and `editedAt` present but set to `null`. This PR handle this situation.
+
+- Regression: Broken message jump onto threads ([#28095](https://github.com/RocketChat/Rocket.Chat/pull/28095))
+
+- Regression: Broken room and message composer events ([#27754](https://github.com/RocketChat/Rocket.Chat/pull/27754))
+
+  It hotfixes two issues:  
+  1. user card not opening on clicking in user mentions;  
+  2. slash commands inside threads sending results to the main room.
+
+- Regression: Change names of requested apps sorting options ([#28312](https://github.com/RocketChat/Rocket.Chat/pull/28312))
+
+  ## Jira task: [MKP-253](https://rocketchat.atlassian.net/browse/MKP-253)
+  Changed the name of the requested app-related sorting options to cause less confusion regarding their expected behavior and solved some UX problems with the initial state of the sorting filter when on different marketplace pages. Also fixed some typos.
+  Demo image:
+  ![image](https://user-images.githubusercontent.com/43561537/223466309-60f02a71-c21e-4607-a2b4-5de81c3b3cd5.png)
+
+- Regression: Change text of buttons tooltips on custom content homepage block ([#28094](https://github.com/RocketChat/Rocket.Chat/pull/28094))
+
+  ### Show to workspace Button:
+  
+  * No custom content added:
+
+  “This action will become available after the custom content has been added”
+  
+  * W/ custom content:
+
+  "Not it's visible for everyone"
+  "Not it's visible only for admins"
+
+  ---
+
+  ### Show only this content Button:
+  
+  * if CE → “Enterprise only”  
+  * if EE and disabled → "This action will become available after the custom content has been added and made visible to everyone”  
+  * if EE and enabled → “It will hide…" or “It will show…"
+
+- Regression: Change wording on department removal setting ([#28051](https://github.com/RocketChat/Rocket.Chat/pull/28051))
+
+- Regression: Client crashing when updating CachedChatSubscription ([#28062](https://github.com/RocketChat/Rocket.Chat/pull/28062))
+
+  Currently the typing of 'ISubscription' is a little off from reality. The property `ts` is optional, and this can cause crashes when trying to access `ts`'s properties.
+
+  I decided to avoid changing the type definitions for ISubscription this time, since it will probably impact many other places, and that's not the scope of this task.
+
+- Regression: Client is not loading new settings from server ([#28248](https://github.com/RocketChat/Rocket.Chat/pull/28248))
+
+- Regression: Client-side checks for message deletion ([#27590](https://github.com/RocketChat/Rocket.Chat/pull/27590))
+
+- Regression: Composer fix join room action ([#27657](https://github.com/RocketChat/Rocket.Chat/pull/27657))
+
+- Regression: Composer Toolbox overlapping borders ([#27714](https://github.com/RocketChat/Rocket.Chat/pull/27714))
+
+- Regression: Creating Custom status  ([#28292](https://github.com/RocketChat/Rocket.Chat/pull/28292))
+
+  User is not able to create a custom status from the admin section. Workspace > User Status > New
+
+  The SAVE button is not performing any action
+  ![image](https://user-images.githubusercontent.com/20212776/223121583-769a571a-365d-4f72-8d0b-f43016d31546.png)
+
+- Regression: DateRangePicker errors ([#28015](https://github.com/RocketChat/Rocket.Chat/pull/28015))
+
+  The date range picker for `Yesterday`,  `This Week`, `Previous Week`, and `This Month` in the Message Audit page, was not selecting the correct date range and it was causing form validation issues.
+
+  **Error Evidence:** 
+  ![Clipboard   - February 10, 2023 6_12 PM](https://user-images.githubusercontent.com/20212776/218519404-f8ab1e02-7b95-452f-8433-374b2208b02a.png)
+  ![Clipboard   - February 10, 2023 6_10 PM](https://user-images.githubusercontent.com/20212776/218519412-4392b3cd-7e21-42f0-aac5-4c30a980b9af.png)
+  ![Clipboard   - February 10, 2023 6_09 PM](https://user-images.githubusercontent.com/20212776/218519417-6726fea6-34bd-41fc-b7fb-e7e3c5ba53cd.png)
+  ![Clipboard   - February 10, 2023 6_08 PM](https://user-images.githubusercontent.com/20212776/218519423-8ec8f0b2-6ad6-4d3c-b678-5383792d4ff3.png)
+
+- Regression: Decrypt thread main message for room ([#28262](https://github.com/RocketChat/Rocket.Chat/pull/28262))
+
+- Regression: Denied Camera permission do not disable VideoMessageAction ([#28210](https://github.com/RocketChat/Rocket.Chat/pull/28210))
+
+  #### before
+  ![Kapture 2023-02-28 at 16 12 58](https://user-images.githubusercontent.com/27704687/221955658-2c733275-e193-4029-ba9e-777caf3f03ba.gif)
+
+  #### after
+  ![Kapture 2023-02-28 at 16 09 20](https://user-images.githubusercontent.com/27704687/221954849-f4379294-0189-4466-a523-ab71e1a8d0af.gif)
+
+- Regression: Denied Microphone permission disables composer ([#28133](https://github.com/RocketChat/Rocket.Chat/pull/28133))
+
+  ![Kapture 2023-02-23 at 13 10 38](https://user-images.githubusercontent.com/27704687/220964655-b2a3b69c-9b32-4f82-b585-49ac0118297a.gif)
+
+- Regression: Disable video message when composer is in use ([#28073](https://github.com/RocketChat/Rocket.Chat/pull/28073))
+
+- Regression: Disabled grandfathered apps must have the option to be enabled ([#28266](https://github.com/RocketChat/Rocket.Chat/pull/28266))
+
+  Grandfathered apps will not follow the new enabling flow and it should always be possible to enable them
+
+- Regression: Emoji picker styling ([#28046](https://github.com/RocketChat/Rocket.Chat/pull/28046))
+
+  ### Before
+  <img width="477" alt="image" src="https://user-images.githubusercontent.com/58601732/218936623-832066e0-1854-4b4f-9579-03403ef00a82.png">
+
+  ### After
+  <img width="425" alt="image" src="https://user-images.githubusercontent.com/58601732/218940006-c87b91eb-95b5-46db-8a42-152201b3ec93.png">
+
+- Regression: EmojiPicker missing shadow on dark mode ([#28236](https://github.com/RocketChat/Rocket.Chat/pull/28236))
+
+  #### before
+  ![Screen Shot 2023-03-01 at 18 23 18](https://user-images.githubusercontent.com/27704687/222267993-3958de34-5f28-4550-ae93-ef81af034b21.png)
+
+  #### after
+  ![Screen Shot 2023-03-01 at 18 22 14](https://user-images.githubusercontent.com/27704687/222267788-e39d292b-5dc2-4797-b227-1b47008075e7.png)
+
+- Regression: EnableUnlimitedApps button action ([#28221](https://github.com/RocketChat/Rocket.Chat/pull/28221))
+
+  "Enable unlimited apps" button on installation modal doesn't do anything. Now it redirects to the `'go-fully-featured-registered'` page.
+
+- Regression: fix a wrong behavior with the Department table row ([#28157](https://github.com/RocketChat/Rocket.Chat/pull/28157))
+
+- Regression: Fix agent departments select value ([#28077](https://github.com/RocketChat/Rocket.Chat/pull/28077))
+
+- Regression: fix api tests ([#28067](https://github.com/RocketChat/Rocket.Chat/pull/28067))
+
+- Regression: Fix app status filter not working in private apps page ([#28198](https://github.com/RocketChat/Rocket.Chat/pull/28198))
+
+  ## Jira task: [MKP-266](https://rocketchat.atlassian.net/browse/MKP-266?atlOrigin=eyJpIjoiMzlhNmRhZDNmOGZkNDBmZGEyY2FkNTQ5ZTVlZjUzNzkiLCJwIjoiaiJ9)
+  Fixed a bug in which the app status filter didn't work because of the new 'enabled*' and 'disabled*' app status.
+  Demo gif:
+  ![private-apps-status-filter](https://user-images.githubusercontent.com/43561537/221709473-633f6866-e921-438d-9a20-e6b341823cbf.gif)
+
+- Regression: fix close flextab on click outside the container ([#27857](https://github.com/RocketChat/Rocket.Chat/pull/27857))
+
+- Regression: Fix composer restore ([#27642](https://github.com/RocketChat/Rocket.Chat/pull/27642))
+
+- Regression: Fix Custom CSS  ([#27993](https://github.com/RocketChat/Rocket.Chat/pull/27993))
+
+- Regression: Fix department edit breaking ([#28053](https://github.com/RocketChat/Rocket.Chat/pull/28053))
+
+- Regression: Fix emojiPicker reactivity on load-more ([#28331](https://github.com/RocketChat/Rocket.Chat/pull/28331))
+
+- Regression: Fix file upload on collapsed composer menu ([#28071](https://github.com/RocketChat/Rocket.Chat/pull/28071))
+
+- Regression: Fix go to ThreadList hook ([#27663](https://github.com/RocketChat/Rocket.Chat/pull/27663))
+
+- Regression: Fix hasLicense failing due call stack limit reasons ([#28304](https://github.com/RocketChat/Rocket.Chat/pull/28304))
+
+- Regression: Fix improper usage of useEndpointData ([#28050](https://github.com/RocketChat/Rocket.Chat/pull/28050))
+
+- Regression: Fix intermitent apps engine startup ([#28254](https://github.com/RocketChat/Rocket.Chat/pull/28254))
+
+  Makes the apps limitation functionality depend on methods from the Apps Engine's service instead of a dynamic import of the apps orchestrator, making the engine's load process deterministic.
+
+- Regression: Fix missing Formatting items ([#28044](https://github.com/RocketChat/Rocket.Chat/pull/28044))
+
+- Regression: Fix not showing global search option ([#28342](https://github.com/RocketChat/Rocket.Chat/pull/28342))
+
+- Regression: Fix omnichannel chat forwarding not working ([#28117](https://github.com/RocketChat/Rocket.Chat/pull/28117))
+
+- Regression: Fix presence broadcast not re-enabling ([#28017](https://github.com/RocketChat/Rocket.Chat/pull/28017))
+
+- Regression: Fix private apps already in marketplace not shown properly on app details page ([#28199](https://github.com/RocketChat/Rocket.Chat/pull/28199))
+
+  ## Jira task: [MKP-267](https://rocketchat.atlassian.net/browse/MKP-267?atlOrigin=eyJpIjoiMDVmNDJjYjFjZDNiNGU4NTk4NGQ4ODZjMjM3NDYwNDciLCJwIjoiaiJ9)
+  Fixed a bug in which apps that already existed in the marketplace would not show properly when installed via the private apps page.
+  Demo gif:
+  ![private-apps-same-app](https://user-images.githubusercontent.com/43561537/221710893-004adb81-2dd7-4ad4-b0c6-18b644415ac0.gif)
+
+- Regression: Fix RegisterForm Translations ([#28156](https://github.com/RocketChat/Rocket.Chat/pull/28156))
+
+- Regression: Fix remove user from room shows skeleton ([#28247](https://github.com/RocketChat/Rocket.Chat/pull/28247))
+
+  When the user is removed from a public channel and has it open it will show a grey placeholder screen
+
+  Now, it appears the Join button as usual
+
+- Regression: Fix slash command with preview ([#28127](https://github.com/RocketChat/Rocket.Chat/pull/28127))
+
+- Regression: Fix slash commands ([#28168](https://github.com/RocketChat/Rocket.Chat/pull/28168))
+
+- Regression: fix Thread horizontal scrolling ([#28327](https://github.com/RocketChat/Rocket.Chat/pull/28327))
+
+- Regression: Fix toggle theme breaking UI ([#28161](https://github.com/RocketChat/Rocket.Chat/pull/28161))
+
+- Regression: Fix write stream error on user data export ([#27683](https://github.com/RocketChat/Rocket.Chat/pull/27683))
+
+- Regression: Fixed room edit custom field validation ([#28078](https://github.com/RocketChat/Rocket.Chat/pull/28078))
+
+  This PR fixes custom fields validations not being properly triggered/cleared on the room edit page.
+
+- Regression: Fixed triggers edit form not being properly updated ([#28235](https://github.com/RocketChat/Rocket.Chat/pull/28235))
+
+- Regression: Formatted text rendered by UI Kit ([#28060](https://github.com/RocketChat/Rocket.Chat/pull/28060))
+
+- Regression: Gracefully stop DDP Streamer publication and close WS ([#28121](https://github.com/RocketChat/Rocket.Chat/pull/28121))
+
+- Regression: Hide price and category filters when inside of private apps page ([#28188](https://github.com/RocketChat/Rocket.Chat/pull/28188))
+
+  ## Jira task: [MKP-265](https://rocketchat.atlassian.net/browse/MKP-265?atlOrigin=eyJpIjoiMGUyMjI0ZTJjNjg1NDc5ZWE0Y2U4NDVkMzk4MmRmYmEiLCJwIjoiaiJ9)
+  The price and category filters dont make sense for private apps so when inside of the private apps page these filters will now be hidden.
+  Demo image:
+  ![image](https://user-images.githubusercontent.com/43561537/221595718-c812861a-672e-44ac-bb03-6046064e420a.png)
+
+- Regression: Hide Workspace registration feature for non-admin users ([#28154](https://github.com/RocketChat/Rocket.Chat/pull/28154))
+
+- Regression: Image Attachment Description size ([#28149](https://github.com/RocketChat/Rocket.Chat/pull/28149))
+
+  The Image Attachment is breaking lines to match the size of the image, should follow the same size of the normal message.
+
+  **Previous:** 
+  ![image](https://user-images.githubusercontent.com/20212776/221175529-e574fbdb-9069-48ae-9946-d6ea475ba4bf.png)
+
+  **Current:** 
+  ![image](https://user-images.githubusercontent.com/20212776/221175349-486b4c40-16a2-40ab-9593-089963b6315b.png)
+
+- Regression: Incorrect installation flow on app detail and upload app pages ([#28173](https://github.com/RocketChat/Rocket.Chat/pull/28173))
+
+  The install button displayed in the App detail page of an app from the Marketplace that hasn't been installed in the workspace didn't follow the same installation steps performed in the app list on Explore or Enterprise pages.
+
+  This PR isolates the installation handler so the exact same functions are used in both places.
+
+  The same problem was solved in the Upload App page
+
+- Regression: Incorrect system message upon adding/editing SLA policy for a room. ([#28151](https://github.com/RocketChat/Rocket.Chat/pull/28151))
+
+- Regression: Installation of some apps fail ([#28265](https://github.com/RocketChat/Rocket.Chat/pull/28265))
+
+  Installation was failing for apps that did not include a set o permissions required because the process was short circuiting in those cases. However, they are valid as they signify apps that function with the default permission set
+
+- Regression: Jump to message not working ([#28163](https://github.com/RocketChat/Rocket.Chat/pull/28163))
+
+- Regression: Message > `messageActionDefault`> Copy and Report ([#28040](https://github.com/RocketChat/Rocket.Chat/pull/28040))
+
+  This regression was probably generated by the Attachments rewrite.
+
+  Issue 1: When selecting the action `Copy` on the message toolbox with Attachment Messages (messages with files/images)
+  The copied content was empty because was getting from an empty prop.
+
+  **Previous output:**
+  ![output2](https://user-images.githubusercontent.com/20212776/218820716-e5c6b9cf-8968-4ee7-9e87-f958edcc7fdf.jpg)
+
+  **Current output:**
+  ![output1](https://user-images.githubusercontent.com/20212776/218820706-c26ff106-1eb9-4e07-bb71-a4f97cc21d97.jpg)
+
+
+  Issue 2: When selecting the action `Report` the reported message was showing an unformatted message (with markdown tokens)
+
+  **Previous output:**
+  ![output4](https://user-images.githubusercontent.com/20212776/218821154-2090a79d-58ee-4717-8646-e1eb2b5ad46e.jpg)
+
+  **Current output:**
+  ![output3](https://user-images.githubusercontent.com/20212776/218821189-e820b58e-1128-4a34-80d8-0aadeb880830.jpg)
+
+- Regression: message box issues ([#27495](https://github.com/RocketChat/Rocket.Chat/pull/27495))
+
+  It fixes some problems introduced/exposed after refactoring the `ChatMessages` API.
+
+- Regression: message-parse version update ([#28245](https://github.com/RocketChat/Rocket.Chat/pull/28245))
+
+  Regression to fix URL parsing issues
+  ![image](https://user-images.githubusercontent.com/20212776/222496497-17ee54be-0c45-403f-97b9-95d7428328d8.png)
+
+- Regression: Missing contexts on contextual bar ([#27734](https://github.com/RocketChat/Rocket.Chat/pull/27734))
+
+  It should fixes crashes on starred, pinned, and mentioned messages while those are migrating from Blaze to React.
+
+- Regression: more message box issues ([#27499](https://github.com/RocketChat/Rocket.Chat/pull/27499))
+
+  It handles issues regarding editing messages.
+
+- Regression: New messages not reflected in the chat window for queued chats. ([#28145](https://github.com/RocketChat/Rocket.Chat/pull/28145))
+
+- Regression: OAuth Login ([#28303](https://github.com/RocketChat/Rocket.Chat/pull/28303))
+
+  Login flow with Rocket.Chat as an OAuth provider was broken
+
+- Regression: OAuthApps are added with empty string `_id` field ([#28257](https://github.com/RocketChat/Rocket.Chat/pull/28257))
+
+  - Fix OAuthApps added to the database with a empty string `_id` field.
+
+- Regression: Open Thread ([#27640](https://github.com/RocketChat/Rocket.Chat/pull/27640))
+
+- Regression: Re-add app signature migration to fix the faulty previous one ([#28107](https://github.com/RocketChat/Rocket.Chat/pull/28107))
+
+  Previously merged migration files ended up in a faulty migration
+
+- Regression: Rectifying thread layout ([#27680](https://github.com/RocketChat/Rocket.Chat/pull/27680))
+
+  This PR fixes:  
+  - the size and scrolling area of the list of messages;  
+  - the margin and general style of "Also send to channel" checkbox;  
+  - the size of link previews.
+
+- Regression: Regular users were not able to leave federated rooms ([#28148](https://github.com/RocketChat/Rocket.Chat/pull/28148))
+
+  When regular users (not owners, nor moderators) tried to leave federated rooms, they were not allowed to do so due to a bad permission check.
+
+  Jira: FED-88
+
+- Regression: Remove duplicated broadcast App events ([#28310](https://github.com/RocketChat/Rocket.Chat/pull/28310))
+
+- Regression: Remove unnecessary messages from Email transcript ([#28165](https://github.com/RocketChat/Rocket.Chat/pull/28165))
+
+- Regression: run clientMessageRecieved hooks on thread main message ([#27962](https://github.com/RocketChat/Rocket.Chat/pull/27962))
+
+- Regression: Save button is not enable while trying to save contact manager ([#28183](https://github.com/RocketChat/Rocket.Chat/pull/28183) by [@FabioCavaleti](https://github.com/FabioCavaleti))
+
+- Regression: Scroll bars in sidebar ([#28091](https://github.com/RocketChat/Rocket.Chat/pull/28091))
+
+- Regression: Scrolling on threads ([#28298](https://github.com/RocketChat/Rocket.Chat/pull/28298))
+
+- Regression: SendFileLivechatMessage using deprecated prop affecting PDF transcript ([#28225](https://github.com/RocketChat/Rocket.Chat/pull/28225))
+
+- Regression: Show mention instead of the name of the user in app request messages ([#28200](https://github.com/RocketChat/Rocket.Chat/pull/28200))
+
+  ## Jira task: [MKP-249](https://rocketchat.atlassian.net/browse/MKP-249?atlOrigin=eyJpIjoiYmNmMjBjOGI5OGUwNGVhMTg1NGMyNDZhMGYzMGY4YWMiLCJwIjoiaiJ9)
+  Stopped using the name of users that requested apps and now the app request messages directly mention the users.
+  Demo image:
+  ![image](https://user-images.githubusercontent.com/43561537/221995968-c6e4dc7e-9052-4121-b5d0-610a1fbe7ea1.png)
+
+- Regression: Show messages instead of the composer when there is no action available on federated rooms ([#28093](https://github.com/RocketChat/Rocket.Chat/pull/28093))
+
+  Rules:
+  If the federation module is disabled within the workspace: **do not show the composer and show a message instead**;
+
+  If the federation module is enabled, the user is not part of the room, and the workspace is a CE environment: **do not show the composer and show a message instead.**
+
+  If the federation module is enabled, the is not part of the room, but the workspace is an EE environment: **show the composer with the Join button**
+
+  If everything is enabled, and the user is already part of the room: **show the normal composer**
+
+  Jira: [FED-82]
+
+- Regression: Sidebar collapsing on extra small views ([#27651](https://github.com/RocketChat/Rocket.Chat/pull/27651))
+
+  ### before
+  <img width="382" alt="Screen Shot 2022-12-27 at 10 39 21" src="https://user-images.githubusercontent.com/27704687/209674871-6eb2171d-6fbf-4539-8af6-c382019d1748.png">
+
+
+  ### after
+  <img width="381" alt="Screen Shot 2022-12-27 at 10 38 10" src="https://user-images.githubusercontent.com/27704687/209674727-6b4f989d-a0d1-43a2-a532-d879521675d3.png">
+
+- Regression: Slash commands detected at any line ([#28142](https://github.com/RocketChat/Rocket.Chat/pull/28142))
+
+- Regression: Small fixes to installation flow ([#28160](https://github.com/RocketChat/Rocket.Chat/pull/28160))
+
+  Some UI fixes on app installation flow:  
+  * Some apps were being incorrectly shown as "Enabled"
+  App status `INITIALIZED` was wrongly considered as meaning an app was "Enabled". That's not the case.
+
+  It was introduced there to mark apps as "installed", but this is not the case anymore.  #27330 wanted to solve the situation where an app was initially shown as disabled right after it was installed, and a different solution to this will be provided by changing how Apps-Engine communicates status changes to the UI.
+  
+  * Some installed apps in the "Installed" screen incorrectly not being displayed as grandfathered  
+  * Installation modal being shown in EE where it shouldn't  
+  * Installation modal showed wrong label when installing apps from Marketplace
+
+- Regression: Support generating pdfs from queue ([#28162](https://github.com/RocketChat/Rocket.Chat/pull/28162))
+
+  This removes a code validation that prevented PDF files from being generated for rooms that were closed directly from the queue.
+
+  After discussing with product, this is a behavior we want and so we're removing the code preventing it and updating the translation keys.
+
+- Regression: Tooltip for More options dont disappear after click. ([#28201](https://github.com/RocketChat/Rocket.Chat/pull/28201))
+
+- Regression: UiKit message surface styles ([#28213](https://github.com/RocketChat/Rocket.Chat/pull/28213))
+
+- Regression: Undefined default message context ([#27870](https://github.com/RocketChat/Rocket.Chat/pull/27870))
+
+  It fixes some contextual bar tabs (e.g. "Mentions").
+
+- Regression: Update color tokens for voip footer ([#28197](https://github.com/RocketChat/Rocket.Chat/pull/28197))
+
+- Regression: Update Composer Formatters Translation Keys ([#28228](https://github.com/RocketChat/Rocket.Chat/pull/28228))
+
+- Regression: upserting data into cached collections ([#27965](https://github.com/RocketChat/Rocket.Chat/pull/27965))
+
+  This one should get rid of "grey" (temporary) messages.
+
+- Regression: Video Recorder "record" button alignment ([#28122](https://github.com/RocketChat/Rocket.Chat/pull/28122))
+
+  ### Before
+  <img width="100" alt="image" src="https://user-images.githubusercontent.com/2263066/220740337-82668932-0ac4-4b43-8a26-07fdb4cb0cd4.png">
+  <img width="100" alt="image" src="https://user-images.githubusercontent.com/2263066/220740566-a1d14f75-c207-4f7f-8422-3e15386a6b11.png">
+
+  ### After
+  <img width="100" alt="image" src="https://user-images.githubusercontent.com/2263066/220740404-7dd22522-5f55-4538-aa3d-ddf70cecc9a5.png">
+  <img width="100" alt="image" src="https://user-images.githubusercontent.com/2263066/220740699-7b34e5e6-2f6c-4169-ac13-55d73b5263bf.png">
+
+- Regression: View mode preferences without the selected option by default ([#28120](https://github.com/RocketChat/Rocket.Chat/pull/28120))
+
+  After removing all Meteor Blaze templates from the project, the View mode preferences started presenting the issue:
+
+  No option is selected by default when the view mode preferences are open.
+
+  Possible reason: React does allow you to use name attributes in the input tag, but it may cause some issues with radio buttons. One possible reason is that React uses a synthetic event system that does not rely on native HTML attributes, since we had the wrapper and several blaze templates in the project, this could be effecting this behavior ignoring the name attribute in the inputs.
+
+
+  **Previous:**
+  ![image](https://user-images.githubusercontent.com/20212776/220721444-51e32397-5106-4f16-8af9-7b7e5d7209ea.png)
+
+
+  **Current:**
+  ![image](https://user-images.githubusercontent.com/20212776/220721529-77af023b-951a-44f6-82a8-b2c18a7d0950.png)
+
+- Regression: Visitor abandonment job not working properly ([#28209](https://github.com/RocketChat/Rocket.Chat/pull/28209))
+
+- Regression: Zapier Callout using wrong props ([#28311](https://github.com/RocketChat/Rocket.Chat/pull/28311))
+
+- Release 5.4.4 ([#28333](https://github.com/RocketChat/Rocket.Chat/pull/28333))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@Dnouv](https://github.com/Dnouv)
+- [@Educg550](https://github.com/Educg550)
+- [@FabioCavaleti](https://github.com/FabioCavaleti)
+- [@Nabhag8848](https://github.com/Nabhag8848)
+- [@carlosrodrigues94](https://github.com/carlosrodrigues94)
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+- [@henit-chobisa](https://github.com/henit-chobisa)
+- [@jschirrmacher](https://github.com/jschirrmacher)
+- [@lingohub[bot]](https://github.com/lingohub[bot])
+- [@matheuslc](https://github.com/matheuslc)
+- [@nYCSTs](https://github.com/nYCSTs)
+- [@ostjen](https://github.com/ostjen)
+- [@pouyadarabi](https://github.com/pouyadarabi)
+- [@try-catch-stack](https://github.com/try-catch-stack)
+- [@urbalazs](https://github.com/urbalazs)
+- [@weslley543](https://github.com/weslley543)
+- [@xareyli](https://github.com/xareyli)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@AlenDavid](https://github.com/AlenDavid)
+- [@AllanPazRibeiro](https://github.com/AllanPazRibeiro)
+- [@Harmeet221](https://github.com/Harmeet221)
+- [@KevLehman](https://github.com/KevLehman)
+- [@LucianoPierdona](https://github.com/LucianoPierdona)
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@PedroRorato](https://github.com/PedroRorato)
+- [@albuquerquefabio](https://github.com/albuquerquefabio)
+- [@aleksandernsilva](https://github.com/aleksandernsilva)
+- [@casalsgh](https://github.com/casalsgh)
+- [@cauefcr](https://github.com/cauefcr)
+- [@csuadev](https://github.com/csuadev)
+- [@d-gubert](https://github.com/d-gubert)
+- [@debdutdeb](https://github.com/debdutdeb)
+- [@dougfabris](https://github.com/dougfabris)
+- [@engelgabriel](https://github.com/engelgabriel)
+- [@felipe-rod123](https://github.com/felipe-rod123)
+- [@filipemarins](https://github.com/filipemarins)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@geekgonecrazy](https://github.com/geekgonecrazy)
+- [@ggazzo](https://github.com/ggazzo)
+- [@graywolf336](https://github.com/graywolf336)
+- [@guijun13](https://github.com/guijun13)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@juliajforesti](https://github.com/juliajforesti)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@murtaza98](https://github.com/murtaza98)
+- [@nishant23122000](https://github.com/nishant23122000)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@rique223](https://github.com/rique223)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tapiarafael](https://github.com/tapiarafael)
+- [@tassoevan](https://github.com/tassoevan)
+- [@thassiov](https://github.com/thassiov)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+- [@totoi690](https://github.com/totoi690)
+- [@yash-rajpal](https://github.com/yash-rajpal)
+
+# 5.4.5
+`2023-03-16  ·  1 🐛  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+
+### 🐛 Bug fixes
+
+
+- **ENTERPRISE:** DDP streamer sending data to destroyed streams ([#27929](https://github.com/RocketChat/Rocket.Chat/pull/27929))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- fix(upload): Restriction setting not being applied to the old UFS route ([#28363](https://github.com/RocketChat/Rocket.Chat/pull/28363))
+
+- Regression: Gracefully stop DDP Streamer publication and close WS ([#28121](https://github.com/RocketChat/Rocket.Chat/pull/28121))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 5.4.4
+`2023-03-08  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: New temporary settings to limit access to files and outside room members ([#28319](https://github.com/RocketChat/Rocket.Chat/pull/28319))
+
+- Release 5.4.4 ([#28333](https://github.com/RocketChat/Rocket.Chat/pull/28333))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 5.4.3
+`2023-02-14  ·  1 🐛  ·  2 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Do not rely on external service on tests ([#27874](https://github.com/RocketChat/Rocket.Chat/pull/27874))
+
+- Release 5.4.3 ([#28028](https://github.com/RocketChat/Rocket.Chat/pull/28028))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 5.4.2
+`2023-01-25  ·  1 🚀  ·  5 🐛  ·  6 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🚀 Improvements
+
+
+- Emoji picker for large amount of custom emojis ([#27745](https://github.com/RocketChat/Rocket.Chat/pull/27745))
+
+### 🐛 Bug fixes
+
+
+- `*.files` endpoints returning hidden files ([#27617](https://github.com/RocketChat/Rocket.Chat/pull/27617))
+
+- New users aren't mapped to rooms with OAuth groups/channels map ([#27000](https://github.com/RocketChat/Rocket.Chat/pull/27000) by [@carlosrodrigues94](https://github.com/carlosrodrigues94))
+
+  This change deals with the problem with the new users coming from key cloak, this users were not being mapped to the correct channels on RC.
+
+- Not all messages in chat conversations are available when forwarding between agents or departments. ([#27816](https://github.com/RocketChat/Rocket.Chat/pull/27816))
+
+- OmnichannelRoomIconProvider order breaking VideoConfPopup ([#27740](https://github.com/RocketChat/Rocket.Chat/pull/27740))
+
+  Jira Issue [VC-39]
+
+- Showing thumbnails on files list ([#23301](https://github.com/RocketChat/Rocket.Chat/pull/23301) by [@carlosrodrigues94](https://github.com/carlosrodrigues94) & [@ostjen](https://github.com/ostjen))
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@carlosrodrigues94](https://github.com/carlosrodrigues94)
+- [@ostjen](https://github.com/ostjen)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@dougfabris](https://github.com/dougfabris)
+- [@filipemarins](https://github.com/filipemarins)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 5.4.1
+`2022-12-16  ·  5 🐛  ·  1 🔍  ·  7 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Custom languages not being applied to i18next ([#27557](https://github.com/RocketChat/Rocket.Chat/pull/27557))
+
+- Fix Login with Show default form disabled ([#27475](https://github.com/RocketChat/Rocket.Chat/pull/27475))
+
+- Message Actions menu does not close upon choosing an action ([#27328](https://github.com/RocketChat/Rocket.Chat/pull/27328))
+
+- Pagination not working on current chats ([#27432](https://github.com/RocketChat/Rocket.Chat/pull/27432))
+
+- Registration and Login placeholders not being used ([#27558](https://github.com/RocketChat/Rocket.Chat/pull/27558))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Deprecate unused omnichannel API ([#27538](https://github.com/RocketChat/Rocket.Chat/pull/27538))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@aleksandernsilva](https://github.com/aleksandernsilva)
+- [@filipemarins](https://github.com/filipemarins)
+- [@ggazzo](https://github.com/ggazzo)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@murtaza98](https://github.com/murtaza98)
+- [@yash-rajpal](https://github.com/yash-rajpal)
+
+# 5.4.0
+`2022-12-05  ·  9 🎉  ·  13 🚀  ·  61 🐛  ·  87 🔍  ·  57 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🎉 New features
+
+
+- Add new endpoint 'livechat/agent.status' & deprecate changeLivechatStatus meteor method  ([#27047](https://github.com/RocketChat/Rocket.Chat/pull/27047))
+
+- Bugsnag client ([#23580](https://github.com/RocketChat/Rocket.Chat/pull/23580))
+
+- Custom MessageType for video conference messages ([#27333](https://github.com/RocketChat/Rocket.Chat/pull/27333))
+
+- Emphasis Elements (italic, strike and bold) in Message Parser Components ([#27003](https://github.com/RocketChat/Rocket.Chat/pull/27003))
+
+  Currently the message parser does not accept Emphasis elements mixed with plain text
+
+  `[Normal Link   - *Bold*, _Italic_  and ~strike~ Styles](https://rocket.chat/)` return plain text → Should return a Lin with bold/italic/strike
+
+  To fix this behavior it was necessary to edit LinkSpan component in gazzodown package (changes included in this PR) and the grammar/utils files in the `fuselage/message-parser` repository
+
+  Fuselage Pull Request:  https://github.com/RocketChat/fuselage/pull/887/
+
+- Federation events coverage expansion ([#27119](https://github.com/RocketChat/Rocket.Chat/pull/27119))
+
+  This PR adds the following features for the Matrix Federation feature:  
+  - Ability to sync Users' real names (since they have at least one room in common with other users);  
+  - User typing event;
+
+- Incompatible Apps ([#27280](https://github.com/RocketChat/Rocket.Chat/pull/27280) by [@matheuslc](https://github.com/matheuslc))
+
+- REST API endpoint `/v1/oauth-apps.create` ([#27054](https://github.com/RocketChat/Rocket.Chat/pull/27054))
+
+  Created the 'oauth-apps.addOAuthApp' endpoint for the `apps/meteor/client/views/admin/oauthApps/OAuthAddApp.tsx` file, and added Ajv validation.
+
+- REST API endpoint `/v1/rooms.delete` ([#26866](https://github.com/RocketChat/Rocket.Chat/pull/26866))
+
+- Video Conference Message blocks and info action ([#27310](https://github.com/RocketChat/Rocket.Chat/pull/27310))
+
+### 🚀 Improvements
+
+
+- Add message name container component to message name header and system message ([#27184](https://github.com/RocketChat/Rocket.Chat/pull/27184))
+
+  Add `MessageNameContainer` wrapper to display `name` and `username` inline and separate them with a blank space.
+
+  Update font size of system message:
+
+  Before:
+  ![Screenshot 2022-11-08 at 13 51 58](https://user-images.githubusercontent.com/9275105/200626484-bfcf3eb2-ac36-4b6c-8158-b84bf93023bd.png)
+
+
+  After:
+  <img width="720" alt="Screenshot 2022-11-08 at 10 56 10" src="https://user-images.githubusercontent.com/9275105/200584230-2f8a63b9-137b-441e-9671-b4801688cac5.png">
+
+
+  Add removed message variation to `ThreadMessageOrigin` component
+  Before:
+  ![Screenshot 2022-11-08 at 13 35 45](https://user-images.githubusercontent.com/9275105/200622876-5e5bd7a2-2df1-453a-9e81-96635390648e.png)
+
+  After:
+  <img width="185" alt="Screenshot 2022-11-08 at 10 51 47" src="https://user-images.githubusercontent.com/9275105/200582261-7e371e1a-adfd-47a0-8440-facd06e61b09.png">
+
+- Add searchTerm support for livechat/rid/messages API ([#27214](https://github.com/RocketChat/Rocket.Chat/pull/27214))
+
+- Add update option to apps list kebab menu and implement new update badge on apps list ([#27246](https://github.com/RocketChat/Rocket.Chat/pull/27246))
+
+  Added a new update option to the app menu to follow the removal of the CTA buttons from the apps list. Also implemented the new update badge that will replace the old update button.
+  Demo gif:
+  ![update_badge](https://user-images.githubusercontent.com/43561537/202225372-c0369bea-12d4-4ea3-8996-8d4edab00722.gif)
+
+- Adding a noscript tag for letting users know if they have JS disabled ([#23632](https://github.com/RocketChat/Rocket.Chat/pull/23632) by [@sidmohanty11](https://github.com/sidmohanty11))
+
+- Improve searchChats endpoint to have source filter support ([#27262](https://github.com/RocketChat/Rocket.Chat/pull/27262))
+
+- Login rewrite in react ([#26782](https://github.com/RocketChat/Rocket.Chat/pull/26782))
+
+- Marketplace feedback toasts ([#27239](https://github.com/RocketChat/Rocket.Chat/pull/27239))
+
+  ## Jira tasks
+  Save app changes toast: [MKP-160](https://rocketchat.atlassian.net/browse/MKP-160?atlOrigin=eyJpIjoiMjM1YmZjMTVjZGU2NGUwMGIxNTRlYTEwODgwMDk2ZDkiLCJwIjoiaiJ9)
+  Uninstall app toast: [MKP-168](https://rocketchat.atlassian.net/browse/MKP-168?atlOrigin=eyJpIjoiOThkMjEwOTk5NjhiNDE2OGEwY2MyNWEyNWM5YzNkMTUiLCJwIjoiaiJ9)
+  Enable/disable app feedback toast: [MKP-169](https://rocketchat.atlassian.net/browse/MKP-169?atlOrigin=eyJpIjoiN2VjODIzOGMwNmJkNGU3N2JhOWEzMDU3Y2IxZjZkNWMiLCJwIjoiaiJ9)
+
+
+  Implemented/refactored four toast notifications and refactored another two in marketplace. The first one happens after the user saves the settings of an app, the second one when the user successfully uninstalls an app and the third and fourth ones happen when the user enables and disables an app respectfully.
+  Demo gif:
+  ![feedback_toasts](https://user-images.githubusercontent.com/43561537/202277707-a3b38536-e090-4c4f-96b4-8e21bcd10070.gif)
+
+- Move app list install logic to app menu ([#27056](https://github.com/RocketChat/Rocket.Chat/pull/27056))
+
+  ## Jira task: [MKP-136](https://rocketchat.atlassian.net/browse/MKP-136?atlOrigin=eyJpIjoiM2M0ODhkZDc0YjQ2NGE5OGE4YTBkZDJhY2M0NGVmZDgiLCJwIjoiaiJ9)
+  Moved the install/buy/subscribe logic from the CTA buttons that existed in the app list to the app menu. Now the user can install apps by clicking in the kebab menu in the right of the app list entry. Also solved a little undefined bug happening in the app permissions modal.
+  Demo gif:
+  ![app_menu](https://user-images.githubusercontent.com/43561537/195204630-e66c7859-028f-4654-8367-96029a855b42.gif)
+
+- Quotes on E2EE Messages ([#26303](https://github.com/RocketChat/Rocket.Chat/pull/26303))
+
+  This PR provides basic quoting to E2EE messages, it doesn't support multiple chaining of quotes messages.
+
+  <img width="725" alt="Screenshot 2022-07-19 at 9 42 19 PM" src="https://user-images.githubusercontent.com/58601732/179798812-c0d092f1-388a-4d46-bb1d-9c332d14cc77.png">
+
+- Read threads when marking a room as read ([#26754](https://github.com/RocketChat/Rocket.Chat/pull/26754))
+
+  This PR changes the functionality of `subscription.read` to add read threads when endpoint is called
+
+- Removed tool tip from sidebar menu ([#24605](https://github.com/RocketChat/Rocket.Chat/pull/24605) by [@Himanshu664](https://github.com/Himanshu664))
+
+- Sorting functionality in team channel while leaving a team ([#21790](https://github.com/RocketChat/Rocket.Chat/pull/21790) by [@sumukhah](https://github.com/sumukhah))
+
+- VideoConf Miss Config Modal ([#27153](https://github.com/RocketChat/Rocket.Chat/pull/27153))
+
+  Jira Issue: [VC-9]
+
+  <img width='420px' src='https://user-images.githubusercontent.com/27704687/199082670-7a5b47ea-077b-48f1-b232-ccdfa682e087.png' />
+
+### 🐛 Bug fixes
+
+
+- `channels.convertToTeam` endpoint doesn't work when only the `channelName` param is provided ([#26858](https://github.com/RocketChat/Rocket.Chat/pull/26858))
+
+  - Fix the `channels.convertToTeam` endpoint not working when the `channelName` is sent as parameter.
+
+- Add condition to createUser button on UsersPage ([#27189](https://github.com/RocketChat/Rocket.Chat/pull/27189))
+
+  Hide the create user button in admin if the user doesn't have the permission to do so. It was not the case before.
+
+
+  https://user-images.githubusercontent.com/45966964/115802514-5ab86300-a3df-11eb-98d8-7aba696bfa7e.mp4
+
+- Add condition to invite user if user doesn't have permission ([#27190](https://github.com/RocketChat/Rocket.Chat/pull/27190))
+
+  If you deactivated the permission to send links, the button was always there and led to an error message.
+  Before: 
+
+  https://user-images.githubusercontent.com/45966964/115801057-23948280-a3dc-11eb-83c2-b3e16f66ddd5.mp4
+
+  After:
+
+  https://user-images.githubusercontent.com/45966964/115801253-956ccc00-a3dc-11eb-95d0-9baa69410fe1.mp4
+
+- Add pause functionality to Custom Sounds ([#24361](https://github.com/RocketChat/Rocket.Chat/pull/24361))
+
+- Add sorting channels on teams ([#21675](https://github.com/RocketChat/Rocket.Chat/pull/21675) by [@sumukhah](https://github.com/sumukhah))
+
+- Adding error message for wrong dates ([#21677](https://github.com/RocketChat/Rocket.Chat/pull/21677) by [@shrinish123](https://github.com/shrinish123))
+
+  Before : 
+  ![before](https://user-images.githubusercontent.com/56491104/115405052-85ea5900-a20b-11eb-9c78-5e98de6c454c.png)
+
+  After: 
+
+  ![after export](https://user-images.githubusercontent.com/56491104/115405085-8da9fd80-a20b-11eb-8b72-de9ef7c2217b.png)
+
+- Adjust read only toggle on create channel based on permissions ([#27318](https://github.com/RocketChat/Rocket.Chat/pull/27318))
+
+- Adjusted form validation to disallow duplicated emails ([#27037](https://github.com/RocketChat/Rocket.Chat/pull/27037))
+
+  This pull request revisits the user info form, fixing a bug that allowed the form to be saved with an already existing e-mail. Taking advantage of this opportunity this PR also refactors the file to typescript and adds new libs like `useForm` and `useQuery`.
+
+- Always parse encrypted messages on client ([#27092](https://github.com/RocketChat/Rocket.Chat/pull/27092))
+
+- Archived channels reappearing permanently ([#20476](https://github.com/RocketChat/Rocket.Chat/pull/20476))
+
+- AttachmentDescription color token ([#27222](https://github.com/RocketChat/Rocket.Chat/pull/27222))
+
+- Avg response time calculation ([#27163](https://github.com/RocketChat/Rocket.Chat/pull/27163))
+
+- Change GridFS error message validation ([#26957](https://github.com/RocketChat/Rocket.Chat/pull/26957))
+
+  Allow uninstalling an app even if source files cannot be found. This validation was already done in the past, but since the error message was changed, the validation was broken.
+
+- Delete first message when initializing thread returns black screen ([#27117](https://github.com/RocketChat/Rocket.Chat/pull/27117))
+
+- Discussion list timestamp and Edit room system messages ([#27180](https://github.com/RocketChat/Rocket.Chat/pull/27180))
+
+- Discussions list divider on contextualBar ([#27178](https://github.com/RocketChat/Rocket.Chat/pull/27178))
+
+- Display Edit Team instead of Edit Room when in a team ([#27230](https://github.com/RocketChat/Rocket.Chat/pull/27230))
+
+- Ensure onetime job runs according to 'startupSetting' everytime ([#27311](https://github.com/RocketChat/Rocket.Chat/pull/27311))
+
+  - Fixes the condition of not running a _onetime job_ at the app's startup scheduled to run by using the [`startupSetting`](https://github.com/RocketChat/Rocket.Chat.Apps-engine/blob/04f5930244836043040a8c42beff0690a2359a53/src/definition/scheduler/IProcessor.ts#L8) if the job was run previously at another app startup (Agenda does not remove already run jobs from the database, preventing the app from scheduling the job a second time as it thinks the job is already scheduled);  
+  - Declutters the scheduler's collection by removing _onetime jobs_ documents after they are run.
+
+- Featured apps disappearing, install toast config and save changes button behavior ([#27181](https://github.com/RocketChat/Rocket.Chat/pull/27181))
+
+  ## Jira tasks
+  Featured apps disappearing: [MKP-161](https://rocketchat.atlassian.net/browse/MKP-161?atlOrigin=eyJpIjoiYjI4MWMyODJkZjlkNDEwMjhkZWFhNjkxZjBiZTJiOGMiLCJwIjoiaiJ9)
+  Install toast config: [MKP-162](https://rocketchat.atlassian.net/browse/MKP-162?atlOrigin=eyJpIjoiNjNhNDJjZGE5YWQ5NDJiMWIyZjM4MjMwNmI1MmE5NjUiLCJwIjoiaiJ9)
+  Save changes button behavior: [MKP-163](https://rocketchat.atlassian.net/browse/MKP-163?atlOrigin=eyJpIjoiZjc3MzUwZTNmYjU3NDJiZjhlOWI0OGIzMGY3ZWQ5ODUiLCJwIjoiaiJ9)
+
+  Fixed three bugs: In the first one featured apps would disappear from the apps list after installation, in the second one the install toast wasn't correctly configured, and in the third one the app details page save button would render even when the current app wasn't installed.
+  Demo gif:
+
+  ![featured_disappearing](https://user-images.githubusercontent.com/43561537/199850435-ca9e8ba1-7924-414e-96f4-dfb373fdd754.gif)
+
+- Fix Piwik and add extra setting to allow workarounds ([#27416](https://github.com/RocketChat/Rocket.Chat/pull/27416))
+
+- Fixed Allow reacting toggle button in Edit room ([#20324](https://github.com/RocketChat/Rocket.Chat/pull/20324) by [@Darshilp326](https://github.com/Darshilp326))
+
+  Users can now see changes for toggling allow reacting button after changes.
+  Users do not need to come back for changing allow reacting button.
+
+  https://user-images.githubusercontent.com/55157259/105572410-f274c980-5d7c-11eb-806a-e23c2abd37de.mp4
+
+- Gap between message content and message header when there's no text. ([#27165](https://github.com/RocketChat/Rocket.Chat/pull/27165))
+
+  Before:
+  ![image](https://user-images.githubusercontent.com/40830821/199314585-f09920bd-efea-4767-824a-783aca2a229a.png)
+  ![image](https://user-images.githubusercontent.com/40830821/199320275-cd32a96c-36a2-4c5b-ac3c-0db6aa57fdf7.png)
+
+  After:
+  ![image](https://user-images.githubusercontent.com/40830821/199314648-b6b48512-b8c0-4c11-81bc-d6b97700bf7a.png)
+  ![image](https://user-images.githubusercontent.com/40830821/199320172-c6f986b8-29cd-4b2a-95e6-ffe9d51a8eaa.png)
+
+  Additionaly removed a component that was being rendered inside itself, causing spacing issues.
+
+- Improper grammar when converting channel member to owner ([#27265](https://github.com/RocketChat/Rocket.Chat/pull/27265) by [@JoshMcCullough](https://github.com/JoshMcCullough))
+
+- Install private apps modal behavior marketplace ([#26973](https://github.com/RocketChat/Rocket.Chat/pull/26973))
+
+  Fixed two bugs in the private app install page:   
+  - The first one is a lack of pt-br translation to the agree button of the apps permission modal   
+  - The second one is that the review modal did not show the default permission list when the app being installed did not provide a permissions list.
+
+  **Demo gif**:
+  ![AppsPermissionModal](https://user-images.githubusercontent.com/43561537/193342594-5516b557-948a-4d9d-ade3-65bb1600e458.gif)
+
+- Integration history breaking when there's more than 49 records ([#27290](https://github.com/RocketChat/Rocket.Chat/pull/27290))
+
+  Aditionally, fixed example data for incoming webhooks and converted some files to TS.
+
+- LDAP "Sync Roles" option doesn't work for custom roles ([#26842](https://github.com/RocketChat/Rocket.Chat/pull/26842))
+
+  Previously the sync of custom fields on LDAP wasn't working because the check was assuming that the `name` of the role is the same value from `_id`, which is the same for initial roles, but different for custom.
+
+- LDAP groups to channel mapping attempts to create a new room instead of using an existing one ([#27312](https://github.com/RocketChat/Rocket.Chat/pull/27312))
+
+  - Check rooms' name and **display name** in order to confirm they don't exist (and then try to create a new room).
+
+- Livechat: Allow resolving external image and media blocks  ([#27387](https://github.com/RocketChat/Rocket.Chat/pull/27387))
+
+  Allow external urls to be viewed on livechat.
+
+- MarkdownText component not respecting `Markdown_SupportSchemesForLink` setting ([#27245](https://github.com/RocketChat/Rocket.Chat/pull/27245))
+
+- Marketplace app details page back-button behavior ([#27062](https://github.com/RocketChat/Rocket.Chat/pull/27062))
+
+  Jira task: [MKP-26](https://rocketchat.atlassian.net/browse/MKP-26?atlOrigin=eyJpIjoiM2I4MzVhYmQ2OWRkNDE0ZGI4NWZkMzE3MDQwNmIxMzMiLCJwIjoiaiJ9)
+
+  Fixed the behavior of the marketplace app details page back button. Now it will return the user to the page they accessed the app details from. Also, refactored the overall routing of the marketplace and removed the admin-apps route as everything is now handled by the admin-marketplace route.
+
+  Demo gif:
+  ![apps-back-button](https://user-images.githubusercontent.com/43561537/195709074-a886472e-5462-474e-8f65-5cfa33d30263.gif)
+
+- Message Parser version upgrade ([#27284](https://github.com/RocketChat/Rocket.Chat/pull/27284))
+
+- Message search breaking URL, usertags and emojis ([#20878](https://github.com/RocketChat/Rocket.Chat/pull/20878) by [@TBG-FR](https://github.com/TBG-FR))
+
+- Missing React When Read Only setting on Admin Rooms Edit ([#27183](https://github.com/RocketChat/Rocket.Chat/pull/27183))
+
+  When the user was editing a room in the admin, he could not set React When Read Only because the option was not there unlike a normal room edit.  So i added the option.
+
+- Modifying userActionIndicator syntax for translations ([#27004](https://github.com/RocketChat/Rocket.Chat/pull/27004) by [@TBG-FR](https://github.com/TBG-FR))
+
+- multiple user assigned for a role ([#23741](https://github.com/RocketChat/Rocket.Chat/pull/23741) by [@Aman-Maheshwari](https://github.com/Aman-Maheshwari))
+
+- Navigate to home after deleting a channel from edit screen ([#21602](https://github.com/RocketChat/Rocket.Chat/pull/21602) by [@sumukhah](https://github.com/sumukhah))
+
+- Removed mobile requirement for showing real name ([#26968](https://github.com/RocketChat/Rocket.Chat/pull/26968) by [@TedsCabin](https://github.com/TedsCabin))
+
+  Removed the mobile requirement for allowing real names to be used in message headers.
+
+- Replace regex not compatible with safari ([#27294](https://github.com/RocketChat/Rocket.Chat/pull/27294))
+
+- Room Avatar being deleted after upload. ([#27060](https://github.com/RocketChat/Rocket.Chat/pull/27060))
+
+  Remove avatar before updating it. S3 already overwrites the old image, but since this part of the code is shared among many other File Storage providers, we need to make this deletion before the upload.
+
+- RoomForeword design ([#27196](https://github.com/RocketChat/Rocket.Chat/pull/27196))
+
+  Before
+  ![image](https://user-images.githubusercontent.com/60678893/200065803-aaafe740-62f6-4d11-b9a4-c4f394f00291.png)
+
+
+  After
+  <img width="725" alt="image" src="https://user-images.githubusercontent.com/60678893/200065737-af395c09-4eab-49a1-9059-b53ad53e0c14.png">
+
+- Scrollable report message ([#26853](https://github.com/RocketChat/Rocket.Chat/pull/26853) by [@yasemincidem](https://github.com/yasemincidem))
+
+- Set default value "false" for global search. ([#25568](https://github.com/RocketChat/Rocket.Chat/pull/25568) by [@ivan1kazantsev](https://github.com/ivan1kazantsev))
+
+  If we disable the "global search", then the "global search" checkbox removes from the UI. It's not what we want. I think, we should set the default to "false", because the default is to search inside the channel/dialog.
+
+- Show a consistent name on information screen ([#21603](https://github.com/RocketChat/Rocket.Chat/pull/21603) by [@sumukhah](https://github.com/sumukhah))
+
+- Show Favorite icon only if user has joined room ([#21976](https://github.com/RocketChat/Rocket.Chat/pull/21976))
+
+  Before: There was a favorite button even if the user hasn't joined the room
+
+  After:
+
+  ![favorite new](https://user-images.githubusercontent.com/56491104/117336514-e8a14d00-aeb9-11eb-8c06-618bdaefa35f.png)
+
+- Shrug missing backslash character ([#27233](https://github.com/RocketChat/Rocket.Chat/pull/27233))
+
+  Previously the escape character `\` was escaping everything.
+
+  To avoid unexpected text formatting errors it was restricted to only escape curtains chars like:   * _ ~ ` # . 
+  Doing so the Shrug had to change in the code to display the correct ASCII Art
+
+- Sidebar context menu in searchList ([#23830](https://github.com/RocketChat/Rocket.Chat/pull/23830) by [@Aman-Maheshwari](https://github.com/Aman-Maheshwari))
+
+  Removed onClose function from the Box Component inside `searchList.js`  as this component wraps the complete list which is rendered and when clicked on the any rendered row inside the component it closes the searchList preventing the context menu to be displayed.
+  Also added `usePreventDefault` hook.
+  ## Before
+
+  https://user-images.githubusercontent.com/50165440/144127826-9b6d3e5e-9442-49dc-89c8-b604b910be4c.mp4
+
+  ## After
+
+  https://user-images.githubusercontent.com/50165440/144127815-d60e1026-a0eb-4e9b-a7f3-fe80dd06a2d8.mp4
+
+- Sidebar Room list extended preview not updating on new messages. ([#27259](https://github.com/RocketChat/Rocket.Chat/pull/27259))
+
+- Sort RecordList items in REVERSE chronological order, not FORWARD ([#27201](https://github.com/RocketChat/Rocket.Chat/pull/27201) by [@nmagedman](https://github.com/nmagedman))
+
+  Sort items in the Files sidebar in *reverse* chronological order (newest at top, oldest at bottom), as it did _before_ RC v3.11.0.
+
+- The parent room icon is now clickable ([#21655](https://github.com/RocketChat/Rocket.Chat/pull/21655) by [@shrinish123](https://github.com/shrinish123))
+
+  The parent room icon as shown in the video was not clickable but the cursor type on the icon was a pointer. Now even clicking on the icon or anywhere on the parent room tag will redirect you to the parent room. 
+
+  Before : 
+
+  https://user-images.githubusercontent.com/56491104/115318759-06717100-a19c-11eb-85e6-f3ad4d788721.mp4
+
+
+  After: 
+
+
+  https://user-images.githubusercontent.com/56491104/115318784-15582380-a19c-11eb-9aca-b40b872774ad.mp4
+
+- Thread view expand command in wide screens ([#23136](https://github.com/RocketChat/Rocket.Chat/pull/23136) by [@edward-raven](https://github.com/edward-raven))
+
+- ThreadRow hover color ([#27166](https://github.com/RocketChat/Rocket.Chat/pull/27166))
+
+- Threads replied message not clickable on new message template ([#27359](https://github.com/RocketChat/Rocket.Chat/pull/27359))
+
+  Add the link to the parent message on the `ThreadMessagePreview` component;
+  Add `message ignored` status to the parent message too;
+  Also, allow clicking the message when is ignored status.
+
+- UiKit modals taking 5 seconds to close ([#27225](https://github.com/RocketChat/Rocket.Chat/pull/27225))
+
+- Unable to set idleTimeLimit for users ([#26951](https://github.com/RocketChat/Rocket.Chat/pull/26951))
+
+- Upgrading fuselage package and fix quote message prepend  ([#27307](https://github.com/RocketChat/Rocket.Chat/pull/27307))
+
+  Adding heading styles to message
+
+
+  ### [OLD] As it was before this change:
+  <img width="350" alt="image" src="https://user-images.githubusercontent.com/20212776/202536651-a696839d-8afc-49df-9832-15391f0ae162.png">
+
+  ### [NEW] As it is NOW:
+  <img width="406" alt="image" src="https://user-images.githubusercontent.com/20212776/202536808-8c3c6646-4e66-4de3-97b0-00562d494977.png">
+
+  ---
+
+  Fix heading style in quote messages
+
+  Before:
+  <img width="413" alt="Screen Shot 2022-11-22 at 14 41 55" src="https://user-images.githubusercontent.com/48109548/203384534-9d0b9cf4-2d87-4f40-a71f-6cfeb44f0131.png">
+
+  After:
+  <img width="240" alt="Screen Shot 2022-11-22 at 14 41 47" src="https://user-images.githubusercontent.com/48109548/203384565-bde5105e-0c39-48f9-9e9b-7ed15c20826b.png">
+
+- Uploading Custom Sound files not working, but showing success ([#27177](https://github.com/RocketChat/Rocket.Chat/pull/27177))
+
+- Use name if fname is undefined ([#20459](https://github.com/RocketChat/Rocket.Chat/pull/20459) by [@aKn1ghtOut](https://github.com/aKn1ghtOut))
+
+  In the default general room(and possibly in other cases), the fname property is not set. The site should use the "name" property as a fallback in such cases.
+
+  ### After fix
+  ![Screenshot from 2021-01-28 03-47-19](https://user-images.githubusercontent.com/38764067/106062371-b0e97300-611c-11eb-97de-1ff4c668a4c8.png)
+  ![Screenshot from 2021-01-28 03-47-55](https://user-images.githubusercontent.com/38764067/106062374-b21aa000-611c-11eb-83db-93a3d0858d46.png)
+
+- User approval email doesn't display username and e-mail when user logs in with OAuth ([#27111](https://github.com/RocketChat/Rocket.Chat/pull/27111) by [@carlosrodrigues94](https://github.com/carlosrodrigues94))
+
+- User auto complete breaks on enter key press ([#27213](https://github.com/RocketChat/Rocket.Chat/pull/27213))
+
+- User email address does not change when provisioned by OAuth ([#27148](https://github.com/RocketChat/Rocket.Chat/pull/27148) by [@carlosrodrigues94](https://github.com/carlosrodrigues94))
+
+- UserCard not opening inside Threads ([#27096](https://github.com/RocketChat/Rocket.Chat/pull/27096))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Bump version to 5.4.0-develop ([#27439](https://github.com/RocketChat/Rocket.Chat/pull/27439))
+
+- Chore: Add deprecation warning to settings ([#27295](https://github.com/RocketChat/Rocket.Chat/pull/27295))
+
+  ![image](https://user-images.githubusercontent.com/40830821/202707905-dc7e2b02-35ec-4abd-9b91-26b6e66a7124.png)
+
+  List of settings:  
+  - Show edited status  
+  - Allow Message snippeting  
+  - Show formating Tips  
+  - Disable Embeded for Users  
+  - Issue tracker links  
+  - Message attachments > Group Attachment Buttons  
+  - Markdown > All settings inside Group  
+  - Autolinker > All settings inside Group
+
+  Edited Message for old federation.
+
+- Chore: Add info log to remove all rooms method ([#27106](https://github.com/RocketChat/Rocket.Chat/pull/27106))
+
+- Chore: Add tests for omni-jobs & add more context in system messages for jobs ([#27048](https://github.com/RocketChat/Rocket.Chat/pull/27048))
+
+- Chore: Added tooltip to options of message-actions ([#24043](https://github.com/RocketChat/Rocket.Chat/pull/24043) by [@aswinidev](https://github.com/aswinidev))
+
+  https://user-images.githubusercontent.com/76481696/147604643-253d0577-65d6-4bfe-b67e-49a7cc67c03e.mp4
+
+- Chore: also send thread to channel translations ([#27242](https://github.com/RocketChat/Rocket.Chat/pull/27242))
+
+  <img width="913" alt="image" src="https://user-images.githubusercontent.com/58601732/202270101-57b4dbb2-b5f8-4a54-99c9-66ad66cf1fac.png">
+
+- Chore: Apps/Marketplace code organization ([#27061](https://github.com/RocketChat/Rocket.Chat/pull/27061))
+
+- Chore: Beta Dark Theme switch ([#27324](https://github.com/RocketChat/Rocket.Chat/pull/27324))
+
+  Add RadioButton on UserDropDown to toggle between light and dark theme.
+
+- Chore: Bump actions/upload-artifact from 2 to 3 ([#27109](https://github.com/RocketChat/Rocket.Chat/pull/27109) by [@rettinghaus](https://github.com/rettinghaus))
+
+  Bump actions/upload-artifact from 2 to 3 (no changes in behavior expected)
+
+- Chore: bumping apps engine version ([#27414](https://github.com/RocketChat/Rocket.Chat/pull/27414))
+
+- Chore: change apps-engine version ([#27326](https://github.com/RocketChat/Rocket.Chat/pull/27326))
+
+- Chore: Convert chat history react ([#27302](https://github.com/RocketChat/Rocket.Chat/pull/27302))
+
+- Chore: Convert client/views/directory/hooks to ts ([#26936](https://github.com/RocketChat/Rocket.Chat/pull/26936))
+
+- Chore: Convert client/views/directory/RoomTags to ts ([#26937](https://github.com/RocketChat/Rocket.Chat/pull/26937))
+
+- Chore: Convert omni libs to typescript  ([#27205](https://github.com/RocketChat/Rocket.Chat/pull/27205))
+
+- Chore: Converting game center to typescript ([#26915](https://github.com/RocketChat/Rocket.Chat/pull/26915))
+
+- Chore: create AccountProfileForm endpoints ([#26415](https://github.com/RocketChat/Rocket.Chat/pull/26415))
+
+  Created the '/v1/users.checkUsernameAvailability' and other endpoints for the `apps/meteor/client/views/account/profile/AccountProfileForm.tsx` file, and added Ajv validations.
+
+- Chore: create MailerRoute endpoints ([#26742](https://github.com/RocketChat/Rocket.Chat/pull/26742))
+
+  Created 'email-inbox.sendMail' endpoint for the `apps/meteor/client/views/admin/mailer/MailerRoute.tsx` file.
+
+- Chore: Create new endpoint for test webhooks and deprecate meteor method ([#27160](https://github.com/RocketChat/Rocket.Chat/pull/27160))
+
+- Chore: Create unique index for `E2EKey` field ([#27301](https://github.com/RocketChat/Rocket.Chat/pull/27301))
+
+- Chore: CreateTeamModal Refactor ([#27027](https://github.com/RocketChat/Rocket.Chat/pull/27027))
+
+  Jira Issue: [UFR-36]
+  
+  - Replace `useForm`  
+  - Improve UI validations on Modal  
+  - Add ToastBar message on creating a team
+
+- Chore: Cursor pointer to all the action buttons ([#24440](https://github.com/RocketChat/Rocket.Chat/pull/24440) by [@sidmohanty11](https://github.com/sidmohanty11))
+
+  https://user-images.githubusercontent.com/73601258/152863890-88035cbb-ba14-45c4-92ca-22ab4f566281.mp4
+
+- Chore: deprecate refreshClients methods ([#26956](https://github.com/RocketChat/Rocket.Chat/pull/26956))
+
+  Created the 'assets.refreshClients' endpoint for the `apps/meteor/client/views/admin/settings/groups/AssetsGroupPage.tsx` file.
+
+- Chore: Deprecation warning on 'typing' stream event. ([#27299](https://github.com/RocketChat/Rocket.Chat/pull/27299))
+
+- Chore: docs grammar fix ([#26894](https://github.com/RocketChat/Rocket.Chat/pull/26894) by [@tusharxoxoxo](https://github.com/tusharxoxoxo))
+
+- Chore: Enable PR Title Checker for forks ([#27144](https://github.com/RocketChat/Rocket.Chat/pull/27144))
+
+- Chore: Fix grammatical typos in release.md ([#21297](https://github.com/RocketChat/Rocket.Chat/pull/21297) by [@sumukhah](https://github.com/sumukhah))
+
+- Chore: Fix missing license for forks ([#27258](https://github.com/RocketChat/Rocket.Chat/pull/27258))
+
+- Chore: Fix typo in pa-in.js ([#26717](https://github.com/RocketChat/Rocket.Chat/pull/26717) by [@eltociear](https://github.com/eltociear))
+
+- Chore: Fixed typo in a comment ([#27316](https://github.com/RocketChat/Rocket.Chat/pull/27316) by [@xareyli](https://github.com/xareyli))
+
+- Chore: Improve configurations related to Typescript in Livechat ([#27232](https://github.com/RocketChat/Rocket.Chat/pull/27232))
+
+- Chore: Make it easier to run micro services ([#27223](https://github.com/RocketChat/Rocket.Chat/pull/27223))
+
+  You can now run a microservices environment with `yarn turbo run ms`
+
+- Chore: Migrate EE LivechatRooms model to typescript ([#27046](https://github.com/RocketChat/Rocket.Chat/pull/27046))
+
+- Chore: New Password field is confusing ([#20338](https://github.com/RocketChat/Rocket.Chat/pull/20338) by [@im-adithya](https://github.com/im-adithya))
+
+- Chore: README.md ([#21974](https://github.com/RocketChat/Rocket.Chat/pull/21974) by [@satishp962](https://github.com/satishp962))
+
+- Chore: Refactor LeaveTeam to Typescript ([#27197](https://github.com/RocketChat/Rocket.Chat/pull/27197))
+
+  Additionally, it fixes:   
+  - Users would be able to select team channels that they want to leave while leaving the team.  
+  - Users would now automatically leave from team channels he/she selected.
+
+  BEFORE
+
+
+
+  https://user-images.githubusercontent.com/55157259/116005794-24205980-a626-11eb-888e-59e42ca21f9a.mp4
+
+
+
+
+
+  BEFORE
+
+  https://user-images.githubusercontent.com/55157259/115970150-4babef00-a55e-11eb-97c9-45683ac16cc1.mp4
+
+  AFTER
+
+  https://user-images.githubusercontent.com/55157259/116005344-21bd0000-a624-11eb-8e58-a956579a08b4.mp4
+
+
+  AFTER
+
+  https://user-images.githubusercontent.com/55157259/115970155-5070a300-a55e-11eb-877f-862dd9a974d7.mp4
+
+- Chore: remove auto label action ([#27192](https://github.com/RocketChat/Rocket.Chat/pull/27192))
+
+- Chore: Remove blank owner field from rooms  ([#21766](https://github.com/RocketChat/Rocket.Chat/pull/21766) by [@Kartik18g](https://github.com/Kartik18g))
+
+- Chore: Remove js-preventer Action ([#27195](https://github.com/RocketChat/Rocket.Chat/pull/27195))
+
+- Chore: Remove role requirement to use change streams ([#27281](https://github.com/RocketChat/Rocket.Chat/pull/27281))
+
+  We used to require the `clusterMonitor` role to be able to use Change Streams because we performed a `serverStatus` command, to be able to check if the requirements for change streams are met (like using wired tiger for example). But since our minimum MongoDB supported version is now 4.2, and MMAPv1 [was removed on this version](https://www.mongodb.com/docs/v4.2/core/storage-engines/), there is no need to check that.
+
+  The new approach is just try to use change streams, if it fails for any reason, fallback to oplog.
+
+  If oplog fails as well, we're now halting the process, since it wasn't able to establish a connection for reading real time data, something that is crucial for the application. An additional check was added to make sure `$MONGO_OPLOG_URL` is pointing to the `local` database.
+
+- Chore: Remove secrets.RC_TURBO_GH_TOKEN dep from build ([#27176](https://github.com/RocketChat/Rocket.Chat/pull/27176))
+
+- Chore: Remove SoundRow.js ([#27215](https://github.com/RocketChat/Rocket.Chat/pull/27215))
+
+- Chore: Remove turborepo if env is not set ([#27199](https://github.com/RocketChat/Rocket.Chat/pull/27199))
+
+- Chore: Remove unused css ([#27289](https://github.com/RocketChat/Rocket.Chat/pull/27289))
+
+- Chore: removing useEndpointData from license api ([#26634](https://github.com/RocketChat/Rocket.Chat/pull/26634))
+
+  The deprecated hook `useEndpointData` was removed and changed to `useMethod` + `useQuery`separated in a hook.
+
+  In `useQuery` options we added an option to keep the cache as `Infinity` until the queries are invalidated or the page refreshes, also the query keys were changed to consolidate the keys and manage the cache in the best way possible to avoid unnecessary API calls. 
+
+  In settings changed or user action that impact the License status was added a method to invalidate the cache for license query keys
+
+  E.g: `queryClient.invalidateQueries(['licenses']);`
+
+- Chore: Replace all saveUserPreferences method calls ([#26187](https://github.com/RocketChat/Rocket.Chat/pull/26187))
+
+- Chore: Restrict `ChatMessages` API - Phase 1 ([#27191](https://github.com/RocketChat/Rocket.Chat/pull/27191))
+
+  It prepares `ChatMessages` to be splitted into smaller components to handle the interaction of a list of messages and the message composer.
+
+- Chore: Rewrite AutoCompleteDepartment to TypeScript ([#27198](https://github.com/RocketChat/Rocket.Chat/pull/27198))
+
+  Department field inside of current chats is one of the places who uses AutoCompleteDeparment:
+  ![image](https://user-images.githubusercontent.com/17487063/200659774-9db7b19d-1e5f-471b-8b7d-540ef3aa59fb.png)
+
+- Chore: Rewrite the label/description of the Push_request_content_from_server setting ([#27136](https://github.com/RocketChat/Rocket.Chat/pull/27136) by [@nmagedman](https://github.com/nmagedman))
+
+  Documentation: Clarify the meaning/effect of the setting Push_request_content_from_server ("Fetch full message content from the server on receipt"), which can lead to unexpected "You have a new message" notifications
+
+- Chore: Show better error logs ([#27156](https://github.com/RocketChat/Rocket.Chat/pull/27156))
+
+- Chore: subscriptions.read accepts both "roomId" and "rid" as payload ([#20312](https://github.com/RocketChat/Rocket.Chat/pull/20312) by [@lucassartor](https://github.com/lucassartor))
+
+  Adding `roomId` as another option of payload in the `subscriptions.read` endpoint besides from `rid`.
+
+- Chore: Test for import  ([#26871](https://github.com/RocketChat/Rocket.Chat/pull/26871) by [@weslley543](https://github.com/weslley543))
+
+- Chore: Update Apps-Engine to latest ([#27433](https://github.com/RocketChat/Rocket.Chat/pull/27433))
+
+- Chore: Update badge tokens ([#27363](https://github.com/RocketChat/Rocket.Chat/pull/27363))
+
+- Chore: Update dark theme tokens ([#27386](https://github.com/RocketChat/Rocket.Chat/pull/27386))
+
+  Update dark theme tokens:   
+  - surface-tint   
+  - button-background-secondary-disabled   
+  - button-background-secondary-danger-disabled  
+  - all status-background  
+  - all status-font
+
+- Chore: Update tokens ([#27408](https://github.com/RocketChat/Rocket.Chat/pull/27408))
+
+  Add/update tokens on light and dark palette:  
+  - update stroke-extra-light color  
+  - add status-warning-2  
+  - add status-service-3  
+  - add font-pure-white  
+  - add font-pure-black
+
+- Chore: Updates rocket.cat's logo to match colors of our new logo ([#27314](https://github.com/RocketChat/Rocket.Chat/pull/27314))
+
+- Chore: UserAvatar wrapper missing key in RoomForeword ([#27300](https://github.com/RocketChat/Rocket.Chat/pull/27300))
+
+- Chore(deps): Bump felixmosh/turborepo-gh-artifacts from 1 to 2 ([#27170](https://github.com/RocketChat/Rocket.Chat/pull/27170) by [@dependabot[bot]](https://github.com/dependabot[bot]))
+
+- i18n: Language update from LingoHub 🤖 on 2022-10-24Z ([#27127](https://github.com/RocketChat/Rocket.Chat/pull/27127))
+
+- i18n: Language update from LingoHub 🤖 on 2022-10-31Z ([#27150](https://github.com/RocketChat/Rocket.Chat/pull/27150))
+
+- i18n: Language update from LingoHub 🤖 on 2022-11-07Z ([#27202](https://github.com/RocketChat/Rocket.Chat/pull/27202))
+
+- i18n: Language update from LingoHub 🤖 on 2022-11-14Z ([#27255](https://github.com/RocketChat/Rocket.Chat/pull/27255))
+
+- i18n: Language update from LingoHub 🤖 on 2022-11-21Z ([#27306](https://github.com/RocketChat/Rocket.Chat/pull/27306))
+
+- i18n: Language update from LingoHub 🤖 on 2022-11-28Z ([#27375](https://github.com/RocketChat/Rocket.Chat/pull/27375))
+
+- i18n: Language update from LingoHub 🤖 on 2022-11-29Z ([#27410](https://github.com/RocketChat/Rocket.Chat/pull/27410))
+
+- Merge master into develop & Set version to 5.4.0-develop ([#27162](https://github.com/RocketChat/Rocket.Chat/pull/27162))
+
+- Regression: Admin menu apps option not working ([#27422](https://github.com/RocketChat/Rocket.Chat/pull/27422))
+
+  Solved a bug caused by the RC production build steps breaking the flow router triggersEnter event that did some rerouting for marketplace. Removed the cited function from the routes.tsx file, and now the rerouting is done directly inside the AppsRoute file.
+  Demo gif:
+  ![apps_rerouting_issue](https://user-images.githubusercontent.com/43561537/205097014-644be3fd-913e-48d6-8e2b-c082bd8f80cf.gif)
+
+- Regression: Bad words Filtering not working on new Message Parser ([#27368](https://github.com/RocketChat/Rocket.Chat/pull/27368) by [@xareyli](https://github.com/xareyli))
+
+  Was
+  ![forGH](https://user-images.githubusercontent.com/118266546/204087809-fca6152b-63db-4873-88b8-d86aeb324531.png)
+
+  Now
+  ![forGH2](https://user-images.githubusercontent.com/118266546/204087822-e3273127-a4f0-4a45-a73e-910eb48c9b6f.png)
+
+- Regression: Custom fields form not showing in user profile nor admin ([#27244](https://github.com/RocketChat/Rocket.Chat/pull/27244))
+
+- Regression: Elevation and components z-index fixes ([#27421](https://github.com/RocketChat/Rocket.Chat/pull/27421))
+
+- Regression: fix contact chat history borders ([#27319](https://github.com/RocketChat/Rocket.Chat/pull/27319))
+
+- Regression: Fix custom oauth undefined clientConfig ([#27320](https://github.com/RocketChat/Rocket.Chat/pull/27320))
+
+- Regression: Fix issues with ContactHistoryItem ([#27406](https://github.com/RocketChat/Rocket.Chat/pull/27406))
+
+- Regression: Fix sidebar token highlighted usage ([#27334](https://github.com/RocketChat/Rocket.Chat/pull/27334))
+
+- Regression: fix small issues before release ([#27443](https://github.com/RocketChat/Rocket.Chat/pull/27443))
+
+- Regression: Login and Registration UI Tweaks ([#27411](https://github.com/RocketChat/Rocket.Chat/pull/27411))
+
+- Regression: message-box-editing-color ([#27420](https://github.com/RocketChat/Rocket.Chat/pull/27420))
+
+- Regression: Old threads not opening ([#27384](https://github.com/RocketChat/Rocket.Chat/pull/27384))
+
+- Regression: Quoting Issue ([#27369](https://github.com/RocketChat/Rocket.Chat/pull/27369) by [@henit-chobisa](https://github.com/henit-chobisa))
+
+- Regression: Remove actions from VideoConf Message Block ([#27344](https://github.com/RocketChat/Rocket.Chat/pull/27344))
+
+- Regression: Restore fuselage-ui-kit version ([#27331](https://github.com/RocketChat/Rocket.Chat/pull/27331))
+
+- Regression: Team name validation on Create Team Modal ([#27345](https://github.com/RocketChat/Rocket.Chat/pull/27345))
+
+- Regression: Update VideoConf components colors ([#27365](https://github.com/RocketChat/Rocket.Chat/pull/27365))
+
+- Regression: Update VideoConfListItem Color Tokens ([#27402](https://github.com/RocketChat/Rocket.Chat/pull/27402))
+
+- Regression: videoconf block showing a zero when no user has joined the call ([#27332](https://github.com/RocketChat/Rocket.Chat/pull/27332))
+
+- Regression: VideoConf default info modal not showing meeting URL as a link ([#27382](https://github.com/RocketChat/Rocket.Chat/pull/27382))
+
+  Before:
+  ![image](https://user-images.githubusercontent.com/55164754/204304308-87f6e6d3-8411-4974-8628-d81fd9aa07e5.png)
+
+
+  After:
+  ![image](https://user-images.githubusercontent.com/55164754/204303619-6bc7b014-7b11-40a5-a1de-1530e76fff8b.png)
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@Aman-Maheshwari](https://github.com/Aman-Maheshwari)
+- [@Darshilp326](https://github.com/Darshilp326)
+- [@Himanshu664](https://github.com/Himanshu664)
+- [@JoshMcCullough](https://github.com/JoshMcCullough)
+- [@Kartik18g](https://github.com/Kartik18g)
+- [@TBG-FR](https://github.com/TBG-FR)
+- [@TedsCabin](https://github.com/TedsCabin)
+- [@aKn1ghtOut](https://github.com/aKn1ghtOut)
+- [@aswinidev](https://github.com/aswinidev)
+- [@carlosrodrigues94](https://github.com/carlosrodrigues94)
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+- [@edward-raven](https://github.com/edward-raven)
+- [@eltociear](https://github.com/eltociear)
+- [@henit-chobisa](https://github.com/henit-chobisa)
+- [@im-adithya](https://github.com/im-adithya)
+- [@ivan1kazantsev](https://github.com/ivan1kazantsev)
+- [@lucassartor](https://github.com/lucassartor)
+- [@matheuslc](https://github.com/matheuslc)
+- [@nmagedman](https://github.com/nmagedman)
+- [@rettinghaus](https://github.com/rettinghaus)
+- [@satishp962](https://github.com/satishp962)
+- [@shrinish123](https://github.com/shrinish123)
+- [@sidmohanty11](https://github.com/sidmohanty11)
+- [@sumukhah](https://github.com/sumukhah)
+- [@tusharxoxoxo](https://github.com/tusharxoxoxo)
+- [@weslley543](https://github.com/weslley543)
+- [@xareyli](https://github.com/xareyli)
+- [@yasemincidem](https://github.com/yasemincidem)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@AllanPazRibeiro](https://github.com/AllanPazRibeiro)
+- [@KevLehman](https://github.com/KevLehman)
+- [@LucianoPierdona](https://github.com/LucianoPierdona)
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@aleksandernsilva](https://github.com/aleksandernsilva)
+- [@casalsgh](https://github.com/casalsgh)
+- [@cauefcr](https://github.com/cauefcr)
+- [@d-gubert](https://github.com/d-gubert)
+- [@debdutdeb](https://github.com/debdutdeb)
+- [@dougfabris](https://github.com/dougfabris)
+- [@felipe-rod123](https://github.com/felipe-rod123)
+- [@filipemarins](https://github.com/filipemarins)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@guijun13](https://github.com/guijun13)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@juliajforesti](https://github.com/juliajforesti)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@murtaza98](https://github.com/murtaza98)
+- [@nishant23122000](https://github.com/nishant23122000)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@rique223](https://github.com/rique223)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tapiarafael](https://github.com/tapiarafael)
+- [@tassoevan](https://github.com/tassoevan)
+- [@thassiov](https://github.com/thassiov)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+- [@yash-rajpal](https://github.com/yash-rajpal)
+
+# 5.3.6
+`2023-01-24  ·  1 🚀  ·  1 🐛  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🚀 Improvements
+
+
+- Emoji picker for large amount of custom emojis ([#27745](https://github.com/RocketChat/Rocket.Chat/pull/27745))
+
+### 🐛 Bug fixes
+
+
+- Not all messages in chat conversations are available when forwarding between agents or departments. ([#27816](https://github.com/RocketChat/Rocket.Chat/pull/27816))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@filipemarins](https://github.com/filipemarins)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 5.3.5
+`2022-12-02  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Fix watch db being started on Micro Services env ([#27435](https://github.com/RocketChat/Rocket.Chat/pull/27435))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+
+# 5.3.4
+`2022-11-29  ·  1 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Thread messages being included in the room history even though they are not displayed ([#27391](https://github.com/RocketChat/Rocket.Chat/pull/27391))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 5.3.3 ([#27340](https://github.com/RocketChat/Rocket.Chat/pull/27340))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@dougfabris](https://github.com/dougfabris)
+- [@ggazzo](https://github.com/ggazzo)
+
+# 5.3.3
+`2022-11-24  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+
+# 5.3.2
+`2022-11-18  ·  2 🐛  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Replace regex not compatible with safari ([#27294](https://github.com/RocketChat/Rocket.Chat/pull/27294))
+
+- Sidebar Room list extended preview not updating on new messages. ([#27259](https://github.com/RocketChat/Rocket.Chat/pull/27259))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@filipemarins](https://github.com/filipemarins)
+- [@gabriellsh](https://github.com/gabriellsh)
+
+# 5.3.1
+`2022-11-14  ·  5 🐛  ·  1 🔍  ·  5 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- File upload receiving whole file to apply limits ([#27105](https://github.com/RocketChat/Rocket.Chat/pull/27105))
+
+- Hide system messages setting not being respected. ([#27151](https://github.com/RocketChat/Rocket.Chat/pull/27151))
+
+  There was a query missing the parameters in the client.
+
+  Also added a few tests to help reduce the risk of this happening again.
+
+- Multi instance error message ([#27243](https://github.com/RocketChat/Rocket.Chat/pull/27243))
+
+- Next schedule check for Apps ([#27240](https://github.com/RocketChat/Rocket.Chat/pull/27240))
+
+- User merge by e-mail on OAuth is case-sensitive ([#27167](https://github.com/RocketChat/Rocket.Chat/pull/27167))
+
+  - Ignore case when searching for a user by email.
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Check for Cloud client secret to check if workspace is registered ([#27229](https://github.com/RocketChat/Rocket.Chat/pull/27229))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@casalsgh](https://github.com/casalsgh)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 5.3.0
+`2022-11-01  ·  3 🎉  ·  4 🚀  ·  13 🐛  ·  23 🔍  ·  23 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🎉 New features
+
+
+- Add new endpoint 'livechat/room.saveInfo' & deprecate 'livechat:saveInfo' meteor method ([#26789](https://github.com/RocketChat/Rocket.Chat/pull/26789))
+
+- Health check for data stream ([#27026](https://github.com/RocketChat/Rocket.Chat/pull/27026))
+
+- Matrix federation events coverage expansion (adding support for 3 extra events) ([#26859](https://github.com/RocketChat/Rocket.Chat/pull/26859))
+
+  FED-17
+  FED-25
+  FED-27
+  FED-28
+  FED-30
+  The goal of this PR is to add support for more events on Matrix Federation feature. The new supported events are:
+  
+  - Mentions  
+  - User avatar sync  
+  - Quotes
+
+### 🚀 Improvements
+
+
+- Automatically open call info contextual bar when voip room is opened ([#26963](https://github.com/RocketChat/Rocket.Chat/pull/26963))
+
+  This pull request adds the logic necessary to automatically open the call information contextual bar when entering a voip room. This mirrors the behavior we already have for livechat rooms.
+
+  **Before:**
+  ![before-voip-480p-speed](https://user-images.githubusercontent.com/6494543/192610275-a81ab19e-2b60-4466-9e04-81b2e938afda.gif)
+
+  **After:**
+  ![after-voip-480p-speed](https://user-images.githubusercontent.com/6494543/192610356-896ccd48-8c26-4fb9-8fb4-f792ab63e6d5.gif)
+
+- Better /health response when service not healthy ([#27091](https://github.com/RocketChat/Rocket.Chat/pull/27091))
+
+  Not healthy services will send a HTTP 500 response when not healthy.
+
+- Change status/price badge to fuselage tag ([#27044](https://github.com/RocketChat/Rocket.Chat/pull/27044))
+
+  ## Jira task: [MKP-131](https://rocketchat.atlassian.net/browse/MKP-131?atlOrigin=eyJpIjoiODRjOTk4OGYyZDAwNDIzNmI5N2EyZGRhNTUxOGY2NGEiLCJwIjoiaiJ9)
+  Changed the custom component that showed prices and statuses to a fuselage Tag component for maintainability reasons since after this PR every general design change to the tag component will be automatically reflected in the marketplace UI.
+  Demo image (App List):
+  ![image](https://user-images.githubusercontent.com/43561537/194942430-ba4153f1-2315-4117-85e6-01832cc09d91.png)
+
+  Demo Image (App price):
+  ![image](https://user-images.githubusercontent.com/43561537/194942498-5ff64a27-7232-47b8-a686-2fda2289e491.png)
+
+- Respect convert ascii to emoji preference for new message template ([#27038](https://github.com/RocketChat/Rocket.Chat/pull/27038))
+
+### 🐛 Bug fixes
+
+
+- Actionable messages are now sent to integrations webhook ([#27052](https://github.com/RocketChat/Rocket.Chat/pull/27052))
+
+  Actionable messages, with buttons and similar, (saved as blocks internally) were not being sent to external integrations, so CRMs and the like had no visibility on what was the actionable message sent, this PR adds a yaml version of the actions, as well as a proper json object with the same data on the webhook output, so that our clients can have more visibility in their process
+
+- check if message block has item to show message body ([#27040](https://github.com/RocketChat/Rocket.Chat/pull/27040))
+
+- CSS vars usage ([#27107](https://github.com/RocketChat/Rocket.Chat/pull/27107))
+
+- Email inbox memory leak on connection failure ([#26850](https://github.com/RocketChat/Rocket.Chat/pull/26850))
+
+  - Properly removing event listeners on re-connection.
+   - Attachments handling changed from beforeMessageSent to afterMessageSent, as the id of the message was needed, now rocket.cat will send the "Send Attachment To Email" button.
+   - Self-disable email inbox when reaching max re-connection attempts
+
+- Livechat CurrentChats infinity re-rendering ([#27076](https://github.com/RocketChat/Rocket.Chat/pull/27076))
+
+- Microphone icon alignment issue (# 27073) ([#27123](https://github.com/RocketChat/Rocket.Chat/pull/27123) by [@mani-rsg](https://github.com/mani-rsg))
+
+  Aligned microphone icon to its respective position on  screen widths <= 500 (mobile screens)
+
+  <img width="360" alt="image" src="https://user-images.githubusercontent.com/72298612/197343254-1506125f-06f4-43d1-b42b-e36071862254.png">
+  <img width="439" alt="image" src="https://user-images.githubusercontent.com/72298612/197343268-d7f0e294-4b76-4e5b-9874-0b41586b0487.png">
+
+- On hold reactivity for Omnichannel rooms ([#27013](https://github.com/RocketChat/Rocket.Chat/pull/27013))
+
+  - Fix instabilities from room when changed from on-hold to resume  
+  - Fix gray messages when resume from on-hold
+
+- Preview message not showing when reply direct message ([#27050](https://github.com/RocketChat/Rocket.Chat/pull/27050))
+
+- Remove contact mananger always to support old servers ([#27053](https://github.com/RocketChat/Rocket.Chat/pull/27053))
+
+- Remove voip extension when agent is removed or deactivated ([#26960](https://github.com/RocketChat/Rocket.Chat/pull/26960))
+
+- starting conferences with mic and cam on their default states do not sync the state with the provider ([#26966](https://github.com/RocketChat/Rocket.Chat/pull/26966))
+
+  Task: [VC-3]
+
+- Uncaught error by listening stream-notify-room without subscription ([#27020](https://github.com/RocketChat/Rocket.Chat/pull/27020))
+
+  fix this:
+  <img width="458" alt="image" src="https://user-images.githubusercontent.com/17487063/194358060-7d0fb534-9d04-4af8-abd9-fa2bd79b66c0.png">
+
+- Warning about livechat/inquiries.queuedForUser ([#27086](https://github.com/RocketChat/Rocket.Chat/pull/27086))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Apply correct fuselage color tokens ([#27089](https://github.com/RocketChat/Rocket.Chat/pull/27089))
+
+- Chore: Bump Apps-Engine version ([#27059](https://github.com/RocketChat/Rocket.Chat/pull/27059))
+
+- Chore: bump fuselage packages ([#27157](https://github.com/RocketChat/Rocket.Chat/pull/27157))
+
+- Chore: bump fuselage packages ([#27122](https://github.com/RocketChat/Rocket.Chat/pull/27122))
+
+- Chore: Email Inbox Sanitization ([#26796](https://github.com/RocketChat/Rocket.Chat/pull/26796))
+
+  Jira Issue [UFR-3]
+  
+  - Rewrite Email Inbox to typescript  
+  - Replace `useForm`  
+  - Fix: return an error if there are no email inboxes in `email-inbox` endpoint 
+  **documentation update**: https://github.com/RocketChat/developer-docs/pull/132  
+  - Add e2e test cases for creating email inboxes and deleting email inboxes
+
+- Chore: Implement short description for marketplace apps ([#27030](https://github.com/RocketChat/Rocket.Chat/pull/27030))
+
+  ## Jira task: [MKP-126](https://rocketchat.atlassian.net/browse/MKP-126)
+  Implemented the shortDescription field in the marketplace app details header. Now apps have either a shorter description or nothing, in case it doesn't have a shortDescription registered, in their headers description section.
+  Demo image: 
+  ![image](https://user-images.githubusercontent.com/43561537/194640492-9942f6d9-66ad-4df9-97e8-98c7d51a724c.png)
+
+- Chore: Refactor AppLogs to TS ([#26938](https://github.com/RocketChat/Rocket.Chat/pull/26938))
+
+  Rewrote the AppLogs component to TS. Also, improved some error handling logic.
+
+- Chore: Remove default value from custom home content setting ([#26995](https://github.com/RocketChat/Rocket.Chat/pull/26995))
+
+  Remove content from `Custom body` setting so that new workspaces don't have initial unstyled HTML in their homepages.
+
+- Chore: remove excess space from html preview ([#27043](https://github.com/RocketChat/Rocket.Chat/pull/27043))
+
+- Chore: Remove Unused CSS ([#27012](https://github.com/RocketChat/Rocket.Chat/pull/27012))
+
+- Chore: Switch deprecated fields for projection ([#27025](https://github.com/RocketChat/Rocket.Chat/pull/27025))
+
+- Chore: Tests for EE dashboards ([#26974](https://github.com/RocketChat/Rocket.Chat/pull/26974))
+
+- Chore: Update Image and link previews ([#27019](https://github.com/RocketChat/Rocket.Chat/pull/27019))
+
+  - Add message generic cover image preview component to OEmbed Links  
+  - Add new functionalities to URL Image preview, like click to open preview and arrows to move between images in the current chat  
+  - Design changes to keep the original aspect ratio of the image to prevent loss of important image pieces of information   
+  - Add fallback to common issues related to meta tags like `og:image` and others
+
+- Chore: Use a single notification listener for all videoconf messages ([#26682](https://github.com/RocketChat/Rocket.Chat/pull/26682))
+
+  Task: [VC-1]
+
+- Chore: UserCard loader tweaks ([#27068](https://github.com/RocketChat/Rocket.Chat/pull/27068))
+
+  ### before
+  ![Kapture 2022-10-14 at 12 47 43](https://user-images.githubusercontent.com/27704687/195888045-6fd900ab-feb1-4dc7-924c-a0fd7634eab6.gif)
+
+
+  ### after
+  ![Kapture 2022-10-14 at 12 45 30](https://user-images.githubusercontent.com/27704687/195887641-652f388b-cf9f-413d-9c07-c0df9a3f7287.gif)
+
+- i18n: Language update from LingoHub 🤖 on 2022-10-03Z ([#26992](https://github.com/RocketChat/Rocket.Chat/pull/26992))
+
+- i18n: Language update from LingoHub 🤖 on 2022-10-10Z ([#27035](https://github.com/RocketChat/Rocket.Chat/pull/27035))
+
+- i18n: Language update from LingoHub 🤖 on 2022-10-17Z ([#27082](https://github.com/RocketChat/Rocket.Chat/pull/27082))
+
+- Merge master into develop & Set version to 5.3.0-develop ([#27067](https://github.com/RocketChat/Rocket.Chat/pull/27067))
+
+- Regression: Quote colors ([#27110](https://github.com/RocketChat/Rocket.Chat/pull/27110))
+
+  Before
+  ![image](https://user-images.githubusercontent.com/40830821/196947705-f1b2edf9-7341-4d2a-b8e8-4e3720ab7289.png)
+
+
+  After
+  ![image](https://user-images.githubusercontent.com/40830821/196947512-1267f992-11c7-4ff4-b7a2-9f0b3534f69d.png)
+
+- Regression: Remove margin-bottom inside UserCard actions ([#27100](https://github.com/RocketChat/Rocket.Chat/pull/27100))
+
+- Regression: Toolbox Divider Color ([#27116](https://github.com/RocketChat/Rocket.Chat/pull/27116))
+
+  ![image](https://user-images.githubusercontent.com/27704687/197018407-d591d6bc-e390-4bcd-9b6a-0bf0a1420bc2.png)
+
+- Regression: Unify `isLastDocDelayed` logic ([#27120](https://github.com/RocketChat/Rocket.Chat/pull/27120))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@mani-rsg](https://github.com/mani-rsg)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@aleksandernsilva](https://github.com/aleksandernsilva)
+- [@casalsgh](https://github.com/casalsgh)
+- [@cauefcr](https://github.com/cauefcr)
+- [@d-gubert](https://github.com/d-gubert)
+- [@debdutdeb](https://github.com/debdutdeb)
+- [@dougfabris](https://github.com/dougfabris)
+- [@filipemarins](https://github.com/filipemarins)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@guijun13](https://github.com/guijun13)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@juliajforesti](https://github.com/juliajforesti)
+- [@murtaza98](https://github.com/murtaza98)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@rique223](https://github.com/rique223)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+- [@yash-rajpal](https://github.com/yash-rajpal)
+
+# 5.2.2
+`2023-01-24  ·  1 🚀  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🚀 Improvements
+
+
+- Emoji picker for large amount of custom emojis ([#27745](https://github.com/RocketChat/Rocket.Chat/pull/27745))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 5.2.0
+`2022-10-13  ·  5 🎉  ·  13 🚀  ·  19 🐛  ·  62 🔍  ·  28 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🎉 New features
+
+
+- Add Markup to QuoteAttachment ([#26751](https://github.com/RocketChat/Rocket.Chat/pull/26751))
+
+- Get moderators, owners and leaders from room scope via apps-engine ([#26674](https://github.com/RocketChat/Rocket.Chat/pull/26674))
+
+- Matrix Federation events coverage expansion (support for 5 more events) ([#26705](https://github.com/RocketChat/Rocket.Chat/pull/26705))
+
+  The goal of this PR is to add support for more events on Matrix Federation feature. The new supported events are:
+  
+  - Edit Messages;  
+  - Delete Messages  
+  - File Upload (including video and audio/voice messages);  
+  - Send emojis on messages;  
+  - Reactions.
+
+- Move administration links to an exclusive kebab menu ([#26867](https://github.com/RocketChat/Rocket.Chat/pull/26867))
+
+  Move administration links to an exclusive kebab menu.
+
+  <img width="271" alt="Screen Shot 2022-09-14 at 02 59 03" src="https://user-images.githubusercontent.com/9275105/190071665-b4f862d2-bd35-4916-9688-318971c70ab8.png">
+
+- Sections layout and featured apps for marketplace ([#26514](https://github.com/RocketChat/Rocket.Chat/pull/26514))
+
+  ### [MKP??+   - Featured Apps](https://app.clickup.com/t/2t1w9x3)
+  Implemented a new layout for marketplace's apps list page. Now the page has an All apps section and a "featured apps" section in which pre-selected and pre-categorized apps are dynamically shown on the top area of the page to make them stand out.
+  Demo gif:
+  ![featured_apps](https://user-images.githubusercontent.com/43561537/184385727-4f44c1d5-d7f7-43bf-a93d-2bc582bd3159.gif)
+
+  ClickUp Task link: https://app.clickup.com/t/2t1w9x3
+
+### 🚀 Improvements
+
+
+- Allow delete attachment description on message edit ([#26673](https://github.com/RocketChat/Rocket.Chat/pull/26673))
+
+- Better descriptions for VoIP Settings ([#26877](https://github.com/RocketChat/Rocket.Chat/pull/26877))
+
+- Changed dial pad appearance to match original design ([#26863](https://github.com/RocketChat/Rocket.Chat/pull/26863))
+
+  Before:
+  ![Screen Shot 2022-09-13 at 15 00 34](https://user-images.githubusercontent.com/6494543/189976766-6d085795-a832-4189-898b-4bd631cb4309.png)
+
+  After:
+  ![Screen Shot 2022-09-13 at 14 59 23](https://user-images.githubusercontent.com/6494543/189976804-c419ac33-6a90-464e-8792-feb0d0ae33e5.png)
+
+- Include `syncAvatars` on `ldap.syncNow` ([#26824](https://github.com/RocketChat/Rocket.Chat/pull/26824))
+
+  This PR includes a new call for the method `syncAvatars` when `ldap.syncNow` is called
+
+- OTR Message ([#24297](https://github.com/RocketChat/Rocket.Chat/pull/24297))
+
+- Results of user auto complete ([#26687](https://github.com/RocketChat/Rocket.Chat/pull/26687))
+
+- Rounded video attachment ([#26832](https://github.com/RocketChat/Rocket.Chat/pull/26832))
+
+- Setting for login email notifications ([#26831](https://github.com/RocketChat/Rocket.Chat/pull/26831))
+
+- System messages' consistency ([#26130](https://github.com/RocketChat/Rocket.Chat/pull/26130))
+
+- Updating voip tooltips and icons ([#26834](https://github.com/RocketChat/Rocket.Chat/pull/26834))
+
+  ### This PR includes the following tooltip expression changes:
+  Call toggle button  
+  * Enabled -> Turn off answer calls  
+  * Disabled -> Turn on answer calls  
+  * Signaling connection disconnected -> Waiting for server connection
+
+
+  Chat toggle button  
+  * Available -> Turn off answer chats  
+  * Not available -> Turn on answer chats
+
+  Hold button  
+  * Hold call -> Hold call / Resume call
+
+  Mute button  
+  * Mute -> Turn on microphone / Turn off microphone
+
+  ### Also includes the following icon changes:
+
+  Old:
+  ![new-1](https://user-images.githubusercontent.com/6494543/189218303-144671cb-6533-46a0-be18-52d62b3701d3.png)
+  ![new-2](https://user-images.githubusercontent.com/6494543/189218307-8f24797b-bef6-4d8a-9e25-98e96fa59155.png)
+  ![new-3](https://user-images.githubusercontent.com/6494543/189218309-05a836a3-5c17-4370-9cc6-fd7a6da3d8c2.png)
+
+
+  New: 
+
+  ![old-1](https://user-images.githubusercontent.com/6494543/189217735-3d9cde83-8e54-421e-b57a-ac9bda748416.png)
+  ![old-2](https://user-images.githubusercontent.com/6494543/189217738-d4bb2bfb-ddfd-4830-a2e8-a9937e93826a.png)
+  ![old-3](https://user-images.githubusercontent.com/6494543/189217740-988295bf-9112-4cea-93da-402ea7e82247.png)
+
+- Use cached EE Cloud license on startup ([#26987](https://github.com/RocketChat/Rocket.Chat/pull/26987))
+
+- VideoConference Messages UI ([#26548](https://github.com/RocketChat/Rocket.Chat/pull/26548))
+
+  <img width='300px' src='https://user-images.githubusercontent.com/27704687/186758472-f15837be-0a24-470f-8dec-46422da54c6b.png' />
+
+  <img width='300px' src='https://user-images.githubusercontent.com/27704687/186758582-b6d55be9-e555-4a5d-ab21-9322042fbd5a.png' />
+
+  <img width='300px' src='https://user-images.githubusercontent.com/27704687/186758710-19f6bd5f-e0b4-4a6a-aea8-80a1c25f0ce7.png' />
+
+- VideoConference Messages UI (#26548)" ([#26961](https://github.com/RocketChat/Rocket.Chat/pull/26961))
+
+### 🐛 Bug fixes
+
+
+- **Livechat:** Unread messages badge ([#26843](https://github.com/RocketChat/Rocket.Chat/pull/26843))
+
+  OC-169
+
+  Even if the page was reopening, Livechat will inform unread messages
+
+- Adjusted livechat fallbacks to take null values into account ([#26909](https://github.com/RocketChat/Rocket.Chat/pull/26909))
+
+- Admin sidebar navigation ([#26958](https://github.com/RocketChat/Rocket.Chat/pull/26958))
+
+  ## [MKP-125](https://rocketchat.atlassian.net/browse/MKP-125?atlOrigin=eyJpIjoiMThlMTIwYmFkZWI5NDBlYjhlMWI3YTc1ZDliYTY3NDUiLCJwIjoiaiJ9)
+  Fix the behavior of the admin sidebar, it didn't activate its options properly on pages that had sub-routes.
+  Demo gif:
+  ![sidebar-bug](https://user-images.githubusercontent.com/43561537/192585542-ddd8fd37-e833-4960-ae67-fb408595c7ba.gif)
+
+- Asset settings description not showing on admin ([#26755](https://github.com/RocketChat/Rocket.Chat/pull/26755))
+
+- Check admin setting for whether to display roles or not ([#26601](https://github.com/RocketChat/Rocket.Chat/pull/26601))
+
+- Ephemeral messages not respecting katex setting ([#26812](https://github.com/RocketChat/Rocket.Chat/pull/26812))
+
+- Expanded thread behind sidebar on small screens ([#26852](https://github.com/RocketChat/Rocket.Chat/pull/26852))
+
+  Sidebar overlapping expanded threads in window sizes between **1135px and 780px** and  but the expanded threads should be limited to sidebar size and should not go through it
+
+  ### **Actual behavior**
+  ![image](https://user-images.githubusercontent.com/20212776/189692618-b1c0ebdf-36e1-49cb-9179-29b842260a18.png)
+
+
+  ### **Expected behavior**
+  ![image](https://user-images.githubusercontent.com/20212776/189692714-0cce9947-8f72-48af-9a81-04cc521a9833.png)
+
+- Fix broken legacy message view ([#26819](https://github.com/RocketChat/Rocket.Chat/pull/26819))
+
+  Fixed `messagesHistory` function, it was filtering messages only with existing threads.
+
+- Incorrect filter on contact history search ([#26813](https://github.com/RocketChat/Rocket.Chat/pull/26813) by [@neo-clon](https://github.com/neo-clon))
+
+- Livechat trigger messages covering all the website ([#26776](https://github.com/RocketChat/Rocket.Chat/pull/26776))
+
+- Menu options margin spacing ([#26775](https://github.com/RocketChat/Rocket.Chat/pull/26775))
+
+  - Change margin spacing from 16-4px to 12-8px
+
+  | before | after |
+  |--------|-------|
+  | ![before](https://user-images.githubusercontent.com/48109548/187940409-903eede8-9ade-448d-9211-0e004ccd0ff2.png) | ![after](https://user-images.githubusercontent.com/48109548/187940513-3189ca2a-5f18-4e39-93bb-5843f13fce27.png) |
+
+- Message sequential after message thread preview ([#26900](https://github.com/RocketChat/Rocket.Chat/pull/26900))
+
+- MIME Type fallback for .mov File Extensions ([#26921](https://github.com/RocketChat/Rocket.Chat/pull/26921))
+
+  Some browsers don't support the MIME type for QuickTime video encoder (.mov), so we had to create a fallback to 'video/mp4'. There are other fallbacks for other browsers, but this is the only one we need for now.
+
+  The fallback func was used in the MediaPreview and VideoAttachments components
+
+- Old rooms without the associated unit will not be displayed on the current chats ([#26685](https://github.com/RocketChat/Rocket.Chat/pull/26685))
+
+- Restore current chats  default table order ([#26808](https://github.com/RocketChat/Rocket.Chat/pull/26808))
+
+- Sign in with Apple on mobile ([#26827](https://github.com/RocketChat/Rocket.Chat/pull/26827))
+
+  Our mobile app uses a different method to log in that was removed at #24879 .
+
+  You can also make it available only on mobile:
+  ![image](https://user-images.githubusercontent.com/8591547/188752062-bef03f01-d995-4422-8a24-984ebed49ce2.png)
+
+  Removes the "Sign in with Apple" text from the log in button. This was something we thought were required by Apple, but it is actually allowed to have just the logo as all others OAuth we have. Source: https://developer.apple.com/design/human-interface-guidelines/technologies/sign-in-with-apple/buttons/#creating-a-custom-sign-in-with-apple-button
+
+- Typo on new homepage ([#26768](https://github.com/RocketChat/Rocket.Chat/pull/26768))
+
+- Unable to send native video recording to Whatsapp ([#26669](https://github.com/RocketChat/Rocket.Chat/pull/26669))
+
+- Upload fails when using WebDav as file storage ([#26711](https://github.com/RocketChat/Rocket.Chat/pull/26711))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Bump actions/cache from 2 to 3.0.1 ([#25003](https://github.com/RocketChat/Rocket.Chat/pull/25003) by [@dependabot[bot]](https://github.com/dependabot[bot]))
+
+- Chore: `improve/media-recorder` ([#26426](https://github.com/RocketChat/Rocket.Chat/pull/26426))
+
+- Chore: `refactor/room` ([#26675](https://github.com/RocketChat/Rocket.Chat/pull/26675))
+
+  Replaces `room` Blaze template with React components.
+
+- Chore: add aria hidden if modal is open ([#26826](https://github.com/RocketChat/Rocket.Chat/pull/26826))
+
+- Chore: Add E2E tests to missing omnichannel endpoints ([#26730](https://github.com/RocketChat/Rocket.Chat/pull/26730))
+
+- Chore: Add RocketChatDesktop function to open video calls when using Electron ([#26793](https://github.com/RocketChat/Rocket.Chat/pull/26793))
+
+- Chore: Add tests to cover issue fixed in #26720 ([#26767](https://github.com/RocketChat/Rocket.Chat/pull/26767))
+
+- Chore: break LDAP manager into smaller pieces to improve unit tests ([#26994](https://github.com/RocketChat/Rocket.Chat/pull/26994))
+
+- Chore: Bump Apps-Engine version ([#27059](https://github.com/RocketChat/Rocket.Chat/pull/27059))
+
+- Chore: Bump fuselage dependencies and implement new tabs variant in marketplace ([#26876](https://github.com/RocketChat/Rocket.Chat/pull/26876))
+
+  Bumped the necessary dependencies of fuselage and implemented the new tabs component underline variant.
+  Demo image:
+  ![image](https://user-images.githubusercontent.com/43561537/190252796-cd4ad872-90e6-413e-92cb-13c0354399da.png)
+
+- Chore: Bump fuselage to latest ([#27042](https://github.com/RocketChat/Rocket.Chat/pull/27042))
+
+- Chore: Bump vm2 to 3.9.11 ([#26940](https://github.com/RocketChat/Rocket.Chat/pull/26940))
+
+- Chore: Change BundleChips component appearance ([#26686](https://github.com/RocketChat/Rocket.Chat/pull/26686))
+
+  # [MKP-44](https://rocketchat.atlassian.net/browse/MKP-44?atlOrigin=eyJpIjoiOTBiNzQ4NzE1ZTJiNDBjMGE0NjQxNmQ2MWNkMTI4YjgiLCJwIjoiaiJ9)
+  Changed the appearance of the marketplace app bundle chips (E.G.: The blue Enterprise tag in the images bellow).
+
+  Demo image for app details page:
+  ![image](https://user-images.githubusercontent.com/43561537/190232209-939d29f5-bcdb-4ce4-99d1-1b061d170ab0.png)
+
+  Demo image for list view:
+  ![image](https://user-images.githubusercontent.com/43561537/190232168-ab898d8a-6a73-4e34-9f47-a5af01bf29fc.png)
+
+- Chore: Cleanup endpoint handlers ([#26749](https://github.com/RocketChat/Rocket.Chat/pull/26749))
+
+- Chore: Configure Prettier for `@rocket.chat/livechat` ([#26846](https://github.com/RocketChat/Rocket.Chat/pull/26846))
+
+- Chore: Convert current-chats to useQuery ([#26931](https://github.com/RocketChat/Rocket.Chat/pull/26931))
+
+- Chore: Deprecate some omnichannel meteor methods which aren't getting used ([#26839](https://github.com/RocketChat/Rocket.Chat/pull/26839))
+
+- Chore: first non-aggressive CSS removal ([#26714](https://github.com/RocketChat/Rocket.Chat/pull/26714))
+
+- Chore: Fix API tests retry ([#26860](https://github.com/RocketChat/Rocket.Chat/pull/26860))
+
+- Chore: fix regressions for omnichannel due room refactor ([#26912](https://github.com/RocketChat/Rocket.Chat/pull/26912))
+
+- Chore: fix wrong `test.step` usage ([#26873](https://github.com/RocketChat/Rocket.Chat/pull/26873))
+
+- Chore: Introduce `useQuery` as data source for the `Room` component ([#26855](https://github.com/RocketChat/Rocket.Chat/pull/26855))
+
+- Chore: merge all functions using autorun x useSubscription pattern ([#26886](https://github.com/RocketChat/Rocket.Chat/pull/26886))
+
+- Chore: Missing Also_send_thread_message_to_channel setting translation ([#26926](https://github.com/RocketChat/Rocket.Chat/pull/26926))
+
+- Chore: Move Header to ui-client ([#26757](https://github.com/RocketChat/Rocket.Chat/pull/26757))
+
+  <img width="1151" alt="Screen Shot 2022-08-30 at 23 15 18" src="https://user-images.githubusercontent.com/27704687/187577854-08a2c30d-0bd5-48c6-9302-55e28ade96cd.png">
+
+- Chore: Move micro services to packages ([#26884](https://github.com/RocketChat/Rocket.Chat/pull/26884))
+
+- Chore: Move Omnichannel  Room Footer to react ([#26864](https://github.com/RocketChat/Rocket.Chat/pull/26864))
+
+- Chore: Move presence to package ([#25541](https://github.com/RocketChat/Rocket.Chat/pull/25541))
+
+- Chore: Omnichannel endpoints to ts ([#26829](https://github.com/RocketChat/Rocket.Chat/pull/26829))
+
+- Chore: Refactor message list context usage ([#26748](https://github.com/RocketChat/Rocket.Chat/pull/26748))
+
+- Chore: Refactor omnichannel livechat tests ([#26929](https://github.com/RocketChat/Rocket.Chat/pull/26929))
+
+- Chore: Rewrite apps WarningModal component to typescript ([#26845](https://github.com/RocketChat/Rocket.Chat/pull/26845))
+
+  Translated the admin apps WarningModal component from Javascript to Typescript
+
+- Chore: Test/improve reliability ([#26724](https://github.com/RocketChat/Rocket.Chat/pull/26724) by [@souzaramon](https://github.com/souzaramon))
+
+- Chore: Tests for EE features ([#26939](https://github.com/RocketChat/Rocket.Chat/pull/26939))
+
+- Chore: Update fuselage to next version. ([#26841](https://github.com/RocketChat/Rocket.Chat/pull/26841))
+
+- Chore: Updating apps engine ([#26924](https://github.com/RocketChat/Rocket.Chat/pull/26924))
+
+- Chore: Upgrading livechat's ui-kit package to latest version ([#26709](https://github.com/RocketChat/Rocket.Chat/pull/26709))
+
+  This PR upgrades Livechat's UiKit package to the version 0.31.16. and adjusts the renderer to be compatible with said version.
+
+- i18n: Language update from LingoHub 🤖 on 2022-08-29Z ([#26722](https://github.com/RocketChat/Rocket.Chat/pull/26722))
+
+- i18n: Language update from LingoHub 🤖 on 2022-09-05Z ([#26805](https://github.com/RocketChat/Rocket.Chat/pull/26805))
+
+- i18n: Language update from LingoHub 🤖 on 2022-09-12Z ([#26849](https://github.com/RocketChat/Rocket.Chat/pull/26849))
+
+- i18n: Language update from LingoHub 🤖 on 2022-09-19Z ([#26896](https://github.com/RocketChat/Rocket.Chat/pull/26896))
+
+- i18n: Language update from LingoHub 🤖 on 2022-09-26Z ([#26948](https://github.com/RocketChat/Rocket.Chat/pull/26948))
+
+- Merge master into develop & Set version to 5.2.0-develop ([#26792](https://github.com/RocketChat/Rocket.Chat/pull/26792))
+
+- Regression: Cannot edit messages in some environments. ([#27023](https://github.com/RocketChat/Rocket.Chat/pull/27023))
+
+  An empty `$unset` object was being used and causes exceptions in some mongo versions.
+
+- Regression: Composer not reactive when omnichannel room closed ([#26983](https://github.com/RocketChat/Rocket.Chat/pull/26983))
+
+- Regression: Double Table Cell Causing extra padding on Current Chats ([#27008](https://github.com/RocketChat/Rocket.Chat/pull/27008))
+
+- Regression: Event handler blocking mention links ([#26964](https://github.com/RocketChat/Rocket.Chat/pull/26964))
+
+  Fixes mention links being irresponsive to clicks.
+  Jira: [TC-55]
+
+  [TC-55]: https://rocketchat.atlassian.net/browse/TC-55?atlOrigin=eyJpIjoiMmQ3ZmE0MWE2NGQwNDIzZThkMzc5NGNhMzU1MjExMGMiLCJwIjoiaiJ9
+
+- Regression: Fix open room from current chats ([#26930](https://github.com/RocketChat/Rocket.Chat/pull/26930))
+
+- Regression: Fixed takeInquiry method not displaying error messages on the client ([#26976](https://github.com/RocketChat/Rocket.Chat/pull/26976))
+
+  This pull request brings back the toast message "The maximum number of simultaneous chats per agent has been reached." that should be displayed when an agent tries to take more chats than the maximum allowed.
+
+  ![image](https://user-images.githubusercontent.com/6494543/192891486-8720a5e3-f0c8-4863-b0dc-fa3b922d776b.png)
+
+- Regression: Handle `undefined` values on `useReactiveQuery`'s query function ([#26988](https://github.com/RocketChat/Rocket.Chat/pull/26988))
+
+  According to https://tanstack.com/query/v4/docs/reference/useQuery, the query function must **not** return `undefined` values, a quirk that we've been ignoring.
+
+- Regression: Incorrect on-hold chat resume message ([#26935](https://github.com/RocketChat/Rocket.Chat/pull/26935))
+
+- Regression: Omnichannel Contact Center empty on no filter search ([#26975](https://github.com/RocketChat/Rocket.Chat/pull/26975))
+
+- Regression: Remove section and replace icon on administration kebab menu ([#26986](https://github.com/RocketChat/Rocket.Chat/pull/26986))
+
+- Regression: Remove symbols from number before storing PBX event ([#26969](https://github.com/RocketChat/Rocket.Chat/pull/26969))
+
+- Regression: Sidebar Room List not working properly. ([#26950](https://github.com/RocketChat/Rocket.Chat/pull/26950))
+
+  The CachedCollection Class was assuming that the passed parameter would be modified, instead of using the callback return.
+
+- Regression: Typo on livechat/queue endpoint client call ([#26962](https://github.com/RocketChat/Rocket.Chat/pull/26962))
+
+- Regression: Use raw models instead of meteor ones on visitor inactivity processing ([#27002](https://github.com/RocketChat/Rocket.Chat/pull/27002))
+
+- Regression: VideoConf Actions Reactivity in SidebarItem ([#27009](https://github.com/RocketChat/Rocket.Chat/pull/27009))
+
+  Jira Issue: [VC-10]
+
+- Regression: wrong permission on livechat/tags endpoints ([#26928](https://github.com/RocketChat/Rocket.Chat/pull/26928))
+
+- Release 5.1.1 ([#26822](https://github.com/RocketChat/Rocket.Chat/pull/26822))
+
+- Release 5.1.3 ([#26914](https://github.com/RocketChat/Rocket.Chat/pull/26914))
+
+- Release 5.1.4  ([#26965](https://github.com/RocketChat/Rocket.Chat/pull/26965))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@dependabot[bot]](https://github.com/dependabot[bot])
+- [@neo-clon](https://github.com/neo-clon)
+- [@souzaramon](https://github.com/souzaramon)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@AllanPazRibeiro](https://github.com/AllanPazRibeiro)
+- [@KevLehman](https://github.com/KevLehman)
+- [@LucianoPierdona](https://github.com/LucianoPierdona)
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@albuquerquefabio](https://github.com/albuquerquefabio)
+- [@aleksandernsilva](https://github.com/aleksandernsilva)
+- [@d-gubert](https://github.com/d-gubert)
+- [@debdutdeb](https://github.com/debdutdeb)
+- [@dougfabris](https://github.com/dougfabris)
+- [@filipemarins](https://github.com/filipemarins)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@guijun13](https://github.com/guijun13)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@jeanfbrito](https://github.com/jeanfbrito)
+- [@juliajforesti](https://github.com/juliajforesti)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@murtaza98](https://github.com/murtaza98)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@rique223](https://github.com/rique223)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+- [@yash-rajpal](https://github.com/yash-rajpal)
+
+# 5.1.4
+`2022-09-28  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 5.1.4  ([#26965](https://github.com/RocketChat/Rocket.Chat/pull/26965))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@aleksandernsilva](https://github.com/aleksandernsilva)
+- [@tassoevan](https://github.com/tassoevan)
+
+# 5.1.3
+`2022-09-24  ·  4 🐛  ·  2 🔍  ·  8 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- `MongoInvalidArgumentError` on overwriting existing setting ([#26880](https://github.com/RocketChat/Rocket.Chat/pull/26880))
+
+- Check if messsage.replies exist on new message template ([#26652](https://github.com/RocketChat/Rocket.Chat/pull/26652))
+
+- Error when mentioning a non-member of a public channel ([#26917](https://github.com/RocketChat/Rocket.Chat/pull/26917))
+
+- Importer fails when file includes user without an email. ([#26836](https://github.com/RocketChat/Rocket.Chat/pull/26836))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 5.1.1 ([#26822](https://github.com/RocketChat/Rocket.Chat/pull/26822))
+
+- Release 5.1.3 ([#26914](https://github.com/RocketChat/Rocket.Chat/pull/26914))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@debdutdeb](https://github.com/debdutdeb)
+- [@filipemarins](https://github.com/filipemarins)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tassoevan](https://github.com/tassoevan)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+
+# 5.1.2
+`2022-09-12  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Security Hotfix (https://docs.rocket.chat/guides/security/security-updates)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@ggazzo](https://github.com/ggazzo)
+
+# 5.1.1
+`2022-09-08  ·  3 🐛  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Fix broken legacy message view ([#26819](https://github.com/RocketChat/Rocket.Chat/pull/26819))
+
+  Fixed `messagesHistory` function, it was filtering messages only with existing threads.
+
+- Livechat trigger messages covering all the website ([#26776](https://github.com/RocketChat/Rocket.Chat/pull/26776))
+
+- Restore current chats  default table order ([#26808](https://github.com/RocketChat/Rocket.Chat/pull/26808))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+
+# 5.1.0
+`2022-09-02  ·  8 🎉  ·  7 🚀  ·  42 🐛  ·  129 🔍  ·  37 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🎉 New features
+
+
+- `Home` page ([#25734](https://github.com/RocketChat/Rocket.Chat/pull/25734))
+
+  <img width="1430" alt="image" src="https://user-images.githubusercontent.com/2263066/181625050-91714d59-dc91-4613-a162-2656216771cd.png">
+
+- Adding oauth crud on the rocket.chat side ([#26220](https://github.com/RocketChat/Rocket.Chat/pull/26220))
+
+- allow ephemeral messages to receive a specific id ([#26118](https://github.com/RocketChat/Rocket.Chat/pull/26118))
+
+  Allow apps to pass a specific ID for ephemeral messages as a way to edit them.
+
+- Capability to search visitors by custom fields ([#26312](https://github.com/RocketChat/Rocket.Chat/pull/26312))
+
+  Users of the endpoints [api/v1/omnichannel/contact.search](https://developer.rocket.chat/reference/api/rest-api/endpoints/omnichannel/livechat-endpoints/livechat-contact/omnichannel-search-contact) and [/api/v1/livechat/visitors.search](https://developer.rocket.chat/reference/api/rest-api/endpoints/omnichannel/livechat-endpoints/visitor/search-for-visitors) are now able to search by custom fields in their objects. 
+  Capability of selecting if a custom field can be searched for is added in the Omnichannel pannel as a toggle for `searchable`,  the included JSON in the Accounts' Custom Field example has been updated to make it explicit for future configurations that the field has to be enabled as searchable for that to happen.
+
+- Fallback Error component for Engagement Dashboard widgets ([#26441](https://github.com/RocketChat/Rocket.Chat/pull/26441))
+
+  As proposed, was added a fallback component to catch errors at Engagement Dashboard widgets individually.
+  It used an Error boundary to catch `react-query` errors, due to this scenario was necessary to install and use the library   [react-error-boundary](https://github.com/bvaughn/react-error-boundary)  that implements everything and more compared to our ErrorBoundary component, the main reason was to capture Query errors and the implementation with `react-query` library.
+
+  **New layout:**
+
+  Before:
+  ![image](https://user-images.githubusercontent.com/20212776/184968003-607eda93-ae3f-406c-a775-becd2720a607.png)
+
+  After:
+  ![image](https://user-images.githubusercontent.com/20212776/184970152-25a425f3-6aad-4620-b1c1-5f8c8bb35fbb.png)
+
+- Marketplace apps page new list view layout ([#26181](https://github.com/RocketChat/Rocket.Chat/pull/26181))
+
+  Refactored the layout of the marketplace list of apps, now it has a more minimalist and flexbox-based style. Also implemented a new status filter.
+
+  Demo gif:
+  ![new-app-list](https://user-images.githubusercontent.com/43561537/179572667-792d8d34-1003-4e95-bf10-37ba93f8c1ef.gif)
+
+  ClickUp task: 
+  https://app.clickup.com/t/1na7437
+
+- Surface featured apps endpoint  ([#26416](https://github.com/RocketChat/Rocket.Chat/pull/26416))
+
+  Created the /featured endpoints on the rest.js file. Also created the necessary typings to use together with it.
+
+- Warn admins about running multiple instances of the monolith ([#26667](https://github.com/RocketChat/Rocket.Chat/pull/26667))
+
+### 🚀 Improvements
+
+
+- Added identification on calls to/from existing contacts ([#26334](https://github.com/RocketChat/Rocket.Chat/pull/26334))
+
+  Before: 
+  <img width="273" alt="Screen Shot 2022-07-02 at 01 50 52" src="https://user-images.githubusercontent.com/6494543/180296563-393ae4e8-2d91-4e21-8567-3112d445b8ee.png">
+
+  After:
+  <img width="279" alt="Screen Shot 2022-07-21 at 16 00 27" src="https://user-images.githubusercontent.com/6494543/180296628-188ba5b2-6f49-450f-b0b0-fd8b40d1b45e.png">
+
+- General federation improvements ([#26150](https://github.com/RocketChat/Rocket.Chat/pull/26150))
+
+  I know this changed a lot of files, but the main goal for this PR is not to change any behavior, the goals for the PR are:
+  
+  - Refactor the code;  
+  - Solve any tech debt;  
+  - Simplify and reuse some parts of the code;  
+  - Remove duplicated code;  
+  - Remove all unsafe type castings;  
+  - Solve all Eslint errors and warnings;  
+  - Split too big files;  
+  - Encapsulate the business logic in a better way, avoiding exposing and leaking internal logic to the unintended layers;  
+  - Improve the actual test cases;  
+  - Add more test cases, since a lot of cases were omitted during the release phase;  
+  - Remove unsafe `Object.assign` statements and prefer to use the class `constructor` instead;
+
+- New 'not found page' design ([#26452](https://github.com/RocketChat/Rocket.Chat/pull/26452))
+
+  - Add a new design for the not-found page  
+  - Add English translation for "page not found" and "Homepage"  
+  - Update English translation for "Room_not_exist_or_not_permission"  
+  - Add "Homepage" button on the room not found page
+
+- OTR refactoring ([#24757](https://github.com/RocketChat/Rocket.Chat/pull/24757))
+
+  Rewritten OTR files to TS with new code patterns
+
+- Remove device-management banner and modal ([#26729](https://github.com/RocketChat/Rocket.Chat/pull/26729))
+
+- Spotlight search user results ([#26599](https://github.com/RocketChat/Rocket.Chat/pull/26599))
+
+- use enter key to call using DialPad ([#26454](https://github.com/RocketChat/Rocket.Chat/pull/26454))
+
+### 🐛 Bug fixes
+
+
+- - Incoming SMSs no longer clash with ongoing livechat conversations by the same visitor ([#26307](https://github.com/RocketChat/Rocket.Chat/pull/26307))
+
+  There was a data race in the defineVisitor function, causing new guests to be created even if a registered guest with that number already existed, also made sure that the open room being searched on is the correct source type, so the clash is not possible anymore.
+
+- Active users count on `@all` and `@here`  ([#25957](https://github.com/RocketChat/Rocket.Chat/pull/25957))
+
+  this PR updates the old `roomMembersCount` to count active users instead of everyone
+
+- add image format validation ([#25912](https://github.com/RocketChat/Rocket.Chat/pull/25912))
+
+- Add Offline License Endpoint ([#26282](https://github.com/RocketChat/Rocket.Chat/pull/26282))
+
+  This PR updates the endpoint to add a license
+
+- Agents (with user status offline & omni-status as available) not able to take or forward chat ([#26575](https://github.com/RocketChat/Rocket.Chat/pull/26575))
+
+- Allow normal user to open apps contextual bar ([#26495](https://github.com/RocketChat/Rocket.Chat/pull/26495))
+
+  Fix the bug where normal users cannot open an app contextual bar.
+  The request made by the contextual bar to get the app information, which was for admin only, was removed since the response was not being used.
+
+- Autotranslate method should respect setting ([#26549](https://github.com/RocketChat/Rocket.Chat/pull/26549))
+
+- Avatars of other chats disappear when they located near chat with broken avatar ([#26689](https://github.com/RocketChat/Rocket.Chat/pull/26689))
+
+- Blank screen after requesting transcript ([#26385](https://github.com/RocketChat/Rocket.Chat/pull/26385))
+
+- Chats not getting assigned to offline agents even when "Accept with No Online agents" setting is turned on ([#26147](https://github.com/RocketChat/Rocket.Chat/pull/26147))
+
+- Clear push token on save user password ([#26466](https://github.com/RocketChat/Rocket.Chat/pull/26466))
+
+- Correct IMAP configuration for email inbox ([#25789](https://github.com/RocketChat/Rocket.Chat/pull/25789))
+
+  The primary change here has been to make the library try and reconnect after some time, up to a certain configured number of times, on a few different error classes.
+
+- Current Chat Custom Field Filter ([#26200](https://github.com/RocketChat/Rocket.Chat/pull/26200))
+
+- Decrypt E2EE messages on thread list ([#26133](https://github.com/RocketChat/Rocket.Chat/pull/26133))
+
+  ### Before 
+  <img width="672" alt="Screenshot 2022-07-05 at 9 28 22 PM" src="https://user-images.githubusercontent.com/58601732/177369226-b863a362-4064-450e-8c93-ff708b378c7b.png">
+  ### After
+  <img width="674" alt="Screenshot 2022-07-05 at 9 27 42 PM" src="https://user-images.githubusercontent.com/58601732/177369298-fc6b375a-687b-4b84-8600-c0a179637f2a.png">
+
+- Default BH not getting applied in-case any other BH is disabled ([#26471](https://github.com/RocketChat/Rocket.Chat/pull/26471))
+
+- DialPad call button from end to center ([#26459](https://github.com/RocketChat/Rocket.Chat/pull/26459))
+
+- Don't give errors on outbound voip call Request Terminated ([#26373](https://github.com/RocketChat/Rocket.Chat/pull/26373))
+
+- Don't wrap wrap up notes ([#26375](https://github.com/RocketChat/Rocket.Chat/pull/26375))
+
+- incorrect error toast messages ([#26320](https://github.com/RocketChat/Rocket.Chat/pull/26320))
+
+- Katex is not respecting the 'Katex_Enabled' setting ([#26542](https://github.com/RocketChat/Rocket.Chat/pull/26542))
+
+- MDM content alignment ([#26665](https://github.com/RocketChat/Rocket.Chat/pull/26665))
+
+  - remove left margin of MDM content
+
+  before:
+  ![image](https://user-images.githubusercontent.com/48109548/186213428-946d6061-8f8d-415f-9b3b-049082c1bc25.png)
+
+  after:
+  <img width="610" alt="Screen Shot 2022-08-23 at 11 50 55" src="https://user-images.githubusercontent.com/48109548/186213460-c057e8a1-5838-44f5-b3fa-9f76752f0a89.png">
+
+- Missing bio field UI validation ([#26345](https://github.com/RocketChat/Rocket.Chat/pull/26345))
+
+- Not allowed error in discussion room with a private parent channel ([#26394](https://github.com/RocketChat/Rocket.Chat/pull/26394))
+
+- Notification preferences not updated on save ([#26461](https://github.com/RocketChat/Rocket.Chat/pull/26461))
+
+  Publish required notification subscription fields on change, so that changes can be seen on save.
+
+- Onhold auto chat resume feature not working for email channel ([#26363](https://github.com/RocketChat/Rocket.Chat/pull/26363))
+
+- Open team after room not found page ([#26264](https://github.com/RocketChat/Rocket.Chat/pull/26264))
+
+  After the room not found page, the `FlowRouter` was not clearing `msg` query param, causing the next redirect to private teams break because it's try to find the unknow msg id
+
+- Permission `view-all-teams` is not checked in the `teams.info` endpoint ([#25841](https://github.com/RocketChat/Rocket.Chat/pull/25841))
+
+  Previously any authenticated user was able to access the `teams.info` endpoint, this PR updates this so only users with the `view-all-teams` permission or team members can access it.
+
+- Prevent VoIP issues during disconnection when network failed ([#26321](https://github.com/RocketChat/Rocket.Chat/pull/26321))
+
+- Prune messages not removing thumbnails ([#26443](https://github.com/RocketChat/Rocket.Chat/pull/26443))
+
+  This PR adds a method on `Uploads` called `findOneByName`, and excludes a thumbnail of an image on `cleanRoomHistory`
+
+- Request at least one field in the payload of `/v1/users.setStatus` ([#26490](https://github.com/RocketChat/Rocket.Chat/pull/26490))
+
+  Requests `status` and/or `message` fields on `/v1/users.setStatus` request payload.
+
+- Reset password errors ([#26597](https://github.com/RocketChat/Rocket.Chat/pull/26597))
+
+- Save edited tags for omnichannel departments ([#26481](https://github.com/RocketChat/Rocket.Chat/pull/26481))
+
+- Slack User CSV importer not working ([#26629](https://github.com/RocketChat/Rocket.Chat/pull/26629))
+
+- Slackbridge Connect Error ([#25793](https://github.com/RocketChat/Rocket.Chat/pull/25793))
+
+  This PR fixes an issue that was happening when an invalid token was passed on SlackBridge, basically the app crashes because the error was not being handled
+
+- Slash commands description as undefined ([#26372](https://github.com/RocketChat/Rocket.Chat/pull/26372) by [@carlosrodrigues94](https://github.com/carlosrodrigues94))
+
+- SMS service check ([#26558](https://github.com/RocketChat/Rocket.Chat/pull/26558))
+
+- Too many REST API requests ([#26330](https://github.com/RocketChat/Rocket.Chat/pull/26330))
+
+  Uses React Query cache as an alternative for querying data "sorta" real time.
+
+- UI fixes on dropdown titles ([#26318](https://github.com/RocketChat/Rocket.Chat/pull/26318))
+
+  - Add paddings on profile dropdown title  
+  - Fix paddings on 'sort' and 'create new' dropdown titles  
+  - Remove inline styles of `OptionTitle` (removing uppercase style)
+
+  | Location | Before | After |
+  | --------------- | --------------- | --------------- |
+  | Sort Dropdown | ![image](https://user-images.githubusercontent.com/48109548/183442156-9cc5269e-458e-4b6a-b2e5-91102dcfe153.png) | <img width="178" alt="Screen Shot 2022-08-05 at 15 54 14" src="https://user-images.githubusercontent.com/48109548/183143281-52205a07-e264-4a92-85b9-cb750623aabe.png">  |
+  | User Dropdown | ![image](https://user-images.githubusercontent.com/48109548/183442678-49667402-57fd-4a5c-9077-eaef53aad10c.png) | <img width="244" alt="Screen Shot 2022-08-05 at 15 54 05" src="https://user-images.githubusercontent.com/48109548/183143288-65ab1bc3-6cd7-4318-b973-9b4307e3dbf6.png"> |
+  | Create new Dropdown | <img width="173" alt="Screen Shot 2022-08-08 at 11 33 17" src="https://user-images.githubusercontent.com/48109548/183442902-e8586b2c-795b-4dfe-9045-c2c7a8a8194a.png"> | <img width="164" alt="Screen Shot 2022-08-05 at 15 54 26" src="https://user-images.githubusercontent.com/48109548/183143273-ece23507-9b60-4c09-a4fe-dcea00454cf4.png"> |
+
+- Unable to remove a user who joined a public team with a mention ([#26218](https://github.com/RocketChat/Rocket.Chat/pull/26218))
+
+  This PR fixes a bug where a user that joins a team by mention don't get added to the team.
+
+- Unable to send voice recording to Whatsapp ([#26276](https://github.com/RocketChat/Rocket.Chat/pull/26276))
+
+- Users can access public discussions inside private channels they are not members of ([#26619](https://github.com/RocketChat/Rocket.Chat/pull/26619))
+
+- Users can access public discussions inside private channels they are not members of ([#25981](https://github.com/RocketChat/Rocket.Chat/pull/25981))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Accounts/token to TS ([#26434](https://github.com/RocketChat/Rocket.Chat/pull/26434))
+
+- Chore: Add end-to-end tests to teams listing in the `directory` endpoint ([#26347](https://github.com/RocketChat/Rocket.Chat/pull/26347) by [@carlosrodrigues94](https://github.com/carlosrodrigues94))
+
+- Chore: Add license env var to ee tests ([#26650](https://github.com/RocketChat/Rocket.Chat/pull/26650))
+
+- Chore: add playwright ee coverage ([#26293](https://github.com/RocketChat/Rocket.Chat/pull/26293) by [@souzaramon](https://github.com/souzaramon) & [@weslley543](https://github.com/weslley543))
+
+- Chore: Add translations code owner ([#26560](https://github.com/RocketChat/Rocket.Chat/pull/26560))
+
+- Chore: Bump fuselage packages ([#26769](https://github.com/RocketChat/Rocket.Chat/pull/26769))
+
+- Chore: Bypass turbo cache on `ui-contexts` ([#26526](https://github.com/RocketChat/Rocket.Chat/pull/26526))
+
+  Skips cache for building `@rocket.chat/ui-contexts`, avoiding Turborepo issues with a symlink.
+
+- Chore: Cache playwright  ([#26432](https://github.com/RocketChat/Rocket.Chat/pull/26432))
+
+- Chore: Change some places still using `fields` to `projection` ([#26308](https://github.com/RocketChat/Rocket.Chat/pull/26308))
+
+- Chore: cleanup startup of test and put wizard in setup function ([#26306](https://github.com/RocketChat/Rocket.Chat/pull/26306) by [@weslley543](https://github.com/weslley543))
+
+- Chore: Codecov threshold ([#26477](https://github.com/RocketChat/Rocket.Chat/pull/26477))
+
+- Chore: Convert `client/views/account/preferences` folder to ts ([#26496](https://github.com/RocketChat/Rocket.Chat/pull/26496))
+
+- Chore: Convert `LivechatCustomField` model to raw model ([#26446](https://github.com/RocketChat/Rocket.Chat/pull/26446))
+
+- Chore: Convert AccountPreferencesPage to ts ([#26096](https://github.com/RocketChat/Rocket.Chat/pull/26096))
+
+- Chore: Convert AppSetting to tsx ([#26625](https://github.com/RocketChat/Rocket.Chat/pull/26625))
+
+- Chore: Convert AppSettingsAssembler to tsx ([#26626](https://github.com/RocketChat/Rocket.Chat/pull/26626))
+
+- Chore: Convert AutoCompleteAgent to tsx ([#26704](https://github.com/RocketChat/Rocket.Chat/pull/26704))
+
+- Chore: convert autotranslate to ts ([#25953](https://github.com/RocketChat/Rocket.Chat/pull/25953))
+
+  Converted the `apps/meteor/app/api/server/v1/autotranslate.js` to ts and created endpoint typings on the `packages/rest-typings/src/v1/autotranslate` folder.
+
+- Chore: Convert client/views/account/security folder to ts ([#26413](https://github.com/RocketChat/Rocket.Chat/pull/26413))
+
+- Chore: create a test for managers screen ([#26581](https://github.com/RocketChat/Rocket.Chat/pull/26581) by [@weslley543](https://github.com/weslley543))
+
+- Chore: create removeWebdavAccount endpoint ([#26393](https://github.com/RocketChat/Rocket.Chat/pull/26393))
+
+  Created the '/v1/webdav.removeWebdavAccount' endpoint for the `apps/meteor/client/views/account/integrations/AccountIntegrationsPage.tsx` file, and added Ajv validations.
+
+- Chore: create roomNameExists endpoint ([#26386](https://github.com/RocketChat/Rocket.Chat/pull/26386))
+
+  Created the missing rest endpoint 'roomNameExists' for `apps/meteor/client/sidebar/header/CreateChannel.tsx`, on the packages/rest-typings/src/v1/ folder.
+
+- Chore: Create teams management tests ([#26578](https://github.com/RocketChat/Rocket.Chat/pull/26578) by [@souzaramon](https://github.com/souzaramon))
+
+- Chore: Create tests for Omnichannel admin add a custom fields ([#26609](https://github.com/RocketChat/Rocket.Chat/pull/26609) by [@weslley543](https://github.com/weslley543))
+
+- Chore: Engagement Dashboard end to end tests ([#26702](https://github.com/RocketChat/Rocket.Chat/pull/26702))
+
+  Adding tests to check the behavior of the Engagement Dashboard for the Enterprise Edition license. 
+  The tests include:   
+  - Visibility and navigation of page and tabs  
+  - Fallback component on widgets error
+
+- Chore: ESLint warnings ([#26504](https://github.com/RocketChat/Rocket.Chat/pull/26504))
+
+  The current amount of ESLint warning messages is overwhelming to properly debug serious issues. This PR aims to reduce them to a sane amount.
+
+- Chore: Exclude private/public folders from typecheck ([#26399](https://github.com/RocketChat/Rocket.Chat/pull/26399))
+
+- Chore: Exit process on `unhandledRejection` on CI ([#26467](https://github.com/RocketChat/Rocket.Chat/pull/26467))
+
+- Chore: Fail-fast on callbacks ([#26572](https://github.com/RocketChat/Rocket.Chat/pull/26572))
+
+- Chore: Fix CI intermittent ([#26649](https://github.com/RocketChat/Rocket.Chat/pull/26649))
+
+- Chore: Fix docker latest tag push ([#26770](https://github.com/RocketChat/Rocket.Chat/pull/26770))
+
+- Chore: Fix grammatical typo when only one message is pruned ([#21902](https://github.com/RocketChat/Rocket.Chat/pull/21902) by [@shrinish123](https://github.com/shrinish123))
+
+  Whenever only 1 message is pruned it says '1 messages pruned' instead of '1 message pruned' in the toast message
+
+- Chore: Fix lint issues ([#26531](https://github.com/RocketChat/Rocket.Chat/pull/26531))
+
+  #24757 was an old PR and was recently auto-merged, it was not following our latest eslint rules, so now there are some lint issues on the develop.
+
+- Chore: Fix some settings with incompatible default value types ([#26114](https://github.com/RocketChat/Rocket.Chat/pull/26114))
+
+- Chore: fix tests with beforeEach ([#26335](https://github.com/RocketChat/Rocket.Chat/pull/26335) by [@souzaramon](https://github.com/souzaramon) & [@weslley543](https://github.com/weslley543))
+
+- Chore: Fix UiKit dependency issue for Livechat ([#26534](https://github.com/RocketChat/Rocket.Chat/pull/26534))
+
+- Chore: Importer rest types, meteor methods to TS and API unit tests ([#26284](https://github.com/RocketChat/Rocket.Chat/pull/26284))
+
+- Chore: Improve test for livechat  ([#26527](https://github.com/RocketChat/Rocket.Chat/pull/26527) by [@weslley543](https://github.com/weslley543))
+
+- Chore: Migrate AppPermissionsReviewModal from JS to TS ([#26498](https://github.com/RocketChat/Rocket.Chat/pull/26498))
+
+- Chore: Migrate modules related to `room` template to TypeScript ([#25881](https://github.com/RocketChat/Rocket.Chat/pull/25881))
+
+- Chore: Migrate omni-chat forwarding to use API instead of meteor method ([#26377](https://github.com/RocketChat/Rocket.Chat/pull/26377))
+
+  - Use `livechat/room.forward` endpoint to forward omnichannel chats instead of using meteor method "livechat:transfer"
+
+- Chore: Missing permissions translations ([#26546](https://github.com/RocketChat/Rocket.Chat/pull/26546))
+
+- Chore: Missing some English translation keywords ([#20131](https://github.com/RocketChat/Rocket.Chat/pull/20131) by [@Karting06](https://github.com/Karting06))
+
+  Add missing translation keys in `en.i18n.json` to be able to translate them via Lingohub.
+
+- Chore: Mocha handling multiple React instances ([#26513](https://github.com/RocketChat/Rocket.Chat/pull/26513))
+
+  Whenever Mocha runs a test file which imports stuff from outside `apps/meteor`, it uses a hoisted version of React (i.e. located at the root `node_modules`) instead of the one tied to `apps/meteor/node_modules`. This PR adds a monkey patch while we can't migrate to another test runner.
+
+- Chore: ModalFooterControllers adoption ([#26445](https://github.com/RocketChat/Rocket.Chat/pull/26445))
+
+- Chore: More Omnichannel tests ([#26691](https://github.com/RocketChat/Rocket.Chat/pull/26691))
+
+- Chore: Move `Card` and related components to `@rocket.chat/ui-client` ([#26653](https://github.com/RocketChat/Rocket.Chat/pull/26653))
+
+- Chore: Move fuselage-ui-kit to main repo ([#26630](https://github.com/RocketChat/Rocket.Chat/pull/26630))
+
+- Chore: Omnichannel endpoints e2e tests ([#26376](https://github.com/RocketChat/Rocket.Chat/pull/26376))
+
+- Chore: omnichannel-departments tests  ([#26607](https://github.com/RocketChat/Rocket.Chat/pull/26607))
+
+- Chore: Options in BaseRaw model could possibly be undefined ([#26395](https://github.com/RocketChat/Rocket.Chat/pull/26395))
+
+  I found this while I was doing some refactorings on the federation side. 😬
+
+- Chore: Parallelize e2e tests ([#26390](https://github.com/RocketChat/Rocket.Chat/pull/26390) by [@souzaramon](https://github.com/souzaramon) & [@weslley543](https://github.com/weslley543))
+
+- Chore: Permissions check per endpoint/method ([#26419](https://github.com/RocketChat/Rocket.Chat/pull/26419))
+
+- Chore: Prevent tooltip from opening after click ([#26612](https://github.com/RocketChat/Rocket.Chat/pull/26612))
+
+- Chore: Purge some unused modules ([#26447](https://github.com/RocketChat/Rocket.Chat/pull/26447))
+
+  The title says it all.
+
+- Chore: Refactor create-target-channel util ([#26493](https://github.com/RocketChat/Rocket.Chat/pull/26493) by [@souzaramon](https://github.com/souzaramon))
+
+- Chore: Refactor ReportMessage Modal to React Component ([#26478](https://github.com/RocketChat/Rocket.Chat/pull/26478))
+
+- Chore: Refactor RoomMembers to Typescript ([#26559](https://github.com/RocketChat/Rocket.Chat/pull/26559))
+
+- Chore: Refactor WebdavFilePicker Modal to React Component ([#26422](https://github.com/RocketChat/Rocket.Chat/pull/26422))
+
+- Chore: Remove & Test cannedResponse meteor templates ([#26706](https://github.com/RocketChat/Rocket.Chat/pull/26706))
+
+- Chore: Remove & Test old closeChat templates ([#26631](https://github.com/RocketChat/Rocket.Chat/pull/26631))
+
+- Chore: Remove console.log ([#26618](https://github.com/RocketChat/Rocket.Chat/pull/26618))
+
+- Chore: Remove italic/bold font-style from system messages ([#26655](https://github.com/RocketChat/Rocket.Chat/pull/26655))
+
+  It was removed from system messages font-styles elements (italic and bold) that highlighted some words as `users`, `room_name` and others.
+
+  In addition to this PR, was also created a PR to Fuselage to remove italic font style in general at system messages. 
+
+  Fuselage PR:  https://github.com/RocketChat/fuselage/pull/830
+
+- Chore: Remove Livechat Dashboard Templates ([#26627](https://github.com/RocketChat/Rocket.Chat/pull/26627))
+
+- Chore: Remove method calls - Stage 1 ([#26149](https://github.com/RocketChat/Rocket.Chat/pull/26149))
+
+- Chore: Remove public and node_modules folders from TypeScript server watcher ([#26391](https://github.com/RocketChat/Rocket.Chat/pull/26391))
+
+- Chore: Remove settings Fibers usage ([#26465](https://github.com/RocketChat/Rocket.Chat/pull/26465))
+
+- Chore: Remove translation owners ([#26598](https://github.com/RocketChat/Rocket.Chat/pull/26598))
+
+- Chore: Remove trash collection from models when not used ([#26628](https://github.com/RocketChat/Rocket.Chat/pull/26628))
+
+- Chore: remove useMethod calls ([#26195](https://github.com/RocketChat/Rocket.Chat/pull/26195))
+
+- Chore: Remove visitor, agent and customTemplate meteor templates ([#26700](https://github.com/RocketChat/Rocket.Chat/pull/26700))
+
+- Chore: Replace direct multiple icon ([#26342](https://github.com/RocketChat/Rocket.Chat/pull/26342))
+
+- Chore: Replace timeAgo on WebdavFilePickerTable ([#26564](https://github.com/RocketChat/Rocket.Chat/pull/26564))
+
+- Chore: restrict `.only` ([#26537](https://github.com/RocketChat/Rocket.Chat/pull/26537))
+
+- Chore: Rewrite custom OAuth Modals to react ([#26204](https://github.com/RocketChat/Rocket.Chat/pull/26204))
+
+- Chore: Rewrite Location modal to React ([#26196](https://github.com/RocketChat/Rocket.Chat/pull/26196))
+
+- Chore: Rewrite SaveToWebdav Modal to React Component ([#24365](https://github.com/RocketChat/Rocket.Chat/pull/24365))
+
+  ### before
+  ![Screen Shot 2022-01-31 at 11 02 34](https://user-images.githubusercontent.com/27704687/151807376-6dc87be5-287a-45a0-ac1b-47a7cdf4e3d3.png)
+
+  ### after
+  ![Screen Shot 2022-01-31 at 10 58 04](https://user-images.githubusercontent.com/27704687/151806686-7110cec8-a006-4ac1-befd-a2684550ecc5.png)
+
+- Chore: Rewrite VerticalBarOldActions to TS ([#26277](https://github.com/RocketChat/Rocket.Chat/pull/26277))
+
+- Chore: Separating user edit form to prevent browser autocomplete ([#26280](https://github.com/RocketChat/Rocket.Chat/pull/26280))
+
+  Separating user edit form to prevent browser password and username auto-complete. 
+  The browser will continue showing the suggestion dropdown for the password field, but when you select a suggestion the other text field will not be impacted, as was happening before with 'Nickname' field
+
+- Chore: skipping tests that are based on kebab menu ([#26616](https://github.com/RocketChat/Rocket.Chat/pull/26616))
+
+- Chore: test for change avatar ([#26543](https://github.com/RocketChat/Rocket.Chat/pull/26543) by [@weslley543](https://github.com/weslley543))
+
+- Chore: Tests intermitences ([#26464](https://github.com/RocketChat/Rocket.Chat/pull/26464) by [@weslley543](https://github.com/weslley543))
+
+- Chore: transfer to another agent ([#26545](https://github.com/RocketChat/Rocket.Chat/pull/26545) by [@weslley543](https://github.com/weslley543))
+
+- Chore: Update Apps-Engine ([#26765](https://github.com/RocketChat/Rocket.Chat/pull/26765))
+
+- Chore: update codeowners for omnichannel ([#25771](https://github.com/RocketChat/Rocket.Chat/pull/25771))
+
+- Chore: update fuselage rounded edition  ([#26540](https://github.com/RocketChat/Rocket.Chat/pull/26540))
+
+- Chore: Upgrade dependencies ([#26694](https://github.com/RocketChat/Rocket.Chat/pull/26694))
+
+- Chore: Upgrade ESLint ([#26132](https://github.com/RocketChat/Rocket.Chat/pull/26132))
+
+  Upgrade ESLint (to 8.19.0) and its dependencies, dropping outdated rules.
+
+- Chore: Upgrade Fuselage packages to next dist-tag ([#26435](https://github.com/RocketChat/Rocket.Chat/pull/26435))
+
+- Chore: Upgrade nivo and React Query ([#26338](https://github.com/RocketChat/Rocket.Chat/pull/26338))
+
+- Chore: Use Docker compose on CI ([#26437](https://github.com/RocketChat/Rocket.Chat/pull/26437))
+
+- Chore: useEndpointData deprecation ([#26494](https://github.com/RocketChat/Rocket.Chat/pull/26494))
+
+- Chore: Wait subscription to expose message composer ([#26600](https://github.com/RocketChat/Rocket.Chat/pull/26600))
+
+- i18n: Fix Korean set role translation ([#24966](https://github.com/RocketChat/Rocket.Chat/pull/24966) by [@imyaman](https://github.com/imyaman))
+
+  English  https://pbs.twimg.com/media/FO2zby1aQAMB84D?format=png&name=small
+  Korean  https://pbs.twimg.com/media/FO2zWgKaIAYidJ7?format=png&name=small
+  Google Translate  https://pbs.twimg.com/media/FO20MPnaUAU-TU_?format=jpg&name=medium
+
+- i18n: Language update from LingoHub 🤖 on 2022-08-01Z ([#26429](https://github.com/RocketChat/Rocket.Chat/pull/26429))
+
+- i18n: Language update from LingoHub 🤖 on 2022-08-08Z ([#26508](https://github.com/RocketChat/Rocket.Chat/pull/26508))
+
+- i18n: Language update from LingoHub 🤖 on 2022-08-15Z ([#26570](https://github.com/RocketChat/Rocket.Chat/pull/26570))
+
+- i18n: Language update from LingoHub 🤖 on 2022-08-22Z ([#26645](https://github.com/RocketChat/Rocket.Chat/pull/26645))
+
+- i18n: Makes the text less ambiguous ([#20895](https://github.com/RocketChat/Rocket.Chat/pull/20895) by [@pierreozoux](https://github.com/pierreozoux))
+
+- i18n: Manual sync from LingoHub ([#26397](https://github.com/RocketChat/Rocket.Chat/pull/26397))
+
+- i18n: pt-BR translation typo ([#26732](https://github.com/RocketChat/Rocket.Chat/pull/26732))
+
+- Regression: "Cache size is not a function" error when booting ([#26683](https://github.com/RocketChat/Rocket.Chat/pull/26683))
+
+- Regression: Add alsoSendThreadToChannel to user settings api ([#26663](https://github.com/RocketChat/Rocket.Chat/pull/26663))
+
+- Regression: AutoTranslate is disabled error ([#26701](https://github.com/RocketChat/Rocket.Chat/pull/26701))
+
+- Regression: Banner - Room not found - Omnichannel room ([#26693](https://github.com/RocketChat/Rocket.Chat/pull/26693))
+
+- Regression: CI ([#26658](https://github.com/RocketChat/Rocket.Chat/pull/26658))
+
+- Regression: Custom fields not being saved for room ([#26747](https://github.com/RocketChat/Rocket.Chat/pull/26747))
+
+- Regression: Custom status loading forever in Usercard ([#26656](https://github.com/RocketChat/Rocket.Chat/pull/26656))
+
+- Regression: Empty custom-fields filter on Current Chats causing issues ([#26720](https://github.com/RocketChat/Rocket.Chat/pull/26720))
+
+- Regression: Fix Current Chats Page Issues ([#26744](https://github.com/RocketChat/Rocket.Chat/pull/26744))
+
+- Regression: Fix spacing problem on AppStatus component ([#26421](https://github.com/RocketChat/Rocket.Chat/pull/26421))
+
+  Fixed a problem where the AppStatus component would show a unwanted margin when an app was installed and had an update.
+  Before:
+  ![image](https://user-images.githubusercontent.com/43561537/181837343-c51ed297-442c-4507-aff3-20df5ac9366a.png)
+
+  After:
+  ![image](https://user-images.githubusercontent.com/43561537/181838756-b04fe31c-9e85-4830-8dd4-fddf8ec03458.png)
+
+- Regression: Home cards UI tweaks ([#26610](https://github.com/RocketChat/Rocket.Chat/pull/26610))
+
+- Regression: Instances Modal breaking ([#26779](https://github.com/RocketChat/Rocket.Chat/pull/26779))
+
+  Revert back to meteor method for now.
+
+- Regression: invalid statistics format  ([#26684](https://github.com/RocketChat/Rocket.Chat/pull/26684))
+
+- Regression: Modal footer alignment ([#26635](https://github.com/RocketChat/Rocket.Chat/pull/26635))
+
+- Regression: Prevent message from being temp forever ([#26668](https://github.com/RocketChat/Rocket.Chat/pull/26668))
+
+- Regression: Remove log from banners.ts ([#26699](https://github.com/RocketChat/Rocket.Chat/pull/26699))
+
+- Regression: REST setUserPublicAndPrivateKeys ([#26753](https://github.com/RocketChat/Rocket.Chat/pull/26753))
+
+- Regression: Select settings options not visible on Apps Setting panel ([#26759](https://github.com/RocketChat/Rocket.Chat/pull/26759))
+
+- Regression: Sidebar Search list local data cache and keyboard navigation ([#26764](https://github.com/RocketChat/Rocket.Chat/pull/26764))
+
+- Regression: Team name validation failing always. ([#26574](https://github.com/RocketChat/Rocket.Chat/pull/26574))
+
+- Regression: Update custom homepage content behavior ([#26571](https://github.com/RocketChat/Rocket.Chat/pull/26571))
+
+- Regression: Visitor being overwritten on call end ([#26756](https://github.com/RocketChat/Rocket.Chat/pull/26756))
+
+  This PR adds a check to the `createRoom` method, responsible for creating VoIP rooms. It checks whether the visitor already exists before creating a new one, if one is found it uses it instead of overwriting existing visitors.
+
+- Regression: Workaround to handle auto stopped computations 😞  ([#26745](https://github.com/RocketChat/Rocket.Chat/pull/26745))
+
+- Release 5.0.1 ([#26450](https://github.com/RocketChat/Rocket.Chat/pull/26450))
+
+- Release 5.0.2 ([#26507](https://github.com/RocketChat/Rocket.Chat/pull/26507))
+
+- Release 5.0.3 ([#26551](https://github.com/RocketChat/Rocket.Chat/pull/26551))
+
+- Release 5.0.4 ([#26620](https://github.com/RocketChat/Rocket.Chat/pull/26620))
+
+- Release 5.0.5 ([#26718](https://github.com/RocketChat/Rocket.Chat/pull/26718))
+
+</details>
+
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@Karting06](https://github.com/Karting06)
+- [@carlosrodrigues94](https://github.com/carlosrodrigues94)
+- [@imyaman](https://github.com/imyaman)
+- [@pierreozoux](https://github.com/pierreozoux)
+- [@shrinish123](https://github.com/shrinish123)
+- [@souzaramon](https://github.com/souzaramon)
+- [@weslley543](https://github.com/weslley543)
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@AllanPazRibeiro](https://github.com/AllanPazRibeiro)
+- [@KevLehman](https://github.com/KevLehman)
+- [@LucianoPierdona](https://github.com/LucianoPierdona)
+- [@MarcosSpessatto](https://github.com/MarcosSpessatto)
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@albuquerquefabio](https://github.com/albuquerquefabio)
+- [@aleksandernsilva](https://github.com/aleksandernsilva)
+- [@casalsgh](https://github.com/casalsgh)
+- [@cauefcr](https://github.com/cauefcr)
+- [@d-gubert](https://github.com/d-gubert)
+- [@debdutdeb](https://github.com/debdutdeb)
+- [@dougfabris](https://github.com/dougfabris)
+- [@felipe-rod123](https://github.com/felipe-rod123)
+- [@filipemarins](https://github.com/filipemarins)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@guijun13](https://github.com/guijun13)
+- [@hugocostadev](https://github.com/hugocostadev)
+- [@jeanfbrito](https://github.com/jeanfbrito)
+- [@juliajforesti](https://github.com/juliajforesti)
+- [@matheusbsilva137](https://github.com/matheusbsilva137)
+- [@murtaza98](https://github.com/murtaza98)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@rique223](https://github.com/rique223)
+- [@rodrigok](https://github.com/rodrigok)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+- [@tapiarafael](https://github.com/tapiarafael)
+- [@tassoevan](https://github.com/tassoevan)
+- [@tiagoevanp](https://github.com/tiagoevanp)
+- [@yash-rajpal](https://github.com/yash-rajpal)
+
+# 5.0.5
+`2022-08-29  ·  3 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- **ENTERPRISE:** Omnichannel real time data on micro services ([#26703](https://github.com/RocketChat/Rocket.Chat/pull/26703))
+
+- Business Units endpoints not filtering by Unit type ([#26713](https://github.com/RocketChat/Rocket.Chat/pull/26713))
+
+- Omnichannel inquiries being updated even if not needed ([#26692](https://github.com/RocketChat/Rocket.Chat/pull/26692))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 5.0.5 ([#26718](https://github.com/RocketChat/Rocket.Chat/pull/26718))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@Harmeet221](https://github.com/Harmeet221)
+- [@KevLehman](https://github.com/KevLehman)
+- [@murtaza98](https://github.com/murtaza98)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 5.0.4
+`2022-08-19  ·  1 🐛  ·  3 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- **ENTERPRISE:** User not marked as offline on log out when using micro services ([#26579](https://github.com/RocketChat/Rocket.Chat/pull/26579))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Fix services image publish do DockerHub ([#26608](https://github.com/RocketChat/Rocket.Chat/pull/26608))
+
+- Regression: Fix services Docker build ([#26617](https://github.com/RocketChat/Rocket.Chat/pull/26617))
+
+- Release 5.0.4 ([#26620](https://github.com/RocketChat/Rocket.Chat/pull/26620))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@murtaza98](https://github.com/murtaza98)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 5.0.3
+`2022-08-11  ·  3 🐛  ·  2 🔍  ·  7 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Chats holds to load history for some time ([#26425](https://github.com/RocketChat/Rocket.Chat/pull/26425))
+
+- Endpoints not working when using "Use Real Name" setting ([#26530](https://github.com/RocketChat/Rocket.Chat/pull/26530))
+
+  The list of endpoints affected is:
+  
+  - `/api/v1/channels.list`  
+  - `/api/v1/channels.list.joined`  
+  - `/api/v1/groups.list`  
+  - `/api/v1/groups.listAll`  
+  - `/api/v1/im.list`  
+  - `/api/v1/im.list.everyone`
+
+- LDAP fails to sync teams when the user DN has escaped characters. ([#26535](https://github.com/RocketChat/Rocket.Chat/pull/26535))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: validateParams to accept different validators per request method ([#26357](https://github.com/RocketChat/Rocket.Chat/pull/26357))
+
+- Release 5.0.3 ([#26551](https://github.com/RocketChat/Rocket.Chat/pull/26551))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@filipemarins](https://github.com/filipemarins)
+- [@gabriellsh](https://github.com/gabriellsh)
+- [@ggazzo](https://github.com/ggazzo)
+- [@murtaza98](https://github.com/murtaza98)
+- [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 5.0.2
+`2022-08-08  ·  2 🐛  ·  1 🔍  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Empty results on `im.list` endpoint ([#26438](https://github.com/RocketChat/Rocket.Chat/pull/26438))
+
+- Undefined MediaDevices error on HTTP ([#26396](https://github.com/RocketChat/Rocket.Chat/pull/26396))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Release 5.0.2 ([#26507](https://github.com/RocketChat/Rocket.Chat/pull/26507))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@MartinSchoeler](https://github.com/MartinSchoeler)
+- [@albuquerquefabio](https://github.com/albuquerquefabio)
+- [@murtaza98](https://github.com/murtaza98)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 5.0.1
+`2022-08-02  ·  1 🚀  ·  1 🐛  ·  4 🔍  ·  3 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.19.3`
+- NPM: `6.14.17`
+- MongoDB: `4.2, 4.4, 5.0`
+
+### 🚀 Improvements
+
+
+- Use single change stream to watch DB changes ([#26336](https://github.com/RocketChat/Rocket.Chat/pull/26336))
+
+### 🐛 Bug fixes
+
+
+- Not possible to deactivate users ([#26323](https://github.com/RocketChat/Rocket.Chat/pull/26323))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Convert UserCardWithData to ts ([#26192](https://github.com/RocketChat/Rocket.Chat/pull/26192))
+
+- Chore: Remove square prop from IconButton ([#26343](https://github.com/RocketChat/Rocket.Chat/pull/26343))
+
+- Regression: Fix app privacy links opening in desktop client instead of browser ([#26368](https://github.com/RocketChat/Rocket.Chat/pull/26368))
+
+  Demo gif:
+  ![privacy-links](https://user-images.githubusercontent.com/43561537/181083695-bc37b5c2-8aa5-4714-9098-9ad02d2fc2bb.gif)
+
+- Release 5.0.1 ([#26450](https://github.com/RocketChat/Rocket.Chat/pull/26450))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@dougfabris](https://github.com/dougfabris)
+- [@rique223](https://github.com/rique223)
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
 # 5.0.0
-`2022-07-22  ·  14 ️️️⚠️  ·  33 🎉  ·  20 🚀  ·  110 🐛  ·  389 🔍  ·  63 👩‍💻👨‍💻`
+`2022-07-21  ·  14 ️️️⚠️  ·  33 🎉  ·  20 🚀  ·  110 🐛  ·  389 🔍  ·  62 👩‍💻👨‍💻`
 
 ### Engine versions
 - Node: `14.19.3`
@@ -152,7 +4407,7 @@
 
 - Create Team with a member list of usernames ([#25868](https://github.com/RocketChat/Rocket.Chat/pull/25868))
 
-- Enable outbound calling for EE (#25843) ([#25960](https://github.com/RocketChat/Rocket.Chat/pull/25960))
+- Enable outbound calling for EE (#25843) ([#25960](https://github.com/RocketChat/Rocket.Chat/pull/25960) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Engagement Metrics - Phase 2 ([#25505](https://github.com/RocketChat/Rocket.Chat/pull/25505))
 
@@ -240,7 +4495,7 @@
   Demo gif:
   ![privacy-tab](https://user-images.githubusercontent.com/43561537/173878394-333057d4-3c7e-434e-a3ca-d3e08f33c7bc.gif)
 
-- Matrix Federation UX improvements ([#25847](https://github.com/RocketChat/Rocket.Chat/pull/25847))
+- Matrix Federation UX improvements ([#25847](https://github.com/RocketChat/Rocket.Chat/pull/25847) by [@carlosrodrigues94](https://github.com/carlosrodrigues94))
 
 - Message Template React Component ([#23971](https://github.com/RocketChat/Rocket.Chat/pull/23971))
 
@@ -253,7 +4508,7 @@
 
   <img width="556" alt="image" src="https://user-images.githubusercontent.com/5263975/162099800-15806953-f2f5-4905-a424-3f095076bc1d.png">
 
-- New button for network outage ([#25499](https://github.com/RocketChat/Rocket.Chat/pull/25499))
+- New button for network outage ([#25499](https://github.com/RocketChat/Rocket.Chat/pull/25499) by [@amolghode1981](https://github.com/amolghode1981))
 
   When network outage happens it should be conveyed to the user with special icon. This icon should not be clickable.
   Network outage handling is handled in https://app.clickup.com/t/245c0d8 task.
@@ -285,7 +4540,7 @@
 
   - Adds flag responsible for overwriting #general channel creation
 
-- VoIP Input/Output Device Selection ([#25966](https://github.com/RocketChat/Rocket.Chat/pull/25966))
+- VoIP Input/Output Device Selection ([#25966](https://github.com/RocketChat/Rocket.Chat/pull/25966) by [@amolghode1981](https://github.com/amolghode1981))
 
 ### 🚀 Improvements
 
@@ -310,7 +4565,7 @@
 
 - Add tooltip to sidebar room menu ([#24405](https://github.com/RocketChat/Rocket.Chat/pull/24405) by [@Himanshu664](https://github.com/Himanshu664))
 
-- add warnings for federation setup ([#25684](https://github.com/RocketChat/Rocket.Chat/pull/25684))
+- add warnings for federation setup ([#25684](https://github.com/RocketChat/Rocket.Chat/pull/25684) by [@carlosrodrigues94](https://github.com/carlosrodrigues94))
 
 - Added MaxNickNameLength and MaxBioLength constants ([#25231](https://github.com/RocketChat/Rocket.Chat/pull/25231) by [@aakash-gitdev](https://github.com/aakash-gitdev))
 
@@ -435,7 +4690,7 @@
 
   Added `ToolboxProvider` to `MessageListProvider` and fixed actionLink.js open function exec
 
-- Client disconnection on network loss ([#25170](https://github.com/RocketChat/Rocket.Chat/pull/25170))
+- Client disconnection on network loss ([#25170](https://github.com/RocketChat/Rocket.Chat/pull/25170) by [@amolghode1981](https://github.com/amolghode1981))
 
   Agent gets disconnected (or Unregistered) from asterisk in multiple ways. The goal is that agent should remain online
   unless agent explicitly logs off.
@@ -501,7 +4756,7 @@
 
 - Fixing app contextual bar functionality ([#25615](https://github.com/RocketChat/Rocket.Chat/pull/25615))
 
-- Fixing Network connectivity issues with SIP client. ([#25391](https://github.com/RocketChat/Rocket.Chat/pull/25391))
+- Fixing Network connectivity issues with SIP client. ([#25391](https://github.com/RocketChat/Rocket.Chat/pull/25391) by [@amolghode1981](https://github.com/amolghode1981))
 
   The previous PR https://github.com/RocketChat/Rocket.Chat/pull/25170 did not handle the issues completely.
   This PR is expected to handle  
@@ -755,7 +5010,7 @@
 
   To prevent this issue to happen it was added a cached and out-of-scope snapshot variable to the hook using `useSyncExternalStore`
 
-- VoIP disabled/enabled  sequence puts voip agent in error state ([#25230](https://github.com/RocketChat/Rocket.Chat/pull/25230))
+- VoIP disabled/enabled  sequence puts voip agent in error state ([#25230](https://github.com/RocketChat/Rocket.Chat/pull/25230) by [@amolghode1981](https://github.com/amolghode1981))
 
   Initially it was thought that the issue occurs because of the race condition while changing the client settings vs those settings reflected on server side. So a natural solution to solve this is to wait for setting change event 'private-settings-changed'. Then if 'VoIP_Enabled' is updated and it is true, set voipEnabled  to true in useVoipClient.ts (on client side)
 
@@ -829,7 +5084,7 @@
 
   See title
 
-- Chore: Add tests for agents screens ([#25637](https://github.com/RocketChat/Rocket.Chat/pull/25637))
+- Chore: Add tests for agents screens ([#25637](https://github.com/RocketChat/Rocket.Chat/pull/25637) by [@weslley543](https://github.com/weslley543))
 
 - Chore: Add typings for /v1/webdav.getMyAccounts ([#25276](https://github.com/RocketChat/Rocket.Chat/pull/25276))
 
@@ -837,7 +5092,7 @@
 
 - Chore: Adding default message parser template ([#26064](https://github.com/RocketChat/Rocket.Chat/pull/26064))
 
-- Chore: adjust in some configurations ([#25612](https://github.com/RocketChat/Rocket.Chat/pull/25612))
+- Chore: adjust in some configurations ([#25612](https://github.com/RocketChat/Rocket.Chat/pull/25612) by [@weslley543](https://github.com/weslley543))
 
 - Chore: Allow endpoints to optionally require authentication ([#26084](https://github.com/RocketChat/Rocket.Chat/pull/26084))
 
@@ -883,7 +5138,7 @@
 
 - Chore: Code Improvements for #25391 ([#25606](https://github.com/RocketChat/Rocket.Chat/pull/25606))
 
-- Chore: Collect e2e coverage ([#25743](https://github.com/RocketChat/Rocket.Chat/pull/25743))
+- Chore: Collect e2e coverage ([#25743](https://github.com/RocketChat/Rocket.Chat/pull/25743) by [@souzaramon](https://github.com/souzaramon))
 
 - Chore: Colors ([#25969](https://github.com/RocketChat/Rocket.Chat/pull/25969))
 
@@ -962,7 +5217,7 @@
 
 - Chore: Convert Mailer to TS ([#25121](https://github.com/RocketChat/Rocket.Chat/pull/25121))
 
-- Chore: convert marketplace price display component to use typescript ([#25504](https://github.com/RocketChat/Rocket.Chat/pull/25504))
+- Chore: convert marketplace price display component to use typescript ([#25504](https://github.com/RocketChat/Rocket.Chat/pull/25504) by [@matheuslc](https://github.com/matheuslc))
 
   **Marketplace apps listing page**
   ![Screen Shot 2022-05-13 at 12 57 43](https://user-images.githubusercontent.com/4161171/168322189-67990fdf-a447-46dc-8f88-08b16c2a5416.png)
@@ -1012,7 +5267,7 @@
 
 - Chore: Convert useUpdateAvatar to TS and type avatar endpoints ([#25430](https://github.com/RocketChat/Rocket.Chat/pull/25430))
 
-- Chore: Converting files from app/livechat folder from JS to TS ([#25658](https://github.com/RocketChat/Rocket.Chat/pull/25658))
+- Chore: Converting files from app/livechat folder from JS to TS ([#25658](https://github.com/RocketChat/Rocket.Chat/pull/25658) by [@amolghode1981](https://github.com/amolghode1981))
 
   Converting files from apps/meteor/app/livechat/lib/ from JS to TS
 
@@ -1022,7 +5277,7 @@
 
 - Chore: Converting orchestrator.js to ts ([#25367](https://github.com/RocketChat/Rocket.Chat/pull/25367))
 
-- Chore: create a e2e test guideline ([#25884](https://github.com/RocketChat/Rocket.Chat/pull/25884))
+- Chore: create a e2e test guideline ([#25884](https://github.com/RocketChat/Rocket.Chat/pull/25884) by [@souzaramon](https://github.com/souzaramon))
 
 - Chore: Create a token for each action ([#26023](https://github.com/RocketChat/Rocket.Chat/pull/26023))
 
@@ -1040,9 +5295,9 @@
 
 - Chore: Do not log integrations using `name` key ([#26163](https://github.com/RocketChat/Rocket.Chat/pull/26163))
 
-- Chore: Enable marketplace screenshots endpoint ([#25395](https://github.com/RocketChat/Rocket.Chat/pull/25395))
+- Chore: Enable marketplace screenshots endpoint ([#25395](https://github.com/RocketChat/Rocket.Chat/pull/25395) by [@matheuslc](https://github.com/matheuslc))
 
-- Chore: ensure scripts use cross-env and ignore some dirs (ROC-54) ([#25218](https://github.com/RocketChat/Rocket.Chat/pull/25218))
+- Chore: ensure scripts use cross-env and ignore some dirs (ROC-54) ([#25218](https://github.com/RocketChat/Rocket.Chat/pull/25218) by [@souzaramon](https://github.com/souzaramon))
 
   - data and test-failure should be ignored  
   - ensure scripts use cross-env
@@ -1061,7 +5316,7 @@
 
 - Chore: fix watermark condition ([#26095](https://github.com/RocketChat/Rocket.Chat/pull/26095))
 
-- Chore: Fixes e2e playwright intermittences ([#25984](https://github.com/RocketChat/Rocket.Chat/pull/25984))
+- Chore: Fixes e2e playwright intermittences ([#25984](https://github.com/RocketChat/Rocket.Chat/pull/25984) by [@souzaramon](https://github.com/souzaramon) & [@weslley543](https://github.com/weslley543))
 
 - Chore: Fuselage update ([#26004](https://github.com/RocketChat/Rocket.Chat/pull/26004))
 
@@ -1091,7 +5346,7 @@
 
 - Chore: Livechat change output level ([#25522](https://github.com/RocketChat/Rocket.Chat/pull/25522))
 
-- Chore: Major refactors in pageobjects ([#26015](https://github.com/RocketChat/Rocket.Chat/pull/26015))
+- Chore: Major refactors in pageobjects ([#26015](https://github.com/RocketChat/Rocket.Chat/pull/26015) by [@souzaramon](https://github.com/souzaramon))
 
 - Chore: Make kodiak merge message empty ([#26069](https://github.com/RocketChat/Rocket.Chat/pull/26069))
 
@@ -1099,9 +5354,9 @@
 
 - Chore: Messages raw model rewrite to ts ([#25761](https://github.com/RocketChat/Rocket.Chat/pull/25761))
 
-- Chore: Migrate 15-message-popup from cypress to playwright ([#25462](https://github.com/RocketChat/Rocket.Chat/pull/25462))
+- Chore: Migrate 15-message-popup from cypress to playwright ([#25462](https://github.com/RocketChat/Rocket.Chat/pull/25462) by [@souzaramon](https://github.com/souzaramon))
 
-- Chore: migrate from cypress to pw 14-setting-permission ([#25523](https://github.com/RocketChat/Rocket.Chat/pull/25523))
+- Chore: migrate from cypress to pw 14-setting-permission ([#25523](https://github.com/RocketChat/Rocket.Chat/pull/25523) by [@weslley543](https://github.com/weslley543))
 
 - Chore: migrate katex to ts ([#25501](https://github.com/RocketChat/Rocket.Chat/pull/25501))
 
@@ -1119,9 +5374,9 @@
 
 - Chore: Migrate spotify to ts ([#25507](https://github.com/RocketChat/Rocket.Chat/pull/25507))
 
-- Chore: migrate-to-pw-16-discussion ([#25567](https://github.com/RocketChat/Rocket.Chat/pull/25567))
+- Chore: migrate-to-pw-16-discussion ([#25567](https://github.com/RocketChat/Rocket.Chat/pull/25567) by [@weslley543](https://github.com/weslley543))
 
-- Chore: migrate-to-pw-adjust-in-intermitences ([#25542](https://github.com/RocketChat/Rocket.Chat/pull/25542))
+- Chore: migrate-to-pw-adjust-in-intermitences ([#25542](https://github.com/RocketChat/Rocket.Chat/pull/25542) by [@weslley543](https://github.com/weslley543))
 
 - Chore: Minor dependency updates ([#25269](https://github.com/RocketChat/Rocket.Chat/pull/25269))
 
@@ -1157,7 +5412,7 @@
 
 - Chore: Prune Messages contextualBar rewrite ([#25757](https://github.com/RocketChat/Rocket.Chat/pull/25757))
 
-- Chore: Remove all cypress tests, configs and references ([#25564](https://github.com/RocketChat/Rocket.Chat/pull/25564))
+- Chore: Remove all cypress tests, configs and references ([#25564](https://github.com/RocketChat/Rocket.Chat/pull/25564) by [@souzaramon](https://github.com/souzaramon))
 
 - Chore: Remove Alpine image deps after using them ([#25053](https://github.com/RocketChat/Rocket.Chat/pull/25053))
 
@@ -1187,7 +5442,7 @@
 
 - Chore: Remove unused Drone CI files ([#25124](https://github.com/RocketChat/Rocket.Chat/pull/25124))
 
-- Chore: remove unused locators from e2e tests ([#25860](https://github.com/RocketChat/Rocket.Chat/pull/25860))
+- Chore: remove unused locators from e2e tests ([#25860](https://github.com/RocketChat/Rocket.Chat/pull/25860) by [@souzaramon](https://github.com/souzaramon))
 
 - Chore: Remove unused migrations ([#26102](https://github.com/RocketChat/Rocket.Chat/pull/26102))
 
@@ -1217,7 +5472,7 @@
 
 - Chore: Rewrite action-links to ts ([#25418](https://github.com/RocketChat/Rocket.Chat/pull/25418))
 
-- Chore: Rewrite AddUsers to TS ([#25830](https://github.com/RocketChat/Rocket.Chat/pull/25830) by [@kodiakhq[bot]](https://github.com/kodiakhq[bot]))
+- Chore: Rewrite AddUsers to TS ([#25830](https://github.com/RocketChat/Rocket.Chat/pull/25830))
 
 - Chore: Rewrite Admin UsersTable to Typescript ([#25698](https://github.com/RocketChat/Rocket.Chat/pull/25698))
 
@@ -1295,23 +5550,23 @@
   npx hygen package new test
   ```
 
-- Chore: Test for department screen ([#25696](https://github.com/RocketChat/Rocket.Chat/pull/25696))
+- Chore: Test for department screen ([#25696](https://github.com/RocketChat/Rocket.Chat/pull/25696) by [@weslley543](https://github.com/weslley543))
 
 - Chore: test turbo params ([#26038](https://github.com/RocketChat/Rocket.Chat/pull/26038))
 
 - Chore: Testing Kodiak feature ([#25794](https://github.com/RocketChat/Rocket.Chat/pull/25794))
 
-- Chore: Tests refactor pageobjects ([#26245](https://github.com/RocketChat/Rocket.Chat/pull/26245))
+- Chore: Tests refactor pageobjects ([#26245](https://github.com/RocketChat/Rocket.Chat/pull/26245) by [@souzaramon](https://github.com/souzaramon) & [@weslley543](https://github.com/weslley543))
 
-- Chore: Tests with Playwright (task: All works) ([#25122](https://github.com/RocketChat/Rocket.Chat/pull/25122))
+- Chore: Tests with Playwright (task: All works) ([#25122](https://github.com/RocketChat/Rocket.Chat/pull/25122) by [@weslley543](https://github.com/weslley543))
 
-- Chore: Tests with Playwright (task: ROC-25, 06-message) ([#25252](https://github.com/RocketChat/Rocket.Chat/pull/25252))
+- Chore: Tests with Playwright (task: ROC-25, 06-message) ([#25252](https://github.com/RocketChat/Rocket.Chat/pull/25252) by [@weslley543](https://github.com/weslley543))
 
 - Chore: Tests with Playwright (task: ROC-28, 09-channels) ([#25196](https://github.com/RocketChat/Rocket.Chat/pull/25196))
 
-- Chore: Tests with Playwright (task: ROC-31, 12-settings) ([#25253](https://github.com/RocketChat/Rocket.Chat/pull/25253))
+- Chore: Tests with Playwright (task: ROC-31, 12-settings) ([#25253](https://github.com/RocketChat/Rocket.Chat/pull/25253) by [@souzaramon](https://github.com/souzaramon))
 
-- Chore: Tests with Playwright (task: ROC-66, Intermittent resolution in tests) ([#25416](https://github.com/RocketChat/Rocket.Chat/pull/25416))
+- Chore: Tests with Playwright (task: ROC-66, Intermittent resolution in tests) ([#25416](https://github.com/RocketChat/Rocket.Chat/pull/25416) by [@souzaramon](https://github.com/souzaramon) & [@weslley543](https://github.com/weslley543))
 
 - Chore: Translate admin helpers to TS ([#25690](https://github.com/RocketChat/Rocket.Chat/pull/25690))
 
@@ -1343,7 +5598,7 @@
 
 - Chore: Update package.json update tsc memory  ([#25755](https://github.com/RocketChat/Rocket.Chat/pull/25755))
 
-- Chore: update pageobjects to use es6 getters and remove export default ([#25867](https://github.com/RocketChat/Rocket.Chat/pull/25867))
+- Chore: update pageobjects to use es6 getters and remove export default ([#25867](https://github.com/RocketChat/Rocket.Chat/pull/25867) by [@souzaramon](https://github.com/souzaramon))
 
 - Chore: Update poplib ([#25964](https://github.com/RocketChat/Rocket.Chat/pull/25964))
 
@@ -1534,7 +5789,7 @@
 
 - Regression: Federated users not showing as federated in Room Members ([#26249](https://github.com/RocketChat/Rocket.Chat/pull/26249))
 
-- Regression: fix `directory` endpoint not listing teams ([#26310](https://github.com/RocketChat/Rocket.Chat/pull/26310))
+- Regression: fix `directory` endpoint not listing teams ([#26310](https://github.com/RocketChat/Rocket.Chat/pull/26310) by [@carlosrodrigues94](https://github.com/carlosrodrigues94))
 
 - Regression: Fix app icons breaking UI ([#26278](https://github.com/RocketChat/Rocket.Chat/pull/26278))
 
@@ -1689,7 +5944,7 @@
 
   ### I'm definitely open for better looking alternatives. Please leave a comment if you have a better solution to share.
 
-- Regression: Matrix Federation regressions ([#26283](https://github.com/RocketChat/Rocket.Chat/pull/26283))
+- Regression: Matrix Federation regressions ([#26283](https://github.com/RocketChat/Rocket.Chat/pull/26283) by [@carlosrodrigues94](https://github.com/carlosrodrigues94))
 
 - Regression: Messages in new message template Crashing. ([#25327](https://github.com/RocketChat/Rocket.Chat/pull/25327))
 
@@ -1861,9 +6116,9 @@
 
 - Regression: yarn dev triggers build dependencies ([#25208](https://github.com/RocketChat/Rocket.Chat/pull/25208))
 
-- Revert:  "Chore: Collect e2e coverage" ([#25936](https://github.com/RocketChat/Rocket.Chat/pull/25936))
+- Revert:  "Chore: Collect e2e coverage" ([#25936](https://github.com/RocketChat/Rocket.Chat/pull/25936) by [@souzaramon](https://github.com/souzaramon))
 
-- Test: Migrate 13-permissions from cypress to playwright ([#25558](https://github.com/RocketChat/Rocket.Chat/pull/25558))
+- Test: Migrate 13-permissions from cypress to playwright ([#25558](https://github.com/RocketChat/Rocket.Chat/pull/25558) by [@souzaramon](https://github.com/souzaramon))
 
 </details>
 
@@ -1875,6 +6130,8 @@
 - [@Kunalvrm555](https://github.com/Kunalvrm555)
 - [@Sh0uld](https://github.com/Sh0uld)
 - [@aakash-gitdev](https://github.com/aakash-gitdev)
+- [@amolghode1981](https://github.com/amolghode1981)
+- [@carlosrodrigues94](https://github.com/carlosrodrigues94)
 - [@cuonghuunguyen](https://github.com/cuonghuunguyen)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
 - [@divinespear](https://github.com/divinespear)
@@ -1883,12 +6140,14 @@
 - [@g-thome](https://github.com/g-thome)
 - [@joakimaho](https://github.com/joakimaho)
 - [@kibonusp](https://github.com/kibonusp)
-- [@kodiakhq[bot]](https://github.com/kodiakhq[bot])
+- [@matheuslc](https://github.com/matheuslc)
 - [@matthias4217](https://github.com/matthias4217)
 - [@ostjen](https://github.com/ostjen)
 - [@paulobernardoaf](https://github.com/paulobernardoaf)
 - [@sidmohanty11](https://github.com/sidmohanty11)
+- [@souzaramon](https://github.com/souzaramon)
 - [@ujorgeleite](https://github.com/ujorgeleite)
+- [@weslley543](https://github.com/weslley543)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
@@ -1901,8 +6160,6 @@
 - [@alansikora](https://github.com/alansikora)
 - [@albuquerquefabio](https://github.com/albuquerquefabio)
 - [@aleksandernsilva](https://github.com/aleksandernsilva)
-- [@amolghode1981](https://github.com/amolghode1981)
-- [@carlosrodrigues94](https://github.com/carlosrodrigues94)
 - [@cauefcr](https://github.com/cauefcr)
 - [@csuadev](https://github.com/csuadev)
 - [@d-gubert](https://github.com/d-gubert)
@@ -1920,21 +6177,63 @@
 - [@juliajforesti](https://github.com/juliajforesti)
 - [@marceloschmidt](https://github.com/marceloschmidt)
 - [@matheusbsilva137](https://github.com/matheusbsilva137)
-- [@matheuslc](https://github.com/matheuslc)
 - [@murtaza98](https://github.com/murtaza98)
 - [@nishant23122000](https://github.com/nishant23122000)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@rique223](https://github.com/rique223)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
-- [@souzaramon](https://github.com/souzaramon)
 - [@tapiarafael](https://github.com/tapiarafael)
 - [@tassoevan](https://github.com/tassoevan)
 - [@thassiov](https://github.com/thassiov)
 - [@tiagoevanp](https://github.com/tiagoevanp)
 - [@tmontini](https://github.com/tmontini)
-- [@weslley543](https://github.com/weslley543)
 - [@yash-rajpal](https://github.com/yash-rajpal)
+
+# 4.8.4
+`2022-08-11  ·  1 🐛  ·  1 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.18.3`
+- NPM: `6.14.15`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Endpoints `im.list` not working with Use Real Name setting ([#26532](https://github.com/RocketChat/Rocket.Chat/pull/26532))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@sampaiodiego](https://github.com/sampaiodiego)
+
+# 4.8.3
+`2022-08-02  ·  4 🐛  ·  4 👩‍💻👨‍💻`
+
+### Engine versions
+- Node: `14.18.3`
+- NPM: `6.14.15`
+- MongoDB: `3.6, 4.0, 4.2, 4.4, 5.0`
+
+### 🐛 Bug fixes
+
+
+- Empty results on `im.list` endpoint ([#26438](https://github.com/RocketChat/Rocket.Chat/pull/26438))
+
+- Unable to close chats when comments is disabled ([#26057](https://github.com/RocketChat/Rocket.Chat/pull/26057))
+
+  Fixes https://github.com/RocketChat/Rocket.Chat/issues/25954
+
+- Unable to send voice recording to Whatsapp ([#26276](https://github.com/RocketChat/Rocket.Chat/pull/26276))
+
+- Update chartjs usage to v3 ([#25873](https://github.com/RocketChat/Rocket.Chat/pull/25873))
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@albuquerquefabio](https://github.com/albuquerquefabio)
+- [@murtaza98](https://github.com/murtaza98)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 4.8.2
 `2022-07-21  ·  4 🐛  ·  3 🔍  ·  7 👩‍💻👨‍💻`
@@ -2116,7 +6415,7 @@
 
   <img width="556" alt="image" src="https://user-images.githubusercontent.com/5263975/162099800-15806953-f2f5-4905-a424-3f095076bc1d.png">
 
-- New button for network outage ([#25499](https://github.com/RocketChat/Rocket.Chat/pull/25499))
+- New button for network outage ([#25499](https://github.com/RocketChat/Rocket.Chat/pull/25499) by [@amolghode1981](https://github.com/amolghode1981))
 
   When network outage happens it should be conveyed to the user with special icon. This icon should not be clickable.
   Network outage handling is handled in https://app.clickup.com/t/245c0d8 task.
@@ -2169,7 +6468,7 @@
 
 - Add tooltip to sidebar room menu ([#24405](https://github.com/RocketChat/Rocket.Chat/pull/24405) by [@Himanshu664](https://github.com/Himanshu664))
 
-- add warnings for federation setup ([#25684](https://github.com/RocketChat/Rocket.Chat/pull/25684))
+- add warnings for federation setup ([#25684](https://github.com/RocketChat/Rocket.Chat/pull/25684) by [@carlosrodrigues94](https://github.com/carlosrodrigues94))
 
 - Added MaxNickNameLength and MaxBioLength constants ([#25231](https://github.com/RocketChat/Rocket.Chat/pull/25231) by [@aakash-gitdev](https://github.com/aakash-gitdev))
 
@@ -2237,7 +6536,7 @@
 
   Added `ToolboxProvider` to `MessageListProvider` and fixed actionLink.js open function exec
 
-- Client disconnection on network loss ([#25170](https://github.com/RocketChat/Rocket.Chat/pull/25170))
+- Client disconnection on network loss ([#25170](https://github.com/RocketChat/Rocket.Chat/pull/25170) by [@amolghode1981](https://github.com/amolghode1981))
 
   Agent gets disconnected (or Unregistered) from asterisk in multiple ways. The goal is that agent should remain online
   unless agent explicitly logs off.
@@ -2283,7 +6582,7 @@
 
 - Fixing app contextual bar functionality ([#25615](https://github.com/RocketChat/Rocket.Chat/pull/25615))
 
-- Fixing Network connectivity issues with SIP client. ([#25391](https://github.com/RocketChat/Rocket.Chat/pull/25391))
+- Fixing Network connectivity issues with SIP client. ([#25391](https://github.com/RocketChat/Rocket.Chat/pull/25391) by [@amolghode1981](https://github.com/amolghode1981))
 
   The previous PR https://github.com/RocketChat/Rocket.Chat/pull/25170 did not handle the issues completely.
   This PR is expected to handle  
@@ -2417,7 +6716,7 @@
 
 - Video and Audio not skipping forward ([#19866](https://github.com/RocketChat/Rocket.Chat/pull/19866))
 
-- VoIP disabled/enabled  sequence puts voip agent in error state ([#25230](https://github.com/RocketChat/Rocket.Chat/pull/25230))
+- VoIP disabled/enabled  sequence puts voip agent in error state ([#25230](https://github.com/RocketChat/Rocket.Chat/pull/25230) by [@amolghode1981](https://github.com/amolghode1981))
 
   Initially it was thought that the issue occurs because of the race condition while changing the client settings vs those settings reflected on server side. So a natural solution to solve this is to wait for setting change event 'private-settings-changed'. Then if 'VoIP_Enabled' is updated and it is true, set voipEnabled  to true in useVoipClient.ts (on client side)
 
@@ -2522,7 +6821,7 @@
 
 - Chore: Convert Mailer to TS ([#25121](https://github.com/RocketChat/Rocket.Chat/pull/25121))
 
-- Chore: convert marketplace price display component to use typescript ([#25504](https://github.com/RocketChat/Rocket.Chat/pull/25504))
+- Chore: convert marketplace price display component to use typescript ([#25504](https://github.com/RocketChat/Rocket.Chat/pull/25504) by [@matheuslc](https://github.com/matheuslc))
 
   **Marketplace apps listing page**
   ![Screen Shot 2022-05-13 at 12 57 43](https://user-images.githubusercontent.com/4161171/168322189-67990fdf-a447-46dc-8f88-08b16c2a5416.png)
@@ -2560,9 +6859,9 @@
 
 - Chore: Dependencies upgrade ([#25290](https://github.com/RocketChat/Rocket.Chat/pull/25290))
 
-- Chore: Enable marketplace screenshots endpoint ([#25395](https://github.com/RocketChat/Rocket.Chat/pull/25395))
+- Chore: Enable marketplace screenshots endpoint ([#25395](https://github.com/RocketChat/Rocket.Chat/pull/25395) by [@matheuslc](https://github.com/matheuslc))
 
-- Chore: ensure scripts use cross-env and ignore some dirs (ROC-54) ([#25218](https://github.com/RocketChat/Rocket.Chat/pull/25218))
+- Chore: ensure scripts use cross-env and ignore some dirs (ROC-54) ([#25218](https://github.com/RocketChat/Rocket.Chat/pull/25218) by [@souzaramon](https://github.com/souzaramon))
 
   - data and test-failure should be ignored  
   - ensure scripts use cross-env
@@ -2577,9 +6876,9 @@
 
 - Chore: Manager Page Rewrite ([#25431](https://github.com/RocketChat/Rocket.Chat/pull/25431))
 
-- Chore: Migrate 15-message-popup from cypress to playwright ([#25462](https://github.com/RocketChat/Rocket.Chat/pull/25462))
+- Chore: Migrate 15-message-popup from cypress to playwright ([#25462](https://github.com/RocketChat/Rocket.Chat/pull/25462) by [@souzaramon](https://github.com/souzaramon))
 
-- Chore: migrate from cypress to pw 14-setting-permission ([#25523](https://github.com/RocketChat/Rocket.Chat/pull/25523))
+- Chore: migrate from cypress to pw 14-setting-permission ([#25523](https://github.com/RocketChat/Rocket.Chat/pull/25523) by [@weslley543](https://github.com/weslley543))
 
 - Chore: Migrate NotFoundPage to TS ([#25509](https://github.com/RocketChat/Rocket.Chat/pull/25509))
 
@@ -2589,7 +6888,7 @@
 
 - Chore: Migrate spotify to ts ([#25507](https://github.com/RocketChat/Rocket.Chat/pull/25507))
 
-- Chore: migrate-to-pw-adjust-in-intermitences ([#25542](https://github.com/RocketChat/Rocket.Chat/pull/25542))
+- Chore: migrate-to-pw-adjust-in-intermitences ([#25542](https://github.com/RocketChat/Rocket.Chat/pull/25542) by [@weslley543](https://github.com/weslley543))
 
 - Chore: Minor dependency updates ([#25269](https://github.com/RocketChat/Rocket.Chat/pull/25269))
 
@@ -2683,15 +6982,15 @@
   npx hygen package new test
   ```
 
-- Chore: Tests with Playwright (task: All works) ([#25122](https://github.com/RocketChat/Rocket.Chat/pull/25122))
+- Chore: Tests with Playwright (task: All works) ([#25122](https://github.com/RocketChat/Rocket.Chat/pull/25122) by [@weslley543](https://github.com/weslley543))
 
-- Chore: Tests with Playwright (task: ROC-25, 06-message) ([#25252](https://github.com/RocketChat/Rocket.Chat/pull/25252))
+- Chore: Tests with Playwright (task: ROC-25, 06-message) ([#25252](https://github.com/RocketChat/Rocket.Chat/pull/25252) by [@weslley543](https://github.com/weslley543))
 
 - Chore: Tests with Playwright (task: ROC-28, 09-channels) ([#25196](https://github.com/RocketChat/Rocket.Chat/pull/25196))
 
-- Chore: Tests with Playwright (task: ROC-31, 12-settings) ([#25253](https://github.com/RocketChat/Rocket.Chat/pull/25253))
+- Chore: Tests with Playwright (task: ROC-31, 12-settings) ([#25253](https://github.com/RocketChat/Rocket.Chat/pull/25253) by [@souzaramon](https://github.com/souzaramon))
 
-- Chore: Tests with Playwright (task: ROC-66, Intermittent resolution in tests) ([#25416](https://github.com/RocketChat/Rocket.Chat/pull/25416))
+- Chore: Tests with Playwright (task: ROC-66, Intermittent resolution in tests) ([#25416](https://github.com/RocketChat/Rocket.Chat/pull/25416) by [@souzaramon](https://github.com/souzaramon) & [@weslley543](https://github.com/weslley543))
 
 - Chore: TS conversion folder client ([#25031](https://github.com/RocketChat/Rocket.Chat/pull/25031))
 
@@ -2832,7 +7131,7 @@
 
 - Release 4.7.2 ([#25580](https://github.com/RocketChat/Rocket.Chat/pull/25580))
 
-- Test: Migrate 13-permissions from cypress to playwright ([#25558](https://github.com/RocketChat/Rocket.Chat/pull/25558))
+- Test: Migrate 13-permissions from cypress to playwright ([#25558](https://github.com/RocketChat/Rocket.Chat/pull/25558) by [@souzaramon](https://github.com/souzaramon))
 
 </details>
 
@@ -2840,6 +7139,8 @@
 
 - [@Himanshu664](https://github.com/Himanshu664)
 - [@aakash-gitdev](https://github.com/aakash-gitdev)
+- [@amolghode1981](https://github.com/amolghode1981)
+- [@carlosrodrigues94](https://github.com/carlosrodrigues94)
 - [@cuonghuunguyen](https://github.com/cuonghuunguyen)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
 - [@divinespear](https://github.com/divinespear)
@@ -2847,10 +7148,13 @@
 - [@felipe-menelau](https://github.com/felipe-menelau)
 - [@kibonusp](https://github.com/kibonusp)
 - [@lingohub[bot]](https://github.com/lingohub[bot])
+- [@matheuslc](https://github.com/matheuslc)
 - [@ostjen](https://github.com/ostjen)
 - [@paulobernardoaf](https://github.com/paulobernardoaf)
 - [@sidmohanty11](https://github.com/sidmohanty11)
+- [@souzaramon](https://github.com/souzaramon)
 - [@ujorgeleite](https://github.com/ujorgeleite)
+- [@weslley543](https://github.com/weslley543)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
@@ -2862,8 +7166,6 @@
 - [@alansikora](https://github.com/alansikora)
 - [@albuquerquefabio](https://github.com/albuquerquefabio)
 - [@aleksandernsilva](https://github.com/aleksandernsilva)
-- [@amolghode1981](https://github.com/amolghode1981)
-- [@carlosrodrigues94](https://github.com/carlosrodrigues94)
 - [@cauefcr](https://github.com/cauefcr)
 - [@d-gubert](https://github.com/d-gubert)
 - [@debdutdeb](https://github.com/debdutdeb)
@@ -2879,19 +7181,16 @@
 - [@juliajforesti](https://github.com/juliajforesti)
 - [@marceloschmidt](https://github.com/marceloschmidt)
 - [@matheusbsilva137](https://github.com/matheusbsilva137)
-- [@matheuslc](https://github.com/matheuslc)
 - [@murtaza98](https://github.com/murtaza98)
 - [@nishant23122000](https://github.com/nishant23122000)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@rique223](https://github.com/rique223)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
-- [@souzaramon](https://github.com/souzaramon)
 - [@tapiarafael](https://github.com/tapiarafael)
 - [@tassoevan](https://github.com/tassoevan)
 - [@tiagoevanp](https://github.com/tiagoevanp)
 - [@tmontini](https://github.com/tmontini)
-- [@weslley543](https://github.com/weslley543)
 - [@yash-rajpal](https://github.com/yash-rajpal)
 
 # 4.7.4
@@ -3115,7 +7414,7 @@
   - After:
   ![image](https://user-images.githubusercontent.com/30026625/161831092-9ee77b51-b083-4f45-9c48-ab2e0511c4d6.png)
 
-- Client disconnection on network loss ([#25170](https://github.com/RocketChat/Rocket.Chat/pull/25170))
+- Client disconnection on network loss ([#25170](https://github.com/RocketChat/Rocket.Chat/pull/25170) by [@amolghode1981](https://github.com/amolghode1981))
 
   Agent gets disconnected (or Unregistered) from asterisk in multiple ways. The goal is that agent should remain online
   unless agent explicitly logs off.
@@ -3230,7 +7529,7 @@
 
 - Video and Audio not skipping forward ([#19866](https://github.com/RocketChat/Rocket.Chat/pull/19866))
 
-- VoIP disabled/enabled  sequence puts voip agent in error state ([#25230](https://github.com/RocketChat/Rocket.Chat/pull/25230))
+- VoIP disabled/enabled  sequence puts voip agent in error state ([#25230](https://github.com/RocketChat/Rocket.Chat/pull/25230) by [@amolghode1981](https://github.com/amolghode1981))
 
   Initially it was thought that the issue occurs because of the race condition while changing the client settings vs those settings reflected on server side. So a natural solution to solve this is to wait for setting change event 'private-settings-changed'. Then if 'VoIP_Enabled' is updated and it is true, set voipEnabled  to true in useVoipClient.ts (on client side)
 
@@ -3288,7 +7587,7 @@
 
 - Chore: Create README.md for Rest Typings ([#25335](https://github.com/RocketChat/Rocket.Chat/pull/25335))
 
-- Chore: ensure scripts use cross-env and ignore some dirs (ROC-54) ([#25218](https://github.com/RocketChat/Rocket.Chat/pull/25218))
+- Chore: ensure scripts use cross-env and ignore some dirs (ROC-54) ([#25218](https://github.com/RocketChat/Rocket.Chat/pull/25218) by [@souzaramon](https://github.com/souzaramon))
 
   - data and test-failure should be ignored  
   - ensure scripts use cross-env
@@ -3327,7 +7626,7 @@
   npx hygen package new test
   ```
 
-- Chore: Tests with Playwright (task: All works) ([#25122](https://github.com/RocketChat/Rocket.Chat/pull/25122))
+- Chore: Tests with Playwright (task: All works) ([#25122](https://github.com/RocketChat/Rocket.Chat/pull/25122) by [@weslley543](https://github.com/weslley543))
 
 - Chore: Tests with Playwright (task: ROC-28, 09-channels) ([#25196](https://github.com/RocketChat/Rocket.Chat/pull/25196))
 
@@ -3422,11 +7721,14 @@
 
 - [@Himanshu664](https://github.com/Himanshu664)
 - [@aakash-gitdev](https://github.com/aakash-gitdev)
+- [@amolghode1981](https://github.com/amolghode1981)
 - [@cuonghuunguyen](https://github.com/cuonghuunguyen)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
 - [@kibonusp](https://github.com/kibonusp)
 - [@paulobernardoaf](https://github.com/paulobernardoaf)
 - [@sidmohanty11](https://github.com/sidmohanty11)
+- [@souzaramon](https://github.com/souzaramon)
+- [@weslley543](https://github.com/weslley543)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
@@ -3436,7 +7738,6 @@
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@alansikora](https://github.com/alansikora)
 - [@albuquerquefabio](https://github.com/albuquerquefabio)
-- [@amolghode1981](https://github.com/amolghode1981)
 - [@d-gubert](https://github.com/d-gubert)
 - [@debdutdeb](https://github.com/debdutdeb)
 - [@dougfabris](https://github.com/dougfabris)
@@ -3452,11 +7753,9 @@
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
-- [@souzaramon](https://github.com/souzaramon)
 - [@tassoevan](https://github.com/tassoevan)
 - [@tiagoevanp](https://github.com/tiagoevanp)
 - [@tmontini](https://github.com/tmontini)
-- [@weslley543](https://github.com/weslley543)
 - [@yash-rajpal](https://github.com/yash-rajpal)
 
 # 4.6.3
@@ -3759,11 +8058,11 @@
 
 - Typo in wrap-up term ([#24661](https://github.com/RocketChat/Rocket.Chat/pull/24661))
 
-- VoIP button gets disabled whenever user status changes ([#24789](https://github.com/RocketChat/Rocket.Chat/pull/24789))
+- VoIP button gets disabled whenever user status changes ([#24789](https://github.com/RocketChat/Rocket.Chat/pull/24789) by [@amolghode1981](https://github.com/amolghode1981))
 
 - VoIP Enable/Disable setting on CallContext/CallProvider Notifications ([#24607](https://github.com/RocketChat/Rocket.Chat/pull/24607))
 
-- Voip Stream Reinitialization Error ([#24657](https://github.com/RocketChat/Rocket.Chat/pull/24657))
+- Voip Stream Reinitialization Error ([#24657](https://github.com/RocketChat/Rocket.Chat/pull/24657) by [@amolghode1981](https://github.com/amolghode1981))
 
 - VoipExtensionsPage component call ([#24792](https://github.com/RocketChat/Rocket.Chat/pull/24792))
 
@@ -3914,7 +8213,7 @@
   ![image](https://user-images.githubusercontent.com/55164754/160981416-555bcaa1-c075-4260-937c-64523472da43.png)
   ![image](https://user-images.githubusercontent.com/55164754/160981452-6eae4e74-8425-4073-8256-472aba72b9db.png)
 
-- Regression: Error is raised when there's no Asterisk queue available yet ([#24980](https://github.com/RocketChat/Rocket.Chat/pull/24980))
+- Regression: Error is raised when there's no Asterisk queue available yet ([#24980](https://github.com/RocketChat/Rocket.Chat/pull/24980) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Regression: Fix account service login expiration ([#24920](https://github.com/RocketChat/Rocket.Chat/pull/24920))
 
@@ -3937,6 +8236,7 @@
 - [@JMoVS](https://github.com/JMoVS)
 - [@Muramatsu2602](https://github.com/Muramatsu2602)
 - [@aadishJ01](https://github.com/aadishJ01)
+- [@amolghode1981](https://github.com/amolghode1981)
 - [@aswinidev](https://github.com/aswinidev)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
 - [@eduardofcabrera](https://github.com/eduardofcabrera)
@@ -3949,7 +8249,6 @@
 - [@KevLehman](https://github.com/KevLehman)
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@albuquerquefabio](https://github.com/albuquerquefabio)
-- [@amolghode1981](https://github.com/amolghode1981)
 - [@cauefcr](https://github.com/cauefcr)
 - [@debdutdeb](https://github.com/debdutdeb)
 - [@dougfabris](https://github.com/dougfabris)
@@ -4103,7 +8402,7 @@
 
 - Show only enabled departments on forward ([#24829](https://github.com/RocketChat/Rocket.Chat/pull/24829))
 
-- VoIP button gets disabled whenever user status changes ([#24789](https://github.com/RocketChat/Rocket.Chat/pull/24789))
+- VoIP button gets disabled whenever user status changes ([#24789](https://github.com/RocketChat/Rocket.Chat/pull/24789) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Wrong param usage on queue summary call ([#24799](https://github.com/RocketChat/Rocket.Chat/pull/24799))
 
@@ -4115,10 +8414,13 @@
 
 </details>
 
+### 👩‍💻👨‍💻 Contributors 😍
+
+- [@amolghode1981](https://github.com/amolghode1981)
+
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@KevLehman](https://github.com/KevLehman)
-- [@amolghode1981](https://github.com/amolghode1981)
 - [@ggazzo](https://github.com/ggazzo)
 - [@sampaiodiego](https://github.com/sampaiodiego)
 - [@tiagoevanp](https://github.com/tiagoevanp)
@@ -4222,7 +8524,7 @@
 
 - VoIP Enable/Disable setting on CallContext/CallProvider Notifications ([#24607](https://github.com/RocketChat/Rocket.Chat/pull/24607))
 
-- Voip Stream Reinitialization Error ([#24657](https://github.com/RocketChat/Rocket.Chat/pull/24657))
+- Voip Stream Reinitialization Error ([#24657](https://github.com/RocketChat/Rocket.Chat/pull/24657) by [@amolghode1981](https://github.com/amolghode1981))
 
 <details>
 <summary>🔍 Minor changes</summary>
@@ -4230,20 +8532,20 @@
 
 - Chore: Update Livechat ([#24754](https://github.com/RocketChat/Rocket.Chat/pull/24754))
 
-- Release 4.5.1 ([#24782](https://github.com/RocketChat/Rocket.Chat/pull/24782) by [@Aman-Maheshwari](https://github.com/Aman-Maheshwari) & [@cuonghuunguyen](https://github.com/cuonghuunguyen))
+- Release 4.5.1 ([#24782](https://github.com/RocketChat/Rocket.Chat/pull/24782) by [@Aman-Maheshwari](https://github.com/Aman-Maheshwari) & [@amolghode1981](https://github.com/amolghode1981) & [@cuonghuunguyen](https://github.com/cuonghuunguyen))
 
 </details>
 
 ### 👩‍💻👨‍💻 Contributors 😍
 
 - [@Aman-Maheshwari](https://github.com/Aman-Maheshwari)
+- [@amolghode1981](https://github.com/amolghode1981)
 - [@cuonghuunguyen](https://github.com/cuonghuunguyen)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
 - [@KevLehman](https://github.com/KevLehman)
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
-- [@amolghode1981](https://github.com/amolghode1981)
 - [@juliajforesti](https://github.com/juliajforesti)
 - [@matheusbsilva137](https://github.com/matheusbsilva137)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
@@ -4272,7 +8574,7 @@
   Demo gif:
   ![Marketplace sort filter](https://user-images.githubusercontent.com/43561537/155033709-e07a6306-a85a-4f7f-9624-b53ba5dd7fa9.gif)
 
-- VoIP Support for Omnichannel ([#23102](https://github.com/RocketChat/Rocket.Chat/pull/23102))
+- VoIP Support for Omnichannel ([#23102](https://github.com/RocketChat/Rocket.Chat/pull/23102) by [@amolghode1981](https://github.com/amolghode1981))
 
   - Created VoipService to manage VoIP connections and PBX connection  
   - Created LivechatVoipService that will handle custom cases for livechat (creating rooms, assigning chats to queue, actions when call is finished, etc)  
@@ -4586,11 +8888,11 @@
 
 - Regression: Fixes in Voice Contextual Bar and Directory ([#24596](https://github.com/RocketChat/Rocket.Chat/pull/24596))
 
-- Regression: If Asterisk suddenly goes down, server has no way to know. Causes server to get stuck. Needs restart ([#24624](https://github.com/RocketChat/Rocket.Chat/pull/24624))
+- Regression: If Asterisk suddenly goes down, server has no way to know. Causes server to get stuck. Needs restart ([#24624](https://github.com/RocketChat/Rocket.Chat/pull/24624) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Regression: Mark all rooms as read modal closing instantly. ([#24610](https://github.com/RocketChat/Rocket.Chat/pull/24610))
 
-- Regression: No audio when call comes from Skype/IP phone ([#24602](https://github.com/RocketChat/Rocket.Chat/pull/24602))
+- Regression: No audio when call comes from Skype/IP phone ([#24602](https://github.com/RocketChat/Rocket.Chat/pull/24602) by [@amolghode1981](https://github.com/amolghode1981))
 
   The audio was not rendered because of re-rendering of react element based on
   queueCounter and roomInfo. queueCounter and roomInfo cause the dom to re-render when call gets accepted
@@ -4608,7 +8910,7 @@
 
 - Regression: Prevent connect to asterisk when VoIP is disabled ([#24601](https://github.com/RocketChat/Rocket.Chat/pull/24601))
 
-- Regression: Queue counter aggregator for incoming/hanged calls ([#24635](https://github.com/RocketChat/Rocket.Chat/pull/24635))
+- Regression: Queue counter aggregator for incoming/hanged calls ([#24635](https://github.com/RocketChat/Rocket.Chat/pull/24635) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Regression: Refresh server connection when MI server settings change ([#24649](https://github.com/RocketChat/Rocket.Chat/pull/24649))
 
@@ -4621,6 +8923,7 @@
 ### 👩‍💻👨‍💻 Contributors 😍
 
 - [@LucasFASouza](https://github.com/LucasFASouza)
+- [@amolghode1981](https://github.com/amolghode1981)
 - [@aswinidev](https://github.com/aswinidev)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
 - [@eduardofcabrera](https://github.com/eduardofcabrera)
@@ -4633,7 +8936,6 @@
 - [@KevLehman](https://github.com/KevLehman)
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@albuquerquefabio](https://github.com/albuquerquefabio)
-- [@amolghode1981](https://github.com/amolghode1981)
 - [@d-gubert](https://github.com/d-gubert)
 - [@debdutdeb](https://github.com/debdutdeb)
 - [@dougfabris](https://github.com/dougfabris)
@@ -4706,7 +9008,7 @@
 
   - Adds flag responsible for overwriting #general channel creation
 
-- VoIP Support for Omnichannel ([#23102](https://github.com/RocketChat/Rocket.Chat/pull/23102))
+- VoIP Support for Omnichannel ([#23102](https://github.com/RocketChat/Rocket.Chat/pull/23102) by [@amolghode1981](https://github.com/amolghode1981))
 
   - Created VoipService to manage VoIP connections and PBX connection  
   - Created LivechatVoipService that will handle custom cases for livechat (creating rooms, assigning chats to queue, actions when call is finished, etc)  
@@ -4918,7 +9220,7 @@
 
 - auto-join team channels not honoring user preferences ([#24779](https://github.com/RocketChat/Rocket.Chat/pull/24779) by [@ostjen](https://github.com/ostjen))
 
-- Client disconnection on network loss ([#25170](https://github.com/RocketChat/Rocket.Chat/pull/25170))
+- Client disconnection on network loss ([#25170](https://github.com/RocketChat/Rocket.Chat/pull/25170) by [@amolghode1981](https://github.com/amolghode1981))
 
   Agent gets disconnected (or Unregistered) from asterisk in multiple ways. The goal is that agent should remain online
   unless agent explicitly logs off.
@@ -5122,7 +9424,7 @@
 
 - Video and Audio not skipping forward ([#19866](https://github.com/RocketChat/Rocket.Chat/pull/19866))
 
-- VoIP disabled/enabled  sequence puts voip agent in error state ([#25230](https://github.com/RocketChat/Rocket.Chat/pull/25230))
+- VoIP disabled/enabled  sequence puts voip agent in error state ([#25230](https://github.com/RocketChat/Rocket.Chat/pull/25230) by [@amolghode1981](https://github.com/amolghode1981))
 
   Initially it was thought that the issue occurs because of the race condition while changing the client settings vs those settings reflected on server side. So a natural solution to solve this is to wait for setting change event 'private-settings-changed'. Then if 'VoIP_Enabled' is updated and it is true, set voipEnabled  to true in useVoipClient.ts (on client side)
 
@@ -5342,7 +9644,7 @@
 
   Just removing a duplicated/unused file.
 
-- Chore: ensure scripts use cross-env and ignore some dirs (ROC-54) ([#25218](https://github.com/RocketChat/Rocket.Chat/pull/25218))
+- Chore: ensure scripts use cross-env and ignore some dirs (ROC-54) ([#25218](https://github.com/RocketChat/Rocket.Chat/pull/25218) by [@souzaramon](https://github.com/souzaramon))
 
   - data and test-failure should be ignored  
   - ensure scripts use cross-env
@@ -5419,7 +9721,7 @@
   npx hygen package new test
   ```
 
-- Chore: Tests with Playwright (task: All works) ([#25122](https://github.com/RocketChat/Rocket.Chat/pull/25122))
+- Chore: Tests with Playwright (task: All works) ([#25122](https://github.com/RocketChat/Rocket.Chat/pull/25122) by [@weslley543](https://github.com/weslley543))
 
 - Chore: Tests with Playwright (task: ROC-28, 09-channels) ([#25196](https://github.com/RocketChat/Rocket.Chat/pull/25196))
 
@@ -5519,7 +9821,7 @@
 
 - Regression: Encode registration info as JWT when signing key is provided ([#24626](https://github.com/RocketChat/Rocket.Chat/pull/24626))
 
-- Regression: Error is raised when there's no Asterisk queue available yet ([#24980](https://github.com/RocketChat/Rocket.Chat/pull/24980))
+- Regression: Error is raised when there's no Asterisk queue available yet ([#24980](https://github.com/RocketChat/Rocket.Chat/pull/24980) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Regression: Error setting user avatars and mentioning rooms on Slack Import ([#24585](https://github.com/RocketChat/Rocket.Chat/pull/24585))
 
@@ -5586,7 +9888,7 @@
 
 - Regression: Fixes in Voice Contextual Bar and Directory ([#24596](https://github.com/RocketChat/Rocket.Chat/pull/24596))
 
-- Regression: If Asterisk suddenly goes down, server has no way to know. Causes server to get stuck. Needs restart ([#24624](https://github.com/RocketChat/Rocket.Chat/pull/24624))
+- Regression: If Asterisk suddenly goes down, server has no way to know. Causes server to get stuck. Needs restart ([#24624](https://github.com/RocketChat/Rocket.Chat/pull/24624) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Regression: Improve Sidenav open/close handling and fixed codeql configs and E2E tests ([#24756](https://github.com/RocketChat/Rocket.Chat/pull/24756))
 
@@ -5594,7 +9896,7 @@
 
 - Regression: Messages in new message template Crashing. ([#25327](https://github.com/RocketChat/Rocket.Chat/pull/25327))
 
-- Regression: No audio when call comes from Skype/IP phone ([#24602](https://github.com/RocketChat/Rocket.Chat/pull/24602))
+- Regression: No audio when call comes from Skype/IP phone ([#24602](https://github.com/RocketChat/Rocket.Chat/pull/24602) by [@amolghode1981](https://github.com/amolghode1981))
 
   The audio was not rendered because of re-rendering of react element based on
   queueCounter and roomInfo. queueCounter and roomInfo cause the dom to re-render when call gets accepted
@@ -5612,7 +9914,7 @@
 
 - Regression: Prevent connect to asterisk when VoIP is disabled ([#24601](https://github.com/RocketChat/Rocket.Chat/pull/24601))
 
-- Regression: Queue counter aggregator for incoming/hanged calls ([#24635](https://github.com/RocketChat/Rocket.Chat/pull/24635))
+- Regression: Queue counter aggregator for incoming/hanged calls ([#24635](https://github.com/RocketChat/Rocket.Chat/pull/24635) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Regression: Refresh server connection when MI server settings change ([#24649](https://github.com/RocketChat/Rocket.Chat/pull/24649))
 
@@ -5640,17 +9942,17 @@
 
 - Release 4.5.0 ([#24652](https://github.com/RocketChat/Rocket.Chat/pull/24652) by [@LucasFASouza](https://github.com/LucasFASouza) & [@aswinidev](https://github.com/aswinidev) & [@dependabot[bot]](https://github.com/dependabot[bot]) & [@lingohub[bot]](https://github.com/lingohub[bot]) & [@ostjen](https://github.com/ostjen))
 
-- Release 4.5.1 ([#24782](https://github.com/RocketChat/Rocket.Chat/pull/24782) by [@Aman-Maheshwari](https://github.com/Aman-Maheshwari) & [@cuonghuunguyen](https://github.com/cuonghuunguyen))
+- Release 4.5.1 ([#24782](https://github.com/RocketChat/Rocket.Chat/pull/24782) by [@Aman-Maheshwari](https://github.com/Aman-Maheshwari) & [@amolghode1981](https://github.com/amolghode1981) & [@cuonghuunguyen](https://github.com/cuonghuunguyen))
 
 - Release 4.5.2 ([#24814](https://github.com/RocketChat/Rocket.Chat/pull/24814))
 
-- Release 4.5.3 ([#24884](https://github.com/RocketChat/Rocket.Chat/pull/24884))
+- Release 4.5.3 ([#24884](https://github.com/RocketChat/Rocket.Chat/pull/24884) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Release 4.5.4 ([#24938](https://github.com/RocketChat/Rocket.Chat/pull/24938))
 
 - Release 4.5.5 ([#24998](https://github.com/RocketChat/Rocket.Chat/pull/24998))
 
-- Release 4.6.0 ([#25027](https://github.com/RocketChat/Rocket.Chat/pull/25027) by [@aswinidev](https://github.com/aswinidev) & [@dependabot[bot]](https://github.com/dependabot[bot]) & [@eduardofcabrera](https://github.com/eduardofcabrera) & [@lingohub[bot]](https://github.com/lingohub[bot]))
+- Release 4.6.0 ([#25027](https://github.com/RocketChat/Rocket.Chat/pull/25027) by [@amolghode1981](https://github.com/amolghode1981) & [@aswinidev](https://github.com/aswinidev) & [@dependabot[bot]](https://github.com/dependabot[bot]) & [@eduardofcabrera](https://github.com/eduardofcabrera) & [@lingohub[bot]](https://github.com/lingohub[bot]))
 
 - Release 4.6.1 ([#25095](https://github.com/RocketChat/Rocket.Chat/pull/25095))
 
@@ -5675,6 +9977,7 @@
 - [@Muramatsu2602](https://github.com/Muramatsu2602)
 - [@aadishJ01](https://github.com/aadishJ01)
 - [@aakash-gitdev](https://github.com/aakash-gitdev)
+- [@amolghode1981](https://github.com/amolghode1981)
 - [@aswinidev](https://github.com/aswinidev)
 - [@cuonghuunguyen](https://github.com/cuonghuunguyen)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
@@ -5687,8 +9990,10 @@
 - [@paulobernardoaf](https://github.com/paulobernardoaf)
 - [@pedrogssouza](https://github.com/pedrogssouza)
 - [@sidmohanty11](https://github.com/sidmohanty11)
+- [@souzaramon](https://github.com/souzaramon)
 - [@tkurz](https://github.com/tkurz)
 - [@ujorgeleite](https://github.com/ujorgeleite)
+- [@weslley543](https://github.com/weslley543)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
@@ -5698,7 +10003,6 @@
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@alansikora](https://github.com/alansikora)
 - [@albuquerquefabio](https://github.com/albuquerquefabio)
-- [@amolghode1981](https://github.com/amolghode1981)
 - [@cauefcr](https://github.com/cauefcr)
 - [@d-gubert](https://github.com/d-gubert)
 - [@debdutdeb](https://github.com/debdutdeb)
@@ -5719,11 +10023,9 @@
 - [@rique223](https://github.com/rique223)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
-- [@souzaramon](https://github.com/souzaramon)
 - [@tassoevan](https://github.com/tassoevan)
 - [@tiagoevanp](https://github.com/tiagoevanp)
 - [@tmontini](https://github.com/tmontini)
-- [@weslley543](https://github.com/weslley543)
 - [@yash-rajpal](https://github.com/yash-rajpal)
 
 # 4.4.4
@@ -5780,7 +10082,7 @@
 
   - Adds flag responsible for overwriting #general channel creation
 
-- VoIP Support for Omnichannel ([#23102](https://github.com/RocketChat/Rocket.Chat/pull/23102))
+- VoIP Support for Omnichannel ([#23102](https://github.com/RocketChat/Rocket.Chat/pull/23102) by [@amolghode1981](https://github.com/amolghode1981))
 
   - Created VoipService to manage VoIP connections and PBX connection  
   - Created LivechatVoipService that will handle custom cases for livechat (creating rooms, assigning chats to queue, actions when call is finished, etc)  
@@ -5992,7 +10294,7 @@
 
 - auto-join team channels not honoring user preferences ([#24779](https://github.com/RocketChat/Rocket.Chat/pull/24779) by [@ostjen](https://github.com/ostjen))
 
-- Client disconnection on network loss ([#25170](https://github.com/RocketChat/Rocket.Chat/pull/25170))
+- Client disconnection on network loss ([#25170](https://github.com/RocketChat/Rocket.Chat/pull/25170) by [@amolghode1981](https://github.com/amolghode1981))
 
   Agent gets disconnected (or Unregistered) from asterisk in multiple ways. The goal is that agent should remain online
   unless agent explicitly logs off.
@@ -6196,7 +10498,7 @@
 
 - Video and Audio not skipping forward ([#19866](https://github.com/RocketChat/Rocket.Chat/pull/19866))
 
-- VoIP disabled/enabled  sequence puts voip agent in error state ([#25230](https://github.com/RocketChat/Rocket.Chat/pull/25230))
+- VoIP disabled/enabled  sequence puts voip agent in error state ([#25230](https://github.com/RocketChat/Rocket.Chat/pull/25230) by [@amolghode1981](https://github.com/amolghode1981))
 
   Initially it was thought that the issue occurs because of the race condition while changing the client settings vs those settings reflected on server side. So a natural solution to solve this is to wait for setting change event 'private-settings-changed'. Then if 'VoIP_Enabled' is updated and it is true, set voipEnabled  to true in useVoipClient.ts (on client side)
 
@@ -6416,7 +10718,7 @@
 
   Just removing a duplicated/unused file.
 
-- Chore: ensure scripts use cross-env and ignore some dirs (ROC-54) ([#25218](https://github.com/RocketChat/Rocket.Chat/pull/25218))
+- Chore: ensure scripts use cross-env and ignore some dirs (ROC-54) ([#25218](https://github.com/RocketChat/Rocket.Chat/pull/25218) by [@souzaramon](https://github.com/souzaramon))
 
   - data and test-failure should be ignored  
   - ensure scripts use cross-env
@@ -6493,7 +10795,7 @@
   npx hygen package new test
   ```
 
-- Chore: Tests with Playwright (task: All works) ([#25122](https://github.com/RocketChat/Rocket.Chat/pull/25122))
+- Chore: Tests with Playwright (task: All works) ([#25122](https://github.com/RocketChat/Rocket.Chat/pull/25122) by [@weslley543](https://github.com/weslley543))
 
 - Chore: Tests with Playwright (task: ROC-28, 09-channels) ([#25196](https://github.com/RocketChat/Rocket.Chat/pull/25196))
 
@@ -6593,7 +10895,7 @@
 
 - Regression: Encode registration info as JWT when signing key is provided ([#24626](https://github.com/RocketChat/Rocket.Chat/pull/24626))
 
-- Regression: Error is raised when there's no Asterisk queue available yet ([#24980](https://github.com/RocketChat/Rocket.Chat/pull/24980))
+- Regression: Error is raised when there's no Asterisk queue available yet ([#24980](https://github.com/RocketChat/Rocket.Chat/pull/24980) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Regression: Error setting user avatars and mentioning rooms on Slack Import ([#24585](https://github.com/RocketChat/Rocket.Chat/pull/24585))
 
@@ -6660,7 +10962,7 @@
 
 - Regression: Fixes in Voice Contextual Bar and Directory ([#24596](https://github.com/RocketChat/Rocket.Chat/pull/24596))
 
-- Regression: If Asterisk suddenly goes down, server has no way to know. Causes server to get stuck. Needs restart ([#24624](https://github.com/RocketChat/Rocket.Chat/pull/24624))
+- Regression: If Asterisk suddenly goes down, server has no way to know. Causes server to get stuck. Needs restart ([#24624](https://github.com/RocketChat/Rocket.Chat/pull/24624) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Regression: Improve Sidenav open/close handling and fixed codeql configs and E2E tests ([#24756](https://github.com/RocketChat/Rocket.Chat/pull/24756))
 
@@ -6668,7 +10970,7 @@
 
 - Regression: Messages in new message template Crashing. ([#25327](https://github.com/RocketChat/Rocket.Chat/pull/25327))
 
-- Regression: No audio when call comes from Skype/IP phone ([#24602](https://github.com/RocketChat/Rocket.Chat/pull/24602))
+- Regression: No audio when call comes from Skype/IP phone ([#24602](https://github.com/RocketChat/Rocket.Chat/pull/24602) by [@amolghode1981](https://github.com/amolghode1981))
 
   The audio was not rendered because of re-rendering of react element based on
   queueCounter and roomInfo. queueCounter and roomInfo cause the dom to re-render when call gets accepted
@@ -6686,7 +10988,7 @@
 
 - Regression: Prevent connect to asterisk when VoIP is disabled ([#24601](https://github.com/RocketChat/Rocket.Chat/pull/24601))
 
-- Regression: Queue counter aggregator for incoming/hanged calls ([#24635](https://github.com/RocketChat/Rocket.Chat/pull/24635))
+- Regression: Queue counter aggregator for incoming/hanged calls ([#24635](https://github.com/RocketChat/Rocket.Chat/pull/24635) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Regression: Refresh server connection when MI server settings change ([#24649](https://github.com/RocketChat/Rocket.Chat/pull/24649))
 
@@ -6714,17 +11016,17 @@
 
 - Release 4.5.0 ([#24652](https://github.com/RocketChat/Rocket.Chat/pull/24652) by [@LucasFASouza](https://github.com/LucasFASouza) & [@aswinidev](https://github.com/aswinidev) & [@dependabot[bot]](https://github.com/dependabot[bot]) & [@lingohub[bot]](https://github.com/lingohub[bot]) & [@ostjen](https://github.com/ostjen))
 
-- Release 4.5.1 ([#24782](https://github.com/RocketChat/Rocket.Chat/pull/24782) by [@Aman-Maheshwari](https://github.com/Aman-Maheshwari) & [@cuonghuunguyen](https://github.com/cuonghuunguyen))
+- Release 4.5.1 ([#24782](https://github.com/RocketChat/Rocket.Chat/pull/24782) by [@Aman-Maheshwari](https://github.com/Aman-Maheshwari) & [@amolghode1981](https://github.com/amolghode1981) & [@cuonghuunguyen](https://github.com/cuonghuunguyen))
 
 - Release 4.5.2 ([#24814](https://github.com/RocketChat/Rocket.Chat/pull/24814))
 
-- Release 4.5.3 ([#24884](https://github.com/RocketChat/Rocket.Chat/pull/24884))
+- Release 4.5.3 ([#24884](https://github.com/RocketChat/Rocket.Chat/pull/24884) by [@amolghode1981](https://github.com/amolghode1981))
 
 - Release 4.5.4 ([#24938](https://github.com/RocketChat/Rocket.Chat/pull/24938))
 
 - Release 4.5.5 ([#24998](https://github.com/RocketChat/Rocket.Chat/pull/24998))
 
-- Release 4.6.0 ([#25027](https://github.com/RocketChat/Rocket.Chat/pull/25027) by [@aswinidev](https://github.com/aswinidev) & [@dependabot[bot]](https://github.com/dependabot[bot]) & [@eduardofcabrera](https://github.com/eduardofcabrera) & [@lingohub[bot]](https://github.com/lingohub[bot]))
+- Release 4.6.0 ([#25027](https://github.com/RocketChat/Rocket.Chat/pull/25027) by [@amolghode1981](https://github.com/amolghode1981) & [@aswinidev](https://github.com/aswinidev) & [@dependabot[bot]](https://github.com/dependabot[bot]) & [@eduardofcabrera](https://github.com/eduardofcabrera) & [@lingohub[bot]](https://github.com/lingohub[bot]))
 
 - Release 4.6.1 ([#25095](https://github.com/RocketChat/Rocket.Chat/pull/25095))
 
@@ -6749,6 +11051,7 @@
 - [@Muramatsu2602](https://github.com/Muramatsu2602)
 - [@aadishJ01](https://github.com/aadishJ01)
 - [@aakash-gitdev](https://github.com/aakash-gitdev)
+- [@amolghode1981](https://github.com/amolghode1981)
 - [@aswinidev](https://github.com/aswinidev)
 - [@cuonghuunguyen](https://github.com/cuonghuunguyen)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
@@ -6761,8 +11064,10 @@
 - [@paulobernardoaf](https://github.com/paulobernardoaf)
 - [@pedrogssouza](https://github.com/pedrogssouza)
 - [@sidmohanty11](https://github.com/sidmohanty11)
+- [@souzaramon](https://github.com/souzaramon)
 - [@tkurz](https://github.com/tkurz)
 - [@ujorgeleite](https://github.com/ujorgeleite)
+- [@weslley543](https://github.com/weslley543)
 
 ### 👩‍💻👨‍💻 Core Team 🤓
 
@@ -6772,7 +11077,6 @@
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@alansikora](https://github.com/alansikora)
 - [@albuquerquefabio](https://github.com/albuquerquefabio)
-- [@amolghode1981](https://github.com/amolghode1981)
 - [@cauefcr](https://github.com/cauefcr)
 - [@d-gubert](https://github.com/d-gubert)
 - [@debdutdeb](https://github.com/debdutdeb)
@@ -6793,11 +11097,9 @@
 - [@rique223](https://github.com/rique223)
 - [@rodrigok](https://github.com/rodrigok)
 - [@sampaiodiego](https://github.com/sampaiodiego)
-- [@souzaramon](https://github.com/souzaramon)
 - [@tassoevan](https://github.com/tassoevan)
 - [@tiagoevanp](https://github.com/tiagoevanp)
 - [@tmontini](https://github.com/tmontini)
-- [@weslley543](https://github.com/weslley543)
 - [@yash-rajpal](https://github.com/yash-rajpal)
 
 # 4.4.3
@@ -11964,7 +16266,7 @@
   > So basically this chat is going to block the agent's queue until the customer is able to finish his time-consuming download task in which he/she doesn't require any agent's assistance. Due to the `Max Simultaneous Chats per agent` limit, the agent is also not able to use this extra time to help other customer thus affecting his overall productivity.
 
   **So how does the On-Hold feature solve this problem?**
-  With the On-Hold feature, an agent is now able to place a chat on-hold. On-Hold chats **don’t count towards the maximum number of concurrent chats** an agent can have. So in our above example, the agent can simply now place the customer on-hold for 20-30 minutes until the customer downloads the software and within this time, the agent can serve other customers   - hence increasing the productivity of an agent.
+  With the On-Hold feature, an agent is now able to place a chat on-hold. On-Hold chats **don’t count towards the maximum number of concurrent chats** an agent can have. So in our above example, the agent can simply now place the customer on-hold for 20-30 minutes until the customer downloads the software and within this time, the agent can serve other customers   - hence increasing the productivity of an agent.
 
   ----------------------------------------
   ### Working of the new On-Hold feature
@@ -13141,6 +17443,32 @@
 - [@tassoevan](https://github.com/tassoevan)
 - [@tiagoevanp](https://github.com/tiagoevanp)
 - [@yash-rajpal](https://github.com/yash-rajpal)
+
+# 3.11.6
+`2022-08-22  ·  2 🐛  ·  1 🔍  ·  2 👩‍💻👨‍💻`
+
+### Engine versions
+- MongoDB: `3.4, 3.6, 4.0`
+
+### 🐛 Bug fixes
+
+
+- Support DISABLE_PRESENCE_MONITOR env var in new DB watchers ([#22257](https://github.com/RocketChat/Rocket.Chat/pull/22257))
+
+- User presence being processes even if presence monitor was disabled ([#22927](https://github.com/RocketChat/Rocket.Chat/pull/22927))
+
+<details>
+<summary>🔍 Minor changes</summary>
+
+
+- Chore: Change Ubuntu version to 20.04 on all GitHub Actions ([#23200](https://github.com/RocketChat/Rocket.Chat/pull/23200))
+
+</details>
+
+### 👩‍💻👨‍💻 Core Team 🤓
+
+- [@KevLehman](https://github.com/KevLehman)
+- [@sampaiodiego](https://github.com/sampaiodiego)
 
 # 3.11.5
 `2021-04-20  ·  1 🐛  ·  1 👩‍💻👨‍💻`
@@ -14816,7 +19144,7 @@
 
 - Update Apps-Engine version ([#19385](https://github.com/RocketChat/Rocket.Chat/pull/19385))
 
-- Update comment of "issue-close-app" ([#19078](https://github.com/RocketChat/Rocket.Chat/pull/19078))
+- Update comment of "issue-close-app" ([#19078](https://github.com/RocketChat/Rocket.Chat/pull/19078) by [@frdmn](https://github.com/frdmn))
 
 - Update feature-request opening process on README ([#19240](https://github.com/RocketChat/Rocket.Chat/pull/19240) by [@brij1999](https://github.com/brij1999))
 
@@ -14838,6 +19166,7 @@
 - [@brij1999](https://github.com/brij1999)
 - [@ceefour](https://github.com/ceefour)
 - [@dependabot[bot]](https://github.com/dependabot[bot])
+- [@frdmn](https://github.com/frdmn)
 - [@galshiff](https://github.com/galshiff)
 - [@jgribonvald](https://github.com/jgribonvald)
 - [@lolimay](https://github.com/lolimay)
@@ -14849,7 +19178,6 @@
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@d-gubert](https://github.com/d-gubert)
 - [@dougfabris](https://github.com/dougfabris)
-- [@frdmn](https://github.com/frdmn)
 - [@gabriellsh](https://github.com/gabriellsh)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
@@ -19272,7 +23600,7 @@
 
 - Revert fix package-lock.json ([#15563](https://github.com/RocketChat/Rocket.Chat/pull/15563))
 
-- Updating license term ([#15476](https://github.com/RocketChat/Rocket.Chat/pull/15476))
+- Updating license term ([#15476](https://github.com/RocketChat/Rocket.Chat/pull/15476) by [@mar-v](https://github.com/mar-v))
 
 </details>
 
@@ -19285,6 +23613,7 @@
 - [@hmagarotto](https://github.com/hmagarotto)
 - [@juanpetterson](https://github.com/juanpetterson)
 - [@knrt10](https://github.com/knrt10)
+- [@mar-v](https://github.com/mar-v)
 - [@mohamedar97](https://github.com/mohamedar97)
 - [@nstseek](https://github.com/nstseek)
 - [@oguhpereira](https://github.com/oguhpereira)
@@ -19302,7 +23631,6 @@
 - [@d-gubert](https://github.com/d-gubert)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
-- [@mar-v](https://github.com/mar-v)
 - [@pierre-lehnen-rc](https://github.com/pierre-lehnen-rc)
 - [@renatobecker](https://github.com/renatobecker)
 - [@rodrigok](https://github.com/rodrigok)
@@ -26122,7 +30450,7 @@
 
 - Typo: German language file ([#9190](https://github.com/RocketChat/Rocket.Chat/pull/9190) by [@TheReal1604](https://github.com/TheReal1604))
 
-- Update license ([#9490](https://github.com/RocketChat/Rocket.Chat/pull/9490))
+- Update license ([#9490](https://github.com/RocketChat/Rocket.Chat/pull/9490) by [@frdmn](https://github.com/frdmn))
 
 - Update Marked dependecy to 0.3.9 ([#9346](https://github.com/RocketChat/Rocket.Chat/pull/9346))
 
@@ -26136,6 +30464,7 @@
 - [@TheReal1604](https://github.com/TheReal1604)
 - [@cpitman](https://github.com/cpitman)
 - [@cyclops24](https://github.com/cyclops24)
+- [@frdmn](https://github.com/frdmn)
 - [@gdelavald](https://github.com/gdelavald)
 - [@ggrish](https://github.com/ggrish)
 - [@karlprieb](https://github.com/karlprieb)
@@ -26152,7 +30481,6 @@
 
 - [@MartinSchoeler](https://github.com/MartinSchoeler)
 - [@engelgabriel](https://github.com/engelgabriel)
-- [@frdmn](https://github.com/frdmn)
 - [@geekgonecrazy](https://github.com/geekgonecrazy)
 - [@ggazzo](https://github.com/ggazzo)
 - [@graywolf336](https://github.com/graywolf336)

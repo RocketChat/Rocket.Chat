@@ -1,3 +1,12 @@
-import { QueryClient } from 'react-query';
+import { QueryClient } from '@tanstack/react-query';
 
-export const queryClient = new QueryClient();
+export const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			onError: console.warn,
+		},
+		mutations: {
+			onError: console.warn,
+		},
+	},
+});

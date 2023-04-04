@@ -1,7 +1,8 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import React, { ReactElement } from 'react';
+import { Header } from '@rocket.chat/ui-client';
+import type { ReactElement } from 'react';
+import React from 'react';
 
-import Header from '../../../components/Header';
 import { useRoomIcon } from '../../../hooks/useRoomIcon';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 
@@ -15,8 +16,10 @@ const ParentRoom = ({ room }: ParentRoomProps): ReactElement => {
 
 	return (
 		<Header.Tag>
-			<Header.Tag.Icon icon={icon} />
-			<Header.Link href={href}>{roomCoordinator.getRoomName(room.t, room)}</Header.Link>
+			<Header.Link href={href}>
+				<Header.Tag.Icon icon={icon} />
+				{roomCoordinator.getRoomName(room.t, room)}
+			</Header.Link>
 		</Header.Tag>
 	);
 };

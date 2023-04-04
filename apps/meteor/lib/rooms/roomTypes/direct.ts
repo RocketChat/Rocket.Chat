@@ -1,4 +1,4 @@
-import { IRoomTypeConfig } from '../../../definition/IRoomTypeConfig';
+import type { IRoomTypeConfig } from '../../../definition/IRoomTypeConfig';
 import type { RoomCoordinator } from '../coordinator';
 
 export function getDirectMessageRoomType(coordinator: RoomCoordinator): IRoomTypeConfig {

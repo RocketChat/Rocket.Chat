@@ -11,16 +11,13 @@ import FinishIcon from '../../icons/finish.svg';
 import { Button } from '../Button';
 import { PopoverContainer } from '../Popover';
 
-
 const defaultMenuItemText = 'A menu item';
 const defaultAnotherMenuItemText = 'Another menu item';
 
 storiesOf('Components/Menu', module)
 	.addDecorator(centered)
 	.addDecorator(withKnobs)
-	.add('empty', () => (
-		<Menu hidden={boolean('hidden', false)} />
-	))
+	.add('empty', () => <Menu hidden={boolean('hidden', false)} />)
 	.add('simple', () => (
 		<Menu hidden={boolean('hidden menu', false)}>
 			<Group title={text('group title', '')}>
@@ -46,9 +43,7 @@ storiesOf('Components/Menu', module)
 
 const centeredWithPopoverContainer = (storyFn, ...args) => (
 	<div style={{ display: 'flex', width: '100vw', height: '100vh' }}>
-		<PopoverContainer>
-			{centered(storyFn, ...args)}
-		</PopoverContainer>
+		<PopoverContainer>{centered(storyFn, ...args)}</PopoverContainer>
 	</div>
 );
 
@@ -122,7 +117,9 @@ storiesOf('Components/Menu/Item', module)
 	.add('primary', () => (
 		<Menu hidden={boolean('hidden menu', false)}>
 			<Group title={text('group title', '')}>
-				<Item primary onClick={action('clicked')}>{text('item text', defaultMenuItemText)}</Item>
+				<Item primary onClick={action('clicked')}>
+					{text('item text', defaultMenuItemText)}
+				</Item>
 				<Item>{defaultAnotherMenuItemText}</Item>
 			</Group>
 		</Menu>
@@ -130,7 +127,9 @@ storiesOf('Components/Menu/Item', module)
 	.add('danger', () => (
 		<Menu hidden={boolean('hidden menu', false)}>
 			<Group title={text('group title', '')}>
-				<Item danger onClick={action('clicked')}>{text('item text', defaultMenuItemText)}</Item>
+				<Item danger onClick={action('clicked')}>
+					{text('item text', defaultMenuItemText)}
+				</Item>
 				<Item>{defaultAnotherMenuItemText}</Item>
 			</Group>
 		</Menu>
@@ -138,7 +137,9 @@ storiesOf('Components/Menu/Item', module)
 	.add('disabled', () => (
 		<Menu hidden={boolean('hidden menu', false)}>
 			<Group title={text('group title', '')}>
-				<Item disabled onClick={action('clicked')}>{text('item text', defaultMenuItemText)}</Item>
+				<Item disabled onClick={action('clicked')}>
+					{text('item text', defaultMenuItemText)}
+				</Item>
 				<Item>{defaultAnotherMenuItemText}</Item>
 			</Group>
 		</Menu>
@@ -146,10 +147,18 @@ storiesOf('Components/Menu/Item', module)
 	.add('with icon', () => (
 		<Menu hidden={boolean('hidden menu', false)}>
 			<Group title={text('group title', '')}>
-				<Item onClick={action('clicked')} icon={CloseIcon}>{text('item text', 'Simple')}</Item>
-				<Item primary onClick={action('clicked')} icon={ChangeIcon}>{text('item text', 'Primary')}</Item>
-				<Item danger onClick={action('clicked')} icon={FinishIcon}>{text('item text', 'Danger')}</Item>
-				<Item disabled onClick={action('clicked')} icon={BellIcon}>{text('item text', 'Disabled')}</Item>
+				<Item onClick={action('clicked')} icon={CloseIcon}>
+					{text('item text', 'Simple')}
+				</Item>
+				<Item primary onClick={action('clicked')} icon={ChangeIcon}>
+					{text('item text', 'Primary')}
+				</Item>
+				<Item danger onClick={action('clicked')} icon={FinishIcon}>
+					{text('item text', 'Danger')}
+				</Item>
+				<Item disabled onClick={action('clicked')} icon={BellIcon}>
+					{text('item text', 'Disabled')}
+				</Item>
 			</Group>
 		</Menu>
 	));

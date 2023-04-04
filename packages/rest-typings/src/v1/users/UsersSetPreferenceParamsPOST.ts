@@ -22,8 +22,8 @@ export type UsersSetPreferencesParamsPOST = {
 		pushNotifications?: string;
 		enableAutoAway?: boolean;
 		highlights?: string[];
+		alsoSendThreadToChannel?: 'never' | 'always' | 'default';
 		desktopNotificationRequireInteraction?: boolean;
-		messageViewMode?: number;
 		hideUsernames?: boolean;
 		hideRoles?: boolean;
 		displayAvatars?: boolean;
@@ -37,6 +37,12 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarDisplayAvatar?: boolean;
 		sidebarGroupByType?: boolean;
 		muteFocusedConversations?: boolean;
+		dontAskAgainList?: Array<{ action: string; label: string }>;
+		themeAppearence?: 'auto' | 'light' | 'dark';
+		receiveLoginDetectionEmail?: boolean;
+		idleTimeLimit?: number;
+		omnichannelTranscriptEmail?: boolean;
+		omnichannelTranscriptPDF?: boolean;
 	};
 };
 
@@ -68,6 +74,11 @@ const UsersSetPreferencesParamsPostSchema = {
 				},
 				convertAsciiEmoji: {
 					type: 'boolean',
+					nullable: true,
+				},
+				alsoSendThreadToChannel: {
+					type: 'string',
+					enum: ['default', 'always', 'never'],
 					nullable: true,
 				},
 				saveMobileBandwidth: {
@@ -115,10 +126,6 @@ const UsersSetPreferencesParamsPostSchema = {
 				},
 				desktopNotificationRequireInteraction: {
 					type: 'boolean',
-					nullable: true,
-				},
-				messageViewMode: {
-					type: 'number',
 					nullable: true,
 				},
 				hideUsernames: {
@@ -170,6 +177,37 @@ const UsersSetPreferencesParamsPostSchema = {
 					nullable: true,
 				},
 				muteFocusedConversations: {
+					type: 'boolean',
+					nullable: true,
+				},
+				dontAskAgainList: {
+					type: 'array',
+					items: {
+						type: 'object',
+						properties: {
+							action: { type: 'string' },
+							label: { type: 'string' },
+						},
+					},
+					nullable: true,
+				},
+				themeAppearence: {
+					type: 'string',
+					nullable: true,
+				},
+				receiveLoginDetectionEmail: {
+					type: 'boolean',
+					nullable: true,
+				},
+				idleTimeLimit: {
+					type: 'number',
+					nullable: true,
+				},
+				omnichannelTranscriptEmail: {
+					type: 'boolean',
+					nullable: true,
+				},
+				omnichannelTranscriptPDF: {
 					type: 'boolean',
 					nullable: true,
 				},

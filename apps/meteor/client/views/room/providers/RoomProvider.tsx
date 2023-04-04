@@ -1,42 +1,82 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useUserSubscription } from '@rocket.chat/ui-contexts';
-import React, { ReactNode, useContext, useMemo, memo, useEffect, useCallback } from 'react';
+import { useRoute } from '@rocket.chat/ui-contexts';
+import type { ReactNode, ContextType, ReactElement } from 'react';
+import React, { useMemo, memo, useEffect, useCallback } from 'react';
 
-import { UserAction } from '../../../../app/ui';
-import { RoomManager, useHandleRoom } from '../../../lib/RoomManager';
-import { AsyncStatePhase } from '../../../lib/asyncState';
+import { ChatSubscription, ChatRoom } from '../../../../app/models/client';
+import { RoomHistoryManager } from '../../../../app/ui-utils/client';
+import { UserAction } from '../../../../app/ui/client/lib/UserAction';
+import { useReactiveQuery } from '../../../hooks/useReactiveQuery';
+import { useReactiveValue } from '../../../hooks/useReactiveValue';
+import { RoomManager } from '../../../lib/RoomManager';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
-import RoomSkeleton from '../Room/RoomSkeleton';
-import { RoomContext, RoomContextValue } from '../contexts/RoomContext';
+import RoomNotFound from '../RoomNotFound';
+import RoomSkeleton from '../RoomSkeleton';
+import { useRoomRolesManagement } from '../components/body/hooks/useRoomRolesManagement';
+import { RoomAPIContext } from '../contexts/RoomAPIContext';
+import { RoomContext } from '../contexts/RoomContext';
+import ComposerPopupProvider from './ComposerPopupProvider';
 import ToolboxProvider from './ToolboxProvider';
 
-export type Props = {
+type RoomProviderProps = {
 	children: ReactNode;
 	rid: IRoom['_id'];
 };
 
-const fields = {};
+const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
+	useRoomRolesManagement(rid);
 
-const RoomProvider = ({ rid, children }: Props): JSX.Element => {
-	const { phase, value: room } = useHandleRoom(rid);
+	const roomQuery = useReactiveQuery(['rooms', rid], () => ChatRoom.findOne({ _id: rid }));
 
-	const getMore = useCallback(() => {
-		RoomManager.getMore(rid);
-	}, [rid]);
+	// TODO: the following effect is a workaround while we don't have a general and definitive solution for it
+	const homeRoute = useRoute('home');
+	useEffect(() => {
+		if (roomQuery.isSuccess && roomQuery.data === undefined) {
+			homeRoute.push();
+		}
+	}, [roomQuery.isSuccess, roomQuery.data, homeRoute]);
 
-	const subscribed = Boolean(useUserSubscription(rid, fields));
-	const context = useMemo(() => {
-		if (!room) {
+	const subscriptionQuery = useReactiveQuery(['subscriptions', { rid }], () => ChatSubscription.findOne({ rid }) ?? null);
+
+	const pseudoRoom = useMemo(() => {
+		if (!roomQuery.data) {
 			return null;
 		}
-		room._id = rid;
+
 		return {
-			subscribed,
-			rid,
-			getMore,
-			room: { ...room, name: roomCoordinator.getRoomName(room.t, room) },
+			...subscriptionQuery.data,
+			...roomQuery.data,
+			name: roomCoordinator.getRoomName(roomQuery.data.t, roomQuery.data),
+			federationOriginalName: roomQuery.data.name,
 		};
-	}, [room, rid, subscribed, getMore]);
+	}, [roomQuery.data, subscriptionQuery.data]);
+
+	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useReactiveValue(
+		useCallback(() => {
+			const { hasMore, hasMoreNext, isLoading } = RoomHistoryManager.getRoom(rid);
+
+			return {
+				hasMorePreviousMessages: hasMore.get(),
+				hasMoreNextMessages: hasMoreNext.get(),
+				isLoadingMoreMessages: isLoading.get(),
+			};
+		}, [rid]),
+	);
+
+	const context = useMemo((): ContextType<typeof RoomContext> => {
+		if (!pseudoRoom) {
+			return null;
+		}
+
+		return {
+			rid,
+			room: pseudoRoom,
+			subscription: subscriptionQuery.data ?? undefined,
+			hasMorePreviousMessages,
+			hasMoreNextMessages,
+			isLoadingMoreMessages,
+		};
+	}, [hasMoreNextMessages, hasMorePreviousMessages, isLoadingMoreMessages, pseudoRoom, rid, subscriptionQuery.data]);
 
 	useEffect(() => {
 		RoomManager.open(rid);
@@ -45,42 +85,38 @@ const RoomProvider = ({ rid, children }: Props): JSX.Element => {
 		};
 	}, [rid]);
 
+	const subscribed = !!subscriptionQuery.data;
+
 	useEffect(() => {
 		if (!subscribed) {
-			return (): void => undefined;
+			return;
 		}
 
 		UserAction.addStream(rid);
 		return (): void => {
-			UserAction.cancel(rid);
+			try {
+				UserAction.cancel(rid);
+			} catch (error) {
+				// Do nothing
+			}
 		};
 	}, [rid, subscribed]);
 
-	if (phase === AsyncStatePhase.LOADING || !room) {
-		return <RoomSkeleton />;
+	const api = useMemo(() => ({}), []);
+
+	if (!pseudoRoom) {
+		return roomQuery.isSuccess && roomQuery.data === undefined ? <RoomNotFound /> : <RoomSkeleton />;
 	}
 
 	return (
-		<RoomContext.Provider value={context}>
-			<ToolboxProvider room={room}>{children}</ToolboxProvider>
-		</RoomContext.Provider>
+		<RoomAPIContext.Provider value={api}>
+			<RoomContext.Provider value={context}>
+				<ToolboxProvider room={pseudoRoom}>
+					<ComposerPopupProvider room={pseudoRoom}>{children}</ComposerPopupProvider>
+				</ToolboxProvider>
+			</RoomContext.Provider>
+		</RoomAPIContext.Provider>
 	);
-};
-
-export const useRoom = (): IRoom => {
-	const context = useContext(RoomContext);
-	if (!context) {
-		throw Error('useRoom should be used only inside rooms context');
-	}
-	return context.room;
-};
-
-export const useRoomContext = (): RoomContextValue => {
-	const context = useContext(RoomContext);
-	if (!context) {
-		throw Error('useRoom should be used only inside rooms context');
-	}
-	return context;
 };
 
 export default memo(RoomProvider);

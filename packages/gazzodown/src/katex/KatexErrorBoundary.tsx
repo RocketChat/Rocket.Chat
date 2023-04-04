@@ -1,7 +1,7 @@
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
 import styled from '@rocket.chat/styled';
-import { ErrorBoundary } from '@rocket.chat/ui-client';
 import { PropsWithChildren, ReactElement, useState } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 
 type KatexErrorBoundaryProps = PropsWithChildren<{ code: string }>;
 

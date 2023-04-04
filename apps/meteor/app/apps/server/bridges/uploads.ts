@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { UploadBridge } from '@rocket.chat/apps-engine/server/bridges/UploadBridge';
-import { IUpload } from '@rocket.chat/apps-engine/definition/uploads';
-import { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
+import type { IUpload } from '@rocket.chat/apps-engine/definition/uploads';
+import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
 
 import { FileUpload } from '../../../file-upload/server';
-import { determineFileType } from '../../lib/misc/determineFileType';
-import { AppServerOrchestrator } from '../orchestrator';
+import { determineFileType } from '../../../../ee/lib/misc/determineFileType';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 const getUploadDetails = (details: IUploadDetails): Partial<IUploadDetails> => {
 	if (details.visitorToken) {
@@ -32,9 +32,13 @@ export class AppUploadBridge extends UploadBridge {
 		const rocketChatUpload = this.orch.getConverters()?.get('uploads').convertToRocketChat(upload);
 
 		return new Promise((resolve, reject) => {
-			FileUpload.getBuffer(rocketChatUpload, (error: Error, result: Buffer) => {
+			FileUpload.getBuffer(rocketChatUpload, (error?: Error, result?: Buffer | false) => {
 				if (error) {
 					return reject(error);
+				}
+
+				if (!(result instanceof Buffer)) {
+					return reject(new Error('Unknown error'));
 				}
 
 				resolve(result);

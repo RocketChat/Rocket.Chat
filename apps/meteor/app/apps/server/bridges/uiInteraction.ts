@@ -1,9 +1,9 @@
 import { UiInteractionBridge as UiIntBridge } from '@rocket.chat/apps-engine/server/bridges/UiInteractionBridge';
-import { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
-import { IUser } from '@rocket.chat/apps-engine/definition/users';
+import type { IUIKitInteraction } from '@rocket.chat/apps-engine/definition/uikit';
+import type { IUser } from '@rocket.chat/apps-engine/definition/users';
+import { api } from '@rocket.chat/core-services';
 
-import { api } from '../../../../server/sdk/api';
-import { AppServerOrchestrator } from '../orchestrator';
+import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 
 export class UiInteractionBridge extends UiIntBridge {
 	// eslint-disable-next-line no-empty-function
@@ -20,6 +20,6 @@ export class UiInteractionBridge extends UiIntBridge {
 			throw new Error('Invalid app provided');
 		}
 
-		api.broadcast('notify.uiInteraction', user.id, interaction);
+		void api.broadcast('notify.uiInteraction', user.id, interaction);
 	}
 }

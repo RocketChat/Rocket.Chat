@@ -1,4 +1,4 @@
-import { ISetting, SettingValue } from '@rocket.chat/core-typings';
+import type { ISetting, SettingValue } from '@rocket.chat/core-typings';
 
 export const convertValue = (value: 'true' | 'false' | string, type: ISetting['type']): SettingValue => {
 	if (value.toLowerCase() === 'true') {

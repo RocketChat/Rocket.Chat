@@ -10,11 +10,18 @@ import {
 	isDownloadPendingAvatarsParamsPOST,
 	isGetCurrentImportOperationParamsGET,
 } from '@rocket.chat/rest-typings';
+import { Imports } from '@rocket.chat/models';
 
 import { API } from '../api';
-import { Imports } from '../../../models/server';
 import { Importers } from '../../../importer/server';
-import { executeUploadImportFile } from '../../../importer/server/methods/uploadImportFile';
+import {
+	executeUploadImportFile,
+	executeDownloadPublicImportFile,
+	executeGetImportProgress,
+	executeGetImportFileData,
+	executeStartImport,
+	executeGetLatestImportOperations,
+} from '../../../importer/server/methods';
 
 API.v1.addRoute(
 	'uploadImportFile',
@@ -23,10 +30,10 @@ API.v1.addRoute(
 		validateParams: isUploadImportFileParamsPOST,
 	},
 	{
-		post() {
+		async post() {
 			const { binaryContent, contentType, fileName, importerKey } = this.bodyParams;
 
-			return API.v1.success(executeUploadImportFile(this.userId, binaryContent, contentType, fileName, importerKey));
+			return API.v1.success(await executeUploadImportFile(this.userId, binaryContent, contentType, fileName, importerKey));
 		},
 	},
 );
@@ -36,12 +43,12 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isDownloadPublicImportFileParamsPOST,
+		permissionsRequired: ['run-import'],
 	},
 	{
-		post() {
+		async post() {
 			const { fileUrl, importerKey } = this.bodyParams;
-
-			Meteor.call('downloadPublicImportFile', fileUrl, importerKey);
+			await executeDownloadPublicImportFile(this.userId, fileUrl, importerKey);
 
 			return API.v1.success();
 		},
@@ -53,12 +60,13 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isStartImportParamsPOST,
+		permissionsRequired: ['run-import'],
 	},
 	{
-		post() {
+		async post() {
 			const { input } = this.bodyParams;
 
-			Meteor.call('startImport', input);
+			await executeStartImport({ input });
 
 			return API.v1.success();
 		},
@@ -70,10 +78,12 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isGetImportFileDataParamsGET,
+		permissionsRequired: ['run-import'],
 	},
 	{
-		get() {
-			const result = Meteor.call('getImportFileData');
+		async get() {
+			const result = await executeGetImportFileData();
+
 			return API.v1.success(result);
 		},
 	},
@@ -84,10 +94,11 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isGetImportProgressParamsGET,
+		permissionsRequired: ['run-import'],
 	},
 	{
-		get() {
-			const result = Meteor.call('getImportProgress');
+		async get() {
+			const result = await executeGetImportProgress();
 			return API.v1.success(result);
 		},
 	},
@@ -98,10 +109,11 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isGetLatestImportOperationsParamsGET,
+		permissionsRequired: ['view-import-operations'],
 	},
 	{
-		get() {
-			const result = Meteor.call('getLatestImportOperations');
+		async get() {
+			const result = await executeGetLatestImportOperations();
 			return API.v1.success(result);
 		},
 	},
@@ -115,16 +127,15 @@ API.v1.addRoute(
 		permissionsRequired: ['run-import'],
 	},
 	{
-		post() {
+		async post() {
 			const importer = Importers.get('pending-files');
 			if (!importer) {
-				throw new Meteor.Error('error-importer-not-defined', 'The Pending File Importer was not found.', {
-					method: 'downloadPendingFiles',
-				});
+				throw new Meteor.Error('error-importer-not-defined', 'The Pending File Importer was not found.', 'downloadPendingFiles');
 			}
 
 			importer.instance = new importer.importer(importer); // eslint-disable-line new-cap
-			const count = importer.instance.prepareFileCount();
+			await importer.instance.build();
+			const count = await importer.instance.prepareFileCount();
 
 			return API.v1.success({
 				count,
@@ -141,16 +152,15 @@ API.v1.addRoute(
 		permissionsRequired: ['run-import'],
 	},
 	{
-		post() {
+		async post() {
 			const importer = Importers.get('pending-avatars');
 			if (!importer) {
-				throw new Meteor.Error('error-importer-not-defined', 'The Pending File Importer was not found.', {
-					method: 'downloadPendingAvatars',
-				});
+				throw new Meteor.Error('error-importer-not-defined', 'The Pending File Importer was not found.', 'downloadPendingAvatars');
 			}
 
 			importer.instance = new importer.importer(importer); // eslint-disable-line new-cap
-			const count = importer.instance.prepareFileCount();
+			await importer.instance.build();
+			const count = await importer.instance.prepareFileCount();
 
 			return API.v1.success({
 				count,
@@ -167,10 +177,9 @@ API.v1.addRoute(
 		permissionsRequired: ['run-import'],
 	},
 	{
-		get() {
-			const operation = Imports.findLastImport();
+		async get() {
+			const operation = await Imports.findLastImport();
 			return API.v1.success({
-				success: true,
 				operation,
 			});
 		},

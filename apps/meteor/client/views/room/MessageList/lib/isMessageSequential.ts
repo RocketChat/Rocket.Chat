@@ -1,7 +1,8 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { differenceInSeconds } from 'date-fns';
 
 import { MessageTypes } from '../../../../../app/ui-utils/lib/MessageTypes';
+import { isMessageNewDay } from './isMessageNewDay';
 
 export const isMessageSequential = (current: IMessage, previous: IMessage | undefined, groupingRange: number): boolean => {
 	if (!previous) {
@@ -16,6 +17,10 @@ export const isMessageSequential = (current: IMessage, previous: IMessage | unde
 		return [previous.tmid, previous._id].includes(current.tmid);
 	}
 
+	if (previous.tmid) {
+		return false;
+	}
+
 	if (current.groupable === false) {
 		return false;
 	}
@@ -27,6 +32,5 @@ export const isMessageSequential = (current: IMessage, previous: IMessage | unde
 	if (current.alias !== previous.alias) {
 		return false;
 	}
-
-	return differenceInSeconds(current.ts, previous.ts) < groupingRange;
+	return differenceInSeconds(current.ts, previous.ts) < groupingRange && !isMessageNewDay(current, previous);
 };

@@ -1,5 +1,5 @@
-import { Command } from './Command';
-import { ICallbackContext } from './ICallbackContext';
+import type { Command } from './Command';
+import type { ICallbackContext } from './ICallbackContext';
 /**
  * Delegate interface for Asterisk management connection.
  * @remarks

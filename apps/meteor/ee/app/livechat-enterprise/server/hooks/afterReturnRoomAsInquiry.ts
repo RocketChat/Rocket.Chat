@@ -1,16 +1,9 @@
+import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatRooms } from '@rocket.chat/models';
+
 import { callbacks } from '../../../../../lib/callbacks';
-import { LivechatRooms } from '../../../../../app/models/server';
 import { settings } from '../../../../../app/settings/server';
 import { cbLogger } from '../lib/logger';
-
-const unsetPredictedVisitorAbandonment = ({ room }: { room: any }): void => {
-	if (!room?._id || !room?.omnichannel?.predictedVisitorAbandonmentAt) {
-		cbLogger.debug('Skipping callback. No room or no visitor abandonment info');
-		return;
-	}
-
-	(LivechatRooms as any).unsetPredictedVisitorAbandonmentByRoomId(room._id);
-};
 
 settings.watch('Livechat_abandoned_rooms_action', (value) => {
 	if (!value || value === 'none') {
@@ -19,7 +12,14 @@ settings.watch('Livechat_abandoned_rooms_action', (value) => {
 	}
 	callbacks.add(
 		'livechat:afterReturnRoomAsInquiry',
-		unsetPredictedVisitorAbandonment,
+		({ room }: { room: IOmnichannelRoom }) => {
+			if (!room?._id || !room?.omnichannel?.predictedVisitorAbandonmentAt) {
+				cbLogger.debug('Skipping callback. No room or no visitor abandonment info');
+				return;
+			}
+
+			return LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id);
+		},
 		callbacks.priority.HIGH,
 		'livechat-after-return-room-as-inquiry',
 	);

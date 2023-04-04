@@ -7,8 +7,24 @@
 		{
 			"pattern": "apps/*",
 			"changeProcessCWD": true
+		},
+		{
+			"pattern": "ee/apps/*",
+			"changeProcessCWD": true
 		}
 	],
 	"typescript.tsdk": "./node_modules/typescript/lib",
-	"cSpell.words": ["photoswipe", "tmid"]
+	"cSpell.words": [
+		"autotranslate",
+    "fname",
+		"katex",
+		"listbox",
+		"livechat",
+		"oauthapps",
+		"omnichannel",
+		"photoswipe",
+		"searchbox",
+		"tmid",
+    "tshow"
+	]
 }

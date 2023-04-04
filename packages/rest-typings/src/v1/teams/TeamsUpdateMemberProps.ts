@@ -1,4 +1,4 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import Ajv from 'ajv';
 
 import type { ITeamMemberParams } from './ITeamMemberParams';
 
@@ -8,7 +8,7 @@ export type TeamsUpdateMemberProps = ({ teamId: string } | { teamName: string })
 	member: ITeamMemberParams;
 };
 
-const teamsUpdateMemberPropsSchema: JSONSchemaType<TeamsUpdateMemberProps> = {
+const teamsUpdateMemberPropsSchema = {
 	oneOf: [
 		{
 			type: 'object',
@@ -67,4 +67,4 @@ const teamsUpdateMemberPropsSchema: JSONSchemaType<TeamsUpdateMemberProps> = {
 	],
 };
 
-export const isTeamsUpdateMemberProps = ajv.compile(teamsUpdateMemberPropsSchema);
+export const isTeamsUpdateMemberProps = ajv.compile<TeamsUpdateMemberProps>(teamsUpdateMemberPropsSchema);

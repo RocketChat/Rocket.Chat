@@ -5,6 +5,7 @@ import type { SessionsPaginateProps } from './SessionsPaginateProps';
 import type { SessionsProps } from './SessionsProps';
 
 declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/sessions/list': {
 			GET: (params: SessionsPaginateProps) => PaginatedResult<{ sessions: Array<DeviceManagementSession> }>;

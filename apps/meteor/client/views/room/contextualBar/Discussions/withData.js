@@ -4,7 +4,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { useTabBarClose } from '../../providers/ToolboxProvider';
+import { useTabBarClose } from '../../contexts/ToolboxContext';
 import { useDiscussionsList } from './useDiscussionsList';
 
 const subscriptionFields = { tunread: 1, tunreadUser: 1, tunreadGroup: 1 };

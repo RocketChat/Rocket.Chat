@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 
-import { Messages, RoomRoles, Subscriptions } from '../../../app/models/client';
+import { Messages, Subscriptions } from '../../../app/models/client';
 import { Notifications } from '../../../app/notifications/client';
 
 type UsersNameChangedEvent = Partial<IUser>;
@@ -49,20 +49,6 @@ Meteor.startup(() => {
 				$set: {
 					fname: name,
 				},
-			},
-		);
-
-		RoomRoles.update(
-			{
-				'u._id': _id,
-			},
-			{
-				$set: {
-					'u.name': name,
-				},
-			},
-			{
-				multi: true,
 			},
 		);
 	});

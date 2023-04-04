@@ -1,8 +1,6 @@
-import type { IOmnichannelRoom, AtLeast, ValueOf } from '@rocket.chat/core-typings';
-import { Session } from 'meteor/session';
+import type { AtLeast, ValueOf } from '@rocket.chat/core-typings';
 
 import { hasPermission } from '../../../../app/authorization/client';
-import { LivechatInquiry } from '../../../../app/livechat/client/collections/LivechatInquiry';
 import { ChatRoom, ChatSubscription } from '../../../../app/models/client';
 import { settings } from '../../../../app/settings/client';
 import { getAvatarURL } from '../../../../app/utils/lib/getAvatarURL';
@@ -31,24 +29,6 @@ roomCoordinator.add(LivechatRoomType, {
 		return room.name || room.fname || (room as any).label;
 	},
 
-	openCustomProfileTab(instance, room, username) {
-		const omniRoom = room as IOmnichannelRoom;
-		if (!omniRoom?.v || (omniRoom.v as any).username !== username) {
-			return false;
-		}
-
-		/* @TODO Due to route information only updating on `Tracker.afterFlush`,
-			we found out that calling the tabBar.openUserInfo() method at this point will cause a route change
-			to the previous route instead of the current one, preventing livechat rooms from being opened.
-
-			As a provisory solution, we're delaying the opening of the contextual bar,
-			which then ensures that the route info is up to date. Although this solution works,
-			we need to find a more reliable way of ensuring consistent route changes with up-to-date information.
-		*/
-		setTimeout(() => instance.tabBar.openUserInfo(), 0);
-		return true;
-	},
-
 	getUiText(context) {
 		switch (context) {
 			case UiTextContext.HIDE_WARNING:
@@ -68,15 +48,6 @@ roomCoordinator.add(LivechatRoomType, {
 		return getAvatarURL({ username: `@${this.roomName(room)}` }) || '';
 	},
 
-	getUserStatus(rid) {
-		const room = Session.get(`roomData${rid}`);
-		if (room) {
-			return room.v && room.v.status;
-		}
-		const inquiry = LivechatInquiry.findOne({ rid });
-		return inquiry?.v?.status;
-	},
-
 	findRoom(identifier) {
 		return ChatRoom.findOne({ _id: identifier });
 	},
@@ -92,7 +63,7 @@ roomCoordinator.add(LivechatRoomType, {
 
 	readOnly(rid, _user) {
 		const room = ChatRoom.findOne({ _id: rid }, { fields: { open: 1, servedBy: 1 } });
-		if (!room || !room.open) {
+		if (!room?.open) {
 			return true;
 		}
 

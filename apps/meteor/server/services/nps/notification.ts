@@ -3,7 +3,8 @@ import { TextObjectType } from '@rocket.chat/apps-engine/definition/uikit/blocks
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
-import { IBanner, BannerPlatform } from '@rocket.chat/core-typings';
+import type { IBanner } from '@rocket.chat/core-typings';
+import { BannerPlatform } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../app/settings/server';
 import { sendMessagesToAdmins } from '../../lib/sendMessagesToAdmins';
@@ -43,15 +44,12 @@ export const getBannerForAdmins = Meteor.bindEnvironment((expireAt: Date): Omit<
 	};
 });
 
-export const notifyAdmins = Meteor.bindEnvironment((expireAt: Date) => {
-	Promise.await(
-		sendMessagesToAdmins({
-			msgs: ({ adminUser }: { adminUser: any }): any => ({
-				msg: TAPi18n.__('NPS_survey_is_scheduled_to-run-at__date__for_all_users', {
-					date: moment(expireAt).format('YYYY-MM-DD'),
-					lng: adminUser.language,
-				}),
+export const notifyAdmins = (expireAt: Date) =>
+	sendMessagesToAdmins({
+		msgs: async ({ adminUser }: { adminUser: any }): Promise<any> => ({
+			msg: TAPi18n.__('NPS_survey_is_scheduled_to-run-at__date__for_all_users', {
+				date: moment(expireAt).format('YYYY-MM-DD'),
+				lng: adminUser.language,
 			}),
 		}),
-	);
-});
+	});

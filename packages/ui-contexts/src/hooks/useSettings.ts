@@ -2,7 +2,8 @@ import type { ISetting } from '@rocket.chat/core-typings';
 import { useContext, useMemo } from 'react';
 import { useSyncExternalStore } from 'use-sync-external-store/shim';
 
-import { SettingsContext, SettingsContextQuery } from '../SettingsContext';
+import type { SettingsContextQuery } from '../SettingsContext';
+import { SettingsContext } from '../SettingsContext';
 
 export const useSettings = (query?: SettingsContextQuery): ISetting[] => {
 	const { querySettings } = useContext(SettingsContext);

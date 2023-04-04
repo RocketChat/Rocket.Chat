@@ -1,4 +1,4 @@
-import {
+import type {
 	IUIKitContextualBarInteraction,
 	IUIKitErrorInteraction,
 	IUIKitSurface,
@@ -7,16 +7,17 @@ import {
 	IBlock,
 	IBlockElement,
 	IActionsBlock,
-	InputElementDispatchAction,
 } from '@rocket.chat/apps-engine/definition/uikit';
+import { InputElementDispatchAction } from '@rocket.chat/apps-engine/definition/uikit';
 import { UIKitIncomingInteractionContainerType } from '@rocket.chat/apps-engine/definition/uikit/UIKitIncomingInteractionContainer';
 import { useDebouncedCallback, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { kitContext } from '@rocket.chat/fuselage-ui-kit';
-import React, { memo, useState, useEffect, useReducer, Dispatch, SyntheticEvent } from 'react';
+import type { Block } from '@rocket.chat/ui-kit';
+import type { Dispatch, SyntheticEvent, ContextType } from 'react';
+import React, { memo, useState, useEffect, useReducer } from 'react';
 
 import { triggerBlockAction, triggerCancel, triggerSubmitView, on, off } from '../../../../../app/ui-message/client/ActionManager';
-import { App } from '../../../admin/apps/types';
-import { useTabBarClose } from '../../providers/ToolboxProvider';
+import { useTabBarClose } from '../../contexts/ToolboxContext';
 import Apps from './Apps';
 
 type FieldStateValue = string | Array<string> | undefined;
@@ -46,7 +47,7 @@ const useValues = (view: IUIKitSurface): [any, Dispatch<any>] => {
 	}));
 
 	const initializer = useMutableCallback(() => {
-		const filterInputFields = (block: IBlock): boolean => {
+		const filterInputFields = (block: IBlock | Block): boolean => {
 			if (isInputBlock(block)) {
 				return true;
 			}
@@ -60,7 +61,7 @@ const useValues = (view: IUIKitSurface): [any, Dispatch<any>] => {
 			return false;
 		};
 
-		const mapElementToState = (block: IBlock): InputFieldStateTuple | InputFieldStateTuple[] => {
+		const mapElementToState = (block: IBlock | Block): InputFieldStateTuple | InputFieldStateTuple[] => {
 			if (isInputBlock(block)) {
 				const { element, blockId } = block;
 				return [element.actionId, { value: element.initialValue, blockId } as FieldState];
@@ -93,16 +94,15 @@ const AppsWithData = ({
 	viewId,
 	roomId,
 	payload,
-	appInfo,
+	appId,
 }: {
 	viewId: string;
 	roomId: string;
 	payload: IUIKitContextualBarInteraction;
-	appInfo: App;
+	appId: string;
 }): JSX.Element => {
 	const closeTabBar = useTabBarClose();
 
-	const { id: appId, name: appName } = appInfo;
 	const [state, setState] = useState<ViewState>(payload);
 	const { view } = state;
 	const [values, updateValues] = useValues(view);
@@ -153,7 +153,7 @@ const AppsWithData = ({
 		});
 	}, 700);
 
-	const context = {
+	const context: ContextType<typeof kitContext> = {
 		action: async ({ actionId, appId, value, blockId, dispatchActionConfig }: ActionParams): Promise<void> => {
 			if (Array.isArray(dispatchActionConfig) && dispatchActionConfig.includes(InputElementDispatchAction.ON_CHARACTER_ENTERED)) {
 				await debouncedBlockAction({ actionId, appId, value, blockId });
@@ -182,7 +182,7 @@ const AppsWithData = ({
 		},
 		...state,
 		values,
-	};
+	} as ContextType<typeof kitContext>;
 
 	const handleSubmit = useMutableCallback((e) => {
 		prevent(e);
@@ -231,7 +231,7 @@ const AppsWithData = ({
 
 	return (
 		<kitContext.Provider value={context}>
-			<Apps onClose={handleClose} onCancel={handleCancel} onSubmit={handleSubmit} view={view} appInfo={{ name: appName, id: appId }} />
+			<Apps onClose={handleClose} onCancel={handleCancel} onSubmit={handleSubmit} view={view} appId={appId} />
 		</kitContext.Provider>
 	);
 };

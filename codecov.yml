@@ -1,0 +1,9 @@
+coverage:
+  status:
+    patch: off
+    project:
+      default:
+        target: auto
+        threshold: 1%
+comment:
+  layout: 'reach, diff, flags'

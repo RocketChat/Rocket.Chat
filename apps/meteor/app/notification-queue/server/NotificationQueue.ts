@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { INotification, INotificationItemPush, INotificationItemEmail, NotificationItem } from '@rocket.chat/core-typings';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { INotification, INotificationItemPush, INotificationItemEmail, NotificationItem, IUser } from '@rocket.chat/core-typings';
 import { NotificationQueue, Users } from '@rocket.chat/models';
 
 import { sendEmailFromData } from '../../lib/server/functions/notifications/email';
@@ -42,11 +41,11 @@ class NotificationClass {
 			return;
 		}
 
-		setTimeout(() => {
+		setTimeout(async () => {
 			try {
-				this.worker();
-			} catch (e) {
-				SystemLogger.error('Error sending notification', e);
+				await this.worker();
+			} catch (err) {
+				SystemLogger.error({ msg: 'Error sending notification', err });
 				this.executeWorkerLater();
 			}
 		}, this.cyclePause);
@@ -69,10 +68,10 @@ class NotificationClass {
 		}
 
 		try {
-			for (const item of notification.items) {
+			for await (const item of notification.items) {
 				switch (item.type) {
 					case 'push':
-						this.push(notification, item);
+						await this.push(notification, item);
 						break;
 					case 'email':
 						this.email(item);
@@ -80,7 +79,7 @@ class NotificationClass {
 				}
 			}
 
-			NotificationQueue.removeById(notification._id);
+			await NotificationQueue.removeById(notification._id);
 		} catch (e) {
 			SystemLogger.error(e);
 			await NotificationQueue.setErrorById(notification._id, e instanceof Error ? e.message : String(e));
@@ -89,7 +88,7 @@ class NotificationClass {
 		if (counter >= this.maxBatchSize) {
 			return this.executeWorkerLater();
 		}
-		this.worker(counter++);
+		await this.worker(counter++);
 	}
 
 	getNextNotification(): Promise<INotification | null> {
@@ -99,8 +98,8 @@ class NotificationClass {
 		return NotificationQueue.findNextInQueueOrExpired(expired);
 	}
 
-	push({ uid, rid, mid }: INotification, item: INotificationItemPush): void {
-		PushNotification.send({
+	async push({ uid, rid, mid }: INotification, item: INotificationItemPush): Promise<void> {
+		await PushNotification.send({
 			rid,
 			uid,
 			mid,

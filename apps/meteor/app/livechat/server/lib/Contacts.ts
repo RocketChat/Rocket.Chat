@@ -1,11 +1,8 @@
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import s from 'underscore.string';
-import { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
-import { LivechatVisitors, Users, LivechatRooms } from '@rocket.chat/models';
-import { ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
-
-import { LivechatCustomField, Rooms, LivechatInquiry, Subscriptions } from '../../../models/server';
+import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
+import { LivechatVisitors, Users, LivechatRooms, LivechatCustomField, LivechatInquiry, Rooms, Subscriptions } from '@rocket.chat/models';
+import type { ILivechatCustomField, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 
 type RegisterContactProps = {
 	_id?: string;
@@ -32,7 +29,7 @@ export const Contacts = {
 	}: RegisterContactProps): Promise<string> {
 		check(token, String);
 
-		const visitorEmail = s.trim(email).toLowerCase();
+		const visitorEmail = email.trim().toLowerCase();
 
 		if (contactManager?.username) {
 			// verify if the user exists with this username and has a livechat-agent role
@@ -71,9 +68,9 @@ export const Contacts = {
 			}
 		}
 
-		const allowedCF: ILivechatCustomField['_id'][] = LivechatCustomField.find({ scope: 'visitor' }, { fields: { _id: 1 } }).map(
-			({ _id }: ILivechatCustomField) => _id,
-		);
+		const allowedCF = await LivechatCustomField.findByScope<Pick<ILivechatCustomField, '_id'>>('visitor', { projection: { _id: 1 } })
+			.map(({ _id }) => _id)
+			.toArray();
 
 		const livechatData = Object.keys(customFields)
 			.filter((key) => allowedCF.includes(key) && customFields[key] !== '' && customFields[key] !== undefined)
@@ -98,11 +95,14 @@ export const Contacts = {
 
 		const rooms: IOmnichannelRoom[] = await LivechatRooms.findByVisitorId(contactId, {}).toArray();
 
-		rooms?.length &&
-			rooms.forEach((room) => {
+		if (rooms?.length) {
+			for await (const room of rooms) {
 				const { _id: rid } = room;
-				Rooms.setFnameById(rid, name) && LivechatInquiry.setNameByRoomId(rid, name) && Subscriptions.updateDisplayNameByRoomId(rid, name);
-			});
+				(await Rooms.setFnameById(rid, name)) &&
+					(await LivechatInquiry.setNameByRoomId(rid, name)) &&
+					(await Subscriptions.updateDisplayNameByRoomId(rid, name));
+			}
+		}
 
 		return contactId;
 	},

@@ -1,7 +1,6 @@
 import store from '../../store';
 import Modal from './component';
 
-
 export default {
 	confirm(props = {}) {
 		return new Promise((resolve) => {

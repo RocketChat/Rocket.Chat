@@ -5,7 +5,6 @@ import { withTranslation } from 'react-i18next';
 import { Consumer } from '../../store';
 import GDPRAgreement from './component';
 
-
 class GDPRContainer extends Component {
 	handleAgree = async () => {
 		const { dispatch } = this.props;
@@ -13,29 +12,14 @@ class GDPRContainer extends Component {
 		route('/');
 	};
 
-	render = (props) => (
-		<GDPRAgreement {...props} onAgree={this.handleAgree} />
-	);
+	render = (props) => <GDPRAgreement {...props} onAgree={this.handleAgree} />;
 }
 
 const GDPRConnector = ({ ref, t, ...props }) => (
 	<Consumer>
 		{({
-			config: {
-				theme: {
-					color,
-				} = {},
-				messages: {
-					dataProcessingConsentText: consentText,
-				} = {},
-			} = {},
-			iframe: {
-				theme: {
-					color: customColor,
-					fontColor: customFontColor,
-					iconColor: customIconColor,
-				} = {},
-			} = {},
+			config: { theme: { color } = {}, messages: { dataProcessingConsentText: consentText } = {} } = {},
+			iframe: { theme: { color: customColor, fontColor: customFontColor, iconColor: customIconColor } = {} } = {},
 			dispatch,
 		}) => (
 			<GDPRContainer
@@ -53,6 +37,5 @@ const GDPRConnector = ({ ref, t, ...props }) => (
 		)}
 	</Consumer>
 );
-
 
 export default withTranslation()(GDPRConnector);

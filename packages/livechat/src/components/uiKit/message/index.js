@@ -1,4 +1,4 @@
-import { uiKitMessage, UiKitParserMessage, BLOCK_CONTEXT } from '@rocket.chat/ui-kit';
+import { uiKitMessage, UiKitParserMessage, BlockContext } from '@rocket.chat/ui-kit';
 
 import ActionsBlock from './ActionsBlock';
 import ButtonElement from './ButtonElement';
@@ -15,7 +15,7 @@ import StaticSelectElement from './StaticSelectElement';
 
 class MessageParser extends UiKitParserMessage {
 	divider = (element, context, index) => {
-		if (context !== BLOCK_CONTEXT.BLOCK) {
+		if (context !== BlockContext.BLOCK) {
 			return null;
 		}
 
@@ -23,7 +23,7 @@ class MessageParser extends UiKitParserMessage {
 	};
 
 	section = (element, context, index) => {
-		if (context !== BLOCK_CONTEXT.BLOCK) {
+		if (context !== BlockContext.BLOCK) {
 			return null;
 		}
 
@@ -31,7 +31,7 @@ class MessageParser extends UiKitParserMessage {
 	};
 
 	image = (element, context, index) => {
-		if (context === BLOCK_CONTEXT.BLOCK) {
+		if (context === BlockContext.BLOCK) {
 			return <ImageBlock key={index} {...element} parser={this} />;
 		}
 
@@ -39,7 +39,7 @@ class MessageParser extends UiKitParserMessage {
 	};
 
 	actions = (element, context, index) => {
-		if (context !== BLOCK_CONTEXT.BLOCK) {
+		if (context !== BlockContext.BLOCK) {
 			return null;
 		}
 
@@ -47,15 +47,15 @@ class MessageParser extends UiKitParserMessage {
 	};
 
 	context = (element, context, index) => {
-		if (context !== BLOCK_CONTEXT.BLOCK) {
+		if (context !== BlockContext.BLOCK) {
 			return null;
 		}
 
 		return <ContextBlock key={index} {...element} parser={this} />;
 	};
 
-	plainText = (element, context, index) => {
-		if (context === BLOCK_CONTEXT.BLOCK) {
+	plain_text = (element, context, index) => {
+		if (context === BlockContext.BLOCK) {
 			return null;
 		}
 
@@ -63,7 +63,7 @@ class MessageParser extends UiKitParserMessage {
 	};
 
 	mrkdwn = (element, context, index) => {
-		if (context === BLOCK_CONTEXT.BLOCK) {
+		if (context === BlockContext.BLOCK) {
 			return null;
 		}
 
@@ -71,7 +71,7 @@ class MessageParser extends UiKitParserMessage {
 	};
 
 	button = (element, context, index) => {
-		if (context === BLOCK_CONTEXT.BLOCK) {
+		if (context === BlockContext.BLOCK) {
 			return null;
 		}
 
@@ -79,7 +79,7 @@ class MessageParser extends UiKitParserMessage {
 	};
 
 	overflow = (element, context, index) => {
-		if (context === BLOCK_CONTEXT.BLOCK) {
+		if (context === BlockContext.BLOCK) {
 			return null;
 		}
 
@@ -87,7 +87,7 @@ class MessageParser extends UiKitParserMessage {
 	};
 
 	datePicker = (element, context, index) => {
-		if (context === BLOCK_CONTEXT.BLOCK) {
+		if (context === BlockContext.BLOCK) {
 			return null;
 		}
 
@@ -95,15 +95,14 @@ class MessageParser extends UiKitParserMessage {
 	};
 
 	staticSelect = (element, context, index) => {
-		if (context === BLOCK_CONTEXT.BLOCK) {
+		if (context === BlockContext.BLOCK) {
 			return null;
 		}
 
 		return <StaticSelectElement key={index} {...element} parser={this} context={context} />;
 	};
 
-	multiStaticSelect = () =>
-		null;
+	multiStaticSelect = () => null;
 }
 
 export const parser = new MessageParser();

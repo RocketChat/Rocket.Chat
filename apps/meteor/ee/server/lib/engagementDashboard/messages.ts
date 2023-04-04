@@ -5,33 +5,31 @@ import { Messages, Analytics } from '@rocket.chat/models';
 import { convertDateToInt, diffBetweenDaysInclusive, convertIntToDate, getTotalOfWeekItems } from './date';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
-export const handleMessagesSent = (message: IMessage, room?: IRoom): IMessage => {
+export const handleMessagesSent = async (message: IMessage, room?: IRoom): Promise<IMessage> => {
 	const roomTypesToShow = roomCoordinator.getTypesToShowOnDashboard();
 	if (!room || !roomTypesToShow.includes(room.t)) {
 		return message;
 	}
 
-	Promise.await(
-		Analytics.saveMessageSent({
-			date: convertDateToInt(message.ts),
-			room,
-		}),
-	);
+	await Analytics.saveMessageSent({
+		date: convertDateToInt(message.ts),
+		room,
+	});
+
 	return message;
 };
 
-export const handleMessagesDeleted = (message: IMessage, room?: IRoom): IMessage => {
+export const handleMessagesDeleted = async (message: IMessage, room?: IRoom): Promise<IMessage> => {
 	const roomTypesToShow = roomCoordinator.getTypesToShowOnDashboard();
 	if (!room || !roomTypesToShow.includes(room.t)) {
 		return message;
 	}
 
-	Promise.await(
-		Analytics.saveMessageDeleted({
-			date: convertDateToInt(message.ts),
-			room,
-		}),
-	);
+	await Analytics.saveMessageDeleted({
+		date: convertDateToInt(message.ts),
+		room,
+	});
+
 	return message;
 };
 
@@ -89,8 +87,8 @@ export const findWeeklyMessagesSentData = async ({
 		end: convertDateToInt(endOfLastWeek),
 		options: { count: daysBetweenDates, sort: { _id: -1 } },
 	}).toArray();
-	const yesterdayMessages = (currentPeriodMessages.find((item) => item._id === yesterday) || {}).messages || 0;
-	const todayMessages = (currentPeriodMessages.find((item) => item._id === today) || {}).messages || 0;
+	const yesterdayMessages = currentPeriodMessages.find((item) => item._id === yesterday)?.messages || 0;
+	const todayMessages = currentPeriodMessages.find((item) => item._id === today)?.messages || 0;
 	const currentPeriodTotalOfMessages = getTotalOfWeekItems(currentPeriodMessages, 'messages');
 	const lastPeriodTotalOfMessages = getTotalOfWeekItems(lastPeriodMessages, 'messages');
 	return {

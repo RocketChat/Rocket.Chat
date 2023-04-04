@@ -1,14 +1,14 @@
 import { Meteor } from 'meteor/meteor';
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
+import { OmnichannelIntegration } from '@rocket.chat/core-services';
 
 import { FileUpload } from '../../../../file-upload/server';
-import { LivechatRooms, LivechatDepartment } from '../../../../models/server';
 import { API } from '../../../../api/server';
 import { fetch } from '../../../../../server/lib/http/fetch';
-import { SMS } from '../../../../sms';
 import { Livechat } from '../../../server/lib/Livechat';
+import { settings } from '../../../../settings/server';
 
 const getUploadFile = async (details, fileUrl) => {
 	const response = await fetch(fileUrl);
@@ -26,17 +26,17 @@ const getUploadFile = async (details, fileUrl) => {
 	return fileStore.insertSync({ ...details, size: contentSize }, content);
 };
 
-const defineDepartment = (idOrName) => {
+const defineDepartment = async (idOrName) => {
 	if (!idOrName || idOrName === '') {
 		return;
 	}
 
-	const department = LivechatDepartment.findOneByIdOrName(idOrName);
+	const department = await LivechatDepartment.findOneByIdOrName(idOrName);
 	return department && department._id;
 };
 
 const defineVisitor = async (smsNumber, targetDepartment) => {
-	const visitor = LivechatVisitors.findOneVisitorByPhone(smsNumber);
+	const visitor = await LivechatVisitors.findOneVisitorByPhone(smsNumber);
 	let data = {
 		token: (visitor && visitor.token) || Random.id(),
 	};
@@ -72,17 +72,22 @@ const normalizeLocationSharing = (payload) => {
 
 API.v1.addRoute('livechat/sms-incoming/:service', {
 	async post() {
-		const SMSService = SMS.getService(this.urlParams.service);
+		if (!(await OmnichannelIntegration.isConfiguredSmsService(this.urlParams.service))) {
+			return API.v1.failure('Invalid service');
+		}
+
+		const smsDepartment = settings.get('SMS_Default_Omnichannel_Department');
+		const SMSService = await OmnichannelIntegration.getSmsService(this.urlParams.service);
 		const sms = SMSService.parse(this.bodyParams);
 		const { department } = this.queryParams;
-		let targetDepartment = defineDepartment(department || SMS.department);
+		let targetDepartment = await defineDepartment(department || smsDepartment);
 		if (!targetDepartment) {
-			targetDepartment = defineDepartment(SMS.department);
+			targetDepartment = await defineDepartment(smsDepartment);
 		}
 
 		const visitor = await defineVisitor(sms.from, targetDepartment);
 		const { token } = visitor;
-		const room = LivechatRooms.findOneOpenByVisitorTokenAndDepartmentId(token, targetDepartment);
+		const room = await LivechatRooms.findOneOpenByVisitorTokenAndDepartmentIdAndSource(token, targetDepartment, OmnichannelSourceType.SMS);
 		const roomExists = !!room;
 		const location = normalizeLocationSharing(sms);
 		const rid = (room && room._id) || Random.id();
@@ -149,8 +154,8 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 				} else {
 					attachment.title_link_download = true;
 				}
-			} catch (e) {
-				Livechat.logger.error(`Attachment upload failed: ${e.message}`);
+			} catch (err) {
+				Livechat.logger.error({ msg: 'Attachment upload failed', err });
 				attachment = {
 					fields: [
 						{
@@ -177,16 +182,19 @@ API.v1.addRoute('livechat/sms-incoming/:service', {
 
 		try {
 			const msg = SMSService.response.call(this, await Livechat.sendMessage(sendMessage));
-			Meteor.defer(() => {
+			Meteor.defer(async () => {
 				if (sms.extra) {
 					if (sms.extra.fromCountry) {
-						Meteor.call('livechat:setCustomField', sendMessage.message.token, 'country', sms.extra.fromCountry);
+						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'country', sms.extra.fromCountry);
 					}
 					if (sms.extra.fromState) {
-						Meteor.call('livechat:setCustomField', sendMessage.message.token, 'state', sms.extra.fromState);
+						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'state', sms.extra.fromState);
 					}
 					if (sms.extra.fromCity) {
-						Meteor.call('livechat:setCustomField', sendMessage.message.token, 'city', sms.extra.fromCity);
+						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'city', sms.extra.fromCity);
+					}
+					if (sms.extra.toPhone) {
+						await Meteor.callAsync('livechat:setCustomField', sendMessage.message.token, 'phoneNumber', sms.extra.toPhone);
 					}
 				}
 			});

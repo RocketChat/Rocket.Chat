@@ -187,54 +187,6 @@
 	}
 }
 
-.preferences-page {
-	display: flex;
-	flex-direction: column;
-
-	height: 100%;
-
-	&--new {
-		padding: 1.5rem;
-	}
-
-	&__content {
-		display: flex;
-		overflow-y: auto;
-		flex-direction: column;
-
-		flex: 1;
-
-		width: 100%;
-		padding: 25px 0;
-	}
-
-	&--apps .preferences-page__header {
-		justify-content: space-between;
-	}
-
-	& .container {
-		flex: 1;
-
-		width: 100%;
-	}
-
-	&__title {
-		margin-top: 20px;
-		margin-bottom: 20px;
-	}
-
-	&__alert {
-		margin-bottom: 20px;
-	}
-}
-
-@media (width > 500px) {
-	.preferences-page .container {
-		max-width: 649px;
-		margin: auto;
-	}
-}
-
 @keyframes spin {
 	0% {
 		transform: rotate(0deg);

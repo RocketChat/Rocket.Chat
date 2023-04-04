@@ -22,13 +22,20 @@ Object.assign(
 
 module.exports = {
 	...base, // see https://github.com/mochajs/mocha/issues/3916
-	require: [...base.require, './tests/setup/registerWebApiMocks.ts', './tests/setup/cleanupTestingLibrary.ts'],
+	require: [
+		...base.require,
+		'./tests/setup/registerWebApiMocks.ts',
+		'./tests/setup/hoistedReact.ts',
+		'./tests/setup/cleanupTestingLibrary.ts',
+	],
+	reporter: 'dot',
+	timeout: 5000,
 	exit: false,
 	slow: 200,
 	spec: [
-		'tests/unit/client/**/*.spec.ts',
+		'client/**/*.spec.{ts,tsx}',
+		'tests/unit/client/**/*.spec.{ts,tsx}',
 		'tests/unit/lib/**/*.tests.ts',
 		'tests/unit/client/**/*.test.ts',
-		'tests/unit/client/**/*.spec.tsx',
 	],
 };

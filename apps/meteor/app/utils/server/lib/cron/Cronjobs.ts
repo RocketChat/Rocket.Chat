@@ -1,11 +1,12 @@
 import { SyncedCron } from 'meteor/littledata:synced-cron';
-import { ICronJobs, ScheduleType } from '@rocket.chat/core-typings';
+import type { ICronJobs, ScheduleType } from '@rocket.chat/core-typings';
+import type { ParseStatic } from 'later';
 
 class SyncedCronJobs implements ICronJobs {
-	add(name: string, schedule: string, callback: Function, scheduleType: ScheduleType = 'cron'): void {
+	add(name: string, schedule: string, callback: (day: string, hour: string) => void, scheduleType: ScheduleType = 'cron'): void {
 		SyncedCron.add({
 			name,
-			schedule: (parser: any) => parser[scheduleType](schedule),
+			schedule: (parser: ParseStatic) => parser[scheduleType](schedule),
 			job() {
 				const [day, hour] = this.name.split('/');
 				callback(day, hour);

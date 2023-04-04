@@ -1,4 +1,15 @@
-import { Box, Icon, IconButton, Option, OptionContent, Tag } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Icon,
+	IconButton,
+	Option,
+	OptionAvatar,
+	OptionColumn,
+	OptionContent,
+	OptionMenu,
+	OptionSkeleton,
+	Tag,
+} from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
@@ -28,10 +39,10 @@ const TeamsChannelItem = ({ room, onClickView, reload }) => {
 
 	return (
 		<Option id={room._id} data-rid={room._id} {...handleMenuEvent} onClick={onClickView}>
-			<Option.Avatar>
+			<OptionAvatar>
 				<RoomAvatar room={room} size='x28' />
-			</Option.Avatar>
-			<Option.Column>{room.t === 'c' ? <Icon name='hash' size='x15' /> : <Icon name='hashtag-lock' size='x15' />}</Option.Column>
+			</OptionAvatar>
+			<OptionColumn>{room.t === 'c' ? <Icon name='hash' size='x15' /> : <Icon name='hashtag-lock' size='x15' />}</OptionColumn>
 			<OptionContent>
 				<Box display='inline-flex' alignItems='center'>
 					{roomCoordinator.getRoomName(room.t, room)}{' '}
@@ -45,14 +56,14 @@ const TeamsChannelItem = ({ room, onClickView, reload }) => {
 				</Box>
 			</OptionContent>
 			{(canRemoveTeamChannel || canEditTeamChannel || canDeleteTeamChannel) && (
-				<Option.Menu onClick={onClick}>
+				<OptionMenu onClick={onClick}>
 					{showButton ? <RoomActions room={room} reload={reload} /> : <IconButton tiny icon='kebab' />}
-				</Option.Menu>
+				</OptionMenu>
 			)}
 		</Option>
 	);
 };
 
 export default Object.assign(TeamsChannelItem, {
-	Skeleton: Option.Skeleton,
+	Skeleton: OptionSkeleton,
 });

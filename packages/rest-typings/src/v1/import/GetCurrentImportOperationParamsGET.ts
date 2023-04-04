@@ -4,7 +4,7 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type GetCurrentImportOperationParamsGET = {};
+export type GetCurrentImportOperationParamsGET = Record<string, unknown>;
 
 const GetCurrentImportOperationParamsGETSchema = {
 	type: 'object',

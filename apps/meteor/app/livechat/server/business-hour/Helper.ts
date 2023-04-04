@@ -1,8 +1,9 @@
 import moment from 'moment';
-import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
+import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
+import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 
-import { createDefaultBusinessHourRow } from '../../../models/server/models/LivechatBusinessHours';
+import { createDefaultBusinessHourRow } from './LivechatBusinessHours';
 
 export const filterBusinessHoursThatMustBeOpened = async (
 	businessHours: ILivechatBusinessHour[],
@@ -27,12 +28,23 @@ export const filterBusinessHoursThatMustBeOpened = async (
 		}));
 };
 
+export const filterBusinessHoursThatMustBeOpenedByDay = async (
+	businessHours: ILivechatBusinessHour[],
+	day: string, // Format: moment.format('dddd')
+): Promise<Pick<ILivechatBusinessHour, '_id' | 'type'>[]> => {
+	return filterBusinessHoursThatMustBeOpened(
+		businessHours.filter((businessHour) =>
+			businessHour.workHours.some((workHour) => workHour.start.utc.dayOfWeek === day || workHour.finish.utc.dayOfWeek === day),
+		),
+	);
+};
+
 export const openBusinessHourDefault = async (): Promise<void> => {
 	await Users.removeBusinessHoursFromAllUsers();
 	const currentTime = moment(moment().format('dddd:HH:mm'), 'dddd:HH:mm');
 	const day = currentTime.format('dddd');
 	const activeBusinessHours = await LivechatBusinessHours.findDefaultActiveAndOpenBusinessHoursByDay(day, {
-		fields: {
+		projection: {
 			workHours: 1,
 			timezone: 1,
 			type: 1,
@@ -45,7 +57,7 @@ export const openBusinessHourDefault = async (): Promise<void> => {
 };
 
 export const createDefaultBusinessHourIfNotExists = async (): Promise<void> => {
-	if ((await LivechatBusinessHours.find({ type: LivechatBusinessHourTypes.DEFAULT }).count()) === 0) {
+	if ((await LivechatBusinessHours.col.countDocuments({ type: LivechatBusinessHourTypes.DEFAULT })) === 0) {
 		await LivechatBusinessHours.insertOne(createDefaultBusinessHourRow());
 	}
 };

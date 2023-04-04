@@ -6,6 +6,7 @@ import { createUser, login } from '../../data/users.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom } from '../../data/rooms.helper';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
+import { testFileUploads } from '../../data/uploads.helper';
 
 function getRoomInfo(roomId) {
 	return new Promise((resolve /* , reject*/) => {
@@ -42,6 +43,7 @@ describe('[Groups]', function () {
 				expect(res.body).to.have.nested.property('group.t', 'p');
 				expect(res.body).to.have.nested.property('group.msgs', 0);
 				group._id = res.body.group._id;
+				group.name = res.body.group.name;
 			})
 			.end(done);
 	});
@@ -639,15 +641,13 @@ describe('[Groups]', function () {
 		request
 			.get(api('groups.list'))
 			.set(credentials)
-			.query({
-				roomId: group._id,
-			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('count');
 				expect(res.body).to.have.property('total');
+				expect(res.body).to.have.property('groups').and.to.be.an('array');
 			})
 			.end(done);
 	});
@@ -745,7 +745,7 @@ describe('[Groups]', function () {
 				});
 		});
 	});
-	describe('/groups.files', () => {
+	describe('/groups.members', () => {
 		it('should return group members when searching by roomId', (done) => {
 			request
 				.get(api('groups.members'))
@@ -786,45 +786,8 @@ describe('[Groups]', function () {
 		});
 	});
 
-	describe('/groups.files', () => {
-		it('should return group files when searching by roomId', (done) => {
-			request
-				.get(api('groups.files'))
-				.set(credentials)
-				.query({
-					roomId: group._id,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('offset');
-					expect(res.body).to.have.property('files').and.to.be.an('array');
-				})
-				.end(done);
-		});
-		it('should return group files when searching by roomId even requested with count and offset params', (done) => {
-			request
-				.get(api('groups.files'))
-				.set(credentials)
-				.query({
-					roomId: group._id,
-					count: 5,
-					offset: 0,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('total');
-					expect(res.body).to.have.property('offset');
-					expect(res.body).to.have.property('files').and.to.be.an('array');
-				})
-				.end(done);
-		});
+	describe('[/groups.files]', async function () {
+		await testFileUploads('groups.files', group);
 	});
 
 	describe('/groups.listAll', () => {
@@ -1614,6 +1577,90 @@ describe('[Groups]', function () {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', false);
+				})
+				.end(done);
+		});
+	});
+
+	context("Setting: 'Use Real Name': true", () => {
+		let realNameGroup;
+
+		before(async () => {
+			await updateSetting('UI_Use_Real_Name', true);
+
+			await request
+				.post(api('groups.create'))
+				.set(credentials)
+				.send({ name: `group-${Date.now()}` })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+
+					realNameGroup = res.body.group;
+				});
+
+			await request
+				.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						text: 'Sample message',
+						rid: realNameGroup._id,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+		after(async () => {
+			await updateSetting('UI_Use_Real_Name', false);
+
+			await request
+				.post(api('groups.delete'))
+				.set(credentials)
+				.send({ roomId: realNameGroup._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('/groups.list', (done) => {
+			request
+				.get(api('groups.list'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('groups').and.to.be.an('array');
+
+					const retGroup = res.body.groups.find(({ _id }) => _id === realNameGroup._id);
+
+					expect(retGroup).to.have.nested.property('lastMessage.u.name', 'RocketChat Internal Admin Test');
+				})
+				.end(done);
+		});
+
+		it('/groups.listAll', (done) => {
+			request
+				.get(api('groups.listAll'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('count');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('groups').and.to.be.an('array');
+
+					const retGroup = res.body.groups.find(({ _id }) => _id === realNameGroup._id);
+
+					expect(retGroup).to.have.nested.property('lastMessage.u.name', 'RocketChat Internal Admin Test');
 				})
 				.end(done);
 		});

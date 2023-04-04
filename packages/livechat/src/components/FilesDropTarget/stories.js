@@ -5,7 +5,6 @@ import { storiesOf } from '@storybook/react';
 import { FilesDropTarget } from '.';
 import { centered } from '../../helpers.stories';
 
-
 const DummyContent = () => (
 	<div
 		style={{

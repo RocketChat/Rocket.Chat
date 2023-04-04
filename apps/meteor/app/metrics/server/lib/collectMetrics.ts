@@ -5,15 +5,18 @@ import connect from 'connect';
 import _ from 'underscore';
 import gcStats from 'prometheus-gc-stats';
 import { Meteor } from 'meteor/meteor';
+import { MongoInternals } from 'meteor/mongo';
 import { Facts } from 'meteor/facts-base';
 import { Statistics } from '@rocket.chat/models';
 
-import { Info, getOplogInfo } from '../../../utils/server';
+import { Info } from '../../../utils/server';
 import { getControl } from '../../../../server/lib/migrations';
 import { settings } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { metrics } from './metrics';
 import { getAppsStatistics } from '../../../statistics/server/lib/getAppsStatistics';
+
+const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
 
 Facts.incrementServerFact = function (pkg: 'pkg' | 'fact', fact: string | number, increment: number): void {
 	metrics.meteorFacts.inc({ pkg, fact }, increment);
@@ -42,7 +45,7 @@ const setPrometheusData = async (): Promise<void> => {
 	metrics.totalAppsEnabled.set(totalActive || 0);
 	metrics.totalAppsFailed.set(totalFailed || 0);
 
-	const oplogQueue = getOplogInfo().mongo._oplogHandle?._entryQueue?.length || 0;
+	const oplogQueue = (mongo as any)._oplogHandle?._entryQueue?.length || 0;
 	metrics.oplogQueue.set(oplogQueue);
 
 	const statistics = await Statistics.findLast();
@@ -77,6 +80,10 @@ const setPrometheusData = async (): Promise<void> => {
 	metrics.totalDirectMessages.set(statistics.totalDirectMessages);
 	metrics.totalLivechatMessages.set(statistics.totalLivechatMessages);
 
+	// Livechat stats
+	metrics.totalLivechatVisitors.set(statistics.totalLivechatVisitors);
+	metrics.totalLivechatAgents.set(statistics.totalLivechatAgents);
+
 	metrics.pushQueue.set(statistics.pushQueue || 0);
 };
 
@@ -87,12 +94,18 @@ const app = connect();
 
 app.use('/metrics', (_req, res) => {
 	res.setHeader('Content-Type', 'text/plain');
-	client.register.metrics().then((data) => {
-		metrics.metricsRequests.inc();
-		metrics.metricsSize.set(data.length);
+	client.register
+		.metrics()
+		.then((data) => {
+			metrics.metricsRequests.inc();
+			metrics.metricsSize.set(data.length);
 
-		res.end(data);
-	});
+			res.end(data);
+		})
+		.catch((err) => {
+			SystemLogger.error({ msg: 'Error while collecting metrics', err });
+			res.end();
+		});
 });
 
 app.use('/', (_req, res) => {
@@ -162,12 +175,17 @@ const updatePrometheusConfig = async (): Promise<void> => {
 	Meteor.clearInterval(resetTimer);
 	if (is.resetInterval) {
 		resetTimer = Meteor.setInterval(() => {
-			client.register.getMetricsAsArray().then((metrics) => {
-				metrics.forEach((metric) => {
-					// @ts-expect-error
-					metric.hashMap = {};
+			client.register
+				.getMetricsAsArray()
+				.then((metrics) => {
+					metrics.forEach((metric) => {
+						// @ts-expect-error Property 'hashMap' does not exist on type 'metric'.
+						metric.hashMap = {};
+					});
+				})
+				.catch((err) => {
+					SystemLogger.error({ msg: 'Error while collecting metrics', err });
 				});
-			});
 		}, is.resetInterval);
 	}
 

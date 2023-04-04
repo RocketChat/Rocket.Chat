@@ -1,6 +1,7 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 import { Tabs, Box, Accordion } from '@rocket.chat/fuselage';
-import { useSetting, useTranslation, TranslationKey } from '@rocket.chat/ui-contexts';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import React, { memo, useMemo, useState } from 'react';
 
 import NoResults from '../../../../components/GenericTable/NoResults';

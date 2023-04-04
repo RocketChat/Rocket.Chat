@@ -2,7 +2,7 @@ import { Accounts } from 'meteor/accounts-base';
 import type { IUser } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
-import { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
+import type { ICodeCheck, IProcessInvalidCodeResult } from './ICodeCheck';
 
 export class PasswordCheckFallback implements ICodeCheck {
 	public readonly name = 'password';
@@ -19,7 +19,7 @@ export class PasswordCheckFallback implements ICodeCheck {
 		return false;
 	}
 
-	public verify(user: IUser, code: string, force: boolean): boolean {
+	public async verify(user: IUser, code: string, force: boolean): Promise<boolean> {
 		if (!this.isEnabled(user, force)) {
 			return false;
 		}
@@ -36,7 +36,7 @@ export class PasswordCheckFallback implements ICodeCheck {
 		return true;
 	}
 
-	public processInvalidCode(): IProcessInvalidCodeResult {
+	public async processInvalidCode(): Promise<IProcessInvalidCodeResult> {
 		return {
 			codeGenerated: false,
 		};

@@ -1,7 +1,10 @@
-import { Box, Divider, Flex, Margins } from '@rocket.chat/fuselage';
+import { Box, Flex } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
-import React, { ReactElement } from 'react';
+import { useTranslation } from '@rocket.chat/ui-contexts';
+import type { ReactElement } from 'react';
+import React from 'react';
 
+import EngagementDashboardCard from '../EngagementDashboardCard';
 import ActiveUsersSection from './ActiveUsersSection';
 import BusiestChatTimesSection from './BusiestChatTimesSection';
 import NewUsersSection from './NewUsersSection';
@@ -12,23 +15,29 @@ type UsersTabProps = {
 };
 
 const UsersTab = ({ timezone }: UsersTabProps): ReactElement => {
+	const t = useTranslation();
+
 	const isXxlScreen = useBreakpoints().includes('xxl');
 
 	return (
 		<>
-			<NewUsersSection timezone={timezone} />
-			<Divider />
-			<ActiveUsersSection timezone={timezone} />
-			<Divider />
-			<Box display='flex' mi='x12' flexWrap='wrap'>
-				<Margins inline='x12'>
-					<Flex.Item grow={1} shrink={0} basis={isXxlScreen ? '0' : '100%'}>
+			<EngagementDashboardCard title={t('New_users')}>
+				<NewUsersSection timezone={timezone} />
+			</EngagementDashboardCard>
+			<EngagementDashboardCard title={t('Active_users')}>
+				<ActiveUsersSection timezone={timezone} />
+			</EngagementDashboardCard>
+			<Box display='flex' flexWrap='wrap' style={{ columnGap: '16px' }}>
+				<Flex.Item grow={1} shrink={0} basis={isXxlScreen ? '0' : '100%'}>
+					<EngagementDashboardCard title={t('Users_by_time_of_day')}>
 						<UsersByTimeOfTheDaySection timezone={timezone} />
-					</Flex.Item>
-					<Box flexGrow={1} flexShrink={0} flexBasis={isXxlScreen ? '0' : '100%'}>
+					</EngagementDashboardCard>
+				</Flex.Item>
+				<Box flexGrow={1} flexShrink={0} flexBasis={isXxlScreen ? '0' : '100%'}>
+					<EngagementDashboardCard title={t('When_is_the_chat_busier?')}>
 						<BusiestChatTimesSection timezone={timezone} />
-					</Box>
-				</Margins>
+					</EngagementDashboardCard>
+				</Box>
 			</Box>
 		</>
 	);

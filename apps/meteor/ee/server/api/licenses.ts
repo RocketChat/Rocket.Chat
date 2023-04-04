@@ -1,10 +1,10 @@
 import { check } from 'meteor/check';
+import { Settings, Users } from '@rocket.chat/models';
 
 import { getLicenses, validateFormat, flatModules, getMaxActiveUsers, isEnterprise } from '../../app/license/server/license';
-import { Settings, Users } from '../../../app/models/server';
 import { API } from '../../../app/api/server/api';
-import { hasPermission } from '../../../app/authorization/server';
-import { ILicense } from '../../app/license/definitions/ILicense';
+import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
+import type { ILicense } from '../../app/license/definition/ILicense';
 
 function licenseTransform(license: ILicense): ILicense {
 	return {
@@ -17,8 +17,8 @@ API.v1.addRoute(
 	'licenses.get',
 	{ authRequired: true },
 	{
-		get() {
-			if (!hasPermission(this.userId, 'view-privileged-setting')) {
+		async get() {
+			if (!(await hasPermissionAsync(this.userId, 'view-privileged-setting'))) {
 				return API.v1.unauthorized();
 			}
 
@@ -35,12 +35,12 @@ API.v1.addRoute(
 	'licenses.add',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			check(this.bodyParams, {
 				license: String,
 			});
 
-			if (!hasPermission(this.userId, 'edit-privileged-setting')) {
+			if (!(await hasPermissionAsync(this.userId, 'edit-privileged-setting'))) {
 				return API.v1.unauthorized();
 			}
 
@@ -49,7 +49,7 @@ API.v1.addRoute(
 				return API.v1.failure('Invalid license');
 			}
 
-			Settings.updateValueById('Enterprise_License', license);
+			await Settings.updateValueById('Enterprise_License', license);
 
 			return API.v1.success();
 		},
@@ -60,9 +60,9 @@ API.v1.addRoute(
 	'licenses.maxActiveUsers',
 	{ authRequired: true },
 	{
-		get() {
+		async get() {
 			const maxActiveUsers = getMaxActiveUsers() || null;
-			const activeUsers = Users.getActiveLocalUserCount();
+			const activeUsers = await Users.getActiveLocalUserCount();
 
 			return API.v1.success({ maxActiveUsers, activeUsers });
 		},

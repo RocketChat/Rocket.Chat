@@ -6,7 +6,6 @@ import { PasswordInput } from '.';
 import { Form, FormField } from '..';
 import { centered } from '../../../helpers.stories';
 
-
 storiesOf('Forms/PasswordInput', module)
 	.addDecorator(centered)
 	.addDecorator(withKnobs)

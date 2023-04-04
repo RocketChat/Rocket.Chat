@@ -1,7 +1,8 @@
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
-import { ToolboxContextValue } from '../../lib/Toolbox/ToolboxContext';
+import type { ToolboxContextValue } from '../../contexts/ToolboxContext';
 import KeyboardShortcuts from './KeyboardShortcuts';
 
 const KeyboardShortcutsWithData = ({ tabBar }: { tabBar: ToolboxContextValue['tabBar'] }): ReactElement => {

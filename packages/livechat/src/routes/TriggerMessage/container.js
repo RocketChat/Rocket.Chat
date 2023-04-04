@@ -6,7 +6,6 @@ import { parentCall } from '../../lib/parentCall';
 import { Consumer } from '../../store';
 import TriggerMessage from './component';
 
-
 export class TriggerMessageContainer extends Component {
 	handleStart(props) {
 		parentCall('setFullScreenDocumentMobile');
@@ -24,18 +23,8 @@ export class TriggerMessageContainer extends Component {
 export const TriggerMessageConnector = ({ ref, ...props }) => (
 	<Consumer>
 		{({
-			config: {
-				theme: {
-					color,
-				} = {},
-			} = {},
-			iframe: {
-				theme: {
-					color: customColor,
-					fontColor: customFontColor,
-					iconColor: customIconColor,
-				} = {},
-			} = {},
+			config: { theme: { color } = {} } = {},
+			iframe: { theme: { color: customColor, fontColor: customFontColor, iconColor: customIconColor } = {} } = {},
 			messages,
 			agent,
 			unread,
@@ -49,18 +38,24 @@ export const TriggerMessageConnector = ({ ref, ...props }) => (
 					iconColor: customIconColor,
 				}}
 				unread={unread}
-				agent={agent ? {
-					_id: agent._id,
-					name: agent.name,
-					status: agent.status,
-					email: agent.emails && agent.emails[0] && agent.emails[0].address,
-					username: agent.username,
-					phone: (agent.phone && agent.phone[0] && agent.phone[0].phoneNumber) || (agent.customFields && agent.customFields.phone),
-					avatar: agent.username ? {
-						description: agent.username,
-						src: getAvatarUrl(agent.username),
-					} : undefined,
-				} : undefined}
+				agent={
+					agent
+						? {
+								_id: agent._id,
+								name: agent.name,
+								status: agent.status,
+								email: agent.emails && agent.emails[0] && agent.emails[0].address,
+								username: agent.username,
+								phone: (agent.phone && agent.phone[0] && agent.phone[0].phoneNumber) || (agent.customFields && agent.customFields.phone),
+								avatar: agent.username
+									? {
+											description: agent.username,
+											src: getAvatarUrl(agent.username),
+									  }
+									: undefined,
+						  }
+						: undefined
+				}
 				messages={messages && messages.filter((message) => canRenderMessage(message))}
 			/>
 		)}

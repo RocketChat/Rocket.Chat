@@ -5,13 +5,11 @@ import { storiesOf } from '@storybook/react';
 
 import { centered } from '../helpers.stories';
 
-
 const req = require.context('./', true, /\.svg$/);
-const iconset = req.keys()
-	.map((filename) => ({
-		component: req(filename),
-		name: path.basename(filename, '.svg'),
-	}));
+const iconset = req.keys().map((filename) => ({
+	component: req(filename),
+	name: path.basename(filename, '.svg'),
+}));
 
 const IconDisplay = ({ component: Icon, name, color }) => (
 	<div
@@ -37,7 +35,9 @@ storiesOf('Components/Icons', module)
 	.addDecorator(withKnobs)
 	.add('all', () => (
 		<div style={{ width: '100%', display: 'flex', flexWrap: 'wrap' }}>
-			{iconset.map((props) => <IconDisplay color={color('color', '#E0364D')} {...props} />)}
+			{iconset.map((props) => (
+				<IconDisplay color={color('color', '#E0364D')} {...props} />
+			))}
 		</div>
 	));
 iconset.forEach(({ component: Icon, name }) =>

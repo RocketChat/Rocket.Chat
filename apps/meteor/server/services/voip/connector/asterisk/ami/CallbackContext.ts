@@ -2,8 +2,8 @@
  * This class is a callback context for AMI event handlers.
  */
 
-import { Command } from '../Command';
-import { ICallbackContext } from '../ICallbackContext';
+import type { Command } from '../Command';
+import type { ICallbackContext } from '../ICallbackContext';
 
 export class CallbackContext implements ICallbackContext {
 	private callback: (event: any) => void;

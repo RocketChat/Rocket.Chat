@@ -1,11 +1,6 @@
-import { Meteor } from 'meteor/meteor';
+import { Logger } from '../../../server/lib/logger/Logger';
 
-let logger;
-
-if (Meteor.isServer) {
-	const { Logger } = require('../../../server/lib/logger/Logger');
-	logger = new Logger('TemplateVarHandler');
-}
+const logger = new Logger('TemplateVarHandler');
 
 export const templateVarHandler = function (variable, object) {
 	const templateRegex = /#{([\w\-]+)}/gi;

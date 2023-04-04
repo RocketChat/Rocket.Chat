@@ -1,4 +1,5 @@
-import { SodiumPlus, X25519PublicKey, X25519SecretKey, CryptographyKey } from 'sodium-plus';
+import type { X25519SecretKey, CryptographyKey } from 'sodium-plus';
+import { SodiumPlus, X25519PublicKey } from 'sodium-plus';
 
 let sodium: SodiumPlus;
 

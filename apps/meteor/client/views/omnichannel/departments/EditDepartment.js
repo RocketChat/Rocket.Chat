@@ -14,14 +14,14 @@ import {
 } from '@rocket.chat/fuselage';
 import { useMutableCallback, useUniqueId } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useState, useRef } from 'react';
+import React, { useMemo, useState, useRef, useCallback } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import Page from '../../../components/Page';
-import { useRoomsList } from '../../../components/RoomAutoComplete/hooks/useRoomsList';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { useForm } from '../../../hooks/useForm';
+import { useRoomsList } from '../../../hooks/useRoomsList';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import { useFormsSubscription } from '../additionalForms';
 import DepartmentsAgentsTable from './DepartmentsAgentsTable';
@@ -30,7 +30,7 @@ function withDefault(key, defaultValue) {
 	return key || defaultValue;
 }
 
-function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
+function EditDepartment({ data, id, title, allowedToForwardData }) {
 	const t = useTranslation();
 	const departmentsRoute = useRoute('omnichannel-departments');
 
@@ -43,7 +43,9 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 		useSelectForwardDepartment = () => {},
 	} = useFormsSubscription();
 
-	const initialAgents = useRef((data && data.agents) || []);
+	const { agents } = data || { agents: [] };
+
+	const initialAgents = useRef(agents);
 
 	const MaxChats = useEeNumberInput();
 	const VisitorInactivity = useEeNumberInput();
@@ -58,7 +60,9 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 
 	const { department } = data || { department: {} };
 
-	const [[tags, tagsText], setTagsState] = useState(() => [department?.chatClosingTags ?? [], '']);
+	const [initialTags] = useState(() => department?.chatClosingTags ?? []);
+	const [[tags, tagsText], setTagsState] = useState(() => [initialTags, '']);
+	const hasTagChanges = useMemo(() => tags.toString() !== initialTags.toString(), [tags, initialTags]);
 
 	const { values, handlers, hasUnsavedChanges } = useForm({
 		name: withDefault(department?.name, ''),
@@ -120,7 +124,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 		setTagsState(([tags, tagsText]) => [tags.filter((_tag) => _tag !== tag), tagsText]);
 	};
 
-	const handleTagTextSubmit = useMutableCallback(() => {
+	const handleTagTextSubmit = useCallback(() => {
 		setTagsState((state) => {
 			const [tags, tagsText] = state;
 
@@ -130,7 +134,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 
 			return [[...tags, tagsText], ''];
 		});
-	});
+	}, []);
 
 	const handleTagTextChange = (e) => {
 		setTagsState(([tags]) => [tags, e.target.value]);
@@ -196,8 +200,8 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 			visitorInactivityTimeoutInSeconds,
 			abandonedRoomsCloseCustomMessage,
 			waitingQueueMessage,
-			departmentsAllowedToForward: departmentsAllowedToForward?.map((dep) => dep.value).join(),
-			fallbackForwardDepartment: fallbackForwardDepartment.value,
+			departmentsAllowedToForward: departmentsAllowedToForward?.map((dep) => dep.value),
+			fallbackForwardDepartment,
 		};
 
 		const agentListPayload = {
@@ -220,7 +224,6 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 				await saveDepartmentInfo(id, payload, agentList);
 			}
 			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			reload();
 			departmentsRoute.push({});
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -232,11 +235,15 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 	});
 
 	const invalidForm =
-		!name || !email || !validateEmail(email) || !hasUnsavedChanges || (requestTagBeforeClosingChat && (!tags || tags.length === 0));
+		!name ||
+		!email ||
+		!validateEmail(email) ||
+		!(hasUnsavedChanges || hasTagChanges) ||
+		(requestTagBeforeClosingChat && (!tags || tags.length === 0));
 
 	const formId = useUniqueId();
 
-	const hasNewAgent = useMemo(() => data.agents.length === agentList.length, [data.agents, agentList]);
+	const hasNewAgent = useMemo(() => agents.length === agentList.length, [agents, agentList]);
 
 	const agentsHaveChanged = () => {
 		let hasChanges = false;
@@ -414,6 +421,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 									placeholder={t('Fallback_forward_department')}
 									label={t('Fallback_forward_department')}
 									onlyMyDepartments
+									showArchived
 								/>
 							</Field>
 						)}
@@ -441,7 +449,13 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 										onChange={handleTagTextChange}
 										placeholder={t('Enter_a_tag')}
 									/>
-									<Button mis='x8' title={t('add')} onClick={handleTagTextSubmit}>
+									<Button
+										disabled={Boolean(!tagsText.trim()) || tags.includes(tagsText)}
+										data-qa='DepartmentEditAddButton-ConversationClosingTags'
+										mis='x8'
+										title={t('add')}
+										onClick={handleTagTextSubmit}
+									>
 										{t('Add')}
 									</Button>
 								</Field.Row>
@@ -467,7 +481,7 @@ function EditDepartment({ data, id, title, reload, allowedToForwardData }) {
 							<Field.Label mb='x4'>{t('Agents')}:</Field.Label>
 							<Box display='flex' flexDirection='column' height='50vh'>
 								<DepartmentsAgentsTable
-									agents={data && data.agents}
+									agents={agents}
 									setAgentListFinal={setAgentList}
 									setAgentsAdded={setAgentsAdded}
 									setAgentsRemoved={setAgentsRemoved}

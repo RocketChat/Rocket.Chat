@@ -2,7 +2,8 @@ import https from 'https';
 import url from 'url';
 import type { IncomingMessage } from 'http';
 
-import { load, Cheerio, CheerioAPI } from 'cheerio';
+import type { Cheerio, CheerioAPI } from 'cheerio';
+import { load } from 'cheerio';
 
 export type CasOptions = {
 	// eslint-disable-next-line @typescript-eslint/naming-convention

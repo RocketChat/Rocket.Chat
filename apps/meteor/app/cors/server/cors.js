@@ -35,7 +35,17 @@ WebApp.rawConnectHandlers.use(function (req, res, next) {
 		]
 			.filter(Boolean)
 			.join(' ');
-		const external = [settings.get('Accounts_OAuth_Apple') && 'https://appleid.cdn-apple.com'].filter(Boolean).join(' ');
+		const external = [
+			settings.get('Accounts_OAuth_Apple') && 'https://appleid.cdn-apple.com',
+			settings.get('PiwikAnalytics_enabled') && settings.get('PiwikAnalytics_url'),
+			settings.get('GoogleAnalytics_enabled' && 'https://www.google-analytics.com'),
+			...settings
+				.get('Extra_CSP_Domains')
+				.split(/[ \n\,]/gim)
+				.filter((e) => Boolean(e.trim())),
+		]
+			.filter(Boolean)
+			.join(' ');
 		res.setHeader(
 			'Content-Security-Policy',
 			[

@@ -1,5 +1,6 @@
 import { useSetModal, usePermission } from '@rocket.chat/ui-contexts';
-import React, { FC, memo, MouseEvent, MouseEventHandler } from 'react';
+import type { FC, MouseEvent, MouseEventHandler } from 'react';
+import React, { memo } from 'react';
 
 import CreateCannedResponse from '../../CannedResponse/modals';
 import CannedResponse from './CannedResponse';

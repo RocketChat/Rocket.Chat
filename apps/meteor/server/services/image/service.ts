@@ -1,11 +1,11 @@
-import stream, { Readable } from 'stream';
+import type { Readable } from 'stream';
+import stream from 'stream';
 
 import ft from 'file-type';
 import sharp from 'sharp';
 import isSvg from 'is-svg';
-
-import { ServiceClassInternal } from '../../sdk/types/ServiceClass';
-import { IMediaService, ResizeResult } from '../../sdk/types/IMediaService';
+import { ServiceClassInternal } from '@rocket.chat/core-services';
+import type { IMediaService, ResizeResult } from '@rocket.chat/core-services';
 
 /* eslint-disable  @typescript-eslint/no-var-requires */
 const ExifTransformer = require('exif-be-gone');

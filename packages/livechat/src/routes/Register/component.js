@@ -3,57 +3,46 @@ import { withTranslation } from 'react-i18next';
 
 import { Button } from '../../components/Button';
 import { ButtonGroup } from '../../components/ButtonGroup';
-import {
-	Form,
-	FormField,
-	TextInput,
-	SelectInput,
-	Validations,
-} from '../../components/Form';
+import { Form, FormField, TextInput, SelectInput, Validations } from '../../components/Form';
 import Screen from '../../components/Screen';
 import { createClassName, sortArrayByColumn } from '../../components/helpers';
 import styles from './styles.scss';
 
 const getDefaultDepartment = (departments = []) => (departments.length === 1 && departments[0]._id) || '';
 
-const renderCustomFields = (customFields, { loading, handleFieldChange = () => {} }, state, t) => customFields.map(({ _id, required, label, type, options }) => {
-	switch (type) {
-		case 'input':
-			return <FormField
-				label={label}
-				required={required}
-				key={_id}
-				error={state[_id].showError && state[_id].error}
-			>
-				<TextInput
-					name={_id}
-					placeholder={t('insert_your_field_here', { field: label })}
-					value={state[_id].value}
-					disabled={loading}
-					onInput={handleFieldChange}
-					custom
-				/>
-			</FormField>;
-		case 'select':
-			return <FormField
-				label={label}
-				required={required}
-				key={_id}
-				error={state[_id].showError && state[_id].error}
-			>
-				<SelectInput
-					name={_id}
-					value={state[_id].value}
-					placeholder={t('choose_an_option')}
-					options={options && options.map((option) => ({ value: option, label: option }))}
-					disabled={loading}
-					onInput={handleFieldChange}
-					custom
-				/>
-			</FormField>;
-	}
-	return null;
-});
+const renderCustomFields = (customFields, { loading, handleFieldChange = () => {} }, state, t) =>
+	customFields.map(({ _id, required, label, type, options }) => {
+		switch (type) {
+			case 'input':
+				return (
+					<FormField label={label} required={required} key={_id} error={state[_id].showError && state[_id].error}>
+						<TextInput
+							name={_id}
+							placeholder={t('insert_your_field_here', { field: label })}
+							value={state[_id].value}
+							disabled={loading}
+							onInput={handleFieldChange}
+							custom
+						/>
+					</FormField>
+				);
+			case 'select':
+				return (
+					<FormField label={label} required={required} key={_id} error={state[_id].showError && state[_id].error}>
+						<SelectInput
+							name={_id}
+							value={state[_id].value}
+							placeholder={t('choose_an_option')}
+							options={options && options.map((option) => ({ value: option, label: option }))}
+							disabled={loading}
+							onInput={handleFieldChange}
+							custom
+						/>
+					</FormField>
+				);
+		}
+		return null;
+	});
 
 const validations = {
 	name: [Validations.nonEmpty],
@@ -94,9 +83,9 @@ const getDefaultState = (props) => {
 	const { hasNameField, hasEmailField, hasDepartmentField, departments, customFields = [] } = props;
 
 	let state = {
-		...hasNameField && { name: { value: '' } },
-		...hasEmailField && { email: { value: '' } },
-		...hasDepartmentField && { department: { value: getDefaultDepartment(departments) } },
+		...(hasNameField && { name: { value: '' } }),
+		...(hasEmailField && { email: { value: '' } }),
+		...(hasDepartmentField && { department: { value: getDefaultDepartment(departments) } }),
 	};
 
 	customFields.forEach(({ _id, defaultValue, options, regexp }) => {
@@ -108,7 +97,7 @@ const getDefaultState = (props) => {
 
 		state[_id] = {
 			value,
-			...regexp && { regexp },
+			...(regexp && { regexp }),
 			error,
 			showError: false,
 		};
@@ -137,34 +126,26 @@ class Register extends Component {
 	}
 
 	static getDerivedStateFromProps(nextProps, state) {
-		const { hasNameField, hasEmailField, hasDepartmentField, departmentDefault, departments, nameDefault, emailDefault } = nextProps;
+		const { hasNameField, hasEmailField, hasDepartmentField, nameDefault, emailDefault, departmentDefault } = nextProps;
+		const { name, email, department } = state;
+		const newState = {};
 
-		const nameValue = nameDefault || '';
-		if (hasNameField && (!state.name || state.name !== nameValue)) {
-			state = { ...state, name: { ...state.name, value: nameValue } };
-		} else if (!hasNameField) {
-			state = { ...state, name: null };
+		if (hasNameField && nameDefault && nameDefault !== name?.value) {
+			const error = validate(this.props, { name: 'name', value: nameDefault, regexp: name?.regexp });
+			newState.name = { ...name, value: nameDefault, error };
 		}
 
-		const emailValue = emailDefault || '';
-		if (hasEmailField && (!state.email || state.name !== emailValue)) {
-			state = { ...state, email: { ...state.email, value: emailValue } };
-		} else if (!hasEmailField) {
-			state = { ...state, email: null };
+		if (hasEmailField && emailDefault && emailDefault !== email?.value) {
+			const error = validate(this.props, { name: 'email', value: emailDefault, regexp: email?.regexp });
+			newState.email = { ...email, value: emailDefault, error };
 		}
 
-		const departmentValue = departmentDefault || getDefaultDepartment(departments);
-		const showDepartmentField = hasDepartmentField && departments && departments.length > 1;
-		if (showDepartmentField && (!state.department || state.department !== departmentValue)) {
-			state = { ...state, department: { ...state.department, value: departmentValue } };
-		} else if (!showDepartmentField) {
-			state = { ...state, department: null };
+		if (hasDepartmentField && departmentDefault && departmentDefault !== department?.value) {
+			const error = validate(this.props, { name: 'department', value: departmentDefault, regexp: department?.regexp });
+			newState.department = { ...department, value: departmentDefault, error };
 		}
 
-		for (const { fieldName: name, value, regexp } of getValidableFields(state)) {
-			const error = validate(nextProps, { name, value, regexp });
-			state = { ...state, [name]: { ...state[name], value, error, showError: false } };
-		}
+		return newState;
 	}
 
 	state = {
@@ -206,74 +187,54 @@ class Register extends Component {
 		const valid = getValidableFields(this.state).every(({ error } = {}) => !error);
 
 		return (
-			<Screen
-				color={color}
-				title={title || defaultTitle}
-				className={createClassName(styles, 'register')}
-				{...props}
-			>
+			<Screen color={color} title={title || defaultTitle} className={createClassName(styles, 'register')} {...props}>
 				<Screen.Content>
 					<p className={createClassName(styles, 'register__message')}>{message || defaultMessage}</p>
 
 					<Form onSubmit={this.handleSubmit}>
-						{name
-							? (
-								<FormField
-									required
-									label={t('name')}
-									error={name.showError && name.error}
-								>
-									<TextInput
-										name='name'
-										value={name.value}
-										placeholder={t('insert_your_field_here', { field: t('name') })}
-										disabled={loading}
-										onInput={this.handleFieldChange}
-									/>
-								</FormField>
-							)
-							: null}
+						{name ? (
+							<FormField required label={t('name')} error={name.showError && name.error}>
+								<TextInput
+									name='name'
+									value={name.value}
+									placeholder={t('insert_your_field_here', { field: t('name') })}
+									disabled={loading}
+									onInput={this.handleFieldChange}
+								/>
+							</FormField>
+						) : null}
 
-						{email
-							? (
-								<FormField
-									required
-									label={t('email')}
-									error={email.showError && email.error}
-								>
-									<TextInput
-										name='email'
-										value={email.value}
-										placeholder={t('insert_your_field_here', { field: t('email') })}
-										disabled={loading}
-										onInput={this.handleFieldChange}
-									/>
-								</FormField>
-							)
-							: null}
+						{email ? (
+							<FormField required label={t('email')} error={email.showError && email.error}>
+								<TextInput
+									name='email'
+									value={email.value}
+									placeholder={t('insert_your_field_here', { field: t('email') })}
+									disabled={loading}
+									onInput={this.handleFieldChange}
+								/>
+							</FormField>
+						) : null}
 
-						{department
-							? (
-								<FormField
-									label={t('i_need_help_with')}
-									error={department.showError && department.error}
-								>
-									<SelectInput
-										name='department'
-										value={department.value}
-										options={sortArrayByColumn(departments, 'name').map(({ _id, name }) => ({ value: _id, label: name }))}
-										placeholder={t('choose_an_option')}
-										disabled={loading}
-										onInput={this.handleFieldChange}
-									/>
-								</FormField>
-							)
-							: null}
+						{department ? (
+							<FormField label={t('i_need_help_with')} error={department.showError && department.error}>
+								<SelectInput
+									name='department'
+									value={department.value}
+									options={sortArrayByColumn(departments, 'name').map(({ _id, name }) => ({ value: _id, label: name }))}
+									placeholder={t('choose_an_option')}
+									disabled={loading}
+									onInput={this.handleFieldChange}
+								/>
+							</FormField>
+						) : null}
 
 						{customFields && renderCustomFields(customFields, { loading, handleFieldChange: this.handleFieldChange }, state, t)}
 
 						<ButtonGroup>
-							<Button submit loading={loading} disabled={!valid || loading} stack>{t('start_chat')}</Button>
+							<Button submit loading={loading} disabled={!valid || loading} stack>
+								{t('start_chat')}
+							</Button>
 						</ButtonGroup>
 					</Form>
 				</Screen.Content>

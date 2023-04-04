@@ -1,11 +1,14 @@
 // DEPRECATED
 
+import type { Root } from '@rocket.chat/message-parser';
+
 import type { MessageAttachmentBase } from './MessageAttachmentBase';
 
 type Action = {
 	msgId?: string;
 	type: 'button';
 	text: string;
+	md?: Root;
 	msg?: string;
 	url?: string;
 	image_url?: string;

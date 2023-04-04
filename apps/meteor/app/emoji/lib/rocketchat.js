@@ -29,5 +29,6 @@ export const emoji = {
 			},
 		},
 	},
+	/** @type {Record<string, unknown>} */
 	list: {},
 };

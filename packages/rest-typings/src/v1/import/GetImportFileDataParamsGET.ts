@@ -4,9 +4,7 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type GetImportFileDataParamsGET = {
-	userId: string;
-};
+export type GetImportFileDataParamsGET = Record<string, unknown>;
 
 const GetImportFileDataParamsGETSchema = {
 	type: 'object',

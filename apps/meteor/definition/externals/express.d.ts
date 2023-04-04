@@ -1,9 +1,9 @@
 import 'express';
 
-import { IUser } from '@rocket.chat/core-typings';
+import type { IUser } from '@rocket.chat/core-typings';
 
 declare module 'express' {
-	export interface Request {
+	interface Request {
 		userId?: string;
 		user?: IUser;
 	}

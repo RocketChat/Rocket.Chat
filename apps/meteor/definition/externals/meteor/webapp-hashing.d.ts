@@ -1,5 +1,11 @@
 declare module 'meteor/webapp-hashing' {
+	import type { IRocketChatAssetCache } from '@rocket.chat/core-typings';
+
 	namespace WebAppHashing {
-		function calculateClientHash(manifest: Record<string, any>, includeFilter: Function, runtimeConfigOverride: any): string;
+		function calculateClientHash(
+			manifest: IRocketChatAssetCache[],
+			includeFilter?: (type: IRocketChatAssetCache['type'], replaceable: boolean) => boolean,
+			runtimeConfigOverride?: unknown,
+		): string;
 	}
 }

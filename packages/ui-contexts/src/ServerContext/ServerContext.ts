@@ -1,5 +1,5 @@
 import type { IServerInfo, Serialized } from '@rocket.chat/core-typings';
-import type { Method, OperationParams, MatchPathPattern, OperationResult, PathFor } from '@rocket.chat/rest-typings';
+import type { Method, OperationParams, OperationResult, PathFor, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import { createContext } from 'react';
 
 import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from './methods';
@@ -17,11 +17,12 @@ export type ServerContextValue = {
 		methodName: MethodName,
 		...args: ServerMethodParameters<MethodName>
 	) => Promise<ServerMethodReturn<MethodName>>;
-	callEndpoint: <TMethod extends Method, TPath extends PathFor<TMethod>>(
-		method: TMethod,
-		path: TPath,
-		params: OperationParams<TMethod, MatchPathPattern<TPath>>,
-	) => Promise<Serialized<OperationResult<TMethod, MatchPathPattern<TPath>>>>;
+	callEndpoint: <TMethod extends Method, TPathPattern extends PathPattern>(args: {
+		method: TMethod;
+		pathPattern: TPathPattern;
+		keys: UrlParams<TPathPattern>;
+		params: OperationParams<TMethod, TPathPattern>;
+	}) => Promise<Serialized<OperationResult<TMethod, TPathPattern>>>;
 	uploadToEndpoint: (
 		endpoint: PathFor<'POST'>,
 		formData: any,
@@ -30,7 +31,20 @@ export type ServerContextValue = {
 		| {
 				promise: Promise<UploadResult>;
 		  };
-	getStream: (streamName: string, options?: {}) => <T>(eventName: string, callback: (data: T) => void) => () => void;
+	getStream: (
+		streamName: string,
+		options?: {
+			retransmit?: boolean | undefined;
+			retransmitToSelf?: boolean | undefined;
+		},
+	) => <TEvent extends unknown[]>(eventName: string, callback: (...event: TEvent) => void) => () => void;
+	getSingleStream: (
+		streamName: string,
+		options?: {
+			retransmit?: boolean | undefined;
+			retransmitToSelf?: boolean | undefined;
+		},
+	) => <TEvent extends unknown[]>(eventName: string, callback: (...event: TEvent) => void) => () => void;
 };
 
 export const ServerContext = createContext<ServerContextValue>({
@@ -43,4 +57,5 @@ export const ServerContext = createContext<ServerContextValue>({
 		throw new Error('not implemented');
 	},
 	getStream: () => () => (): void => undefined,
+	getSingleStream: () => () => (): void => undefined,
 });

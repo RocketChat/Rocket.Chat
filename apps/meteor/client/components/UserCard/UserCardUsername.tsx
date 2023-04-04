@@ -1,5 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
-import React, { ReactElement, ReactNode, ComponentProps } from 'react';
+import type { ReactElement, ReactNode, ComponentProps } from 'react';
+import React from 'react';
 
 import * as UserStatus from '../UserStatus';
 
@@ -21,7 +22,7 @@ const UserCardUsername = ({ name, status = <UserStatus.Offline />, ...props }: U
 		withTruncatedText
 		{...props}
 	>
-		{status}{' '}
+		{status}
 		<Box mis='x8' flexGrow={1} withTruncatedText>
 			{name}
 		</Box>

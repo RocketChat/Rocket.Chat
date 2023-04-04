@@ -21,7 +21,12 @@ const getAgent = (triggerAction) => {
 
 		if (params.sender === 'queue') {
 			const { state } = store;
-			const { defaultAgent, iframe: { guest: { department } } } = state;
+			const {
+				defaultAgent,
+				iframe: {
+					guest: { department },
+				},
+			} = state;
 			if (defaultAgent && defaultAgent.ts && Date.now() - defaultAgent.ts < agentCacheExpiry) {
 				return resolve(defaultAgent); // cache valid for 1
 			}
@@ -33,7 +38,7 @@ const getAgent = (triggerAction) => {
 				return reject(error);
 			}
 
-			store.setState({ defaultAgent: { ...agent, ts: Date.now() } });
+			store.setState({ defaultAgent: { ...agent, department, ts: Date.now() } });
 			resolve(agent);
 		} else if (params.sender === 'custom') {
 			resolve({
@@ -71,7 +76,11 @@ class Triggers {
 			return;
 		}
 
-		const { token, firedTriggers = [], config: { triggers } } = store.state;
+		const {
+			token,
+			firedTriggers = [],
+			config: { triggers },
+		} = store.state;
 		Livechat.credentials.token = token;
 
 		if (!(triggers && triggers.length > 0)) {
@@ -114,7 +123,12 @@ class Triggers {
 
 					await store.setState({
 						triggered: true,
-						messages: upsert(store.state.messages, message, ({ _id }) => _id === message._id, ({ ts }) => ts),
+						messages: upsert(
+							store.state.messages,
+							message,
+							({ _id }) => _id === message._id,
+							({ ts }) => ts,
+						),
 					});
 					await processUnread();
 

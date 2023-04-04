@@ -1,5 +1,5 @@
-import { IMessage, MessageTypesValues } from '@rocket.chat/core-typings';
-import { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { IMessage, MessageTypesValues } from '@rocket.chat/core-typings';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 export type MessageType = {
 	id: MessageTypesValues;
@@ -11,7 +11,8 @@ export type MessageType = {
 	message: TranslationKey;
 	data?: (message: IMessage) => Record<string, string>;
 };
-class MessageTypesClass {
+
+class MessageTypes {
 	private types = new Map<MessageTypesValues, MessageType>();
 
 	registerType(options: MessageType): MessageType {
@@ -25,13 +26,16 @@ class MessageTypesClass {
 		return options;
 	}
 
-	getType(message: IMessage): MessageType | undefined {
+	getType(message: Pick<IMessage, 't'>): MessageType | undefined {
 		return message.t && this.types.get(message.t);
 	}
 
-	isSystemMessage(message: IMessage): boolean {
+	isSystemMessage(message: Pick<IMessage, 't'>): boolean {
 		const type = this.getType(message);
 		return Boolean(type?.system);
 	}
 }
-export const MessageTypes = new MessageTypesClass();
+
+const instance = new MessageTypes();
+
+export { instance as MessageTypes };

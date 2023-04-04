@@ -4,7 +4,7 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type GetImportProgressParamsGET = {};
+export type GetImportProgressParamsGET = Record<string, unknown>;
 
 const GetImportProgressParamsGETSchema = {
 	type: 'object',

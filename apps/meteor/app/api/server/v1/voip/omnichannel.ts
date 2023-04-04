@@ -1,11 +1,11 @@
 import { Match, check } from 'meteor/check';
-import { IUser, IVoipExtensionWithAgentInfo } from '@rocket.chat/core-typings';
+import type { IUser, IVoipExtensionWithAgentInfo } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { LivechatVoip } from '@rocket.chat/core-services';
 
 import { API } from '../../api';
-import { hasPermission } from '../../../../authorization/server/index';
-import { LivechatVoip } from '../../../../../server/sdk';
 import { logger } from './logger';
+import { getPaginationItems } from '../../helpers/getPaginationItems';
 
 function filter(
 	array: IVoipExtensionWithAgentInfo[],
@@ -31,12 +31,9 @@ const isUserIdndTypeParams = (p: any): p is { userId: string; type: 'free' | 'al
 
 API.v1.addRoute(
 	'omnichannel/agent/extension',
-	{ authRequired: true },
+	{ authRequired: true, permissionsRequired: ['manage-agent-extension-association'] },
 	{
 		async post() {
-			if (!hasPermission(this.userId, 'manage-agent-extension-association')) {
-				return API.v1.unauthorized();
-			}
 			check(
 				this.bodyParams,
 				Match.OneOf(
@@ -94,13 +91,16 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'omnichannel/agent/extension/:username',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		permissionsRequired: {
+			GET: ['view-agent-extension-association'],
+			DELETE: ['manage-agent-extension-association'],
+		},
+	},
 	{
 		// Get the extensions associated with the agent passed as request params.
 		async get() {
-			if (!hasPermission(this.userId, 'view-agent-extension-association')) {
-				return API.v1.unauthorized();
-			}
 			check(
 				this.urlParams,
 				Match.ObjectIncluding({
@@ -128,9 +128,6 @@ API.v1.addRoute(
 		},
 
 		async delete() {
-			if (!hasPermission(this.userId, 'manage-agent-extension-association')) {
-				return API.v1.unauthorized();
-			}
 			check(
 				this.urlParams,
 				Match.ObjectIncluding({
@@ -179,8 +176,8 @@ API.v1.addRoute(
 					}),
 				),
 			);
-			const { type } = this.queryParams;
-			switch ((type as string).toLowerCase()) {
+
+			switch (this.queryParams.type.toLowerCase()) {
 				case 'free': {
 					const extensions = await LivechatVoip.getFreeExtensions();
 					if (!extensions) {
@@ -212,7 +209,7 @@ API.v1.addRoute(
 					return API.v1.success({ extensions });
 				}
 				default:
-					return API.v1.notFound(`${type} not found `);
+					return API.v1.notFound(`${this.queryParams.type} not found `);
 			}
 		},
 	},
@@ -223,8 +220,8 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['manage-agent-extension-association'] },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { status, agentId, queues, extension } = this.requestParams();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { status, agentId, queues, extension } = this.queryParams;
 
 			check(status, Match.Maybe(String));
 			check(agentId, Match.Maybe(String));
@@ -232,7 +229,12 @@ API.v1.addRoute(
 			check(extension, Match.Maybe(String));
 
 			const extensions = await LivechatVoip.getExtensionListWithAgentData();
-			const filteredExts = filter(extensions, { status, agentId, queues, extension });
+			const filteredExts = filter(extensions, {
+				status: status ?? undefined,
+				agentId: agentId ?? undefined,
+				queues: queues ?? undefined,
+				extension: extension ?? undefined,
+			});
 
 			// paginating in memory as Asterisk doesn't provide pagination for commands
 			return API.v1.success({
@@ -250,8 +252,8 @@ API.v1.addRoute(
 	{ authRequired: true, permissionsRequired: ['manage-agent-extension-association'] },
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
 			const { text, includeExtension = '' } = this.queryParams;
 
 			const { agents, total } = await LivechatVoip.getAvailableAgents(includeExtension, text, count, offset, sort);

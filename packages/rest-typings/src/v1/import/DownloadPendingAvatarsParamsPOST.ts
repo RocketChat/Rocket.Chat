@@ -4,7 +4,7 @@ const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type DownloadPendingAvatarsParamsPOST = {};
+export type DownloadPendingAvatarsParamsPOST = Record<string, unknown>;
 
 const DownloadPendingAvatarsParamsPOSTSchema = {
 	type: 'object',

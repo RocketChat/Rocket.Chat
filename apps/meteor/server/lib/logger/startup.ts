@@ -1,5 +1,6 @@
 import { settings } from '../../../app/settings/server';
-import { logLevel, LogLevelSetting } from './logLevel';
+import type { LogLevelSetting } from './logLevel';
+import { logLevel } from './logLevel';
 import { setQueueLimit } from './logQueue';
 
 settings.watch('Log_Level', (value) => {

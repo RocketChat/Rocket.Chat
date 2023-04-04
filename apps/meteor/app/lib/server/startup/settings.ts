@@ -1,15 +1,15 @@
-import { Random } from 'meteor/random';
+import { Random } from '@rocket.chat/random';
 
 import { settingsRegistry } from '../../../settings/server';
 import './email';
 import { MessageTypesValues } from '../../lib/MessageTypes';
 
 // Insert server unique id if it doesn't exist
-settingsRegistry.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
+void settingsRegistry.add('uniqueID', process.env.DEPLOYMENT_ID || Random.id(), {
 	public: true,
 });
 
-settingsRegistry.add('Initial_Channel_Created', false, {
+void settingsRegistry.add('Initial_Channel_Created', false, {
 	type: 'boolean',
 	hidden: true,
 });
@@ -17,7 +17,7 @@ settingsRegistry.add('Initial_Channel_Created', false, {
 // When you define a setting and want to add a description, you don't need to automatically define the i18nDescription
 // if you add a node to the i18n.json with the same setting name but with `_Description` it will automatically work.
 
-settingsRegistry.addGroup('Accounts', function () {
+void settingsRegistry.addGroup('Accounts', function () {
 	this.add('Accounts_AllowAnonymousRead', false, {
 		type: 'boolean',
 		public: true,
@@ -80,10 +80,6 @@ settingsRegistry.addGroup('Accounts', function () {
 	});
 	this.add('Accounts_LoginExpiration', 90, {
 		type: 'int',
-		public: true,
-	});
-	this.add('Accounts_ShowFormLogin', true, {
-		type: 'boolean',
 		public: true,
 	});
 	this.add('Accounts_EmailOrUsernamePlaceholder', '', {
@@ -379,6 +375,25 @@ settingsRegistry.addGroup('Accounts', function () {
 			public: true,
 			i18nLabel: 'Group_by_Type',
 		});
+		this.add('Accounts_Default_User_Preferences_themeAppearence', 'auto', {
+			type: 'select',
+			values: [
+				{
+					key: 'auto',
+					i18nLabel: 'Theme_match_system',
+				},
+				{
+					key: 'light',
+					i18nLabel: 'Theme_light',
+				},
+				{
+					key: 'dark',
+					i18nLabel: 'Theme_dark',
+				},
+			],
+			public: true,
+			i18nLabel: 'Theme_Appearence',
+		});
 		this.add('Accounts_Default_User_Preferences_sidebarViewMode', 'medium', {
 			type: 'select',
 			values: [
@@ -431,18 +446,19 @@ settingsRegistry.addGroup('Accounts', function () {
 			values: [
 				{
 					key: 'default',
-					i18nLabel: 'Default',
+					i18nLabel: 'Selected_first_reply_unselected_following_replies',
 				},
 				{
 					key: 'always',
-					i18nLabel: 'Always',
+					i18nLabel: 'Selected_by_default',
 				},
 				{
 					key: 'never',
-					i18nLabel: 'Never',
+					i18nLabel: 'Unselected_by_default',
 				},
 			],
 			public: true,
+			i18nLabel: 'Also_send_thread_message_to_channel_behavior',
 		});
 
 		this.add('Accounts_Default_User_Preferences_sidebarShowFavorites', true, {
@@ -469,26 +485,6 @@ settingsRegistry.addGroup('Accounts', function () {
 			],
 			public: true,
 			i18nLabel: 'Enter_Behaviour',
-		});
-
-		this.add('Accounts_Default_User_Preferences_messageViewMode', 0, {
-			type: 'select',
-			values: [
-				{
-					key: 0,
-					i18nLabel: 'Normal',
-				},
-				{
-					key: 1,
-					i18nLabel: 'Cozy',
-				},
-				{
-					key: 2,
-					i18nLabel: 'Compact',
-				},
-			],
-			public: true,
-			i18nLabel: 'MessageBox_view_mode',
 		});
 		this.add('Accounts_Default_User_Preferences_emailNotificationMode', 'mentions', {
 			type: 'select',
@@ -548,11 +544,10 @@ settingsRegistry.addGroup('Accounts', function () {
 			i18nLabel: 'Notifications_Sound_Volume',
 		});
 
-		this.add('Accounts_Default_User_Preferences_useLegacyMessageTemplate', false, {
+		this.add('Accounts_Default_User_Preferences_omnichannelTranscriptEmail', false, {
 			type: 'boolean',
 			public: true,
-			i18nLabel: 'Use_Legacy_Message_Template',
-			alert: 'Use_Legacy_Message_Template_alert',
+			i18nLabel: 'Omnichannel_transcript_email',
 		});
 	});
 
@@ -665,7 +660,7 @@ settingsRegistry.addGroup('Accounts', function () {
 	});
 });
 
-settingsRegistry.addGroup('OAuth', function () {
+void settingsRegistry.addGroup('OAuth', function () {
 	this.section('Facebook', function () {
 		const enableQuery = {
 			_id: 'Accounts_OAuth_Facebook',
@@ -822,7 +817,7 @@ settingsRegistry.addGroup('OAuth', function () {
 	});
 });
 
-settingsRegistry.addGroup('General', function () {
+void settingsRegistry.addGroup('General', function () {
 	this.add('Show_Setup_Wizard', 'pending', {
 		type: 'select',
 		public: true,
@@ -883,6 +878,11 @@ settingsRegistry.addGroup('General', function () {
 		type: 'boolean',
 	});
 
+	this.add('Extra_CSP_Domains', '', {
+		type: 'string',
+		multiline: true,
+	});
+
 	this.add('Iframe_Restrict_Access', true, {
 		type: 'boolean',
 		secret: true,
@@ -926,6 +926,20 @@ settingsRegistry.addGroup('General', function () {
 		public: true,
 	});
 	this.add('Unread_Count_DM', 'all_messages', {
+		type: 'select',
+		values: [
+			{
+				key: 'all_messages',
+				i18nLabel: 'All_messages',
+			},
+			{
+				key: 'mentions_only',
+				i18nLabel: 'Mentions_only',
+			},
+		],
+		public: true,
+	});
+	this.add('Unread_Count_Omni', 'all_messages', {
 		type: 'select',
 		values: [
 			{
@@ -1137,14 +1151,8 @@ settingsRegistry.addGroup('General', function () {
 	});
 });
 
-settingsRegistry.addGroup('Message', function () {
+void settingsRegistry.addGroup('Message', function () {
 	this.section('Message_Attachments', function () {
-		this.add('Message_Attachments_GroupAttach', false, {
-			type: 'boolean',
-			public: true,
-			i18nDescription: 'Message_Attachments_GroupAttachDescription',
-		});
-
 		this.add('Message_Attachments_Thumbnails_Enabled', true, {
 			type: 'boolean',
 			public: true,
@@ -1190,6 +1198,27 @@ settingsRegistry.addGroup('Message', function () {
 			public: true,
 		});
 	});
+	this.section('Read_Receipts', function () {
+		this.add('Message_Read_Receipt_Enabled', false, {
+			type: 'boolean',
+			enterprise: true,
+			invalidValue: false,
+			modules: ['message-read-receipt'],
+			public: true,
+		});
+		this.add('Message_Read_Receipt_Store_Users', false, {
+			type: 'boolean',
+			enterprise: true,
+			invalidValue: false,
+			modules: ['message-read-receipt'],
+			public: true,
+			enableQuery: { _id: 'Message_Read_Receipt_Enabled', value: true },
+		});
+	});
+	this.add('Message_CustomDomain_AutoLink', '', {
+		type: 'string',
+		public: true,
+	});
 	this.add('Message_AllowEditing', true, {
 		type: 'boolean',
 		public: true,
@@ -1218,10 +1247,6 @@ settingsRegistry.addGroup('Message', function () {
 	});
 	this.add('Message_AlwaysSearchRegExp', false, {
 		type: 'boolean',
-	});
-	this.add('Message_ShowEditedStatus', true, {
-		type: 'boolean',
-		public: true,
 	});
 	this.add('Message_ShowDeletedStatus', false, {
 		type: 'boolean',
@@ -1255,10 +1280,6 @@ settingsRegistry.addGroup('Message', function () {
 		type: 'boolean',
 		public: true,
 	});
-	this.add('Message_ShowFormattingTips', true, {
-		type: 'boolean',
-		public: true,
-	});
 	this.add('Message_GroupingPeriod', 300, {
 		type: 'int',
 		public: true,
@@ -1284,12 +1305,6 @@ settingsRegistry.addGroup('Message', function () {
 		type: 'action',
 		actionText: 'clear',
 		i18nLabel: 'clear_cache_now',
-	});
-	// TODO: deprecate this setting in favor of App
-	this.add('API_EmbedDisabledFor', '', {
-		type: 'string',
-		public: true,
-		i18nDescription: 'API_EmbedDisabledFor_Description',
 	});
 	// TODO: deprecate this setting in favor of App
 	this.add('API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16', {
@@ -1368,7 +1383,7 @@ settingsRegistry.addGroup('Message', function () {
 	});
 });
 
-settingsRegistry.addGroup('Meta', function () {
+void settingsRegistry.addGroup('Meta', function () {
 	this.add('Meta_language', '', {
 		type: 'string',
 	});
@@ -1394,7 +1409,7 @@ settingsRegistry.addGroup('Meta', function () {
 	});
 });
 
-settingsRegistry.addGroup('Mobile', function () {
+void settingsRegistry.addGroup('Mobile', function () {
 	this.add('Allow_Save_Media_to_Gallery', true, {
 		type: 'boolean',
 		public: true,
@@ -1425,7 +1440,7 @@ const pushEnabledWithoutGateway = [
 	},
 ];
 
-settingsRegistry.addGroup('Push', function () {
+void settingsRegistry.addGroup('Push', function () {
 	this.add('Push_enable', true, {
 		type: 'boolean',
 		public: true,
@@ -1545,8 +1560,48 @@ settingsRegistry.addGroup('Push', function () {
 	});
 });
 
-settingsRegistry.addGroup('Layout', function () {
-	this.section('Content', function () {
+void settingsRegistry.addGroup('Layout', function () {
+	this.section('Login', function () {
+		this.add('Layout_Login_Hide_Logo', false, {
+			type: 'boolean',
+			public: true,
+			enterprise: true,
+			invalidValue: false,
+		});
+		this.add('Layout_Login_Hide_Title', false, {
+			type: 'boolean',
+			public: true,
+			enterprise: true,
+			invalidValue: false,
+		});
+		this.add('Layout_Login_Hide_Powered_By', false, {
+			type: 'boolean',
+			public: true,
+			enterprise: true,
+			invalidValue: false,
+		});
+		this.add('Layout_Login_Template', 'horizontal-template', {
+			type: 'select',
+			values: [
+				{
+					key: 'vertical-template',
+					i18nLabel: 'Layout_Login_Template_Vertical',
+				},
+				{
+					key: 'horizontal-template',
+					i18nLabel: 'Layout_Login_Template_Horizontal',
+				},
+			],
+			public: true,
+			enterprise: true,
+			invalidValue: 'horizontal-template',
+		});
+		this.add('Accounts_ShowFormLogin', true, {
+			type: 'boolean',
+			public: true,
+		});
+	});
+	this.section('Layout_Home_Page_Content_Title', function () {
 		this.add('Layout_Home_Title', 'Home', {
 			type: 'string',
 			public: true,
@@ -1555,16 +1610,57 @@ settingsRegistry.addGroup('Layout', function () {
 			type: 'boolean',
 			public: true,
 		});
-		this.add(
-			'Layout_Home_Body',
-			'<p>Welcome to Rocket.Chat!</p>\n<p>The Rocket.Chat desktops apps for Windows, macOS and Linux are available to download <a title="Rocket.Chat desktop apps" href="https://rocket.chat/download" target="_blank" rel="noopener">here</a>.</p><p>The native mobile app, Rocket.Chat,\n  for Android and iOS is available from <a title="Rocket.Chat on Google Play" href="https://play.google.com/store/apps/details?id=chat.rocket.android" target="_blank" rel="noopener">Google Play</a> and the <a title="Rocket.Chat on the App Store" href="https://itunes.apple.com/app/rocket-chat/id1148741252" target="_blank" rel="noopener">App Store</a>.</p>\n<p>For further help, please consult the <a title="Rocket.Chat Documentation" href="https://rocket.chat/docs/" target="_blank" rel="noopener">documentation</a>.</p>\n<p>If you\'re an admin, feel free to change this content via <strong>Administration</strong> &rarr; <strong>Layout</strong> &rarr; <strong>Home Body</strong>. Or clicking <a title="Home Body Layout" href="/admin/Layout">here</a>.</p>',
-			{
-				type: 'code',
-				code: 'text/html',
-				multiline: true,
-				public: true,
-			},
-		);
+		this.add('Layout_Home_Body', '', {
+			i18nDescription: 'Layout_Custom_Content_Description',
+			type: 'code',
+			code: 'text/html',
+			multiline: true,
+			public: true,
+		});
+		this.add('Layout_Home_Custom_Block_Visible', false, {
+			type: 'boolean',
+			invalidValue: false,
+			public: true,
+			enableQuery: [
+				{
+					_id: 'Layout_Home_Body',
+					value: {
+						$exists: true,
+						$ne: '',
+					},
+				},
+				{
+					_id: 'Layout_Custom_Body_Only',
+					value: {
+						$exists: true,
+						$ne: true,
+					},
+				},
+			],
+		});
+		this.add('Layout_Custom_Body_Only', false, {
+			i18nDescription: 'Layout_Custom_Body_Only_Description',
+			type: 'boolean',
+			invalidValue: false,
+			enterprise: true,
+			public: true,
+			enableQuery: [
+				{
+					_id: 'Layout_Home_Body',
+					value: {
+						$exists: true,
+						$ne: '',
+					},
+				},
+				{
+					_id: 'Layout_Home_Custom_Block_Visible',
+					value: {
+						$exists: true,
+						$ne: false,
+					},
+				},
+			],
+		});
 		this.add('Layout_Terms_of_Service', 'Terms of Service <br> Go to APP SETTINGS &rarr; Layout to customize this page.', {
 			type: 'code',
 			code: 'text/html',
@@ -1591,6 +1687,12 @@ settingsRegistry.addGroup('Layout', function () {
 			code: 'text/html',
 			multiline: true,
 			public: true,
+		});
+		this.add('Layout_Sidenav_Footer_Dark', '<a href="/home"><img src="assets/logo_dark.png" alt="Home" /></a>', {
+			type: 'code',
+			code: 'text/html',
+			public: true,
+			i18nDescription: 'Layout_Sidenav_Footer_description',
 		});
 		return this.add('Layout_Sidenav_Footer', '<a href="/home"><img src="assets/logo.png" alt="Home" /></a>', {
 			type: 'code',
@@ -1668,7 +1770,7 @@ settingsRegistry.addGroup('Layout', function () {
 	});
 });
 
-settingsRegistry.addGroup('Logs', function () {
+void settingsRegistry.addGroup('Logs', function () {
 	this.add('Log_Level', '0', {
 		type: 'select',
 		values: [
@@ -1743,7 +1845,7 @@ settingsRegistry.addGroup('Logs', function () {
 	});
 });
 
-settingsRegistry.addGroup('Setup_Wizard', function () {
+void settingsRegistry.addGroup('Setup_Wizard', function () {
 	this.section('Organization_Info', function () {
 		this.add('Organization_Type', '', {
 			type: 'select',
@@ -3092,7 +3194,7 @@ settingsRegistry.addGroup('Setup_Wizard', function () {
 	});
 });
 
-settingsRegistry.addGroup('Rate Limiter', function () {
+void settingsRegistry.addGroup('Rate Limiter', function () {
 	this.section('DDP_Rate_Limiter', function () {
 		this.add('DDP_Rate_Limit_IP_Enabled', true, { type: 'boolean' });
 		this.add('DDP_Rate_Limit_IP_Requests_Allowed', 120000, {
@@ -3169,15 +3271,25 @@ settingsRegistry.addGroup('Rate Limiter', function () {
 	});
 });
 
-settingsRegistry.addGroup('Troubleshoot', function () {
+void settingsRegistry.addGroup('Troubleshoot', function () {
 	this.add('Troubleshoot_Disable_Notifications', false, {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Notifications_Alert',
 	});
+
+	// this settings will let clients know in case presence has been disabled
+	this.add('Presence_broadcast_disabled', false, {
+		type: 'boolean',
+		public: true,
+		readonly: true,
+	});
+
 	this.add('Troubleshoot_Disable_Presence_Broadcast', false, {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Presence_Broadcast_Alert',
+		enableQuery: { _id: 'Presence_broadcast_disabled', value: false },
 	});
+
 	this.add('Troubleshoot_Disable_Instance_Broadcast', false, {
 		type: 'boolean',
 		alert: 'Troubleshoot_Disable_Instance_Broadcast_Alert',
@@ -3204,28 +3316,33 @@ settingsRegistry.addGroup('Troubleshoot', function () {
 	});
 });
 
-settingsRegistry.addGroup('Call_Center', function () {
+void settingsRegistry.addGroup('Call_Center', function () {
+	// TODO: Check with the backend team if an i18nPlaceholder is possible
 	this.with({ tab: 'Settings' }, function () {
-		this.add('VoIP_Enabled', false, {
-			type: 'boolean',
-			public: true,
-			enableQuery: {
-				_id: 'Livechat_enabled',
-				value: true,
-			},
+		this.section('General_Settings', function () {
+			this.add('VoIP_Enabled', false, {
+				type: 'boolean',
+				public: true,
+				i18nDescription: 'VoIP_Enabled_Description',
+				enableQuery: {
+					_id: 'Livechat_enabled',
+					value: true,
+				},
+			});
+			this.add('VoIP_JWT_Secret', '', {
+				type: 'password',
+				i18nDescription: 'VoIP_JWT_Secret_description',
+				enableQuery: {
+					_id: 'VoIP_Enabled',
+					value: true,
+				},
+			});
 		});
-		this.add('VoIP_JWT_Secret', '', {
-			type: 'password',
-			i18nDescription: 'VoIP_JWT_Secret_description',
-			enableQuery: {
-				_id: 'VoIP_Enabled',
-				value: true,
-			},
-		});
-		this.section('Server_Configuration', function () {
+		this.section('Voip_Server_Configuration', function () {
 			this.add('VoIP_Server_Name', '', {
 				type: 'string',
 				public: true,
+				placeholder: 'WebSocket Server',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,
@@ -3234,6 +3351,7 @@ settingsRegistry.addGroup('Call_Center', function () {
 			this.add('VoIP_Server_Websocket_Path', '', {
 				type: 'string',
 				public: true,
+				placeholder: 'wss://your.domain.name',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,
@@ -3242,6 +3360,8 @@ settingsRegistry.addGroup('Call_Center', function () {
 			this.add('VoIP_Retry_Count', -1, {
 				type: 'int',
 				public: true,
+				i18nDescription: 'VoIP_Retry_Count_Description',
+				placeholder: '1',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,
@@ -3262,6 +3382,7 @@ settingsRegistry.addGroup('Call_Center', function () {
 			this.add('VoIP_Management_Server_Host', '', {
 				type: 'string',
 				public: true,
+				placeholder: 'https://your.domain.name',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,
@@ -3271,6 +3392,7 @@ settingsRegistry.addGroup('Call_Center', function () {
 			this.add('VoIP_Management_Server_Port', 0, {
 				type: 'int',
 				public: true,
+				placeholder: '8080',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,
@@ -3280,6 +3402,7 @@ settingsRegistry.addGroup('Call_Center', function () {
 			this.add('VoIP_Management_Server_Name', '', {
 				type: 'string',
 				public: true,
+				placeholder: 'Server Name',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,
@@ -3289,6 +3412,7 @@ settingsRegistry.addGroup('Call_Center', function () {
 			this.add('VoIP_Management_Server_Username', '', {
 				type: 'string',
 				public: true,
+				placeholder: 'Username',
 				enableQuery: {
 					_id: 'VoIP_Enabled',
 					value: true,

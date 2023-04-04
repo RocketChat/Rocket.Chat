@@ -1,12 +1,11 @@
 import limax from 'limax';
+import { SHA256 } from '@rocket.chat/sha256';
 // #ToDo: #TODO: Remove Meteor dependencies
-import { SHA256 } from 'meteor/sha';
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
 import ldapEscape from 'ldap-escape';
 import _ from 'underscore';
-import { ILDAPEntry, LDAPLoginResult, ILDAPUniqueIdentifierField, IUser, LoginUsername } from '@rocket.chat/core-typings';
-import type { IImportUser } from '@rocket.chat/core-typings';
+import type { ILDAPEntry, LDAPLoginResult, ILDAPUniqueIdentifierField, IUser, LoginUsername, IImportUser } from '@rocket.chat/core-typings';
 import { Users as UsersRaw } from '@rocket.chat/models';
 
 import { settings } from '../../../app/settings/server';
@@ -17,6 +16,7 @@ import { logger, authLogger, connLogger } from './Logger';
 import type { IConverterOptions } from '../../../app/importer/server/classes/ImportDataConverter';
 import { callbacks } from '../../../lib/callbacks';
 import { setUserAvatar } from '../../../app/lib/server/functions';
+import { omit } from '../../../lib/utils/omit';
 
 export class LDAPManager {
 	public static async login(username: string, password: string): Promise<LDAPLoginResult> {
@@ -82,7 +82,7 @@ export class LDAPManager {
 		}
 	}
 
-	public static syncUserAvatar(user: IUser, ldapUser: ILDAPEntry): void {
+	public static async syncUserAvatar(user: IUser, ldapUser: ILDAPEntry): Promise<void> {
 		if (!user?._id || settings.get('LDAP_Sync_User_Avatar') !== true) {
 			return;
 		}
@@ -100,7 +100,7 @@ export class LDAPManager {
 		logger.debug({ msg: 'Syncing user avatar', username: user.username });
 		// #ToDo: Remove Meteor references here
 		// runAsUser is needed for now because the UploadFS class rejects files if there's no userId
-		Meteor.runAsUser(user._id, () => setUserAvatar(user, avatar, 'image/jpeg', 'rest', hash));
+		await Meteor.runAsUser(user._id, async () => setUserAvatar(user, avatar, 'image/jpeg', 'rest', hash));
 	}
 
 	// This method will only find existing users that are already linked to LDAP
@@ -218,20 +218,26 @@ export class LDAPManager {
 			return;
 		}
 
-		this.onLogin(ldapUser, user, password, ldap, true);
+		await this.onLogin(ldapUser, user, password, ldap, true);
 
 		return {
 			userId: user._id,
 		};
 	}
 
-	private static onLogin(ldapUser: ILDAPEntry, user: IUser, password: string | undefined, ldap: LDAPConnection, isNewUser: boolean): void {
+	private static async onLogin(
+		ldapUser: ILDAPEntry,
+		user: IUser,
+		password: string | undefined,
+		ldap: LDAPConnection,
+		isNewUser: boolean,
+	): Promise<void> {
 		logger.debug('running onLDAPLogin');
 		if (settings.get<boolean>('LDAP_Login_Fallback') && typeof password === 'string' && password.trim() !== '') {
 			Accounts.setPassword(user._id, password, { logout: false });
 		}
 
-		this.syncUserAvatar(user, ldapUser);
+		await this.syncUserAvatar(user, ldapUser);
 		callbacks.run('onLDAPLogin', { user, ldapUser, isNewUser }, ldap);
 	}
 
@@ -256,7 +262,7 @@ export class LDAPManager {
 		logger.debug({ msg: 'Logging user in', syncData });
 		const updatedUser = (syncData && (await this.syncUserForLogin(ldapUser, user))) || user;
 
-		this.onLogin(ldapUser, updatedUser, password, ldap, false);
+		await this.onLogin(ldapUser, updatedUser, password, ldap, false);
 		return {
 			userId: user._id,
 		};
@@ -269,7 +275,7 @@ export class LDAPManager {
 	): Promise<IUser | undefined> {
 		logger.debug({
 			msg: 'Syncing user data',
-			ldapUser: _.omit(ldapUser, '_raw'),
+			ldapUser: omit(ldapUser, '_raw'),
 			user: { ...(existingUser && { email: existingUser.emails, _id: existingUser._id }) },
 		});
 
@@ -287,7 +293,7 @@ export class LDAPManager {
 		}
 
 		const options = this.getConverterOptions();
-		LDAPDataConverter.convertSingleUser(userData, options);
+		await LDAPDataConverter.convertSingleUser(userData, options);
 
 		return existingUser || this.findExistingLDAPUser(ldapUser);
 	}
@@ -383,7 +389,7 @@ export class LDAPManager {
 			return [`${username}@${settings.get('LDAP_Default_Domain')}`];
 		}
 
-		if (ldapUser.mail && ldapUser.mail.includes('@')) {
+		if (ldapUser.mail?.includes('@')) {
 			return [ldapUser.mail];
 		}
 

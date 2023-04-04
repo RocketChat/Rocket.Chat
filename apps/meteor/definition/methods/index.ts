@@ -1,2 +1,0 @@
-import './federation';
-import './omnichannel';

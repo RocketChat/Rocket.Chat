@@ -1,8 +1,8 @@
 import { Margins } from '@rocket.chat/fuselage';
-import { Meta, Story } from '@storybook/react';
+import type { Meta, Story } from '@storybook/react';
 import React from 'react';
 
-import ChannelsTab from './ChannelsTab';
+import ChannelsTab from './ChannelsOverview';
 
 export default {
 	title: 'Enterprise/Admin/Engagement Dashboard/ChannelsTab',

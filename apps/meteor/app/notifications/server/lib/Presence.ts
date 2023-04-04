@@ -2,12 +2,12 @@ import { Emitter } from '@rocket.chat/emitter';
 import type { IPublication, IStreamerConstructor, Connection, IStreamer } from 'meteor/rocketchat:streamer';
 import type { IUser } from '@rocket.chat/core-typings';
 
-export type UserPresenceStreamProps = {
+type UserPresenceStreamProps = {
 	added: IUser['_id'][];
 	removed: IUser['_id'][];
 };
 
-export type UserPresenceStreamArgs = {
+type UserPresenceStreamArgs = {
 	uid: string;
 	args: unknown;
 };
@@ -18,7 +18,7 @@ const e = new Emitter<{
 
 const clients = new WeakMap<Connection, UserPresence>();
 
-export class UserPresence {
+class UserPresence {
 	private readonly streamer: IStreamer;
 
 	private readonly publication: IPublication;
@@ -46,7 +46,7 @@ export class UserPresence {
 
 	run = (args: UserPresenceStreamArgs): void => {
 		const payload = this.streamer.changedPayload(this.streamer.subscriptionName, args.uid, { ...args, eventName: args.uid }); // there is no good explanation to keep eventName, I just want to save one 'DDPCommon.parseDDP' on the client side, so I'm trying to fit the Meteor Streamer's payload
-		(this.publication as any)._session.socket.send(payload);
+		if (payload) this.publication._session.socket?.send(payload);
 	};
 
 	stop(): void {
@@ -96,6 +96,7 @@ export class StreamPresence {
 		} as any)(name);
 	}
 }
+
 export const emit = (uid: string, args: UserPresenceStreamArgs): void => {
 	e.emit(uid, { uid, args });
 };

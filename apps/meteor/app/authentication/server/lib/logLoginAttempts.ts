@@ -1,4 +1,4 @@
-import { ILoginAttempt } from '../ILoginAttempt';
+import type { ILoginAttempt } from '../ILoginAttempt';
 import { settings } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
@@ -16,13 +16,13 @@ export const logFailedLoginAttempts = (login: ILoginAttempt): void => {
 	if (!settings.get('Login_Logs_ClientIp')) {
 		clientAddress = '-';
 	}
-	let forwardedFor = connection.httpHeaders && connection.httpHeaders['x-forwarded-for'];
-	let realIp = connection.httpHeaders && connection.httpHeaders['x-real-ip'];
+	let forwardedFor = connection.httpHeaders?.['x-forwarded-for'];
+	let realIp = connection.httpHeaders?.['x-real-ip'];
 	if (!settings.get('Login_Logs_ForwardedForIp')) {
 		forwardedFor = '-';
 		realIp = '-';
 	}
-	let userAgent = connection.httpHeaders && connection.httpHeaders['user-agent'];
+	let userAgent = connection.httpHeaders?.['user-agent'];
 	if (!settings.get('Login_Logs_UserAgent')) {
 		userAgent = '-';
 	}

@@ -48,13 +48,13 @@ export type FieldExpression<T> = {
 		$caseSensitive?: boolean;
 		$diacriticSensitive?: boolean;
 	};
-	$where?: string | Function;
+	$where?: string | ((this: T) => boolean);
 	$geoIntersects?: unknown;
 	$geoWithin?: unknown;
 	$near?: unknown;
 	$nearSphere?: unknown;
 	$all?: T[];
-	$elemMatch?: T extends {} ? Query<T> : FieldExpression<T>;
+	$elemMatch?: T extends Record<string, unknown> ? Query<T> : FieldExpression<T>;
 	$size?: number;
 	$bitsAllClear?: unknown;
 	$bitsAllSet?: unknown;
@@ -68,10 +68,12 @@ export type Flatten<T> = T extends unknown[] ? T[0] : T;
 export type Query<T> = {
 	[P in keyof T]?: Flatten<T[P]> | RegExp | FieldExpression<Flatten<T[P]>>;
 } & {
+	[P in keyof T as P extends string ? `${P}.${Extract<keyof T[P], string>}` : never]?: Flatten<T[P]> | RegExp | FieldExpression<unknown>;
+} & {
 	$or?: Query<T>[];
 	$and?: Query<T>[];
 	$nor?: Query<T>[];
-} & Record<string, FieldExpression<unknown>>;
+};
 
 export type Sort =
 	| (string | [string, 'asc' | 'desc'])[]

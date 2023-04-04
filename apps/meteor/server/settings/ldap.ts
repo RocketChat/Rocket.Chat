@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../app/settings/server';
 
-settingsRegistry.addGroup('LDAP', function () {
+void settingsRegistry.addGroup('LDAP', function () {
 	const enableQuery = { _id: 'LDAP_Enable', value: true };
 	const adOnly = { _id: 'LDAP_Server_Type', value: 'ad' };
 	const ldapOnly = { _id: 'LDAP_Server_Type', value: '' };
@@ -19,7 +19,7 @@ settingsRegistry.addGroup('LDAP', function () {
 		});
 
 		this.add('LDAP_Host', '', { type: 'string', enableQuery });
-		this.add('LDAP_Port', '389', { type: 'int', enableQuery });
+		this.add('LDAP_Port', 389, { type: 'int', enableQuery });
 		this.add('LDAP_Reconnect', false, { type: 'boolean', enableQuery });
 
 		this.add('LDAP_Login_Fallback', false, { type: 'boolean', enableQuery });

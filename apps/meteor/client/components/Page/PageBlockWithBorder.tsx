@@ -1,5 +1,6 @@
-import { Box } from '@rocket.chat/fuselage';
-import React, { ComponentProps, forwardRef, useContext } from 'react';
+import type { Box } from '@rocket.chat/fuselage';
+import type { ComponentProps } from 'react';
+import React, { forwardRef, useContext } from 'react';
 
 import PageContent from './PageContent';
 import PageContext from './PageContext';
@@ -11,8 +12,8 @@ const PageBlockWithBorder = forwardRef<HTMLElement, ComponentProps<typeof Box>>(
 			{...props}
 			pb='x16'
 			ref={ref}
-			borderBlockEndColor={border ? 'neutral-200' : 'transparent'}
-			borderBlockEndWidth='x2'
+			borderBlockEndColor={border ? 'extra-light' : 'transparent'}
+			borderBlockEndWidth='default'
 			height='auto'
 		/>
 	);

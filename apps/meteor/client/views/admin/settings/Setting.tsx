@@ -1,10 +1,14 @@
-import { ISettingColor, isSettingColor, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
+import type { ISettingColor, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
+import { isSettingColor, isSetting } from '@rocket.chat/core-typings';
+import { Button } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import { ExternalLink } from '@rocket.chat/ui-client';
 import { useSettingStructure, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useEffect, useMemo, useState, useCallback, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 
 import MarkdownText from '../../../components/MarkdownText';
-import { useEditableSetting, useEditableSettingsDispatch } from '../EditableSettingsContext';
+import { useEditableSetting, useEditableSettingsDispatch, useIsEnterprise } from '../EditableSettingsContext';
 import MemoizedSetting from './MemoizedSetting';
 import SettingSkeleton from './SettingSkeleton';
 
@@ -17,9 +21,15 @@ type SettingProps = {
 function Setting({ className = undefined, settingId, sectionChanged }: SettingProps): ReactElement {
 	const setting = useEditableSetting(settingId);
 	const persistedSetting = useSettingStructure(settingId);
+	const isEnterprise = useIsEnterprise();
 
 	if (!setting || !persistedSetting) {
 		throw new Error(`Setting ${settingId} not found`);
+	}
+
+	// Checks if setting has at least required fields before doing anything
+	if (!isSetting(setting)) {
+		throw new Error(`Setting ${settingId} is not valid`);
 	}
 
 	const dispatch = useEditableSettingsDispatch();
@@ -87,13 +97,30 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 
 	const { _id, disabled, readonly, type, packageValue, i18nLabel, i18nDescription, alert, invisible } = setting;
 
-	const label = (t.has(i18nLabel) && t(i18nLabel)) || (t.has(_id) && t(_id));
+	const label = (t.has(i18nLabel) && t(i18nLabel)) || (t.has(_id) && t(_id)) || i18nLabel || _id;
+
 	const hint = useMemo(
 		() => (t.has(i18nDescription) ? <MarkdownText variant='inline' preserveHtml content={t(i18nDescription)} /> : undefined),
 		[i18nDescription, t],
 	);
-	const callout = useMemo(() => (alert && t.has(alert) ? <span dangerouslySetInnerHTML={{ __html: t(alert) }} /> : undefined), [alert, t]);
+	const callout = useMemo(() => alert && <span dangerouslySetInnerHTML={{ __html: t.has(alert) ? t(alert) : alert }} />, [alert, t]);
+
+	const shouldDisableEnterprise = setting.enterprise && !isEnterprise;
+
+	const PRICING_URL = 'https://go.rocket.chat/i/see-paid-plan-customize-homepage';
+
+	const showUpgradeButton = useMemo(
+		() =>
+			shouldDisableEnterprise ? (
+				<ExternalLink to={PRICING_URL}>
+					<Button>{t('See_Paid_Plan')}</Button>
+				</ExternalLink>
+			) : undefined,
+		[shouldDisableEnterprise, t],
+	);
+
 	const hasResetButton =
+		!shouldDisableEnterprise &&
 		!readonly &&
 		type !== 'asset' &&
 		((isSettingColor(setting) && JSON.stringify(setting.packageEditor) !== JSON.stringify(editor)) ||
@@ -108,8 +135,10 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 			label={label || undefined}
 			hint={hint}
 			callout={callout}
+			showUpgradeButton={showUpgradeButton}
 			sectionChanged={sectionChanged}
 			{...setting}
+			disabled={setting.disabled || shouldDisableEnterprise}
 			value={value}
 			editor={editor}
 			hasResetButton={hasResetButton}

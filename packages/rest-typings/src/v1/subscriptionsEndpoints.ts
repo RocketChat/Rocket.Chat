@@ -5,7 +5,7 @@ type SubscriptionsGet = { updatedSince?: string };
 
 type SubscriptionsGetOne = { roomId: IRoom['_id'] };
 
-type SubscriptionsRead = { rid: IRoom['_id'] };
+type SubscriptionsRead = { rid: IRoom['_id']; readThreads?: boolean } | { roomId: IRoom['_id']; readThreads?: boolean };
 
 type SubscriptionsUnread = { roomId: IRoom['_id'] } | { firstUnreadMessage: Pick<IMessage, '_id'> };
 
@@ -41,14 +41,36 @@ const SubscriptionsGetOneSchema = {
 export const isSubscriptionsGetOneProps = ajv.compile<SubscriptionsGetOne>(SubscriptionsGetOneSchema);
 
 const SubscriptionsReadSchema = {
-	type: 'object',
-	properties: {
-		rid: {
-			type: 'string',
+	anyOf: [
+		{
+			type: 'object',
+			properties: {
+				rid: {
+					type: 'string',
+				},
+				readThreads: {
+					type: 'boolean',
+					nullable: true,
+				},
+			},
+			required: ['rid'],
+			additionalProperties: false,
 		},
-	},
-	required: ['rid'],
-	additionalProperties: false,
+		{
+			type: 'object',
+			properties: {
+				roomId: {
+					type: 'string',
+				},
+				readThreads: {
+					type: 'boolean',
+					nullable: true,
+				},
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		},
+	],
 };
 
 export const isSubscriptionsReadProps = ajv.compile<SubscriptionsRead>(SubscriptionsReadSchema);
@@ -88,24 +110,24 @@ const SubscriptionsUnreadSchema = {
 export const isSubscriptionsUnreadProps = ajv.compile<SubscriptionsUnread>(SubscriptionsUnreadSchema);
 
 export type SubscriptionsEndpoints = {
-	'subscriptions.get': {
+	'/v1/subscriptions.get': {
 		GET: (params: SubscriptionsGet) => {
 			update: ISubscription[];
 			remove: (Pick<ISubscription, '_id'> & { _deletedAt: Date })[];
 		};
 	};
 
-	'subscriptions.getOne': {
+	'/v1/subscriptions.getOne': {
 		GET: (params: SubscriptionsGetOne) => {
 			subscription: ISubscription | null;
 		};
 	};
 
-	'subscriptions.read': {
+	'/v1/subscriptions.read': {
 		POST: (params: SubscriptionsRead) => void;
 	};
 
-	'subscriptions.unread': {
+	'/v1/subscriptions.unread': {
 		POST: (params: SubscriptionsUnread) => void;
 	};
 };

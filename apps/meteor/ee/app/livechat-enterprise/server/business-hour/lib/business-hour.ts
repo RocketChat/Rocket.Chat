@@ -3,7 +3,7 @@ import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatBusinessHours } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../../../../app/authorization/server/functions/hasPermission';
-import { IPaginatedResponse, IPagination } from '../../api/lib/definition';
+import type { IPaginatedResponse, IPagination } from '../../api/lib/definition';
 
 interface IResponse extends IPaginatedResponse {
 	businessHours: ILivechatBusinessHour[];

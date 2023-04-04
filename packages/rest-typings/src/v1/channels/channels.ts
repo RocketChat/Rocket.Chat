@@ -1,16 +1,36 @@
-import type { IUpload, IMessage, IRoom, ITeam, IGetRoomRoles, IUser } from '@rocket.chat/core-typings';
+import type { IUpload, IMessage, IRoom, ITeam, IGetRoomRoles, IUser, IIntegration } from '@rocket.chat/core-typings';
 
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 import type { ChannelsAddAllProps } from './ChannelsAddAllProps';
 import type { ChannelsArchiveProps } from './ChannelsArchiveProps';
+import type { ChannelsConvertToTeamProps } from './ChannelsConvertToTeamProps';
+import type { ChannelsCreateProps } from './ChannelsCreateProps';
 import type { ChannelsDeleteProps } from './ChannelsDeleteProps';
 import type { ChannelsGetAllUserMentionsByChannelProps } from './ChannelsGetAllUserMentionsByChannelProps';
 import type { ChannelsHistoryProps } from './ChannelsHistoryProps';
+import type { ChannelsJoinProps } from './ChannelsJoinProps';
+import type { ChannelsKickProps } from './ChannelsKickProps';
+import type { ChannelsLeaveProps } from './ChannelsLeaveProps';
 import type { ChannelsMessagesProps } from './ChannelsMessagesProps';
+import type { ChannelsModeratorsProps } from './ChannelsModeratorsProps';
 import type { ChannelsOpenProps } from './ChannelsOpenProps';
+import type { ChannelsRolesProps } from './ChannelsRolesProps';
 import type { ChannelsSetAnnouncementProps } from './ChannelsSetAnnouncementProps';
+import type { ChannelsSetReadOnlyProps } from './ChannelsSetReadOnlyProps';
 import type { ChannelsUnarchiveProps } from './ChannelsUnarchiveProps';
+import type { ChannelsGetIntegrationsProps } from './ChannelsGetIntegrationsProps';
+import type { ChannelsListProps } from './ChannelsListProps';
+import type { ChannelsInviteProps } from './ChannelsInviteProps';
+import type { ChannelsOnlineProps } from './ChannelsOnlineProps';
+import type { ChannelsRenameProps } from './ChannelsRenameProps';
+import type { ChannelsSetCustomFieldsProps } from './ChannelsSetCustomFieldsProps';
+import type { ChannelsSetDescriptionProps } from './ChannelsSetDescriptionProps';
+import type { ChannelsSetPurposeProps } from './ChannelsSetPurposeProps';
+import type { ChannelsSetTopicProps } from './ChannelsSetTopicProps';
+import type { ChannelsSetTypeProps } from './ChannelsSetTypeProps';
+import type { ChannelsSetDefaultProps } from './ChannelsSetDefaultProps';
+import type { ChannelsSetJoinCodeProps } from './ChannelsSetJoinCodeProps';
 
 export type ChannelsEndpoints = {
 	'/v1/channels.files': {
@@ -39,21 +59,12 @@ export type ChannelsEndpoints = {
 		POST: (params: ChannelsUnarchiveProps) => void;
 	};
 	'/v1/channels.create': {
-		POST: (params: {
-			name: string;
-			members: string[];
-			readOnly: boolean;
-			extraData: {
-				broadcast: boolean;
-				encrypted: boolean;
-				teamId?: string;
-			};
-		}) => {
-			group: Partial<IRoom>;
+		POST: (params: ChannelsCreateProps) => {
+			channel: Omit<IRoom, 'joinCode' | 'members' | 'importIds' | 'e2e'>;
 		};
 	};
 	'/v1/channels.convertToTeam': {
-		POST: (params: { channelId: string; channelName: string }) => {
+		POST: (params: ChannelsConvertToTeamProps) => {
 			team: ITeam;
 		};
 	};
@@ -61,53 +72,57 @@ export type ChannelsEndpoints = {
 		GET: (params: { roomId: string } | { roomName: string }) => { channel: IRoom };
 	};
 	'/v1/channels.counters': {
-		GET: (params: { roomId: string } | { roomName: string }) => {
+		GET: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => {
 			joined: boolean;
-			members: number;
-			unreads: number;
-			unreadsFrom: Date;
-			msgs: number;
-			latest: Date;
-			userMentions: number;
+			members: number | null;
+			unreads: number | null;
+			unreadsFrom: Date | null;
+			msgs: number | null;
+			latest: Date | null;
+			userMentions: number | null;
 		};
 	};
 	'/v1/channels.join': {
-		POST: (params: { roomId: string; joinCode?: string } | { roomName: string; joinCode?: string }) => {
+		POST: (params: ChannelsJoinProps) => {
 			channel: IRoom;
 		};
 	};
 	'/v1/channels.close': {
-		POST: (params: { roomId: string } | { roomName: string }) => {};
+		POST: (params: { roomId: string } | { roomName: string }) => void;
 	};
 	'/v1/channels.kick': {
-		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => {};
+		POST: (params: ChannelsKickProps) => {
+			channel: IRoom;
+		};
 	};
 	'/v1/channels.delete': {
 		POST: (params: ChannelsDeleteProps) => void;
 	};
 	'/v1/channels.leave': {
-		POST: (params: { roomId: string } | { roomName: string }) => {};
+		POST: (params: ChannelsLeaveProps) => {
+			channel: IRoom;
+		};
 	};
 	'/v1/channels.addModerator': {
-		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => {};
+		POST: (params: ChannelsModeratorsProps) => void;
 	};
 	'/v1/channels.removeModerator': {
-		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => {};
+		POST: (params: ChannelsModeratorsProps) => void;
 	};
 	'/v1/channels.addOwner': {
-		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => {};
+		POST: (params: ChannelsModeratorsProps) => void;
 	};
 	'/v1/channels.removeOwner': {
-		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => {};
+		POST: (params: ChannelsModeratorsProps) => void;
 	};
 	'/v1/channels.addLeader': {
-		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => {};
+		POST: (params: ChannelsModeratorsProps) => void;
 	};
 	'/v1/channels.removeLeader': {
-		POST: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => {};
+		POST: (params: ChannelsModeratorsProps) => void;
 	};
 	'/v1/channels.roles': {
-		GET: (params: { roomId: string } | { roomName: string }) => { roles: IGetRoomRoles[] };
+		GET: (params: ChannelsRolesProps) => { roles: IGetRoomRoles[] };
 	};
 	'/v1/channels.messages': {
 		GET: (params: ChannelsMessagesProps) => PaginatedResult<{
@@ -118,7 +133,7 @@ export type ChannelsEndpoints = {
 		POST: (params: ChannelsOpenProps) => void;
 	};
 	'/v1/channels.setReadOnly': {
-		POST: (params: { roomId: string; readOnly: boolean } | { roomName: string; readOnly: boolean }) => {
+		POST: (params: ChannelsSetReadOnlyProps) => {
 			channel: IRoom;
 		};
 	};
@@ -133,7 +148,9 @@ export type ChannelsEndpoints = {
 		}>;
 	};
 	'/v1/channels.setAnnouncement': {
-		POST: (params: ChannelsSetAnnouncementProps) => {};
+		POST: (params: ChannelsSetAnnouncementProps) => {
+			announcement: string;
+		};
 	};
 	'/v1/channels.getAllUserMentionsByChannel': {
 		GET: (params: ChannelsGetAllUserMentionsByChannelProps) => PaginatedResult<{
@@ -142,5 +159,79 @@ export type ChannelsEndpoints = {
 	};
 	'/v1/channels.moderators': {
 		GET: (params: { roomId: string } | { roomName: string }) => { moderators: Pick<IUser, '_id' | 'name' | 'username'>[] };
+	};
+	'/v1/channels.getIntegrations': {
+		GET: (params: ChannelsGetIntegrationsProps) => {
+			count: number;
+			offset: number;
+			integrations: IIntegration[];
+			total: number;
+		};
+	};
+	'/v1/channels.invite': {
+		POST: (params: ChannelsInviteProps) => {
+			channel: IRoom;
+		};
+	};
+	'/v1/channels.list': {
+		GET: (params: ChannelsListProps) => {
+			count: number;
+			offset: number;
+			channels: IRoom[];
+			total: number;
+		};
+	};
+	'/v1/channels.list.joined': {
+		GET: (params: ChannelsListProps) => {
+			count: number;
+			offset: number;
+			channels: IRoom[];
+			total: number;
+		};
+	};
+	'/v1/channels.online': {
+		GET: (params: ChannelsOnlineProps) => {
+			online: Pick<IUser, '_id' | 'username'>[];
+		};
+	};
+	'/v1/channels.rename': {
+		POST: (params: ChannelsRenameProps) => {
+			channel: IRoom;
+		};
+	};
+	'/v1/channels.setCustomFields': {
+		POST: (params: ChannelsSetCustomFieldsProps) => {
+			channel: IRoom;
+		};
+	};
+	'/v1/channels.setDescription': {
+		POST: (params: ChannelsSetDescriptionProps) => {
+			description: string;
+		};
+	};
+	'/v1/channels.setPurpose': {
+		POST: (params: ChannelsSetPurposeProps) => {
+			purpose: string;
+		};
+	};
+	'/v1/channels.setTopic': {
+		POST: (params: ChannelsSetTopicProps) => {
+			topic: string;
+		};
+	};
+	'/v1/channels.setType': {
+		POST: (params: ChannelsSetTypeProps) => {
+			channel: IRoom;
+		};
+	};
+	'/v1/channels.setDefault': {
+		POST: (params: ChannelsSetDefaultProps) => {
+			channel: IRoom;
+		};
+	};
+	'/v1/channels.setJoinCode': {
+		POST: (params: ChannelsSetJoinCodeProps) => {
+			channel: IRoom;
+		};
 	};
 };

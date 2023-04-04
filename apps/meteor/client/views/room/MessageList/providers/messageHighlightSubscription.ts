@@ -1,7 +1,7 @@
-import { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 
 type SetHighlightFn = (_id: IMessage['_id']) => void;
-type ClearHighlightFn = (_id: IMessage['_id']) => void;
+type ClearHighlightFn = () => void;
 
 type MessageHighlightSubscription = {
 	subscribe: (callback: () => void) => () => void;

@@ -1,10 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 
-import { t, getURL } from '../../utils/client';
+import { getURL } from '../../utils/client';
 import { WebdavAccounts } from '../../models/client';
 import { settings } from '../../settings/client';
-import { MessageAction, modal } from '../../ui-utils/client';
+import { MessageAction } from '../../ui-utils/client';
 import { messageArgs } from '../../../client/lib/utils/messageArgs';
+import { imperativeModal } from '../../../client/lib/imperativeModal';
+import SaveToWebdav from '../../../client/views/room/webdav/SaveToWebdavModal';
 
 Meteor.startup(function () {
 	MessageAction.addButton({
@@ -27,21 +29,16 @@ Meteor.startup(function () {
 		action(_, props) {
 			const { message = messageArgs(this).msg } = props;
 			const [attachment] = message.attachments || [];
-			const { file } = message;
 			const url = getURL(attachment.title_link, { full: true });
-			modal.open({
-				data: {
-					message,
-					attachment,
-					file,
-					url,
+			imperativeModal.open({
+				component: SaveToWebdav,
+				props: {
+					data: {
+						attachment,
+						url,
+					},
+					onClose: imperativeModal.close,
 				},
-				title: t('Save_To_Webdav'),
-				content: 'selectWebdavAccount',
-				showCancelButton: true,
-				showConfirmButton: false,
-				closeOnCancel: true,
-				html: true,
 			});
 		},
 		order: 100,

@@ -1,10 +1,10 @@
-import { IGroupVideoConference } from '@rocket.chat/core-typings';
+import type { IGroupVideoConference } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Button, Message, Box, Avatar } from '@rocket.chat/fuselage';
+import { Button, Message, Box, Avatar, Palette } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import colors from '@rocket.chat/fuselage-tokens/colors';
 import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
-import React, { ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React from 'react';
 
 import UserAvatar from '../../../../../components/avatar/UserAvatar';
 import { useVideoConfJoinCall } from '../../../../../contexts/VideoConfContext';
@@ -39,12 +39,11 @@ const VideoConfListItem = ({
 	const hovered = css`
 		&:hover,
 		&:focus {
-			background: ${colors.n100};
+			background: ${Palette.surface['surface-tint']};
 			.rcx-message {
-				background: ${colors.n100};
+				background: ${Palette.surface['surface-tint']};
 			}
 		}
-		border-bottom: 2px solid ${colors.n300} !important;
 	`;
 
 	const handleJoinConference = useMutableCallback((): void => {
@@ -53,7 +52,14 @@ const VideoConfListItem = ({
 	});
 
 	return (
-		<Box className={[...className, hovered].filter(Boolean)} pb='x8'>
+		<Box
+			color='default'
+			borderBlockEndWidth={2}
+			borderBlockEndColor='stroke-extra-light'
+			borderBlockEndStyle='solid'
+			className={[...className, hovered].filter(Boolean)}
+			pb='x8'
+		>
 			<Message {...props}>
 				<Message.LeftContainer>
 					{username && <UserAvatar username={username} className='rcx-message__avatar' size='x36' />}
@@ -88,7 +94,7 @@ const VideoConfListItem = ({
 								</Avatar.Stack>
 								<Box mis='x4'>
 									{joinedUsers.length > VIDEOCONF_STACK_MAX_USERS
-										? t('__usersCount__members_joined', { usersCount: joinedUsers.length - VIDEOCONF_STACK_MAX_USERS })
+										? t('__usersCount__member_joined', { usersCount: joinedUsers.length - VIDEOCONF_STACK_MAX_USERS })
 										: t('joined')}
 								</Box>
 							</Box>

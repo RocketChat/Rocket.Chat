@@ -9,7 +9,6 @@ let self;
 let oldStatus;
 
 const userPrensence = {
-
 	init() {
 		if (initiated) {
 			return;

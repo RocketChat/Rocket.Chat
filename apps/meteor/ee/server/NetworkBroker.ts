@@ -1,9 +1,8 @@
-import { ServiceBroker, Context, ServiceSchema } from 'moleculer';
+import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
+import { asyncLocalStorage } from '@rocket.chat/core-services';
+import type { IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
 
-import { asyncLocalStorage } from '../../server/sdk';
-import { IBroker, IBrokerNode, IServiceMetrics } from '../../server/sdk/types/IBroker';
-import { ServiceClass } from '../../server/sdk/types/ServiceClass';
-import { EventSignatures } from '../../server/sdk/lib/Events';
+import { EnterpriseCheck } from './lib/EnterpriseCheck';
 
 const events: { [k: string]: string } = {
 	onNodeConnected: '$node.connected',
@@ -34,8 +33,6 @@ export class NetworkBroker implements IBroker {
 		this.broker = broker;
 
 		this.metrics = broker.metrics;
-
-		this.started = this.broker.start();
 	}
 
 	async call(method: string, data: any): Promise<any> {
@@ -73,43 +70,42 @@ export class NetworkBroker implements IBroker {
 		return this.broker.call(method, data);
 	}
 
-	destroyService(instance: ServiceClass): void {
-		this.broker.destroyService(instance.getName());
+	destroyService(instance: IServiceClass): void {
+		const name = instance.getName();
+		if (!name) {
+			return;
+		}
+		void this.broker.destroyService(name);
 	}
 
-	createService(instance: ServiceClass): void {
+	createService(instance: IServiceClass, serviceDependencies?: string[]): void {
 		const methods = (
 			instance.constructor?.name === 'Object'
 				? Object.getOwnPropertyNames(instance)
 				: Object.getOwnPropertyNames(Object.getPrototypeOf(instance))
 		).filter((name) => name !== 'constructor');
 
-		if (!instance.getEvents() || !methods.length) {
-			return;
-		}
-
 		const serviceInstance = instance as any;
 
 		const name = instance.getName();
-
-		if (!instance.isInternal()) {
-			instance.onEvent('shutdown', async (services) => {
-				if (!services[name]?.includes(this.broker.nodeID)) {
-					this.broker.logger.debug({ msg: 'Not shutting down, different node.', nodeID: this.broker.nodeID });
-					return;
-				}
-				this.broker.logger.info({ msg: 'Received shutdown event, destroying service.', nodeID: this.broker.nodeID });
-				this.destroyService(instance);
-			});
+		if (!name) {
+			return;
 		}
 
-		const dependencies = name !== 'license' ? { dependencies: ['license'] } : {};
+		const instanceEvents = instance.getEvents();
+		if (!instanceEvents && !methods.length) {
+			return;
+		}
+
+		// Allow services to depend on other services too
+		const dependencies = name !== 'license' ? { dependencies: ['license', ...(serviceDependencies || [])] } : {};
 
 		const service: ServiceSchema = {
 			name,
 			actions: {},
+			mixins: !instance.isInternal() ? [EnterpriseCheck] : [],
 			...dependencies,
-			events: instance.getEvents().reduce<Record<string, Function>>((map, eventName) => {
+			events: instanceEvents.reduce<Record<string, (ctx: Context) => void>>((map, eventName) => {
 				map[eventName] = /^\$/.test(eventName)
 					? (ctx: Context): void => {
 							// internal events params are not an array
@@ -169,7 +165,7 @@ export class NetworkBroker implements IBroker {
 	}
 
 	async broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
-		this.broker.broadcastLocal(event, args);
+		void this.broker.broadcastLocal(event, args);
 	}
 
 	async broadcastToServices<T extends keyof EventSignatures>(
@@ -177,10 +173,14 @@ export class NetworkBroker implements IBroker {
 		event: T,
 		...args: Parameters<EventSignatures[T]>
 	): Promise<void> {
-		this.broker.broadcast(event, args, services);
+		void this.broker.broadcast(event, args, services);
 	}
 
 	async nodeList(): Promise<IBrokerNode[]> {
 		return this.broker.call('$node.list');
+	}
+
+	async start(): Promise<void> {
+		this.started = this.broker.start();
 	}
 }

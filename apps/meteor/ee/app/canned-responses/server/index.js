@@ -1,5 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-
 import { onLicense } from '../../license/server';
 
 onLicense('canned-responses', () => {
@@ -11,7 +9,5 @@ onLicense('canned-responses', () => {
 	require('./methods/saveCannedResponse');
 	require('./methods/removeCannedResponse');
 
-	Meteor.startup(function () {
-		createSettings();
-	});
+	createSettings();
 });

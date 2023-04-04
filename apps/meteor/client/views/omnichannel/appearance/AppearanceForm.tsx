@@ -1,7 +1,8 @@
 import { Box, Field, TextInput, ToggleSwitch, Accordion, FieldGroup, InputBox, TextAreaInput, NumberInput } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { FC, FormEvent } from 'react';
+import type { FC, FormEvent } from 'react';
+import React from 'react';
 
 type AppearanceFormProps = {
 	values: {

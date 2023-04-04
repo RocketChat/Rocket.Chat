@@ -6,17 +6,14 @@ import store from '../store';
 import constants from './constants';
 
 export const updateBusinessUnit = async (newBusinessUnit) => {
-	const {
-		token,
-		config: existingConfig,
-	} = store.state;
+	const { token, config: existingConfig } = store.state;
 	if (!token) {
 		throw new Error('Error! no livechat token found. please make sure you initialize widget first before setting business unit');
 	}
 
 	const { departments } = await Livechat.config({
 		token,
-		...newBusinessUnit && { businessUnit: newBusinessUnit },
+		...(newBusinessUnit && { businessUnit: newBusinessUnit }),
 	});
 
 	if (newBusinessUnit) {
@@ -39,11 +36,7 @@ export const updateBusinessUnit = async (newBusinessUnit) => {
 };
 
 export const loadConfig = async () => {
-	const {
-		token,
-		businessUnit = null,
-		iframe: { guest: { department } = {} } = {},
-	} = store.state;
+	const { token, businessUnit = null, iframe: { guest: { department } = {} } = {} } = store.state;
 
 	Livechat.credentials.token = token;
 
@@ -56,8 +49,8 @@ export const loadConfig = async () => {
 		...config
 	} = await Livechat.config({
 		token,
-		...businessUnit && { businessUnit },
-		...department && { department },
+		...(businessUnit && { businessUnit }),
+		...(department && { department }),
 	});
 
 	await store.setState({

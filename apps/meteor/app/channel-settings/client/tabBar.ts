@@ -1,4 +1,5 @@
-import { FC, lazy, LazyExoticComponent } from 'react';
+import type { FC, LazyExoticComponent } from 'react';
+import { lazy } from 'react';
 
 import { addAction } from '../../../client/views/room/lib/Toolbox';
 

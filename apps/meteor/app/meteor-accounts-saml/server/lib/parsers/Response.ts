@@ -4,9 +4,9 @@ import xmlCrypto from 'xml-crypto';
 
 import { SAMLUtils } from '../Utils';
 import { StatusCode } from '../constants';
-import { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
-import { IResponseValidateCallback } from '../../definition/callbacks';
-import { ISAMLAssertion } from '../../definition/ISAMLAssertion';
+import type { IServiceProviderOptions } from '../../definition/IServiceProviderOptions';
+import type { IResponseValidateCallback } from '../../definition/callbacks';
+import type { ISAMLAssertion } from '../../definition/ISAMLAssertion';
 
 type XmlParent = Element | Document;
 
@@ -287,9 +287,9 @@ export class ResponseParser {
 		const sig = new xmlCrypto.SignedXml();
 
 		sig.keyInfoProvider = {
-			getKeyInfo: (/* key*/): string => '<X509Data></X509Data>',
-			// @ts-ignore - the definition file must be wrong
-			getKey: (/* keyInfo*/): string => SAMLUtils.certToPEM(cert),
+			file: '',
+			getKeyInfo: () => '<X509Data></X509Data>',
+			getKey: () => Buffer.from(SAMLUtils.certToPEM(cert)),
 		};
 
 		sig.loadSignature(signature);

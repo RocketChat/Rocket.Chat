@@ -114,8 +114,7 @@ export const initAPN = ({ options, absoluteUrl }) => {
 	// Rig apn connection
 	try {
 		apnConnection = new apn.Provider(options.apn);
-	} catch (e) {
-		logger.error('Error trying to initialize APN');
-		logger.error(e);
+	} catch (err) {
+		logger.error({ msg: 'Error trying to initialize APN', err });
 	}
 };

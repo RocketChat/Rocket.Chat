@@ -1,7 +1,8 @@
 import { FieldGroup, Field, ToggleSwitch, Select } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, ChangeEvent } from 'react';
+import type { ReactElement, ChangeEvent } from 'react';
+import React from 'react';
 
 import VerticalBar from '../../../../components/VerticalBar';
 

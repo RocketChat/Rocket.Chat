@@ -1,4 +1,3 @@
-import type { ILivechatAgent } from '@rocket.chat/core-typings';
 import { useEndpoint, useTranslation } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
@@ -12,17 +11,19 @@ type AgentsListOptions = {
 	haveNoAgentsSelectedOption: boolean;
 };
 
+type AgentOption = { value: string; label: string; _updatedAt: Date; _id: string };
+
 export const useAgentsList = (
 	options: AgentsListOptions,
 ): {
-	itemsList: RecordList<ILivechatAgent>;
+	itemsList: RecordList<AgentOption>;
 	initialItemCount: number;
 	reload: () => void;
 	loadMoreItems: (start: number, end: number) => void;
 } => {
 	const t = useTranslation();
-	const [itemsList, setItemsList] = useState(() => new RecordList<ILivechatAgent>());
-	const reload = useCallback(() => setItemsList(new RecordList<ILivechatAgent>()), []);
+	const [itemsList, setItemsList] = useState(() => new RecordList<AgentOption>());
+	const reload = useCallback(() => setItemsList(new RecordList<AgentOption>()), []);
 
 	const getAgents = useEndpoint('GET', '/v1/livechat/users/agent');
 
@@ -39,11 +40,14 @@ export const useAgentsList = (
 				sort: `{ "name": 1 }`,
 			});
 
-			const items = agents.map((agent: any) => {
-				agent._updatedAt = new Date(agent._updatedAt);
-				agent.label = agent.username;
-				agent.value = agent._id;
-				return agent;
+			const items = agents.map<AgentOption>((agent) => {
+				const agentOption = {
+					_updatedAt: new Date(agent._updatedAt),
+					label: agent.username || agent._id,
+					value: agent._id,
+					_id: agent._id,
+				};
+				return agentOption;
 			});
 
 			options.haveAll &&
@@ -51,6 +55,7 @@ export const useAgentsList = (
 					label: t('All'),
 					value: 'all',
 					_updatedAt: new Date(),
+					_id: 'all',
 				});
 
 			options.haveNoAgentsSelectedOption &&
@@ -58,6 +63,7 @@ export const useAgentsList = (
 					label: t('Empty_no_agent_selected'),
 					value: 'no-agent-selected',
 					_updatedAt: new Date(),
+					_id: 'no-agent-selected',
 				});
 
 			return {

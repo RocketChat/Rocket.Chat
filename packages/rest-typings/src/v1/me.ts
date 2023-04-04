@@ -38,8 +38,8 @@ export type MeEndpoints = {
 	'/v1/me': {
 		GET: (params?: { fields: Record<Keys, 0> | Record<Keys, 1>; user: IUser }) => IUser & {
 			email?: string;
-			settings: {
-				profile: {};
+			settings?: {
+				profile: Record<string, unknown>;
 				preferences: unknown;
 			};
 			avatarUrl: string;

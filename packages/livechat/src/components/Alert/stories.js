@@ -5,7 +5,6 @@ import { storiesOf } from '@storybook/react';
 import Alert from '.';
 import { screenCentered, loremIpsum } from '../../helpers.stories';
 
-
 storiesOf('Components/Alert', module)
 	.addDecorator(withKnobs)
 	.addDecorator(screenCentered)

@@ -1,14 +1,12 @@
 import zlib from 'zlib';
 import { EventEmitter } from 'events';
 
-import _ from 'underscore';
-
-import { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
-import { ISAMLUser } from '../definition/ISAMLUser';
-import { ISAMLGlobalSettings } from '../definition/ISAMLGlobalSettings';
-import { IUserDataMap, IAttributeMapping } from '../definition/IAttributeMapping';
+import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
+import type { ISAMLUser } from '../definition/ISAMLUser';
+import type { ISAMLGlobalSettings } from '../definition/ISAMLGlobalSettings';
+import type { IUserDataMap, IAttributeMapping } from '../definition/IAttributeMapping';
 import { StatusCode } from './constants';
-import { Logger } from '../../../../server/lib/logger/Logger';
+import type { Logger } from '../../../../server/lib/logger/Logger';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
 
 let providerList: Array<IServiceProviderOptions> = [];
@@ -54,7 +52,7 @@ export class SAMLUtils {
 	public static getServiceProviderOptions(providerName: string): IServiceProviderOptions | undefined {
 		this.log(providerName, providerList);
 
-		return _.find(providerList, (providerOptions) => providerOptions.provider === providerName);
+		return providerList.find((providerOptions) => providerOptions.provider === providerName);
 	}
 
 	public static setServiceProvidersList(list: Array<IServiceProviderOptions>): void {
@@ -144,24 +142,26 @@ export class SAMLUtils {
 		}
 	}
 
-	public static inflateXml(
+	public static async inflateXml(
 		base64Data: string,
-		successCallback: (xml: string) => void,
-		errorCallback: (err: string | object | null) => void,
-	): void {
-		const buffer = Buffer.from(base64Data, 'base64');
-		zlib.inflateRaw(buffer, (err, decoded) => {
-			if (err) {
-				this.log(`Error while inflating. ${err}`);
-				return errorCallback(err);
-			}
+		successCallback: (xml: string) => Promise<void>,
+		errorCallback: (err: string | object | null) => Promise<void>,
+	): Promise<void> {
+		return new Promise((resolve, reject) => {
+			const buffer = Buffer.from(base64Data, 'base64');
+			zlib.inflateRaw(buffer, (err, decoded) => {
+				if (err) {
+					this.log(`Error while inflating. ${err}`);
+					return reject(errorCallback(err));
+				}
 
-			if (!decoded) {
-				return errorCallback('Failed to extract request data');
-			}
+				if (!decoded) {
+					return reject(errorCallback('Failed to extract request data'));
+				}
 
-			const xmlString = this.convertArrayBufferToString(decoded);
-			return successCallback(xmlString);
+				const xmlString = this.convertArrayBufferToString(decoded);
+				return resolve(successCallback(xmlString));
+			});
 		});
 	}
 

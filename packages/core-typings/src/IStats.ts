@@ -1,7 +1,7 @@
 import type { CpuInfo } from 'os';
 
 import type { DeviceSessionAggregationResult, OSSessionAggregationResult, UserSessionAggregationResult } from './ISession';
-import type { ISettingStatisticsObject, SettingValue } from './ISetting';
+import type { ISettingStatisticsObject } from './ISetting';
 import type { ITeamStats } from './ITeam';
 
 export interface IStats {
@@ -33,16 +33,20 @@ export interface IStats {
 	teams: ITeamStats;
 	totalLivechatVisitors: number;
 	totalLivechatAgents: number;
+	totalLivechatManagers: number;
+	totalCustomFields: number;
 	livechatEnabled: boolean;
+	isDepartmentRemovalEnabled: boolean;
 	totalChannelMessages: number;
 	totalPrivateGroupMessages: number;
 	totalDirectMessages: number;
 	totalLivechatMessages: number;
+	totalTriggers: number;
 	totalMessages: number;
 	federatedServers: number;
 	federatedUsers: number;
 	lastLogin: string;
-	lastMessageSentAt: string;
+	lastMessageSentAt: Date | undefined;
 	lastSeenSubscription: string;
 	os: {
 		type: string;
@@ -76,11 +80,13 @@ export interface IStats {
 	};
 	instanceCount: number;
 	oplogEnabled: boolean;
+	msEnabled: boolean;
 	mongoVersion: string;
 	mongoStorageEngine: string;
 	pushQueue: number;
 	omnichannelSources: { [key: string]: number | string }[];
 	departments: number;
+	archivedDepartments: number;
 	routingAlgorithm: string;
 	onHoldEnabled: boolean;
 	emailInboxes: number;
@@ -112,8 +118,7 @@ export interface IStats {
 	uniqueOSOfLastWeek: OSSessionAggregationResult;
 	uniqueOSOfLastMonth: OSSessionAggregationResult;
 	apps: {
-		engineVersion: number;
-		enabled: SettingValue;
+		engineVersion: string;
 		totalInstalled: number | false;
 		totalActive: number | false;
 		totalFailed: number | false;
@@ -133,10 +138,11 @@ export interface IStats {
 		modules: string[];
 		tags: string[];
 		seatRequests: number;
-		livechatTags: number;
-		cannedResponses: number;
-		priorities: number;
-		businessUnits: number;
+		livechatTags?: number;
+		cannedResponses?: number;
+		priorities?: number;
+		slas?: number;
+		businessUnits?: number;
 	};
 	createdAt: Date | string;
 	totalOTR: number;
@@ -194,7 +200,13 @@ export interface IStats {
 	};
 	totalSubscriptionRoles: number;
 	totalUserRoles: number;
+	totalCustomRoles: number;
 	totalWebRTCCalls: number;
-	matrixBridgeEnabled: boolean;
 	uncaughtExceptionsCount: number;
+	matrixFederation: {
+		enabled: boolean;
+	};
+	webRTCEnabled: boolean;
+	webRTCEnabledForOmnichannel: boolean;
+	omnichannelWebRTCCalls: number;
 }

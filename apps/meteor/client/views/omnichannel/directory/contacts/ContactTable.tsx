@@ -1,8 +1,8 @@
-import { css } from '@rocket.chat/css-in-js';
 import { Icon, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Box } from '@rocket.chat/fuselage';
 import { useDebouncedState, useDebouncedValue, useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoute, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { useMemo, useEffect, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { useMemo } from 'react';
 
 import { parseOutboundPhoneNumber } from '../../../../../ee/client/lib/voip/parseOutboundPhoneNumber';
 import FilterByText from '../../../../components/FilterByText';
@@ -21,20 +21,9 @@ import { useIsCallReady } from '../../../../contexts/CallContext';
 import { useEndpointData } from '../../../../hooks/useEndpointData';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { AsyncStatePhase } from '../../../../lib/asyncState';
-import { CallDialpadButton } from '../CallDialpadButton';
+import { CallDialpadButton } from '../components/CallDialpadButton';
 
-type ContactTableProps = {
-	setContactReload(fn: () => void): void;
-};
-
-export const rcxCallDialButton = css`
-	&:not(:hover) {
-		.rcx-call-dial-button {
-			display: none !important;
-		}
-	}
-`;
-function ContactTable({ setContactReload }: ContactTableProps): ReactElement {
+function ContactTable(): ReactElement {
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'username' | 'phone' | 'name' | 'visitorEmails.address' | 'lastchat'>('username');
 	const isCallReady = useIsCallReady();
@@ -75,11 +64,7 @@ function ContactTable({ setContactReload }: ContactTableProps): ReactElement {
 			}),
 	);
 
-	const { reload, ...result } = useEndpointData('/v1/livechat/visitors.search', query);
-
-	useEffect(() => {
-		setContactReload(() => reload);
-	}, [reload, setContactReload]);
+	const { reload, ...result } = useEndpointData('/v1/livechat/visitors.search', { params: query });
 
 	return (
 		<>
@@ -126,10 +111,10 @@ function ContactTable({ setContactReload }: ContactTableProps): ReactElement {
 					</GenericTableHeaderCell>
 					<GenericTableHeaderCell key='call' width={44} />
 				</GenericTableHeader>
-				{result.phase === AsyncStatePhase.RESOLVED && (
-					<GenericTableBody>
-						{result.value.visitors.map(({ _id, username, fname, visitorEmails, phone, lastChat }) => {
-							const phoneNumber = phone?.length && phone[0].phoneNumber;
+				<GenericTableBody>
+					{result.phase === AsyncStatePhase.RESOLVED &&
+						result.value.visitors.map(({ _id, username, fname, name, visitorEmails, phone, lastChat }) => {
+							const phoneNumber = (phone?.length && phone[0].phoneNumber) || '';
 							const visitorEmail = visitorEmails?.length && visitorEmails[0].address;
 
 							return (
@@ -140,11 +125,11 @@ function ContactTable({ setContactReload }: ContactTableProps): ReactElement {
 									role='link'
 									height='40px'
 									qa-user-id={_id}
-									className={rcxCallDialButton}
+									rcx-show-call-button-on-hover
 									onClick={onRowClick(_id)}
 								>
 									<GenericTableCell withTruncatedText>{username}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{parseOutboundPhoneNumber(fname)}</GenericTableCell>
+									<GenericTableCell withTruncatedText>{parseOutboundPhoneNumber(fname || name)}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{parseOutboundPhoneNumber(phoneNumber)}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{visitorEmail}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{lastChat && formatDate(lastChat.ts)}</GenericTableCell>
@@ -152,9 +137,8 @@ function ContactTable({ setContactReload }: ContactTableProps): ReactElement {
 								</GenericTableRow>
 							);
 						})}
-					</GenericTableBody>
-				)}
-				{result.phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={6} />}
+					{result.phase === AsyncStatePhase.LOADING && <GenericTableLoadingTable headerCells={6} />}
+				</GenericTableBody>
 			</GenericTable>
 
 			{result.phase === AsyncStatePhase.REJECTED && (

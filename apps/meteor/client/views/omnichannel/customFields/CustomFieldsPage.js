@@ -18,12 +18,13 @@ const CustomFieldsPage = ({ data, header, setParams, params, title, renderRow, c
 		<Page flexDirection='row'>
 			<Page>
 				<Page.Header title={title}>
-					<Button onClick={onAddNew}>
+					<Button data-qa-id='CustomFieldPageBtnNew' onClick={onAddNew}>
 						<Icon name='plus' size='x16' /> {t('New')}
 					</Button>
 				</Page.Header>
 				<Page.Content>
 					<GenericTable
+						data-qa='GenericTableCustomFieldsInfoBody'
 						header={header}
 						renderRow={renderRow}
 						results={data && data.customFields}

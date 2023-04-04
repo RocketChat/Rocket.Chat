@@ -1,4 +1,4 @@
-import _ from 'underscore';
+import { omit } from '../../../lib/utils/omit';
 
 const { LOG_METHOD_PAYLOAD = 'false', LOG_REST_PAYLOAD = 'false', LOG_REST_METHOD_PAYLOADS = 'false' } = process.env;
 
@@ -9,7 +9,7 @@ export const getMethodArgs =
 				const params = method === 'ufsWrite' ? args.slice(1) : args;
 
 				if (method === 'saveSettings') {
-					return { arguments: [args[0].map((arg: any) => _.omit(arg, 'value'))] };
+					return { arguments: [args[0].map((arg: any) => omit(arg, 'value'))] };
 				}
 
 				if (method === 'saveSetting') {
@@ -17,7 +17,7 @@ export const getMethodArgs =
 				}
 
 				return {
-					arguments: params.map((arg) => (typeof arg !== 'object' ? arg : _.omit(arg, 'password', 'msg', 'pass', 'username', 'message'))),
+					arguments: params.map((arg) => (typeof arg !== 'object' ? arg : omit(arg, 'password', 'msg', 'pass', 'username', 'message'))),
 				};
 		  };
 

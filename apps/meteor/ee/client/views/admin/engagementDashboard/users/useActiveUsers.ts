@@ -1,6 +1,6 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import moment from 'moment';
-import { useQuery } from 'react-query';
 
 import { getPeriodRange } from '../dataView/periods';
 
@@ -30,6 +30,7 @@ export const useActiveUsers = ({ utc }: UseActiveUsersOptions) => {
 		},
 		{
 			refetchInterval: 5 * 60 * 1000,
+			useErrorBoundary: true,
 		},
 	);
 };

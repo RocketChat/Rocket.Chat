@@ -1,7 +1,7 @@
 import { useUserRoom } from '@rocket.chat/ui-contexts';
 import React from 'react';
 
-import { useTabBarClose } from '../../../providers/ToolboxProvider';
+import { useTabBarClose } from '../../../contexts/ToolboxContext';
 import EditChannel from './EditChannel';
 
 function EditChannelWithData({ rid, onClickBack }) {

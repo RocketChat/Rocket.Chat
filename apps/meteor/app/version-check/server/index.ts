@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 
 import { settings } from '../../settings/server';
-import checkVersionUpdate from './functions/checkVersionUpdate';
+import { checkVersionUpdate } from './functions/checkVersionUpdate';
 import './methods/banner_dismiss';
 import './addSettings';
 
@@ -15,23 +15,23 @@ if (SyncedCron.nextScheduledAtDate(jobName)) {
 const addVersionCheckJob = Meteor.bindEnvironment(() => {
 	SyncedCron.add({
 		name: jobName,
-		schedule: (parser: { text: (time: string) => string }) => parser.text('at 2:00 am'),
-		job() {
-			checkVersionUpdate();
+		schedule: (parser) => parser.text('at 2:00 am'),
+		async job() {
+			await checkVersionUpdate();
 		},
 	});
 });
 
 Meteor.startup(() => {
 	Meteor.defer(() => {
-		if (settings.get('Register_Server') && settings.get('Update_EnableChecker')) {
-			checkVersionUpdate();
+		if (settings.get('Update_EnableChecker')) {
+			void checkVersionUpdate();
 		}
 	});
 });
 
-settings.watchMultiple(['Register_Server', 'Update_EnableChecker'], () => {
-	const checkForUpdates = settings.get('Register_Server') && settings.get('Update_EnableChecker');
+settings.watch('Update_EnableChecker', () => {
+	const checkForUpdates = settings.get('Update_EnableChecker');
 
 	if (checkForUpdates && SyncedCron.nextScheduledAtDate(jobName)) {
 		return;

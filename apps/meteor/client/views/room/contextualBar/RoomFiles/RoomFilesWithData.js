@@ -5,7 +5,7 @@ import React, { useState, useCallback, useMemo } from 'react';
 import GenericModal from '../../../../components/GenericModal';
 import { useRecordList } from '../../../../hooks/lists/useRecordList';
 import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
-import { useTabBarClose } from '../../providers/ToolboxProvider';
+import { useTabBarClose } from '../../contexts/ToolboxContext';
 import RoomFiles from './RoomFiles';
 import { useFilesList } from './hooks/useFilesList';
 import { useMessageDeletionIsAllowed } from './hooks/useMessageDeletionIsAllowed';

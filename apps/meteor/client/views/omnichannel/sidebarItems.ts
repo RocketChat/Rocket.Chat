@@ -63,11 +63,6 @@ export const {
 		permissionGranted: (): boolean => hasPermission('view-livechat-webhooks'),
 	},
 	{
-		href: 'omnichannel-facebook',
-		i18nLabel: 'Facebook Messenger',
-		permissionGranted: (): boolean => hasPermission('view-livechat-facebook'),
-	},
-	{
 		href: 'omnichannel-businessHours',
 		i18nLabel: 'Business_Hours',
 		permissionGranted: (): boolean => hasPermission('view-livechat-business-hours'),

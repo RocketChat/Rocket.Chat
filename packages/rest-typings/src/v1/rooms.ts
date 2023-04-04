@@ -75,7 +75,26 @@ export const isRoomsAutocompleteAvailableForTeamsProps = ajv.compile<RoomsAutoco
 	RoomsAutocompleteAvailableForTeamsSchema,
 );
 
-type RoomsInfoProps = { roomId: string } | { roomName: string };
+type RoomsAutocompleteAdminRoomsPayload = { selector: string };
+
+const RoomsAutocompleteAdminRoomsPayloadSchema = {
+	type: 'object',
+	properties: {
+		selector: {
+			type: 'string',
+		},
+	},
+	required: ['selector'],
+	additionalProperties: false,
+};
+
+export const isRoomsAutocompleteAdminRoomsPayload = ajv.compile<RoomsAutocompleteAdminRoomsPayload>(
+	RoomsAutocompleteAdminRoomsPayloadSchema,
+);
+
+type BaseRoomsProps = { roomId: string } | { roomName: string };
+type RoomsInfoProps = BaseRoomsProps;
+type RoomsLeaveProps = BaseRoomsProps;
 
 const RoomsInfoSchema = {
 	oneOf: [
@@ -387,27 +406,66 @@ const RoomsSaveRoomSettingsSchema = {
 
 export const isRoomsSaveRoomSettingsProps = ajv.compile<RoomsSaveRoomSettingsProps>(RoomsSaveRoomSettingsSchema);
 
+type GETRoomsNameExists = {
+	roomName: string;
+};
+
+const GETRoomsNameExistsSchema = {
+	type: 'object',
+	properties: {
+		roomName: {
+			type: 'string',
+		},
+	},
+	required: ['roomName'],
+	additionalProperties: false,
+};
+
+export const isGETRoomsNameExists = ajv.compile<GETRoomsNameExists>(GETRoomsNameExistsSchema);
+
+export type Notifications = {
+	disableNotifications: string;
+	muteGroupMentions: string;
+	hideUnreadStatus: string;
+	desktopNotifications: string;
+	audioNotificationValue: string;
+	mobilePushNotifications: string;
+	emailNotifications: string;
+};
+
+type RoomsGetDiscussionsProps = PaginatedRequest<BaseRoomsProps>;
+
 export type RoomsEndpoints = {
 	'/v1/rooms.autocomplete.channelAndPrivate': {
 		GET: (params: RoomsAutoCompleteChannelAndPrivateProps) => {
 			items: IRoom[];
 		};
 	};
+
 	'/v1/rooms.autocomplete.channelAndPrivate.withPagination': {
-		GET: (params: RoomsAutocompleteChannelAndPrivateWithPaginationProps) => PaginatedResult<{
+		GET: (params: RoomsAutocompleteChannelAndPrivateWithPaginationProps) => {
 			items: IRoom[];
-		}>;
+			total: number;
+		};
 	};
+
 	'/v1/rooms.autocomplete.availableForTeams': {
 		GET: (params: RoomsAutocompleteAvailableForTeamsProps) => {
 			items: IRoom[];
 		};
 	};
-	'/v1/rooms.info': {
-		GET: (params: RoomsInfoProps) => {
-			room: IRoom;
+	'/v1/rooms.autocomplete.adminRooms': {
+		GET: (params: RoomsAutocompleteAdminRoomsPayload) => {
+			items: IRoom[];
 		};
 	};
+
+	'/v1/rooms.info': {
+		GET: (params: RoomsInfoProps) => {
+			room: IRoom | undefined;
+		};
+	};
+
 	'/v1/rooms.cleanHistory': {
 		POST: (params: {
 			roomId: IRoom['_id'];
@@ -422,34 +480,41 @@ export type RoomsEndpoints = {
 			ignoreThreads?: boolean;
 		}) => { _id: IRoom['_id']; count: number; success: boolean };
 	};
+
 	'/v1/rooms.createDiscussion': {
 		POST: (params: RoomsCreateDiscussionProps) => {
 			discussion: IRoom;
 		};
 	};
+
 	'/v1/rooms.export': {
 		POST: (params: RoomsExportProps) => {
-			missing?: [];
+			missing?: string[];
 			success: boolean;
-		};
+		} | void;
 	};
+
 	'/v1/rooms.adminRooms': {
 		GET: (params: RoomsAdminRoomsProps) => PaginatedResult<{ rooms: Pick<IRoom, RoomAdminFieldsType>[] }>;
 	};
+
 	'/v1/rooms.adminRooms.getRoom': {
 		GET: (params: RoomsAdminRoomsGetRoomProps) => Pick<IRoom, RoomAdminFieldsType>;
 	};
+
 	'/v1/rooms.saveRoomSettings': {
 		POST: (params: RoomsSaveRoomSettingsProps) => {
 			success: boolean;
 			rid: string;
 		};
 	};
+
 	'/v1/rooms.changeArchivationState': {
 		POST: (params: RoomsChangeArchivationStateProps) => {
 			success: boolean;
 		};
 	};
+
 	'/v1/rooms.upload/:rid': {
 		POST: (params: {
 			file: File;
@@ -460,22 +525,51 @@ export type RoomsEndpoints = {
 			groupable?: boolean;
 			msg?: string;
 			tmid?: string;
-		}) => { message: IMessage };
+		}) => { message: IMessage | null };
 	};
+
 	'/v1/rooms.saveNotification': {
-		POST: (params: {
-			roomId: string;
-			notifications: {
-				disableNotifications: string;
-				muteGroupMentions: string;
-				hideUnreadStatus: string;
-				desktopNotifications: string;
-				audioNotificationValue: string;
-				mobilePushNotifications: string;
-				emailNotifications: string;
-			};
-		}) => {
-			success: boolean;
+		POST: (params: { roomId: string; notifications: Notifications }) => void;
+	};
+
+	'/v1/rooms.favorite': {
+		POST: (
+			params:
+				| {
+						roomId: string;
+						favorite: boolean;
+				  }
+				| {
+						roomName: string;
+						favorite: boolean;
+				  },
+		) => void;
+	};
+
+	'/v1/rooms.nameExists': {
+		GET: (params: { roomName: string }) => {
+			exists: boolean;
 		};
+	};
+
+	'/v1/rooms.delete': {
+		POST: (params: { roomId: string }) => void;
+	};
+
+	'/v1/rooms.get': {
+		GET: (params: { updatedSince: string }) => {
+			update: IRoom[];
+			remove: IRoom[];
+		};
+	};
+
+	'/v1/rooms.leave': {
+		POST: (params: RoomsLeaveProps) => void;
+	};
+
+	'/v1/rooms.getDiscussions': {
+		GET: (params: RoomsGetDiscussionsProps) => PaginatedResult<{
+			discussions: IRoom[];
+		}>;
 	};
 };

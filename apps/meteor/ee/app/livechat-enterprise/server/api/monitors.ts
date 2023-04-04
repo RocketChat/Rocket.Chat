@@ -1,20 +1,23 @@
-import { ILivechatMonitor } from '@rocket.chat/core-typings';
+import type { ILivechatMonitor } from '@rocket.chat/core-typings';
 
 import { API } from '../../../../../app/api/server';
 import { findMonitors, findMonitorByUsername } from './lib/monitors';
+import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 
 API.v1.addRoute(
 	'livechat/monitors',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		permissionsRequired: ['manage-livechat-monitors'],
+	},
 	{
 		async get() {
-			const { offset, count } = this.getPaginationItems();
-			const { sort } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
 			const { text } = this.queryParams;
 
 			return API.v1.success(
 				await findMonitors({
-					userId: this.userId,
 					text,
 					pagination: {
 						offset,
@@ -29,14 +32,16 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/monitors/:username',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		permissionsRequired: ['manage-livechat-monitors'],
+	},
 	{
 		async get() {
 			const { username } = this.urlParams;
 
 			return API.v1.success(
 				(await findMonitorByUsername({
-					userId: this.userId,
 					username,
 				})) as unknown as ILivechatMonitor,
 			);

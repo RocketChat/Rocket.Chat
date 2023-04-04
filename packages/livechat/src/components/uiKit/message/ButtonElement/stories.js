@@ -1,4 +1,4 @@
-import { BLOCK_CONTEXT } from '@rocket.chat/ui-kit';
+import { BlockContext } from '@rocket.chat/ui-kit';
 import { action } from '@storybook/addon-actions';
 
 import ButtonElement from '.';
@@ -11,13 +11,15 @@ export default {
 		layout: 'centered',
 	},
 	decorators: [
-		(storyFn) => <Surface
-			children={storyFn()}
-			dispatchAction={async (payload) => {
-				await new Promise((resolve) => setTimeout(resolve, 1000));
-				action('dispatchAction')(payload);
-			}}
-		/>,
+		(storyFn) => (
+			<Surface
+				children={storyFn()}
+				dispatchAction={async (payload) => {
+					await new Promise((resolve) => setTimeout(resolve, 1000));
+					action('dispatchAction')(payload);
+				}}
+			/>
+		),
 	],
 	argTypes: {
 		text: { control: 'object' },
@@ -25,7 +27,7 @@ export default {
 		url: { control: 'text' },
 		value: { control: 'text' },
 		style: { control: { type: 'inline-radio', options: [null, 'primary', 'danger'] } },
-		context: { control: { type: 'select', options: BLOCK_CONTEXT } },
+		context: { control: { type: 'select', options: BlockContext } },
 	},
 	args: {
 		text: { type: 'plain_text', text: 'Click Me' },
@@ -38,6 +40,5 @@ export default {
 	},
 };
 
-export const Default = (args) =>
-	<ButtonElement {...args} parser={parser} />;
+export const Default = (args) => <ButtonElement {...args} parser={parser} />;
 Default.storyName = 'default';

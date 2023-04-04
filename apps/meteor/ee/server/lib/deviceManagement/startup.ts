@@ -1,16 +1,17 @@
-import { BannerPlatform } from '@rocket.chat/core-typings';
-import { Banners, Permissions } from '@rocket.chat/models';
+import { Permissions } from '@rocket.chat/models';
 
 import { settingsRegistry } from '../../../../app/settings/server/index';
 
 export const createPermissions = async (): Promise<void> => {
-	Permissions.create('view-device-management', ['admin']);
-	Permissions.create('logout-device-management', ['admin']);
-	Permissions.create('block-ip-device-management', ['admin']);
+	await Promise.all([
+		Permissions.create('view-device-management', ['admin']),
+		Permissions.create('logout-device-management', ['admin']),
+		Permissions.create('block-ip-device-management', ['admin']),
+	]);
 };
 
 export const createEmailTemplates = async (): Promise<void> => {
-	settingsRegistry.addGroup('Email', function () {
+	void settingsRegistry.addGroup('Email', function () {
 		this.section('Device Management - Login Detected', function () {
 			this.add('Device_Management_Email_Subject', '{Device_Management_Email_Subject}', {
 				type: 'string',
@@ -29,32 +30,4 @@ export const createEmailTemplates = async (): Promise<void> => {
 			);
 		});
 	});
-};
-
-export const createDeviceManagementModal = async (): Promise<void> => {
-	const banner = await Banners.findOneById('device-management', { projection: { _id: 1 } });
-	if (!banner) {
-		const today = new Date();
-
-		const expire = new Date();
-		expire.setMonth(expire.getMonth() + 6);
-
-		Banners.insertOne({
-			_id: 'device-management',
-			platform: [BannerPlatform.Web],
-			roles: ['admin', 'user'],
-			createdAt: today,
-			startAt: today,
-			expireAt: expire,
-			active: true,
-			createdBy: {
-				_id: 'rocket.cat',
-			},
-			view: {
-				viewId: 'mdm',
-				appId: 'mdm',
-				blocks: [],
-			},
-		});
-	}
 };

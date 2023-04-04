@@ -1,5 +1,6 @@
 import { Field, ToggleSwitch } from '@rocket.chat/fuselage';
-import React, { ReactElement, SyntheticEvent } from 'react';
+import type { ReactElement, SyntheticEvent } from 'react';
+import React from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 
@@ -35,8 +36,7 @@ function BooleanSettingInput({
 				id={_id}
 				value='true'
 				checked={value === true}
-				disabled={disabled}
-				readOnly={readonly}
+				disabled={disabled || readonly}
 				onChange={handleChange}
 			/>
 			<Field.Label htmlFor={_id} title={_id}>

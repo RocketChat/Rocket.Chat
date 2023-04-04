@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import _ from 'underscore';
 
 import { BaseDb } from './_BaseDb';
 
@@ -10,10 +9,6 @@ export class Base {
 		this.model = this._db.model;
 		this.collectionName = this._db.collectionName;
 		this.name = this._db.name;
-
-		this.removeListener = this._db.removeListener.bind(this._db);
-		this.on = this._db.on.bind(this._db);
-		this.emit = this._db.emit.bind(this._db);
 
 		this.db = this;
 	}
@@ -42,7 +37,7 @@ export class Base {
 		}
 
 		query.roles = roleId;
-		return !_.isUndefined(this.findOne(query, { fields: { roles: 1 } }));
+		return this.findOne(query, { fields: { roles: 1 } }) !== undefined;
 	}
 
 	/**

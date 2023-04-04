@@ -1,18 +1,30 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import mem from 'mem';
-import { IRoom, ISubscription, ISupportedLanguage, ITranslatedMessage, IUser, MessageAttachmentDefault } from '@rocket.chat/core-typings';
+import type {
+	IRoom,
+	ISubscription,
+	ISupportedLanguage,
+	ITranslatedMessage,
+	IUser,
+	MessageAttachmentDefault,
+} from '@rocket.chat/core-typings';
+import { isTranslatedMessageAttachment } from '@rocket.chat/core-typings';
 
 import { Subscriptions, Messages } from '../../../models/client';
 import { hasPermission } from '../../../authorization/client';
-import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
+import { call } from '../../../../client/lib/utils/call';
+import {
+	hasTranslationLanguageInAttachments,
+	hasTranslationLanguageInMessage,
+} from '../../../../client/views/room/MessageList/lib/autoTranslate';
 
 let userLanguage = 'en';
 let username = '';
 
 Meteor.startup(() => {
-	Tracker.autorun(() => {
-		const user: Pick<IUser, 'language' | 'username'> | null = Meteor.user();
+	Tracker.autorun(async () => {
+		const user: Pick<IUser, 'language' | 'username'> | null = await Meteor.userAsync();
 		if (!user) {
 			return;
 		}
@@ -25,7 +37,7 @@ export const AutoTranslate = {
 	initialized: false,
 	providersMetadata: {} as { [providerNamer: string]: { name: string; displayName: string } },
 	messageIdsToWait: {} as { [messageId: string]: string },
-	supportedLanguages: [] as ISupportedLanguage[],
+	supportedLanguages: [] as ISupportedLanguage[] | undefined,
 
 	findSubscriptionByRid: mem((rid) => Subscriptions.findOne({ rid })),
 
@@ -36,7 +48,7 @@ export const AutoTranslate = {
 		}
 		const language = (subscription?.autoTranslateLanguage || userLanguage || window.defaultUserLanguage?.()) as string;
 		if (language.indexOf('-') !== -1) {
-			if (!this.supportedLanguages.some((supportedLanguage) => supportedLanguage.language === language)) {
+			if (!(this.supportedLanguages || []).some((supportedLanguage) => supportedLanguage.language === language)) {
 				return language.slice(0, 2);
 			}
 		}
@@ -48,6 +60,9 @@ export const AutoTranslate = {
 		language: string,
 		autoTranslateShowInverse: boolean,
 	): MessageAttachmentDefault[] {
+		if (!isTranslatedMessageAttachment(attachments)) {
+			return attachments;
+		}
 		for (const attachment of attachments) {
 			if (attachment.author_name !== username) {
 				if (attachment.text && attachment.translations && attachment.translations[language]) {
@@ -93,10 +108,15 @@ export const AutoTranslate = {
 
 			c.stop();
 
-			[this.providersMetadata, this.supportedLanguages] = await Promise.all([
-				callWithErrorHandling('autoTranslate.getProviderUiMetadata'),
-				callWithErrorHandling('autoTranslate.getSupportedLanguages', 'en'),
-			]);
+			try {
+				[this.providersMetadata, this.supportedLanguages] = await Promise.all([
+					call('autoTranslate.getProviderUiMetadata'),
+					call('autoTranslate.getSupportedLanguages', 'en'),
+				]);
+			} catch (e: unknown) {
+				// Avoid unwanted error message on UI when autotranslate is disabled while fetching data
+				console.error((e as Error).message);
+			}
 		});
 
 		Subscriptions.find().observeChanges({
@@ -111,49 +131,6 @@ export const AutoTranslate = {
 	},
 };
 
-export const createAutoTranslateMessageRenderer = (): ((message: ITranslatedMessage) => ITranslatedMessage) => {
-	AutoTranslate.init();
-
-	return (message: ITranslatedMessage): ITranslatedMessage => {
-		const subscription = AutoTranslate.findSubscriptionByRid(message.rid);
-		const autoTranslateLanguage = AutoTranslate.getLanguage(message.rid);
-		if (message.u && message.u._id !== Meteor.userId()) {
-			if (!message.translations) {
-				message.translations = {};
-			}
-			if (!!subscription?.autoTranslate !== !!message.autoTranslateShowInverse) {
-				const hasAttachmentsTranslate =
-					message.attachments?.some(
-						(attachment) =>
-							'translations' in attachment &&
-							typeof attachment.translations === 'object' &&
-							autoTranslateLanguage in attachment.translations,
-					) ?? false;
-
-				message.translations.original = message.html;
-				if (message.translations[autoTranslateLanguage] && !hasAttachmentsTranslate) {
-					message.html = message.translations[autoTranslateLanguage];
-				}
-
-				if (message.attachments && message.attachments.length > 0) {
-					message.attachments = AutoTranslate.translateAttachments(
-						message.attachments,
-						autoTranslateLanguage,
-						!!message.autoTranslateShowInverse,
-					);
-				}
-			}
-		} else if (message.attachments && message.attachments.length > 0) {
-			message.attachments = AutoTranslate.translateAttachments(
-				message.attachments,
-				autoTranslateLanguage,
-				!!message.autoTranslateShowInverse,
-			);
-		}
-		return message;
-	};
-};
-
 export const createAutoTranslateMessageStreamHandler = (): ((message: ITranslatedMessage) => void) => {
 	AutoTranslate.init();
 
@@ -165,7 +142,8 @@ export const createAutoTranslateMessageStreamHandler = (): ((message: ITranslate
 				subscription &&
 				subscription.autoTranslate === true &&
 				message.msg &&
-				(!message.translations || !message.translations[language])
+				(!message.translations ||
+					(!hasTranslationLanguageInMessage(message, language) && !hasTranslationLanguageInAttachments(message.attachments, language)))
 			) {
 				// || (message.attachments && !_.find(message.attachments, attachment => { return attachment.translations && attachment.translations[language]; }))
 				Messages.update({ _id: message._id }, { $set: { autoTranslateFetching: true } });

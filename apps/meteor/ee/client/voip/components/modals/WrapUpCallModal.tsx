@@ -1,7 +1,9 @@
-import { Button, ButtonGroup, Field, Modal, TextAreaInput } from '@rocket.chat/fuselage';
+import { Button, Field, Modal, TextAreaInput } from '@rocket.chat/fuselage';
 import { useSetModal, useTranslation } from '@rocket.chat/ui-contexts';
-import React, { ReactElement, useEffect } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import type { ReactElement } from 'react';
+import React, { useEffect } from 'react';
+import type { SubmitHandler } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 import Tags from '../../../../../client/components/Omnichannel/Tags';
 
@@ -59,14 +61,14 @@ export const WrapUpCallModal = ({ closeRoom }: WrapUpCallModalProps): ReactEleme
 				<Tags tags={tags} handler={handleTags as () => void} />
 			</Modal.Content>
 			<Modal.Footer>
-				<ButtonGroup align='end'>
+				<Modal.FooterControllers>
 					<Button secondary onClick={onCancel}>
 						{t('Cancel')}
 					</Button>
 					<Button type='submit' primary>
 						{t('Save')}
 					</Button>
-				</ButtonGroup>
+				</Modal.FooterControllers>
 			</Modal.Footer>
 		</Modal>
 	);

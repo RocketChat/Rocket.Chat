@@ -2,9 +2,9 @@ import { EventEmitter } from 'events';
 
 import type { IPublication } from 'meteor/rocketchat:streamer';
 
-import { Server } from './Server';
-import { Client } from './Client';
-import { IPacket } from './types/IPacket';
+import type { Server } from './Server';
+import type { Client } from './Client';
+import type { IPacket } from './types/IPacket';
 
 export class Publication extends EventEmitter implements IPublication {
 	_session: IPublication['_session'];
@@ -25,6 +25,14 @@ export class Publication extends EventEmitter implements IPublication {
 		};
 
 		this.connection = client.connection;
+	}
+
+	error(_error: Error): void {
+		throw new Error('Method not implemented.');
+	}
+
+	unblock(): void {
+		throw new Error('Method not implemented.');
 	}
 
 	ready(): void {
@@ -52,7 +60,7 @@ export class Publication extends EventEmitter implements IPublication {
 		this.server.removed(this.client, collection, id);
 	}
 
-	get userId(): string | undefined {
-		return this.client.userId;
+	get userId() {
+		return this.client.userId ?? null;
 	}
 }

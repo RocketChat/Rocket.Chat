@@ -5,7 +5,6 @@ import { storiesOf } from '@storybook/react';
 import { screenCentered, screenProps } from '../../helpers.stories';
 import GDPRAgreement from './component';
 
-
 storiesOf('Routes/GDPRAgreement', module)
 	.addDecorator(screenCentered)
 	.addDecorator(withKnobs)

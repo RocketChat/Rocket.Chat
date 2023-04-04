@@ -1,6 +1,7 @@
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 
-import { AbstractBusinessHourBehavior, IBusinessHourBehavior } from './AbstractBusinessHour';
+import type { IBusinessHourBehavior } from './AbstractBusinessHour';
+import { AbstractBusinessHourBehavior } from './AbstractBusinessHour';
 import { openBusinessHourDefault } from './Helper';
 
 export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior implements IBusinessHourBehavior {

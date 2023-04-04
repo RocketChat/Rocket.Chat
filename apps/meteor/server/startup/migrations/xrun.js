@@ -5,5 +5,5 @@ const { MIGRATION_VERSION = 'latest' } = process.env;
 
 const [version, ...subcommands] = MIGRATION_VERSION.split(',');
 
-migrateDatabase(version === 'latest' ? version : parseInt(version), subcommands);
-onFreshInstall(upsertPermissions);
+await migrateDatabase(version === 'latest' ? version : parseInt(version), subcommands);
+await onFreshInstall(upsertPermissions);

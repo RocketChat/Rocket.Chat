@@ -49,7 +49,12 @@ class ScreenHeader extends Component {
 			ref={this.handleRef}
 			post={
 				<Header.Post>
-					{alerts && alerts.map((alert) => <Alert {...alert} onDismiss={onDismissAlert}>{alert.children}</Alert>)}
+					{alerts &&
+						alerts.map((alert) => (
+							<Alert {...alert} onDismiss={onDismissAlert}>
+								{alert.children}
+							</Alert>
+						))}
 				</Header.Post>
 			}
 			large={this.largeHeader()}
@@ -68,12 +73,8 @@ class ScreenHeader extends Component {
 
 			<Header.Content>
 				<Header.Title>{this.headerTitle(t)}</Header.Title>
-				{agent && agent.email && (
-					<Header.SubTitle>{agent.email}</Header.SubTitle>
-				)}
-				{agent && agent.phone && (
-					<Header.CustomField>{agent.phone}</Header.CustomField>
-				)}
+				{agent && agent.email && <Header.SubTitle>{agent.email}</Header.SubTitle>}
+				{agent && agent.phone && <Header.CustomField>{agent.phone}</Header.CustomField>}
 			</Header.Content>
 			<Tooltip.Container>
 				<Header.Actions>
@@ -82,26 +83,21 @@ class ScreenHeader extends Component {
 							aria-label={notificationsEnabled ? t('disable_notifications') : t('enable_notifications')}
 							onClick={notificationsEnabled ? onDisableNotifications : onEnableNotifications}
 						>
-							{notificationsEnabled
-								? <NotificationsEnabledIcon width={20} height={20} />
-								: <NotificationsDisabledIcon width={20} height={20} />
-							}
+							{notificationsEnabled ? (
+								<NotificationsEnabledIcon width={20} height={20} />
+							) : (
+								<NotificationsDisabledIcon width={20} height={20} />
+							)}
 						</Header.Action>
 					</Tooltip.Trigger>
 					{(expanded || !windowed) && (
 						<Tooltip.Trigger content={minimized ? t('restore_chat') : t('minimize_chat')}>
-							<Header.Action
-								aria-label={minimized ? t('restore_chat') : t('minimize_chat')}
-								onClick={minimized ? onRestore : onMinimize}
-							>
-								{minimized
-									? <RestoreIcon width={20} height={20} />
-									: <MinimizeIcon width={20} height={20} />
-								}
+							<Header.Action aria-label={minimized ? t('restore_chat') : t('minimize_chat')} onClick={minimized ? onRestore : onMinimize}>
+								{minimized ? <RestoreIcon width={20} height={20} /> : <MinimizeIcon width={20} height={20} />}
 							</Header.Action>
 						</Tooltip.Trigger>
 					)}
-					{(!expanded && !windowed) && (
+					{!expanded && !windowed && (
 						<Tooltip.Trigger content={t('expand_chat')} placement='bottom-left'>
 							<Header.Action aria-label={t('expand_chat')} onClick={onOpenWindow}>
 								<OpenWindowIcon width={20} height={20} />

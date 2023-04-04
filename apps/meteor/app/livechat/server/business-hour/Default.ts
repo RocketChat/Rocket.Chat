@@ -1,7 +1,9 @@
 import moment from 'moment-timezone';
-import { ILivechatBusinessHour, LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
+import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
+import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 
-import { AbstractBusinessHourType, IBusinessHourType } from './AbstractBusinessHour';
+import type { IBusinessHourType } from './AbstractBusinessHour';
+import { AbstractBusinessHourType } from './AbstractBusinessHour';
 
 interface IExtraProperties {
 	timezoneName?: string;

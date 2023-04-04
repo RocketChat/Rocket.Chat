@@ -11,4 +11,5 @@ export function parentCall(method, args = []) {
 	window.parent.postMessage(data, '*'); // lgtm [js/cross-window-information-leak]
 }
 
-export const runCallbackEventEmitter = (callbackName, data) => validCallbacks.includes(callbackName) && parentCall('callback', [callbackName, data]);
+export const runCallbackEventEmitter = (callbackName, data) =>
+	validCallbacks.includes(callbackName) && parentCall('callback', [callbackName, data]);

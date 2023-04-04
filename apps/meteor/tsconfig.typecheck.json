@@ -4,5 +4,5 @@
 		"skipLibCheck": true,
 		"noEmit": true
 	},
-	"exclude": ["./.meteor/**", "./packages/**", "./imports/client/**", "**/dist/**", "./ee/server/services/**", "node_modules"]
+	"exclude": ["./.meteor/**", "./packages/**", "./imports/client/**", "**/dist/**", "./ee/server/services/**", "**/node_modules/**", "./public/**", "*./private/**"]
 }

@@ -25,7 +25,7 @@ export const useQuery: useQueryType = ({ servedBy, status, departmentId, itemsPe
 	useMemo(() => {
 		const query: {
 			agentId?: string;
-			includeOflineAgents?: 'true' | 'false';
+			includeOfflineAgents?: 'true' | 'false';
 			departmentId?: string;
 			sort: string;
 			count: number;
@@ -39,7 +39,7 @@ export const useQuery: useQueryType = ({ servedBy, status, departmentId, itemsPe
 		};
 
 		if (status !== 'online') {
-			query.includeOflineAgents = 'true';
+			query.includeOfflineAgents = 'true';
 		}
 		if (servedBy) {
 			query.agentId = servedBy;

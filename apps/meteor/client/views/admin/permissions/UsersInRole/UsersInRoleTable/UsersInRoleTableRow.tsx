@@ -1,7 +1,8 @@
-import { IUserInRole } from '@rocket.chat/core-typings';
+import type { IUserInRole } from '@rocket.chat/core-typings';
 import { Box, TableRow, TableCell, Button, Icon } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
-import React, { memo, ReactElement } from 'react';
+import type { ReactElement } from 'react';
+import React, { memo } from 'react';
 
 import { getUserEmailAddress } from '../../../../../../lib/getUserEmailAddress';
 import UserAvatar from '../../../../../components/avatar/UserAvatar';

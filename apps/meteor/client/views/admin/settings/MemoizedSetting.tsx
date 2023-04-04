@@ -1,6 +1,7 @@
-import { ISettingBase, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
-import { Callout, Field, Margins } from '@rocket.chat/fuselage';
-import React, { ElementType, memo, ReactElement, ReactNode } from 'react';
+import type { ISettingBase, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
+import { Box, Callout, Field, Margins } from '@rocket.chat/fuselage';
+import type { ElementType, ReactElement, ReactNode } from 'react';
+import React, { memo } from 'react';
 
 import ActionSettingInput from './inputs/ActionSettingInput';
 import AssetSettingInput from './inputs/AssetSettingInput';
@@ -49,7 +50,7 @@ type MemoizedSettingProps = {
 	callout?: ReactNode;
 	value?: SettingValue;
 	editor?: SettingEditor;
-	onChangeValue?: (value: unknown) => void;
+	onChangeValue?: (value: SettingValue) => void;
 	onChangeEditor?: (value: unknown) => void;
 	onResetButtonClick?: () => void;
 	className?: string;
@@ -57,6 +58,8 @@ type MemoizedSettingProps = {
 	label?: string;
 	sectionChanged?: boolean;
 	hasResetButton?: boolean;
+	disabled?: boolean;
+	showUpgradeButton?: ReactNode;
 	actionText?: string;
 };
 
@@ -68,6 +71,8 @@ const MemoizedSetting = ({
 	editor = undefined,
 	onChangeValue,
 	onChangeEditor,
+	disabled,
+	showUpgradeButton,
 	className = undefined,
 	invisible = undefined,
 	...inputProps
@@ -79,14 +84,25 @@ const MemoizedSetting = ({
 	const InputComponent = inputsByType[type];
 
 	return (
-		<Field className={className}>
-			<InputComponent value={value} editor={editor} onChangeValue={onChangeValue} onChangeEditor={onChangeEditor} {...inputProps} />
-			{hint && <Field.Hint>{hint}</Field.Hint>}
-			{callout && (
-				<Margins block='x16'>
-					<Callout type='warning'>{callout}</Callout>
-				</Margins>
-			)}
+		<Field className={className} flexDirection='row' justifyContent='space-between' alignItems='flex-start'>
+			<Box flexDirection='column' flexGrow={1}>
+				<InputComponent
+					value={value}
+					hint={hint}
+					editor={editor}
+					onChangeValue={onChangeValue}
+					onChangeEditor={onChangeEditor}
+					{...inputProps}
+					disabled={disabled}
+				/>
+				{hint && type !== 'code' && <Field.Hint>{hint}</Field.Hint>}
+				{callout && (
+					<Margins block='x16'>
+						<Callout type='warning'>{callout}</Callout>
+					</Margins>
+				)}
+			</Box>
+			{showUpgradeButton}
 		</Field>
 	);
 };

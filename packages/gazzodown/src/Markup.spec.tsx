@@ -1,9 +1,9 @@
 import { render, screen, cleanup, waitFor } from '@testing-library/react';
 import { Suspense } from 'react';
 
-import Markup from './Markup';
-
 import '@testing-library/jest-dom';
+import { MarkupInteractionContext } from '.';
+import Markup from './Markup';
 
 afterEach(cleanup);
 
@@ -33,6 +33,33 @@ it('renders a big emoji block', () => {
 	expect(screen.getAllByRole('img', { name: ':smile:' })).toHaveLength(2);
 });
 
+it('renders a big emoji block with ASCII emoji', () => {
+	render(
+		<MarkupInteractionContext.Provider
+			value={{
+				convertAsciiToEmoji: false,
+			}}
+		>
+			<Markup
+				tokens={[
+					{
+						type: 'BIG_EMOJI',
+						value: [
+							{ type: 'EMOJI', value: { type: 'PLAIN_TEXT', value: 'slight_smile' }, shortCode: 'slight_smile' },
+							{ type: 'EMOJI', value: undefined, unicode: '🙂' },
+							{ type: 'EMOJI', value: { type: 'PLAIN_TEXT', value: ':)' }, shortCode: 'slight_smile' },
+						],
+					},
+				]}
+			/>
+		</MarkupInteractionContext.Provider>,
+	);
+
+	expect(screen.getByRole('presentation')).toHaveTextContent(':slight_smile:🙂:)');
+	expect(screen.getAllByRole('img')).toHaveLength(2);
+	expect(screen.getAllByRole('img', { name: ':slight_smile:' })).toHaveLength(1);
+});
+
 it('renders a paragraph', () => {
 	render(
 		<Markup
@@ -46,7 +73,6 @@ it('renders a paragraph', () => {
 	);
 
 	expect(screen.getByText('Hello')).toBeInTheDocument();
-	expect(screen.getByText('Hello').matches('p')).toBeTruthy();
 });
 
 it('renders a heading', () => {
@@ -178,7 +204,6 @@ it('renders a blockquote', () => {
 	expect(screen.getByText('Cogito ergo sum.')).toBeInTheDocument();
 	expect(screen.getByText('Sit amet, consectetur adipiscing elit.')).toBeInTheDocument();
 	expect(screen.getByText('Donec eget ex euismod, euismod nisi euismod, vulputate nisi.')).toBeInTheDocument();
-	expect(screen.getByText('Cogito ergo sum.').matches('blockquote p')).toBeTruthy();
 });
 
 it('renders a code block', async () => {

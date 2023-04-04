@@ -1,12 +1,22 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { WebdavAccounts } from '@rocket.chat/models';
+import { api } from '@rocket.chat/core-services';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { IWebdavAccountPayload } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../settings/server';
 import { WebdavClientAdapter } from '../lib/webdavClientAdapter';
-import { api } from '../../../../server/sdk/api';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		addWebdavAccount(formData: IWebdavAccountPayload): boolean;
+		addWebdavAccountByToken(data: IWebdavAccountPayload): boolean;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async addWebdavAccount(formData) {
 		const userId = Meteor.userId();
 
@@ -58,7 +68,7 @@ Meteor.methods({
 			await client.stat('/');
 			await WebdavAccounts.insertOne(accountData);
 
-			api.broadcast('notify.webdav', userId, {
+			void api.broadcast('notify.webdav', userId, {
 				type: 'changed',
 				account: accountData,
 			});
@@ -87,7 +97,11 @@ Meteor.methods({
 			data,
 			Match.ObjectIncluding({
 				serverURL: String,
-				token: String,
+				token: Match.ObjectIncluding({
+					access_token: String,
+					token_type: String,
+					refresh_token: Match.Optional(String),
+				}),
 				name: Match.Maybe(String),
 			}),
 		);
@@ -116,7 +130,7 @@ Meteor.methods({
 					upsert: true,
 				},
 			);
-			api.broadcast('notify.webdav', userId, {
+			void api.broadcast('notify.webdav', userId, {
 				type: 'changed',
 				account: accountData,
 			});

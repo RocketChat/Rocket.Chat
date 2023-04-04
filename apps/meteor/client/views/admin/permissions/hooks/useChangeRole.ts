@@ -21,8 +21,8 @@ export const useChangeRole = ({
 				await onGrant(permissionId, roleId);
 			}
 			return !granted;
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
+		} catch (error: unknown) {
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 		return granted;
 	});
