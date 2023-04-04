@@ -544,7 +544,7 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 										'_id': userId,
 									},
 									{
-										fields: getDefaultUserFields(),
+										projection: getDefaultUserFields(),
 									},
 								);
 
@@ -788,16 +788,16 @@ export class APIClass<TBasePath extends string = ''> extends Restivus {
 						} as unknown as SuccessResult<Record<string, any>>;
 					}
 
-					this.user = (await Users.findOne(
+					this.user = await Users.findOne(
 						{
 							_id: auth.id,
 						},
 						{
-							fields: getDefaultUserFields(),
+							projection: getDefaultUserFields(),
 						},
-					)) as any;
+					);
 
-					this.userId = (this.user as unknown as IUser)?._id as any;
+					this.userId = (this.user as unknown as IUser)?._id;
 
 					const response = {
 						status: 'success',
