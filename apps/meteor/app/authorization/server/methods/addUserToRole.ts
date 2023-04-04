@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import type { IRole, IUser, IRoom } from '@rocket.chat/core-typings';
-import { Roles } from '@rocket.chat/models';
+import { Roles, Users } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { Users } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { hasPermissionAsync } from '../functions/hasPermission';
 import { apiDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
@@ -53,8 +52,8 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const user = Users.findOneByUsernameIgnoringCase(username, {
-			fields: {
+		const user = await Users.findOneByUsernameIgnoringCase(username, {
+			projection: {
 				_id: 1,
 			},
 		});

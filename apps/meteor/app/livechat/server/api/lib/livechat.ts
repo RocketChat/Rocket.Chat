@@ -124,7 +124,7 @@ export function getRoom({
 	return Livechat.getRoom(guest, message, roomInfo, agent, extraParams);
 }
 
-export function findAgent(agentId: string): void | { hiddenInfo: true } | ILivechatAgent {
+export async function findAgent(agentId: string): Promise<void | { hiddenInfo: true } | ILivechatAgent> {
 	return normalizeAgent(agentId);
 }
 

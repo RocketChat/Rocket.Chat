@@ -11,11 +11,10 @@ import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
-import { LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
 
 import { getRoom } from '../../../livechat/server/api/lib/livechat';
 import { Livechat } from '../../../livechat/server/lib/Livechat';
-import { Users } from '../../../models/server';
 import type { AppServerOrchestrator } from '../../../../ee/server/apps/orchestrator';
 import { Livechat as LivechatTyped } from '../../../livechat/server/lib/LivechatTyped';
 
@@ -42,7 +41,7 @@ export class AppLivechatBridge extends LivechatBridge {
 
 		const msg = await Livechat.sendMessage({
 			guest: this.orch.getConverters()?.get('visitors').convertAppVisitor(message.visitor),
-			message: this.orch.getConverters()?.get('messages').convertAppMessage(message),
+			message: await this.orch.getConverters()?.get('messages').convertAppMessage(message),
 			agent: undefined,
 			roomInfo: {
 				source: {
@@ -67,7 +66,7 @@ export class AppLivechatBridge extends LivechatBridge {
 
 		const data = {
 			guest: message.visitor,
-			message: this.orch.getConverters()?.get('messages').convertAppMessage(message),
+			message: await this.orch.getConverters()?.get('messages').convertAppMessage(message),
 		};
 
 		await Livechat.updateMessage(data);
@@ -86,8 +85,8 @@ export class AppLivechatBridge extends LivechatBridge {
 
 		let agentRoom;
 		if (agent?.id) {
-			const user = Users.getAgentInfo(agent.id);
-			agentRoom = Object.assign({}, { agentId: user._id, username: user.username });
+			const user = await Users.getAgentInfo(agent.id);
+			agentRoom = Object.assign({}, { agentId: user?._id, username: user?.username });
 		}
 
 		const result = await getRoom({
@@ -180,7 +179,7 @@ export class AppLivechatBridge extends LivechatBridge {
 
 		const { targetAgent, targetDepartment: departmentId, currentRoom } = transferData;
 
-		const appUser = Users.findOneByAppId(appId, {});
+		const appUser = await Users.findOneByAppId(appId, {});
 		if (!appUser) {
 			throw new Error('Invalid app user, cannot transfer');
 		}
@@ -196,8 +195,8 @@ export class AppLivechatBridge extends LivechatBridge {
 		let transferredTo;
 
 		if (targetAgent?.id) {
-			transferredTo = Users.findOneAgentById(targetAgent.id, {
-				fields: { _id: 1, username: 1, name: 1 },
+			transferredTo = await Users.findOneAgentById(targetAgent.id, {
+				projection: { _id: 1, username: 1, name: 1 },
 			});
 			if (!transferredTo) {
 				throw new Error('Invalid target agent, cannot transfer');

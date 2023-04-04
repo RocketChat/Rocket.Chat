@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
-import { HTTP } from 'meteor/http';
 
 import { getWorkspaceAccessToken } from '../../app/cloud/server';
 import { statistics } from '../../app/statistics/server';
 import { settings } from '../../app/settings/server';
+import { fetch } from '../lib/http/fetch';
 
 async function generateStatistics(logger) {
 	const cronStatistics = await statistics.save();
@@ -22,8 +22,9 @@ async function generateStatistics(logger) {
 			headers.Authorization = `Bearer ${token}`;
 		}
 
-		HTTP.post('https://collector.rocket.chat/', {
-			data: cronStatistics,
+		await fetch('https://collector.rocket.chat/', {
+			method: 'POST',
+			body: JSON.stringify(cronStatistics),
 			headers,
 		});
 	} catch (error) {

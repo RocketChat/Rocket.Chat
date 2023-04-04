@@ -32,10 +32,6 @@ const { FederationHooksEE } = proxyquire
 	});
 
 describe('FederationEE - Infrastructure - RocketChat - Hooks', () => {
-	beforeEach(() => {
-		Promise.await = (args) => args;
-	});
-
 	afterEach(() => {
 		remove.reset();
 		get.reset();

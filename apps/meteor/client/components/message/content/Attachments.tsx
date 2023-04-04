@@ -1,19 +1,19 @@
-import type { FileProp, MessageAttachmentBase } from '@rocket.chat/core-typings';
+import type { MessageAttachmentBase } from '@rocket.chat/core-typings';
 import type { ReactElement } from 'react';
 import React from 'react';
 
 import AttachmentsItem from './attachments/AttachmentsItem';
 
 type AttachmentsProps = {
-	file?: FileProp;
 	attachments: MessageAttachmentBase[];
+	collapsed?: boolean;
 };
 
-const Attachments = ({ attachments, file }: AttachmentsProps): ReactElement => {
+const Attachments = ({ attachments, collapsed }: AttachmentsProps): ReactElement => {
 	return (
 		<>
 			{attachments?.map((attachment, index) => (
-				<AttachmentsItem key={index} file={file} attachment={attachment} />
+				<AttachmentsItem key={index} attachment={{ ...attachment, collapsed }} />
 			))}
 		</>
 	);
