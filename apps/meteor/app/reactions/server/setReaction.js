@@ -7,7 +7,7 @@ import { api } from '@rocket.chat/core-services';
 import { Messages, Rooms } from '../../models/server';
 import { callbacks } from '../../../lib/callbacks';
 import { emoji } from '../../emoji/server';
-import { isTheLastMessage, msgStream } from '../../lib/server';
+import { isTheLastMessage } from '../../lib/server';
 import { canAccessRoom, hasPermission } from '../../authorization/server';
 import { AppEvents, Apps } from '../../../ee/server/apps/orchestrator';
 
@@ -96,8 +96,6 @@ async function setReaction(room, user, message, reaction, shouldReact) {
 	}
 
 	Promise.await(Apps.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, isReacted));
-
-	msgStream.emit(message.rid, message);
 }
 
 export const executeSetReaction = async function (reaction, messageId, shouldReact) {
