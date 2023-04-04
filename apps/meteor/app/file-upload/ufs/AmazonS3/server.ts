@@ -162,8 +162,8 @@ class AmazonS3Store extends UploadFS.Store {
 		 */
 		this.getWriteStream = function (_fileId, file /* , options*/) {
 			const writeStream = new stream.PassThrough();
-			// TODO: Check if is necessary, type does not allow;
-			// writeStream.length = file.size;
+			// TS does not allow but S3 requires a length property;
+			(writeStream as unknown as any).length = file.size;
 
 			writeStream.on('newListener', (event, listener) => {
 				if (event === 'finish') {

@@ -367,7 +367,7 @@ API.v1.addRoute(
 			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				messages: normalizeMessagesForUser(messages, this.userId),
+				messages: await normalizeMessagesForUser(messages, this.userId),
 				count: messages.length,
 				offset,
 				total,
@@ -419,7 +419,7 @@ API.v1.addRoute(
 			}
 
 			return API.v1.success({
-				messages: normalizeMessagesForUser(msgs, this.userId),
+				messages: await normalizeMessagesForUser(msgs, this.userId),
 				offset,
 				count: msgs.length,
 				total,

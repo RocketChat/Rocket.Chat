@@ -1,5 +1,6 @@
-import { Users } from '../../models';
-import { settings } from '../../settings';
+import { Users } from '@rocket.chat/models';
+
+import { settings } from '../../../settings/server';
 
 /**
  * @summary Get a user preference
@@ -8,10 +9,10 @@ import { settings } from '../../settings';
  * @param {unknown?} defaultValue The default value
  * @returns {unknown} The preference value
  */
-export const getUserPreference = (user, key, defaultValue = undefined) => {
+export const getUserPreference = async (user, key, defaultValue = undefined) => {
 	let preference;
 	if (typeof user === typeof '') {
-		user = Users.findOne(user, { fields: { [`settings.preferences.${key}`]: 1 } });
+		user = await Users.findOneById(user, { projection: { [`settings.preferences.${key}`]: 1 } });
 	}
 	if (user && user.settings && user.settings.preferences && user.settings.preferences.hasOwnProperty(key)) {
 		preference = user.settings.preferences[key];
