@@ -194,5 +194,5 @@ export abstract class RoomCoordinator {
 		return Object.keys(this.roomTypes);
 	}
 
-	abstract openRoom(_type: string, _name: string, _render?: boolean): void;
+	abstract openRoom(_type: string, _name: string): void;
 }

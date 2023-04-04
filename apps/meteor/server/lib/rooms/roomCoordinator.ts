@@ -75,7 +75,7 @@ class RoomCoordinatorServer extends RoomCoordinator {
 		return directives as IRoomTypeServerDirectives;
 	}
 
-	openRoom(_type: string, _name: string, _render = true): void {
+	openRoom(_type: string, _name: string): void {
 		// Nothing to do on the server side.
 	}
 
