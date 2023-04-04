@@ -60,7 +60,7 @@ const _setEmail = async function (userId: string, email: string, shouldSendVerif
 	}
 
 	// Check email availability
-	if (!checkEmailAvailability(email)) {
+	if (!(await checkEmailAvailability(email))) {
 		throw new Meteor.Error('error-field-unavailable', `${email} is already in use :(`, {
 			function: '_setEmail',
 			field: email,
