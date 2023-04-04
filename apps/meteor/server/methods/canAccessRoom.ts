@@ -2,9 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { Rooms } from '@rocket.chat/models';
+import { Rooms, Users } from '@rocket.chat/models';
 
-import { Users } from '../../app/models/server';
 import { canAccessRoomAsync } from '../../app/authorization/server';
 import { settings } from '../../app/settings/server';
 
@@ -25,8 +24,8 @@ if (['yes', 'true'].includes(String(process.env.ALLOW_CANACCESSROOM_METHOD).toLo
 			let user;
 
 			if (userId) {
-				user = Users.findOneById(userId, {
-					fields: {
+				user = await Users.findOneById(userId, {
+					projection: {
 						username: 1,
 					},
 				});
