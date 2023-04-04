@@ -11,12 +11,12 @@ import {
 	isTeamsLeaveProps,
 	isTeamsUpdateProps,
 } from '@rocket.chat/rest-typings';
-import type { ITeam } from '@rocket.chat/core-typings';
+import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
 import { TEAM_TYPE } from '@rocket.chat/core-typings';
 import { Team } from '@rocket.chat/core-services';
+import { Users, Rooms } from '@rocket.chat/models';
 
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
-import { Rooms, Users } from '../../../models/server';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { API } from '../api';
@@ -161,11 +161,11 @@ API.v1.addRoute(
 				Match.OneOf(
 					Match.ObjectIncluding({
 						teamId: String,
-						rooms: [String],
+						rooms: [String] as [StringConstructor],
 					}),
 					Match.ObjectIncluding({
 						teamName: String,
-						rooms: [String],
+						rooms: [String] as [StringConstructor],
 					}),
 				),
 			);
@@ -410,7 +410,7 @@ API.v1.addRoute(
 			const query = {
 				username: username ? new RegExp(escapeRegExp(username), 'i') : undefined,
 				name: name ? new RegExp(escapeRegExp(name), 'i') : undefined,
-				status: status ? { $in: status } : undefined,
+				status: status ? { $in: status as UserStatus[] } : undefined,
 			};
 
 			const { records, total } = await Team.members(this.userId, team._id, canSeeAllMembers, { offset, count }, query);
@@ -499,7 +499,7 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
-			const user = Users.findOneActiveById(userId, {});
+			const user = await Users.findOneActiveById(userId, {});
 			if (!user) {
 				return API.v1.failure('invalid-user');
 			}
@@ -577,7 +577,7 @@ API.v1.addRoute(
 				return API.v1.failure('Team not found');
 			}
 
-			const room = Rooms.findOneById(teamInfo.roomId);
+			const room = await Rooms.findOneById(teamInfo.roomId);
 
 			if (!room) {
 				return API.v1.failure('Room not found');

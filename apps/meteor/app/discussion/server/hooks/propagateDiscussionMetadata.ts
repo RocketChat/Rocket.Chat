@@ -1,8 +1,6 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../lib/callbacks';
-import { Rooms as RoomsSync } from '../../../models/server';
 import { deleteRoom } from '../../../lib/server';
 
 /**
@@ -51,7 +49,7 @@ callbacks.add(
 			}
 		}
 		if (message.drid) {
-			deleteRoom(message.drid);
+			await deleteRoom(message.drid);
 		}
 		return message;
 	},
@@ -61,8 +59,11 @@ callbacks.add(
 
 callbacks.add(
 	'afterDeleteRoom',
-	(rid) => {
-		RoomsSync.find({ prid: rid }, { fields: { _id: 1 } }).forEach(({ _id }: Pick<IRoom, '_id'>) => deleteRoom(_id));
+	async (rid) => {
+		for await (const { _id } of Rooms.find({ prid: rid }, { projection: { _id: 1 } })) {
+			await deleteRoom(_id);
+		}
+
 		return rid;
 	},
 	callbacks.priority.LOW,
@@ -72,9 +73,9 @@ callbacks.add(
 // TODO discussions define new fields
 callbacks.add(
 	'afterRoomNameChange',
-	(roomConfig) => {
+	async (roomConfig) => {
 		const { rid, name, oldName } = roomConfig;
-		RoomsSync.update({ prid: rid, ...(oldName && { topic: oldName }) }, { $set: { topic: name } }, { multi: true });
+		await Rooms.updateMany({ prid: rid, ...(oldName && { topic: oldName }) }, { $set: { topic: name } });
 		return roomConfig;
 	},
 	callbacks.priority.LOW,

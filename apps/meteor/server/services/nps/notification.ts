@@ -46,7 +46,7 @@ export const getBannerForAdmins = Meteor.bindEnvironment((expireAt: Date): Omit<
 
 export const notifyAdmins = (expireAt: Date) =>
 	sendMessagesToAdmins({
-		msgs: ({ adminUser }: { adminUser: any }): any => ({
+		msgs: async ({ adminUser }: { adminUser: any }): Promise<any> => ({
 			msg: TAPi18n.__('NPS_survey_is_scheduled_to-run-at__date__for_all_users', {
 				date: moment(expireAt).format('YYYY-MM-DD'),
 				lng: adminUser.language,

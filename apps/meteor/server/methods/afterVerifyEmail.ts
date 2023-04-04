@@ -1,9 +1,7 @@
 import { Meteor } from 'meteor/meteor';
-import type { IUser, IRole } from '@rocket.chat/core-typings';
-import { Roles } from '@rocket.chat/models';
+import type { IRole } from '@rocket.chat/core-typings';
+import { Roles, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-
-import { Users } from '../../app/models/server';
 
 const rolesToChangeTo: Map<IRole['_id'], [IRole['_id']]> = new Map([['anonymous', ['user']]]);
 
@@ -24,7 +22,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const user = Users.findOneById(userId) as IUser;
+		const user = await Users.findOneById(userId);
 		if (user?.emails && Array.isArray(user.emails)) {
 			const verifiedEmail = user.emails.find((email) => email.verified);
 

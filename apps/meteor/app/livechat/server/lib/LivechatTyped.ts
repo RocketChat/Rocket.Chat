@@ -4,7 +4,7 @@ import type {
 	IUser,
 	MessageTypesValues,
 	ILivechatVisitor,
-	IRegisterUser,
+	IOmnichannelSystemMessage,
 } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatInquiry, LivechatRooms, Subscriptions, LivechatVisitors, Messages, Users } from '@rocket.chat/models';
@@ -41,7 +41,7 @@ type GenericCloseRoomParams = {
 };
 
 export type CloseRoomParamsByUser = {
-	user: IUser;
+	user: IUser | null;
 } & GenericCloseRoomParams;
 
 export type CloseRoomParamsByVisitor = {
@@ -90,11 +90,11 @@ class LivechatClass {
 		let chatCloser: any;
 		if (isRoomClosedByUserParams(params)) {
 			const { user } = params;
-			this.logger.debug(`Closing by user ${user._id}`);
+			this.logger.debug(`Closing by user ${user?._id}`);
 			closeData.closer = 'user';
 			closeData.closedBy = {
-				_id: user._id,
-				username: user.username,
+				_id: user?._id || '',
+				username: user?.username,
 			};
 			chatCloser = user;
 		} else if (isRoomClosedByVisitorParams(params)) {
@@ -237,7 +237,7 @@ class LivechatClass {
 		rid: string;
 		email: string;
 		subject?: string;
-		user?: Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'>;
+		user?: Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'> | null;
 	}): Promise<boolean> {
 		check(rid, String);
 		check(email, String);
@@ -321,27 +321,29 @@ class LivechatClass {
 			callbacks.run('livechat.sendTranscript', messages, email);
 		});
 
-		let type = 'user';
+		const requestData: IOmnichannelSystemMessage['requestData'] = {
+			type: 'user',
+			visitor,
+			user,
+		};
+
 		if (!user?.username) {
 			const cat = await Users.findOneById('rocket.cat', { projection: { _id: 1, username: 1, name: 1 } });
-			if (!cat) {
-				this.logger.error('rocket.cat user not found');
-				throw new Error('No user provided and rocket.cat not found');
+			if (cat) {
+				requestData.user = cat;
+				requestData.type = 'visitor';
 			}
-			user = cat;
-			type = 'visitor';
 		}
 
-		await Messages.createWithTypeRoomIdMessageUserAndUnread(
-			'livechat_transcript_history',
-			room._id,
-			'',
-			user as IRegisterUser,
-			settings.get('Message_Read_Receipt_Enabled'),
-			{
-				requestData: { type, visitor, user },
-			} as any, // TODO should a message really have "requestData"? if so, it should be on IMessage
-		);
+		if (!requestData.user) {
+			this.logger.error('rocket.cat user not found');
+			throw new Error('No user provided and rocket.cat not found');
+		}
+
+		await Message.saveSystemMessage<IOmnichannelSystemMessage>('livechat_transcript_history', room._id, '', requestData.user, {
+			requestData,
+		});
+
 		return true;
 	}
 }

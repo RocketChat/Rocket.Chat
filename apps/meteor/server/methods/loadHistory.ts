@@ -2,9 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Rooms } from '@rocket.chat/models';
 
-import { Rooms } from '../../app/models/server';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { settings } from '../../app/settings/server';
@@ -41,7 +40,7 @@ Meteor.methods<ServerMethods>({
 
 		const fromId = Meteor.userId();
 
-		const room = Rooms.findOneById(rid, { fields: { ...roomAccessAttributes, t: 1 } });
+		const room = await Rooms.findOneById(rid, { fields: { ...roomAccessAttributes, t: 1 } });
 		if (!room) {
 			return false;
 		}

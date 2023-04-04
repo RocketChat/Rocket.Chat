@@ -2,12 +2,11 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Message, Team } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
 
 import { hasRoleAsync } from '../../app/authorization/server/functions/hasRole';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { removeUserFromRolesAsync } from '../lib/roles/removeUserFromRoles';
-import { Users, Rooms } from '../../app/models/server';
 import { callbacks } from '../../lib/callbacks';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
@@ -44,7 +43,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const room = Rooms.findOneById(data.rid);
+		const room = await Rooms.findOneById(data.rid);
 
 		if (!room || !(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.REMOVE_USER, fromId))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
@@ -52,9 +51,14 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const removedUser = Users.findOneByUsernameIgnoringCase(data.username);
+		const removedUser = await Users.findOneByUsernameIgnoringCase(data.username);
 
-		const fromUser = Users.findOneById(fromId);
+		const fromUser = await Users.findOneById(fromId);
+		if (!fromUser) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'removeUserFromRoom',
+			});
+		}
 
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, removedUser._id, {
 			projection: { _id: 1 },
