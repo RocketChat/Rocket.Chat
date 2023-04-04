@@ -55,16 +55,17 @@ export class ConnectionImpl
 
 	status: ConnectionStatus = 'idle';
 
-	constructor(private ws: WebSocket, private client: DDPClient, _retryOptions?: RetryOptions) {
+	ws: WebSocket | undefined;
+
+	retryCount = 0;
+
+	constructor(
+		readonly url: string,
+		private WS: WebSocketConstructor,
+		private client: DDPClient,
+		readonly retryOptions: RetryOptions = { retryCount: 0, retryTime: 1000 },
+	) {
 		super();
-
-		ws.onmessage = (event) => {
-			client.handleMessage(String(event.data));
-		};
-
-		client.onDispatchMessage((message) => {
-			ws.send(message);
-		});
 	}
 
 	private emitStatus() {
@@ -74,8 +75,24 @@ export class ConnectionImpl
 	connect() {
 		this.status = 'connecting';
 		this.emitStatus();
+
+		const ws = new this.WS(this.url);
+
+		ws.onmessage = (event) => {
+			this.client.handleMessage(String(event.data));
+		};
+
+		const handle = (message: string) => {
+			ws.send(message);
+		};
+
+		let stop: () => void | undefined;
 		return new Promise<boolean>((resolve, reject) => {
-			this.ws.onopen = () => {
+			ws.onopen = () => {
+				// stop =
+				this.client.onDispatchMessage(handle);
+
+				this.retryCount = 0;
 				// The server may send an initial message which is a JSON object lacking a msg key. If so, the client should ignore it. The client does not have to wait for this message.
 				// (The message was once used to help implement Meteor's hot code reload feature; it is now only included to force old clients to update).
 				this.client.onceMessage((data) => {
@@ -114,35 +131,40 @@ export class ConnectionImpl
 				});
 			};
 
-			this.ws.addEventListener('close', () => {
+			ws.addEventListener('close', () => {
+				stop?.();
 				if (this.status === 'closed') {
-					return;
-				}
-				if (this.status === 'failed') {
 					return;
 				}
 				this.status = 'disconnected';
 				this.emitStatus();
-				// if (this.retryOptions.retryCount > 0) {
-				// 	this.retryOptions.retryCount -= 1;
-				// 	this.retryOptions.retryTimer = setTimeout(() => {
-				// 		this.connect();
-				// 	}, this.retryOptions.retryTime);
-				// }
+
+				if (this.retryCount >= this.retryOptions.retryCount) {
+					return;
+				}
+
+				this.retryCount += 1;
+
+				this.retryOptions.retryTimer = setTimeout(() => {
+					this.connect();
+				}, this.retryOptions.retryTime);
 			});
 		});
 	}
 
 	close() {
 		this.status = 'closed';
-		this.ws.close();
+		this.ws?.close();
 		this.emitStatus();
 	}
 
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	static create(url: string, WebSocketImpl: WebSocketConstructor, client: DDPClient, retryOptions?: RetryOptions): Connection {
-		const ws = new WebSocketImpl(url);
-
-		return new ConnectionImpl(ws, client, retryOptions);
+	static create(
+		url: string,
+		// eslint-disable-next-line @typescript-eslint/naming-convention
+		WebSocketImpl: WebSocketConstructor,
+		client: DDPClient,
+		retryOptions: RetryOptions = { retryCount: 0, retryTime: 1000 },
+	): Connection {
+		return new ConnectionImpl(url, WebSocketImpl, client, retryOptions);
 	}
 }
