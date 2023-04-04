@@ -3,6 +3,7 @@ export * from './models/IAvatarsModel';
 export * from './models/IBannersDismissModel';
 export * from './models/IBannersModel';
 export * from './models/IBaseModel';
+export * from './models/IBaseUploadsModel';
 export * from './models/ICannedResponseModel';
 export * from './models/ICredentialTokensModel';
 export * from './models/ICustomSoundsModel';
