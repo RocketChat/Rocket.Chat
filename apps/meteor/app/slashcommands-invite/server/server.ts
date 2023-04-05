@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { IUser } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Users } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
@@ -21,13 +21,13 @@ slashCommands.add({
 		if (usernames.length === 0) {
 			return;
 		}
-		const users = Meteor.users.find({
+		const users = await Users.find({
 			username: {
 				$in: usernames,
 			},
-		});
+		}).toArray();
 		const userId = Meteor.userId() as string;
-		if (users.count() === 0) {
+		if (users.length === 0) {
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('User_doesnt_exist', {
 					postProcess: 'sprintf',
@@ -40,7 +40,7 @@ slashCommands.add({
 
 		const usersFiltered: IUser[] = [];
 
-		for await (const user of users.fetch()) {
+		for await (const user of users) {
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(item.rid, user._id, {
 				projection: { _id: 1 },
 			});
