@@ -189,9 +189,9 @@ export class CustomOAuth {
 
 	registerService() {
 		const self = this;
-		OAuth.registerService(this.name, 2, null, (query) => {
-			const response = self.getAccessToken(query);
-			const identity = self.getIdentity(response.access_token, query);
+		OAuth.registerService(this.name, 2, null, async (query) => {
+			const response = await self.getAccessToken(query);
+			const identity = await self.getIdentity(response.access_token, query);
 
 			const serviceData = {
 				_OAuthCustom: true,
@@ -324,7 +324,7 @@ export class CustomOAuth {
 	}
 
 	addHookToProcessUser() {
-		BeforeUpdateOrCreateUserFromExternalService.push((serviceName, serviceData /* , options*/) => {
+		BeforeUpdateOrCreateUserFromExternalService.push(async (serviceName, serviceData /* , options*/) => {
 			if (serviceName !== this.name) {
 				return;
 			}
@@ -333,9 +333,9 @@ export class CustomOAuth {
 				let user = undefined;
 
 				if (this.keyField === 'username') {
-					user = Promise.await(Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceData._id, serviceName));
+					user = await Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceData._id, serviceName);
 				} else if (this.keyField === 'email') {
-					user = Promise.await(Users.findOneByEmailAddressAndServiceNameIgnoringCase(serviceData.email, serviceData._id, serviceName));
+					user = await Users.findOneByEmailAddressAndServiceNameIgnoringCase(serviceData.email, serviceData._id, serviceName);
 				}
 
 				if (!user) {
@@ -368,7 +368,7 @@ export class CustomOAuth {
 					},
 				};
 
-				Promise.await(Users.update({ _id: user._id }, update));
+				await Users.update({ _id: user._id }, update);
 			}
 		});
 
@@ -429,9 +429,9 @@ export class CustomOAuth {
 }
 
 const { updateOrCreateUserFromExternalService } = Accounts;
-Accounts.updateOrCreateUserFromExternalService = function (...args /* serviceName, serviceData, options*/) {
-	for (const hook of BeforeUpdateOrCreateUserFromExternalService) {
-		hook.apply(this, args);
+const updateOrCreateUserFromExternalServiceAsync = async function (...args /* serviceName, serviceData, options*/) {
+	for await (const hook of BeforeUpdateOrCreateUserFromExternalService) {
+		await hook.apply(this, args);
 	}
 
 	const [serviceName, serviceData] = args;
@@ -441,8 +441,12 @@ Accounts.updateOrCreateUserFromExternalService = function (...args /* serviceNam
 	callbacks.run('afterValidateNewOAuthUser', {
 		identity: serviceData,
 		serviceName,
-		user: Promise.await(Users.findOneById(user.userId)),
+		user: await Users.findOneById(user.userId),
 	});
 
 	return user;
+};
+
+Accounts.updateOrCreateUserFromExternalService = function (...args /* serviceName, serviceData, options*/) {
+	return Promise.await(updateOrCreateUserFromExternalServiceAsync.call(this, ...args));
 };
