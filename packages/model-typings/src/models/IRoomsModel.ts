@@ -139,7 +139,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findRoomsInsideTeams(autoJoin?: boolean): FindCursor<IRoom>;
 
-	findOneDirectRoomContainingAllUserIDs(uid: IDirectMessageRoom['uids'], options?: FindOptions<IRoom>): Promise<IDirectMessageRoom | null>;
+	findOneDirectRoomContainingAllUserIDs(uid: IDirectMessageRoom['uids'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
 	countByType(t: IRoom['t']): Promise<number>;
 

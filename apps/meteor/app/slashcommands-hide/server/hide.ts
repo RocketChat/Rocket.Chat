@@ -1,7 +1,8 @@
+import { api } from '@rocket.chat/core-services';
+import type { IRoom } from '@rocket.chat/core-typings';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { api } from '@rocket.chat/core-services';
-import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/server';
@@ -35,7 +36,7 @@ slashCommands.add({
 
 			const [type] = room;
 
-			const roomObject =
+			const roomObject: IRoom | null =
 				type === '#'
 					? await Rooms.findOneByName(strippedRoom)
 					: await Rooms.findOne({
@@ -50,6 +51,8 @@ slashCommands.add({
 						lng,
 					}),
 				});
+
+				return;
 			}
 			if (!(await Subscriptions.findOneByRoomIdAndUserId(roomObject._id, user._id, { projection: { _id: 1 } }))) {
 				void api.broadcast('notify.ephemeralMessage', user._id, item.rid, {

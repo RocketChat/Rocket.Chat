@@ -1,29 +1,29 @@
 import type {
-	IDirectMessageRoom,
-	IMessage,
-	IOmnichannelGenericRoom,
-	IRoom,
-	IRoomFederated,
-	ITeam,
-	IUser,
-	RocketChatRecordDeleted,
+    IDirectMessageRoom,
+    IMessage,
+    IOmnichannelGenericRoom,
+    IRoom,
+    IRoomFederated,
+    ITeam,
+    IUser,
+    RocketChatRecordDeleted
 } from '@rocket.chat/core-typings';
 import type { FindPaginated, IRoomsModel } from '@rocket.chat/model-typings';
 import { Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
-	AggregationCursor,
-	Collection,
-	Db,
-	DeleteResult,
-	Document,
-	Filter,
-	FindCursor,
-	FindOptions,
-	IndexDescription,
-	UpdateFilter,
-	UpdateOptions,
-	UpdateResult,
+    AggregationCursor,
+    Collection,
+    Db,
+    DeleteResult,
+    Document,
+    Filter,
+    FindCursor,
+    FindOptions,
+    IndexDescription,
+    UpdateFilter,
+    UpdateOptions,
+    UpdateResult
 } from 'mongodb';
 import { ReadPreference } from 'mongodb';
 
@@ -855,16 +855,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findPaginated(query, options);
 	}
 
-	findOneDirectRoomContainingAllUserIDs(
-		uid: IDirectMessageRoom['uids'],
-		options: FindOptions<IRoom> = {},
-	): Promise<IDirectMessageRoom | null> {
+	findOneDirectRoomContainingAllUserIDs(uid: IDirectMessageRoom['uids'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
 		const query: Filter<IRoom> = {
 			t: 'd',
 			uids: { $size: uid.length, $all: uid },
 		};
 
-		return this.findOne<IDirectMessageRoom>(query, options);
+		return this.findOne<IRoom>(query, options);
 	}
 
 	findFederatedRooms(options: FindOptions<IRoom> = {}): FindCursor<IRoomFederated> {

@@ -102,7 +102,7 @@ export class RocketChatRoomAdapter {
 		}
 
 		if (room) {
-			return this.createFederatedRoomInstance<IDirectMessageRoom>(externalRoomId, room);
+			return this.createFederatedRoomInstance(externalRoomId, room);
 		}
 	}
 
