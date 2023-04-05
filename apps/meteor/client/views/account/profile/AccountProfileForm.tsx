@@ -99,10 +99,13 @@ const AccountProfileForm = ({ values, handlers, user, settings, onSaveStateChang
 	}, [dispatchToastMessage, email, previousEmail, sendConfirmationEmail, t]);
 
 	// this is will decide whether form can be saved
-	const passwordError = useMemo(
-		() => (password && confirmationPassword && password === confirmationPassword ? undefined : t('Passwords_do_not_match')),
-		[t, password, confirmationPassword],
-	);
+	const passwordError = useMemo(() => {
+		// if changing password in not initiated, no password error
+		const passwordUpdateNotStarted = !password && !confirmationPassword;
+		const passwordMatches = password && confirmationPassword && password === confirmationPassword;
+
+		return passwordUpdateNotStarted || passwordMatches ? undefined : t('Passwords_do_not_match');
+	}, [t, password, confirmationPassword]);
 
 	// this will decide when to password mismatch on UI
 	const showPasswordError = useMemo(
