@@ -738,7 +738,7 @@ export class FileUploadClass {
 		return store.delete(file._id);
 	}
 
-	async _doInsert(fileData: OptionalId<IUpload>, streamOrBuffer: stream | Buffer): Promise<IUpload> {
+	async _doInsert(fileData: OptionalId<IUpload>, streamOrBuffer: ReadableStream | stream | Buffer): Promise<IUpload> {
 		const fileId = await this.store.create(fileData);
 		const tmpFile = UploadFS.getTempFilePath(fileId);
 
@@ -753,17 +753,13 @@ export class FileUploadClass {
 
 			const file = await ufsComplete(fileId, this.name);
 
-			if (cb) {
-				cb(undefined, file);
-			}
-
 			return file;
 		} catch (e: any) {
 			throw e;
 		}
 	}
 
-	async insert(fileData: OptionalId<IUpload>, streamOrBuffer: stream.Readable | Buffer) {
+	async insert(fileData: OptionalId<IUpload>, streamOrBuffer: ReadableStream | stream.Readable | Buffer) {
 		if (streamOrBuffer instanceof stream) {
 			streamOrBuffer = await streamToBuffer(streamOrBuffer);
 		}

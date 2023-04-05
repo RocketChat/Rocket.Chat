@@ -59,7 +59,7 @@ export class Filter {
 		}
 	}
 
-	async check(file: OptionalId<IUpload>, content?: Buffer) {
+	async check(file: OptionalId<IUpload>, content?: ReadableStream | Buffer) {
 		let error = null;
 		if (typeof file !== 'object' || !file) {
 			error = this.options.invalidFileError();
@@ -137,7 +137,7 @@ export class Filter {
 		return result;
 	}
 
-	async onCheck(_file: OptionalId<IUpload>, _content?: Buffer) {
+	async onCheck(_file: OptionalId<IUpload>, _content?: ReadableStream | Buffer) {
 		return true;
 	}
 }
