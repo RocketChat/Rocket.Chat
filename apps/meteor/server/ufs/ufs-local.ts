@@ -2,11 +2,11 @@ import fs from 'fs';
 import { stat, unlink } from 'fs/promises';
 
 import mkdirp from 'mkdirp';
+import type { IUpload } from '@rocket.chat/core-typings';
 
 import { UploadFS } from '.';
 import type { StoreOptions } from './ufs-store';
 import { Store } from './ufs-store';
-import type { IFile } from './definition';
 
 type LocalStoreOptions = StoreOptions & {
 	mode?: string;
@@ -77,7 +77,7 @@ export class LocalStore extends Store {
 			}
 		};
 
-		this.getReadStream = async (fileId: string, file: IFile, options?: { start?: number; end?: number }) => {
+		this.getReadStream = async (fileId: string, file: IUpload, options?: { start?: number; end?: number }) => {
 			options = Object.assign({}, options);
 			return fs.createReadStream(await this.getFilePath(fileId, file), {
 				flags: 'r',
@@ -88,7 +88,7 @@ export class LocalStore extends Store {
 			});
 		};
 
-		this.getWriteStream = async (fileId: string, file: IFile, options?: { start?: number }) => {
+		this.getWriteStream = async (fileId: string, file: IUpload, options?: { start?: number }) => {
 			options = Object.assign({}, options);
 			return fs.createWriteStream(await this.getFilePath(fileId, file), {
 				flags: 'a',
@@ -99,7 +99,7 @@ export class LocalStore extends Store {
 		};
 	}
 
-	async getFilePath(fileId: string, fileParam?: IFile): Promise<string> {
+	async getFilePath(fileId: string, fileParam?: IUpload): Promise<string> {
 		const file = fileParam || (await this.getCollection().findOne(fileId, { projection: { extension: 1 } }));
 		return (file && this.getPath(fileId + (file.extension ? `.${file.extension}` : ''))) || '';
 	}

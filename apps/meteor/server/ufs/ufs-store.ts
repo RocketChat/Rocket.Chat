@@ -12,47 +12,41 @@ import type { IUpload } from '@rocket.chat/core-typings';
 import type { IBaseUploadsModel } from '@rocket.chat/model-typings';
 
 import { UploadFS } from '.';
-import type { IFile } from './definition';
 import { Filter } from './ufs-filter';
-import { Tokens } from './ufs-tokens';
 
 export type StoreOptions = {
-	collection?: IBaseUploadsModel<IFile>;
+	collection?: IBaseUploadsModel<IUpload>;
 	filter?: Filter;
 	name: string;
-	onCopyError?: (err: any, fileId: string, file: IFile) => void;
-	onFinishUpload?: (file: IFile) => Promise<void>;
-	onRead?: (fileId: string, file: IFile, request: any, response: any) => Promise<boolean>;
-	onReadError?: (err: any, fileId: string, file: IFile) => void;
-	onValidate?: (file: IFile) => Promise<void>;
-	onWriteError?: (err: any, fileId: string, file: IFile) => void;
+	onCopyError?: (err: any, fileId: string, file: IUpload) => void;
+	onFinishUpload?: (file: IUpload) => Promise<void>;
+	onRead?: (fileId: string, file: IUpload, request: any, response: any) => Promise<boolean>;
+	onReadError?: (err: any, fileId: string, file: IUpload) => void;
+	onValidate?: (file: IUpload) => Promise<void>;
+	onWriteError?: (err: any, fileId: string, file: IUpload) => void;
 	transformRead?: (
 		readStream: stream.Readable,
 		writeStream: stream.Writable,
 		fileId: string,
-		file: IFile,
+		file: IUpload,
 		request: createServer.IncomingMessage,
 		headers?: Record<string, any>,
 	) => void;
-	transformWrite?: (readStream: stream.Readable, writeStream: stream.Writable, fileId: string, file: IFile) => void;
+	transformWrite?: (readStream: stream.Readable, writeStream: stream.Writable, fileId: string, file: IUpload) => void;
 };
 
 export class Store {
 	protected options: StoreOptions;
 
-	public checkToken: (token: string, fileId: string) => boolean;
-
 	public copy: (
 		fileId: string,
 		store: Store,
-		callback?: (err?: Error, copyId?: string, copy?: OptionalId<IFile>, store?: Store) => void,
+		callback?: (err?: Error, copyId?: string, copy?: OptionalId<IUpload>, store?: Store) => void,
 	) => Promise<void>;
 
-	public create: (file: OptionalId<IFile>) => Promise<string>;
+	public create: (file: OptionalId<IUpload>) => Promise<string>;
 
-	public createToken: (fileId: string) => void;
-
-	public write: (rs: stream.Readable, fileId: string, callback: (err?: Error, file?: IFile) => void) => Promise<void>;
+	public write: (rs: stream.Readable, fileId: string, callback: (err?: Error, file?: IUpload) => void) => Promise<void>;
 
 	constructor(options: StoreOptions) {
 		options = {
@@ -106,12 +100,6 @@ export class Store {
 		// Add the store to the list
 		UploadFS.addStore(this);
 
-		this.checkToken = (token, fileId) => {
-			check(token, String);
-			check(fileId, String);
-			return Tokens.find({ value: token, fileId }).count() === 1;
-		};
-
 		this.copy = async (fileId, store, callback) => {
 			check(fileId, String);
 
@@ -141,27 +129,20 @@ export class Store {
 			const rs = await this.getReadStream(fileId, file);
 
 			// Catch errors to avoid app crashing
-			rs.on(
-				'error',
-				Meteor.bindEnvironment((err: Error) => {
-					callback?.call(this, err);
-				}),
-			);
+			rs.on('error', (err: Error) => {
+				callback?.call(this, err);
+			});
 
 			// Copy file data
-			await store.write(
-				rs,
-				copyId,
-				Meteor.bindEnvironment((err) => {
-					if (err) {
-						void this.removeById(copyId);
-						this.onCopyError.call(this, err, fileId, file);
-					}
-					if (typeof callback === 'function') {
-						callback.call(this, err, copyId, copy, store);
-					}
-				}),
-			);
+			await store.write(rs, copyId, (err) => {
+				if (err) {
+					void this.removeById(copyId);
+					this.onCopyError.call(this, err, fileId, file);
+				}
+				if (typeof callback === 'function') {
+					callback.call(this, err, copyId, copy, store);
+				}
+			});
 		};
 
 		this.create = async (file) => {
@@ -170,103 +151,70 @@ export class Store {
 			return (await this.getCollection().insertOne(file)).insertedId;
 		};
 
-		this.createToken = (fileId) => {
-			const token = this.generateToken();
-
-			// Check if token exists
-			if (Tokens.find({ fileId }).count()) {
-				Tokens.update(
-					{ fileId },
-					{
-						$set: {
-							createdAt: new Date(),
-							value: token,
-						},
-					},
-				);
-			} else {
-				Tokens.insert({
-					createdAt: new Date(),
-					fileId,
-					value: token,
-				});
-			}
-			return token;
-		};
-
 		this.write = async (rs, fileId, callback) => {
 			const file = await this.getCollection().findOne({ _id: fileId });
 			if (!file) {
 				return callback(new Error('File not found'));
 			}
 
-			const errorHandler = Meteor.bindEnvironment((err: Error) => {
+			const errorHandler = (err: Error) => {
 				this.onWriteError.call(this, err, fileId, file);
 				callback.call(this, err);
-			});
+			};
 
-			const finishHandler = Meteor.bindEnvironment(async () => {
+			const finishHandler = async () => {
 				let size = 0;
 				const readStream = await this.getReadStream(fileId, file);
 
-				readStream.on(
-					'error',
-					Meteor.bindEnvironment((error: Error) => {
-						callback.call(this, error);
-					}),
-				);
-				readStream.on(
-					'data',
-					Meteor.bindEnvironment((data) => {
-						size += data.length;
-					}),
-				);
-				readStream.on(
-					'end',
-					Meteor.bindEnvironment(async () => {
-						if (file.complete) {
-							return;
-						}
-						// Set file attribute
-						file.complete = true;
-						file.etag = UploadFS.generateEtag();
-						file.path = await this.getFileRelativeURL(fileId);
-						file.progress = 1;
-						file.size = size;
-						file.token = this.generateToken();
-						file.uploading = false;
-						file.uploadedAt = new Date();
-						file.url = await this.getFileURL(fileId);
+				readStream.on('error', (error: Error) => {
+					callback.call(this, error);
+				});
+				readStream.on('data', (data) => {
+					size += data.length;
+				});
+				readStream.on('end', async () => {
+					if (file.complete) {
+						return;
+					}
+					// Set file attribute
+					file.complete = true;
+					file.etag = UploadFS.generateEtag();
+					file.path = await this.getFileRelativeURL(fileId);
+					file.progress = 1;
+					file.size = size;
+					file.token = this.generateToken();
+					file.uploading = false;
+					file.uploadedAt = new Date();
+					file.url = await this.getFileURL(fileId);
 
-						// Execute callback
-						if (typeof this.onFinishUpload === 'function') {
-							await this.onFinishUpload.call(this, file);
-						}
+					// Execute callback
+					if (typeof this.onFinishUpload === 'function') {
+						await this.onFinishUpload.call(this, file);
+					}
 
-						// Sets the file URL when file transfer is complete,
-						// this way, the image will loads entirely.
-						await this.getCollection().updateOne(
-							{ _id: fileId },
-							{
-								$set: {
-									complete: file.complete,
-									etag: file.etag,
-									path: file.path,
-									progress: file.progress,
-									size: file.size,
-									token: file.token,
-									uploading: file.uploading,
-									uploadedAt: file.uploadedAt,
-									url: file.url,
-								},
+					// Sets the file URL when file transfer is complete,
+					// this way, the image will loads entirely.
+					await this.getCollection().updateOne(
+						{ _id: fileId },
+						{
+							$set: {
+								complete: file.complete,
+								etag: file.etag,
+								path: file.path,
+								progress: file.progress,
+								size: file.size,
+								token: file.token,
+								uploading: file.uploading,
+								uploadedAt: file.uploadedAt,
+								url: file.url,
 							},
-						);
+						},
+					);
 
-						// Return file info
-						callback.call(this, undefined, file);
-					}),
-				);
-			});
+					// Return file info
+					callback.call(this, undefined, file);
+				});
+			};
 
 			const ws = await this.getWriteStream(fileId, file);
 			ws.on('error', errorHandler);
@@ -292,7 +240,6 @@ export class Store {
 		});
 
 		await this.getCollection().removeById(fileId);
-		Tokens.remove({ fileId });
 	}
 
 	async delete(_fileId: string): Promise<any> {
@@ -314,7 +261,7 @@ export class Store {
 		return this.options.collection!;
 	}
 
-	async getFilePath(_fileId: string, _file?: IFile): Promise<string> {
+	async getFilePath(_fileId: string, _file?: IUpload): Promise<string> {
 		throw new Error('Store.getFilePath is not implemented');
 	}
 
@@ -336,7 +283,7 @@ export class Store {
 		return this.options.name;
 	}
 
-	async getReadStream(_fileId: string, _file: IFile, _options?: { start?: number; end?: number }): Promise<stream.Readable> {
+	async getReadStream(_fileId: string, _file: IUpload, _options?: { start?: number; end?: number }): Promise<stream.Readable> {
 		throw new Error('Store.getReadStream is not implemented');
 	}
 
@@ -359,31 +306,31 @@ export class Store {
 		throw new Error('getRedirectURL is not implemented');
 	}
 
-	async getWriteStream(_fileId: string, _file: IFile): Promise<stream.Writable> {
+	async getWriteStream(_fileId: string, _file: IUpload): Promise<stream.Writable> {
 		throw new Error('getWriteStream is not implemented');
 	}
 
-	onCopyError(err: Error, fileId: string, _file: IFile) {
+	onCopyError(err: Error, fileId: string, _file: IUpload) {
 		console.error(`ufs: cannot copy file "${fileId}" (${err.message})`, err);
 	}
 
-	async onFinishUpload(_file: IFile) {
+	async onFinishUpload(_file: IUpload) {
 		//
 	}
 
-	async onRead(_fileId: string, _file: IFile, _request: createServer.IncomingMessage, _response: http.ServerResponse) {
+	async onRead(_fileId: string, _file: IUpload, _request: createServer.IncomingMessage, _response: http.ServerResponse) {
 		return true;
 	}
 
-	onReadError(err: Error, fileId: string, _file: IFile) {
+	onReadError(err: Error, fileId: string, _file: IUpload) {
 		console.error(`ufs: cannot read file "${fileId}" (${err.message})`, err);
 	}
 
-	async onValidate(_file: IFile) {
+	async onValidate(_file: IUpload) {
 		//
 	}
 
-	onWriteError(err: Error, fileId: string, _file: IFile) {
+	onWriteError(err: Error, fileId: string, _file: IUpload) {
 		console.error(`ufs: cannot write file "${fileId}" (${err.message})`, err);
 	}
 
@@ -391,7 +338,7 @@ export class Store {
 		readStream: stream.Readable,
 		writeStream: stream.Writable,
 		fileId: string,
-		file: IFile,
+		file: IUpload,
 		request: createServer.IncomingMessage,
 		headers?: Record<string, any>,
 	) {
@@ -402,7 +349,7 @@ export class Store {
 		}
 	}
 
-	transformWrite(readStream: stream.Readable, writeStream: stream.Writable, fileId: string, file: IFile) {
+	transformWrite(readStream: stream.Readable, writeStream: stream.Writable, fileId: string, file: IUpload) {
 		if (typeof this.options.transformWrite === 'function') {
 			this.options.transformWrite.call(this, readStream, writeStream, fileId, file);
 		} else {
@@ -410,7 +357,7 @@ export class Store {
 		}
 	}
 
-	async validate(file: IFile) {
+	async validate(file: IUpload) {
 		if (typeof this.onValidate === 'function') {
 			await this.onValidate(file);
 		}

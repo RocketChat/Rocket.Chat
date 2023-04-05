@@ -5,10 +5,10 @@ import { Random } from '@rocket.chat/random';
 import _ from 'underscore';
 import S3 from 'aws-sdk/clients/s3';
 import type { OptionalId } from 'mongodb';
+import type { IUpload } from '@rocket.chat/core-typings';
 
 import { UploadFS } from '../../../../server/ufs';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import type { IFile } from '../../../../server/ufs/definition';
 import type { StoreOptions } from '../../../../server/ufs/ufs-store';
 
 export type S3Options = StoreOptions & {
@@ -25,11 +25,11 @@ export type S3Options = StoreOptions & {
 		region: string;
 	};
 	URLExpiryTimeSpan: number;
-	getPath: (file: OptionalId<IFile>) => string;
+	getPath: (file: OptionalId<IUpload>) => string;
 };
 
 class AmazonS3Store extends UploadFS.Store {
-	protected getPath: (file: IFile) => string;
+	protected getPath: (file: IUpload) => string;
 
 	constructor(options: S3Options) {
 		// Default options

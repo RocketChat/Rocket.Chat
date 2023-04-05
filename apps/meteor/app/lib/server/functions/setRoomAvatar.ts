@@ -41,15 +41,11 @@ export const setRoomAvatar = async function (rid: string, dataURI: string, user:
 		await fileStore.deleteById(current._id);
 	}
 
-	await fileStore.insert(file, buffer, (err?: Error, result: { etag?: string } = {}) => {
-		if (err) {
-			throw err;
-		}
+	const result = await fileStore.insert(file, buffer);
 
-		Meteor.setTimeout(async function () {
-			result.etag && (await Rooms.setAvatarData(rid, 'upload', result.etag));
-			await Message.saveSystemMessage('room_changed_avatar', rid, '', user);
-			void api.broadcast('room.avatarUpdate', { _id: rid, avatarETag: result.etag });
-		}, 500);
-	});
+	Meteor.setTimeout(async function () {
+		result.etag && (await Rooms.setAvatarData(rid, 'upload', result.etag));
+		await Message.saveSystemMessage('room_changed_avatar', rid, '', user);
+		void api.broadcast('room.avatarUpdate', { _id: rid, avatarETag: result.etag });
+	}, 500);
 };
