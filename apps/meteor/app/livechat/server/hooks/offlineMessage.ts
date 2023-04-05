@@ -4,7 +4,7 @@ import { Livechat } from '../lib/Livechat';
 
 callbacks.add(
 	'livechat.offlineMessage',
-	(data) => {
+	async (data) => {
 		if (!settings.get('Livechat_webhook_on_offline_msg')) {
 			return data;
 		}
@@ -19,7 +19,7 @@ callbacks.add(
 			message: data.message,
 		};
 
-		Livechat.sendRequest(postData);
+		await Livechat.sendRequest(postData);
 	},
 	callbacks.priority.MEDIUM,
 	'livechat-send-email-offline-message',
