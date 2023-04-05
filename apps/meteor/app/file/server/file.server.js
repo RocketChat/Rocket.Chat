@@ -100,12 +100,9 @@ RocketChatFile.GridFS = class {
 		}
 		return new Promise((resolve) => {
 			const data = [];
-			file.readStream.on(
-				'data',
-				Meteor.bindEnvironment(function (chunk) {
-					return data.push(chunk);
-				}),
-			);
+			file.readStream.on('data', function (chunk) {
+				return data.push(chunk);
+			});
 
 			file.readStream.on('end', function () {
 				resolve({
@@ -198,24 +195,18 @@ RocketChatFile.FileSystem = class {
 			return cb();
 		}
 		const data = [];
-		file.readStream.on(
-			'data',
-			Meteor.bindEnvironment(function (chunk) {
-				return data.push(chunk);
-			}),
-		);
-		return file.readStream.on(
-			'end',
-			Meteor.bindEnvironment(function () {
-				return {
-					buffer: Buffer.concat(data)({
-						contentType: file.contentType,
-						length: file.length,
-						uploadDate: file.uploadDate,
-					}),
-				};
-			}),
-		);
+		file.readStream.on('data', function (chunk) {
+			return data.push(chunk);
+		});
+		return file.readStream.on('end', function () {
+			return {
+				buffer: Buffer.concat(data)({
+					contentType: file.contentType,
+					length: file.length,
+					uploadDate: file.uploadDate,
+				}),
+			};
+		});
 	}
 
 	deleteFile(fileName) {

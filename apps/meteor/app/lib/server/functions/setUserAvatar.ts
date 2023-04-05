@@ -110,7 +110,7 @@ export async function setUserAvatar(
 		size: buffer.length,
 	};
 
-	const result = await fileStore.insertSync(file, buffer);
+	const result = await fileStore.insert(file, buffer);
 
 	const avatarETag = etag || result?.etag || '';
 

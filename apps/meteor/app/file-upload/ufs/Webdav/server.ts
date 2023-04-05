@@ -3,12 +3,12 @@ import stream from 'stream';
 import { check } from 'meteor/check';
 import { Random } from '@rocket.chat/random';
 import type { OptionalId } from 'mongodb';
+import type { IUpload } from '@rocket.chat/core-typings';
 
 import { UploadFS } from '../../../../server/ufs';
 import { WebdavClientAdapter } from '../../../webdav/server/lib/webdavClientAdapter';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import type { StoreOptions } from '../../../../server/ufs/ufs-store';
-import type { IFile } from '../../../../server/ufs/definition';
 
 type WebdavOptions = StoreOptions & {
 	connection: {
@@ -19,11 +19,11 @@ type WebdavOptions = StoreOptions & {
 		};
 	};
 	uploadFolderPath: string;
-	getPath: (file: OptionalId<IFile>) => string;
+	getPath: (file: OptionalId<IUpload>) => string;
 };
 
 class WebdavStore extends UploadFS.Store {
-	protected getPath: (file: IFile) => string;
+	protected getPath: (file: IUpload) => string;
 
 	constructor(options: WebdavOptions) {
 		super(options);

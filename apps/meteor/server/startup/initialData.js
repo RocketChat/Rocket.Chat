@@ -51,7 +51,8 @@ Meteor.startup(async function () {
 		};
 
 		await Meteor.runAsUser('rocket.cat', async () => {
-			await fileStore.insert(file, rs, () => Users.setAvatarData('rocket.cat', 'local', null));
+			await fileStore.insert(file, rs);
+			Users.setAvatarData('rocket.cat', 'local', null);
 		});
 	}
 

@@ -1129,62 +1129,55 @@ export default class SlackAdapter {
 		const requestModule = /https/i.test(slackFileURL) ? https : http;
 		const parsedUrl = url.parse(slackFileURL, true);
 		parsedUrl.headers = { Authorization: `Bearer ${this.apiToken}` };
-		await requestModule.get(
-			parsedUrl,
-			Meteor.bindEnvironment(async (stream) => {
-				const fileStore = FileUpload.getStore('Uploads');
+		await requestModule.get(parsedUrl, async (stream) => {
+			const fileStore = FileUpload.getStore('Uploads');
 
-				await fileStore.insert(details, stream, (err, file) => {
-					if (err) {
-						throw new Error(err);
-					} else {
-						const url = file.url.replace(Meteor.absoluteUrl(), '/');
-						const attachment = {
-							title: file.name,
-							title_link: url,
-						};
+			const file = await fileStore.insert(details, stream);
 
-						if (/^image\/.+/.test(file.type)) {
-							attachment.image_url = url;
-							attachment.image_type = file.type;
-							attachment.image_size = file.size;
-							attachment.image_dimensions = file.identify && file.identify.size;
-						}
-						if (/^audio\/.+/.test(file.type)) {
-							attachment.audio_url = url;
-							attachment.audio_type = file.type;
-							attachment.audio_size = file.size;
-						}
-						if (/^video\/.+/.test(file.type)) {
-							attachment.video_url = url;
-							attachment.video_type = file.type;
-							attachment.video_size = file.size;
-						}
+			const url = file.url.replace(Meteor.absoluteUrl(), '/');
+			const attachment = {
+				title: file.name,
+				title_link: url,
+			};
 
-						const msg = {
-							rid: details.rid,
-							ts: timeStamp,
-							msg: '',
-							file: {
-								_id: file._id,
-							},
-							groupable: false,
-							attachments: [attachment],
-						};
+			if (/^image\/.+/.test(file.type)) {
+				attachment.image_url = url;
+				attachment.image_type = file.type;
+				attachment.image_size = file.size;
+				attachment.image_dimensions = file.identify && file.identify.size;
+			}
+			if (/^audio\/.+/.test(file.type)) {
+				attachment.audio_url = url;
+				attachment.audio_type = file.type;
+				attachment.audio_size = file.size;
+			}
+			if (/^video\/.+/.test(file.type)) {
+				attachment.video_url = url;
+				attachment.video_type = file.type;
+				attachment.video_size = file.size;
+			}
 
-						if (isImporting) {
-							msg.imported = 'slackbridge';
-						}
+			const msg = {
+				rid: details.rid,
+				ts: timeStamp,
+				msg: '',
+				file: {
+					_id: file._id,
+				},
+				groupable: false,
+				attachments: [attachment],
+			};
 
-						if (details.message_id && typeof details.message_id === 'string') {
-							msg._id = details.message_id;
-						}
+			if (isImporting) {
+				msg.imported = 'slackbridge';
+			}
 
-						void sendMessage(rocketUser, msg, rocketChannel, true);
-					}
-				});
-			}),
-		);
+			if (details.message_id && typeof details.message_id === 'string') {
+				msg._id = details.message_id;
+			}
+
+			void sendMessage(rocketUser, msg, rocketChannel, true);
+		});
 	}
 
 	async importFromHistory(family, options) {

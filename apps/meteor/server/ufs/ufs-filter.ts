@@ -1,14 +1,13 @@
+import type { IUpload } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import type { OptionalId } from 'mongodb';
-
-import type { IFile } from './definition';
 
 type IFilterOptions = {
 	contentTypes?: string[];
 	extensions?: string[];
 	minSize?: number;
 	maxSize?: number;
-	onCheck?: (file: IFile, content?: Buffer) => Promise<boolean>;
+	onCheck?: (file: IUpload, content?: Buffer) => Promise<boolean>;
 	invalidFileError?: () => Meteor.Error;
 	fileTooSmallError?: (fileSize: number, minFileSize: number) => Meteor.Error;
 	fileTooLargeError?: (fileSize: number, maxFileSize: number) => Meteor.Error;
@@ -60,7 +59,7 @@ export class Filter {
 		}
 	}
 
-	async check(file: OptionalId<IFile>, content?: Buffer) {
+	async check(file: OptionalId<IUpload>, content?: ReadableStream | Buffer) {
 		let error = null;
 		if (typeof file !== 'object' || !file) {
 			error = this.options.invalidFileError();
@@ -128,7 +127,7 @@ export class Filter {
 		return false;
 	}
 
-	async isValid(file: IFile) {
+	async isValid(file: IUpload) {
 		let result = true;
 		try {
 			await this.check(file);
@@ -138,7 +137,7 @@ export class Filter {
 		return result;
 	}
 
-	async onCheck(_file: OptionalId<IFile>, _content?: Buffer) {
+	async onCheck(_file: OptionalId<IUpload>, _content?: ReadableStream | Buffer) {
 		return true;
 	}
 }
