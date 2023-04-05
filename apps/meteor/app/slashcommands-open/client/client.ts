@@ -32,16 +32,16 @@ slashCommands.add({
 		if (type && type.indexOf('d') === -1) {
 			return;
 		}
-		return Meteor.callAsync('createDirectMessage', room, function (err: Meteor.Error) {
-			if (err) {
-				return;
-			}
+		try {
+			await Meteor.callAsync('createDirectMessage', room);
 			const subscription = Subscriptions.findOne(query);
 			if (!subscription) {
 				return;
 			}
 			roomCoordinator.openRouteLink(subscription.t, subscription, FlowRouter.current().queryParams);
-		});
+		} catch (err: unknown) {
+			// noop
+		}
 	},
 	options: {
 		description: 'Opens_a_channel_group_or_direct_message',

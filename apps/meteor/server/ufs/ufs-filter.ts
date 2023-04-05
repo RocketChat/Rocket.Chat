@@ -1,14 +1,13 @@
+import type { IUpload } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import type { OptionalId } from 'mongodb';
-
-import type { IFile } from './definition';
 
 type IFilterOptions = {
 	contentTypes?: string[];
 	extensions?: string[];
 	minSize?: number;
 	maxSize?: number;
-	onCheck?: (file: IFile, content?: Buffer) => boolean;
+	onCheck?: (file: IUpload, content?: Buffer) => Promise<boolean>;
 	invalidFileError?: () => Meteor.Error;
 	fileTooSmallError?: (fileSize: number, minFileSize: number) => Meteor.Error;
 	fileTooLargeError?: (fileSize: number, maxFileSize: number) => Meteor.Error;
@@ -60,7 +59,7 @@ export class Filter {
 		}
 	}
 
-	check(file: OptionalId<IFile>, content?: Buffer) {
+	async check(file: OptionalId<IUpload>, content?: ReadableStream | Buffer) {
 		let error = null;
 		if (typeof file !== 'object' || !file) {
 			error = this.options.invalidFileError();
@@ -88,7 +87,7 @@ export class Filter {
 			error = this.options.invalidFileType(fileTypes, allowedContentTypes);
 		}
 		// Apply custom check
-		if (typeof this.onCheck === 'function' && !this.onCheck(file, content)) {
+		if (typeof this.onCheck === 'function' && !(await this.onCheck(file, content))) {
 			error = new Meteor.Error('invalid-file', 'File does not match filter');
 		}
 
@@ -128,17 +127,17 @@ export class Filter {
 		return false;
 	}
 
-	isValid(file: IFile) {
+	async isValid(file: IUpload) {
 		let result = true;
 		try {
-			this.check(file);
+			await this.check(file);
 		} catch (err) {
 			result = false;
 		}
 		return result;
 	}
 
-	onCheck(_file: OptionalId<IFile>, _content?: Buffer) {
+	async onCheck(_file: OptionalId<IUpload>, _content?: ReadableStream | Buffer) {
 		return true;
 	}
 }
