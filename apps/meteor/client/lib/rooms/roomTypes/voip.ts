@@ -13,7 +13,6 @@ export const VoipRoomType = getVoipRoomType(roomCoordinator);
 roomCoordinator.add(
 	{
 		...VoipRoomType,
-		order: 6,
 		icon: 'phone',
 		label: 'Voip',
 		action: ({ id } = {}): void => {

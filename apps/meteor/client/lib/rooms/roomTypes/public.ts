@@ -19,7 +19,6 @@ export const PublicRoomType = getPublicRoomType(roomCoordinator);
 roomCoordinator.add(
 	{
 		...PublicRoomType,
-		order: 30,
 		icon: 'hashtag',
 		label: 'Channels',
 		action: ({ name } = {}): void => {

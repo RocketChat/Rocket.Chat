@@ -59,7 +59,6 @@ export interface IRoomTypeConfig {
 }
 
 export interface IRoomTypeClientConfig extends IRoomTypeConfig {
-	order: number;
 	icon?: 'hash' | 'hashtag' | 'hashtag-lock' | 'at' | 'omnichannel' | 'phone' | 'star';
 	label?: string;
 	action?: RouteOptions['action'];

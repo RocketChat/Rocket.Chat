@@ -10,7 +10,6 @@ export const FavoriteRoomType = getFavoriteRoomType(roomCoordinator);
 roomCoordinator.add(
 	{
 		...FavoriteRoomType,
-		order: 20,
 		icon: 'star',
 		label: 'Favorites',
 	},

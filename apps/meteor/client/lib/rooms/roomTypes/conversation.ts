@@ -9,7 +9,6 @@ export const ConversationRoomType = getConversationRoomType(roomCoordinator);
 roomCoordinator.add(
 	{
 		...ConversationRoomType,
-		order: 30,
 		label: 'Conversations',
 	},
 	{

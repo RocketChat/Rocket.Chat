@@ -9,7 +9,6 @@ export const UnreadRoomType = getUnreadRoomType(roomCoordinator);
 roomCoordinator.add(
 	{
 		...UnreadRoomType,
-		order: 10,
 		label: 'Unread',
 	},
 	{

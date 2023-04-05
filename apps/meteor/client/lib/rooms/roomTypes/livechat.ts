@@ -14,7 +14,6 @@ export const LivechatRoomType = getLivechatRoomType(roomCoordinator);
 roomCoordinator.add(
 	{
 		...LivechatRoomType,
-		order: 5,
 		icon: 'omnichannel',
 		label: 'Omnichannel',
 		action: ({ id } = {}): void => {
