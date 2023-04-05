@@ -1385,7 +1385,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			t: {
 				$in: types,
             },
-            defaultValue ? { default: true } : { $or: [{ default: { $exists: false } }, { default: false }] },
+            ...(defaultValue ? { default: true } : { $or: [{ default: { $exists: false } }, { default: false }] }),
 		};
 
 		return this.find(query, options);
