@@ -1,10 +1,10 @@
 import { MongoInternals } from 'meteor/mongo';
 import type { ObjectId } from 'mongodb';
 import { GridFSBucket } from 'mongodb';
+import type { IUpload } from '@rocket.chat/core-typings';
 
 import { UploadFS } from '.';
 import type { StoreOptions } from './ufs-store';
-import type { IFile } from './definition';
 
 type GridFSStoreOptions = StoreOptions & {
 	chunkSize: number;
@@ -55,7 +55,7 @@ export class GridFSStore extends UploadFS.Store {
 			}
 		};
 
-		this.getReadStream = async function (fileId: string, _file: IFile, options?: { end?: number }) {
+		this.getReadStream = async function (fileId: string, _file: IUpload, options?: { end?: number }) {
 			options = Object.assign({}, options);
 			// https://mongodb.github.io/node-mongodb-native/4.4/interfaces/GridFSBucketReadStreamOptionsWithRevision.html#end
 			// according to the mongodb doc, the end is 0-based offset in bytes to stop streaming before -<< BEFORE
@@ -69,7 +69,7 @@ export class GridFSStore extends UploadFS.Store {
 			return mongoStore.openDownloadStream(fileId as unknown as ObjectId, options);
 		};
 
-		this.getWriteStream = async function (fileId: string, file: IFile, _options?: any) {
+		this.getWriteStream = async function (fileId: string, file: IUpload, _options?: any) {
 			const writeStream = mongoStore.openUploadStreamWithId(fileId as unknown as ObjectId, fileId, {
 				chunkSizeBytes: this.chunkSize,
 				contentType: file.type,

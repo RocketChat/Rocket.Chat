@@ -1,7 +1,6 @@
 import http from 'http';
 import URL from 'url';
 
-import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { InstanceStatus as InstanceStatusModel } from '@rocket.chat/models';
@@ -17,7 +16,7 @@ const logger = new Logger('UploadProxy');
 WebApp.connectHandlers.stack.unshift({
 	route: '',
 	// eslint-disable-next-line @typescript-eslint/no-misused-promises
-	handle: Meteor.bindEnvironment(async function (req: createServer.IncomingMessage, res: http.ServerResponse, next: NextFunction) {
+	async handle(req: createServer.IncomingMessage, res: http.ServerResponse, next: NextFunction) {
 		// Quick check to see if request should be catch
 		if (!req.url?.includes(`/${UploadFS.config.storesPath}/`)) {
 			return next();
@@ -101,5 +100,5 @@ WebApp.connectHandlers.stack.unshift({
 		req.pipe(proxy, {
 			end: true,
 		});
-	}),
+	},
 });

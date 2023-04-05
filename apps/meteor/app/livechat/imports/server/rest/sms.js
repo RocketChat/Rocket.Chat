@@ -23,7 +23,7 @@ const getUploadFile = async (details, fileUrl) => {
 
 	const fileStore = FileUpload.getStore('Uploads');
 
-	return fileStore.insertSync({ ...details, size: contentSize }, content);
+	return fileStore.insert({ ...details, size: contentSize }, content);
 };
 
 const defineDepartment = async (idOrName) => {

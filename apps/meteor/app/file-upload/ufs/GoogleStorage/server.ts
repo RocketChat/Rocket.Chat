@@ -3,11 +3,11 @@ import { Random } from '@rocket.chat/random';
 import type { GetSignedUrlConfig } from '@google-cloud/storage';
 import { Storage } from '@google-cloud/storage';
 import type { OptionalId } from 'mongodb';
+import type { IUpload } from '@rocket.chat/core-typings';
 
 import { UploadFS } from '../../../../server/ufs';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import type { StoreOptions } from '../../../../server/ufs/ufs-store';
-import type { IFile } from '../../../../server/ufs/definition';
 
 type GStoreOptions = StoreOptions & {
 	connection: {
@@ -19,11 +19,11 @@ type GStoreOptions = StoreOptions & {
 	};
 	bucket: string;
 	URLExpiryTimeSpan: number;
-	getPath: (file: OptionalId<IFile>) => string;
+	getPath: (file: OptionalId<IUpload>) => string;
 };
 
 class GoogleStorageStore extends UploadFS.Store {
-	protected getPath: (file: IFile) => string;
+	protected getPath: (file: IUpload) => string;
 
 	constructor(options: GStoreOptions) {
 		super(options);
