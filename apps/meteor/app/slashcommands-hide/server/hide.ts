@@ -1,9 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
+import { Subscriptions } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
-import { Rooms, Subscriptions, Users } from '../../models/server';
+import { Rooms, Users } from '../../models/server';
 import { slashCommands } from '../../utils/server';
 
 /*
@@ -13,7 +14,7 @@ import { slashCommands } from '../../utils/server';
 
 slashCommands.add({
 	command: 'hide',
-	callback: (_command: 'hide', param, item): void => {
+	callback: async (_command: 'hide', param, item): Promise<void> => {
 		const room = param.trim();
 		const userId = Meteor.userId();
 		if (!userId) {
@@ -51,7 +52,7 @@ slashCommands.add({
 					}),
 				});
 			}
-			if (!Subscriptions.findOneByRoomIdAndUserId(roomObject._id, user._id, { fields: { _id: 1 } })) {
+			if (!(await Subscriptions.findOneByRoomIdAndUserId(roomObject._id, user._id, { projection: { _id: 1 } }))) {
 				void api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
 					msg: TAPi18n.__('error-logged-user-not-in-room', {
 						postProcess: 'sprintf',
@@ -63,7 +64,7 @@ slashCommands.add({
 			}
 			rid = roomObject._id;
 		}
-		Meteor.call('hideRoom', rid, (error: string) => {
+		await Meteor.callAsync('hideRoom', rid, (error: string) => {
 			if (error) {
 				return api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
 					msg: TAPi18n.__(error, { lng }),

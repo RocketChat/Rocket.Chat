@@ -64,6 +64,9 @@ export interface ISubscription extends IRocketChatRecord {
 	desktopPrefOrigin?: 'subscription' | 'user';
 	mobilePrefOrigin?: 'subscription' | 'user';
 	emailPrefOrigin?: 'subscription' | 'user';
+
+	/* @deprecated */
+	customFields?: Record<string, any>;
 }
 
 export interface IOmnichannelSubscription extends ISubscription {

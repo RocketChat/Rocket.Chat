@@ -44,9 +44,10 @@ import RoomForeword from './RoomForeword';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import UploadProgressIndicator from './UploadProgressIndicator';
 import ComposerContainer from './composer/ComposerContainer';
-import { useFileUploadDropTarget } from './useFileUploadDropTarget';
-import { useRetentionPolicy } from './useRetentionPolicy';
-import { useUnreadMessages } from './useUnreadMessages';
+import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
+import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
+import { useRetentionPolicy } from './hooks/useRetentionPolicy';
+import { useUnreadMessages } from './hooks/useUnreadMessages';
 
 const RoomBody = (): ReactElement => {
 	const t = useTranslation();
@@ -537,6 +538,8 @@ const RoomBody = (): ReactElement => {
 		},
 		[toolbox],
 	);
+
+	useReadMessageWindowEvents();
 
 	return (
 		<>

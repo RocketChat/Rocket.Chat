@@ -1,7 +1,4 @@
 import { Base } from './models/Base';
-import Avatars from './models/Avatars';
-import Uploads from './models/Uploads';
-import UserDataFiles from './models/UserDataFiles';
 import { Roles } from './models/Roles';
 import { Users } from './models/Users';
 import { CachedChannelList } from './models/CachedChannelList';
@@ -31,11 +28,19 @@ Meteor.user = () => {
 	return (Users.findOne({ _id: uid }) ?? null) as Meteor.User | null;
 };
 
+declare global {
+	// eslint-disable-next-line @typescript-eslint/no-namespace
+	namespace Meteor {
+		function userAsync(options?: { fields?: Mongo.FieldSpecifier | undefined }): Promise<Meteor.User | null>;
+	}
+}
+
+Meteor.userAsync = async () => {
+	return Meteor.user();
+};
+
 export {
 	Base,
-	Avatars,
-	Uploads,
-	UserDataFiles,
 	Roles,
 	CachedChannelList,
 	CachedChatRoom,

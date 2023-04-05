@@ -19,7 +19,7 @@ type TranslationNamespace = Extract<TranslationKey, `${string}.${string}`> exten
 
 const namespacesDefault = ['core', 'onboarding', 'registration', 'cloud'] as TranslationNamespace[];
 
-const parseToJSON = (customTranslations: string) => {
+const parseToJSON = (customTranslations: string): Record<string, Record<string, string>> | false => {
 	try {
 		return JSON.parse(customTranslations);
 	} catch (e) {
@@ -98,7 +98,7 @@ const useI18next = (lng: string): typeof i18next => {
 			return;
 		}
 
-		const parsedCustomTranslations: Record<string, Record<string, string>> = JSON.parse(customTranslations);
+		const parsedCustomTranslations = parseToJSON(customTranslations);
 
 		if (!parsedCustomTranslations) {
 			return;

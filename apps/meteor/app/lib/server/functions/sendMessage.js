@@ -1,8 +1,8 @@
 import { Match, check } from 'meteor/check';
+import { Messages } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Messages } from '../../../models/server';
 import { Apps } from '../../../../ee/server/apps';
 import { isURL } from '../../../../lib/utils/isURL';
 import { FileUpload } from '../../../file-upload/server';
@@ -128,11 +128,11 @@ const validateAttachment = (attachment) => {
 		}),
 	);
 
-	if (attachment.fields && attachment.fields.length) {
+	if (attachment.fields?.length) {
 		attachment.fields.map(validateAttachmentsFields);
 	}
 
-	if (attachment.actions && attachment.actions.length) {
+	if (attachment.actions?.length) {
 		attachment.actions.map(validateAttachmentsActions);
 	}
 };
@@ -203,7 +203,7 @@ function cleanupMessageObject(message) {
 	['customClass'].forEach((field) => delete message[field]);
 }
 
-export const sendMessage = function (user, message, room, upsert = false) {
+export const sendMessage = async function (user, message, room, upsert = false) {
 	if (!user || !message || !room._id) {
 		return false;
 	}
@@ -217,14 +217,14 @@ export const sendMessage = function (user, message, room, upsert = false) {
 
 	// For the Rocket.Chat Apps :)
 	if (Apps && Apps.isLoaded()) {
-		const prevent = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentPrevent', message));
+		const prevent = await Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageSentPrevent', message);
 		if (prevent) {
 			return;
 		}
 
 		let result;
-		result = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentExtend', message));
-		result = Promise.await(Apps.getBridges().getListenerBridge().messageEvent('IPreMessageSentModify', result));
+		result = await Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageSentExtend', message);
+		result = await Apps.getBridges()?.getListenerBridge().messageEvent('IPreMessageSentModify', result);
 
 		if (typeof result === 'object') {
 			message = Object.assign(message, result);
@@ -246,26 +246,28 @@ export const sendMessage = function (user, message, room, upsert = false) {
 		} else if (message._id && upsert) {
 			const { _id } = message;
 			delete message._id;
-			Messages.upsert(
+			await Messages.updateOne(
 				{
 					_id,
 					'u._id': message.u._id,
 				},
-				message,
+				{ $set: message },
+				{ upsert: true },
 			);
 			message._id = _id;
 		} else {
-			const messageAlreadyExists = message._id && Messages.findOneById(message._id, { fields: { _id: 1 } });
+			const messageAlreadyExists = message._id && (await Messages.findOneById(message._id, { projection: { _id: 1 } }));
 			if (messageAlreadyExists) {
 				return;
 			}
-			message._id = Messages.insert(message);
+			const result = await Messages.insertOne(message);
+			message._id = result.insertedId;
 		}
 
 		if (Apps && Apps.isLoaded()) {
 			// This returns a promise, but it won't mutate anything about the message
 			// so, we don't really care if it is successful or fails
-			Apps.getBridges().getListenerBridge().messageEvent('IPostMessageSent', message);
+			void Apps.getBridges()?.getListenerBridge().messageEvent('IPostMessageSent', message);
 		}
 
 		/*

@@ -1,18 +1,18 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
-import { Messages, AppsTokens } from '@rocket.chat/models';
+import { Messages, AppsTokens, Users } from '@rocket.chat/models';
 
 import { API } from '../api';
 import PushNotification from '../../../push-notifications/server/lib/PushNotification';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { Users, Rooms } from '../../../models/server';
+import { Rooms } from '../../../models/server';
 
 API.v1.addRoute(
 	'push.token',
 	{ authRequired: true },
 	{
-		post() {
+		async post() {
 			const { id, type, value, appName } = this.bodyParams;
 
 			if (id && typeof id !== 'string') {
@@ -33,15 +33,13 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-appName-param-not-valid', 'The required "appName" body param is missing or invalid.');
 			}
 
-			const result = Meteor.runAsUser(this.userId, () =>
-				Meteor.call('raix:push-update', {
-					id: deviceId,
-					token: { [type]: value },
-					authToken: this.request.headers['x-auth-token'],
-					appName,
-					userId: this.userId,
-				}),
-			);
+			const result = await Meteor.callAsync('raix:push-update', {
+				id: deviceId,
+				token: { [type]: value },
+				authToken: this.request.headers['x-auth-token'],
+				appName,
+				userId: this.userId,
+			});
 
 			return API.v1.success({ result });
 		},
@@ -80,7 +78,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async get() {
-			const params = this.requestParams();
+			const params = this.queryParams;
 			check(
 				params,
 				Match.ObjectIncluding({
@@ -88,7 +86,7 @@ API.v1.addRoute(
 				}),
 			);
 
-			const receiver = Users.findOneById(this.userId);
+			const receiver = await Users.findOneById(this.userId);
 			if (!receiver) {
 				throw new Error('error-user-not-found');
 			}

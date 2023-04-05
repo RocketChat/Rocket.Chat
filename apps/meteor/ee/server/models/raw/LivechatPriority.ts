@@ -1,6 +1,6 @@
 import type { ILivechatPriority } from '@rocket.chat/core-typings';
 import type { ILivechatPriorityModel } from '@rocket.chat/model-typings';
-import type { Db, UpdateFilter, ModifyResult } from 'mongodb';
+import type { Db, UpdateFilter, ModifyResult, IndexDescription, FindOptions } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
@@ -9,6 +9,20 @@ import { BaseRaw } from '../../../../server/models/raw/BaseRaw';
 export class LivechatPriorityRaw extends BaseRaw<ILivechatPriority> implements ILivechatPriorityModel {
 	constructor(db: Db) {
 		super(db, 'livechat_priority');
+	}
+
+	protected modelIndexes(): IndexDescription[] {
+		return [
+			{
+				key: {
+					name: 1,
+				},
+				unique: true,
+				partialFilterExpression: {
+					$and: [{ name: { $exists: true } }, { name: { $gt: '' } }],
+				},
+			},
+		];
 	}
 
 	findOneByIdOrName(_idOrName: string, options = {}): Promise<ILivechatPriority | null> {
@@ -60,5 +74,11 @@ export class LivechatPriorityRaw extends BaseRaw<ILivechatPriority> implements I
 		return this.findOneAndUpdate(query, update, {
 			returnDocument: 'after',
 		});
+	}
+
+	findOneById(_id: string, options?: FindOptions<ILivechatPriority>): Promise<ILivechatPriority | null> {
+		const query = { _id };
+
+		return this.findOne(query, options);
 	}
 }

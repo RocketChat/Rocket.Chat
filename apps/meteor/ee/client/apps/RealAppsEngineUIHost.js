@@ -48,7 +48,7 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 	}
 
 	async getClientUserInfo() {
-		const { username, _id } = Meteor.user();
+		const { username, _id } = await Meteor.userAsync();
 
 		return {
 			id: _id,

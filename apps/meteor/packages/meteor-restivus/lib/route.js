@@ -221,7 +221,7 @@ export class Route {
 		*/
 
 	async _authenticate(endpointContext) {
-		const auth = this.api._config.auth.user.call(endpointContext);
+		const auth = await this.api._config.auth.user.call(endpointContext);
 		if (!auth) {
 			return {
 				success: false,

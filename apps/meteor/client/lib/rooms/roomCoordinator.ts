@@ -71,8 +71,8 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		super.addRoute(path, { ...routeConfig, triggersExit: [roomExit] });
 	}
 
-	getRoomDirectives(roomType: string): IRoomTypeClientDirectives | undefined {
-		return this.roomTypes[roomType]?.directives as IRoomTypeClientDirectives;
+	getRoomDirectives(roomType: string): IRoomTypeClientDirectives {
+		return this.roomTypes[roomType].directives as IRoomTypeClientDirectives;
 	}
 
 	getRoomTypeById(rid: string): RoomType | undefined {
@@ -99,7 +99,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 	}
 
 	getIcon(room: Partial<IRoom>): IRoomTypeConfig['icon'] {
-		return room?.t && this.getRoomDirectives(room.t)?.getIcon(room);
+		return room?.t && this.getRoomDirectives(room.t).getIcon(room);
 	}
 
 	openRouteLink(roomType: RoomType, subData: RoomIdentification, queryParams?: Record<string, string>): void {
@@ -123,11 +123,11 @@ class RoomCoordinatorClient extends RoomCoordinator {
 	}
 
 	isLivechatRoom(roomType: string): boolean {
-		return Boolean(this.getRoomDirectives(roomType)?.isLivechatRoom());
+		return Boolean(this.getRoomDirectives(roomType).isLivechatRoom());
 	}
 
 	getRoomName(roomType: string, roomData: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid'>): string {
-		return this.getRoomDirectives(roomType)?.roomName(roomData) ?? '';
+		return this.getRoomDirectives(roomType).roomName(roomData) ?? '';
 	}
 
 	readOnly(rid: string, user: AtLeast<IUser, 'username'>): boolean {
@@ -184,7 +184,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		if (!room?.t) {
 			return false;
 		}
-		if (!this.getRoomDirectives(room.t)?.canSendMessage(rid)) {
+		if (!this.getRoomDirectives(room.t).canSendMessage(rid)) {
 			return false;
 		}
 		if (isRoomFederated(room)) {

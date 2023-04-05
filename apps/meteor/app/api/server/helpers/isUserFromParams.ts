@@ -1,12 +1,14 @@
-import { API } from '../api';
+import type { IUser } from '@rocket.chat/core-typings';
 
-API.helperMethods.set('isUserFromParams', function _isUserFromParams(this: any) {
-	const params = this.requestParams();
-
-	return (
+export function isUserFromParams(
+	params: { userId?: string; username?: string; user?: string },
+	loggedInUserId?: string,
+	loggedInUser?: IUser,
+): boolean {
+	return Boolean(
 		(!params.userId && !params.username && !params.user) ||
-		(params.userId && this.userId === params.userId) ||
-		(params.username && this.user.username === params.username) ||
-		(params.user && this.user.username === params.user)
+			(params.userId && loggedInUserId === params.userId) ||
+			(params.username && loggedInUser?.username === params.username) ||
+			(params.user && loggedInUser?.username === params.user),
 	);
-});
+}
