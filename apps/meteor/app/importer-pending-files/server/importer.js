@@ -142,44 +142,38 @@ export class PendingFileImporter extends Base {
 
 							res.on(
 								'end',
-								Meteor.bindEnvironment(() => {
+								Meteor.bindEnvironment(async () => {
 									try {
 										// Bypass the fileStore filters
-										fileStore._doInsert(details, Buffer.concat(rawData), function (error, file) {
-											if (error) {
-												completeFile(details);
-												logError(error);
-												return;
-											}
+										const file = await fileStore._doInsert(details, Buffer.concat(rawData));
 
-											const url = FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`);
-											const attachment = {
-												title: file.name,
-												title_link: url,
-											};
+										const url = FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`);
+										const attachment = {
+											title: file.name,
+											title_link: url,
+										};
 
-											if (/^image\/.+/.test(file.type)) {
-												attachment.image_url = url;
-												attachment.image_type = file.type;
-												attachment.image_size = file.size;
-												attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
-											}
+										if (/^image\/.+/.test(file.type)) {
+											attachment.image_url = url;
+											attachment.image_type = file.type;
+											attachment.image_size = file.size;
+											attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
+										}
 
-											if (/^audio\/.+/.test(file.type)) {
-												attachment.audio_url = url;
-												attachment.audio_type = file.type;
-												attachment.audio_size = file.size;
-											}
+										if (/^audio\/.+/.test(file.type)) {
+											attachment.audio_url = url;
+											attachment.audio_type = file.type;
+											attachment.audio_size = file.size;
+										}
 
-											if (/^video\/.+/.test(file.type)) {
-												attachment.video_url = url;
-												attachment.video_type = file.type;
-												attachment.video_size = file.size;
-											}
+										if (/^video\/.+/.test(file.type)) {
+											attachment.video_url = url;
+											attachment.video_type = file.type;
+											attachment.video_size = file.size;
+										}
 
-											Promise.await(Messages.setImportFileRocketChatAttachment(_importFile.id, url, attachment));
-											completeFile(details);
-										});
+										Promise.await(Messages.setImportFileRocketChatAttachment(_importFile.id, url, attachment));
+										completeFile(details);
 									} catch (error) {
 										completeFile(details);
 										logError(error);

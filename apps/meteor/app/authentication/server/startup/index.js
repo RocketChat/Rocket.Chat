@@ -4,12 +4,11 @@ import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
-import { Roles, Settings, Users as UsersRaw } from '@rocket.chat/models';
+import { Roles, Settings, Users } from '@rocket.chat/models';
 
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { callbacks } from '../../../../lib/callbacks';
-import { Users } from '../../../models/server';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
@@ -215,7 +214,7 @@ Accounts.onCreateUser(function (options, user = {}) {
 			}),
 		};
 
-		Mailer.send(email);
+		Promise.await(Mailer.send(email));
 	}
 
 	callbacks.run('onCreateUser', options, user);
@@ -259,9 +258,11 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc,
 
 	const _id = insertUserDoc.call(Accounts, options, user);
 
-	user = Meteor.users.findOne({
-		_id,
-	});
+	user = Promise.await(
+		Users.findOne({
+			_id,
+		}),
+	);
 
 	if (user.username) {
 		if (options.joinDefaultChannels !== false && user.joinDefaultChannels !== false) {
@@ -298,7 +299,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc,
 	 * create this user admin.
 	 * count this as the completion of setup wizard step 1.
 	 */
-	const hasAdmin = Users.findOneByRolesAndType('admin', 'user', { fields: { _id: 1 } });
+	const hasAdmin = Promise.await(Users.findOneByRolesAndType('admin', 'user', { projection: { _id: 1 } }));
 	if (!roles.includes('admin') && !hasAdmin) {
 		roles.push('admin');
 		if (settings.get('Show_Setup_Wizard') === 'pending') {
@@ -361,7 +362,7 @@ Accounts.validateLoginAttempt(function (login) {
 
 	login = callbacks.run('onValidateLogin', login);
 
-	Users.updateLastLoginById(login.user._id);
+	Promise.await(Users.updateLastLoginById(login.user._id));
 	Meteor.defer(function () {
 		return callbacks.run('afterValidateLogin', login);
 	});
@@ -429,9 +430,9 @@ Accounts.onLogin(async ({ user }) => {
 		return;
 	}
 
-	const { tokens } = (await UsersRaw.findAllResumeTokensByUserId(user._id))[0];
+	const { tokens } = (await Users.findAllResumeTokensByUserId(user._id))[0];
 	if (tokens.length >= MAX_RESUME_LOGIN_TOKENS) {
 		const oldestDate = tokens.reverse()[MAX_RESUME_LOGIN_TOKENS - 1];
-		await UsersRaw.removeOlderResumeTokensByUserId(user._id, oldestDate.when);
+		await Users.removeOlderResumeTokensByUserId(user._id, oldestDate.when);
 	}
 });

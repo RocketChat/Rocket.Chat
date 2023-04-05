@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
-import { Users } from '../../../../../app/models/server';
 import { twoFactorRequired } from '../../../../../app/2fa/server/twoFactorRequired';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -26,7 +26,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const tokenExist = Users.findPersonalAccessTokenByTokenNameAndUserId({
+		const tokenExist = await Users.findPersonalAccessTokenByTokenNameAndUserId({
 			userId: uid,
 			tokenName,
 		});

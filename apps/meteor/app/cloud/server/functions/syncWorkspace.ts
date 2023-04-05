@@ -11,7 +11,7 @@ import { getAndCreateNpsSurvey } from '../../../../server/services/nps/getAndCre
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export async function syncWorkspace(reconnectCheck = false) {
-	const { workspaceRegistered, connectToCloud } = retrieveRegistrationStatus();
+	const { workspaceRegistered, connectToCloud } = await retrieveRegistrationStatus();
 	if (!workspaceRegistered || (!connectToCloud && !reconnectCheck)) {
 		return false;
 	}

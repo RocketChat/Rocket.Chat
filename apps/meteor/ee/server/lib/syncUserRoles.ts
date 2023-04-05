@@ -68,7 +68,7 @@ export async function syncUserRoles(
 	}
 
 	const wasGuest = existingRoles.length === 1 && existingRoles[0] === 'guest';
-	if (wasGuest && !canAddNewUser()) {
+	if (wasGuest && !(await canAddNewUser())) {
 		throw new Error('error-license-user-limit-reached');
 	}
 

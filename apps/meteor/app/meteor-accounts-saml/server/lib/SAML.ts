@@ -5,7 +5,7 @@ import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
-import type { IUser, IIncomingMessage, ILoginToken } from '@rocket.chat/core-typings';
+import type { IUser, IIncomingMessage, IPersonalAccessToken } from '@rocket.chat/core-typings';
 import { CredentialTokens, Rooms, Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
@@ -175,7 +175,7 @@ export class SAML {
 		const stampedToken = Accounts._generateStampedLoginToken();
 		await Users.addPersonalAccessTokenToUser({
 			userId: user._id,
-			loginTokenObject: stampedToken as unknown as ILoginToken,
+			loginTokenObject: stampedToken as unknown as IPersonalAccessToken,
 		});
 
 		const updateData: Record<string, any> = {

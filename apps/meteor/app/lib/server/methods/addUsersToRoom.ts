@@ -5,9 +5,8 @@ import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { Subscriptions, Users } from '@rocket.chat/models';
+import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
-import { Rooms } from '../../../models/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { addUserToRoom } from '../functions';
 import { callbacks } from '../../../../lib/callbacks';
@@ -37,7 +36,13 @@ Meteor.methods<ServerMethods>({
 		}
 
 		// Get user and room details
-		const room = Rooms.findOneById(data.rid);
+		const room = await Rooms.findOneById(data.rid);
+		if (!room) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+				method: 'addUsersToRoom',
+			});
+		}
+
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, uid, {
 			projection: { _id: 1 },
 		});
