@@ -59,11 +59,11 @@ Meteor.startup(() => {
 
 router.use(authenticationMiddleware({ rejectUnauthorized: false }));
 
-router.use((req: Request, res, next) => {
+router.use(async (req: Request, res, next) => {
 	const { 'x-visitor-token': visitorToken } = req.headers;
 
 	if (visitorToken) {
-		req.body.visitor = Apps.getConverters()?.get('visitors').convertByToken(visitorToken);
+		req.body.visitor = await Apps.getConverters()?.get('visitors').convertByToken(visitorToken);
 	}
 
 	if (!req.user && !req.body.visitor) {
@@ -190,9 +190,9 @@ const appsRoutes =
 				const { type, actionId, triggerId, mid, rid, payload, container } = req.body;
 
 				const { visitor } = req.body;
-				const room = orch.getConverters()?.get('rooms').convertById(rid);
+				const room = await orch.getConverters()?.get('rooms').convertById(rid);
 				const user = orch.getConverters()?.get('users').convertToApp(req.user);
-				const message = mid && orch.getConverters()?.get('messages').convertById(mid);
+				const message = mid && (await orch.getConverters()?.get('messages').convertById(mid));
 
 				const action = {
 					type,
@@ -286,9 +286,9 @@ const appsRoutes =
 					payload: { context },
 				} = req.body;
 
-				const room = orch.getConverters()?.get('rooms').convertById(rid);
+				const room = await orch.getConverters()?.get('rooms').convertById(rid);
 				const user = orch.getConverters()?.get('users').convertToApp(req.user);
-				const message = mid && orch.getConverters()?.get('messages').convertById(mid);
+				const message = mid && (await orch.getConverters()?.get('messages').convertById(mid));
 
 				const action = {
 					type,

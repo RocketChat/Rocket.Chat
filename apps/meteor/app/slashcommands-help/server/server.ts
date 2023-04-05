@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
+import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
-import { Users } from '../../models/server';
 
 /*
  * Help is a named function that will replace /help commands
@@ -18,9 +18,9 @@ interface IHelpCommand {
 
 slashCommands.add({
 	command: 'help',
-	callback: function Help(_command, _params, item): void {
+	callback: async function Help(_command, _params, item): Promise<void> {
 		const userId = Meteor.userId() as string;
-		const user = Users.findOneById(userId);
+		const user = await Users.findOneById(userId);
 
 		const keys: IHelpCommand[] = [
 			{
@@ -56,14 +56,16 @@ slashCommands.add({
 				command: 'Shift + Enter',
 			},
 		];
+		let msg = '';
 		keys.forEach((key) => {
-			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-				msg: TAPi18n.__(key.key, {
-					postProcess: 'sprintf',
-					sprintf: [key.command],
-					lng: user?.language || settings.get('Language') || 'en',
-				}),
-			});
+			msg = `${msg}\n${TAPi18n.__(key.key, {
+				postProcess: 'sprintf',
+				sprintf: [key.command],
+				lng: user?.language || settings.get('language') || 'en',
+			})}`;
+		});
+		void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			msg,
 		});
 	},
 	options: {

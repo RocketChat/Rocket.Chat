@@ -6,11 +6,11 @@ import {
 	LivechatDepartment as LivechatDepartmentRaw,
 	LivechatCustomField,
 	LivechatInquiry,
+	Users,
 } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 
 import { memoizeDebounce } from './debounceByParams';
-import { Users } from '../../../../../app/models/server';
 import { settings } from '../../../../../app/settings/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { dispatchAgentDelegated } from '../../../../../app/livechat/server/lib/Helper';
@@ -29,7 +29,7 @@ export const getMaxNumberSimultaneousChat = async ({ agentId, departmentId }) =>
 	}
 
 	if (agentId) {
-		const user = Users.getAgentInfo(agentId);
+		const user = await Users.getAgentInfo(agentId);
 		const { livechat: { maxNumberSimultaneousChat } = {} } = user || {};
 		if (maxNumberSimultaneousChat > 0) {
 			return maxNumberSimultaneousChat;
@@ -185,11 +185,11 @@ export const updatePredictedVisitorAbandonment = async () => {
 	}
 };
 
-export const updateQueueInactivityTimeout = () => {
+export const updateQueueInactivityTimeout = async () => {
 	const queueTimeout = settings.get('Livechat_max_queue_wait_time');
 	if (queueTimeout <= 0) {
 		logger.debug('QueueInactivityTimer: Disabling scheduled closing');
-		OmnichannelQueueInactivityMonitor.stop();
+		await OmnichannelQueueInactivityMonitor.stop();
 		return;
 	}
 

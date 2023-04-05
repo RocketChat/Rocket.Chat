@@ -3,7 +3,7 @@ import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { SearchLogger } from './logger/logger';
-import type { ISearchResult } from './model/ISearchResult';
+import type { IRawSearchResult, ISearchResult } from './model/ISearchResult';
 import { searchProviderService, validationService } from './service';
 
 declare module '@rocket.chat/ui-contexts' {
@@ -55,16 +55,15 @@ Meteor.methods<ServerMethods>({
 
 		SearchLogger.debug({ msg: 'search', text, context, payload });
 
-		return new Promise((resolve, reject) => {
+		return new Promise<IRawSearchResult>((resolve, reject) => {
 			searchProviderService.activeProvider?.search(text, context, payload, (error, data) => {
 				if (error) {
-					reject(error);
-					return;
+					return reject(error);
 				}
 
-				resolve(validationService.validateSearchResult(data));
+				return resolve(data);
 			});
-		});
+		}).then((result) => validationService.validateSearchResult(result));
 	},
 
 	async 'rocketchatSearch.suggest'(text, context, payload) {
