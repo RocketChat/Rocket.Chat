@@ -48,6 +48,7 @@ type IMessageReactions = Record<string, IMessageReaction>;
 export type IConverterOptions = {
 	flagEmailsAsVerified?: boolean;
 	skipExistingUsers?: boolean;
+	skipNewUsers?: boolean;
 };
 
 const guessNameFromUsername = (username: string): string =>
@@ -79,6 +80,7 @@ export class ImportDataConverter {
 		this._options = options || {
 			flagEmailsAsVerified: false,
 			skipExistingUsers: false,
+			skipNewUsers: false,
 		};
 		this._userCache = new Map();
 		this._userDisplayNameCache = new Map();
@@ -338,6 +340,10 @@ export class ImportDataConverter {
 
 				let existingUser = await this.findExistingUser(data);
 				if (existingUser && this._options.skipExistingUsers) {
+					await this.skipRecord(_id);
+					continue;
+				}
+				if (!existingUser && this._options.skipNewUsers) {
 					await this.skipRecord(_id);
 					continue;
 				}

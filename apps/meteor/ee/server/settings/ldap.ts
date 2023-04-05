@@ -38,6 +38,12 @@ export function addSettings(): void {
 						invalidValue: true,
 					});
 
+					this.add('LDAP_Background_Sync_Merge_Existent_Users', false, {
+						type: 'boolean',
+						enableQuery: [...backgroundSyncQuery, { _id: 'LDAP_Background_Sync_Keep_Existant_Users_Updated', value: true }],
+						invalidValue: false,
+					});
+
 					this.add('LDAP_Background_Sync_Avatars', false, {
 						type: 'boolean',
 						enableQuery,
