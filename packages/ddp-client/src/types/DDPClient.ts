@@ -25,6 +25,15 @@ export interface DDPClient {
 	subscribe(name: string, ...params: any[]): string;
 
 	/**
+	 * Subscribes to a queue of stream messages.
+	 * @param id arbitrary id to use for the subscription
+	 * @param name The name of the queue to subscribe to.
+	 * @param params The parameters that the queue takes.
+	 * @returns A string representing the subscription id.
+	 */
+	subscribeWithId(id: string, name: string, ...params: any[]): string;
+
+	/**
 	 * Unsubscribes from a queue of stream messages.
 	 * @param id The id of the subscription to unsubscribe from.
 	 */

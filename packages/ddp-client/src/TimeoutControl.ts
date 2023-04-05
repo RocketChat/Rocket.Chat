@@ -9,6 +9,7 @@ export interface TimeoutControlEvents
 		heartbeat: void;
 	}> {
 	reset(): void;
+	stop(): void;
 	readonly timeout: number;
 	readonly heartbeat: number;
 }
@@ -41,6 +42,15 @@ export class TimeoutControl
 		}
 		this.timeoutId = setTimeout(() => this.emit('timeout'), this.timeout);
 		this.heartbeatId = setTimeout(() => this.emit('heartbeat'), this.heartbeat);
+	}
+
+	stop() {
+		if (this.timeoutId) {
+			clearTimeout(this.timeoutId);
+		}
+		if (this.heartbeatId) {
+			clearTimeout(this.heartbeatId);
+		}
 	}
 
 	static create(ddp: DDPClient, connection: Connection, timeout?: number, heartbeat?: number): TimeoutControl {

@@ -1,6 +1,6 @@
 import { ClientStreamImpl } from './ClientStream';
 import type { ClientStream } from './ClientStream';
-import { ConnectionImpl } from './Connection';
+import { Connection, ConnectionImpl } from './Connection';
 import { MinimalDDPClient } from './MinimalDDPClient';
 import { TimeoutControl } from './TimeoutControl';
 
@@ -20,7 +20,13 @@ import { TimeoutControl } from './TimeoutControl';
 * In order for the server to function properly, it is important that it is aware of the 'agreement' and uses the same assumptions.
 */
 interface SDK extends ClientStream {
+	user?: {
+		_id: string;
+		username: string;
+	};
 	stream(name: string, params: unknown[], cb: (data: unknown) => void): Promise<() => void>;
+
+	connection: Connection;
 }
 
 interface PublicationPayloads {
@@ -41,6 +47,15 @@ const isValidPayload = (data: unknown): data is PublicationPayloads => {
 };
 
 export class DDPSDK extends ClientStreamImpl implements SDK {
+	public user?: {
+		_id: string;
+		username: string;
+	};
+
+	constructor(ddp: MinimalDDPClient, readonly connection: Connection) {
+		super(ddp);
+	}
+
 	async stream(name: string, params: unknown[], cb: (data: PublicationPayloads) => void): Promise<() => void> {
 		const cancel = await Promise.all([
 			this.subscribe(name, ...params),
@@ -65,17 +80,41 @@ export class DDPSDK extends ClientStreamImpl implements SDK {
 		};
 	}
 
-	static async create(url: string): Promise<DDPSDK> {
+	static async create(url: string, retryOptions = { retryCount: 1, retryTime: 100 }): Promise<DDPSDK> {
 		const ddp = new MinimalDDPClient();
 
-		const connection = ConnectionImpl.create(url, WebSocket, ddp);
+		const connection = ConnectionImpl.create(url, WebSocket, ddp, retryOptions);
 
 		TimeoutControl.create(ddp, connection);
 
+		const sdk = new DDPSDK(ddp, connection);
+
+		sdk.onCollection('users', (data) => {
+			if (data.collection !== 'users') {
+				return;
+			}
+			if (data.msg !== 'changed') {
+				return;
+			}
+
+			if (!('fields' in data) || !('username' in data.fields!)) {
+				return;
+			}
+
+			sdk.user = {
+				...sdk.user,
+				_id: data.id,
+				username: data.fields.username,
+			};
+		});
+
+		connection.on('connected', () => {
+			Object.entries(sdk.subscriptions).forEach(([, sub]) => {
+				ddp.subscribeWithId(sub.id, sub.name, ...sub.params);
+			});
+		});
+
 		await connection.connect();
-
-		const sdk = new DDPSDK(ddp);
-
 		return sdk;
 	}
 }

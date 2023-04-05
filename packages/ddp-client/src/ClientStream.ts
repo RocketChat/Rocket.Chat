@@ -9,13 +9,29 @@ export interface ClientStream {
 	connect(): Promise<any>;
 	onCollection(id: string, callback: (data: PublicationPayloads) => void): () => void;
 
-	subscriptions: Map<string, unknown>;
+	subscriptions: Map<
+		string,
+		{
+			id: string;
+			status: 'ready' | 'loading';
+			name: string;
+			params: any[];
+		}
+	>;
 }
 
 export class ClientStreamImpl implements ClientStream {
-	subscriptions = new Map<string, unknown>();
+	subscriptions = new Map<
+		string,
+		{
+			id: string;
+			status: 'ready' | 'loading';
+			name: string;
+			params: any[];
+		}
+	>();
 
-	constructor(private ws: DDPClient) {}
+	constructor(private ddp: DDPClient) {}
 
 	call(method: string, ...params: any[]): string {
 		// get the last argument
@@ -25,10 +41,10 @@ export class ClientStreamImpl implements ClientStream {
 			params.push(callback);
 		}
 
-		const id = this.ws.call(method, ...params);
+		const id = this.ddp.call(method, ...params);
 
 		if (typeof callback === 'function') {
-			this.ws.onResult(id, (payload) => {
+			this.ddp.onResult(id, (payload) => {
 				if ('error' in payload) {
 					callback(payload.error);
 				} else {
@@ -40,10 +56,10 @@ export class ClientStreamImpl implements ClientStream {
 	}
 
 	callAsync(method: string, ...params: any[]): Promise<any> & { id: string } {
-		const id = this.ws.call(method, ...params);
+		const id = this.ddp.call(method, ...params);
 
 		const result = new Promise((resolve, reject) => {
-			this.ws.onResult(id, (payload) => {
+			this.ddp.onResult(id, (payload) => {
 				if ('error' in payload) {
 					reject(payload.error);
 				} else {
@@ -56,17 +72,27 @@ export class ClientStreamImpl implements ClientStream {
 	}
 
 	subscribe(name: string, ...params: any[]): Promise<any> & { id: string } {
-		const id = this.ws.subscribe(name, ...params);
+		const id = this.ddp.subscribe(name, ...params);
 
-		this.subscriptions.set(id, true);
+		this.subscriptions.set(id, {
+			id,
+			status: 'loading',
+			name,
+			params,
+		});
 		const result = new Promise((resolve, reject) => {
-			this.ws.onPublish(id, (payload) => {
+			this.ddp.onPublish(id, (payload) => {
 				if ('error' in payload) {
 					this.subscriptions.delete(id);
-					reject(payload.error);
-				} else {
-					resolve(payload);
+					return reject(payload.error);
 				}
+				this.subscriptions.set(id, {
+					id,
+					status: 'ready',
+					name,
+					params,
+				});
+				resolve(payload);
 			});
 		});
 		return Object.assign(result, { id });
@@ -75,8 +101,8 @@ export class ClientStreamImpl implements ClientStream {
 	unsubscribe(id: string): Promise<any> {
 		return new Promise((resolve, reject) => {
 			this.subscriptions.delete(id);
-			this.ws.unsubscribe(id);
-			this.ws.onNoSub(id, (payload) => {
+			this.ddp.unsubscribe(id);
+			this.ddp.onNoSub(id, (payload) => {
 				if ('error' in payload) {
 					reject(payload.error);
 				} else {
@@ -87,9 +113,9 @@ export class ClientStreamImpl implements ClientStream {
 	}
 
 	connect(): Promise<any> {
-		this.ws.connect();
+		this.ddp.connect();
 		return new Promise((resolve, reject) => {
-			this.ws.onConnection((data) => {
+			this.ddp.onConnection((data) => {
 				if (data.msg === 'failed') reject(data);
 				else resolve(data);
 			});
@@ -97,6 +123,6 @@ export class ClientStreamImpl implements ClientStream {
 	}
 
 	onCollection(id: string, callback: (data: PublicationPayloads) => void) {
-		return this.ws.onCollection(id, callback);
+		return this.ddp.onCollection(id, callback);
 	}
 }

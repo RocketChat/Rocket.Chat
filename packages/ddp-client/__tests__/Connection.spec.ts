@@ -19,7 +19,7 @@ it('should connect', async () => {
 
 	server.nextMessage.then((message) => {
 		expect(message).toBe('{"msg":"connect","version":"1","support":["1","pre2","pre1"]}');
-		server.send('{"msg":"connected","session":"123"}');
+		return server.send('{"msg":"connected","session":"123"}');
 	});
 
 	expect(connection.status).toBe('idle');
@@ -37,9 +37,9 @@ it('should handle a failing connection', async () => {
 
 	const suggestedVersion = '1';
 
-	server.nextMessage.then((message) => {
+	const message = server.nextMessage.then((message) => {
 		expect(message).toBe('{"msg":"connect","version":"1","support":["1","pre2","pre1"]}');
-		server.send(`{"msg":"failed","version":"${suggestedVersion}"}`);
+		return server.send(`{"msg":"failed","version":"${suggestedVersion}"}`);
 	});
 
 	expect(connection.status).toBe('idle');
@@ -49,6 +49,7 @@ it('should handle a failing connection', async () => {
 
 	expect(connection.session).toBeUndefined();
 	expect(connection.status).toBe('failed');
+	await message;
 });
 
 it('should trigger a disconnect callback', async () => {
@@ -133,7 +134,7 @@ it('should handle reconnecting', async () => {
 
 	expect(connection.status).toBe('connecting');
 
-	// await expect(new Promise((resolve) => connection.once('connection', (data) => resolve(data)))).resolves.toBe('connected');
+	await expect(new Promise((resolve) => connection.once('connection', (data) => resolve(data)))).resolves.toBe('connected');
 
-	// expect(connection.status).toBe('connected');
+	expect(connection.status).toBe('connected');
 });

@@ -27,6 +27,8 @@ type ConnectionStatus = 'idle' | 'connecting' | 'connected' | 'failed' | 'closed
 export interface Connection
 	extends Emitter<{
 		connection: ConnectionStatus;
+		connecting: void;
+		connected: string;
 		disconnected: void;
 		reconnecting: void;
 		close: void;
@@ -36,6 +38,8 @@ export interface Connection
 	status: ConnectionStatus;
 
 	connect(): Promise<boolean>;
+
+	reconnect(): Promise<boolean>;
 
 	close(): void;
 }
@@ -47,6 +51,8 @@ interface WebSocketConstructor {
 export class ConnectionImpl
 	extends Emitter<{
 		connection: ConnectionStatus;
+		connecting: void;
+		connected: string;
 		disconnected: void;
 		reconnecting: void;
 		close: void;
@@ -74,8 +80,21 @@ export class ConnectionImpl
 		this.emit('connection', this.status);
 	}
 
+	reconnect(): Promise<boolean> {
+		if (this.status === 'connecting' || this.status === 'connected') {
+			return Promise.resolve(true);
+		}
+
+		clearTimeout(this.retryOptions.retryTimer);
+
+		this.emit('reconnecting');
+
+		return this.connect();
+	}
+
 	connect() {
 		this.status = 'connecting';
+		this.emit('connecting');
 		this.emitStatus();
 
 		const ws = new this.WS(this.url);
@@ -86,11 +105,10 @@ export class ConnectionImpl
 				ws.onmessage = (event) => {
 					this.client.handleMessage(String(event.data));
 				};
-
 				const handle = (message: string) => {
 					ws.send(message);
 				};
-				this.client.onDispatchMessage(handle);
+				stop = this.client.onDispatchMessage(handle);
 
 				this.retryCount = 0;
 				// The server may send an initial message which is a JSON object lacking a msg key. If so, the client should ignore it. The client does not have to wait for this message.
@@ -117,6 +135,7 @@ export class ConnectionImpl
 
 				this.client.onConnection((payload) => {
 					if (payload.msg === 'connected') {
+						this.emit('connected', payload.session);
 						this.status = 'connected';
 						this.emitStatus();
 						this.session = payload.session;
@@ -125,13 +144,14 @@ export class ConnectionImpl
 					if (payload.msg === 'failed') {
 						this.status = 'failed';
 						this.emitStatus();
+						this.emit('disconnected');
 						return reject(payload.version);
 					}
 					reject(new Error('Unknown message type'));
 				});
 			};
 
-			ws.addEventListener('close', () => {
+			ws.onclose = () => {
 				clearTimeout(this.retryOptions.retryTimer);
 				stop?.();
 				if (this.status === 'closed') {
@@ -139,6 +159,7 @@ export class ConnectionImpl
 				}
 				this.status = 'disconnected';
 				this.emitStatus();
+				this.emit('disconnected');
 
 				if (this.retryCount >= this.retryOptions.retryCount) {
 					return;
@@ -147,10 +168,9 @@ export class ConnectionImpl
 				this.retryCount += 1;
 
 				this.retryOptions.retryTimer = setTimeout(() => {
-					this.emit('reconnecting');
-					this.connect();
+					this.reconnect();
 				}, this.retryOptions.retryTime);
-			});
+			};
 		});
 	}
 

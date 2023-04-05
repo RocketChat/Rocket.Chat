@@ -148,6 +148,11 @@ export class MinimalDDPClient extends Emitter<MinimalDDPClientEvents> implements
 
 	subscribe(name: string, ...params: any[]): string {
 		const id = getUniqueId();
+
+		return this.subscribeWithId(id, name, ...params);
+	}
+
+	subscribeWithId(id: string, name: string, ...params: any[]): string {
 		const payload: SubscribePayload = {
 			msg: 'sub',
 			id,
