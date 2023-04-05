@@ -60,7 +60,7 @@ API.v1.addRoute('livechat/room', {
 			}
 
 			let agent;
-			const agentObj = agentId && findAgent(agentId);
+			const agentObj = agentId && (await findAgent(agentId));
 			if (agentObj) {
 				if (isAgentWithInfo(agentObj)) {
 					const { username = undefined } = agentObj;
@@ -338,7 +338,7 @@ API.v1.addRoute(
 			}
 
 			const guest = await LivechatVisitors.findOneById(room.v?._id);
-			transferData.transferredBy = normalizeTransferredByData(Meteor.user() || {}, room);
+			transferData.transferredBy = normalizeTransferredByData((await Meteor.userAsync()) || {}, room);
 			if (transferData.userId) {
 				const userToTransfer = await Users.findOneById(transferData.userId);
 				if (userToTransfer) {

@@ -1,14 +1,22 @@
+import type { UpdateResult } from 'mongodb';
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Users } from '@rocket.chat/models';
 
-import { Users } from '../../app/models/server';
 import { passwordPolicy } from '../../app/lib/server';
 import { compareUserPassword } from '../lib/compareUserPassword';
 
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		setUserPassword(password: string): UpdateResult;
+	}
+}
+
 Meteor.methods<ServerMethods>({
-	setUserPassword(password) {
+	async setUserPassword(password) {
 		check(password, String);
 
 		const userId = Meteor.userId();
@@ -19,7 +27,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const user = Users.findOneById(userId);
+		const user = await Users.findOneById(userId);
 
 		if (user && user.requirePasswordChange !== true) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
@@ -27,6 +35,11 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
+		if (!user) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'setUserPassword',
+			});
+		}
 		if (compareUserPassword(user, { plain: password })) {
 			throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
 				method: 'setUserPassword',

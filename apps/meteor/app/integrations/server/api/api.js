@@ -7,14 +7,16 @@ import Fiber from 'fibers';
 import Future from 'fibers/future';
 import _ from 'underscore';
 import moment from 'moment';
-import { Integrations } from '@rocket.chat/models';
+import { Integrations, Users } from '@rocket.chat/models';
+import * as Models from '@rocket.chat/models';
 
 import * as s from '../../../../lib/utils/stringUtils';
 import { incomingLogger } from '../logger';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { API, APIClass, defaultRateLimiterOptions } from '../../../api/server';
-import * as Models from '../../../models/server';
 import { settings } from '../../../settings/server';
+
+export const forbiddenModelMethods = ['registerModel', 'getCollectionName'];
 
 const compiledScripts = {};
 function buildSandbox(store = {}) {
@@ -51,7 +53,7 @@ function buildSandbox(store = {}) {
 		},
 	};
 	Object.keys(Models)
-		.filter((k) => !k.startsWith('_'))
+		.filter((k) => !forbiddenModelMethods.includes(k))
 		.forEach((k) => {
 			sandbox[k] = Models[k];
 		});
@@ -137,11 +139,11 @@ function createIntegration(options, user) {
 	return API.v1.success();
 }
 
-function removeIntegration(options, user) {
+async function removeIntegration(options, user) {
 	incomingLogger.info('Remove integration');
 	incomingLogger.debug({ options });
 
-	const integrationToRemove = Promise.await(Integrations.findOneByUrl(options.target_url));
+	const integrationToRemove = await Integrations.findOneByUrl(options.target_url);
 	if (!integrationToRemove) {
 		return API.v1.failure('integration-not-found');
 	}
@@ -289,7 +291,7 @@ function addIntegrationRest() {
 	return createIntegration(this.bodyParams, this.user);
 }
 
-function removeIntegrationRest() {
+async function removeIntegrationRest() {
 	return removeIntegration(this.bodyParams, this.user);
 }
 
@@ -353,7 +355,7 @@ class WebHookAPI extends APIClass {
 		);
 	}
 
-	shouldVerifyRateLimit(/* route */) {
+	async shouldVerifyRateLimit(/* route */) {
 		return (
 			settings.get('API_Enable_Rate_Limiter') === true &&
 			(process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true)
@@ -364,7 +366,7 @@ class WebHookAPI extends APIClass {
 	There is only one generic route propagated to Restivus which has URL-path-parameters for the integration and the token.
 	Since the rate-limiter operates on absolute routes, we need to add a limiter to the absolute url before we can validate it
 	*/
-	enforceRateLimit(objectForRateLimitMatch, request, response, userId) {
+	async enforceRateLimit(objectForRateLimitMatch, request, response, userId) {
 		const { method, url } = request;
 		const route = url.replace(`/${this.apiPath}`, '');
 		const nameRoute = this.getFullRouteName(route, [method.toLowerCase()]);
@@ -393,7 +395,7 @@ const Api = new WebHookAPI({
 	enableCors: true,
 	apiPath: 'hooks/',
 	auth: {
-		user() {
+		async user() {
 			const payloadKeys = Object.keys(this.bodyParams);
 			const payloadIsWrapped = this.bodyParams && this.bodyParams.payload && payloadKeys.length === 1;
 			if (payloadIsWrapped && this.request.headers['content-type'] === 'application/x-www-form-urlencoded') {
@@ -412,12 +414,10 @@ const Api = new WebHookAPI({
 				}
 			}
 
-			this.integration = Promise.await(
-				Integrations.findOne({
-					_id: this.request.params.integrationId,
-					token: decodeURIComponent(this.request.params.token),
-				}),
-			);
+			this.integration = await Integrations.findOne({
+				_id: this.request.params.integrationId,
+				token: decodeURIComponent(this.request.params.token),
+			});
 
 			if (!this.integration) {
 				incomingLogger.info(`Invalid integration id ${this.request.params.integrationId} or token ${this.request.params.token}`);
@@ -433,7 +433,7 @@ const Api = new WebHookAPI({
 				};
 			}
 
-			const user = Models.Users.findOne({
+			const user = await Users.findOne({
 				_id: this.integration.userId,
 			});
 

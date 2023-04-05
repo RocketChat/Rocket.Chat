@@ -63,16 +63,6 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 
 	const { handleToUsers, handleAdditionalEmails, handleSubject } = handlers;
 
-	const onChangeUsers = useMutableCallback((value, action) => {
-		if (!action) {
-			if (toUsers.includes(value)) {
-				return;
-			}
-			return handleToUsers([...toUsers, value]);
-		}
-		handleToUsers(toUsers.filter((current) => current !== value));
-	});
-
 	const roomsExport = useEndpoint('POST', '/v1/rooms.export');
 
 	const handleSubmit = async (): Promise<void> => {
@@ -134,7 +124,7 @@ const MailExportForm: FC<MailExportFormProps> = ({ onCancel, rid }) => {
 			<Field>
 				<Field.Label>{t('To_users')}</Field.Label>
 				<Field.Row>
-					<UserAutoCompleteMultiple value={toUsers} onChange={onChangeUsers} />
+					<UserAutoCompleteMultiple value={toUsers} onChange={handleToUsers} />
 				</Field.Row>
 			</Field>
 			<Field>

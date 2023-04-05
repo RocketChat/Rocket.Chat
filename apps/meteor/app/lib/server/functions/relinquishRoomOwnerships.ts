@@ -1,12 +1,11 @@
-import { Messages, Roles, Rooms } from '@rocket.chat/models';
+import { Messages, Roles, Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { FileUpload } from '../../../file-upload/server';
-import { Subscriptions } from '../../../models/server';
 import type { SubscribedRoomsForUserWithDetails } from './getRoomsWithSingleOwner';
 
 const bulkRoomCleanUp = async (rids: string[]): Promise<unknown> => {
 	// no bulk deletion for files
-	rids.forEach((rid) => FileUpload.removeFilesByRoomId(rid));
+	await Promise.all(rids.map((rid) => FileUpload.removeFilesByRoomId(rid)));
 
 	return Promise.all([Subscriptions.removeByRoomIds(rids), Messages.removeByRoomIds(rids), Rooms.removeByIds(rids)]);
 };

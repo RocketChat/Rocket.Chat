@@ -35,7 +35,7 @@ API.v1.addRoute(
 				return API.v1.failure('Room cannot be placed on hold after being closed');
 			}
 
-			const user = Meteor.user();
+			const user = await Meteor.userAsync();
 			if (!user) {
 				return API.v1.failure('Invalid user');
 			}

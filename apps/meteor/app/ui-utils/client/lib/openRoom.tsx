@@ -9,7 +9,6 @@ import { appLayout } from '../../../../client/lib/appLayout';
 import { waitUntilFind } from '../../../../client/lib/utils/waitUntilFind';
 import { ChatSubscription, Rooms, Subscriptions } from '../../../models/client';
 import { settings } from '../../../settings/client';
-import { callbacks } from '../../../../lib/callbacks';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { call } from '../../../../client/lib/utils/call';
 import { LegacyRoomManager } from '..';
@@ -19,12 +18,13 @@ import MainLayout from '../../../../client/views/root/MainLayout';
 import { omit } from '../../../../lib/utils/omit';
 import { RoomSkeleton, RoomProvider, Room, RoomNotFound } from '../../../../client/views/room';
 import { RoomManager } from '../../../../client/lib/RoomManager';
+import { readMessage } from './readMessages';
 
 export async function openRoom(type: RoomType, name: string, render = true) {
 	setTimeout(() => {
 		LegacyRoomManager.currentTracker?.stop();
 		LegacyRoomManager.currentTracker = Tracker.autorun(async function (c) {
-			const user = Meteor.user();
+			const user = await Meteor.userAsync();
 			if ((user && user.username == null) || (user == null && settings.get('Accounts_AllowAnonymousRead') === false)) {
 				appLayout.render(<MainLayout />);
 				return;
@@ -79,7 +79,10 @@ export async function openRoom(type: RoomType, name: string, render = true) {
 					await callWithErrorHandling('openRoom', room._id);
 				}
 
-				return callbacks.run('enter-room', sub);
+				if (sub) {
+					const { rid } = sub;
+					setTimeout(() => readMessage.read(rid), 1000);
+				}
 			} catch (error) {
 				c.stop();
 

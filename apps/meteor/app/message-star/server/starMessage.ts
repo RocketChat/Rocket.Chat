@@ -42,7 +42,7 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		const room = await Rooms.findOneById(message.rid, { fields: { ...roomAccessAttributes, lastMessage: 1 } });
+		const room = await Rooms.findOneById(message.rid, { projection: { ...roomAccessAttributes, lastMessage: 1 } });
 
 		if (!room) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'starMessage' });
@@ -56,7 +56,7 @@ Meteor.methods<ServerMethods>({
 			await Rooms.updateLastMessageStar(room._id, uid, message.starred);
 		}
 
-		await Apps.triggerEvent(AppEvents.IPostMessageStarred, message, Meteor.user(), message.starred);
+		await Apps.triggerEvent(AppEvents.IPostMessageStarred, message, await Meteor.userAsync(), message.starred);
 
 		await Messages.updateUserStarById(message._id, uid, message.starred);
 

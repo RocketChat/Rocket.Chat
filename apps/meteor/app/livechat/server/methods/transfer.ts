@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { LivechatVisitors, LivechatRooms, Subscriptions } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatRooms, Subscriptions, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IUser } from '@rocket.chat/core-typings';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Users } from '../../../models/server';
 import { Livechat } from '../lib/Livechat';
 import { normalizeTransferredByData } from '../lib/Helper';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
@@ -71,11 +70,14 @@ Meteor.methods<ServerMethods>({
 			transferredTo?: Pick<IUser, '_id' | 'username' | 'name'>;
 		} = {
 			...transferData,
-			transferredBy: normalizeTransferredByData(Meteor.user() || {}, room),
+			transferredBy: normalizeTransferredByData((await Meteor.userAsync()) || {}, room),
 		};
 
 		if (normalizedTransferData.userId) {
-			const userToTransfer = Users.findOneById(normalizedTransferData.userId);
+			const userToTransfer = await Users.findOneById(normalizedTransferData.userId);
+			if (!userToTransfer) {
+				throw new Meteor.Error('error-invalid-user', 'Invalid user to transfer the room');
+			}
 			normalizedTransferData.transferredTo = {
 				_id: userToTransfer._id,
 				username: userToTransfer.username,

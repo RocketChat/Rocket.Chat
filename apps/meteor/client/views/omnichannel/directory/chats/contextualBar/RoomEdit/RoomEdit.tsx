@@ -30,7 +30,7 @@ const ROOM_INTIAL_VALUE = {
 	slaId: '',
 };
 
-export const getInitialValuesRoom = (room: Serialized<IOmnichannelRoom>) => {
+const getInitialValuesRoom = (room: Serialized<IOmnichannelRoom>) => {
 	const { topic, tags, livechatData, slaId, priorityId } = room ?? ROOM_INTIAL_VALUE;
 
 	return {

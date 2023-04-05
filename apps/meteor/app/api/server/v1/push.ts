@@ -1,12 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
-import { Messages, AppsTokens } from '@rocket.chat/models';
+import { Messages, AppsTokens, Users, Rooms } from '@rocket.chat/models';
 
 import { API } from '../api';
 import PushNotification from '../../../push-notifications/server/lib/PushNotification';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { Users, Rooms } from '../../../models/server';
 
 API.v1.addRoute(
 	'push.token',
@@ -86,7 +85,7 @@ API.v1.addRoute(
 				}),
 			);
 
-			const receiver = Users.findOneById(this.userId);
+			const receiver = await Users.findOneById(this.userId);
 			if (!receiver) {
 				throw new Error('error-user-not-found');
 			}
@@ -96,7 +95,7 @@ API.v1.addRoute(
 				throw new Error('error-message-not-found');
 			}
 
-			const room = Rooms.findOneById(message.rid);
+			const room = await Rooms.findOneById(message.rid);
 			if (!room) {
 				throw new Error('error-room-not-found');
 			}

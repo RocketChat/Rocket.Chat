@@ -2,7 +2,6 @@ import type { RouteOptions } from 'meteor/kadira:flow-router';
 import type {
 	IRoom,
 	RoomType,
-	IRocketChatRecord,
 	IUser,
 	IMessage,
 	ReadReceipt,
@@ -105,14 +104,14 @@ export interface IRoomTypeServerDirectives {
 	canBeDeleted: (hasPermission: (permissionId: string, rid?: string) => Promise<boolean> | boolean, room: IRoom) => Promise<boolean>;
 	preventRenaming: () => boolean;
 	getDiscussionType: (room?: AtLeast<IRoom, 'teamId'>) => Promise<RoomType>;
-	canAccessUploadedFile: (params: { rc_uid: string; rc_rid: string; rc_token: string }) => boolean;
+	canAccessUploadedFile: (params: { rc_uid: string; rc_rid: string; rc_token: string }) => Promise<boolean>;
 	getNotificationDetails: (
 		room: IRoom,
 		sender: AtLeast<IUser, '_id' | 'name' | 'username'>,
 		notificationMessage: string,
 		userId: string,
 	) => Promise<{ title: string | undefined; text: string }>;
-	getMsgSender: (senderId: IRocketChatRecord['_id']) => Promise<IRocketChatRecord | undefined>;
+	getMsgSender: (senderId: IUser['_id']) => Promise<IUser | null>;
 	includeInRoomSearch: () => boolean;
 	getReadReceiptsExtraData: (message: IMessage) => Partial<ReadReceipt>;
 	includeInDashboard: () => boolean;
