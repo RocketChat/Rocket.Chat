@@ -1,5 +1,5 @@
 import { Base64 } from '@rocket.chat/base64';
-import { EJSON } from 'meteor/ejson';
+import EJSON from 'ejson';
 import { Random } from '@rocket.chat/random';
 import { Emitter } from '@rocket.chat/emitter';
 
