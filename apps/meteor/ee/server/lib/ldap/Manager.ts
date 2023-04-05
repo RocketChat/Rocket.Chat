@@ -573,7 +573,7 @@ export class LDAPEEManager extends LDAPManager {
 				continue;
 			}
 
-			LDAPManager.syncUserAvatar(user, ldapUser);
+			await LDAPManager.syncUserAvatar(user, ldapUser);
 		}
 	}
 

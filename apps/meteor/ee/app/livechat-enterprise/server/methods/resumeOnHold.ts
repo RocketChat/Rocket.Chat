@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { ILivechatVisitor } from '@rocket.chat/core-typings';
-import { LivechatVisitors, LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { Users } from '../../../../../app/models/server';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
 import { callbacks } from '../../../../../lib/callbacks';
 
@@ -62,7 +61,10 @@ Meteor.methods<ServerMethods>({
 		const { servedBy: { _id: agentId, username } = {} } = room;
 		await RoutingManager.takeInquiry(inquiry, { agentId, username }, options);
 
-		const onHoldChatResumedBy = options.clientAction ? await Meteor.userAsync() : Users.findOneById('rocket.cat');
+		const onHoldChatResumedBy = options.clientAction ? await Meteor.userAsync() : await Users.findOneById('rocket.cat');
+		if (!onHoldChatResumedBy) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'livechat:resumeOnHold' });
+		}
 
 		const comment = await resolveOnHoldCommentInfo(options, room, onHoldChatResumedBy);
 

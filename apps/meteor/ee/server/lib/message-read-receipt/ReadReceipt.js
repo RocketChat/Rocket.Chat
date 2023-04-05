@@ -1,7 +1,6 @@
 import { Random } from '@rocket.chat/random';
-import { LivechatVisitors, ReadReceipts, Messages, Rooms, Subscriptions } from '@rocket.chat/models';
+import { LivechatVisitors, ReadReceipts, Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
-import { Users } from '../../../../app/models/server';
 import { settings } from '../../../../app/settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -116,7 +115,7 @@ export const ReadReceipt = {
 				...receipt,
 				user: receipt.token
 					? await LivechatVisitors.getVisitorByToken(receipt.token, { projection: { username: 1, name: 1 } })
-					: Users.findOneById(receipt.userId, { fields: { username: 1, name: 1 } }),
+					: await Users.findOneById(receipt.userId, { projection: { username: 1, name: 1 } }),
 			})),
 		);
 	},

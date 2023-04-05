@@ -2,13 +2,12 @@ import type Mail from 'nodemailer/lib/mailer';
 import { Match } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { isIMessageInbox } from '@rocket.chat/core-typings';
-import type { IEmailInbox, IUser, IMessage } from '@rocket.chat/core-typings';
-import { Messages, Uploads, LivechatRooms } from '@rocket.chat/models';
+import type { IEmailInbox, IUser, IMessage, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { Messages, Uploads, LivechatRooms, Rooms, Users } from '@rocket.chat/models';
 
 import { callbacks } from '../../../lib/callbacks';
 import { FileUpload } from '../../../app/file-upload/server';
 import { slashCommands } from '../../../app/utils/server';
-import { Rooms, Users } from '../../../app/models/server';
 import type { Inbox } from './EmailInbox';
 import { inboxes } from './EmailInbox';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
@@ -17,7 +16,7 @@ import { logger } from './logger';
 
 const livechatQuoteRegExp = /^\[\s\]\(https?:\/\/.+\/live\/.+\?msg=(?<id>.+?)\)\s(?<text>.+)/s;
 
-const user: IUser = Users.findOneById('rocket.cat');
+const getRocketCatUser = async (): Promise<IUser | null> => Users.findOneById('rocket.cat');
 
 const language = settings.get<string>('Language') || 'en';
 const t = (s: string): string => TAPi18n.__(s, { lng: language });
@@ -36,6 +35,11 @@ const sendErrorReplyMessage = async (error: string, options: any) => {
 		ts: new Date(),
 	};
 
+	const user = await getRocketCatUser();
+	if (!user) {
+		return;
+	}
+
 	return sendMessage(user, message, { _id: options.rid });
 };
 
@@ -50,6 +54,11 @@ const sendSuccessReplyMessage = async (options: any) => {
 		rid: options.rid,
 		ts: new Date(),
 	};
+
+	const user = await getRocketCatUser();
+	if (!user) {
+		return;
+	}
 
 	return sendMessage(user, message, { _id: options.rid });
 };
@@ -93,7 +102,11 @@ slashCommands.add({
 			return;
 		}
 
-		const room = Rooms.findOneById(message.rid);
+		const room = await Rooms.findOneById<IOmnichannelRoom>(message.rid);
+
+		if (!room?.email) {
+			return;
+		}
 
 		const inbox = inboxes.get(room.email.inbox);
 
@@ -111,14 +124,14 @@ slashCommands.add({
 			return;
 		}
 
-		FileUpload.getBuffer(file, (_err?: Error, buffer?: Buffer) => {
+		FileUpload.getBuffer(file, (_err?: Error, buffer?: Buffer | false) => {
 			!_err &&
 				buffer &&
 				void sendEmail(
 					inbox,
 					{
-						to: room.email.replyTo,
-						subject: room.email.subject,
+						to: room.email?.replyTo,
+						subject: room.email?.subject,
 						text: message?.attachments?.[0].description || '',
 						attachments: [
 							{
@@ -127,8 +140,8 @@ slashCommands.add({
 								filename: file.name,
 							},
 						],
-						inReplyTo: room.email.thread,
-						references: [room.email.thread],
+						inReplyTo: Array.isArray(room.email?.thread) ? room.email?.thread[0] : room.email?.thread,
+						references: ([] as string[]).concat(room.email?.thread || []),
 					},
 					{
 						msgId: message._id,
@@ -177,6 +190,11 @@ callbacks.add(
 	'afterSaveMessage',
 	async function (message: IMessage, room: any) {
 		if (!room?.email?.inbox) {
+			return message;
+		}
+
+		const user = await getRocketCatUser();
+		if (!user) {
 			return message;
 		}
 

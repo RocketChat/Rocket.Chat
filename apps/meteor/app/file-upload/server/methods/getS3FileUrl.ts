@@ -10,7 +10,7 @@ import { canAccessRoomAsync } from '../../../authorization/server';
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		getS3FileUrl(fileId: string): void;
+		getS3FileUrl(fileId: string): string;
 	}
 }
 
