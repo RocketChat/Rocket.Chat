@@ -14,7 +14,6 @@ export const LivechatRoomType = getLivechatRoomType(roomCoordinator);
 roomCoordinator.add(
 	{
 		...LivechatRoomType,
-		icon: 'omnichannel',
 		label: 'Omnichannel',
 		action: ({ id } = {}): void => {
 			roomCoordinator.openRoom('l', id);
@@ -78,6 +77,10 @@ roomCoordinator.add(
 
 			const subscription = ChatSubscription.findOne({ rid });
 			return !subscription;
+		},
+
+		getIcon() {
+			return 'livechat';
 		},
 	} as AtLeast<IRoomTypeClientDirectives, 'roomName'>,
 );

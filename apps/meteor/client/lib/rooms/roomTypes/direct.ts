@@ -20,7 +20,6 @@ export const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
 roomCoordinator.add(
 	{
 		...DirectMessageRoomType,
-		icon: 'at',
 		label: 'Direct_Messages',
 		action: ({ rid } = {}): void => {
 			roomCoordinator.openRoom('d', rid);

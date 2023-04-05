@@ -13,7 +13,6 @@ export const VoipRoomType = getVoipRoomType(roomCoordinator);
 roomCoordinator.add(
 	{
 		...VoipRoomType,
-		icon: 'phone',
 		label: 'Voip',
 		action: ({ id } = {}): void => {
 			roomCoordinator.openRoom('v', id);
@@ -42,6 +41,10 @@ roomCoordinator.add(
 
 		readOnly(_rid, _user) {
 			return true;
+		},
+
+		getIcon() {
+			return 'phone';
 		},
 	} as AtLeast<IRoomTypeClientDirectives, 'roomName'>,
 );

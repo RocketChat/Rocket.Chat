@@ -10,6 +10,8 @@ import type {
 	ISubscription,
 	IOmnichannelRoom,
 } from '@rocket.chat/core-typings';
+import type { ComponentProps } from 'react';
+import type { Icon } from '@rocket.chat/fuselage';
 
 export type RoomIdentification = { rid?: IRoom['_id']; name?: string };
 
@@ -59,7 +61,6 @@ export interface IRoomTypeConfig {
 }
 
 export interface IRoomTypeClientConfig extends IRoomTypeConfig {
-	icon?: 'hash' | 'hashtag' | 'hashtag-lock' | 'at' | 'omnichannel' | 'phone' | 'star';
 	label?: string;
 	action?: RouteOptions['action'];
 }
@@ -81,7 +82,7 @@ export interface IRoomTypeClientDirectives {
 	getAvatarPath: (
 		room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid' | 'avatarETag' | 'uids' | 'usernames'> & { username?: IRoom['_id'] },
 	) => string;
-	getIcon: (room: Partial<IRoom>) => IRoomTypeClientConfig['icon'];
+	getIcon?: (room: Partial<IRoom>) => ComponentProps<typeof Icon>['name'];
 	findRoom: (identifier: string) => IRoom | undefined;
 	showJoinLink: (roomId: string) => boolean;
 	isLivechatRoom: () => boolean;

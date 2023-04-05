@@ -10,12 +10,14 @@ export const FavoriteRoomType = getFavoriteRoomType(roomCoordinator);
 roomCoordinator.add(
 	{
 		...FavoriteRoomType,
-		icon: 'star',
 		label: 'Favorites',
 	},
 	{
 		condition(): boolean {
 			return settings.get('Favorite_Rooms') && getUserPreference(Meteor.userId(), 'sidebarShowFavorites');
+		},
+		getIcon() {
+			return 'star';
 		},
 	},
 );

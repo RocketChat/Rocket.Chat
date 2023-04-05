@@ -52,9 +52,6 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			getAvatarPath(_room): string {
 				return '';
 			},
-			getIcon(_room: Partial<IRoom>): IRoomTypeClientConfig['icon'] {
-				return this.config.icon;
-			},
 			findRoom(_identifier: string): IRoom | undefined {
 				return undefined;
 			},
@@ -106,10 +103,6 @@ class RoomCoordinatorClient extends RoomCoordinator {
 					</MainLayout>,
 				);
 			});
-	}
-
-	public getIcon(room: Partial<IRoom>): IRoomTypeClientConfig['icon'] {
-		return room?.t && this.getRoomDirectives(room.t).getIcon(room);
 	}
 
 	public openRouteLink(roomType: RoomType, subData: RoomIdentification, queryParams?: Record<string, string>): void {
@@ -222,14 +215,10 @@ class RoomCoordinatorClient extends RoomCoordinator {
 	protected validateRoomConfig(roomConfig: IRoomTypeClientConfig): void {
 		super.validateRoomConfig(roomConfig);
 
-		const { route, icon, label, action } = roomConfig;
+		const { route, label, action } = roomConfig;
 
 		if (route !== undefined) {
 			this.validateRoute(route);
-		}
-
-		if (icon !== undefined && (typeof icon !== 'string' || icon.length === 0)) {
-			throw new Error('The icon must be a string.');
 		}
 
 		if (label !== undefined && (typeof label !== 'string' || label.length === 0)) {

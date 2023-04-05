@@ -19,7 +19,6 @@ export const PrivateRoomType = getPrivateRoomType(roomCoordinator);
 roomCoordinator.add(
 	{
 		...PrivateRoomType,
-		icon: 'hashtag-lock',
 		label: 'Private_Groups',
 		action: ({ name } = {}): void => {
 			roomCoordinator.openRoom('p', name);
