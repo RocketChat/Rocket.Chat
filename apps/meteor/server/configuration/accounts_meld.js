@@ -1,7 +1,6 @@
 import _ from 'underscore';
 import { Accounts } from 'meteor/accounts-base';
-
-import { Users } from '../../app/models/server';
+import { Users } from '@rocket.chat/models';
 
 const orig_updateOrCreateUserFromExternalService = Accounts.updateOrCreateUserFromExternalService;
 
@@ -24,7 +23,7 @@ Accounts.updateOrCreateUserFromExternalService = function (serviceName, serviceD
 	}
 
 	if (serviceData.email) {
-		const user = Users.findOneByEmailAddress(serviceData.email);
+		const user = Promise.await(Users.findOneByEmailAddress(serviceData.email));
 		if (user != null) {
 			const findQuery = {
 				address: serviceData.email,
@@ -32,15 +31,17 @@ Accounts.updateOrCreateUserFromExternalService = function (serviceName, serviceD
 			};
 
 			if (user.services?.password && !_.findWhere(user.emails, findQuery)) {
-				Users.resetPasswordAndSetRequirePasswordChange(
-					user._id,
-					true,
-					'This_email_has_already_been_used_and_has_not_been_verified__Please_change_your_password',
+				Promise.await(
+					Users.resetPasswordAndSetRequirePasswordChange(
+						user._id,
+						true,
+						'This_email_has_already_been_used_and_has_not_been_verified__Please_change_your_password',
+					),
 				);
 			}
 
-			Users.setServiceId(user._id, serviceName, serviceData.id);
-			Users.setEmailVerified(user._id, serviceData.email);
+			Promise.await(Users.setServiceId(user._id, serviceName, serviceData.id));
+			Promise.await(Users.setEmailVerified(user._id, serviceData.email));
 		}
 	}
 
