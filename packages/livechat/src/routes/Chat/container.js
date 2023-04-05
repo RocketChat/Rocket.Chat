@@ -321,12 +321,12 @@ class ChatContainer extends Component {
 	}
 
 	async componentDidUpdate(prevProps) {
-		const { messages, dispatch } = this.props;
+		const { messages, dispatch, user } = this.props;
 		const { messages: prevMessages, alerts: prevAlerts } = prevProps;
 
 		const shouldMarkUnread = shouldMarkAsUnread();
 
-		if (messages?.length !== prevMessages?.length && !shouldMarkUnread) {
+		if (messages[-1]?.u?._id === user._id || (!shouldMarkUnread && messages?.length !== prevMessages?.length)) {
 			const nextLastMessage = messages[messages.length - 1];
 			const lastReadMessage = getLastReadMessage();
 

@@ -70,14 +70,32 @@ export const loadConfig = async () => {
 
 export const shouldMarkAsUnread = () => {
 	const { minimized, visible, messageListPosition } = store.state;
-	return minimized || !visible || messageListPosition !== 'bottom';
+	return minimized || !visible || (messageListPosition !== undefined && messageListPosition !== 'bottom');
+};
+
+export const getLastReadMessage = () => {
+	const { messages, lastReadMessageId, user } = store.state;
+
+	const renderedMessages = messages.filter((message) => canRenderMessage(message));
+
+	return lastReadMessageId
+		? renderedMessages.find((item) => item._id === lastReadMessageId)
+		: renderedMessages
+				.slice()
+				.reverse()
+				.find((item) => item.u._id === user._id);
 };
 
 export const getUnreadMessages = () => {
 	const { messages, user, lastReadMessageId } = store.state;
 
 	const renderedMessages = messages.filter((message) => canRenderMessage(message));
-	const lastReadMessageIndex = renderedMessages.findIndex((item) => item._id === lastReadMessageId);
+	const lastReadMessageIndex = lastReadMessageId
+		? renderedMessages.findIndex((item) => item._id === lastReadMessageId)
+		: renderedMessages
+				.slice()
+				.reverse()
+				.findIndex((item) => item.u._id === user._id);
 
 	if (lastReadMessageIndex !== -1) {
 		const unreadMessages = renderedMessages.slice(lastReadMessageIndex + 1).filter((message) => message.u._id !== user._id);
@@ -88,13 +106,9 @@ export const getUnreadMessages = () => {
 	return [];
 };
 
-export const getLastReadMessage = () => {
-	const { messages, lastReadMessageId } = store.state;
-	return messages.filter((message) => canRenderMessage(message)).find((item) => item._id === lastReadMessageId);
-};
-
 export const processUnread = async () => {
-	if (shouldMarkAsUnread) {
+	const shouldMarkUnread = shouldMarkAsUnread();
+	if (shouldMarkUnread) {
 		const unreadMessages = getUnreadMessages();
 
 		if (unreadMessages.length > 0) {
