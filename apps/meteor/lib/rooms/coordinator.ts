@@ -102,6 +102,4 @@ export abstract class RoomCoordinator {
 
 		return routeData;
 	}
-
-	public abstract openRoom(_type: string, _name: string): void;
 }

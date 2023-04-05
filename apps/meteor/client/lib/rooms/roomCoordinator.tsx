@@ -1,13 +1,11 @@
 import type { IRoom, RoomType, IUser, AtLeast, ValueOf, ISubscription } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import type { RouteOptions } from 'meteor/kadira:flow-router';
-import React, { Suspense } from 'react';
+import React from 'react';
 
 import { hasPermission } from '../../../app/authorization/client';
 import { ChatRoom, ChatSubscription } from '../../../app/models/client';
 import { settings } from '../../../app/settings/client';
-import { openRoom } from '../../../app/ui-utils/client/lib/openRoom';
 import type {
 	RoomSettingsEnum,
 	RoomMemberActions,
@@ -18,7 +16,7 @@ import type {
 	IRoomTypeClientConfig,
 } from '../../../definition/IRoomTypeConfig';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
-import { Room, RoomNotFound, RoomProvider, RoomSkeleton } from '../../views/room';
+import RoomOpener from '../../views/room/RoomOpener';
 import MainLayout from '../../views/root/MainLayout/MainLayout';
 import { appLayout } from '../appLayout';
 import { roomExit } from './roomExit';
@@ -71,38 +69,6 @@ class RoomCoordinatorClient extends RoomCoordinator {
 
 	public getRoomDirectives(roomType: string): IRoomTypeClientDirectives {
 		return this.roomTypes[roomType].directives as IRoomTypeClientDirectives;
-	}
-
-	public openRoom(type: RoomType, name: string): void {
-		openRoom(type, name)
-			.then((data) => {
-				if ('type' in data && 'id' in data) {
-					FlowRouter.go('direct', { rid: data.id }, FlowRouter.current().queryParams);
-					appLayout.render(
-						<MainLayout>
-							<RoomSkeleton />
-						</MainLayout>,
-					);
-					return;
-				}
-
-				appLayout.render(
-					<MainLayout>
-						<Suspense fallback={<RoomSkeleton />}>
-							<RoomProvider rid={data.rid}>
-								<Room />
-							</RoomProvider>
-						</Suspense>
-					</MainLayout>,
-				);
-			})
-			.catch(() => {
-				appLayout.render(
-					<MainLayout>
-						<RoomNotFound />
-					</MainLayout>,
-				);
-			});
 	}
 
 	public openRouteLink(roomType: RoomType, subData: RoomIdentification, queryParams?: Record<string, string>): void {
@@ -234,18 +200,20 @@ class RoomCoordinatorClient extends RoomCoordinator {
 				route: { name, path },
 			} = roomConfig;
 			const { extractOpenRoomParams } = directives;
-			return this.addRoute(path, {
+			FlowRouter.route(path, {
 				name,
 				action: (params) => {
 					const { type, ref } = extractOpenRoomParams(params ?? {});
-					this.openRoom(type, ref);
+
+					appLayout.render(
+						<MainLayout>
+							<RoomOpener type={type} reference={ref} />
+						</MainLayout>,
+					);
 				},
+				triggersExit: [roomExit],
 			});
 		}
-	}
-
-	protected addRoute(path: string, routeConfig: RouteOptions): void {
-		FlowRouter.route(path, { ...routeConfig, triggersExit: [roomExit] });
 	}
 
 	public getURL(roomType: string, subData: RoomIdentification): string | false {
