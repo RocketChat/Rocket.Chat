@@ -46,7 +46,7 @@ Meteor.startup(function () {
 				return;
 			}
 
-			const file = RocketChatFileCustomSoundsInstance.getFileWithReadStream(fileId);
+			const file = await RocketChatFileCustomSoundsInstance.getFileWithReadStream(fileId);
 			if (!file) {
 				return;
 			}

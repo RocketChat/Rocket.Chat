@@ -58,7 +58,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		const rs = RocketChatFile.bufferToStream(fileBuffer);
-		RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
+		await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
 		const ws = RocketChatFileEmojiCustomInstance.createWriteStream(
 			encodeURIComponent(`${emojiData.name}.${emojiData.extension}`),
 			contentType,
