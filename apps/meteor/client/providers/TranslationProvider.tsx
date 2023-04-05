@@ -105,6 +105,9 @@ const useI18next = (lng: string): typeof i18next => {
 		}
 
 		for (const [ln, translations] of Object.entries(parsedCustomTranslations)) {
+			if (!translations) {
+				continue;
+			}
 			const namespaces = Object.entries(translations).reduce((acc, [key, value]): Record<string, Record<string, string>> => {
 				const namespace = key.split('.')[0];
 
