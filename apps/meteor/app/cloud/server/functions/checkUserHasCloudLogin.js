@@ -3,7 +3,7 @@ import { Users } from '@rocket.chat/models';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 
 export async function checkUserHasCloudLogin(userId) {
-	const { connectToCloud, workspaceRegistered } = retrieveRegistrationStatus();
+	const { connectToCloud, workspaceRegistered } = await retrieveRegistrationStatus();
 
 	if (!connectToCloud || !workspaceRegistered) {
 		return false;

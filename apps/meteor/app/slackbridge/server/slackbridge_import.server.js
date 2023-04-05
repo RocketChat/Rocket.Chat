@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match } from 'meteor/check';
 import { Random } from '@rocket.chat/random';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { Rooms } from '@rocket.chat/models';
+import { Rooms, Users } from '@rocket.chat/models';
 
 import { SlackBridge } from './slackbridge';
 import { msgStream } from '../../lib/server';
@@ -15,7 +15,7 @@ async function SlackBridgeImport(command, params, item) {
 
 	const room = await Rooms.findOneById(item.rid);
 	const channel = room.name;
-	const user = Meteor.users.findOne(Meteor.userId());
+	const user = await Users.findOneById(Meteor.userId());
 
 	msgStream.emit(item.rid, {
 		_id: Random.id(),
