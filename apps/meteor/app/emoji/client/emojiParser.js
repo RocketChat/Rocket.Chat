@@ -68,5 +68,3 @@ const emojiParser = (message) => {
 };
 
 export { emojiParser };
-
-export const createEmojiMessageRenderer = () => emojiParser;

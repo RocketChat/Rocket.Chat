@@ -1,13 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { Rooms, Subscriptions } from '@rocket.chat/models';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Message } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IRoom } from '@rocket.chat/core-typings';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { callbacks } from '../../lib/callbacks';
-import { Users } from '../../app/models/server';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../definition/IRoomTypeConfig';
 
@@ -61,9 +60,19 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const unmutedUser = Users.findOneByUsernameIgnoringCase(data.username);
+		const unmutedUser = await Users.findOneByUsernameIgnoringCase(data.username);
+		if (!unmutedUser?.username) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user to unmute', {
+				method: 'unmuteUserInRoom',
+			});
+		}
 
-		const fromUser = Users.findOneById(fromId);
+		const fromUser = await Users.findOneById(fromId);
+		if (!fromUser) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'unmuteUserInRoom',
+			});
+		}
 
 		callbacks.run('beforeUnmuteUser', { unmutedUser, fromUser }, room);
 

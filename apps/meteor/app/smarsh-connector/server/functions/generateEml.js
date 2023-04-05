@@ -1,10 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import moment from 'moment';
-import { Messages, SmarshHistory } from '@rocket.chat/models';
+import { Messages, SmarshHistory, Users, Rooms } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
-import { Rooms, Users } from '../../../models/server';
 import { MessageTypes } from '../../../ui-utils/server';
 import { smarsh } from '../lib/rocketchat';
 import 'moment-timezone';
@@ -28,11 +27,12 @@ function _getLink(attachment) {
 }
 
 smarsh.generateEml = () => {
-	Meteor.defer(() => {
+	Meteor.defer(async () => {
 		const smarshMissingEmail = settings.get('Smarsh_MissingEmail_Email');
 		const timeZone = settings.get('Smarsh_Timezone');
 
-		Rooms.find().forEach(async (room) => {
+		// TODO: revisit with more time => This appears to be a super expensive operation, going through all rooms
+		for await (const room of Rooms.find()) {
 			const smarshHistory = await SmarshHistory.findOne({ _id: room._id });
 			const query = { rid: room._id };
 
@@ -50,7 +50,7 @@ smarsh.generateEml = () => {
 				room: room.name ? `#${room.name}` : `Direct Message Between: ${room.usernames.join(' & ')}`,
 			};
 
-			await Messages.find(query).forEach((message) => {
+			await Messages.find(query).forEach(async (message) => {
 				rows.push(opentr);
 
 				// The timestamp
@@ -60,7 +60,7 @@ smarsh.generateEml = () => {
 
 				// The sender
 				rows.push(open20td);
-				const sender = Users.findOne({ _id: message.u._id });
+				const sender = await Users.findOne({ _id: message.u._id });
 				if (data.users.indexOf(sender._id) === -1) {
 					data.users.push(sender._id);
 				}
@@ -125,6 +125,6 @@ smarsh.generateEml = () => {
 					files: data.files,
 				});
 			}
-		});
+		}
 	});
 };
