@@ -1,11 +1,10 @@
 import { Team } from '@rocket.chat/core-services';
-import type { IIntegration, IUser, RoomType } from '@rocket.chat/core-typings';
+import type { IIntegration, IUser, IRoom, RoomType } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
-import { IRoom } from '@rocket.chat/core-typings';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../../authorization/server';
 import {
