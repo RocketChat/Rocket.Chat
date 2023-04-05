@@ -5,7 +5,7 @@ const HEADER = {
 	alg: 'HS256',
 };
 
-export const generateJWT = (payload: Record<string, string>, secret: string): string => {
+export const generateJWT = (payload: Record<string, any>, secret: string): string => {
 	const tokenPayload = {
 		iat: jsr.KJUR.jws.IntDate.get('now'),
 		nbf: jsr.KJUR.jws.IntDate.get('now'),

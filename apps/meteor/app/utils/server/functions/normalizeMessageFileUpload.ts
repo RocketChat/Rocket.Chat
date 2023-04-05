@@ -4,7 +4,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { getURL } from '../../lib/getURL';
 import { FileUpload } from '../../../file-upload/server';
 
-export const normalizeMessageFileUpload = async (message: IMessage): Promise<IMessage> => {
+export const normalizeMessageFileUpload = async (message: Omit<IMessage, '_updatedAt'>): Promise<Omit<IMessage, '_updatedAt'>> => {
 	if (message.file && !message.fileUpload) {
 		const jwt = FileUpload.generateJWTToFileUrls({
 			rid: message.rid,
