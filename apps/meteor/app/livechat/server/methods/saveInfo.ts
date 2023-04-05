@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { LivechatRooms } from '@rocket.chat/models';
+import { LivechatRooms, Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { callbacks } from '../../../../lib/callbacks';
@@ -81,7 +81,7 @@ Meteor.methods<ServerMethods>({
 
 		await Promise.allSettled([Livechat.saveGuest(guestData), Livechat.saveRoomInfo(roomData)]);
 
-		const user = Meteor.users.findOne({ _id: userId }, { fields: { _id: 1, username: 1 } });
+		const user = await Users.findOne({ _id: userId }, { projection: { _id: 1, username: 1 } });
 
 		Meteor.defer(async () => {
 			callbacks.run('livechat.saveInfo', await LivechatRooms.findOneById(roomData._id), {
