@@ -232,7 +232,7 @@ const RoomBody = (): ReactElement => {
 					queryClient.invalidateQueries(['rooms', room._id]);
 					dispatchToastMessage({
 						type: 'success',
-						message: t('You_have_been_removed_from_channel', {
+						message: t('You_have_been_removed_from_room', {
 							roomName: room?.fname || room?.name || '',
 						}),
 					});
