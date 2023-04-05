@@ -1344,32 +1344,36 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			t: {
 				$in: types,
 			},
-			$or: [
+			$and: [
 				{
-					teamId: {
-						$exists: false,
-					},
+					$or: [
+						{
+							teamId: {
+								$exists: false,
+							},
+						},
+						{
+							teamId: {
+								$exists: true,
+							},
+							_id: {
+								$in: ids,
+							},
+						},
+						{
+							// Also return the main room of public teams
+							// this will have no effect if the method is called without the 'c' type, as the type filter is outside the $or group.
+							teamMain: true,
+							t: 'c',
+						},
+					],
 				},
-				{
-					teamId: {
-						$exists: true,
-					},
-					_id: {
-						$in: ids,
-					},
-				},
-				{
-					// Also return the main room of public teams
-					// this will have no effect if the method is called without the 'c' type, as the type filter is outside the $or group.
-					teamMain: true,
-					t: 'c',
-				},
+				includeFederatedRooms
+					? {
+							$or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }],
+					  }
+					: { $or: [{ federated: { $exists: false } }, { federated: false }], name },
 			],
-			...(includeFederatedRooms
-				? {
-						$or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }],
-				  }
-				: { $or: [{ federated: { $exists: false } }, { federated: false }], name }),
 		};
 
 		// do not use cache
@@ -1378,10 +1382,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	findByDefaultAndTypes(defaultValue: boolean, types: Array<IRoom['t']>, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		const query: Filter<IRoom> = {
-			default: defaultValue,
 			t: {
 				$in: types,
-			},
+            },
+            defaultValue ? { default: true } : { $or: [{ default: { $exists: false } }, { default: false }] },
 		};
 
 		return this.find(query, options);
@@ -1411,7 +1415,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	findByTypeAndNameOrId(
 		type: IRoom['t'],
-		identifier: IRoom['name'] | IRoom['_id'],
+		identifier: NonNullable<IRoom['name'] | IRoom['_id']>,
 		options: FindOptions<IRoom> = {},
 	): Promise<IRoom | null> {
 		const query: Filter<IRoom> = {
