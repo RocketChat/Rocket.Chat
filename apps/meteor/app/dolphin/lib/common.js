@@ -47,7 +47,7 @@ if (Meteor.isServer) {
 			loginStyle: settings.get('Accounts_OAuth_Dolphin_login_style'),
 		};
 
-		ServiceConfiguration.configurations.upsert({ service: 'dolphin' }, { $set: data });
+		await ServiceConfiguration.configurations.upsertAsync({ service: 'dolphin' }, { $set: data });
 	}
 
 	callbacks.add('beforeCreateUser', DolphinOnCreateUser, callbacks.priority.HIGH, 'dolphin');
