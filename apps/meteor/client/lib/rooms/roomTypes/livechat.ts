@@ -15,9 +15,6 @@ roomCoordinator.add(
 	{
 		...LivechatRoomType,
 		label: 'Omnichannel',
-		action: ({ id } = {}): void => {
-			roomCoordinator.openRoom('l', id);
-		},
 	},
 	{
 		allowRoomSettingChange(_room, setting) {
@@ -81,6 +78,10 @@ roomCoordinator.add(
 
 		getIcon() {
 			return 'livechat';
+		},
+
+		extractOpenRoomParams({ id }) {
+			return { type: 'l', ref: id };
 		},
 	} as AtLeast<IRoomTypeClientDirectives, 'roomName'>,
 );

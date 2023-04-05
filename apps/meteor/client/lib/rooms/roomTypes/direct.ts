@@ -21,9 +21,6 @@ roomCoordinator.add(
 	{
 		...DirectMessageRoomType,
 		label: 'Direct_Messages',
-		action: ({ rid } = {}): void => {
-			roomCoordinator.openRoom('d', rid);
-		},
 	},
 	{
 		allowRoomSettingChange(_room, setting) {
@@ -142,6 +139,10 @@ roomCoordinator.add(
 			}
 
 			return 'at';
+		},
+
+		extractOpenRoomParams({ rid }) {
+			return { type: 'd', ref: rid };
 		},
 
 		findRoom(identifier) {

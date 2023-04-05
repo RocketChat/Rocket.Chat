@@ -20,9 +20,6 @@ roomCoordinator.add(
 	{
 		...PrivateRoomType,
 		label: 'Private_Groups',
-		action: ({ name } = {}): void => {
-			roomCoordinator.openRoom('p', name);
-		},
 	},
 	{
 		allowRoomSettingChange(room, setting) {
@@ -106,6 +103,10 @@ roomCoordinator.add(
 			}
 
 			return 'hashtag-lock';
+		},
+
+		extractOpenRoomParams({ name }) {
+			return { type: 'p', ref: name };
 		},
 
 		findRoom(identifier) {

@@ -14,9 +14,6 @@ roomCoordinator.add(
 	{
 		...VoipRoomType,
 		label: 'Voip',
-		action: ({ id } = {}): void => {
-			roomCoordinator.openRoom('v', id);
-		},
 	},
 	{
 		roomName(room) {
@@ -45,6 +42,10 @@ roomCoordinator.add(
 
 		getIcon() {
 			return 'phone';
+		},
+
+		extractOpenRoomParams({ id }) {
+			return { type: 'v', ref: id };
 		},
 	} as AtLeast<IRoomTypeClientDirectives, 'roomName'>,
 );

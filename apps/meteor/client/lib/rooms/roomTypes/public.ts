@@ -20,9 +20,6 @@ roomCoordinator.add(
 	{
 		...PublicRoomType,
 		label: 'Channels',
-		action: ({ name } = {}): void => {
-			roomCoordinator.openRoom('c', name);
-		},
 	},
 	{
 		allowRoomSettingChange(room, setting) {
@@ -105,6 +102,10 @@ roomCoordinator.add(
 			}
 
 			return 'hashtag';
+		},
+
+		extractOpenRoomParams({ name }) {
+			return { type: 'c', ref: name };
 		},
 
 		findRoom(identifier) {

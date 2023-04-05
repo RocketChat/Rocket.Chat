@@ -215,7 +215,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 	protected validateRoomConfig(roomConfig: IRoomTypeClientConfig): void {
 		super.validateRoomConfig(roomConfig);
 
-		const { route, label, action } = roomConfig;
+		const { route, label } = roomConfig;
 
 		if (route !== undefined) {
 			this.validateRoute(route);
@@ -224,19 +224,22 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		if (label !== undefined && (typeof label !== 'string' || label.length === 0)) {
 			throw new Error('The label must be a string.');
 		}
-
-		if (!['undefined', 'function'].includes(typeof action)) {
-			throw new Error('The route action must be a function.');
-		}
 	}
 
 	protected addRoomType(roomConfig: IRoomTypeClientConfig, directives: IRoomTypeClientDirectives): void {
 		super.addRoomType(roomConfig, directives);
 
-		if (roomConfig.route?.path && roomConfig.route.name && roomConfig.action) {
-			return this.addRoute(roomConfig.route.path, {
-				name: roomConfig.route.name,
-				action: roomConfig.action,
+		if (roomConfig.route?.path && roomConfig.route.name && directives.extractOpenRoomParams) {
+			const {
+				route: { name, path },
+			} = roomConfig;
+			const { extractOpenRoomParams } = directives;
+			return this.addRoute(path, {
+				name,
+				action: (params) => {
+					const { type, ref } = extractOpenRoomParams(params ?? {});
+					this.openRoom(type, ref);
+				},
 			});
 		}
 	}

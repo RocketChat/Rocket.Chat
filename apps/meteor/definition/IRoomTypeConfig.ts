@@ -1,4 +1,3 @@
-import type { RouteOptions } from 'meteor/kadira:flow-router';
 import type {
 	IRoom,
 	RoomType,
@@ -62,7 +61,6 @@ export interface IRoomTypeConfig {
 
 export interface IRoomTypeClientConfig extends IRoomTypeConfig {
 	label?: string;
-	action?: RouteOptions['action'];
 }
 
 export interface IRoomTypeClientDirectives {
@@ -83,6 +81,7 @@ export interface IRoomTypeClientDirectives {
 		room: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid' | 'avatarETag' | 'uids' | 'usernames'> & { username?: IRoom['_id'] },
 	) => string;
 	getIcon?: (room: Partial<IRoom>) => ComponentProps<typeof Icon>['name'];
+	extractOpenRoomParams?: (routeParams: Record<string, string | null | undefined>) => { type: RoomType; ref: string };
 	findRoom: (identifier: string) => IRoom | undefined;
 	showJoinLink: (roomId: string) => boolean;
 	isLivechatRoom: () => boolean;
