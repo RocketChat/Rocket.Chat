@@ -1,8 +1,5 @@
-import { createHash } from 'node:crypto';
 import domain from 'domain';
 import fs from 'fs';
-// import http from 'http';
-// import https from 'https';
 import stream from 'stream';
 import URL from 'url';
 import zlib from 'zlib';
@@ -55,7 +52,6 @@ WebApp.connectHandlers.use(async (req, res, next) => {
 	// Remove store path
 	const parsedUrl = URL.parse(req.url, true);
 	const path = parsedUrl.pathname?.substr(UploadFS.config.storesPath.length + 1);
-	const { query } = parsedUrl;
 
 	if (!path) {
 		next();
@@ -93,94 +89,8 @@ WebApp.connectHandlers.use(async (req, res, next) => {
 
 		next();
 	} else if (req.method === 'POST') {
-		// Get store
-		const regExp = new RegExp('^/([^/?]+)/([^/?]+)$');
-		const match = regExp.exec(path);
-
-		// Request is not valid
-		if (match === null) {
-			res.writeHead(400);
-			res.end();
-			return;
-		}
-
-		// Get store
-		const store = UploadFS.getStore(match[1]);
-		if (!store) {
-			res.writeHead(404);
-			res.end();
-			return;
-		}
-
-		// If a store is found, go ahead and allow the origin
-		allowCORS();
-
-		// Get file
-		const fileId = match[2];
-		if ((await store.getCollection().find({ _id: fileId }).count()) === 0) {
-			res.writeHead(404);
-			res.end();
-			return;
-		}
-
-		// Check upload token
-		if (!store.checkToken(typeof query.token === 'string' ? query.token : '', fileId)) {
-			res.writeHead(403);
-			res.end();
-			return;
-		}
-
-		// Check if duplicate
-		const unique = async function (hash: string) {
-			const originalId = await store.getCollection().findOne({ hash, _id: { $ne: fileId } });
-			return originalId ? originalId._id : false;
-		};
-
-		const spark = createHash('md5');
-		const tmpFile = UploadFS.getTempFilePath(fileId);
-		const ws = fs.createWriteStream(tmpFile, { flags: 'a' });
-		const fields: {
-			uploading: boolean;
-			progress?: number;
-			hash?: string;
-			originalId?: string;
-		} = { uploading: true };
-		const progress = parseFloat(typeof query.progress === 'string' ? query.progress : '0');
-		if (!isNaN(progress) && progress > 0) {
-			fields.progress = Math.min(progress, 1);
-		}
-
-		req.on('data', (chunk) => {
-			ws.write(chunk);
-			spark.update(chunk);
-		});
-		// eslint-disable-next-line no-unused-vars
-		req.on('error', (_err) => {
-			res.writeHead(500);
-			res.end();
-		});
-		req.on('end', async () => {
-			// Update completed state without triggering hooks
-			fields.hash = spark.digest('hex');
-			fields.originalId = (await unique(fields.hash)) || undefined;
-			await store.getCollection().updateOne({ _id: fileId }, { $set: fields });
-			ws.end();
-		});
-		ws.on('error', (err) => {
-			console.error(`ufs: cannot write chunk of file "${fileId}" (${err.message})`);
-			fs.stat(tmpFile, (err) => {
-				!err &&
-					fs.unlink(tmpFile, (err2) => {
-						err2 && console.error(`ufs: cannot delete temp file "${tmpFile}" (${err2.message})`);
-					});
-			});
-			res.writeHead(500);
-			res.end();
-		});
-		ws.on('finish', () => {
-			res.writeHead(204, { 'Content-Type': 'text/plain' });
-			res.end();
-		});
+		res.writeHead(404);
+		res.end();
 	} else if (req.method === 'GET') {
 		// Get store, file Id and file name
 		const regExp = new RegExp('^/([^/?]+)/([^/?]+)(?:/([^/?]+))?$');

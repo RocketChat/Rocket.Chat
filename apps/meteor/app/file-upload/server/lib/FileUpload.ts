@@ -25,7 +25,6 @@ import type { OptionalId } from 'mongodb';
 import { UploadFS } from '../../../../server/ufs';
 import { settings } from '../../../settings/server';
 import { mime } from '../../../utils/lib/mimeTypes';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
@@ -34,6 +33,7 @@ import { streamToBuffer } from './streamToBuffer';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import type { Store, StoreOptions } from '../../../../server/ufs/ufs-store';
+import { ufsComplete } from '../../../../server/ufs/ufs-methods';
 
 const cookie = new Cookies();
 let maxFileSize = 0;
@@ -224,17 +224,8 @@ export const FileUpload = {
 	defaults,
 
 	async avatarsOnValidate(this: Store, file: IUpload) {
-		const userId = Meteor.userId();
-		if (!userId || settings.get('Accounts_AvatarResize') !== true) {
+		if (settings.get('Accounts_AvatarResize') !== true) {
 			return;
-		}
-
-		if (file.rid) {
-			if (!(await hasPermissionAsync(userId, 'edit-room-avatar', file.rid))) {
-				throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
-			}
-		} else if (userId !== file.userId && !(await hasPermissionAsync(userId, 'edit-other-user-avatar'))) {
-			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 
 		const tempFilePath = UploadFS.getTempFilePath(file._id);
@@ -345,7 +336,7 @@ export const FileUpload = {
 			userId,
 		};
 
-		return store.insertSync(details, buffer);
+		return store.insert(details, buffer);
 	},
 
 	async uploadsOnValidate(this: Store, file: IUpload) {
@@ -401,26 +392,11 @@ export const FileUpload = {
 		);
 	},
 
-	async avatarRoomOnFinishUpload(file: IUpload) {
-		const userId = Meteor.userId();
-		if (userId && !(await hasPermissionAsync(userId, 'edit-room-avatar', file.rid))) {
-			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
-		}
-	},
 	async avatarsOnFinishUpload(file: IUpload) {
-		if (file.rid) {
-			return FileUpload.avatarRoomOnFinishUpload(file);
-		}
-
-		const userId = Meteor.userId();
-
 		if (!file.userId) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 
-		if (userId && userId !== file.userId && !(await hasPermissionAsync(userId, 'edit-other-user-avatar'))) {
-			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
-		}
 		// update file record to match user's username
 		const user = await Users.findOneById(file.userId);
 		if (!user?.username) {
@@ -632,7 +608,7 @@ type FileUploadClassOptions = {
 	model?: typeof Avatars | typeof Uploads | typeof UserDataFiles;
 	store?: Store;
 	get: (file: IUpload, req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => Promise<void>;
-	insert?: () => Promise<void>;
+	insert?: () => Promise<IUpload>;
 	getStore?: () => Store;
 	copy?: (file: IUpload, out: WriteStream | WritableStreamBuffer) => Promise<void>;
 };
@@ -647,8 +623,6 @@ export class FileUploadClass {
 	public get: FileUploadClassOptions['get'];
 
 	public copy: FileUploadClassOptions['copy'];
-
-	public insertSync: (fileData: OptionalId<IUpload>, streamOrBuffer: ReadableStream | stream | Buffer) => Promise<IUpload>;
 
 	constructor({ name, model, store, get, insert, getStore, copy }: FileUploadClassOptions) {
 		this.name = name;
@@ -666,8 +640,6 @@ export class FileUploadClass {
 		}
 
 		FileUpload.handlers[name] = this;
-
-		this.insertSync = Meteor.wrapAsync(this.insert, this);
 	}
 
 	getStore() {
@@ -741,9 +713,8 @@ export class FileUploadClass {
 		return store.delete(file._id);
 	}
 
-	async _doInsert(fileData: OptionalId<IUpload>, streamOrBuffer: stream | Buffer, cb?: (err?: Error, file?: IUpload) => void) {
+	async _doInsert(fileData: OptionalId<IUpload>, streamOrBuffer: ReadableStream | stream | Buffer): Promise<IUpload> {
 		const fileId = await this.store.create(fileData);
-		const token = this.store.createToken(fileId);
 		const tmpFile = UploadFS.getTempFilePath(fileId);
 
 		try {
@@ -755,23 +726,15 @@ export class FileUploadClass {
 				throw new Error('Invalid file type');
 			}
 
-			const file = Meteor.call('ufsComplete', fileId, this.name, token);
-
-			if (cb) {
-				cb(undefined, file);
-			}
+			const file = await ufsComplete(fileId, this.name);
 
 			return file;
 		} catch (e: any) {
-			if (cb) {
-				cb(e);
-			} else {
-				throw e;
-			}
+			throw e;
 		}
 	}
 
-	async insert(fileData: OptionalId<IUpload>, streamOrBuffer: stream.Readable | Buffer, cb?: (err?: Error, file?: IUpload) => void) {
+	async insert(fileData: OptionalId<IUpload>, streamOrBuffer: ReadableStream | stream.Readable | Buffer) {
 		if (streamOrBuffer instanceof stream) {
 			streamOrBuffer = await streamToBuffer(streamOrBuffer);
 		}
@@ -787,6 +750,6 @@ export class FileUploadClass {
 			await filter.check(fileData, streamOrBuffer);
 		}
 
-		return this._doInsert(fileData, streamOrBuffer, cb);
+		return this._doInsert(fileData, streamOrBuffer);
 	}
 }

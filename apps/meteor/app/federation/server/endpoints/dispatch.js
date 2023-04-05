@@ -248,7 +248,7 @@ const eventHandlers = {
 						origin,
 					};
 
-					await fileStore.insertSync(upload, buffer);
+					await fileStore.insert(upload, buffer);
 
 					// Update the message's file
 					denormalizedMessage.file._id = upload._id;
