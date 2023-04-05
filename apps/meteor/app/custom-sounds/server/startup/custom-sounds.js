@@ -36,7 +36,7 @@ Meteor.startup(function () {
 
 	return WebApp.connectHandlers.use(
 		'/custom-sounds/',
-		Meteor.bindEnvironment(function (req, res /* , next*/) {
+		Meteor.bindEnvironment(async function (req, res /* , next*/) {
 			const fileId = decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''));
 
 			if (!fileId) {

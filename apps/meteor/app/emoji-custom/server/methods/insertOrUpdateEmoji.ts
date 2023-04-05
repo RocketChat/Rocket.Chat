@@ -133,8 +133,8 @@ Meteor.methods<ServerMethods>({
 				);
 				ws.on(
 					'end',
-					Meteor.bindEnvironment(async () =>
-						await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`)),
+					Meteor.bindEnvironment(() =>
+						RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`)),
 					),
 				);
 				rs.readStream.pipe(ws);
