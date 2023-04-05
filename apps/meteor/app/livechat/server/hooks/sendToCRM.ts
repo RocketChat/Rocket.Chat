@@ -120,7 +120,7 @@ async function sendToCRM(
 			};
 
 			const { u } = message;
-			postData.messages.push(await normalizeMessageFileUpload({ u, ...msg }));
+			postData.messages.push({ ...(await normalizeMessageFileUpload({ u, ...msg })), ...{ _updatedAt: message._updatedAt } });
 		}
 	}
 
