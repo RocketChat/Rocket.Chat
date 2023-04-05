@@ -202,7 +202,7 @@ class RocketChatAssetsClass {
 		return assets;
 	}
 
-	public setAsset(binaryContent: string, contentType: string, asset: string): void {
+	public async setAsset(binaryContent: string, contentType: string, asset: string): Promise<void> {
 		const assetInstance = getAssetByKey(asset);
 		if (!assetInstance) {
 			throw new Meteor.Error('error-invalid-asset', 'Invalid asset', {
@@ -231,37 +231,34 @@ class RocketChatAssetsClass {
 		}
 
 		const rs = RocketChatFile.bufferToStream(file);
-		RocketChatAssetsInstance.deleteFile(asset);
+		await RocketChatAssetsInstance.deleteFile(asset);
 
 		const ws = RocketChatAssetsInstance.createWriteStream(asset, contentType);
-		ws.on(
-			'end',
-			Meteor.bindEnvironment(function () {
-				return Meteor.setTimeout(function () {
-					const key = `Assets_${asset}`;
-					const value = {
-						url: `assets/${asset}.${extension}`,
-						defaultUrl: assetInstance.defaultUrl,
-					};
+		ws.on('end', function () {
+			return Meteor.setTimeout(async function () {
+				const key = `Assets_${asset}`;
+				const value = {
+					url: `assets/${asset}.${extension}`,
+					defaultUrl: assetInstance.defaultUrl,
+				};
 
-					void Settings.updateValueById(key, value);
-					// eslint-disable-next-line @typescript-eslint/no-use-before-define
-					return RocketChatAssets.processAsset(key, value);
-				}, 200);
-			}),
-		);
+				void Settings.updateValueById(key, value);
+				// eslint-disable-next-line @typescript-eslint/no-use-before-define
+				return RocketChatAssets.processAsset(key, value);
+			}, 200);
+		});
 
 		rs.pipe(ws);
 	}
 
-	public unsetAsset(asset: string): void {
+	public async unsetAsset(asset: string): Promise<void> {
 		if (!getAssetByKey(asset)) {
 			throw new Meteor.Error('error-invalid-asset', 'Invalid asset', {
 				function: 'RocketChat.Assets.unsetAsset',
 			});
 		}
 
-		RocketChatAssetsInstance.deleteFile(asset);
+		await RocketChatAssetsInstance.deleteFile(asset);
 		const key = `Assets_${asset}`;
 		const value = {
 			defaultUrl: getAssetByKey(asset).defaultUrl,
@@ -269,7 +266,7 @@ class RocketChatAssetsClass {
 
 		void Settings.updateValueById(key, value);
 		// eslint-disable-next-line @typescript-eslint/no-use-before-define
-		RocketChatAssets.processAsset(key, value);
+		await RocketChatAssets.processAsset(key, value);
 	}
 
 	public refreshClients(): boolean {
@@ -278,7 +275,7 @@ class RocketChatAssetsClass {
 		});
 	}
 
-	public processAsset(settingKey: string, settingValue: any): Record<string, any> | undefined {
+	public async processAsset(settingKey: string, settingValue: any): Promise<Record<string, any> | undefined> {
 		if (settingKey.indexOf('Assets_') !== 0) {
 			return;
 		}
@@ -295,7 +292,7 @@ class RocketChatAssetsClass {
 			return;
 		}
 
-		const file = RocketChatAssetsInstance.getFileSync(assetKey);
+		const file = await RocketChatAssetsInstance.getFile(assetKey);
 		if (!file) {
 			assetValue.cache = undefined;
 			return;
@@ -497,7 +494,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		RocketChatAssets.setAsset(binaryContent, contentType, asset);
+		await RocketChatAssets.setAsset(binaryContent, contentType, asset);
 	},
 });
 
