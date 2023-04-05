@@ -25,7 +25,6 @@ import type { OptionalId } from 'mongodb';
 import { UploadFS } from '../../../../server/ufs';
 import { settings } from '../../../settings/server';
 import { mime } from '../../../utils/lib/mimeTypes';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { canAccessRoomAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { fileUploadIsValidContentType } from '../../../utils/lib/fileUploadRestrictions';
 import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
@@ -225,17 +224,8 @@ export const FileUpload = {
 	defaults,
 
 	async avatarsOnValidate(this: Store, file: IUpload) {
-		const userId = Meteor.userId();
-		if (!userId || settings.get('Accounts_AvatarResize') !== true) {
+		if (settings.get('Accounts_AvatarResize') !== true) {
 			return;
-		}
-
-		if (file.rid) {
-			if (!(await hasPermissionAsync(userId, 'edit-room-avatar', file.rid))) {
-				throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
-			}
-		} else if (userId !== file.userId && !(await hasPermissionAsync(userId, 'edit-other-user-avatar'))) {
-			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 
 		const tempFilePath = UploadFS.getTempFilePath(file._id);
@@ -402,26 +392,11 @@ export const FileUpload = {
 		);
 	},
 
-	async avatarRoomOnFinishUpload(file: IUpload) {
-		const userId = Meteor.userId();
-		if (userId && !(await hasPermissionAsync(userId, 'edit-room-avatar', file.rid))) {
-			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
-		}
-	},
 	async avatarsOnFinishUpload(file: IUpload) {
-		if (file.rid) {
-			return FileUpload.avatarRoomOnFinishUpload(file);
-		}
-
-		const userId = Meteor.userId();
-
 		if (!file.userId) {
 			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
 		}
 
-		if (userId && userId !== file.userId && !(await hasPermissionAsync(userId, 'edit-other-user-avatar'))) {
-			throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed');
-		}
 		// update file record to match user's username
 		const user = await Users.findOneById(file.userId);
 		if (!user?.username) {
