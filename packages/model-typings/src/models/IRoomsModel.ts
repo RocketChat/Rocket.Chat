@@ -1,5 +1,4 @@
 import type { IDirectMessageRoom, IMessage, IOmnichannelGenericRoom, IRoom, IRoomFederated, ITeam, IUser } from '@rocket.chat/core-typings';
-import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import type { AggregationCursor, DeleteResult, Document, FindCursor, FindOptions, UpdateOptions, UpdateResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -91,7 +90,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		startOfLastWeek: number;
 		endOfLastWeek: number;
 		onlyCount?: T;
-		options?: PaginatedRequest;
+		options?: any;
 	}): AggregationCursor<
 		T extends true
 			? { total: number }

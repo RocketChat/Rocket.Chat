@@ -10,7 +10,6 @@ import type {
 } from '@rocket.chat/core-typings';
 import type { FindPaginated, IRoomsModel } from '@rocket.chat/model-typings';
 import { Subscriptions } from '@rocket.chat/models';
-import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
 	AggregationCursor,
@@ -469,7 +468,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		startOfLastWeek: number;
 		endOfLastWeek: number;
 		onlyCount?: T;
-		options?: PaginatedRequest;
+		options?: any;
 	}): AggregationCursor<
 		T extends true
 			? { total: number }
@@ -1384,8 +1383,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		const query: Filter<IRoom> = {
 			t: {
 				$in: types,
-            },
-            ...(defaultValue ? { default: true } : { $or: [{ default: { $exists: false } }, { default: false }] }),
+			},
+			...(defaultValue ? { default: true } : { default: { $exists: false } }),
 		};
 
 		return this.find(query, options);
@@ -1426,7 +1425,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne(query, options);
 	}
 
-	findByTypeAndNameContaining(type: IRoom['t'], name: IRoom['name'], options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
+	findByTypeAndNameContaining(type: IRoom['t'], name: NonNullable<IRoom['name']>, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
 		const query: Filter<IRoom> = {
@@ -1440,7 +1439,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	findByTypeInIdsAndNameContaining(
 		type: IRoom['t'],
 		ids: Array<IRoom['_id']>,
-		name: IRoom['name'],
+		name: NonNullable<IRoom['name']>,
 		options: FindOptions<IRoom> = {},
 	): FindCursor<IRoom> {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
@@ -1482,7 +1481,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	// UPDATE
 	addImportIds(_id: IRoom['_id'], importIds: string[]): Promise<UpdateResult> {
-		importIds = [].concat(importIds);
 		const query: Filter<IRoom> = { _id };
 
 		const update: UpdateFilter<IRoom> = {
@@ -1541,18 +1539,15 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	): Promise<UpdateResult> {
 		const query: Filter<IRoom> = { _id };
 
-		let update: UpdateFilter<IRoom> = {
+		const update: UpdateFilter<IRoom> = {
 			$set: {
 				lm: lastMessageTimestamp,
+				...(lastMessage ? { lastMessage } : {}),
 			},
 			$inc: {
 				msgs: inc,
 			},
 		};
-
-		if (lastMessage) {
-			update.$set.lastMessage = lastMessage;
-		}
 
 		return this.updateOne(query, update);
 	}
@@ -1915,7 +1910,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		name: IRoom['name'],
 		extraData?: Record<string, string>,
 	): Promise<IRoom> {
-		const room = {
+		const room: IRoom = {
 			_id,
 			ts: new Date(),
 			t: type,
@@ -1923,7 +1918,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			usernames: [],
 			msgs: 0,
 			usersCount: 0,
-		} as IRoom;
+			_updatedAt: new Date(),
+			u: {
+				_id: 'rocket.cat',
+				username: 'rocket.cat',
+				name: 'Rocket.Cat',
+			},
+		};
 
 		Object.assign(room, extraData);
 
@@ -1934,6 +1935,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	async createWithFullRoomData(room: Omit<IRoom, '_id' | '_updatedAt'>): Promise<IRoom> {
 		const newRoom: IRoom = {
 			_id: (await this.insertOne(room)).insertedId,
+			_updatedAt: new Date(),
 			...room,
 		};
 
