@@ -13,7 +13,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error(203, 'User_logged_out');
 		}
 
-		const user = await Meteor.userAsync();
+		const user = Meteor.user();
 
 		if (!user?.username) {
 			return false;
