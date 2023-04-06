@@ -77,32 +77,32 @@ const loginWithOAuthTokenAndTOTP = createOAuthTotpLoginMethod();
 
 const loginWithFacebookAndTOTP = createOAuthTotpLoginMethod(() => Facebook);
 const { loginWithFacebook } = Meteor;
-Meteor.loginWithFacebook = async function (options, cb) {
-	await overrideLoginMethod(loginWithFacebook, [options], cb, loginWithFacebookAndTOTP);
+Meteor.loginWithFacebook = function (options, cb) {
+	overrideLoginMethod(loginWithFacebook, [options], cb, loginWithFacebookAndTOTP);
 };
 
 const loginWithGithubAndTOTP = createOAuthTotpLoginMethod(() => Github);
 const { loginWithGithub } = Meteor;
-Meteor.loginWithGithub = async function (options, cb) {
-	await overrideLoginMethod(loginWithGithub, [options], cb, loginWithGithubAndTOTP);
+Meteor.loginWithGithub = function (options, cb) {
+	overrideLoginMethod(loginWithGithub, [options], cb, loginWithGithubAndTOTP);
 };
 
 const loginWithMeteorDeveloperAccountAndTOTP = createOAuthTotpLoginMethod(() => MeteorDeveloperAccounts);
 const { loginWithMeteorDeveloperAccount } = Meteor;
-Meteor.loginWithMeteorDeveloperAccount = async function (options, cb) {
-	await overrideLoginMethod(loginWithMeteorDeveloperAccount, [options], cb, loginWithMeteorDeveloperAccountAndTOTP);
+Meteor.loginWithMeteorDeveloperAccount = function (options, cb) {
+	overrideLoginMethod(loginWithMeteorDeveloperAccount, [options], cb, loginWithMeteorDeveloperAccountAndTOTP);
 };
 
 const loginWithTwitterAndTOTP = createOAuthTotpLoginMethod(() => Twitter);
 const { loginWithTwitter } = Meteor;
-Meteor.loginWithTwitter = async function (options, cb) {
-	await overrideLoginMethod(loginWithTwitter, [options], cb, loginWithTwitterAndTOTP);
+Meteor.loginWithTwitter = function (options, cb) {
+	overrideLoginMethod(loginWithTwitter, [options], cb, loginWithTwitterAndTOTP);
 };
 
 const loginWithLinkedinAndTOTP = createOAuthTotpLoginMethod(() => Linkedin);
 const { loginWithLinkedin } = Meteor;
-Meteor.loginWithLinkedin = async function (options, cb) {
-	await overrideLoginMethod(loginWithLinkedin, [options], cb, loginWithLinkedinAndTOTP);
+Meteor.loginWithLinkedin = function (options, cb) {
+	overrideLoginMethod(loginWithLinkedin, [options], cb, loginWithLinkedinAndTOTP);
 };
 
 Accounts.onPageLoadLogin(async (loginAttempt) => {
@@ -136,7 +136,7 @@ CustomOAuth.prototype.configureLogin = function (...args) {
 
 	const oldMethod = Meteor[loginWithService];
 
-	Meteor[loginWithService] = async function (options, cb) {
-		await overrideLoginMethod(oldMethod, [options], cb, loginWithOAuthTokenAndTOTP);
+	Meteor[loginWithService] = function (options, cb) {
+		overrideLoginMethod(oldMethod, [options], cb, loginWithOAuthTokenAndTOTP);
 	};
 };

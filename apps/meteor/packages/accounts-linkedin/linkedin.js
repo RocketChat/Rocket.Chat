@@ -5,14 +5,14 @@ import { Linkedin } from 'meteor/pauli:linkedin-oauth';
 Accounts.oauth.registerService('linkedin');
 
 if (Meteor.isClient) {
-	const loginWithLinkedin = async function (options, callback) {
+	const loginWithLinkedin = function (options, callback) {
 		// support a callback without options
 		if (!callback && typeof options === 'function') {
 			callback = options;
 			options = null;
 		}
 		const credentialRequestCompleteCallback = Accounts.oauth.credentialRequestCompleteHandler(callback);
-		await Linkedin.requestCredential(options, credentialRequestCompleteCallback).catch(credentialRequestCompleteCallback);
+		void Linkedin.requestCredential(options, credentialRequestCompleteCallback).catch(credentialRequestCompleteCallback);
 	};
 	Accounts.registerClientLoginFunction('linkedin', loginWithLinkedin);
 

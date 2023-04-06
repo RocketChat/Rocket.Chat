@@ -12,13 +12,13 @@ type LoginMethod<A extends unknown[]> = (...args: [...args: A, cb: LoginCallback
 
 type LoginMethodWithTotp<A extends unknown[]> = (...args: [...args: A, code: string, cb: LoginCallback]) => void;
 
-export const overrideLoginMethod = async <A extends unknown[]>(
+export const overrideLoginMethod = <A extends unknown[]>(
 	loginMethod: LoginMethod<A>,
 	loginArgs: A,
 	callback: LoginCallback,
 	loginMethodTOTP: LoginMethodWithTotp<A>,
 	emailOrUsername: string,
-): Promise<void> => {
+): void => {
 	loginMethod.call(null, ...loginArgs, async (error: unknown, result?: unknown) => {
 		if (!isTotpRequiredError(error)) {
 			callback(error);
