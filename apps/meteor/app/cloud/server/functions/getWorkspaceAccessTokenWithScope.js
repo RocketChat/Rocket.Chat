@@ -30,19 +30,18 @@ export async function getWorkspaceAccessTokenWithScope(scope = '') {
 
 	let authTokenResult;
 	try {
-		authTokenResult = (
-			await fetch(`${cloudUrl}/api/oauth/token`, {
-				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-				method: 'POST',
-				body: JSON.stringify({
-					client_id,
-					client_secret,
-					scope,
-					grant_type: 'client_credentials',
-					redirect_uri: redirectUri,
-				}),
-			})
-		).json();
+		const result = await fetch(`${cloudUrl}/api/oauth/token`, {
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			method: 'POST',
+			body: JSON.stringify({
+				client_id,
+				client_secret,
+				scope,
+				grant_type: 'client_credentials',
+				redirect_uri: redirectUri,
+			}),
+		});
+		authTokenResult = await result.json();
 	} catch (err) {
 		SystemLogger.error({
 			msg: 'Failed to get Workspace AccessToken from Rocket.Chat Cloud',

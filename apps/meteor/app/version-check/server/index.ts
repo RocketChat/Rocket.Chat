@@ -12,7 +12,7 @@ if (SyncedCron.nextScheduledAtDate(jobName)) {
 	SyncedCron.remove(jobName);
 }
 
-const addVersionCheckJob = () => {
+const addVersionCheckJob = Meteor.bindEnvironment(() => {
 	SyncedCron.add({
 		name: jobName,
 		schedule: (parser) => parser.text('at 2:00 am'),
@@ -20,7 +20,7 @@ const addVersionCheckJob = () => {
 			await checkVersionUpdate();
 		},
 	});
-};
+});
 
 Meteor.startup(() => {
 	Meteor.defer(() => {

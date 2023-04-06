@@ -794,8 +794,8 @@ export const Livechat = {
 			Livechat.webhookLogger.error({ msg: `Response error on ${11 - attempts} try ->`, err });
 			// try 10 times after 10 seconds each
 			attempts - 1 && Livechat.webhookLogger.warn('Will try again in 10 seconds ...');
-			setTimeout(function () {
-				Livechat.sendRequest(postData, callback, attempts - 1);
+			setTimeout(async function () {
+				await Livechat.sendRequest(postData, callback, attempts - 1);
 			}, 10000);
 		}
 	},
