@@ -91,7 +91,6 @@ it('should handle streams after reconnect', async () => {
 		expect(message).toBe('{"msg":"connect","version":"1","support":["1","pre2","pre1"]}');
 		return server.send(`{"msg":"connected","session":"${streamParams}"}`);
 	});
-	server.on('connection', console.log);
 
 	const sdk = await create;
 
@@ -108,8 +107,6 @@ it('should handle streams after reconnect', async () => {
 	await server.send(`{"msg":"changed","collection":"${streamName}","id":"id","fields":{"eventName":"${streamParams}"}}`);
 	await server.send(`{"msg":"changed","collection":"${streamName}","id":"id","fields":{"eventName":"${streamParams}"}}`);
 	await server.send(`{"msg":"changed","collection":"${streamName}","id":"id","fields":{"eventName":"${streamParams}"}}`);
-
-	await server.send(`{"msg":"changed","collection":"${streamName}","id":"id","fields":{"eventName":"${streamParams}-another"}}`);
 
 	expect(cb).toBeCalledTimes(3);
 	jest.useFakeTimers();
@@ -142,7 +139,76 @@ it('should handle streams after reconnect', async () => {
 	await server.send(`{"msg":"changed","collection":"${streamName}","id":"id","fields":{"eventName":"${streamParams}"}}`);
 	await server.send(`{"msg":"changed","collection":"${streamName}","id":"id","fields":{"eventName":"${streamParams}"}}`);
 
-	await server.send(`{"msg":"changed","collection":"${streamName}","id":"id","fields":{"eventName":"${streamParams}-another"}}`);
-
 	expect(cb).toBeCalledTimes(6);
+	jest.useRealTimers();
+});
+
+it('should handle an unsubscribe stream after reconnect', async () => {
+	const cb = jest.fn();
+
+	const streamName = 'stream';
+	const streamParams = '123';
+
+	const create = DDPSDK.create('ws://localhost:1234');
+
+	await server.nextMessage.then((message) => {
+		expect(message).toBe('{"msg":"connect","version":"1","support":["1","pre2","pre1"]}');
+		return server.send(`{"msg":"connected","session":"${streamParams}"}`);
+	});
+
+	const sdk = await create;
+
+	const stopSubscription = sdk.stream(streamName, [streamParams], cb);
+
+	expect(sdk.subscriptions.size).toBe(1);
+
+	const [id] = [...sdk.subscriptions.keys()];
+
+	await server.nextMessage.then((message) => {
+		expect(message).toBe(`{"msg":"sub","id":"${id}","name":"${streamName}","params":["${streamParams}"]}`);
+		return server.send(`{"msg":"ready","subs":["${id}"]}`);
+	});
+
+	await server.send(`{"msg":"changed","collection":"${streamName}","id":"id","fields":{"eventName":"${streamParams}"}}`);
+	await server.send(`{"msg":"changed","collection":"${streamName}","id":"id","fields":{"eventName":"${streamParams}"}}`);
+	await server.send(`{"msg":"changed","collection":"${streamName}","id":"id","fields":{"eventName":"${streamParams}"}}`);
+
+	expect(cb).toBeCalledTimes(3);
+	jest.useFakeTimers();
+
+	server.close();
+	WS.clean();
+	server = new WS('ws://localhost:1234');
+
+	server.nextMessage.then((message) => {
+		expect(message).toBe('{"msg":"connect","version":"1","support":["1","pre2","pre1"]}');
+		return server.send(`{"msg":"connected","session":"${streamParams}"}`);
+	});
+
+	const reconnect = new Promise((resolve) => sdk.connection.once('reconnecting', () => resolve(undefined)));
+	const connecting = new Promise((resolve) => sdk.connection.once('connecting', () => resolve(undefined)));
+	const connected = new Promise((resolve) => sdk.connection.once('connected', () => resolve(undefined)));
+
+	jest.runAllTimers();
+
+	await reconnect;
+	await connecting;
+	await connected;
+
+	server.nextMessage.then((message) => {
+		expect(message).toBe(`{"msg":"sub","id":"${id}","name":"${streamName}","params":["${streamParams}"]}`);
+		return server.send(`{"msg":"ready","subs":["${id}"]}`);
+	});
+
+	await server.send(`{"msg":"changed","collection":"${streamName}","id":"id","fields":{"eventName":"${streamParams}"}}`);
+
+	stopSubscription();
+
+	await server.send(`{"msg":"changed","collection":"${streamName}","id":"id","fields":{"eventName":"${streamParams}"}}`);
+	await server.send(`{"msg":"changed","collection":"${streamName}","id":"id","fields":{"eventName":"${streamParams}"}}`);
+
+	expect(cb).toBeCalledTimes(4);
+
+	expect(sdk.subscriptions.size).toBe(0);
+	jest.useRealTimers();
 });

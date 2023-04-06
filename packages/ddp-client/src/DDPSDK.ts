@@ -1,6 +1,7 @@
 import { ClientStreamImpl } from './ClientStream';
 import type { ClientStream } from './ClientStream';
-import { Connection, ConnectionImpl } from './Connection';
+import type { Connection } from './Connection';
+import { ConnectionImpl } from './Connection';
 import { MinimalDDPClient } from './MinimalDDPClient';
 import { TimeoutControl } from './TimeoutControl';
 
@@ -24,7 +25,7 @@ interface SDK extends ClientStream {
 		_id: string;
 		username: string;
 	};
-	stream(name: string, params: unknown[], cb: (data: unknown) => void): Promise<() => void>;
+	stream(name: string, params: unknown[], cb: (data: unknown) => void): () => void;
 
 	connection: Connection;
 }
@@ -56,9 +57,10 @@ export class DDPSDK extends ClientStreamImpl implements SDK {
 		super(ddp);
 	}
 
-	async stream(name: string, params: unknown[], cb: (data: PublicationPayloads) => void): Promise<() => void> {
-		const cancel = await Promise.all([
-			this.subscribe(name, ...params),
+	stream(name: string, params: unknown[], cb: (data: PublicationPayloads) => void): () => void {
+		const { id } = this.subscribe(name, ...params);
+		const cancel = [
+			() => this.unsubscribe(id),
 			this.onCollection(name, (data) => {
 				if (!isValidPayload(data)) {
 					return;
@@ -74,7 +76,7 @@ export class DDPSDK extends ClientStreamImpl implements SDK {
 					cb(data);
 				}
 			}),
-		]);
+		];
 		return () => {
 			cancel.forEach((fn) => fn());
 		};
