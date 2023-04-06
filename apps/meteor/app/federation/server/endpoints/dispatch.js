@@ -1,4 +1,4 @@
-import { EJSON } from 'meteor/ejson';
+import EJSON from 'ejson';
 import { FederationServers, FederationRoomEvents, Rooms, Messages, Subscriptions, Users } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 import { eventTypes } from '@rocket.chat/core-typings';

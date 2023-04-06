@@ -220,7 +220,7 @@ const onCreateUserAsync = async function (options, user = {}) {
 	callbacks.run('onCreateUser', options, user);
 
 	// App IPostUserCreated event hook
-	await Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: safeGetMeteorUser() });
+	await Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: await safeGetMeteorUser() });
 
 	return user;
 };
