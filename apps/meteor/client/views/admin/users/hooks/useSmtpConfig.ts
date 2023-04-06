@@ -6,8 +6,8 @@ export const useSmtpConfig = () => {
 
 	const { data } = useQuery(['smtp.check'], async () => {
 		const smtpConfig = await getSmtpConfig();
-		console.log({ smtpConfig });
-		return smtpConfig.isSMTPConfigured;
+
+        return smtpConfig.isSMTPConfigured;
 	});
 
 	return data;
