@@ -1,10 +1,10 @@
-import { HTTP as MeteorHTTP } from 'meteor/http';
 import { EJSON } from 'meteor/ejson';
 
 import { httpLogger } from './logger';
 import { getFederationDomain } from './getFederationDomain';
 import { search } from './dns';
 import { encrypt } from './crypt';
+import { fetch } from '../../../../server/lib/http/fetch';
 
 export async function federationRequest(method, url, body, headers, peerKey = null) {
 	let data = null;
@@ -19,11 +19,16 @@ export async function federationRequest(method, url, body, headers, peerKey = nu
 
 	httpLogger.debug(`[${method}] ${url}`);
 
-	return MeteorHTTP.call(method, url, {
+	const response = await fetch(url, {
+		method,
 		data,
 		timeout: 2000,
 		headers: { ...headers, 'x-federation-domain': getFederationDomain() },
 	});
+
+	return {
+		data: await response.json(),
+	};
 }
 
 export async function federationRequestToPeer(method, peerDomain, uri, body, options = {}) {
