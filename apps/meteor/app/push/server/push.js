@@ -124,18 +124,16 @@ class PushClass {
 
 		if (result.status === 406) {
 			logger.info('removing push token', token);
-			Promise.await(
-				AppsTokens.deleteMany({
-					$or: [
-						{
-							'token.apn': token,
-						},
-						{
-							'token.gcm': token,
-						},
-					],
-				}),
-			);
+			await AppsTokens.deleteMany({
+				$or: [
+					{
+						'token.apn': token,
+					},
+					{
+						'token.gcm': token,
+					},
+				],
+			});
 			return;
 		}
 

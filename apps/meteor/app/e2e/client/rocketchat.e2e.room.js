@@ -20,7 +20,7 @@ import {
 	readFileAsArrayBuffer,
 } from './helper';
 import { Notifications } from '../../notifications/client';
-import { Rooms, Subscriptions, Messages } from '../../models/client';
+import { ChatRoom, Subscriptions, Messages } from '../../models/client';
 import { log, logError } from './logger';
 import { E2ERoomState } from './E2ERoomState';
 import { call } from '../../../client/lib/utils/call';
@@ -229,7 +229,7 @@ export class E2ERoom extends Emitter {
 		}
 
 		try {
-			const room = Rooms.findOne({ _id: this.roomId });
+			const room = ChatRoom.findOne({ _id: this.roomId });
 			if (!room.e2eKeyId) {
 				// TODO CHECK_PERMISSION
 				this.setState(E2ERoomState.CREATING_KEYS);

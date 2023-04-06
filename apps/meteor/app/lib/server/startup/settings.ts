@@ -1216,6 +1216,10 @@ void settingsRegistry.addGroup('Message', function () {
 			enableQuery: { _id: 'Message_Read_Receipt_Enabled', value: true },
 		});
 	});
+	this.add('Message_CustomDomain_AutoLink', '', {
+		type: 'string',
+		public: true,
+	});
 	this.add('Message_AllowEditing', true, {
 		type: 'boolean',
 		public: true,
