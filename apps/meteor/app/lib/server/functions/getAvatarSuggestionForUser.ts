@@ -71,22 +71,33 @@ const avatarProviders = {
 		}
 	},
 
-	customOAuth(user: IUser) {
-		const avatars = [];
-		for (const service in user.services) {
-			if (user.services[service as keyof typeof user.services]._OAuthCustom) {
-				const services = ServiceConfiguration.configurations.find({ service }, { fields: { secret: 0 } }).fetch();
+	async customOAuth(user: IUser) {
+		const avatars: { service: string; url: string }[] = [];
+		if (!user.services) {
+			return avatars;
+		}
 
-				if (services.length > 0) {
-					if (user.services[service as keyof typeof user.services].avatarUrl) {
-						avatars.push({
-							service,
-							url: user.services[service as keyof typeof user.services].avatarUrl,
-						});
+		await Promise.all(
+			Object.keys(user.services).map(async (service) => {
+				if (!user.services) {
+					return;
+				}
+
+				if (user.services[service as keyof typeof user.services]._OAuthCustom) {
+					const services = await ServiceConfiguration.configurations.find({ service }, { fields: { secret: 0 } }).fetchAsync();
+
+					if (services.length > 0) {
+						if (user.services[service as keyof typeof user.services].avatarUrl) {
+							avatars.push({
+								service,
+								url: user.services[service as keyof typeof user.services].avatarUrl,
+							});
+						}
 					}
 				}
-			}
-		}
+			}),
+		);
+
 		return avatars;
 	},
 
@@ -131,8 +142,8 @@ export async function getAvatarSuggestionForUser(
 
 	const avatars = [];
 
-	for (const avatarProvider of Object.values(avatarProviders)) {
-		const avatar = avatarProvider(user);
+	for await (const avatarProvider of Object.values(avatarProviders)) {
+		const avatar = await avatarProvider(user);
 		if (avatar) {
 			if (Array.isArray(avatar)) {
 				avatars.push(...avatar);

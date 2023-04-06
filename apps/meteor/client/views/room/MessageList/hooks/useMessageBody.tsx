@@ -4,11 +4,14 @@ import { useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import { parseMessageTextToAstMarkdown } from '../../../../lib/parseMessageTextToAstMarkdown';
+import { useAutoLinkDomains } from './useAutoLinkDomains';
 import { useAutoTranslate } from './useAutoTranslate';
 
 export const useMessageBody = (message: IMessage | undefined, rid: string): string | Root => {
 	const subscription = useUserSubscription(rid);
 	const autoTranslateOptions = useAutoTranslate(subscription);
+	const customDomains = useAutoLinkDomains();
+
 	return useMemo(() => {
 		if (!message) {
 			return '';
@@ -16,6 +19,7 @@ export const useMessageBody = (message: IMessage | undefined, rid: string): stri
 
 		if (message.md) {
 			const parseOptions: Options = {
+				customDomains,
 				emoticons: true,
 			};
 
@@ -41,5 +45,5 @@ export const useMessageBody = (message: IMessage | undefined, rid: string): stri
 		}
 
 		return '';
-	}, [message, autoTranslateOptions]);
+	}, [message, customDomains, autoTranslateOptions]);
 };
