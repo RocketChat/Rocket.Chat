@@ -4,10 +4,10 @@ import path from 'path';
 import semver from 'semver';
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../app/settings/server';
 import { Info, getMongoInfo } from '../../app/utils/server';
-import { Users } from '../../app/models/server';
 import { sendMessagesToAdmins } from '../lib/sendMessagesToAdmins';
 import { showErrorBox, showWarningBox, showSuccessBox } from '../lib/logger/showBox';
 import { isRunningMs } from '../lib/isRunningMs';
@@ -28,7 +28,7 @@ Meteor.startup(async function () {
 	const desiredNodeVersion = semver.clean(fs.readFileSync(path.join(process.cwd(), '../../.node_version.txt')).toString());
 	const desiredNodeVersionMajor = String(semver.parse(desiredNodeVersion).major);
 
-	return Meteor.setTimeout(function () {
+	return Meteor.setTimeout(async function () {
 		const replicaSet = isRunningMs() ? 'Not required (running micro services)' : `${oplogEnabled ? 'Enabled' : 'Disabled'}`;
 
 		let msg = [
@@ -99,9 +99,9 @@ Meteor.startup(async function () {
 			const text = 'MongoDB_version_s_is_deprecated_please_upgrade_your_installation';
 			const link = 'https://go.rocket.chat/i/mongodb-deprecated';
 
-			if (!Users.bannerExistsById(id)) {
+			if (!(await Users.bannerExistsById(id))) {
 				sendMessagesToAdmins({
-					msgs: ({ adminUser }) => [
+					msgs: async ({ adminUser }) => [
 						{
 							msg: `*${TAPi18n.__(title, adminUser.language)}*\n${TAPi18n.__(text, mongoVersion, adminUser.language)}\n${link}`,
 						},

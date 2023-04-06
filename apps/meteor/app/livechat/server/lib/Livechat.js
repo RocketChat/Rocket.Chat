@@ -1103,8 +1103,8 @@ export const Livechat = {
 		return showConnecting;
 	},
 
-	sendEmail(from, to, replyTo, subject, html) {
-		Mailer.send({
+	async sendEmail(from, to, replyTo, subject, html) {
+		return Mailer.send({
 			to,
 			from,
 			replyTo,
@@ -1227,7 +1227,7 @@ export const Livechat = {
 		const from = `${name} - ${email} <${fromEmail}>`;
 		const replyTo = `${name} <${email}>`;
 		const subject = `Livechat offline message from ${name}: ${`${emailMessage}`.substring(0, 20)}`;
-		this.sendEmail(from, emailTo, replyTo, subject, html);
+		await this.sendEmail(from, emailTo, replyTo, subject, html);
 
 		Meteor.defer(() => {
 			callbacks.run('livechat.offlineMessage', data);

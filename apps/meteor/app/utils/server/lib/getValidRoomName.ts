@@ -6,7 +6,11 @@ import { Rooms } from '@rocket.chat/models';
 import { settings } from '../../../settings/server';
 import { validateName } from '../../../lib/server/functions/validateName';
 
-export const getValidRoomName = async (displayName, rid = '', options = {}) => {
+export const getValidRoomName = async (
+	displayName: string,
+	rid = '',
+	options: { allowDuplicates?: boolean; nameValidationRegex?: string } = {},
+) => {
 	let slugifiedName = displayName;
 
 	if (settings.get('UI_Allow_room_names_with_special_chars')) {

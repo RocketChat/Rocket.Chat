@@ -1,25 +1,28 @@
 import type { IRoom, RoomType, IUser, AtLeast, ValueOf, ISubscription } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { FlowRouter } from 'meteor/kadira:flow-router';
-import type { RouteOptions } from 'meteor/kadira:flow-router';
+import React from 'react';
 
 import { hasPermission } from '../../../app/authorization/client';
 import { ChatRoom, ChatSubscription } from '../../../app/models/client';
 import { settings } from '../../../app/settings/client';
-import { openRoom } from '../../../app/ui-utils/client/lib/openRoom';
 import type {
 	RoomSettingsEnum,
 	RoomMemberActions,
 	UiTextContext,
-	IRoomTypeConfig,
 	IRoomTypeClientDirectives,
 	RoomIdentification,
+	IRoomTypeRouteConfig,
+	IRoomTypeClientConfig,
 } from '../../../definition/IRoomTypeConfig';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
+import RoomOpener from '../../views/room/RoomOpener';
+import MainLayout from '../../views/root/MainLayout/MainLayout';
+import { appLayout } from '../appLayout';
 import { roomExit } from './roomExit';
 
 class RoomCoordinatorClient extends RoomCoordinator {
-	add(roomConfig: IRoomTypeConfig, directives: Partial<IRoomTypeClientDirectives>): void {
+	public add(roomConfig: IRoomTypeClientConfig, directives: Partial<IRoomTypeClientDirectives>): void {
 		this.addRoomType(roomConfig, {
 			allowRoomSettingChange(_room: Partial<IRoom>, _setting: ValueOf<typeof RoomSettingsEnum>): boolean {
 				return true;
@@ -47,9 +50,6 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			getAvatarPath(_room): string {
 				return '';
 			},
-			getIcon(_room: Partial<IRoom>): IRoomTypeConfig['icon'] {
-				return this.config.icon;
-			},
 			findRoom(_identifier: string): IRoom | undefined {
 				return undefined;
 			},
@@ -67,42 +67,11 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		});
 	}
 
-	protected addRoute(path: string, routeConfig: RouteOptions): void {
-		super.addRoute(path, { ...routeConfig, triggersExit: [roomExit] });
-	}
-
-	getRoomDirectives(roomType: string): IRoomTypeClientDirectives {
+	public getRoomDirectives(roomType: string): IRoomTypeClientDirectives {
 		return this.roomTypes[roomType].directives as IRoomTypeClientDirectives;
 	}
 
-	getRoomTypeById(rid: string): RoomType | undefined {
-		const room = ChatRoom.findOne({ _id: rid, t: { $exists: true, $ne: null as any } }, { fields: { t: 1 } });
-		return room?.t;
-	}
-
-	getRoomDirectivesById(rid: string): IRoomTypeClientDirectives | undefined {
-		const roomType = this.getRoomTypeById(rid);
-		if (roomType) {
-			return this.getRoomDirectives(roomType);
-		}
-	}
-
-	getRoomTypeConfigById(rid: string): IRoomTypeConfig | undefined {
-		const roomType = this.getRoomTypeById(rid);
-		if (roomType) {
-			return this.getRoomTypeConfig(roomType);
-		}
-	}
-
-	openRoom(type: RoomType, name: string, render = true): void {
-		openRoom(type, name, render);
-	}
-
-	getIcon(room: Partial<IRoom>): IRoomTypeConfig['icon'] {
-		return room?.t && this.getRoomDirectives(room.t).getIcon(room);
-	}
-
-	openRouteLink(roomType: RoomType, subData: RoomIdentification, queryParams?: Record<string, string>): void {
+	public openRouteLink(roomType: RoomType, subData: RoomIdentification, queryParams?: Record<string, string>): void {
 		const config = this.getRoomTypeConfig(roomType);
 		if (!config?.route) {
 			return;
@@ -122,15 +91,15 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		FlowRouter.go(config.route.name, routeData, queryParams);
 	}
 
-	isLivechatRoom(roomType: string): boolean {
+	public isLivechatRoom(roomType: string): boolean {
 		return Boolean(this.getRoomDirectives(roomType).isLivechatRoom());
 	}
 
-	getRoomName(roomType: string, roomData: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid'>): string {
+	public getRoomName(roomType: string, roomData: AtLeast<IRoom, '_id' | 'name' | 'fname' | 'prid'>): string {
 		return this.getRoomDirectives(roomType).roomName(roomData) ?? '';
 	}
 
-	readOnly(rid: string, user: AtLeast<IUser, 'username'>): boolean {
+	public readOnly(rid: string, user: AtLeast<IUser, 'username'>): boolean {
 		const fields = {
 			ro: 1,
 			t: 1,
@@ -174,12 +143,12 @@ class RoomCoordinatorClient extends RoomCoordinator {
 	}
 
 	// #ToDo: Move this out of the RoomCoordinator
-	archived(rid: string): boolean {
+	public archived(rid: string): boolean {
 		const room = ChatRoom.findOne({ _id: rid }, { fields: { archived: 1 } });
 		return Boolean(room?.archived);
 	}
 
-	verifyCanSendMessage(rid: string): boolean {
+	public verifyCanSendMessage(rid: string): boolean {
 		const room = ChatRoom.findOne({ _id: rid }, { fields: { t: 1, federated: 1 } });
 		if (!room?.t) {
 			return false;
@@ -193,11 +162,84 @@ class RoomCoordinatorClient extends RoomCoordinator {
 		return true;
 	}
 
-	getSortedTypes(): Array<{ config: IRoomTypeConfig; directives: IRoomTypeClientDirectives }> {
-		return this.roomTypesOrder
-			.sort((a, b) => a.order - b.order)
-			.map((type) => this.roomTypes[type.identifier] as { config: IRoomTypeConfig; directives: IRoomTypeClientDirectives })
-			.filter((type) => type.directives.condition());
+	private validateRoute(route: IRoomTypeRouteConfig): void {
+		const { name, path, link } = route;
+
+		if (typeof name !== 'string' || name.length === 0) {
+			throw new Error('The route name must be a string.');
+		}
+
+		if (path !== undefined && (typeof path !== 'string' || path.length === 0)) {
+			throw new Error('The route path must be a string.');
+		}
+
+		if (!['undefined', 'function'].includes(typeof link)) {
+			throw new Error('The route link must be a function.');
+		}
+	}
+
+	protected validateRoomConfig(roomConfig: IRoomTypeClientConfig): void {
+		super.validateRoomConfig(roomConfig);
+
+		const { route, label } = roomConfig;
+
+		if (route !== undefined) {
+			this.validateRoute(route);
+		}
+
+		if (label !== undefined && (typeof label !== 'string' || label.length === 0)) {
+			throw new Error('The label must be a string.');
+		}
+	}
+
+	protected addRoomType(roomConfig: IRoomTypeClientConfig, directives: IRoomTypeClientDirectives): void {
+		super.addRoomType(roomConfig, directives);
+
+		if (roomConfig.route?.path && roomConfig.route.name && directives.extractOpenRoomParams) {
+			const {
+				route: { name, path },
+			} = roomConfig;
+			const { extractOpenRoomParams } = directives;
+			FlowRouter.route(path, {
+				name,
+				action: (params) => {
+					const { type, ref } = extractOpenRoomParams(params ?? {});
+
+					appLayout.render(
+						<MainLayout>
+							<RoomOpener type={type} reference={ref} />
+						</MainLayout>,
+					);
+				},
+				triggersExit: [roomExit],
+			});
+		}
+	}
+
+	public getURL(roomType: string, subData: RoomIdentification): string | false {
+		const config = this.getRoomTypeConfig(roomType);
+		if (!config?.route) {
+			return false;
+		}
+
+		const routeData = this.getRouteData(roomType, subData);
+		if (!routeData) {
+			return false;
+		}
+
+		return FlowRouter.url(config.route.name, routeData);
+	}
+
+	public isRouteNameKnown(routeName: string): boolean {
+		return Boolean(this.getRouteNameIdentifier(routeName));
+	}
+
+	public getRouteNameIdentifier(routeName: string): string | undefined {
+		if (!routeName) {
+			return;
+		}
+
+		return Object.keys(this.roomTypes).find((key) => this.roomTypes[key].config.route?.name === routeName);
 	}
 }
 

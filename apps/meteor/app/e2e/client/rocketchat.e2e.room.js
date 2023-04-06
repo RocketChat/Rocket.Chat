@@ -1,5 +1,5 @@
 import { Base64 } from '@rocket.chat/base64';
-import { EJSON } from 'meteor/ejson';
+import EJSON from 'ejson';
 import { Random } from '@rocket.chat/random';
 import { Emitter } from '@rocket.chat/emitter';
 
@@ -20,7 +20,7 @@ import {
 	readFileAsArrayBuffer,
 } from './helper';
 import { Notifications } from '../../notifications/client';
-import { Rooms, Subscriptions, Messages } from '../../models/client';
+import { ChatRoom, Subscriptions, Messages } from '../../models/client';
 import { log, logError } from './logger';
 import { E2ERoomState } from './E2ERoomState';
 import { call } from '../../../client/lib/utils/call';
@@ -187,7 +187,7 @@ export class E2ERoom extends Emitter {
 			return;
 		}
 
-		Subscriptions.direct.update(
+		Subscriptions.update(
 			{
 				_id: subscription._id,
 			},
@@ -203,7 +203,7 @@ export class E2ERoom extends Emitter {
 
 	async decryptPendingMessages() {
 		return Messages.find({ rid: this.roomId, t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }) => {
-			Messages.direct.update({ _id }, await this.decryptMessage(msg));
+			Messages.update({ _id }, await this.decryptMessage(msg));
 		});
 	}
 
@@ -229,7 +229,7 @@ export class E2ERoom extends Emitter {
 		}
 
 		try {
-			const room = Rooms.findOne({ _id: this.roomId });
+			const room = ChatRoom.findOne({ _id: this.roomId });
 			if (!room.e2eKeyId) {
 				// TODO CHECK_PERMISSION
 				this.setState(E2ERoomState.CREATING_KEYS);
