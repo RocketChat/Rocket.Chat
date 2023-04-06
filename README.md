@@ -51,7 +51,7 @@ After initialized, you can access the server at http://localhost:4000
 
 ## Installation
 
-Please see the [requirements documentation](https://docs.rocket.chat/installing-and-updating/minimum-requirements-for-using-rocket.chat) for system requirements and more information about supported operating systems.
+Please see the [requirements documentation](https://docs.rocket.chat/deploy/installing-client-apps/minimum-requirements-for-using-rocket.chat) for system requirements and more information about supported operating systems.
 Please refer to [Install Rocket.Chat](https://rocket.chat/install) to install your Rocket.Chat instance.
 
 ## Feature Request
@@ -67,7 +67,7 @@ Talk with Rocket.Chat's leadership at the [Community Open Call](https://www.yout
 
 ## Contributions
 
-Rocket.Chat is an open source project and we are very happy to accept community contributions. Please refer to the [How can I help?](https://docs.rocket.chat/contributors/how-can-i-help) for more details.
+Rocket.Chat is an open source project and we are very happy to accept community contributions. Please refer to the [How can I help?](https://docs.rocket.chat/contribute-to-rocket.chat/how-can-i-help) for more details.
 
 ## Credits
 
@@ -100,3 +100,4 @@ We're hiring developers, support people, and product managers all the time. Plea
 - [Email Newsletter](https://rocket.chat/newsletter)
 
 Any other questions, reach out to us at [our website](https://rocket.chat/contact) or you can email us directly at [contact@rocket.chat](mailto:contact@rocket.chat). We’d be happy to help!
+

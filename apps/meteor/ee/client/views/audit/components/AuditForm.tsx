@@ -1,9 +1,9 @@
+import type { IAuditLog } from '@rocket.chat/core-typings';
 import { Box, Field, TextInput, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React from 'react';
 import { useController } from 'react-hook-form';
 
-import type { IAuditLog } from '../../../../definition/IAuditLog';
 import type { AuditFields } from '../hooks/useAuditForm';
 import { useAuditForm } from '../hooks/useAuditForm';
 import { useSendTelemetryMutation } from '../hooks/useSendTelemetryMutation';

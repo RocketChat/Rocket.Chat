@@ -86,7 +86,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false): Pro
 
 		// removes user's avatar
 		if (user.avatarOrigin === 'upload' || user.avatarOrigin === 'url' || user.avatarOrigin === 'rest') {
-			FileUpload.getStore('Avatars').deleteByName(user.username);
+			await FileUpload.getStore('Avatars').deleteByName(user.username);
 		}
 
 		await Integrations.disableByUserId(userId); // Disables all the integrations which rely on the user being deleted.

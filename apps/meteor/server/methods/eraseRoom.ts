@@ -42,7 +42,7 @@ export async function eraseRoom(rid: string, uid: string): Promise<void> {
 		}
 	}
 
-	deleteRoom(rid);
+	await deleteRoom(rid);
 
 	const team = room.teamId && (await Team.getOneById(room.teamId));
 
