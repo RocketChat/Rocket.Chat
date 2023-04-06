@@ -7227,7 +7227,7 @@ __metadata:
     "@types/imap": ^0.8.35
     "@types/jsdom": ^16.2.14
     "@types/jsdom-global": ^3.0.2
-    "@types/jsrsasign": ^9.0.3
+    "@types/jsrsasign": ^10.5.8
     "@types/katex": ^0.14.0
     "@types/later": ^1.2.7
     "@types/ldapjs": ^2.2.2
@@ -11797,10 +11797,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/jsrsasign@npm:^9.0.3":
-  version: 9.0.3
-  resolution: "@types/jsrsasign@npm:9.0.3"
-  checksum: 9c181ca6e3600fafd8a131cdabad1cae8d9b184bf6634d1509f3ad6ae31ae8a90f17b04409f3fde0794a6c0dfe4bf7aa91765cfa4c0f1ad3b9eca05b61dca62a
+"@types/jsrsasign@npm:^10.5.8":
+  version: 10.5.8
+  resolution: "@types/jsrsasign@npm:10.5.8"
+  checksum: ef53cee635ab31ae60b41d050266e16949be84b9b6781eb7585acc9094bc6e1f8c9aff4f19221ee1c587ecf3134a6b551800989d2add6f28f9176a248c89a57d
   languageName: node
   linkType: hard
 

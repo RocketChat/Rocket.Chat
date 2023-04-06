@@ -42,8 +42,7 @@ callbacks.add(
 
 		let extraData = {};
 		if (message.file) {
-			message = await normalizeMessageFileUpload(message);
-			// @ts-expect-error TODO: investigate from where fileUpload comes
+			message = { ...(await normalizeMessageFileUpload(message)), ...{ _updatedAt: message._updatedAt } };
 			const { fileUpload, rid, u: { _id: userId } = {} } = message;
 			extraData = Object.assign({}, { rid, userId, fileUpload });
 		}

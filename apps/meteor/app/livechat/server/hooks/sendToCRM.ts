@@ -111,6 +111,7 @@ async function sendToCRM(
 				msg: message.msg || JSON.stringify(message.blocks),
 				...(message.blocks && message.blocks.length > 0 ? { blocks: message.blocks } : {}),
 				ts: message.ts,
+				rid: message.rid,
 				...(isEditedMessage(message) && { editedAt: message.editedAt }),
 				...(message.u.username !== postData.visitor.username && { agentId: message.u._id }),
 				...(isOmnichannelNavigationMessage(message) && { navigation: message.navigation }),
@@ -119,7 +120,7 @@ async function sendToCRM(
 			};
 
 			const { u } = message;
-			postData.messages.push(await normalizeMessageFileUpload({ u, ...msg }));
+			postData.messages.push({ ...(await normalizeMessageFileUpload({ u, ...msg })), ...{ _updatedAt: message._updatedAt } });
 		}
 	}
 

@@ -100,8 +100,8 @@ export class CustomOAuth {
 		}
 	}
 
-	getAccessToken(query) {
-		const config = ServiceConfiguration.configurations.findOne({ service: this.name });
+	async getAccessToken(query) {
+		const config = await ServiceConfiguration.configurations.findOneAsync({ service: this.name });
 		if (!config) {
 			throw new ServiceConfiguration.ConfigError();
 		}
