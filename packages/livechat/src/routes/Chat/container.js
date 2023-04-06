@@ -324,10 +324,13 @@ class ChatContainer extends Component {
 		const { messages, dispatch, user } = this.props;
 		const { messages: prevMessages, alerts: prevAlerts } = prevProps;
 
+		const renderedMessages = messages.filter((message) => canRenderMessage(message));
+		const prevRenderedMessages = prevMessages.filter((message) => canRenderMessage(message));
+
 		const shouldMarkUnread = shouldMarkAsUnread();
 
-		if (messages[-1]?.u?._id === user._id || (!shouldMarkUnread && messages?.length !== prevMessages?.length)) {
-			const nextLastMessage = messages[messages.length - 1];
+		if (renderedMessages[-1]?.u?._id === user._id || (!shouldMarkUnread && renderedMessages?.length !== prevRenderedMessages?.length)) {
+			const nextLastMessage = renderedMessages[-1];
 			const lastReadMessage = getLastReadMessage();
 
 			if (nextLastMessage?._id !== lastReadMessage?._id) {
