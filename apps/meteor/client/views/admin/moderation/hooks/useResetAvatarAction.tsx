@@ -23,7 +23,7 @@ const useResetAvatarAction = (userId: string, onChange: () => void, onReload: ()
 
 	const onResetAvatar = async () => {
 		setModal();
-		await handleResetAvatar.mutateAsync({ userId });
+		handleResetAvatar.mutateAsync({ userId });
 		onChange();
 		onReload();
 	};
