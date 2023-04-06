@@ -60,7 +60,6 @@ konecty:user-presence@2.6.3
 launch-screen@1.3.0
 littledata:synced-cron@1.5.1
 localstorage@1.2.0
-logging@1.3.2
 mdg:validation-error@0.5.1
 meteor@1.11.1
 meteor-base@1.5.1
