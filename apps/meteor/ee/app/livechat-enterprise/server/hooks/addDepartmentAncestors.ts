@@ -1,7 +1,6 @@
-import { LivechatRooms } from '@rocket.chat/models';
+import { LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../../lib/callbacks';
-import LivechatDepartment from '../../../../../app/models/server/models/LivechatDepartment';
 
 callbacks.add(
 	'livechat.newRoom',
@@ -10,8 +9,8 @@ callbacks.add(
 			return room;
 		}
 
-		const department = LivechatDepartment.findOneById(room.departmentId, {
-			fields: { ancestors: 1 },
+		const department = await LivechatDepartment.findOneById(room.departmentId, {
+			projection: { ancestors: 1 },
 		});
 
 		if (!department?.ancestors) {

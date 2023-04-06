@@ -1,5 +1,5 @@
 import type { FindCursor, AggregationCursor, Document, FindOptions, UpdateResult, DeleteResult } from 'mongodb';
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IDirectMessageRoom, IMessage, IRoom } from '@rocket.chat/core-typings';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 
@@ -30,8 +30,6 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findPaginatedByTeamIdContainingNameAndDefault(teamId: any, name: any, teamDefault: any, ids: any, options?: any): any;
 
 	findByTeamIdAndRoomsId(teamId: any, rids: any, options?: any): any;
-
-	findChannelAndPrivateByNameStarting(name: any, sIds: any, options: any): any;
 
 	findRoomsByNameOrFnameStarting(name: any, options: any): any;
 
@@ -69,6 +67,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	incUsersCountByIds(ids: any, inc: number): any;
 
 	findOneByNameOrFname(name: any, options?: any): any;
+	findOneByNonValidatedName(name: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
 	allRoomSourcesCount(): AggregationCursor<Document>; // TODO change back when convert model do TS AggregationCursor<{ _id: Required<IOmnichannelGenericRoom['source']>; count: number }>;
 
@@ -147,15 +146,14 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		options?: FindOptions<IRoom>,
 		includeFederatedRooms?: boolean,
 	): Promise<IRoom | null>;
-	findById(rid: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findById(rid: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 	findByIds(rids: string[], options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findByType(type: IRoom['t'], options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findByTypeInIds(type: IRoom['t'], ids: string[], options?: FindOptions<IRoom>): FindCursor<IRoom>;
-	findByUserId(userId: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
-	findBySubscriptionUserId(userId: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
-	findBySubscriptionUserIdUpdatedAfter(userId: string, updatedAfter: Date, options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findBySubscriptionUserId(userId: string, options?: FindOptions<IRoom>): Promise<FindCursor<IRoom>>;
+	findBySubscriptionUserIdUpdatedAfter(userId: string, updatedAfter: Date, options?: FindOptions<IRoom>): Promise<FindCursor<IRoom>>;
 	findByNameAndType(name: string, type: IRoom['t'], options?: FindOptions<IRoom>): FindCursor<IRoom>;
-	findByNameOrFNameAndType(name: string, type: IRoom['t'], options?: FindOptions<IRoom>): FindCursor<IRoom>;
+
 	findByNameAndTypeNotDefault(
 		name: string,
 		type: IRoom['t'],
@@ -170,13 +168,12 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		includeFederatedRooms?: boolean,
 	): FindCursor<IRoom>;
 	findByDefaultAndTypes(defaultValue: boolean, types: IRoom['t'][], options?: FindOptions<IRoom>): FindCursor<IRoom>;
-	findDirectRoomContainingAllUsernames(usernames: string[], options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findDirectRoomContainingAllUsernames(usernames: string[], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 	findByTypeAndName(type: IRoom['t'], name: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 	findByTypeAndNameOrId(type: IRoom['t'], name: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 	findByTypeAndNameContaining(type: IRoom['t'], name: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findByTypeInIdsAndNameContaining(type: IRoom['t'], ids: string[], name: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
-	findByTypeAndArchivationState(type: IRoom['t'], archived: boolean, options?: FindOptions<IRoom>): FindCursor<IRoom>;
-	findGroupDMsByUids(uids: string[], options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findGroupDMsByUids(uids: string[], options?: FindOptions<IDirectMessageRoom>): FindCursor<IDirectMessageRoom>;
 	find1On1ByUserId(userId: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findByCreatedOTR(): FindCursor<IRoom>;
 	addImportIds(rid: string, importIds: string[]): Promise<UpdateResult>;

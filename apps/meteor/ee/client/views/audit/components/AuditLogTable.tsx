@@ -1,9 +1,9 @@
+import type { IAuditLog } from '@rocket.chat/core-typings';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import React from 'react';
 
 import GenericTable from '../../../../../client/components/GenericTable';
-import type { IAuditLog } from '../../../../definition/IAuditLog';
 import AuditLogEntry from './AuditLogEntry';
 
 type AuditLogTableProps = {

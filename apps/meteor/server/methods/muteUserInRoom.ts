@@ -2,9 +2,9 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Rooms } from '@rocket.chat/models';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 
-import { Subscriptions, Users, Messages } from '../../app/models/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
@@ -56,8 +56,8 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUsername(data.rid, data.username, {
-			fields: { _id: 1 },
+		const subscription = await Subscriptions.findOneByRoomIdAndUsername(data.rid, data.username, {
+			projection: { _id: 1 },
 		});
 		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
@@ -65,20 +65,26 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const mutedUser = Users.findOneByUsernameIgnoringCase(data.username);
+		const mutedUser = await Users.findOneByUsernameIgnoringCase(data.username);
 
-		const fromUser = Users.findOneById(fromId);
+		if (!mutedUser?.username) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user to mute', {
+				method: 'muteUserInRoom',
+			});
+		}
+
+		const fromUser = await Users.findOneById(fromId);
+		if (!fromUser) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'muteUserInRoom',
+			});
+		}
 
 		callbacks.run('beforeMuteUser', { mutedUser, fromUser }, room);
 
 		await Rooms.muteUsernameByRoomId(data.rid, mutedUser.username);
 
-		Messages.createUserMutedWithRoomIdAndUser(data.rid, mutedUser, {
-			u: {
-				_id: fromUser._id,
-				username: fromUser.username,
-			},
-		});
+		await Message.saveSystemMessage('user-muted', data.rid, mutedUser.username, fromUser);
 
 		callbacks.run('afterMuteUser', { mutedUser, fromUser }, room);
 

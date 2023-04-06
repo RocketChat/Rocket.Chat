@@ -1,19 +1,19 @@
 import { Meteor } from 'meteor/meteor';
+import { Messages } from '@rocket.chat/models';
 
-import { Messages } from '../../../models/server';
 import { callbacks } from '../../../../lib/callbacks';
 import { settings } from '../../../settings/server';
 import { reply } from '../functions';
 import { updateThreadUsersSubscriptions, getMentions } from '../../../lib/server/lib/notifyUsersOnMessage';
 import { sendMessageNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
 
-function notifyUsersOnReply(message, replies, room) {
+async function notifyUsersOnReply(message, replies, room) {
 	// skips this callback if the message was edited
 	if (message.editedAt) {
 		return message;
 	}
 
-	updateThreadUsersSubscriptions(message, room, replies);
+	await updateThreadUsersSubscriptions(message, room, replies);
 
 	return message;
 }
@@ -41,7 +41,7 @@ export async function processThreads(message, room) {
 		return message;
 	}
 
-	const parentMessage = Messages.findOneById(message.tmid);
+	const parentMessage = await Messages.findOneById(message.tmid);
 	if (!parentMessage) {
 		return message;
 	}
@@ -56,7 +56,7 @@ export async function processThreads(message, room) {
 		]),
 	].filter((userId) => userId !== message.u._id);
 
-	notifyUsersOnReply(message, replies, room);
+	await notifyUsersOnReply(message, replies, room);
 	await metaData(message, parentMessage, replies);
 	notification(message, room, replies);
 

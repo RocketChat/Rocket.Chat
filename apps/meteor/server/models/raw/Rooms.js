@@ -247,37 +247,6 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findChannelAndPrivateByNameStarting(name, sIds, options) {
-		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
-
-		const query = {
-			t: {
-				$in: ['c', 'p'],
-			},
-			name: nameRegex,
-			teamMain: {
-				$exists: false,
-			},
-			$or: [
-				{
-					teamId: {
-						$exists: false,
-					},
-				},
-				{
-					teamId: {
-						$exists: true,
-					},
-					_id: {
-						$in: sIds,
-					},
-				},
-			],
-		};
-
-		return this.find(query, options);
-	}
-
 	findRoomsByNameOrFnameStarting(name, options) {
 		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
 
@@ -524,6 +493,30 @@ export class RoomsRaw extends BaseRaw {
 		return this.col.aggregate(params, { allowDiskUse: true, readPreference });
 	}
 
+	findOneByNameOrFname(name, options) {
+		const query = {
+			$or: [
+				{
+					name,
+				},
+				{
+					fname: name,
+				},
+			],
+		};
+
+		return this.findOne(query, options);
+	}
+
+	async findOneByNonValidatedName(name, options) {
+		const room = await this.findOneByNameOrFname(name, options);
+		if (room) {
+			return room;
+		}
+
+		return this.findOneByName(name, options);
+	}
+
 	findOneByName(name, options = {}) {
 		return this.col.findOne({ name }, options);
 	}
@@ -552,10 +545,6 @@ export class RoomsRaw extends BaseRaw {
 		};
 
 		return this.updateMany(query, update);
-	}
-
-	findOneByNameOrFname(name, options = {}) {
-		return this.col.findOne({ $or: [{ name }, { fname: name }] }, options);
 	}
 
 	allRoomSourcesCount() {
@@ -1062,7 +1051,7 @@ export class RoomsRaw extends BaseRaw {
 	// FIND
 
 	findById(roomId, options) {
-		return this.find({ _id: roomId }, options);
+		return this.findOne({ _id: roomId }, options);
 	}
 
 	findByIds(roomIds, options) {
@@ -1086,14 +1075,8 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findByUserId(userId, options) {
-		const query = { 'u._id': userId };
-
-		return this.find(query, options);
-	}
-
 	async findBySubscriptionUserId(userId, options) {
-		const data = (await Subscriptions.cachedFindByUserId(userId, { projection: { rid: 1 } }).toArray()).map((item) => item.rid);
+		const data = (await Subscriptions.findByUserId(userId, { projection: { rid: 1 } }).toArray()).map((item) => item.rid);
 
 		const query = {
 			_id: {
@@ -1153,26 +1136,6 @@ export class RoomsRaw extends BaseRaw {
 		const query = {
 			t: type,
 			name,
-		};
-
-		// do not use cache
-		return this.find(query, options);
-	}
-
-	findByNameOrFNameAndType(name, type, options) {
-		const query = {
-			t: type,
-			teamId: {
-				$exists: false,
-			},
-			$or: [
-				{
-					name,
-				},
-				{
-					fname: name,
-				},
-			],
 		};
 
 		// do not use cache
@@ -1309,23 +1272,11 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findByTypeAndArchivationState(type, archivationstate, options) {
-		const query = { t: type };
-
-		if (archivationstate) {
-			query.archived = true;
-		} else {
-			query.archived = { $ne: true };
-		}
-
-		return this.find(query, options);
-	}
-
 	findGroupDMsByUids(uids, options) {
 		return this.find(
 			{
 				usersCount: { $gt: 2 },
-				uids,
+				uids: { $in: uids },
 			},
 			options,
 		);
