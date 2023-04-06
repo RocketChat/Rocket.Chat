@@ -84,7 +84,7 @@ Meteor.methods<ServerMethods>({
 
 		passwordPolicy.validate(formData.pass);
 
-		validateEmailDomain(formData.email);
+		await validateEmailDomain(formData.email);
 
 		const userData = {
 			email: trim(formData.email.toLowerCase()),

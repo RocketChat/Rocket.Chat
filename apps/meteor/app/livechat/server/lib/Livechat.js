@@ -2,6 +2,7 @@
 // Please add new methods to LivechatTyped.ts
 
 import dns from 'dns';
+import util from 'util';
 
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
@@ -48,7 +49,7 @@ import { Livechat as LivechatTyped } from './LivechatTyped';
 
 const logger = new Logger('Livechat');
 
-const dnsResolveMx = Meteor.wrapAsync(dns.resolveMx);
+const dnsResolveMx = util.promisify(dns.resolveMx);
 
 export const Livechat = {
 	Analytics,
@@ -1210,7 +1211,7 @@ export const Livechat = {
 			const emailDomain = email.substr(email.lastIndexOf('@') + 1);
 
 			try {
-				dnsResolveMx(emailDomain);
+				await dnsResolveMx(emailDomain);
 			} catch (e) {
 				throw new Meteor.Error('error-invalid-email-address', 'Invalid email address', {
 					method: 'livechat:sendOfflineMessage',
