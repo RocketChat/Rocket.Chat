@@ -63,13 +63,13 @@ slashCommands.add({
 			}
 			rid = roomObject._id;
 		}
-		await Meteor.callAsync('hideRoom', rid, (error: string) => {
-			if (error) {
-				return api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
-					msg: TAPi18n.__(error, { lng }),
-				});
-			}
-		});
+		try {
+			await Meteor.callAsync('hideRoom', rid);
+		} catch (error: any) {
+			await api.broadcast('notify.ephemeralMessage', user._id, item.rid, {
+				msg: TAPi18n.__(error, { lng }),
+			});
+		}
 	},
 	options: { description: 'Hide_room', params: '#room' },
 });

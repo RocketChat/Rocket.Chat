@@ -6,7 +6,7 @@ import { addMigration } from '../../lib/migrations';
 addMigration({
 	version: 267,
 	async up() {
-		ServiceConfiguration.configurations.remove({
+		await ServiceConfiguration.configurations.removeAsync({
 			service: 'blockstack',
 		});
 
