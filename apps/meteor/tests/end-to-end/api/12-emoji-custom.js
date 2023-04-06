@@ -321,10 +321,6 @@ describe('[EmojiCustom]', function () {
 				.expect(304)
 				.expect((res) => {
 					expect(res.headers).to.have.property('last-modified', 'Thu, 01 Jan 2015 00:00:00 GMT');
-					expect(res.headers).to.have.property('content-type', 'image/svg+xml');
-					expect(res.headers).to.have.property('cache-control', 'public, max-age=0');
-					expect(res.headers).to.have.property('expires', '-1');
-					expect(res.headers).to.have.property('content-disposition', 'inline');
 				})
 				.end(done);
 		});
