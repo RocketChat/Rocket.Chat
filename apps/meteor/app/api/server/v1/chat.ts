@@ -2,19 +2,21 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { Message } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { canAccessRoom, canAccessRoomId, roomAccessAttributes, hasPermission } from '../../../authorization/server';
+import { roomAccessAttributes } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
-import { deleteMessage, processWebhookMessage } from '../../../lib/server';
-import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
-import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { API } from '../api';
-import { processWebhookMessage } from '../../../lib/server';
+import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { settings } from '../../../settings/server';
+import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
-import { canDeleteMessage } from '../../../authorization/server/functions/canDeleteMessage';
+import { getPaginationItems } from '../helpers/getPaginationItems';
+import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
+import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { reportMessage } from '../../../../server/lib/moderation/reportMessage';
 
 API.v1.addRoute(
@@ -31,7 +33,7 @@ API.v1.addRoute(
 				}),
 			);
 
-			const msg = Messages.findOneById(this.bodyParams.msgId, { fields: { u: 1, rid: 1 } });
+			const msg = await Messages.findOneById(this.bodyParams.msgId, { projection: { u: 1, rid: 1 } });
 
 			if (!msg) {
 				return API.v1.failure(`No message found with the id of "${this.bodyParams.msgId}".`);
@@ -41,17 +43,17 @@ API.v1.addRoute(
 				return API.v1.failure('The room id provided does not match where the message is from.');
 			}
 
-			if (this.bodyParams.asUser && msg.u._id !== userId && !hasPermission(userId, 'force-delete-message', msg.rid)) {
+			if (
+				this.bodyParams.asUser &&
+				msg.u._id !== this.userId &&
+				!(await hasPermissionAsync(this.userId, 'force-delete-message', msg.rid))
+			) {
 				return API.v1.failure('Unauthorized. You must have the permission "force-delete-message" to delete other\'s message as them.');
 			}
 
-			if (!canDeleteMessage(userId, msg)) {
-				return API.v1.failure(
-					'You are not allowed to delete this message. You must have the permission "delete-message" to delete this message.',
-				);
-			}
-
-			await deleteMessage(msg, this.bodyParams.asUser ? msg.u._id : this.userId);
+			await Meteor.runAsUser(this.bodyParams.asUser ? msg.u._id : this.userId, async () => {
+				await Meteor.callAsync('deleteMessage', { _id: msg._id });
+			});
 
 			return API.v1.success({
 				_id: msg._id,
@@ -79,7 +81,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-roomId-param-invalid', 'The "lastUpdate" query parameter must be a valid date.');
 			}
 
-			const result = await Meteor.call('messages/get', roomId, { lastUpdate: new Date(lastUpdate) });
+			const result = await Meteor.callAsync('messages/get', roomId, { lastUpdate: new Date(lastUpdate) });
 
 			if (!result) {
 				return API.v1.failure();
@@ -106,7 +108,7 @@ API.v1.addRoute(
 				return API.v1.failure('The "msgId" query parameter must be provided.');
 			}
 
-			const msg = await Meteor.call('getSingleMessage', this.queryParams.msgId);
+			const msg = await Meteor.callAsync('getSingleMessage', this.queryParams.msgId);
 
 			if (!msg) {
 				return API.v1.failure();
@@ -136,7 +138,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
-			const pinnedMessage = await Meteor.call('pinMessage', msg);
+			const pinnedMessage = await Meteor.callAsync('pinMessage', msg);
 
 			const [message] = await normalizeMessagesForUser([pinnedMessage], this.userId);
 
@@ -152,7 +154,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			const messageReturn = await processWebhookMessage(this.bodyParams, this.user)[0];
+			const messageReturn = (await processWebhookMessage(this.bodyParams, this.user))[0];
 
 			if (!messageReturn) {
 				return API.v1.failure('unknown-error');
@@ -175,7 +177,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId, searchText } = this.queryParams;
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!roomId) {
 				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
@@ -185,7 +187,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-searchText-param-not-provided', 'The required "searchText" query param is missing.');
 			}
 
-			const result = await Meteor.call('messageSearch', searchText, roomId, count, offset).message.docs;
+			const result = (await Meteor.callAsync('messageSearch', searchText, roomId, count, offset)).message.docs;
 
 			return API.v1.success({
 				messages: await normalizeMessagesForUser(result, this.userId),
@@ -231,7 +233,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
-			await Meteor.call('starMessage', {
+			await Meteor.callAsync('starMessage', {
 				_id: msg._id,
 				rid: msg.rid,
 				starred: true,
@@ -257,7 +259,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
-			await Meteor.call('unpinMessage', msg);
+			await Meteor.callAsync('unpinMessage', msg);
 
 			return API.v1.success();
 		},
@@ -279,7 +281,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
-			await Meteor.call('starMessage', {
+			await Meteor.callAsync('starMessage', {
 				_id: msg._id,
 				rid: msg.rid,
 				starred: false,
@@ -316,7 +318,7 @@ API.v1.addRoute(
 			}
 
 			// Permission checks are already done in the updateMessage method, so no need to duplicate them
-			await Meteor.call('updateMessage', { _id: msg._id, msg: this.bodyParams.text, rid: msg.rid });
+			await Meteor.callAsync('updateMessage', { _id: msg._id, msg: this.bodyParams.text, rid: msg.rid });
 
 			const updatedMessage = await Messages.findOneById(msg._id);
 			const [message] = await normalizeMessagesForUser(updatedMessage ? [updatedMessage] : [], this.userId);
@@ -395,7 +397,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-user-id-param-not-provided', 'The required "userId" param is missing.');
 			}
 
-			await Meteor.call('ignoreUser', { rid, userId, ignore });
+			await Meteor.callAsync('ignoreUser', { rid, userId, ignore });
 
 			return API.v1.success();
 		},
@@ -408,7 +410,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId, since } = this.queryParams;
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!roomId) {
 				throw new Meteor.Error('The required "roomId" query param is missing.');
@@ -448,13 +450,13 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId } = this.queryParams;
-			const { offset, count } = this.getPaginationItems();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!roomId) {
 				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
 			}
 
-			if (!canAccessRoomId(roomId, this.userId)) {
+			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 
@@ -485,8 +487,8 @@ API.v1.addRoute(
 			check(type, Match.Maybe(String));
 			check(text, Match.Maybe(String));
 
-			const { offset, count } = this.getPaginationItems();
-			const { sort, fields, query } = this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields, query } = await this.parseJsonQuery();
 
 			if (!settings.get<boolean>('Threads_enabled')) {
 				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
@@ -494,7 +496,7 @@ API.v1.addRoute(
 			const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
 			const room = await Rooms.findOneById(rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } });
 
-			if (!room || !user || !canAccessRoom(room, user)) {
+			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
 
@@ -531,7 +533,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { rid } = this.queryParams;
-			const { query, fields, sort } = this.parseJsonQuery();
+			const { query, fields, sort } = await this.parseJsonQuery();
 			const { updatedSince } = this.queryParams;
 			let updatedSinceDate;
 			if (!settings.get<boolean>('Threads_enabled')) {
@@ -551,7 +553,7 @@ API.v1.addRoute(
 			const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
 			const room = await Rooms.findOneById(rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } });
 
-			if (!room || !user || !canAccessRoom(room, user)) {
+			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
 			const threadQuery = Object.assign({}, query, { rid, tcount: { $exists: true } });
@@ -580,8 +582,8 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { tmid } = this.queryParams;
-			const { query, fields, sort } = this.parseJsonQuery();
-			const { offset, count } = this.getPaginationItems();
+			const { query, fields, sort } = await this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!settings.get('Threads_enabled')) {
 				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
@@ -596,7 +598,7 @@ API.v1.addRoute(
 			const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
 			const room = await Rooms.findOneById(thread.rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } });
 
-			if (!room || !user || !canAccessRoom(room, user)) {
+			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
 			const { cursor, totalCount } = await Messages.findPaginated(
@@ -627,7 +629,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { tmid } = this.queryParams;
-			const { query, fields, sort } = this.parseJsonQuery();
+			const { query, fields, sort } = await this.parseJsonQuery();
 			const { updatedSince } = this.queryParams;
 			let updatedSinceDate;
 			if (!settings.get<boolean>('Threads_enabled')) {
@@ -651,7 +653,7 @@ API.v1.addRoute(
 			const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
 			const room = await Rooms.findOneById(thread.rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } });
 
-			if (!room || !user || !canAccessRoom(room, user)) {
+			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
 			return API.v1.success({
@@ -675,7 +677,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('The required "mid" body param is missing.');
 			}
 
-			await Meteor.call('followMessage', { mid });
+			await Meteor.callAsync('followMessage', { mid });
 
 			return API.v1.success();
 		},
@@ -693,7 +695,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('The required "mid" body param is missing.');
 			}
 
-			await Meteor.call('unfollowMessage', { mid });
+			await Meteor.callAsync('unfollowMessage', { mid });
 
 			return API.v1.success();
 		},
@@ -706,8 +708,8 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId } = this.queryParams;
-			const { sort } = this.parseJsonQuery();
-			const { offset, count } = this.getPaginationItems();
+			const { sort } = await this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			if (!roomId) {
 				throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
 			}
@@ -732,8 +734,8 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId } = this.queryParams;
-			const { sort } = this.parseJsonQuery();
-			const { offset, count } = this.getPaginationItems();
+			const { sort } = await this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!roomId) {
 				throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
@@ -761,8 +763,8 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { roomId, text } = this.queryParams;
-			const { sort } = this.parseJsonQuery();
-			const { offset, count } = this.getPaginationItems();
+			const { sort } = await this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!roomId) {
 				throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
@@ -778,6 +780,36 @@ API.v1.addRoute(
 				},
 			});
 			return API.v1.success(messages);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'chat.otr',
+	{ authRequired: true },
+	{
+		async post() {
+			const { roomId, type: otrType } = this.bodyParams;
+
+			if (!roomId) {
+				throw new Meteor.Error('error-invalid-params', 'The required "roomId" query param is missing.');
+			}
+
+			if (!otrType) {
+				throw new Meteor.Error('error-invalid-params', 'The required "type" query param is missing.');
+			}
+
+			const { username, type } = this.user;
+
+			if (!username) {
+				throw new Meteor.Error('error-invalid-user', 'Invalid user');
+			}
+
+			await canSendMessageAsync(roomId, { uid: this.userId, username, type });
+
+			await Message.saveSystemMessage(otrType, roomId, username, { _id: this.userId, username });
+
+			return API.v1.success();
 		},
 	},
 );

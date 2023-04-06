@@ -1,16 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
-import { EmojiCustom } from '@rocket.chat/models';
+import { Messages, EmojiCustom, Rooms } from '@rocket.chat/models';
 import { api } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { Messages, Rooms } from '../../models/server';
 import { callbacks } from '../../../lib/callbacks';
 import { emoji } from '../../emoji/server';
-import { isTheLastMessage, msgStream } from '../../lib/server';
-import { canAccessRoom, hasPermission } from '../../authorization/server';
+import { isTheLastMessage } from '../../lib/server';
+import { canAccessRoomAsync } from '../../authorization/server';
+import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { AppEvents, Apps } from '../../../ee/server/apps/orchestrator';
 
 const removeUserReaction = (message: IMessage, reaction: string, username: string) => {
@@ -34,7 +34,7 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 		});
 	}
 
-	if (room.ro === true && !room.reactWhenReadOnly && !hasPermission(user._id, 'post-readonly', room._id)) {
+	if (room.ro === true && !room.reactWhenReadOnly && !(await hasPermissionAsync(user._id, 'post-readonly', room._id))) {
 		// Unless the user was manually unmuted
 		if (!(room.unmuted || []).includes(user.username as string)) {
 			throw new Error("You can't send messages because the room is readonly.");
@@ -46,6 +46,10 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 			rid: room._id,
 		});
 	}
+
+	// if (!('reactions' in message)) {
+	// 	return;
+	// }
 
 	const userAlreadyReacted =
 		message.reactions &&
@@ -68,13 +72,13 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 		if (_.isEmpty(message.reactions)) {
 			delete message.reactions;
 			if (isTheLastMessage(room, message)) {
-				Rooms.unsetReactionsInLastMessage(room._id);
+				await Rooms.unsetReactionsInLastMessage(room._id);
 			}
-			Messages.unsetReactions(message._id);
+			await Messages.unsetReactions(message._id);
 		} else {
-			Messages.setReactions(message._id, message.reactions);
+			await Messages.setReactions(message._id, message.reactions);
 			if (isTheLastMessage(room, message)) {
-				Rooms.setReactionsInLastMessage(room._id, message);
+				await Rooms.setReactionsInLastMessage(room._id, message.reactions);
 			}
 		}
 		callbacks.run('unsetReaction', message._id, reaction);
@@ -91,9 +95,9 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 			};
 		}
 		message.reactions[reaction].usernames.push(user.username as string);
-		Messages.setReactions(message._id, message.reactions);
+		await Messages.setReactions(message._id, message.reactions);
 		if (isTheLastMessage(room, message)) {
-			Rooms.setReactionsInLastMessage(room._id, message);
+			await Rooms.setReactionsInLastMessage(room._id, message.reactions);
 		}
 		callbacks.run('setReaction', message._id, reaction);
 		callbacks.run('afterSetReaction', message, { user, reaction, shouldReact });
@@ -101,39 +105,37 @@ async function setReaction(room: IRoom, user: IUser, message: IMessage, reaction
 		isReacted = true;
 	}
 
-	Promise.await(Apps.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, isReacted));
-
-	msgStream.emit(message.rid, message);
+	await Apps.triggerEvent(AppEvents.IPostMessageReacted, message, user, reaction, isReacted);
 }
 
-export const executeSetReaction = async (reaction: string, messageId: IMessage['_id'], shouldReact?: boolean) => {
-	const user = Meteor.user() as IUser | null;
+export async function executeSetReaction(reaction: string, messageId: IMessage['_id'], shouldReact?: boolean) {
+	const user = (await Meteor.userAsync()) as IUser | null;
 
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setReaction' });
 	}
 
-	const message = Messages.findOneById(messageId);
+	const message = await Messages.findOneById(messageId);
 	if (!message) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
 	}
 
-	const room = Rooms.findOneById(message.rid);
+	const room = await Rooms.findOneById(message.rid);
 	if (!room) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
 	}
 
-	if (!canAccessRoom(room, user)) {
+	if (!(await canAccessRoomAsync(room, user))) {
 		throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'setReaction' });
 	}
 
 	return setReaction(room, user, message, reaction, shouldReact);
-};
+}
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		setReaction(reaction: string, messageId: IMessage['_id'], shouldReact?: boolean): Promise<void | boolean>;
+		setReaction(reaction: string, messageId: IMessage['_id'], shouldReact?: boolean): boolean | undefined;
 	}
 }
 
@@ -145,7 +147,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		try {
-			return executeSetReaction(reaction, messageId, shouldReact);
+			await executeSetReaction(reaction, messageId, shouldReact);
 		} catch (e: any) {
 			if (e.error === 'error-not-allowed' && e.reason && e.details && e.details.rid) {
 				void api.broadcast('notify.ephemeralMessage', uid, e.details.rid, {

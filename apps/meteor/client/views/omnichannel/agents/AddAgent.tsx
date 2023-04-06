@@ -26,14 +26,21 @@ const AddAgent = ({ reload }: AddAgentProps): ReactElement => {
 			return;
 		}
 		reload();
-		setUsername(username);
+		setUsername('');
 	});
+
+	const handleChange = (value: unknown): void => {
+		if (typeof value === 'string') {
+			setUsername(value);
+		}
+	};
+
 	return (
 		<Box display='flex' alignItems='center' pi='24px'>
 			<Field>
 				<Field.Label>{t('Username')}</Field.Label>
 				<Field.Row>
-					<UserAutoComplete value={username} onChange={(username: string): void => setUsername(username)} />
+					<UserAutoComplete value={username} onChange={handleChange} />
 					<Button disabled={!username} onClick={handleSave} mis='x8' primary>
 						{t('Add')}
 					</Button>

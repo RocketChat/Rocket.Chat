@@ -7,8 +7,8 @@ import { settings } from '../../../settings/server';
 import { workspaceScopes } from '../oauthScopes';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
-export function getWorkspaceAccessTokenWithScope(scope = '') {
-	const { connectToCloud, workspaceRegistered } = retrieveRegistrationStatus();
+export async function getWorkspaceAccessTokenWithScope(scope = '') {
+	const { connectToCloud, workspaceRegistered } = await retrieveRegistrationStatus();
 
 	const tokenResponse = { token: '', expiresAt: new Date() };
 

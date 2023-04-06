@@ -3,9 +3,9 @@ import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Rooms } from '@rocket.chat/models';
 
-import { Rooms } from '../../app/models/server';
-import { canAccessRoom } from '../../app/authorization/server';
+import { canAccessRoomAsync } from '../../app/authorization/server';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -15,7 +15,7 @@ declare module '@rocket.chat/ui-contexts' {
 }
 
 Meteor.methods<ServerMethods>({
-	getRoomById(rid) {
+	async getRoomById(rid) {
 		check(rid, String);
 		const userId = Meteor.userId();
 		if (!userId) {
@@ -24,13 +24,13 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const room = Rooms.findOneById(rid);
+		const room = await Rooms.findOneById(rid);
 		if (room == null) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'getRoomNameById',
 			});
 		}
-		if (!canAccessRoom(room, Meteor.user() as IUser)) {
+		if (!(await canAccessRoomAsync(room, (await Meteor.userAsync()) as IUser))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'getRoomById',
 			});

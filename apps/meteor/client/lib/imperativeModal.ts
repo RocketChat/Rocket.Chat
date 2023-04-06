@@ -13,6 +13,11 @@ type ModalInstance = {
 	cancel: () => void;
 };
 
+type ModalInstance = {
+	close: () => void;
+	cancel: () => void;
+};
+
 class ImperativeModalEmmiter extends Emitter<{ update: ModalDescriptor }> {
 	private modalStack: ModalDescriptor[] = [];
 

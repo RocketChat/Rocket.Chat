@@ -37,5 +37,3 @@ const insertRoleAsync = async (roleData: Omit<IRole, '_id'>, options: InsertRole
 
 	return newRole;
 };
-
-export const insertRole = (...args: Parameters<typeof insertRoleAsync>): IRole => Promise.await(insertRoleAsync(...args));

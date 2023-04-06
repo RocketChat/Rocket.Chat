@@ -47,7 +47,8 @@
 						}
 					}
 				],
-				"@typescript-eslint/no-floating-promises": "error"
+				"@typescript-eslint/no-floating-promises": "error",
+				"no-unreachable-loop": "error"
 			},
 			"parserOptions": {
 				"project": ["./tsconfig.json"]

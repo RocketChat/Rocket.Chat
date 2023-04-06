@@ -2,10 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Rooms } from '@rocket.chat/models';
 
 import { readMessages } from '../lib/readMessages';
-import { canAccessRoom } from '../../app/authorization/server';
-import { Rooms } from '../../app/models/server';
+import { canAccessRoomAsync } from '../../app/authorization/server';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -25,12 +25,12 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const user = (Meteor.user() as IUser | null) ?? undefined;
-		const room = Rooms.findOneById(rid);
+		const user = ((await Meteor.userAsync()) as IUser | null) ?? undefined;
+		const room = await Rooms.findOneById(rid);
 		if (!room) {
 			throw new Meteor.Error('error-room-does-not-exist', 'This room does not exist', { method: 'readMessages' });
 		}
-		if (!canAccessRoom(room, user)) {
+		if (!(await canAccessRoomAsync(room, user))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'readMessages' });
 		}
 

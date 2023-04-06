@@ -61,7 +61,10 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 		this.internalQueueInstance = internalQueueInstance;
 		this.internalSettingsAdapter = internalSettingsAdapter;
 		this.bridge = federationBridge;
+<<<<<<< HEAD
 		this.initialize();
+=======
+>>>>>>> develop
 		this.internalFileAdapter = FederationFactory.buildInternalFileAdapter();
 		this.internalRoomAdapter = FederationFactory.buildInternalRoomAdapter();
 		this.internalUserAdapter = FederationFactory.buildInternalUserAdapter();
@@ -129,9 +132,15 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 		return this.onDisableFederation();
 	}
 
+<<<<<<< HEAD
 	private initialize(): void {
 		this.internalSettingsAdapter = FederationFactory.buildInternalSettingsAdapter();
 		this.internalSettingsAdapter.initialize();
+=======
+	public async initialize() {
+		this.internalSettingsAdapter = FederationFactory.buildInternalSettingsAdapter();
+		await this.internalSettingsAdapter.initialize();
+>>>>>>> develop
 		this.cancelSettingsObserver = this.internalSettingsAdapter.onFederationEnabledStatusChanged(
 			this.onFederationEnabledSettingChange.bind(this),
 		);
@@ -152,7 +161,11 @@ export abstract class AbstractFederationService extends ServiceClassInternal {
 			this.internalQueueInstance,
 			this.bridge,
 		);
+<<<<<<< HEAD
 		const federationMessageServiceReceiver = FederationFactory.buildMessageServiceReceiver(
+=======
+		const federationMessageServiceReceiver = await FederationFactory.buildMessageServiceReceiver(
+>>>>>>> develop
 			this.internalRoomAdapter,
 			this.internalUserAdapter,
 			this.internalMessageAdapter,
@@ -316,5 +329,14 @@ export class FederationService extends AbstractBaseFederationService implements 
 		return this.getInternalRoomServiceSender().createDirectMessageRoomAndInviteUser(
 			FederationRoomSenderConverter.toCreateDirectMessageRoomDto(internalInviterId, internalRoomId, externalInviteeId),
 		);
+<<<<<<< HEAD
+=======
+	}
+
+	static async createFederationService(): Promise<FederationService> {
+		const federationService = new FederationService();
+		await federationService.initialize();
+		return federationService;
+>>>>>>> develop
 	}
 }

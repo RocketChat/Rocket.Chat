@@ -63,7 +63,7 @@ async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
 
 	// Number of canned responses
 	statsPms.push(
-		CannedResponse.col.count().then((count) => {
+		CannedResponse.col.estimatedDocumentCount().then((count) => {
 			statistics.cannedResponses = count;
 			return true;
 		}),
@@ -93,11 +93,35 @@ async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
 
 	// Number of business units
 	statsPms.push(
-		LivechatUnit.find({ type: 'u' })
+		LivechatUnit.countUnits().then((count) => {
+			statistics.businessUnits = count;
+			return true;
+		}),
+	);
+
+	statsPms.push(
+		// Total livechat monitors
+		Users.col.countDocuments({ type: 'livechat-monitor' }).then((count) => {
+			statistics.livechatMonitors = count;
+			return true;
+		}),
+	);
+
+	// Number of PDF transcript requested
+	statsPms.push(
+		LivechatRooms.find({ pdfTranscriptRequested: { $exists: true } })
 			.count()
 			.then((count) => {
-				statistics.businessUnits = count;
-				return true;
+				statistics.omnichannelPdfTranscriptRequested = count;
+			}),
+	);
+
+	// Number of PDF transcript that succeeded
+	statsPms.push(
+		LivechatRooms.find({ pdfTranscriptFileId: { $exists: true } })
+			.count()
+			.then((count) => {
+				statistics.omnichannelPdfTranscriptSucceeded = count;
 			}),
 	);
 

@@ -1,4 +1,5 @@
 import type { IMessage, RequiredField, SlashCommandPreviews } from '@rocket.chat/core-typings';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
 
 import { slashCommands } from '../../../utils/server';
@@ -10,12 +11,12 @@ declare module '@rocket.chat/ui-contexts' {
 			cmd: string;
 			params: string;
 			msg: RequiredField<Partial<IMessage>, 'rid'>;
-		}): Promise<SlashCommandPreviews>;
+		}): SlashCommandPreviews | undefined;
 	}
 }
 
-Meteor.methods({
-	getSlashCommandPreviews(command) {
+Meteor.methods<ServerMethods>({
+	async getSlashCommandPreviews(command) {
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'getSlashCommandPreview',

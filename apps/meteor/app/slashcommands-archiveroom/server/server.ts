@@ -1,30 +1,38 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
+import { isRegisterUser } from '@rocket.chat/core-typings';
 import { api } from '@rocket.chat/core-services';
+import { Users, Rooms } from '@rocket.chat/models';
 
-import { Rooms, Messages } from '../../models/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
+import { archiveRoom } from '../../lib/server/functions/archiveRoom';
 
 slashCommands.add({
 	command: 'archive',
-	callback: function Archive(_command, params, item): void {
+	callback: async function Archive(_command, params, item): Promise<void> {
 		let channel = params.trim();
 
 		let room;
 
 		if (channel === '') {
-			room = Rooms.findOneById(item.rid);
-			channel = room.name;
+			room = await Rooms.findOneById(item.rid);
+			if (room?.name) {
+				channel = room.name;
+			}
 		} else {
 			channel = channel.replace('#', '');
-			room = Rooms.findOneByName(channel);
+			room = await Rooms.findOneByName(channel);
 		}
 
 		const userId = Meteor.userId();
-
 		if (!userId) {
 			return;
+		}
+
+		const user = await Users.findOneById(userId, { projection: { username: 1, name: 1 } });
+		if (!user || !isRegisterUser(user)) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'archiveRoom' });
 		}
 
 		if (!room) {
@@ -53,9 +61,9 @@ slashCommands.add({
 			});
 			return;
 		}
-		Meteor.call('archiveRoom', room._id);
 
-		Messages.createRoomArchivedByRoomIdAndUser(room._id, Meteor.user());
+		await archiveRoom(room._id, user);
+
 		void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 			msg: TAPi18n.__('Channel_Archived', {
 				postProcess: 'sprintf',

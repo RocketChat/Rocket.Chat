@@ -22,7 +22,11 @@ const allowedActionsForModerators = allowedActionsInFederatedRooms.filter((actio
 const allowedRoomSettingsChangesInFederatedRooms: ValueOf<typeof RoomSettingsEnum>[] = [RoomSettingsEnum.NAME, RoomSettingsEnum.TOPIC];
 
 export class Federation {
+<<<<<<< HEAD
 	public static actionAllowed(room: IRoom, action: ValueOf<typeof RoomMemberActions>, userId?: IUser['_id']): boolean {
+=======
+	public static async actionAllowed(room: IRoom, action: ValueOf<typeof RoomMemberActions>, userId?: IUser['_id']): Promise<boolean> {
+>>>>>>> develop
 		if (!isRoomFederated(room)) {
 			return false;
 		}
@@ -33,7 +37,11 @@ export class Federation {
 			return true;
 		}
 
+<<<<<<< HEAD
 		const userSubscription = Promise.await(Subscriptions.findOneByRoomIdAndUserId(room._id, userId));
+=======
+		const userSubscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, userId);
+>>>>>>> develop
 		if (!userSubscription) {
 			return true;
 		}

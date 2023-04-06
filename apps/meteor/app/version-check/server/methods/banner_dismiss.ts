@@ -1,20 +1,21 @@
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
-
-import { Users } from '../../../models/server';
+import { Users } from '@rocket.chat/models';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'banner/dismiss'({ id }: { id: string }): Promise<void>;
+		'banner/dismiss'({ id }: { id: string }): void;
 	}
 }
 
-Meteor.methods({
-	'banner/dismiss'({ id }) {
-		if (!Meteor.userId()) {
+Meteor.methods<ServerMethods>({
+	async 'banner/dismiss'({ id }) {
+		const userId = Meteor.userId();
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'banner/dismiss' });
 		}
 
-		Users.setBannerReadById(this.userId, id);
+		await Users.setBannerReadById(userId, id);
 	},
 });

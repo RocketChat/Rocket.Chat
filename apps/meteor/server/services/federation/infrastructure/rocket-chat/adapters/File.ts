@@ -21,7 +21,11 @@ export class RocketChatFileAdapter {
 			const fileStore = FileUpload.getStore('Uploads');
 			// this needs to be here due to a high coupling in the third party lib that rely on the logged in user
 			await Meteor.runAsUser(internalUser._id, async () => {
+<<<<<<< HEAD
 				const uploadedFile = fileStore.insertSync(fileRecord, readableStream);
+=======
+				const uploadedFile = await fileStore.insert(fileRecord, readableStream);
+>>>>>>> develop
 				try {
 					const { files, attachments } = await parseFileIntoMessageAttachments(uploadedFile, internalRoomId, internalUser);
 
@@ -35,9 +39,12 @@ export class RocketChatFileAdapter {
 
 	public async getBufferFromFileRecord(fileRecord: IUpload): Promise<Buffer> {
 		return new Promise((resolve, reject) => {
-			FileUpload.getBuffer(fileRecord, (err: Error, buffer: Buffer) => {
+			FileUpload.getBuffer(fileRecord, (err?: Error, buffer?: Buffer | false) => {
 				if (err) {
 					return reject(err);
+				}
+				if (!(buffer instanceof Buffer)) {
+					return reject(new Error('Unknown error'));
 				}
 				resolve(buffer);
 			});

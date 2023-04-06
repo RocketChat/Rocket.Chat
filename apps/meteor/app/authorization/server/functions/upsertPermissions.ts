@@ -225,8 +225,6 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ _id: 'view-moderation-console', roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'manage-moderation-actions', roles: ['admin', 'owner', 'moderator'] },
 		{ _id: 'bypass-time-limit-edit-and-delete', roles: ['bot', 'app'] },
-		{ _id: 'view-moderation-console', roles: ['admin', 'owner', 'moderator'] },
-		{ _id: 'manage-moderation-actions', roles: ['admin', 'owner', 'moderator'] },
 	];
 
 	for await (const permission of permissions) {
