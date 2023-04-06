@@ -25,11 +25,11 @@ const LoginServicesButton = <T extends LoginService>({
 	const handler = useLoginWithService({ service, buttonLabelText, title, clientConfig, ...props });
 
 	const handleOnClick = useCallback(() => {
-		handler().catch((e: LoginErrors) => {
-			if (typeof e !== 'string') {
+		handler().catch((e: { error?: LoginErrors }) => {
+			if (!e.error || typeof e.error !== 'string') {
 				return;
 			}
-			setError?.(e);
+			setError?.(e.error);
 		});
 	}, [handler, setError]);
 
