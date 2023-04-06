@@ -1,6 +1,5 @@
 import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
 import { Meteor } from 'meteor/meteor';
-import { HTTP } from 'meteor/http';
 import { Settings, Users } from '@rocket.chat/models';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
@@ -123,9 +122,8 @@ export class AppsRestApi {
 
 					let result;
 					try {
-						result = HTTP.get(`${baseUrl}/v1/apps?${customQueryParams.toString()}`, {
-							headers,
-						});
+						const request = await fetch(`${baseUrl}/v1/apps?${customQueryParams.toString()}`, { headers });
+						result = await request.json();
 					} catch (e) {
 						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 					}
@@ -155,9 +153,8 @@ export class AppsRestApi {
 
 					let result;
 					try {
-						result = HTTP.get(`${baseUrl}/v1/categories`, {
-							headers,
-						});
+						const request = await fetch(`${baseUrl}/v1/categories`, { headers });
+						result = await request.json();
 					} catch (e: any) {
 						orchestrator.getRocketChatLogger().error('Error getting the categories from the Marketplace:', e.response.data);
 						return API.v1.internalError();
@@ -237,9 +234,8 @@ export class AppsRestApi {
 
 						let result;
 						try {
-							result = HTTP.get(`${baseUrl}/v1/apps`, {
-								headers,
-							});
+							const request = await fetch(`${baseUrl}/v1/apps`, { headers });
+							result = await request.json();
 						} catch (e) {
 							return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 						}
@@ -264,9 +260,8 @@ export class AppsRestApi {
 
 						let result;
 						try {
-							result = HTTP.get(`${baseUrl}/v1/categories`, {
-								headers,
-							});
+							const request = await fetch(`${baseUrl}/v1/categories`, { headers });
+							result = await request.json();
 						} catch (e: any) {
 							orchestrator.getRocketChatLogger().error('Error getting the categories from the Marketplace:', e.response.data);
 							return API.v1.internalError();
@@ -566,9 +561,8 @@ export class AppsRestApi {
 
 					let result;
 					try {
-						result = HTTP.get(`${baseUrl}/v1/bundles/${this.urlParams.id}/apps`, {
-							headers,
-						});
+						const request = await fetch(`${baseUrl}/v1/bundles/${this.urlParams.id}/apps`, { headers });
+						result = await request.json();
 					} catch (e: any) {
 						orchestrator.getRocketChatLogger().error("Error getting the Bundle's Apps from the Marketplace:", e.response.data);
 						return API.v1.internalError();
@@ -599,9 +593,8 @@ export class AppsRestApi {
 
 					let result;
 					try {
-						result = HTTP.get(`${baseUrl}/v1/featured-apps`, {
-							headers,
-						});
+						const request = await fetch(`${baseUrl}/v1/featured-apps`, { headers });
+						result = await request.json();
 					} catch (e) {
 						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 					}
@@ -632,9 +625,8 @@ export class AppsRestApi {
 
 						let result;
 						try {
-							result = HTTP.get(`${baseUrl}/v1/apps/${this.urlParams.id}?appVersion=${this.queryParams.version}`, {
-								headers,
-							});
+							const request = await fetch(`${baseUrl}/v1/apps/${this.urlParams.id}?appVersion=${this.queryParams.version}`, { headers });
+							result = await request.json();
 						} catch (e) {
 							return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 						}
@@ -658,9 +650,10 @@ export class AppsRestApi {
 
 						let result;
 						try {
-							result = HTTP.get(`${baseUrl}/v1/apps/${this.urlParams.id}/latest?frameworkVersion=${appsEngineVersionForMarketplace}`, {
+							const request = await fetch(`${baseUrl}/v1/apps/${this.urlParams.id}/latest?appVersion=${this.queryParams.appVersion}`, {
 								headers,
 							});
+							result = await request.json();
 						} catch (e) {
 							return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 						}
@@ -813,15 +806,16 @@ export class AppsRestApi {
 					}
 
 					let result;
+					let statusCode;
 					try {
-						result = HTTP.get(`${baseUrl}/v1/apps/${this.urlParams.id}`, {
-							headers,
-						});
+						const request = await fetch(`${baseUrl}/v1/apps/${this.urlParams.id}/versions`, { headers });
+						statusCode = request.status;
+						result = await request.json();
 					} catch (e) {
 						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 					}
 
-					if (!result || result.statusCode !== 200) {
+					if (!result || statusCode !== 200) {
 						orchestrator.getRocketChatLogger().error('Error getting the App versions from the Marketplace:', result.data);
 						return API.v1.failure();
 					}
@@ -886,16 +880,17 @@ export class AppsRestApi {
 					}
 
 					let result;
+					let statusCode;
 					try {
-						result = HTTP.get(`${baseUrl}/v1/workspaces/${workspaceIdSetting.value}/apps/${this.urlParams.id}`, {
-							headers,
-						});
+						const request = await fetch(`${baseUrl}/v1/workspaces/${workspaceIdSetting.value}/apps/${this.urlParams.id}`, { headers });
+						statusCode = request.status;
+						result = await request.json();
 					} catch (e: any) {
 						orchestrator.getRocketChatLogger().error('Error syncing the App from the Marketplace:', e.response.data);
 						return API.v1.internalError();
 					}
 
-					if (result.statusCode !== 200) {
+					if (statusCode !== 200) {
 						orchestrator.getRocketChatLogger().error('Error syncing the App from the Marketplace:', result.data);
 						return API.v1.failure();
 					}
@@ -942,13 +937,14 @@ export class AppsRestApi {
 			':id/screenshots',
 			{ authRequired: false },
 			{
-				get() {
+				async get() {
 					const baseUrl = orchestrator.getMarketplaceUrl();
 					const appId = this.urlParams.id;
 					const headers = getDefaultHeaders();
 
 					try {
-						const { data } = HTTP.get(`${baseUrl}/v1/apps/${appId}/screenshots`, { headers });
+						const request = await fetch(`${baseUrl}/v1/apps/${appId}/screenshots`, { headers });
+						const { data } = await request.json();
 
 						return API.v1.success({
 							screenshots: data,
@@ -1163,9 +1159,10 @@ export class AppsRestApi {
 					}
 
 					try {
-						const result = HTTP.get(`${baseUrl}/v1/app-request?appId=${appId}&q=${q}&sort=${sort}&limit=${limit}&offset=${offset}`, {
+						const request = await fetch(`${baseUrl}/v1/app-request?appId=${appId}&q=${q}&sort=${sort}&limit=${limit}&offset=${offset}`, {
 							headers,
 						});
+						const result = await request.json();
 
 						return API.v1.success(result.data);
 					} catch (e: any) {
@@ -1191,7 +1188,8 @@ export class AppsRestApi {
 					}
 
 					try {
-						const result = HTTP.get(`${baseUrl}/v1/app-request/stats`, { headers });
+						const request = await fetch(`${baseUrl}/v1/app-request/stats`, { headers });
+						const result = await request.json();
 
 						return API.v1.success(result.data);
 					} catch (e: any) {
@@ -1219,7 +1217,12 @@ export class AppsRestApi {
 					const { unseenRequests } = this.bodyParams;
 
 					try {
-						const result = HTTP.post(`${baseUrl}/v1/app-request/markAsSeen`, { headers, data: { ids: unseenRequests } });
+						const request = await fetch(`${baseUrl}/v1/app-request/markAsSeen`, {
+							method: 'POST',
+							headers,
+							body: JSON.stringify({ ids: unseenRequests }),
+						});
+						const result = await request.json();
 
 						return API.v1.success(result.data);
 					} catch (e: any) {

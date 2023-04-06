@@ -1,8 +1,7 @@
-import { HTTP } from 'meteor/http';
-
 import { API } from '../../../../api/server';
 import { settings } from '../../../../settings/server';
 import { Livechat } from '../../lib/Livechat';
+import { fetch } from '../../../../../server/lib/http/fetch';
 
 API.v1.addRoute(
 	'livechat/webhook.test',
@@ -58,7 +57,7 @@ API.v1.addRoute(
 				headers: {
 					'X-RocketChat-Livechat-Token': settings.get<string>('Livechat_secret_token'),
 				},
-				data: sampleData,
+				body: JSON.stringify(sampleData),
 			};
 
 			const webhookUrl = settings.get<string>('Livechat_webhookUrl');
@@ -69,10 +68,11 @@ API.v1.addRoute(
 
 			try {
 				Livechat.logger.debug(`Testing webhook ${webhookUrl}`);
-				const response = HTTP.post(webhookUrl, options);
+				const request = await fetch(webhookUrl, options);
+				const response = await request.json();
 
 				Livechat.logger.debug({ response });
-				if (response?.statusCode === 200) {
+				if (request.status === 200) {
 					return API.v1.success();
 				}
 

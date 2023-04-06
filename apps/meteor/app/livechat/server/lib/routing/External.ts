@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
-import { HTTP } from 'meteor/http';
 import type { IRoutingMethod, RoutingMethodConfig, SelectedAgent } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../../settings/server';
 import { RoutingManager } from '../RoutingManager';
 import { SystemLogger } from '../../../../../server/lib/logger/system';
+import { fetch } from '../../../../../server/lib/http/fetch';
 
 class ExternalQueue implements IRoutingMethod {
 	config: RoutingMethodConfig;
@@ -46,13 +46,14 @@ class ExternalQueue implements IRoutingMethod {
 				const ignoreAgentIdParam = `ignoreAgentId=${ignoreAgentId}`;
 				queryString = queryString.startsWith('?') ? `${queryString}&${ignoreAgentIdParam}` : `?${ignoreAgentIdParam}`;
 			}
-			const result = HTTP.call('GET', `${settings.get('Livechat_External_Queue_URL')}${queryString}`, {
+			const request = await fetch(`${settings.get('Livechat_External_Queue_URL')}${queryString}`, {
 				headers: {
 					'User-Agent': 'RocketChat Server',
 					'Accept': 'application/json',
 					'X-RocketChat-Secret-Token': settings.get('Livechat_External_Queue_Token'),
 				},
 			});
+			const result = await request.json();
 
 			if (result?.data?.username) {
 				const agent = await Users.findOneOnlineAgentByUserList(result.data.username);

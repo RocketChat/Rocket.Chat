@@ -2,7 +2,6 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Accounts } from 'meteor/accounts-base';
 import { OAuth } from 'meteor/oauth';
-import { HTTP } from 'meteor/http';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 import { Users } from '@rocket.chat/models';
@@ -12,6 +11,7 @@ import { Logger } from '../../logger/server';
 import { isURL } from '../../../lib/utils/isURL';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
 import { callbacks } from '../../../lib/callbacks';
+import { fetch } from '../../../server/lib/http/fetch';
 
 const logger = new Logger('CustomOAuth');
 
@@ -130,7 +130,9 @@ export class CustomOAuth {
 		}
 
 		try {
-			response = HTTP.post(this.tokenPath, allOptions);
+			const queryparams = new URLSearchParams(allOptions.params);
+			const request = await fetch(`${this.tokenPath}?${queryparams.toString()}`, { method: 'POST', headers: allOptions.headers });
+			response = await request.json();
 		} catch (err) {
 			const error = new Error(`Failed to complete OAuth handshake with ${this.name} at ${this.tokenPath}. ${err.message}`);
 			throw _.extend(error, { response: err.response });
@@ -151,7 +153,7 @@ export class CustomOAuth {
 		}
 	}
 
-	getIdentity(accessToken) {
+	async getIdentity(accessToken) {
 		const params = {};
 		const headers = {
 			'User-Agent': this.userAgent, // http://doc.gitlab.com/ce/api/users.html#Current-user
@@ -165,10 +167,9 @@ export class CustomOAuth {
 		}
 
 		try {
-			const response = HTTP.get(this.identityPath, {
-				headers,
-				params,
-			});
+			const queryparams = new URLSearchParams(params);
+			const request = await fetch(`${this.identityPath}?${queryparams.toString()}`, { method: 'GET', headers });
+			const response = await request.json();
 
 			let data;
 
@@ -406,7 +407,7 @@ export class CustomOAuth {
 				}),
 			);
 
-			const identity = self.getIdentity(options.accessToken);
+			const identity = await self.getIdentity(options.accessToken);
 
 			const serviceData = {
 				accessToken: options.accessToken,

@@ -1,10 +1,11 @@
-import { HTTP as MeteorHTTP } from 'meteor/http';
 import EJSON from 'ejson';
+import { AbortController } from 'abort-controller';
 
 import { httpLogger } from './logger';
 import { getFederationDomain } from './getFederationDomain';
 import { search } from './dns';
 import { encrypt } from './crypt';
+import { fetch } from '../../../../server/lib/http/fetch';
 
 export async function federationRequest(method, url, body, headers, peerKey = null) {
 	let data = null;
@@ -19,11 +20,26 @@ export async function federationRequest(method, url, body, headers, peerKey = nu
 
 	httpLogger.debug(`[${method}] ${url}`);
 
-	return MeteorHTTP.call(method, url, {
-		data,
-		timeout: 2000,
-		headers: { ...headers, 'x-federation-domain': getFederationDomain() },
-	});
+	const controller = new AbortController();
+	const { signal } = controller;
+
+	const timeout = setTimeout(() => {
+		controller.abort();
+	}, 2000);
+
+	try {
+		const request = await fetch(url, {
+			method,
+			headers: { ...headers, 'x-federation-domain': getFederationDomain() },
+			body: JSON.stringify(data),
+			signal,
+		});
+		return request.json();
+	} catch (e) {
+		throw e;
+	} finally {
+		clearTimeout(timeout);
+	}
 }
 
 export async function federationRequestToPeer(method, peerDomain, uri, body, options = {}) {

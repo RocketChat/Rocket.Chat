@@ -1,10 +1,10 @@
-import { HTTP } from 'meteor/http';
 import { Users } from '@rocket.chat/models';
 
 import { userLoggedOut } from './userLoggedOut';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { settings } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { fetch } from '../../../../server/lib/http/fetch';
 
 export async function userLogout(userId) {
 	const { connectToCloud, workspaceRegistered } = await retrieveRegistrationStatus();
@@ -31,15 +31,17 @@ export async function userLogout(userId) {
 
 			const { refreshToken } = user.services.cloud;
 
-			HTTP.post(`${cloudUrl}/api/oauth/revoke`, {
-				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-				params: {
-					client_id,
-					client_secret,
-					token: refreshToken,
-					token_type_hint: 'refresh_token',
-				},
+			const queryparams = new URLSearchParams({
+				client_id,
+				client_secret,
+				token: refreshToken,
+				token_type_hint: 'refresh_token',
 			});
+			const request = await fetch(`${cloudUrl}/api/oauth/revoke?${queryparams.toString()}`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			});
+			await request.json();
 		} catch (err) {
 			SystemLogger.error({
 				msg: 'Failed to get Revoke refresh token to logout of Rocket.Chat Cloud',
