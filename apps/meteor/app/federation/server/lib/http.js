@@ -29,7 +29,7 @@ export async function federationRequest(method, url, body, headers, peerKey = nu
 export async function federationRequestToPeer(method, peerDomain, uri, body, options = {}) {
 	const ignoreErrors = peerDomain === getFederationDomain() ? false : options.ignoreErrors;
 
-	const { url: baseUrl, publicKey } = search(peerDomain);
+	const { url: baseUrl, publicKey } = await search(peerDomain);
 
 	let peerKey = null;
 
