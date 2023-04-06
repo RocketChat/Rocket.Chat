@@ -75,10 +75,6 @@ class RoomCoordinatorServer extends RoomCoordinator {
 		return directives as IRoomTypeServerDirectives;
 	}
 
-	openRoom(_type: string, _name: string, _render = true): void {
-		// Nothing to do on the server side.
-	}
-
 	getTypesToShowOnDashboard(): Array<IRoomTypeConfig['identifier']> {
 		return Object.keys(this.roomTypes).filter((key) => (this.roomTypes[key].directives as IRoomTypeServerDirectives).includeInDashboard());
 	}
