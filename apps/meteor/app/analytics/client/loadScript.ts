@@ -34,19 +34,20 @@ Template.body.onRendered(function () {
 
 			if (googleId) {
 				/*eslint-disable */
-				if(googleId.startsWith("G-")){
+				if (googleId.startsWith("G-")) {
 					// Google Analytics 4
 					const f = document.getElementsByTagName('script')[0];
 					const j = document.createElement('script');
 					j.async = true;
 					j.src = `//www.googletagmanager.com/gtag/js?id=${googleId}`;
 					f.parentNode?.insertBefore(j, f);
-					
-					window.dataLayer = window.dataLayer || [];
-					function gtag(){dataLayer.push(arguments);}
+
+					interface window { dataLayer: any; }
+					let dataLayer = window.dataLayer || [];
+					function gtag() { dataLayer.push(arguments); }
 					gtag('js', new Date());
 					gtag('config', googleId);
-				}else{
+				} else {
 					// Google Analytics 3
 					(function (i, s, o, g, r: 'ga', a?: any, m?: any) {
 						i['GoogleAnalyticsObject'] = r;
