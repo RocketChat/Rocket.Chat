@@ -54,19 +54,19 @@ export const EmojiPicker = {
 			}),
 		);
 	},
-	isOpened() {
-		return this.opened;
-	},
-	setTone(tone) {
-		this.tone = tone;
-		Meteor._localStorage.setItem('emoji.tone', tone);
-	},
-	getTone() {
-		return this.tone;
-	},
-	getRecent() {
-		return this.recent;
-	},
+	// isOpened() {
+	// 	return this.opened;
+	// },
+	// setTone(tone) {
+	// 	this.tone = tone;
+	// 	Meteor._localStorage.setItem('emoji.tone', tone);
+	// },
+	// getTone() {
+	// 	return this.tone;
+	// },
+	// getRecent() {
+	// 	return this.recent;
+	// },
 	setPosition() {
 		const windowHeight = window.innerHeight;
 		const windowWidth = window.innerWidth;
@@ -157,9 +157,9 @@ export const EmojiPicker = {
 		this.recent.splice(pos, 1);
 		Meteor._localStorage.setItem('emoji.recent', this.recent);
 	},
-	updateRecent(category) {
-		updateRecentEmoji(category);
-	},
+	// updateRecent(category) {
+	// 	updateRecentEmoji(category);
+	// },
 	calculateCategoryPositions() {
 		if (!updatePositions) {
 			return;

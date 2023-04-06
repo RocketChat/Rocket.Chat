@@ -14,6 +14,7 @@ Meteor.startup(function () {
 		action(event, props) {
 			event.stopPropagation();
 			const { message = messageArgs(this).msg } = props;
+			// TODO: create a callback to send the emoji
 			EmojiPicker.open(event.currentTarget, (emoji) => Meteor.call('setReaction', `:${emoji}:`, message._id));
 		},
 		condition({ message, user, room, subscription }) {

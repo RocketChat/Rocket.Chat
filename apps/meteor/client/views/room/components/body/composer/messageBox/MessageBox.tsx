@@ -14,7 +14,7 @@ import {
 import { useTranslation, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { MouseEventHandler, ReactElement, FormEvent, KeyboardEventHandler, KeyboardEvent, Ref, ClipboardEventHandler } from 'react';
-import React, { memo, useRef, useReducer, useCallback } from 'react';
+import React, { memo, useRef, useReducer, useCallback, useState } from 'react';
 import { useSubscription } from 'use-subscription';
 
 import { EmojiPicker } from '../../../../../../../app/emoji/client';
@@ -31,6 +31,7 @@ import type { ComposerAPI } from '../../../../../../lib/chats/ChatAPI';
 import { roomCoordinator } from '../../../../../../lib/rooms/roomCoordinator';
 import { keyCodes } from '../../../../../../lib/utils/keyCodes';
 import AudioMessageRecorder from '../../../../../composer/AudioMessageRecorder';
+import EmojiPickerTemplate from '../../../../../composer/EmojiPicker';
 import VideoMessageRecorder from '../../../../../composer/VideoMessageRecorder';
 import { useChat } from '../../../../contexts/ChatContext';
 import { useComposerPopup } from '../../../../contexts/ComposerPopupContext';
@@ -125,6 +126,7 @@ const MessageBox = ({
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 	const messageComposerRef = useRef<HTMLElement>(null);
 	const shadowRef = useRef(null);
+	const emojiButtonRef = useRef();
 
 	const storageID = `${rid}${tmid ? `-${tmid}` : ''}`;
 
@@ -341,6 +343,12 @@ const MessageBox = ({
 
 	const mergedRefs = useMessageComposerMergedRefs(c, textareaRef, callbackRef, autofocusRef);
 
+	const [isPickerOpen, setIsPickerOpen] = useState(false);
+
+	const handleOpenTest = () => {
+		setIsPickerOpen(true);
+	};
+
 	return (
 		<>
 			{chat?.composer?.quotedMessages && <MessageBoxReplies />}
@@ -396,9 +404,12 @@ const MessageBox = ({
 						<MessageComposerAction
 							icon='emoji'
 							disabled={!useEmojis || isRecording || !canSend}
-							onClick={handleOpenEmojiPicker}
+							onClick={handleOpenTest}
 							title={t('Emoji')}
 						/>
+						{isPickerOpen && (
+							<EmojiPickerTemplate composer={chat.composer} reference={messageComposerRef} onClose={() => setIsPickerOpen(false)} />
+						)}
 						<MessageComposerActionsDivider />
 						{chat.composer && formatters.length > 0 && (
 							<MessageBoxFormattingToolbar
