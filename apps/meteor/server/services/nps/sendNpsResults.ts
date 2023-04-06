@@ -24,7 +24,8 @@ export const sendNpsResults = Meteor.bindEnvironment(async function sendNpsResul
 			await fetch(`${npsUrl}/v1/surveys/${npsId}/results`, {
 				method: 'POST',
 				headers: {
-					Authorization: `Bearer ${token}`,
+					'Authorization': `Bearer ${token}`,
+					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify(data),
 			})

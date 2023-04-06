@@ -8,7 +8,7 @@ import { fetch } from '../../../../server/lib/http/fetch';
 type installAction = 'install' | 'update' | 'uninstall';
 
 export async function notifyAppInstall(marketplaceBaseUrl: string, action: installAction, appInfo: IAppInfo): Promise<void> {
-	const headers: { Authorization?: string } = {};
+	const headers: { 'Authorization'?: string; 'Content-Type': string } = { 'Content-Type': 'application/json' };
 
 	try {
 		const token = await getWorkspaceAccessToken();

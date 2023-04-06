@@ -30,7 +30,8 @@ const appsNotifyAppRequests = Meteor.bindEnvironment(async function _appsNotifyA
 
 		const options = {
 			headers: {
-				Authorization: `Bearer ${token}`,
+				'Authorization': `Bearer ${token}`,
+				'Content-Type': 'application/json',
 			},
 		};
 

@@ -1,5 +1,11 @@
 import { fetch } from '../../../server/lib/http/fetch';
 
+const defaultFetchOptions = {
+	headers: {
+		'Content-Type': 'application/json',
+	},
+};
+
 export class SlackAPI {
 	constructor(apiToken) {
 		this.apiToken = apiToken;
@@ -17,10 +23,10 @@ export class SlackAPI {
 		const request = await fetch(`https://slack.com/api/conversations.list?${queryparams.toString()}`);
 		const response = await request.json();
 
-		if (response && response.data && Array.isArray(response.data.channels) && response.data.channels.length > 0) {
-			channels = channels.concat(response.data.channels);
-			if (response.data.response_metadata && response.data.response_metadata.next_cursor) {
-				const nextChannels = await this.getChannels(response.data.response_metadata.next_cursor);
+		if (response && response && Array.isArray(response.channels) && response.channels.length > 0) {
+			channels = channels.concat(response.channels);
+			if (response.response_metadata && response.response_metadata.next_cursor) {
+				const nextChannels = await this.getChannels(response.response_metadata.next_cursor);
 				channels = channels.concat(nextChannels);
 			}
 		}
@@ -40,10 +46,10 @@ export class SlackAPI {
 		const request = await fetch(`https://slack.com/api/conversations.list?${queryparams.toString()}`);
 		const response = await request.json();
 
-		if (response && response.data && Array.isArray(response.data.channels) && response.data.channels.length > 0) {
-			groups = groups.concat(response.data.channels);
-			if (response.data.response_metadata && response.data.response_metadata.next_cursor) {
-				const nextGroups = await this.getGroups(response.data.response_metadata.next_cursor);
+		if (response && response && Array.isArray(response.channels) && response.channels.length > 0) {
+			groups = groups.concat(response.channels);
+			if (response.response_metadata && response.response_metadata.next_cursor) {
+				const nextGroups = await this.getGroups(response.response_metadata.next_cursor);
 				groups = groups.concat(nextGroups);
 			}
 		}
@@ -59,7 +65,7 @@ export class SlackAPI {
 		});
 		const request = await fetch(`https://slack.com/api/conversations.info?${queryparams.toString()}`);
 		const response = await request.json();
-		return response && response.data && request.status === 200 && response.data.ok && response.data.channel;
+		return response && response && request.status === 200 && request.ok && response.channel;
 	}
 
 	async getMembers(channelId) {
@@ -79,11 +85,11 @@ export class SlackAPI {
 			const request = await fetch(`https://slack.com/api/conversations.members?${queryparams.toString()}`);
 			// eslint-disable-next-line no-await-in-loop
 			const response = await request.json();
-			if (response && response.data && response.statusCode === 200 && response.data.ok && Array.isArray(response.data.members)) {
-				members = members.concat(response.data.members);
-				const hasMoreItems = response.data.response_metadata && response.data.response_metadata.next_cursor;
+			if (response && response && request.status === 200 && request.ok && Array.isArray(response.members)) {
+				members = members.concat(response.members);
+				const hasMoreItems = response.response_metadata && response.response_metadata.next_cursor;
 				if (hasMoreItems) {
-					currentCursor = response.data.response_metadata.next_cursor;
+					currentCursor = response.response_metadata.next_cursor;
 				}
 			}
 		}
@@ -91,32 +97,52 @@ export class SlackAPI {
 	}
 
 	async react(data) {
-		const request = await fetch('https://slack.com/api/reactions.add', { method: 'POST', body: JSON.stringify(data) });
+		const request = await fetch('https://slack.com/api/reactions.add', {
+			method: 'POST',
+			body: JSON.stringify(data),
+			...defaultFetchOptions,
+		});
 		const response = await request.json();
-		return response && request.status === 200 && response.data && response.data.ok;
+		return response && request.status === 200 && response && request.ok;
 	}
 
 	async removeReaction(data) {
-		const request = await fetch('https://slack.com/api/reactions.remove', { method: 'POST', body: JSON.stringify(data) });
+		const request = await fetch('https://slack.com/api/reactions.remove', {
+			method: 'POST',
+			body: JSON.stringify(data),
+			...defaultFetchOptions,
+		});
 		const response = await request.json();
-		return response && request.status === 200 && response.data && response.data.ok;
+		return response && request.status === 200 && response && request.ok;
 	}
 
 	async removeMessage(data) {
-		const request = await fetch('https://slack.com/api/chat.delete', { method: 'POST', body: JSON.stringify(data) });
+		const request = await fetch('https://slack.com/api/chat.delete', {
+			method: 'POST',
+			body: JSON.stringify(data),
+			...defaultFetchOptions,
+		});
 		const response = await request.json();
-		return response && request.status === 200 && response.data && response.data.ok;
+		return response && request.status === 200 && response && request.ok;
 	}
 
 	async sendMessage(data) {
-		const request = await fetch('https://slack.com/api/chat.postMessage', { method: 'POST', body: JSON.stringify(data) });
+		const request = await fetch('https://slack.com/api/chat.postMessage', {
+			method: 'POST',
+			body: JSON.stringify(data),
+			...defaultFetchOptions,
+		});
 		return request.json();
 	}
 
 	async updateMessage(data) {
-		const request = await fetch('https://slack.com/api/chat.update', { method: 'POST', body: JSON.stringify(data) });
+		const request = await fetch('https://slack.com/api/chat.update', {
+			method: 'POST',
+			body: JSON.stringify(data),
+			...defaultFetchOptions,
+		});
 		const response = await request.json();
-		return response && request.status === 200 && response.data && response.data.ok;
+		return response && request.status === 200 && response && request.ok;
 	}
 
 	async getHistory(family, options) {
@@ -126,7 +152,7 @@ export class SlackAPI {
 		});
 		const request = await fetch(`https://slack.com/api/${family}.history?${queryparams.toString()}`);
 		const response = await request.json();
-		return response && response.data;
+		return response;
 	}
 
 	async getPins(channelId) {
@@ -136,7 +162,7 @@ export class SlackAPI {
 		});
 		const request = await fetch(`https://slack.com/api/pins.list?${queryparams.toString()}`);
 		const response = await request.json();
-		return response && response.data && request.status === 200 && response.data.ok && response.data.items;
+		return response && response && request.status === 200 && request.ok && response.items;
 	}
 
 	async getUser(userId) {
@@ -146,6 +172,6 @@ export class SlackAPI {
 		});
 		const request = await fetch(`https://slack.com/api/users.info?${queryparams.toString()}`);
 		const response = await request.json();
-		return response && response.data && request.status === 200 && response.data.ok && response.data.user;
+		return response && response && request.status === 200 && request.ok && response.user;
 	}
 }

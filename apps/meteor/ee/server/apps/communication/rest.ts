@@ -28,6 +28,7 @@ const rocketChatVersion = Info.version;
 const appsEngineVersionForMarketplace = Info.marketplaceApiVersion.replace(/-.*/g, '');
 const getDefaultHeaders = (): Record<string, any> => ({
 	'X-Apps-Engine-Version': appsEngineVersionForMarketplace,
+	'Content-Type': 'application/json',
 });
 
 const purchaseTypes = new Set(['buy', 'subscription']);

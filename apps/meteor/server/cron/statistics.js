@@ -15,7 +15,7 @@ async function generateStatistics(logger) {
 	}
 
 	try {
-		const headers = {};
+		const headers = { 'Content-Type': 'application/json' };
 		const token = await getWorkspaceAccessToken();
 
 		if (token) {

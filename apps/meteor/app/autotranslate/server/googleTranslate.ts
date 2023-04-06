@@ -96,13 +96,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 			result = await request.json();
 		} catch (e: any) {
 			// Fallback: Get the English names of the target languages
-			if (
-				e.response &&
-				e.response.statusCode === 400 &&
-				e.response.data &&
-				e.response.data.error &&
-				e.response.data.error.status === 'INVALID_ARGUMENT'
-			) {
+			if (e.response && e.response.statusCode === 400 && e.response && e.response.error && e.response.error.status === 'INVALID_ARGUMENT') {
 				params.target = 'en';
 				target = 'en';
 				if (!this.supportedLanguages[target]) {

@@ -158,7 +158,8 @@ export class Mobex implements ISMSProvider {
 			const response = await fetch(`${this.restAddress}/secure/sendbatch`, {
 				method: 'POST',
 				headers: {
-					Authorization: `Basic ${authToken}`,
+					'Authorization': `Basic ${authToken}`,
+					'Content-Type': 'application/json',
 				},
 				body: JSON.stringify({
 					messages: [
