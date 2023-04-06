@@ -1,9 +1,8 @@
 import { check, Match } from 'meteor/check';
-import { EmailInbox } from '@rocket.chat/models';
+import { EmailInbox, Users } from '@rocket.chat/models';
 
 import { API } from '../api';
 import { insertOneEmailInbox, findEmailInboxes, findOneEmailInbox, updateEmailInbox } from '../lib/emailInbox';
-import Users from '../../../models/server/models/Users';
 import { sendTestEmailToInbox } from '../../../../server/features/EmailInbox/EmailInbox_Outgoing';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
@@ -147,7 +146,10 @@ API.v1.addRoute(
 				return API.v1.notFound();
 			}
 
-			const user = Users.findOneById(this.userId);
+			const user = await Users.findOneById(this.userId);
+			if (!user) {
+				return API.v1.notFound();
+			}
 
 			await sendTestEmailToInbox(emailInbox, user);
 

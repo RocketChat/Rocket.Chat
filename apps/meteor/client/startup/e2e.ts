@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { e2e } from '../../app/e2e/client/rocketchat.e2e';
-import { Subscriptions, Rooms } from '../../app/models/client';
+import { Subscriptions, ChatRoom } from '../../app/models/client';
 import { Notifications } from '../../app/notifications/client';
 import { settings } from '../../app/settings/client';
 import { onClientBeforeSendMessage } from '../lib/onClientBeforeSendMessage';
@@ -109,7 +109,7 @@ Meteor.startup(() => {
 
 		offClientMessageReceived = onClientMessageReceived.use(async (msg: IMessage) => {
 			const e2eRoom = await e2e.getInstanceByRoomId(msg.rid);
-			if (!e2eRoom || !e2eRoom.shouldConvertReceivedMessages()) {
+			if (!e2eRoom?.shouldConvertReceivedMessages()) {
 				return msg;
 			}
 			return e2e.decryptMessage(msg);
@@ -123,7 +123,7 @@ Meteor.startup(() => {
 				return message;
 			}
 
-			const subscription = await waitUntilFind(() => Rooms.findOne({ _id: message.rid }));
+			const subscription = await waitUntilFind(() => ChatRoom.findOne({ _id: message.rid }));
 
 			subscription.encrypted ? e2eRoom.resume() : e2eRoom.pause();
 

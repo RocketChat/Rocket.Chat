@@ -7,7 +7,7 @@ import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'livechat:removeTag'(id: string): boolean;
+		'livechat:removeTag'(id: string): Promise<boolean>;
 	}
 }
 
@@ -18,6 +18,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:removeTag' });
 		}
 
-		return LivechatEnterprise.removeTag(id);
+		return (await LivechatEnterprise.removeTag(id)).deletedCount > 0;
 	},
 });

@@ -60,7 +60,7 @@ export default class MentionsServer extends MentionsParser {
 				continue;
 			}
 			if (this.messageMaxAll > 0 && (await this.getTotalChannelMembers(rid)) > this.messageMaxAll) {
-				this.onMaxRoomMembersExceeded({ sender, rid });
+				await this.onMaxRoomMembersExceeded({ sender, rid });
 				continue;
 			}
 			mentionsAll.push({
@@ -72,14 +72,14 @@ export default class MentionsServer extends MentionsParser {
 		return [...mentionsAll, ...mentions];
 	}
 
-	getChannelbyMentions({ msg }) {
+	async getChannelbyMentions({ msg }) {
 		const channels = this.getChannelMentions(msg);
 		return this.getChannels(channels.map((c) => c.trim().substr(1)));
 	}
 
 	async execute(message) {
 		const mentionsAll = await this.getUsersByMentions(message);
-		const channels = this.getChannelbyMentions(message);
+		const channels = await this.getChannelbyMentions(message);
 
 		message.mentions = mentionsAll;
 		message.channels = channels;

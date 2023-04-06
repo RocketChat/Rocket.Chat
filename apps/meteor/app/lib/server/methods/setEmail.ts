@@ -34,7 +34,7 @@ Meteor.methods<ServerMethods>({
 			return email;
 		}
 
-		if (!setEmail(user._id, email)) {
+		if (!(await setEmail(user._id, email))) {
 			throw new Meteor.Error('error-could-not-change-email', 'Could not change email', {
 				method: 'setEmail',
 			});

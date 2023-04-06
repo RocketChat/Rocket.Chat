@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
-import { Rooms, Subscriptions } from '@rocket.chat/models';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
@@ -17,7 +17,7 @@ slashCommands.add({
 		channel = channel.replace('#', '');
 
 		const userId = Meteor.userId() as string;
-		const user = Meteor.users.findOne(userId);
+		const user = await Users.findOne(userId);
 		const room = await Rooms.findOneByNameAndType(channel, 'c');
 
 		if (!user) {
