@@ -15,7 +15,7 @@ import {
 	MESSAGE_TYPE_USER_LEFT,
 	MESSAGE_VIDEO_CALL,
 	MESSAGE_WEBRTC_CALL,
-} from './Messages';
+} from './Messages/constants';
 
 export function flatMap(arr, mapFunc) {
 	const result = [];
