@@ -1,6 +1,6 @@
 import fs from 'fs';
 
-function hasDockerEnv() {
+function hasDockerEnv(): boolean {
 	try {
 		fs.statSync('/.dockerenv');
 		return true;
@@ -9,7 +9,7 @@ function hasDockerEnv() {
 	}
 }
 
-function hasDockerCGroup() {
+function hasDockerCGroup(): boolean {
 	try {
 		return fs.readFileSync('/proc/self/cgroup', 'utf8').indexOf('docker') !== -1;
 	} catch (err) {
@@ -17,12 +17,12 @@ function hasDockerCGroup() {
 	}
 }
 
-function check() {
+function check(): boolean {
 	return hasDockerEnv() || hasDockerCGroup();
 }
 
-let _isDocker;
-export const isDocker = function () {
+let _isDocker: boolean;
+export const isDocker = function (): boolean {
 	if (_isDocker === undefined) {
 		_isDocker = check();
 	}

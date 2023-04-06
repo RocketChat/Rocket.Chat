@@ -29,28 +29,28 @@ function DolphinOnCreateUser(options, user) {
 }
 
 if (Meteor.isServer) {
-	Meteor.startup(() =>
+	Meteor.startup(async () => {
 		settings.watch('Accounts_OAuth_Dolphin_URL', (value) => {
 			config.serverURL = value;
 			return Dolphin.configure(config);
-		}),
-	);
+		});
 
-	if (settings.get('Accounts_OAuth_Dolphin_URL')) {
-		const data = {
-			buttonLabelText: settings.get('Accounts_OAuth_Dolphin_button_label_text'),
-			buttonColor: settings.get('Accounts_OAuth_Dolphin_button_color'),
-			buttonLabelColor: settings.get('Accounts_OAuth_Dolphin_button_label_color'),
-			clientId: settings.get('Accounts_OAuth_Dolphin_id'),
-			secret: settings.get('Accounts_OAuth_Dolphin_secret'),
-			serverURL: settings.get('Accounts_OAuth_Dolphin_URL'),
-			loginStyle: settings.get('Accounts_OAuth_Dolphin_login_style'),
-		};
+		if (settings.get('Accounts_OAuth_Dolphin_URL')) {
+			const data = {
+				buttonLabelText: settings.get('Accounts_OAuth_Dolphin_button_label_text'),
+				buttonColor: settings.get('Accounts_OAuth_Dolphin_button_color'),
+				buttonLabelColor: settings.get('Accounts_OAuth_Dolphin_button_label_color'),
+				clientId: settings.get('Accounts_OAuth_Dolphin_id'),
+				secret: settings.get('Accounts_OAuth_Dolphin_secret'),
+				serverURL: settings.get('Accounts_OAuth_Dolphin_URL'),
+				loginStyle: settings.get('Accounts_OAuth_Dolphin_login_style'),
+			};
 
-		ServiceConfiguration.configurations.upsert({ service: 'dolphin' }, { $set: data });
-	}
+			await ServiceConfiguration.configurations.upsertAsync({ service: 'dolphin' }, { $set: data });
+		}
 
-	callbacks.add('beforeCreateUser', DolphinOnCreateUser, callbacks.priority.HIGH, 'dolphin');
+		callbacks.add('beforeCreateUser', DolphinOnCreateUser, callbacks.priority.HIGH, 'dolphin');
+	});
 } else {
 	Meteor.startup(() =>
 		Tracker.autorun(function () {

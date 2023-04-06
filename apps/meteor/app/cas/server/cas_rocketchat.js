@@ -48,12 +48,12 @@ Meteor.startup(function () {
 
 let timer;
 
-function updateServices(/* record*/) {
+async function updateServices(/* record*/) {
 	if (typeof timer !== 'undefined') {
 		Meteor.clearTimeout(timer);
 	}
 
-	timer = Meteor.setTimeout(function () {
+	timer = Meteor.setTimeout(async function () {
 		const data = {
 			// These will pe passed to 'node-cas' as options
 			enabled: settings.get('CAS_enabled'),
@@ -71,14 +71,14 @@ function updateServices(/* record*/) {
 		// Either register or deregister the CAS login service based upon its configuration
 		if (data.enabled) {
 			logger.info('Enabling CAS login service');
-			ServiceConfiguration.configurations.upsert({ service: 'cas' }, { $set: data });
+			await ServiceConfiguration.configurations.upsertAsync({ service: 'cas' }, { $set: data });
 		} else {
 			logger.info('Disabling CAS login service');
-			ServiceConfiguration.configurations.remove({ service: 'cas' });
+			await ServiceConfiguration.configurations.removeAsync({ service: 'cas' });
 		}
 	}, 2000);
 }
 
-settings.watchByRegex(/^CAS_.+/, (key, value) => {
-	updateServices(value);
+settings.watchByRegex(/^CAS_.+/, async (key, value) => {
+	await updateServices(value);
 });
