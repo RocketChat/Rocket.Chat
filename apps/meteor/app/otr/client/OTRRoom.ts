@@ -1,5 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { EJSON } from 'meteor/ejson';
+import EJSON from 'ejson';
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { ReactiveVar } from 'meteor/reactive-var';
