@@ -7069,7 +7069,7 @@ __metadata:
     "@types/chalk": ^2.2.0
     "@types/ejson": ^2
     "@types/jest": ^27.4.1
-    chalk: ^5.2.0
+    chalk: ^4.0.0
     ejson: ^2.2.3
     eslint: ^8.12.0
     jest: ~29.5.0
@@ -7313,7 +7313,7 @@ __metadata:
     chai-datetime: ^1.8.0
     chai-dom: ^1.11.0
     chai-spies: ~1.0.0
-    chalk: ^5.2.0
+    chalk: ^4.0.0
     change-case: ^4.1.2
     chart.js: ^3.8.0
     clipboard: ^2.0.11
@@ -16127,7 +16127,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:*, chalk@npm:^5.2.0":
+"chalk@npm:*":
   version: 5.2.0
   resolution: "chalk@npm:5.2.0"
   checksum: 03d8060277de6cf2fd567dc25fcf770593eb5bb85f460ce443e49255a30ff1242edd0c90a06a03803b0466ff0687a939b41db1757bec987113e83de89a003caa

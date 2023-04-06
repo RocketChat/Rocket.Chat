@@ -1,11 +1,11 @@
 // Copied from meteor/logging package
-import { Chalk } from 'chalk';
+import chalk from 'chalk';
 import { stringify } from 'ejson';
-import type { ColorName } from 'chalk';
 
-type NonGrayColors = Exclude<ColorName, 'gray' | 'grey'>;
+type Color = typeof chalk.Color;
+type NonGrayColors = Exclude<Color, 'gray' | 'grey'>;
 
-type Colors = Exclude<`${ColorName}Bright` | ColorName, 'grayBright' | 'greyBright'>;
+type Colors = Exclude<`${Color}Bright` | Color, 'grayBright' | 'greyBright'>;
 
 type LogMessage = {
 	time?: Date;
@@ -27,8 +27,6 @@ type Options = {
 	metaColor?: NonGrayColors;
 };
 
-const chalk = new Chalk({ level: 3 });
-
 const RESTRICTED_KEYS = ['time', 'timeInexact', 'level', 'file', 'line', 'program', 'originApp', 'satellite', 'stderr'];
 
 const FORMATTED_KEYS = [...RESTRICTED_KEYS, 'app', 'message'];
@@ -42,6 +40,8 @@ const LEVEL_COLORS: Record<string, NonGrayColors> = {
 };
 
 const META_COLOR = 'blue';
+
+chalk.level = 2;
 
 // Default colors cause readability problems on Windows Powershell,
 // switch to bright variants. While still capable of millions of
