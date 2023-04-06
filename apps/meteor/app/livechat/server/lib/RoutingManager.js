@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
+import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms, Users } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 
 import {
 	createLivechatSubscription,
@@ -14,7 +15,6 @@ import {
 } from './Helper';
 import { callbacks } from '../../../../lib/callbacks';
 import { Logger } from '../../../../server/lib/logger/Logger';
-import { Rooms, Messages, Users, Subscriptions } from '../../../models/server';
 import { Apps, AppEvents } from '../../../../ee/server/apps';
 
 const logger = new Logger('RoutingManager');
@@ -68,7 +68,7 @@ export const RoutingManager = {
 	async delegateInquiry(inquiry, agent, options = {}) {
 		const { department, rid } = inquiry;
 		logger.debug(`Attempting to delegate inquiry ${inquiry._id}`);
-		if (!agent || (agent.username && !Users.findOneOnlineAgentByUserList(agent.username) && !allowAgentSkipQueue(agent))) {
+		if (!agent || (agent.username && !(await Users.findOneOnlineAgentByUserList(agent.username)) && !(await allowAgentSkipQueue(agent)))) {
 			logger.debug(`Agent offline or invalid. Using routing method to get next agent for inquiry ${inquiry._id}`);
 			agent = await this.getNextAgent(department);
 			logger.debug(`Routing method returned agent ${agent && agent.agentId} for inquiry ${inquiry._id}`);
@@ -95,18 +95,19 @@ export const RoutingManager = {
 		logger.debug(`Assigning agent ${agent.agentId} to inquiry ${inquiry._id}`);
 
 		const { rid, name, v, department } = inquiry;
-		if (!createLivechatSubscription(rid, name, v, agent, department)) {
+		if (!(await createLivechatSubscription(rid, name, v, agent, department))) {
 			logger.debug(`Cannot assign agent to inquiry ${inquiry._id}: Cannot create subscription`);
 			throw new Meteor.Error('error-creating-subscription', 'Error creating subscription');
 		}
 
 		await LivechatRooms.changeAgentByRoomId(rid, agent);
-		Rooms.incUsersCountById(rid);
+		await Rooms.incUsersCountById(rid);
 
-		const user = Users.findOneById(agent.agentId);
+		const user = await Users.findOneById(agent.agentId);
 		const room = await LivechatRooms.findOneById(rid);
 
-		Messages.createCommandWithRoomIdAndUser('connected', rid, user);
+		await Message.saveSystemMessage('command', rid, 'connected', user);
+
 		dispatchAgentDelegated(rid, agent.agentId);
 		logger.debug(`Agent ${agent.agentId} assigned to inquriy ${inquiry._id}. Instances notified`);
 
@@ -140,7 +141,7 @@ export const RoutingManager = {
 		if (servedBy) {
 			logger.debug(`Unassigning current agent for inquiry ${inquiry._id}`);
 			await LivechatRooms.removeAgentByRoomId(rid);
-			this.removeAllRoomSubscriptions(room);
+			await this.removeAllRoomSubscriptions(room);
 			dispatchAgentDelegated(rid, null);
 		}
 
@@ -239,10 +240,10 @@ export const RoutingManager = {
 		return defaultAgent;
 	},
 
-	removeAllRoomSubscriptions(room, ignoreUser) {
+	async removeAllRoomSubscriptions(room, ignoreUser) {
 		const { _id: roomId } = room;
 
-		const subscriptions = Subscriptions.findByRoomId(roomId).fetch();
+		const subscriptions = await Subscriptions.findByRoomId(roomId).toArray();
 		subscriptions?.forEach(({ u }) => {
 			if (ignoreUser && ignoreUser._id === u._id) {
 				return;

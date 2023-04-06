@@ -9,7 +9,7 @@ export type EditableSetting = (ISettingBase | ISettingColor) & {
 	invisible: boolean;
 };
 
-export type EditableSettingsContextQuery = SettingsContextQuery & {
+type EditableSettingsContextQuery = SettingsContextQuery & {
 	changed?: boolean;
 };
 

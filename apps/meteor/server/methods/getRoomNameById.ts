@@ -1,16 +1,15 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Rooms } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import { Rooms } from '../../app/models/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		getRoomNameById(rid: IRoom['_id']): string;
+		getRoomNameById(rid: IRoom['_id']): Promise<string | undefined>;
 	}
 }
 
@@ -24,7 +23,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const room = Rooms.findOneById(rid);
+		const room = await Rooms.findOneById(rid);
 
 		if (room == null) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {

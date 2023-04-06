@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import objectPath from 'object-path';
+import { Messages } from '@rocket.chat/models';
 
 import { slashCommands } from '../../../utils/server';
-import { Messages } from '../../../models/server';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { API } from '../api';
 import { getLoggedInUser } from '../helpers/getLoggedInUser';
@@ -203,7 +203,7 @@ API.v1.addRoute(
 
 			const params = body.params ? body.params : '';
 			if (typeof body.tmid === 'string') {
-				const thread = Messages.findOneById(body.tmid);
+				const thread = await Messages.findOneById(body.tmid);
 				if (!thread || thread.rid !== body.roomId) {
 					return API.v1.failure('Invalid thread.');
 				}
@@ -309,7 +309,7 @@ API.v1.addRoute(
 
 			const { params = '' } = body;
 			if (body.tmid) {
-				const thread = Messages.findOneById(body.tmid);
+				const thread = await Messages.findOneById(body.tmid);
 				if (!thread || thread.rid !== body.roomId) {
 					return API.v1.failure('Invalid thread.');
 				}

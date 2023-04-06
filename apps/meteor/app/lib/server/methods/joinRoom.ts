@@ -1,11 +1,11 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, IRoomWithJoinCode } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import { Rooms } from '@rocket.chat/models';
 
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
-import { Rooms } from '../../../models/server';
 import { addUserToRoom } from '../functions';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
@@ -21,13 +21,13 @@ Meteor.methods<ServerMethods>({
 	async joinRoom(rid, code) {
 		check(rid, String);
 
-		const user = Meteor.user();
+		const user = await Meteor.userAsync();
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'joinRoom' });
 		}
 
-		const room = Rooms.findOneById(rid);
+		const room = await Rooms.findOneById<IRoomWithJoinCode>(rid);
 
 		if (!room) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'joinRoom' });

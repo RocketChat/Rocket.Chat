@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import type { ISlashCommand, ISlashCommandPreviewItem } from '@rocket.chat/apps-engine/definition/slashcommands';
+import type { ISlashCommand, ISlashCommandPreview, ISlashCommandPreviewItem } from '@rocket.chat/apps-engine/definition/slashcommands';
 import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
 import { CommandBridge } from '@rocket.chat/apps-engine/server/bridges/CommandBridge';
 import type { IMessage, RequiredField, SlashCommand } from '@rocket.chat/core-typings';
@@ -168,8 +168,8 @@ export class AppCommandsBridge extends CommandBridge {
 		message: RequiredField<Partial<IMessage>, 'rid'>,
 		triggerId?: string,
 	): Promise<void> {
-		const user = this.orch.getConverters()?.get('users').convertById(Meteor.userId());
-		const room = this.orch.getConverters()?.get('rooms').convertById(message.rid);
+		const user = await this.orch.getConverters()?.get('users').convertById(Meteor.userId());
+		const room = await this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
 		const params = parseParameters(parameters);
 
@@ -184,14 +184,18 @@ export class AppCommandsBridge extends CommandBridge {
 		await this.orch.getManager()?.getCommandManager().executeCommand(command, context);
 	}
 
-	private _appCommandPreviewer(command: string, parameters: any, message: RequiredField<Partial<IMessage>, 'rid'>): any {
-		const user = this.orch.getConverters()?.get('users').convertById(Meteor.userId());
-		const room = this.orch.getConverters()?.get('rooms').convertById(message.rid);
+	private async _appCommandPreviewer(
+		command: string,
+		parameters: any,
+		message: RequiredField<Partial<IMessage>, 'rid'>,
+	): Promise<ISlashCommandPreview | undefined> {
+		const user = await this.orch.getConverters()?.get('users').convertById(Meteor.userId());
+		const room = await this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
 		const params = parseParameters(parameters);
 
 		const context = new SlashCommandContext(Object.freeze(user), Object.freeze(room), Object.freeze(params) as string[], threadId);
-		return Promise.await(this.orch.getManager()?.getCommandManager().getPreviews(command, context));
+		return this.orch.getManager()?.getCommandManager().getPreviews(command, context);
 	}
 
 	private async _appCommandPreviewExecutor(
@@ -201,8 +205,8 @@ export class AppCommandsBridge extends CommandBridge {
 		preview: ISlashCommandPreviewItem,
 		triggerId: string,
 	): Promise<void> {
-		const user = this.orch.getConverters()?.get('users').convertById(Meteor.userId());
-		const room = this.orch.getConverters()?.get('rooms').convertById(message.rid);
+		const user = await this.orch.getConverters()?.get('users').convertById(Meteor.userId());
+		const room = await this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
 		const params = parseParameters(parameters);
 

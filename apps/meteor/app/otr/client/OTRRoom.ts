@@ -1,5 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { EJSON } from 'meteor/ejson';
+import EJSON from 'ejson';
 import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { ReactiveVar } from 'meteor/reactive-var';
@@ -256,12 +256,15 @@ export class OTRRoom implements IOTRRoom {
 						await this.generateKeyPair();
 						await this.importPublicKey(data.publicKey);
 						await goToRoomById(data.roomId);
-						Meteor.defer(() => {
+						Meteor.defer(async () => {
 							this.setState(OtrRoomState.ESTABLISHED);
 							this.acknowledge();
 
 							if (data.refresh) {
-								Meteor.call('sendSystemMessages', this._roomId, Meteor.user(), otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY);
+								await APIClient.post('/v1/chat.otr', {
+									roomId: this._roomId,
+									type: otrSystemMessages.USER_KEY_REFRESHED_SUCCESSFULLY,
+								});
 							}
 						});
 					} catch (e) {
@@ -325,7 +328,10 @@ export class OTRRoom implements IOTRRoom {
 					this.setState(OtrRoomState.ESTABLISHED);
 
 					if (this.isFirstOTR) {
-						Meteor.call('sendSystemMessages', this._roomId, Meteor.user(), otrSystemMessages.USER_JOINED_OTR);
+						await APIClient.post('/v1/chat.otr', {
+							roomId: this._roomId,
+							type: otrSystemMessages.USER_JOINED_OTR,
+						});
 					}
 					this.isFirstOTR = false;
 				} catch (e) {

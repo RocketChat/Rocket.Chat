@@ -1,8 +1,9 @@
-import { Meteor } from 'meteor/meteor';
 import moment from 'moment-timezone';
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { LivechatBusinessHours, LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
+
+import { isEnterprise } from '../../../license/server/license';
 
 const getAllAgentIdsWithoutDepartment = async (): Promise<string[]> => {
 	const agentIdsWithDepartment = (
@@ -39,13 +40,13 @@ const getAgentIdsToHandle = async (businessHour: Record<string, any>): Promise<s
 export const openBusinessHour = async (businessHour: Record<string, any>): Promise<void> => {
 	const agentIds: string[] = await getAgentIdsToHandle(businessHour);
 	await Users.addBusinessHourByAgentIds(agentIds, businessHour._id);
-	Users.updateLivechatStatusBasedOnBusinessHours();
+	await Users.updateLivechatStatusBasedOnBusinessHours();
 };
 
 export const closeBusinessHour = async (businessHour: Record<string, any>): Promise<void> => {
 	const agentIds: string[] = await getAgentIdsToHandle(businessHour);
 	await Users.removeBusinessHourByAgentIds(agentIds, businessHour._id);
-	Users.updateLivechatStatusBasedOnBusinessHours();
+	await Users.updateLivechatStatusBasedOnBusinessHours();
 };
 
 export const removeBusinessHourByAgentIds = async (agentIds: string[], businessHourId: string): Promise<void> => {
@@ -53,33 +54,30 @@ export const removeBusinessHourByAgentIds = async (agentIds: string[], businessH
 		return;
 	}
 	await Users.removeBusinessHourByAgentIds(agentIds, businessHourId);
-	Users.updateLivechatStatusBasedOnBusinessHours();
+	await Users.updateLivechatStatusBasedOnBusinessHours();
 };
 
 export const resetDefaultBusinessHourIfNeeded = async (): Promise<void> => {
-	await Meteor.callAsync('license:isEnterprise', async (err: any, isEnterprise: any) => {
-		if (err) {
-			throw err;
-		}
-		if (isEnterprise) {
-			return;
-		}
-		const defaultBusinessHour = await LivechatBusinessHours.findOneDefaultBusinessHour<Pick<ILivechatBusinessHour, '_id'>>({
-			projection: { _id: 1 },
-		});
-		if (!defaultBusinessHour) {
-			return;
-		}
-		await LivechatBusinessHours.update(
-			{ _id: defaultBusinessHour._id },
-			{
-				$set: {
-					timezone: {
-						name: moment.tz.guess(),
-						utc: String(moment().utcOffset() / 60),
-					},
+	if (isEnterprise()) {
+		return;
+	}
+
+	const defaultBusinessHour = await LivechatBusinessHours.findOneDefaultBusinessHour<Pick<ILivechatBusinessHour, '_id'>>({
+		projection: { _id: 1 },
+	});
+	if (!defaultBusinessHour) {
+		return;
+	}
+
+	await LivechatBusinessHours.updateOne(
+		{ _id: defaultBusinessHour._id },
+		{
+			$set: {
+				timezone: {
+					name: moment.tz.guess(),
+					utc: String(moment().utcOffset() / 60),
 				},
 			},
-		);
-	});
+		},
+	);
 };

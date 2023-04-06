@@ -4,7 +4,7 @@ import { Utilities } from '../../lib/misc/Utilities';
 import { AppEvents } from './communication';
 import { Apps } from './orchestrator';
 
-export const loadAppI18nResources = (appId, languages) => {
+const loadAppI18nResources = (appId, languages) => {
 	Object.entries(languages).forEach(([language, translations]) => {
 		try {
 			// Translations keys must be scoped under app id

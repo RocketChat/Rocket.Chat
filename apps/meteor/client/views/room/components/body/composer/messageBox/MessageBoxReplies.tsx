@@ -1,3 +1,4 @@
+import type { MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { IconButton, Box, Margins } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
@@ -46,8 +47,9 @@ const MessageBoxReplies = (): ReactElement | null => {
 									author_name: reply.alias || getUserDisplayName(reply.u.name, reply.u.username, useRealName),
 									author_icon: `/avatar/${reply.u.username}`,
 									ts: reply.ts,
-									attachments: reply.attachments,
-								} as any
+									attachments: reply?.attachments?.map((obj) => ({ ...obj, collapsed: true })),
+									collapsed: true,
+								} as MessageQuoteAttachment
 							}
 						/>
 						<Box

@@ -3,10 +3,10 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import moment from 'moment';
 import { api } from '@rocket.chat/core-services';
+import { Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { callbacks } from '../../../../lib/callbacks';
-import { Users } from '../../../models/server';
 
 callbacks.add(
 	'beforeSaveMessage',
@@ -25,7 +25,7 @@ callbacks.add(
 				!(await hasPermissionAsync(message.u._id, 'mention-here', message.rid))
 			) {
 				// Get the language of the user for the error notification.
-				const { language } = Users.findOneById(message.u._id);
+				const { language } = (await Users.findOneById(message.u._id)) || {};
 				const action = TAPi18n.__('Notify_active_in_this_room', {}, language);
 
 				// Add a notification to the chat, informing the user that this

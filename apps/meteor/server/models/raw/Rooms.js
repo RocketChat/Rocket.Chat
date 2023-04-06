@@ -493,6 +493,30 @@ export class RoomsRaw extends BaseRaw {
 		return this.col.aggregate(params, { allowDiskUse: true, readPreference });
 	}
 
+	findOneByNameOrFname(name, options) {
+		const query = {
+			$or: [
+				{
+					name,
+				},
+				{
+					fname: name,
+				},
+			],
+		};
+
+		return this.findOne(query, options);
+	}
+
+	async findOneByNonValidatedName(name, options) {
+		const room = await this.findOneByNameOrFname(name, options);
+		if (room) {
+			return room;
+		}
+
+		return this.findOneByName(name, options);
+	}
+
 	findOneByName(name, options = {}) {
 		return this.col.findOne({ name }, options);
 	}
@@ -521,10 +545,6 @@ export class RoomsRaw extends BaseRaw {
 		};
 
 		return this.updateMany(query, update);
-	}
-
-	findOneByNameOrFname(name, options = {}) {
-		return this.col.findOne({ $or: [{ name }, { fname: name }] }, options);
 	}
 
 	allRoomSourcesCount() {
@@ -1056,7 +1076,7 @@ export class RoomsRaw extends BaseRaw {
 	}
 
 	async findBySubscriptionUserId(userId, options) {
-		const data = (await Subscriptions.cachedFindByUserId(userId, { projection: { rid: 1 } }).toArray()).map((item) => item.rid);
+		const data = (await Subscriptions.findByUserId(userId, { projection: { rid: 1 } }).toArray()).map((item) => item.rid);
 
 		const query = {
 			_id: {
