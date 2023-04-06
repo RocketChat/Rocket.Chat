@@ -95,9 +95,6 @@ export class DDPSDK extends ClientStreamImpl implements SDK {
 			if (data.collection !== 'users') {
 				return;
 			}
-			if (data.msg !== 'changed') {
-				return;
-			}
 
 			if (!('fields' in data) || !('username' in data.fields!)) {
 				return;
@@ -108,6 +105,7 @@ export class DDPSDK extends ClientStreamImpl implements SDK {
 				_id: data.id,
 				username: data.fields.username,
 			};
+			sdk.emit('user', sdk.user);
 		});
 
 		connection.on('connected', () => {

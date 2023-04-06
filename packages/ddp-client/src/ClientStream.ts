@@ -1,7 +1,9 @@
+import { Emitter } from '@rocket.chat/emitter';
+
 import type { DDPClient } from './types/DDPClient';
 import type { PublicationPayloads } from './types/publicationPayloads';
 
-export interface ClientStream {
+export interface ClientStream extends Emitter {
 	call(method: string, ...params: any[]): string;
 	callAsync(method: string, ...params: any[]): Promise<any> & { id: string };
 	subscribe(name: string, ...params: any[]): Promise<any> & { id: string };
@@ -20,7 +22,7 @@ export interface ClientStream {
 	>;
 }
 
-export class ClientStreamImpl implements ClientStream {
+export class ClientStreamImpl extends Emitter implements ClientStream {
 	subscriptions = new Map<
 		string,
 		{
@@ -31,7 +33,9 @@ export class ClientStreamImpl implements ClientStream {
 		}
 	>();
 
-	constructor(private ddp: DDPClient) {}
+	constructor(private ddp: DDPClient) {
+		super();
+	}
 
 	call(method: string, ...params: any[]): string {
 		// get the last argument
