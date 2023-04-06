@@ -187,7 +187,7 @@ export class E2ERoom extends Emitter {
 			return;
 		}
 
-		Subscriptions.direct.update(
+		Subscriptions.update(
 			{
 				_id: subscription._id,
 			},
@@ -203,7 +203,7 @@ export class E2ERoom extends Emitter {
 
 	async decryptPendingMessages() {
 		return Messages.find({ rid: this.roomId, t: 'e2e', e2e: 'pending' }).forEach(async ({ _id, ...msg }) => {
-			Messages.direct.update({ _id }, await this.decryptMessage(msg));
+			Messages.update({ _id }, await this.decryptMessage(msg));
 		});
 	}
 
