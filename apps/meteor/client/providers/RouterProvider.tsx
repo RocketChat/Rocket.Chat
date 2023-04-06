@@ -22,18 +22,22 @@ const queryRouteUrl = (
 const pushRoute = (
 	name: Parameters<RouterContextValue['pushRoute']>[0],
 	parameters: Parameters<RouterContextValue['pushRoute']>[1],
-	queryStringParameters: Parameters<RouterContextValue['pushRoute']>[2],
+	queryStringParameters?: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>,
 ): ReturnType<RouterContextValue['pushRoute']> => {
-	FlowRouter.go(name, parameters, queryStringParameters);
+	const queryParams =
+		typeof queryStringParameters === 'function' ? queryStringParameters(FlowRouter.current().queryParams) : queryStringParameters;
+	FlowRouter.go(name, parameters, queryParams);
 };
 
 const replaceRoute = (
 	name: Parameters<RouterContextValue['replaceRoute']>[0],
 	parameters: Parameters<RouterContextValue['replaceRoute']>[1],
-	queryStringParameters: Parameters<RouterContextValue['replaceRoute']>[2],
+	queryStringParameters?: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>,
 ): ReturnType<RouterContextValue['replaceRoute']> => {
 	FlowRouter.withReplaceState(() => {
-		FlowRouter.go(name, parameters, queryStringParameters);
+		const queryParams =
+			typeof queryStringParameters === 'function' ? queryStringParameters(FlowRouter.current().queryParams) : queryStringParameters;
+		FlowRouter.go(name, parameters, queryParams);
 	});
 };
 
