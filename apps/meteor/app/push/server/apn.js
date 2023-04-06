@@ -1,5 +1,5 @@
 import apn from 'apn';
-import { EJSON } from 'meteor/ejson';
+import EJSON from 'ejson';
 
 import { logger } from './logger';
 
