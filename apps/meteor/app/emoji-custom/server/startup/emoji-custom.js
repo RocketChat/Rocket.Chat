@@ -49,7 +49,7 @@ Meteor.startup(function () {
 
 		res.setHeader('Content-Disposition', 'inline');
 
-		if (file == null) {
+		if (!file) {
 			// use code from username initials renderer until file upload is complete
 			res.setHeader('Content-Type', 'image/svg+xml');
 			res.setHeader('Cache-Control', 'public, max-age=0');
