@@ -156,7 +156,7 @@ const getLinkedInName = ({ firstName, lastName }) => {
 	return `${firstName} ${lastName}`;
 };
 
-Accounts.onCreateUser(function (options, user = {}) {
+const onCreateUserAsync = async function (options, user = {}) {
 	callbacks.run('beforeCreateUser', options, user);
 
 	user.status = 'offline';
@@ -194,8 +194,8 @@ Accounts.onCreateUser(function (options, user = {}) {
 
 	if (!user.active) {
 		const destinations = [];
-		const usersInRole = Promise.await(Roles.findUsersInRole('admin'));
-		Promise.await(usersInRole.toArray()).forEach((adminUser) => {
+		const usersInRole = await Roles.findUsersInRole('admin');
+		await usersInRole.toArray().forEach((adminUser) => {
 			if (Array.isArray(adminUser.emails)) {
 				adminUser.emails.forEach((email) => {
 					destinations.push(`${adminUser.name}<${email.address}>`);
@@ -214,18 +214,24 @@ Accounts.onCreateUser(function (options, user = {}) {
 			}),
 		};
 
-		Promise.await(Mailer.send(email));
+		await Mailer.send(email);
 	}
 
 	callbacks.run('onCreateUser', options, user);
 
 	// App IPostUserCreated event hook
-	Promise.await(Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: safeGetMeteorUser() }));
+	await Apps.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: safeGetMeteorUser() });
 
 	return user;
+};
+
+Accounts.onCreateUser(function (...args) {
+	// Depends on meteor support for Async
+	return Promise.await(onCreateUserAsync.call(this, ...args));
 });
 
-Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc, options, user) {
+const { insertUserDoc } = Accounts;
+const insertUserDocAsync = async function (options, user) {
 	const globalRoles = [];
 
 	if (Match.test(user.globalRoles, [String]) && user.globalRoles.length > 0) {
@@ -258,11 +264,9 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc,
 
 	const _id = insertUserDoc.call(Accounts, options, user);
 
-	user = Promise.await(
-		Users.findOne({
-			_id,
-		}),
-	);
+	user = await Users.findOne({
+		_id,
+	});
 
 	if (user.username) {
 		if (options.joinDefaultChannels !== false && user.joinDefaultChannels !== false) {
@@ -277,7 +281,7 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc,
 			});
 		}
 		if (settings.get('Accounts_SetDefaultAvatar') === true) {
-			const avatarSuggestions = Promise.await(getAvatarSuggestionForUser(user));
+			const avatarSuggestions = await getAvatarSuggestionForUser(user);
 			Object.keys(avatarSuggestions).some((service) => {
 				const avatarData = avatarSuggestions[service];
 				if (service !== 'gravatar') {
@@ -299,29 +303,34 @@ Accounts.insertUserDoc = _.wrap(Accounts.insertUserDoc, function (insertUserDoc,
 	 * create this user admin.
 	 * count this as the completion of setup wizard step 1.
 	 */
-	const hasAdmin = Promise.await(Users.findOneByRolesAndType('admin', 'user', { projection: { _id: 1 } }));
+	const hasAdmin = await Users.findOneByRolesAndType('admin', 'user', { projection: { _id: 1 } });
 	if (!roles.includes('admin') && !hasAdmin) {
 		roles.push('admin');
 		if (settings.get('Show_Setup_Wizard') === 'pending') {
-			Promise.await(Settings.updateValueById('Show_Setup_Wizard', 'in_progress'));
+			await Settings.updateValueById('Show_Setup_Wizard', 'in_progress');
 		}
 	}
 
-	Promise.await(addUserRolesAsync(_id, roles));
+	await addUserRolesAsync(_id, roles);
 
 	return _id;
-});
+};
 
-Accounts.validateLoginAttempt(function (login) {
+Accounts.insertUserDoc = function (...args) {
+	// Depends on meteor support for Async
+	return Promise.await(insertUserDocAsync.call(this, ...args));
+};
+
+const validateLoginAttemptAsync = async function (login) {
 	login = callbacks.run('beforeValidateLogin', login);
 
-	if (!Promise.await(isValidLoginAttemptByIp(getClientAddress(login.connection)))) {
+	if (!(await isValidLoginAttemptByIp(getClientAddress(login.connection)))) {
 		throw new Meteor.Error('error-login-blocked-for-ip', 'Login has been temporarily blocked For IP', {
 			function: 'Accounts.validateLoginAttempt',
 		});
 	}
 
-	if (!Promise.await(isValidAttemptByUser(login))) {
+	if (!(await isValidAttemptByUser(login))) {
 		throw new Meteor.Error('error-login-blocked-for-user', 'Login has been temporarily blocked For User', {
 			function: 'Accounts.validateLoginAttempt',
 		});
@@ -362,7 +371,7 @@ Accounts.validateLoginAttempt(function (login) {
 
 	login = callbacks.run('onValidateLogin', login);
 
-	Promise.await(Users.updateLastLoginById(login.user._id));
+	await Users.updateLastLoginById(login.user._id);
 	Meteor.defer(function () {
 		return callbacks.run('afterValidateLogin', login);
 	});
@@ -373,10 +382,15 @@ Accounts.validateLoginAttempt(function (login) {
 	 */
 	if (login.type !== 'resume') {
 		// App IPostUserLoggedIn event hook
-		Promise.await(Apps.triggerEvent(AppEvents.IPostUserLoggedIn, login.user));
+		await Apps.triggerEvent(AppEvents.IPostUserLoggedIn, login.user);
 	}
 
 	return true;
+};
+
+Accounts.validateLoginAttempt(function (...args) {
+	// Depends on meteor support for Async
+	return Promise.await(validateLoginAttemptAsync.call(this, ...args));
 });
 
 Accounts.validateNewUser(function (user) {
