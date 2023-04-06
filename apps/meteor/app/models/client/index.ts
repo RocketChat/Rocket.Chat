@@ -1,7 +1,4 @@
 import { Base } from './models/Base';
-import Avatars from './models/Avatars';
-import Uploads from './models/Uploads';
-import UserDataFiles from './models/UserDataFiles';
 import { Roles } from './models/Roles';
 import { Users } from './models/Users';
 import { CachedChannelList } from './models/CachedChannelList';
@@ -45,9 +42,6 @@ Meteor.userAsync = async () => {
 
 export {
 	Base,
-	Avatars,
-	Uploads,
-	UserDataFiles,
 	Roles,
 	CachedChannelList,
 	CachedChatRoom,
@@ -63,8 +57,6 @@ export {
 	WebdavAccounts,
 	/** @deprecated */
 	Users,
-	/** @deprecated */
-	ChatRoom as Rooms,
 	/** @deprecated */
 	ChatRoom,
 	/** @deprecated */

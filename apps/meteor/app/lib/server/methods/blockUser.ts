@@ -1,9 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Rooms } from '@rocket.chat/models';
 
-import { Rooms } from '../../../models/server';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 
@@ -24,7 +23,11 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'blockUser' });
 		}
 
-		const room = Rooms.findOne({ _id: rid });
+		const room = await Rooms.findOne({ _id: rid });
+
+		if (!room) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'blockUser' });
+		}
 
 		if (!(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.BLOCK, userId))) {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'blockUser' });

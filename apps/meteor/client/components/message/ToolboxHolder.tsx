@@ -14,7 +14,7 @@ type ToolboxHolderProps = {
 	context?: MessageActionContext;
 };
 
-export const ToolboxHolder = ({ message, context }: ToolboxHolderProps): ReactElement => {
+const ToolboxHolder = ({ message, context }: ToolboxHolderProps): ReactElement => {
 	const ref = useRef(null);
 
 	const [visible] = useIsVisible(ref);

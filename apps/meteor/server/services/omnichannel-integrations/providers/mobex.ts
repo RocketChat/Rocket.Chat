@@ -1,9 +1,9 @@
-import { HTTP } from 'meteor/http';
 import { Base64 } from '@rocket.chat/base64';
 import type { ISMSProvider, ServiceData, SMSProviderResult, SMSProviderResponse } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../../app/settings/server';
 import { SystemLogger } from '../../../lib/logger/system';
+import { fetch } from '../../../lib/http/fetch';
 
 type MobexData = {
 	from: string;
@@ -119,15 +119,16 @@ export class Mobex implements ISMSProvider {
 		};
 
 		try {
-			const response = HTTP.call(
-				'GET',
+			const response = await fetch(
 				`${currentAddress}/send?username=${currentUsername}&password=${currentPassword}&to=${strippedTo}&from=${currentFrom}&content=${message}`,
 			);
-			if (response.statusCode === 200) {
-				result.resultMsg = response.content;
+
+			const json = await response.json();
+			if (response.ok) {
+				result.resultMsg = json;
 				result.isSuccess = true;
 			} else {
-				result.resultMsg = `Could not able to send SMS. Code:  ${response.statusCode}`;
+				result.resultMsg = `Could not able to send SMS. Code:  ${response.status}`;
 			}
 		} catch (err) {
 			result.resultMsg = `Error while sending SMS with Mobex. Detail: ${err}`;
@@ -154,11 +155,12 @@ export class Mobex implements ISMSProvider {
 		const authToken = Base64.encode(userPass);
 
 		try {
-			const response = await HTTP.call('POST', `${this.restAddress}/secure/sendbatch`, {
+			const response = await fetch(`${this.restAddress}/secure/sendbatch`, {
+				method: 'POST',
 				headers: {
 					Authorization: `Basic ${authToken}`,
 				},
-				data: {
+				body: JSON.stringify({
 					messages: [
 						{
 							to: toNumbersArr,
@@ -166,12 +168,12 @@ export class Mobex implements ISMSProvider {
 							content: message,
 						},
 					],
-				},
+				}),
 			});
 
-			result.isSuccess = true;
+			result.isSuccess = response.ok;
 			result.resultMsg = 'Success';
-			result.response = response;
+			result.response = await response.json();
 		} catch (err) {
 			result.resultMsg = `Error while sending SMS with Mobex. Detail: ${err}`;
 			SystemLogger.error({ msg: 'Error while sending SMS with Mobex', err });

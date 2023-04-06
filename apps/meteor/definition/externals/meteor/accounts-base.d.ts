@@ -27,6 +27,8 @@ declare module 'meteor/accounts-base' {
 
 		function _unstoreLoginToken(): void;
 
+		function _setAccountData(connectionId: string, key: string, token: string): void;
+
 		function updateOrCreateUserFromExternalService(
 			serviceName: string,
 			serviceData: Record<string, unknown>,
@@ -44,5 +46,7 @@ declare module 'meteor/accounts-base' {
 		const USER_ID_KEY: string;
 
 		const LOGIN_TOKEN_KEY: string;
+
+		const _accountData: Record<string, any>;
 	}
 }

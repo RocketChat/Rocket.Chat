@@ -18,12 +18,11 @@ import {
 	isChannelsSetReadOnlyProps,
 	isChannelsDeleteProps,
 } from '@rocket.chat/rest-typings';
-import { Integrations, Messages, Rooms, Subscriptions, Uploads } from '@rocket.chat/models';
+import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import { Team } from '@rocket.chat/core-services';
 
-import { Subscriptions as SubscriptionsSync, Users as UsersSync } from '../../../models/server';
-import { canAccessRoomAsync, hasAtLeastOnePermission } from '../../../authorization/server';
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { canAccessRoomAsync } from '../../../authorization/server';
+import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
@@ -68,7 +67,7 @@ async function findChannelByIdOrName({
 		throw new Meteor.Error('error-room-archived', `The channel, ${room.name}, is archived`);
 	}
 	if (userId && room.lastMessage) {
-		const [lastMessage] = normalizeMessagesForUser([room.lastMessage], userId);
+		const [lastMessage] = await normalizeMessagesForUser([room.lastMessage], userId);
 		room.lastMessage = lastMessage;
 	}
 
@@ -292,7 +291,7 @@ API.v1.addRoute(
 			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				messages: normalizeMessagesForUser(messages, this.userId),
+				messages: await normalizeMessagesForUser(messages, this.userId),
 				count: messages.length,
 				offset,
 				total,
@@ -425,11 +424,11 @@ API.v1.addRoute(
 
 			const findResult = await findChannelByIdOrName({ params });
 
-			const moderators = await SubscriptionsSync.findByRoomIdAndRoles(findResult._id, ['moderator'], {
-				fields: { u: 1 },
-			})
-				.fetch()
-				.map((sub: ISubscription) => sub.u);
+			const moderators = (
+				await Subscriptions.findByRoomIdAndRoles(findResult._id, ['moderator'], {
+					projection: { u: 1 },
+				}).toArray()
+			).map((sub: ISubscription) => sub.u);
 
 			return API.v1.success({
 				moderators,
@@ -691,7 +690,7 @@ API.v1.addRoute(
 			let error;
 
 			try {
-				await API.channels.create.validate({
+				await API.channels?.create.validate({
 					user: {
 						value: userId,
 					},
@@ -739,7 +738,7 @@ API.v1.addRoute(
 				bodyParams.members = [...membersToAdd].filter(Boolean) as string[];
 			}
 
-			return API.v1.success(await API.channels.create.execute(userId, bodyParams));
+			return API.v1.success(await API.channels?.create.execute(userId, bodyParams));
 		},
 	},
 );
@@ -788,7 +787,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			if (
-				!(await hasAtLeastOnePermission(this.userId, [
+				!(await hasAtLeastOnePermissionAsync(this.userId, [
 					'manage-outgoing-integrations',
 					'manage-own-outgoing-integrations',
 					'manage-incoming-integrations',
@@ -896,18 +895,18 @@ API.v1.addRoute(
 				if (!(await hasPermissionAsync(this.userId, 'view-joined-room'))) {
 					return API.v1.unauthorized();
 				}
-				const roomIds = await SubscriptionsSync.findByUserIdAndType(this.userId, 'c', {
-					fields: { rid: 1 },
-				})
-					.fetch()
-					.map((s: Record<string, any>) => s.rid);
+				const roomIds = (
+					await Subscriptions.findByUserIdAndType(this.userId, 'c', {
+						projection: { rid: 1 },
+					}).toArray()
+				).map((s) => s.rid);
 				ourQuery._id = { $in: roomIds };
 			}
 
 			// teams filter - I would love to have a way to apply this filter @ db level :(
-			const ids = await SubscriptionsSync.cachedFindByUserId(this.userId, { fields: { rid: 1 } })
-				.fetch()
-				.map((item: Record<string, any>) => item.rid);
+			const ids = (await Subscriptions.findByUserId(this.userId, { projection: { rid: 1 } }).toArray()).map(
+				(item: Record<string, any>) => item.rid,
+			);
 
 			ourQuery.$or = [
 				{
@@ -1051,9 +1050,9 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
 
-			const online: Pick<IUser, '_id' | 'username'>[] = await UsersSync.findUsersNotOffline({
-				fields: { username: 1 },
-			}).fetch();
+			const online: Pick<IUser, '_id' | 'username'>[] = await Users.findUsersNotOffline({
+				projection: { username: 1 },
+			}).toArray();
 
 			const onlineInRoom = await Promise.all(
 				online.map(async (user) => {
@@ -1371,7 +1370,7 @@ API.v1.addRoute(
 			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
-				messages: normalizeMessagesForUser(messages, this.userId || ''),
+				messages: await normalizeMessagesForUser(messages, this.userId || ''),
 				count: messages.length,
 				offset,
 				total,

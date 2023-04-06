@@ -8,7 +8,7 @@ import React, { memo, useLayoutEffect, useRef } from 'react';
 
 import { useBlazePortals } from '../../../lib/portals/blazePortals';
 import { useRoom } from '../contexts/RoomContext';
-import { useRoomMessageContext } from './body/useRoomMessageContext';
+import { useRoomMessageContext } from './body/hooks/useRoomMessageContext';
 
 type PropsFromBox = 'className' | 'display' | 'flexGrow' | 'flexShrink' | 'flexDirection' | 'overflow' | 'w' | 'onClick' | 'onMouseEnter';
 

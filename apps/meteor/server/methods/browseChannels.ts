@@ -2,13 +2,12 @@ import { Meteor } from 'meteor/meteor';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import mem from 'mem';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Rooms, Users } from '@rocket.chat/models';
+import { Rooms, Users, Subscriptions } from '@rocket.chat/models';
 import { Team } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
-import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { Subscriptions } from '../../app/models/server';
 import { settings } from '../../app/settings/server';
 import { getFederationDomain } from '../../app/federation/server/lib/getFederationDomain';
 import { isFederationEnabled } from '../../app/federation/server/lib/isFederationEnabled';
@@ -134,7 +133,7 @@ const getTeams = async (
 		return;
 	}
 
-	const userSubs: ISubscription[] = Subscriptions.cachedFindByUserId(user._id).fetch();
+	const userSubs = await Subscriptions.findByUserId(user._id).toArray();
 	const ids = userSubs.map((sub) => sub.rid);
 	const { cursor, totalCount } = Rooms.findPaginatedContainingNameOrFNameInIdsAsTeamMain(
 		searchTerm ? new RegExp(searchTerm, 'i') : null,

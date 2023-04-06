@@ -4,16 +4,7 @@ import { useTranslation } from '@rocket.chat/ui-contexts';
 import type { ReactElement, Dispatch, SetStateAction } from 'react';
 import React, { useCallback, useState, useEffect } from 'react';
 
-export const DEFAULT_TYPES = ['d', 'p', 'c', 'teams'];
-
-export const roomTypeI18nMap = {
-	l: 'Omnichannel',
-	c: 'Channel',
-	d: 'Direct',
-	p: 'Group',
-	discussion: 'Discussion',
-	team: 'Team',
-};
+const DEFAULT_TYPES = ['d', 'p', 'c', 'teams'];
 
 const FilterByTypeAndText = ({ setFilter, ...props }: { setFilter?: Dispatch<SetStateAction<any>> }): ReactElement => {
 	const [text, setText] = useState('');

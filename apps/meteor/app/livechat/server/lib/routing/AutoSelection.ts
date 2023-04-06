@@ -1,8 +1,7 @@
 import type { IRoutingMethod, RoutingMethodConfig, SelectedAgent } from '@rocket.chat/core-typings';
-import { LivechatDepartmentAgents } from '@rocket.chat/models';
+import { LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 
 import { RoutingManager } from '../RoutingManager';
-import { Users } from '../../../../models/server';
 import { callbacks } from '../../../../../lib/callbacks';
 import { settings } from '../../../../settings/server';
 
