@@ -3,22 +3,21 @@ import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { ILivechatAgent, ILivechatVisitor, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, ILivechatVisitor, IMessage, IRoom, IUser, IAuditLog } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { Filter } from 'mongodb';
-import { LivechatRooms, Messages, Rooms } from '@rocket.chat/models';
+import { LivechatRooms, Messages, Rooms, Users, AuditLog } from '@rocket.chat/models';
 
-import AuditLog from './AuditLog';
-import { Users } from '../../../../app/models/server';
 import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
 import { updateCounter } from '../../../../app/statistics/server';
-import type { IAuditLog } from '../../../definition/IAuditLog';
+import { isTruthy } from '../../../../lib/isTruthy';
 
 const getValue = (room: IRoom | null) => room && { rids: [room._id], name: room.name };
 
-const getUsersIdFromUserName = (usernames: IUser['username'][]) => {
-	const user: IUser[] = usernames ? Users.findByUsername({ $in: usernames }) : undefined;
-	return user.map((userId) => userId._id);
+const getUsersIdFromUserName = async (usernames: IUser['username'][]) => {
+	const users = usernames ? await Users.findByUsernames(usernames.filter(isTruthy)).toArray() : undefined;
+
+	return users?.filter(isTruthy).map((userId) => userId._id);
 };
 
 const getRoomInfoByAuditParams = async ({
@@ -70,7 +69,7 @@ declare module '@rocket.chat/ui-contexts' {
 			endDate: Date;
 			users: NonNullable<IUser['username']>[];
 			msg: IMessage['msg'];
-			type: 'l';
+			type: string;
 			visitor?: ILivechatVisitor['_id'];
 			agent?: ILivechatAgent['_id'];
 		}) => IMessage[];
@@ -109,7 +108,7 @@ Meteor.methods<ServerMethods>({
 
 		// Once the filter is applied, messages will be shown and a log containing all filters will be saved for further auditing.
 
-		AuditLog.insert({
+		await AuditLog.insertOne({
 			ts: new Date(),
 			results: messages.length,
 			u: user,
@@ -138,7 +137,7 @@ Meteor.methods<ServerMethods>({
 		};
 
 		if (type === 'u') {
-			const usersId = getUsersIdFromUserName(usernames);
+			const usersId = await getUsersIdFromUserName(usernames);
 			query['u._id'] = { $in: usersId };
 		} else {
 			const roomInfo = await getRoomInfoByAuditParams({ type, roomId: rid, users: usernames, visitor, agent });
@@ -160,7 +159,7 @@ Meteor.methods<ServerMethods>({
 
 		// Once the filter is applied, messages will be shown and a log containing all filters will be saved for further auditing.
 
-		AuditLog.insert({
+		await AuditLog.insertOne({
 			ts: new Date(),
 			results: messages.length,
 			u: user,
@@ -183,7 +182,7 @@ Meteor.methods<ServerMethods>({
 				$gt: startDate,
 				$lt: endDate,
 			},
-		}).fetch();
+		}).toArray();
 	},
 });
 
