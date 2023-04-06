@@ -27,7 +27,7 @@ const RoomForeword = ({ user, room }: RoomForewordProps): ReactElement | null =>
 	}
 
 	const usernames = room.usernames?.filter((username) => username !== user?.username);
-	console.log(room);
+
 	if (!usernames || usernames.length < 1) {
 		return null;
 	}
