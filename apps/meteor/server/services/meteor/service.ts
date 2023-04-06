@@ -256,7 +256,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 	}
 
 	async getLoginServiceConfiguration(): Promise<any[]> {
-		return ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetch();
+		return ServiceConfiguration.configurations.find({}, { fields: { secret: 0 } }).fetchAsync();
 	}
 
 	async callMethodWithToken(userId: string, token: string, method: string, args: any[]): Promise<void | any> {

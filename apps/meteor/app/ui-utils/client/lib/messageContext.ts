@@ -3,7 +3,7 @@ import { Template } from 'meteor/templating';
 import { Tracker } from 'meteor/tracker';
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 
-import { Subscriptions, Rooms, Users } from '../../../models/client';
+import { Subscriptions, ChatRoom, Users } from '../../../models/client';
 import { hasPermission } from '../../../authorization/client';
 import { settings } from '../../../settings/client';
 import { getUserPreference } from '../../../utils/client';
@@ -24,7 +24,7 @@ export const createMessageContext = ({
 	user = uid ? Users.findOne({ _id: uid }, { fields }) : undefined,
 	rid = (Template.instance() as CommonRoomTemplateInstance).data.rid,
 	room = Tracker.nonreactive(() =>
-		Rooms.findOne(
+		ChatRoom.findOne(
 			{ _id: rid },
 			{
 				fields: {

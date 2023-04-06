@@ -27,16 +27,16 @@ settings.watchMultiple(
 		'Accounts_OAuth_Apple_iss',
 		'Accounts_OAuth_Apple_kid',
 	],
-	([enabled, clientId, serverSecret, iss, kid]) => {
+	async ([enabled, clientId, serverSecret, iss, kid]) => {
 		if (!enabled) {
-			return ServiceConfiguration.configurations.remove({
+			return ServiceConfiguration.configurations.removeAsync({
 				service: 'apple',
 			});
 		}
 
 		// if everything is empty but Apple login is enabled, don't show the login button
 		if (!clientId && !serverSecret && !iss && !kid) {
-			ServiceConfiguration.configurations.upsert(
+			await ServiceConfiguration.configurations.upsertAsync(
 				{
 					service: 'apple',
 				},
@@ -72,7 +72,7 @@ settings.watchMultiple(
 			serverSecret as string,
 		);
 
-		ServiceConfiguration.configurations.upsert(
+		await ServiceConfiguration.configurations.upsertAsync(
 			{
 				service: 'apple',
 			},
