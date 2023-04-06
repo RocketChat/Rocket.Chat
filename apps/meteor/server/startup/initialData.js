@@ -1,10 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Accounts } from 'meteor/accounts-base';
-<<<<<<< HEAD
-import { Settings } from '@rocket.chat/models';
-=======
 import { Settings, Rooms, Users } from '@rocket.chat/models';
->>>>>>> develop
 import colors from 'colors/safe';
 
 import { RocketChatFile } from '../../app/file/server';
@@ -137,17 +133,10 @@ Meteor.startup(async function () {
 
 			if (!initialUser._id) {
 				console.log(colors.red('No _id provided; Ignoring environment variable INITIAL_USER'));
-<<<<<<< HEAD
-			} else if (!Users.findOneById(initialUser._id)) {
-				console.log(colors.green('Inserting initial user:'));
-				console.log(colors.green(JSON.stringify(initialUser, null, 2)));
-				Users.create(initialUser);
-=======
 			} else if (!(await Users.findOneById(initialUser._id))) {
 				console.log(colors.green('Inserting initial user:'));
 				console.log(colors.green(JSON.stringify(initialUser, null, 2)));
 				await Users.create(initialUser);
->>>>>>> develop
 
 				await addUserToDefaultChannels(initialUser, true);
 			}
