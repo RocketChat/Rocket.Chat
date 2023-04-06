@@ -85,12 +85,7 @@ export class OTRRoom implements IOTRRoom {
 					refresh,
 				});
 			if (refresh) {
-				await Meteor.callAsync(
-					'sendSystemMessages',
-					this._roomId,
-					await Meteor.userAsync(),
-					otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH,
-				);
+				await Meteor.callAsync('sendSystemMessages', this._roomId, Meteor.user(), otrSystemMessages.USER_REQUESTED_OTR_KEY_REFRESH);
 				this.isFirstOTR = false;
 			}
 		} catch (e) {
