@@ -290,7 +290,7 @@ export const FileUpload = {
 	},
 
 	async extractMetadata(file: IUpload) {
-		return sharp(FileUpload.getBufferSync(file)).metadata();
+		return sharp(await FileUpload.getBuffer(file)).metadata();
 	},
 
 	async createImageThumbnail(fileParam: IUpload) {
@@ -508,25 +508,29 @@ export const FileUpload = {
 		res.end();
 	},
 
-	getBuffer(file: IUpload, cb: (err?: Error, data?: false | Buffer) => void) {
+	async getBuffer(file: IUpload): Promise<Buffer> {
 		const store = this.getStoreByName(file.store);
 
 		if (!store?.get) {
-			cb(new Error('Store is invalid'), undefined);
+			throw new Error('Store is invalid');
 		}
 
 		const buffer = new streamBuffers.WritableStreamBuffer({
 			initialSize: file.size,
 		});
 
-		buffer.on('finish', () => {
-			cb(undefined, buffer.getContents());
+		return new Promise((resolve, reject) => {
+			buffer.on('finish', () => {
+				const contents = buffer.getContents();
+				if (contents === false) {
+					return reject();
+				}
+				resolve(contents);
+			});
+
+			void store.copy?.(file, buffer);
 		});
-
-		void store.copy?.(file, buffer);
 	},
-
-	getBufferSync: Meteor.wrapAsync((file: IUpload, cb: (err?: Error, data?: false | Buffer) => void) => FileUpload.getBuffer(file, cb)),
 
 	async copy(file: IUpload, targetFile: string) {
 		const store = this.getStoreByName(file.store);
