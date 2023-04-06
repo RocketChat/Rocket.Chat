@@ -8,11 +8,6 @@ import { RoomsMock } from './mocks/models/Rooms.mock';
 import { UsersMock } from './mocks/models/Users.mock';
 
 const { AppMessagesConverter } = proxyquire.noCallThru().load('../../../../../app/apps/server/converters/messages', {
-	'../../../models/server': {
-		Messages: new MessagesMock(),
-		Rooms: new RoomsMock(),
-		Users: new UsersMock(),
-	},
 	'@rocket.chat/random': {
 		Random: {
 			id: () => 1,
@@ -20,6 +15,8 @@ const { AppMessagesConverter } = proxyquire.noCallThru().load('../../../../../ap
 	},
 	'@rocket.chat/models': {
 		Rooms: new RoomsMock(),
+		Messages: new MessagesMock(),
+		Users: new UsersMock(),
 	},
 });
 

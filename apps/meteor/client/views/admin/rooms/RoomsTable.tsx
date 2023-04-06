@@ -175,9 +175,9 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 	);
 
 	const renderRow = useCallback(
-		(room) => {
+		(room: IRoom) => {
 			const { _id, t: type, usersCount, msgs, default: isDefault, featured, ...args } = room;
-			const icon = roomCoordinator.getIcon(room);
+			const icon = roomCoordinator.getRoomDirectives(room.t).getIcon?.(room);
 			const roomName = getRoomDisplayName(room);
 
 			return (
@@ -187,7 +187,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }): React
 							<RoomAvatar size={mediaQuery ? 'x28' : 'x40'} room={{ type, name: roomName, _id, ...args }} />
 							<Box display='flex' style={style} mi='x8'>
 								<Box display='flex' flexDirection='row' alignSelf='center' alignItems='center' style={style}>
-									{icon && <Icon mi='x2' name={icon === 'omnichannel' ? 'livechat' : icon} fontScale='p2m' color='hint' />}
+									{icon && <Icon mi='x2' name={icon} fontScale='p2m' color='hint' />}
 									<Box fontScale='p2m' style={style} color='default' qa-room-name={roomName}>
 										{roomName}
 									</Box>

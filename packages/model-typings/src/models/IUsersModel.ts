@@ -238,7 +238,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		userId: string;
 		loginTokenObject: AtLeast<IPersonalAccessToken, 'type' | 'name'>;
 	}): Promise<UpdateResult>;
-	findPersonalAccessTokenByTokenNameAndUserId(data: { userId: string; tokenName: string }): Promise<IUser | null>;
+	findPersonalAccessTokenByTokenNameAndUserId(data: { userId: string; tokenName: string }): Promise<IPersonalAccessToken | null>;
 	setOperator(userId: string, operator: boolean): Promise<UpdateResult>;
 	checkOnlineAgents(agentId: string): Promise<boolean>;
 	findOnlineAgents(agentId: string): FindCursor<ILivechatAgent>;
@@ -328,7 +328,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	setName(userId: string, name: string): Promise<UpdateResult>;
 	unsetName(userId: string): Promise<UpdateResult>;
 	setCustomFields(userId: string, customFields: Record<string, unknown>): Promise<UpdateResult>;
-	setAvatarData(userId: string, origin: string, etag: Date): Promise<UpdateResult>;
+	setAvatarData(userId: string, origin: string, etag?: Date | null | string): Promise<UpdateResult>;
 	unsetAvatarData(userId: string): Promise<UpdateResult>;
 	setUserActive(userId: string, active: boolean): Promise<UpdateResult>;
 	setAllUsersActive(active: boolean): Promise<UpdateResult | Document>;

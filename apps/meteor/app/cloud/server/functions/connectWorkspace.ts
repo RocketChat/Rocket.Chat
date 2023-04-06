@@ -8,7 +8,7 @@ import { saveRegistrationData } from './saveRegistrationData';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export async function connectWorkspace(token: string) {
-	const { connectToCloud } = retrieveRegistrationStatus();
+	const { connectToCloud } = await retrieveRegistrationStatus();
 	if (!connectToCloud) {
 		await Settings.updateValueById('Register_Server', true);
 	}
