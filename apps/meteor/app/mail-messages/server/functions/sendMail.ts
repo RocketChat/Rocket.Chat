@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { EJSON } from 'meteor/ejson';
+import EJSON from 'ejson';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import type { Filter } from 'mongodb';
