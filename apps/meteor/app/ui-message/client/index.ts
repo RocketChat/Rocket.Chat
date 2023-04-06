@@ -1,1 +1,1 @@
-import './popup/messagePopupSlashCommandPreview.ts';
+import './popup/messagePopupSlashCommandPreview';
