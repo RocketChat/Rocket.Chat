@@ -56,7 +56,7 @@ export async function process2faReturn({
 
 	const props = {
 		method: error.details.method,
-		emailOrUsername: emailOrUsername || error.details.emailOrUsername || (await Meteor.userAsync())?.username,
+		emailOrUsername: emailOrUsername || error.details.emailOrUsername || Meteor.user()?.username,
 	};
 
 	assertModalProps(props);
@@ -95,7 +95,7 @@ export async function process2faAsyncReturn({
 
 		const props = {
 			method: error.details.method,
-			emailOrUsername: emailOrUsername || error.details.emailOrUsername || (await Meteor.userAsync())?.username,
+			emailOrUsername: emailOrUsername || error.details.emailOrUsername || Meteor.user()?.username,
 		};
 
 		assertModalProps(props);

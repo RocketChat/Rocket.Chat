@@ -29,17 +29,6 @@ const meteorUserOverwrite = () => {
 Meteor.users = Users as typeof Meteor.users;
 Meteor.user = meteorUserOverwrite;
 
-declare global {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
-	namespace Meteor {
-		function userAsync(options?: { fields?: Mongo.FieldSpecifier | undefined }): Promise<Meteor.User | null>;
-	}
-}
-
-Meteor.userAsync = async () => {
-	return meteorUserOverwrite();
-};
-
 export {
 	Base,
 	Roles,

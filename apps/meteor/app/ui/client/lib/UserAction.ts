@@ -38,7 +38,7 @@ const shownName = function (user: IUser | null | undefined): string | undefined 
 
 const emitActivities = debounce(async (rid: string, extras: IExtras): Promise<void> => {
 	const activities = roomActivities.get(extras?.tmid || rid) || new Set();
-	Notifications.notifyRoom(rid, USER_ACTIVITY, shownName((await Meteor.userAsync()) as IUser), [...activities], extras);
+	Notifications.notifyRoom(rid, USER_ACTIVITY, shownName(Meteor.user() as unknown as IUser), [...activities], extras);
 }, 500);
 
 function handleStreamAction(rid: string, username: string, activityTypes: string[], extras?: IExtras): void {
