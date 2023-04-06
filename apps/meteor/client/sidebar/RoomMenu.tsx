@@ -16,7 +16,7 @@ import {
 import type { ReactElement } from 'react';
 import React, { memo, useMemo } from 'react';
 
-import { RoomManager } from '../../app/ui-utils/client';
+import { LegacyRoomManager } from '../../app/ui-utils/client';
 import { UiTextContext } from '../../definition/IRoomTypeConfig';
 import { useOmnichannelPrioritiesMenu } from '../../ee/client/omnichannel/hooks/useOmnichannelPrioritiesMenu';
 import { GenericModalDoNotAskAgain } from '../components/GenericModal';
@@ -117,14 +117,14 @@ const RoomMenu = ({
 				if (roomOpen) {
 					router.push({});
 				}
-				RoomManager.close(rid);
+				LegacyRoomManager.close(rid);
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
 			closeModal();
 		};
 
-		const warnText = roomCoordinator.getRoomDirectives(type)?.getUiText(UiTextContext.LEAVE_WARNING);
+		const warnText = roomCoordinator.getRoomDirectives(type).getUiText(UiTextContext.LEAVE_WARNING);
 
 		setModal(
 			<WarningModal
@@ -148,7 +148,7 @@ const RoomMenu = ({
 			closeModal();
 		};
 
-		const warnText = roomCoordinator.getRoomDirectives(type)?.getUiText(UiTextContext.HIDE_WARNING);
+		const warnText = roomCoordinator.getRoomDirectives(type).getUiText(UiTextContext.HIDE_WARNING);
 
 		if (dontAskHideRoom) {
 			return hide();
@@ -178,11 +178,11 @@ const RoomMenu = ({
 				await readMessages({ rid, readThreads: true });
 				return;
 			}
-			await unreadMessages(null, rid);
+			await unreadMessages(undefined, rid);
 			if (subscription == null) {
 				return;
 			}
-			RoomManager.close(subscription.t + subscription.name);
+			LegacyRoomManager.close(subscription.t + subscription.name);
 
 			router.push({});
 		} catch (error) {

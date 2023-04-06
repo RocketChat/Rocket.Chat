@@ -216,7 +216,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		});
 
 		this.onEvent('watch.emailInbox', async () => {
-			configureEmailInboxes();
+			await configureEmailInboxes();
 		});
 
 		if (!disableMsgRoundtripTracking) {
@@ -236,11 +236,11 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		Meteor.server.publish_handlers.meteor_autoupdate_clientVersions.call({
 			added(_collection: string, _id: string, version: AutoUpdateRecord) {
 				clientVersionsStore.set(_id, version);
-				api.broadcast('meteor.clientVersionUpdated', version);
+				void api.broadcast('meteor.clientVersionUpdated', version);
 			},
 			changed(_collection: string, _id: string, version: AutoUpdateRecord) {
 				clientVersionsStore.set(_id, version);
-				api.broadcast('meteor.clientVersionUpdated', version);
+				void api.broadcast('meteor.clientVersionUpdated', version);
 			},
 			onStop() {
 				//
@@ -265,12 +265,12 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 		});
 		if (!user) {
 			return {
-				result: Meteor.call(method, ...args),
+				result: Meteor.callAsync(method, ...args),
 			};
 		}
 
 		return {
-			result: Meteor.runAsUser(userId, () => Meteor.call(method, ...args)),
+			result: Meteor.runAsUser(userId, () => Meteor.callAsync(method, ...args)),
 		};
 	}
 

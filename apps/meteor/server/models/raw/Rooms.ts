@@ -1,5 +1,6 @@
 import type {
 	IDirectMessageRoom,
+	IMessage,
 	IOmnichannelGenericRoom,
 	IRoom,
 	IRoomFederated,
@@ -8,16 +9,18 @@ import type {
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
 import type { FindPaginated, IRoomsModel } from '@rocket.chat/model-typings';
-import type { PaginatedRequest } from '@rocket.chat/rest-typings';
+import { Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
 	AggregationCursor,
 	Collection,
 	Db,
+	DeleteResult,
 	Document,
 	Filter,
 	FindCursor,
 	FindOptions,
+	IndexDescription,
 	UpdateFilter,
 	UpdateOptions,
 	UpdateResult,
@@ -32,8 +35,72 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		super(db, 'room', trash);
 	}
 
+	modelIndexes(): IndexDescription[] {
+		return [
+			{
+				key: { name: 1 },
+				unique: true,
+				sparse: true,
+			},
+			{
+				key: { default: 1 },
+				sparse: true,
+			},
+			{
+				key: { featured: 1 },
+				sparse: true,
+			},
+			{
+				key: { muted: 1 },
+				sparse: true,
+			},
+			{
+				key: { t: 1 },
+			},
+			{
+				key: { 'u._id': 1 },
+			},
+			{
+				key: { ts: 1 },
+			},
+			// discussions
+			{
+				key: { prid: 1 },
+				sparse: true,
+			},
+			{
+				key: { fname: 1 },
+				sparse: true,
+			},
+			// field used for DMs only
+			{
+				key: { uids: 1 },
+				sparse: true,
+			},
+			{
+				key: { createdOTR: 1 },
+				sparse: true,
+			},
+			{
+				key: { encrypted: 1 },
+				sparse: true,
+			}, // used on statistics
+			{
+				key: { broadcast: 1 },
+				sparse: true,
+			}, // used on statistics
+			{
+				key: {
+					teamId: 1,
+					teamDefault: 1,
+				},
+				sparse: true,
+			},
+		];
+	}
+
 	findOneByRoomIdAndUserId(rid: IRoom['_id'], uid: IUser['_id'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
-		const query = {
+		const query: Filter<IRoom> = {
 			'_id': rid,
 			'u._id': uid,
 		};
@@ -42,7 +109,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	findManyByRoomIds(roomIds: Array<IRoom['_id']>, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
-		const query = {
+		const query: Filter<IRoom> = {
 			_id: {
 				$in: roomIds,
 			},
@@ -51,7 +118,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(query, options);
 	}
 
-	findPaginatedByIds(roomIds: Array<IRoom['_id']>, options: FindOptions<IRoom> = {}): FindPaginated<FindCursor<IRoom>> {
+	findPaginatedByIds(
+		roomIds: Array<IRoom['_id']>,
+		options: FindOptions<IRoom> = {},
+	): FindPaginated<FindCursor<IRoom & { isLastOwner?: boolean }>> {
 		return this.findPaginated(
 			{
 				_id: { $in: roomIds },
@@ -88,14 +158,14 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	findByNameOrFnameContainingAndTypes(
 		name: NonNullable<IRoom['name']>,
 		types: Array<IRoom['t']>,
-		discussion: boolean = false,
-		teams: boolean = false,
-		showOnlyTeams: boolean = false,
+		discussion = false,
+		teams = false,
+		showOnlyTeams = false,
 		options: FindOptions<IRoom> = {},
 	): FindPaginated<FindCursor<IRoom>> {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
 
-		const onlyTeamsQuery = showOnlyTeams ? { teamMain: { $exists: true } } : {};
+		const onlyTeamsQuery: Filter<IRoom> = showOnlyTeams ? { teamMain: { $exists: true } } : {};
 
 		const teamCondition = teams
 			? {}
@@ -126,9 +196,9 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	findByTypes(
 		types: Array<IRoom['t']>,
-		discussion: boolean = false,
-		teams: boolean = false,
-		onlyTeams: boolean = false,
+		discussion = false,
+		teams = false,
+		onlyTeams = false,
 		options: FindOptions<IRoom> = {},
 	): FindPaginated<FindCursor<IRoom>> {
 		const teamCondition = teams
@@ -154,9 +224,9 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	findByNameOrFnameContaining(
 		name: NonNullable<IRoom['name']>,
-		discussion: boolean = false,
-		teams: boolean = false,
-		onlyTeams: boolean = false,
+		discussion = false,
+		teams = false,
+		onlyTeams = false,
 		options: FindOptions<IRoom> = {},
 	): FindPaginated<FindCursor<IRoom>> {
 		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
@@ -202,8 +272,8 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	findPaginatedByTeamIdContainingNameAndDefault(
 		teamId: ITeam['_id'],
 		name: IRoom['name'],
-		teamDefault: boolean = false,
-		ids: Array<IRoom['_id']> = [],
+		teamDefault = false,
+		ids: Array<IRoom['_id']> | undefined,
 		options: FindOptions<IRoom> = {},
 	): FindPaginated<FindCursor<IRoom>> {
 		const query: Filter<IRoom> = {
@@ -220,46 +290,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	findByTeamIdAndRoomsId(teamId: ITeam['_id'], rids: Array<IRoom['_id']>, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
-		const query = {
+		const query: Filter<IRoom> = {
 			teamId,
 			_id: {
 				$in: rids,
 			},
-		};
-
-		return this.find(query, options);
-	}
-
-	findChannelAndPrivateByNameStarting(
-		name: NonNullable<IRoom['name']>,
-		sIds: Array<IRoom['_id']>,
-		options: FindOptions<IRoom> = {},
-	): FindCursor<IRoom> {
-		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
-
-		const query: Filter<IRoom> = {
-			t: {
-				$in: ['c', 'p'],
-			},
-			name: nameRegex,
-			teamMain: {
-				$exists: false,
-			},
-			$or: [
-				{
-					teamId: {
-						$exists: false,
-					},
-				},
-				{
-					teamId: {
-						$exists: true,
-					},
-					_id: {
-						$in: sIds,
-					},
-				},
-			],
 		};
 
 		return this.find(query, options);
@@ -433,8 +468,24 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		startOfLastWeek: number;
 		endOfLastWeek: number;
 		onlyCount?: T;
-		options?: PaginatedRequest;
-	}): T extends true ? {total: number} : AggregationCursor<IRoom> {
+		options?: any;
+	}): AggregationCursor<
+		T extends true
+			? { total: number }
+			: {
+					room: {
+						_id: IRoom['_id'];
+						name: IRoom['name'] | IRoom['fname'];
+						ts: IRoom['ts'];
+						t: IRoom['t'];
+						_updatedAt: IRoom['_updatedAt'];
+						usernames?: IDirectMessageRoom['usernames'];
+					};
+					messages: number;
+					lastWeekMessages: number;
+					diffFromLastWeek: number;
+			  }
+	> {
 		const readPreference = ReadPreference.SECONDARY_PREFERRED;
 		const lookup = {
 			$lookup: {
@@ -524,7 +575,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			lastWeekMessagesGroup,
 			presentationProject,
 		];
-		const sort = { $sort: options.sort || { messages: -1 } };
+		const sort = { $sort: options?.sort || { messages: -1 } };
 		const params: Exclude<Parameters<Collection<IRoom>['aggregate']>[0], undefined> = [...firstParams, sort];
 
 		if (options?.offset) {
@@ -533,14 +584,53 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 		if (options?.count) {
 			params.push({ $limit: options.count });
-        }
+		}
 
-        if (onlyCount) {
-            params.push({ $count: 'total' });
-            return this.col.aggregate<IRoom>(params, { allowDiskUse: true, readPreference }) as {total: number};
-        }
+		if (onlyCount) {
+			params.push({ $count: 'total' });
+		}
 
-		return this.col.aggregate<IRoom>(params, { allowDiskUse: true, readPreference });
+		return this.col.aggregate<
+			T extends true
+				? { total: number }
+				: {
+						room: {
+							_id: IRoom['_id'];
+							name: IRoom['name'] | IRoom['fname'];
+							ts: IRoom['ts'];
+							t: IRoom['t'];
+							_updatedAt: IRoom['_updatedAt'];
+							usernames?: IDirectMessageRoom['usernames'];
+						};
+						messages: number;
+						lastWeekMessages: number;
+						diffFromLastWeek: number;
+				  }
+		>(params, { allowDiskUse: true, readPreference });
+	}
+
+	findOneByNameOrFname(name: IRoom['name'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
+		const query = {
+			$or: [
+				{
+					name,
+				},
+				{
+					fname: name,
+				},
+			],
+		};
+
+		return this.findOne(query, options);
+	}
+
+	async findOneByNonValidatedName(name: IRoom['name'], options: FindOptions<IRoom> = {}) {
+		const room = await this.findOneByNameOrFname(name, options);
+		if (room) {
+			return room;
+		}
+
+		return this.findOneByName(name, options);
 	}
 
 	findOneByName(name: IRoom['name'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
@@ -557,7 +647,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		});
 	}
 
-	incUsersCountByIds(ids: Array<IRoom['_id']>, inc: number = 1): Promise<Document | UpdateResult> {
+	incUsersCountByIds(ids: Array<IRoom['_id']>, inc = 1): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = {
 			_id: {
 				$in: ids,
@@ -571,10 +661,6 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		};
 
 		return this.updateMany(query, update);
-	}
-
-	findOneByNameOrFname(name: NonNullable<IRoom['name'] | IRoom['fname']>, options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
-		return this.col.findOne({ $or: [{ name }, { fname: name }] }, options);
 	}
 
 	allRoomSourcesCount(): AggregationCursor<{ _id: Required<IOmnichannelGenericRoom['source']>; count: number }> {
@@ -651,7 +737,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		);
 	}
 
-	findRoomsInsideTeams(autoJoin: boolean = false): FindCursor<IRoom> {
+	findRoomsInsideTeams(autoJoin = false): FindCursor<IRoom> {
 		return this.find({
 			teamId: { $exists: true },
 			teamMain: { $exists: false },
@@ -769,16 +855,13 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findPaginated(query, options);
 	}
 
-	findOneDirectRoomContainingAllUserIDs(
-		uid: IDirectMessageRoom['uids'],
-		options: FindOptions<IRoom> = {},
-	): Promise<IDirectMessageRoom | null> {
+	findOneDirectRoomContainingAllUserIDs(uid: IDirectMessageRoom['uids'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
 		const query: Filter<IRoom> = {
 			t: 'd',
 			uids: { $size: uid.length, $all: uid },
 		};
 
-		return this.findOne<IDirectMessageRoom>(query, options);
+		return this.findOne<IRoom>(query, options);
 	}
 
 	findFederatedRooms(options: FindOptions<IRoom> = {}): FindCursor<IRoomFederated> {
@@ -789,12 +872,1107 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find<IRoomFederated>(query, options);
 	}
 
-	findCountOfRoomsWithActiveCalls() {
-		const query = {
+	findCountOfRoomsWithActiveCalls(): Promise<number> {
+		const query: Filter<IRoom> = {
 			// No matter the actual "status" of the call, if the room has a callStatus, it means there is/was a call
 			callStatus: { $exists: true },
 		};
 
 		return this.col.countDocuments(query);
+	}
+
+	incMsgCountById(_id: IRoom['_id'], inc = 1): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$inc: {
+				msgs: inc,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	decreaseMessageCountById(_id: IRoom['_id'], count = 1) {
+		return this.incMsgCountById(_id, -count);
+	}
+
+	findOneByIdOrName(_idOrName: IRoom['_id'] | IRoom['name'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
+		const query: Filter<IRoom> = {
+			$or: [
+				{
+					_id: _idOrName,
+				},
+				{
+					name: _idOrName,
+				},
+			],
+		};
+
+		return this.findOne(query, options);
+	}
+
+	setCallStatus(_id: IRoom['_id'], status: IRoom['callStatus']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = {
+			_id,
+		};
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				callStatus: status,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	setCallStatusAndCallStartTime(_id: IRoom['_id'], status: IRoom['callStatus']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = {
+			_id,
+		};
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				callStatus: status,
+				webRtcCallStartTime: new Date(),
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	setReactionsInLastMessage(roomId: IRoom['_id'], reactions: IMessage['reactions']): Promise<UpdateResult> {
+		return this.updateOne({ _id: roomId }, { $set: { 'lastMessage.reactions': reactions } });
+	}
+
+	unsetReactionsInLastMessage(roomId: IRoom['_id']): Promise<UpdateResult> {
+		return this.updateOne({ _id: roomId }, { $unset: { 'lastMessage.reactions': 1 } });
+	}
+
+	unsetAllImportIds(): Promise<Document | UpdateResult> {
+		const query: Filter<IRoom> = {
+			importIds: {
+				$exists: true,
+			},
+		};
+
+		const update: UpdateFilter<IRoom> = {
+			$unset: {
+				importIds: 1,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	updateLastMessageStar(roomId: IRoom['_id'], userId: IUser['_id'], starred: boolean): Promise<UpdateResult> {
+		let update: UpdateFilter<IRoom>;
+		const query: Filter<IRoom> = { _id: roomId };
+
+		if (starred) {
+			update = {
+				$addToSet: {
+					'lastMessage.starred': { _id: userId },
+				},
+			};
+		} else {
+			update = {
+				$pull: {
+					'lastMessage.starred': { _id: userId },
+				},
+			};
+		}
+
+		return this.updateOne(query, update);
+	}
+
+	setLastMessagePinned(
+		roomId: IRoom['_id'],
+		pinnedBy: IMessage['pinnedBy'],
+		pinned: IMessage['pinned'],
+		pinnedAt: IMessage['pinnedAt'],
+	): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id: roomId };
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				'lastMessage.pinned': pinned,
+				'lastMessage.pinnedAt': pinnedAt || new Date(),
+				'lastMessage.pinnedBy': pinnedBy,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	setLastMessageAsRead(roomId: IRoom['_id']): Promise<UpdateResult> {
+		return this.updateOne(
+			{
+				_id: roomId,
+			},
+			{
+				$unset: {
+					'lastMessage.unread': 1,
+				},
+			},
+		);
+	}
+
+	setDescriptionById(_id: IRoom['_id'], description: IRoom['description']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = {
+			_id,
+		};
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				description,
+			},
+		};
+		return this.updateOne(query, update);
+	}
+
+	setStreamingOptionsById(_id: IRoom['_id'], streamingOptions: IRoom['streamingOptions']): Promise<UpdateResult> {
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				streamingOptions,
+			},
+		};
+		return this.updateOne({ _id }, update);
+	}
+
+	setReadOnlyById(_id: IRoom['_id'], readOnly: IRoom['ro']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = {
+			_id,
+		};
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				ro: readOnly,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	setDmReadOnlyByUserId(
+		_id: IRoom['_id'],
+		ids: Array<IRoom['_id']>,
+		readOnly: IRoom['ro'],
+		reactWhenReadOnly: IRoom['reactWhenReadOnly'],
+	): Promise<Document | UpdateResult> {
+		const query: Filter<IRoom> = {
+			uids: {
+				$size: 2,
+				$in: [_id],
+			},
+			...(ids && Array.isArray(ids) ? { _id: { $in: ids } } : {}),
+			t: 'd',
+		};
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				ro: readOnly,
+				reactWhenReadOnly,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	getDirectConversationsByUserId(_id: IRoom['_id'], options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
+		return this.find({ t: 'd', uids: { $size: 2, $in: [_id] } }, options);
+	}
+
+	// 2
+	setAllowReactingWhenReadOnlyById(_id: IRoom['_id'], allowReacting: IRoom['reactWhenReadOnly']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = {
+			_id,
+		};
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				reactWhenReadOnly: allowReacting,
+			},
+		};
+		return this.updateOne(query, update);
+	}
+
+	setAvatarData(_id: IRoom['_id'], origin: string, etag: IRoom['avatarETag']): Promise<UpdateResult> {
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				avatarOrigin: origin,
+				avatarETag: etag,
+			},
+		};
+
+		return this.updateOne({ _id }, update);
+	}
+
+	unsetAvatarData(_id: IRoom['_id']): Promise<UpdateResult> {
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				avatarETag: Date.now().toString(),
+			},
+			$unset: {
+				avatarOrigin: 1,
+			},
+		};
+
+		return this.updateOne({ _id }, update);
+	}
+
+	setSystemMessagesById(_id: IRoom['_id'], systemMessages: IRoom['sysMes']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = {
+			_id,
+		};
+		const update: UpdateFilter<IRoom> =
+			systemMessages && systemMessages.length > 0
+				? {
+						$set: {
+							sysMes: systemMessages,
+						},
+				  }
+				: {
+						$unset: {
+							sysMes: '',
+						},
+				  };
+
+		return this.updateOne(query, update);
+	}
+
+	setE2eKeyId(_id: IRoom['_id'], e2eKeyId: IRoom['e2eKeyId'], options: UpdateOptions = {}): Promise<UpdateResult> {
+		const query: Filter<IRoom> = {
+			_id,
+		};
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				e2eKeyId,
+			},
+		};
+
+		return this.updateOne(query, update, options);
+	}
+
+	findOneByImportId(_id: IRoom['_id'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
+		const query: Filter<IRoom> = { importIds: _id };
+
+		return this.findOne(query, options);
+	}
+
+	findOneByNameAndNotId(name: IRoom['name'], rid: IRoom['_id']): Promise<IRoom | null> {
+		const query: Filter<IRoom> = {
+			_id: { $ne: rid },
+			name,
+		};
+
+		return this.findOne(query);
+	}
+
+	findOneByDisplayName(fname: IRoom['fname'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
+		const query: Filter<IRoom> = { fname };
+
+		return this.findOne(query, options);
+	}
+
+	findOneByNameAndType(
+		name: IRoom['name'],
+		type: IRoom['t'],
+		options: FindOptions<IRoom> = {},
+		includeFederatedRooms = false,
+	): Promise<IRoom | null> {
+		const query: Filter<IRoom> = {
+			t: type,
+			teamId: {
+				$exists: false,
+			},
+			...(includeFederatedRooms
+				? { $or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }] }
+				: { $or: [{ federated: { $exists: false } }, { federated: false }], name }),
+		};
+
+		return this.findOne(query, options);
+	}
+
+	// FIND
+	findById(roomId: IRoom['_id'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
+		return this.findOne({ _id: roomId }, options);
+	}
+
+	findByIds(roomIds: Array<IRoom['_id']>, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
+		return this.find({ _id: { $in: roomIds } }, options);
+	}
+
+	findByType(type: IRoom['t'], options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
+		const query: Filter<IRoom> = { t: type };
+
+		return this.find(query, options);
+	}
+
+	findByTypeInIds(type: IRoom['t'], ids: Array<IRoom['_id']>, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
+		const query: Filter<IRoom> = {
+			_id: {
+				$in: ids,
+			},
+			t: type,
+		};
+
+		return this.find(query, options);
+	}
+
+	async findBySubscriptionUserId(userId: IUser['_id'], options: FindOptions<IRoom> = {}): Promise<FindCursor<IRoom>> {
+		const data = (await Subscriptions.findByUserId(userId, { projection: { rid: 1 } }).toArray()).map((item) => item.rid);
+
+		const query: Filter<IRoom> = {
+			_id: {
+				$in: data,
+			},
+			$or: [
+				{
+					teamId: {
+						$exists: false,
+					},
+				},
+				{
+					teamId: {
+						$exists: true,
+					},
+					_id: {
+						$in: data,
+					},
+				},
+			],
+		};
+
+		return this.find(query, options);
+	}
+
+	async findBySubscriptionUserIdUpdatedAfter(
+		userId: IUser['_id'],
+		_updatedAt: IRoom['_updatedAt'],
+		options: FindOptions<IRoom> = {},
+	): Promise<FindCursor<IRoom>> {
+		const ids = (await Subscriptions.findByUserId(userId, { projection: { rid: 1 } }).toArray()).map((item) => item.rid);
+
+		const query: Filter<IRoom> = {
+			_id: {
+				$in: ids,
+			},
+			_updatedAt: {
+				$gt: _updatedAt,
+			},
+			$or: [
+				{
+					teamId: {
+						$exists: false,
+					},
+				},
+				{
+					teamId: {
+						$exists: true,
+					},
+					_id: {
+						$in: ids,
+					},
+				},
+			],
+		};
+
+		return this.find(query, options);
+	}
+
+	findByNameAndType(name: IRoom['name'], type: IRoom['t'], options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
+		const query: Filter<IRoom> = {
+			t: type,
+			name,
+		};
+
+		// do not use cache
+		return this.find(query, options);
+	}
+
+	findByNameAndTypeNotDefault(
+		name: IRoom['name'],
+		type: IRoom['t'],
+		options: FindOptions<IRoom> = {},
+		includeFederatedRooms = false,
+	): FindCursor<IRoom> {
+		const query: Filter<IRoom> = {
+			t: type,
+			default: {
+				$ne: true,
+			},
+			$and: [
+				{
+					$or: [
+						{
+							teamId: {
+								$exists: false,
+							},
+						},
+						{
+							teamMain: true,
+						},
+					],
+				},
+				includeFederatedRooms
+					? {
+							$or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }],
+					  }
+					: { $or: [{ federated: { $exists: false } }, { federated: false }], name },
+			],
+		};
+
+		// do not use cache
+		return this.find(query, options);
+	}
+
+	// 3
+	findByNameAndTypesNotInIds(
+		name: IRoom['name'],
+		types: Array<IRoom['t']>,
+		ids: Array<IRoom['_id']>,
+		options: FindOptions<IRoom> = {},
+		includeFederatedRooms = false,
+	): FindCursor<IRoom> {
+		const query: Filter<IRoom> = {
+			_id: {
+				$nin: ids,
+			},
+			t: {
+				$in: types,
+			},
+			$and: [
+				{
+					$or: [
+						{
+							teamId: {
+								$exists: false,
+							},
+						},
+						{
+							teamId: {
+								$exists: true,
+							},
+							_id: {
+								$in: ids,
+							},
+						},
+						{
+							// Also return the main room of public teams
+							// this will have no effect if the method is called without the 'c' type, as the type filter is outside the $or group.
+							teamMain: true,
+							t: 'c',
+						},
+					],
+				},
+				includeFederatedRooms
+					? {
+							$or: [{ $and: [{ $or: [{ federated: { $exists: false } }, { federated: false }], name }] }, { federated: true, fname: name }],
+					  }
+					: { $or: [{ federated: { $exists: false } }, { federated: false }], name },
+			],
+		};
+
+		// do not use cache
+		return this.find(query, options);
+	}
+
+	findByDefaultAndTypes(defaultValue: boolean, types: Array<IRoom['t']>, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
+		const query: Filter<IRoom> = {
+			t: {
+				$in: types,
+			},
+			...(defaultValue ? { default: true } : { default: { $exists: false } }),
+		};
+
+		return this.find(query, options);
+	}
+
+	findDirectRoomContainingAllUsernames(
+		usernames: NonNullable<IRoom['usernames']>,
+		options: FindOptions<IRoom> = {},
+	): Promise<IRoom | null> {
+		const query: Filter<IRoom> = {
+			t: 'd',
+			usernames: { $size: usernames.length, $all: usernames },
+			usersCount: usernames.length,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findByTypeAndName(type: IRoom['t'], name: IRoom['name'], options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
+		const query: Filter<IRoom> = {
+			name,
+			t: type,
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findByTypeAndNameOrId(
+		type: IRoom['t'],
+		identifier: NonNullable<IRoom['name'] | IRoom['_id']>,
+		options: FindOptions<IRoom> = {},
+	): Promise<IRoom | null> {
+		const query: Filter<IRoom> = {
+			t: type,
+			$or: [{ name: identifier }, { _id: identifier }],
+		};
+
+		return this.findOne(query, options);
+	}
+
+	findByTypeAndNameContaining(type: IRoom['t'], name: NonNullable<IRoom['name']>, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
+		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
+
+		const query: Filter<IRoom> = {
+			name: nameRegex,
+			t: type,
+		};
+
+		return this.find(query, options);
+	}
+
+	findByTypeInIdsAndNameContaining(
+		type: IRoom['t'],
+		ids: Array<IRoom['_id']>,
+		name: NonNullable<IRoom['name']>,
+		options: FindOptions<IRoom> = {},
+	): FindCursor<IRoom> {
+		const nameRegex = new RegExp(escapeRegExp(name).trim(), 'i');
+
+		const query: Filter<IRoom> = {
+			_id: {
+				$in: ids,
+			},
+			name: nameRegex,
+			t: type,
+		};
+
+		return this.find(query, options);
+	}
+
+	findGroupDMsByUids(uids: IRoom['uids'], options: FindOptions<IDirectMessageRoom> = {}): FindCursor<IDirectMessageRoom> {
+		return this.find(
+			{
+				usersCount: { $gt: 2 },
+				uids: { $in: uids },
+			},
+			options,
+		);
+	}
+
+	find1On1ByUserId(userId: string, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
+		return this.find(
+			{
+				uids: userId,
+				usersCount: 2,
+			},
+			options,
+		);
+	}
+
+	findByCreatedOTR(): FindCursor<IRoom> {
+		return this.find({ createdOTR: true });
+	}
+
+	// UPDATE
+	addImportIds(_id: IRoom['_id'], importIds: string[]): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$addToSet: {
+				importIds: {
+					$each: importIds,
+				},
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	archiveById(_id: IRoom['_id']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				archived: true,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	unarchiveById(_id: IRoom['_id']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				archived: false,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	setNameById(_id: IRoom['_id'], name: IRoom['name'], fname: IRoom['fname']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				name,
+				fname,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	incMsgCountAndSetLastMessageById(
+		_id: IRoom['_id'],
+		inc = 1,
+		lastMessageTimestamp: IRoom['lm'],
+		lastMessage: IRoom['lastMessage'],
+	): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				lm: lastMessageTimestamp,
+				...(lastMessage ? { lastMessage } : {}),
+			},
+			$inc: {
+				msgs: inc,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	incUsersCountById(_id: IRoom['_id'], inc = 1): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$inc: {
+				usersCount: inc,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	// 4
+	incUsersCountNotDMsByIds(ids: Array<IRoom['_id']>, inc = 1): Promise<Document | UpdateResult> {
+		const query: Filter<IRoom> = {
+			_id: {
+				$in: ids,
+			},
+			t: { $ne: 'd' },
+		};
+
+		const update: UpdateFilter<IRoom> = {
+			$inc: {
+				usersCount: inc,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	setLastMessageById(_id: IRoom['_id'], lastMessage: IRoom['lastMessage']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				lastMessage,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	async resetLastMessageById(_id: IRoom['_id'], lastMessage: IRoom['lastMessage'] | undefined): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = lastMessage
+			? {
+					$set: {
+						lastMessage,
+					},
+			  }
+			: {
+					$unset: {
+						lastMessage: 1,
+					},
+			  };
+
+		return this.updateOne(query, update);
+	}
+
+	replaceUsername(previousUsername: string, username: string): Promise<Document | UpdateResult> {
+		const query: Filter<IRoom> = { usernames: previousUsername };
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				'usernames.$': username,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	replaceMutedUsername(previousUsername: string, username: string): Promise<Document | UpdateResult> {
+		const query: Filter<IRoom> = { muted: previousUsername };
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				'muted.$': username,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	replaceUsernameOfUserByUserId(userId: IRoom['u']['_id'], username: IRoom['u']['username']): Promise<Document | UpdateResult> {
+		const query: Filter<IRoom> = { 'u._id': userId };
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				'u.username': username,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	setJoinCodeById(_id: IRoom['_id'], joinCode: string): Promise<UpdateResult> {
+		let update: UpdateFilter<IRoom>;
+		const query: Filter<IRoom> = { _id };
+
+		if ((joinCode != null ? joinCode.trim() : undefined) !== '') {
+			update = {
+				$set: {
+					joinCodeRequired: true,
+					joinCode,
+				},
+			};
+		} else {
+			update = {
+				$set: {
+					joinCodeRequired: false,
+				},
+				$unset: {
+					joinCode: 1,
+				},
+			};
+		}
+
+		return this.updateOne(query, update);
+	}
+
+	setTypeById(_id: IRoom['_id'], type: IRoom['t']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				t: type,
+			},
+		};
+		if (type === 'p') {
+			update.$unset = { default: '' };
+		}
+
+		return this.updateOne(query, update);
+	}
+
+	setTopicById(_id: IRoom['_id'], topic: IRoom['topic']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				topic,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	setAnnouncementById(
+		_id: IRoom['_id'],
+		announcement: IRoom['announcement'],
+		announcementDetails: IRoom['announcementDetails'],
+	): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				announcement,
+				announcementDetails,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	setCustomFieldsById(_id: IRoom['_id'], customFields: IRoom['customFields']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				customFields,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	muteUsernameByRoomId(_id: IRoom['_id'], username: IUser['username']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$addToSet: {
+				muted: username,
+			},
+			$pull: {
+				unmuted: username,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	unmuteUsernameByRoomId(_id: IRoom['_id'], username: IUser['username']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$pull: {
+				muted: username,
+			},
+			$addToSet: {
+				unmuted: username,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	saveFeaturedById(_id: IRoom['_id'], featured: string | boolean): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+		const set = ['true', true].includes(featured);
+
+		const update: UpdateFilter<IRoom> = {
+			[set ? '$set' : '$unset']: {
+				featured: true,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	saveDefaultById(_id: IRoom['_id'], defaultValue: boolean): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = defaultValue
+			? {
+					$set: {
+						default: true,
+					},
+			  }
+			: {
+					$unset: {
+						default: 1,
+					},
+			  };
+
+		return this.updateOne(query, update);
+	}
+
+	saveFavoriteById(_id: IRoom['_id'], favorite: IRoom['favorite'], defaultValue: boolean): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			...(favorite && defaultValue && { $set: { favorite } }),
+			...((!favorite || !defaultValue) && { $unset: { favorite: 1 } }),
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	saveRetentionEnabledById(_id: IRoom['_id'], value: boolean): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {};
+
+		if (value == null) {
+			update.$unset = { 'retention.enabled': true };
+		} else {
+			update.$set = { 'retention.enabled': !!value };
+		}
+
+		return this.updateOne(query, update);
+	}
+
+	saveRetentionMaxAgeById(_id: IRoom['_id'], value = 30): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				'retention.maxAge': value,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	saveRetentionExcludePinnedById(_id: IRoom['_id'], value: boolean): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				'retention.excludePinned': value === true,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	// 5
+	saveRetentionIgnoreThreadsById(_id: IRoom['_id'], value: boolean): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			[value === true ? '$set' : '$unset']: {
+				'retention.ignoreThreads': true,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	saveRetentionFilesOnlyById(_id: IRoom['_id'], value: boolean): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				'retention.filesOnly': value === true,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	saveRetentionOverrideGlobalById(_id: IRoom['_id'], value: boolean): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				'retention.overrideGlobal': value === true,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	saveEncryptedById(_id: IRoom['_id'], value: boolean): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id };
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				encrypted: value === true,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	updateGroupDMsRemovingUsernamesByUsername(username: string, userId: string): Promise<Document | UpdateResult> {
+		const query: Filter<IRoom> = {
+			t: 'd',
+			usernames: username,
+			usersCount: { $gt: 2 },
+		};
+
+		const update: UpdateFilter<IRoom> = {
+			$pull: {
+				usernames: username,
+				uids: userId,
+			},
+		};
+
+		return this.updateMany(query, update);
+	}
+
+	async createWithIdTypeAndName(
+		_id: IRoom['_id'],
+		type: IRoom['t'],
+		name: IRoom['name'],
+		extraData?: Record<string, string>,
+	): Promise<IRoom> {
+		const room: IRoom = {
+			_id,
+			ts: new Date(),
+			t: type,
+			name,
+			usernames: [],
+			msgs: 0,
+			usersCount: 0,
+			_updatedAt: new Date(),
+			u: {
+				_id: 'rocket.cat',
+				username: 'rocket.cat',
+				name: 'Rocket.Cat',
+			},
+		};
+
+		Object.assign(room, extraData);
+
+		await this.insertOne(room);
+		return room;
+	}
+
+	async createWithFullRoomData(room: Omit<IRoom, '_id' | '_updatedAt'>): Promise<IRoom> {
+		const newRoom: IRoom = {
+			_id: (await this.insertOne(room)).insertedId,
+			_updatedAt: new Date(),
+			...room,
+		};
+
+		return newRoom;
+	}
+
+	// REMOVE
+	removeById(_id: IRoom['_id']): Promise<DeleteResult> {
+		const query: Filter<IRoom> = { _id };
+
+		return this.deleteOne(query);
+	}
+
+	removeByIds(ids: Array<IRoom['_id']>): Promise<DeleteResult> {
+		return this.deleteMany({ _id: { $in: ids } });
+	}
+
+	removeDirectRoomContainingUsername(username: string): Promise<DeleteResult> {
+		const query: Filter<IRoom> = {
+			t: 'd',
+			usernames: username,
+			usersCount: { $lte: 2 },
+		};
+
+		return this.deleteMany(query);
+	}
+
+	countDiscussions(): Promise<number> {
+		return this.col.countDocuments({ prid: { $exists: true } });
+	}
+
+	setOTRForDMByRoomID(rid: IRoom['_id']): Promise<UpdateResult> {
+		const query: Filter<IRoom> = { _id: rid, t: 'd' };
+
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				createdOTR: true,
+			},
+		};
+
+		return this.updateOne(query, update);
 	}
 }

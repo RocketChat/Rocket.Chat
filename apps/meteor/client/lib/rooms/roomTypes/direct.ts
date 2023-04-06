@@ -2,7 +2,6 @@ import type { AtLeast, IRoom, ISubscription, IUser } from '@rocket.chat/core-typ
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Meteor } from 'meteor/meteor';
 import type { Mongo } from 'meteor/mongo';
-import { Session } from 'meteor/session';
 
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
 import { Subscriptions, Users, ChatRoom } from '../../../../app/models/client';
@@ -135,15 +134,6 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 
 		return DirectMessageRoomType.icon;
-	},
-
-	getUserStatus(roomId) {
-		const subscription = Subscriptions.findOne({ rid: roomId });
-		if (!subscription) {
-			return;
-		}
-
-		return Session.get(`user_${subscription.name}_status`);
 	},
 
 	findRoom(identifier) {
