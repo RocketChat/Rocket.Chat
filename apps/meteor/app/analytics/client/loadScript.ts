@@ -42,9 +42,10 @@ Template.body.onRendered(function () {
 					j.src = `//www.googletagmanager.com/gtag/js?id=${googleId}`;
 					f.parentNode?.insertBefore(j, f);
 
-					interface window { dataLayer: any; }
-					let dataLayer = window.dataLayer || [];
-					function gtag() { dataLayer.push(arguments); }
+					// injecting the dataLayer into the windows global object
+					const w: Window & { dataLayer?: any } = window;
+					let dataLayer = w.dataLayer || [];
+					function gtag(key: string, value: any) { dataLayer.push(key, value); }
 					gtag('js', new Date());
 					gtag('config', googleId);
 				} else {
