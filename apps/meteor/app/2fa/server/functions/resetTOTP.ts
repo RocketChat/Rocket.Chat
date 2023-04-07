@@ -4,7 +4,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
-import * as Mailer from '../../../mailer';
+import * as Mailer from '../../../mailer/server/api';
 import { isUserIdFederated } from '../../../../server/lib/isUserIdFederated';
 
 const sendResetNotification = async function (uid: string): Promise<void> {
@@ -35,24 +35,22 @@ const sendResetNotification = async function (uid: string): Promise<void> {
 	const from = settings.get('From_Email');
 	const subject = t('TOTP_reset_email');
 
-	for (const address of addresses) {
-		Meteor.defer(() => {
-			try {
-				Mailer.send({
-					to: address,
-					from,
-					subject,
-					text,
-					html,
-				} as any);
-			} catch (error) {
-				const message = error instanceof Error ? error.message : String(error);
-				throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
-					function: 'resetUserTOTP',
-					message,
-				});
-			}
-		});
+	for await (const address of addresses) {
+		try {
+			await Mailer.send({
+				to: address,
+				from,
+				subject,
+				text,
+				html,
+			} as any);
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
+				function: 'resetUserTOTP',
+				message,
+			});
+		}
 	}
 };
 

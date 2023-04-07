@@ -18,10 +18,10 @@ import React, { useMemo, useState, useRef, useCallback } from 'react';
 
 import { validateEmail } from '../../../../lib/emailValidator';
 import Page from '../../../components/Page';
-import { useRoomsList } from '../../../components/RoomAutoComplete/hooks/useRoomsList';
 import { useRecordList } from '../../../hooks/lists/useRecordList';
 import { useComponentDidUpdate } from '../../../hooks/useComponentDidUpdate';
 import { useForm } from '../../../hooks/useForm';
+import { useRoomsList } from '../../../hooks/useRoomsList';
 import { AsyncStatePhase } from '../../../lib/asyncState';
 import { useFormsSubscription } from '../additionalForms';
 import DepartmentsAgentsTable from './DepartmentsAgentsTable';
@@ -200,8 +200,8 @@ function EditDepartment({ data, id, title, allowedToForwardData }) {
 			visitorInactivityTimeoutInSeconds,
 			abandonedRoomsCloseCustomMessage,
 			waitingQueueMessage,
-			departmentsAllowedToForward: departmentsAllowedToForward?.map((dep) => dep.value).join(),
-			fallbackForwardDepartment: fallbackForwardDepartment.value,
+			departmentsAllowedToForward: departmentsAllowedToForward?.map((dep) => dep.value),
+			fallbackForwardDepartment,
 		};
 
 		const agentListPayload = {

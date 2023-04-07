@@ -1011,11 +1011,13 @@ test.describe.parallel('Federation - Group Creation', () => {
 				await expect(poFederationChannelServer1.tabs.btnTabMembers).toBeVisible();
 				await poFederationChannelServer1.tabs.btnTabMembers.click();
 				await (await poFederationChannelServer1.tabs.members.getUserInList(usernameWithDomainFromServer2)).click();
+				await poFederationChannelServer1.tabs.members.btnMenuUserInfo.click();
 				await expect(poFederationChannelServer1.tabs.members.btnRemoveUserFromRoom).toBeVisible();
 
 				await expect(poFederationChannelServer2.tabs.btnTabMembers).toBeVisible();
 				await poFederationChannelServer2.tabs.btnTabMembers.click();
 				await (await poFederationChannelServer2.tabs.members.getUserInList(usernameWithDomainFromServer1)).click();
+				await expect(poFederationChannelServer2.tabs.members.btnMenuUserInfo).not.toBeVisible();
 				await expect(poFederationChannelServer2.tabs.members.btnRemoveUserFromRoom).not.toBeVisible();
 
 				await pageForServer2.close();
@@ -1183,14 +1185,13 @@ test.describe.parallel('Federation - Group Creation', () => {
 
 				await poFederationChannelServer2.tabs.room.btnLeave.click();
 				await poFederationChannelServer2.tabs.room.btnModalConfirm.click();
+				await pageForServer2.close();
 
 				const leftChannelSystemMessageServer1 = await poFederationChannelServer1.content.getSystemMessageByText('left the channel');
 				await expect(leftChannelSystemMessageServer1).toBeVisible();
 				await expect(await (await poFederationChannelServer1.content.getLastSystemMessageName()).textContent()).toBe(
 					usernameWithDomainFromServer2,
 				);
-
-				await pageForServer2.close();
 			});
 		});
 

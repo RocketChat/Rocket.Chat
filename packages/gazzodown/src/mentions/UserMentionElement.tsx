@@ -15,7 +15,7 @@ const UserMentionElement = ({ mention }: UserMentionElementProps): ReactElement 
 
 	const { isMobile } = useLayout();
 	const uid = useUserId();
-	const showRealName = Boolean(useSetting('UI_Use_Real_Name')) && !isMobile;
+	const showRealName = useSetting<boolean>('UI_Use_Real_Name') && !isMobile;
 
 	if (mention === 'all') {
 		return <span className='mention-link mention-link--all mention-link--group'>all</span>;

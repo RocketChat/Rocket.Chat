@@ -15,6 +15,7 @@ export interface ILivechatDepartmentRecord extends IRocketChatRecord {
 	numAgents: number;
 	businessHourId?: string;
 	fallbackForwardDepartment?: string;
+	departmentsAllowedToForward?: string[];
 	// extra optional fields
 	[k: string]: any;
 }

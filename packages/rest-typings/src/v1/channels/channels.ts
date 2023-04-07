@@ -1,4 +1,4 @@
-import type { IUpload, IMessage, IRoom, ITeam, IGetRoomRoles, IUser } from '@rocket.chat/core-typings';
+import type { IUpload, IMessage, IRoom, ITeam, IGetRoomRoles, IUser, IIntegration } from '@rocket.chat/core-typings';
 
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
@@ -19,6 +19,18 @@ import type { ChannelsRolesProps } from './ChannelsRolesProps';
 import type { ChannelsSetAnnouncementProps } from './ChannelsSetAnnouncementProps';
 import type { ChannelsSetReadOnlyProps } from './ChannelsSetReadOnlyProps';
 import type { ChannelsUnarchiveProps } from './ChannelsUnarchiveProps';
+import type { ChannelsGetIntegrationsProps } from './ChannelsGetIntegrationsProps';
+import type { ChannelsListProps } from './ChannelsListProps';
+import type { ChannelsInviteProps } from './ChannelsInviteProps';
+import type { ChannelsOnlineProps } from './ChannelsOnlineProps';
+import type { ChannelsRenameProps } from './ChannelsRenameProps';
+import type { ChannelsSetCustomFieldsProps } from './ChannelsSetCustomFieldsProps';
+import type { ChannelsSetDescriptionProps } from './ChannelsSetDescriptionProps';
+import type { ChannelsSetPurposeProps } from './ChannelsSetPurposeProps';
+import type { ChannelsSetTopicProps } from './ChannelsSetTopicProps';
+import type { ChannelsSetTypeProps } from './ChannelsSetTypeProps';
+import type { ChannelsSetDefaultProps } from './ChannelsSetDefaultProps';
+import type { ChannelsSetJoinCodeProps } from './ChannelsSetJoinCodeProps';
 
 export type ChannelsEndpoints = {
 	'/v1/channels.files': {
@@ -60,14 +72,14 @@ export type ChannelsEndpoints = {
 		GET: (params: { roomId: string } | { roomName: string }) => { channel: IRoom };
 	};
 	'/v1/channels.counters': {
-		GET: (params: { roomId: string } | { roomName: string }) => {
+		GET: (params: { roomId: string; userId: string } | { roomName: string; userId: string }) => {
 			joined: boolean;
-			members: number;
-			unreads: number;
-			unreadsFrom: Date;
-			msgs: number;
-			latest: Date;
-			userMentions: number;
+			members: number | null;
+			unreads: number | null;
+			unreadsFrom: Date | null;
+			msgs: number | null;
+			latest: Date | null;
+			userMentions: number | null;
 		};
 	};
 	'/v1/channels.join': {
@@ -147,5 +159,79 @@ export type ChannelsEndpoints = {
 	};
 	'/v1/channels.moderators': {
 		GET: (params: { roomId: string } | { roomName: string }) => { moderators: Pick<IUser, '_id' | 'name' | 'username'>[] };
+	};
+	'/v1/channels.getIntegrations': {
+		GET: (params: ChannelsGetIntegrationsProps) => {
+			count: number;
+			offset: number;
+			integrations: IIntegration[];
+			total: number;
+		};
+	};
+	'/v1/channels.invite': {
+		POST: (params: ChannelsInviteProps) => {
+			channel: IRoom;
+		};
+	};
+	'/v1/channels.list': {
+		GET: (params: ChannelsListProps) => {
+			count: number;
+			offset: number;
+			channels: IRoom[];
+			total: number;
+		};
+	};
+	'/v1/channels.list.joined': {
+		GET: (params: ChannelsListProps) => {
+			count: number;
+			offset: number;
+			channels: IRoom[];
+			total: number;
+		};
+	};
+	'/v1/channels.online': {
+		GET: (params: ChannelsOnlineProps) => {
+			online: Pick<IUser, '_id' | 'username'>[];
+		};
+	};
+	'/v1/channels.rename': {
+		POST: (params: ChannelsRenameProps) => {
+			channel: IRoom;
+		};
+	};
+	'/v1/channels.setCustomFields': {
+		POST: (params: ChannelsSetCustomFieldsProps) => {
+			channel: IRoom;
+		};
+	};
+	'/v1/channels.setDescription': {
+		POST: (params: ChannelsSetDescriptionProps) => {
+			description: string;
+		};
+	};
+	'/v1/channels.setPurpose': {
+		POST: (params: ChannelsSetPurposeProps) => {
+			purpose: string;
+		};
+	};
+	'/v1/channels.setTopic': {
+		POST: (params: ChannelsSetTopicProps) => {
+			topic: string;
+		};
+	};
+	'/v1/channels.setType': {
+		POST: (params: ChannelsSetTypeProps) => {
+			channel: IRoom;
+		};
+	};
+	'/v1/channels.setDefault': {
+		POST: (params: ChannelsSetDefaultProps) => {
+			channel: IRoom;
+		};
+	};
+	'/v1/channels.setJoinCode': {
+		POST: (params: ChannelsSetJoinCodeProps) => {
+			channel: IRoom;
+		};
 	};
 };

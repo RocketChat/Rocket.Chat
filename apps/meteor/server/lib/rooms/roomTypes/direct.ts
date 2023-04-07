@@ -1,16 +1,16 @@
 import { Meteor } from 'meteor/meteor';
 import type { IRoom, AtLeast } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
+import { Subscriptions } from '@rocket.chat/models';
 
 import { settings } from '../../../../app/settings/server';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
 import { roomCoordinator } from '../roomCoordinator';
-import { Subscriptions } from '../../../../app/models/server';
-import { Federation } from '../../../../app/federation-v2/server/Federation';
+import { Federation } from '../../../services/federation/Federation';
 
-export const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
+const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
 
 const getCurrentUserId = (): string | undefined => {
 	try {
@@ -42,7 +42,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 	},
 
-	allowMemberAction(room: IRoom, action, userId) {
+	async allowMemberAction(room: IRoom, action, userId) {
 		if (isRoomFederated(room)) {
 			return Federation.actionAllowed(room, action, userId);
 		}
@@ -54,8 +54,8 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 	},
 
-	roomName(room, userId?) {
-		const subscription = ((): { fname?: string; name?: string } | undefined => {
+	async roomName(room, userId?) {
+		const subscription = await (async (): Promise<{ fname?: string; name?: string } | null> => {
 			if (room.fname || room.name) {
 				return {
 					fname: room.fname,
@@ -64,16 +64,16 @@ roomCoordinator.add(DirectMessageRoomType, {
 			}
 
 			if (!room._id) {
-				return undefined;
+				return null;
 			}
 
 			const uid = userId || getCurrentUserId();
 			if (uid) {
-				return Subscriptions.findOneByRoomIdAndUserId(room._id, uid, { fields: { name: 1, fname: 1 } });
+				return Subscriptions.findOneByRoomIdAndUserId(room._id, uid, { projection: { name: 1, fname: 1 } });
 			}
 
 			// If we don't know what user is requesting the roomName, then any subscription will do
-			return Subscriptions.findOne({ rid: room._id }, { fields: { name: 1, fname: 1 } });
+			return Subscriptions.findOne({ rid: room._id }, { projection: { name: 1, fname: 1 } });
 		})();
 
 		if (!subscription) {
@@ -91,7 +91,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 		return (room?.uids?.length || 0) > 2;
 	},
 
-	getNotificationDetails(room, sender, notificationMessage, userId) {
+	async getNotificationDetails(room, sender, notificationMessage, userId) {
 		const useRealName = settings.get<boolean>('UI_Use_Real_Name');
 
 		if (this.isGroupChat(room)) {
