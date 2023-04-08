@@ -6,6 +6,8 @@ import { isGETRoomsNameExists } from '@rocket.chat/rest-typings';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Media } from '@rocket.chat/core-services';
+import { MongoInternals } from 'meteor/mongo';
+import { GridFSBucket } from 'mongodb';
 
 import { API } from '../api';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -179,7 +181,6 @@ API.v1.addRoute(
 					.update(`${this.userId}-${this.urlParams.rid}-${file.filename}-${file.chunk.size}`)
 					.digest('hex')}.tmp`;
 
-				const { GridFSBucket } = MongoInternals.NpmModules.mongodb.module;
 				const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 				const bucket = new GridFSBucket(db, {
@@ -203,19 +204,19 @@ API.v1.addRoute(
 
 				const uploadStream = bucket.openUploadStream(`${tmpFileAppend}.${file.chunk.start}`, { contentType: 'application/octet-stream' });
 
-				await new Promise((resolve, reject) => {
+				await new Promise<void>((resolve, reject) => {
 					uploadStream
 						.on('finish', () => {
 							resolve();
 						})
-						.on('error', (err) => {
+						.on('error', (err: Error) => {
 							reject(err);
 						});
 
 					uploadStream.write(file.fileBuffer);
 					uploadStream.end();
-				}).catch((err) => {
-					console.error(err);
+				}).catch((err: Error) => {
+					console.error(`unable to store chunk starting at offset ${file.chunk?.start}: ${err}`);
 					throw new Meteor.Error('500');
 				});
 
