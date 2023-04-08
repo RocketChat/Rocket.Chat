@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 import { Meteor } from 'meteor/meteor';
 import type { Notifications } from '@rocket.chat/rest-typings';
 import { isGETRoomsNameExists } from '@rocket.chat/rest-typings';
@@ -9,6 +11,7 @@ import { API } from '../api';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { getUploadFormData } from '../lib/getUploadFormData';
+import { streamToBuffer } from '../../../file-upload/server/lib/streamToBuffer';
 import { settings } from '../../../settings/server';
 import { eraseRoom } from '../../../../server/methods/eraseRoom';
 import { FileUpload } from '../../../file-upload/server';
@@ -140,15 +143,114 @@ API.v1.addRoute(
 				return API.v1.unauthorized();
 			}
 
+			const uploadMaxSize = settings.get<number>('FileUpload_MaxFileSize');
+
 			const file = await getUploadFormData(
 				{
 					request: this.request,
 				},
-				{ field: 'file', sizeLimit: settings.get<number>('FileUpload_MaxFileSize') },
+				{ field: 'file', sizeLimit: uploadMaxSize },
 			);
 
 			if (!file) {
 				throw new Meteor.Error('invalid-field');
+			}
+
+			// Start: This section handle chunk upload (not the upload processing itself)
+			const chunkCapability = settings.get<boolean>('FileUpload_Chunked_Enabled');
+			const chunkMaxSize = settings.get<number>('FileUpload_Chunked_MaxSize');
+
+			if (!chunkCapability && file.chunk) {
+				throw new Meteor.Error('error-chunk-upload-disabled');
+			}
+
+			if (file.chunk) {
+				if (file.fileBuffer.length > chunkMaxSize) {
+					throw new Meteor.Error('error-chunk-too-large');
+				}
+				if (file.fileBuffer.length !== file.chunk.end - file.chunk.start) {
+					throw new Meteor.Error('error-invalid-chunk');
+				}
+			}
+
+			if (file.chunk) {
+				const tmpFileAppend = `${crypto
+					.createHash('sha256')
+					.update(`${this.userId}-${this.urlParams.rid}-${file.filename}-${file.chunk.size}`)
+					.digest('hex')}.tmp`;
+
+				const { GridFSBucket } = MongoInternals.NpmModules.mongodb.module;
+				const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
+
+				const bucket = new GridFSBucket(db, {
+					bucketName: 'rocketchat_chunk_upload',
+					chunkSizeBytes: 1024 * 512,
+				});
+
+				const expectedOffsets = Array.from({ length: file.chunk.size / chunkMaxSize + 1 }, (_, i) => i * chunkMaxSize);
+
+				if (expectedOffsets[expectedOffsets.length - 1] > file.chunk.size) {
+					expectedOffsets.pop();
+				}
+
+				if (!expectedOffsets.includes(file.chunk.start)) {
+					throw new Meteor.Error('error-invalid-chunk');
+				}
+
+				if (uploadMaxSize > -1 && file.chunk.size > uploadMaxSize) {
+					throw new Meteor.Error('error-file-too-large');
+				}
+
+				const uploadStream = bucket.openUploadStream(`${tmpFileAppend}.${file.chunk.start}`, { contentType: 'application/octet-stream' });
+
+				await new Promise((resolve, reject) => {
+					uploadStream
+						.on('finish', () => {
+							resolve();
+						})
+						.on('error', (err) => {
+							reject(err);
+						});
+
+					uploadStream.write(file.fileBuffer);
+					uploadStream.end();
+				}).catch((err) => {
+					console.error(err);
+					throw new Meteor.Error('500');
+				});
+
+				if (file.chunk.end !== file.chunk.size) {
+					return API.v1.success({
+						message: 'chunk received',
+						statusCode: 202,
+					});
+				}
+
+				const buffers = [];
+
+				for (const startOffset of expectedOffsets) {
+					// eslint-disable-next-line no-await-in-loop
+					const documents = await bucket.find({ filename: `${tmpFileAppend}.${startOffset}` }).toArray();
+
+					if (documents.length !== 1) {
+						console.error(`chunk bloc starting at offset ${startOffset} loss in-flight (GridFS not found)`);
+						throw new Meteor.Error('500');
+					}
+
+					const downloadStream = bucket.openDownloadStreamByName(`${tmpFileAppend}.${startOffset}`);
+
+					// eslint-disable-next-line no-await-in-loop
+					const buffer = await streamToBuffer(downloadStream);
+
+					buffers.push(buffer);
+
+					// free the tmp ressource in GridFs
+					// eslint-disable-next-line no-await-in-loop
+					await bucket.delete(documents[0]._id);
+				}
+
+				file.fileBuffer = Buffer.concat(buffers);
+				file.chunk = undefined;
 			}
 
 			const { fields } = file;

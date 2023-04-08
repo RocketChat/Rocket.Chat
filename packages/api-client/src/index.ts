@@ -274,6 +274,13 @@ export class RestClient implements RestClientInterface {
 				xhr.upload.removeEventListener('load', events.load);
 				// chunk end upload does not mean that the full upload is complete
 				xhr.upload.addEventListener('load', function (evt) {
+					// stop the rec calls(upload chunk) in case of in-flight error
+					if (xhr.status >= 400) {
+						if (events.load) {
+							events.load(evt);
+						}
+						return;
+					}
 					const remainingSize = params.file.size - chunkEndOffset;
 
 					// a bit of a hack
