@@ -102,7 +102,7 @@ export async function setUserAvatar(
 	})();
 
 	const fileStore = FileUpload.getStore('Avatars');
-	user.username && fileStore.deleteByName(user.username);
+	user.username && (await fileStore.deleteByName(user.username));
 
 	const file = {
 		userId: user._id,
@@ -110,7 +110,7 @@ export async function setUserAvatar(
 		size: buffer.length,
 	};
 
-	const result = fileStore.insertSync(file, buffer);
+	const result = await fileStore.insert(file, buffer);
 
 	const avatarETag = etag || result?.etag || '';
 

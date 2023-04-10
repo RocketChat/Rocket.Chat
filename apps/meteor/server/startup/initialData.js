@@ -14,7 +14,7 @@ import { validateEmail } from '../../lib/emailValidator';
 
 Meteor.startup(async function () {
 	if (!settings.get('Initial_Channel_Created')) {
-		const exists = await Rooms.findOneById('GENERAL', { fields: { _id: 1 } });
+		const exists = await Rooms.findOneById('GENERAL', { projection: { _id: 1 } });
 		if (!exists) {
 			await Rooms.createWithIdTypeAndName('GENERAL', 'c', 'general', {
 				default: true,
@@ -42,7 +42,7 @@ Meteor.startup(async function () {
 
 		const rs = RocketChatFile.bufferToStream(buffer, 'utf8');
 		const fileStore = FileUpload.getStore('Avatars');
-		fileStore.deleteByName('rocket.cat');
+		await fileStore.deleteByName('rocket.cat');
 
 		const file = {
 			userId: 'rocket.cat',
@@ -51,7 +51,8 @@ Meteor.startup(async function () {
 		};
 
 		await Meteor.runAsUser('rocket.cat', async () => {
-			fileStore.insert(file, rs, () => Users.setAvatarData('rocket.cat', 'local', null));
+			await fileStore.insert(file, rs);
+			Users.setAvatarData('rocket.cat', 'local', null);
 		});
 	}
 

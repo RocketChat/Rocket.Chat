@@ -61,7 +61,6 @@ launch-screen@1.3.0
 littledata:synced-cron@1.5.1
 localstorage@1.2.0
 logging@1.3.2
-matb33:collection-hooks@1.2.1
 mdg:validation-error@0.5.1
 meteor@1.11.1
 meteor-base@1.5.1
@@ -92,7 +91,6 @@ pauli:accounts-linkedin@6.0.0
 pauli:linkedin-oauth@6.0.0
 promise@0.12.2
 raix:eventemitter@1.0.0
-raix:handlebar-helpers@0.2.5
 random@1.2.1
 rate-limit@1.0.9
 react-fast-refresh@0.2.6
@@ -132,4 +130,3 @@ underscore@1.0.12
 url@1.3.2
 webapp@1.13.4
 webapp-hashing@1.1.1
-zodern:types@1.0.9

@@ -427,7 +427,7 @@ export const saveUser = async function (userId, userData) {
 	await Apps.triggerEvent(AppEvents.IPostUserUpdated, {
 		user: userUpdated,
 		previousUser: oldUserData,
-		performedBy: safeGetMeteorUser(),
+		performedBy: await safeGetMeteorUser(),
 	});
 
 	if (sendPassword) {
