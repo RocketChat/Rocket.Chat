@@ -1,6 +1,6 @@
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import type { ISubscriptionExtraData } from '@rocket.chat/core-services';
-import type { ICreatedRoom, IDirectMessageRoom, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { ICreatedRoom, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
@@ -71,7 +71,7 @@ export async function createDirectRoom(
 	const uids = roomMembers.map(({ _id }) => _id).sort();
 
 	// Deprecated: using users' _id to compose the room _id is deprecated
-	const room: IRoom | IDirectMessageRoom | null =
+	const room: IRoom | null =
 		uids.length === 2
 			? await Rooms.findOneById(uids.join(''), { projection: { _id: 1 } })
 			: await Rooms.findOneDirectRoomContainingAllUserIDs(uids, { projection: { _id: 1 } });

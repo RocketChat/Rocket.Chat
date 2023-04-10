@@ -13,7 +13,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		options?: FindOptions<IRoom>,
 	): FindPaginated<FindCursor<IRoom & { isLastOwner?: boolean }>>;
 
-	getMostRecentAverageChatDurationTime(numberMostRecentChats: number, department: string | object): Promise<Document>;
+	getMostRecentAverageChatDurationTime(numberMostRecentChats: number, department: string): Promise<Document>;
 
 	findByNameOrFnameContainingAndTypes(
 		name: NonNullable<IRoom['name']>,
@@ -76,20 +76,25 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	unsetTeamById(rid: IRoom['_id'], options?: UpdateOptions): Promise<UpdateResult>;
 
-	setTeamById(rid: IRoom['_id'], teamId: ITeam['_id'], teamDefault: IRoom['teamDefault'], options?: UpdateOptions): Promise<UpdateResult>;
+	setTeamById(
+		rid: IRoom['_id'],
+		teamId: ITeam['_id'],
+		teamDefault: NonNullable<IRoom['teamDefault']>,
+		options?: UpdateOptions,
+	): Promise<UpdateResult>;
 
 	setTeamMainById(rid: IRoom['_id'], teamId: ITeam['_id'], options?: UpdateOptions): Promise<UpdateResult>;
 
 	setTeamByIds(rids: Array<IRoom['_id']>, teamId: ITeam['_id'], options?: UpdateOptions): Promise<Document | UpdateResult>;
 
-	setTeamDefaultById(rid: IRoom['_id'], teamDefault: IRoom['teamDefault'], options?: UpdateOptions): Promise<UpdateResult>;
+	setTeamDefaultById(rid: IRoom['_id'], teamDefault: NonNullable<IRoom['teamDefault']>, options?: UpdateOptions): Promise<UpdateResult>;
 
 	findChannelsWithNumberOfMessagesBetweenDate<T extends boolean>(params: {
 		start: number;
 		end: number;
 		startOfLastWeek: number;
 		endOfLastWeek: number;
-		onlyCount?: T;
+		onlyCount: T;
 		options?: any;
 	}): AggregationCursor<
 		T extends true
@@ -109,7 +114,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 			  }
 	>;
 
-	findOneByName(name: IRoom['name'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
+	findOneByName(name: NonNullable<IRoom['name']>, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
 	findDefaultRoomsForTeam(teamId: any): FindCursor<IRoom>;
 
@@ -117,7 +122,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findOneByNameOrFname(name: NonNullable<IRoom['name'] | IRoom['fname']>, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
-	findOneByNonValidatedName(name: string, options?: FindOptions<IRoom>): Promise<IRoom | null>;
+	findOneByNonValidatedName(name: NonNullable<IRoom['name'] | IRoom['fname']>, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
 	allRoomSourcesCount(): AggregationCursor<{ _id: Required<IOmnichannelGenericRoom['source']>; count: number }>;
 
@@ -175,15 +180,18 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	setLastMessageAsRead(roomId: string): Promise<UpdateResult>;
 	setDescriptionById(roomId: string, description: string): Promise<UpdateResult>;
 	setStreamingOptionsById(roomId: string, streamingOptions: IRoom['streamingOptions']): Promise<UpdateResult>;
-	setReadOnlyById(roomId: string, readOnly: boolean): Promise<UpdateResult>;
+	setReadOnlyById(roomId: string, readOnly: NonNullable<IRoom['ro']>): Promise<UpdateResult>;
 	setDmReadOnlyByUserId(
 		roomId: string,
 		ids: string[] | undefined,
-		readOnly: boolean,
-		reactWhenReadOnly: boolean,
+		readOnly: NonNullable<IRoom['ro']>,
+		reactWhenReadOnly: NonNullable<IRoom['reactWhenReadOnly']>,
 	): Promise<UpdateResult | Document>;
 	getDirectConversationsByUserId(userId: string, options?: FindOptions<IRoom>): FindCursor<IRoom>;
-	setAllowReactingWhenReadOnlyById(roomId: string, allowReactingWhenReadOnly: boolean): Promise<UpdateResult>;
+	setAllowReactingWhenReadOnlyById(
+		roomId: string,
+		allowReactingWhenReadOnly: NonNullable<IRoom['reactWhenReadOnly']>,
+	): Promise<UpdateResult>;
 	setAvatarData(roomId: string, origin: string, etag: string): Promise<UpdateResult>;
 	unsetAvatarData(roomId: string): Promise<UpdateResult>;
 	setSystemMessagesById(roomId: string, systemMessages: IRoom['sysMes']): Promise<UpdateResult>;
@@ -203,16 +211,14 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findByTypeInIds(type: IRoom['t'], ids: string[], options?: FindOptions<IRoom>): FindCursor<IRoom>;
 	findBySubscriptionUserId(userId: string, options?: FindOptions<IRoom>): Promise<FindCursor<IRoom>>;
 	findBySubscriptionUserIdUpdatedAfter(userId: string, updatedAfter: Date, options?: FindOptions<IRoom>): Promise<FindCursor<IRoom>>;
-	findByNameAndType(name: string, type: IRoom['t'], options?: FindOptions<IRoom>): FindCursor<IRoom>;
-
 	findByNameAndTypeNotDefault(
-		name: string,
+		name: IRoom['name'] | RegExp,
 		type: IRoom['t'],
 		options?: FindOptions<IRoom>,
 		includeFederatedRooms?: boolean,
 	): FindCursor<IRoom>;
 	findByNameAndTypesNotInIds(
-		name: string,
+		name: IRoom['name'] | RegExp,
 		types: IRoom['t'][],
 		ids: string[],
 		options?: FindOptions<IRoom>,

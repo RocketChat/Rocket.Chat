@@ -1,3 +1,4 @@
+import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatDepartment, Rooms, Users } from '@rocket.chat/models';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 
@@ -12,7 +13,7 @@ callbacks.add(
 			return data;
 		}
 
-		let channelName = settings.get('Livechat_OfflineMessageToChannel_channel_name') as string;
+		let channelName = settings.get<string>('Livechat_OfflineMessageToChannel_channel_name');
 		let departmentName;
 		const { name, email, department, message: text, host } = data;
 		if (department && department !== '') {
@@ -30,7 +31,7 @@ callbacks.add(
 		}
 
 		const room: any = await Rooms.findOneByName(channelName, { projection: { t: 1, archived: 1 } });
-		if (!room || room.archived || room?.closedAt) {
+		if (!room || room.archived || (isOmnichannelRoom(room) && room.closedAt)) {
 			return data;
 		}
 
