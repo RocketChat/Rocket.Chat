@@ -1,11 +1,10 @@
-import { HTTP } from 'meteor/http';
-
 import { getRedirectUri } from './getRedirectUri';
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { removeWorkspaceRegistrationInfo } from './removeWorkspaceRegistrationInfo';
 import { settings } from '../../../settings/server';
 import { workspaceScopes } from '../oauthScopes';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { fetch } from '../../../../server/lib/http/fetch';
 
 export async function getWorkspaceAccessTokenWithScope(scope = '') {
 	const { connectToCloud, workspaceRegistered } = await retrieveRegistrationStatus();
@@ -31,16 +30,18 @@ export async function getWorkspaceAccessTokenWithScope(scope = '') {
 
 	let authTokenResult;
 	try {
-		authTokenResult = HTTP.post(`${cloudUrl}/api/oauth/token`, {
+		const result = await fetch(`${cloudUrl}/api/oauth/token`, {
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-			params: {
+			method: 'POST',
+			body: JSON.stringify({
 				client_id,
 				client_secret,
 				scope,
 				grant_type: 'client_credentials',
 				redirect_uri: redirectUri,
-			},
+			}),
 		});
+		authTokenResult = await result.json();
 	} catch (err) {
 		SystemLogger.error({
 			msg: 'Failed to get Workspace AccessToken from Rocket.Chat Cloud',

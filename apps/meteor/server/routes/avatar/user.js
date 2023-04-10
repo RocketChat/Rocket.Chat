@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { Avatars, Users } from '@rocket.chat/models';
 
 import { renderSVGLetters, serveAvatar, wasFallbackModified, setCacheAndDispositionHeaders } from './utils';
@@ -6,7 +5,7 @@ import { FileUpload } from '../../../app/file-upload/server';
 import { settings } from '../../../app/settings/server';
 
 // request /avatar/@name forces returning the svg
-export const userAvatar = Meteor.bindEnvironment(async function (req, res) {
+export const userAvatar = async function (req, res) {
 	const requestUsername = decodeURIComponent(req.url.substr(1).replace(/\?.*$/, ''));
 
 	if (!requestUsername) {
@@ -68,4 +67,4 @@ export const userAvatar = Meteor.bindEnvironment(async function (req, res) {
 	}
 
 	serveAvatar(svg, req.query.format, res);
-});
+};

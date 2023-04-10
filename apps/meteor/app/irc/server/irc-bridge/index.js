@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import Queue from 'queue-fifo';
 import moment from 'moment';
 import { Settings } from '@rocket.chat/models';
@@ -14,21 +13,19 @@ const logger = new Logger('IRC Bridge');
 const queueLogger = logger.section('Queue');
 
 let removed = false;
-const updateLastPing = withThrottling({ wait: 10_000 })(
-	Meteor.bindEnvironment(() => {
-		if (removed) {
-			return;
-		}
-		Settings.upsert(
-			{ _id: 'IRC_Bridge_Last_Ping' },
-			{
-				$set: {
-					value: new Date(),
-				},
+const updateLastPing = withThrottling({ wait: 10_000 })(() => {
+	if (removed) {
+		return;
+	}
+	Settings.upsert(
+		{ _id: 'IRC_Bridge_Last_Ping' },
+		{
+			$set: {
+				value: new Date(),
 			},
-		);
-	}),
-);
+		},
+	);
+});
 
 class Bridge {
 	constructor(config) {

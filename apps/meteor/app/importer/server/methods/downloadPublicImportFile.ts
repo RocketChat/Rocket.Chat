@@ -54,19 +54,13 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 
 	const writeStream = RocketChatImportFileInstance.createWriteStream(newFileName);
 
-	writeStream.on(
-		'error',
-		Meteor.bindEnvironment(() => {
-			void importer.instance.updateProgress(ProgressStep.ERROR);
-		}),
-	);
+	writeStream.on('error', () => {
+		void importer.instance.updateProgress(ProgressStep.ERROR);
+	});
 
-	writeStream.on(
-		'end',
-		Meteor.bindEnvironment(() => {
-			void importer.instance.updateProgress(ProgressStep.FILE_LOADED);
-		}),
-	);
+	writeStream.on('end', () => {
+		void importer.instance.updateProgress(ProgressStep.FILE_LOADED);
+	});
 
 	if (isUrl) {
 		downloadHttpFile(fileUrl, writeStream);
