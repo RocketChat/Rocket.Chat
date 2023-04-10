@@ -271,7 +271,7 @@ const insertUserDocAsync = async function (options, user) {
 	if (user.username) {
 		if (options.joinDefaultChannels !== false && user.joinDefaultChannels !== false) {
 			Meteor.runAsUser(_id, function () {
-				return Meteor.call('joinDefaultChannels', options.joinDefaultChannelsSilenced);
+				return Promise.await(Meteor.callAsync('joinDefaultChannels', options.joinDefaultChannelsSilenced));
 			});
 		}
 
@@ -286,7 +286,7 @@ const insertUserDocAsync = async function (options, user) {
 				const avatarData = avatarSuggestions[service];
 				if (service !== 'gravatar') {
 					Meteor.runAsUser(_id, function () {
-						return Meteor.call('setAvatarFromService', avatarData.blob, '', service);
+						return Promise.await(Meteor.callAsync('setAvatarFromService', avatarData.blob, '', service));
 					});
 					return true;
 				}
