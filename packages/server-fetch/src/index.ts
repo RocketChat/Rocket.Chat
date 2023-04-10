@@ -1,6 +1,7 @@
 import http from 'http';
 import https from 'https';
 
+import fetch from 'node-fetch';
 import { getProxyForUrl } from 'proxy-from-env';
 import type { HttpProxyAgent } from 'http-proxy-agent';
 import { default as createHttpProxyAgent } from 'http-proxy-agent';

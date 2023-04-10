@@ -355,6 +355,7 @@
 		"mongodb-memory-server": "^7.6.3",
 		"nats": "^2.6.1",
 		"node-dogstatsd": "^0.0.7",
+		"node-fetch": "^3.3.1",
 		"node-gcm": "1.0.5",
 		"node-rsa": "^1.1.1",
 		"nodemailer": "^6.7.8",
