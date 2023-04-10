@@ -33,12 +33,12 @@ const isDefaultStatus = (id: string): boolean => (Object.values(UserStatusEnum) 
 
 const isDefaultStatusName = (_name: string, id: string): _name is UserStatusEnum => isDefaultStatus(id);
 
-const setStatus = (status: typeof userStatus.list['']): void => {
+const setStatus = (status: (typeof userStatus.list)['']): void => {
 	AccountBox.setStatus(status.statusType, !isDefaultStatus(status.id) ? status.name : '');
 	callbacks.run('userStatusManuallySet', status);
 };
 
-const translateStatusName = (t: ReturnType<typeof useTranslation>, status: typeof userStatus.list['']): string => {
+const translateStatusName = (t: ReturnType<typeof useTranslation>, status: (typeof userStatus.list)['']): string => {
 	if (isDefaultStatusName(status.name, status.id)) {
 		return t(status.name as TranslationKey);
 	}
@@ -66,7 +66,7 @@ const UserDropdown = ({ user, onClose }: UserDropdownProps): ReactElement => {
 	const displayName = useUserDisplayName(user);
 
 	const filterInvisibleStatus = !useSetting('Accounts_AllowInvisibleStatusOption')
-		? (status: ValueOf<typeof userStatus['list']>): boolean => status.name !== 'invisible'
+		? (status: ValueOf<(typeof userStatus)['list']>): boolean => status.name !== 'invisible'
 		: (): boolean => true;
 
 	const handleCustomStatus = useMutableCallback((e) => {

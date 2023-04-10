@@ -22,7 +22,7 @@ export async function upsertMessage(
 		msg: IMessage & { ignored?: boolean };
 		subscription?: ISubscription;
 	},
-	{ direct }: MinimongoCollection<IMessage> = ChatMessage,
+	collection: MinimongoCollection<IMessage> = ChatMessage,
 ) {
 	const userId = msg.u?._id;
 
@@ -37,7 +37,7 @@ export async function upsertMessage(
 
 	const { _id } = msg;
 
-	return direct.upsert({ _id }, msg);
+	return collection.upsert({ _id }, msg);
 }
 
 export function upsertMessageBulk(
