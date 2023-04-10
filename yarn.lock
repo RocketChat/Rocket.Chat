@@ -6521,7 +6521,7 @@ __metadata:
     eslint: ^8.29.0
     fibers: ^5.0.3
     mongodb: ^4.12.1
-    prettier: ^2.7.1
+    prettier: ~2.8.7
     typescript: ~5.0.2
   languageName: unknown
   linkType: soft
@@ -6537,7 +6537,7 @@ __metadata:
     "@rocket.chat/ui-kit": next
     eslint: ^8.29.0
     mongodb: ^4.12.1
-    prettier: ^2.7.1
+    prettier: ~2.8.7
     typescript: ~5.0.2
   languageName: unknown
   linkType: soft
@@ -6686,7 +6686,7 @@ __metadata:
     eslint-plugin-import: ^2.26.0
     eslint-plugin-jest: ^26.9.0
     eslint-plugin-prettier: ^4.2.1
-    prettier: 2.7.1
+    prettier: ~2.8.7
   languageName: unknown
   linkType: soft
 
@@ -6837,7 +6837,7 @@ __metadata:
     lint-staged: ~12.3.3
     normalize.css: ^8.0.1
     npm-run-all: ^4.1.5
-    prettier: ~2.5.1
+    prettier: ~2.8.7
     react-dom: ^17.0.2
     rimraf: ^3.0.2
     tslib: ^2.3.1
@@ -6962,7 +6962,7 @@ __metadata:
     "@rocket.chat/models": "workspace:^"
     eslint: ^8.29.0
     mongodb: ^4.12.1
-    prettier: ^2.7.1
+    prettier: ~2.8.7
     typescript: ~5.0.2
   languageName: unknown
   linkType: soft
@@ -7405,7 +7405,7 @@ __metadata:
     postcss-nested: ^5.0.6
     postcss-url: ^10.1.3
     postis: ^2.2.0
-    prettier: 2.7.1
+    prettier: ~2.8.7
     prom-client: ^14.0.1
     prometheus-gc-stats: ^0.6.3
     proxy-from-env: ^1.1.0
@@ -31593,15 +31593,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:2.7.1, prettier@npm:^2.7.1":
-  version: 2.7.1
-  resolution: "prettier@npm:2.7.1"
-  bin:
-    prettier: bin-prettier.js
-  checksum: 55a4409182260866ab31284d929b3cb961e5fdb91fe0d2e099dac92eaecec890f36e524b4c19e6ceae839c99c6d7195817579cdffc8e2c80da0cb794463a748b
-  languageName: node
-  linkType: hard
-
 "prettier@npm:>=2.2.1 <=2.3.0":
   version: 2.3.0
   resolution: "prettier@npm:2.3.0"
@@ -31611,12 +31602,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:~2.5.1":
-  version: 2.5.1
-  resolution: "prettier@npm:2.5.1"
+"prettier@npm:~2.8.7":
+  version: 2.8.7
+  resolution: "prettier@npm:2.8.7"
   bin:
     prettier: bin-prettier.js
-  checksum: 21b9408476ea1c544b0e45d51ceb94a84789ff92095abb710942d780c862d0daebdb29972d47f6b4d0f7ebbfb0ffbf56cc2cfa3e3e9d1cca54864af185b15b66
+  checksum: fdc8f2616f099f5f0d685907f4449a70595a0fc1d081a88919604375989e0d5e9168d6121d8cc6861f21990b31665828e00472544d785d5940ea08a17660c3a6
   languageName: node
   linkType: hard
 
