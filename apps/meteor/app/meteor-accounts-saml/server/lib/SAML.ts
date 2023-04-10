@@ -4,13 +4,11 @@ import { Meteor } from 'meteor/meteor';
 import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import fiber from 'fibers';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
-import type { IUser, IIncomingMessage } from '@rocket.chat/core-typings';
-import { CredentialTokens, Rooms } from '@rocket.chat/models';
+import type { IUser, IIncomingMessage, IPersonalAccessToken } from '@rocket.chat/core-typings';
+import { CredentialTokens, Rooms, Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings/server';
-import { Users } from '../../../models/server';
 import { saveUserIdentity, createRoom, generateUsernameSuggestion, addUserToRoom } from '../../../lib/server/functions';
 import { SAMLServiceProvider } from './ServiceProvider';
 import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
@@ -29,12 +27,12 @@ const showErrorMessage = function (res: ServerResponse, err: string): void {
 };
 
 export class SAML {
-	public static processRequest(
+	public static async processRequest(
 		req: IIncomingMessage,
 		res: ServerResponse,
 		service: IServiceProviderOptions,
 		samlObject: ISAMLAction,
-	): void {
+	): Promise<void> {
 		// Skip everything if there's no service set by the saml middleware
 		if (!service) {
 			if (samlObject.actionName === 'metadata') {
@@ -101,7 +99,7 @@ export class SAML {
 
 			const query: Record<string, any> = {};
 			query[`services.saml.${customIdentifierAttributeName}`] = userObject.attributeList.get(customIdentifierAttributeName);
-			user = Users.findOne(query);
+			user = await Users.findOne(query);
 
 			if (user) {
 				customIdentifierMatch = true;
@@ -113,7 +111,7 @@ export class SAML {
 			const expression = userObject.emailList.map((email) => `^${escapeRegExp(email)}$`).join('|');
 			const emailRegex = new RegExp(expression, 'i');
 
-			user = SAML.findUser(userObject.username, emailRegex);
+			user = await SAML.findUser(userObject.username, emailRegex);
 		}
 
 		const emails = userObject.emailList.map((email) => ({
@@ -163,18 +161,21 @@ export class SAML {
 			}
 
 			const userId = Accounts.insertUserDoc({}, newUser);
-			user = Users.findOne(userId);
+			user = await Users.findOneById(userId);
 
-			if (userObject.channels && channelsAttributeUpdate !== true) {
+			if (user && userObject.channels && channelsAttributeUpdate !== true) {
 				await SAML.subscribeToSAMLChannels(userObject.channels, user);
 			}
 		}
 
+		if (!user) {
+			throw new Error('Failed to create user');
+		}
 		// creating the token and adding to the user
 		const stampedToken = Accounts._generateStampedLoginToken();
-		Users.addPersonalAccessTokenToUser({
+		await Users.addPersonalAccessTokenToUser({
 			userId: user._id,
-			loginTokenObject: stampedToken,
+			loginTokenObject: stampedToken as unknown as IPersonalAccessToken,
 		});
 
 		const updateData: Record<string, any> = {
@@ -208,7 +209,7 @@ export class SAML {
 			await SAML.subscribeToSAMLChannels(userObject.channels, user);
 		}
 
-		Users.update(
+		await Users.updateOne(
 			{
 				_id: user._id,
 			},
@@ -240,7 +241,7 @@ export class SAML {
 		}
 	}
 
-	private static processLogoutAction(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions): void {
+	private static async processLogoutAction(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions): Promise<void> {
 		// This is where we receive SAML LogoutResponse
 		if (req.query.SAMLRequest) {
 			return this.processLogoutRequest(req, res, service);
@@ -249,22 +250,22 @@ export class SAML {
 		return this.processLogoutResponse(req, res, service);
 	}
 
-	private static _logoutRemoveTokens(userId: string): void {
+	private static async _logoutRemoveTokens(userId: string): Promise<void> {
 		SAMLUtils.log(`Found user ${userId}`);
 
-		Users.unsetLoginTokens(userId);
-		Users.removeSamlServiceSession(userId);
+		await Users.unsetLoginTokens(userId);
+		await Users.removeSamlServiceSession(userId);
 	}
 
-	private static processLogoutRequest(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions): void {
+	private static async processLogoutRequest(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions): Promise<void> {
 		const serviceProvider = new SAMLServiceProvider(service);
-		serviceProvider.validateLogoutRequest(req.query.SAMLRequest, (err, result) => {
+		await serviceProvider.validateLogoutRequest(req.query.SAMLRequest, async (err, result) => {
 			if (err) {
 				SystemLogger.error({ err });
 				throw new Meteor.Error('Unable to Validate Logout Request');
 			}
 
-			if (!result) {
+			if (!result?.nameID || !result?.idpSession) {
 				throw new Meteor.Error('Unable to process Logout Request: missing request data.');
 			}
 
@@ -290,51 +291,47 @@ export class SAML {
 				redirect();
 			}, 5000);
 
-			fiber(() => {
-				try {
-					const cursor = Users.findBySAMLNameIdOrIdpSession(result.nameID, result.idpSession);
-					const count = cursor.count();
-					if (count > 1) {
-						throw new Meteor.Error('Found multiple users matching SAML session');
-					}
-
-					if (count === 0) {
-						throw new Meteor.Error('Invalid logout request: no user associated with session.');
-					}
-
-					const loggedOutUser = cursor.fetch();
-					this._logoutRemoveTokens(loggedOutUser[0]._id);
-
-					const { response } = serviceProvider.generateLogoutResponse({
-						nameID: result.nameID || '',
-						sessionIndex: result.idpSession || '',
-						inResponseToId: result.id || '',
-					});
-
-					serviceProvider.logoutResponseToUrl(response, (err, url) => {
-						if (err) {
-							SystemLogger.error({ err });
-							return redirect();
-						}
-
-						redirect(url);
-					});
-				} catch (e: any) {
-					SystemLogger.error(e);
-					redirect();
+			try {
+				const loggedOutUsers = await Users.findBySAMLNameIdOrIdpSession(result.nameID, result.idpSession).toArray();
+				if (loggedOutUsers.length > 1) {
+					throw new Meteor.Error('Found multiple users matching SAML session');
 				}
-			}).run();
+
+				if (loggedOutUsers.length === 0) {
+					throw new Meteor.Error('Invalid logout request: no user associated with session.');
+				}
+
+				await this._logoutRemoveTokens(loggedOutUsers[0]._id);
+
+				const { response } = serviceProvider.generateLogoutResponse({
+					nameID: result.nameID || '',
+					sessionIndex: result.idpSession || '',
+					inResponseToId: result.id || '',
+				});
+
+				serviceProvider.logoutResponseToUrl(response, (err, url) => {
+					if (err) {
+						SystemLogger.error({ err });
+						return redirect();
+					}
+
+					redirect(url);
+				});
+			} catch (e: any) {
+				SystemLogger.error(e);
+				redirect();
+			}
 		});
 	}
 
-	private static processLogoutResponse(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions): void {
+	private static async processLogoutResponse(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions): Promise<void> {
 		if (!req.query.SAMLResponse) {
 			SAMLUtils.error('Invalid LogoutResponse, missing SAMLResponse', req.query);
 			throw new Error('Invalid LogoutResponse received.');
 		}
 
 		const serviceProvider = new SAMLServiceProvider(service);
-		serviceProvider.validateLogoutResponse(req.query.SAMLResponse, (err, inResponseTo) => {
+		await serviceProvider.validateLogoutResponse(req.query.SAMLResponse, async (err, inResponseTo) => {
 			if (err) {
 				return;
 			}
@@ -343,25 +340,23 @@ export class SAML {
 				throw new Meteor.Error('Invalid logout request: no inResponseTo value.');
 			}
 
-			const logOutUser = (inResponseTo: string): void => {
+			const logOutUser = async (inResponseTo: string): Promise<void> => {
 				SAMLUtils.log(`Logging Out user via inResponseTo ${inResponseTo}`);
 
-				const cursor = Users.findBySAMLInResponseTo(inResponseTo);
-				const count = cursor.count();
-				if (count > 1) {
+				const loggedOutUsers = await Users.findBySAMLInResponseTo(inResponseTo).toArray();
+				if (loggedOutUsers.length > 1) {
 					throw new Meteor.Error('Found multiple users matching SAML inResponseTo fields');
 				}
 
-				if (count === 0) {
+				if (loggedOutUsers.length === 0) {
 					throw new Meteor.Error('Invalid logout request: no user associated with inResponseTo.');
 				}
 
-				const loggedOutUser = cursor.fetch();
-				this._logoutRemoveTokens(loggedOutUser[0]._id);
+				await this._logoutRemoveTokens(loggedOutUsers[0]._id);
 			};
 
 			try {
-				fiber(() => logOutUser(inResponseTo)).run();
+				await logOutUser(inResponseTo);
 			} finally {
 				res.writeHead(302, {
 					Location: req.query.RelayState,
@@ -441,7 +436,7 @@ export class SAML {
 		});
 	}
 
-	private static findUser(username: string | undefined, emailRegex: RegExp): IUser | undefined {
+	private static async findUser(username: string | undefined, emailRegex: RegExp): Promise<IUser | undefined | null> {
 		const { globalSettings } = SAMLUtils;
 
 		if (globalSettings.immutableProperty === 'Username') {
