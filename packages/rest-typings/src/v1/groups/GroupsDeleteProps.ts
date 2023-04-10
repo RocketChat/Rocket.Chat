@@ -1,22 +1,14 @@
 import Ajv from 'ajv';
 
+import type { GroupsBaseProps } from './BaseProps';
+import { withGroupBaseProperties } from './BaseProps';
+
 const ajv = new Ajv({
 	coerceTypes: true,
 });
 
-export type GroupsDeleteProps = {
-	roomId: string;
-};
+export type GroupsDeleteProps = GroupsBaseProps;
 
-const GroupsDeletePropsSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-		},
-	},
-	required: ['roomId'],
-	additionalProperties: false,
-};
+const GroupsDeletePropsSchema = withGroupBaseProperties();
 
 export const isGroupsDeleteProps = ajv.compile<GroupsDeleteProps>(GroupsDeletePropsSchema);

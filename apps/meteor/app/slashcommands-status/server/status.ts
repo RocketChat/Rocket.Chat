@@ -1,34 +1,37 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
+import { Users } from '@rocket.chat/models';
 
 import { slashCommands } from '../../utils/lib/slashCommand';
 import { settings } from '../../settings/server';
-import { Users } from '../../models/server';
 
 slashCommands.add({
 	command: 'status',
-	callback: function Status(_command: 'status', params, item): void {
-		const userId = Meteor.userId() as string;
+	callback: async function Status(_command: 'status', params, item): Promise<void> {
+		const userId = Meteor.userId();
+		if (!userId) {
+			return;
+		}
 
-		Meteor.call('setUserStatus', null, params, (err: Meteor.Error) => {
-			const user = userId && Users.findOneById(userId, { fields: { language: 1 } });
-			const lng = user?.language || settings.get('Language') || 'en';
+		const user = await Users.findOneById(userId, { projection: { language: 1 } });
+		const lng = user?.language || settings.get('Language') || 'en';
 
-			if (err) {
-				if (err.error === 'error-not-allowed') {
-					api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-						msg: TAPi18n.__('StatusMessage_Change_Disabled', { lng }),
-					});
-				}
+		try {
+			await Meteor.callAsync('setUserStatus', null, params);
 
-				throw err;
-			} else {
-				api.broadcast('notify.ephemeralMessage', userId, item.rid, {
-					msg: TAPi18n.__('StatusMessage_Changed_Successfully', { lng }),
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+				msg: TAPi18n.__('StatusMessage_Changed_Successfully', { lng }),
+			});
+		} catch (err: any) {
+			if (err.error === 'error-not-allowed') {
+				void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+					msg: TAPi18n.__('StatusMessage_Change_Disabled', { lng }),
 				});
 			}
-		});
+
+			throw err;
+		}
 	},
 	options: {
 		description: 'Slash_Status_Description',

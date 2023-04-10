@@ -70,7 +70,7 @@ API.v1.addRoute(
 
 				const cfIds = Object.keys(customCF);
 
-				const customFields = await LivechatCustomField.findMatchingCustomFieldsByIds(Object.keys(cfIds), 'visitor', true, {
+				const customFields = await LivechatCustomField.findMatchingCustomFieldsByIds(cfIds, 'visitor', true, {
 					projection: { _id: 1 },
 				}).toArray();
 

@@ -65,14 +65,5 @@ export function messageContainsHighlight(message, highlights) {
 }
 
 export function callJoinRoom(userId, rid) {
-	return new Promise((resolve, reject) => {
-		Meteor.runAsUser(userId, () =>
-			Meteor.call('joinRoom', rid, (error, result) => {
-				if (error) {
-					return reject(error);
-				}
-				return resolve(result);
-			}),
-		);
-	});
+	return Meteor.runAsUser(userId, () => Meteor.callAsync('joinRoom', rid));
 }

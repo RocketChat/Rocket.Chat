@@ -2,7 +2,7 @@ import { Meteor } from 'meteor/meteor';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 
-import { ChatMessage, Rooms } from '../../../models/client';
+import { ChatMessage, ChatRoom } from '../../../models/client';
 import { settings } from '../../../settings/client';
 import { callbacks } from '../../../../lib/callbacks';
 import { t } from '../../../utils/client';
@@ -11,7 +11,7 @@ import { onClientMessageReceived } from '../../../../client/lib/onClientMessageR
 import { trim } from '../../../../lib/utils/stringUtils';
 
 Meteor.methods<ServerMethods>({
-	sendMessage(message) {
+	async sendMessage(message) {
 		const uid = Meteor.userId();
 		if (!uid || trim(message.msg) === '') {
 			return false;
@@ -36,13 +36,13 @@ Meteor.methods<ServerMethods>({
 		}
 
 		// If the room is federated, send the message to matrix only
-		const federated = Rooms.findOne({ _id: message.rid }, { fields: { federated: 1 } })?.federated;
+		const federated = ChatRoom.findOne({ _id: message.rid }, { fields: { federated: 1 } })?.federated;
 		if (federated) {
 			return;
 		}
 
 		message = callbacks.run('beforeSaveMessage', message);
-		onClientMessageReceived(message as IMessage).then(function (message) {
+		await onClientMessageReceived(message as IMessage).then(function (message) {
 			ChatMessage.insert(message);
 			return callbacks.run('afterSaveMessage', message);
 		});

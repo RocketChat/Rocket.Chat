@@ -12,14 +12,11 @@ const HeadingBlock = ({ children = [], level = 1 }: HeadingBlockProps): ReactEle
 	const HeadingTag = `h${level}` as const;
 
 	return (
-		<>
-			<HeadingTag style={{ display: 'inline-block' }}>
-				{children.map((block, index) => (
-					<PlainSpan key={index} text={block.value} />
-				))}
-			</HeadingTag>
-			<br />
-		</>
+		<HeadingTag>
+			{children.map((block, index) => (
+				<PlainSpan key={index} text={block.value} />
+			))}
+		</HeadingTag>
 	);
 };
 

@@ -60,11 +60,11 @@ export const createVisitor = (department?: string): Promise<ILivechatVisitor> =>
 		});
 	});
 
-export const takeInquiry = (roomId: string, _agentId?: string): Promise<IOmnichannelRoom> => {
+export const takeInquiry = (roomId: string, agentCredentials?: object): Promise<IOmnichannelRoom> => {
 	return new Promise((resolve, reject) => {
 		request
 			.post(methodCall(`livechat:takeInquiry`))
-			.set(credentials)
+			.set(agentCredentials || credentials)
 			.send({
 				message: JSON.stringify({
 					method: 'livechat:takeInquiry',

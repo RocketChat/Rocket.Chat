@@ -61,7 +61,7 @@ type OmnichannelTypesValues = 'omnichannel_placed_chat_on_hold' | 'omnichannel_o
 
 type OtrMessageTypeValues = 'otr' | 'otr-ack';
 
-type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
+export type OtrSystemMessages = 'user_joined_otr' | 'user_requested_otr_key_refresh' | 'user_key_refreshed_successfully';
 
 export type MessageTypesValues =
 	| 'e2e'
@@ -94,6 +94,13 @@ export type MessageTypesValues =
 	| 'command'
 	| 'videoconf'
 	| 'message_pinned'
+	| 'new-moderator'
+	| 'moderator-removed'
+	| 'new-owner'
+	| 'owner-removed'
+	| 'new-leader'
+	| 'leader-removed'
+	| 'discussion-created'
 	| LivechatMessageTypes
 	| TeamMessageTypes
 	| VoipMessageTypesValues
@@ -126,7 +133,7 @@ export interface IMessage extends IRocketChatRecord {
 
 	groupable?: false;
 	channels?: Pick<IRoom, '_id' | 'name'>[];
-	u: Required<Pick<IUser, '_id' | 'username' | 'name'>>;
+	u: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>;
 	blocks?: MessageSurfaceLayout;
 	alias?: string;
 	md?: Root;
@@ -140,6 +147,8 @@ export interface IMessage extends IRocketChatRecord {
 	};
 	starred?: { _id: IUser['_id'] }[];
 	pinned?: boolean;
+	pinnedAt?: Date;
+	pinnedBy?: Pick<IUser, '_id' | 'username'>;
 	unread?: boolean;
 	temp?: boolean;
 	drid?: RoomID;
@@ -164,6 +173,11 @@ export interface IMessage extends IRocketChatRecord {
 
 	/** @deprecated Deprecated in favor of files */
 	file?: FileProp;
+	fileUpload?: {
+		publicFilePath: string;
+		type?: string;
+		size?: number;
+	};
 	files?: FileProp[];
 	attachments?: MessageAttachment[];
 
@@ -302,7 +316,7 @@ export interface IOmnichannelSystemMessage extends IMessage {
 	requestData?: {
 		type: 'visitor' | 'user';
 		visitor?: ILivechatVisitor;
-		user?: IUser;
+		user?: Pick<IUser, '_id' | 'name' | 'username' | 'utcOffset'> | null;
 	};
 	webRtcCallEndTs?: Date;
 	comment?: string;
@@ -328,6 +342,7 @@ export type IMessageInbox = IMessage & {
 	email?: {
 		references?: string[];
 		messageId?: string;
+		thread?: string[];
 	};
 };
 

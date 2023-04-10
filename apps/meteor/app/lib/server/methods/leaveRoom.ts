@@ -1,15 +1,23 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Roles } from '@rocket.chat/models';
+import { Roles, Subscriptions, Rooms } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission, hasRole } from '../../../authorization/server';
-import { Subscriptions, Rooms } from '../../../models/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { removeUserFromRoom } from '../functions';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
+import { hasRoleAsync } from '../../../authorization/server/functions/hasRole';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		leaveRoom(rid: string): Promise<void>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async leaveRoom(rid) {
 		check(rid, String);
 
@@ -17,19 +25,26 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'leaveRoom' });
 		}
 
-		const room = Rooms.findOneById(rid);
-		const user = Meteor.user() as unknown as IUser;
+		const room = await Rooms.findOneById(rid);
+		if (!room) {
+			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'leaveRoom' });
+		}
 
-		if (!user || !roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.LEAVE, user._id)) {
+		const user = (await Meteor.userAsync()) as unknown as IUser;
+
+		if (!user || !(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.LEAVE, user._id))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'leaveRoom' });
 		}
 
-		if ((room.t === 'c' && !hasPermission(user._id, 'leave-c')) || (room.t === 'p' && !hasPermission(user._id, 'leave-p'))) {
+		if (
+			(room.t === 'c' && !(await hasPermissionAsync(user._id, 'leave-c'))) ||
+			(room.t === 'p' && !(await hasPermissionAsync(user._id, 'leave-p')))
+		) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'leaveRoom' });
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(rid, user._id, {
-			fields: { _id: 1 },
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id, {
+			projection: { _id: 1 },
 		});
 		if (!subscription) {
 			throw new Meteor.Error('error-user-not-in-room', 'You are not in this room', {
@@ -38,7 +53,7 @@ Meteor.methods({
 		}
 
 		// If user is room owner, check if there are other owners. If there isn't anyone else, warn user to set a new owner.
-		if (hasRole(user._id, 'owner', room._id)) {
+		if (await hasRoleAsync(user._id, 'owner', room._id)) {
 			const cursor = await Roles.findUsersInRole('owner', room._id);
 			const numOwners = await cursor.count();
 			if (numOwners === 1) {

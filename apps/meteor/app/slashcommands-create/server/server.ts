@@ -1,14 +1,14 @@
 import { Meteor } from 'meteor/meteor';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { api } from '@rocket.chat/core-services';
+import { Rooms } from '@rocket.chat/models';
 
 import { settings } from '../../settings/server';
-import { Rooms } from '../../models/server';
 import { slashCommands } from '../../utils/lib/slashCommand';
 
 slashCommands.add({
 	command: 'create',
-	callback: function Create(_command: 'create', params, item): void {
+	callback: async function Create(_command: 'create', params, item): Promise<void> {
 		function getParams(str: string): string[] {
 			const regex = /(--(\w+))+/g;
 			const result = [];
@@ -36,9 +36,9 @@ slashCommands.add({
 		}
 		const userId = Meteor.userId() as string;
 
-		const room = Rooms.findOneByName(channelStr);
+		const room = await Rooms.findOneByName(channelStr);
 		if (room != null) {
-			api.broadcast('notify.ephemeralMessage', userId, item.rid, {
+			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: TAPi18n.__('Channel_already_exist', {
 					postProcess: 'sprintf',
 					sprintf: [channelStr],
@@ -49,10 +49,10 @@ slashCommands.add({
 		}
 
 		if (getParams(params).indexOf('private') > -1) {
-			return Meteor.call('createPrivateGroup', channelStr, []);
+			return Meteor.callAsync('createPrivateGroup', channelStr, []);
 		}
 
-		Meteor.call('createChannel', channelStr, []);
+		await Meteor.callAsync('createChannel', channelStr, []);
 	},
 	options: {
 		description: 'Create_A_New_Channel',

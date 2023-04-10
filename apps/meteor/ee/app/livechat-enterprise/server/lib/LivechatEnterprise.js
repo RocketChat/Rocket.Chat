@@ -6,13 +6,16 @@ import {
 	LivechatRooms,
 	LivechatDepartment as LivechatDepartmentRaw,
 	OmnichannelServiceLevelAgreements,
+	LivechatTag,
+	LivechatUnitMonitors,
+	LivechatUnit,
 } from '@rocket.chat/models';
+import { Message } from '@rocket.chat/core-services';
 
 import { hasLicense } from '../../../license/server/license';
 import { updateDepartmentAgents } from '../../../../../app/livechat/server/lib/Helper';
-import { Messages } from '../../../../../app/models/server';
-import { addUserRoles } from '../../../../../server/lib/roles/addUserRoles';
-import { removeUserFromRoles } from '../../../../../server/lib/roles/removeUserFromRoles';
+import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
+import { removeUserFromRolesAsync } from '../../../../../server/lib/roles/removeUserFromRoles';
 import { processWaitingQueue, updateSLAInquiries } from './Helper';
 import { removeSLAFromRooms } from './SlaHelper';
 import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingManager';
@@ -21,13 +24,12 @@ import { logger, queueLogger } from './logger';
 import { callbacks } from '../../../../../lib/callbacks';
 import { AutoCloseOnHoldScheduler } from './AutoCloseOnHoldScheduler';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
-import { LivechatTag, LivechatUnit, LivechatUnitMonitors } from '../../../models/server';
 
 export const LivechatEnterprise = {
 	async addMonitor(username) {
 		check(username, String);
 
-		const user = await Users.findOneByUsername(username, { fields: { _id: 1, username: 1 } });
+		const user = await Users.findOneByUsername(username, { projection: { _id: 1, username: 1 } });
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -35,7 +37,7 @@ export const LivechatEnterprise = {
 			});
 		}
 
-		if (addUserRoles(user._id, ['livechat-monitor'])) {
+		if (await addUserRolesAsync(user._id, ['livechat-monitor'])) {
 			return user;
 		}
 
@@ -45,7 +47,7 @@ export const LivechatEnterprise = {
 	async removeMonitor(username) {
 		check(username, String);
 
-		const user = await Users.findOneByUsername(username, { fields: { _id: 1 } });
+		const user = await Users.findOneByUsername(username, { projection: { _id: 1 } });
 
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -53,21 +55,21 @@ export const LivechatEnterprise = {
 			});
 		}
 
-		const removeRoleResult = removeUserFromRoles(user._id, ['livechat-monitor']);
+		const removeRoleResult = await removeUserFromRolesAsync(user._id, ['livechat-monitor']);
 		if (!removeRoleResult) {
 			return false;
 		}
 
 		// remove this monitor from any unit it is assigned to
-		LivechatUnitMonitors.removeByMonitorId(user._id);
+		await LivechatUnitMonitors.removeByMonitorId(user._id);
 
 		return true;
 	},
 
-	removeUnit(_id) {
+	async removeUnit(_id) {
 		check(_id, String);
 
-		const unit = LivechatUnit.findOneById(_id, { fields: { _id: 1 } });
+		const unit = await LivechatUnit.findOneById(_id, { projection: { _id: 1 } });
 
 		if (!unit) {
 			throw new Meteor.Error('unit-not-found', 'Unit not found', { method: 'livechat:removeUnit' });
@@ -76,7 +78,7 @@ export const LivechatEnterprise = {
 		return LivechatUnit.removeById(_id);
 	},
 
-	saveUnit(_id, unitData, unitMonitors, unitDepartments) {
+	async saveUnit(_id, unitData, unitMonitors, unitDepartments) {
 		check(_id, Match.Maybe(String));
 
 		check(unitData, {
@@ -103,7 +105,7 @@ export const LivechatEnterprise = {
 
 		let ancestors = [];
 		if (_id) {
-			const unit = LivechatUnit.findOneById(_id);
+			const unit = await LivechatUnit.findOneById(_id);
 			if (!unit) {
 				throw new Meteor.Error('error-unit-not-found', 'Unit not found', {
 					method: 'livechat:saveUnit',
@@ -116,10 +118,10 @@ export const LivechatEnterprise = {
 		return LivechatUnit.createOrUpdateUnit(_id, unitData, ancestors, unitMonitors, unitDepartments);
 	},
 
-	removeTag(_id) {
+	async removeTag(_id) {
 		check(_id, String);
 
-		const tag = LivechatTag.findOneById(_id, { fields: { _id: 1 } });
+		const tag = await LivechatTag.findOneById(_id, { projection: { _id: 1 } });
 
 		if (!tag) {
 			throw new Meteor.Error('tag-not-found', 'Tag not found', { method: 'livechat:removeTag' });
@@ -128,7 +130,7 @@ export const LivechatEnterprise = {
 		return LivechatTag.removeById(_id);
 	},
 
-	saveTag(_id, tagData, tagDepartments) {
+	async saveTag(_id, tagData, tagDepartments) {
 		check(_id, Match.Maybe(String));
 
 		check(tagData, {
@@ -177,19 +179,18 @@ export const LivechatEnterprise = {
 		await removeSLAFromRooms(_id);
 	},
 
-	placeRoomOnHold(room, comment, onHoldBy) {
+	async placeRoomOnHold(room, comment, onHoldBy) {
 		logger.debug(`Attempting to place room ${room._id} on hold by user ${onHoldBy?._id}`);
 		const { _id: roomId, onHold } = room;
 		if (!roomId || onHold) {
 			logger.debug(`Room ${roomId} invalid or already on hold. Skipping`);
 			return false;
 		}
-		Promise.await(LivechatRooms.setOnHoldByRoomId(roomId));
+		await LivechatRooms.setOnHoldByRoomId(roomId);
 
-		Messages.createOnHoldHistoryWithRoomIdMessageAndUser(roomId, comment, onHoldBy);
-		Meteor.defer(() => {
-			callbacks.run('livechat:afterOnHold', room);
-		});
+		await Message.saveSystemMessage('omnichannel_placed_chat_on_hold', roomId, '', onHoldBy, { comment });
+
+		await callbacks.run('livechat:afterOnHold', room);
 
 		logger.debug(`Room ${room._id} set on hold succesfully`);
 		return true;
@@ -208,7 +209,7 @@ export const LivechatEnterprise = {
 	/**
 	 * @param {string|null} _id - The department id
 	 * @param {Partial<import('@rocket.chat/core-typings').ILivechatDepartment>} departmentData
-	 * @param {{upsert?: { agentId: string; count?: number; order?: number; }[], remove?: { agentId: string; count?: number; order?: number; }[]}} [departmentAgents] - The department agents
+	 * @param {{upsert?: { agentId: string; count?: number; order?: number; }[], remove?: { agentId: string; count?: number; order?: number; }}} [departmentAgents] - The department agents
 	 */
 	async saveDepartment(_id, departmentData, departmentAgents) {
 		check(_id, Match.Maybe(String));
@@ -287,7 +288,7 @@ export const LivechatEnterprise = {
 
 		const departmentDB = await LivechatDepartmentRaw.createOrUpdateDepartment(_id, departmentData);
 		if (departmentDB && departmentAgents) {
-			updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
+			await updateDepartmentAgents(departmentDB._id, departmentAgents, departmentDB.enabled);
 		}
 
 		return departmentDB;

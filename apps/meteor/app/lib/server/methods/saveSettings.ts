@@ -2,9 +2,10 @@ import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
 import { Settings } from '@rocket.chat/models';
 import type { ISetting } from '@rocket.chat/core-typings';
+import { isSettingCode } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 
-import { hasPermission } from '../../../authorization/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { getSettingPermissionId } from '../../../authorization/lib';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 
@@ -20,6 +21,15 @@ declare module '@rocket.chat/ui-contexts' {
 	}
 }
 
+const validJSON = Match.Where((value: string) => {
+	try {
+		value === '' || JSON.parse(value);
+		return true;
+	} catch (_) {
+		throw new Meteor.Error('Invalid JSON provided');
+	}
+});
+
 Meteor.methods<ServerMethods>({
 	saveSettings: twoFactorRequired(async function (
 		params: {
@@ -34,14 +44,14 @@ Meteor.methods<ServerMethods>({
 				method: 'saveSetting',
 			});
 		}
-		const editPrivilegedSetting = hasPermission(uid, 'edit-privileged-setting');
-		const manageSelectedSettings = hasPermission(uid, 'manage-selected-settings');
+		const editPrivilegedSetting = await hasPermissionAsync(uid, 'edit-privileged-setting');
+		const manageSelectedSettings = await hasPermissionAsync(uid, 'manage-selected-settings');
 
 		await Promise.all(
 			params.map(async ({ _id, value }) => {
 				// Verify the _id passed in is a string.
 				check(_id, String);
-				if (!editPrivilegedSetting && !(manageSelectedSettings && hasPermission(uid, getSettingPermissionId(_id)))) {
+				if (!editPrivilegedSetting && !(manageSelectedSettings && (await hasPermissionAsync(uid, getSettingPermissionId(_id))))) {
 					return settingsNotAllowed.push(_id);
 				}
 
@@ -59,6 +69,12 @@ Meteor.methods<ServerMethods>({
 						break;
 					case 'multiSelect':
 						check(value, Array);
+						break;
+					case 'code':
+						check(value, String);
+						if (isSettingCode(setting) && setting.code === 'application/json') {
+							check(value, validJSON);
+						}
 						break;
 					default:
 						check(value, String);
