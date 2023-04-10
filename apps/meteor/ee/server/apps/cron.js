@@ -3,11 +3,11 @@ import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { Settings, Users } from '@rocket.chat/models';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { sendMessagesToAdmins } from '../../../server/lib/sendMessagesToAdmins';
-import { fetch } from '../../../server/lib/http/fetch';
 
 const notifyAdminsAboutInvalidApps = Meteor.bindEnvironment(async function _notifyAdminsAboutInvalidApps(apps) {
 	if (!apps) {

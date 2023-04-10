@@ -5,13 +5,13 @@ import { OAuth } from 'meteor/oauth';
 import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 import { Users } from '@rocket.chat/models';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
 import { Logger } from '../../logger/server';
 import { isURL } from '../../../lib/utils/isURL';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
 import { callbacks } from '../../../lib/callbacks';
-import { fetch } from '../../../server/lib/http/fetch';
 
 const logger = new Logger('CustomOAuth');
 

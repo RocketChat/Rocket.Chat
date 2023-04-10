@@ -5,13 +5,13 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IUser, IMessage } from '@rocket.chat/core-typings';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getUploadFormData } from '../../../../app/api/server/lib/getUploadFormData';
 import { getWorkspaceAccessToken, getWorkspaceAccessTokenWithScope } from '../../../../app/cloud/server';
 import { settings } from '../../../../app/settings/server';
 import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
 import { actionButtonsHandler } from './endpoints/actionButtonsHandler';
-import { fetch } from '../../../../server/lib/http/fetch';
 import { apiDeprecationLogger } from '../../../../app/lib/server/lib/deprecationWarningLogger';
 import { notifyAppInstall } from '../marketplace/appInstall';
 import { canEnableApp } from '../../../app/license/server/license';

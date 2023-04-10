@@ -10,13 +10,13 @@ import jschardet from 'jschardet';
 import type { OEmbedUrlContentResult, OEmbedUrlWithMetadata, IMessage, MessageAttachment, OEmbedMeta } from '@rocket.chat/core-typings';
 import { isOEmbedUrlContentResult, isOEmbedUrlWithMetadata } from '@rocket.chat/core-typings';
 import { Messages, OEmbedCache } from '@rocket.chat/models';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { Logger } from '../../logger/server';
 import { callbacks } from '../../../lib/callbacks';
 import { settings } from '../../settings/server';
 import { isURL } from '../../../lib/utils/isURL';
 import { Info } from '../../utils/server';
-import { fetch } from '../../../server/lib/http/fetch';
 
 const log = new Logger('OEmbed');
 //  Detect encoding

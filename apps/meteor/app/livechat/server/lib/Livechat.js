@@ -22,6 +22,7 @@ import {
 	Users,
 } from '@rocket.chat/models';
 import { Message, VideoConf, api } from '@rocket.chat/core-services';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { QueueManager } from './QueueManager';
 import { RoutingManager } from './RoutingManager';
@@ -44,7 +45,6 @@ import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { Livechat as LivechatTyped } from './LivechatTyped';
-import { fetch } from '../../../../server/lib/http/fetch';
 
 const logger = new Logger('Livechat');
 

@@ -1,9 +1,9 @@
 import { Meteor } from 'meteor/meteor';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getWorkspaceAccessToken } from '../../app/cloud/server';
 import { statistics } from '../../app/statistics/server';
 import { settings } from '../../app/settings/server';
-import { fetch } from '../lib/http/fetch';
 
 async function generateStatistics(logger) {
 	const cronStatistics = await statistics.save();

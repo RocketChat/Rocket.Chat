@@ -1,9 +1,9 @@
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
 import { settings } from '../../../../app/settings/server';
 import { Info } from '../../../../app/utils/server';
-import { fetch } from '../../../../server/lib/http/fetch';
 
 type installAction = 'install' | 'update' | 'uninstall';
 

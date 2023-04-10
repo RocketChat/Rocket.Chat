@@ -13,11 +13,11 @@ import type {
 	IGoogleTranslation,
 	MessageAttachment,
 } from '@rocket.chat/core-typings';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { AutoTranslate, TranslationProviderRegistry } from './autotranslate';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { settings } from '../../settings/server';
-import { fetch } from '../../../server/lib/http/fetch';
 
 /**
  * Represents google translate class

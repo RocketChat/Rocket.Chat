@@ -1,12 +1,11 @@
 import http from 'http';
 import https from 'https';
 
-import { fetch as nodeFetch } from 'meteor/fetch';
+import { getProxyForUrl } from 'proxy-from-env';
 import type { HttpProxyAgent } from 'http-proxy-agent';
 import { default as createHttpProxyAgent } from 'http-proxy-agent';
 import type { HttpsProxyAgent } from 'https-proxy-agent';
 import { default as createHttpsProxyAgent } from 'https-proxy-agent';
-import { getProxyForUrl } from 'proxy-from-env';
 
 function getFetchAgent(url: string, allowSelfSignedCerts?: boolean): http.Agent | https.Agent | null | HttpsProxyAgent | HttpProxyAgent {
 	const isHttps = /^https/.test(url);
@@ -33,14 +32,14 @@ function getFetchAgent(url: string, allowSelfSignedCerts?: boolean): http.Agent 
 	return null;
 }
 
-export function fetch(
+export function serverFetch(
 	input: string,
-	options?: Parameters<typeof nodeFetch>[1] & { compress?: boolean; follow?: number; size?: number },
+	options?: Parameters<typeof fetch>[1] & { compress?: boolean; follow?: number; size?: number },
 	allowSelfSignedCerts?: boolean,
-): ReturnType<typeof nodeFetch> {
+): ReturnType<typeof fetch> {
 	const agent = getFetchAgent(input, allowSelfSignedCerts);
 
-	return nodeFetch(input, {
+	return fetch(input, {
 		...options,
 		...(agent ? { agent } : {}),
 	});

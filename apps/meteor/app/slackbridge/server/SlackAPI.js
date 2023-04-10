@@ -1,4 +1,4 @@
-import { fetch } from '../../../server/lib/http/fetch';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 const defaultFetchOptions = {
 	headers: {

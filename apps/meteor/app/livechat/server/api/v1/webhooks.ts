@@ -1,7 +1,8 @@
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+
 import { API } from '../../../../api/server';
 import { settings } from '../../../../settings/server';
 import { Livechat } from '../../lib/Livechat';
-import { fetch } from '../../../../../server/lib/http/fetch';
 
 API.v1.addRoute(
 	'livechat/webhook.test',

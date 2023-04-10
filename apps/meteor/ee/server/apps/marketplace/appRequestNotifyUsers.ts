@@ -1,10 +1,10 @@
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import type { AppRequest, IUser, Pagination } from '@rocket.chat/core-typings';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { API } from '../../../../app/api/server';
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
 import { sendDirectMessageToUsers } from '../../../../server/lib/sendDirectMessageToUsers';
-import { fetch } from '../../../../server/lib/http/fetch';
 
 const ROCKET_CAT_USERID = 'rocket.cat';
 const DEFAULT_LIMIT = 100;

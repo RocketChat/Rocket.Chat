@@ -1,11 +1,11 @@
 import EJSON from 'ejson';
 import { AbortController } from 'abort-controller';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { httpLogger } from './logger';
 import { getFederationDomain } from './getFederationDomain';
 import { search } from './dns';
 import { encrypt } from './crypt';
-import { fetch } from '../../../../server/lib/http/fetch';
 
 export async function federationRequest(method, url, body, headers, peerKey = null) {
 	let data = null;
