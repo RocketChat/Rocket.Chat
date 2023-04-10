@@ -129,6 +129,10 @@ export class AppsRestApi {
 							return API.v1.failure();
 						}
 						result = await request.json();
+
+						if (!request.ok) {
+							throw new Error(result.error);
+						}
 					} catch (e) {
 						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 					}
@@ -804,6 +808,10 @@ export class AppsRestApi {
 						const request = await fetch(`${baseUrl}/v1/apps/${this.urlParams.id}/versions`, { headers });
 						statusCode = request.status;
 						result = await request.json();
+
+						if (!request.ok) {
+							throw new Error(result.error);
+						}
 					} catch (e) {
 						return handleError('Unable to access Marketplace. Does the server has access to the internet?', e);
 					}
@@ -878,6 +886,10 @@ export class AppsRestApi {
 						const request = await fetch(`${baseUrl}/v1/workspaces/${workspaceIdSetting.value}/apps/${this.urlParams.id}`, { headers });
 						statusCode = request.status;
 						result = await request.json();
+
+						if (!request.ok) {
+							throw new Error(result.error);
+						}
 					} catch (e: any) {
 						orchestrator.getRocketChatLogger().error('Error syncing the App from the Marketplace:', e);
 						return API.v1.internalError();
@@ -1157,6 +1169,9 @@ export class AppsRestApi {
 						});
 						const result = await request.json();
 
+						if (!request.ok) {
+							throw new Error(result.error);
+						}
 						return API.v1.success(result);
 					} catch (e: any) {
 						orchestrator.getRocketChatLogger().error('Error getting all non sent app requests from the Marketplace:', e.message);
@@ -1183,7 +1198,9 @@ export class AppsRestApi {
 					try {
 						const request = await fetch(`${baseUrl}/v1/app-request/stats`, { headers });
 						const result = await request.json();
-
+						if (!request.ok) {
+							throw new Error(result.error);
+						}
 						return API.v1.success(result);
 					} catch (e: any) {
 						orchestrator.getRocketChatLogger().error('Error getting the app requests stats from marketplace', e.message);
@@ -1216,6 +1233,10 @@ export class AppsRestApi {
 							body: JSON.stringify({ ids: unseenRequests }),
 						});
 						const result = await request.json();
+
+						if (!request.ok) {
+							throw new Error(result.error);
+						}
 
 						return API.v1.success(result);
 					} catch (e: any) {
