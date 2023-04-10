@@ -1,7 +1,7 @@
-import type { IRoom, RoomType, IUser, IMessage, ReadReceipt, IRocketChatRecord, ValueOf, AtLeast } from '@rocket.chat/core-typings';
+import type { IRoom, RoomType, IUser, IMessage, ReadReceipt, ValueOf, AtLeast } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
 import type { IRoomTypeConfig, IRoomTypeServerDirectives, RoomSettingsEnum, RoomMemberActions } from '../../../definition/IRoomTypeConfig';
-import { Users } from '../../../app/models/server';
 import { RoomCoordinator } from '../../../lib/rooms/coordinator';
 import { settings } from '../../../app/settings/server';
 
@@ -48,7 +48,7 @@ class RoomCoordinatorServer extends RoomCoordinator {
 
 				return { title, text };
 			},
-			getMsgSender(senderId: IRocketChatRecord['_id']): Promise<IRocketChatRecord | undefined> {
+			getMsgSender(senderId: IUser['_id']): Promise<IUser | null> {
 				return Users.findOneById(senderId);
 			},
 			includeInRoomSearch(): boolean {
@@ -73,10 +73,6 @@ class RoomCoordinatorServer extends RoomCoordinator {
 			throw new Error(`Room type ${roomType} not found`);
 		}
 		return directives as IRoomTypeServerDirectives;
-	}
-
-	openRoom(_type: string, _name: string, _render = true): void {
-		// Nothing to do on the server side.
 	}
 
 	getTypesToShowOnDashboard(): Array<IRoomTypeConfig['identifier']> {

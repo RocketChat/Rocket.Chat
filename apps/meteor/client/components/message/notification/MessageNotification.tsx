@@ -7,7 +7,7 @@ import React from 'react';
 
 type MessageNotificationProps = {
 	label: TranslationKey;
-	bg: keyof typeof Palette['badge'];
+	bg: keyof (typeof Palette)['badge'];
 };
 
 const MessageNotification = ({ label, bg }: MessageNotificationProps): ReactElement => {

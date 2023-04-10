@@ -2,8 +2,8 @@ import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IUser } from '@rocket.chat/core-typings';
+import { Users } from '@rocket.chat/models';
 
-import { Users } from '../../app/models/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { deleteUser } from '../../app/lib/server';
@@ -26,7 +26,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const user = Users.findOneById(userId);
+		const user = await Users.findOneById(userId);
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user to delete', {
 				method: 'deleteUser',
@@ -39,7 +39,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const adminCount = Meteor.users.find({ roles: 'admin' }).count();
+		const adminCount = await Users.col.countDocuments({ roles: 'admin' });
 
 		const userIsAdmin = user.roles?.indexOf('admin') > -1;
 

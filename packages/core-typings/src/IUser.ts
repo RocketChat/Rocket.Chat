@@ -86,6 +86,11 @@ export interface IUserServices {
 		id: string;
 		idAttribute?: string;
 	};
+	nextcloud?: {
+		accessToken: string;
+		refreshToken: string;
+		serverURL: string;
+	};
 }
 
 export interface IUserEmail {
@@ -170,6 +175,7 @@ export interface IUser extends IRocketChatRecord {
 			read?: boolean;
 		};
 	};
+	importIds?: string[];
 }
 
 export interface IRegisterUser extends IUser {

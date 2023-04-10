@@ -14,7 +14,7 @@ import { fireGlobalEvent } from '../../lib/utils/fireGlobalEvent';
 import { isLayoutEmbedded } from '../../lib/utils/isLayoutEmbedded';
 
 const notifyNewRoom = async (sub: ISubscription): Promise<void> => {
-	const user = (await Meteor.userAsync()) as IUser | null;
+	const user = Meteor.user() as IUser | null;
 	if (!user || user.status === 'busy') {
 		return;
 	}
