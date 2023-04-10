@@ -147,7 +147,7 @@
 		"@types/use-subscription": "^1.0.0",
 		"@types/use-sync-external-store": "^0.0.3",
 		"@types/uuid": "^8.3.4",
-		"@types/xml-crypto": "^1.4.2",
+		"@types/xml-crypto": "~1.4.2",
 		"@typescript-eslint/eslint-plugin": "^5.52.0",
 		"@typescript-eslint/parser": "^5.30.7",
 		"autoprefixer": "^9.8.8",
@@ -405,7 +405,7 @@
 		"uuid": "^8.3.2",
 		"vm2": "^3.9.11",
 		"webdav": "^4.11.0",
-		"xml-crypto": "^2.1.4",
+		"xml-crypto": "~2.1.5",
 		"xml-encryption": "2.0.0",
 		"xml2js": "0.4.23",
 		"yaqrcode": "^0.2.1"
