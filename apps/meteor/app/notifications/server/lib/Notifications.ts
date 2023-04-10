@@ -11,7 +11,7 @@ import './Presence';
 class Stream extends Streamer {
 	registerPublication(name: string, fn: (eventName: string, options: boolean | { useCollection?: boolean; args?: any }) => void): void {
 		Meteor.publish(name, function (eventName, options) {
-			return Promise.await(fn.call(this, eventName, options));
+			return fn.call(this, eventName, options);
 		});
 	}
 

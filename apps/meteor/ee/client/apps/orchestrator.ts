@@ -159,7 +159,7 @@ class AppClientOrchestrator {
 	}
 
 	public async installApp(appId: string, version: string, permissionsGranted?: IPermission[]): Promise<App> {
-		const { app } = await APIClient.post('/apps', {
+		const { app } = await APIClient.post<'/apps/'>('/apps/', {
 			appId,
 			marketplace: true,
 			version,
