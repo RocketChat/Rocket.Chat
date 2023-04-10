@@ -169,7 +169,7 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 			}
 
 			const { _id } = newRecord;
-			this.collection.direct.upsert({ _id } as Mongo.Selector<T>, newRecord);
+			this.collection.upsert({ _id } as Mongo.Selector<T>, newRecord);
 			this.emit('changed', newRecord as any); // TODO: investigate why this is needed
 
 			if (hasUpdatedAt(newRecord) && newRecord._updatedAt > this.updatedAt) {
@@ -233,7 +233,7 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 				this.collection.remove(newRecord._id);
 			} else {
 				const { _id } = newRecord;
-				this.collection.direct.upsert({ _id } as Mongo.Selector<T>, newRecord);
+				this.collection.upsert({ _id } as Mongo.Selector<T>, newRecord);
 			}
 			await this.save();
 		});
@@ -277,7 +277,7 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 				changes.push({
 					action: () => {
 						const { _id } = newRecord;
-						this.collection.direct.upsert({ _id } as Mongo.Selector<T>, newRecord);
+						this.collection.upsert({ _id } as Mongo.Selector<T>, newRecord);
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}
@@ -302,7 +302,7 @@ export class CachedCollection<T extends object, U = T> extends Emitter<{ changed
 				changes.push({
 					action: () => {
 						const { _id } = newRecord;
-						this.collection.direct.remove({ _id } as Mongo.Selector<T>);
+						this.collection.remove({ _id } as Mongo.Selector<T>);
 						if (actionTime > this.updatedAt) {
 							this.updatedAt = actionTime;
 						}

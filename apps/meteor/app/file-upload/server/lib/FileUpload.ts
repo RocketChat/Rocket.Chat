@@ -436,7 +436,7 @@ export const FileUpload = {
 		const isAuthorizedByJWT = () =>
 			settings.get('FileUpload_Enable_json_web_token_for_files') &&
 			token &&
-			isValidJWT(token, settings.get('FileUpload_json_web_token_secret_for_files'));
+			isValidJWT(token as string, settings.get('FileUpload_json_web_token_secret_for_files'));
 
 		if ((await isAuthorizedByRoom()) || isAuthorizedByJWT()) {
 			return true;

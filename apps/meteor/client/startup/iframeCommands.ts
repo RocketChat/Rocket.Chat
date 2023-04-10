@@ -67,7 +67,7 @@ const commands = {
 	},
 
 	async 'logout'() {
-		const user = await Meteor.userAsync();
+		const user = Meteor.user();
 		Meteor.logout(() => {
 			callbacks.run('afterLogoutCleanUp', user);
 			Meteor.call('logoutCleanUp', user);
