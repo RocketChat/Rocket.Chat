@@ -7455,7 +7455,7 @@ __metadata:
     use-subscription: ~1.6.0
     use-sync-external-store: ^1.2.0
     uuid: ^8.3.2
-    vm2: ^3.9.11
+    vm2: ^3.9.15
     webdav: ^4.11.0
     webpack: ^4.46.0
     xml-crypto: ^2.1.4
@@ -38147,6 +38147,18 @@ __metadata:
   bin:
     vm2: bin/vm2
   checksum: aab39e6e4b59146d24abacd79f490e854a6e058a8b23d93d2be5aca7720778e2605d2cc028ccc4a5f50d3d91b0c38be9a6247a80d2da1a6de09425cc437770b4
+  languageName: node
+  linkType: hard
+
+"vm2@npm:^3.9.15":
+  version: 3.9.15
+  resolution: "vm2@npm:3.9.15"
+  dependencies:
+    acorn: ^8.7.0
+    acorn-walk: ^8.2.0
+  bin:
+    vm2: bin/vm2
+  checksum: 1df70d5a88173651c0062901aba67e5edfeeb3f699fe6c305f5efb6a5a7391e5724cbf98a6516600b65016c6824dc07cc79947ea4222f8537ae1d9ce0b730ad7
   languageName: node
   linkType: hard
 
