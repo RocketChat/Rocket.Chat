@@ -124,7 +124,6 @@ const getUrlContent = async function (urlObjStr: string | URL.UrlWithStringQuery
 
 	let totalSize = 0;
 	const chunks = [];
-	// @ts-expect-error from https://github.com/microsoft/TypeScript/issues/39051
 	for await (const chunk of response.body) {
 		totalSize += chunk.length;
 		chunks.push(chunk as Buffer);
