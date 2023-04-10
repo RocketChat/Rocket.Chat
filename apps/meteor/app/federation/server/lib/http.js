@@ -1,5 +1,4 @@
 import EJSON from 'ejson';
-import { AbortController } from 'abort-controller';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { httpLogger } from './logger';
@@ -20,25 +19,16 @@ export async function federationRequest(method, url, body, headers, peerKey = nu
 
 	httpLogger.debug(`[${method}] ${url}`);
 
-	const controller = new AbortController();
-	const { signal } = controller;
-
-	const timeout = setTimeout(() => {
-		controller.abort();
-	}, 2000);
-
 	try {
 		const request = await fetch(url, {
 			method,
 			headers: { ...headers, 'x-federation-domain': getFederationDomain() },
 			body: JSON.stringify(data),
-			signal,
+			timeout: 2000,
 		});
 		return request.json();
 	} catch (e) {
 		throw e;
-	} finally {
-		clearTimeout(timeout);
 	}
 }
 
