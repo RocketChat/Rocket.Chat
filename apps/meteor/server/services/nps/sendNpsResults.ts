@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import type { INpsVote } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
@@ -11,7 +10,7 @@ type NPSResultPayload = {
 	votes: Pick<INpsVote, 'identifier' | 'roles' | 'score' | 'comment'>[];
 };
 
-export const sendNpsResults = Meteor.bindEnvironment(async function sendNpsResults(npsId: string, data: NPSResultPayload) {
+export const sendNpsResults = async function sendNpsResults(npsId: string, data: NPSResultPayload) {
 	const token = await getWorkspaceAccessToken();
 	if (!token) {
 		return false;
@@ -34,4 +33,4 @@ export const sendNpsResults = Meteor.bindEnvironment(async function sendNpsResul
 		SystemLogger.error(e);
 		return false;
 	}
-});
+};

@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import { SyncedCron } from 'meteor/littledata:synced-cron';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
@@ -7,7 +6,7 @@ import { Apps } from './orchestrator';
 import { getWorkspaceAccessToken } from '../../../app/cloud/server';
 import { appRequestNotififyForUsers } from './marketplace/appRequestNotifyUsers';
 
-const appsNotifyAppRequests = Meteor.bindEnvironment(async function _appsNotifyAppRequests() {
+const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 	try {
 		const installedApps = await Apps.installedApps({ enabled: true });
 		if (!installedApps || installedApps.length === 0) {
@@ -63,7 +62,7 @@ const appsNotifyAppRequests = Meteor.bindEnvironment(async function _appsNotifyA
 	} catch (err) {
 		Apps.debugLog(err);
 	}
-});
+};
 
 // Scheduling as every 12 hours to avoid multiple instances hiting the marketplace at the same time
 SyncedCron.add({

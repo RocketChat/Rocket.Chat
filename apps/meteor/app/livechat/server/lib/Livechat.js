@@ -784,17 +784,18 @@ export const Livechat = {
 		const secretToken = settings.get('Livechat_secret_token');
 		const headers = { 'X-RocketChat-Livechat-Token': secretToken };
 		const options = {
-			body: JSON.stringify(postData),
+			data: postData,
 			...(secretToken !== '' && secretToken !== undefined && { headers }),
 		};
 		try {
-			const request = await fetch(settings.get('Livechat_webhookUrl'), options);
-			return request.json();
+			return (await fetch(settings.get('Livechat_webhookUrl'), options)).json();
 		} catch (err) {
 			Livechat.webhookLogger.error({ msg: `Response error on ${11 - attempts} try ->`, err });
 			// try 10 times after 10 seconds each
 			attempts - 1 && Livechat.webhookLogger.warn('Will try again in 10 seconds ...');
-			setTimeout(() => Livechat.sendRequest(postData, callback, attempts - 1), 10000);
+			setTimeout(async function () {
+				await Livechat.sendRequest(postData, callback, attempts - 1);
+			}, 10000);
 		}
 	},
 
