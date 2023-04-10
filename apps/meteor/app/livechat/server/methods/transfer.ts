@@ -1,11 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Match, check } from 'meteor/check';
-import { LivechatVisitors } from '@rocket.chat/models';
+import { LivechatVisitors, LivechatRooms, Subscriptions, Users } from '@rocket.chat/models';
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import type { IUser } from '@rocket.chat/core-typings';
 
-import { hasPermission } from '../../../authorization/server';
-import { LivechatRooms, Subscriptions, Users } from '../../../models/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Livechat } from '../lib/Livechat';
 import { normalizeTransferredByData } from '../lib/Helper';
 import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
@@ -29,7 +28,7 @@ Meteor.methods<ServerMethods>({
 	async 'livechat:transfer'(transferData) {
 		methodDeprecationLogger.warn('livechat:transfer method is deprecated in favor of "livechat/room.forward" endpoint');
 		const uid = Meteor.userId();
-		if (!uid || !hasPermission(uid, 'view-l-room')) {
+		if (!uid || !(await hasPermissionAsync(uid, 'view-l-room'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'livechat:transfer' });
 		}
 
@@ -41,7 +40,7 @@ Meteor.methods<ServerMethods>({
 			clientAction: Match.Optional(Boolean),
 		});
 
-		const room = LivechatRooms.findOneById(transferData.roomId);
+		const room = await LivechatRooms.findOneById(transferData.roomId);
 		if (!room || room.t !== 'l') {
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'livechat:transfer' });
 		}
@@ -50,10 +49,10 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('room-closed', 'Room closed', { method: 'livechat:transfer' });
 		}
 
-		const subscription = Subscriptions.findOneByRoomIdAndUserId(room._id, uid, {
-			fields: { _id: 1 },
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, uid, {
+			projection: { _id: 1 },
 		});
-		if (!subscription && !hasPermission(uid, 'transfer-livechat-guest')) {
+		if (!subscription && !(await hasPermissionAsync(uid, 'transfer-livechat-guest'))) {
 			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
 				method: 'livechat:transfer',
 			});
@@ -71,11 +70,14 @@ Meteor.methods<ServerMethods>({
 			transferredTo?: Pick<IUser, '_id' | 'username' | 'name'>;
 		} = {
 			...transferData,
-			transferredBy: normalizeTransferredByData(Meteor.user() || {}, room),
+			transferredBy: normalizeTransferredByData((await Meteor.userAsync()) || {}, room),
 		};
 
 		if (normalizedTransferData.userId) {
-			const userToTransfer = Users.findOneById(normalizedTransferData.userId);
+			const userToTransfer = await Users.findOneById(normalizedTransferData.userId);
+			if (!userToTransfer) {
+				throw new Meteor.Error('error-invalid-user', 'Invalid user to transfer the room');
+			}
 			normalizedTransferData.transferredTo = {
 				_id: userToTransfer._id,
 				username: userToTransfer.username,

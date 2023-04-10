@@ -1,6 +1,6 @@
 import { ReadPreference } from 'mongodb';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Subscriptions, Messages } from '@rocket.chat/models';
+import { Subscriptions } from '@rocket.chat/models';
 
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
@@ -242,37 +242,6 @@ export class RoomsRaw extends BaseRaw {
 			_id: {
 				$in: rids,
 			},
-		};
-
-		return this.find(query, options);
-	}
-
-	findChannelAndPrivateByNameStarting(name, sIds, options) {
-		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
-
-		const query = {
-			t: {
-				$in: ['c', 'p'],
-			},
-			name: nameRegex,
-			teamMain: {
-				$exists: false,
-			},
-			$or: [
-				{
-					teamId: {
-						$exists: false,
-					},
-				},
-				{
-					teamId: {
-						$exists: true,
-					},
-					_id: {
-						$in: sIds,
-					},
-				},
-			],
 		};
 
 		return this.find(query, options);
@@ -524,6 +493,30 @@ export class RoomsRaw extends BaseRaw {
 		return this.col.aggregate(params, { allowDiskUse: true, readPreference });
 	}
 
+	findOneByNameOrFname(name, options) {
+		const query = {
+			$or: [
+				{
+					name,
+				},
+				{
+					fname: name,
+				},
+			],
+		};
+
+		return this.findOne(query, options);
+	}
+
+	async findOneByNonValidatedName(name, options) {
+		const room = await this.findOneByNameOrFname(name, options);
+		if (room) {
+			return room;
+		}
+
+		return this.findOneByName(name, options);
+	}
+
 	findOneByName(name, options = {}) {
 		return this.col.findOne({ name }, options);
 	}
@@ -552,10 +545,6 @@ export class RoomsRaw extends BaseRaw {
 		};
 
 		return this.updateMany(query, update);
-	}
-
-	findOneByNameOrFname(name, options = {}) {
-		return this.col.findOne({ $or: [{ name }, { fname: name }] }, options);
 	}
 
 	allRoomSourcesCount() {
@@ -823,8 +812,8 @@ export class RoomsRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	setReactionsInLastMessage(roomId, lastMessage) {
-		return this.updateOne({ _id: roomId }, { $set: { 'lastMessage.reactions': lastMessage.reactions } });
+	setReactionsInLastMessage(roomId, reactions) {
+		return this.updateOne({ _id: roomId }, { $set: { 'lastMessage.reactions': reactions } });
 	}
 
 	unsetReactionsInLastMessage(roomId) {
@@ -893,10 +882,6 @@ export class RoomsRaw extends BaseRaw {
 				},
 			},
 		);
-	}
-
-	setSentiment(roomId, sentiment) {
-		return this.updateOne({ _id: roomId }, { $set: { sentiment } });
 	}
 
 	setDescriptionById(_id, description) {
@@ -1066,7 +1051,7 @@ export class RoomsRaw extends BaseRaw {
 	// FIND
 
 	findById(roomId, options) {
-		return this.find({ _id: roomId }, options);
+		return this.findOne({ _id: roomId }, options);
 	}
 
 	findByIds(roomIds, options) {
@@ -1090,14 +1075,8 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findByUserId(userId, options) {
-		const query = { 'u._id': userId };
-
-		return this.find(query, options);
-	}
-
 	async findBySubscriptionUserId(userId, options) {
-		const data = (await Subscriptions.cachedFindByUserId(userId, { projection: { rid: 1 } }).toArray()).map((item) => item.rid);
+		const data = (await Subscriptions.findByUserId(userId, { projection: { rid: 1 } }).toArray()).map((item) => item.rid);
 
 		const query = {
 			_id: {
@@ -1157,26 +1136,6 @@ export class RoomsRaw extends BaseRaw {
 		const query = {
 			t: type,
 			name,
-		};
-
-		// do not use cache
-		return this.find(query, options);
-	}
-
-	findByNameOrFNameAndType(name, type, options) {
-		const query = {
-			t: type,
-			teamId: {
-				$exists: false,
-			},
-			$or: [
-				{
-					name,
-				},
-				{
-					fname: name,
-				},
-			],
 		};
 
 		// do not use cache
@@ -1313,23 +1272,11 @@ export class RoomsRaw extends BaseRaw {
 		return this.find(query, options);
 	}
 
-	findByTypeAndArchivationState(type, archivationstate, options) {
-		const query = { t: type };
-
-		if (archivationstate) {
-			query.archived = true;
-		} else {
-			query.archived = { $ne: true };
-		}
-
-		return this.find(query, options);
-	}
-
 	findGroupDMsByUids(uids, options) {
 		return this.find(
 			{
 				usersCount: { $gt: 2 },
-				uids,
+				uids: { $in: uids },
 			},
 			options,
 		);
@@ -1466,14 +1413,8 @@ export class RoomsRaw extends BaseRaw {
 		return this.updateOne(query, update);
 	}
 
-	/**
-	 * @param {string} _id
-	 * @param {string?} messageId
-	 * @returns {Promise<void>}
-	 */
-	async resetLastMessageById(_id, messageId = undefined) {
+	async resetLastMessageById(_id, lastMessage = undefined) {
 		const query = { _id };
-		const lastMessage = await Messages.getLastVisibleMessageSentWithNoTypeByRoomId(_id, messageId);
 
 		const update = lastMessage
 			? {
@@ -1547,21 +1488,6 @@ export class RoomsRaw extends BaseRaw {
 				},
 			};
 		}
-
-		return this.updateOne(query, update);
-	}
-
-	setUserById(_id, user) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				u: {
-					_id: user._id,
-					username: user.username,
-				},
-			},
-		};
 
 		return this.updateOne(query, update);
 	}
@@ -1792,27 +1718,6 @@ export class RoomsRaw extends BaseRaw {
 		return this.updateMany(query, update);
 	}
 
-	// INSERT
-	async createWithTypeNameUserAndUsernames(type, name, fname, user, usernames, extraData) {
-		const room = {
-			name,
-			fname,
-			t: type,
-			usernames,
-			msgs: 0,
-			usersCount: 0,
-			u: {
-				_id: user._id,
-				username: user.username,
-			},
-		};
-
-		Object.assign(room, extraData);
-
-		room._id = (await this.insertOne(room)).insertedId;
-		return room;
-	}
-
 	async createWithIdTypeAndName(_id, type, name, extraData) {
 		const room = {
 			_id,
@@ -1856,37 +1761,6 @@ export class RoomsRaw extends BaseRaw {
 		};
 
 		return this.deleteMany(query);
-	}
-
-	// ############################
-	// Discussion
-	findDiscussionParentByNameStarting(name, options) {
-		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
-
-		const query = {
-			t: {
-				$in: ['c'],
-			},
-			name: nameRegex,
-			archived: { $ne: true },
-			prid: {
-				$exists: false,
-			},
-		};
-
-		return this.find(query, options);
-	}
-
-	setLinkMessageById(_id, linkMessageId) {
-		const query = { _id };
-
-		const update = {
-			$set: {
-				linkMessageId,
-			},
-		};
-
-		return this.updateOne(query, update);
 	}
 
 	countDiscussions() {

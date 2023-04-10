@@ -1110,6 +1110,7 @@ void settingsRegistry.addGroup('General', function () {
 	this.section('Translations', function () {
 		return this.add('Custom_Translations', '', {
 			type: 'code',
+			code: 'application/json',
 			public: true,
 		});
 	});
@@ -1214,6 +1215,10 @@ void settingsRegistry.addGroup('Message', function () {
 			public: true,
 			enableQuery: { _id: 'Message_Read_Receipt_Enabled', value: true },
 		});
+	});
+	this.add('Message_CustomDomain_AutoLink', '', {
+		type: 'string',
+		public: true,
 	});
 	this.add('Message_AllowEditing', true, {
 		type: 'boolean',

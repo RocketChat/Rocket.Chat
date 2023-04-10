@@ -4,7 +4,7 @@ import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
 import { syncWorkspace } from './syncWorkspace';
 
 export async function disconnectWorkspace() {
-	const { connectToCloud } = retrieveRegistrationStatus();
+	const { connectToCloud } = await retrieveRegistrationStatus();
 	if (!connectToCloud) {
 		return true;
 	}

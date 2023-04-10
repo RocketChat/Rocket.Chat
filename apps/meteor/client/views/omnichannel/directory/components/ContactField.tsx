@@ -21,7 +21,7 @@ const ContactField = ({ contact, room }: ContactFieldProps) => {
 	const t = useTranslation();
 	const { status } = contact;
 	const { fname, t: type } = room;
-	const avatarUrl = roomCoordinator.getRoomDirectives(type)?.getAvatarPath(room) || '';
+	const avatarUrl = roomCoordinator.getRoomDirectives(type).getAvatarPath(room) || '';
 
 	const getVisitorInfo = useEndpoint('GET', '/v1/livechat/visitors.info');
 	const { data, isLoading, isError } = useQuery(['/v1/livechat/visitors.info', contact._id], () =>

@@ -1,19 +1,19 @@
-import { Users } from '../../../models/server';
+import { Users } from '@rocket.chat/models';
 
-export const getStatusText = function (userId: string): string | undefined {
+export const getStatusText = async function (userId: string): Promise<string | undefined> {
 	if (!userId) {
 		return;
 	}
 
-	const fields = {
+	const projection = {
 		statusText: 1,
 	};
 
 	const options = {
-		fields,
+		projection,
 		limit: 1,
 	};
 
-	const data = Users.findOneById(userId, options);
+	const data = await Users.findOneById(userId, options);
 	return data?.statusText;
 };

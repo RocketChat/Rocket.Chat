@@ -8,7 +8,6 @@ export interface IInstance {
 		lastHeartbeatTime?: number;
 	};
 	instanceRecord?: IInstanceStatus;
-
 	broadcastAuth: boolean;
 }
 

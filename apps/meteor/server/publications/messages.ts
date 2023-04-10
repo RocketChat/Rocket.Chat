@@ -1,11 +1,26 @@
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { Messages } from '@rocket.chat/models';
+import type { ServerMethods } from '@rocket.chat/ui-contexts';
+import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { FindOptions } from 'mongodb';
 
-import { canAccessRoomId } from '../../app/authorization/server';
-import { Messages as MessagesSync } from '../../app/models/server';
+import { canAccessRoomIdAsync } from '../../app/authorization/server/functions/canAccessRoom';
 
-Meteor.methods({
+declare module '@rocket.chat/ui-contexts' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface ServerMethods {
+		'messages/get': (
+			rid: IRoom['_id'],
+			options: { lastUpdate?: Date; latestDate?: Date; oldestDate?: Date; inclusive?: boolean; count?: number; unreads?: boolean },
+		) => Promise<{
+			updated: IMessage[];
+			deleted: IMessage[];
+		}>;
+	}
+}
+
+Meteor.methods<ServerMethods>({
 	async 'messages/get'(rid, { lastUpdate, latestDate = new Date(), oldestDate, inclusive = false, count = 20, unreads = false }) {
 		check(rid, String);
 
@@ -21,13 +36,13 @@ Meteor.methods({
 			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'messages/get' });
 		}
 
-		if (!canAccessRoomId(rid, fromId)) {
+		if (!(await canAccessRoomIdAsync(rid, fromId))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'messages/get',
 			});
 		}
 
-		const options = {
+		const options: FindOptions<IMessage> = {
 			sort: {
 				ts: -1,
 			},
@@ -40,11 +55,11 @@ Meteor.methods({
 						ts: -1,
 					},
 				}).toArray(),
-				deleted: MessagesSync.trashFindDeletedAfter(lastUpdate, { rid }, { ...options, fields: { _id: 1, _deletedAt: 1 } }).fetch(),
+				deleted: await Messages.trashFindDeletedAfter(lastUpdate, { rid }, { ...options, projection: { _id: 1, _deletedAt: 1 } }).toArray(),
 			};
 		}
 
-		return Meteor.call('getChannelHistory', {
+		return Meteor.callAsync('getChannelHistory', {
 			rid,
 			latest: latestDate,
 			oldest: oldestDate,

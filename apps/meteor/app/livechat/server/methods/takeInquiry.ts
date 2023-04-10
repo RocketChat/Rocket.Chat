@@ -1,9 +1,10 @@
 import type { ServerMethods } from '@rocket.chat/ui-contexts';
 import { Meteor } from 'meteor/meteor';
+import { LivechatInquiry, Users } from '@rocket.chat/models';
 
-import { hasPermission } from '../../../authorization/server';
-import { Users, LivechatInquiry } from '../../../models/server';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { RoutingManager } from '../lib/RoutingManager';
+import { settings } from '../../../settings/server';
 
 declare module '@rocket.chat/ui-contexts' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -15,13 +16,13 @@ declare module '@rocket.chat/ui-contexts' {
 Meteor.methods<ServerMethods>({
 	async 'livechat:takeInquiry'(inquiryId, options) {
 		const uid = Meteor.userId();
-		if (!uid || !hasPermission(uid, 'view-l-room')) {
+		if (!uid || !(await hasPermissionAsync(uid, 'view-l-room'))) {
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 				method: 'livechat:takeInquiry',
 			});
 		}
 
-		const inquiry = LivechatInquiry.findOneById(inquiryId);
+		const inquiry = await LivechatInquiry.findOneById(inquiryId);
 
 		if (!inquiry) {
 			throw new Meteor.Error('error-not-found', 'Inquiry not found', {
@@ -35,7 +36,7 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const user = Users.findOneOnlineAgentById(uid);
+		const user = await Users.findOneOnlineAgentById(uid, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
 		if (!user) {
 			throw new Meteor.Error('error-agent-status-service-offline', 'Agent status is offline or Omnichannel service is not active', {
 				method: 'livechat:takeInquiry',

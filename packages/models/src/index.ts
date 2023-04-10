@@ -68,7 +68,10 @@ import type {
 	IAppsPersistenceModel,
 	IAppLogsModel,
 	IImportsModel,
+	IRawImportsModel,
 	IFederationRoomEventsModel,
+	IAppsTokensModel,
+	IAuditLogModel,
 } from '@rocket.chat/model-typings';
 
 import { proxify } from './proxify';
@@ -81,6 +84,7 @@ export function getCollectionName(name: string): string {
 export { registerModel } from './proxify';
 
 export const Apps = proxify<IAppsModel>('IAppsModel');
+export const AppsTokens = proxify<IAppsTokensModel>('IAppsTokensModel');
 export const AppsPersistence = proxify<IAppsPersistenceModel>('IAppsPersistenceModel');
 export const AppLogs = proxify<IAppLogsModel>('IAppLogsModel');
 export const Analytics = proxify<IAnalyticsModel>('IAnalyticsModel');
@@ -129,6 +133,7 @@ export const PushToken = proxify<IPushTokenModel>('IPushTokenModel');
 export const Permissions = proxify<IPermissionsModel>('IPermissionsModel');
 export const ReadReceipts = proxify<IReadReceiptsModel>('IReadReceiptsModel');
 export const MessageReads = proxify<IMessageReadsModel>('IMessageReadsModel');
+export const RawImports = proxify<IRawImportsModel>('IRawImportsModel');
 export const Reports = proxify<IReportsModel>('IReportsModel');
 export const Roles = proxify<IRolesModel>('IRolesModel');
 export const Rooms = proxify<IRoomsModel>('IRoomsModel');
@@ -152,3 +157,4 @@ export const MatrixBridgedUser = proxify<IMatrixBridgedUserModel>('IMatrixBridge
 export const OmnichannelServiceLevelAgreements = proxify<IOmnichannelServiceLevelAgreementsModel>(
 	'IOmnichannelServiceLevelAgreementsModel',
 );
+export const AuditLog = proxify<IAuditLogModel>('IAuditLogModel');
