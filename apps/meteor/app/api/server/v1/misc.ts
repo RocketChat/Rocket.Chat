@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
-import { EJSON } from 'meteor/ejson';
+import EJSON from 'ejson';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import {
