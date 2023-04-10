@@ -344,7 +344,7 @@ export async function canEnableApp(app: IAppStorageItem): Promise<boolean> {
 	return License.canEnableApp(app.installationSource);
 }
 
-export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void): void {
+export function onLicense(feature: BundleFeature, cb: (...args: any[]) => void): void | Promise<void> {
 	if (hasLicense(feature)) {
 		return cb();
 	}
@@ -435,8 +435,8 @@ interface IOverrideClassProperties {
 
 type Class = { new (...args: any[]): any };
 
-export function overwriteClassOnLicense(license: BundleFeature, original: Class, overwrite: IOverrideClassProperties): void {
-	onLicense(license, () => {
+export async function overwriteClassOnLicense(license: BundleFeature, original: Class, overwrite: IOverrideClassProperties): Promise<void> {
+	await onLicense(license, () => {
 		Object.entries(overwrite).forEach(([key, value]) => {
 			const originalFn = original.prototype[key];
 			original.prototype[key] = function (...args: any[]): any {
