@@ -69,8 +69,8 @@ export class PendingFileImporter extends Base {
 			})();
 		};
 
-		const completeFile = (details) => {
-			Promise.await(this.addCountCompleted(1));
+		const completeFile = async (details) => {
+			await this.addCountCompleted(1);
 			count--;
 			currentSize -= details.size;
 		};
@@ -132,60 +132,48 @@ export class PendingFileImporter extends Base {
 									reportProgress();
 								}),
 							);
-							res.on(
-								'error',
-								Meteor.bindEnvironment((error) => {
-									completeFile(details);
-									logError(error);
-								}),
-							);
+							res.on('error', async (error) => {
+								await completeFile(details);
+								logError(error);
+							});
 
-							res.on(
-								'end',
-								Meteor.bindEnvironment(() => {
-									try {
-										// Bypass the fileStore filters
-										fileStore._doInsert(details, Buffer.concat(rawData), function (error, file) {
-											if (error) {
-												completeFile(details);
-												logError(error);
-												return;
-											}
+							res.on('end', async () => {
+								try {
+									// Bypass the fileStore filters
+									const file = await fileStore._doInsert(details, Buffer.concat(rawData));
 
-											const url = FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`);
-											const attachment = {
-												title: file.name,
-												title_link: url,
-											};
+									const url = FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`);
+									const attachment = {
+										title: file.name,
+										title_link: url,
+									};
 
-											if (/^image\/.+/.test(file.type)) {
-												attachment.image_url = url;
-												attachment.image_type = file.type;
-												attachment.image_size = file.size;
-												attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
-											}
-
-											if (/^audio\/.+/.test(file.type)) {
-												attachment.audio_url = url;
-												attachment.audio_type = file.type;
-												attachment.audio_size = file.size;
-											}
-
-											if (/^video\/.+/.test(file.type)) {
-												attachment.video_url = url;
-												attachment.video_type = file.type;
-												attachment.video_size = file.size;
-											}
-
-											Promise.await(Messages.setImportFileRocketChatAttachment(_importFile.id, url, attachment));
-											completeFile(details);
-										});
-									} catch (error) {
-										completeFile(details);
-										logError(error);
+									if (/^image\/.+/.test(file.type)) {
+										attachment.image_url = url;
+										attachment.image_type = file.type;
+										attachment.image_size = file.size;
+										attachment.image_dimensions = file.identify != null ? file.identify.size : undefined;
 									}
-								}),
-							);
+
+									if (/^audio\/.+/.test(file.type)) {
+										attachment.audio_url = url;
+										attachment.audio_type = file.type;
+										attachment.audio_size = file.size;
+									}
+
+									if (/^video\/.+/.test(file.type)) {
+										attachment.video_url = url;
+										attachment.video_type = file.type;
+										attachment.video_size = file.size;
+									}
+
+									await Messages.setImportFileRocketChatAttachment(_importFile.id, url, attachment);
+									await completeFile(details);
+								} catch (error) {
+									await completeFile(details);
+									logError(error);
+								}
+							});
 						}),
 					);
 				} catch (error) {

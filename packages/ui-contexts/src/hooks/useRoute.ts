@@ -6,8 +6,14 @@ import { RouterContext } from '../RouterContext';
 type Route = {
 	getPath: (parameters?: RouteParameters, queryStringParameters?: QueryStringParameters) => string | undefined;
 	getUrl: (parameters?: RouteParameters, queryStringParameters?: QueryStringParameters) => string | undefined;
-	push: (parameters?: RouteParameters, queryStringParameters?: QueryStringParameters) => void;
-	replace: (parameters?: RouteParameters, queryStringParameters?: QueryStringParameters) => void;
+	push: (
+		parameters?: RouteParameters,
+		queryStringParameters?: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>,
+	) => void;
+	replace: (
+		parameters?: RouteParameters,
+		queryStringParameters?: ((prev: Record<string, string>) => Record<string, string>) | Record<string, string>,
+	) => void;
 };
 
 export const useRoute = (name: string): Route => {
@@ -15,11 +21,10 @@ export const useRoute = (name: string): Route => {
 
 	return useMemo<Route>(
 		() => ({
-			getPath: (parameters, queryStringParameters): string | undefined => queryRoutePath(name, parameters, queryStringParameters)[1](),
-			getUrl: (parameters, queryStringParameters): ReturnType<Route['getUrl']> =>
-				queryRouteUrl(name, parameters, queryStringParameters)[1](),
-			push: (parameters, queryStringParameters): ReturnType<Route['push']> => pushRoute(name, parameters, queryStringParameters),
-			replace: (parameters, queryStringParameters): ReturnType<Route['replace']> => replaceRoute(name, parameters, queryStringParameters),
+			getPath: (parameters, queryStringParameters) => queryRoutePath(name, parameters, queryStringParameters)[1](),
+			getUrl: (parameters, queryStringParameters) => queryRouteUrl(name, parameters, queryStringParameters)[1](),
+			push: (parameters, queryStringParameters) => pushRoute(name, parameters, queryStringParameters),
+			replace: (parameters, queryStringParameters) => replaceRoute(name, parameters, queryStringParameters),
 		}),
 		[queryRoutePath, queryRouteUrl, name, pushRoute, replaceRoute],
 	);

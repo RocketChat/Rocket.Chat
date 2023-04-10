@@ -7,7 +7,7 @@ import { settings } from '../../../settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 
 export async function userLogout(userId) {
-	const { connectToCloud, workspaceRegistered } = retrieveRegistrationStatus();
+	const { connectToCloud, workspaceRegistered } = await retrieveRegistrationStatus();
 
 	if (!connectToCloud || !workspaceRegistered) {
 		return '';
