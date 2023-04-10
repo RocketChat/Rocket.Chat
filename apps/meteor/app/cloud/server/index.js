@@ -37,7 +37,7 @@ Meteor.startup(async function () {
 		});
 	});
 
-	const { workspaceRegistered } = retrieveRegistrationStatus();
+	const { workspaceRegistered } = await retrieveRegistrationStatus();
 
 	if (process.env.REG_TOKEN && process.env.REG_TOKEN !== '' && !workspaceRegistered) {
 		try {

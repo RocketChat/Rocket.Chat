@@ -115,27 +115,24 @@ Meteor.methods<ServerMethods>({
 		}
 		// update emoji
 		if (emojiData.newFile) {
-			RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
-			RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.previousExtension}`));
-			RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.extension}`));
-			RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`));
+			await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
+			await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.previousExtension}`));
+			await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.extension}`));
+			await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`));
 
 			await EmojiCustom.setExtension(emojiData._id, emojiData.extension);
 		} else if (emojiData.name !== emojiData.previousName) {
-			const rs = RocketChatFileEmojiCustomInstance.getFileWithReadStream(
+			const rs = await RocketChatFileEmojiCustomInstance.getFileWithReadStream(
 				encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`),
 			);
 			if (rs !== null) {
-				RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
+				await RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.name}.${emojiData.extension}`));
 				const ws = RocketChatFileEmojiCustomInstance.createWriteStream(
 					encodeURIComponent(`${emojiData.name}.${emojiData.previousExtension}`),
 					rs.contentType,
 				);
-				ws.on(
-					'end',
-					Meteor.bindEnvironment(() =>
-						RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`)),
-					),
+				ws.on('end', () =>
+					RocketChatFileEmojiCustomInstance.deleteFile(encodeURIComponent(`${emojiData.previousName}.${emojiData.previousExtension}`)),
 				);
 				rs.readStream.pipe(ws);
 			}

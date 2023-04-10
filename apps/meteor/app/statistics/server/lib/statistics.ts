@@ -361,7 +361,7 @@ export const statistics = {
 		statistics.msEnabled = isRunningMs();
 		statistics.oplogEnabled = oplogEnabled;
 		statistics.mongoVersion = mongoVersion;
-		statistics.mongoStorageEngine = mongoStorageEngine;
+		statistics.mongoStorageEngine = mongoStorageEngine || '';
 
 		statsPms.push(
 			Sessions.getUniqueUsersOfYesterday().then((result) => {

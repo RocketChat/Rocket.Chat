@@ -1,5 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-
 import { settings, settingsRegistry } from '../../../settings/server';
 import { SearchLogger } from '../logger/logger';
 import type { SearchProvider } from '../model/SearchProvider';
@@ -101,15 +99,13 @@ export class SearchProviderService {
 		});
 
 		// add listener to react on setting changes
-		const configProvider = withDebouncing({ wait: 1000 })(
-			Meteor.bindEnvironment(() => {
-				const providerId = settings.get<string>('Search.Provider');
+		const configProvider = withDebouncing({ wait: 1000 })(() => {
+			const providerId = settings.get<string>('Search.Provider');
 
-				if (providerId) {
-					void this.use(providerId); // TODO do something with success and errors
-				}
-			}),
-		);
+			if (providerId) {
+				void this.use(providerId); // TODO do something with success and errors
+			}
+		});
 
 		settings.watchByRegex(/^Search\./, configProvider);
 	}

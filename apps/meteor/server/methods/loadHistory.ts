@@ -40,7 +40,7 @@ Meteor.methods<ServerMethods>({
 
 		const fromId = Meteor.userId();
 
-		const room = await Rooms.findOneById(rid, { fields: { ...roomAccessAttributes, t: 1 } });
+		const room = await Rooms.findOneById(rid, { projection: { ...roomAccessAttributes, t: 1 } });
 		if (!room) {
 			return false;
 		}
