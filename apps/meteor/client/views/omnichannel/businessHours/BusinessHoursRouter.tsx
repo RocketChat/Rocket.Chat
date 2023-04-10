@@ -15,7 +15,7 @@ const BusinessHoursRouter = () => {
 	const context = useRouteParameter('context');
 	const id = useRouteParameter('id');
 	const type = useRouteParameter('type');
-	const isSingleBH = useIsSingleBusinessHours();
+	const isSingleBH = false;
 
 	const router = useRoute('omnichannel-businessHours');
 

@@ -1,17 +1,19 @@
 import { Button, ButtonGroup, Callout } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch, useRoute, useMethod, useTranslation } from '@rocket.chat/ui-contexts';
+import type { MutableRefObject } from 'react';
 import React, { useRef, useMemo, useState } from 'react';
 
 import Page from '../../../components/Page';
 import PageSkeleton from '../../../components/PageSkeleton';
 import { AsyncStatePhase } from '../../../hooks/useAsyncState';
 import { useEndpointData } from '../../../hooks/useEndpointData';
+import type { DaysTime } from './BusinessHoursFormContainer';
 import BusinessHoursFormContainer from './BusinessHoursFormContainer';
 import { useIsSingleBusinessHours } from './BusinessHoursRouter';
 import { mapBusinessHoursForm } from './mapBusinessHoursForm';
 
-const EditBusinessHoursPage = ({ id, type }) => {
+const EditBusinessHoursPage = ({ id, type }: { id: string | undefined; type: string }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isSingleBH = useIsSingleBusinessHours();
@@ -20,7 +22,11 @@ const EditBusinessHoursPage = ({ id, type }) => {
 		params: useMemo(() => ({ _id: id, type }), [id, type]),
 	});
 
-	const saveData = useRef({ form: {} });
+	const saveData: MutableRefObject<{
+		form: Record<string, unknown>;
+		multiple?: { name?: string; active?: boolean; departments?: { value: string; _id: string }[] };
+		timezone?: { name: string };
+	}> = useRef({ form: {} });
 
 	const [hasChanges, setHasChanges] = useState(false);
 
@@ -45,7 +51,7 @@ const EditBusinessHoursPage = ({ id, type }) => {
 			});
 		}
 
-		const mappedForm = mapBusinessHoursForm(form, data.businessHour);
+		const mappedForm = mapBusinessHoursForm(form as { daysOpen: string[]; daysTime: DaysTime }, data.businessHour);
 
 		const departmentsToApplyBusinessHour = departments?.map((dep) => dep.value).join(',') || '';
 

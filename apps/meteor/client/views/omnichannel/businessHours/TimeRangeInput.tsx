@@ -3,7 +3,15 @@ import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useState } from 'react';
 
-const TimeRangeInput = ({ onChange, start: startDefault, finish: finishDefault }) => {
+const TimeRangeInput = ({
+	onChange,
+	start: startDefault,
+	finish: finishDefault,
+}: {
+	onChange: (value: string, time: string) => void;
+	start: string;
+	finish: string;
+}) => {
 	const t = useTranslation();
 
 	const [start, setStart] = useState(startDefault);

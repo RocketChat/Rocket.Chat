@@ -1,27 +1,36 @@
+import type { SelectOption } from '@rocket.chat/fuselage';
 import { SelectFiltered, Field } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import React, { useMemo } from 'react';
 
 import { useForm } from '../../../../client/hooks/useForm';
 import { useTimezoneNameList } from '../../../../client/hooks/useTimezoneNameList';
 
-const getInitialData = (data = {}) => ({
+type Props = {
+	onChange: (val: any) => void;
+	data: string;
+	className?: string;
+	hasChanges: (_val: any) => void;
+};
+
+const getInitialData = (data: string | undefined = undefined) => ({
 	name: data ?? '',
 });
 
-const BusinessHoursTimeZone = ({ onChange, data, className, hasChanges = () => {} }) => {
+const BusinessHoursTimeZone = ({ onChange, data, className, hasChanges = (_val) => undefined }: Props) => {
 	const t = useTranslation();
 
 	const { values, handlers, hasUnsavedChanges } = useForm(getInitialData(data));
 
-	const { name } = values;
+	const { name } = values as { name: string };
 	const { handleName } = handlers;
 
 	const timeZones = useTimezoneNameList();
 
-	const timeZonesOptions = useMemo(() => timeZones.map((name) => [name, t(name)]), [t, timeZones]);
+	const timeZonesOptions = useMemo<SelectOption[]>(() => timeZones.map((name) => [name, t(name as TranslationKey)]), [t, timeZones]);
 
-	onChange && onChange({ name });
+	onChange?.({ name });
 	hasChanges(hasUnsavedChanges);
 
 	return (
