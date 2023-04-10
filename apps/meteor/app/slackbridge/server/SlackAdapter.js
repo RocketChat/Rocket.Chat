@@ -409,8 +409,8 @@ export default class SlackAdapter {
 				// Stash this away to key off it later so we don't send it back to Slack
 				this.slackBridge.reactionsMap.set(`unset${rocketMsg._id}${rocketReaction}`, rocketUser);
 				slackLogger.debug('Removing reaction from Slack');
-				Meteor.runAsUser(rocketUser._id, () => {
-					Meteor.call('setReaction', rocketReaction, rocketMsg._id);
+				await Meteor.runAsUser(rocketUser._id, () => {
+					return Meteor.callAsync('setReaction', rocketReaction, rocketMsg._id);
 				});
 			}
 		}
@@ -455,8 +455,8 @@ export default class SlackAdapter {
 				// Stash this away to key off it later so we don't send it back to Slack
 				this.slackBridge.reactionsMap.set(`set${rocketMsg._id}${rocketReaction}`, rocketUser);
 				slackLogger.debug('Adding reaction from Slack');
-				Meteor.runAsUser(rocketUser._id, () => {
-					Meteor.call('setReaction', rocketReaction, rocketMsg._id);
+				await Meteor.runAsUser(rocketUser._id, () => {
+					return Meteor.callAsync('setReaction', rocketReaction, rocketMsg._id);
 				});
 			}
 		}
