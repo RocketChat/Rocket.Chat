@@ -170,6 +170,7 @@ export interface IUser extends IRocketChatRecord {
 			read?: boolean;
 		};
 	};
+	importIds?: string[];
 }
 
 export interface IRegisterUser extends IUser {

@@ -4,8 +4,6 @@ import { Config } from './ufs-config';
 import { Filter } from './ufs-filter';
 import { MIME } from './ufs-mime';
 import { Store } from './ufs-store';
-import { StorePermissions } from './ufs-store-permissions';
-import { Tokens } from './ufs-tokens';
 
 const stores: Record<string, Store> = {};
 const store: Record<string, typeof Store> = {};
@@ -14,8 +12,6 @@ export const UploadFS = {
 	config: new Config(),
 
 	store,
-
-	tokens: Tokens,
 
 	addStore(store: Store) {
 		if (!(store instanceof Store)) {
@@ -52,7 +48,6 @@ export const UploadFS = {
 	Config,
 	Filter,
 	Store,
-	StorePermissions,
 };
 
 await import('./ufs-methods');

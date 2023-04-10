@@ -1,11 +1,10 @@
-import { Roles } from '@rocket.chat/models';
+import { Roles, Users } from '@rocket.chat/models';
 
 import { onLicense } from '../../app/license/server';
 import type { ISAMLUser } from '../../../app/meteor-accounts-saml/server/definition/ISAMLUser';
 import { SAMLUtils } from '../../../app/meteor-accounts-saml/server/lib/Utils';
 import { settings } from '../../../app/settings/server';
 import { addSettings } from '../settings/saml';
-import { Users } from '../../../app/models/server';
 import { ensureArray } from '../../../lib/utils/arrayUtils';
 
 onLicense('saml-enterprise', () => {
@@ -45,7 +44,7 @@ onLicense('saml-enterprise', () => {
 		});
 	});
 
-	SAMLUtils.events.on('updateCustomFields', (loginResult: Record<string, any>, updatedUser: { userId: string; token: string }) => {
+	SAMLUtils.events.on('updateCustomFields', async (loginResult: Record<string, any>, updatedUser: { userId: string; token: string }) => {
 		const userDataCustomFieldMap = settings.get('SAML_Custom_Default_user_data_custom_fieldmap') as string;
 		const customMap: Record<string, any> = JSON.parse(userDataCustomFieldMap);
 
@@ -63,7 +62,7 @@ onLicense('saml-enterprise', () => {
 			customFieldsList[customAttribute] = value;
 		}
 
-		Users.updateCustomFieldsById(updatedUser.userId, customFieldsList);
+		await Users.updateCustomFieldsById(updatedUser.userId, customFieldsList);
 	});
 });
 

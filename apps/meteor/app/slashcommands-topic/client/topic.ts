@@ -10,14 +10,13 @@ slashCommands.add({
 	command: 'topic',
 	callback: async function Topic(_command: 'topic', params, item): Promise<void> {
 		if (hasPermission('edit-room', item.rid)) {
-			await Meteor.callAsync('saveRoomSettings', item.rid, 'roomTopic', params, (error: Meteor.Error) => {
-				if (error) {
-					dispatchToastMessage({ type: 'error', message: error });
-					throw error;
-				}
-
+			try {
+				await Meteor.callAsync('saveRoomSettings', item.rid, 'roomTopic', params);
 				callbacks.run('roomTopicChanged', ChatRoom.findOne(item.rid));
-			});
+			} catch (error: unknown) {
+				dispatchToastMessage({ type: 'error', message: error });
+				throw error;
+			}
 		}
 	},
 	options: {

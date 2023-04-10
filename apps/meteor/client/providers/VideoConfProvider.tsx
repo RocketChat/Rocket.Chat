@@ -40,7 +40,7 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 			},
 			rejectIncomingCall: (callId: string): void => VideoConfManager.rejectIncomingCall(callId),
 			abortCall: (): void => VideoConfManager.abortCall(),
-			setPreferences: (prefs: Partial<typeof VideoConfManager['preferences']>): void => VideoConfManager.setPreferences(prefs),
+			setPreferences: (prefs: Partial<(typeof VideoConfManager)['preferences']>): void => VideoConfManager.setPreferences(prefs),
 			queryIncomingCalls: {
 				getCurrentValue: (): DirectCallParams[] => VideoConfManager.getIncomingDirectCalls(),
 				subscribe: (cb: () => void): Unsubscribe => VideoConfManager.on('incoming/changed', cb),

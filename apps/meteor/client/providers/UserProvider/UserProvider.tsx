@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
 import React, { useMemo } from 'react';
 
-import { Subscriptions, Rooms } from '../../../app/models/client';
+import { Subscriptions, ChatRoom } from '../../../app/models/client';
 import { getUserPreference } from '../../../app/utils/client';
 import { callbacks } from '../../../lib/callbacks';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
@@ -79,13 +79,13 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 			querySubscription: createReactiveSubscriptionFactory<ISubscription | undefined>((query, fields, sort) =>
 				Subscriptions.findOne(query, { fields, sort }),
 			),
-			queryRoom: createReactiveSubscriptionFactory<IRoom | undefined>((query, fields) => Rooms.findOne(query, { fields })),
+			queryRoom: createReactiveSubscriptionFactory<IRoom | undefined>((query, fields) => ChatRoom.findOne(query, { fields })),
 			querySubscriptions: createReactiveSubscriptionFactory<SubscriptionWithRoom[]>((query, options) => {
 				if (userId) {
 					return Subscriptions.find(query, options).fetch();
 				}
 
-				return Rooms.find(query, options).fetch();
+				return ChatRoom.find(query, options).fetch();
 			}),
 			loginWithToken: (token: string): Promise<void> =>
 				new Promise((resolve, reject) =>

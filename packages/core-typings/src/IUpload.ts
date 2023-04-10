@@ -15,7 +15,8 @@ export interface IUpload {
 	etag?: string;
 	size?: number;
 	identify?: {
-		size: {
+		format?: string;
+		size?: {
 			width: number;
 			height: number;
 		};

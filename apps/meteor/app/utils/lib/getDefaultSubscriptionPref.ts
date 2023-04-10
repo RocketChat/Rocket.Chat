@@ -1,3 +1,5 @@
+import type { ISubscription, IUser } from '@rocket.chat/core-typings';
+
 /**
  * @type {(userPref: Pick<import('@rocket.chat/core-typings').IUser, 'settings'>) => {
  * 	desktopPrefOrigin: 'user';
@@ -5,11 +7,10 @@
  * 	emailPrefOrigin: 'user';
  * }}
  */
-export const getDefaultSubscriptionPref = (userPref) => {
-	const subscription = {};
+export const getDefaultSubscriptionPref = (userPref: IUser) => {
+	const subscription: Partial<ISubscription> = {};
 
-	const { desktopNotifications, pushNotifications, emailNotificationMode, highlights } =
-		(userPref.settings && userPref.settings.preferences) || {};
+	const { desktopNotifications, pushNotifications, emailNotificationMode, highlights } = userPref.settings?.preferences || {};
 
 	if (Array.isArray(highlights) && highlights.length) {
 		subscription.userHighlights = highlights;
