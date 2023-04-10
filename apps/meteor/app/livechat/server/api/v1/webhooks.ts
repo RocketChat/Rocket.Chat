@@ -55,6 +55,7 @@ API.v1.addRoute(
 				],
 			};
 			const options = {
+				method: 'POST',
 				headers: {
 					'X-RocketChat-Livechat-Token': settings.get<string>('Livechat_secret_token'),
 					'Content-Type': 'application/json',
