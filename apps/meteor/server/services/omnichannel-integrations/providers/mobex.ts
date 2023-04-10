@@ -123,7 +123,7 @@ export class Mobex implements ISMSProvider {
 				`${currentAddress}/send?username=${currentUsername}&password=${currentPassword}&to=${strippedTo}&from=${currentFrom}&content=${message}`,
 			);
 
-			const json = await response.json();
+			const json = await response.text();
 			if (response.ok) {
 				result.resultMsg = json;
 				result.isSuccess = true;

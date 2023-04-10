@@ -53,10 +53,10 @@ class ExternalQueue implements IRoutingMethod {
 					'X-RocketChat-Secret-Token': settings.get('Livechat_External_Queue_Token'),
 				},
 			});
-			const result = await request.json();
+			const result = (await request.json()) as { username?: string };
 
-			if (result?.data?.username) {
-				const agent = await Users.findOneOnlineAgentByUserList(result.data.username);
+			if (result?.username) {
+				const agent = await Users.findOneOnlineAgentByUserList(result.username);
 
 				if (!agent?.username) {
 					return;

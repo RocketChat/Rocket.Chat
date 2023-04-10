@@ -58,10 +58,10 @@ export const appRequestNotififyForUsers = async (
 			{ headers },
 		);
 
-		const data = await response.json();
+		const data = (await response.json()) as { meta: { total: number }; data: any };
 
 		const appRequests = API.v1.success({ data });
-		const { total } = appRequests.body.data.data.meta;
+		const { total } = appRequests.body.data.meta;
 
 		if (total === undefined || total === 0) {
 			return [];
@@ -74,7 +74,7 @@ export const appRequestNotififyForUsers = async (
 
 		// Notify first batch
 		requestsCollection.push(
-			Promise.resolve(appRequests.body.data.data.data)
+			Promise.resolve(appRequests.body.data.data)
 				.then((response) => notifyBatchOfUsers(appName, learnMore, response))
 				.catch(notifyBatchOfUsersError),
 		);
@@ -89,9 +89,9 @@ export const appRequestNotififyForUsers = async (
 				{ headers },
 			);
 
-			const data = await request.json();
+			const data = (await request.json()) as { data: any };
 
-			requestsCollection.push(notifyBatchOfUsers(appName, learnMore, data.data.data));
+			requestsCollection.push(notifyBatchOfUsers(appName, learnMore, data.data));
 		}
 
 		const finalResult = await Promise.all(requestsCollection);

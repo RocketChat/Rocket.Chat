@@ -127,7 +127,7 @@ const getUrlContent = async function (urlObjStr: string | URL.UrlWithStringQuery
 	// @ts-expect-error from https://github.com/microsoft/TypeScript/issues/39051
 	for await (const chunk of response.body) {
 		totalSize += chunk.length;
-		chunks.push(chunk);
+		chunks.push(chunk as Buffer);
 
 		if (totalSize > sizeLimit) {
 			log.warn({ msg: 'OEmbed request size exceeded', url });
@@ -138,7 +138,6 @@ const getUrlContent = async function (urlObjStr: string | URL.UrlWithStringQuery
 	log.debug('Obtained response from server with length of', totalSize);
 	const buffer = Buffer.concat(chunks);
 	return {
-		// @ts-expect-error - fetch types are kinda weird
 		headers: Object.fromEntries(response.headers),
 		body: toUtf8(response.headers.get('content-type') || 'text/plain', buffer),
 		parsedUrl,

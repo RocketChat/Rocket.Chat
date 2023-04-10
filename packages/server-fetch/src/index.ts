@@ -45,3 +45,5 @@ export function serverFetch(
 		...(agent ? { agent } : {}),
 	});
 }
+
+export { Response } from 'node-fetch';

@@ -227,7 +227,7 @@ export class MatrixBridge implements IFederationBridge {
 			throw new Error('Not able to download the file');
 		}
 
-		return response.body;
+		return response.body as unknown as ReadableStream;
 	}
 
 	public isUserIdFromTheSameHomeserver(externalUserId: string, domain: string): boolean {

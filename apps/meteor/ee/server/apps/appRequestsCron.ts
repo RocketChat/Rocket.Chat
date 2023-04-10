@@ -37,7 +37,7 @@ const appsNotifyAppRequests = Meteor.bindEnvironment(async function _appsNotifyA
 
 		const pendingSentUrl = `${baseUrl}/v1/app-request/sent/pending`;
 		const result = await fetch(pendingSentUrl, options);
-		const data = (await result.json()).data?.data;
+		const { data } = (await result.json()) as { data: any };
 		const filtered = installedApps.filter((app) => data.indexOf(app.getID()) !== -1);
 
 		for await (const app of filtered) {
