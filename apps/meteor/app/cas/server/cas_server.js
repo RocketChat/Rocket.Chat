@@ -44,7 +44,7 @@ const casTicket = function (req, token, callback) {
 			service: `${appUrl}/_cas/${token}`,
 		},
 		ticketId,
-		Meteor.bindEnvironment(async function (err, status, username, details) {
+		async function (err, status, username, details) {
 			if (err) {
 				logger.error(`error when trying to validate: ${err.message}`);
 			} else if (status) {
@@ -62,7 +62,7 @@ const casTicket = function (req, token, callback) {
 			// logger.debug("Received response: " + JSON.stringify(details, null , 4));
 
 			callback();
-		}),
+		},
 	);
 };
 
