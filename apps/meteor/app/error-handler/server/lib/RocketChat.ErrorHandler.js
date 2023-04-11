@@ -30,16 +30,13 @@ class ErrorHandler {
 	}
 
 	async registerHandlers() {
-		process.on(
-			'uncaughtException',
-			Meteor.bindEnvironment(async (error) => {
-				await Settings.incrementValueById('Uncaught_Exceptions_Count');
-				if (!this.reporting) {
-					return;
-				}
-				await this.trackError(error.message, error.stack);
-			}),
-		);
+		process.on('uncaughtException', async (error) => {
+			await Settings.incrementValueById('Uncaught_Exceptions_Count');
+			if (!this.reporting) {
+				return;
+			}
+			await this.trackError(error.message, error.stack);
+		});
 
 		const self = this;
 		const originalMeteorDebug = Meteor._debug;

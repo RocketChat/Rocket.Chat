@@ -1,4 +1,3 @@
-import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 import {
 	Rooms as RoomRaw,
@@ -83,12 +82,12 @@ const normalizeQueueInfo = async ({ position, queueInfo, department }) => {
 export const dispatchInquiryPosition = async (inquiry, queueInfo) => {
 	const { position, department } = inquiry;
 	const data = await normalizeQueueInfo({ position, queueInfo, department });
-	const propagateInquiryPosition = Meteor.bindEnvironment((inquiry) => {
+	const propagateInquiryPosition = (inquiry) => {
 		void api.broadcast('omnichannel.room', inquiry.rid, {
 			type: 'queueData',
 			data,
 		});
-	});
+	};
 
 	return setTimeout(() => {
 		propagateInquiryPosition(inquiry);
@@ -128,9 +127,9 @@ export const processWaitingQueue = async (department, inquiry) => {
 	const { defaultAgent } = inquiry;
 	const room = await RoutingManager.delegateInquiry(inquiry, defaultAgent);
 
-	const propagateAgentDelegated = Meteor.bindEnvironment((rid, agentId) => {
+	const propagateAgentDelegated = (rid, agentId) => {
 		dispatchAgentDelegated(rid, agentId);
-	});
+	};
 
 	if (room && room.servedBy) {
 		const {
