@@ -19,8 +19,8 @@ const EmojiPickerCategoryItem = ({ category, activeCategory, setSearching }) => 
 	const handleSelect = (e) => {
 		e.preventDefault();
 		setSearching(false);
-		const header = document.getElementById(`emoji-list-category-${category.key}`);
-		header?.scrollIntoView({ behavior: 'smooth' });
+		const categoryHeader = document.getElementById(`emoji-list-category-${category.key}`);
+		categoryHeader?.scrollIntoView({ behavior: 'smooth' });
 	};
 
 	return (

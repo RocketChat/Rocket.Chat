@@ -42,7 +42,7 @@ const EmojiElement = ({ emoji, image, onClick }: EmojiElementProps) => {
 		// 	title={emoji}
 		// />
 		<IconButton onClick={onClick} data-emoji={emoji} title={emoji} icon={undefined}>
-			<Box dangerouslySetInnerHTML={{ __html: image }} />
+			<div dangerouslySetInnerHTML={{ __html: image }} />
 		</IconButton>
 	);
 };

@@ -9,6 +9,7 @@ import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/high
 import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
 import { MessageListContext } from '../../../../components/message/list/MessageListContext';
 import AttachmentProvider from '../../../../providers/AttachmentProvider';
+import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import ToolboxProvider from '../../providers/ToolboxProvider';
 import { useAutoTranslate } from '../hooks/useAutoTranslate';
@@ -55,6 +56,8 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children, scrollMe
 	const msgParameter = useQueryStringParameter('msg');
 
 	useLoadSurroundingMessages(msgParameter);
+
+	const chat = useChat();
 
 	const context: MessageListContextValue = useMemo(
 		() => ({
@@ -121,11 +124,12 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children, scrollMe
 			useOpenEmojiPicker: uid
 				? (message) =>
 						(e): void => {
+							console.log(message);
 							e.nativeEvent.stopImmediatePropagation();
-							EmojiPicker.open(
-								e.currentTarget,
-								(emoji: string) => reactToMessage({ messageId: message._id, reaction: emoji }) as unknown as void,
-							);
+							chat?.emojiPicker.open(e.currentTarget, (emoji: string) => reactToMessage({ messageId: message._id, reaction: emoji }));
+							// EmojiPicker.open(
+							// 	 as unknown as void,
+							// );
 						}
 				: () => (): void => undefined,
 		}),
@@ -146,6 +150,7 @@ const MessageListProvider: VFC<MessageListProviderProps> = ({ children, scrollMe
 			showColors,
 			msgParameter,
 			scrollMessageList,
+			chat?.emojiPicker,
 		],
 	);
 

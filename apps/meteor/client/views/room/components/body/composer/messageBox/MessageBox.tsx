@@ -13,11 +13,11 @@ import {
 } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { MouseEventHandler, ReactElement, FormEvent, KeyboardEventHandler, KeyboardEvent, Ref, ClipboardEventHandler } from 'react';
-import React, { memo, useRef, useReducer, useCallback, useState } from 'react';
+import type { ReactElement, FormEvent, KeyboardEventHandler, KeyboardEvent, Ref, ClipboardEventHandler } from 'react';
+import React, { memo, useRef, useReducer, useCallback } from 'react';
 import { useSubscription } from 'use-subscription';
 
-import { EmojiPicker } from '../../../../../../../app/emoji/client';
+// import { EmojiPicker } from '../../../../../../../app/emoji/client';
 import { createComposerAPI } from '../../../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -31,7 +31,6 @@ import type { ComposerAPI } from '../../../../../../lib/chats/ChatAPI';
 import { roomCoordinator } from '../../../../../../lib/rooms/roomCoordinator';
 import { keyCodes } from '../../../../../../lib/utils/keyCodes';
 import AudioMessageRecorder from '../../../../../composer/AudioMessageRecorder';
-import EmojiPickerTemplate from '../../../../../composer/EmojiPicker';
 import VideoMessageRecorder from '../../../../../composer/VideoMessageRecorder';
 import { useChat } from '../../../../contexts/ChatContext';
 import { useComposerPopup } from '../../../../contexts/ComposerPopupContext';
@@ -126,7 +125,6 @@ const MessageBox = ({
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 	const messageComposerRef = useRef<HTMLElement>(null);
 	const shadowRef = useRef(null);
-	const emojiButtonRef = useRef();
 
 	const storageID = `${rid}${tmid ? `-${tmid}` : ''}`;
 
@@ -144,21 +142,21 @@ const MessageBox = ({
 
 	const useEmojis = useUserPreference<boolean>('useEmojis');
 
-	const handleOpenEmojiPicker: MouseEventHandler<HTMLElement> = useMutableCallback((e) => {
-		e.stopPropagation();
-		e.preventDefault();
+	// const handleOpenEmojiPicker: MouseEventHandler<HTMLElement> = useMutableCallback((e) => {
+	// 	e.stopPropagation();
+	// 	e.preventDefault();
 
-		if (!useEmojis) {
-			return;
-		}
+	// 	if (!useEmojis) {
+	// 		return;
+	// 	}
 
-		if (EmojiPicker.isOpened()) {
-			EmojiPicker.close();
-			return;
-		}
+	// 	if (EmojiPicker.isOpened()) {
+	// 		EmojiPicker.close();
+	// 		return;
+	// 	}
 
-		EmojiPicker.open(e.currentTarget, (emoji: string) => chat?.composer?.insertText(` :${emoji}: `));
-	});
+	// 	EmojiPicker.open(e.currentTarget, (emoji: string) => chat?.composer?.insertText(` :${emoji}: `));
+	// });
 
 	const handleSendMessage = useMutableCallback(() => {
 		const text = chat?.composer?.text ?? '';
@@ -343,10 +341,9 @@ const MessageBox = ({
 
 	const mergedRefs = useMessageComposerMergedRefs(c, textareaRef, callbackRef, autofocusRef);
 
-	const [isPickerOpen, setIsPickerOpen] = useState(false);
-
-	const handleOpenTest = () => {
-		setIsPickerOpen(true);
+	const handleOpenTest = (event: UIEvent) => {
+		// EmojiPicker.open(e.currentTarget, (emoji: string) => chat?.composer?.insertText(` :${emoji}: `));
+		chat?.emojiPicker.open(event?.currentTarget, (emoji: string) => chat?.composer?.insertText(` :${emoji}: `));
 	};
 
 	return (
@@ -407,9 +404,6 @@ const MessageBox = ({
 							onClick={handleOpenTest}
 							title={t('Emoji')}
 						/>
-						{isPickerOpen && (
-							<EmojiPickerTemplate composer={chat.composer} reference={messageComposerRef} onClose={() => setIsPickerOpen(false)} />
-						)}
 						<MessageComposerActionsDivider />
 						{chat.composer && formatters.length > 0 && (
 							<MessageBoxFormattingToolbar

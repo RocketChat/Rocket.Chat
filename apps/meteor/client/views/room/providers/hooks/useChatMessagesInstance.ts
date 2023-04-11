@@ -2,6 +2,7 @@ import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 
 import { ChatMessages } from '../../../../../app/ui/client/lib/ChatMessages';
 import type { ChatAPI } from '../../../../lib/chats/ChatAPI';
+import { useEmojiPicker } from './useEmojiPicker';
 import { useInstance } from './useInstance';
 import { useUserCard } from './useUserCard';
 
@@ -13,6 +14,7 @@ export function useChatMessagesInstance({ rid, tmid }: { rid: IRoom['_id']; tmid
 	}, [rid, tmid]);
 
 	chatMessages.userCard = useUserCard();
+	chatMessages.emojiPicker = useEmojiPicker();
 
 	return chatMessages;
 }
