@@ -44,6 +44,10 @@ export const RateLimiterClass = new (class {
 			name: methodName,
 		};
 
-		return DDPRateLimiter.addRule(match, numRequests, timeInterval, matchers);
+		Object.entries(matchers).forEach(function ([key, matcher]) {
+			match[key] = matcher;
+		});
+
+		return DDPRateLimiter.addRule(match, numRequests, timeInterval);
 	}
 })();
