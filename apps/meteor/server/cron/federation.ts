@@ -81,7 +81,7 @@ export async function federationCron(): Promise<void> {
 	const name = 'Federation';
 
 	settings.watch('FEDERATION_Enabled', async (value) => {
-		if (!value && (await defaultCronJobs.has(name))) {
+		if (!value) {
 			return defaultCronJobs.remove(name);
 		}
 
